@@ -43,11 +43,11 @@
   - Doctor correctly identifies the unsupported macOS host and missing QNX toolchain.
   - Toolchain correctly produces a fatal configure error with exact remediation steps.
   - No actual QNX compilation performed because QNX SDP is not installed.
-- **Commits created:** None (git repository not initialized).
+- **Commits created:** `b72e4ea`, `1ee882e`, `ab2f474`, `8097603`.
 - **Problems discovered:**
   - Current workspace is macOS arm64, not the supported x86-64 Ubuntu 24.04 build host.
   - QNX SDP 8.0.5 and Ninja are missing.
 - **Remaining work:**
   - Install QNX SDP 8.0.5 on an x86-64 Ubuntu 24.04 host and re-run doctor/configure/build.
-  - Initialize git repository and commit Milestone 0 scaffolding.
 - **Recommended continuation point:** `docs/handoff/NEXT_ACTIONS.md` Next Action 1.
+- **Final commit this session:** `8097603`
