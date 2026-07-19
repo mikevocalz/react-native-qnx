@@ -37,7 +37,7 @@ Milestone 0: Compatibility and Toolchain
 
 ## Latest known-good commit
 
-None (git repository not yet initialized).
+`b72e4ea8870ff732edd85f8dad27a5d2987ad20e` – initial Milestone 0 scaffolding.
 
 ## Last successfully executed command
 
