@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "project": "react-native-qnx",
+  "activeMilestone": "Milestone 0: Compatibility and Toolchain",
+  "activeBranch": "main",
+  "latestKnownGoodCommit": null,
+  "repositoryBuildable": false,
+  "lastSuccessfulCommand": "bash scripts/doctor.sh",
+  "lastFailingCommand": "bash scripts/configure-qnx.sh aarch64 Debug",
+  "lastTestedHost": "macOS arm64 (not the supported build host)",
+  "lastTestedTarget": null,
+  "completedTasks": ["QNX-RN-000", "QNX-RN-001", "QNX-RN-002", "QNX-RN-003", "QNX-RN-004", "QNX-RN-005", "QNX-RN-006"],
+  "activeTasks": ["QNX-RN-007"],
+  "blockedTasks": [],
+  "nextRecommendedTask": "Install QNX SDP 8.0.5 on x86-64 Ubuntu 24.04, run ./scripts/doctor.sh, then ./scripts/configure-qnx.sh aarch64 Debug and ./scripts/build-qnx.sh aarch64 Debug",
+  "updatedAt": "2026-07-19T20:14:53Z"
+}

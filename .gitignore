@@ -1,0 +1,38 @@
+# Build outputs
+build/
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+
+# Node
+node_modules/
+.pnpm-store/
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs may contain personal paths or secrets; preserve locally but sanitize before committing
+artifacts/logs/*
+!artifacts/logs/.gitkeep
+
+# Environment / secrets
+.env
+.env.local
+*.key
+*.pem
+*.crt
+
+# QNX
+*.core

@@ -1,0 +1,2 @@
+# Preserve the artifacts/logs directory in git.
+# Actual log files are excluded by .gitignore to avoid committing personal paths or secrets.
