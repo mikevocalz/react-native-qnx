@@ -37,7 +37,7 @@ Milestone 0: Compatibility and Toolchain
 
 ## Latest known-good commit
 
-`01f474f4c28a07d7d28b7fa7426b26d03c1fd6dd` – handoff state before final session wrap-up.
+`ab2f474d44649cbae16aacdda807e3e198970f90` – final handoff update for this session.
 
 ## Last successfully executed command
 
