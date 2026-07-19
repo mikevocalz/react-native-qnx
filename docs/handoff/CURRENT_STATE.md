@@ -37,7 +37,7 @@ Milestone 0: Compatibility and Toolchain
 
 ## Latest known-good commit
 
-`b72e4ea8870ff732edd85f8dad27a5d2987ad20e` – initial Milestone 0 scaffolding.
+`1ee882e5314d74a13f68e10dc52ff95bdc893cc6` – handoff updates after Milestone 0 scaffolding validation.
 
 ## Last successfully executed command
 
