@@ -3,7 +3,7 @@
   "project": "react-native-qnx",
   "activeMilestone": "Milestone 0: Compatibility and Toolchain",
   "activeBranch": "main",
-  "latestKnownGoodCommit": "1ee882e5314d74a13f68e10dc52ff95bdc893cc6",
+  "latestKnownGoodCommit": "01f474f4c28a07d7d28b7fa7426b26d03c1fd6dd",
   "repositoryBuildable": false,
   "lastSuccessfulCommand": "bash scripts/doctor.sh",
   "lastFailingCommand": "bash scripts/configure-qnx.sh aarch64 Debug",
