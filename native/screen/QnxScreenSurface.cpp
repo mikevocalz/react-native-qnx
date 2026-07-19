@@ -151,17 +151,12 @@ void QnxScreenSurface::fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
               (static_cast<int>(g) << 8)  |
               static_cast<int>(r);
 
-  int rect[4] = {0, 0, width_, height_};
-  int rc = screen_fill(context_, currentBuffer(), rect);
-  throwOnError(rc, "screen_fill failed");
-
-  rc = screen_set_context_property_iv(context_, SCREEN_PROPERTY_COLOR, &color);
+  int rc = screen_set_context_property_iv(context_, SCREEN_PROPERTY_COLOR, &color);
   throwOnError(rc, "screen_set_context_property_iv(SCREEN_PROPERTY_COLOR) failed");
 
-  rc = screen_blit(context_, currentBuffer(), buffers_[0], rect);
-  if (rc != 0) {
-    // screen_blit may not be needed for a simple fill; ignore errors in this demo path.
-  }
+  int rect[4] = {0, 0, width_, height_};
+  rc = screen_fill(context_, currentBuffer(), rect);
+  throwOnError(rc, "screen_fill failed");
 }
 
 } // namespace rnqnx
