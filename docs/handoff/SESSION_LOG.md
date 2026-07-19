@@ -50,4 +50,3 @@
 - **Remaining work:**
   - Install QNX SDP 8.0.5 on an x86-64 Ubuntu 24.04 host and re-run doctor/configure/build.
 - **Recommended continuation point:** `docs/handoff/NEXT_ACTIONS.md` Next Action 1.
-- **Final commit this session:** `8097603`
