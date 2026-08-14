@@ -5,21 +5,42 @@
   "description": "Production-grade React Native out-of-tree platform for QNX",
   "license": "MIT",
   "author": "react-native-qnx contributors",
+  "packageManager": "pnpm@11.21.0",
   "engines": {
-    "node": ">=24.0.0",
-    "pnpm": ">=9.0.0"
+    "node": ">=24.3.0",
+    "pnpm": ">=11.21.0"
   },
   "scripts": {
     "doctor": "bash scripts/doctor.sh",
     "configure:qnx": "bash scripts/configure-qnx.sh",
     "build:qnx": "bash scripts/build-qnx.sh",
-    "typecheck": "tsc --noEmit",
+    "bootstrap:macos": "bash scripts/bootstrap-macos.sh",
+    "validate:macos": "bash scripts/validate-macos.sh",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
     "lint": "prettier --check .",
-    "format": "prettier --write ."
+    "typecheck": "tsc --noEmit",
+    "test": "pnpm test:js && pnpm test:cpp:host",
+    "test:js": "node scripts/run-js-tests.mjs",
+    "test:cpp:host": "node scripts/run-cpp-host-tests.mjs",
+    "codegen:check": "node scripts/codegen-check.mjs",
+    "build:packages": "node scripts/build-packages.mjs",
+    "audit:dependencies": "pnpm audit --audit-level moderate",
+    "validate:dependencies": "node scripts/validate-dependencies.mjs",
+    "validate:manifests": "node scripts/validate-manifests.mjs",
+    "validate:architecture": "node scripts/validate-architecture.mjs"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "prettier": "^3.5.0",
-    "typescript": "^5.8.0"
+    "@react-native/jest-preset": "0.86.2",
+    "@types/node": "24.13.3",
+    "@types/react": "19.2.18",
+    "expo": "57.0.12",
+    "metro": "0.84.4",
+    "nitrogen": "0.36.5",
+    "prettier": "3.9.6",
+    "react": "19.2.3",
+    "react-native": "0.86.2",
+    "react-native-nitro-modules": "0.36.5",
+    "typescript": "6.0.3"
   }
 }

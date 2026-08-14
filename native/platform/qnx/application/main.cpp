@@ -4,14 +4,14 @@
 // it, and keeps the window alive until interrupted. This validates the toolchain,
 // Screen library linkage, and basic resource lifecycle.
 
-#include "QnxScreenSurface.h"
+#include "screen/QnxScreenSurface.h"
 
+#include <chrono>
+#include <csignal>
 #include <screen/screen.h>
 #include <cstdio>
 #include <cstdlib>
-#include <csignal>
 #include <thread>
-#include <chrono>
 
 namespace {
 
@@ -32,11 +32,7 @@ int main(int argc, char* argv[]) {
 
   try {
     rnqnx::QnxScreenSurface surface;
-    surface.initialize(SCREEN_WINDOW_TYPE_APPLICATION);
-
-    // Use a modest default window size. The actual display size should be queried
-    // from Screen properties in a real application.
-    surface.setSize(1280, 720);
+    surface.initialize(SCREEN_APPLICATION_WINDOW, 1280, 720);
 
     std::printf("rnqnx_playground: Screen surface initialized (%dx%d)\n",
                 surface.width(), surface.height());

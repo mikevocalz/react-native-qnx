@@ -7,7 +7,7 @@ set -euo pipefail
 if [[ -z "${QNX_HOST:-}" || -z "${QNX_TARGET:-}" ]]; then
   echo "ERROR: QNX_HOST and QNX_TARGET are not set."
   echo "Source the QNX SDP environment script before running this script."
-  echo "Example: source /opt/qnx/800/host_linux/x86_64/bin/qnxsdp-env.sh"
+  echo "Source the installation-specific top-level qnxsdp-env.sh script."
   exit 1
 fi
 
@@ -16,9 +16,17 @@ echo "QNX_TARGET: ${QNX_TARGET}"
 
 if command -v qcc >/dev/null 2>&1; then
   echo "qcc: $(command -v qcc)"
-  qcc -V || true
+  qcc -V
 else
   echo "ERROR: qcc not found. The QNX host toolchain may not be on PATH."
+  exit 1
+fi
+
+if command -v q++ >/dev/null 2>&1; then
+  echo "q++: $(command -v q++)"
+  q++ -V
+else
+  echo "ERROR: q++ not found. The QNX host toolchain may not be on PATH."
   exit 1
 fi
 
@@ -30,4 +38,4 @@ else
 fi
 
 echo ""
-echo "If the commands above report active license information, the QNX environment is ready."
+echo "Compiler target discovery passed. Run ./scripts/validate-g0-a.sh for an actual licensed compile/link and Pi execution."

@@ -1,119 +1,125 @@
 # NEXT_ACTIONS.md
 
-## Next Action 1: Verify the build on an x86-64 Ubuntu 24.04 host with QNX SDP 8.0.5
+## 1. Complete QNX-RN-008 on the licensed build host and target
 
-**Objective:** Confirm that the Milestone 0 native executable configures, builds, and runs on a real QNX target.
+**Objective:** Compile the current Screen-only executable against the installed
+QNX SDP 8.0.5, then run it on a real target. This is the only remaining
+Milestone 0 exit gate.
 
 **Files:**
 
 - `cmake/toolchains/qnx-8.0.cmake`
 - `CMakeLists.txt`
-- `native/application/main.cpp`
-- `native/screen/QnxScreenSurface.{h,cpp}`
-- `scripts/doctor.sh`
-- `scripts/configure-qnx.sh`
-- `scripts/build-qnx.sh`
+- `native/platform/qnx/application/main.cpp`
+- `native/platform/qnx/screen/QnxScreenSurface.{h,cpp}`
+- `tests/cpp/qnx-screen-fake/screen/screen.h`
+- `scripts/{doctor,configure-qnx,build-qnx,deploy-qnx,run-qnx}.sh`
 
-**Current behavior:**
-The toolchain file correctly reports the missing QNX environment on a non-QNX host. It has not yet been exercised against a real QNX SDP 8.0.5 installation.
+**Procedure:**
 
-**Implementation:**
+1. On x86-64 Ubuntu 24.04, install and license QNX SDP 8.0.5 plus the target
+   BSP/Screen development files. Source its environment script.
+2. Before changing native code, inspect the installed `screen/screen.h` and cite
+   the declarations/constants used by `QnxScreenSurface`: `screen_create_context`,
+   `screen_create_window_type`, `screen_set_window_property_iv`,
+   `screen_create_window_buffers`, `screen_get_window_property_iv`,
+   `screen_get_window_property_pv`, `screen_fill`, `screen_post_window`,
+   `screen_destroy_window`, `screen_destroy_context`, and their referenced
+   `SCREEN_*` constants. Reconcile the test-only header from that installed file.
+3. Run:
 
-1. Install QNX SDP 8.0.5 and the target BSP on an x86-64 Ubuntu 24.04 host through QNX Software Center.
-2. Source the SDP environment script.
-3. Run `./scripts/doctor.sh` and resolve all reported errors.
-4. Run `./scripts/configure-qnx.sh aarch64 Debug`.
-5. Run `./scripts/build-qnx.sh aarch64 Debug`.
-6. Deploy and run `rnqnx_playground` on a QNX target.
+   ```bash
+   pnpm install --frozen-lockfile
+   ./scripts/doctor.sh
+   ./scripts/configure-qnx.sh aarch64 Debug
+   ./scripts/build-qnx.sh aarch64 Debug
+   ```
 
-**Validation:**
+4. With `QNX_TARGET_IP` set, deploy and run:
 
-- `./scripts/doctor.sh` exits 0.
-- `build/qnx-aarch64-debug/bin/rnqnx_playground` is produced.
-- On the target, a window opens and alternates color for 600 frames (20 seconds).
+   ```bash
+   ./scripts/deploy-qnx.sh aarch64 rnqnx_playground Debug
+   ./scripts/run-qnx.sh aarch64 rnqnx_playground
+   ```
 
-**Expected result:** End-to-end Milestone 0 exit gate satisfied.
-
-**Acceptance criteria:**
-
-- `rnqnx_playground` compiles with no warnings-as-errors.
-- Binary runs on the QNX target.
-- No memory/resource leaks detected on exit.
-
-**Dependencies:** QNX SDP 8.0.5 license and installation; x86-64 Ubuntu 24.04 host; QNX AArch64 target.
-
-**Known risks:**
-
-- Exact `qcc`/`q++` target variant names may differ from the assumed `gcc_ntoaarch64le`/`gcc_ntox86_64`; the toolchain file must be adjusted if `qcc -V` shows different names.
-- QNX Screen buffer API or supported pixel formats may vary by BSP.
-
----
-
-## Next Action 2: Investigate Hermes cross-compilation for QNX
-
-**Objective:** Determine the exact Hermes version bundled with React Native 0.86.0 and produce a QNX cross-compilation plan.
-
-**Files:**
-
-- `docs/getting-started/compatibility-matrix.md`
-- `cmake/dependencies/Hermes.cmake` (to be created)
-- `native/hermes/` (to be populated)
-
-**Implementation:**
-
-1. Identify the Hermes tag/commit used by React Native 0.86.0.
-2. Evaluate whether Hermes can be built with `qcc`/`q++` for AArch64/x86-64 QNX.
-3. Document required CMake flags, sysroot adjustments, and any QNX-specific patches.
-4. Add a configure-time check for Hermes artifacts.
-
-**Validation:**
-
-- A written investigation note or ADR is added.
-- If Hermes builds, `cmake/dependencies/Hermes.cmake` reports `HERMES_FOUND`.
-- If blocked, a precise configure error with the missing component is produced.
-
-**Expected result:** Clear path to Milestone 1 (Hermes and React runtime).
+5. Run the executable repeatedly and use target-appropriate Screen/resource
+   diagnostics to check cleanup. Record exact commands and output in
+   `TEST_STATUS.md`; advance the two QNX-GFX queue entries only with evidence.
 
 **Acceptance criteria:**
 
-- No placeholder engine substitutions.
-- Missing proprietary QNX components produce exact failure messages.
+- The installed header/source audit finds every used Screen symbol or work stops
+  with the exact mismatch recorded; no substitute API is invented.
+- `qnx_platform` and `rnqnx_playground` compile and link with warnings as errors.
+- The target shows the 1280×720 window alternating blue and black for up to 600
+  frames, and exits cleanly.
+- Repeated runs show no retained Screen context, window, or buffers.
 
-**Dependencies:** Next Action 1 (working QNX toolchain).
+**Current blocker:** This macOS workspace has no licensed SDP or target. See
+`BLOCKERS.md`.
 
-**Known risks:** Hermes ICU and Folly dependencies may require QNX-specific patches or additional sysroot libraries.
+## 2. Produce the exact-tag Hermes QNX feasibility record
 
----
+**Objective:** Turn the current Hermes identity into a source-backed QNX build
+plan without assuming Apple/Android build seams are portable.
 
-## Next Action 3: Set up CI foundation with self-hosted QNX runners
+**Installed evidence:**
 
-**Objective:** Provide automated build validation that does not expose QNX proprietary material.
+- `node_modules/react-native/sdks/.hermesv1version` →
+  `hermes-v250829098.0.16`
+- `node_modules/react-native/ReactCommon/react/runtime/hermes/HermesInstance.h`
+  → `HermesInstance::createJSRuntime`
+- `node_modules/react-native/ReactCommon/react/runtime/hermes/HermesInstance.cpp`
+  → `hermes::makeHermesRuntime`
+- `node_modules/react-native/ReactAndroid/hermes-engine/build.gradle.kts` and
+  `node_modules/react-native/sdks/hermes-engine/hermes-utils.rb` → platform
+  precedents only
 
-**Files:**
+**Procedure:** Acquire the exact upstream Hermes tag separately, map its OS,
+thread, ICU, mmap, signal, and host-`hermesc` requirements to the installed QNX
+toolchain, and write an ADR/investigation note. Do not add a QNX CMake adapter
+until every called source symbol exists in that checkout.
 
-- `.github/workflows/` or equivalent CI directory
-- `scripts/ci-qnx-runner.sh`
-- `docs/security/build-infra-security.md`
+**Dependency:** QNX-RN-008, because feasibility must be tested with the actual
+compiler and sysroot.
 
-**Implementation:**
+## 3. Specify the Fabric host/mount boundary from installed RN source
 
-1. Add workflow that runs on self-hosted runner labels only when `QNX_HOST`/`QNX_TARGET` are present.
-2. Run doctor, configure, and build steps.
-3. Ensure no QNX license files or secrets are committed or logged.
-4. Add artifact publishing for the native executable when build succeeds.
+**Objective:** Define the first renderer seam at source-symbol level before
+implementing a QNX abstraction.
 
-**Validation:**
+**Installed authorities:**
 
-- CI passes on a licensed self-hosted runner.
-- CI skips or fails with a clear message on unsupported public runners.
+- `ReactCommon/react/renderer/scheduler/SchedulerToolbox.h` →
+  `SchedulerToolbox`
+- `ReactCommon/react/renderer/scheduler/SchedulerDelegate.h` →
+  `SchedulerDelegate::schedulerDidFinishTransaction`
+- `ReactCommon/react/renderer/mounting/MountingCoordinator.h` →
+  `MountingCoordinator::pullTransaction`
+- `ReactCommon/react/renderer/mounting/MountingTransaction.h` →
+  `MountingTransaction`
+- `ReactCommon/react/renderer/mounting/ShadowViewMutation.h` →
+  `ShadowViewMutation`
+- `ReactCommon/react/renderer/uimanager/UIManagerBinding.h` →
+  `UIManagerBinding::createAndInstallIfNeeded`
 
-**Expected result:** Reproducible automated builds for Milestone 0.
+Write the design and tests first. RN's generic `platform/cxx` fallbacks are
+incomplete, and the installed CMake platform selector is Android-only; neither
+is a ready-made QNX implementation.
 
-**Acceptance criteria:**
+## 4. Design Nitro, Expo Modules, and Metro QNX extensions separately
 
-- CI does not download or redistribute QNX SDP.
-- Build logs are sanitized before retention.
+Installed source establishes the following contracts and gaps:
 
-**Dependencies:** Next Action 1.
+- Nitro C++: `margelo::nitro::install` and
+  `HybridObjectRegistry::registerHybridObjectConstructor` exist, but Nitrogen's
+  generated platforms are iOS/Android only.
+- Expo Modules Core: `ensureNativeModulesAreInstalled` expects the
+  `ExpoModulesCore` TurboModule and `globalThis.expo`; installed native installers
+  are Apple/Android only.
+- Expo Metro: `getDefaultConfig` is available through `expo/metro-config`, but
+  its default platforms omit `qnx`.
 
-**Known risks:** Public GitHub runners cannot satisfy QNX licensing; only self-hosted runners are viable.
+Treat these as three explicit source-backed designs, not one guessed platform
+shim. Each native file created on macOS must receive its own QNX validation queue
+entry.

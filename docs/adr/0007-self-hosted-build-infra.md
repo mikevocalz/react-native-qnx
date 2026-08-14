@@ -10,7 +10,10 @@ QNX SDP is licensed proprietary software and cannot be redistributed in public C
 
 ## Decision
 
-Use self-hosted CI runners or private agents that have licensed QNX SDP 8.0.5 installed. Build scripts are idempotent and environment-variable driven so they can run in any compliant private runner.
+Use self-hosted CI runners or private agents that have licensed QNX SDP 8.0
+installed. Record the exact installed update/build with the runner evidence.
+Build scripts are idempotent and environment-variable driven so they can run in
+any compliant private runner.
 
 ## Consequences
 

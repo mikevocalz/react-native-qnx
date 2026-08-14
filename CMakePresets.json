@@ -1,0 +1,220 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 31,
+    "patch": 9
+  },
+  "configurePresets": [
+    {
+      "name": "macos-host-debug",
+      "displayName": "macOS Host Debug",
+      "description": "Debug build for macOS host development and tests.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/macos-host-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "BUILD_TESTING": "OFF"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "macos-host-release",
+      "displayName": "macOS Host Release",
+      "description": "Release build for macOS host development and tests.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/macos-host-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "BUILD_TESTING": "OFF"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "macos-host-tests",
+      "displayName": "macOS Host Tests",
+      "description": "Debug build configured for CTest on macOS.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/macos-host-tests",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "BUILD_TESTING": "ON",
+        "RNQNX_ENABLE_HOST_SANITIZERS": "ON"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "linux-host-debug",
+      "displayName": "Linux Host Debug",
+      "description": "Debug build for Linux host tooling and tests.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/linux-host-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "OFF"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux-host-tests",
+      "displayName": "Linux Host Tests",
+      "description": "Debug build configured for CTest on Linux.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/linux-host-tests",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "ON",
+        "RNQNX_ENABLE_HOST_SANITIZERS": "ON"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "qnx-aarch64-debug",
+      "displayName": "QNX AArch64 Debug",
+      "description": "Cross-compiled debug build for QNX AArch64 using the official QNX toolchain.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/qnx-aarch64-debug",
+      "toolchainFile": "${sourceDir}/vnext/cmake/qnx-aarch64le.toolchain.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "OFF"
+      }
+    },
+    {
+      "name": "qnx-pi4",
+      "displayName": "G0-A QNX Raspberry Pi 4 Probe",
+      "description": "Cross-configures only the C++20 G0 probe for the QNX OS 8 AArch64le Pi target. A configure or build is not a passed gate until the binary runs on the Pi.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/qnx-pi4",
+      "toolchainFile": "${sourceDir}/vnext/cmake/qnx-aarch64le.toolchain.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "OFF",
+        "RNQNX_G0_PROBE_ONLY": "ON"
+      }
+    },
+    {
+      "name": "qnx-aarch64-release",
+      "displayName": "QNX AArch64 Release",
+      "description": "Cross-compiled release build for QNX AArch64.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/qnx-aarch64-release",
+      "toolchainFile": "${sourceDir}/vnext/cmake/qnx-aarch64le.toolchain.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_TESTING": "OFF"
+      }
+    },
+    {
+      "name": "qnx-x86_64-debug",
+      "displayName": "QNX x86_64 Debug",
+      "description": "Cross-compiled debug build for QNX x86_64 using the official QNX toolchain.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/qnx-x86_64-debug",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/qnx-8.0.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "OFF",
+        "QNX_TARGET_ARCH": "x86_64"
+      }
+    },
+    {
+      "name": "qnx-x86_64-release",
+      "displayName": "QNX x86_64 Release",
+      "description": "Cross-compiled release build for QNX x86_64.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/qnx-x86_64-release",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/qnx-8.0.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_TESTING": "OFF",
+        "QNX_TARGET_ARCH": "x86_64"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "macos-host-debug",
+      "configurePreset": "macos-host-debug"
+    },
+    {
+      "name": "macos-host-release",
+      "configurePreset": "macos-host-release"
+    },
+    {
+      "name": "macos-host-tests",
+      "configurePreset": "macos-host-tests"
+    },
+    {
+      "name": "linux-host-debug",
+      "configurePreset": "linux-host-debug"
+    },
+    {
+      "name": "linux-host-tests",
+      "configurePreset": "linux-host-tests"
+    },
+    {
+      "name": "qnx-aarch64-debug",
+      "configurePreset": "qnx-aarch64-debug"
+    },
+    {
+      "name": "qnx-pi4",
+      "configurePreset": "qnx-pi4",
+      "targets": ["rnqnx_g0_cxx20_probe"]
+    },
+    {
+      "name": "qnx-aarch64-release",
+      "configurePreset": "qnx-aarch64-release"
+    },
+    {
+      "name": "qnx-x86_64-debug",
+      "configurePreset": "qnx-x86_64-debug"
+    },
+    {
+      "name": "qnx-x86_64-release",
+      "configurePreset": "qnx-x86_64-release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "macos-host-tests",
+      "configurePreset": "macos-host-tests",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "linux-host-tests",
+      "configurePreset": "linux-host-tests",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

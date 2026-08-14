@@ -11,25 +11,23 @@ ARCH="${1:-aarch64}"
 CONFIG="${2:-Debug}"
 
 if [[ "${ARCH}" != "aarch64" && "${ARCH}" != "x86_64" ]]; then
-  echo "Usage: $0 <aarch64|x86_64> <Debug|Release|RelWithDebInfo>"
+  echo "Usage: $0 <aarch64|x86_64> <Debug|Release>"
   exit 1
 fi
 
-BUILD_DIR="${PROJECT_ROOT}/build/qnx-$(echo "${ARCH}" | tr '[:upper:]' '[:lower:]')-$(echo "${CONFIG}" | tr '[:upper:]' '[:lower:]')"
+if [[ "${CONFIG}" != "Debug" && "${CONFIG}" != "Release" ]]; then
+  echo "Usage: $0 <aarch64|x86_64> <Debug|Release>"
+  exit 1
+fi
+
+PRESET="qnx-$(echo "${ARCH}" | tr '[:upper:]' '[:lower:]')-$(echo "${CONFIG}" | tr '[:upper:]' '[:lower:]')"
+BUILD_DIR="${PROJECT_ROOT}/build/${PRESET}"
 
 echo "Configuring react-native-qnx for QNX ${ARCH} ${CONFIG}..."
 echo "Build directory: ${BUILD_DIR}"
 
-rm -rf "${BUILD_DIR}"
-mkdir -p "${BUILD_DIR}"
-
-cmake \
-  -DCMAKE_TOOLCHAIN_FILE="${PROJECT_ROOT}/cmake/toolchains/qnx-8.0.cmake" \
-  -DQNX_TARGET_ARCH="${ARCH}" \
-  -DCMAKE_BUILD_TYPE="${CONFIG}" \
-  -G Ninja \
-  -S "${PROJECT_ROOT}" \
-  -B "${BUILD_DIR}"
+cd "${PROJECT_ROOT}"
+cmake --fresh --preset "${PRESET}"
 
 echo ""
 echo "Configure complete: ${BUILD_DIR}"

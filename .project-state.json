@@ -3,15 +3,59 @@
   "project": "react-native-qnx",
   "activeMilestone": "Milestone 0: Compatibility and Toolchain",
   "activeBranch": "main",
-  "latestKnownGoodCommit": "ab2f474d44649cbae16aacdda807e3e198970f90",
+  "latestKnownGoodCommit": "29652b14b5c83cdec59fc694f723724c30d406f0",
   "repositoryBuildable": false,
-  "lastSuccessfulCommand": "bash scripts/doctor.sh",
+  "developmentMode": "mac-first",
+  "currentAuthoringHost": {
+    "operatingSystem": "macOS 26.6.1",
+    "architecture": "arm64",
+    "qnxToolchainAvailable": false
+  },
+  "dependencyBaseline": {
+    "reactNative": "0.86.2",
+    "react": "19.2.3",
+    "expo": "57.0.12",
+    "metro": "0.84.4",
+    "nitroModules": "0.36.5",
+    "nitrogen": "0.36.5",
+    "packageManager": "pnpm@11.21.0",
+    "lastRegistryAudit": "2026-08-13"
+  },
+  "validationHosts": {
+    "macos": {
+      "status": "host-validation-passed"
+    },
+    "linuxQnxBuildHost": {
+      "status": "not-configured"
+    },
+    "qnxRuntimeTarget": {
+      "status": "not-configured"
+    }
+  },
+  "verification": {
+    "macosHostTests": "passed",
+    "qnxScreenHostEmulation": "passed-with-asan-and-ubsan",
+    "installedDependencySourceContracts": "passed",
+    "dependencySecurityAudit": "blocked-upstream-image-size-advisories",
+    "linuxQnxCompilation": "not-run",
+    "qnxRuntimeTests": "not-run"
+  },
+  "lastSuccessfulCommand": "bash scripts/validate-macos.sh",
   "lastFailingCommand": "bash scripts/configure-qnx.sh aarch64 Debug",
-  "lastTestedHost": "macOS arm64 (not the supported build host)",
+  "lastTestedHost": "macOS 26.6.1 arm64 (authoring host)",
   "lastTestedTarget": null,
-  "completedTasks": ["QNX-RN-000", "QNX-RN-001", "QNX-RN-002", "QNX-RN-003", "QNX-RN-004", "QNX-RN-005", "QNX-RN-006"],
-  "activeTasks": ["QNX-RN-007"],
-  "blockedTasks": [],
-  "nextRecommendedTask": "Install QNX SDP 8.0.5 on x86-64 Ubuntu 24.04, run ./scripts/doctor.sh, then ./scripts/configure-qnx.sh aarch64 Debug and ./scripts/build-qnx.sh aarch64 Debug",
-  "updatedAt": "2026-07-19T20:14:53Z"
+  "completedTasks": [
+    "QNX-RN-000",
+    "QNX-RN-001",
+    "QNX-RN-002",
+    "QNX-RN-003",
+    "QNX-RN-004",
+    "QNX-RN-005",
+    "QNX-RN-006",
+    "QNX-RN-007"
+  ],
+  "activeTasks": ["QNX-RN-008"],
+  "blockedTasks": ["QNX-RN-008", "UPSTREAM-DEP-001"],
+  "nextRecommendedTask": "Validate the installed QNX Screen API, cross-compile on the licensed Ubuntu/QNX host, and run rnqnx_playground on a QNX target",
+  "updatedAt": "2026-08-14T03:34:37Z"
 }

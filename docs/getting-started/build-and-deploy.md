@@ -1,35 +1,61 @@
-# Build and Deploy on an Ubuntu 24.04 QNX Host
+# Host Validation, QNX Build, and Target Deployment
 
-This document describes how to set up an x86-64 Ubuntu 24.04 workstation for `react-native-qnx` development, build the Milestone 0 native executable, and deploy it to a QNX target.
+This document separates the freely reproducible host-validation path from the licensed QNX build and runtime path.
 
-## Host requirements
+## Supported paths
 
-- x86-64 Ubuntu 24.04 LTS
-- QNX SDP 8.0.5 installed through QNX Software Center 2.0.4 or newer
-- QNX license activated
+- **macOS or Linux host validation:** formatting, TypeScript, dependency/source-contract audit, JavaScript checks, and sanitizer-backed C++ host tests. QNX SDP is not required.
+- **QNX build and target validation:** canonical x86-64 Ubuntu 22.04 with a
+  licensed QNX SDP 8.0 installation, followed by deployment to the QSTI Pi.
+
+Host tests compile the concrete Screen wrapper against a test-only implementation of the documented Screen C API. They validate ownership and call sequencing, but they do not establish QNX header, ABI, driver, compositor, or runtime compatibility.
+
+## Validate on macOS
+
+From the repository root:
+
+```bash
+./scripts/bootstrap-macos.sh
+pnpm validate:macos
+```
+
+The dependency audit verifies the exact workspace pins (including pnpm 11.21.0, React Native 0.86.2, React 19.2.3, Expo 57.0.12, Metro 0.84.4, Nitro/Nitrogen 0.36.5, and TypeScript 6.0.3), resolved Expo packages, Hermes source identity, and installed source symbols.
+
+Do not record this result as a QNX compile or runtime pass. QNX-specific follow-up belongs in `docs/handoff/QNX_VALIDATION_QUEUE.md`.
+
+## QNX host requirements
+
+- x86-64 Ubuntu 22.04 LTS for the canonical QNX/Qt cross-build
+- QNX SDP 8.0 installed through QNX Software Center, with its exact installed
+  update/build recorded during G0-A
+- An active QNX license
+- BSP/graphics packages that provide the target Screen implementation
 - Network access to the QNX target device
 
-## Install freely redistributable host tools
+QNX SDP is licensed software and is not installed by this repository.
+
+## Install freely redistributable Ubuntu tools
 
 ```bash
 cd react-native-qnx
 ./scripts/bootstrap-host.sh
 ```
 
-This installs CMake, Ninja, Node.js 24 LTS, pnpm, Python, and other build dependencies. It does **not** install the QNX SDK, which must be licensed and installed separately.
+This installs the non-QNX host prerequisites, including CMake, Ninja, Node.js, pnpm, and Python. It does not install or license QNX SDP.
 
-## Install and license QNX SDP 8.0.5
+## Install and activate QNX SDP 8.0
 
-1. Download and install QNX Software Center.
-2. Install QNX SDP 8.0.5 and the target BSP packages for your board.
-3. Activate your license.
-4. Source the SDP environment script every session:
+1. Install QNX Software Center through your licensed QNX channel.
+2. Install QNX SDP 8.0 and the current Raspberry Pi 4 QSTI/BSP/graphics
+   packages for the target board.
+3. Activate the license.
+4. Source the SDP environment script in every build shell. For example:
 
 ```bash
-source /opt/qnx/800/host_linux/x86_64/bin/qnxsdp-env.sh
+source <qnx-installation>/qnxsdp-env.sh
 ```
 
-Adjust the path to match your installation location.
+The actual path is installation-specific. Do not copy proprietary SDK headers, libraries, or sources into this repository.
 
 ## Verify the QNX environment
 
@@ -40,16 +66,37 @@ Adjust the path to match your installation location.
 
 The doctor checks:
 
-- Host OS and architecture
+- host OS and architecture
 - `QNX_HOST` and `QNX_TARGET`
-- `qcc` / `q++` availability
+- `qcc` / `q++`
 - QNX Screen and EGL headers/libraries
-- CMake, Ninja, Node.js, pnpm, Python versions
-- Project structure
+- CMake, Ninja, Node.js, pnpm, and Python
+- installed React Native/Expo/Nitro version and source contracts
+- repository structure
 
-Resolve every reported error before continuing.
+Resolve every error before configuration. In particular, an unset SDP environment or missing Screen development files is a hard blocker, not a condition to bypass with a host stub.
 
-## Configure the build
+## Prove G0-A on the Pi
+
+The current QSTI documentation uses the `qnxuser` account, but verify the user
+and key/password configuration on the installed image. Root is never assumed.
+
+```bash
+export QNX_TARGET_IP=qnxpi.local
+export QNX_TARGET_USER=qnxuser
+# Set QNX_SSH_KEY only when the key is not already selected by SSH config/agent.
+export QNX_SSH_KEY=<private-key-path>
+
+./scripts/validate-g0-a.sh
+```
+
+This is the first executable gate. It captures `qcc -V`, cross-builds the
+concepts/ranges/designated-initializer/`std::jthread` target with preset
+`qnx-pi4`, runs that exact binary on the Pi, checks its output, and measures the
+deploy/run portion. A host build of the same source is only a source sanity
+check.
+
+## Configure
 
 For an AArch64 QNX target in Debug configuration:
 
@@ -57,13 +104,13 @@ For an AArch64 QNX target in Debug configuration:
 ./scripts/configure-qnx.sh aarch64 Debug
 ```
 
-For x86-64 QNX target:
+For an x86-64 QNX target:
 
 ```bash
 ./scripts/configure-qnx.sh x86_64 Debug
 ```
 
-This creates a build directory such as `build/qnx-aarch64-debug` and runs CMake with the QNX toolchain file.
+`Release` is also accepted as the second argument. The scripts map the architecture/configuration pair to a checked-in CMake preset and recreate its configure state with `cmake --fresh`.
 
 ## Build
 
@@ -71,74 +118,86 @@ This creates a build directory such as `build/qnx-aarch64-debug` and runs CMake 
 ./scripts/build-qnx.sh aarch64 Debug
 ```
 
-The native executable is written to `build/qnx-aarch64-debug/bin/rnqnx_playground`.
+The AArch64 Debug executable is expected at:
 
-## Deploy to the QNX target
-
-Set the target device IP and optional user:
-
-```bash
-export QNX_TARGET_IP=192.168.1.100
-export QNX_TARGET_USER=root
+```text
+build/qnx-aarch64-debug/bin/rnqnx_playground
 ```
 
-Then deploy:
+That artifact is not considered proven until this command succeeds with the licensed QNX toolchain and the resulting executable is tested on the target.
+
+## Deploy
+
+Set the target address and verified user:
 
 ```bash
-./scripts/deploy-qnx.sh aarch64 rnqnx_playground
+export QNX_TARGET_IP=qnxpi.local
+export QNX_TARGET_USER=qnxuser
 ```
 
-## Run on the QNX target
+Deploy the exact CMake target name and configuration:
+
+```bash
+./scripts/deploy-qnx.sh aarch64 rnqnx_playground Debug
+```
+
+The deploy script selects `build/qnx-aarch64-debug/bin/rnqnx_playground`, copies it to `/tmp/rnqnx_playground`, and makes it executable. Use `Release` only after building the matching Release preset.
+
+## Run and inspect
 
 ```bash
 ./scripts/run-qnx.sh aarch64 rnqnx_playground
 ```
 
-You should see a window open on the target display and alternate between blue and black frames.
+The current direct-Screen program is intended to create a 1280×720 application
+window, alternate ARGB blue and black fills for up to 600 frames, present each
+render buffer, and clean up Screen resources. It is a window-system probe below
+the locked Qt Quick backend. Record the actual result—including failures—in
+`docs/handoff/TEST_STATUS.md` and update the matching queue entries.
 
-## View target logs
+View target logs with:
 
 ```bash
 ./scripts/log-qnx.sh
 ```
 
-## Remote development from macOS
+## macOS remote-development option
 
-The primary build host must run Ubuntu with the QNX toolchain. macOS can be used as a development client:
+macOS is a supported local authoring and host-validation environment. It may also be used as a client for the QNX build host:
 
-1. Install VS Code with the Remote - SSH extension.
-2. SSH to the Ubuntu build host.
-3. Open the `react-native-qnx` directory in VS Code Remote.
-4. Run the doctor, configure, and build commands in the remote terminal.
+1. Run `pnpm validate:macos` locally while editing.
+2. Connect to the licensed Ubuntu/QNX host through SSH or an editor's remote-development feature.
+3. Run the doctor, configure, build, deploy, and target-test commands on that Ubuntu host.
 
-Do not attempt to run the QNX compiler or CMake toolchain directly on macOS; QNX SDP 8 host tools are not supported there.
+Do not attempt to treat the macOS host compiler or the test-only Screen fake as a substitute for the QNX toolchain.
 
 ## Troubleshooting
 
-### QNX_HOST or QNX_TARGET not set
+### `QNX_HOST` or `QNX_TARGET` is unset
 
-Source the SDP environment script:
+Source the installation-specific SDP environment script, then rerun the license verifier and doctor.
 
-```bash
-source /opt/qnx/800/host_linux/x86_64/bin/qnxsdp-env.sh
-```
+### `qcc` is not found
 
-### qcc not found
+Confirm `${QNX_HOST}/usr/bin` is on `PATH`. The official SDP environment script normally configures it.
 
-Ensure `${QNX_HOST}/usr/bin` is on `PATH`. The SDP environment script normally does this.
+### QNX Screen headers or libraries are missing
 
-### QNX Screen headers missing
-
-Install the graphics BSP package for your target through QNX Software Center. The package usually contains the Screen headers and libraries.
+Install the appropriate graphics development package/BSP component through the licensed QNX Software Center channel. Stop if the installed SDK does not expose the APIs used by `native/platform/qnx/screen/QnxScreenSurface.cpp`; update the wrapper only from installed headers/documentation, never from a fabricated API shape.
 
 ### CMake cannot find the QNX toolchain
 
-Make sure you invoked `configure-qnx.sh` rather than running `cmake` directly, or pass the toolchain file explicitly:
+Use the repository script so the architecture and preset remain consistent:
 
 ```bash
-cmake -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/qnx-8.0.cmake -S . -B build/qnx-aarch64-debug
+./scripts/configure-qnx.sh aarch64 Debug
 ```
 
-## Next steps
+If it fails, preserve the exact configure error in the handoff rather than bypassing the toolchain checks.
 
-After the native executable runs on QNX, proceed to Milestone 1 (Hermes and React runtime) by following `docs/handoff/NEXT_ACTIONS.md`.
+## Next step
+
+Pass G0-A, then G0-D, before beginning the Qt G0-B source build/on-glass proof.
+Only after G0-B and G0-C may P1 Hermes begin. None of Qt Quick, Hermes, Fabric,
+Nitro, or Expo currently has a demonstrated QNX implementation in this
+repository.

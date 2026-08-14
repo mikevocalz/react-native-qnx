@@ -1,4 +1,4 @@
-# QNX SDP 8.0.5 CMake toolchain file
+# Generic QNX SDP 8.0 CMake toolchain file
 # Usage:
 #   cmake -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/qnx-8.0.cmake \
 #         -DQNX_TARGET_ARCH=aarch64|x86_64 \
@@ -27,16 +27,14 @@ set(CMAKE_SYSTEM_PROCESSOR "${QNX_TARGET_ARCH}")
 if(NOT DEFINED ENV{QNX_HOST})
   message(FATAL_ERROR
     "Environment variable QNX_HOST is not set.\n"
-    "Install QNX SDP 8.0.5 and source the SDP environment script, e.g.:\n"
-    "  source /opt/qnx/800/host_linux/x86_64/bin/qnxsdp-env.sh\n"
+    "Install QNX SDP 8.0 and source the qnxsdp-env.sh script from that installation.\n"
     "Then re-run CMake.")
 endif()
 
 if(NOT DEFINED ENV{QNX_TARGET})
   message(FATAL_ERROR
     "Environment variable QNX_TARGET is not set.\n"
-    "Install QNX SDP 8.0.5 and source the SDP environment script, e.g.:\n"
-    "  source /opt/qnx/800/host_linux/x86_64/bin/qnxsdp-env.sh\n"
+    "Install QNX SDP 8.0 and source the qnxsdp-env.sh script from that installation.\n"
     "Then re-run CMake.")
 endif()
 
@@ -81,76 +79,6 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
-
-# Feature probes -----------------------------------------------------------
-include(CMakePushCheckState)
-cmake_push_check_state()
-set(CMAKE_REQUIRED_FLAGS "${QNX_TARGET_CFLAGS}")
-
-include(CheckCXXSourceCompiles)
-
-# C++20
-set(CMAKE_REQUIRED_FLAGS "${QNX_TARGET_CFLAGS} -std=c++20")
-check_cxx_source_compiles("
-#include <version>
-int main() {
-#if __cplusplus < 202002L
-#error C++20 required
-#endif
-  return 0;
-}
-" QNX_CXX20_SUPPORTED)
-if(NOT QNX_CXX20_SUPPORTED)
-  message(FATAL_ERROR "QNX compiler does not support C++20 (-std=c++20). Verify SDP installation.")
-endif()
-
-# Exceptions
-check_cxx_source_compiles("
-int main() { try { throw 0; } catch(int) { return 0; } return 1; }
-" QNX_EXCEPTIONS_SUPPORTED)
-if(NOT QNX_EXCEPTIONS_SUPPORTED)
-  message(FATAL_ERROR "QNX compiler does not support C++ exceptions.")
-endif()
-
-# RTTI
-check_cxx_source_compiles("
-#include <typeinfo>
-struct Base { virtual ~Base() = default; };
-struct Derived : Base {};
-int main() { Derived d; Base* b = &d; return typeid(*b) == typeid(Derived) ? 0 : 1; }
-" QNX_RTTI_SUPPORTED)
-if(NOT QNX_RTTI_SUPPORTED)
-  message(FATAL_ERROR "QNX compiler does not support RTTI.")
-endif()
-
-# Atomics
-check_cxx_source_compiles("
-#include <atomic>
-int main() { std::atomic<int> a{0}; return a.fetch_add(1); }
-" QNX_ATOMICS_SUPPORTED)
-if(NOT QNX_ATOMICS_SUPPORTED)
-  message(FATAL_ERROR "QNX compiler does not support C++ atomics.")
-endif()
-
-# Thread-local storage
-check_cxx_source_compiles("
-thread_local int value = 42;
-int main() { return value == 42 ? 0 : 1; }
-" QNX_TLS_SUPPORTED)
-if(NOT QNX_TLS_SUPPORTED)
-  message(FATAL_ERROR "QNX compiler does not support thread_local storage.")
-endif()
-
-# Filesystem
-check_cxx_source_compiles("
-#include <filesystem>
-int main() { return std::filesystem::path(\"/tmp\").empty() ? 1 : 0; }
-" QNX_FILESYSTEM_SUPPORTED)
-if(NOT QNX_FILESYSTEM_SUPPORTED)
-  message(FATAL_ERROR "QNX compiler does not support std::filesystem.")
-endif()
-
-cmake_pop_check_state()
 
 message(STATUS "QNX toolchain configured")
 message(STATUS "  QNX_HOST:            ${QNX_HOST}")

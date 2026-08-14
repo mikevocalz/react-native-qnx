@@ -1,8 +1,8 @@
-# ADR-0003: Skia as the initial graphics renderer
+# ADR-0003: Skia as the initial graphics renderer (superseded)
 
 ## Status
 
-Accepted
+Superseded by ADR-0001 and the current platform specification
 
 ## Context
 
@@ -32,3 +32,6 @@ Use Skia as the initial production renderer, connected to QNX Screen through EGL
 ## Notes
 
 Skia must be cross-compiled for QNX. The exact Skia commit is recorded in the compatibility matrix.
+
+This decision predates the locked Qt Quick backend and was never backed by a
+QNX Skia build or target result. It must not be used as implementation authority.

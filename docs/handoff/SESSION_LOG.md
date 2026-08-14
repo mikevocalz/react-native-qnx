@@ -50,3 +50,49 @@
 - **Remaining work:**
   - Install QNX SDP 8.0.5 on an x86-64 Ubuntu 24.04 host and re-run doctor/configure/build.
 - **Recommended continuation point:** `docs/handoff/NEXT_ACTIONS.md` Next Action 1.
+
+## 2026-08-13 23:00 EDT – Mac-first foundation completion and source audit
+
+- **Goal:** Finish the interrupted macOS-host foundation, select the most current
+  mutually compatible package line, correct concrete QNX Screen bugs, validate
+  the host path, and leave an exact external-QNX handoff.
+- **Dependency result:** Pinned pnpm 11.21.0, React Native 0.86.2, React 19.2.3,
+  Expo 57.0.12, Metro 0.84.4, Nitro Modules/Nitrogen 0.36.5, TypeScript 6.0.3,
+  Prettier 3.9.6, and current matching type packages. Regenerated
+  `pnpm-lock.yaml`.
+- **Registry audit:** Compared the selected line with registry `latest` tags on
+  2026-08-13. RN 0.87.0, Metro 0.87.0, React 19.2.8, and TypeScript 7.0.2 were
+  identified but not mixed into Expo 57's installed RN 0.86.2/React 19.2.3/Metro
+  0.84.4/TypeScript 6.0.3 baseline.
+- **Installed-source audit:** Recorded exact Fabric, Yoga, Hermes, Nitro,
+  Nitrogen, Expo Modules, and Expo Metro files/symbols. Confirmed that their
+  installed platform paths do not provide QNX integration.
+- **Security audit:** Replaced xcode's vulnerable uuid 7.0.3 with a scoped,
+  source-checked uuid 11.1.1 override. Recorded two remaining high `image-size`
+  Metro-tooling advisories as UPSTREAM-DEP-001 because the registry has no fixed
+  release.
+- **Native corrections:** Relocated QNX sources under `native/platform/qnx`,
+  fixed typed window creation and include paths, partial-init cleanup, `errno`
+  propagation, ARGB fill attributes, render-buffer storage/re-query, and
+  fill-to-present ownership.
+- **Host coverage:** Added a test-only QNX Screen subset/fake plus eight wrapper
+  cases, strict warnings, CMake presets, CTest wiring, ASan, and UBSan.
+- **Scaffold/tooling corrections:** Made required empty directories trackable;
+  replaced placeholder package/codegen success with explicit applicability
+  results; added dependency, manifest, architecture, JS, and full-host runners;
+  updated bootstrap/configure/build/deploy scripts.
+- **Documentation/state:** Reconciled README, compatibility matrix, ADR-0008,
+  build guide, project memory, project state, blockers, tests, queue, environment,
+  current state, and next actions. Removed undocumented completed task IDs.
+- **Commands executed:** Exact pnpm 11.21.0 install; registry metadata queries;
+  `pnpm validate:macos`; standalone source/architecture checks; CMake/CTest host
+  builds; `git diff --check`; Bash/JSON syntax checks; expected unsupported-host
+  QNX configure/doctor diagnostics; `pnpm outdated`; and `pnpm audit`.
+- **Tests:** Full host validation passed. CTest 1/1 passed, containing eight C++
+  cases under ASan/UBSan. JS, package-build, and Nitrogen generation stages were
+  explicitly not applicable because their inputs do not exist yet.
+- **QNX result:** Not compiled or run. The expected configure diagnostic reports
+  missing `QNX_HOST`; the installed SDK/header/source gate remains external.
+- **Commits created:** None. The completed batch remains uncommitted.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 1 / QNX-RN-008 on
+  the licensed Ubuntu/QNX host and target.

@@ -1,49 +1,53 @@
 # ENVIRONMENT.md
 
-## Verified development environment
+## Verified authoring environment
 
-The current workspace was verified on 2026-07-19. It is **not** the supported build host; it is a macOS arm64 client used for development only.
+Verified on 2026-08-13:
 
-### Current workspace
+- Operating system: macOS 26.6.1 (`Darwin 25.6.0`)
+- Architecture: arm64
+- Apple Clang: 21.0.0
+- CMake: 4.4.2
+- Ninja: 1.13.2
+- Node.js: 26.7.0
+- Repository pnpm: 11.21.0, selected by `packageManager`
+- Global pnpm launcher: 10.32.1; it delegates this workspace to pnpm 11.21.0
+- npm: 11.19.0
+- Python: 3.13.3
+- Git: 2.55.0
 
-- **Host operating system:** macOS (Darwin)
-- **Host architecture:** arm64
-- **CMake:** 4.3.3 (newer than required 3.28)
-- **Node.js:** v26.0.0 (newer than required 24.x)
-- **pnpm:** 10.28.0 (newer than required 9.x)
-- **Python:** 3.13.3
+The repository requires Node.js 24.3.0 or newer, pnpm 11.21.0 exactly, CMake 3.28
+or newer, and Ninja 1.11 or newer. `./scripts/bootstrap-macos.sh` checks and
+installs the freely redistributable workspace prerequisites.
 
-### Missing on current workspace
+## Missing QNX prerequisites
 
-- QNX SDP 8.0.5 (not installed)
-- `QNX_HOST` environment variable
-- `QNX_TARGET` environment variable
-- `qcc` / `q++` toolchain
-- QNX Screen headers and libraries
-- Ninja build tool
+- Licensed QNX SDP 8.0.5 installation
+- `QNX_HOST` and `QNX_TARGET`
+- `qcc` and `q++`
+- Installed QNX `screen/screen.h` and `libscreen`
+- EGL/GLES development files from the target BSP
+- x86-64 Ubuntu 24.04 QNX build host
+- QNX target, Screen service, display, and deployment address
 
-### Expected build host environment
+The current machine can run host validation only. It cannot establish QNX
+header, ABI, compiler, linker, BSP, driver, compositor, or runtime compatibility.
 
-- **Host operating system:** x86-64 Ubuntu 24.04 LTS
-- **Host architecture:** x86-64
-- **QNX SDP version:** 8.0.5
-- **QNX Software Center version:** 2.0.4 or newer
-- **QNX compiler:** `qcc` / `q++` from the installed SDP
-- **CMake:** 3.28 or newer
-- **Ninja:** 1.11 or newer
-- **Node.js:** 24.x LTS
-- **pnpm:** 9.x or newer
-- **Target CPU architectures:** x86-64, AArch64
+## Expected licensed build-host environment
 
-### Required environment variables
+- x86-64 Ubuntu 24.04 LTS
+- QNX SDP 8.0.5 installed through the licensed QNX channel
+- Target BSP/graphics development packages
+- `QNX_HOST` and `QNX_TARGET` exported by the official environment script
+- `QNX_TARGET_IP` for deploy/run; `QNX_TARGET_USER` is optional and defaults to
+  `root`
 
-- `QNX_HOST` – path to the host toolchain directory
-- `QNX_TARGET` – path to the target sysroot
-- `QNX_TARGET_IP` – target device IP or hostname (for deploy/run scripts)
-- `QNX_TARGET_USER` – target SSH user (defaults to `root` if unset)
+No QNX header, library, license material, or credential may be copied into this
+repository.
 
-### Notes
+## Application/tooling availability
 
-- The primary build host is **not** macOS; macOS can be used only for remote development (SSH/VS Code Remote).
-- Do not write QNX license content, keys, or credentials into this file.
-- The current workspace cannot build QNX binaries; the toolchain file intentionally fails with a clear message until QNX SDP is installed.
+Milestone 0 has no runnable React Native app, Metro server, iOS simulator,
+Android emulator, or QNX device workflow. The only runnable native host artifact
+is the isolated C++ test executable. Device UI validation begins only after a
+real platform runtime/app exists.
