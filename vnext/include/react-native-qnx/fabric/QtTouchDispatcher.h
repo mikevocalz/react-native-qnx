@@ -38,6 +38,13 @@ class QtTouchDispatcher final : public QObject {
       std::shared_ptr<const facebook::react::TouchEventEmitter> emitter);
   void forgetTag(Tag tag);
 
+  /// React Native tells the platform which view has claimed the JavaScript
+  /// responder (`SchedulerDelegate::schedulerDidSetIsJSResponder`). While one is
+  /// set, subsequent pointer events go to it rather than to whatever is under
+  /// the pointer, which is what makes a drag that leaves the view still end on
+  /// it.
+  void setJsResponder(Tag tag, bool isResponder);
+
   /// Number of touch events delivered, so a test can tell "no handler ran" from
   /// "no event was dispatched".
   int dispatchedCount() const;
@@ -54,6 +61,7 @@ class QtTouchDispatcher final : public QObject {
   QHash<Tag, std::shared_ptr<const facebook::react::TouchEventEmitter>>
       emitters_;
   Tag activeTag_{-1};
+  Tag responderTag_{-1};
   int dispatchedCount_{0};
 };
 

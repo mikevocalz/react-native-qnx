@@ -64,6 +64,10 @@ void QtTouchDispatcher::forgetTag(Tag tag) {
   }
 }
 
+void QtTouchDispatcher::setJsResponder(Tag tag, bool isResponder) {
+  responderTag_ = isResponder ? tag : -1;
+}
+
 int QtTouchDispatcher::dispatchedCount() const {
   return dispatchedCount_;
 }
@@ -126,6 +130,11 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
 
   if (type == QEvent::MouseButtonPress) {
     activeTag_ = hitTest(windowPoint);
+  }
+
+  // A claimed responder wins over the hit test for the rest of the gesture.
+  if (responderTag_ >= 0) {
+    activeTag_ = responderTag_;
   }
 
   if (activeTag_ < 0) {

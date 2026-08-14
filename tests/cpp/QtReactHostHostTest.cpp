@@ -156,6 +156,7 @@ class Fixture {
   /// dispatcher.
   rnqnx::fabric::QtTouchDispatcher& enableTouch() {
     adapter_.setTouchDispatcher(&dispatcher_);
+    host_.delegate().setTouchDispatcher(&dispatcher_);
     window_.installEventFilter(&dispatcher_);
     return dispatcher_;
   }
@@ -709,6 +710,22 @@ void pointerEventsReachJavaScript() {
   EXPECT_NEAR(starts.getNumber(), 1.0);
   EXPECT(ends.isNumber());
   EXPECT_NEAR(ends.getNumber(), 1.0);
+
+  // React's Fabric renderer runs the JavaScript responder system on top of
+  // these touches, and it negotiated a responder for this view: it asked, the
+  // view claimed it, and the release was delivered. That is the machinery
+  // Pressability and every gesture are built on.
+  for (const char* name : {"__askedResponder", "__granted", "__released"}) {
+    const auto value = runtime.global().getProperty(runtime, name);
+    if (!value.isNumber()) {
+      fail(
+          "the responder callback ran in JavaScript",
+          __FILE__,
+          __LINE__,
+          name);
+    }
+    EXPECT_NEAR(value.getNumber(), 1.0);
+  }
 
   // The handler read locationX off the event, so the coordinate survived the
   // trip from Qt into React Native's touch payload.

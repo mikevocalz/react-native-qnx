@@ -126,9 +126,12 @@ The result is verified on glass: `renderedTreeIsPainted` grabs a rendered frame
 and reads pixels, and `rnqnx_playground_host` shows the same app in a real
 window or writes a PNG.
 
-Touch reaches JavaScript: `QtTouchDispatcher` filters Qt pointer events,
-hit-tests to the deepest mounted item, and calls its `TouchEventEmitter`, so a
-press on the rendered app runs its `onTouchStart` handler. One pointer only.
+Touch reaches JavaScript and React's responder system runs on top of it:
+`QtTouchDispatcher` filters Qt pointer events, hit-tests to the deepest mounted
+item, and calls its `TouchEventEmitter`; a press then asks
+`onStartShouldSetResponder`, grants, and releases. The scheduler delegate
+forwards the responder claim so the rest of a gesture follows the responder.
+One pointer only, and `Pressable` itself is untested.
 
 JavaScript errors are reported to the host rather than aborting the process:
 `QnxExceptionsManager` implements React Native's ExceptionsManager over the

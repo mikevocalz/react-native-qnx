@@ -41,6 +41,16 @@ function PlaygroundApp() {
       onTouchEnd: () => {
         globalThis.__touchEnds = (globalThis.__touchEnds ?? 0) + 1;
       },
+      onStartShouldSetResponder: () => {
+        globalThis.__askedResponder = (globalThis.__askedResponder ?? 0) + 1;
+        return true;
+      },
+      onResponderGrant: () => {
+        globalThis.__granted = (globalThis.__granted ?? 0) + 1;
+      },
+      onResponderRelease: () => {
+        globalThis.__released = (globalThis.__released ?? 0) + 1;
+      },
     })
   );
 }

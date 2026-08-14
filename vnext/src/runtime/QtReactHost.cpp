@@ -128,11 +128,20 @@ void QtSchedulerDelegate::schedulerDidSendAccessibilityEvent(
   // wired up. Recorded in docs/component-support.md rather than faked.
 }
 
+void QtSchedulerDelegate::setTouchDispatcher(
+    fabric::QtTouchDispatcher* dispatcher) {
+  touchDispatcher_ = dispatcher;
+}
+
 void QtSchedulerDelegate::schedulerDidSetIsJSResponder(
-    const facebook::react::ShadowView& /*shadowView*/,
-    bool /*isJSResponder*/,
+    const facebook::react::ShadowView& shadowView,
+    bool isJSResponder,
     bool /*blockNativeResponder*/) {
-  // Touch responder handover, which needs the input pipeline (P6).
+  // blockNativeResponder is ignored: there is no native gesture recogniser to
+  // block on this platform yet, so honouring it would change nothing.
+  if (touchDispatcher_ != nullptr) {
+    touchDispatcher_->setJsResponder(shadowView.tag, isJSResponder);
+  }
 }
 
 void QtSchedulerDelegate::schedulerShouldSynchronouslyUpdateViewOnUIThread(

@@ -627,3 +627,31 @@ validate:macos`.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — finish input
   (responder negotiation), then DeviceInfo and SourceCode.
+
+## 2026-08-14 – The JavaScript responder system
+
+- **Goal:** Get React's responder negotiation working, so gestures are possible.
+- **Implemented:** responder event props in the platform's `BaseViewConfig` —
+  React's Fabric renderer only attaches those handlers if the view config
+  declares them — and `schedulerDidSetIsJSResponder` forwarding the claim to
+  `QtTouchDispatcher`, which then routes the rest of a gesture to the responder
+  rather than to whatever is under the pointer.
+- **Result:** a press asks `onStartShouldSetResponder`, the view claims it,
+  `onResponderGrant` runs, and the release delivers `onResponderRelease`. That
+  is the machinery `Pressability` and every gesture are built on.
+- **Mutation check:** returning `false` from `onStartShouldSetResponder` fails
+  the case on `__granted`.
+- **A misleading result, corrected:** the plan was to prove this by rendering a
+  `Pressable` and asserting `onPress`. The test failed, and the obvious reading
+  was that `Pressable` does not work. It was wrong: the scripted edit that added
+  `Pressable` to the app never landed, so the run was testing an app with no
+  `Pressable` in it. `docs/component-support.md` marks `Pressable` untested
+  rather than broken, and `NEXT_ACTIONS.md` says to try it properly.
+- **Process note:** that is the third silently-dropped edit this session to
+  produce a misleading result — the earlier two were a vacuous colour assertion
+  and a stale bundle. Every scripted edit now gets grepped back afterwards
+  rather than trusted because the surrounding command succeeded.
+- **Results:** CTest 9/9 with Hermes, 7/7 default, seventeen host cases.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — render a real
+  `Pressable`, then DeviceInfo and SourceCode.

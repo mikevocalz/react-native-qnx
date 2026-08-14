@@ -51,6 +51,11 @@ class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
  public:
   explicit QtSchedulerDelegate(fabric::ShadowViewMutationAdapter& adapter);
 
+  /// Borrowed, with the same lifetime rule as the adapter's: it must outlive
+  /// every transaction, including the empty-tree commit that stopping a surface
+  /// produces during teardown.
+  void setTouchDispatcher(fabric::QtTouchDispatcher* dispatcher);
+
   /// Failures from the most recent mount, empty when everything applied.
   const std::vector<fabric::MutationFailure>& lastFailures() const;
 
@@ -96,6 +101,7 @@ class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
 
  private:
   fabric::ShadowViewMutationAdapter& adapter_;
+  fabric::QtTouchDispatcher* touchDispatcher_{nullptr};
   std::vector<fabric::MutationFailure> lastFailures_;
   int mountedTransactionCount_{0};
 };

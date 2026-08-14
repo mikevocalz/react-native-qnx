@@ -68,10 +68,32 @@ const directEventTypes = {
   topLayout: { registrationName: 'onLayout' },
 };
 
+// React's Fabric renderer runs the JavaScript responder system itself, driven by
+// the touch events this platform emits. It only attaches these handlers if the
+// view config declares them, so `Pressable` and every gesture built on
+// `Pressability` depend on this list. Names follow
+// `Libraries/NativeComponent/BaseViewConfig.ios.js:391-403`.
+const responderEventProps = {
+  onStartShouldSetResponder: true,
+  onStartShouldSetResponderCapture: true,
+  onMoveShouldSetResponder: true,
+  onMoveShouldSetResponderCapture: true,
+  onResponderGrant: true,
+  onResponderReject: true,
+  onResponderStart: true,
+  onResponderMove: true,
+  onResponderEnd: true,
+  onResponderRelease: true,
+  onResponderTerminate: true,
+  onResponderTerminationRequest: true,
+  onShouldBlockNativeResponder: true,
+};
+
 module.exports = {
   bubblingEventTypes,
   directEventTypes,
   validAttributes: {
+    ...responderEventProps,
     ...ReactNativeStyleAttributes,
     style: ReactNativeStyleAttributes,
     collapsable: true,

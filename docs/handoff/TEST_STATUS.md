@@ -1,5 +1,26 @@
 # TEST_STATUS.md
 
+## The JavaScript responder system works — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.
+- `pointerEventsReachJavaScript` now also asserts React's responder
+  negotiation: a press asks `onStartShouldSetResponder`, the view claims it,
+  `onResponderGrant` runs, and the release delivers `onResponderRelease`. That
+  machinery is what `Pressability` and every gesture are built on.
+- `QtSchedulerDelegate::schedulerDidSetIsJSResponder` forwards the claim to the
+  dispatcher, which then routes the rest of the gesture to the responder rather
+  than to whatever is under the pointer.
+- Mutation check: returning `false` from `onStartShouldSetResponder` fails the
+  case on `__granted`.
+- **`Pressable` is not claimed either way.** An attempt to render one never
+  landed in the app — the scripted edit failed silently — so the run that
+  appeared to show `Pressable` failing was really testing an app with no
+  `Pressable` in it. `docs/component-support.md` marks it untested rather than
+  broken. That is the third silently-dropped edit to produce a misleading
+  result this session; every scripted edit now gets grepped back afterwards.
+- Evidence level: host only, offscreen QPA. Nothing cross-compiled for QNX,
+  nothing run on the Pi 4.
+
 ## Touch reaches JavaScript — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.
