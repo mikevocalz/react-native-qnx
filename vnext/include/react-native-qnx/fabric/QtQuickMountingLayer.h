@@ -57,9 +57,15 @@ struct ViewStyle {
 /// because Qt Quick's `Text` styles the whole item.
 struct TextStyle {
   QString text;
+  /// The same content with per-fragment styling as Qt rich text. Used when a
+  /// paragraph mixes styles, which Qt Quick's `Text` cannot express through its
+  /// own font and colour properties.
+  QString richText;
   float fontSize{0.0F};
   bool hasColor{false};
   std::uint32_t color{0};
+  /// True when the paragraph has more than one styled fragment.
+  bool mixedStyles{false};
 };
 
 enum class MountError : std::uint8_t {

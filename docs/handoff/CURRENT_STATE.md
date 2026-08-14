@@ -135,9 +135,9 @@ forwards the responder claim so the rest of a gesture follows the responder.
 pointer only.
 
 `Text` renders too, measured by this platform's own `TextLayoutManager` using
-`QFontMetricsF` — React Native's generic C++ manager does not measure at all and
-would have collapsed every string to nothing. One style per paragraph, and
-measurement is single-line.
+`QTextLayout` — React Native's generic C++ manager does not measure at all and
+would have collapsed every string to nothing. Mixed styling within a paragraph
+is carried as Qt rich text, and long text wraps.
 
 JavaScript errors are reported to the host rather than aborting the process:
 `QnxExceptionsManager` implements React Native's ExceptionsManager over the

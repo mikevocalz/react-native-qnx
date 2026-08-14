@@ -707,3 +707,30 @@ validate:macos`.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — finish
   `Text` (mixed styling, wrapping) or move to `Image`.
+
+## 2026-08-14 – Text wrapping and mixed styling
+
+- **Goal:** Finish `Text` — measure wrapped text correctly and keep per-fragment
+  styling.
+- **Measurement:** moved from `QFontMetricsF` to `QTextLayout` with a
+  `FormatRange` per fragment, so a paragraph with mixed fonts measures correctly
+  and long text wraps against the available width. React Native passes infinity
+  for an unconstrained axis, which `QTextLine::setLineWidth` cannot take, so
+  that case is guarded.
+- **Rendering:** mixed styling is carried as Qt rich text, because Qt Quick's
+  `Text` applies one font and colour to the whole item. Single-style paragraphs
+  stay plain text so markup characters in ordinary strings are never
+  interpreted.
+- **A mismatch caught by looking:** the first render measured two lines but
+  painted one, with the text running outside its own frame, because the item's
+  own `wrapMode` was never set. Measurement and paint have to agree; the
+  screenshot is what showed they did not.
+- **Method correction, twice earned.** Two mutation runs reported a false pass
+  because the mutated source failed to compile and the previous binary was still
+  on disk. Mutation runs now check the build's exit status before the test's.
+  With that in place: forcing the plain-text branch fails the rich-text
+  assertion, and setting the measurer to `NoWrap` fails the wrapped-height
+  assertion.
+- **Results:** CTest 9/9 with Hermes, 7/7 default, seventeen host cases.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — `Image`.

@@ -1,5 +1,27 @@
 # TEST_STATUS.md
 
+## Text wraps and mixes styles — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.
+- Measurement moved from `QFontMetricsF` to `QTextLayout` with a format range
+  per fragment, so a paragraph with mixed fonts measures correctly and long text
+  wraps against the available width. React Native passes infinity for an
+  unconstrained axis, which `QTextLine` cannot take, so that is guarded.
+- Mixed styling is carried to the item as Qt rich text, because Qt Quick's
+  `Text` applies one font and colour to the whole item. The plain string is kept
+  for the single-style case so markup characters are never interpreted.
+- The item is set to wrap as well. Without that the measurement said two lines
+  while the paint said one, and the text ran outside its own frame — visible in
+  the screenshot before the fix.
+- Mutation checks, both with the build verified first: forcing the plain-text
+  branch fails the rich-text assertion, and setting the measurer to `NoWrap`
+  fails the wrapped-height assertion.
+- **Method correction.** Two mutation runs this session reported a false pass
+  because the mutated source did not compile and the old binary was still on
+  disk. Mutation runs now check the build's exit status before the test's.
+- Evidence level: host only. Nothing cross-compiled for QNX, nothing run on the
+  Pi 4.
+
 ## Text renders — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.

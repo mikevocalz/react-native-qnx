@@ -244,7 +244,21 @@ MountError QtQuickMountingLayer::updateText(
   }
 
   QQuickItem* item = mounted->item;
-  item->setProperty("text", style.text);
+
+  // The text layout manager measures with wrapping, so the item has to wrap
+  // too. Without this the measured height says two lines while the paint says
+  // one, and the text runs outside its own frame.
+  item->setProperty("wrapMode", 4);  // Text.Wrap
+
+  // Rich text preserves per-fragment styling; plain text is used otherwise so
+  // that markup characters in ordinary strings are never interpreted.
+  if (style.mixedStyles) {
+    item->setProperty("textFormat", 1);  // Text.RichText
+    item->setProperty("text", style.richText);
+  } else {
+    item->setProperty("textFormat", 0);  // Text.PlainText
+    item->setProperty("text", style.text);
+  }
 
   if (style.fontSize > 0.0F) {
     // `font` is a grouped property holding a QFont value, so it is read,

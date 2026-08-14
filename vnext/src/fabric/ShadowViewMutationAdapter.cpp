@@ -1,5 +1,8 @@
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 
+#include <QColor>
+#include <QStringList>
+
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/components/text/ParagraphState.h>
 #include <react/renderer/components/view/ViewProps.h>
@@ -37,6 +40,27 @@ std::uint32_t packColor(const facebook::react::SharedColor& color) {
 /// Per-fragment attributes — font, colour, weight — are measured by the text
 /// layout manager but not yet carried onto the Qt item, so a paragraph renders
 /// with one style. Recorded in docs/component-support.md.
+/// CSS for one fragment, in the subset Qt's rich text understands.
+QString fragmentStyleAttribute(const facebook::react::TextAttributes& attributes) {
+  QStringList parts;
+  if (!std::isnan(attributes.fontSize) && attributes.fontSize > 0) {
+    parts << QStringLiteral("font-size:%1px").arg(static_cast<int>(attributes.fontSize));
+  }
+  if (facebook::react::isColorMeaningful(attributes.foregroundColor)) {
+    parts << QStringLiteral("color:%1").arg(
+        QColor::fromRgba(packColor(attributes.foregroundColor)).name(QColor::HexRgb));
+  }
+  if (attributes.fontWeight.has_value()) {
+    parts << QStringLiteral("font-weight:%1")
+                 .arg(static_cast<int>(*attributes.fontWeight));
+  }
+  if (attributes.fontStyle.has_value() &&
+      *attributes.fontStyle == facebook::react::FontStyle::Italic) {
+    parts << QStringLiteral("font-style:italic");
+  }
+  return parts.join(QLatin1Char(';'));
+}
+
 TextStyle paragraphTextStyle(const ShadowView& view) {
   using ParagraphState = facebook::react::ParagraphState;
   const auto* state =
@@ -48,15 +72,21 @@ TextStyle paragraphTextStyle(const ShadowView& view) {
   }
 
   bool first = true;
+  int fragmentCount = 0;
   for (const auto& fragment : state->getData().attributedString.getFragments()) {
     if (fragment.isAttachment()) {
       continue;
     }
+    ++fragmentCount;
     style.text += QString::fromStdString(fragment.string);
 
-    // Qt Quick's Text styles the whole item, so only the first fragment's
-    // attributes are carried. Mixed styling inside one paragraph is a gap in
-    // docs/component-support.md rather than a silent approximation.
+    // Per-fragment styling is carried as rich text, because Qt Quick's Text
+    // applies its own font and colour to the whole item. The plain string is
+    // kept alongside it for anything that reads text without markup.
+    style.richText += QStringLiteral("<span style=\"%1\">%2</span>")
+                          .arg(fragmentStyleAttribute(fragment.textAttributes))
+                          .arg(QString::fromStdString(fragment.string).toHtmlEscaped());
+
     if (first) {
       first = false;
       if (!std::isnan(fragment.textAttributes.fontSize)) {
@@ -69,6 +99,10 @@ TextStyle paragraphTextStyle(const ShadowView& view) {
       }
     }
   }
+
+  // More than one styled fragment means Qt Quick's single font and colour
+  // cannot express the paragraph, so the rich-text form is used instead.
+  style.mixedStyles = fragmentCount > 1;
   return style;
 }
 

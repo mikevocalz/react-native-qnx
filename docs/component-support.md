@@ -10,18 +10,18 @@ Legend: ✅ works and is covered by a host test · ⚠ partial, with the limit n
 
 ## Components
 
-| Component            | Status | Notes                                                                                                    |
-| -------------------- | ------ | -------------------------------------------------------------------------------------------------------- |
-| `View`               | ⚠      | Mounts, lays out, and paints background, corner radius, and opacity.                                     |
-| `Text`               | ⚠      | Renders with its string, font size, and colour. One style per paragraph, and measurement is single-line. |
-| `Image`              | ❌     | Needs `QQuickImageProvider` and the image manager.                                                       |
-| `ScrollView`         | ❌     | `Flickable` is the intended backing.                                                                     |
-| `TextInput`          | ❌     | Needs Qt Quick's text input plus IME.                                                                    |
-| `Switch`             | ❌     |                                                                                                          |
-| `ActivityIndicator`  | ❌     |                                                                                                          |
-| `Modal`              | ❌     |                                                                                                          |
-| `FlatList`/`Section` | ❌     | Upstream JavaScript over `ScrollView`; blocked on `ScrollView`.                                          |
-| `Pressable`          | ✅     | Renders and `onPress` fires from a real pointer press; covered by a host test. `Button` is untested.     |
+| Component            | Status | Notes                                                                                                   |
+| -------------------- | ------ | ------------------------------------------------------------------------------------------------------- |
+| `View`               | ⚠      | Mounts, lays out, and paints background, corner radius, and opacity.                                    |
+| `Text`               | ⚠      | Renders with string, font size, colour, mixed styling, and wrapping. No ellipsis or inline attachments. |
+| `Image`              | ❌     | Needs `QQuickImageProvider` and the image manager.                                                      |
+| `ScrollView`         | ❌     | `Flickable` is the intended backing.                                                                    |
+| `TextInput`          | ❌     | Needs Qt Quick's text input plus IME.                                                                   |
+| `Switch`             | ❌     |                                                                                                         |
+| `ActivityIndicator`  | ❌     |                                                                                                         |
+| `Modal`              | ❌     |                                                                                                         |
+| `FlatList`/`Section` | ❌     | Upstream JavaScript over `ScrollView`; blocked on `ScrollView`.                                         |
+| `Pressable`          | ✅     | Renders and `onPress` fires from a real pointer press; covered by a host test. `Button` is untested.    |
 
 ## `View` props
 
@@ -40,14 +40,15 @@ Legend: ✅ works and is covered by a host test · ⚠ partial, with the limit n
 
 ## `Text`
 
-| Aspect                     | Status | Notes                                                                                                                    |
-| -------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------ |
-| String content             | ✅     | Fragments are flattened and set on a Qt Quick `Text` item.                                                               |
-| `fontSize`, `color`        | ⚠      | Taken from the first fragment only: Qt Quick's `Text` styles the whole item.                                             |
-| Measurement                | ⚠      | This platform's `TextLayoutManager` measures with `QFontMetricsF`. Single line — wrapped text reports one line's height. |
-| Mixed styling in one block | ❌     | Nested `<Text>` spans with different styles collapse to the first fragment's style.                                      |
-| `numberOfLines`            | ⚠      | Clamps the measured height; no ellipsis.                                                                                 |
-| Attachments (inline views) | ❌     | Reported as zero-sized, as React Native's generic manager does.                                                          |
+| Aspect                     | Status | Notes                                                                                                     |
+| -------------------------- | ------ | --------------------------------------------------------------------------------------------------------- |
+| String content             | ✅     | Fragments flattened onto a Qt Quick `Text` item.                                                          |
+| `fontSize`, `color`        | ✅     | Applied per fragment.                                                                                     |
+| Mixed styling in one block | ✅     | Carried as Qt rich text, because Qt Quick's `Text` applies one font and colour to the whole item.         |
+| Wrapping                   | ✅     | Measured with `QTextLayout` against the available width; the item is set to wrap so paint matches layout. |
+| `numberOfLines`            | ⚠      | Limits the measured lines; no ellipsis.                                                                   |
+| Attachments (inline views) | ❌     | Reported as zero-sized, as React Native's generic manager does.                                           |
+| Font family                | ⚠      | Passed to Qt if named; no font registration, so an unavailable family silently falls back.                |
 
 ## Platform modules
 

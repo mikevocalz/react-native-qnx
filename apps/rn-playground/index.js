@@ -65,7 +65,23 @@ function PlaygroundApp() {
     }),
     // Text is measured by the platform's TextLayoutManager, so its size comes
     // from Qt's font metrics rather than from an explicit style.
-    React.createElement(Text, { style: { fontSize: 24 }, collapsable: false }, 'Hello QNX')
+    React.createElement(Text, { style: { fontSize: 24 }, collapsable: false }, 'Hello QNX'),
+    // Two nested spans with different styles, which Qt Quick's Text can only
+    // express as rich text.
+    React.createElement(
+      Text,
+      { style: { fontSize: 14 }, collapsable: false },
+      'plain ',
+      React.createElement(Text, { style: { fontSize: 20, color: '#ffcc00' } }, 'styled')
+    ),
+    // Long enough to wrap inside the 320pt parent, so the measured height has
+    // to account for more than one line.
+    React.createElement(
+      Text,
+      { style: { fontSize: 16 }, collapsable: false },
+      'This sentence is deliberately long enough that it must wrap onto more ' +
+        'than one line inside a three hundred and twenty point wide parent.'
+    )
   );
 }
 

@@ -15,9 +15,15 @@
 
 #include <QFont>
 #include <QFontMetricsF>
+#include <QList>
+#include <QPointF>
+#include <QTextLayout>
+#include <QTextOption>
 #include <QString>
 
 #include <algorithm>
+#include <cmath>
+#include <limits>
 #include <string>
 
 namespace facebook::react {
@@ -61,15 +67,17 @@ TextMeasurement TextLayoutManager::measure(
     const LayoutConstraints& layoutConstraints) const {
   const auto& attributedString = attributedStringBox.getValue();
 
+  // One string with a format range per fragment, so a paragraph with mixed
+  // fonts measures correctly rather than as if it were uniform.
+  QString text;
+  QList<QTextLayout::FormatRange> formats;
   TextMeasurement::Attachments attachments;
-  Float width = 0;
-  Float height = 0;
 
   for (const auto& fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {
-      // Inline views are laid out by Yoga, not measured here. Reporting a zero
-      // frame is what the generic implementation does and is honest: this
-      // platform has no attachment support yet.
+      // Inline views are laid out by Yoga, not measured here. A zero frame is
+      // what React Native's generic manager reports and is honest: this
+      // platform has no attachment support.
       attachments.push_back(
           TextMeasurement::Attachment{
               .frame = {.origin = {.x = 0, .y = 0}, .size = {.width = 0, .height = 0}},
@@ -77,33 +85,70 @@ TextMeasurement TextLayoutManager::measure(
       continue;
     }
 
-    const QFontMetricsF metrics(fontForFragment(fragment.textAttributes));
-    const QString text = QString::fromStdString(fragment.string);
-
-    // Single-line advance width, summed across fragments because they sit on
-    // one line unless wrapped. Wrapping is handled below by clamping.
-    width += static_cast<Float>(metrics.horizontalAdvance(text));
-    height = std::max(height, static_cast<Float>(metrics.height()));
+    const QString piece = QString::fromStdString(fragment.string);
+    QTextLayout::FormatRange range;
+    range.start = static_cast<int>(text.length());
+    range.length = static_cast<int>(piece.length());
+    range.format.setFont(fontForFragment(fragment.textAttributes));
+    formats.append(range);
+    text += piece;
   }
 
-  // Respect the constraints React Native computed. Clamping rather than
-  // re-wrapping means multi-line text reports one line's height, which is
-  // recorded as a gap in docs/component-support.md rather than hidden.
-  width = std::clamp(
-      width, layoutConstraints.minimumSize.width, layoutConstraints.maximumSize.width);
-  height = std::clamp(
-      height,
-      layoutConstraints.minimumSize.height,
-      layoutConstraints.maximumSize.height);
-
-  if (paragraphAttributes.maximumNumberOfLines > 0) {
-    height = std::min(
-        height,
-        static_cast<Float>(paragraphAttributes.maximumNumberOfLines) * height);
+  if (text.isEmpty()) {
+    return TextMeasurement{
+        .size =
+            {.width = layoutConstraints.minimumSize.width,
+             .height = layoutConstraints.minimumSize.height},
+        .attachments = attachments};
   }
+
+  QTextLayout layout(text);
+  layout.setFormats(formats);
+
+  QTextOption option;
+  option.setWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
+  layout.setTextOption(option);
+
+  // React Native passes infinity for an unconstrained axis, which QTextLine
+  // cannot use as a line width.
+  const qreal availableWidth =
+      std::isfinite(layoutConstraints.maximumSize.width)
+      ? static_cast<qreal>(layoutConstraints.maximumSize.width)
+      : std::numeric_limits<qreal>::max();
+
+  const int lineLimit = paragraphAttributes.maximumNumberOfLines > 0
+      ? paragraphAttributes.maximumNumberOfLines
+      : std::numeric_limits<int>::max();
+
+  qreal height = 0;
+  qreal width = 0;
+  int lines = 0;
+
+  layout.beginLayout();
+  while (lines < lineLimit) {
+    QTextLine line = layout.createLine();
+    if (!line.isValid()) {
+      break;
+    }
+    line.setLineWidth(availableWidth);
+    line.setPosition(QPointF(0, height));
+    height += line.height();
+    width = std::max(width, line.naturalTextWidth());
+    ++lines;
+  }
+  layout.endLayout();
 
   return TextMeasurement{
-      .size = {.width = width, .height = height}, .attachments = attachments};
+      .size =
+          {.width = std::clamp(
+               static_cast<Float>(width),
+               layoutConstraints.minimumSize.width,
+               layoutConstraints.maximumSize.width),
+           .height = std::clamp(
+               static_cast<Float>(height),
+               layoutConstraints.minimumSize.height,
+               layoutConstraints.maximumSize.height)},
+      .attachments = attachments};
 }
 
 }  // namespace facebook::react

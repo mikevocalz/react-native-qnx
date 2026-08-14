@@ -504,9 +504,9 @@ void metroBundleRendersThroughReact() {
   EXPECT(outer->property("color").value<QColor>() == QColor(0x20, 0x40, 0x80));
   EXPECT_NEAR(outer->property("radius").toDouble(), 12.0);
 
-  // The app renders three children: the styled inner view, a Pressable, and a
-  // Text.
-  EXPECT(outer->childItems().size() == 3);
+  // The app renders five children: the styled inner view, a Pressable, and
+  // three Texts — a simple one, one with mixed styling, and one that wraps.
+  EXPECT(outer->childItems().size() == 5);
   QQuickItem* inner = outer->childItems().at(0);
   EXPECT_NEAR(inner->width(), 64.0);
   EXPECT_NEAR(inner->height(), 32.0);
@@ -524,6 +524,23 @@ void metroBundleRendersThroughReact() {
   EXPECT(text->property("font").value<QFont>().pixelSize() == 24);
   EXPECT(text->width() > 40.0);
   EXPECT(text->height() > 20.0);
+
+  // Mixed styling is carried as rich text, because Qt Quick's Text applies one
+  // font and colour to the whole item.
+  QQuickItem* mixed = outer->childItems().at(3);
+  EXPECT(mixed->property("textFormat").toInt() == 1);
+  const QString markup = mixed->property("text").toString();
+  EXPECT(markup.contains(QStringLiteral("plain")));
+  EXPECT(markup.contains(QStringLiteral("styled")));
+  EXPECT(markup.contains(QStringLiteral("font-size:20px")));
+  EXPECT(markup.contains(QStringLiteral("#ffcc00")));
+
+  // The wrapping paragraph is measured with QTextLayout, so its height covers
+  // more than one line. React Native's generic manager would have reported the
+  // minimum size instead.
+  QQuickItem* wrapped = outer->childItems().at(4);
+  EXPECT(wrapped->height() > 30.0);
+  EXPECT(wrapped->width() <= 320.0);
 }
 
 /// A JavaScript error reaches the host instead of aborting the process.
