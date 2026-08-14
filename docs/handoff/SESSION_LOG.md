@@ -121,3 +121,32 @@
 - **Remaining work:** Unchanged and entirely external-prerequisite bound.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 1 / QNX-RN-008 on
   the licensed Ubuntu/QNX host and target.
+
+## 2026-08-14 – Qt Quick host bring-up
+
+- **Goal:** Stop treating all native work as blocked. Establish macOS as a
+  development host for portable native code and implement the first real view
+  seam against installed Qt.
+- **Decisions:** ADR-0010 accepts macOS as a development host with four
+  constraints (portable code only, platform code behind existing seams, host Qt
+  symbols must exist in the Qt LTS that G0-B pins, optional `find_package`).
+  ADR-0002 moves from proposed to provisionally accepted on host evidence.
+- **Implemented:** `QtQuickItemFactory` (cached `QQmlComponent` per component
+  type, inline QML type source, typed failure paths) plus
+  `rnqnx_qtquick_host_probe`, wired into CTest under the offscreen QPA plugin.
+- **Commands executed:** `brew list --versions qt`, header/symbol audit of the
+  installed Qt frameworks, `node scripts/run-cpp-host-tests.mjs`,
+  `pnpm validate:macos`.
+- **Results:** Qt 6.11.1 resolves without a `CMAKE_PREFIX_PATH` hint. Both new
+  targets build clean under `-Werror`. CTest 3/3. Probe:
+  `items=1000 create_ms=12.856 update10_ms=0.456 destroy_ms=0.516`.
+- **Problems discovered:** None in the new code. Fixed a duplicated word in a
+  `CMakeLists.txt` comment introduced by an earlier documentation sweep.
+- **QNX result:** Unchanged. No QNX translation unit compiled, no QNX or Pi 4
+  binary run. G0-A, G0-B, G0-C, G0-D, and QNX-RN-008 remain blocked on the
+  licensed SDP host and hardware in `BLOCKERS.md`.
+- **Remaining work:** Fabric mounting layer and component-view registry against
+  the installed React Native sources, then the JS/TS packages. Neither needs the
+  QNX toolchain.
+- **Recommended continuation point:** Fabric host/mount boundary, action 3 in
+  `NEXT_ACTIONS.md`, now buildable on this host.

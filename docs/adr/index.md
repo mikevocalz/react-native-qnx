@@ -15,3 +15,4 @@ This directory records significant architectural decisions for `react-native-qnx
 | [0007](0007-self-hosted-build-infra.md)     | Self-hosted QNX build infrastructure       | Accepted               | 2026-07-19 |
 | [0008](0008-version-pinning.md)             | Version-pinning strategy                   | Accepted               | 2026-07-19 |
 | [0009](0009-fabric-only.md)                 | Fabric-only renderer architecture          | Accepted               | 2026-08-13 |
+| [0010](0010-macos-qt-development-host.md)   | macOS as a development host                | Accepted               | 2026-08-14 |

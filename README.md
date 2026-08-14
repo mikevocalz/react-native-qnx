@@ -70,6 +70,13 @@ pnpm validate:macos
 
 This validates formatting, TypeScript, installed dependency/source contracts, JavaScript checks, and the QNX Screen wrapper against the test-only host fake. It does not compile against QNX headers or run on a QNX target.
 
+Install Qt 6.8 or newer to build the Qt Quick host targets as well
+(`brew install qt`). They are optional: without Qt the suite configures, builds,
+and passes everything else, and CMake reports the skip. Set `CMAKE_PREFIX_PATH`
+if Qt is installed somewhere CMake does not search by default. Host Qt is a
+development dependency under `docs/adr/0010-macos-qt-development-host.md`; the
+QNX target still builds the pinned Qt LTS from source.
+
 ## Build and deploy on QNX
 
 Run the QNX path on the x86-64 Ubuntu 22.04 workstation with a licensed QNX SDP

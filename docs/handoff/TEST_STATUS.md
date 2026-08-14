@@ -1,5 +1,27 @@
 # TEST_STATUS.md
 
+## Qt Quick host bring-up — 2026-08-14
+
+- Host: macOS 26.6.1, Darwin 25.6.0 arm64, Apple Clang 21.0.0.21000099,
+  Homebrew Qt 6.11.1 at `/opt/homebrew/opt/qt`.
+- `find_package(Qt6 6.8 COMPONENTS Core Gui Qml Quick QUIET)` resolves with no
+  `CMAKE_PREFIX_PATH` hint on this machine; CMake logged
+  `Qt 6.11.1 found; building Qt Quick host targets`.
+- `rnqnx_views_qt` and `rnqnx_qtquick_host_probe` compile clean under
+  `-Wall -Wextra -Wpedantic -Werror` against public Qt headers only.
+- CTest is 3/3: `rnqnx_g0_cxx20_probe`, `qnx_screen_surface_host_test`, and
+  `rnqnx_qtquick_host_probe` (offscreen QPA).
+- Probe output:
+
+  ```text
+  RNQNX_QTQUICK_HOST_OK items=1000 create_ms=12.856 update10_ms=0.456 destroy_ms=0.516 platform=offscreen
+  ```
+
+- Evidence level: host-compiled, host-executed. This is not Qt-on-QNX evidence.
+  No Qt code has been cross-compiled or run on the Pi 4, the QNX QPA plugin over
+  Screen is unbuilt, and G0-B and G0-C remain open. Nothing here promotes a QNX
+  validation row.
+
 ## Latest host validation — 2026-08-14
 
 Re-ran the full host suite before committing the batch.

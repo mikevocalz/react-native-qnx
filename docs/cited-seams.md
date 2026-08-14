@@ -35,6 +35,29 @@ Installed-header reconciliation is queued in
 `docs/handoff/QNX_VALIDATION_QUEUE.md`. The fake header is never listed as QNX
 authority.
 
+## Installed Qt 6.11.1 (macOS development host)
+
+Homebrew Qt 6.11.1 at `/opt/homebrew/opt/qt`, used per ADR-0010. Framework
+layout, so headers live under `lib/<Module>.framework/Headers`. These are public
+headers only; no private Qt header is included. Every symbol here must be
+re-audited against the Qt LTS tag that G0-B pins for the target.
+
+| Symbol                                                   | Installed path and line                                      | Used by                            | Remaining gate                   |
+| -------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------- | -------------------------------- |
+| `QQmlComponent(QQmlEngine*, QObject*)`                   | `lib/QtQml.framework/Headers/qqmlcomponent.h:46`             | `QtQuickItemFactory::componentFor` | Presence in the pinned Qt LTS    |
+| `QQmlComponent::setData(const QByteArray&, const QUrl&)` | `lib/QtQml.framework/Headers/qqmlcomponent.h:94`             | inline type-source compilation     | Presence in the pinned Qt LTS    |
+| `QQmlComponent::isError`, `errorString`                  | `lib/QtQml.framework/Headers/qqmlcomponent.h:63,69`          | compile/instantiate failure path   | Presence in the pinned Qt LTS    |
+| `QQmlComponent::create(QQmlContext*)`                    | `lib/QtQml.framework/Headers/qqmlcomponent.h:75`             | item instantiation                 | Ownership behavior on the target |
+| `QQuickItem::setParentItem(QQuickItem*)`                 | `lib/QtQuick.framework/Headers/qquickitem.h:186`             | mounting/parenting                 | Target scene-graph behavior      |
+| `QQuickItem::setX`, `setWidth`, `setSize`, `setVisible`  | `lib/QtQuick.framework/Headers/qquickitem.h:207,214,228,247` | Yoga metrics application           | Target layout/paint behavior     |
+| `QQuickWindow::contentItem()`                            | `lib/QtQuick.framework/Headers/qquickwindow.h:97`            | root item host                     | QNX QPA window behavior          |
+| `QQuickWindow::setColor(const QColor&)`                  | `lib/QtQuick.framework/Headers/qquickwindow.h:127`           | root background                    | QNX QPA window behavior          |
+| Offscreen QPA plugin                                     | `share/qt/plugins/platforms/libqoffscreen.dylib`             | headless CTest run                 | Not applicable to the target     |
+
+Evidence level: host-compiled and host-executed under strict warnings. This is
+not Qt-on-QNX evidence; the QNX QPA plugin over Screen remains unbuilt and
+unproven, and no Qt code has run on the Pi.
+
 ## Installed React Native 0.86.2
 
 | Seam                           | Installed path and symbol                                                                                | Evidence boundary                                          |

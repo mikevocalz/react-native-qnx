@@ -2,7 +2,8 @@
 
 ## Status
 
-Proposed; blocked by G0-B source/build proof and G0-C Pi benchmarking.
+Provisionally accepted on host evidence (2026-08-14); confirmation still blocked
+by G0-B's pinned Qt source proof and G0-C's Pi benchmark.
 
 ## Context
 
@@ -35,10 +36,38 @@ which public text/scene-graph facilities exist.
 5. Correct ownership/thread-affinity behavior under the actual Qt event loop.
 
 If the candidate requires a private header or a behavioral Qt patch, stop for a
-new decision. This document authorizes no implementation yet.
+new decision.
+
+## Host evidence — 2026-08-14
+
+Under ADR-0010, the cached-component path is implemented and measured against
+installed Qt 6.11.1 on macOS. `rnqnx_views_qt` uses only public headers; no
+private Qt header is included, satisfying evidence item 3 for this Qt version.
+
+`rnqnx_qtquick_host_probe`, 1,000 `Rectangle`-backed items, offscreen QPA,
+Apple Silicon, Debug build with strict warnings:
+
+| Phase                                   | Time      | Per item |
+| --------------------------------------- | --------- | -------- |
+| Create + parent + set absolute geometry | 12.856 ms | 12.9 µs  |
+| 10 update passes (x + opacity per item) | 0.456 ms  | 46 ns    |
+| Destroy                                 | 0.516 ms  | 0.5 µs   |
+
+The update path — the one Fabric drives per frame — is the cheapest by three
+orders of magnitude, which is the property that matters for mounting. The probe
+also asserts that destroying items leaves no residual children on the content
+item and that an unregistered type fails instead of returning a bare item.
+
+This settles the shape of the strategy. It does not settle it for the target:
+evidence items 1, 2, 4, and 5 remain open, and the Pi is slower than this host
+by an unmeasured factor.
 
 ## Related files
 
 - Platform specification §4 G0-C
+- `vnext/include/react-native-qnx/views/QtQuickItemFactory.h`
+- `vnext/src/views/qt/QtQuickItemFactory.cpp`
+- `vnext/probes/qtquick/main.cpp`
+- `docs/adr/0010-macos-qt-development-host.md`
 - `docs/adr/0001-qt-quick-backend.md`
 - `docs/toolchain.md`

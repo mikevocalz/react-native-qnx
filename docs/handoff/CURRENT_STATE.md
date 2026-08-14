@@ -47,6 +47,18 @@ such as React Native 0.87, Metro 0.87, or TypeScript 7 can be substituted.
   published for two Metro development-tool denial-of-service advisories. See
   `BLOCKERS.md`; Metro must not process untrusted assets.
 
+## Qt Quick view layer (host)
+
+`QtQuickItemFactory` implements ADR-0002's cached-`QQmlComponent` strategy
+against installed Qt 6.11.1 on macOS, per ADR-0010. It compiles one component
+per React Native component type from inline QML type source, instantiates items,
+parents them, and reports compile/type failures instead of returning partially
+constructed objects. `rnqnx_qtquick_host_probe` exercises and benchmarks it
+headlessly in CTest.
+
+This is host evidence. The QNX QPA plugin, the pinned Qt LTS, the cross-build,
+and every Pi number remain open.
+
 ## Installed-source boundaries
 
 - RN Fabric entry points are grounded in installed `SchedulerToolbox`,
@@ -73,8 +85,8 @@ compiled against an installed SDP, and no QNX binary has run.
 
 ## Repository state
 
-The batch is committed on `main`, after a clean re-run of
-`pnpm validate:macos` and `pnpm install --frozen-lockfile`. The working tree is
-clean and nothing is pushed. Continue with `NEXT_ACTIONS.md` and
+The working tree is clean and nothing is pushed; no git remote is configured
+yet. Repository-local material that is not part of the published repository is
+excluded through `.git/info/exclude` rather than a tracked ignore file. Continue with `NEXT_ACTIONS.md` and
 `QNX_VALIDATION_QUEUE.md`; do not mark Milestone 0 exited until QNX-RN-008
 passes.

@@ -54,7 +54,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
 
   if(NOT RNQNX_G0_PROBE_ONLY)
     # Screen is a window-system probe and possible future bare-Screen path. The
-    # The component backend is Qt Quick, which remains behind G0-B.
+    # component backend is Qt Quick, which remains behind G0-B.
     add_library(qnx_platform STATIC
       native/platform/qnx/screen/QnxScreenSurface.cpp
     )
@@ -113,6 +113,41 @@ else()
       ENVIRONMENT
         "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1"
     )
+
+    # Qt Quick view work is developed against an installed host Qt (ADR-0010).
+    # It is optional so that a host without Qt still builds and tests the rest.
+    find_package(Qt6 6.8 COMPONENTS Core Gui Qml Quick QUIET)
+    if(Qt6_FOUND)
+      message(STATUS "Qt ${Qt6_VERSION} found; building Qt Quick host targets")
+
+      add_library(rnqnx_views_qt STATIC
+        vnext/src/views/qt/QtQuickItemFactory.cpp
+      )
+      target_include_directories(rnqnx_views_qt PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/vnext/include
+      )
+      target_link_libraries(rnqnx_views_qt PUBLIC Qt6::Quick Qt6::Qml Qt6::Gui)
+      rnqnx_enable_strict_warnings(rnqnx_views_qt)
+
+      add_executable(rnqnx_qtquick_host_probe
+        vnext/probes/qtquick/main.cpp
+      )
+      target_link_libraries(rnqnx_qtquick_host_probe PRIVATE rnqnx_views_qt)
+      rnqnx_enable_strict_warnings(rnqnx_qtquick_host_probe)
+      set_target_properties(rnqnx_qtquick_host_probe PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+      )
+
+      # Offscreen keeps the test headless. A windowed run is a manual command,
+      # and neither one is evidence for the Pi.
+      add_test(NAME rnqnx_qtquick_host_probe
+        COMMAND $<TARGET_FILE:rnqnx_qtquick_host_probe> -platform offscreen)
+      set_tests_properties(rnqnx_qtquick_host_probe PROPERTIES
+        PASS_REGULAR_EXPRESSION "RNQNX_QTQUICK_HOST_OK items=1000"
+      )
+    else()
+      message(STATUS "Qt6 >= 6.8 not found; skipping Qt Quick host targets")
+    endif()
   endif()
 
 endif()
