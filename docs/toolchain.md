@@ -1,5 +1,15 @@
 # QNX Toolchain Evidence
 
+## Versions this document targets
+
+- QNX SDP 8.0.2 — the current release as of 2026-08-14, supplied by the project
+  owner rather than read from an installation. The installed package identity is
+  still a G0-A deliverable and overrides this line the moment it exists. An
+  earlier revision of these documents claimed SDP 8.0.5, which was never
+  verified against anything; that number is corrected throughout.
+- Qt 6.11.1 is the current release, with 6.12 in beta. The macOS development
+  host builds against 6.11.1 (ADR-0010); the target pins an LTS chosen at G0-B.
+
 ## Gate status
 
 G0-A is **blocked**, not passed. The current macOS arm64 workspace has no QNX

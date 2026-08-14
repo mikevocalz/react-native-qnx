@@ -46,9 +46,9 @@
 - **Commits created:** `f766782`, `731c822`, `0bfc174`, `af15694`.
 - **Problems discovered:**
   - Current workspace is macOS arm64, not the supported x86-64 Ubuntu 24.04 build host.
-  - QNX SDP 8.0.5 and Ninja are missing.
+  - QNX SDP 8.0.2 and Ninja are missing.
 - **Remaining work:**
-  - Install QNX SDP 8.0.5 on an x86-64 Ubuntu 24.04 host and re-run doctor/configure/build.
+  - Install QNX SDP 8.0.2 on an x86-64 Ubuntu 24.04 host and re-run doctor/configure/build.
 - **Recommended continuation point:** `docs/handoff/NEXT_ACTIONS.md` Next Action 1.
 
 ## 2026-08-13 23:00 EDT – Mac-first foundation completion and source audit
@@ -435,3 +435,26 @@ validate:macos`.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — check which
   of the nine modules React Native already ships as generic C++ before writing
   anything.
+
+## 2026-08-14 – Version correction: QNX SDP 8.0.2, Qt 6.11.1
+
+- **Trigger:** the project owner reported that QNX is on SDP 8.0.2 and Qt is on
+  6.11.1 with 6.12 in beta.
+- **Defect found:** six handoff documents claimed "QNX SDP 8.0.5". That version
+  was never verified against anything — this workspace has never had a licensed
+  SDP — and appears to have been written from assumption in an early session.
+  It is exactly the kind of invented specific this repository is supposed to
+  refuse.
+- **Corrected:** every `8.0.5` reference now reads `8.0.2`, marked as
+  owner-supplied and still subject to the G0-A capture of the installed package
+  identity, which overrides it. `docs/toolchain.md` gains a Versions section
+  recording both the correction and its cause.
+- **Qt:** 6.11.1 is the current release and is what the macOS development host
+  already builds against, so no code changes. ADR-0010 and the compatibility
+  matrix now say "current release" rather than implying 6.11.1 is unusual, and
+  note 6.12 in beta. The LTS the target pins is still a G0-B decision, and the
+  gap between it and 6.11.1 is what ADR-0010's symbol re-audit covers.
+- **Not changed:** no build, test, or code path depends on either number. The
+  Qt the host compiles against is read from the installation, not from a
+  document.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.

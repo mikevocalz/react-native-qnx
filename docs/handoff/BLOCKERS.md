@@ -4,7 +4,7 @@
 
 - **First observed:** 2026-07-19
 - **Affected milestone:** Milestone 0 exit gate
-- **Problem:** The current macOS arm64 workspace has no QNX SDP 8.0.5,
+- **Problem:** The current macOS arm64 workspace has no QNX SDP 8.0.2,
   `QNX_HOST`, `QNX_TARGET`, `qcc`/`q++`, installed Screen header/library, or QNX
   runtime target.
 - **Reproduction:** Run `./scripts/configure-qnx.sh aarch64 Debug` without the
@@ -19,7 +19,7 @@
 - **Why that is insufficient:** The fake cannot prove installed header
   signatures/constants, qcc compatibility, `libscreen` linkage, BSP behavior,
   compositor behavior, or target resource cleanup.
-- **External prerequisite:** Licensed QNX SDP 8.0.5 and target BSP on an x86-64
+- **External prerequisite:** Licensed QNX SDP 8.0.2 and target BSP on an x86-64
   Ubuntu 24.04 host, plus a QNX target with Screen and a display.
 - **Next investigation:** Follow QNX-RN-008 in `QNX_VALIDATION_QUEUE.md` and
   record the installed header/source symbols before changing any native seam.

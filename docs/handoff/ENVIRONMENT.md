@@ -22,7 +22,7 @@ installs the freely redistributable workspace prerequisites.
 
 ## Missing QNX prerequisites
 
-- Licensed QNX SDP 8.0.5 installation
+- Licensed QNX SDP 8.0.2 installation
 - `QNX_HOST` and `QNX_TARGET`
 - `qcc` and `q++`
 - Installed QNX `screen/screen.h` and `libscreen`
@@ -36,7 +36,7 @@ header, ABI, compiler, linker, BSP, driver, compositor, or runtime compatibility
 ## Expected licensed build-host environment
 
 - x86-64 Ubuntu 24.04 LTS
-- QNX SDP 8.0.5 installed through the licensed QNX channel
+- QNX SDP 8.0.2 installed through the licensed QNX channel
 - Target BSP/graphics development packages
 - `QNX_HOST` and `QNX_TARGET` exported by the official environment script
 - `QNX_TARGET_IP` for deploy/run; `QNX_TARGET_USER` is optional and defaults to

@@ -40,8 +40,9 @@ Rules:
    may call a macOS-only API outside `native/platform/macos-host`.
 3. Qt on this host is a development dependency only. The QNX target still builds
    the pinned Qt 6 LTS from source per ADR-0001, and every Qt symbol used here
-   must exist in that pinned LTS. Host Qt 6.11.1 is newer than the LTS we expect
-   to pin, so using a symbol introduced after the LTS is a defect, not a feature.
+   must exist in that pinned LTS. Host Qt 6.11.1 is the current release as of
+   2026-08-14, with 6.12 in beta; the LTS the target pins will be older, so
+   using a symbol introduced after that LTS is a defect, not a feature.
 4. `find_package(Qt6 ...)` is `QUIET` and optional. A host without Qt still
    configures, builds, and passes every non-Qt target.
 5. Host benchmark numbers are recorded as host numbers. G0-C's Pi benchmark is
@@ -57,7 +58,8 @@ Harder: two build hosts now exist, and macOS-isms can leak in. Rules 2 and 3 are
 the mitigation, and the QNX cross-build remains the merge gate for anything that
 compiles for the target.
 
-Risk accepted: host Qt is a non-LTS Homebrew build with a different QPA plugin
+Risk accepted: host Qt is a current-release Homebrew build, not the LTS, with a
+different QPA plugin
 (cocoa/offscreen rather than the QNX plugin over Screen). Window-system behavior
 proven here says nothing about the target compositor.
 

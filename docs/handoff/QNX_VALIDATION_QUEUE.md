@@ -112,13 +112,13 @@ Record tearing, stale frames, format mismatches, and every returned `errno`.
 
 **Priority:** High
 
-**Blocker:** No licensed QNX SDP 8.0.5 build host or QNX target is available in
+**Blocker:** No licensed QNX SDP 8.0.2 build host or QNX target is available in
 the current workspace. See `BLOCKERS.md`.
 
 **Required environment:**
 
 - x86-64 Ubuntu 24.04 host
-- licensed QNX SDP 8.0.5 with `QNX_HOST`/`QNX_TARGET` sourced
+- licensed QNX SDP 8.0.2 with `QNX_HOST`/`QNX_TARGET` sourced
 - installed target BSP, Screen headers, and `libscreen`
 - AArch64 QNX target with Screen service and display
 

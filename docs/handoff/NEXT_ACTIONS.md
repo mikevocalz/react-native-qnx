@@ -3,7 +3,7 @@
 ## 1. Complete QNX-RN-008 on the licensed build host and target
 
 **Objective:** Compile the current Screen-only executable against the installed
-QNX SDP 8.0.5, then run it on a real target. This is the only remaining
+QNX SDP 8.0.2, then run it on a real target. This is the only remaining
 Milestone 0 exit gate.
 
 **Files:**
@@ -17,7 +17,7 @@ Milestone 0 exit gate.
 
 **Procedure:**
 
-1. On x86-64 Ubuntu 24.04, install and license QNX SDP 8.0.5 plus the target
+1. On x86-64 Ubuntu 24.04, install and license QNX SDP 8.0.2 plus the target
    BSP/Screen development files. Source its environment script.
 2. Before changing native code, inspect the installed `screen/screen.h` and cite
    the declarations/constants used by `QnxScreenSurface`: `screen_create_context`,

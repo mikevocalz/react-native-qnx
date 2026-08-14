@@ -283,7 +283,7 @@ installed dependency/source checks all passed.
 
 | Suite                                      | Status  | Reason                                                                     |
 | ------------------------------------------ | ------- | -------------------------------------------------------------------------- |
-| Installed QNX `screen/screen.h` audit      | Not run | QNX SDP 8.0.5 is not installed in this workspace.                          |
+| Installed QNX `screen/screen.h` audit      | Not run | QNX SDP 8.0.2 is not installed in this workspace.                          |
 | QNX AArch64/x86-64 cross-compilation       | Not run | No `QNX_HOST`, `QNX_TARGET`, `qcc`, `q++`, or licensed sysroot.            |
 | `libscreen` linkage                        | Not run | QNX Screen development library is unavailable.                             |
 | Virtual/physical QNX target runtime        | Not run | No QNX target is configured.                                               |

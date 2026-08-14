@@ -39,19 +39,19 @@ date above must be refreshed during the next dependency update.
 
 ## Platform and toolchain
 
-| Component                  | Status                      | Version / requirement       | Notes                                                                                                        |
-| -------------------------- | --------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| macOS host                 | Supported host validation   | Darwin with Apple Clang     | Runs authoring checks and sanitizer-backed C++ host tests. It does not provide QNX compile or runtime proof. |
-| Linux host                 | Supported host validation   | Linux with Clang or GCC     | Runs the same non-QNX host test path.                                                                        |
-| QNX build host             | Required for QNX validation | x86-64 Ubuntu 22.04 LTS     | Canonical host shared by current QNX/Qt guidance; macOS is authoring/host-test only.                         |
-| QNX SDP                    | Target                      | 8.0; exact update pending   | Installed package/build must be captured at G0-A and is authoritative for QNX headers/libraries.             |
-| QNX Software Center        | Host prerequisite           | Licensed compatible release | Installs and licenses SDP/QSTI; the project does not pin or redistribute this proprietary installer.         |
-| QNX compiler (`qcc`/`q++`) | Target                      | SDP-provided                | `scripts/doctor.sh` validates availability after the SDP environment is sourced.                             |
-| CMake                      | Host prerequisite           | 3.28.0 or newer             | Matches `cmake_minimum_required`.                                                                            |
-| Ninja                      | Host prerequisite           | 1.11.0 or newer             | Generator used by the checked-in presets.                                                                    |
-| Node.js                    | Host prerequisite           | 24.3.0 or newer             | Matches the workspace engine constraint and the selected React Native line.                                  |
-| pnpm                       | Pin                         | 11.21.0                     | Exact workspace package-manager identity.                                                                    |
-| Python                     | Host prerequisite           | 3.11 or newer               | Required by current/future React Native tooling and codegen.                                                 |
+| Component                  | Status                      | Version / requirement       | Notes                                                                                                                                                                       |
+| -------------------------- | --------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| macOS host                 | Supported host validation   | Darwin with Apple Clang     | Runs authoring checks and sanitizer-backed C++ host tests. It does not provide QNX compile or runtime proof.                                                                |
+| Linux host                 | Supported host validation   | Linux with Clang or GCC     | Runs the same non-QNX host test path.                                                                                                                                       |
+| QNX build host             | Required for QNX validation | x86-64 Ubuntu 22.04 LTS     | Canonical host shared by current QNX/Qt guidance; macOS is authoring/host-test only.                                                                                        |
+| QNX SDP                    | Target                      | 8.0.2                       | Current release as of 2026-08-14, supplied by the project owner. The installed package/build must still be captured at G0-A and is authoritative for QNX headers/libraries. |
+| QNX Software Center        | Host prerequisite           | Licensed compatible release | Installs and licenses SDP/QSTI; the project does not pin or redistribute this proprietary installer.                                                                        |
+| QNX compiler (`qcc`/`q++`) | Target                      | SDP-provided                | `scripts/doctor.sh` validates availability after the SDP environment is sourced.                                                                                            |
+| CMake                      | Host prerequisite           | 3.28.0 or newer             | Matches `cmake_minimum_required`.                                                                                                                                           |
+| Ninja                      | Host prerequisite           | 1.11.0 or newer             | Generator used by the checked-in presets.                                                                                                                                   |
+| Node.js                    | Host prerequisite           | 24.3.0 or newer             | Matches the workspace engine constraint and the selected React Native line.                                                                                                 |
+| pnpm                       | Pin                         | 11.21.0                     | Exact workspace package-manager identity.                                                                                                                                   |
+| Python                     | Host prerequisite           | 3.11 or newer               | Required by current/future React Native tooling and codegen.                                                                                                                |
 
 ## React Native runtime
 
@@ -87,12 +87,12 @@ date above must be refreshed during the next dependency update.
 
 ## Graphics and text
 
-| Component       | Status               | Notes                                                                                                                    |
-| --------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Qt 6 / Qt Quick | Locked, not pinned   | Component backend per ADR-0001; exact LTS tag, QNX source seams, build result, and licensing decision remain G0-B gates. |
-| Skia            | Superseded direction | Not the component backend. Any future leaf/canvas use requires its own decision and QNX proof.                           |
-| Text stack      | Qt-tag dependent     | HarfBuzz/FreeType and other third-party identities must be recorded from the exact Qt source/build rather than invented. |
-| Image codecs    | Not pinned           | Codec choices and provenance follow the proven Qt build or a later explicit dependency decision.                         |
+| Component       | Status               | Notes                                                                                                                                                                                                                                                                    |
+| --------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Qt 6 / Qt Quick | Locked, not pinned   | Component backend per ADR-0001. Current release is 6.11.1 with 6.12 in beta as of 2026-08-14; the macOS development host builds against 6.11.1 per ADR-0010. The exact LTS tag for the target, QNX source seams, build result, and licensing decision remain G0-B gates. |
+| Skia            | Superseded direction | Not the component backend. Any future leaf/canvas use requires its own decision and QNX proof.                                                                                                                                                                           |
+| Text stack      | Qt-tag dependent     | HarfBuzz/FreeType and other third-party identities must be recorded from the exact Qt source/build rather than invented.                                                                                                                                                 |
+| Image codecs    | Not pinned           | Codec choices and provenance follow the proven Qt build or a later explicit dependency decision.                                                                                                                                                                         |
 
 ## QNX target libraries
 
