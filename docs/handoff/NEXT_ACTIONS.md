@@ -96,10 +96,10 @@ and platform constants.
    `backgroundColor`, `borderRadius`, `opacity`, and transforms are silently
    ignored. Start there: they are the difference between a correct tree and a
    visible app. Record each in `docs/component-support.md`.
-2. **Try `Pressable` properly.** The responder system it needs demonstrably
-   works, but no test has actually rendered a `Pressable`. Render one, and if
-   `onPress` does not fire, find out why rather than assuming. Multi-touch and
-   pointer capture remain unimplemented.
+2. **`Text`.** The most conspicuous gap: nothing can display a string. It needs
+   the text component descriptors, which need React Native's codegen run, plus a
+   Qt Quick text item and `TextLayoutManager`. Multi-touch and pointer capture
+   also remain unimplemented.
 3. **On glass.** Everything so far runs under the offscreen QPA plugin. Render
    the playground into a real `QQuickWindow` on macOS and look at it.
 4. **Input.** No touch or pointer events reach JavaScript yet; the

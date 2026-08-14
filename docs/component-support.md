@@ -10,18 +10,18 @@ Legend: ✅ works and is covered by a host test · ⚠ partial, with the limit n
 
 ## Components
 
-| Component            | Status | Notes                                                                                                                                                            |
-| -------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `View`               | ⚠      | Mounts, lays out, and paints background, corner radius, and opacity.                                                                                             |
-| `Text`               | ❌     | Needs the text descriptors, which need React Native's codegen run.                                                                                               |
-| `Image`              | ❌     | Needs `QQuickImageProvider` and the image manager.                                                                                                               |
-| `ScrollView`         | ❌     | `Flickable` is the intended backing.                                                                                                                             |
-| `TextInput`          | ❌     | Needs Qt Quick's text input plus IME.                                                                                                                            |
-| `Switch`             | ❌     |                                                                                                                                                                  |
-| `ActivityIndicator`  | ❌     |                                                                                                                                                                  |
-| `Modal`              | ❌     |                                                                                                                                                                  |
-| `FlatList`/`Section` | ❌     | Upstream JavaScript over `ScrollView`; blocked on `ScrollView`.                                                                                                  |
-| `Pressable`/`Button` | ❓     | The responder system it needs works, but `Pressable` itself is untested here — an attempt to render one never landed in the app, so no claim is made either way. |
+| Component            | Status | Notes                                                                                                |
+| -------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
+| `View`               | ⚠      | Mounts, lays out, and paints background, corner radius, and opacity.                                 |
+| `Text`               | ❌     | Needs the text descriptors, which need React Native's codegen run.                                   |
+| `Image`              | ❌     | Needs `QQuickImageProvider` and the image manager.                                                   |
+| `ScrollView`         | ❌     | `Flickable` is the intended backing.                                                                 |
+| `TextInput`          | ❌     | Needs Qt Quick's text input plus IME.                                                                |
+| `Switch`             | ❌     |                                                                                                      |
+| `ActivityIndicator`  | ❌     |                                                                                                      |
+| `Modal`              | ❌     |                                                                                                      |
+| `FlatList`/`Section` | ❌     | Upstream JavaScript over `ScrollView`; blocked on `ScrollView`.                                      |
+| `Pressable`          | ✅     | Renders and `onPress` fires from a real pointer press; covered by a host test. `Button` is untested. |
 
 ## `View` props
 

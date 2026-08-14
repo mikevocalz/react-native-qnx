@@ -131,7 +131,8 @@ Touch reaches JavaScript and React's responder system runs on top of it:
 item, and calls its `TouchEventEmitter`; a press then asks
 `onStartShouldSetResponder`, grants, and releases. The scheduler delegate
 forwards the responder claim so the rest of a gesture follows the responder.
-One pointer only, and `Pressable` itself is untested.
+`Pressable` renders and its `onPress` fires from a real pointer press, which is
+the first component here that is not a bare `View`. One pointer only.
 
 JavaScript errors are reported to the host rather than aborting the process:
 `QnxExceptionsManager` implements React Native's ExceptionsManager over the

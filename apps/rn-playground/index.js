@@ -11,6 +11,7 @@
 const React = require('react');
 const AppRegistry = require('react-native/Libraries/ReactNative/AppRegistry').AppRegistry;
 const View = require('react-native/Libraries/Components/View/View').default;
+const Pressable = require('react-native/Libraries/Components/Pressable/Pressable').default;
 
 function PlaygroundApp() {
   return React.createElement(
@@ -50,6 +51,15 @@ function PlaygroundApp() {
       },
       onResponderRelease: () => {
         globalThis.__released = (globalThis.__released ?? 0) + 1;
+      },
+    }),
+    // Pressable sits on top of the responder system. It is the first component
+    // this platform renders that is not a bare View.
+    React.createElement(Pressable, {
+      style: { width: 64, height: 32, backgroundColor: '#00aa66' },
+      collapsable: false,
+      onPress: () => {
+        globalThis.__presses = (globalThis.__presses ?? 0) + 1;
       },
     })
   );

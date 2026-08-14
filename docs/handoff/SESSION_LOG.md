@@ -655,3 +655,27 @@ validate:macos`.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — render a real
   `Pressable`, then DeviceInfo and SourceCode.
+
+## 2026-08-14 – Pressable
+
+- **Goal:** Settle the previous entry's open question by actually rendering a
+  `Pressable`.
+- **Result:** it works. The playground renders one and `onPress` fires from a
+  real `QMouseEvent` press and release, through React's responder system and
+  Pressability's timers. It is the first component rendered on this platform
+  that is not a bare `View`.
+- **How it announced itself:** `metroBundleRendersThroughReact` failed on
+  `outer->childItems().size() == 1`, because the mounted `Pressable` made it
+  two. That failure was the proof the component had rendered.
+- **Mutation check:** moving the press to a point outside the `Pressable` fails
+  the case, so the assertion is about the hit and not merely about a press
+  happening somewhere.
+- **The earlier conclusion was wrong, and is corrected:** `Pressable` was never
+  broken. The previous run tested an app the edit had failed to reach.
+  `docs/component-support.md` moves it from ❓ to ✅. Verifying each scripted
+  edit with a grep — added as a habit after the third such incident — is what
+  made this run trustworthy.
+- **Results:** CTest 9/9 with Hermes, 7/7 default, seventeen host cases.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — `Text`, the
+  most conspicuous remaining gap.

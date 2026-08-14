@@ -498,7 +498,8 @@ void metroBundleRendersThroughReact() {
   EXPECT(outer->property("color").value<QColor>() == QColor(0x20, 0x40, 0x80));
   EXPECT_NEAR(outer->property("radius").toDouble(), 12.0);
 
-  EXPECT(outer->childItems().size() == 1);
+  // The app renders two children: the styled inner view and a Pressable.
+  EXPECT(outer->childItems().size() == 2);
   QQuickItem* inner = outer->childItems().at(0);
   EXPECT_NEAR(inner->width(), 64.0);
   EXPECT_NEAR(inner->height(), 32.0);
@@ -726,6 +727,40 @@ void pointerEventsReachJavaScript() {
     }
     EXPECT_NEAR(value.getNumber(), 1.0);
   }
+
+  // Pressable is the first component here that is not a bare View. It sits
+  // below the first child, so 48pt down lands inside it.
+  const QPointF pressablePoint(20.0, 48.0);
+  QMouseEvent pressableDown(
+      QEvent::MouseButtonPress,
+      pressablePoint,
+      pressablePoint,
+      Qt::LeftButton,
+      Qt::LeftButton,
+      Qt::NoModifier);
+  QMouseEvent pressableUp(
+      QEvent::MouseButtonRelease,
+      pressablePoint,
+      pressablePoint,
+      Qt::LeftButton,
+      Qt::NoButton,
+      Qt::NoModifier);
+  QCoreApplication::sendEvent(&fixture.window(), &pressableDown);
+  QCoreApplication::sendEvent(&fixture.window(), &pressableUp);
+  for (int i = 0; i < 40; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  const auto presses = runtime.global().getProperty(runtime, "__presses");
+  if (!presses.isNumber()) {
+    fail(
+        "Pressable.onPress ran",
+        __FILE__,
+        __LINE__,
+        "globalThis.__presses was never set");
+  }
+  EXPECT_NEAR(presses.getNumber(), 1.0);
 
   // The handler read locationX off the event, so the coordinate survived the
   // trip from Qt into React Native's touch payload.

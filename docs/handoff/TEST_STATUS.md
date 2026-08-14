@@ -1,5 +1,21 @@
 # TEST_STATUS.md
 
+## Pressable works — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.
+- The playground renders a `Pressable`, and `pointerEventsReachJavaScript`
+  asserts `onPress` fires from a real `QMouseEvent` press and release. This is
+  the first component rendered here that is not a bare `View`.
+- Mutation check: moving the press to a point outside the `Pressable` fails the
+  case, so the assertion is about the hit, not merely about a press happening.
+- This also settles the previous entry's open question. `Pressable` was never
+  broken; the earlier run tested an app the edit had failed to reach.
+  `docs/component-support.md` moves it from ❓ to ✅.
+- `metroBundleRendersThroughReact` was updated to expect two children rather
+  than one, which is how the mounted `Pressable` first announced itself.
+- Evidence level: host only, offscreen QPA. Nothing cross-compiled for QNX,
+  nothing run on the Pi 4.
+
 ## The JavaScript responder system works — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.
