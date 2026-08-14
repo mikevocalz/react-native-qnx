@@ -57,29 +57,33 @@ Recipes ported rather than invented:
 | folly compile definitions | `ReactAndroid/src/main/jni/third-party/folly/CMakeLists.txt:10-20` |
 | glog `.h.in` token map    | `@react-native/gradle-plugin` `PrepareGlogTask.kt`                 |
 | glog `config.h`           | `ReactAndroid/src/main/jni/third-party/glog/config.h`              |
-| Debug-string switch       | `ReactCommon/react/debug/flags.h` — `REACT_NATIVE_PRODUCTION`      |
+| double-conversion staging | `ReactAndroid/build.gradle.kts:340-349`                            |
 
 Deviations from React Native's Android recipe, each deliberate:
 
-- **Boost is absent.** Nothing in the ShadowViewMutation include graph reaches a
-  boost-using folly header, and the Android recipe compiles only boost's
-  context-switching assembly, which nothing here uses.
-- **folly is header-only.** React Native's `folly_runtime` compiles 27 sources;
-  none is needed to link what exists today. They get added when a link failure
-  proves one is required.
+- **Boost is React Native's trimmed distribution, and its assembly is not
+  built.** The 1.4 MB `boost-for-react-native` tarball carries the headers folly
+  needs; `folly/json/json.cpp` includes `boost/algorithm/string.hpp`. React
+  Native also compiles boost's context-switching assembly for folly's fibers,
+  which nothing here uses.
 - **`FOLLY_HAVE_XSI_STRERROR_R` and `FOLLY_HAVE_RECVMMSG` are omitted** as
-  Bionic-specific and unused respectively.
-- **`REACT_NATIVE_PRODUCTION` is defined**, which compiles out
-  `RN_DEBUG_STRING_CONVERTIBLE`. That subsystem's `getDebugName`/`getDebugProps`
-  overloads live in `ShadowView.cpp` and pull in the whole
-  ShadowNode/LayoutableShadowNode graph. React Native's internal assertions are
-  off as a consequence.
+  Bionic-specific and unused respectively. Every other folly definition and all
+  29 `folly_runtime` sources are React Native's.
+- **glog is compiled with `-w` and `NDEBUG`.** Third-party warnings are not ours
+  to fix, and React Native applies its own suppressions rather than compiling
+  glog clean.
 
-React Native sources compiled directly into this repository:
+Note on the debug-string subsystem: an earlier revision defined
+`REACT_NATIVE_PRODUCTION` to compile out `RN_DEBUG_STRING_CONVERTIBLE`, because
+`ShadowViewMutation.cpp` referenced `getDebugName`/`getDebugProps` from
+`ShadowView.cpp`. That flag is gone. `react_renderer_debug` defines
+`RN_ENABLE_DEBUG_STRING_CONVERTIBLE` publicly for Debug builds
+(`react/renderer/debug/CMakeLists.txt:22-23`), so defining the opposite would
+have split the flag across translation units. Building the mounting module
+supplies the symbols instead.
 
-| Source                                                       | Reason                                                       |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| `ReactCommon/react/renderer/mounting/ShadowViewMutation.cpp` | out-of-line static factories used to build real transactions |
+React Native sources are no longer compiled one file at a time; the renderer
+modules described above are built as React Native itself defines them.
 
 ## Fabric mount contract mirrored on the host
 

@@ -70,6 +70,10 @@ itself pins. The adapter consumes real `ShadowViewMutation` values and reports
 failures rather than skipping views; only layout is applied so far, which is an
 honest gap rather than a silent partial update.
 
+React Native's renderer itself builds here now: 41 modules, from Yoga and JSI
+through mounting and the UIManager, compiled from the installed package using
+React Native's own per-module CMake files.
+
 Transactions are still built in tests rather than pulled from a live surface.
 Closing that needs a JSI runtime host and a `SchedulerDelegate`; see
 `NEXT_ACTIONS.md` action 3. It needs no QNX toolchain and no device.

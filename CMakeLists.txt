@@ -140,6 +140,7 @@ else()
       # it needs network access on a first configure.
       if(RNQNX_FETCH_REACT_NATIVE_DEPS)
         include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/ReactNativeThirdParty.cmake)
+        include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/ReactNativeRenderer.cmake)
 
         add_executable(rnqnx_rn_headers_probe
           vnext/probes/rn-headers/main.cpp
@@ -159,15 +160,11 @@ else()
             "RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0"
         )
 
-        # The adapter needs React Native's out-of-line mutation and shadow-view
-        # definitions. These two sources are compiled directly rather than
-        # linking a prebuilt React Native, which does not exist for this host.
         add_library(rnqnx_fabric_adapter STATIC
           vnext/src/fabric/ShadowViewMutationAdapter.cpp
-          ${RNQNX_REACT_NATIVE_DIR}/ReactCommon/react/renderer/mounting/ShadowViewMutation.cpp
         )
         target_link_libraries(rnqnx_fabric_adapter PUBLIC
-          rnqnx_react_native_headers
+          rnqnx_react_native_renderer
           rnqnx_views_qt
         )
         rnqnx_enable_strict_warnings(rnqnx_fabric_adapter)

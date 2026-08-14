@@ -218,3 +218,37 @@
   QNX-side recipe work is untouched.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — a JSI runtime
   host plus a `SchedulerDelegate` so transactions come from a live surface.
+
+## 2026-08-14 – React Native renderer builds from source on the host
+
+- **Goal:** Build React Native's real renderer modules rather than compiling
+  individual sources, so the mounting work sits on the actual Fabric machinery.
+- **Result:** 41 modules build and link on macOS, added through React Native's
+  own per-module `CMakeLists.txt` files so that source lists, flags, and link
+  lists stay owned by React Native. `folly_runtime` now compiles all 29 sources
+  React Native lists, alongside real glog, fmt, and double-conversion libraries
+  and React Native's trimmed boost headers.
+- **Problems discovered, each solved with React Native's own mechanism:**
+  the platform selector had to be included before adding modules so the generic
+  `cxx` paths are chosen; `REACT_ANDROID_DIR` had to be set so `target_merge_so`
+  resolves, which is a no-op off Android; nine `platform/cxx` directories had to
+  go on the global include path, matching React Native's assembler, because
+  `react_renderer_componentregistry` reaches `HostPlatformViewProps.h` without
+  linking `rrc_view`; Yoga's target is `yogacore` and needed a `yoga` alias; and
+  OBJECT library objects are not archived into a static library that links them,
+  so the aggregate target attaches `$<TARGET_OBJECTS:...>` explicitly.
+- **Reverted:** `REACT_NATIVE_PRODUCTION`. `react_renderer_debug` defines
+  `RN_ENABLE_DEBUG_STRING_CONVERTIBLE` publicly in Debug builds, so the flag
+  would have split across translation units. Building the mounting module
+  supplies the symbols the adapter needed.
+- **Commands executed:** repeated `node scripts/run-cpp-host-tests.mjs` cycles
+  driven by the exact missing target or header at each step; `pnpm
+validate:macos`.
+- **Results:** CTest 6/6, unchanged coverage, now running against React Native's
+  real modules.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+  These modules have never been built with `qcc`.
+- **Recommended continuation point:** drive a real `ShadowTree` commit through
+  the Differ and `MountingCoordinator` into the adapter, using React Native's
+  `react/renderer/element` builder, and assert Yoga's computed layout on the Qt
+  items.

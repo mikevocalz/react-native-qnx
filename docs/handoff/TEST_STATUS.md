@@ -1,5 +1,30 @@
 # TEST_STATUS.md
 
+## React Native renderer builds from source — 2026-08-14
+
+- 41 React Native 0.86.2 modules now build on the macOS host by adding React
+  Native's own per-module `CMakeLists.txt` files: the renderer core, graphics,
+  mounting, componentregistry, view/root/scrollview/text components,
+  attributedstring, textlayoutmanager, uimanager, runtimescheduler, css,
+  consistency, observers, performance timeline, jsinspector, cxxreact, Yoga,
+  JSI, and their support modules.
+- Third-party is now compiled rather than header-only: `folly_runtime` builds
+  all 29 sources React Native lists, plus real glog, fmt, and double-conversion
+  libraries and React Native's trimmed boost headers.
+- `rnqnx_fabric_adapter` links `react_renderer_mounting` instead of compiling
+  `ShadowViewMutation.cpp` directly.
+- CTest remains 6/6 with every existing case passing against the real modules.
+- Five problems found and fixed during bring-up, each by using React Native's
+  own mechanism rather than working around it: the platform selector had to be
+  included for the generic `cxx` paths; `REACT_ANDROID_DIR` had to be set so
+  `target_merge_so` resolves (it is a no-op off Android); nine `platform/cxx`
+  include directories had to be added globally, matching React Native's
+  assembler; Yoga's target is `yogacore` and needed the `yoga` alias; and OBJECT
+  library objects had to be attached explicitly because they are not archived
+  into a static library that links them.
+- Evidence level: host-compiled and host-linked. None of these modules has been
+  cross-compiled with `qcc` or run on the Pi 4, and no bundle has been executed.
+
 ## React Native headers and mutation adapter — 2026-08-14
 
 - CTest is 6/6. New: `rnqnx_rn_headers_probe` and

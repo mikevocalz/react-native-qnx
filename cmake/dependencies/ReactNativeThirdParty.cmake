@@ -17,11 +17,11 @@
 #   ReactAndroid/src/main/jni/third-party/fast_float/CMakeLists.txt
 #   ReactCommon/cmake-utils/react-native-flags.cmake
 #
-# Boost is deliberately absent. React Native links it for folly, but no header
-# in the ShadowViewMutation include graph reaches a boost-using folly header,
-# and the Android recipe only compiles boost's context-switching assembly, which
-# nothing here uses. Add it the moment a real include demands it; do not add it
-# speculatively.
+# Boost is React Native's trimmed distribution, not upstream boost: 1.4 MB of
+# exactly the headers folly needs. folly/json/json.cpp includes
+# boost/algorithm/string.hpp, which is what forced it in. React Native's Android
+# recipe also compiles boost's context-switching assembly for folly's fibers;
+# nothing here uses fibers, so that assembly is not built.
 
 include_guard(GLOBAL)
 include(FetchContent)
@@ -37,6 +37,7 @@ set(RNQNX_FMT_VERSION "12.1.0")
 set(RNQNX_GLOG_VERSION "0.3.5")
 set(RNQNX_DOUBLE_CONVERSION_VERSION "1.1.6")
 set(RNQNX_FAST_FLOAT_VERSION "8.0.0")
+set(RNQNX_BOOST_VERSION "1.84.0")
 
 # ReactAndroid/src/main/jni/third-party/folly/CMakeLists.txt:10-20, minus the
 # Android-only entries. FOLLY_HAVE_XSI_STRERROR_R is Bionic-specific and
@@ -81,7 +82,15 @@ FetchContent_Declare(rnqnx_fast_float
   SOURCE_SUBDIR ${RNQNX_NO_UPSTREAM_BUILD}
 )
 
+FetchContent_Declare(rnqnx_boost
+  URL "https://github.com/react-native-community/boost-for-react-native/archive/refs/tags/v${RNQNX_BOOST_VERSION}.tar.gz"
+  URL_HASH SHA256=954a04e9468dee21259937b83a2b21c3985cc96f91ee0152a34a7f0f752093e8
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  SOURCE_SUBDIR ${RNQNX_NO_UPSTREAM_BUILD}
+)
+
 FetchContent_MakeAvailable(
+  rnqnx_boost
   rnqnx_folly
   rnqnx_fmt
   rnqnx_glog
@@ -131,23 +140,64 @@ configure_file(
   COPYONLY
 )
 
-add_library(rnqnx_glog INTERFACE)
-target_include_directories(rnqnx_glog SYSTEM INTERFACE "${RNQNX_GLOG_EXPORTED}")
+# ReactAndroid/src/main/jni/third-party/glog/CMakeLists.txt source list and
+# flags. HAVE_PREAD and the warning suppressions are React Native's.
+add_library(rnqnx_glog STATIC
+  "${rnqnx_glog_SOURCE_DIR}/src/demangle.cc"
+  "${rnqnx_glog_SOURCE_DIR}/src/logging.cc"
+  "${rnqnx_glog_SOURCE_DIR}/src/raw_logging.cc"
+  "${rnqnx_glog_SOURCE_DIR}/src/signalhandler.cc"
+  "${rnqnx_glog_SOURCE_DIR}/src/symbolize.cc"
+  "${rnqnx_glog_SOURCE_DIR}/src/utilities.cc"
+  "${rnqnx_glog_SOURCE_DIR}/src/vlog_is_on.cc"
+)
+target_include_directories(rnqnx_glog SYSTEM PUBLIC "${RNQNX_GLOG_EXPORTED}")
+target_include_directories(rnqnx_glog SYSTEM PRIVATE
+  "${RNQNX_GLOG_CONFIG_DIR}"
+  "${rnqnx_glog_SOURCE_DIR}/src"
+)
+target_compile_definitions(rnqnx_glog PRIVATE HAVE_PREAD=1 NDEBUG)
+target_compile_options(rnqnx_glog PRIVATE -w)
 
 add_library(rnqnx_fast_float INTERFACE)
 target_include_directories(rnqnx_fast_float SYSTEM INTERFACE
   "${rnqnx_fast_float_SOURCE_DIR}/include")
 
-add_library(rnqnx_fmt INTERFACE)
-target_include_directories(rnqnx_fmt SYSTEM INTERFACE
+add_library(rnqnx_fmt STATIC "${rnqnx_fmt_SOURCE_DIR}/src/format.cc")
+target_include_directories(rnqnx_fmt SYSTEM PUBLIC
   "${rnqnx_fmt_SOURCE_DIR}/include")
 
-add_library(rnqnx_double_conversion INTERFACE)
-target_include_directories(rnqnx_double_conversion SYSTEM INTERFACE
-  "${rnqnx_double_conversion_SOURCE_DIR}")
+# double-conversion 1.1.6 ships its sources under src/, but every consumer
+# includes them as <double-conversion/...>. React Native's prepareDoubleConversion
+# task (ReactAndroid/build.gradle.kts:340-349) restages them under a
+# double-conversion/ directory, and this reproduces that layout.
+set(RNQNX_DOUBLE_CONVERSION_STAGE
+  "${CMAKE_CURRENT_BINARY_DIR}/double-conversion-staged")
+file(GLOB RNQNX_DOUBLE_CONVERSION_FILES
+  "${rnqnx_double_conversion_SOURCE_DIR}/src/*.h"
+  "${rnqnx_double_conversion_SOURCE_DIR}/src/*.cc")
+file(COPY ${RNQNX_DOUBLE_CONVERSION_FILES}
+  DESTINATION "${RNQNX_DOUBLE_CONVERSION_STAGE}/double-conversion")
 
-# Header-only for now. React Native's folly_runtime target compiles 27 sources;
-# they are added when a link failure proves one is needed, not before.
+add_library(rnqnx_double_conversion STATIC
+  "${RNQNX_DOUBLE_CONVERSION_STAGE}/double-conversion/bignum.cc"
+  "${RNQNX_DOUBLE_CONVERSION_STAGE}/double-conversion/bignum-dtoa.cc"
+  "${RNQNX_DOUBLE_CONVERSION_STAGE}/double-conversion/cached-powers.cc"
+  "${RNQNX_DOUBLE_CONVERSION_STAGE}/double-conversion/diy-fp.cc"
+  "${RNQNX_DOUBLE_CONVERSION_STAGE}/double-conversion/double-conversion.cc"
+  "${RNQNX_DOUBLE_CONVERSION_STAGE}/double-conversion/fast-dtoa.cc"
+  "${RNQNX_DOUBLE_CONVERSION_STAGE}/double-conversion/fixed-dtoa.cc"
+  "${RNQNX_DOUBLE_CONVERSION_STAGE}/double-conversion/strtod.cc"
+)
+target_include_directories(rnqnx_double_conversion SYSTEM PUBLIC
+  "${RNQNX_DOUBLE_CONVERSION_STAGE}")
+target_compile_options(rnqnx_double_conversion PRIVATE -w)
+
+add_library(rnqnx_boost INTERFACE)
+target_include_directories(rnqnx_boost SYSTEM INTERFACE
+  "${rnqnx_boost_SOURCE_DIR}")
+
+# Headers, usable on their own by translation units that only read folly types.
 add_library(rnqnx_folly INTERFACE)
 target_include_directories(rnqnx_folly SYSTEM INTERFACE "${rnqnx_folly_SOURCE_DIR}")
 target_compile_definitions(rnqnx_folly INTERFACE ${RNQNX_FOLLY_DEFINITIONS})
@@ -156,20 +206,50 @@ target_link_libraries(rnqnx_folly INTERFACE
   rnqnx_fmt
   rnqnx_fast_float
   rnqnx_double_conversion
+  rnqnx_boost
 )
+
+# The compiled half. Source list is React Native's folly_runtime target,
+# ReactAndroid/src/main/jni/third-party/folly/CMakeLists.txt:26-56, unchanged.
+add_library(rnqnx_folly_runtime STATIC
+  "${rnqnx_folly_SOURCE_DIR}/folly/Conv.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/Demangle.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/FileUtil.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/Format.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/ScopeGuard.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/SharedMutex.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/String.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/Unicode.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/concurrency/CacheLocality.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/container/detail/F14Table.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/detail/FileUtilDetail.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/detail/Futex.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/detail/SplitStringSimd.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/detail/UniqueInstance.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/hash/SpookyHashV2.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/json/dynamic.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/json/json_pointer.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/json/json.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/lang/CString.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/lang/Exception.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/lang/SafeAssert.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/lang/ToAscii.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/memory/detail/MallocImpl.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/net/NetOps.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/portability/SysUio.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/synchronization/SanitizeThread.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/synchronization/ParkingLot.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/system/AtFork.cpp"
+  "${rnqnx_folly_SOURCE_DIR}/folly/system/ThreadId.cpp"
+)
+target_link_libraries(rnqnx_folly_runtime PUBLIC rnqnx_folly)
+# Third-party warnings are not ours to fix, and React Native compiles folly with
+# its own suppressions rather than clean.
+target_compile_options(rnqnx_folly_runtime PRIVATE -w -fexceptions -frtti)
 
 # React Native's own headers, consumed as a system include so that its warnings
 # do not fail our -Werror builds.
 add_library(rnqnx_react_native_headers INTERFACE)
-# React Native's own switch, documented in ReactCommon/react/debug/flags.h:
-# defining REACT_NATIVE_PRODUCTION selects release semantics without touching
-# NDEBUG. It compiles out RN_DEBUG_STRING_CONVERTIBLE, whose getDebugName and
-# getDebugProps overloads live in ShadowView.cpp and drag in the whole
-# ShadowNode/LayoutableShadowNode graph. Debug-string conversion is not part of
-# the mounting contract; React Native's own internal assertions are off as a
-# consequence, which is what a shipping platform build does too.
-target_compile_definitions(rnqnx_react_native_headers INTERFACE
-  REACT_NATIVE_PRODUCTION)
 target_include_directories(rnqnx_react_native_headers SYSTEM INTERFACE
   "${RNQNX_REACT_NATIVE_DIR}/ReactCommon"
   "${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi"
