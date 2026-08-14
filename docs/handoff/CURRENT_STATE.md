@@ -118,8 +118,13 @@ a Metro `resolveRequest`; Hermes' microtask queue, which is off by default;
 `QTimer`-backed timers, because timers are a host responsibility rather than an
 engine builtin; and platform constants read from the running system.
 
-Honest gaps: props beyond layout are unconsumed, so backgrounds, borders,
-opacity, and transforms do nothing yet. There is no input pipeline, so nothing
+Background colour, corner radius, border, and opacity are applied too, so the
+rendered tree is visible rather than merely correctly sized.
+`docs/component-support.md` is the honest table of what works.
+
+Remaining gaps: transforms and `onLayout` are unimplemented, per-corner radii
+collapse to one value because Qt Quick's `Rectangle` has a single `radius`, and
+only the left border edge is read for the same reason. There is no input pipeline, so nothing
 responds to touch. Seven of the nine TurboModules the bundle references are
 still unimplemented — the render does not touch them, but an error path would
 reach ExceptionsManager immediately. The rendering surface is the offscreen QPA

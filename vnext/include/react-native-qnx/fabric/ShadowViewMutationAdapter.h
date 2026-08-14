@@ -52,6 +52,10 @@ class ShadowViewMutationAdapter {
   QHash<QString, QString> componentTypes_;
 };
 
+/// Converts React Native's view props to the visual style the mounting layer
+/// applies. Props that are not ViewProps yield defaults rather than guesses.
+ViewStyle toViewStyle(const facebook::react::ShadowView& view);
+
 /// Converts LayoutMetrics::frame (LayoutMetrics.h:26) to the mounting layer's
 /// frame type. Both use the platform Float, so no rounding happens here.
 LayoutFrame toLayoutFrame(const facebook::react::LayoutMetrics& metrics);

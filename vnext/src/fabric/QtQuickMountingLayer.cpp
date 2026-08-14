@@ -2,6 +2,7 @@
 
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
+#include <QColor>
 #include <QList>
 #include <QQuickItem>
 
@@ -195,6 +196,38 @@ MountError QtQuickMountingLayer::destroy(Tag tag) {
     item->setParentItem(nullptr);
   }
   delete item;
+
+  lastError_.clear();
+  return MountError::None;
+}
+
+MountError QtQuickMountingLayer::updateStyle(Tag tag, const ViewStyle& style) {
+  const auto mounted = items_.constFind(tag);
+  if (mounted == items_.constEnd()) {
+    return failWith(
+        MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
+  }
+
+  QQuickItem* item = mounted->item;
+  item->setOpacity(static_cast<qreal>(style.opacity));
+
+  // These are QML properties of Rectangle rather than QQuickItem members, so
+  // they go through the metaobject. A component type whose QML source is not a
+  // Rectangle simply will not have them, and setProperty is a no-op there.
+  if (style.hasBackgroundColor) {
+    item->setProperty("color", QColor::fromRgba(style.backgroundColor));
+  }
+  item->setProperty("radius", static_cast<qreal>(style.borderRadius));
+
+  if (style.borderWidth > 0.0F || style.hasBorderColor) {
+    // `border` is a grouped property holding a QQuickPen.
+    if (auto* border = item->property("border").value<QObject*>()) {
+      border->setProperty("width", static_cast<qreal>(style.borderWidth));
+      if (style.hasBorderColor) {
+        border->setProperty("color", QColor::fromRgba(style.borderColor));
+      }
+    }
+  }
 
   lastError_.clear();
   return MountError::None;

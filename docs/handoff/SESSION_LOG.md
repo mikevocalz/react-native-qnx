@@ -527,3 +527,28 @@ validate:macos`.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — props beyond
   layout, then ExceptionsManager, then render on glass.
+
+## 2026-08-14 – Visual props, and a vacuous test caught by mutation
+
+- **Goal:** Make the rendered tree visible, not just correctly sized.
+- **Implemented:** `ViewStyle` and `QtQuickMountingLayer::updateStyle`, applying
+  background colour, corner radius, border, and opacity. The adapter fills it
+  from `BaseViewProps` using React Native's own
+  `resolveBorderMetrics(layoutMetrics)`, so the border cascade — including
+  percentage radii against the frame — is React Native's implementation rather
+  than a second one written here.
+- **Limits recorded, not hidden:** Qt Quick's `Rectangle` has a single `radius`
+  and a single border pen, so per-corner radii collapse to the top-left value
+  and only the left border edge is read. Both are in
+  `docs/component-support.md`, which is new.
+- **A mutation check caught a vacuous test before it was committed.** The script
+  that was supposed to add the colour assertions patched the app first, asserted
+  on text prettier had already reformatted, and threw — so neither file was
+  written, yet the suite passed. Mutating the app's colour also passed, which is
+  what exposed it. The assertions are now present and the same mutation fails.
+  Worth remembering: a passing suite after an edit is not evidence the edit
+  landed.
+- **Results:** CTest 9/9 with Hermes, 7/7 default.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 —
+  ExceptionsManager next, then render on glass.

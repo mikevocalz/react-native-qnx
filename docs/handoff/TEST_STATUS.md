@@ -1,5 +1,23 @@
 # TEST_STATUS.md
 
+## Visual props reach the items — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default; thirteen host cases.
+- The playground app now declares `backgroundColor`, `borderRadius`, and
+  `opacity`, and `metroBundleRendersThroughReact` asserts all three on the
+  resulting Qt Quick items alongside the geometry.
+- Border metrics come from React Native's own
+  `BaseViewProps::resolveBorderMetrics` rather than a second implementation of
+  the cascade here.
+- **A mutation check caught a vacuous test before it was committed.** The first
+  attempt at these assertions never reached the file: the script that patched
+  both the app and the test asserted on stale app text and threw before writing
+  either. The suite still passed, and changing the app's colour still passed —
+  which is what exposed it. With the assertions actually present, changing
+  `#204080` to `#207040` fails the case.
+- Evidence level: host only, offscreen QPA. Nothing cross-compiled for QNX,
+  nothing run on the Pi 4.
+
 ## A React bundle renders to Qt Quick items — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default; `qt_react_host_host_test` is thirteen

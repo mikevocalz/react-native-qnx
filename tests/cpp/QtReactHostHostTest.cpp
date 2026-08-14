@@ -24,6 +24,7 @@
 #include <yoga/style/StyleLength.h>
 
 #include <QByteArray>
+#include <QColor>
 #include <QGuiApplication>
 #include <QList>
 #include <QQmlEngine>
@@ -473,10 +474,17 @@ void metroBundleRendersThroughReact() {
   QQuickItem* outer = fixture.root().childItems().at(0);
   EXPECT_NEAR(outer->width(), 320.0);
   EXPECT_NEAR(outer->height(), 180.0);
+  // Visual props, not just geometry: colour and corner radius come from the
+  // JSX style, resolved through React Native's own border cascade.
+  EXPECT(outer->property("color").value<QColor>() == QColor(0x20, 0x40, 0x80));
+  EXPECT_NEAR(outer->property("radius").toDouble(), 12.0);
+
   EXPECT(outer->childItems().size() == 1);
   QQuickItem* inner = outer->childItems().at(0);
   EXPECT_NEAR(inner->width(), 64.0);
   EXPECT_NEAR(inner->height(), 32.0);
+  EXPECT(inner->property("color").value<QColor>() == QColor(0xff, 0x88, 0x00));
+  EXPECT_NEAR(inner->opacity(), 0.5);
 }
 
 struct TestCase {

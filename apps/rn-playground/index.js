@@ -15,9 +15,22 @@ const View = require('react-native/Libraries/Components/View/View').default;
 function PlaygroundApp() {
   return React.createElement(
     View,
-    { style: { width: 320, height: 180 }, collapsable: false },
+    {
+      style: {
+        width: 320,
+        height: 180,
+        backgroundColor: '#204080',
+        borderRadius: 12,
+      },
+      collapsable: false,
+    },
     React.createElement(View, {
-      style: { width: 64, height: 32 },
+      style: {
+        width: 64,
+        height: 32,
+        backgroundColor: '#ff8800',
+        opacity: 0.5,
+      },
       collapsable: false,
     })
   );

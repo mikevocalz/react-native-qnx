@@ -34,6 +34,24 @@ struct LayoutFrame {
   float height{0.0F};
 };
 
+/// The visual props this platform applies, mirrored from
+/// facebook::react::BaseViewProps so the mounting layer stays free of React
+/// Native headers.
+///
+/// Installed sources: `components/view/BaseViewProps.h:46` (opacity), `:47`
+/// (backgroundColor), `:50` (borderRadii), `:51` (borderColors), and
+/// `components/view/primitives.h:233` (BorderRadii). Colours are 0xAARRGGBB,
+/// which is what QColor::fromRgba takes.
+struct ViewStyle {
+  bool hasBackgroundColor{false};
+  std::uint32_t backgroundColor{0};
+  float opacity{1.0F};
+  float borderRadius{0.0F};
+  float borderWidth{0.0F};
+  bool hasBorderColor{false};
+  std::uint32_t borderColor{0};
+};
+
 enum class MountError : std::uint8_t {
   None,
   UnknownComponentType,
@@ -85,6 +103,12 @@ class QtQuickMountingLayer {
   MountError remove(Tag parentTag, Tag childTag, int index);
   MountError destroy(Tag tag);
   MountError updateLayout(Tag tag, const LayoutFrame& frame);
+
+  /// Applies visual props. Qt Quick's Rectangle carries a single `radius`, so a
+  /// per-corner radius collapses to the uniform value; anything React Native
+  /// expresses that Rectangle cannot is an honest gap in
+  /// docs/component-support.md rather than a silent approximation.
+  MountError updateStyle(Tag tag, const ViewStyle& style);
 
   /// Borrowed; nullptr when the tag is not mounted.
   QQuickItem* itemForTag(Tag tag) const;
