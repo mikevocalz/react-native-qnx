@@ -116,6 +116,82 @@ Host-specific handling, none of it a change to React Native's recipes:
 Evidence level: host-compiled and host-linked. None of these modules has been
 cross-compiled with `qcc` or run on the Pi 4.
 
+## Hermes
+
+React Native 0.86.2 carries two Hermes versions and the newer one is the
+default. Every build path opts _out_ of it rather than into it:
+
+| Fact                                              | Installed authority                                         |
+| ------------------------------------------------- | ----------------------------------------------------------- |
+| `HERMES_VERSION_NAME=0.17.0` (legacy)             | `sdks/hermes-engine/version.properties:1`                   |
+| `HERMES_V1_VERSION_NAME=250829098.0.16` (default) | `sdks/hermes-engine/version.properties:2`                   |
+| Apple: v1 unless `RCT_HERMES_V1_ENABLED == "0"`   | `sdks/hermes-engine/hermes-utils.rb:89-91`                  |
+| Android: `convention(true)`                       | `@react-native/gradle-plugin` `PrivateReactExtension.kt:62` |
+| `hermes-compiler` pinned to `250829098.0.16`      | `node_modules/react-native/package.json:179`                |
+| Source URL template                               | `ReactAndroid/hermes-engine/build.gradle.kts:106-111`       |
+| Git source form                                   | `sdks/hermes-engine/hermes-utils.rb:10,176-185`             |
+
+So `hermes-v250829098.0.16` is React Native 0.86.2's Hermes. Nothing usable
+ships in the package: `sdks/hermes` and `sdks/hermesc` are both absent, and
+`ReactCommon/hermes` holds only React Native's glue, which includes
+`<hermes/...>` and needs the tree present.
+
+The tag is pinned to commit `90f23852efcd361315688e2904d2446707fa274c` and the
+build fails if it ever resolves elsewhere. A tarball SHA256 would have been the
+obvious pin and is the wrong one: GitHub's generated archives are not
+byte-reproducible, so the hash would eventually fail for reasons unrelated to
+the source changing.
+
+Options set explicitly, because this tree's defaults differ from 0.17.0's:
+
+| Option                         | Set   | Reason                                                                      |
+| ------------------------------ | ----- | --------------------------------------------------------------------------- |
+| `HERMES_ENABLE_INTL`           | `OFF` | React Native forces it on where ICU ships; QNX has no ICU story yet         |
+| `HERMES_ENABLE_DEBUGGER`       | `ON`  | defaults OFF in this tree, unlike 0.17.0                                    |
+| `HERMES_BUILD_APPLE_FRAMEWORK` | `OFF` | defaults OFF here; we want a plain dylib                                    |
+| `HERMES_ENABLE_TEST_SUITE`     | `OFF` | upstream's own suite is not our gate                                        |
+| `JSI_DIR`                      | RN's  | one JSI in the process, matching what React Native passes on both platforms |
+
+Linkage is chosen by target name — `lib/CMakeLists.txt` declares `hermesvm`
+(SHARED) and `hermesvm_a` (STATIC); there is no `BUILD_SHARED_LIBS` switch.
+`IMPORT_HOST_COMPILERS` is left unset: it exists for cross-compiling, where a
+host `hermesc` must be built first
+(`lib/InternalJavaScript/CMakeLists.txt:6-14`). The QNX cross-build will need
+that two-stage bootstrap.
+
+One trap worth recording: React Native ships two CMakeLists for JSI and they are
+not equivalent. `ReactCommon/jsi/CMakeLists.txt:17` globs `jsi/*.cpp` and so
+includes `JSIDynamic.cpp`; `ReactCommon/jsi/jsi/CMakeLists.txt:9` builds
+`jsi.cpp` alone. Hermes adds the inner one, so when Hermes provides `jsi` the
+`folly::dynamic` bridge is missing and `AppRegistryBinding` fails to link. That
+single translation unit is added back explicitly.
+
+## What a platform must implement itself
+
+Audited against the installed package. Everything from `Scheduler` downward is
+generic C++ and usable as-is; these five have no generic implementation and are
+ours to write:
+
+| Piece                                         | Interface                                                      | Only shipped implementations                                                       |
+| --------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `EventBeat` subclass                          | `react/renderer/core/EventBeat.h:62`, `request()` :90          | Android Choreographer, Apple CFRunLoop                                             |
+| `ComponentRegistryFactory`                    | `componentregistry/ComponentDescriptorFactory.h:25-27`         | none — `getDefaultComponentRegistryFactory()` is declared at :29 and never defined |
+| `SchedulerDelegate` subclass                  | `renderer/scheduler/SchedulerDelegate.h:21`, 13 pure virtuals  | `RCTScheduler.mm:24`, `FabricUIManagerBinding.h:38`                                |
+| `bindHasComponentProvider`                    | `componentregistry/native/NativeComponentRegistryBinding.h:26` | Android and Apple only                                                             |
+| `MessageQueueThread`, `PlatformTimerRegistry` | required by `ReactInstance`                                    | Android and Apple only                                                             |
+
+Two further facts that shape the work:
+
+- `ReactCommon/react/runtime/platform` contains only `ios`. There is no
+  `platform/cxx` host wiring in the package — that layer is exactly what this
+  project rebuilds.
+- `SurfaceManager` (`renderer/scheduler/SurfaceManager.{h,cpp}`) is complete,
+  generic, and has zero C++ callers in the tree. It collapses surface
+  registration, layout constraint, and start into one call.
+- `<View>` needs no codegen. `ViewComponentDescriptor` and
+  `RootComponentDescriptor` are hand-written and shipped; only components beyond
+  the core set require running React Native's codegen.
+
 ## Shadow-tree pipeline seams
 
 The end-to-end host test drives React Native's own machinery rather than

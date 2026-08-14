@@ -1,5 +1,30 @@
 # TEST_STATUS.md
 
+## Hermes builds and runs on the host — 2026-08-14
+
+- Hermes `hermes-v250829098.0.16` (commit `90f2385`) builds from source on
+  macOS ARM64: 418 targets, no errors, producing `libhermesvm.dylib`.
+- `rnqnx_hermes_probe` evaluates JavaScript through JSI and asserts four things:
+  arithmetic, an ES6 shape (class + spread + destructuring + reduce), an
+  **async arrow function body actually executing**, and a host function called
+  from JS returning a value to C++.
+- The async-arrow case is the react-native-linux landmine, where a Hermes build
+  silently did not run `async () => {}` bodies. It passes here and is now a
+  permanent regression test.
+- Mutation check: emptying the async arrow's body produced
+  `RNQNX_HERMES_FAIL async-arrow: got 0, expected 7`. Reverted and re-run green.
+- Two configurations both pass: CTest 7/7 with Hermes off (the default), 8/8
+  with `-DRNQNX_BUILD_HERMES=ON`. Hermes is opt-in because it is a long build
+  that most changes do not need.
+- One integration problem found and fixed: React Native ships two CMakeLists for
+  JSI. The outer globs `jsi/*.cpp` and includes `JSIDynamic.cpp`; the inner
+  builds `jsi.cpp` alone. Hermes adds the inner one, so `AppRegistryBinding`
+  failed to link on `valueFromDynamic`. That translation unit is added back
+  explicitly rather than by duplicating a JSI copy.
+- Evidence level: host only. Hermes has not been cross-compiled with `qcc`, has
+  not run on the Pi 4, and no React Native bundle has been loaded — the probe
+  evaluates source strings directly.
+
 ## Shadow tree to Qt items, end to end — 2026-08-14
 
 - CTest is 7/7. New: `shadow_tree_mounting_host_test`, five cases.

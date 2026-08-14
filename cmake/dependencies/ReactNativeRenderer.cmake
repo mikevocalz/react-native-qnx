@@ -108,12 +108,34 @@ set(RNQNX_REACT_NATIVE_MODULES
   yoga
 )
 
+# Hermes is configured against React Native's JSI copy (JSI_DIR), so when Hermes
+# is built it has already added that directory and created the `jsi` target.
+# Adding it twice is a duplicate-target error, and pointing Hermes at its own
+# bundled JSI instead would put two jsi implementations in one process.
+set(RNQNX_JSI_PROVIDED_BY_HERMES FALSE)
 foreach(module IN LISTS RNQNX_REACT_NATIVE_MODULES)
+  if(module STREQUAL "jsi" AND TARGET jsi)
+    set(RNQNX_JSI_PROVIDED_BY_HERMES TRUE)
+    continue()
+  endif()
   add_subdirectory(
     "${REACT_COMMON_DIR}/${module}"
     "${CMAKE_BINARY_DIR}/react-native/${module}"
   )
 endforeach()
+
+# React Native ships two CMakeLists for JSI and they are not equivalent:
+# ReactCommon/jsi/CMakeLists.txt:17 globs `jsi/*.cpp`, so it includes
+# JSIDynamic.cpp, while ReactCommon/jsi/jsi/CMakeLists.txt:9 builds jsi.cpp
+# alone. Hermes adds the inner one, so when Hermes provides `jsi` the
+# folly::dynamic bridge is missing and AppRegistryBinding fails to link. Adding
+# that one translation unit is the whole difference.
+if(RNQNX_JSI_PROVIDED_BY_HERMES)
+  add_library(rnqnx_jsi_dynamic STATIC
+    "${REACT_COMMON_DIR}/jsi/jsi/JSIDynamic.cpp")
+  target_link_libraries(rnqnx_jsi_dynamic PUBLIC jsi rnqnx_folly)
+  target_include_directories(rnqnx_jsi_dynamic PUBLIC "${REACT_COMMON_DIR}/jsi")
+endif()
 
 # ReactCommon/yoga/yoga/CMakeLists.txt names its target yogacore; every renderer
 # module links it as `yoga`.
@@ -168,6 +190,9 @@ set(RNQNX_REACT_NATIVE_RENDERER_TARGETS
   rnqnx_folly_runtime
   rnqnx_react_native_headers
 )
+if(RNQNX_JSI_PROVIDED_BY_HERMES)
+  list(APPEND RNQNX_REACT_NATIVE_RENDERER_TARGETS rnqnx_jsi_dynamic)
+endif()
 target_link_libraries(rnqnx_react_native_renderer INTERFACE
   ${RNQNX_REACT_NATIVE_RENDERER_TARGETS}
 )

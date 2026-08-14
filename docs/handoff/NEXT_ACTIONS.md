@@ -83,39 +83,58 @@ until every called source symbol exists in that checkout.
 **Dependency:** QNX-RN-008, because feasibility must be tested with the actual
 compiler and sysroot.
 
-## 3. Run JavaScript: Hermes, a bundle, and UIManagerBinding
+## 3. Wire the runtime to the renderer
 
-**Done:** the mounting layer, the third-party recipes, 41 React Native renderer
-modules building from source, the `ShadowViewMutation` adapter, and an
-end-to-end host test that commits a real `ShadowTree` and asserts Yoga's
-geometry on Qt Quick items. Twenty-seven host cases across four executables.
+**Done:** Hermes builds and runs on the host, and the mounting path is proven
+end to end from a hand-committed `ShadowTree`. CTest is 7/7 by default and 8/8
+with Hermes.
 
-**What remains, in order:**
+**What remains** is the wiring between them. The audit below is against the
+installed package; everything from `Scheduler` downward is generic C++ and needs
+no porting. Five pieces have no generic implementation and are ours to write:
 
-1. **Hermes for the development host.** React Native 0.86.2 identifies
-   `hermes-v250829098.0.16` (`sdks/.hermesv1version`) but ships no Hermes source
-   checkout. Acquire that exact tag and build it for the host with
-   `HERMES_ENABLE_INTL=OFF`, recording the ICU decision as a follow-up rather
-   than a silent dependency.
-2. **Runtime host.** Wire `HermesInstance::createJSRuntime`
-   (`ReactCommon/react/runtime/hermes/HermesInstance.h`), a bundle loader, and
-   `RuntimeScheduler` to the Qt event loop through
-   `QMetaObject::invokeMethod(..., Qt::QueuedConnection)`.
-3. **UIManager.** Install `UIManagerBinding::createAndInstallIfNeeded` and
-   implement a `SchedulerDelegate` whose `schedulerDidFinishTransaction` calls
-   `MountingCoordinator::pullTransaction` and feeds the existing adapter. The
-   adapter and mounting layer need no changes for this.
-4. **Codegen artifacts.** `FBReactNativeSpec` is generated, not shipped, which is
-   why modal and text descriptors cannot be registered yet. Run React Native's
-   codegen before extending the component set past `View`.
-5. **Props past layout.** The adapter applies geometry only. Backgrounds,
-   borders, opacity, and transforms are the next honest additions, each recorded
-   in `docs/component-support.md`.
+1. **`EventBeat` subclass** (`react/renderer/core/EventBeat.h:62`, `request()`
+   at :90). Android drives it from Choreographer, Apple from a `CFRunLoop`
+   observer; ours drives `induce()` from the Qt frame tick.
+2. **`ComponentRegistryFactory`**
+   (`componentregistry/ComponentDescriptorFactory.h:25-27`).
+   `getDefaultComponentRegistryFactory()` is declared at :29 and **never
+   defined anywhere in the package** — linking against it fails. Register
+   `RootComponentDescriptor` and `ViewComponentDescriptor`, and consider
+   `UnimplementedViewComponentDescriptor` as the fallback so an unknown
+   component is a soft failure rather than a thrown `std::invalid_argument`
+   (`ComponentDescriptorRegistry.cpp:112`).
+3. **`SchedulerDelegate` subclass** (`scheduler/SchedulerDelegate.h:21`), all 13
+   pure virtuals. Mount from `schedulerShouldRenderTransactions` (:38), not
+   `schedulerDidFinishTransaction` (:28) — the latter fires synchronously on the
+   commit thread and Apple makes it a no-op.
+4. **`bindHasComponentProvider` predicate**
+   (`componentregistry/native/NativeComponentRegistryBinding.h:26`), or JS view
+   config lookup will not find `View`.
+5. **`MessageQueueThread` and `PlatformTimerRegistry`**, required by
+   `ReactInstance`.
 
-**Acceptance criteria:** a real React Native bundle renders a `<View>` tree in a
-Qt Quick window on the development host, with the existing host cases still
-green. No QNX toolchain or device is required, and no result from it promotes a
-QNX validation row.
+**Ordered sequence:** construct `RuntimeScheduler`, install
+`RuntimeSchedulerBinding`, put the scheduler into the `ContextContainer` under
+`RuntimeSchedulerKey` (`Scheduler.cpp:76-78` asserts on it), fill a
+`SchedulerToolbox` (`SchedulerToolbox.h:28-68`), construct `Scheduler` — which
+builds the `UIManager` and installs `UIManagerBinding` itself
+(`Scheduler.cpp:136-138`) — then evaluate the bundle, then start a surface.
+`SurfaceManager` (`scheduler/SurfaceManager.{h,cpp}`) collapses registration,
+layout constraint, and start into one call; it is complete, generic, and
+currently has zero C++ callers in the tree.
+
+**Two traps recorded from the audit:** `constraintLayout` must run before
+`start()` because `LayoutConstraints::layoutDirection` defaults to `Undefined`
+and `SurfaceHandler.cpp:43` asserts on it; and `AppRegistryBinding::startSurface`
+throws unless the bundle has installed `global.RN$AppRegistry`
+(`AppRegistryBinding.cpp:30-32`), so a first bring-up may want a minimal JS entry
+that calls `AppRegistry.registerComponent` directly rather than importing all of
+`react-native` and its TurboModule expectations.
+
+**Acceptance criteria:** a bundle renders a `<View>` tree into a Qt Quick window
+on the development host, with existing host cases green. No QNX toolchain or
+device required, and no result from it promotes a QNX validation row.
 
 ## 4. Design Nitro, Expo Modules, and Metro QNX extensions separately
 

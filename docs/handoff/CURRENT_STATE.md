@@ -80,7 +80,13 @@ pulls them through `MountingCoordinator`, and asserts Yoga's computed geometry â
 fixed sizes, flex distribution, padding offsets, in-place resizes, and unmounts
 â€” on the resulting Qt Quick items.
 
-What is still missing between here and a running app: JavaScript. The tree is
+Hermes is the other half. `hermes-v250829098.0.16`, the version React Native
+0.86.2 actually defaults to, builds from source on this host and runs JavaScript
+through JSI, including the async-arrow case that a previous out-of-tree platform
+found broken.
+
+What is still missing between here and a running app: the wiring between the
+runtime and the renderer. The tree is
 committed from C++, so there is no Hermes runtime, no bundle, and no
 `UIManagerBinding`. Props beyond layout are also unconsumed. Neither gap needs
 the QNX toolchain or a device; see `NEXT_ACTIONS.md` action 3.

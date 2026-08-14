@@ -289,3 +289,44 @@ validate:macos`.
   unconsumed.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3, step 1 —
   Hermes at tag `hermes-v250829098.0.16` for the development host.
+
+## 2026-08-14 – Hermes on the host, and the runtime/renderer audit
+
+- **Goal:** Build the JavaScript engine React Native 0.86.2 actually uses, and
+  establish exactly what stands between a running runtime and mount
+  transactions.
+- **Version resolved:** the package carries two Hermes versions and the newer is
+  the default — every build path opts _out_ of v1 rather than into it
+  (`hermes-utils.rb:89-91`, `PrivateReactExtension.kt:62`,
+  `version.properties:1-2`, `package.json:179`). So
+  `hermes-v250829098.0.16`, not `0.17.0`.
+- **Pinning:** the tag is pinned to commit `90f23852`, verified at configure
+  time. A tarball SHA256 was rejected as a pin because GitHub's generated
+  archives are not byte-reproducible.
+- **Built:** 418 targets, `libhermesvm.dylib`, no errors.
+  `rnqnx_hermes_probe` asserts arithmetic, an ES6 shape, an async arrow body
+  executing, and a host function crossing JSI in both directions.
+- **Problem found and fixed:** React Native ships two CMakeLists for JSI that
+  are not equivalent — the outer globs `jsi/*.cpp` (including `JSIDynamic.cpp`),
+  the inner builds `jsi.cpp` alone. Hermes adds the inner one, so
+  `AppRegistryBinding` failed to link on `valueFromDynamic`. Added that one
+  translation unit back rather than duplicating a JSI copy.
+- **Audit result:** everything from `Scheduler` downward is generic C++. Five
+  pieces have no generic implementation and are ours to write: an `EventBeat`
+  subclass, a `ComponentRegistryFactory` (its supposed default,
+  `getDefaultComponentRegistryFactory()`, is declared and never defined), a
+  `SchedulerDelegate` subclass, a `bindHasComponentProvider` predicate, and a
+  `MessageQueueThread`/`PlatformTimerRegistry` pair. Recorded in
+  `docs/cited-seams.md` and `NEXT_ACTIONS.md` action 3.
+- **Commands executed:** version audit across the installed package; tag and
+  commit verification via `git ls-remote`; Hermes configure and build; a
+  deliberate mutation of the async-arrow probe; `ctest` in both configurations;
+  `pnpm validate:macos`.
+- **Results:** CTest 7/7 default, 8/8 with `-DRNQNX_BUILD_HERMES=ON`. Emptying
+  the async arrow's body failed the probe as expected; reverted and re-run
+  green.
+- **QNX result:** Unchanged. Hermes has not been cross-compiled with `qcc` and
+  has not run on the Pi 4. The QNX build will additionally need the two-stage
+  `IMPORT_HOST_COMPILERS` bootstrap that host builds skip.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — the five
+  pieces above, in the order given.

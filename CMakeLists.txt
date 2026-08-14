@@ -30,6 +30,10 @@ set(RNQNX_REACT_NATIVE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/node_modules/react-nativ
 option(RNQNX_FETCH_REACT_NATIVE_DEPS
   "Fetch React Native's pinned C++ third-party dependencies" ON)
 
+# Hermes is a long build and is not needed by most changes, so it is opt-in:
+#   cmake --preset macos-host-tests -DRNQNX_BUILD_HERMES=ON
+option(RNQNX_BUILD_HERMES "Build Hermes from source for the host" OFF)
+
 # This target is the executable G0-A language/runtime proof. Compiling it on a
 # host validates the TU itself; only a qcc cross-build followed by execution on
 # the Pi satisfies G0-A.
@@ -140,6 +144,23 @@ else()
       # it needs network access on a first configure.
       if(RNQNX_FETCH_REACT_NATIVE_DEPS)
         include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/ReactNativeThirdParty.cmake)
+        if(RNQNX_BUILD_HERMES)
+          include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/Hermes.cmake)
+
+          add_executable(rnqnx_hermes_probe vnext/probes/hermes/main.cpp)
+          target_link_libraries(rnqnx_hermes_probe PRIVATE rnqnx_hermes)
+          rnqnx_enable_strict_warnings(rnqnx_hermes_probe)
+          set_target_properties(rnqnx_hermes_probe PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+          )
+          add_test(NAME rnqnx_hermes_probe
+            COMMAND $<TARGET_FILE:rnqnx_hermes_probe>)
+          set_tests_properties(rnqnx_hermes_probe PROPERTIES
+            PASS_REGULAR_EXPRESSION
+              "RNQNX_HERMES_OK arithmetic es6 async-arrow host-function"
+          )
+        endif()
+
         include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/ReactNativeRenderer.cmake)
 
         add_executable(rnqnx_rn_headers_probe
@@ -181,6 +202,7 @@ else()
         add_test(NAME shadow_view_mutation_adapter_host_test
           COMMAND $<TARGET_FILE:shadow_view_mutation_adapter_host_test>
                   -platform offscreen)
+
 
         # The full pipeline: a real ShadowTree commit, React Native's differ,
         # MountingCoordinator, the adapter, and Yoga's geometry on Qt items.
