@@ -1,6 +1,26 @@
 # TEST_STATUS.md
 
-## Latest host validation — 2026-08-13
+## Latest host validation — 2026-08-14
+
+Re-ran the full host suite before committing the batch.
+
+- Host: macOS 26.6.1, Darwin 25.6.0 arm64, Apple Clang 21.0.0.21000099.
+- `pnpm format:check` failed first on `docs/cited-seams.md` and
+  `docs/getting-started/compatibility-matrix.md`; `pnpm format` fixed both and
+  the re-run passed.
+- `pnpm validate:macos` then completed all eight stages with exit 0.
+- CTest is now 2/2, not 1/1: `rnqnx_g0_cxx20_probe` (0.27 s) and
+  `qnx_screen_surface_host_test` (0.38 s, eight internal cases). The probe
+  passing here is host evidence only — G0-A requires that binary to run on the
+  Pi 4, which has not happened.
+- `pnpm install --frozen-lockfile` reported "Already up to date".
+- Not-applicable stages are unchanged: no `tests/js` files, no package
+  manifests, no `nitro.json`.
+
+The dated table below remains the detailed per-check record; only the CTest
+count and the two Prettier files changed.
+
+## Host validation — 2026-08-13
 
 - Host: macOS 26.6.1, Darwin 25.6.0 arm64, Apple Clang 21.0.0.
 - Repository package manager: pnpm 11.21.0.

@@ -73,6 +73,8 @@ compiled against an installed SDP, and no QNX binary has run.
 
 ## Repository state
 
-The completed work is present as an uncommitted working-tree batch on `main`.
-No commit was created by this session. Continue with `NEXT_ACTIONS.md` and
-`QNX_VALIDATION_QUEUE.md`; do not mark Milestone 0 exited until QNX-RN-008 passes.
+The batch is committed on `main`, after a clean re-run of
+`pnpm validate:macos` and `pnpm install --frozen-lockfile`. The working tree is
+clean and nothing is pushed. Continue with `NEXT_ACTIONS.md` and
+`QNX_VALIDATION_QUEUE.md`; do not mark Milestone 0 exited until QNX-RN-008
+passes.

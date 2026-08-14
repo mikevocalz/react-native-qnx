@@ -3,7 +3,7 @@
   "project": "react-native-qnx",
   "activeMilestone": "Milestone 0: Compatibility and Toolchain",
   "activeBranch": "main",
-  "latestKnownGoodCommit": "29652b14b5c83cdec59fc694f723724c30d406f0",
+  "latestKnownGoodCommit": "2a896aaec23067c512c839f2b0726b5d3cdd236f",
   "repositoryBuildable": false,
   "developmentMode": "mac-first",
   "currentAuthoringHost": {
@@ -57,5 +57,5 @@
   "activeTasks": ["QNX-RN-008"],
   "blockedTasks": ["QNX-RN-008", "UPSTREAM-DEP-001"],
   "nextRecommendedTask": "Validate the installed QNX Screen API, cross-compile on the licensed Ubuntu/QNX host, and run rnqnx_playground on a QNX target",
-  "updatedAt": "2026-08-14T03:34:37Z"
+  "updatedAt": "2026-08-14T04:31:43Z"
 }

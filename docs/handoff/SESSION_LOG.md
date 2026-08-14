@@ -43,7 +43,7 @@
   - Doctor correctly identifies the unsupported macOS host and missing QNX toolchain.
   - Toolchain correctly produces a fatal configure error with exact remediation steps.
   - No actual QNX compilation performed because QNX SDP is not installed.
-- **Commits created:** `b72e4ea`, `1ee882e`, `ab2f474`, `8097603`.
+- **Commits created:** `f766782`, `731c822`, `0bfc174`, `af15694`.
 - **Problems discovered:**
   - Current workspace is macOS arm64, not the supported x86-64 Ubuntu 24.04 build host.
   - QNX SDP 8.0.5 and Ninja are missing.
@@ -94,5 +94,30 @@
 - **QNX result:** Not compiled or run. The expected configure diagnostic reports
   missing `QNX_HOST`; the installed SDK/header/source gate remains external.
 - **Commits created:** None. The completed batch remains uncommitted.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 1 / QNX-RN-008 on
+  the licensed Ubuntu/QNX host and target.
+
+## 2026-08-14 – Batch verification and commit
+
+- **Goal:** Resume the interrupted session, re-verify the outstanding
+  working-tree batch, and commit it so the repository stops carrying unrecorded
+  work.
+- **Commands executed:** `pnpm validate:macos` (twice), `pnpm format`,
+  `pnpm install --frozen-lockfile`, staged-diff secret grep, `git commit`.
+- **Results:** The first validation run failed at stage 1 because
+  `docs/cited-seams.md` and `docs/getting-started/compatibility-matrix.md` were
+  not Prettier-clean. `pnpm format` fixed both. The second run passed all eight
+  stages, with CTest 2/2 (`rnqnx_g0_cxx20_probe`, `qnx_screen_surface_host_test`)
+  under ASan/UBSan. The lockfile was already in sync.
+- **Commits created:** the Milestone 0 foundation batch.
+  (`feat(foundation): lock Qt Quick backend and land mac-first host validation`).
+  Nothing was pushed.
+- **Problems discovered:** Only the two Prettier violations above. The previous
+  session's `TEST_STATUS.md` CTest count of 1/1 was stale once the G0-A probe
+  target landed; it is corrected in the 2026-08-14 section.
+- **QNX result:** Unchanged. No QNX translation unit compiled, no QNX or Pi 4
+  binary run. G0-A/G0-B/G0-C/G0-D remain blocked on the licensed SDP host and
+  hardware in `BLOCKERS.md`.
+- **Remaining work:** Unchanged and entirely external-prerequisite bound.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 1 / QNX-RN-008 on
   the licensed Ubuntu/QNX host and target.
