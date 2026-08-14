@@ -83,29 +83,47 @@ until every called source symbol exists in that checkout.
 **Dependency:** QNX-RN-008, because feasibility must be tested with the actual
 compiler and sysroot.
 
-## 3. Specify the Fabric host/mount boundary from installed RN source
+## 3. Connect the mounting layer to real ShadowViewMutation lists
 
-**Objective:** Define the first renderer seam at source-symbol level before
-implementing a QNX abstraction.
+**Status:** the platform half is implemented and tested on the host.
+`vnext/src/fabric/QtQuickMountingLayer.cpp` provides create/insert/remove/
+destroy/updateLayout over Qt Quick items, and fifteen host cases cover ordering,
+detachment, ownership, and every failure path under ASan/UBSan.
 
-**Installed authorities:**
+**What remains:** the adapter that turns a `ShadowViewMutation::List` into those
+calls. It is blocked on compilation, not on design or on hardware.
 
-- `ReactCommon/react/renderer/scheduler/SchedulerToolbox.h` →
-  `SchedulerToolbox`
-- `ReactCommon/react/renderer/scheduler/SchedulerDelegate.h` →
-  `SchedulerDelegate::schedulerDidFinishTransaction`
-- `ReactCommon/react/renderer/mounting/MountingCoordinator.h` →
-  `MountingCoordinator::pullTransaction`
-- `ReactCommon/react/renderer/mounting/MountingTransaction.h` →
-  `MountingTransaction`
-- `ReactCommon/react/renderer/mounting/ShadowViewMutation.h` →
-  `ShadowViewMutation`
-- `ReactCommon/react/renderer/uimanager/UIManagerBinding.h` →
-  `UIManagerBinding::createAndInstallIfNeeded`
+**Blocking fact:** `ReactCommon/react/renderer/mounting/ShadowView.h` includes
+`folly/dynamic.h` and `glog/logging.h`, and neither folly nor glog is vendored in
+`node_modules/react-native`. No React Native header can be compiled here until
+those dependencies exist.
 
-Write the design and tests first. RN's generic `platform/cxx` fallbacks are
-incomplete, and the installed CMake platform selector is Android-only; neither
-is a ready-made QNX implementation.
+**Procedure:**
+
+1. Add third-party recipes under `vnext/cmake/` for the folly subset React
+   Native uses, plus glog, fmt, double-conversion, and the required boost
+   headers. Follow the flags React Native's own Android build uses rather than
+   inventing a configuration; quarantine any patch in `vnext/patches/` with an
+   explanation.
+2. Build `react_renderer_mounting` and its transitive dependencies for the host.
+3. Write the adapter as its own translation unit: a switch over
+   `ShadowViewMutation::Type` (`ShadowViewMutation.h:84`) reading `parentTag`,
+   `oldChildShadowView`, `newChildShadowView`, and `index`
+   (`ShadowViewMutation.h:94-98`), calling into `QtQuickMountingLayer`.
+4. Map `ShadowView::componentName` (`ShadowView.h:41`) to registered QML type
+   sources, and `ShadowView::layoutMetrics` (`ShadowView.h:46`) to `LayoutFrame`.
+5. Cover it with transactions captured from a real bundle, not hand-written
+   mutation lists only.
+
+**Installed authorities:** `SchedulerToolbox`, `SchedulerDelegate::
+schedulerDidFinishTransaction`, `MountingCoordinator::pullTransaction`,
+`MountingTransaction`, `ShadowViewMutation`, `UIManagerBinding::
+createAndInstallIfNeeded`.
+
+**Acceptance criteria:** a real React Native 0.86.2 bundle's mount transactions
+drive the Qt Quick tree with correct ordering, and the existing fifteen host
+cases still pass. This runs on the macOS development host; no QNX toolchain or
+device is required, and no result from it promotes a QNX validation row.
 
 ## 4. Design Nitro, Expo Modules, and Metro QNX extensions separately
 

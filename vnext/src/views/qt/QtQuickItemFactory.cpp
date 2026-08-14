@@ -92,6 +92,11 @@ QQuickItem* QtQuickItemFactory::create(
     return nullptr;
   }
 
+  // C++-constructed objects already default to CppOwnership, but the mounting
+  // layer deletes these items explicitly, so the lifetime rule is stated rather
+  // than assumed. Seam: lib/QtQml.framework/Headers/qjsengine.h:310-311.
+  QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
+
   item->setParentItem(parent);
   lastError_.clear();
   return item;

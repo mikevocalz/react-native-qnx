@@ -35,6 +35,29 @@ Installed-header reconciliation is queued in
 `docs/handoff/QNX_VALIDATION_QUEUE.md`. The fake header is never listed as QNX
 authority.
 
+## Fabric mount contract mirrored on the host
+
+`QtQuickMountingLayer` exposes the platform half of the mounting layer. Its
+operation set and value types are taken field-by-field from installed React
+Native 0.86.2 sources, so the future adapter is a direct translation rather than
+a reinterpretation.
+
+| Mirrored element                                                | Installed path and line                                             | Mirror in this repository                   |
+| --------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------- |
+| `ShadowViewMutation::Type` (Create/Delete/Insert/Remove/Update) | `ReactCommon/react/renderer/mounting/ShadowViewMutation.h:84`       | `create/destroy/insert/remove/updateLayout` |
+| `ShadowViewMutation` fields `type`, `parentTag`, `index`        | `ReactCommon/react/renderer/mounting/ShadowViewMutation.h:94,95,98` | operation parameters                        |
+| `Tag`                                                           | `ReactCommon/react/renderer/core/ReactPrimitives.h:17`              | `rnqnx::fabric::Tag`                        |
+| `LayoutMetrics::frame`                                          | `ReactCommon/react/renderer/core/LayoutMetrics.h:26`                | `rnqnx::fabric::LayoutFrame`                |
+| `Rect{Point origin, Size size}`                                 | `ReactCommon/react/renderer/graphics/Rect.h:23-25`                  | `LayoutFrame` x/y/width/height              |
+| `Float`                                                         | `graphics/platform/cxx/react/renderer/graphics/Float.h:18`          | `float` fields in `LayoutFrame`             |
+
+Evidence level: header-verified against the installed package; **not compiled
+against**. `ShadowView.h` pulls in `folly/dynamic.h` and `glog/logging.h`, and
+neither folly nor glog is vendored in `node_modules/react-native`. The adapter
+that consumes a real `ShadowViewMutation::List` therefore waits on the
+third-party dependency recipes, and until then no code here includes a React
+Native header.
+
 ## Installed Qt 6.11.1 (macOS development host)
 
 Homebrew Qt 6.11.1 at `/opt/homebrew/opt/qt`, used per ADR-0010. Framework

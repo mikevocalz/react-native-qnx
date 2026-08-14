@@ -150,3 +150,34 @@
   QNX toolchain.
 - **Recommended continuation point:** Fabric host/mount boundary, action 3 in
   `NEXT_ACTIONS.md`, now buildable on this host.
+
+## 2026-08-14 – Fabric mounting layer, platform half
+
+- **Goal:** Build the mounting layer's platform side on the development host,
+  without waiting for the QNX toolchain.
+- **Implemented:** `QtQuickMountingLayer` — create, insert, remove, destroy,
+  updateLayout over Qt Quick items, with an operation set mirrored field-by-field
+  from `ShadowViewMutation`. Tag and LayoutFrame are mirrored from
+  `ReactPrimitives.h:17` and `LayoutMetrics.h:26` with the generic cxx `Float`
+  (float), and all six mirrors are recorded in the cited-seams ledger.
+- **Ownership:** items are owned individually rather than through QObject
+  parentage. `QtQuickItemFactory` now states `QQmlEngine::CppOwnership`
+  explicitly instead of relying on the default.
+- **Commands executed:** installed-header audit of `ShadowViewMutation.h`,
+  `ShadowView.h`, `ReactPrimitives.h`, `LayoutMetrics.h`, `Rect.h`, `Float.h`,
+  and `qquickitem.h`; `node scripts/run-cpp-host-tests.mjs`; a deliberate
+  mutation of the restacking branch; `pnpm validate:macos`.
+- **Results:** CTest 4/4. Fifteen mounting cases pass under ASan/UBSan and strict
+  warnings. Disabling the restacking branch failed
+  `insertParentsAndOrdersChildren` at the expected assertion, confirming the
+  ordering coverage is real; the mutation was reverted and the suite re-run
+  green.
+- **Problems discovered:** React Native's mounting headers require folly and
+  glog, which are not vendored in the installed package. This blocks the
+  `ShadowViewMutation::List` adapter on dependency recipes, not on hardware.
+  Recorded as `NEXT_ACTIONS.md` action 3.
+- **QNX result:** Unchanged. No QNX translation unit compiled, no QNX or Pi 4
+  binary run.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — folly, glog,
+  fmt, double-conversion, and boost recipes under `vnext/cmake/`, then the
+  adapter.

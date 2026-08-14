@@ -56,6 +56,19 @@ parents them, and reports compile/type failures instead of returning partially
 constructed objects. `rnqnx_qtquick_host_probe` exercises and benchmarks it
 headlessly in CTest.
 
+`QtQuickMountingLayer` adds the platform half of the Fabric mounting layer over
+that factory: create, insert, remove, destroy, and updateLayout, with an
+operation set mirrored field-by-field from `ShadowViewMutation`. Fifteen host
+cases cover ordering, detachment, ownership, and every failure path under
+ASan/UBSan. Layout is applied only here, as absolute geometry, because Yoga is
+the layout authority and no Qt layout or anchor participates.
+
+The adapter from a real `ShadowViewMutation::List` is not written. React Native's
+mounting headers include `folly/dynamic.h` and `glog/logging.h`, and neither is
+vendored in `node_modules/react-native`, so no React Native header compiles here
+yet. That is a dependency-recipe task, not a hardware one; see `NEXT_ACTIONS.md`
+action 3.
+
 This is host evidence. The QNX QPA plugin, the pinned Qt LTS, the cross-build,
 and every Pi number remain open.
 

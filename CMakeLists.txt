@@ -122,12 +122,45 @@ else()
 
       add_library(rnqnx_views_qt STATIC
         vnext/src/views/qt/QtQuickItemFactory.cpp
+        vnext/src/fabric/QtQuickMountingLayer.cpp
       )
       target_include_directories(rnqnx_views_qt PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/vnext/include
       )
       target_link_libraries(rnqnx_views_qt PUBLIC Qt6::Quick Qt6::Qml Qt6::Gui)
       rnqnx_enable_strict_warnings(rnqnx_views_qt)
+
+      add_executable(qtquick_mounting_layer_host_test
+        tests/cpp/QtQuickMountingLayerHostTest.cpp
+      )
+      target_link_libraries(qtquick_mounting_layer_host_test
+        PRIVATE rnqnx_views_qt)
+      rnqnx_enable_strict_warnings(qtquick_mounting_layer_host_test)
+
+      if(RNQNX_ENABLE_HOST_SANITIZERS AND
+         CMAKE_CXX_COMPILER_ID MATCHES "AppleClang|Clang|GNU")
+        target_compile_options(qtquick_mounting_layer_host_test PRIVATE
+          -fsanitize=address,undefined
+          -fno-sanitize-recover=undefined
+          -fno-omit-frame-pointer
+        )
+        target_link_options(qtquick_mounting_layer_host_test PRIVATE
+          -fsanitize=address,undefined
+        )
+      endif()
+
+      set_target_properties(qtquick_mounting_layer_host_test PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+      )
+      add_test(NAME qtquick_mounting_layer_host_test
+        COMMAND $<TARGET_FILE:qtquick_mounting_layer_host_test>
+                -platform offscreen)
+      # Qt allocates engine-lifetime singletons that outlive main, so leak
+      # detection stays off here exactly as it does for the Screen host test.
+      set_tests_properties(qtquick_mounting_layer_host_test PROPERTIES
+        ENVIRONMENT
+          "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1"
+      )
 
       add_executable(rnqnx_qtquick_host_probe
         vnext/probes/qtquick/main.cpp

@@ -1,5 +1,28 @@
 # TEST_STATUS.md
 
+## Fabric mounting layer host tests — 2026-08-14
+
+- CTest is 4/4: `rnqnx_g0_cxx20_probe`, `qnx_screen_surface_host_test`,
+  `qtquick_mounting_layer_host_test`, `rnqnx_qtquick_host_probe`.
+- `qtquick_mounting_layer_host_test` reports fifteen internal cases, all passing
+  under strict warnings, ASan, and non-recovering UBSan on the offscreen QPA
+  plugin.
+- Coverage: root borrowed and undeletable; create leaves items unparented;
+  insert ordering including insert-at-0 ahead of existing children; unknown
+  parent, unknown tag, and out-of-range index rejected; remove detaches without
+  destroying; remove rejects index disagreement and wrong-parent claims; destroy
+  releases both tag and item; destroy detaches a still-mounted item; a nested
+  three-level tree is torn down with the layer; layout applies absolute
+  geometry; unregistered type, broken QML source, non-item type, and duplicate
+  tag each fail with the specific error; re-registering a type invalidates the
+  cached component.
+- Mutation check: forcing the restacking branch off made
+  `insertParentsAndOrdersChildren` fail at the expected assertion, so the
+  ordering coverage is not vacuous. The change was reverted and the suite
+  re-run green.
+- Evidence level: host only. No React Native header is compiled here, no QNX
+  translation unit exists, and nothing has run on the Pi 4.
+
 ## Qt Quick host bring-up — 2026-08-14
 
 - Host: macOS 26.6.1, Darwin 25.6.0 arm64, Apple Clang 21.0.0.21000099,
