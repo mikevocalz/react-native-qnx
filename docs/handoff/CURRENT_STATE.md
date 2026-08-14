@@ -98,10 +98,16 @@ JavaScript now drives the tree. A script calling
 item whose geometry Yoga computed from props JavaScript supplied. The component
 predicate JavaScript uses to resolve native components is installed too.
 
-What is still missing between here and a running app: React itself, and Metro.
-The JavaScript is hand-written against the binding rather than produced by a
-bundler, so nothing exercises `AppRegistry`, React's renderer, or TurboModules,
-and props beyond layout are still unconsumed. The tree is
+Metro bundles for `qnx`. `@rn-qnx/metro-config-qnx` registers the platform, and
+`apps/rn-playground` produces a real bundle during the build carrying
+`RN$AppRegistry`, `RN$stopSurface`, and its registered component. The host
+installs the bridgeless globals React Native's JavaScript branches on before any
+evaluation.
+
+What is still missing between here and a running app: TurboModules. Evaluating
+the bundle reaches `TurboModuleRegistry.getEnforcing('ExceptionsManager')` and
+throws; the playground needs nine modules. No test claims otherwise. Props
+beyond layout are also still unconsumed. The tree is
 committed from C++, so there is no Hermes runtime, no bundle, and no
 `UIManagerBinding`. Props beyond layout are also unconsumed. Neither gap needs
 the QNX toolchain or a device; see `NEXT_ACTIONS.md` action 3.

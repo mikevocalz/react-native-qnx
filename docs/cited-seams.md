@@ -215,6 +215,39 @@ Four behaviours found by running this, all React Native's:
   Apple-flavoured generation, and anything past the core component set needs
   React Native's codegen run properly.
 
+## Bundle-time and bridgeless globals
+
+Metro resolves platform files by extension and its default platform list has no
+`qnx`, so `@rn-qnx/metro-config-qnx` appends it. Without that, a `Foo.qnx.js`
+file is never preferred over `Foo.js` — the entire mechanism an out-of-tree
+platform depends on.
+
+React Native's JavaScript branches on several globals before a bundle can even
+finish evaluating. The host installs them before any evaluation:
+
+| Global                      | Why it is required                                                         |
+| --------------------------- | -------------------------------------------------------------------------- |
+| `RN$Bridgeless`             | `Libraries/Core/setUpBatchedBridge.js:16`, `NativeComponentRegistry.js:57` |
+| `__fbBatchedBridgeConfig`   | `Libraries/BatchedBridge/NativeModules.js:185-192` throws without it       |
+| `RN$registerCallableModule` | `Libraries/Core/registerCallableModule.js:20` in bridgeless mode           |
+
+`__fbBatchedBridgeConfig` is installed with an empty `remoteModuleConfig`, which
+is the truthful answer rather than a stub: this platform has no legacy bridge
+modules, and TurboModules are the mechanism. `RN$registerCallableModule` mirrors
+`ReactInstance.cpp:586-606` and keeps its registrations; what is missing is a
+native caller, not the registry.
+
+The bundle's own globals come from React Native's JavaScript:
+`global.RN$AppRegistry` at `Libraries/ReactNative/AppRegistry.js:30`, which
+`AppRegistryBinding::startSurface` requires, and `global.RN$stopSurface` at
+`Libraries/Renderer/shims/ReactFabric.js:27`.
+
+**Evaluating the bundle stops at TurboModules.** The playground bundle calls
+`TurboModuleRegistry.getEnforcing` for nine modules — DeviceInfo,
+ExceptionsManager, FileReaderModule, NativeIdleCallbacksCxx,
+NativeMicrotasksCxx, SegmentFetcher, SourceCode, UIManager, WebSocketModule —
+and the first one throws. That is the next slice, not a defect in what exists.
+
 ## The JavaScript binding surface
 
 `nativeFabricUIManager` is what React's renderer drives, and driving it directly

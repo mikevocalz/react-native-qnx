@@ -83,33 +83,45 @@ until every called source symbol exists in that checkout.
 **Dependency:** QNX-RN-008, because feasibility must be tested with the actual
 compiler and sysroot.
 
-## 3. Produce and load a real bundle
+## 3. Implement the TurboModules the bundle requires
 
-**Done:** JavaScript drives the renderer. The component predicate
-(`bindHasComponentProvider`) is installed, and a script calling
-`nativeFabricUIManager.createNode`, `createChildSet`, `appendChildToSet`, and
-`completeRoot` mounts a Qt Quick item with Yoga's geometry.
+**Done:** Metro bundles for `qnx` through `@rn-qnx/metro-config-qnx`, the
+playground app produces a real bundle during the build, and the host installs
+the bridgeless globals (`RN$Bridgeless`, `__fbBatchedBridgeConfig`,
+`RN$registerCallableModule`) that React Native's JavaScript branches on.
 
-**What remains:**
+**The blocker is precise.** Evaluating the bundle reaches
+`TurboModuleRegistry.getEnforcing('ExceptionsManager')` and throws. The
+playground bundle demands nine modules:
 
-1. **Metro.** Nothing produces a bundle yet. `metro-config-qnx` with `qnx` added
-   to `resolver.platforms`, then `bundle-qnx` in the CLI. Pure TypeScript, no
-   device.
-2. **A JavaScript entry point.** `AppRegistryBinding::startSurface` throws
-   unless the bundle installed `global.RN$AppRegistry`
-   (`AppRegistryBinding.cpp:30-32`). Start minimal — `AppRegistry
-.registerComponent` and React's Fabric renderer — rather than importing all
-   of `react-native`, which drags in TurboModule expectations the host cannot
-   satisfy yet.
-3. **`MessageQueueThread` and `PlatformTimerRegistry`**, if `ReactInstance` is
-   adopted. The host drives the runtime directly today; a real JS thread changes
-   that, and React's scheduler will want timers.
-4. **Props past layout.** Backgrounds, borders, opacity, and transforms, each
-   recorded in `docs/component-support.md`.
+| Module                 | Note                                                     |
+| ---------------------- | -------------------------------------------------------- |
+| ExceptionsManager      | first to throw; needs to surface JS errors to the host   |
+| SourceCode             | bundle URL for stack symbolication                       |
+| DeviceInfo             | screen metrics and scale                                 |
+| UIManager              | legacy shim; check what the Fabric path actually needs   |
+| NativeMicrotasksCxx    | already a C++ module in React Native — check reusability |
+| NativeIdleCallbacksCxx | same                                                     |
+| FileReaderModule       | pulled in by a transitive import; may be avoidable       |
+| SegmentFetcher         | same                                                     |
+| WebSocketModule        | same                                                     |
 
-**Acceptance criteria:** a Metro-produced bundle renders a React `<View>` tree
-into a Qt Quick window on the development host, with existing host cases green.
-No QNX toolchain or device required.
+**Procedure:**
+
+1. Check which of these React Native already implements as generic C++
+   TurboModules (`ReactCommon/react/nativemodule/**`) rather than per platform.
+   Anything reusable is a link-list change, not new code.
+2. Trim the entry point. FileReaderModule, SegmentFetcher, and WebSocketModule
+   look like transitive imports rather than genuine needs; a narrower entry may
+   drop them.
+3. Implement the rest as Nitro HybridObjects per ADR-0004, which is the module
+   architecture this project committed to. Do not add TurboModules by hand
+   beyond what React Native's own generic C++ provides.
+4. Install a `TurboModuleBinding` so `TurboModuleRegistry` resolves.
+
+**Acceptance criteria:** the playground bundle evaluates, its component renders
+through React, and the resulting Qt Quick items match the tree. No QNX toolchain
+or device required.
 
 ## 4. Design Nitro, Expo Modules, and Metro QNX extensions separately
 

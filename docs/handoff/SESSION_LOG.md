@@ -400,3 +400,38 @@ validate:macos`.
   props beyond layout.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3, step 1 —
   `metro-config-qnx`.
+
+## 2026-08-14 – Metro bundles for qnx
+
+- **Goal:** Produce a real bundle for the platform and find out exactly what
+  stands between it and rendering.
+- **Implemented:** `@rn-qnx/metro-config-qnx`, which appends `qnx` to Metro's
+  `resolver.platforms` — without it Metro never prefers a `.qnx.js` file, which
+  is the whole out-of-tree mechanism. `apps/rn-playground` is a minimal entry
+  that imports `AppRegistry` and `View` directly rather than all of
+  `react-native`. CMake bundles it during the build as an artifact.
+- **Host globals:** `RN$Bridgeless`, an empty `__fbBatchedBridgeConfig`, and
+  `RN$registerCallableModule`, each installed before evaluation and each traced
+  to the JavaScript that branches on it.
+- **Problems discovered:**
+  - Metro could not resolve `react` under pnpm. Package files live in
+    `node_modules/.pnpm`, so the app config needs `watchFolders` and
+    `nodeModulesPaths` pointing at the workspace root.
+  - Evaluating the bundle threw `__fbBatchedBridgeConfig is not set`. The
+    bridgeless flag alone does not gate that check
+    (`NativeModules.js:185-192`); an empty remote module config is the truthful
+    answer for a platform with no legacy bridge.
+  - Then `undefined is not a function` from
+    `registerCallableModule.js:20`, which needs the host-installed registrar.
+  - Then `TurboModuleRegistry.getEnforcing('ExceptionsManager')`. That is where
+    this stops.
+- **Deliberately not claimed:** the bundle does not evaluate. The test asserts
+  what Metro produced and the host installed, and the nine required TurboModules
+  are enumerated in `NEXT_ACTIONS.md`. Asserting the failure would have been
+  asserting a failure.
+- **Results:** CTest 9/9 with Hermes, 7/7 default; `validate:manifests` reports
+  two real manifests.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — check which
+  of the nine modules React Native already ships as generic C++ before writing
+  anything.

@@ -187,6 +187,28 @@ else()
           set_target_properties(qt_react_host_host_test PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
           )
+          # Bundle the playground with Metro so the test can load real React
+          # output rather than hand-written JavaScript. The bundle is a build
+          # artifact, not a checked-in file.
+          set(RNQNX_PLAYGROUND_BUNDLE "${CMAKE_BINARY_DIR}/rnqnx-playground.bundle.js")
+          add_custom_command(
+            OUTPUT "${RNQNX_PLAYGROUND_BUNDLE}"
+            COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/node_modules/.bin/metro" build
+                    index.js --platform qnx --dev false
+                    --out "${RNQNX_PLAYGROUND_BUNDLE}"
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground"
+            DEPENDS
+              "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground/index.js"
+              "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground/metro.config.js"
+            COMMENT "Bundling apps/rn-playground for qnx"
+            VERBATIM
+          )
+          add_custom_target(rnqnx_playground_bundle
+            DEPENDS "${RNQNX_PLAYGROUND_BUNDLE}")
+          add_dependencies(qt_react_host_host_test rnqnx_playground_bundle)
+          target_compile_definitions(qt_react_host_host_test PRIVATE
+            RNQNX_PLAYGROUND_BUNDLE_PATH="${RNQNX_PLAYGROUND_BUNDLE}")
+
           add_test(NAME qt_react_host_host_test
             COMMAND $<TARGET_FILE:qt_react_host_host_test> -platform offscreen)
         endif()

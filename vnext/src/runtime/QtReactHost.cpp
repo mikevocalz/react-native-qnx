@@ -16,6 +16,8 @@
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/UIManager.h>
 
+#include <folly/dynamic.h>
+
 #include <QCoreApplication>
 #include <QMetaObject>
 
@@ -247,6 +249,57 @@ class QtReactHost::Impl {
 
     scheduler = std::make_shared<Scheduler>(
         toolbox, /*animationDelegate=*/nullptr, &delegate);
+
+    // React Native's JavaScript branches on this global to decide whether the
+    // legacy bridge exists. Without it, loading a bundle throws
+    // "__fbBatchedBridgeConfig is not set" from setUpBatchedBridge.js:16, and
+    // NativeComponentRegistry.js:57 would look for legacy view configs. This
+    // platform is Fabric-only, so the answer is a flat true and it must be set
+    // before any bundle is evaluated.
+    runtime->global().setProperty(*runtime, "RN$Bridgeless", true);
+
+    // NativeModules.js:185-192 throws unless one of `global.nativeModuleProxy`
+    // or `global.__fbBatchedBridgeConfig` exists, and the bridgeless flag does
+    // not gate that check. An empty remote module config is the truthful
+    // answer for this platform: there are no legacy bridge modules. It is not a
+    // stub standing in for work — TurboModules are the mechanism here, and none
+    // are registered yet.
+    auto bridgeConfig = facebook::jsi::Object(*runtime);
+    bridgeConfig.setProperty(
+        *runtime, "remoteModuleConfig", facebook::jsi::Array(*runtime, 0));
+    runtime->global().setProperty(
+        *runtime, "__fbBatchedBridgeConfig", bridgeConfig);
+
+    // In bridgeless mode React Native's JavaScript registers callable modules
+    // through this global instead of the batched bridge
+    // (Libraries/Core/registerCallableModule.js:20). ReactInstance installs it
+    // (ReactInstance.cpp:586-606) and this host does not use ReactInstance, so
+    // it installs its own. Registrations are kept rather than discarded; what
+    // is missing is a native caller, which arrives with the first native module
+    // that calls into JavaScript.
+    runtime->global().setProperty(
+        *runtime,
+        "RN$registerCallableModule",
+        facebook::jsi::Function::createFromHostFunction(
+            *runtime,
+            facebook::jsi::PropNameID::forAscii(
+                *runtime, "registerCallableModule"),
+            2,
+            [this](
+                facebook::jsi::Runtime& jsRuntime,
+                const facebook::jsi::Value& /*thisValue*/,
+                const facebook::jsi::Value* args,
+                size_t count) -> facebook::jsi::Value {
+              if (count != 2 || !args[0].isString()) {
+                throw facebook::jsi::JSError(
+                    jsRuntime,
+                    "registerCallableModule requires a name and a factory");
+              }
+              callableModules.emplace(
+                  args[0].asString(jsRuntime).utf8(jsRuntime),
+                  facebook::jsi::Value(jsRuntime, args[1]));
+              return facebook::jsi::Value::undefined();
+            }));
   }
 
   ~Impl() {
@@ -265,6 +318,9 @@ class QtReactHost::Impl {
   QtSchedulerDelegate delegate;
   std::shared_ptr<Scheduler> scheduler;
   std::unordered_map<SurfaceId, std::unique_ptr<SurfaceHandler>> surfaces;
+  /// Modules JavaScript has registered as callable from native. Nothing calls
+  /// them yet; keeping them is what makes that possible later.
+  std::unordered_map<std::string, facebook::jsi::Value> callableModules;
   QString lastError;
 };
 
@@ -340,6 +396,36 @@ bool QtReactHost::hasFabricUIManager() {
   return !value.isUndefined() && !value.isNull();
 }
 
+namespace {
+
+facebook::react::LayoutConstraints makeLayoutConstraints(
+    float width,
+    float height) {
+  facebook::react::LayoutConstraints constraints;
+  constraints.minimumSize = {.width = 0, .height = 0};
+  constraints.maximumSize = {.width = width, .height = height};
+  // SurfaceHandler.cpp:43 asserts the direction is set, and it defaults to
+  // Undefined, so this must happen before start().
+  constraints.layoutDirection = facebook::react::LayoutDirection::LeftToRight;
+  return constraints;
+}
+
+}  // namespace
+
+void QtReactHost::startSurface(
+    SurfaceId surfaceId,
+    const std::string& moduleName,
+    float width,
+    float height) {
+  auto handler = std::make_unique<SurfaceHandler>(moduleName, surfaceId);
+  impl_->scheduler->registerSurface(*handler);
+  handler->setProps(folly::dynamic::object());
+  handler->constraintLayout(
+      makeLayoutConstraints(width, height), facebook::react::LayoutContext{});
+  handler->start();
+  impl_->surfaces.emplace(surfaceId, std::move(handler));
+}
+
 void QtReactHost::startEmptySurface(
     SurfaceId surfaceId,
     float width,
@@ -356,14 +442,8 @@ void QtReactHost::startEmptySurface(
   auto handler = std::make_unique<SurfaceHandler>("", surfaceId);
   impl_->scheduler->registerSurface(*handler);
 
-  facebook::react::LayoutConstraints constraints;
-  constraints.minimumSize = {.width = 0, .height = 0};
-  constraints.maximumSize = {.width = width, .height = height};
-  // SurfaceHandler.cpp:43 asserts the direction is set, and it defaults to
-  // Undefined, so this must happen before start().
-  constraints.layoutDirection = facebook::react::LayoutDirection::LeftToRight;
-
-  handler->constraintLayout(constraints, facebook::react::LayoutContext{});
+  handler->constraintLayout(
+      makeLayoutConstraints(width, height), facebook::react::LayoutContext{});
   handler->start();
 
   impl_->surfaces.emplace(surfaceId, std::move(handler));

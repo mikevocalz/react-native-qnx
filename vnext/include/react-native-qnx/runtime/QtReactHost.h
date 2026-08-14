@@ -170,6 +170,17 @@ class QtReactHost {
       facebook::react::SurfaceId surfaceId,
       float width,
       float height);
+
+  /// Starts a surface backed by a registered JavaScript component. This is the
+  /// path a real app takes: `UIManager::startSurface` hops the runtime executor
+  /// and calls `AppRegistryBinding::startSurface`, which invokes
+  /// `global.RN$AppRegistry.runApplication` (AppRegistryBinding.cpp:14-40). The
+  /// bundle must already be evaluated.
+  void startSurface(
+      facebook::react::SurfaceId surfaceId,
+      const std::string& moduleName,
+      float width,
+      float height);
   void stopSurface(facebook::react::SurfaceId surfaceId);
 
   /// Commits `children` as the surface root's children through the UIManager's

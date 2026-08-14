@@ -1,5 +1,30 @@
 # TEST_STATUS.md
 
+## Metro bundles for qnx — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default. `qt_react_host_host_test` is eleven
+  cases; `validate:manifests` now reports two real package manifests.
+- `@rn-qnx/metro-config-qnx` registers `qnx` in `resolver.platforms`; verified
+  the resulting list is `["android","ios","qnx"]`.
+- `apps/rn-playground` bundles for `--platform qnx` through Metro during the
+  build, as a build artifact rather than a checked-in file. The bundle is 465 KB
+  and contains `RN$AppRegistry`, `RN$stopSurface`, and the registered component
+  name.
+- `hostInstallsBridgelessGlobals` asserts the three globals React Native's
+  JavaScript branches on, and that `RN$registerCallableModule` accepts a
+  registration.
+- **Evaluating the bundle does not work yet and no test claims it does.** It
+  reaches `TurboModuleRegistry.getEnforcing('ExceptionsManager')` and throws;
+  the bundle needs nine TurboModules. Asserting that would be asserting a
+  failure, so the test stops at what Metro produced and the gap is recorded in
+  NEXT_ACTIONS.
+- Two problems fixed along the way, both real: pnpm keeps package files under
+  `node_modules/.pnpm`, so Metro needed `watchFolders` and `nodeModulesPaths`
+  pointed at the workspace root; and evaluating the bundle needed the bridgeless
+  globals above before it got as far as TurboModules.
+- Evidence level: host only. Nothing has been cross-compiled for QNX or run on
+  the Pi 4.
+
 ## JavaScript drives the tree — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default. `qt_react_host_host_test` is now nine

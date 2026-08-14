@@ -1,0 +1,14 @@
+{
+  "name": "@rn-qnx/rn-playground",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimal React Native app used to prove the QNX bundle and render path",
+  "main": "index.js",
+  "dependencies": {
+    "react": "19.2.3",
+    "react-native": "0.86.2"
+  },
+  "devDependencies": {
+    "@rn-qnx/metro-config-qnx": "workspace:*"
+  }
+}

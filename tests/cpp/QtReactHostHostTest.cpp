@@ -32,6 +32,7 @@
 #include <QString>
 
 #include <cstdlib>
+#include <fstream>
 #include <exception>
 #include <functional>
 #include <iostream>
@@ -337,6 +338,60 @@ void javaScriptBuildsTheTreeThroughFabricUIManager() {
   EXPECT_NEAR(item->height(), 80.0);
 }
 
+#ifdef RNQNX_PLAYGROUND_BUNDLE_PATH
+/// Metro produces a QNX bundle, and it carries the globals React Native's C++
+/// requires.
+///
+/// This deliberately stops short of evaluating the bundle. Doing so reaches
+/// `TurboModuleRegistry.getEnforcing('ExceptionsManager')` and throws, because
+/// no TurboModule is registered yet — the bundle needs nine of them
+/// (DeviceInfo, ExceptionsManager, FileReaderModule, NativeIdleCallbacksCxx,
+/// NativeMicrotasksCxx, SegmentFetcher, SourceCode, UIManager,
+/// WebSocketModule). That is the next slice, recorded in NEXT_ACTIONS.md;
+/// asserting it here would be asserting a failure.
+void metroProducesABundleForQnx() {
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  EXPECT(bundleFile.good());
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+
+  EXPECT(bundle.size() > 100000);
+  // AppRegistry.js:30 installs this, and AppRegistryBinding::startSurface
+  // requires it. Its presence is what makes the bundle startable at all.
+  EXPECT(bundle.find("RN$AppRegistry") != std::string::npos);
+  // ReactFabric.js:27 installs this; UIManager::stopSurface requires it.
+  EXPECT(bundle.find("RN$stopSurface") != std::string::npos);
+  // The component this app registered, proving the entry point was bundled.
+  EXPECT(bundle.find("RNQnxPlayground") != std::string::npos);
+}
+
+/// The host installs the globals React Native's JavaScript branches on before
+/// any bundle is evaluated.
+void hostInstallsBridgelessGlobals() {
+  Fixture fixture;
+  auto& runtime = fixture.host().runtime();
+
+  const auto bridgeless = runtime.global().getProperty(runtime, "RN$Bridgeless");
+  EXPECT(bridgeless.isBool() && bridgeless.getBool());
+
+  // NativeModules.js:185-192 throws without one of these.
+  EXPECT(!runtime.global()
+              .getProperty(runtime, "__fbBatchedBridgeConfig")
+              .isUndefined());
+
+  // registerCallableModule.js:20 calls this in bridgeless mode.
+  const auto registrar =
+      runtime.global().getProperty(runtime, "RN$registerCallableModule");
+  EXPECT(registrar.isObject());
+  EXPECT(registrar.asObject(runtime).isFunction(runtime));
+
+  EXPECT(fixture.host().evaluate(
+      "globalThis.RN$registerCallableModule('Probe', () => ({}));",
+      "registrar.js"));
+}
+#endif
+
 struct TestCase {
   const char* name;
   std::function<void()> run;
@@ -362,6 +417,10 @@ int main(int argc, char** argv) {
        componentPredicateAnswersForRegisteredNames},
       {"javaScriptBuildsTheTreeThroughFabricUIManager",
        javaScriptBuildsTheTreeThroughFabricUIManager},
+      {"hostInstallsBridgelessGlobals", hostInstallsBridgelessGlobals},
+#ifdef RNQNX_PLAYGROUND_BUNDLE_PATH
+      {"metroProducesABundleForQnx", metroProducesABundleForQnx},
+#endif
   };
 
   int failed = 0;
