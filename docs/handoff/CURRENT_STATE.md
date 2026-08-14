@@ -104,10 +104,17 @@ Metro bundles for `qnx`. `@rn-qnx/metro-config-qnx` registers the platform, and
 installs the bridgeless globals React Native's JavaScript branches on before any
 evaluation.
 
-What is still missing between here and a running app: TurboModules. Evaluating
-the bundle reaches `TurboModuleRegistry.getEnforcing('ExceptionsManager')` and
-throws; the playground needs nine modules. No test claims otherwise. Props
-beyond layout are also still unconsumed. The tree is
+The bundle evaluates in Hermes. `TurboModuleBinding` is installed with a
+provider delegating to React Native's own generic C++ modules — the minimal
+adapter ADR-0004 sanctions, not a move away from Nitro, which remains the
+mechanism for every application-facing API.
+
+What is still missing between here and a running app: a `Platform.qnx.js`.
+Starting the surface aborts with `Cannot read property 'select' of undefined`
+because React Native's `Libraries/Utilities/Platform.js` re-exports `./Platform`
+and nothing resolves for an unknown platform. React then needs an
+ExceptionsManager TurboModule to report that error. Props beyond layout are also
+still unconsumed. The tree is
 committed from C++, so there is no Hermes runtime, no bundle, and no
 `UIManagerBinding`. Props beyond layout are also unconsumed. Neither gap needs
 the QNX toolchain or a device; see `NEXT_ACTIONS.md` action 3.

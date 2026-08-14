@@ -150,6 +150,20 @@ class QtReactHost {
   /// where the registry holds `View`.
   void installComponentProvider();
 
+  /// Installs the TurboModule binding React Native's own JavaScript needs.
+  ///
+  /// This is the "minimal internal adapter" ADR-0004 sanctions, not a move to
+  /// TurboModules: application-facing APIs are Nitro HybridObjects. React
+  /// Native's core JavaScript calls `TurboModuleRegistry.getEnforcing` for its
+  /// own modules, and nothing else can answer that registry.
+  ///
+  /// The provider delegates to `DefaultTurboModules::getTurboModule`, which
+  /// returns React Native's own generic C++ modules — real implementations
+  /// backed by the platform runtime, not stubs. Anything it does not cover
+  /// returns nullptr so `getEnforcing` fails with the module's name, which
+  /// ADR-0004 requires over empty TurboModules that silence the error.
+  void installTurboModuleBinding();
+
   /// Whether a component name resolves after normalisation. Exposed so a test
   /// can assert the predicate directly rather than only through JavaScript.
   bool hasComponent(const std::string& componentName) const;

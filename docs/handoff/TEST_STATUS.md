@@ -1,5 +1,26 @@
 # TEST_STATUS.md
 
+## The bundle evaluates in Hermes — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default. `qt_react_host_host_test` is twelve
+  cases.
+- `metroBundleEvaluatesInHermes` loads the Metro-produced bundle into the Hermes
+  runtime and it evaluates. `global.RN$AppRegistry` is installed afterwards,
+  which is what `AppRegistryBinding::startSurface` requires.
+- What unblocked it: `TurboModuleBinding::install` with a provider delegating to
+  `DefaultTurboModules::getTurboModule`, plus 16 more React Native modules on the
+  build, plus `QT_NO_KEYWORDS`.
+- **Rendering still fails and no test claims otherwise.** Starting the surface
+  aborts with `Cannot read property 'select' of undefined`: React Native's
+  `Libraries/Utilities/Platform.js` re-exports `./Platform`, which resolves to
+  nothing for an unknown platform, so there is no `Platform.qnx.js`. The error
+  reporter then needs an ExceptionsManager TurboModule, which is why the abort
+  message mentions it. Both are recorded in NEXT_ACTIONS.
+- Finding: Qt's `emit` macro breaks `react/bridging/EventEmitter.h`, which
+  declares a method of that name. Fixed with `QT_NO_KEYWORDS`.
+- Evidence level: host only. Nothing has been cross-compiled for QNX or run on
+  the Pi 4.
+
 ## Metro bundles for qnx — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default. `qt_react_host_host_test` is eleven

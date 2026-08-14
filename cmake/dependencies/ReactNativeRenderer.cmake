@@ -50,6 +50,25 @@ add_library(glog_init ALIAS rnqnx_glog_init)
 # .cpp, which reaches ViewProps.h -> HostPlatformViewProps.h without linking
 # rrc_view. These are the generic `cxx` variants, which is what a non-Android
 # platform such as QNX uses.
+# The generated module specs are addressed as
+# <FBReactNativeSpec/FBReactNativeSpecJSI.h>, and React Native ships that
+# pre-generated header under React/ in the Apple pod layout even though it is
+# plain C++/JSI. Same artifact Android calls react_codegen_rncore.
+include_directories("${RNQNX_REACT_NATIVE_DIR}/React")
+include_directories("${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi")
+include_directories("${RNQNX_REACT_NATIVE_DIR}/ReactCommon/callinvoker")
+
+# Third-party include roots the React Native module targets assume are global,
+# the way React Native's own Android assembler provides them.
+include_directories(SYSTEM
+  "${rnqnx_folly_SOURCE_DIR}"
+  "${RNQNX_GLOG_EXPORTED}"
+  "${rnqnx_fmt_SOURCE_DIR}/include"
+  "${rnqnx_fast_float_SOURCE_DIR}/include"
+  "${RNQNX_DOUBLE_CONVERSION_STAGE}"
+  "${rnqnx_boost_SOURCE_DIR}"
+)
+
 foreach(platform_dir IN ITEMS
   react/renderer/components/modal/platform/cxx
   react/renderer/components/scrollview/platform/cxx
@@ -60,6 +79,9 @@ foreach(platform_dir IN ITEMS
   react/renderer/textlayoutmanager/platform/cxx
   react/utils/platform/cxx
   runtimeexecutor/platform/cxx
+  # TurboModule headers are addressed as <ReactCommon/TurboModule.h>, which
+  # resolves from the module's own root rather than from ReactCommon.
+  react/nativemodule/core
 )
   include_directories("${REACT_COMMON_DIR}/${platform_dir}")
 endforeach()
@@ -84,6 +106,22 @@ set(RNQNX_REACT_NATIVE_MODULES
   react/renderer/observers/events
   react/performance/timeline
   react/timing
+  react/renderer/animated
+  react/renderer/observers/mutation
+  react/renderer/observers/intersection
+  devtoolsruntimesettings
+  react/bridging
+  react/nativemodule/core
+  react/nativemodule/microtasks
+  react/nativemodule/idlecallbacks
+  react/nativemodule/dom
+  react/nativemodule/featureflags
+  react/nativemodule/devtoolsruntimesettings
+  react/nativemodule/intersectionobserver
+  react/nativemodule/mutationobserver
+  react/nativemodule/viewtransition
+  react/nativemodule/webperformance
+  react/nativemodule/defaults
   react/renderer/componentregistry/native
   react/renderer/viewtransition
   react/renderer/animationbackend
@@ -200,6 +238,22 @@ set(RNQNX_REACT_NATIVE_RENDERER_TARGETS
   react_renderer_mounting
   react_performance_timeline
   react_timing
+  react_renderer_animated
+  react_renderer_observers_mutation
+  react_renderer_observers_intersection
+  devtoolsruntimesettings
+  react_bridging
+  react_nativemodule_core
+  react_nativemodule_microtasks
+  react_nativemodule_idlecallbacks
+  react_nativemodule_dom
+  react_nativemodule_featureflags
+  react_nativemodule_devtoolsruntimesettings
+  react_nativemodule_intersectionobserver
+  react_nativemodule_mutationobserver
+  react_nativemodule_viewtransition
+  react_nativemodule_webperformance
+  react_nativemodule_defaults
   rrc_native
   react_renderer_viewtransition
   react_codegen_rncore

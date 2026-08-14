@@ -13,6 +13,9 @@
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowTree.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+#include <ReactCommon/TurboModuleBinding.h>
+#include <react/nativemodule/defaults/DefaultTurboModules.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/UIManager.h>
 
@@ -381,6 +384,25 @@ bool QtReactHost::hasComponent(const std::string& componentName) const {
   // see registeredComponentNames(), which both use.
   const auto names = registeredComponentNames();
   return std::find(names.begin(), names.end(), unified) != names.end();
+}
+
+void QtReactHost::installTurboModuleBinding() {
+  auto callInvoker =
+      std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(
+          impl_->runtimeScheduler);
+
+  facebook::react::TurboModuleBinding::install(
+      *impl_->runtime,
+      [callInvoker](
+          facebook::jsi::Runtime& /*jsRuntime*/,
+          const std::string& name)
+          -> std::shared_ptr<facebook::react::TurboModule> {
+        // React Native's own generic C++ modules. Two of the modules this
+        // platform needs come from here already implemented — microtasks and
+        // idle callbacks, both backed by the RuntimeScheduler.
+        return facebook::react::DefaultTurboModules::getTurboModule(
+            name, callInvoker);
+      });
 }
 
 void QtReactHost::installComponentProvider() {

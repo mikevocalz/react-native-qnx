@@ -370,6 +370,7 @@ void metroProducesABundleForQnx() {
 /// any bundle is evaluated.
 void hostInstallsBridgelessGlobals() {
   Fixture fixture;
+  fixture.host().installTurboModuleBinding();
   auto& runtime = fixture.host().runtime();
 
   const auto bridgeless = runtime.global().getProperty(runtime, "RN$Bridgeless");
@@ -391,6 +392,43 @@ void hostInstallsBridgelessGlobals() {
       "registrar.js"));
 }
 #endif
+
+/// The Metro bundle evaluates in Hermes and installs React Native's globals.
+///
+/// This stops before starting the surface. Rendering needs two things that do
+/// not exist yet: a `Platform.qnx.js` — React Native's `Libraries/Utilities/
+/// Platform.js` re-exports `./Platform`, which resolves to nothing for an
+/// unknown platform, so `Platform.select` is called on undefined — and an
+/// ExceptionsManager TurboModule, which is the first thing React reaches for
+/// when reporting that error. Both are recorded in NEXT_ACTIONS.md.
+void metroBundleEvaluatesInHermes() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  EXPECT(bundleFile.good());
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+
+  if (!fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js")) {
+    fail(
+        "bundle evaluated",
+        __FILE__,
+        __LINE__,
+        fixture.host().lastError().toStdString());
+  }
+
+  auto& runtime = fixture.host().runtime();
+  // AppRegistry.js:30 installs this once the bundle runs; without it
+  // AppRegistryBinding::startSurface throws.
+  EXPECT(!runtime.global()
+              .getProperty(runtime, "RN$AppRegistry")
+              .isUndefined());
+  // RN$stopSurface is deliberately not asserted: ReactFabric.js:27 installs it
+  // only when the renderer is first used, which needs a surface to start.
+}
 
 struct TestCase {
   const char* name;
@@ -420,6 +458,7 @@ int main(int argc, char** argv) {
       {"hostInstallsBridgelessGlobals", hostInstallsBridgelessGlobals},
 #ifdef RNQNX_PLAYGROUND_BUNDLE_PATH
       {"metroProducesABundleForQnx", metroProducesABundleForQnx},
+      {"metroBundleEvaluatesInHermes", metroBundleEvaluatesInHermes},
 #endif
   };
 

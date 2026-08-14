@@ -458,3 +458,40 @@ validate:macos`.
   Qt the host compiles against is read from the installation, not from a
   document.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+
+## 2026-08-14 – The bundle evaluates in Hermes
+
+- **Goal:** Satisfy the TurboModule lookups React Native's own JavaScript makes,
+  and find the next real blocker.
+- **Architecture check:** this is ADR-0004's sanctioned adapter, not a move to
+  TurboModules. That ADR already says application-facing APIs are Nitro and that
+  "a minimal internal adapter satisfies React Native core interfaces that expect
+  TurboModule registry semantics," delegating real behaviour to Nitro or the
+  platform runtime, with the note not to generate empty TurboModules. The
+  provider delegates to `DefaultTurboModules::getTurboModule` and returns
+  nullptr for anything else, so an unimplemented module fails by name rather
+  than receiving a stub.
+- **Implemented:** `installTurboModuleBinding()`, sixteen more React Native
+  modules on the build (nativemodule core/defaults/microtasks/idlecallbacks and
+  their dependencies, bridging, animated, the observers), and the include roots
+  those targets assume are global.
+- **Result:** the Metro bundle now evaluates in Hermes and installs
+  `global.RN$AppRegistry`.
+- **Problems discovered:**
+  - Qt defines `emit` as a macro and React Native's
+    `react/bridging/EventEmitter.h` declares a method called `emit`. Fixed with
+    `QT_NO_KEYWORDS`, which costs nothing here.
+  - `TurboModuleRegistry.js:17` captures `global.__turboModuleProxy` once at
+    module-eval time, so the binding has to be installed before any bundle runs.
+  - Rendering still fails: `Cannot read property 'select' of undefined`, because
+    `Libraries/Utilities/Platform.js` re-exports `./Platform` and there is no
+    `Platform.qnx.js`. That is the JavaScript platform package, not a native
+    gap.
+- **Not claimed:** the render test was written, run, and then rewritten to
+  assert only what actually happens — the bundle evaluates. Asserting a render
+  would have been asserting a failure.
+- **Results:** CTest 9/9 with Hermes, 7/7 default; twelve host cases.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 —
+  `Platform.qnx.js` in `@rn-qnx/react-native-qnx` plus a Metro
+  `resolveRequest` redirect.

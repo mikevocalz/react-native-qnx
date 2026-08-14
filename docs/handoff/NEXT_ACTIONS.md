@@ -83,45 +83,40 @@ until every called source symbol exists in that checkout.
 **Dependency:** QNX-RN-008, because feasibility must be tested with the actual
 compiler and sysroot.
 
-## 3. Implement the TurboModules the bundle requires
+## 3. Ship the JavaScript platform package
 
-**Done:** Metro bundles for `qnx` through `@rn-qnx/metro-config-qnx`, the
-playground app produces a real bundle during the build, and the host installs
-the bridgeless globals (`RN$Bridgeless`, `__fbBatchedBridgeConfig`,
-`RN$registerCallableModule`) that React Native's JavaScript branches on.
+**Done:** the Metro bundle evaluates in Hermes. `TurboModuleBinding` is
+installed with a provider delegating to `DefaultTurboModules::getTurboModule`,
+which covers `NativeMicrotasksCxx` and `NativeIdleCallbacksCxx` with React
+Native's own C++ implementations. This is ADR-0004's sanctioned adapter;
+application-facing APIs remain Nitro.
 
-**The blocker is precise.** Evaluating the bundle reaches
-`TurboModuleRegistry.getEnforcing('ExceptionsManager')` and throws. The
-playground bundle demands nine modules:
-
-| Module                 | Note                                                     |
-| ---------------------- | -------------------------------------------------------- |
-| ExceptionsManager      | first to throw; needs to surface JS errors to the host   |
-| SourceCode             | bundle URL for stack symbolication                       |
-| DeviceInfo             | screen metrics and scale                                 |
-| UIManager              | legacy shim; check what the Fabric path actually needs   |
-| NativeMicrotasksCxx    | already a C++ module in React Native — check reusability |
-| NativeIdleCallbacksCxx | same                                                     |
-| FileReaderModule       | pulled in by a transitive import; may be avoidable       |
-| SegmentFetcher         | same                                                     |
-| WebSocketModule        | same                                                     |
+**The blocker is `Platform`.** Starting the surface aborts with `Cannot read
+property 'select' of undefined`. React Native's
+`Libraries/Utilities/Platform.js` re-exports `./Platform`, which resolves to
+`Platform.ios.js` or `Platform.android.js` by extension; there is no
+`Platform.qnx.js`, so the import is undefined.
 
 **Procedure:**
 
-1. Check which of these React Native already implements as generic C++
-   TurboModules (`ReactCommon/react/nativemodule/**`) rather than per platform.
-   Anything reusable is a link-list change, not new code.
-2. Trim the entry point. FileReaderModule, SegmentFetcher, and WebSocketModule
-   look like transitive imports rather than genuine needs; a narrower entry may
-   drop them.
-3. Implement the rest as Nitro HybridObjects per ADR-0004, which is the module
-   architecture this project committed to. Do not add TurboModules by hand
-   beyond what React Native's own generic C++ provides.
-4. Install a `TurboModuleBinding` so `TurboModuleRegistry` resolves.
+1. **`@rn-qnx/react-native-qnx`** ships the platform JavaScript, starting with
+   `Platform.qnx.js` exporting `OS: 'qnx'`, `select`, `Version`, and
+   `constants`. Model the shape on `Libraries/Utilities/Platform.ios.js`.
+2. **Redirect resolution.** React Native's own files cannot be edited in
+   `node_modules`, so `metro-config-qnx` needs a `resolver.resolveRequest` that
+   maps `react-native/Libraries/Utilities/Platform` to the platform package.
+   This is the same mechanism react-native-windows and react-native-macos use;
+   check theirs before inventing one.
+3. **ExceptionsManager**, as a C++ TurboModule over the generated
+   `NativeExceptionsManagerCxxSpec` in the shipped `FBReactNativeSpecJSI.h`. It
+   must actually surface errors to the host — ADR-0004 forbids empty modules —
+   so route it into `QtReactHost::lastError()` and a log.
+4. Re-run the render and take the next failure. Expect DeviceInfo and SourceCode
+   next; both have generated specs and need real values (screen metrics from the
+   Qt window, the bundle URL).
 
-**Acceptance criteria:** the playground bundle evaluates, its component renders
-through React, and the resulting Qt Quick items match the tree. No QNX toolchain
-or device required.
+**Acceptance criteria:** the playground bundle's React component renders and its
+`<View>` tree appears as Qt Quick items. No QNX toolchain or device required.
 
 ## 4. Design Nitro, Expo Modules, and Metro QNX extensions separately
 

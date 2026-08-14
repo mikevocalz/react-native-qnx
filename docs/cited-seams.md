@@ -248,6 +248,53 @@ ExceptionsManager, FileReaderModule, NativeIdleCallbacksCxx,
 NativeMicrotasksCxx, SegmentFetcher, SourceCode, UIManager, WebSocketModule —
 and the first one throws. That is the next slice, not a defect in what exists.
 
+## TurboModule adapter (ADR-0004's sanctioned exception)
+
+Application-facing APIs are Nitro HybridObjects. React Native's own core
+JavaScript, however, calls `TurboModuleRegistry.getEnforcing` for its own
+modules, and nothing else can answer that registry. ADR-0004 anticipated this:
+"A minimal internal adapter satisfies React Native core interfaces that expect
+TurboModule registry semantics, but the adapter delegates real behavior to Nitro
+or the platform runtime," with the note "Do not generate empty TurboModules
+merely to silence linker errors."
+
+The adapter is one call:
+
+| Seam                                         | Installed authority                                              |
+| -------------------------------------------- | ---------------------------------------------------------------- |
+| `TurboModuleBinding::install`                | `react/nativemodule/core/ReactCommon/TurboModuleBinding.h:41-45` |
+| `TurboModuleProviderFunctionTypeWithRuntime` | `react/nativemodule/core/ReactCommon/TurboModule.h:152-153`      |
+| `DefaultTurboModules::getTurboModule`        | `react/nativemodule/defaults/DefaultTurboModules.h:12-16`        |
+| `RuntimeSchedulerCallInvoker`                | `react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h`  |
+
+`install` branches on `RN$Bridgeless` (`TurboModuleBinding.cpp:124`): with the
+flag set it installs `nativeModuleProxy`; without it, `__turboModuleProxy`,
+which `Libraries/TurboModule/TurboModuleRegistry.js:17` captures **once at
+module-eval time** — so the binding must be installed before any bundle runs.
+
+The provider delegates to `DefaultTurboModules::getTurboModule`, which returns
+React Native's own generic C++ modules — real implementations backed by the
+platform runtime. Two of the nine the playground bundle demands come from there
+already written: `NativeMicrotasksCxx` and `NativeIdleCallbacksCxx`, the latter
+requiring a bound `RuntimeScheduler`. Anything not covered returns nullptr, so
+`getEnforcing` fails naming the module rather than receiving an empty stub.
+
+Of the remaining seven: DeviceInfo, ExceptionsManager, FileReaderModule,
+SourceCode, and WebSocketModule have generated `…CxxSpec` base classes in the
+shipped `FBReactNativeSpecJSI.h` but Apple/Android-only implementations;
+SegmentFetcher has a JS spec and no native implementation anywhere in the
+package; and **UIManager is not a TurboModule at all** — it has no codegen spec,
+and bridgeless React Native serves it from JavaScript via
+`Libraries/ReactNative/BridgelessUIManager.js`.
+
+## Qt and React Native header collision
+
+Qt defines `emit`, `signals`, and `slots` as macros. React Native's
+`react/bridging/EventEmitter.h` declares a method named `emit`, which the macro
+shreds into a syntax error the moment both headers meet. `QT_NO_KEYWORDS` turns
+the macros off; nothing here uses them, and `Q_EMIT`/`Q_SIGNALS` remain
+available if a `Q_OBJECT` class ever needs them.
+
 ## The JavaScript binding surface
 
 `nativeFabricUIManager` is what React's renderer drives, and driving it directly

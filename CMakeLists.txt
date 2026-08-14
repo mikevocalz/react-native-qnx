@@ -137,6 +137,12 @@ else()
         ${CMAKE_CURRENT_SOURCE_DIR}/vnext/include
       )
       target_link_libraries(rnqnx_views_qt PUBLIC Qt6::Quick Qt6::Qml Qt6::Gui)
+      # Qt defines `emit`, `signals`, and `slots` as macros. React Native's
+      # react/bridging/EventEmitter.h declares a method named `emit`, which the
+      # macro shreds into a syntax error. QT_NO_KEYWORDS turns the macros off;
+      # nothing here uses them, and Qt's Q_EMIT/Q_SIGNALS spellings remain
+      # available if a Q_OBJECT class ever needs them.
+      target_compile_definitions(rnqnx_views_qt PUBLIC QT_NO_KEYWORDS)
       rnqnx_enable_strict_warnings(rnqnx_views_qt)
 
       # Compiling real React Native renderer headers requires folly and glog,
