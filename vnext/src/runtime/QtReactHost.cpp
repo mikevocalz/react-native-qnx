@@ -8,7 +8,11 @@
 #include <react/renderer/componentregistry/native/NativeComponentRegistryBinding.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
+#include <react/renderer/components/text/ParagraphComponentDescriptor.h>
+#include <react/renderer/components/text/RawTextComponentDescriptor.h>
+#include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/mounting/MountingTransaction.h>
@@ -173,6 +177,12 @@ std::vector<std::string> registeredComponentNames() {
   return {
       std::string(RootComponentDescriptor::ConcreteShadowNode::Name()),
       std::string(ViewComponentDescriptor::ConcreteShadowNode::Name()),
+      std::string(facebook::react::ParagraphComponentDescriptor::
+                      ConcreteShadowNode::Name()),
+      std::string(
+          facebook::react::TextComponentDescriptor::ConcreteShadowNode::Name()),
+      std::string(facebook::react::RawTextComponentDescriptor::
+                      ConcreteShadowNode::Name()),
   };
 }
 
@@ -196,6 +206,17 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<
             ViewComponentDescriptor>());
+    // Text is three descriptors: Paragraph is the laid-out block, Text is a
+    // nested span, and RawText is the string itself.
+    providerRegistry->add(
+        facebook::react::concreteComponentDescriptorProvider<
+            facebook::react::ParagraphComponentDescriptor>());
+    providerRegistry->add(
+        facebook::react::concreteComponentDescriptorProvider<
+            facebook::react::TextComponentDescriptor>());
+    providerRegistry->add(
+        facebook::react::concreteComponentDescriptorProvider<
+            facebook::react::RawTextComponentDescriptor>());
 
     // Without a fallback, an unregistered component name throws
     // std::invalid_argument out of ComponentDescriptorRegistry::at
@@ -255,6 +276,13 @@ class QtReactHost::Impl {
     container->insert(
         facebook::react::RuntimeSchedulerKey,
         std::weak_ptr<RuntimeScheduler>(runtimeScheduler));
+
+    // BaseParagraphComponentDescriptor.h:23 pulls the TextLayoutManager out of
+    // the context container by name; without it, constructing a Paragraph
+    // descriptor throws.
+    container->insert(
+        "TextLayoutManager",
+        std::make_shared<const facebook::react::TextLayoutManager>(nullptr));
     contextContainer = container;
 
     SchedulerToolbox toolbox{};

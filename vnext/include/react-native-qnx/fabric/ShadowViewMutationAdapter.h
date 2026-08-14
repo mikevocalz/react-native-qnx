@@ -54,6 +54,7 @@ class ShadowViewMutationAdapter {
       const facebook::react::ShadowViewMutation::List& mutations);
 
  private:
+  void applyText(const facebook::react::ShadowView& view);
   void registerEventEmitter(const facebook::react::ShadowView& view);
 
   MountError applyOne(

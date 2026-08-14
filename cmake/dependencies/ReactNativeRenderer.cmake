@@ -16,6 +16,9 @@ if(NOT TARGET rnqnx_folly_runtime)
 endif()
 
 set(REACT_COMMON_DIR "${RNQNX_REACT_NATIVE_DIR}/ReactCommon")
+
+# This repository root, for sources outside node_modules.
+get_filename_component(RNQNX_REPO_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
 # Some modules include React Native's Android-side CMake helpers. The helper
 # they need, target_merge_so, is a no-op off Android (SoMerging-utils.cmake:17),
 # so pointing at the real directory is enough; nothing Android-specific runs.
@@ -130,7 +133,6 @@ set(RNQNX_REACT_NATIVE_MODULES
   react/renderer/scheduler
   react/renderer/element
   react/renderer/leakchecker
-  react/renderer/textlayoutmanager
   react/renderer/attributedstring
   react/renderer/components/text
   react/renderer/dom
@@ -196,6 +198,32 @@ target_link_libraries(react_codegen_rncore PUBLIC
   rnqnx_folly
 )
 target_compile_options(react_codegen_rncore PRIVATE -w)
+
+# React Native selects a TextLayoutManager per platform, and its generic C++ one
+# does not measure: it returns layoutConstraints.minimumSize, collapsing every
+# <Text> to nothing. Android and Apple each substitute a real implementation, so
+# this target is assembled here with ours in place of the generic .cpp. React
+# Native's header and its other sources are used unchanged.
+set(RNQNX_TEXTLAYOUT_DIR "${REACT_COMMON_DIR}/react/renderer/textlayoutmanager")
+file(GLOB RNQNX_TEXTLAYOUT_SRC CONFIGURE_DEPENDS "${RNQNX_TEXTLAYOUT_DIR}/*.cpp")
+add_library(react_renderer_textlayoutmanager OBJECT
+  ${RNQNX_TEXTLAYOUT_SRC}
+  "${RNQNX_REPO_ROOT}/vnext/src/text/QtTextLayoutManager.cpp"
+)
+target_include_directories(react_renderer_textlayoutmanager PUBLIC
+  "${RNQNX_TEXTLAYOUT_DIR}"
+  "${REACT_COMMON_DIR}"
+  "${RNQNX_TEXTLAYOUT_DIR}/platform/cxx"
+)
+target_link_libraries(react_renderer_textlayoutmanager
+  react_renderer_attributedstring
+  react_renderer_core
+  react_renderer_graphics
+  react_utils
+  rnqnx_folly
+  Qt6::Gui
+)
+target_compile_options(react_renderer_textlayoutmanager PRIVATE -w)
 
 # React Native ships two CMakeLists for JSI and they are not equivalent:
 # ReactCommon/jsi/CMakeLists.txt:17 globs `jsi/*.cpp`, so it includes

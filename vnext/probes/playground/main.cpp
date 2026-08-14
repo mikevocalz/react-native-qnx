@@ -36,6 +36,7 @@ namespace {
 
 constexpr facebook::react::SurfaceId kSurfaceId = 1;
 constexpr const char* kViewSource = "import QtQuick\nRectangle { visible: true }\n";
+constexpr const char* kTextSource = "import QtQuick\nText { visible: true }\n";
 constexpr int kWindowWidth = 640;
 constexpr int kWindowHeight = 480;
 
@@ -84,11 +85,13 @@ int main(int argc, char** argv) {
   QQmlEngine engine;
   rnqnx::views::QtQuickItemFactory factory(engine);
   factory.registerType(QStringLiteral("View"), QByteArray(kViewSource));
+  factory.registerType(QStringLiteral("Text"), QByteArray(kTextSource));
 
   rnqnx::fabric::QtQuickMountingLayer layer(
       factory, *window.contentItem(), kSurfaceId);
   rnqnx::fabric::ShadowViewMutationAdapter adapter(layer);
   adapter.mapComponent(QStringLiteral("View"), QStringLiteral("View"));
+  adapter.mapComponent(QStringLiteral("Paragraph"), QStringLiteral("Text"));
 
   rnqnx::runtime::QtReactHost host(adapter);
   host.installTurboModuleBinding();

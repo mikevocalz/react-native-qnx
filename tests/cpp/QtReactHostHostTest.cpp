@@ -26,6 +26,7 @@
 
 #include <QByteArray>
 #include <QColor>
+#include <QFont>
 #include <QImage>
 #include <QMouseEvent>
 #include <QPointF>
@@ -63,6 +64,7 @@ using rnqnx::views::QtQuickItemFactory;
 
 constexpr SurfaceId kSurfaceId = 11;
 constexpr const char* kViewSource = "import QtQuick\nRectangle { visible: true }\n";
+constexpr const char* kTextSource = "import QtQuick\nText { visible: true }\n";
 
 class TestFailure final : public std::runtime_error {
  public:
@@ -142,6 +144,10 @@ class Fixture {
         builder_(makeComponentBuilder(host_.contextContainer())) {
     factory_.registerType(QStringLiteral("View"), QByteArray(kViewSource));
     adapter_.mapComponent(QStringLiteral("View"), QStringLiteral("View"));
+    // Paragraph is React Native's laid-out text block; Qt Quick's Text item is
+    // what draws it.
+    factory_.registerType(QStringLiteral("Text"), QByteArray(kTextSource));
+    adapter_.mapComponent(QStringLiteral("Paragraph"), QStringLiteral("Text"));
   }
 
   ~Fixture() { host_.stopSurface(kSurfaceId); }
@@ -498,13 +504,26 @@ void metroBundleRendersThroughReact() {
   EXPECT(outer->property("color").value<QColor>() == QColor(0x20, 0x40, 0x80));
   EXPECT_NEAR(outer->property("radius").toDouble(), 12.0);
 
-  // The app renders two children: the styled inner view and a Pressable.
-  EXPECT(outer->childItems().size() == 2);
+  // The app renders three children: the styled inner view, a Pressable, and a
+  // Text.
+  EXPECT(outer->childItems().size() == 3);
   QQuickItem* inner = outer->childItems().at(0);
   EXPECT_NEAR(inner->width(), 64.0);
   EXPECT_NEAR(inner->height(), 32.0);
   EXPECT(inner->property("color").value<QColor>() == QColor(0xff, 0x88, 0x00));
   EXPECT_NEAR(inner->opacity(), 0.5);
+
+  // The Text child carries its string, and its size came from this platform's
+  // TextLayoutManager measuring with Qt font metrics rather than from an
+  // explicit style — React Native's generic C++ manager would have returned
+  // zero.
+  QQuickItem* text = outer->childItems().at(2);
+  EXPECT(text->property("text").toString() == QStringLiteral("Hello QNX"));
+  // fontSize: 24 from the JSX reaches the item, and the measured size follows
+  // from it rather than from a default font.
+  EXPECT(text->property("font").value<QFont>().pixelSize() == 24);
+  EXPECT(text->width() > 40.0);
+  EXPECT(text->height() > 20.0);
 }
 
 /// A JavaScript error reaches the host instead of aborting the process.

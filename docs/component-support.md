@@ -10,18 +10,18 @@ Legend: ✅ works and is covered by a host test · ⚠ partial, with the limit n
 
 ## Components
 
-| Component            | Status | Notes                                                                                                |
-| -------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
-| `View`               | ⚠      | Mounts, lays out, and paints background, corner radius, and opacity.                                 |
-| `Text`               | ❌     | Needs the text descriptors, which need React Native's codegen run.                                   |
-| `Image`              | ❌     | Needs `QQuickImageProvider` and the image manager.                                                   |
-| `ScrollView`         | ❌     | `Flickable` is the intended backing.                                                                 |
-| `TextInput`          | ❌     | Needs Qt Quick's text input plus IME.                                                                |
-| `Switch`             | ❌     |                                                                                                      |
-| `ActivityIndicator`  | ❌     |                                                                                                      |
-| `Modal`              | ❌     |                                                                                                      |
-| `FlatList`/`Section` | ❌     | Upstream JavaScript over `ScrollView`; blocked on `ScrollView`.                                      |
-| `Pressable`          | ✅     | Renders and `onPress` fires from a real pointer press; covered by a host test. `Button` is untested. |
+| Component            | Status | Notes                                                                                                    |
+| -------------------- | ------ | -------------------------------------------------------------------------------------------------------- |
+| `View`               | ⚠      | Mounts, lays out, and paints background, corner radius, and opacity.                                     |
+| `Text`               | ⚠      | Renders with its string, font size, and colour. One style per paragraph, and measurement is single-line. |
+| `Image`              | ❌     | Needs `QQuickImageProvider` and the image manager.                                                       |
+| `ScrollView`         | ❌     | `Flickable` is the intended backing.                                                                     |
+| `TextInput`          | ❌     | Needs Qt Quick's text input plus IME.                                                                    |
+| `Switch`             | ❌     |                                                                                                          |
+| `ActivityIndicator`  | ❌     |                                                                                                          |
+| `Modal`              | ❌     |                                                                                                          |
+| `FlatList`/`Section` | ❌     | Upstream JavaScript over `ScrollView`; blocked on `ScrollView`.                                          |
+| `Pressable`          | ✅     | Renders and `onPress` fires from a real pointer press; covered by a host test. `Button` is untested.     |
 
 ## `View` props
 
@@ -37,6 +37,17 @@ Legend: ✅ works and is covered by a host test · ⚠ partial, with the limit n
 | `onTouchStart`/`Move`/`End`                                                             | ⚠      | Single pointer, hit-tested to the deepest item. No multi-touch, no pointer capture.          |
 | Responder props (`onStartShouldSetResponder`, `onResponderGrant`, `onResponderRelease`) | ✅     | React's responder negotiation runs on top of the touch events and is covered by a host test. |
 | Accessibility props                                                                     | ❌     | Qt Quick's accessibility bridge is not connected.                                            |
+
+## `Text`
+
+| Aspect                     | Status | Notes                                                                                                                    |
+| -------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------ |
+| String content             | ✅     | Fragments are flattened and set on a Qt Quick `Text` item.                                                               |
+| `fontSize`, `color`        | ⚠      | Taken from the first fragment only: Qt Quick's `Text` styles the whole item.                                             |
+| Measurement                | ⚠      | This platform's `TextLayoutManager` measures with `QFontMetricsF`. Single line — wrapped text reports one line's height. |
+| Mixed styling in one block | ❌     | Nested `<Text>` spans with different styles collapse to the first fragment's style.                                      |
+| `numberOfLines`            | ⚠      | Clamps the measured height; no ellipsis.                                                                                 |
+| Attachments (inline views) | ❌     | Reported as zero-sized, as React Native's generic manager does.                                                          |
 
 ## Platform modules
 

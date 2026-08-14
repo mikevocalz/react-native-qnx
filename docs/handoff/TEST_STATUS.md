@@ -1,5 +1,26 @@
 # TEST_STATUS.md
 
+## Text renders — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.
+- The playground renders `<Text style={{fontSize: 24}}>Hello QNX</Text>` and the
+  test asserts the string reaches the Qt item, the font size is 24, and the
+  measured size follows from the font rather than from an explicit style.
+- The measurement is this platform's own `TextLayoutManager`. React Native's
+  generic C++ one returns `layoutConstraints.minimumSize` — it does not measure
+  — so every `<Text>` would have collapsed to nothing. Ours measures with
+  `QFontMetricsF`, substituted the same way Android and Apple substitute theirs.
+- Mutation check: changing the app's `fontSize` to 12 fails the case on the
+  pixel size.
+- Rendered and looked at: "Hello QNX" appears in black at 24px inside the blue
+  view.
+- A bug found by looking: the first screenshot showed no text at all, because
+  `rnqnx_playground_host` registered only the `View` QML type and never mapped
+  `Paragraph`. The test fixture had both, so the tests passed while the runner
+  rendered nothing — a reminder that two entry points need the same setup.
+- Evidence level: host only. Nothing cross-compiled for QNX, nothing run on the
+  Pi 4.
+
 ## Pressable works — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.

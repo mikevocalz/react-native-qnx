@@ -11,6 +11,7 @@
 const React = require('react');
 const AppRegistry = require('react-native/Libraries/ReactNative/AppRegistry').AppRegistry;
 const View = require('react-native/Libraries/Components/View/View').default;
+const Text = require('react-native/Libraries/Text/Text').default;
 const Pressable = require('react-native/Libraries/Components/Pressable/Pressable').default;
 
 function PlaygroundApp() {
@@ -61,7 +62,10 @@ function PlaygroundApp() {
       onPress: () => {
         globalThis.__presses = (globalThis.__presses ?? 0) + 1;
       },
-    })
+    }),
+    // Text is measured by the platform's TextLayoutManager, so its size comes
+    // from Qt's font metrics rather than from an explicit style.
+    React.createElement(Text, { style: { fontSize: 24 }, collapsable: false }, 'Hello QNX')
   );
 }
 

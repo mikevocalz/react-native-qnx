@@ -3,6 +3,7 @@
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
 #include <QColor>
+#include <QFont>
 #include <QList>
 #include <QQuickItem>
 
@@ -229,6 +230,32 @@ MountError QtQuickMountingLayer::updateStyle(Tag tag, const ViewStyle& style) {
     }
   }
 
+  lastError_.clear();
+  return MountError::None;
+}
+
+MountError QtQuickMountingLayer::updateText(
+    Tag tag,
+    const TextStyle& style) {
+  const auto mounted = items_.constFind(tag);
+  if (mounted == items_.constEnd()) {
+    return failWith(
+        MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
+  }
+
+  QQuickItem* item = mounted->item;
+  item->setProperty("text", style.text);
+
+  if (style.fontSize > 0.0F) {
+    // `font` is a grouped property holding a QFont value, so it is read,
+    // modified, and written back rather than set through a dotted name.
+    QFont font = item->property("font").value<QFont>();
+    font.setPixelSize(static_cast<int>(style.fontSize));
+    item->setProperty("font", font);
+  }
+  if (style.hasColor) {
+    item->setProperty("color", QColor::fromRgba(style.color));
+  }
   lastError_.clear();
   return MountError::None;
 }

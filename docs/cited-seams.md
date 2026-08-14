@@ -275,6 +275,31 @@ tables plus React Native's own `ReactNativeStyleAttributes` for
 `validAttributes`. The iOS file's accessibility and force-touch events are
 deliberately absent rather than declared and unimplemented.
 
+## Text
+
+React Native selects a `TextLayoutManager` per platform, and its generic C++ one
+does not measure: it returns `layoutConstraints.minimumSize`
+(`textlayoutmanager/platform/cxx/.../TextLayoutManager.cpp:20-33`), which
+collapses every `<Text>` to nothing. Android and Apple each substitute a real
+implementation, so this platform does the same — React Native's header
+unchanged, the definitions replaced, measured with `QFontMetricsF`.
+
+| Seam                                    | Installed authority                                             |
+| --------------------------------------- | --------------------------------------------------------------- |
+| `TextLayoutManager` declaration         | `textlayoutmanager/platform/cxx/.../TextLayoutManager.h`        |
+| `TextLayoutManagerKey` in the container | `components/text/BaseParagraphComponentDescriptor.h:16,23`      |
+| `ParagraphState::attributedString`      | `components/text/platform/cxx/.../ParagraphState.h:21-26`       |
+| Paragraph/Text/RawText descriptors      | `components/text/{Paragraph,Text,RawText}ComponentDescriptor.h` |
+
+Three descriptors are registered, not one: `Paragraph` is the laid-out block,
+`Text` a nested span, and `RawText` the string itself. The descriptor pulls the
+layout manager out of the `ContextContainer` by name, so a missing entry throws
+at construction rather than degrading.
+
+Qt Quick's `Text` styles the whole item, so only the first fragment's font size
+and colour are carried; mixed styling inside one paragraph collapses. Recorded
+in `docs/component-support.md`.
+
 ## Input
 
 React Native ships no generic input path: Android reads Choreographer-driven

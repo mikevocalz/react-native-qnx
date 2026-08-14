@@ -1,7 +1,9 @@
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 
 #include <react/renderer/core/LayoutMetrics.h>
+#include <react/renderer/components/text/ParagraphState.h>
 #include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/core/ConcreteState.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/mounting/ShadowView.h>
 
@@ -28,6 +30,46 @@ std::uint32_t packColor(const facebook::react::SharedColor& color) {
       (static_cast<std::uint32_t>(facebook::react::greenFromColor(color))
        << 8) |
       static_cast<std::uint32_t>(facebook::react::blueFromColor(color));
+}
+
+/// Flattens a paragraph's attributed string into plain text.
+///
+/// Per-fragment attributes — font, colour, weight — are measured by the text
+/// layout manager but not yet carried onto the Qt item, so a paragraph renders
+/// with one style. Recorded in docs/component-support.md.
+TextStyle paragraphTextStyle(const ShadowView& view) {
+  using ParagraphState = facebook::react::ParagraphState;
+  const auto* state =
+      dynamic_cast<const facebook::react::ConcreteState<ParagraphState>*>(
+          view.state.get());
+  TextStyle style;
+  if (state == nullptr) {
+    return style;
+  }
+
+  bool first = true;
+  for (const auto& fragment : state->getData().attributedString.getFragments()) {
+    if (fragment.isAttachment()) {
+      continue;
+    }
+    style.text += QString::fromStdString(fragment.string);
+
+    // Qt Quick's Text styles the whole item, so only the first fragment's
+    // attributes are carried. Mixed styling inside one paragraph is a gap in
+    // docs/component-support.md rather than a silent approximation.
+    if (first) {
+      first = false;
+      if (!std::isnan(fragment.textAttributes.fontSize)) {
+        style.fontSize = static_cast<float>(fragment.textAttributes.fontSize);
+      }
+      if (facebook::react::isColorMeaningful(
+              fragment.textAttributes.foregroundColor)) {
+        style.hasColor = true;
+        style.color = packColor(fragment.textAttributes.foregroundColor);
+      }
+    }
+  }
+  return style;
 }
 
 }  // namespace
@@ -92,6 +134,13 @@ void ShadowViewMutationAdapter::mapComponent(
   componentTypes_.insert(componentName, qmlTypeName);
 }
 
+void ShadowViewMutationAdapter::applyText(const ShadowView& view) {
+  const TextStyle style = paragraphTextStyle(view);
+  if (!style.text.isEmpty()) {
+    layer_.updateText(view.tag, style);
+  }
+}
+
 void ShadowViewMutationAdapter::registerEventEmitter(const ShadowView& view) {
   if (touchDispatcher_ == nullptr) {
     return;
@@ -133,6 +182,7 @@ MountError ShadowViewMutationAdapter::applyOne(
         return layoutError;
       }
       registerEventEmitter(view);
+      applyText(view);
       return layer_.updateStyle(view.tag, toViewStyle(view));
     }
 
@@ -158,6 +208,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (layoutError != MountError::None) {
         return layoutError;
       }
+      applyText(view);
       return layer_.updateStyle(view.tag, toViewStyle(view));
     }
   }

@@ -52,6 +52,16 @@ struct ViewStyle {
   std::uint32_t borderColor{0};
 };
 
+/// The text attributes this platform carries onto a text item. Mirrored from
+/// facebook::react::TextAttributes; only the first fragment's values are used,
+/// because Qt Quick's `Text` styles the whole item.
+struct TextStyle {
+  QString text;
+  float fontSize{0.0F};
+  bool hasColor{false};
+  std::uint32_t color{0};
+};
+
 enum class MountError : std::uint8_t {
   None,
   UnknownComponentType,
@@ -109,6 +119,11 @@ class QtQuickMountingLayer {
   /// expresses that Rectangle cannot is an honest gap in
   /// docs/component-support.md rather than a silent approximation.
   MountError updateStyle(Tag tag, const ViewStyle& style);
+
+  /// Sets the string a text item displays. Qt Quick's `Text` exposes `text` as
+  /// a QML property, so this goes through the metaobject like the other visual
+  /// props; a component whose QML source has no `text` property is unaffected.
+  MountError updateText(Tag tag, const TextStyle& style);
 
   /// Borrowed; nullptr when the tag is not mounted.
   QQuickItem* itemForTag(Tag tag) const;

@@ -679,3 +679,31 @@ validate:macos`.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — `Text`, the
   most conspicuous remaining gap.
+
+## 2026-08-14 – Text
+
+- **Goal:** Display a string, the most conspicuous remaining gap.
+- **Implemented:** the Paragraph/Text/RawText descriptors registered, the
+  `TextLayoutManager` placed in the `ContextContainer` under the name
+  `BaseParagraphComponentDescriptor.h:23` looks for, the paragraph's
+  `AttributedString` flattened onto a Qt Quick `Text` item, and the first
+  fragment's font size and colour carried across.
+- **The measurement is ours.** React Native's generic C++ `TextLayoutManager`
+  returns `layoutConstraints.minimumSize` — it does not measure — so every
+  `<Text>` would have collapsed to nothing. This platform substitutes its own,
+  measured with `QFontMetricsF`, the same substitution Android and Apple make.
+  React Native's header is unchanged; only the definitions are replaced.
+- **Mutation check:** changing the app's `fontSize` to 12 fails the test on the
+  item's pixel size.
+- **A bug found by looking at the screenshot:** the first render showed no text,
+  even though every test passed. `rnqnx_playground_host` registered only the
+  `View` QML type and never mapped `Paragraph`, while the test fixture had both.
+  Two entry points, one of them missing setup — the tests could not have caught
+  it. Fixed in the runner.
+- **Gaps recorded, not hidden:** one style per paragraph, because Qt Quick's
+  `Text` styles the whole item; single-line measurement, so wrapped text reports
+  one line's height; no ellipsis for `numberOfLines`; zero-sized attachments.
+- **Results:** CTest 9/9 with Hermes, 7/7 default, seventeen host cases.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — finish
+  `Text` (mixed styling, wrapping) or move to `Image`.
