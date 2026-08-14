@@ -25,6 +25,7 @@
 
 #include <QByteArray>
 #include <QColor>
+#include <QImage>
 #include <QGuiApplication>
 #include <QList>
 #include <QQmlEngine>
@@ -142,6 +143,7 @@ class Fixture {
   ~Fixture() { host_.stopSurface(kSurfaceId); }
 
   QtReactHost& host() { return host_; }
+  QQuickWindow& window() { return window_; }
   ComponentBuilder& builder() { return builder_; }
   QtQuickMountingLayer& layer() { return layer_; }
   QQuickItem& root() { return *window_.contentItem(); }
@@ -552,6 +554,74 @@ void aSuccessfulRenderReportsNoErrors() {
   }
 }
 
+#ifdef RNQNX_PLAYGROUND_BUNDLE_PATH
+/// The tree is actually painted, not merely configured.
+///
+/// Every other test asserts item properties, which proves the mounting layer
+/// set them. This one renders the scene graph and reads pixels back, which is
+/// the only thing that proves Qt Quick drew what those properties describe.
+void renderedTreeIsPainted() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  auto& window = fixture.window();
+  window.setWidth(640);
+  window.setHeight(480);
+  // A white backdrop makes an unpainted region obvious rather than ambiguous.
+  window.setColor(QColor(Qt::white));
+  window.show();
+
+  fixture.host().startSurface(kSurfaceId, "RNQnxPlayground", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  const QImage frame = window.grabWindow();
+  if (frame.isNull()) {
+    fail(
+        "window.grabWindow() produced a frame",
+        __FILE__,
+        __LINE__,
+        "the platform plugin rendered nothing");
+  }
+
+  const qreal scale = frame.width() / 640.0;
+  const auto pixelAt = [&frame, scale](int x, int y) {
+    return frame.pixelColor(
+        static_cast<int>(x * scale), static_cast<int>(y * scale));
+  };
+
+  // The outer view is 320x180 at the origin and painted #204080.
+  const QColor outer = pixelAt(160, 90);
+  EXPECT(outer.red() == 0x20);
+  EXPECT(outer.green() == 0x40);
+  EXPECT(outer.blue() == 0x80);
+
+  // Outside it, the window's own colour shows through, so the view is bounded
+  // rather than filling the surface.
+  const QColor outside = pixelAt(500, 400);
+  EXPECT(outside.red() > 0xF0 && outside.green() > 0xF0 && outside.blue() > 0xF0);
+
+  // The inner view is #ff8800 at 50% opacity over the outer view, so the
+  // composite is roughly halfway between the two — proof the opacity was
+  // applied by the renderer rather than only stored on the item.
+  const QColor inner = pixelAt(32, 16);
+  EXPECT(inner.red() > outer.red());
+  EXPECT(inner.red() < 0xFF);
+  EXPECT(inner != outer);
+}
+#endif
+
 struct TestCase {
   const char* name;
   std::function<void()> run;
@@ -586,6 +656,7 @@ int main(int argc, char** argv) {
       {"javaScriptErrorsReachTheHost", javaScriptErrorsReachTheHost},
 #ifdef RNQNX_PLAYGROUND_BUNDLE_PATH
       {"aSuccessfulRenderReportsNoErrors", aSuccessfulRenderReportsNoErrors},
+      {"renderedTreeIsPainted", renderedTreeIsPainted},
 #endif
 #endif
   };

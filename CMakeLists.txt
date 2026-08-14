@@ -219,6 +219,18 @@ else()
           target_compile_definitions(qt_react_host_host_test PRIVATE
             RNQNX_PLAYGROUND_BUNDLE_PATH="${RNQNX_PLAYGROUND_BUNDLE}")
 
+          # A runnable window, so the rendered app can be looked at rather than
+          # only asserted. Also renders to a PNG for machines with no display.
+          add_executable(rnqnx_playground_host vnext/probes/playground/main.cpp)
+          target_link_libraries(rnqnx_playground_host PRIVATE rnqnx_react_host)
+          rnqnx_enable_strict_warnings(rnqnx_playground_host)
+          add_dependencies(rnqnx_playground_host rnqnx_playground_bundle)
+          target_compile_definitions(rnqnx_playground_host PRIVATE
+            RNQNX_PLAYGROUND_BUNDLE_PATH="${RNQNX_PLAYGROUND_BUNDLE}")
+          set_target_properties(rnqnx_playground_host PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+          )
+
           add_test(NAME qt_react_host_host_test
             COMMAND $<TARGET_FILE:qt_react_host_host_test> -platform offscreen)
         endif()

@@ -1,8 +1,9 @@
 # Component Support
 
 What actually works, on the macOS development host, driven by a real React
-Native bundle. Nothing in this table has been cross-compiled for QNX or run on a
-Raspberry Pi 4; the rendering surface is Qt's offscreen QPA plugin.
+Native bundle and verified by reading pixels back from a rendered frame.
+Nothing in this table has been cross-compiled for QNX or run on a Raspberry
+Pi 4.
 
 Legend: ✅ works and is covered by a host test · ⚠ partial, with the limit named
 · ❌ not implemented.

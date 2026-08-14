@@ -572,3 +572,29 @@ validate:macos`.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — render on
   glass in a real window, then input.
+
+## 2026-08-14 – On glass
+
+- **Goal:** Prove the rendered tree is painted, not merely configured, and give
+  a person something to look at.
+- **Implemented:** `renderedTreeIsPainted` shows a `QQuickWindow`, renders the
+  playground bundle, grabs the frame, and reads pixels. Also
+  `rnqnx_playground_host`, which runs the same app in a real window or writes a
+  PNG with `--screenshot` for machines with no display.
+- **Asserted from pixels:** the outer view's centre is exactly `#204080`; a
+  point outside it is the window's white backdrop, so the view is bounded; and
+  the inner view's pixel sits between the two colours, which is the 50% opacity
+  being composited by the renderer rather than only stored on the item.
+- **Useful discovery:** `grabWindow` works under the offscreen platform plugin,
+  so the pixel test runs headless and does not need a display.
+- **Mutation check:** changing the app's colour to `#804020` fails on
+  `outer.red() == 0x20`.
+- **Looked at it:** the rendered frame is a 320x180 blue rounded rectangle with
+  a half-transparent orange child in its corner, on white — which is what the
+  JSX says.
+- **Also updated:** the README's scope section, which still described the
+  repository as a Screen probe with no renderer.
+- **Results:** CTest 9/9 with Hermes, 7/7 default, sixteen host cases.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — input, so
+  the rendered app can respond to something.

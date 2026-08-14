@@ -122,6 +122,10 @@ Background colour, corner radius, border, and opacity are applied too, so the
 rendered tree is visible rather than merely correctly sized.
 `docs/component-support.md` is the honest table of what works.
 
+The result is verified on glass: `renderedTreeIsPainted` grabs a rendered frame
+and reads pixels, and `rnqnx_playground_host` shows the same app in a real
+window or writes a PNG.
+
 JavaScript errors are reported to the host rather than aborting the process:
 `QnxExceptionsManager` implements React Native's ExceptionsManager over the
 generated spec, and a healthy render is asserted to report nothing.

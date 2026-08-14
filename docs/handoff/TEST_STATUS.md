@@ -1,5 +1,25 @@
 # TEST_STATUS.md
 
+## The tree is painted, not just configured — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default; sixteen host cases.
+- `renderedTreeIsPainted` renders the playground bundle into a shown
+  `QQuickWindow`, grabs the frame, and reads pixels back. Every other test
+  asserts item properties, which only proves the mounting layer set them; this
+  is the one that proves Qt Quick drew what they describe.
+- Asserted: the outer view's centre is exactly `#204080`; a point outside it is
+  the window's white backdrop, so the view is bounded rather than filling the
+  surface; and the inner view's pixel sits between the two colours, which is the
+  50% opacity being composited by the renderer rather than merely stored.
+- `grabWindow` works under the offscreen platform plugin, so this runs headless.
+- Mutation check: changing the app's colour to `#804020` fails on
+  `outer.red() == 0x20`.
+- `rnqnx_playground_host` renders the same app in a real window, or writes a PNG
+  with `--screenshot`. The rendered frame shows a 320x180 blue rounded rectangle
+  with a half-transparent orange child, matching the JSX.
+- Evidence level: host only. Nothing cross-compiled for QNX, nothing run on the
+  Pi 4.
+
 ## JavaScript errors reach the host — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default; fifteen host cases.

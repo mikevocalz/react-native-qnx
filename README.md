@@ -9,21 +9,31 @@ Nitro Modules/Nitrogen 0.36.5.
 
 Build an upstream-conscious React Native platform that runs on QNX Neutrino,
 using Qt Quick component views over Qt's QNX QPA/Screen integration, Fabric for
-mounting, Yoga for layout, and Hermes as the JavaScript engine. The current
-direct-Screen executable is a window-system probe, not the component backend.
-Nitro Modules and Expo are selected integration targets, but their installed
-upstream packages do not currently provide QNX support; those seams must be
-implemented and validated in this repository.
+mounting, Yoga for layout, and Hermes as the JavaScript engine. The direct-Screen
+executable is a window-system probe, not the component backend. Nitro Modules
+are the module architecture for application-facing APIs; Expo is a selected
+integration target. Neither upstream package provides QNX support today, so
+those seams are implemented and validated here.
 
 ## Current scope
 
-The repository is in **Milestone 0: Compatibility and Toolchain**. It currently provides the workspace structure, dependency/source-contract validation, CMake presets, QNX toolchain scripts, a concrete QNX Screen surface, and host-side tests for that surface.
+**A React Native app renders.** On the macOS development host, Metro bundles
+`apps/rn-playground` for the `qnx` platform, Hermes evaluates it, React
+reconciles, and the tree is painted as Qt Quick items with Yoga's layout and the
+styles the JSX declares. That path is covered by host tests that read pixels
+back from a rendered frame, and `rnqnx_playground_host` shows it in a window.
 
-macOS and Linux are supported for host authoring and validation. A real QNX
-configure, compile, deploy, or runtime result still requires a licensed QNX SDP
-8.0 installation on a supported host; x86-64 Ubuntu 22.04 is the canonical
-QNX/Qt cross-build environment for this repository. Host tests do not
-constitute QNX proof.
+What exists: React Native's renderer built from source, a Qt Quick mounting
+layer, the `ShadowViewMutation` adapter, a Hermes runtime host with the
+scheduler, event beat, component registry and TurboModule adapter React Native
+requires, the JavaScript platform package, and a Metro configuration.
+`docs/component-support.md` is the honest table of what works — today that is
+`View` with layout, background, radius, border and opacity, and little else.
+
+**None of this has run on QNX.** Every result is from the development host
+(`docs/adr/0010-macos-qt-development-host.md`). A real QNX configure, compile,
+deploy, or runtime result requires a licensed QNX SDP on a supported host and a
+target; see `docs/handoff/BLOCKERS.md`. Host tests are not QNX proof.
 
 See `docs/handoff/CURRENT_STATE.md`, `docs/handoff/QNX_VALIDATION_QUEUE.md`, and `.project-state.json` for the latest state.
 
@@ -76,6 +86,28 @@ and passes everything else, and CMake reports the skip. Set `CMAKE_PREFIX_PATH`
 if Qt is installed somewhere CMake does not search by default. Host Qt is a
 development dependency under `docs/adr/0010-macos-qt-development-host.md`; the
 QNX target still builds the pinned Qt LTS from source.
+
+## Run the playground
+
+The playground is a React Native app rendered by this platform. Building it
+requires Qt and Hermes:
+
+```bash
+cmake -S . -B build/playground -G Ninja -DCMAKE_BUILD_TYPE=Debug -DRNQNX_BUILD_HERMES=ON
+cmake --build build/playground --target rnqnx_playground_host
+./build/playground/bin/rnqnx_playground_host
+```
+
+Metro bundles `apps/rn-playground` for the `qnx` platform as part of the build.
+On a machine with no display, render one frame to a file instead:
+
+```bash
+./build/playground/bin/rnqnx_playground_host -platform offscreen --screenshot frame.png
+```
+
+This runs on the development host, not on QNX. See
+`docs/adr/0010-macos-qt-development-host.md` for what that does and does not
+prove, and `docs/component-support.md` for what actually works.
 
 ## Build and deploy on QNX
 
