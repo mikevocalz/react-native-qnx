@@ -84,6 +84,7 @@ set(RNQNX_REACT_NATIVE_MODULES
   react/renderer/observers/events
   react/performance/timeline
   react/timing
+  react/renderer/componentregistry/native
   react/renderer/viewtransition
   react/renderer/animationbackend
   react/performance/cdpmetrics
@@ -199,6 +200,7 @@ set(RNQNX_REACT_NATIVE_RENDERER_TARGETS
   react_renderer_mounting
   react_performance_timeline
   react_timing
+  rrc_native
   react_renderer_viewtransition
   react_codegen_rncore
   react_renderer_animationbackend

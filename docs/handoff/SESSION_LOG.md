@@ -372,3 +372,31 @@ validate:macos`.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — a bundle,
   which needs `bindHasComponentProvider` and a minimal JS entry point first.
+
+## 2026-08-14 – JavaScript drives the renderer
+
+- **Goal:** Close the last gap that does not need a bundler: let JavaScript
+  build a view tree and have it mount.
+- **Implemented:** `installComponentProvider()` binds React Native's component
+  predicate (`bindHasComponentProvider`), normalising React view names through
+  `componentNameByReactViewName` so `RCTView` resolves to `View`. The answer
+  comes from `registeredComponentNames()`, one list shared with the registry
+  factory, because `ComponentDescriptorRegistry` has no name-based existence
+  check and a fallback makes `at()` unable to answer.
+- **Proven:** a script calling `nativeFabricUIManager.createNode`,
+  `createChildSet`, `appendChildToSet`, and `completeRoot` — the same binding
+  surface React's renderer drives — mounts a Qt Quick item sized by Yoga from
+  props JavaScript supplied.
+- **Commands executed:** audit of `UIManagerBinding.cpp` for the exposed JS
+  methods and their argument shapes; added the `rrc_native` module for the
+  predicate binding; build and `ctest` in both configurations; a deliberate
+  mutation of the expected width; `pnpm validate:macos`.
+- **Results:** CTest 9/9 with Hermes, 7/7 default. Expecting 161 where
+  JavaScript passed 160 failed the case, so the value really travels from JS
+  through Yoga to the item.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Remaining before a real app:** Metro, an entry point installing
+  `global.RN$AppRegistry`, timers/JS thread if `ReactInstance` is adopted, and
+  props beyond layout.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3, step 1 —
+  `metro-config-qnx`.

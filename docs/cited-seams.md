@@ -215,6 +215,33 @@ Four behaviours found by running this, all React Native's:
   Apple-flavoured generation, and anything past the core component set needs
   React Native's codegen run properly.
 
+## The JavaScript binding surface
+
+`nativeFabricUIManager` is what React's renderer drives, and driving it directly
+proves the JavaScript-to-mount path without React or a bundle in the way:
+
+| JS method          | Installed authority            | Arguments                                            |
+| ------------------ | ------------------------------ | ---------------------------------------------------- |
+| `createNode`       | `UIManagerBinding.cpp:219-252` | tag, componentName, surfaceId, props, instanceHandle |
+| `createChildSet`   | `UIManagerBinding.cpp:424-438` | none                                                 |
+| `appendChildToSet` | `UIManagerBinding.cpp:441-460` | childSet, node                                       |
+| `completeRoot`     | `UIManagerBinding.cpp:462-…`   | surfaceId, childSet                                  |
+
+`instanceHandle` must be an object; React Native asserts on a null one
+(`UIManagerBinding.cpp:234-238`).
+
+The component predicate JavaScript uses to ask whether a native component
+exists is `bindHasComponentProvider`
+(`componentregistry/native/NativeComponentRegistryBinding.h:26`, built from the
+`rrc_native` module). Names arrive as React view names, so they are normalised
+through `componentNameByReactViewName` first — that function strips an `RCT`
+prefix and rewrites `Text`, `VirtualText`, and `ImageView`.
+
+`ComponentDescriptorRegistry` offers no name-based existence check, and with a
+fallback installed `at()` never throws, so it cannot answer the predicate. The
+answer comes from `registeredComponentNames()`, the same list the registry
+factory registers from, so the two cannot drift apart.
+
 ## Shadow-tree pipeline seams
 
 The end-to-end host test drives React Native's own machinery rather than

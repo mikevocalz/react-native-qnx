@@ -3,6 +3,8 @@
 #include <hermes/hermes.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <react/renderer/componentregistry/componentNameByReactViewName.h>
+#include <react/renderer/componentregistry/native/NativeComponentRegistryBinding.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
@@ -17,6 +19,7 @@
 #include <QCoreApplication>
 #include <QMetaObject>
 
+#include <algorithm>
 #include <utility>
 
 namespace rnqnx::runtime {
@@ -145,6 +148,15 @@ void QtSchedulerDelegate::schedulerDidSetViewSnapshot(
     facebook::react::SurfaceId /*surfaceId*/) {}
 
 void QtSchedulerDelegate::schedulerDidClearPendingSnapshots() {}
+
+std::vector<std::string> registeredComponentNames() {
+  // One list, used by both the registry factory and the JavaScript predicate,
+  // so the two cannot drift apart.
+  return {
+      std::string(RootComponentDescriptor::ConcreteShadowNode::Name()),
+      std::string(ViewComponentDescriptor::ConcreteShadowNode::Name()),
+  };
+}
 
 facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
   return [](const facebook::react::EventDispatcher::Weak& eventDispatcher,
@@ -297,6 +309,29 @@ bool QtReactHost::evaluate(
     impl_->lastError = QString::fromUtf8(error.what());
     return false;
   }
+}
+
+bool QtReactHost::hasComponent(const std::string& componentName) const {
+  // JavaScript asks for the React view name; the registry holds the component
+  // name. componentNameByReactViewName is React Native's own mapping, which
+  // strips an RCT prefix and rewrites Text/VirtualText/ImageView
+  // (componentregistry/componentNameByReactViewName.cpp).
+  const auto unified =
+      facebook::react::componentNameByReactViewName(componentName);
+
+  // ComponentDescriptorRegistry offers no name-based existence check, and with
+  // a fallback installed `at()` never throws, so it cannot answer this. The
+  // answer therefore comes from the same list the registry factory registers —
+  // see registeredComponentNames(), which both use.
+  const auto names = registeredComponentNames();
+  return std::find(names.begin(), names.end(), unified) != names.end();
+}
+
+void QtReactHost::installComponentProvider() {
+  facebook::react::bindHasComponentProvider(
+      *impl_->runtime, [this](const std::string& name) {
+        return hasComponent(name);
+      });
 }
 
 bool QtReactHost::hasFabricUIManager() {

@@ -106,6 +106,11 @@ class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
 /// anywhere in the package, so every platform supplies its own. Unknown
 /// components resolve to the unimplemented-native-view descriptor rather than throwing
 /// `std::invalid_argument` out of ComponentDescriptorRegistry::at.
+/// The component names this platform registers. One list, shared by the
+/// registry factory and the JavaScript component predicate so they cannot
+/// drift apart.
+std::vector<std::string> registeredComponentNames();
+
 facebook::react::ComponentRegistryFactory makeComponentRegistryFactory();
 
 /// Owns a Hermes runtime and the React Native scheduler wired to Qt Quick.
@@ -136,6 +141,18 @@ class QtReactHost {
   /// True when `global.nativeFabricUIManager` is installed, which is what
   /// proves the UIManagerBinding reached the runtime.
   bool hasFabricUIManager();
+
+  /// Installs the predicate JavaScript view configs use to ask whether a native
+  /// component exists
+  /// (componentregistry/native/NativeComponentRegistryBinding.h:26). React
+  /// Native ships this only for Android and Apple. Names are normalised through
+  /// `componentNameByReactViewName` first, because JavaScript asks for `RCTView`
+  /// where the registry holds `View`.
+  void installComponentProvider();
+
+  /// Whether a component name resolves after normalisation. Exposed so a test
+  /// can assert the predicate directly rather than only through JavaScript.
+  bool hasComponent(const std::string& componentName) const;
 
   /// Starts a surface with no JavaScript module attached. React Native calls
   /// this an empty surface (SurfaceHandler.cpp:72); it exists so a platform can

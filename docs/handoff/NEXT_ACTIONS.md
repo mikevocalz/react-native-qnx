@@ -83,41 +83,33 @@ until every called source symbol exists in that checkout.
 **Dependency:** QNX-RN-008, because feasibility must be tested with the actual
 compiler and sysroot.
 
-## 3. Load a real bundle
+## 3. Produce and load a real bundle
 
-**Done:** the runtime and renderer are connected. `QtReactHost` builds React
-Native's `Scheduler` on a Hermes runtime with our `EventBeat`, component
-registry factory, and `SchedulerDelegate`; surface commits mount onto Qt Quick
-items with Yoga's geometry. Three of the five previously missing pieces are
-implemented; the other two are avoided rather than faked, and both come back
-with a real bundle.
+**Done:** JavaScript drives the renderer. The component predicate
+(`bindHasComponentProvider`) is installed, and a script calling
+`nativeFabricUIManager.createNode`, `createChildSet`, `appendChildToSet`, and
+`completeRoot` mounts a Qt Quick item with Yoga's geometry.
 
 **What remains:**
 
-1. **`bindHasComponentProvider`**
-   (`componentregistry/native/NativeComponentRegistryBinding.h:26`). JS view
-   configs ask whether a native component exists; without it `View` will not
-   resolve from JavaScript. The predicate should normalise through
-   `componentNameByReactViewName` before answering.
+1. **Metro.** Nothing produces a bundle yet. `metro-config-qnx` with `qnx` added
+   to `resolver.platforms`, then `bundle-qnx` in the CLI. Pure TypeScript, no
+   device.
 2. **A JavaScript entry point.** `AppRegistryBinding::startSurface` throws
    unless the bundle installed `global.RN$AppRegistry`
-   (`AppRegistryBinding.cpp:30-32`), and `stopSurface` needs
-   `global.RN$stopSurface`. The host currently installs a no-op for the latter
-   so empty surfaces can stop; a real bundle replaces it. Start with a minimal
-   entry that calls `AppRegistry.registerComponent` directly rather than
-   importing all of `react-native`, which drags in TurboModule expectations.
-3. **`MessageQueueThread` and `PlatformTimerRegistry`**, if and when
-   `ReactInstance` is adopted. The host drives the runtime directly today, which
-   is why they are not needed yet — a real JS thread changes that.
-4. **Metro.** A bundle has to be produced before it can be loaded:
-   `metro-config-qnx` with `qnx` in `resolver.platforms`, and `bundle-qnx` in
-   the CLI. Neither needs a device.
-5. **Props past layout.** Backgrounds, borders, opacity, and transforms, each
+   (`AppRegistryBinding.cpp:30-32`). Start minimal — `AppRegistry
+.registerComponent` and React's Fabric renderer — rather than importing all
+   of `react-native`, which drags in TurboModule expectations the host cannot
+   satisfy yet.
+3. **`MessageQueueThread` and `PlatformTimerRegistry`**, if `ReactInstance` is
+   adopted. The host drives the runtime directly today; a real JS thread changes
+   that, and React's scheduler will want timers.
+4. **Props past layout.** Backgrounds, borders, opacity, and transforms, each
    recorded in `docs/component-support.md`.
 
-**Acceptance criteria:** a React bundle renders a `<View>` tree into a Qt Quick
-window on the development host, with existing host cases green. No QNX toolchain
-or device required, and no result from it promotes a QNX validation row.
+**Acceptance criteria:** a Metro-produced bundle renders a React `<View>` tree
+into a Qt Quick window on the development host, with existing host cases green.
+No QNX toolchain or device required.
 
 ## 4. Design Nitro, Expo Modules, and Metro QNX extensions separately
 

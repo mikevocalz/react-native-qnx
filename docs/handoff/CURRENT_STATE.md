@@ -92,8 +92,15 @@ component registry factory, and a `SchedulerDelegate` that mounts from
 `schedulerShouldRenderTransactions`. Surface commits flow through React Native's
 own UIManager and land on Qt Quick items with Yoga's geometry.
 
-What is still missing between here and a running app: React itself. No bundle is
-loaded, so nothing exercises `AppRegistry`, the JS renderer, or TurboModules,
+JavaScript now drives the tree. A script calling
+`nativeFabricUIManager.createNode`/`createChildSet`/`appendChildToSet`/
+`completeRoot` — the surface React's own renderer drives — produces a Qt Quick
+item whose geometry Yoga computed from props JavaScript supplied. The component
+predicate JavaScript uses to resolve native components is installed too.
+
+What is still missing between here and a running app: React itself, and Metro.
+The JavaScript is hand-written against the binding rather than produced by a
+bundler, so nothing exercises `AppRegistry`, React's renderer, or TurboModules,
 and props beyond layout are still unconsumed. The tree is
 committed from C++, so there is no Hermes runtime, no bundle, and no
 `UIManagerBinding`. Props beyond layout are also unconsumed. Neither gap needs

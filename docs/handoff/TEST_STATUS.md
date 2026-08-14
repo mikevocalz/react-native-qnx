@@ -1,5 +1,24 @@
 # TEST_STATUS.md
 
+## JavaScript drives the tree — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default. `qt_react_host_host_test` is now nine
+  cases.
+- `javaScriptBuildsTheTreeThroughFabricUIManager` runs JavaScript that calls
+  `nativeFabricUIManager.createNode`, `createChildSet`, `appendChildToSet`, and
+  `completeRoot` — the same binding surface React's renderer drives — and a Qt
+  Quick item appears with Yoga's geometry computed from props JavaScript
+  supplied.
+- `componentPredicateAnswersForRegisteredNames` covers
+  `bindHasComponentProvider`, including the `RCTView` to `View` normalisation
+  and a negative case.
+- Mutation check: expecting 161 instead of the 160 JavaScript passed failed the
+  case with `160 != 161`, so the number really travels from JS through Yoga to
+  the item.
+- Evidence level: host only. This is not React and not a bundle — the JavaScript
+  is hand-written against the binding. Nothing has been cross-compiled for QNX
+  or run on the Pi 4.
+
 ## Runtime and renderer wired together — 2026-08-14
 
 - CTest is 9/9 with `-DRNQNX_BUILD_HERMES=ON` and 7/7 by default. New:

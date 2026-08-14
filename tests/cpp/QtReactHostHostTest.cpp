@@ -285,6 +285,58 @@ void commitToAnUnknownSurfaceIsReported() {
   EXPECT(fixture.host().lastError().contains(QStringLiteral("9999")));
 }
 
+void componentPredicateAnswersForRegisteredNames() {
+  Fixture fixture;
+  fixture.host().installComponentProvider();
+
+  EXPECT(fixture.host().hasComponent("View"));
+  // JavaScript asks with the RCT prefix; React Native's normaliser strips it.
+  EXPECT(fixture.host().hasComponent("RCTView"));
+  EXPECT(fixture.host().hasComponent("RootView"));
+  EXPECT(!fixture.host().hasComponent("Slider"));
+}
+
+void javaScriptBuildsTheTreeThroughFabricUIManager() {
+  Fixture fixture;
+  fixture.host().installComponentProvider();
+  fixture.host().startEmptySurface(kSurfaceId, 640.0F, 480.0F);
+
+  // This is the binding surface React's renderer drives: createNode,
+  // createChildSet, appendChildToSet, completeRoot
+  // (UIManagerBinding.cpp:219, 424, 441, 462). Driving it directly proves the
+  // JavaScript-to-mount path without React or a bundle in the way.
+  const std::string script = R"JS(
+    const fabric = globalThis.nativeFabricUIManager;
+    const surfaceId = )JS" +
+      std::to_string(kSurfaceId) + R"JS(;
+    const node = fabric.createNode(
+      501,
+      'View',
+      surfaceId,
+      { width: 160, height: 80, collapsable: false },
+      {}
+    );
+    const childSet = fabric.createChildSet();
+    fabric.appendChildToSet(childSet, node);
+    fabric.completeRoot(surfaceId, childSet);
+    globalThis.didComplete = true;
+  )JS";
+
+  EXPECT(fixture.host().evaluate(script, "fabric-drive.js"));
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+
+  auto& runtime = fixture.host().runtime();
+  const auto completed = runtime.global().getProperty(runtime, "didComplete");
+  EXPECT(completed.isBool() && completed.getBool());
+
+  QQuickItem* item = fixture.layer().itemForTag(501);
+  EXPECT(item != nullptr);
+  EXPECT(item->parentItem() == &fixture.root());
+  // The geometry is Yoga's, computed from props JavaScript supplied.
+  EXPECT_NEAR(item->width(), 160.0);
+  EXPECT_NEAR(item->height(), 80.0);
+}
+
 struct TestCase {
   const char* name;
   std::function<void()> run;
@@ -306,6 +358,10 @@ int main(int argc, char** argv) {
       {"secondCommitUpdatesTheSameItem", secondCommitUpdatesTheSameItem},
       {"stoppingASurfaceUnmountsItsItems", stoppingASurfaceUnmountsItsItems},
       {"commitToAnUnknownSurfaceIsReported", commitToAnUnknownSurfaceIsReported},
+      {"componentPredicateAnswersForRegisteredNames",
+       componentPredicateAnswersForRegisteredNames},
+      {"javaScriptBuildsTheTreeThroughFabricUIManager",
+       javaScriptBuildsTheTreeThroughFabricUIManager},
   };
 
   int failed = 0;
