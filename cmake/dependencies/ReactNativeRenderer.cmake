@@ -84,6 +84,7 @@ set(RNQNX_REACT_NATIVE_MODULES
   react/renderer/observers/events
   react/performance/timeline
   react/timing
+  react/renderer/element
   react/renderer/leakchecker
   react/renderer/textlayoutmanager
   react/renderer/attributedstring
@@ -142,6 +143,7 @@ set(RNQNX_REACT_NATIVE_RENDERER_TARGETS
   react_renderer_mounting
   react_performance_timeline
   react_timing
+  react_renderer_element
   react_renderer_leakchecker
   react_renderer_textlayoutmanager
   react_renderer_attributedstring

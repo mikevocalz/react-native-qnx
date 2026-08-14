@@ -181,6 +181,21 @@ else()
         add_test(NAME shadow_view_mutation_adapter_host_test
           COMMAND $<TARGET_FILE:shadow_view_mutation_adapter_host_test>
                   -platform offscreen)
+
+        # The full pipeline: a real ShadowTree commit, React Native's differ,
+        # MountingCoordinator, the adapter, and Yoga's geometry on Qt items.
+        add_executable(shadow_tree_mounting_host_test
+          tests/cpp/ShadowTreeMountingHostTest.cpp
+        )
+        target_link_libraries(shadow_tree_mounting_host_test
+          PRIVATE rnqnx_fabric_adapter)
+        rnqnx_enable_strict_warnings(shadow_tree_mounting_host_test)
+        set_target_properties(shadow_tree_mounting_host_test PROPERTIES
+          RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        )
+        add_test(NAME shadow_tree_mounting_host_test
+          COMMAND $<TARGET_FILE:shadow_tree_mounting_host_test>
+                  -platform offscreen)
       endif()
 
       add_executable(qtquick_mounting_layer_host_test

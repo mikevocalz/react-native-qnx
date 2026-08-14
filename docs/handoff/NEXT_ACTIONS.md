@@ -83,34 +83,39 @@ until every called source symbol exists in that checkout.
 **Dependency:** QNX-RN-008, because feasibility must be tested with the actual
 compiler and sysroot.
 
-## 3. Drive the mounting layer from a running surface
+## 3. Run JavaScript: Hermes, a bundle, and UIManagerBinding
 
-**Done:** the platform mounting layer, the third-party dependency recipes, and
-the `ShadowViewMutation` adapter. React Native's renderer headers compile in this
-repository, and `ShadowViewMutationAdapter` applies real mutation lists built
-through React Native's own static factories. Twenty-two host cases cover the two
-layers.
+**Done:** the mounting layer, the third-party recipes, 41 React Native renderer
+modules building from source, the `ShadowViewMutation` adapter, and an
+end-to-end host test that commits a real `ShadowTree` and asserts Yoga's
+geometry on Qt Quick items. Twenty-seven host cases across four executables.
 
-**What remains:** the transactions are still constructed in tests rather than
-pulled from a live surface. To close that gap:
+**What remains, in order:**
 
-1. Stand up a JSI runtime host with Hermes on the development host, load a real
-   React Native 0.86.2 bundle, and install `UIManagerBinding`
-   (`UIManagerBinding::createAndInstallIfNeeded`).
-2. Implement a `SchedulerDelegate` whose `schedulerDidFinishTransaction` calls
-   `MountingCoordinator::pullTransaction` and feeds
-   `MountingTransaction::getMutations()` to the adapter.
-3. Expect the dependency surface to grow: this pulls in the renderer core,
-   Yoga, and the folly sources React Native's `folly_runtime` compiles. Add
-   each only when a link failure names it, and record every addition in the
-   cited-seams ledger.
-4. Extend the adapter past layout. Props are unconsumed today, which is an
-   honest gap in `docs/component-support.md`, not a silent partial update.
+1. **Hermes for the development host.** React Native 0.86.2 identifies
+   `hermes-v250829098.0.16` (`sdks/.hermesv1version`) but ships no Hermes source
+   checkout. Acquire that exact tag and build it for the host with
+   `HERMES_ENABLE_INTL=OFF`, recording the ICU decision as a follow-up rather
+   than a silent dependency.
+2. **Runtime host.** Wire `HermesInstance::createJSRuntime`
+   (`ReactCommon/react/runtime/hermes/HermesInstance.h`), a bundle loader, and
+   `RuntimeScheduler` to the Qt event loop through
+   `QMetaObject::invokeMethod(..., Qt::QueuedConnection)`.
+3. **UIManager.** Install `UIManagerBinding::createAndInstallIfNeeded` and
+   implement a `SchedulerDelegate` whose `schedulerDidFinishTransaction` calls
+   `MountingCoordinator::pullTransaction` and feeds the existing adapter. The
+   adapter and mounting layer need no changes for this.
+4. **Codegen artifacts.** `FBReactNativeSpec` is generated, not shipped, which is
+   why modal and text descriptors cannot be registered yet. Run React Native's
+   codegen before extending the component set past `View`.
+5. **Props past layout.** The adapter applies geometry only. Backgrounds,
+   borders, opacity, and transforms are the next honest additions, each recorded
+   in `docs/component-support.md`.
 
-**Acceptance criteria:** a real bundle's `<View>` tree mounts and lays out in a
-Qt Quick window on the development host, and the existing host cases still pass.
-No QNX toolchain or device is required, and no result from it promotes a QNX
-validation row.
+**Acceptance criteria:** a real React Native bundle renders a `<View>` tree in a
+Qt Quick window on the development host, with the existing host cases still
+green. No QNX toolchain or device is required, and no result from it promotes a
+QNX validation row.
 
 ## 4. Design Nitro, Expo Modules, and Metro QNX extensions separately
 

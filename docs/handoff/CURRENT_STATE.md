@@ -74,9 +74,16 @@ React Native's renderer itself builds here now: 41 modules, from Yoga and JSI
 through mounting and the UIManager, compiled from the installed package using
 React Native's own per-module CMake files.
 
-Transactions are still built in tests rather than pulled from a live surface.
-Closing that needs a JSI runtime host and a `SchedulerDelegate`; see
-`NEXT_ACTIONS.md` action 3. It needs no QNX toolchain and no device.
+The pipeline is now proven end to end on the host. `shadow_tree_mounting_host_test`
+commits a real `ShadowTree`, lets React Native's differ compute the mutations,
+pulls them through `MountingCoordinator`, and asserts Yoga's computed geometry —
+fixed sizes, flex distribution, padding offsets, in-place resizes, and unmounts
+— on the resulting Qt Quick items.
+
+What is still missing between here and a running app: JavaScript. The tree is
+committed from C++, so there is no Hermes runtime, no bundle, and no
+`UIManagerBinding`. Props beyond layout are also unconsumed. Neither gap needs
+the QNX toolchain or a device; see `NEXT_ACTIONS.md` action 3.
 
 This is host evidence. The QNX QPA plugin, the pinned Qt LTS, the cross-build,
 and every Pi number remain open.

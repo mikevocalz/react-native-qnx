@@ -252,3 +252,40 @@ validate:macos`.
   the Differ and `MountingCoordinator` into the adapter, using React Native's
   `react/renderer/element` builder, and assert Yoga's computed layout on the Qt
   items.
+
+## 2026-08-14 – Shadow tree to Qt items, end to end
+
+- **Goal:** Stop hand-building mutation lists and drive the Qt Quick items from
+  React Native's real shadow tree, differ, and mounting coordinator.
+- **Implemented:** `shadow_tree_mounting_host_test` — commits a real
+  `ShadowTree` from C++, pulls the transaction through
+  `MountingCoordinator::pullTransaction`, applies it with the existing adapter,
+  and asserts Yoga's computed geometry on the Qt items. Five cases: fixed size,
+  flex distribution with stacking offsets, padding offsets, in-place resize on a
+  second commit, and unmount on removal.
+- **Findings:**
+  - View flattening. The first run produced exactly one mutation — an Update of
+    the root, sized to the child — and no Create, because React Native flattens
+    views carrying only layout props. The test sets `collapsable = false`
+    (`BaseViewProps.h:107`) and the behaviour is now documented; it is React
+    Native's design, not a defect, and the platform gets it for free.
+  - `react/renderer/element/testUtils.h` cannot be used. Its
+    `simpleComponentBuilder` registers modal and text descriptors that include
+    generated `FBReactNativeSpec` headers, which this repository does not
+    produce. The test registers Root and View descriptors directly.
+  - `ShadowNode::ListOfShared` does not exist in 0.86.2; the type is spelled
+    inline at `ShadowNodeFragment.h:27`.
+- **Commands executed:** installed-header audit of `ShadowTree`,
+  `ShadowTreeDelegate`, `MountingCoordinator`, `ShadowNodeFragment`, and the
+  Yoga style setters; a temporary mutation dump to diagnose the missing
+  mutations; `node scripts/run-cpp-host-tests.mjs`; a deliberate removal of
+  `setY` from the mounting layer; `pnpm validate:macos`.
+- **Results:** CTest 7/7. Removing `setY` failed `flexChildrenSplitTheRootWidth`
+  (`0 != 40`) and `paddingOffsetsChildOrigin` (`0 != 16`) as expected; reverted
+  and re-run green.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Remaining work:** JavaScript. No Hermes runtime, no bundle, no
+  `UIManagerBinding`; the tree is committed from C++. Props beyond layout are
+  unconsumed.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3, step 1 —
+  Hermes at tag `hermes-v250829098.0.16` for the development host.

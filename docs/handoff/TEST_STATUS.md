@@ -1,5 +1,27 @@
 # TEST_STATUS.md
 
+## Shadow tree to Qt items, end to end — 2026-08-14
+
+- CTest is 7/7. New: `shadow_tree_mounting_host_test`, five cases.
+- The pipeline under test is entirely React Native's: a real `ShadowTree` is
+  committed from C++, React Native's differ computes the mutations,
+  `MountingCoordinator::pullTransaction` hands over a `MountingTransaction`, and
+  the adapter applies it to Qt Quick items. The geometry asserted is Yoga's,
+  computed by React Native, not by this repository.
+- Cases: a fixed 120x60 view reaches the item; two flex children split a 160pt
+  column 1:3 with correct stacking offsets; 16pt padding offsets a child's
+  origin; a second commit resizes the same item in place rather than replacing
+  it; removing a child from the tree unmounts its item.
+- Finding: view flattening. The first run produced exactly one mutation, an
+  Update of the root sized to the child, and no Create — React Native flattens
+  views carrying only layout props. The test sets `collapsable = false`, and the
+  behaviour is documented in the cited-seams ledger rather than worked around.
+- Mutation check: removing `setY` from the mounting layer failed
+  `flexChildrenSplitTheRootWidth` (`0 != 40`) and `paddingOffsetsChildOrigin`
+  (`0 != 16`). Reverted and re-run green.
+- Evidence level: host only. No JavaScript runs — the tree is committed from
+  C++ — and nothing has been cross-compiled for QNX or run on the Pi 4.
+
 ## React Native renderer builds from source — 2026-08-14
 
 - 41 React Native 0.86.2 modules now build on the macOS host by adding React

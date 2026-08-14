@@ -85,6 +85,70 @@ supplies the symbols instead.
 React Native sources are no longer compiled one file at a time; the renderer
 modules described above are built as React Native itself defines them.
 
+## React Native renderer modules built from source
+
+`cmake/dependencies/ReactNativeRenderer.cmake` builds 41 React Native modules by
+adding React Native's own per-module `CMakeLists.txt` files rather than
+rewriting them, so source lists, compile flags, and link lists stay owned by
+React Native.
+
+| Element                        | Installed authority                                                               |
+| ------------------------------ | --------------------------------------------------------------------------------- |
+| Platform selection             | `ReactCommon/cmake-utils/internal/react-native-platform-selector.cmake:17-24`     |
+| React Native compile flags     | `ReactCommon/cmake-utils/react-native-flags.cmake`                                |
+| `target_merge_so` (no-op here) | `ReactAndroid/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake:17-19` |
+| Yoga target name               | `ReactCommon/yoga/yoga/CMakeLists.txt` defines `yogacore`, aliased to `yoga`      |
+
+Host-specific handling, none of it a change to React Native's recipes:
+
+- With `ANDROID` unset, React Native's selector picks each module's generic
+  `cxx` implementation — the same path QNX will take.
+- Nine `platform/cxx` directories go on the global include path, matching React
+  Native's Android assembler, because modules such as
+  `react_renderer_componentregistry` reach `HostPlatformViewProps.h` without
+  linking `rrc_view`.
+- Most modules are CMake OBJECT libraries, whose objects are not archived into a
+  static library that links them, so the aggregate target attaches
+  `$<TARGET_OBJECTS:...>` for each.
+- `glog_init` is React Native's Android glog bootstrap and resolves to an empty
+  interface target.
+
+Evidence level: host-compiled and host-linked. None of these modules has been
+cross-compiled with `qcc` or run on the Pi 4.
+
+## Shadow-tree pipeline seams
+
+The end-to-end host test drives React Native's own machinery rather than
+hand-built mutation lists:
+
+| Seam                                      | Installed path and symbol                                           |
+| ----------------------------------------- | ------------------------------------------------------------------- |
+| `ShadowTree` construction                 | `react/renderer/mounting/ShadowTree.h:88-93`                        |
+| `ShadowTree::commit`                      | `react/renderer/mounting/ShadowTree.h:120`                          |
+| `ShadowTreeCommitTransaction`             | `react/renderer/mounting/ShadowTree.h:26`                           |
+| `ShadowTreeDelegate` (four pure virtuals) | `react/renderer/mounting/ShadowTreeDelegate.h`                      |
+| `MountingCoordinator::pullTransaction`    | `react/renderer/mounting/MountingCoordinator.h:64`                  |
+| `ShadowNodeFragment::children`            | `react/renderer/core/ShadowNodeFragment.h:27`                       |
+| Element tree builder                      | `react/renderer/element/{ComponentBuilder,Element}.h`               |
+| Yoga style setters                        | `yoga/style/Style.h:108,136,178,199`; `yoga/style/StyleLength.h:32` |
+| `BaseViewProps::collapsable`              | `react/renderer/components/view/BaseViewProps.h:107`                |
+
+Two behaviours found by running it, both React Native's and neither worked
+around:
+
+- **View flattening is real and silent.** A `<View>` carrying only layout props
+  produces no mount mutation at all; React Native folds its layout into the
+  parent. The first run emitted exactly one mutation — an Update of the root,
+  sized to the child — and no Create. The views under test set
+  `collapsable = false` so the layout assertions have a mounted item to assert
+  against. A platform gets flattening for free, but anyone debugging a missing
+  view needs to know this first.
+- **`react/renderer/element/testUtils.h` is not usable here.** Its
+  `simpleComponentBuilder` registers modal and text descriptors, which include
+  codegen output (`FBReactNativeSpec`) this repository does not generate. The
+  test registers `RootComponentDescriptor` and `ViewComponentDescriptor`
+  directly instead of pretending those artifacts exist.
+
 ## Fabric mount contract mirrored on the host
 
 `QtQuickMountingLayer` exposes the platform half of the mounting layer. Its
