@@ -1,5 +1,30 @@
 # TEST_STATUS.md
 
+## React Native headers and mutation adapter — 2026-08-14
+
+- CTest is 6/6. New: `rnqnx_rn_headers_probe` and
+  `shadow_view_mutation_adapter_host_test` (seven internal cases).
+- React Native 0.86.2 renderer headers compile here for the first time, against
+  fetched folly 2024.11.18.00, fmt 12.1.0, glog 0.3.5, double-conversion 1.1.6,
+  and fast_float 8.0.0. Boost is not needed and is not fetched.
+- `rnqnx_rn_headers_probe` enforces every mirror in the cited-seams ledger with
+  `static_assert`, including the five `ShadowViewMutation::Type` values and the
+  identity of `Tag` and the layout `Float`.
+- The adapter applies real `ShadowViewMutation` values built through React
+  Native's own static factories: create/insert with initial layout, index
+  ordering, update, remove-then-delete, nested trees, and reported (not skipped)
+  failures for unmapped components and missing parents.
+- Two problems found and fixed during bring-up: glog defines a `CHECK` macro
+  that collided with the test harness, renamed to `EXPECT`; and
+  `RN_DEBUG_STRING_CONVERTIBLE` pulled `ShadowView.cpp`'s debug-string overloads
+  into the link, resolved with React Native's own `REACT_NATIVE_PRODUCTION`
+  switch rather than by stubbing the symbols.
+- Mutation check: forcing the adapter's Insert to always use index 0 made
+  `insertOrderFollowsMutationIndex` fail at the expected assertion. Reverted and
+  re-run green.
+- Evidence level: host only. Transactions are constructed in tests, not pulled
+  from a live surface, and nothing has been cross-compiled for QNX.
+
 ## Fabric mounting layer host tests — 2026-08-14
 
 - CTest is 4/4: `rnqnx_g0_cxx20_probe`, `qnx_screen_surface_host_test`,

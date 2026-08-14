@@ -35,6 +35,52 @@ Installed-header reconciliation is queued in
 `docs/handoff/QNX_VALIDATION_QUEUE.md`. The fake header is never listed as QNX
 authority.
 
+## React Native third-party dependency pins
+
+React Native 0.86.2 does not vendor its C++ third-party dependencies, so
+`cmake/dependencies/ReactNativeThirdParty.cmake` fetches them at the versions the
+installed package itself pins. Versions and flags are read from the package, not
+chosen:
+
+| Dependency        | Version       | Pinned by                                          |
+| ----------------- | ------------- | -------------------------------------------------- |
+| folly             | 2024.11.18.00 | `scripts/cocoapods/helpers.rb:50`                  |
+| fmt               | 12.1.0        | `third-party-podspecs/fmt.podspec:11`              |
+| glog              | 0.3.5         | `third-party-podspecs/glog.podspec:11`             |
+| double-conversion | 1.1.6         | `third-party-podspecs/DoubleConversion.podspec:11` |
+| fast_float        | 8.0.0         | `third-party-podspecs/fast_float.podspec:11`       |
+
+Recipes ported rather than invented:
+
+| Element                   | Installed authority                                                |
+| ------------------------- | ------------------------------------------------------------------ |
+| folly compile definitions | `ReactAndroid/src/main/jni/third-party/folly/CMakeLists.txt:10-20` |
+| glog `.h.in` token map    | `@react-native/gradle-plugin` `PrepareGlogTask.kt`                 |
+| glog `config.h`           | `ReactAndroid/src/main/jni/third-party/glog/config.h`              |
+| Debug-string switch       | `ReactCommon/react/debug/flags.h` — `REACT_NATIVE_PRODUCTION`      |
+
+Deviations from React Native's Android recipe, each deliberate:
+
+- **Boost is absent.** Nothing in the ShadowViewMutation include graph reaches a
+  boost-using folly header, and the Android recipe compiles only boost's
+  context-switching assembly, which nothing here uses.
+- **folly is header-only.** React Native's `folly_runtime` compiles 27 sources;
+  none is needed to link what exists today. They get added when a link failure
+  proves one is required.
+- **`FOLLY_HAVE_XSI_STRERROR_R` and `FOLLY_HAVE_RECVMMSG` are omitted** as
+  Bionic-specific and unused respectively.
+- **`REACT_NATIVE_PRODUCTION` is defined**, which compiles out
+  `RN_DEBUG_STRING_CONVERTIBLE`. That subsystem's `getDebugName`/`getDebugProps`
+  overloads live in `ShadowView.cpp` and pull in the whole
+  ShadowNode/LayoutableShadowNode graph. React Native's internal assertions are
+  off as a consequence.
+
+React Native sources compiled directly into this repository:
+
+| Source                                                       | Reason                                                       |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `ReactCommon/react/renderer/mounting/ShadowViewMutation.cpp` | out-of-line static factories used to build real transactions |
+
 ## Fabric mount contract mirrored on the host
 
 `QtQuickMountingLayer` exposes the platform half of the mounting layer. Its
@@ -51,12 +97,12 @@ a reinterpretation.
 | `Rect{Point origin, Size size}`                                 | `ReactCommon/react/renderer/graphics/Rect.h:23-25`                  | `LayoutFrame` x/y/width/height              |
 | `Float`                                                         | `graphics/platform/cxx/react/renderer/graphics/Float.h:18`          | `float` fields in `LayoutFrame`             |
 
-Evidence level: header-verified against the installed package; **not compiled
-against**. `ShadowView.h` pulls in `folly/dynamic.h` and `glog/logging.h`, and
-neither folly nor glog is vendored in `node_modules/react-native`. The adapter
-that consumes a real `ShadowViewMutation::List` therefore waits on the
-third-party dependency recipes, and until then no code here includes a React
-Native header.
+Evidence level: **compiled against the installed headers**, not merely read.
+`rnqnx_rn_headers_probe` asserts each mirror with `static_assert`, so a mismatch
+between this table and the installed package is a build failure rather than a
+stale document. `ShadowViewMutationAdapter` consumes real
+`facebook::react::ShadowViewMutation` values built through React Native's own
+static factories.
 
 ## Installed Qt 6.11.1 (macOS development host)
 

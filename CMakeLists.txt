@@ -25,6 +25,11 @@ endfunction()
 
 include(CTest)
 
+# Installed React Native, resolved through the workspace rather than assumed.
+set(RNQNX_REACT_NATIVE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/node_modules/react-native")
+option(RNQNX_FETCH_REACT_NATIVE_DEPS
+  "Fetch React Native's pinned C++ third-party dependencies" ON)
+
 # This target is the executable G0-A language/runtime proof. Compiling it on a
 # host validates the TU itself; only a qcc cross-build followed by execution on
 # the Pi satisfies G0-A.
@@ -129,6 +134,57 @@ else()
       )
       target_link_libraries(rnqnx_views_qt PUBLIC Qt6::Quick Qt6::Qml Qt6::Gui)
       rnqnx_enable_strict_warnings(rnqnx_views_qt)
+
+      # Compiling real React Native renderer headers requires folly and glog,
+      # which the installed package does not vendor. Fetching is opt-out because
+      # it needs network access on a first configure.
+      if(RNQNX_FETCH_REACT_NATIVE_DEPS)
+        include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/ReactNativeThirdParty.cmake)
+
+        add_executable(rnqnx_rn_headers_probe
+          vnext/probes/rn-headers/main.cpp
+        )
+        target_link_libraries(rnqnx_rn_headers_probe PRIVATE
+          rnqnx_react_native_headers
+          rnqnx_views_qt
+        )
+        rnqnx_enable_strict_warnings(rnqnx_rn_headers_probe)
+        set_target_properties(rnqnx_rn_headers_probe PROPERTIES
+          RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        )
+        add_test(NAME rnqnx_rn_headers_probe
+          COMMAND $<TARGET_FILE:rnqnx_rn_headers_probe>)
+        set_tests_properties(rnqnx_rn_headers_probe PROPERTIES
+          PASS_REGULAR_EXPRESSION
+            "RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0"
+        )
+
+        # The adapter needs React Native's out-of-line mutation and shadow-view
+        # definitions. These two sources are compiled directly rather than
+        # linking a prebuilt React Native, which does not exist for this host.
+        add_library(rnqnx_fabric_adapter STATIC
+          vnext/src/fabric/ShadowViewMutationAdapter.cpp
+          ${RNQNX_REACT_NATIVE_DIR}/ReactCommon/react/renderer/mounting/ShadowViewMutation.cpp
+        )
+        target_link_libraries(rnqnx_fabric_adapter PUBLIC
+          rnqnx_react_native_headers
+          rnqnx_views_qt
+        )
+        rnqnx_enable_strict_warnings(rnqnx_fabric_adapter)
+
+        add_executable(shadow_view_mutation_adapter_host_test
+          tests/cpp/ShadowViewMutationAdapterHostTest.cpp
+        )
+        target_link_libraries(shadow_view_mutation_adapter_host_test
+          PRIVATE rnqnx_fabric_adapter)
+        rnqnx_enable_strict_warnings(shadow_view_mutation_adapter_host_test)
+        set_target_properties(shadow_view_mutation_adapter_host_test PROPERTIES
+          RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+        )
+        add_test(NAME shadow_view_mutation_adapter_host_test
+          COMMAND $<TARGET_FILE:shadow_view_mutation_adapter_host_test>
+                  -platform offscreen)
+      endif()
 
       add_executable(qtquick_mounting_layer_host_test
         tests/cpp/QtQuickMountingLayerHostTest.cpp

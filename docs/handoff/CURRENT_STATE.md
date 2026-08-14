@@ -63,11 +63,16 @@ cases cover ordering, detachment, ownership, and every failure path under
 ASan/UBSan. Layout is applied only here, as absolute geometry, because Yoga is
 the layout authority and no Qt layout or anchor participates.
 
-The adapter from a real `ShadowViewMutation::List` is not written. React Native's
-mounting headers include `folly/dynamic.h` and `glog/logging.h`, and neither is
-vendored in `node_modules/react-native`, so no React Native header compiles here
-yet. That is a dependency-recipe task, not a hardware one; see `NEXT_ACTIONS.md`
-action 3.
+`ShadowViewMutationAdapter` connects that layer to React Native. React Native's
+renderer headers now compile here against fetched folly, fmt, glog,
+double-conversion, and fast_float, pinned at the versions the installed package
+itself pins. The adapter consumes real `ShadowViewMutation` values and reports
+failures rather than skipping views; only layout is applied so far, which is an
+honest gap rather than a silent partial update.
+
+Transactions are still built in tests rather than pulled from a live surface.
+Closing that needs a JSI runtime host and a `SchedulerDelegate`; see
+`NEXT_ACTIONS.md` action 3. It needs no QNX toolchain and no device.
 
 This is host evidence. The QNX QPA plugin, the pinned Qt LTS, the cross-build,
 and every Pi number remain open.

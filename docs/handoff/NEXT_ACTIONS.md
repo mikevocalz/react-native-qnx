@@ -83,47 +83,34 @@ until every called source symbol exists in that checkout.
 **Dependency:** QNX-RN-008, because feasibility must be tested with the actual
 compiler and sysroot.
 
-## 3. Connect the mounting layer to real ShadowViewMutation lists
+## 3. Drive the mounting layer from a running surface
 
-**Status:** the platform half is implemented and tested on the host.
-`vnext/src/fabric/QtQuickMountingLayer.cpp` provides create/insert/remove/
-destroy/updateLayout over Qt Quick items, and fifteen host cases cover ordering,
-detachment, ownership, and every failure path under ASan/UBSan.
+**Done:** the platform mounting layer, the third-party dependency recipes, and
+the `ShadowViewMutation` adapter. React Native's renderer headers compile in this
+repository, and `ShadowViewMutationAdapter` applies real mutation lists built
+through React Native's own static factories. Twenty-two host cases cover the two
+layers.
 
-**What remains:** the adapter that turns a `ShadowViewMutation::List` into those
-calls. It is blocked on compilation, not on design or on hardware.
+**What remains:** the transactions are still constructed in tests rather than
+pulled from a live surface. To close that gap:
 
-**Blocking fact:** `ReactCommon/react/renderer/mounting/ShadowView.h` includes
-`folly/dynamic.h` and `glog/logging.h`, and neither folly nor glog is vendored in
-`node_modules/react-native`. No React Native header can be compiled here until
-those dependencies exist.
+1. Stand up a JSI runtime host with Hermes on the development host, load a real
+   React Native 0.86.2 bundle, and install `UIManagerBinding`
+   (`UIManagerBinding::createAndInstallIfNeeded`).
+2. Implement a `SchedulerDelegate` whose `schedulerDidFinishTransaction` calls
+   `MountingCoordinator::pullTransaction` and feeds
+   `MountingTransaction::getMutations()` to the adapter.
+3. Expect the dependency surface to grow: this pulls in the renderer core,
+   Yoga, and the folly sources React Native's `folly_runtime` compiles. Add
+   each only when a link failure names it, and record every addition in the
+   cited-seams ledger.
+4. Extend the adapter past layout. Props are unconsumed today, which is an
+   honest gap in `docs/component-support.md`, not a silent partial update.
 
-**Procedure:**
-
-1. Add third-party recipes under `vnext/cmake/` for the folly subset React
-   Native uses, plus glog, fmt, double-conversion, and the required boost
-   headers. Follow the flags React Native's own Android build uses rather than
-   inventing a configuration; quarantine any patch in `vnext/patches/` with an
-   explanation.
-2. Build `react_renderer_mounting` and its transitive dependencies for the host.
-3. Write the adapter as its own translation unit: a switch over
-   `ShadowViewMutation::Type` (`ShadowViewMutation.h:84`) reading `parentTag`,
-   `oldChildShadowView`, `newChildShadowView`, and `index`
-   (`ShadowViewMutation.h:94-98`), calling into `QtQuickMountingLayer`.
-4. Map `ShadowView::componentName` (`ShadowView.h:41`) to registered QML type
-   sources, and `ShadowView::layoutMetrics` (`ShadowView.h:46`) to `LayoutFrame`.
-5. Cover it with transactions captured from a real bundle, not hand-written
-   mutation lists only.
-
-**Installed authorities:** `SchedulerToolbox`, `SchedulerDelegate::
-schedulerDidFinishTransaction`, `MountingCoordinator::pullTransaction`,
-`MountingTransaction`, `ShadowViewMutation`, `UIManagerBinding::
-createAndInstallIfNeeded`.
-
-**Acceptance criteria:** a real React Native 0.86.2 bundle's mount transactions
-drive the Qt Quick tree with correct ordering, and the existing fifteen host
-cases still pass. This runs on the macOS development host; no QNX toolchain or
-device is required, and no result from it promotes a QNX validation row.
+**Acceptance criteria:** a real bundle's `<View>` tree mounts and lays out in a
+Qt Quick window on the development host, and the existing host cases still pass.
+No QNX toolchain or device is required, and no result from it promotes a QNX
+validation row.
 
 ## 4. Design Nitro, Expo Modules, and Metro QNX extensions separately
 

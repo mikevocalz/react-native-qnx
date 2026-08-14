@@ -181,3 +181,40 @@
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — folly, glog,
   fmt, double-conversion, and boost recipes under `vnext/cmake/`, then the
   adapter.
+
+## 2026-08-14 – React Native third-party recipes and the mutation adapter
+
+- **Goal:** Remove the last non-hardware blocker by making React Native's
+  renderer headers compile here, then write the adapter that was waiting on it.
+- **Dependency recipes:** `cmake/dependencies/ReactNativeThirdParty.cmake`
+  fetches folly 2024.11.18.00, fmt 12.1.0, glog 0.3.5, double-conversion 1.1.6,
+  and fast_float 8.0.0 — every version read from the installed package, with
+  SHA256 pins. Compile definitions, the glog `.h.in` token map, and glog's
+  `config.h` are ported from React Native's own Android recipes.
+- **Deliberate deviations:** boost is not fetched (nothing in the include graph
+  reaches a boost-using folly header); folly is header-only (no `folly_runtime`
+  source is needed to link what exists); `FOLLY_HAVE_XSI_STRERROR_R` and
+  `FOLLY_HAVE_RECVMMSG` are omitted. All recorded in the cited-seams ledger.
+- **Implemented:** `ShadowViewMutationAdapter` — a switch over
+  `ShadowViewMutation::Type` applying Create, Delete, Insert, Remove, and Update
+  to `QtQuickMountingLayer`, with per-mutation failures returned rather than
+  thrown or swallowed.
+- **Commands executed:** version audit of the installed podspecs and
+  `helpers.rb`; tarball download and SHA256 capture;
+  `node scripts/run-cpp-host-tests.mjs` across several iterations; a deliberate
+  mutation of the adapter's Insert index; `pnpm validate:macos`.
+- **Results:** CTest 6/6. React Native renderer headers compile for the first
+  time. `rnqnx_rn_headers_probe` enforces every cited mirror with
+  `static_assert`. Seven adapter cases pass. Forcing Insert to index 0 failed
+  `insertOrderFollowsMutationIndex` as expected; reverted and re-run green.
+- **Problems discovered:** `FetchContent_MakeAvailable` tried to configure the
+  upstream CMake projects, several of which declare pre-3.5 minimums that
+  current CMake rejects — solved with a non-existent `SOURCE_SUBDIR`. glog
+  defines a `CHECK` macro that collided with the test harness. RN's
+  debug-string-convertible code pulled `ShadowView.cpp` into the link, resolved
+  with React Native's documented `REACT_NATIVE_PRODUCTION` switch.
+- **QNX result:** Unchanged. No QNX translation unit compiled, no QNX or Pi 4
+  binary run. These dependencies have not been cross-compiled for QNX and the
+  QNX-side recipe work is untouched.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — a JSI runtime
+  host plus a `SchedulerDelegate` so transactions come from a live surface.
