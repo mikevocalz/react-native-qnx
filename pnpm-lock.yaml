@@ -69,9 +69,18 @@ importers:
       '@react-native/metro-config':
         specifier: 0.86.2
         version: 0.86.2(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+      '@rn-qnx/react-native-qnx':
+        specifier: workspace:*
+        version: link:../react-native-qnx
       metro-config:
         specifier: 0.84.4
         version: 0.84.4(supports-color@8.1.1)
+
+  packages/react-native-qnx:
+    dependencies:
+      react-native:
+        specifier: 0.86.2
+        version: 0.86.2(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/jest-preset@0.86.2(@babel/core@7.29.7(supports-color@8.1.1))(react@19.2.3)(supports-color@8.1.1))(@react-native/metro-config@0.86.2(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.2.18)(react@19.2.3)(supports-color@8.1.1)
 
 packages:
 

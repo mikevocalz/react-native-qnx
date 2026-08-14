@@ -405,6 +405,8 @@ void metroBundleEvaluatesInHermes() {
   Fixture fixture;
   fixture.host().installTurboModuleBinding();
   fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
 
   std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
   EXPECT(bundleFile.good());
@@ -428,6 +430,53 @@ void metroBundleEvaluatesInHermes() {
               .isUndefined());
   // RN$stopSurface is deliberately not asserted: ReactFabric.js:27 installs it
   // only when the renderer is first used, which needs a surface to start.
+}
+
+/// The whole path, end to end: a Metro bundle, evaluated in Hermes, whose
+/// registered React component renders through React Native's own renderer and
+/// lands on Qt Quick items with Yoga's geometry.
+void metroBundleRendersThroughReact() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  EXPECT(bundleFile.good());
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+
+  if (!fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js")) {
+    fail(
+        "bundle evaluated",
+        __FILE__,
+        __LINE__,
+        fixture.host().lastError().toStdString());
+  }
+
+  fixture.host().startSurface(kSurfaceId, "RNQnxPlayground", 640.0F, 480.0F);
+
+  // React schedules its work through microtasks and the RuntimeScheduler. With
+  // no running event loop, the host has to drain them explicitly.
+  for (int i = 0; i < 10; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().mountedTransactionCount() > 0);
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+
+  // apps/rn-playground renders one 320x180 View containing a 64x32 View.
+  EXPECT(fixture.rootChildCount() == 1);
+  QQuickItem* outer = fixture.root().childItems().at(0);
+  EXPECT_NEAR(outer->width(), 320.0);
+  EXPECT_NEAR(outer->height(), 180.0);
+  EXPECT(outer->childItems().size() == 1);
+  QQuickItem* inner = outer->childItems().at(0);
+  EXPECT_NEAR(inner->width(), 64.0);
+  EXPECT_NEAR(inner->height(), 32.0);
 }
 
 struct TestCase {
@@ -456,9 +505,11 @@ int main(int argc, char** argv) {
       {"javaScriptBuildsTheTreeThroughFabricUIManager",
        javaScriptBuildsTheTreeThroughFabricUIManager},
       {"hostInstallsBridgelessGlobals", hostInstallsBridgelessGlobals},
+
 #ifdef RNQNX_PLAYGROUND_BUNDLE_PATH
       {"metroProducesABundleForQnx", metroProducesABundleForQnx},
       {"metroBundleEvaluatesInHermes", metroBundleEvaluatesInHermes},
+      {"metroBundleRendersThroughReact", metroBundleRendersThroughReact},
 #endif
   };
 

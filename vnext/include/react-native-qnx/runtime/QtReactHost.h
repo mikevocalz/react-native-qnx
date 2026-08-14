@@ -164,6 +164,22 @@ class QtReactHost {
   /// ADR-0004 requires over empty TurboModules that silence the error.
   void installTurboModuleBinding();
 
+  /// Installs `globalThis.__RNQNX_PLATFORM_CONSTANTS`, which the platform
+  /// package's `Platform.js` reads. Values are real: the OS name and version
+  /// come from the running system, not from a placeholder, and the platform
+  /// module throws rather than inventing them if this was never called.
+  void installPlatformConstants();
+
+  /// Installs the timer functions JavaScript expects from its host. Hermes is a
+  /// JavaScript engine, not a runtime: `setTimeout` and friends are the host's
+  /// job, and React needs them. These are backed by `QTimer`, so they fire on
+  /// the Qt event loop — which means they only fire when that loop is running.
+  void installTimers();
+
+  /// Runs pending Qt events, so timers scheduled by JavaScript can fire in a
+  /// context with no running event loop, such as a test.
+  void pumpEvents();
+
   /// Whether a component name resolves after normalisation. Exposed so a test
   /// can assert the predicate directly rather than only through JavaScript.
   bool hasComponent(const std::string& componentName) const;

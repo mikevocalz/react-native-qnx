@@ -83,40 +83,33 @@ until every called source symbol exists in that checkout.
 **Dependency:** QNX-RN-008, because feasibility must be tested with the actual
 compiler and sysroot.
 
-## 3. Ship the JavaScript platform package
+## 3. Make the rendered app look and behave like an app
 
-**Done:** the Metro bundle evaluates in Hermes. `TurboModuleBinding` is
-installed with a provider delegating to `DefaultTurboModules::getTurboModule`,
-which covers `NativeMicrotasksCxx` and `NativeIdleCallbacksCxx` with React
-Native's own C++ implementations. This is ADR-0004's sanctioned adapter;
-application-facing APIs remain Nitro.
+**Done:** a React Native bundle renders to Qt Quick items on the development
+host. `@rn-qnx/react-native-qnx` supplies `Platform.js` and `BaseViewConfig.js`,
+Metro selects them by resolved path, and the host provides microtasks, timers,
+and platform constants.
 
-**The blocker is `Platform`.** Starting the surface aborts with `Cannot read
-property 'select' of undefined`. React Native's
-`Libraries/Utilities/Platform.js` re-exports `./Platform`, which resolves to
-`Platform.ios.js` or `Platform.android.js` by extension; there is no
-`Platform.qnx.js`, so the import is undefined.
+**What remains, roughly in the order it will be missed:**
 
-**Procedure:**
+1. **Props past layout.** The mounting layer applies geometry only, so
+   `backgroundColor`, `borderRadius`, `opacity`, and transforms are silently
+   ignored. Start there: they are the difference between a correct tree and a
+   visible app. Record each in `docs/component-support.md`.
+2. **ExceptionsManager**, as a C++ TurboModule over the generated
+   `NativeExceptionsManagerCxxSpec`. Today any JavaScript error aborts the
+   process while trying to report itself. It must surface errors to the host —
+   ADR-0004 forbids an empty module.
+3. **On glass.** Everything so far runs under the offscreen QPA plugin. Render
+   the playground into a real `QQuickWindow` on macOS and look at it.
+4. **Input.** No touch or pointer events reach JavaScript yet; the
+   `SchedulerDelegate` hooks for responders are deliberate no-ops.
+5. **DeviceInfo and SourceCode**, both with generated specs, both needing real
+   values — screen metrics from the Qt window, the bundle URL.
 
-1. **`@rn-qnx/react-native-qnx`** ships the platform JavaScript, starting with
-   `Platform.qnx.js` exporting `OS: 'qnx'`, `select`, `Version`, and
-   `constants`. Model the shape on `Libraries/Utilities/Platform.ios.js`.
-2. **Redirect resolution.** React Native's own files cannot be edited in
-   `node_modules`, so `metro-config-qnx` needs a `resolver.resolveRequest` that
-   maps `react-native/Libraries/Utilities/Platform` to the platform package.
-   This is the same mechanism react-native-windows and react-native-macos use;
-   check theirs before inventing one.
-3. **ExceptionsManager**, as a C++ TurboModule over the generated
-   `NativeExceptionsManagerCxxSpec` in the shipped `FBReactNativeSpecJSI.h`. It
-   must actually surface errors to the host — ADR-0004 forbids empty modules —
-   so route it into `QtReactHost::lastError()` and a log.
-4. Re-run the render and take the next failure. Expect DeviceInfo and SourceCode
-   next; both have generated specs and need real values (screen metrics from the
-   Qt window, the bundle URL).
-
-**Acceptance criteria:** the playground bundle's React component renders and its
-`<View>` tree appears as Qt Quick items. No QNX toolchain or device required.
+**Acceptance criteria:** the playground renders visibly in a real window with
+correct colors and rounded corners, and a JavaScript error is reported rather
+than aborting.
 
 ## 4. Design Nitro, Expo Modules, and Metro QNX extensions separately
 

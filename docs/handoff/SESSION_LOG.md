@@ -495,3 +495,35 @@ validate:macos`.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 —
   `Platform.qnx.js` in `@rn-qnx/react-native-qnx` plus a Metro
   `resolveRequest` redirect.
+
+## 2026-08-14 – A React bundle renders to Qt Quick items
+
+- **Goal:** Close the last gap between a bundle and a rendered tree.
+- **Result:** `metroBundleRendersThroughReact` passes. Metro bundles the
+  playground for `qnx`, Hermes evaluates it, `startSurface` runs
+  `RN$AppRegistry.runApplication`, React reconciles, and the tree lands as Qt
+  Quick items with the geometry the JSX declares — a 320x180 outer item
+  containing a 64x32 inner item, computed by Yoga.
+- **Implemented:** `@rn-qnx/react-native-qnx` with `Platform.js` and
+  `BaseViewConfig.js`; a Metro `resolveRequest` in `metro-config-qnx` that runs
+  Metro's resolver first and swaps the result when an override exists at the
+  same relative path, which is what makes relative imports such as `./Platform`
+  work; and four host responsibilities — Hermes' microtask queue, `QTimer`-backed
+  timers, explicit draining, and platform constants from `QSysInfo`.
+- **Problems discovered, in the order the runtime found them:** `Platform` was
+  undefined; `setTimeout` did not exist; microtasks were disabled in the Hermes
+  runtime; the view config was undefined. Each was a real missing host or
+  platform responsibility, and each was fixed rather than stubbed.
+- **Mutation checks:** changing the app's width to 300 fails the render test
+  with `300 != 320`, so the value travels from JSX through Metro, Hermes, React,
+  Yoga and the mounting layer. Flipping `Platform.OS` to `ios` changed nothing —
+  recorded, because it means `OS` is not load-bearing for this path and a future
+  test should not assume otherwise.
+- **Also fixed:** the bundle build now depends on the platform package and Metro
+  config sources, so editing them no longer leaves a stale bundle. That
+  staleness cost a debugging cycle.
+- **Results:** CTest 9/9 with Hermes, 7/7 default, thirteen host cases;
+  `validate:manifests` reports three real manifests.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — props beyond
+  layout, then ExceptionsManager, then render on glass.

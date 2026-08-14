@@ -1,5 +1,31 @@
 # TEST_STATUS.md
 
+## A React bundle renders to Qt Quick items — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default; `qt_react_host_host_test` is thirteen
+  cases.
+- `metroBundleRendersThroughReact` is the whole path: Metro bundles
+  `apps/rn-playground` for `qnx`, Hermes evaluates it, `startSurface` runs
+  `RN$AppRegistry.runApplication`, React reconciles, the commit reaches the
+  delegate, and the tree lands as Qt Quick items. Asserted geometry: a 320x180
+  outer item containing a 64x32 inner item — the dimensions the app's JSX
+  declares, computed by Yoga.
+- Mutation check: changing the app's width to 300 fails the case with
+  `300 != 320`, so the number travels from the JSX through Metro, Hermes, React,
+  Yoga and the mounting layer to the item. A weaker mutation — flipping
+  `Platform.OS` to `ios` — changed nothing, which is worth knowing: `OS` is not
+  load-bearing for this render.
+- Four host responsibilities had to be added to get here, each a real gap rather
+  than a stub: Hermes' microtask queue is off by default; `setTimeout` and
+  friends are not engine builtins and are now backed by `QTimer`; React's work
+  has to be drained explicitly with no running event loop; and
+  `Platform.constants` is installed from the running system via `QSysInfo`.
+- Two JavaScript platform overrides were required: `Platform.js` and
+  `BaseViewConfig.js`. Both live in `@rn-qnx/react-native-qnx` and are selected
+  by a Metro `resolveRequest` that swaps by resolved path.
+- Evidence level: host only. The rendering surface is the offscreen QPA plugin,
+  and nothing has been cross-compiled for QNX or run on the Pi 4.
+
 ## The bundle evaluates in Hermes — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default. `qt_react_host_host_test` is twelve

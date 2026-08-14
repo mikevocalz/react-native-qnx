@@ -1,6 +1,7 @@
 #include "react-native-qnx/runtime/QtReactHost.h"
 
 #include <hermes/hermes.h>
+#include <hermes/Public/RuntimeConfig.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/componentregistry/componentNameByReactViewName.h>
@@ -22,6 +23,8 @@
 #include <folly/dynamic.h>
 
 #include <QCoreApplication>
+#include <QSysInfo>
+#include <QTimer>
 #include <QMetaObject>
 
 #include <algorithm>
@@ -217,7 +220,13 @@ class QtReactHost::Impl {
  public:
   explicit Impl(fabric::ShadowViewMutationAdapter& adapter)
       : delegate(adapter) {
-    runtime = facebook::hermes::makeHermesRuntime();
+    // Microtasks are off by default in Hermes. React Native's scheduler and
+    // React itself queue them, and NativeMicrotasks forwards straight to
+    // Runtime::queueMicrotask, which throws when the queue is disabled.
+    runtime = facebook::hermes::makeHermesRuntime(
+        ::hermes::vm::RuntimeConfig::Builder()
+            .withMicrotaskQueue(true)
+            .build());
 
     // JavaScript runs on this thread. The executor therefore calls straight
     // through; a real JS thread replaces this without changing anything above.
@@ -324,6 +333,8 @@ class QtReactHost::Impl {
   /// Modules JavaScript has registered as callable from native. Nothing calls
   /// them yet; keeping them is what makes that possible later.
   std::unordered_map<std::string, facebook::jsi::Value> callableModules;
+  std::unordered_map<int, std::unique_ptr<QTimer>> timers;
+  int nextTimerHandle{0};
   QString lastError;
 };
 
@@ -403,6 +414,124 @@ void QtReactHost::installTurboModuleBinding() {
         return facebook::react::DefaultTurboModules::getTurboModule(
             name, callInvoker);
       });
+}
+
+void QtReactHost::installPlatformConstants() {
+  auto& runtime = *impl_->runtime;
+  auto constants = facebook::jsi::Object(runtime);
+
+  // Real values from the running system. On the development host that means
+  // macOS; on the target it will mean QNX. Reporting the host truthfully is
+  // better than reporting a QNX version this process cannot observe.
+  const auto productVersion = QSysInfo::productVersion().toStdString();
+  constants.setProperty(
+      runtime,
+      "osVersion",
+      facebook::jsi::String::createFromUtf8(runtime, productVersion));
+  constants.setProperty(
+      runtime,
+      "systemName",
+      facebook::jsi::String::createFromUtf8(
+          runtime, QSysInfo::productType().toStdString()));
+  constants.setProperty(runtime, "isTesting", false);
+
+  // The React Native line this platform is built against, pinned in
+  // package.json and asserted by validate:dependencies.
+  auto version = facebook::jsi::Object(runtime);
+  version.setProperty(runtime, "major", 0);
+  version.setProperty(runtime, "minor", 86);
+  version.setProperty(runtime, "patch", 2);
+  version.setProperty(runtime, "prerelease", facebook::jsi::Value::null());
+  constants.setProperty(runtime, "reactNativeVersion", version);
+
+  runtime.global().setProperty(
+      runtime, "__RNQNX_PLATFORM_CONSTANTS", constants);
+}
+
+void QtReactHost::installTimers() {
+  auto& runtime = *impl_->runtime;
+  auto* impl = impl_.get();
+
+  const auto makeSetTimer = [&runtime, impl](bool repeating) {
+    return facebook::jsi::Function::createFromHostFunction(
+        runtime,
+        facebook::jsi::PropNameID::forAscii(
+            runtime, repeating ? "setInterval" : "setTimeout"),
+        2,
+        [impl, repeating](
+            facebook::jsi::Runtime& jsRuntime,
+            const facebook::jsi::Value& /*thisValue*/,
+            const facebook::jsi::Value* args,
+            size_t count) -> facebook::jsi::Value {
+          if (count < 1 || !args[0].isObject() ||
+              !args[0].asObject(jsRuntime).isFunction(jsRuntime)) {
+            throw facebook::jsi::JSError(
+                jsRuntime, "setTimeout requires a function");
+          }
+
+          auto callback = std::make_shared<facebook::jsi::Function>(
+              args[0].asObject(jsRuntime).asFunction(jsRuntime));
+          const int delayMs = count > 1 && args[1].isNumber()
+              ? static_cast<int>(args[1].getNumber())
+              : 0;
+
+          const int handle = ++impl->nextTimerHandle;
+          auto timer = std::make_unique<QTimer>();
+          timer->setSingleShot(!repeating);
+          timer->setInterval(delayMs);
+          QObject::connect(
+              timer.get(), &QTimer::timeout, [impl, handle, callback, repeating]() {
+                // The callback runs on the thread the timer fires on, which is
+                // the thread that owns the event loop — the same thread that
+                // owns this runtime.
+                callback->call(*impl->runtime);
+                if (!repeating) {
+                  impl->timers.erase(handle);
+                }
+              });
+          timer->start();
+          impl->timers.emplace(handle, std::move(timer));
+          return facebook::jsi::Value(handle);
+        });
+  };
+
+  const auto makeClearTimer = [&runtime, impl](const char* name) {
+    return facebook::jsi::Function::createFromHostFunction(
+        runtime,
+        facebook::jsi::PropNameID::forAscii(runtime, name),
+        1,
+        [impl](
+            facebook::jsi::Runtime& /*jsRuntime*/,
+            const facebook::jsi::Value& /*thisValue*/,
+            const facebook::jsi::Value* args,
+            size_t count) -> facebook::jsi::Value {
+          if (count >= 1 && args[0].isNumber()) {
+            impl->timers.erase(static_cast<int>(args[0].getNumber()));
+          }
+          return facebook::jsi::Value::undefined();
+        });
+  };
+
+  auto global = runtime.global();
+  global.setProperty(runtime, "setTimeout", makeSetTimer(false));
+  global.setProperty(runtime, "setInterval", makeSetTimer(true));
+  global.setProperty(runtime, "clearTimeout", makeClearTimer("clearTimeout"));
+  global.setProperty(runtime, "clearInterval", makeClearTimer("clearInterval"));
+  // React Native's JavaScript treats these as interchangeable with timeouts.
+  global.setProperty(runtime, "setImmediate", makeSetTimer(false));
+  global.setProperty(
+      runtime, "clearImmediate", makeClearTimer("clearImmediate"));
+  global.setProperty(runtime, "requestAnimationFrame", makeSetTimer(false));
+  global.setProperty(
+      runtime,
+      "cancelAnimationFrame",
+      makeClearTimer("cancelAnimationFrame"));
+}
+
+void QtReactHost::pumpEvents() {
+  if (auto* application = QCoreApplication::instance()) {
+    application->processEvents();
+  }
 }
 
 void QtReactHost::installComponentProvider() {

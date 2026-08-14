@@ -206,6 +206,9 @@ else()
             DEPENDS
               "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground/index.js"
               "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground/metro.config.js"
+              "${CMAKE_CURRENT_SOURCE_DIR}/packages/metro-config-qnx/src/index.js"
+              "${CMAKE_CURRENT_SOURCE_DIR}/packages/react-native-qnx/Libraries/Utilities/Platform.js"
+              "${CMAKE_CURRENT_SOURCE_DIR}/packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js"
             COMMENT "Bundling apps/rn-playground for qnx"
             VERBATIM
           )

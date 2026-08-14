@@ -248,6 +248,44 @@ ExceptionsManager, FileReaderModule, NativeIdleCallbacksCxx,
 NativeMicrotasksCxx, SegmentFetcher, SourceCode, UIManager, WebSocketModule —
 and the first one throws. That is the next slice, not a defect in what exists.
 
+## JavaScript platform overrides
+
+React Native resolves twelve files in `Libraries/` by platform extension. Two of
+them are load-bearing for any platform, and neither has a working generic
+fallback:
+
+| React Native file                             | Symptom when missing                                                                           |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `Libraries/Utilities/Platform.js`             | re-exports `./Platform`, resolves to itself, `Platform` is undefined, `Platform.select` throws |
+| `Libraries/NativeComponent/BaseViewConfig.js` | resolves to nothing, React reads `bubblingEventTypes` of undefined                             |
+
+`@rn-qnx/react-native-qnx` supplies both under a `Libraries/` tree mirroring
+React Native's layout, and `metro-config-qnx` installs a `resolveRequest` that
+runs Metro's own resolver first and then swaps the result when an override
+exists at the same relative path. Overriding by resolved path rather than by
+module name is what makes relative imports such as `./Platform` work, and the
+swap only applies to `platform === 'qnx'`.
+
+`Platform.constants` comes from `globalThis.__RNQNX_PLATFORM_CONSTANTS`, which
+the host installs from the running system via `QSysInfo`. The module throws if
+that global is absent rather than reporting invented values.
+
+`BaseViewConfig` carries the platform-independent bubbling and direct event
+tables plus React Native's own `ReactNativeStyleAttributes` for
+`validAttributes`. The iOS file's accessibility and force-touch events are
+deliberately absent rather than declared and unimplemented.
+
+## Host responsibilities beyond the bindings
+
+Hermes is a JavaScript engine, not a runtime, so several things JavaScript
+assumes exist are the host's job:
+
+| Responsibility  | Why                                                                                                                                                                |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Microtask queue | off by default; `RuntimeConfig::Builder().withMicrotaskQueue(true)`. `NativeMicrotasks` forwards straight to `Runtime::queueMicrotask`, which throws when disabled |
+| Timers          | `setTimeout` and friends are not engine builtins. Backed by `QTimer`, so they fire only while the Qt event loop runs                                               |
+| Draining        | React schedules through microtasks and the RuntimeScheduler; with no running loop the host drains explicitly                                                       |
+
 ## TurboModule adapter (ADR-0004's sanctioned exception)
 
 Application-facing APIs are Nitro HybridObjects. React Native's own core

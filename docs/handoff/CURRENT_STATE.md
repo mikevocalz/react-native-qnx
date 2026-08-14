@@ -104,23 +104,26 @@ Metro bundles for `qnx`. `@rn-qnx/metro-config-qnx` registers the platform, and
 installs the bridgeless globals React Native's JavaScript branches on before any
 evaluation.
 
-The bundle evaluates in Hermes. `TurboModuleBinding` is installed with a
-provider delegating to React Native's own generic C++ modules — the minimal
-adapter ADR-0004 sanctions, not a move away from Nitro, which remains the
-mechanism for every application-facing API.
+**A React Native bundle renders.** Metro bundles `apps/rn-playground` for
+`qnx`, Hermes evaluates it, `AppRegistryBinding::startSurface` runs
+`RN$AppRegistry.runApplication`, React reconciles, and the resulting mount
+transaction lands as Qt Quick items with Yoga's geometry. That is the full path
+from JSX to pixel geometry, on the development host.
 
-What is still missing between here and a running app: a `Platform.qnx.js`.
-Starting the surface aborts with `Cannot read property 'select' of undefined`
-because React Native's `Libraries/Utilities/Platform.js` re-exports `./Platform`
-and nothing resolves for an unknown platform. React then needs an
-ExceptionsManager TurboModule to report that error. Props beyond layout are also
-still unconsumed. The tree is
-committed from C++, so there is no Hermes runtime, no bundle, and no
-`UIManagerBinding`. Props beyond layout are also unconsumed. Neither gap needs
-the QNX toolchain or a device; see `NEXT_ACTIONS.md` action 3.
+What made it work, beyond the mounting layer and the runtime host: the
+TurboModule adapter ADR-0004 sanctions (Nitro remains the mechanism for every
+application-facing API); two JavaScript platform overrides in
+`@rn-qnx/react-native-qnx` — `Platform.js` and `BaseViewConfig.js` — selected by
+a Metro `resolveRequest`; Hermes' microtask queue, which is off by default;
+`QTimer`-backed timers, because timers are a host responsibility rather than an
+engine builtin; and platform constants read from the running system.
 
-This is host evidence. The QNX QPA plugin, the pinned Qt LTS, the cross-build,
-and every Pi number remain open.
+Honest gaps: props beyond layout are unconsumed, so backgrounds, borders,
+opacity, and transforms do nothing yet. There is no input pipeline, so nothing
+responds to touch. Seven of the nine TurboModules the bundle references are
+still unimplemented — the render does not touch them, but an error path would
+reach ExceptionsManager immediately. The rendering surface is the offscreen QPA
+plugin, not glass.
 
 ## Installed-source boundaries
 

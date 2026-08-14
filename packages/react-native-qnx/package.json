@@ -1,0 +1,14 @@
+{
+  "name": "@rn-qnx/react-native-qnx",
+  "version": "0.1.0",
+  "description": "JavaScript platform implementation for React Native on QNX",
+  "license": "MIT",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "Libraries"
+  ],
+  "peerDependencies": {
+    "react-native": "0.86.2"
+  }
+}
