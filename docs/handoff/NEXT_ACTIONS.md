@@ -83,58 +83,41 @@ until every called source symbol exists in that checkout.
 **Dependency:** QNX-RN-008, because feasibility must be tested with the actual
 compiler and sysroot.
 
-## 3. Wire the runtime to the renderer
+## 3. Load a real bundle
 
-**Done:** Hermes builds and runs on the host, and the mounting path is proven
-end to end from a hand-committed `ShadowTree`. CTest is 7/7 by default and 8/8
-with Hermes.
+**Done:** the runtime and renderer are connected. `QtReactHost` builds React
+Native's `Scheduler` on a Hermes runtime with our `EventBeat`, component
+registry factory, and `SchedulerDelegate`; surface commits mount onto Qt Quick
+items with Yoga's geometry. Three of the five previously missing pieces are
+implemented; the other two are avoided rather than faked, and both come back
+with a real bundle.
 
-**What remains** is the wiring between them. The audit below is against the
-installed package; everything from `Scheduler` downward is generic C++ and needs
-no porting. Five pieces have no generic implementation and are ours to write:
+**What remains:**
 
-1. **`EventBeat` subclass** (`react/renderer/core/EventBeat.h:62`, `request()`
-   at :90). Android drives it from Choreographer, Apple from a `CFRunLoop`
-   observer; ours drives `induce()` from the Qt frame tick.
-2. **`ComponentRegistryFactory`**
-   (`componentregistry/ComponentDescriptorFactory.h:25-27`).
-   `getDefaultComponentRegistryFactory()` is declared at :29 and **never
-   defined anywhere in the package** — linking against it fails. Register
-   `RootComponentDescriptor` and `ViewComponentDescriptor`, and consider
-   `UnimplementedViewComponentDescriptor` as the fallback so an unknown
-   component is a soft failure rather than a thrown `std::invalid_argument`
-   (`ComponentDescriptorRegistry.cpp:112`).
-3. **`SchedulerDelegate` subclass** (`scheduler/SchedulerDelegate.h:21`), all 13
-   pure virtuals. Mount from `schedulerShouldRenderTransactions` (:38), not
-   `schedulerDidFinishTransaction` (:28) — the latter fires synchronously on the
-   commit thread and Apple makes it a no-op.
-4. **`bindHasComponentProvider` predicate**
-   (`componentregistry/native/NativeComponentRegistryBinding.h:26`), or JS view
-   config lookup will not find `View`.
-5. **`MessageQueueThread` and `PlatformTimerRegistry`**, required by
-   `ReactInstance`.
+1. **`bindHasComponentProvider`**
+   (`componentregistry/native/NativeComponentRegistryBinding.h:26`). JS view
+   configs ask whether a native component exists; without it `View` will not
+   resolve from JavaScript. The predicate should normalise through
+   `componentNameByReactViewName` before answering.
+2. **A JavaScript entry point.** `AppRegistryBinding::startSurface` throws
+   unless the bundle installed `global.RN$AppRegistry`
+   (`AppRegistryBinding.cpp:30-32`), and `stopSurface` needs
+   `global.RN$stopSurface`. The host currently installs a no-op for the latter
+   so empty surfaces can stop; a real bundle replaces it. Start with a minimal
+   entry that calls `AppRegistry.registerComponent` directly rather than
+   importing all of `react-native`, which drags in TurboModule expectations.
+3. **`MessageQueueThread` and `PlatformTimerRegistry`**, if and when
+   `ReactInstance` is adopted. The host drives the runtime directly today, which
+   is why they are not needed yet — a real JS thread changes that.
+4. **Metro.** A bundle has to be produced before it can be loaded:
+   `metro-config-qnx` with `qnx` in `resolver.platforms`, and `bundle-qnx` in
+   the CLI. Neither needs a device.
+5. **Props past layout.** Backgrounds, borders, opacity, and transforms, each
+   recorded in `docs/component-support.md`.
 
-**Ordered sequence:** construct `RuntimeScheduler`, install
-`RuntimeSchedulerBinding`, put the scheduler into the `ContextContainer` under
-`RuntimeSchedulerKey` (`Scheduler.cpp:76-78` asserts on it), fill a
-`SchedulerToolbox` (`SchedulerToolbox.h:28-68`), construct `Scheduler` — which
-builds the `UIManager` and installs `UIManagerBinding` itself
-(`Scheduler.cpp:136-138`) — then evaluate the bundle, then start a surface.
-`SurfaceManager` (`scheduler/SurfaceManager.{h,cpp}`) collapses registration,
-layout constraint, and start into one call; it is complete, generic, and
-currently has zero C++ callers in the tree.
-
-**Two traps recorded from the audit:** `constraintLayout` must run before
-`start()` because `LayoutConstraints::layoutDirection` defaults to `Undefined`
-and `SurfaceHandler.cpp:43` asserts on it; and `AppRegistryBinding::startSurface`
-throws unless the bundle has installed `global.RN$AppRegistry`
-(`AppRegistryBinding.cpp:30-32`), so a first bring-up may want a minimal JS entry
-that calls `AppRegistry.registerComponent` directly rather than importing all of
-`react-native` and its TurboModule expectations.
-
-**Acceptance criteria:** a bundle renders a `<View>` tree into a Qt Quick window
-on the development host, with existing host cases green. No QNX toolchain or
-device required, and no result from it promotes a QNX validation row.
+**Acceptance criteria:** a React bundle renders a `<View>` tree into a Qt Quick
+window on the development host, with existing host cases green. No QNX toolchain
+or device required, and no result from it promotes a QNX validation row.
 
 ## 4. Design Nitro, Expo Modules, and Metro QNX extensions separately
 

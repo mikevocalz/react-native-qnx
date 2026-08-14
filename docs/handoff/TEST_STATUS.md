@@ -1,5 +1,36 @@
 # TEST_STATUS.md
 
+## Runtime and renderer wired together — 2026-08-14
+
+- CTest is 9/9 with `-DRNQNX_BUILD_HERMES=ON` and 7/7 by default. New:
+  `qt_react_host_host_test`, seven internal cases.
+- `QtReactHost` owns a Hermes runtime, a `RuntimeScheduler`, a
+  `ContextContainer` carrying the scheduler under `RuntimeSchedulerKey`, and
+  React Native's `Scheduler` built from a `SchedulerToolbox` filled with our
+  `QtEventBeat`, `makeComponentRegistryFactory()`, and `QtSchedulerDelegate`.
+- Cases: JavaScript evaluates and a value reads back through JSI; a thrown JS
+  error is reported rather than swallowed; `global.nativeFabricUIManager` is
+  installed, proving `UIManagerBinding` reached the runtime through our
+  `RuntimeExecutor`; a surface commit mounts through the delegate with Yoga's
+  geometry on the Qt item; a second commit updates the same item in place; and
+  stopping a surface unmounts its items. A commit to an unregistered surface is
+  reported, not silently dropped.
+- Mutation check: making the delegate apply an empty mutation list instead of
+  the transaction's failed three cases — `surfaceCommitMountsThroughTheDelegate`,
+  `secondCommitUpdatesTheSameItem`, and `stoppingASurfaceUnmountsItsItems`.
+  Reverted and re-run green. An earlier attempt at this mutation did not
+  compile, so the first "pass" was a stale binary rather than evidence.
+- Four React Native behaviours found while bringing this up, all recorded in
+  the cited-seams ledger: the fallback descriptor must be
+  `UnimplementedNativeView` (the other one segfaults on a null flavor), the
+  descriptor registry is returned const and the fallback goes in via
+  `const_cast` as React Native itself does, stopping any surface calls
+  `RN$stopSurface` even when no React app ran, and `react_codegen_rncore` is
+  codegen output that three renderer modules require.
+- Evidence level: host only. JavaScript runs on the test thread, no bundle is
+  loaded, no React renderer participates, and nothing has been cross-compiled
+  for QNX or run on the Pi 4.
+
 ## Hermes builds and runs on the host — 2026-08-14
 
 - Hermes `hermes-v250829098.0.16` (commit `90f2385`) builds from source on

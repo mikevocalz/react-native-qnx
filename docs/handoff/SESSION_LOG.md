@@ -330,3 +330,45 @@ validate:macos`.
   `IMPORT_HOST_COMPILERS` bootstrap that host builds skip.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — the five
   pieces above, in the order given.
+
+## 2026-08-14 – Runtime and renderer wired together
+
+- **Goal:** Implement the pieces React Native ships no generic implementation
+  of, and get a surface commit to travel from React Native's UIManager to Qt
+  Quick items.
+- **Implemented:** `QtEventBeat` (ticks off the Qt event loop),
+  `makeComponentRegistryFactory()`, `QtSchedulerDelegate` (all thirteen pure
+  virtuals; mounts from `schedulerShouldRenderTransactions`), and `QtReactHost`,
+  which owns the Hermes runtime, the `RuntimeScheduler`, the `ContextContainer`
+  and React Native's `Scheduler`.
+- **Avoided rather than faked:** `MessageQueueThread` and
+  `PlatformTimerRegistry` are `ReactInstance` requirements, and the host drives
+  the runtime directly, so neither is needed yet. `bindHasComponentProvider` is
+  only needed once JavaScript resolves view configs. Both are recorded as
+  remaining work.
+- **Problems discovered, each traced to installed source:**
+  - Registering `UnimplementedViewComponentDescriptor` as the fallback
+    segfaulted. Its `getComponentName()` dereferences `flavor_` as a
+    `std::string` (`UnimplementedViewComponentDescriptor.cpp:17-19`) and
+    `setFallbackComponentDescriptor` registers immediately. React Native's own
+    default is `UnimplementedNativeView`, which is what Android installs.
+  - `createComponentDescriptorRegistry` returns a pointer-to-const; the fallback
+    goes in through a `const_cast`, matching
+    `DefaultComponentsRegistry.cpp:54-56`.
+  - Stopping an empty surface threw, because `UIManager::stopSurface` calls
+    `AppRegistryBinding::stopSurface` unconditionally. The host installs a
+    `RN$stopSurface` no-op only when the global is absent.
+  - Three renderer modules require `react_codegen_rncore`, which is codegen
+    output with no CMakeLists. Built from the pre-generated copy React Native
+    ships under `React/FBReactNativeSpec`, whose renderer half is plain C++.
+- **Commands executed:** iterative configure/build cycles driven by the exact
+  missing target; `lldb` and checkpoint bisection to locate the segfault; a
+  deliberate mutation of the delegate's mount call; `ctest` in both
+  configurations; `pnpm validate:macos`.
+- **Results:** CTest 9/9 with Hermes, 7/7 default. Making the delegate apply an
+  empty mutation list failed three cases as expected; reverted and re-run green.
+  A first attempt at that mutation did not compile, so its apparent pass was a
+  stale binary rather than evidence — re-run with a compiling mutation.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — a bundle,
+  which needs `bindHasComponentProvider` and a minimal JS entry point first.

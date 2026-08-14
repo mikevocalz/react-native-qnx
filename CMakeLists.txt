@@ -159,9 +159,37 @@ else()
             PASS_REGULAR_EXPRESSION
               "RNQNX_HERMES_OK arithmetic es6 async-arrow host-function"
           )
+
+          # The runtime/renderer host: the five pieces React Native ships no
+          # generic implementation of. Built after the renderer modules, so the
+          # target is declared here and its sources added below.
+          set(RNQNX_BUILD_REACT_HOST TRUE)
         endif()
 
         include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/ReactNativeRenderer.cmake)
+
+        if(RNQNX_BUILD_REACT_HOST)
+          add_library(rnqnx_react_host STATIC
+            vnext/src/runtime/QtReactHost.cpp
+          )
+          target_link_libraries(rnqnx_react_host PUBLIC
+            rnqnx_fabric_adapter
+            rnqnx_react_native_renderer
+            rnqnx_hermes
+          )
+          rnqnx_enable_strict_warnings(rnqnx_react_host)
+
+          add_executable(qt_react_host_host_test
+            tests/cpp/QtReactHostHostTest.cpp
+          )
+          target_link_libraries(qt_react_host_host_test PRIVATE rnqnx_react_host)
+          rnqnx_enable_strict_warnings(qt_react_host_host_test)
+          set_target_properties(qt_react_host_host_test PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+          )
+          add_test(NAME qt_react_host_host_test
+            COMMAND $<TARGET_FILE:qt_react_host_host_test> -platform offscreen)
+        endif()
 
         add_executable(rnqnx_rn_headers_probe
           vnext/probes/rn-headers/main.cpp

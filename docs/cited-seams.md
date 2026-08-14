@@ -168,29 +168,52 @@ single translation unit is added back explicitly.
 
 ## What a platform must implement itself
 
-Audited against the installed package. Everything from `Scheduler` downward is
-generic C++ and usable as-is; these five have no generic implementation and are
-ours to write:
+Audited against the installed package, then implemented. Everything from
+`Scheduler` downward is generic C++ and used as-is; these are the pieces that
+had no generic implementation:
 
-| Piece                                         | Interface                                                      | Only shipped implementations                                                       |
-| --------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `EventBeat` subclass                          | `react/renderer/core/EventBeat.h:62`, `request()` :90          | Android Choreographer, Apple CFRunLoop                                             |
-| `ComponentRegistryFactory`                    | `componentregistry/ComponentDescriptorFactory.h:25-27`         | none — `getDefaultComponentRegistryFactory()` is declared at :29 and never defined |
-| `SchedulerDelegate` subclass                  | `renderer/scheduler/SchedulerDelegate.h:21`, 13 pure virtuals  | `RCTScheduler.mm:24`, `FabricUIManagerBinding.h:38`                                |
-| `bindHasComponentProvider`                    | `componentregistry/native/NativeComponentRegistryBinding.h:26` | Android and Apple only                                                             |
-| `MessageQueueThread`, `PlatformTimerRegistry` | required by `ReactInstance`                                    | Android and Apple only                                                             |
+| Piece                                         | Interface                                                      | Implemented as                                 |
+| --------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------- |
+| `EventBeat` subclass                          | `react/renderer/core/EventBeat.h:62`, `request()` :90          | `QtEventBeat`, ticking off the Qt loop         |
+| `ComponentRegistryFactory`                    | `componentregistry/ComponentDescriptorFactory.h:25-27`         | `makeComponentRegistryFactory()`               |
+| `SchedulerDelegate` subclass                  | `renderer/scheduler/SchedulerDelegate.h:21`, 13 pure virtuals  | `QtSchedulerDelegate`                          |
+| `bindHasComponentProvider`                    | `componentregistry/native/NativeComponentRegistryBinding.h:26` | not yet — needed once JS view configs run      |
+| `MessageQueueThread`, `PlatformTimerRegistry` | required by `ReactInstance`                                    | avoided — the host drives the runtime directly |
 
-Two further facts that shape the work:
+`getDefaultComponentRegistryFactory()` is declared at
+`ComponentDescriptorFactory.h:29` and defined nowhere in the package, which is
+why every platform writes its own.
 
-- `ReactCommon/react/runtime/platform` contains only `ios`. There is no
-  `platform/cxx` host wiring in the package — that layer is exactly what this
-  project rebuilds.
-- `SurfaceManager` (`renderer/scheduler/SurfaceManager.{h,cpp}`) is complete,
-  generic, and has zero C++ callers in the tree. It collapses surface
-  registration, layout constraint, and start into one call.
-- `<View>` needs no codegen. `ViewComponentDescriptor` and
-  `RootComponentDescriptor` are hand-written and shipped; only components beyond
-  the core set require running React Native's codegen.
+Four behaviours found by running this, all React Native's:
+
+- **The fallback descriptor must be `UnimplementedNativeView`, not
+  `UnimplementedView`.** The latter's `getComponentName()` dereferences
+  `flavor_` as a `std::string`
+  (`UnimplementedViewComponentDescriptor.cpp:17-19`), so registering it with a
+  null flavor segfaults inside `setFallbackComponentDescriptor`, which calls
+  `registerComponentDescriptor` immediately
+  (`ComponentDescriptorRegistry.cpp:143-147`). React Native's own comment names
+  `UnimplementedNativeViewComponentDescriptor` as the default
+  (`ComponentDescriptorRegistry.cpp:97-99`), and Android installs exactly that.
+- **`createComponentDescriptorRegistry` returns a pointer-to-const**, so the
+  fallback goes in through a `const_cast`. That is React Native's own pattern
+  (`DefaultComponentsRegistry.cpp:54-56`), not a workaround.
+- **Stopping any surface calls into JavaScript.**
+  `UIManager::stopSurface` runs `AppRegistryBinding::stopSurface`
+  unconditionally (`UIManager.cpp:292-294`), which throws unless
+  `global.RN$stopSurface` exists. An empty surface has no React app to tear
+  down, so the host installs a no-op only when the global is absent; a real
+  bundle's implementation (`Libraries/Renderer/shims/ReactFabric.js:27`) always
+  wins.
+- **`react_codegen_rncore` is required by three renderer modules** (scheduler,
+  animationbackend, viewtransition) and is codegen output with no CMakeLists.
+  `ReactCommon/react/renderer/components/rncore/` is five headers forwarding to
+  `FBReactNativeSpec`, which does not exist under `ReactCommon` at all. React
+  Native does ship a pre-generated copy under `React/FBReactNativeSpec`, and its
+  renderer half is plain C++ despite living in the Apple tree, so those five
+  sources are built as `react_codegen_rncore`. Known ceiling: these are
+  Apple-flavoured generation, and anything past the core component set needs
+  React Native's codegen run properly.
 
 ## Shadow-tree pipeline seams
 

@@ -84,6 +84,11 @@ set(RNQNX_REACT_NATIVE_MODULES
   react/renderer/observers/events
   react/performance/timeline
   react/timing
+  react/renderer/viewtransition
+  react/renderer/animationbackend
+  react/performance/cdpmetrics
+  react/renderer/components/unimplementedview
+  react/renderer/scheduler
   react/renderer/element
   react/renderer/leakchecker
   react/renderer/textlayoutmanager
@@ -123,6 +128,35 @@ foreach(module IN LISTS RNQNX_REACT_NATIVE_MODULES)
     "${CMAKE_BINARY_DIR}/react-native/${module}"
   )
 endforeach()
+
+# `react_codegen_rncore` is codegen output, so it has no CMakeLists to add.
+# ReactCommon/react/renderer/components/rncore/ holds five headers that each
+# forward to FBReactNativeSpec, and FBReactNativeSpec does not exist under
+# ReactCommon at all — but React Native does ship a pre-generated copy under
+# React/FBReactNativeSpec, and its renderer half is plain C++ despite living in
+# the Apple tree. Building those five sources satisfies every module that links
+# rncore (scheduler, animationbackend, viewtransition).
+#
+# This is a stopgap with a known ceiling: the artifacts are Apple-flavoured
+# generation, and anything beyond React Native's core components needs the
+# codegen run properly. Recorded in docs/cited-seams.md.
+set(RNQNX_RNCORE_DIR "${RNQNX_REACT_NATIVE_DIR}/React/FBReactNativeSpec")
+add_library(react_codegen_rncore STATIC
+  "${RNQNX_RNCORE_DIR}/react/renderer/components/FBReactNativeSpec/ComponentDescriptors.cpp"
+  "${RNQNX_RNCORE_DIR}/react/renderer/components/FBReactNativeSpec/EventEmitters.cpp"
+  "${RNQNX_RNCORE_DIR}/react/renderer/components/FBReactNativeSpec/Props.cpp"
+  "${RNQNX_RNCORE_DIR}/react/renderer/components/FBReactNativeSpec/ShadowNodes.cpp"
+  "${RNQNX_RNCORE_DIR}/react/renderer/components/FBReactNativeSpec/States.cpp"
+)
+target_include_directories(react_codegen_rncore SYSTEM PUBLIC "${RNQNX_RNCORE_DIR}")
+target_link_libraries(react_codegen_rncore PUBLIC
+  react_renderer_core
+  react_renderer_graphics
+  rrc_view
+  yogacore
+  rnqnx_folly
+)
+target_compile_options(react_codegen_rncore PRIVATE -w)
 
 # React Native ships two CMakeLists for JSI and they are not equivalent:
 # ReactCommon/jsi/CMakeLists.txt:17 globs `jsi/*.cpp`, so it includes
@@ -165,6 +199,12 @@ set(RNQNX_REACT_NATIVE_RENDERER_TARGETS
   react_renderer_mounting
   react_performance_timeline
   react_timing
+  react_renderer_viewtransition
+  react_codegen_rncore
+  react_renderer_animationbackend
+  react_performance_cdpmetrics
+  rrc_unimplementedview
+  react_renderer_scheduler
   react_renderer_element
   react_renderer_leakchecker
   react_renderer_textlayoutmanager

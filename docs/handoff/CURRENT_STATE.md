@@ -85,8 +85,16 @@ Hermes is the other half. `hermes-v250829098.0.16`, the version React Native
 through JSI, including the async-arrow case that a previous out-of-tree platform
 found broken.
 
-What is still missing between here and a running app: the wiring between the
-runtime and the renderer. The tree is
+The two halves are now connected. `QtReactHost` builds React Native's
+`Scheduler` on top of a Hermes runtime, supplying the pieces React Native has no
+generic implementation of — an `EventBeat` driven by the Qt event loop, a
+component registry factory, and a `SchedulerDelegate` that mounts from
+`schedulerShouldRenderTransactions`. Surface commits flow through React Native's
+own UIManager and land on Qt Quick items with Yoga's geometry.
+
+What is still missing between here and a running app: React itself. No bundle is
+loaded, so nothing exercises `AppRegistry`, the JS renderer, or TurboModules,
+and props beyond layout are still unconsumed. The tree is
 committed from C++, so there is no Hermes runtime, no bundle, and no
 `UIManagerBinding`. Props beyond layout are also unconsumed. Neither gap needs
 the QNX toolchain or a device; see `NEXT_ACTIONS.md` action 3.

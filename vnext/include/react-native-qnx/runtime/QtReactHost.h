@@ -1,0 +1,175 @@
+#pragma once
+
+#include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
+
+#include <react/renderer/core/EventBeat.h>
+#include <react/renderer/scheduler/Scheduler.h>
+#include <react/renderer/scheduler/SchedulerDelegate.h>
+#include <react/renderer/scheduler/SurfaceHandler.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#include <react/utils/ContextContainer.h>
+
+#include <jsi/jsi.h>
+
+#include <QString>
+
+#include <memory>
+#include <string>
+#include <vector>
+
+namespace rnqnx::runtime {
+
+/// Drives React Native's event beat from the Qt event loop.
+///
+/// React Native ships no generic implementation: the only two are Android's
+/// Choreographer beat and Apple's CFRunLoop observer. The contract
+/// (react/renderer/core/EventBeat.h:88-113) is that `request()` asks the host
+/// platform for a tick and the platform later calls `induce()`, which forwards
+/// the beat callback to the JavaScript thread through the RuntimeScheduler.
+class QtEventBeat final : public facebook::react::EventBeat {
+ public:
+  QtEventBeat(
+      std::shared_ptr<OwnerBox> ownerBox,
+      facebook::react::RuntimeScheduler& runtimeScheduler);
+
+  void request() const override;
+};
+
+/// Applies mount transactions to Qt Quick items.
+///
+/// Mounting happens in `schedulerShouldRenderTransactions`, not in
+/// `schedulerDidFinishTransaction`. The latter fires synchronously on the commit
+/// thread for every transaction (Scheduler.cpp:311) and Apple treats it as a
+/// no-op; the former is dispatched through the RuntimeScheduler's rendering
+/// update (Scheduler.cpp:322-332), which is where a platform is meant to mount.
+///
+/// The hooks this platform does not implement yet are explicit no-ops with a
+/// recorded reason rather than silent stubs. None of them can be omitted:
+/// SchedulerDelegate declares thirteen pure virtuals.
+class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
+ public:
+  explicit QtSchedulerDelegate(fabric::ShadowViewMutationAdapter& adapter);
+
+  /// Failures from the most recent mount, empty when everything applied.
+  const std::vector<fabric::MutationFailure>& lastFailures() const;
+
+  /// How many transactions have been mounted, for tests that need to know a
+  /// transaction actually arrived rather than that the tree happens to match.
+  int mountedTransactionCount() const;
+
+  void schedulerDidFinishTransaction(
+      const std::shared_ptr<const facebook::react::MountingCoordinator>&
+          mountingCoordinator) override;
+  void schedulerShouldRenderTransactions(
+      const std::shared_ptr<const facebook::react::MountingCoordinator>&
+          mountingCoordinator) override;
+  void schedulerShouldMergeReactRevision(
+      facebook::react::SurfaceId surfaceId) override;
+  void schedulerDidRequestPreliminaryViewAllocation(
+      const facebook::react::ShadowNode& shadowNode) override;
+  void schedulerDidDispatchCommand(
+      const facebook::react::ShadowView& shadowView,
+      const std::string& commandName,
+      const folly::dynamic& args) override;
+  void schedulerDidSendAccessibilityEvent(
+      const facebook::react::ShadowView& shadowView,
+      const std::string& eventType) override;
+  void schedulerDidSetIsJSResponder(
+      const facebook::react::ShadowView& shadowView,
+      bool isJSResponder,
+      bool blockNativeResponder) override;
+  void schedulerShouldSynchronouslyUpdateViewOnUIThread(
+      facebook::react::Tag tag,
+      const folly::dynamic& props) override;
+  void schedulerDidUpdateShadowTree(
+      const std::unordered_map<facebook::react::Tag, folly::dynamic>& tagToProps)
+      override;
+  void schedulerDidCaptureViewSnapshot(
+      facebook::react::Tag tag,
+      facebook::react::SurfaceId surfaceId) override;
+  void schedulerDidSetViewSnapshot(
+      facebook::react::Tag sourceTag,
+      facebook::react::Tag targetTag,
+      facebook::react::SurfaceId surfaceId) override;
+  void schedulerDidClearPendingSnapshots() override;
+
+ private:
+  fabric::ShadowViewMutationAdapter& adapter_;
+  std::vector<fabric::MutationFailure> lastFailures_;
+  int mountedTransactionCount_{0};
+};
+
+/// Registers the component descriptors this platform can mount.
+///
+/// React Native declares `getDefaultComponentRegistryFactory()`
+/// (componentregistry/ComponentDescriptorFactory.h:29) and never defines it
+/// anywhere in the package, so every platform supplies its own. Unknown
+/// components resolve to the unimplemented-native-view descriptor rather than throwing
+/// `std::invalid_argument` out of ComponentDescriptorRegistry::at.
+facebook::react::ComponentRegistryFactory makeComponentRegistryFactory();
+
+/// Owns a Hermes runtime and the React Native scheduler wired to Qt Quick.
+///
+/// This is the layer React Native has no generic implementation of: the package
+/// ships `react/runtime/platform/ios` and nothing else, so the host wiring is
+/// ours. JavaScript runs on the thread that constructs this object; there is no
+/// separate JS thread yet, which keeps the first bring-up honest about what has
+/// actually been proven.
+class QtReactHost {
+ public:
+  QtReactHost(fabric::ShadowViewMutationAdapter& adapter);
+  ~QtReactHost();
+
+  QtReactHost(const QtReactHost&) = delete;
+  QtReactHost& operator=(const QtReactHost&) = delete;
+  QtReactHost(QtReactHost&&) = delete;
+  QtReactHost& operator=(QtReactHost&&) = delete;
+
+  facebook::jsi::Runtime& runtime();
+  facebook::react::Scheduler& scheduler();
+  QtSchedulerDelegate& delegate();
+
+  /// Evaluates JavaScript on the runtime. Returns false and fills
+  /// `lastError()` when the script throws.
+  bool evaluate(const std::string& source, const std::string& sourceUrl);
+
+  /// True when `global.nativeFabricUIManager` is installed, which is what
+  /// proves the UIManagerBinding reached the runtime.
+  bool hasFabricUIManager();
+
+  /// Starts a surface with no JavaScript module attached. React Native calls
+  /// this an empty surface (SurfaceHandler.cpp:72); it exists so a platform can
+  /// prove its mounting path before a bundle is involved.
+  ///
+  /// Stopping any surface still calls into JavaScript:
+  /// `UIManager::stopSurface` runs `AppRegistryBinding::stopSurface`
+  /// unconditionally (UIManager.cpp:292-294), which throws unless
+  /// `global.RN$stopSurface` exists (AppRegistryBinding.cpp). An empty surface
+  /// has no React app to tear down, so this installs a no-op for it. A real
+  /// bundle overwrites the global with React's own implementation
+  /// (Libraries/Renderer/shims/ReactFabric.js:27), and this shim goes away with
+  /// the first real bundle.
+  void startEmptySurface(
+      facebook::react::SurfaceId surfaceId,
+      float width,
+      float height);
+  void stopSurface(facebook::react::SurfaceId surfaceId);
+
+  /// Commits `children` as the surface root's children through the UIManager's
+  /// shadow tree, which is the same path a React commit takes.
+  bool commit(
+      facebook::react::SurfaceId surfaceId,
+      const std::vector<std::shared_ptr<const facebook::react::ShadowNode>>&
+          children);
+
+  const std::shared_ptr<const facebook::react::ContextContainer>&
+  contextContainer() const;
+
+  QString lastError() const;
+
+ private:
+  class Impl;
+  std::unique_ptr<Impl> impl_;
+};
+
+}  // namespace rnqnx::runtime
