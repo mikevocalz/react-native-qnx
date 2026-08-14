@@ -32,6 +32,15 @@ function PlaygroundApp() {
         opacity: 0.5,
       },
       collapsable: false,
+      // The host test presses here and reads these back, which is how a touch
+      // reaching JavaScript is proven rather than assumed.
+      onTouchStart: (event) => {
+        globalThis.__touchStarts = (globalThis.__touchStarts ?? 0) + 1;
+        globalThis.__lastTouch = event.nativeEvent.locationX;
+      },
+      onTouchEnd: () => {
+        globalThis.__touchEnds = (globalThis.__touchEnds ?? 0) + 1;
+      },
     })
   );
 }

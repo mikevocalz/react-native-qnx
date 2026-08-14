@@ -1,6 +1,7 @@
 #pragma once
 
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
+#include "react-native-qnx/fabric/QtTouchDispatcher.h"
 
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
@@ -35,6 +36,15 @@ class ShadowViewMutationAdapter {
  public:
   explicit ShadowViewMutationAdapter(QtQuickMountingLayer& layer);
 
+  /// Routes shadow-view event emitters to a touch dispatcher as mutations
+  /// arrive. Optional: without one, mounted views simply receive no input.
+  ///
+  /// The dispatcher is borrowed and must outlive every mutation this adapter
+  /// applies — including the empty-tree commit that stopping a surface
+  /// produces, which arrives while the host is being torn down. Pass nullptr
+  /// before destroying it if that ordering cannot be guaranteed.
+  void setTouchDispatcher(QtTouchDispatcher* dispatcher);
+
   /// Maps a React Native component name to a QML type registered on the
   /// factory. Unmapped names fail rather than falling back to a generic view.
   void mapComponent(const QString& componentName, const QString& qmlTypeName);
@@ -44,11 +54,14 @@ class ShadowViewMutationAdapter {
       const facebook::react::ShadowViewMutation::List& mutations);
 
  private:
+  void registerEventEmitter(const facebook::react::ShadowView& view);
+
   MountError applyOne(
       const facebook::react::ShadowViewMutation& mutation,
       QString& detail);
 
   QtQuickMountingLayer& layer_;
+  QtTouchDispatcher* touchDispatcher_{nullptr};
   QHash<QString, QString> componentTypes_;
 };
 

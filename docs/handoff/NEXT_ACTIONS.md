@@ -96,10 +96,10 @@ and platform constants.
    `backgroundColor`, `borderRadius`, `opacity`, and transforms are silently
    ignored. Start there: they are the difference between a correct tree and a
    visible app. Record each in `docs/component-support.md`.
-2. **Input.** No touch or pointer event reaches JavaScript, so nothing is
-   interactive. Qt delivers pointer events to items; they have to be bridged to
-   React Native's touch pipeline through the Dispatcher, and the
-   `SchedulerDelegate` responder hooks are currently deliberate no-ops.
+2. **Finish input.** A single pointer reaches JavaScript. Multi-touch, pointer
+   capture, and the JS responder negotiation are not implemented, which is why
+   `Pressable` is marked partial rather than working — `schedulerDidSetIsJSResponder`
+   is still a no-op.
 3. **On glass.** Everything so far runs under the offscreen QPA plugin. Render
    the playground into a real `QQuickWindow` on macOS and look at it.
 4. **Input.** No touch or pointer events reach JavaScript yet; the

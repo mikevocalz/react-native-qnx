@@ -10,6 +10,7 @@
  */
 
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
+#include "react-native-qnx/fabric/QtTouchDispatcher.h"
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
@@ -26,6 +27,8 @@
 #include <QByteArray>
 #include <QColor>
 #include <QImage>
+#include <QMouseEvent>
+#include <QPointF>
 #include <QGuiApplication>
 #include <QList>
 #include <QQmlEngine>
@@ -134,6 +137,7 @@ class Fixture {
       : factory_(engine_),
         layer_(factory_, *window_.contentItem(), kSurfaceId),
         adapter_(layer_),
+        dispatcher_(layer_, *window_.contentItem()),
         host_(adapter_),
         builder_(makeComponentBuilder(host_.contextContainer())) {
     factory_.registerType(QStringLiteral("View"), QByteArray(kViewSource));
@@ -144,6 +148,17 @@ class Fixture {
 
   QtReactHost& host() { return host_; }
   QQuickWindow& window() { return window_; }
+  ShadowViewMutationAdapter& adapter() { return adapter_; }
+
+  /// Starts routing pointer events. The dispatcher is a fixture member declared
+  /// before the host, because stopping a surface commits an empty tree during
+  /// host destruction and that reaches the adapter, which reaches the
+  /// dispatcher.
+  rnqnx::fabric::QtTouchDispatcher& enableTouch() {
+    adapter_.setTouchDispatcher(&dispatcher_);
+    window_.installEventFilter(&dispatcher_);
+    return dispatcher_;
+  }
   ComponentBuilder& builder() { return builder_; }
   QtQuickMountingLayer& layer() { return layer_; }
   QQuickItem& root() { return *window_.contentItem(); }
@@ -156,6 +171,7 @@ class Fixture {
   QtQuickItemFactory factory_;
   QtQuickMountingLayer layer_;
   ShadowViewMutationAdapter adapter_;
+  rnqnx::fabric::QtTouchDispatcher dispatcher_;
   QtReactHost host_;
   ComponentBuilder builder_;
 };
@@ -622,6 +638,86 @@ void renderedTreeIsPainted() {
 }
 #endif
 
+#ifdef RNQNX_PLAYGROUND_BUNDLE_PATH
+/// A pointer press reaches the JavaScript handler.
+///
+/// Qt delivers pointer events to the window; QtTouchDispatcher filters them,
+/// hit-tests to the deepest mounted item, and calls that shadow view's
+/// TouchEventEmitter. Nothing about that path is React Native's — it ships
+/// Choreographer motion events on Android and UIKit touches on Apple.
+void pointerEventsReachJavaScript() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  auto& dispatcher = fixture.enableTouch();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(kSurfaceId, "RNQnxPlayground", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+  EXPECT(fixture.rootChildCount() == 1);
+
+  // The inner view is 64x32 at the origin, so this lands inside it.
+  const QPointF point(20.0, 10.0);
+  QMouseEvent press(
+      QEvent::MouseButtonPress,
+      point,
+      point,
+      Qt::LeftButton,
+      Qt::LeftButton,
+      Qt::NoModifier);
+  QMouseEvent release(
+      QEvent::MouseButtonRelease,
+      point,
+      point,
+      Qt::LeftButton,
+      Qt::NoButton,
+      Qt::NoModifier);
+  QCoreApplication::sendEvent(&fixture.window(), &press);
+  QCoreApplication::sendEvent(&fixture.window(), &release);
+
+  EXPECT(dispatcher.dispatchedCount() == 2);
+
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  auto& runtime = fixture.host().runtime();
+  const auto starts = runtime.global().getProperty(runtime, "__touchStarts");
+  const auto ends = runtime.global().getProperty(runtime, "__touchEnds");
+  if (!starts.isNumber()) {
+    fail(
+        "onTouchStart ran in JavaScript",
+        __FILE__,
+        __LINE__,
+        "globalThis.__touchStarts was never set");
+  }
+  EXPECT_NEAR(starts.getNumber(), 1.0);
+  EXPECT(ends.isNumber());
+  EXPECT_NEAR(ends.getNumber(), 1.0);
+
+  // The handler read locationX off the event, so the coordinate survived the
+  // trip from Qt into React Native's touch payload.
+  const auto locationX = runtime.global().getProperty(runtime, "__lastTouch");
+  EXPECT(locationX.isNumber());
+  EXPECT_NEAR(locationX.getNumber(), 20.0);
+}
+#endif
+
 struct TestCase {
   const char* name;
   std::function<void()> run;
@@ -657,6 +753,7 @@ int main(int argc, char** argv) {
 #ifdef RNQNX_PLAYGROUND_BUNDLE_PATH
       {"aSuccessfulRenderReportsNoErrors", aSuccessfulRenderReportsNoErrors},
       {"renderedTreeIsPainted", renderedTreeIsPainted},
+      {"pointerEventsReachJavaScript", pointerEventsReachJavaScript},
 #endif
 #endif
   };
@@ -665,7 +762,9 @@ int main(int argc, char** argv) {
   for (const auto& test : tests) {
     try {
       test.run();
-      std::cout << "[PASS] " << test.name << '\n';
+      // Flushed: stdout is buffered, and a crash in a later case would
+      // otherwise discard the record of which ones passed.
+      std::cout << "[PASS] " << test.name << std::endl;
     } catch (const TestFailure& failure) {
       ++failed;
       std::cerr << "[FAIL] " << test.name << ": " << failure.what() << '\n';

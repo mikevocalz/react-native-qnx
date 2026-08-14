@@ -598,3 +598,32 @@ validate:macos`.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — input, so
   the rendered app can respond to something.
+
+## 2026-08-14 – Touch reaches JavaScript
+
+- **Goal:** Make the rendered app respond to a pointer.
+- **Implemented:** `QtTouchDispatcher` — a Qt event filter on the window that
+  hit-tests to the deepest mounted item and calls that shadow view's
+  `TouchEventEmitter`. React Native ships no generic input path; Android reads
+  Choreographer motion events and Apple reads UIKit touches. The adapter
+  registers each view's emitter as mutations arrive and forgets it on delete.
+- **Test:** a `QMouseEvent` press and release on the window run the playground's
+  `onTouchStart` and `onTouchEnd` handlers in JavaScript, and
+  `event.nativeEvent.locationX` is the pressed coordinate.
+- **Two bugs found, both mine:**
+  - The dispatcher was a local in the test while the adapter held a raw pointer
+    to it. Stopping a surface commits an empty tree _during host teardown_,
+    which reaches the adapter and then the freed dispatcher — heap corruption
+    surfacing as `EXC_BREAKPOINT` inside malloc, not a clean failure. The
+    fixture now owns it, declared before the host, and the lifetime requirement
+    is documented on `setTouchDispatcher`.
+  - The harness printed `[PASS]` to buffered stdout, so the crash discarded the
+    record of which cases had passed and made it look like the first case
+    failed. It flushes now. That cost a diagnostic cycle chasing the wrong test.
+- **Scope stated:** one pointer. No multi-touch, no pointer capture, no JS
+  responder negotiation, so `Pressable` is marked partial rather than working.
+- **Mutation check:** removing the `onTouchStart` call fails the case.
+- **Results:** CTest 9/9 with Hermes, 7/7 default, seventeen host cases.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — finish input
+  (responder negotiation), then DeviceInfo and SourceCode.

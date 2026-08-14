@@ -275,6 +275,30 @@ tables plus React Native's own `ReactNativeStyleAttributes` for
 `validAttributes`. The iOS file's accessibility and force-touch events are
 deliberately absent rather than declared and unimplemented.
 
+## Input
+
+React Native ships no generic input path: Android reads Choreographer-driven
+motion events and Apple reads UIKit touches. Qt delivers pointer events to the
+window, so `QtTouchDispatcher` filters them there, hit-tests to the deepest
+mounted item, and calls that shadow view's emitter.
+
+| Seam                                        | Installed authority                                |
+| ------------------------------------------- | -------------------------------------------------- |
+| `TouchEventEmitter::onTouchStart/Move/End`  | `components/view/TouchEventEmitter.h:28-31`        |
+| `TouchEvent` (touches/changed/target lists) | `components/view/TouchEvent.h:20-38`               |
+| `Touch` fields                              | `components/view/BaseTouch.h:26,31,36,41,48,53,59` |
+| `ShadowView::eventEmitter`                  | `mounting/ShadowView.h:45`                         |
+
+Scope is one pointer — press, move, release. Multi-touch, pointer capture, and
+the JS responder negotiation are not implemented, and
+`docs/component-support.md` says so rather than implying `Pressable` fully works.
+
+A lifetime rule worth stating: the adapter borrows the dispatcher, and stopping
+a surface commits an empty tree _during host teardown_, which reaches the
+adapter and therefore the dispatcher. The dispatcher must outlive the host, or
+be cleared first. Getting this wrong corrupts the heap rather than failing
+cleanly.
+
 ## Host responsibilities beyond the bindings
 
 Hermes is a JavaScript engine, not a runtime, so several things JavaScript

@@ -81,10 +81,27 @@ LayoutFrame toLayoutFrame(const facebook::react::LayoutMetrics& metrics) {
 ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer)
     : layer_(layer) {}
 
+void ShadowViewMutationAdapter::setTouchDispatcher(
+    QtTouchDispatcher* dispatcher) {
+  touchDispatcher_ = dispatcher;
+}
+
 void ShadowViewMutationAdapter::mapComponent(
     const QString& componentName,
     const QString& qmlTypeName) {
   componentTypes_.insert(componentName, qmlTypeName);
+}
+
+void ShadowViewMutationAdapter::registerEventEmitter(const ShadowView& view) {
+  if (touchDispatcher_ == nullptr) {
+    return;
+  }
+  // ShadowView::eventEmitter (ShadowView.h:45) is the shadow node's emitter.
+  // Only view emitters carry touches; anything else simply does not register.
+  touchDispatcher_->setEventEmitter(
+      view.tag,
+      std::dynamic_pointer_cast<const facebook::react::TouchEventEmitter>(
+          view.eventEmitter));
 }
 
 MountError ShadowViewMutationAdapter::applyOne(
@@ -115,10 +132,14 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (layoutError != MountError::None) {
         return layoutError;
       }
+      registerEventEmitter(view);
       return layer_.updateStyle(view.tag, toViewStyle(view));
     }
 
     case ShadowViewMutation::Type::Delete:
+      if (touchDispatcher_ != nullptr) {
+        touchDispatcher_->forgetTag(mutation.oldChildShadowView.tag);
+      }
       return layer_.destroy(mutation.oldChildShadowView.tag);
 
     case ShadowViewMutation::Type::Insert:
@@ -131,6 +152,7 @@ MountError ShadowViewMutationAdapter::applyOne(
 
     case ShadowViewMutation::Type::Update: {
       const ShadowView& view = mutation.newChildShadowView;
+      registerEventEmitter(view);
       const MountError layoutError =
           layer_.updateLayout(view.tag, toLayoutFrame(view.layoutMetrics));
       if (layoutError != MountError::None) {

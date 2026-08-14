@@ -1,5 +1,27 @@
 # TEST_STATUS.md
 
+## Touch reaches JavaScript — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.
+- `pointerEventsReachJavaScript` sends a `QMouseEvent` press and release to the
+  window and asserts the playground's `onTouchStart` and `onTouchEnd` handlers
+  each ran once in JavaScript, and that `event.nativeEvent.locationX` is 20 —
+  the coordinate survived the trip from Qt into React Native's touch payload.
+- Mutation check: removing the `onTouchStart` call fails the case on
+  `globalThis.__touchStarts was never set`.
+- Two bugs found and fixed, both mine:
+  - The dispatcher was a local in the test while the adapter held a raw pointer
+    to it. Stopping a surface commits an empty tree during host teardown, which
+    reaches the adapter and then the freed dispatcher — heap corruption, an
+    `EXC_BREAKPOINT` inside malloc rather than a clean failure. The fixture now
+    owns it, declared before the host, and the lifetime rule is documented on
+    the API.
+  - The harness printed `[PASS]` to buffered stdout, so a crash in a later case
+    discarded the record of which cases had passed and made the failure look
+    like it happened first. It now flushes.
+- Evidence level: host only, offscreen QPA. Nothing cross-compiled for QNX,
+  nothing run on the Pi 4.
+
 ## The tree is painted, not just configured — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default; sixteen host cases.

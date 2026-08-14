@@ -255,6 +255,9 @@ else()
 
         add_library(rnqnx_fabric_adapter STATIC
           vnext/src/fabric/ShadowViewMutationAdapter.cpp
+          # Needs React Native's headers, so it lives with the adapter rather
+          # than in the Qt-only view library.
+          vnext/src/fabric/QtTouchDispatcher.cpp
         )
         target_link_libraries(rnqnx_fabric_adapter PUBLIC
           rnqnx_react_native_renderer
