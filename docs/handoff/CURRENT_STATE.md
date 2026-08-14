@@ -122,6 +122,10 @@ Background colour, corner radius, border, and opacity are applied too, so the
 rendered tree is visible rather than merely correctly sized.
 `docs/component-support.md` is the honest table of what works.
 
+JavaScript errors are reported to the host rather than aborting the process:
+`QnxExceptionsManager` implements React Native's ExceptionsManager over the
+generated spec, and a healthy render is asserted to report nothing.
+
 Remaining gaps: transforms and `onLayout` are unimplemented, per-corner radii
 collapse to one value because Qt Quick's `Rectangle` has a single `radius`, and
 only the left border edge is read for the same reason. There is no input pipeline, so nothing

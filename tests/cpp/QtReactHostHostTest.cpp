@@ -487,6 +487,71 @@ void metroBundleRendersThroughReact() {
   EXPECT_NEAR(inner->opacity(), 0.5);
 }
 
+/// A JavaScript error reaches the host instead of aborting the process.
+///
+/// Before ExceptionsManager existed, React reached for it while reporting any
+/// error, `getEnforcing` threw, and the throw escaped — so the first error
+/// killed the process while trying to describe itself.
+void javaScriptErrorsReachTheHost() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+
+  // In bridgeless mode TurboModuleBinding installs `nativeModuleProxy`
+  // (TurboModuleBinding.cpp:151-161), which is what TurboModuleRegistry falls
+  // back to. Reaching it directly keeps the test independent of a bundle.
+  const char* report = R"JS(
+    const manager = globalThis.nativeModuleProxy.ExceptionsManager;
+    manager.reportException({
+      message: 'deliberate failure',
+      isFatal: true,
+      stack: [{ methodName: 'renderThing', file: 'App.js', lineNumber: 42 }],
+    });
+    manager.dismissRedbox();
+  )JS";
+
+  EXPECT(fixture.host().evaluate(report, "errors.js"));
+
+  const auto& errors = fixture.host().javaScriptErrors();
+  EXPECT(errors.size() == 1);
+  EXPECT(errors.front().message == "deliberate failure");
+  EXPECT(errors.front().isFatal);
+  // The stack is flattened from React Native's frame objects, so the method and
+  // location survive rather than being dropped.
+  EXPECT(errors.front().stack.find("renderThing") != std::string::npos);
+  EXPECT(errors.front().stack.find("App.js:42") != std::string::npos);
+}
+
+/// A healthy render reports nothing. This is the guard that keeps the error
+/// path from quietly becoming noisy.
+void aSuccessfulRenderReportsNoErrors() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.host().startSurface(kSurfaceId, "RNQnxPlayground", 640.0F, 480.0F);
+  for (int i = 0; i < 10; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.rootChildCount() == 1);
+  if (!fixture.host().javaScriptErrors().empty()) {
+    fail(
+        "render reported no JavaScript errors",
+        __FILE__,
+        __LINE__,
+        fixture.host().javaScriptErrors().front().message);
+  }
+}
+
 struct TestCase {
   const char* name;
   std::function<void()> run;
@@ -518,6 +583,10 @@ int main(int argc, char** argv) {
       {"metroProducesABundleForQnx", metroProducesABundleForQnx},
       {"metroBundleEvaluatesInHermes", metroBundleEvaluatesInHermes},
       {"metroBundleRendersThroughReact", metroBundleRendersThroughReact},
+      {"javaScriptErrorsReachTheHost", javaScriptErrorsReachTheHost},
+#ifdef RNQNX_PLAYGROUND_BUNDLE_PATH
+      {"aSuccessfulRenderReportsNoErrors", aSuccessfulRenderReportsNoErrors},
+#endif
 #endif
   };
 

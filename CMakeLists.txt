@@ -177,6 +177,7 @@ else()
         if(RNQNX_BUILD_REACT_HOST)
           add_library(rnqnx_react_host STATIC
             vnext/src/runtime/QtReactHost.cpp
+            vnext/src/runtime/QnxExceptionsManager.cpp
           )
           target_link_libraries(rnqnx_react_host PUBLIC
             rnqnx_fabric_adapter

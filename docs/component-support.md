@@ -42,7 +42,7 @@ Legend: ✅ works and is covered by a host test · ⚠ partial, with the limit n
 | ------------------------------------------------------- | ------ | ----------------------------------------------------------------- |
 | `Platform`                                              | ⚠      | `OS`, `select`, `Version`, and constants from the running system. |
 | `NativeMicrotasksCxx`, `NativeIdleCallbacksCxx`         | ✅     | React Native's own C++ modules, via `DefaultTurboModules`.        |
-| `ExceptionsManager`                                     | ❌     | A JavaScript error currently aborts the process while reporting.  |
+| `ExceptionsManager`                                     | ✅     | Reports to the host and logs; `dismissRedbox` is an honest no-op. |
 | `DeviceInfo`, `SourceCode`                              | ❌     | Generated specs exist; real values needed.                        |
 | `FileReaderModule`, `SegmentFetcher`, `WebSocketModule` | ❌     | Referenced by the bundle; unused by the render path.              |
 | `UIManager`                                             | n/a    | Not a TurboModule; bridgeless React Native serves it from JS.     |

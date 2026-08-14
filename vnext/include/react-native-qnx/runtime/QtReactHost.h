@@ -1,6 +1,7 @@
 #pragma once
 
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
+#include "react-native-qnx/runtime/QnxExceptionsManager.h"
 
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/scheduler/Scheduler.h>
@@ -163,6 +164,9 @@ class QtReactHost {
   /// returns nullptr so `getEnforcing` fails with the module's name, which
   /// ADR-0004 requires over empty TurboModules that silence the error.
   void installTurboModuleBinding();
+
+  /// Errors JavaScript has reported through ExceptionsManager, oldest first.
+  const std::vector<JavaScriptError>& javaScriptErrors() const;
 
   /// Installs `globalThis.__RNQNX_PLATFORM_CONSTANTS`, which the platform
   /// package's `Platform.js` reads. Values are real: the OS name and version

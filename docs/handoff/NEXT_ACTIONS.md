@@ -96,10 +96,10 @@ and platform constants.
    `backgroundColor`, `borderRadius`, `opacity`, and transforms are silently
    ignored. Start there: they are the difference between a correct tree and a
    visible app. Record each in `docs/component-support.md`.
-2. **ExceptionsManager**, as a C++ TurboModule over the generated
-   `NativeExceptionsManagerCxxSpec`. Today any JavaScript error aborts the
-   process while trying to report itself. It must surface errors to the host —
-   ADR-0004 forbids an empty module.
+2. **Render on glass.** Everything so far runs under the offscreen QPA plugin.
+   Show the playground in a real `QQuickWindow` on macOS and look at it — the
+   first check that the colours and radii are actually painted rather than
+   merely set.
 3. **On glass.** Everything so far runs under the offscreen QPA plugin. Render
    the playground into a real `QQuickWindow` on macOS and look at it.
 4. **Input.** No touch or pointer events reach JavaScript yet; the

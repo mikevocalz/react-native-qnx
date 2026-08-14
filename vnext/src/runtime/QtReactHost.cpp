@@ -23,6 +23,7 @@
 #include <folly/dynamic.h>
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QSysInfo>
 #include <QTimer>
 #include <QMetaObject>
@@ -334,6 +335,7 @@ class QtReactHost::Impl {
   /// them yet; keeping them is what makes that possible later.
   std::unordered_map<std::string, facebook::jsi::Value> callableModules;
   std::unordered_map<int, std::unique_ptr<QTimer>> timers;
+  std::vector<JavaScriptError> javaScriptErrors;
   int nextTimerHandle{0};
   QString lastError;
 };
@@ -397,17 +399,36 @@ bool QtReactHost::hasComponent(const std::string& componentName) const {
   return std::find(names.begin(), names.end(), unified) != names.end();
 }
 
+const std::vector<JavaScriptError>& QtReactHost::javaScriptErrors() const {
+  return impl_->javaScriptErrors;
+}
+
 void QtReactHost::installTurboModuleBinding() {
   auto callInvoker =
       std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(
           impl_->runtimeScheduler);
+  auto* impl = impl_.get();
 
   facebook::react::TurboModuleBinding::install(
       *impl_->runtime,
-      [callInvoker](
+      [callInvoker, impl](
           facebook::jsi::Runtime& /*jsRuntime*/,
           const std::string& name)
           -> std::shared_ptr<facebook::react::TurboModule> {
+        // Without this, every JavaScript error aborts the process: React
+        // reaches for ExceptionsManager while reporting, getEnforcing throws,
+        // and the throw escapes.
+        if (name == QnxExceptionsManager::kModuleName) {
+          return std::make_shared<QnxExceptionsManager>(
+              callInvoker, [impl](const JavaScriptError& error) {
+                qWarning().noquote()
+                    << (error.isFatal ? "[js fatal]" : "[js error]")
+                    << QString::fromStdString(error.message) << '\n'
+                    << QString::fromStdString(error.stack);
+                impl->javaScriptErrors.push_back(error);
+              });
+        }
+
         // React Native's own generic C++ modules. Two of the modules this
         // platform needs come from here already implemented — microtasks and
         // idle callbacks, both backed by the RuntimeScheduler.

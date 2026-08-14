@@ -552,3 +552,23 @@ validate:macos`.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 —
   ExceptionsManager next, then render on glass.
+
+## 2026-08-14 – ExceptionsManager
+
+- **Goal:** Stop JavaScript errors from killing the process while reporting
+  themselves.
+- **Implemented:** `QnxExceptionsManager` over the generated
+  `NativeExceptionsManagerCxxSpec`, wired into the host's TurboModule provider
+  ahead of the `DefaultTurboModules` fallback. It flattens React Native's stack
+  frame objects into text, records each error on the host, and logs it.
+  `dismissRedbox` is an honest no-op — there is no redbox here — rather than an
+  unimplemented method.
+- **Tests:** an error reported from JavaScript reaches the host with its
+  message, fatal flag, and a stack that still names the method and file; and a
+  healthy render of the playground bundle reports nothing.
+- **Mutation check:** dropping the reporter call fails the first test on
+  `errors.size() == 1`.
+- **Results:** CTest 9/9 with Hermes, 7/7 default, fifteen host cases.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — render on
+  glass in a real window, then input.

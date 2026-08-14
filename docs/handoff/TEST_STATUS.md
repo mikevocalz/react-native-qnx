@@ -1,5 +1,22 @@
 # TEST_STATUS.md
 
+## JavaScript errors reach the host — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default; fifteen host cases.
+- `QnxExceptionsManager` implements React Native's ExceptionsManager over the
+  generated `NativeExceptionsManagerCxxSpec`. Before it existed, any JavaScript
+  error aborted the process: React reached for the module while reporting,
+  `getEnforcing` threw, and the throw escaped.
+- `javaScriptErrorsReachTheHost` reports an error from JavaScript through
+  `nativeModuleProxy` and asserts the host received the message, the fatal flag,
+  and a flattened stack that still names the method and `App.js:42`.
+- `aSuccessfulRenderReportsNoErrors` renders the playground bundle and asserts
+  nothing was reported, which keeps the error path from quietly becoming noisy.
+- Mutation check: dropping the `reporter_` call fails
+  `javaScriptErrorsReachTheHost` on `errors.size() == 1`.
+- Evidence level: host only, offscreen QPA. Nothing cross-compiled for QNX,
+  nothing run on the Pi 4.
+
 ## Visual props reach the items — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default; thirteen host cases.
