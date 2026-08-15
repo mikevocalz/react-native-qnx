@@ -232,8 +232,30 @@ else()
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
           )
 
+          # ASan's allocator is installed process-wide by interposition, so
+          # heap use-after-free is caught in the React Native and Qt libraries
+          # this links even though they are not themselves instrumented. That
+          # is what makes the event-beat lifetime case a real test rather than
+          # a coin flip: without it, reading a destroyed beat only sometimes
+          # touches an unmapped page.
+          if(RNQNX_ENABLE_HOST_SANITIZERS AND
+             CMAKE_CXX_COMPILER_ID MATCHES "AppleClang|Clang|GNU")
+            target_compile_options(qt_react_host_host_test PRIVATE
+              -fsanitize=address
+              -fno-omit-frame-pointer
+            )
+            target_link_options(qt_react_host_host_test PRIVATE
+              -fsanitize=address
+            )
+          endif()
+
           add_test(NAME qt_react_host_host_test
             COMMAND $<TARGET_FILE:qt_react_host_host_test> -platform offscreen)
+          # Qt and Hermes both allocate singletons that outlive main, exactly as
+          # for the other sanitized host tests.
+          set_tests_properties(qt_react_host_host_test PROPERTIES
+            ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0"
+          )
         endif()
 
         add_executable(rnqnx_rn_headers_probe

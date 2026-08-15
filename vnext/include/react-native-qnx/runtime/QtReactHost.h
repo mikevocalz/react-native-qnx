@@ -12,6 +12,7 @@
 
 #include <jsi/jsi.h>
 
+#include <QObject>
 #include <QString>
 
 #include <memory>
@@ -34,6 +35,11 @@ class QtEventBeat final : public facebook::react::EventBeat {
       facebook::react::RuntimeScheduler& runtimeScheduler);
 
   void request() const override;
+
+ private:
+  /// The receiver for queued beats. Owning it here is what bounds a posted
+  /// `induce()` to this beat's lifetime; see request().
+  std::unique_ptr<QObject> context_{std::make_unique<QObject>()};
 };
 
 /// Applies mount transactions to Qt Quick items.

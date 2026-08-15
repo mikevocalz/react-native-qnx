@@ -10,6 +10,7 @@
 #include <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
 #include <react/renderer/components/image/ImageComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
+#include <react/renderer/components/iostextinput/TextInputComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
@@ -63,19 +64,28 @@ QtEventBeat::QtEventBeat(
 void QtEventBeat::request() const {
   EventBeat::request();
 
-  // Ask the Qt event loop for the tick. Queuing through the application object
-  // means the beat lands after the current event finishes, which is what the
-  // Android and Apple beats do with their own frame callbacks.
-  auto* application = QCoreApplication::instance();
-  if (application == nullptr) {
+  if (QCoreApplication::instance() == nullptr) {
     // Without an event loop there is nothing to schedule against. Inducing
     // immediately keeps a headless test moving instead of hanging.
     induce();
     return;
   }
 
+  // Ask the Qt event loop for the tick. Queuing means the beat lands after the
+  // current event finishes, which is what the Android and Apple beats do with
+  // their own frame callbacks.
+  //
+  // The receiver is this beat's own QObject rather than
+  // QCoreApplication::instance(). A queued call outlives the moment it was
+  // posted and the application object outlives every host, so posting there
+  // left a pending `induce()` on a destroyed beat whenever a host was torn
+  // down with a beat in flight — a segfault in whatever pumped the loop next.
+  // ~QObject drops that object's posted events, so the stale beat is discarded
+  // instead. React Native's OwnerBox does not help: it is checked inside
+  // induce(), which is already too late for a dangling `this`
+  // (EventBeat.cpp:62-66).
   QMetaObject::invokeMethod(
-      application, [this]() { induce(); }, Qt::QueuedConnection);
+      context_.get(), [this]() { induce(); }, Qt::QueuedConnection);
 }
 
 QtSchedulerDelegate::QtSchedulerDelegate(
@@ -230,6 +240,15 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<
             facebook::react::ScrollViewComponentDescriptor>());
+
+    // React Native's textinput descriptor lives under platform/ios, but it is
+    // portable C++: TextInputShadowNode and TextInputProps depend only on
+    // react/, Yoga and the standard library. The Android one is not an option —
+    // it reaches for fbjni and the Java FabricUIManager to read theme padding
+    // (AndroidTextInputComponentDescriptor.h:41-47).
+    providerRegistry->add(
+        facebook::react::concreteComponentDescriptorProvider<
+            facebook::react::TextInputComponentDescriptor>());
 
     // Without a fallback, an unregistered component name throws
     // std::invalid_argument out of ComponentDescriptorRegistry::at
