@@ -57,7 +57,12 @@ class ShadowViewMutationAdapter {
  private:
   void applyText(const facebook::react::ShadowView& view);
   void applyImage(const facebook::react::ShadowView& view);
+  void applyTextInput(const facebook::react::ShadowView& view);
   void registerEventEmitter(const facebook::react::ShadowView& view);
+
+  /// Connects an editable item's text changes to its shadow view's
+  /// TextInputEventEmitter, so `onChange` reaches JavaScript.
+  void connectTextInputEvents(const facebook::react::ShadowView& view);
 
   /// Connects a scrollable item's position changes to its shadow view's
   /// ScrollViewEventEmitter, so `onScroll` reaches JavaScript.
@@ -73,6 +78,8 @@ class ShadowViewMutationAdapter {
   /// Tags whose scroll signals are already connected, so a second Update does
   /// not attach a duplicate handler.
   QSet<Tag> scrollConnected_;
+  /// Tags whose text-change signal is already connected, for the same reason.
+  QSet<Tag> textInputConnected_;
 };
 
 /// Converts React Native's view props to the visual style the mounting layer

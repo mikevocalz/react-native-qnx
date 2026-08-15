@@ -2,6 +2,9 @@
 
 #include "react-native-qnx/fabric/QtScrollBridge.h"
 
+#include <react/renderer/components/iostextinput/TextInputProps.h>
+#include <react/renderer/components/textinput/TextInputEventEmitter.h>
+
 #include <QColor>
 #include <QMetaMethod>
 #include <QQuickItem>
@@ -203,6 +206,79 @@ void ShadowViewMutationAdapter::applyText(const ShadowView& view) {
   }
 }
 
+void ShadowViewMutationAdapter::applyTextInput(const ShadowView& view) {
+  const auto* props =
+      dynamic_cast<const facebook::react::TextInputProps*>(view.props.get());
+  if (props == nullptr) {
+    return;
+  }
+
+  TextInputStyle style;
+  style.text = QString::fromStdString(props->text);
+  style.readOnly = props->readOnly || !props->editable;
+  // Secure entry lives on the traits rather than the props themselves
+  // (iostextinput/primitives.h:162, TextInputProps.h:29).
+  style.secure = props->traits.secureTextEntry;
+  if (props->maxLength != std::numeric_limits<int>::max()) {
+    style.maxLength = props->maxLength;
+  }
+
+  // The field's own text attributes, not a paragraph's: a TextInput has one
+  // style for its whole content.
+  const auto attributes = props->getEffectiveTextAttributes(1.0F);
+  if (!std::isnan(attributes.fontSize) && attributes.fontSize > 0) {
+    style.fontSize = static_cast<float>(attributes.fontSize);
+  }
+  if (attributes.foregroundColor) {
+    style.hasColor = true;
+    style.color = static_cast<std::uint32_t>(*attributes.foregroundColor);
+  }
+
+  layer_.updateTextInput(view.tag, style);
+}
+
+void ShadowViewMutationAdapter::connectTextInputEvents(const ShadowView& view) {
+  if (textInputConnected_.contains(view.tag)) {
+    return;
+  }
+
+  const auto emitter =
+      std::dynamic_pointer_cast<const facebook::react::TextInputEventEmitter>(
+          view.eventEmitter);
+  if (emitter == nullptr) {
+    return;
+  }
+
+  QQuickItem* item = layer_.itemForTag(view.tag);
+  // A plain Item has no `text` property, so this also rejects a TextInput
+  // component mapped onto a QML type that cannot edit.
+  if (item == nullptr || !item->property("text").isValid()) {
+    return;
+  }
+
+  // eventCount is React Native's ordering token: JavaScript compares it against
+  // the count it last sent so it can drop an update that crossed a keystroke in
+  // flight. It has to increase per emission, so it is owned here.
+  auto eventCount = std::make_shared<int>(0);
+  const auto emitChange = [emitter, item, eventCount]() {
+    facebook::react::TextInputEventEmitter::Metrics metrics{};
+    metrics.text = item->property("text").toString().toStdString();
+    metrics.eventCount = ++(*eventCount);
+    metrics.containerSize = {
+        .width = static_cast<facebook::react::Float>(item->width()),
+        .height = static_cast<facebook::react::Float>(item->height())};
+    metrics.layoutMeasurement = metrics.containerSize;
+    metrics.zoomScale = 1.0F;
+    emitter->onChange(metrics);
+  };
+
+  // The bridge is parented to the item, so it dies with it.
+  auto* bridge = new QtScrollBridge(emitChange, item);
+  QObject::connect(item, SIGNAL(textChanged()), bridge, SLOT(notify()));
+
+  textInputConnected_.insert(view.tag);
+}
+
 void ShadowViewMutationAdapter::connectScrollEvents(const ShadowView& view) {
   if (scrollConnected_.contains(view.tag)) {
     return;
@@ -292,8 +368,10 @@ MountError ShadowViewMutationAdapter::applyOne(
       }
       registerEventEmitter(view);
       connectScrollEvents(view);
+      connectTextInputEvents(view);
       applyText(view);
       applyImage(view);
+      applyTextInput(view);
       return layer_.updateStyle(view.tag, toViewStyle(view));
     }
 
@@ -331,8 +409,10 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (layoutError != MountError::None) {
         return layoutError;
       }
+      connectTextInputEvents(view);
       applyText(view);
       applyImage(view);
+      applyTextInput(view);
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) {
         return styleError;

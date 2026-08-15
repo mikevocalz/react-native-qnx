@@ -1,5 +1,48 @@
 # TEST_STATUS.md
 
+## TextInput types, and an event-beat use-after-free — 2026-08-15
+
+- CTest 9/9; twenty `qt_react_host_host_test` cases, 55 host cases in total.
+- The native `TextInput` seam works. React Native's textinput descriptor under
+  `platform/ios` is portable C++ — `TextInputShadowNode` and `TextInputProps`
+  include only `react/`, Yoga and the standard library, while the Android one
+  reaches for fbjni and the Java `FabricUIManager` to read theme padding
+  (`AndroidTextInputComponentDescriptor.h:41-47`) — so that is the one this
+  platform registers. Its component name is `"TextInput"`
+  (`TextInputShadowNode.cpp:12`), which React Native's own view names map onto
+  (`componentNameByReactViewName.cpp:62-64`).
+- `textInputMounts` renders the component, asserts `text`, font size and
+  `readOnly` reached the Qt item, sends a real key event to the focused item,
+  and then asserts both that the item now reads `typedX` and that JavaScript
+  received `onChange` carrying that same string. Mutation check: never applying
+  `text`, and putting the wrong string in the event metrics, each fail. A third
+  mutant — deleting the signal connection — did not compile, so it was re-run as
+  a connection to `editingFinished()`, which does compile and does fail.
+- React Native's `TextInput.js` branches on `Platform.OS` with no third branch,
+  so it renders nothing on `qnx`. The test therefore reaches the native
+  component directly. The JavaScript wrapper is a separate, still-open problem.
+- **A real use-after-free was found by the new tests, not by review.** The event
+  beat asked the Qt loop for a tick by posting a queued call to
+  `QCoreApplication::instance()`, which outlives every host. A host torn down
+  with a beat in flight therefore left a pending `induce()` on a destroyed beat,
+  and the next thing to pump the loop dereferenced it. The receiver is now the
+  beat's own `QObject`, which `~QObject` drains. React Native's `OwnerBox` does
+  not help here: it is checked inside `induce()` (`EventBeat.cpp:62-66`), which
+  is already too late for a dangling `this`.
+- The bug was intermittent — 3 failures in 40 runs — because a use-after-free
+  need not touch an unmapped page. `qt_react_host_host_test` now builds with
+  `-fsanitize=address`; ASan's allocator is installed process-wide by
+  interposition, so freed memory is poisoned even though React Native and Qt are
+  not themselves instrumented. With the bug reintroduced the suite fails 5 runs
+  out of 5; with it fixed, 30 runs out of 30 pass.
+- A dedicated regression case for the beat was written and then **deleted for
+  being vacuous**: it passed with the bug present, because `~Fixture` calls
+  `stopSurface`, which drains the posted beat while the host is still alive. The
+  invariant is covered by the suite under ASan instead, which is measured above
+  rather than assumed.
+- Evidence level: host only, offscreen QPA. Nothing has been cross-compiled for
+  QNX or run on the Pi 4.
+
 ## FlatList virtualises, and scroll events reach JavaScript — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default; nineteen `qt_react_host_host_test`

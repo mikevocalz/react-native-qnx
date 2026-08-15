@@ -30,6 +30,7 @@
 #include <QFont>
 #include <QGuiApplication>
 #include <QImage>
+#include <QKeyEvent>
 #include <QList>
 #include <QMouseEvent>
 #include <QPointF>
@@ -74,6 +75,10 @@ constexpr const char* kImageSource =
 // viewport, which is what a React Native ScrollView does.
 constexpr const char* kScrollViewSource =
     "import QtQuick\nFlickable { visible: true; clip: true }\n";
+// Qt Quick's TextInput is the editable single-line item. `visible` matches the
+// other types; everything else is set from props at mount time.
+constexpr const char* kTextInputSource =
+    "import QtQuick\nTextInput { visible: true }\n";
 
 class TestFailure final : public std::runtime_error {
  public:
@@ -159,8 +164,12 @@ class Fixture {
     factory_.registerType(QStringLiteral("Image"), QByteArray(kImageSource));
     factory_.registerType(
         QStringLiteral("ScrollView"), QByteArray(kScrollViewSource));
+    factory_.registerType(
+        QStringLiteral("TextInput"), QByteArray(kTextInputSource));
     adapter_.mapComponent(
         QStringLiteral("ScrollView"), QStringLiteral("ScrollView"));
+    adapter_.mapComponent(
+        QStringLiteral("TextInput"), QStringLiteral("TextInput"));
     adapter_.mapComponent(QStringLiteral("Image"), QStringLiteral("Image"));
     adapter_.mapComponent(QStringLiteral("Paragraph"), QStringLiteral("Text"));
   }
@@ -818,6 +827,85 @@ void flatListRendersAndVirtualises() {
   }
 }
 
+/// A TextInput mounts as an editable Qt Quick item.
+///
+/// React Native's TextInput.js branches on Platform.OS with no third branch, so
+/// this reaches the native component directly. What is being established here
+/// is the native seam: that the "TextInput" descriptor React Native's own view
+/// names map onto is registered, and that it mounts and lays out.
+void textInputMounts() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  // Key events are delivered to the focused item of an active window, so the
+  // window has to exist on screen before typing can be simulated.
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(kSurfaceId, "RNQnxTextInput", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* outer = fixture.root().childItems().at(0);
+  EXPECT(outer->childItems().size() == 1);
+  QQuickItem* input = outer->childItems().at(0);
+  EXPECT_NEAR(input->width(), 200.0);
+  EXPECT_NEAR(input->height(), 40.0);
+
+  // The props reached the item, not just its geometry.
+  EXPECT(input->property("text").toString() == QStringLiteral("typed"));
+  EXPECT(input->property("font").value<QFont>().pixelSize() == 18);
+  EXPECT(input->property("readOnly").toBool() == false);
+
+  // Typing is what a text field is for. Qt applies key events to the focused
+  // item, and the resulting text change has to reach JavaScript as onChange —
+  // without it a controlled TextInput can never update its own value.
+  input->forceActiveFocus();
+  for (int i = 0; i < 5; ++i) {
+    fixture.host().pumpEvents();
+  }
+  EXPECT(input->hasActiveFocus());
+  QKeyEvent key(QEvent::KeyPress, Qt::Key_X, Qt::NoModifier, QStringLiteral("X"));
+  QCoreApplication::sendEvent(&fixture.window(), &key);
+
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(input->property("text").toString() == QStringLiteral("typedX"));
+
+  auto& rt = fixture.host().runtime();
+  const auto changes = rt.global().getProperty(rt, "__inputChanges");
+  if (!changes.isNumber()) {
+    fail(
+        "onChange ran in JavaScript",
+        __FILE__,
+        __LINE__,
+        "globalThis.__inputChanges was never set");
+  }
+  EXPECT(changes.getNumber() >= 1.0);
+
+  // The text travels with the event, not just the fact that it changed.
+  const auto text = rt.global().getProperty(rt, "__inputText");
+  EXPECT(text.isString());
+  EXPECT(text.getString(rt).utf8(rt) == "typedX");
+}
+
 /// A JavaScript error reaches the host instead of aborting the process.
 ///
 /// Before ExceptionsManager existed, React reached for it while reporting any
@@ -1119,6 +1207,7 @@ int main(int argc, char** argv) {
       {"pointerEventsReachJavaScript", pointerEventsReachJavaScript},
       {"scrollEventsReachJavaScript", scrollEventsReachJavaScript},
       {"flatListRendersAndVirtualises", flatListRendersAndVirtualises},
+      {"textInputMounts", textInputMounts},
 #endif
 #endif
   };

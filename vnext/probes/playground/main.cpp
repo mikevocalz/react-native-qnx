@@ -38,6 +38,10 @@ constexpr facebook::react::SurfaceId kSurfaceId = 1;
 constexpr const char* kViewSource = "import QtQuick\nRectangle { visible: true }\n";
 constexpr const char* kTextSource = "import QtQuick\nText { visible: true }\n";
 constexpr const char* kImageSource = "import QtQuick\nImage { visible: true }\n";
+// Qt Quick's TextInput is the editable single-line item. `visible` matches the
+// other types; everything else is set from props at mount time.
+constexpr const char* kTextInputSource =
+    "import QtQuick\nTextInput { visible: true }\n";
 constexpr const char* kScrollViewSource =
     "import QtQuick\nFlickable { visible: true; clip: true }\n";
 constexpr int kWindowWidth = 640;
@@ -92,6 +96,8 @@ int main(int argc, char** argv) {
   factory.registerType(QStringLiteral("Image"), QByteArray(kImageSource));
   factory.registerType(
       QStringLiteral("ScrollView"), QByteArray(kScrollViewSource));
+  factory.registerType(
+      QStringLiteral("TextInput"), QByteArray(kTextInputSource));
 
   rnqnx::fabric::QtQuickMountingLayer layer(
       factory, *window.contentItem(), kSurfaceId);
@@ -101,6 +107,8 @@ int main(int argc, char** argv) {
   adapter.mapComponent(QStringLiteral("Image"), QStringLiteral("Image"));
   adapter.mapComponent(
       QStringLiteral("ScrollView"), QStringLiteral("ScrollView"));
+  adapter.mapComponent(
+      QStringLiteral("TextInput"), QStringLiteral("TextInput"));
 
   rnqnx::runtime::QtReactHost host(adapter);
   host.installTurboModuleBinding();

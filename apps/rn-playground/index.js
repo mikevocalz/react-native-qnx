@@ -16,6 +16,12 @@ const Image = require('react-native/Libraries/Image/Image').default;
 const ScrollView = require('react-native/Libraries/Components/ScrollView/ScrollView').default;
 const Pressable = require('react-native/Libraries/Components/Pressable/Pressable').default;
 const FlatList = require('react-native/Libraries/Lists/FlatList').default;
+// React Native's TextInput.js branches on Platform.OS and has no third
+// branch, so on qnx it renders nothing. This reaches the native component
+// directly, the same one that file would render on Apple platforms — the JS
+// wrapper is a separate problem from whether the native seam works.
+const SinglelineTextInput =
+  require('react-native/Libraries/Components/TextInput/RCTSingelineTextInputNativeComponent').default;
 
 function PlaygroundApp() {
   return React.createElement(
@@ -166,5 +172,23 @@ function FlatListApp() {
   );
 }
 
+function TextInputApp() {
+  return React.createElement(
+    View,
+    { style: { width: 200, height: 60 }, collapsable: false },
+    React.createElement(SinglelineTextInput, {
+      style: { width: 200, height: 40, fontSize: 18 },
+      collapsable: false,
+      text: 'typed',
+      placeholder: 'enter text',
+      onChange: (event) => {
+        globalThis.__inputChanges = (globalThis.__inputChanges ?? 0) + 1;
+        globalThis.__inputText = event.nativeEvent.text;
+      },
+    })
+  );
+}
+
 AppRegistry.registerComponent('RNQnxPlayground', () => PlaygroundApp);
 AppRegistry.registerComponent('RNQnxFlatList', () => FlatListApp);
+AppRegistry.registerComponent('RNQnxTextInput', () => TextInputApp);

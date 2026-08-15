@@ -819,3 +819,19 @@ timers are `QTimer`s, so the test pumps wall-clock time.
 
 All five scroll and virtualisation mutants were confirmed to compile before
 their failures were believed, per the correction recorded earlier in this log.
+
+## TextInput, and a use-after-free the tests found — 2026-08-15
+
+The native TextInput seam works: props apply, typing reaches JavaScript as
+`onChange`. React Native's `TextInput.js` still renders nothing on `qnx`
+because it branches on `Platform.OS` with no third branch, so the wrapper
+remains open work.
+
+The more important outcome was a latent use-after-free in the event beat,
+which had been there since the beat was written and only became visible once
+the new tests pumped the loop harder. Two lessons are worth carrying forward.
+An intermittent failure is a defect until proven otherwise — this one was 3 in
+40 and it would have been easy to re-run and move on. And a test that passes
+when the bug is reintroduced is not a test: the dedicated regression case
+written for this was deleted rather than kept for reassurance, and the
+detection it claimed was replaced with a measured one under ASan.

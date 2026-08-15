@@ -68,6 +68,21 @@ struct TextStyle {
   bool mixedStyles{false};
 };
 
+/// The properties of an editable text field this platform can apply.
+///
+/// Qt Quick's `TextInput` has no placeholder of its own — that belongs to
+/// QtQuick.Controls' `TextField` — so `placeholder` is deliberately absent
+/// rather than faked. See `docs/component-support.md`.
+struct TextInputStyle {
+  QString text;
+  float fontSize{0.0F};
+  bool hasColor{false};
+  std::uint32_t color{0};
+  bool readOnly{false};
+  bool secure{false};
+  int maxLength{0};
+};
+
 enum class MountError : std::uint8_t {
   None,
   UnknownComponentType,
@@ -130,6 +145,11 @@ class QtQuickMountingLayer {
   /// a QML property, so this goes through the metaobject like the other visual
   /// props; a component whose QML source has no `text` property is unaffected.
   MountError updateText(Tag tag, const TextStyle& style);
+
+  /// Applies editable-field properties. The item must expose Qt Quick's
+  /// `TextInput` surface; a plain Item silently ignores the unknown properties,
+  /// so the mapping is what keeps this honest rather than a type check.
+  MountError updateTextInput(Tag tag, const TextInputStyle& style);
 
   /// Points an image item at a source URI. `file:` and `http(s):` are fetched by
   /// Qt; `data:` URIs are decoded by this platform and served back through its

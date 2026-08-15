@@ -227,6 +227,49 @@ target_link_libraries(react_renderer_textlayoutmanager
 )
 target_compile_options(react_renderer_textlayoutmanager PRIVATE -w)
 
+# React Native's own textinput CMakeLists globs the Android platform sources,
+# which need fbjni and the Java FabricUIManager
+# (AndroidTextInputComponentDescriptor.h:41-47). The sources under
+# `platform/ios/.../iostextinput` have no Apple dependency — TextInputShadowNode
+# and TextInputProps include only react/, yoga and the standard library — so
+# this target pairs them with the shared base, the same substitution Android and
+# Apple each perform. `TextInputComponentName` is "TextInput"
+# (TextInputShadowNode.cpp:12), which is what React Native's own JavaScript view
+# names map onto (componentNameByReactViewName.cpp:62-64).
+set(RNQNX_TEXTINPUT_DIR "${REACT_COMMON_DIR}/react/renderer/components/textinput")
+set(RNQNX_TEXTINPUT_IOS_DIR
+  "${RNQNX_TEXTINPUT_DIR}/platform/ios/react/renderer/components/iostextinput")
+file(GLOB RNQNX_TEXTINPUT_SRC CONFIGURE_DEPENDS
+  "${RNQNX_TEXTINPUT_DIR}/*.cpp"
+  "${RNQNX_TEXTINPUT_IOS_DIR}/*.cpp"
+)
+add_library(rrc_textinput OBJECT ${RNQNX_TEXTINPUT_SRC})
+# SYSTEM: iostextinput/conversions.h has unused `context` parameters on its
+# fromRawValue overloads, which this repository builds as errors. The header is
+# included by our own strictly-warned targets through the component descriptor,
+# so suppressing it at the source target is the only place it can be done.
+target_include_directories(rrc_textinput SYSTEM PUBLIC
+  "${RNQNX_TEXTINPUT_DIR}"
+  "${RNQNX_TEXTINPUT_DIR}/platform/ios"
+  "${REACT_COMMON_DIR}"
+)
+target_link_libraries(rrc_textinput
+  react_renderer_attributedstring
+  react_renderer_componentregistry
+  react_renderer_core
+  react_renderer_graphics
+  react_renderer_imagemanager
+  react_renderer_mounting
+  react_renderer_textlayoutmanager
+  react_renderer_uimanager
+  react_utils
+  rnqnx_folly
+  rrc_image
+  rrc_text
+  rrc_view
+)
+target_compile_options(rrc_textinput PRIVATE -w)
+
 # React Native ships two CMakeLists for JSI and they are not equivalent:
 # ReactCommon/jsi/CMakeLists.txt:17 globs `jsi/*.cpp`, so it includes
 # JSIDynamic.cpp, while ReactCommon/jsi/jsi/CMakeLists.txt:9 builds jsi.cpp
@@ -298,6 +341,7 @@ set(RNQNX_REACT_NATIVE_RENDERER_TARGETS
   react_renderer_textlayoutmanager
   react_renderer_attributedstring
   rrc_text
+  rrc_textinput
   react_renderer_dom
   react_renderer_bridging
   react_renderer_uimanager_consistency

@@ -92,10 +92,15 @@ and platform constants.
 
 **What remains, roughly in the order it will be missed:**
 
-1. **`TextInput`.** The largest missing component and the first one an app will
-   ask for. It needs Qt Quick's `TextInput`/`TextEdit`, a text-change event back
-   to JavaScript, and IME handling — which is also the first thing on this
-   platform that has no equivalent already working.
+1. **`TextInput`'s JavaScript wrapper.** The native seam works — the component
+   mounts, props apply, and typing reaches JavaScript as `onChange` — but React
+   Native's `TextInput.js` branches on `Platform.OS` with no third branch, so an
+   app writing `<TextInput>` still renders nothing. That file is ~900 lines, so
+   forking it wholesale is the wrong answer; decide how a platform override
+   reuses upstream logic before writing one. Still missing underneath it: focus,
+   blur, submit and selection events, the `focus`/`blur` commands, multiline,
+   `placeholder` (which needs QtQuick.Controls' `TextField`, a module this
+   platform does not yet depend on), and IME.
 2. **Scroll gaps.** `onScroll` carries offset, content size, and container size,
    but `scrollBeginDrag`, `scrollEndDrag`, and the momentum events are not
    emitted, `scrollTo` does not reach the `Flickable`, `contentContainerStyle`

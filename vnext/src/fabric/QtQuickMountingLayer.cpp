@@ -250,6 +250,46 @@ MountError QtQuickMountingLayer::updateStyle(Tag tag, const ViewStyle& style) {
   return MountError::None;
 }
 
+MountError QtQuickMountingLayer::updateTextInput(
+    Tag tag,
+    const TextInputStyle& style) {
+  const auto mounted = items_.constFind(tag);
+  if (mounted == items_.constEnd()) {
+    return failWith(
+        MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
+  }
+
+  QQuickItem* item = mounted->item;
+
+  // Setting `text` unconditionally would fight the user: every keystroke
+  // produces a props update carrying the text React last knew about, and
+  // writing it back moves the cursor. Only a genuine difference is applied,
+  // which is the same rule React Native's own platforms follow.
+  if (item->property("text").toString() != style.text) {
+    item->setProperty("text", style.text);
+  }
+
+  if (style.fontSize > 0.0F) {
+    QFont font = item->property("font").value<QFont>();
+    font.setPixelSize(static_cast<int>(style.fontSize));
+    item->setProperty("font", font);
+  }
+  if (style.hasColor) {
+    item->setProperty("color", QColor::fromRgba(style.color));
+  }
+
+  item->setProperty("readOnly", style.readOnly);
+  // TextInput.Normal is 0 and TextInput.Password is 2
+  // (lib/QtQuick.framework/Headers/qquicktextinput_p.h, EchoMode).
+  item->setProperty("echoMode", style.secure ? 2 : 0);
+  if (style.maxLength > 0) {
+    item->setProperty("maximumLength", style.maxLength);
+  }
+
+  lastError_.clear();
+  return MountError::None;
+}
+
 MountError QtQuickMountingLayer::updateText(
     Tag tag,
     const TextStyle& style) {
