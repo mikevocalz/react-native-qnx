@@ -10,18 +10,18 @@ Legend: ✅ works and is covered by a host test · ⚠ partial, with the limit n
 
 ## Components
 
-| Component            | Status | Notes                                                                                                                                                  |
-| -------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `View`               | ⚠      | Mounts, lays out, and paints background, corner radius, and opacity.                                                                                   |
-| `Text`               | ⚠      | Renders with string, font size, colour, mixed styling, and wrapping. No ellipsis or inline attachments.                                                |
-| `Image`              | ⚠      | Renders from `data:` URIs through this platform's image provider. Bundler assets, `defaultSource`, `getSize`, `prefetch`, and load events are missing. |
-| `ScrollView`         | ⚠      | Mounts as a Qt `Flickable` that clips and scrolls. `onScroll` carries `contentOffset`, `contentSize` and `containerSize`. No `contentContainerStyle`, no momentum/begin/end events, no `scrollTo`, `zoomScale` is always 1. |
-| `TextInput`          | ❌     | Needs Qt Quick's text input plus IME.                                                                                                                  |
-| `Switch`             | ❌     |                                                                                                                                                        |
-| `ActivityIndicator`  | ❌     |                                                                                                                                                        |
-| `Modal`              | ❌     |                                                                                                                                                        |
-| `FlatList`/`Section` | ❓     | Untested. The `ScrollView` they build on now exists.                                                                                                   |
-| `Pressable`          | ✅     | Renders and `onPress` fires from a real pointer press; covered by a host test. `Button` is untested.                                                   |
+| Component           | Status | Notes                                                                                                                                                                                                                       |
+| ------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `View`              | ⚠      | Mounts, lays out, and paints background, corner radius, and opacity.                                                                                                                                                        |
+| `Text`              | ⚠      | Renders with string, font size, colour, mixed styling, and wrapping. No ellipsis or inline attachments.                                                                                                                     |
+| `Image`             | ⚠      | Renders from `data:` URIs through this platform's image provider. Bundler assets, `defaultSource`, `getSize`, `prefetch`, and load events are missing.                                                                      |
+| `ScrollView`        | ⚠      | Mounts as a Qt `Flickable` that clips and scrolls. `onScroll` carries `contentOffset`, `contentSize` and `containerSize`. No `contentContainerStyle`, no momentum/begin/end events, no `scrollTo`, `zoomScale` is always 1. |
+| `TextInput`         | ❌     | Needs Qt Quick's text input plus IME.                                                                                                                                                                                       |
+| `Switch`            | ❌     |                                                                                                                                                                                                                             |
+| `ActivityIndicator` | ❌     |                                                                                                                                                                                                                             |
+| `Modal`             | ❌     |                                                                                                                                                                                                                             |
+| `FlatList`          | ✅     | Renders and virtualises: the window follows the scroll and off-window cells are released. `onLayout` and `onContentSizeChange` both reach it. Covered by a host test. `SectionList` is untested.                            |
+| `Pressable`         | ✅     | Renders and `onPress` fires from a real pointer press; covered by a host test. `Button` is untested.                                                                                                                        |
 
 ## `View` props
 

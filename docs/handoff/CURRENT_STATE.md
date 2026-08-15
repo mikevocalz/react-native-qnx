@@ -185,8 +185,8 @@ compiled against an installed SDP, and no QNX binary has run.
 
 ## Repository state
 
-The working tree is clean and nothing is pushed; no git remote is configured
-yet. Repository-local material that is not part of the published repository is
-excluded through `.git/info/exclude` rather than a tracked ignore file. Continue with `NEXT_ACTIONS.md` and
+The working tree is clean and pushed. Repository-local material that is not part
+of the published repository is excluded through `.git/info/exclude` rather than a
+tracked ignore file. Continue with `NEXT_ACTIONS.md` and
 `QNX_VALIDATION_QUEUE.md`; do not mark Milestone 0 exited until QNX-RN-008
 passes.

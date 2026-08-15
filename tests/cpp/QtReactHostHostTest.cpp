@@ -26,20 +26,23 @@
 
 #include <QByteArray>
 #include <QColor>
+#include <QElapsedTimer>
 #include <QFont>
+#include <QGuiApplication>
 #include <QImage>
+#include <QList>
 #include <QMouseEvent>
 #include <QPointF>
-#include <QGuiApplication>
-#include <QList>
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QString>
 
+#include <algorithm>
+#include <cmath>
 #include <cstdlib>
-#include <fstream>
 #include <exception>
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -651,6 +654,170 @@ void scrollEventsReachJavaScript() {
   EXPECT_NEAR(contentHeight.getNumber(), 300.0);
 }
 
+/// FlatList renders and virtualises on this platform.
+///
+/// FlatList is upstream JavaScript over ScrollView rather than anything
+/// native, so what it needs is the parts underneath: a mounted Flickable,
+/// measured children, Dimensions, timers, and scroll offsets coming back. This
+/// runs one to find out which of those is actually missing.
+void flatListRendersAndVirtualises() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.host().startSurface(kSurfaceId, "RNQnxFlatList", 640.0F, 480.0F);
+  for (int i = 0; i < 40; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* outer = fixture.root().childItems().at(0);
+  EXPECT(outer->childItems().size() == 1);
+  QQuickItem* list = outer->childItems().at(0);
+  EXPECT_NEAR(list->height(), 100.0);
+
+  // The list mounted as a Flickable with a contentItem, which is what makes it
+  // a scroll view rather than a clipped column.
+  auto* content = list->property("contentItem").value<QQuickItem*>();
+  EXPECT(content != nullptr);
+
+  // Cells are wrapped by VirtualizedList, so rows are found by height
+  // anywhere below the content item, and their offsets are read in the content
+  // item's coordinates — which is the space the list scrolls.
+  const auto rowOffsets = [&](QQuickItem* root) {
+    std::vector<double> offsets;
+    std::function<void(QQuickItem*)> walk = [&](QQuickItem* item) {
+      for (QQuickItem* child : item->childItems()) {
+        if (std::abs(child->height() - 30.0) < 0.5) {
+          offsets.push_back(child->mapToItem(root, QPointF(0, 0)).y());
+        }
+        walk(child);
+      }
+    };
+    walk(root);
+    std::sort(offsets.begin(), offsets.end());
+    return offsets;
+  };
+
+  // 20 rows of data, initialNumToRender 4, windowSize 1. Rendering all 20
+  // would mean virtualisation never engaged; rendering none would mean the
+  // list never measured.
+  const std::vector<double> initial = rowOffsets(content);
+  EXPECT(initial.size() == 4);
+  EXPECT_NEAR(initial.front(), 0.0);
+
+  // VirtualizedList sizes cells from onLayout when getItemLayout is absent, so
+  // without layout events reaching JavaScript it could never window at all.
+  auto& rt = fixture.host().runtime();
+  const auto layouts = rt.global().getProperty(rt, "__cellLayouts");
+  if (!layouts.isNumber()) {
+    fail(
+        "onLayout ran in JavaScript",
+        __FILE__,
+        __LINE__,
+        "globalThis.__cellLayouts was never set");
+  }
+  EXPECT_NEAR(layouts.getNumber(), 4.0);
+  const auto cellHeight = rt.global().getProperty(rt, "__lastCellHeight");
+  EXPECT(cellHeight.isNumber());
+  EXPECT_NEAR(cellHeight.getNumber(), 30.0);
+
+  // Scrolling far past the rendered window is what virtualisation exists for:
+  // the list has to drop what left the window and render what entered it.
+  // Stepped rather than jumped: a list is scrolled by a stream of offsets, and
+  // VirtualizedList windows from the metrics those carry. VirtualizedList also
+  // batches its window update behind a real setTimeout
+  // (updateCellsBatchingPeriod, 50ms by default), and this platform's timers
+  // are QTimers, so each step has to cover wall-clock time rather than a fixed
+  // number of pump iterations.
+  const auto pumpFor = [&fixture](int ms) {
+    QElapsedTimer clock;
+    clock.start();
+    while (clock.elapsed() < ms) {
+      fixture.host().runtime().drainMicrotasks();
+      fixture.host().pumpEvents();
+    }
+  };
+  for (double offset = 30.0; offset <= 300.0; offset += 30.0) {
+    list->setProperty("contentY", offset);
+    pumpFor(80);
+  }
+  pumpFor(300);
+
+  const auto listScrollY = rt.global().getProperty(rt, "__listScrollY");
+  if (!listScrollY.isNumber()) {
+    fail(
+        "FlatList received onScroll",
+        __FILE__,
+        __LINE__,
+        "globalThis.__listScrollY was never set");
+  }
+  EXPECT_NEAR(listScrollY.getNumber(), 300.0);
+
+  // The list's own viewport and content lengths reach it too. Without both,
+  // VirtualizedList has no window to compute: the viewport comes from the
+  // ScrollView's onLayout and the content length from its content container's,
+  // and neither is something this platform reports explicitly.
+  const auto viewportH = rt.global().getProperty(rt, "__listViewportH");
+  if (!viewportH.isNumber()) {
+    fail(
+        "FlatList received onLayout",
+        __FILE__,
+        __LINE__,
+        "globalThis.__listViewportH was never set");
+  }
+  EXPECT_NEAR(viewportH.getNumber(), 100.0);
+  const auto contentH = rt.global().getProperty(rt, "__listContentH");
+  if (!contentH.isNumber()) {
+    fail(
+        "FlatList received onContentSizeChange",
+        __FILE__,
+        __LINE__,
+        "globalThis.__listContentH was never set");
+  }
+  // The content grew past the 100pt viewport as cells rendered, which is what
+  // makes the list scrollable at all.
+  EXPECT(contentH.getNumber() > 100.0);
+
+  const std::vector<double> scrolled = rowOffsets(content);
+  EXPECT(!scrolled.empty());
+  EXPECT(scrolled.size() < 20);
+  // The window moved to where the scroll went rather than staying at the top.
+  // The rendered set is the retained initialNumToRender region plus a live
+  // window around the scroll offset, with the rows between them released:
+  // {0, 30, 60, 90} and {270 … 390} for a 100pt viewport at offset 300.
+  EXPECT(scrolled.size() < 20);
+  EXPECT_NEAR(scrolled.front(), 0.0);
+
+  const auto renderedAt = [&scrolled](double y) {
+    return std::any_of(scrolled.begin(), scrolled.end(), [y](double offset) {
+      return std::abs(offset - y) < 0.5;
+    });
+  };
+
+  // Row 10 sits at the new offset and was not rendered before the scroll, so
+  // the window followed the scroll rather than standing still.
+  EXPECT(renderedAt(300.0));
+  EXPECT(renderedAt(330.0));
+
+  // Rows 4 through 7 left the window and were released. This is the half that
+  // makes it virtualisation rather than a list that only ever grows.
+  for (double y : {120.0, 150.0, 180.0, 210.0}) {
+    EXPECT(!renderedAt(y));
+  }
+}
+
 /// A JavaScript error reaches the host instead of aborting the process.
 ///
 /// Before ExceptionsManager existed, React reached for it while reporting any
@@ -951,6 +1118,7 @@ int main(int argc, char** argv) {
       {"renderedTreeIsPainted", renderedTreeIsPainted},
       {"pointerEventsReachJavaScript", pointerEventsReachJavaScript},
       {"scrollEventsReachJavaScript", scrollEventsReachJavaScript},
+      {"flatListRendersAndVirtualises", flatListRendersAndVirtualises},
 #endif
 #endif
   };

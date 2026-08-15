@@ -15,6 +15,7 @@ const Text = require('react-native/Libraries/Text/Text').default;
 const Image = require('react-native/Libraries/Image/Image').default;
 const ScrollView = require('react-native/Libraries/Components/ScrollView/ScrollView').default;
 const Pressable = require('react-native/Libraries/Components/Pressable/Pressable').default;
+const FlatList = require('react-native/Libraries/Lists/FlatList').default;
 
 function PlaygroundApp() {
   return React.createElement(
@@ -101,8 +102,7 @@ function PlaygroundApp() {
         onScroll: (event) => {
           globalThis.__scrolls = (globalThis.__scrolls ?? 0) + 1;
           globalThis.__lastScrollY = event.nativeEvent.contentOffset.y;
-          globalThis.__lastScrollContentHeight =
-            event.nativeEvent.contentSize.height;
+          globalThis.__lastScrollContentHeight = event.nativeEvent.contentSize.height;
         },
         scrollEventThrottle: 16,
       },
@@ -121,4 +121,50 @@ function PlaygroundApp() {
   );
 }
 
+/**
+ * FlatList is upstream JavaScript over ScrollView, so it is registered
+ * separately: it exercises virtualisation rather than the mounting path the
+ * component tests index into.
+ */
+function FlatListApp() {
+  const data = [];
+  for (let i = 0; i < 20; i++) {
+    data.push({ key: String(i) });
+  }
+  return React.createElement(
+    View,
+    { style: { width: 200, height: 100 }, collapsable: false },
+    React.createElement(FlatList, {
+      style: { width: 200, height: 100 },
+      data,
+      initialNumToRender: 4,
+      // The default windowSize of 21 viewports covers 2100pt, far more than
+      // 20 rows of 30pt, so the list would legitimately render everything and
+      // prove nothing. One viewport is what makes windowing observable.
+      windowSize: 1,
+      onScroll: (event) => {
+        globalThis.__listScrollY = event.nativeEvent.contentOffset.y;
+      },
+      onLayout: (event) => {
+        globalThis.__listViewportH = event.nativeEvent.layout.height;
+      },
+      onContentSizeChange: (w, h) => {
+        globalThis.__listContentH = h;
+      },
+      renderItem: ({ item }) =>
+        React.createElement(View, {
+          style: { width: 200, height: 30, backgroundColor: '#3366cc' },
+          collapsable: false,
+          // VirtualizedList sizes cells from onLayout when getItemLayout is
+          // absent, so this records whether that reaches JavaScript at all.
+          onLayout: (event) => {
+            globalThis.__cellLayouts = (globalThis.__cellLayouts ?? 0) + 1;
+            globalThis.__lastCellHeight = event.nativeEvent.layout.height;
+          },
+        }),
+    })
+  );
+}
+
 AppRegistry.registerComponent('RNQnxPlayground', () => PlaygroundApp);
+AppRegistry.registerComponent('RNQnxFlatList', () => FlatListApp);

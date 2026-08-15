@@ -92,26 +92,27 @@ and platform constants.
 
 **What remains, roughly in the order it will be missed:**
 
-1. **Props past layout.** The mounting layer applies geometry only, so
-   `backgroundColor`, `borderRadius`, `opacity`, and transforms are silently
-   ignored. Start there: they are the difference between a correct tree and a
-   visible app. Record each in `docs/component-support.md`.
-2. **`FlatList`, and scroll events.** `FlatList` and `SectionList` are upstream
-   JavaScript over `ScrollView`, which now exists — try one and find out what is
-   missing rather than assuming. Scroll events do not reach JavaScript yet, so
-   `onScroll` and anything virtualised will not update. Smaller gaps still open:
-   bundler assets for `Image`, `resizeMode`, image load events, `numberOfLines`
-   ellipsis, multi-touch, and pointer capture.
-3. **On glass.** Everything so far runs under the offscreen QPA plugin. Render
-   the playground into a real `QQuickWindow` on macOS and look at it.
-4. **Input.** No touch or pointer events reach JavaScript yet; the
-   `SchedulerDelegate` hooks for responders are deliberate no-ops.
-5. **DeviceInfo and SourceCode**, both with generated specs, both needing real
-   values — screen metrics from the Qt window, the bundle URL.
+1. **`TextInput`.** The largest missing component and the first one an app will
+   ask for. It needs Qt Quick's `TextInput`/`TextEdit`, a text-change event back
+   to JavaScript, and IME handling — which is also the first thing on this
+   platform that has no equivalent already working.
+2. **Scroll gaps.** `onScroll` carries offset, content size, and container size,
+   but `scrollBeginDrag`, `scrollEndDrag`, and the momentum events are not
+   emitted, `scrollTo` does not reach the `Flickable`, `contentContainerStyle`
+   is ignored, and `zoomScale` is hard-coded to 1. `SectionList` is untested.
+3. **Smaller component gaps.** Bundler assets for `Image`, `resizeMode`, image
+   load events, `numberOfLines` ellipsis, multi-touch, and pointer capture.
+4. **`Switch`, `ActivityIndicator`, `Modal`.** None mount; see
+   `docs/component-support.md`.
+5. **Nitro for app-facing modules.** ADR-0004 settled the boundary: React
+   Native's own modules stay C++ TurboModules because that is what its
+   JavaScript looks up, and Nitro is for the modules an app author writes. No
+   Nitro `HybridObject` is registered yet.
 
-**Acceptance criteria:** the playground renders visibly in a real window with
-correct colors and rounded corners, and a JavaScript error is reported rather
-than aborting.
+**Acceptance criteria for the next slice:** a `TextInput` accepts typed
+characters in the windowed playground and its `onChangeText` reaches
+JavaScript, proven the way the touch and scroll paths were — by reading the
+value back out of the runtime, with the assertion mutation-checked.
 
 ## 4. Design Nitro, Expo Modules, and Metro QNX extensions separately
 

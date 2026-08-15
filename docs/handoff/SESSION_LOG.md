@@ -794,3 +794,28 @@ validate:macos`.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — try a
   `FlatList`, and deliver scroll events to JavaScript.
+
+## FlatList virtualises, and scroll events reach JavaScript — 2026-08-14
+
+Scroll offsets now travel from the Qt `Flickable` back to JavaScript as
+`onScroll`, and `FlatList` was run to find out what it actually needed rather
+than to confirm a guess.
+
+`FlatList` needed nothing native beyond that. `onLayout` already worked and
+`onContentSizeChange` already followed from the content container's layout
+event, so once `onScroll` existed the list windowed correctly: with
+`initialNumToRender: 4`, `windowSize: 1`, and a 100pt viewport scrolled to 300,
+it renders the retained initial region and a live window around the offset and
+releases the rows between.
+
+Two things about method are worth carrying forward. First, the initial
+`FlatList` assertions were wrong about the platform in both directions —
+expecting fewer than 20 cells under a `windowSize` that covers three times the
+content, and expecting the deliberately retained initial cells to be released.
+Measuring the offsets and reading upstream's behaviour replaced both guesses.
+Second, a fixed number of pump iterations is not a substitute for time:
+`VirtualizedList` batches behind a real 50ms `setTimeout` and this platform's
+timers are `QTimer`s, so the test pumps wall-clock time.
+
+All five scroll and virtualisation mutants were confirmed to compile before
+their failures were believed, per the correction recorded earlier in this log.

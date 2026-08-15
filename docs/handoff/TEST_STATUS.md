@@ -1,5 +1,49 @@
 # TEST_STATUS.md
 
+## FlatList virtualises, and scroll events reach JavaScript — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default; nineteen `qt_react_host_host_test`
+  cases, 54 host cases in total.
+- `scrollEventsReachJavaScript` drives the mounted `Flickable`'s `contentY` to
+  120 and asserts in the runtime that `onScroll` ran, that
+  `contentOffset.y` is 120, and that `contentSize.height` is the 300 this
+  platform computed from the Flickable's children. Mutation check: removing
+  either signal connection leaves `globalThis.__scrolls` unset; adding 1 to the
+  offset or doubling the content height fails the corresponding assertion. All
+  three mutants compiled before being run, which is what makes the result mean
+  anything.
+- `flatListRendersAndVirtualises` renders a 20-row `FlatList` with
+  `initialNumToRender: 4` and `windowSize: 1` in a 100pt viewport, then scrolls
+  to offset 300 in 30pt steps. The rendered cells settle at offsets
+  `{0, 30, 60, 90}` and `{270 … 390}`: the retained initial region plus a live
+  window around the scroll, with rows 4 through 7 released. The test asserts
+  both halves — that the window followed the scroll, and that the cells it left
+  are gone.
+- Nothing native was missing for `FlatList`. `onLayout` already reached
+  JavaScript with correct geometry, and `onContentSizeChange` followed from the
+  content container's own layout event; the list read a 100pt viewport and a
+  420pt content length. What was missing was `onScroll`, and a first attempt
+  that scrolled instantly and pumped a fixed number of iterations produced a
+  misleading result twice over: `VirtualizedList` batches its window update
+  behind a real 50ms `setTimeout`, and this platform's timers are `QTimer`s, so
+  the pump has to cover wall-clock time.
+- Two assertions in the first draft of the `FlatList` case were wrong about the
+  platform rather than about the platform being wrong. Expecting fewer than 20
+  cells under the default `windowSize` of 21 was meaningless — 21 viewports
+  cover 2100pt against 600pt of content — and expecting the leading cell to be
+  released ignored that `initialNumToRender` is deliberately retained. Both were
+  corrected against measured offsets, not assumed ones.
+- Qt notifies `contentX`/`contentY` by signal, but `Flickable`'s class is
+  private to Qt Quick and these items are known only through their metaobject,
+  so the functor-based `connect` is unavailable and the string-based one needs a
+  real slot. `QtScrollBridge` is that slot, parented to the item so the
+  connection dies with it. `QT_NO_KEYWORDS` is set on this target, so it
+  declares `Q_SLOTS` rather than `slots`, and its header is listed in the
+  target's sources because `AUTOMOC` does not scan headers found only through
+  include paths.
+- Evidence level: host only, offscreen QPA. Nothing has been cross-compiled for
+  QNX or run on the Pi 4.
+
 ## ScrollView scrolls — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.
