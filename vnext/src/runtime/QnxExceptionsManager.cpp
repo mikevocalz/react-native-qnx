@@ -109,4 +109,20 @@ void QnxExceptionsManager::dismissRedbox(
   // it unconditionally when an error is cleared.
 }
 
+QnxSourceCode::QnxSourceCode(
+    std::shared_ptr<facebook::react::CallInvoker> jsInvoker,
+    std::string scriptUrl)
+    : NativeSourceCodeCxxSpec(std::move(jsInvoker)),
+      scriptUrl_(std::move(scriptUrl)) {}
+
+facebook::jsi::Object QnxSourceCode::getConstants(
+    facebook::jsi::Runtime& runtime) {
+  auto constants = facebook::jsi::Object(runtime);
+  constants.setProperty(
+      runtime,
+      "scriptURL",
+      facebook::jsi::String::createFromUtf8(runtime, scriptUrl_));
+  return constants;
+}
+
 }  // namespace rnqnx::runtime

@@ -8,10 +8,12 @@
 #include <react/renderer/componentregistry/native/NativeComponentRegistryBinding.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
+#include <react/renderer/components/image/ImageComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/imagemanager/ImageManager.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
@@ -183,6 +185,8 @@ std::vector<std::string> registeredComponentNames() {
           facebook::react::TextComponentDescriptor::ConcreteShadowNode::Name()),
       std::string(facebook::react::RawTextComponentDescriptor::
                       ConcreteShadowNode::Name()),
+      std::string(
+          facebook::react::ImageComponentDescriptor::ConcreteShadowNode::Name()),
   };
 }
 
@@ -217,6 +221,9 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<
             facebook::react::RawTextComponentDescriptor>());
+    providerRegistry->add(
+        facebook::react::concreteComponentDescriptorProvider<
+            facebook::react::ImageComponentDescriptor>());
 
     // Without a fallback, an unregistered component name throws
     // std::invalid_argument out of ComponentDescriptorRegistry::at
@@ -283,6 +290,14 @@ class QtReactHost::Impl {
     container->insert(
         "TextLayoutManager",
         std::make_shared<const facebook::react::TextLayoutManager>(nullptr));
+
+    // ImageComponentDescriptor pulls this out by name the same way. React
+    // Native's generic C++ ImageManager is a documented stub — it does not
+    // fetch or decode — which is correct here: Qt Quick's Image item loads from
+    // the URI itself, so the manager has nothing to do on this platform.
+    container->insert(
+        "ImageManager",
+        std::make_shared<facebook::react::ImageManager>(nullptr));
     contextContainer = container;
 
     SchedulerToolbox toolbox{};
@@ -373,6 +388,9 @@ class QtReactHost::Impl {
   std::unordered_map<std::string, facebook::jsi::Value> callableModules;
   std::unordered_map<int, std::unique_ptr<QTimer>> timers;
   std::vector<JavaScriptError> javaScriptErrors;
+  /// The source URL of the most recently evaluated script, reported by the
+  /// SourceCode module.
+  std::string scriptUrl;
   int nextTimerHandle{0};
   QString lastError;
 };
@@ -409,6 +427,7 @@ bool QtReactHost::evaluate(
   try {
     impl_->runtime->evaluateJavaScript(
         std::make_unique<facebook::jsi::StringBuffer>(source), sourceUrl);
+    impl_->scriptUrl = sourceUrl;
     impl_->lastError.clear();
     return true;
   } catch (const facebook::jsi::JSError& error) {
@@ -455,6 +474,13 @@ void QtReactHost::installTurboModuleBinding() {
         // Without this, every JavaScript error aborts the process: React
         // reaches for ExceptionsManager while reporting, getEnforcing throws,
         // and the throw escapes.
+        if (name == QnxSourceCode::kModuleName) {
+          // getDevServer and resolveAssetSource read scriptURL from this, so
+          // <Image> cannot render without it. The value is the bundle the host
+          // actually evaluated.
+          return std::make_shared<QnxSourceCode>(callInvoker, impl->scriptUrl);
+        }
+
         if (name == QnxExceptionsManager::kModuleName) {
           return std::make_shared<QnxExceptionsManager>(
               callInvoker, [impl](const JavaScriptError& error) {

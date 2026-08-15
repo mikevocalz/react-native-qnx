@@ -131,6 +131,11 @@ class QtQuickMountingLayer {
   /// props; a component whose QML source has no `text` property is unaffected.
   MountError updateText(Tag tag, const TextStyle& style);
 
+  /// Points an image item at a source URI. `file:` and `http(s):` are fetched by
+  /// Qt; `data:` URIs are decoded by this platform and served back through its
+  /// image provider, because Qt Quick's `Image` does not read them.
+  MountError updateImageSource(Tag tag, const QString& uri);
+
   /// Borrowed; nullptr when the tag is not mounted.
   QQuickItem* itemForTag(Tag tag) const;
 

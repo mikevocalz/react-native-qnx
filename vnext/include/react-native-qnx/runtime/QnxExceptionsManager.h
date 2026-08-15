@@ -58,4 +58,26 @@ class QnxExceptionsManager
   Reporter reporter_;
 };
 
+/// React Native's SourceCode module.
+///
+/// `getDevServer` and `resolveAssetSource` read `scriptURL` from it, so an
+/// `<Image>` cannot render without it. React Native ships implementations only
+/// for Apple and Android. This one reports the bundle the host actually
+/// evaluated rather than a placeholder.
+class QnxSourceCode
+    : public facebook::react::NativeSourceCodeCxxSpec<QnxSourceCode> {
+ public:
+  QnxSourceCode(
+      std::shared_ptr<facebook::react::CallInvoker> jsInvoker,
+      std::string scriptUrl);
+
+  /// The generated spec bridges this through `callFromJs<jsi::Object>`
+  /// (FBReactNativeSpecJSI.h:4998), so the object is built directly rather than
+  /// through the templated constants struct.
+  facebook::jsi::Object getConstants(facebook::jsi::Runtime& runtime);
+
+ private:
+  std::string scriptUrl_;
+};
+
 }  // namespace rnqnx::runtime

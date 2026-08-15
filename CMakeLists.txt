@@ -131,6 +131,7 @@ else()
 
       add_library(rnqnx_views_qt STATIC
         vnext/src/views/qt/QtQuickItemFactory.cpp
+        vnext/src/views/qt/QnxImageProvider.cpp
         vnext/src/fabric/QtQuickMountingLayer.cpp
       )
       target_include_directories(rnqnx_views_qt PUBLIC

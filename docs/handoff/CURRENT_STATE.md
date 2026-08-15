@@ -134,6 +134,10 @@ forwards the responder claim so the rest of a gesture follows the responder.
 `Pressable` renders and its `onPress` fires from a real pointer press. One
 pointer only.
 
+`Image` renders from `data:` URIs, decoded by this platform's image provider
+because Qt Quick cannot read them, with `SourceCode` implemented as the
+TurboModule the image path needs.
+
 `Text` renders too, measured by this platform's own `TextLayoutManager` using
 `QTextLayout` — React Native's generic C++ manager does not measure at all and
 would have collapsed every string to nothing. Mixed styling within a paragraph

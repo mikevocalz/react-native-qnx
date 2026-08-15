@@ -4,6 +4,7 @@
 #include <QStringList>
 
 #include <react/renderer/core/LayoutMetrics.h>
+#include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/text/ParagraphState.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ConcreteState.h>
@@ -59,6 +60,21 @@ QString fragmentStyleAttribute(const facebook::react::TextAttributes& attributes
     parts << QStringLiteral("font-style:italic");
   }
   return parts.join(QLatin1Char(';'));
+}
+
+/// The first image source's URI, or empty when the view is not an Image.
+///
+/// React Native's ImageProps carries a list so a platform can pick by scale or
+/// size (`components/image/ImageProps.h:28`). This takes the first: Qt Quick's
+/// Image loads one URL and does its own scaling, and choosing among candidates
+/// needs the display metrics work that is not done yet.
+QString imageSourceUri(const ShadowView& view) {
+  const auto* props =
+      dynamic_cast<const facebook::react::ImageProps*>(view.props.get());
+  if (props == nullptr || props->sources.empty()) {
+    return {};
+  }
+  return QString::fromStdString(props->sources.front().uri);
 }
 
 TextStyle paragraphTextStyle(const ShadowView& view) {
@@ -168,6 +184,13 @@ void ShadowViewMutationAdapter::mapComponent(
   componentTypes_.insert(componentName, qmlTypeName);
 }
 
+void ShadowViewMutationAdapter::applyImage(const ShadowView& view) {
+  const QString uri = imageSourceUri(view);
+  if (!uri.isEmpty()) {
+    layer_.updateImageSource(view.tag, uri);
+  }
+}
+
 void ShadowViewMutationAdapter::applyText(const ShadowView& view) {
   const TextStyle style = paragraphTextStyle(view);
   if (!style.text.isEmpty()) {
@@ -217,6 +240,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       }
       registerEventEmitter(view);
       applyText(view);
+      applyImage(view);
       return layer_.updateStyle(view.tag, toViewStyle(view));
     }
 
@@ -243,6 +267,7 @@ MountError ShadowViewMutationAdapter::applyOne(
         return layoutError;
       }
       applyText(view);
+      applyImage(view);
       return layer_.updateStyle(view.tag, toViewStyle(view));
     }
   }

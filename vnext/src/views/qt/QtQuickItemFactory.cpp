@@ -18,7 +18,18 @@ QUrl syntheticUrlFor(const QString& componentName) {
 
 }  // namespace
 
-QtQuickItemFactory::QtQuickItemFactory(QQmlEngine& engine) : engine_(engine) {}
+QtQuickItemFactory::QtQuickItemFactory(QQmlEngine& engine) : engine_(engine) {
+  // The engine takes ownership. Registering here means every item this factory
+  // creates can be given an image:// source without further setup.
+  imageProvider_ = new QnxImageProvider();
+  engine_.addImageProvider(
+      QLatin1String(QnxImageProvider::providerId()), imageProvider_);
+}
+
+QString QtQuickItemFactory::resolveImageSource(const QString& uri) {
+  const QString provided = imageProvider_->registerDataUri(uri);
+  return provided.isEmpty() ? uri : provided;
+}
 
 QtQuickItemFactory::~QtQuickItemFactory() {
   for (auto* component : std::as_const(components_)) {

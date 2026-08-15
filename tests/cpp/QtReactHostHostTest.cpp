@@ -65,6 +65,8 @@ using rnqnx::views::QtQuickItemFactory;
 constexpr SurfaceId kSurfaceId = 11;
 constexpr const char* kViewSource = "import QtQuick\nRectangle { visible: true }\n";
 constexpr const char* kTextSource = "import QtQuick\nText { visible: true }\n";
+constexpr const char* kImageSource =
+    "import QtQuick\nImage { visible: true }\n";
 
 class TestFailure final : public std::runtime_error {
  public:
@@ -147,6 +149,8 @@ class Fixture {
     // Paragraph is React Native's laid-out text block; Qt Quick's Text item is
     // what draws it.
     factory_.registerType(QStringLiteral("Text"), QByteArray(kTextSource));
+    factory_.registerType(QStringLiteral("Image"), QByteArray(kImageSource));
+    adapter_.mapComponent(QStringLiteral("Image"), QStringLiteral("Image"));
     adapter_.mapComponent(QStringLiteral("Paragraph"), QStringLiteral("Text"));
   }
 
@@ -504,9 +508,9 @@ void metroBundleRendersThroughReact() {
   EXPECT(outer->property("color").value<QColor>() == QColor(0x20, 0x40, 0x80));
   EXPECT_NEAR(outer->property("radius").toDouble(), 12.0);
 
-  // The app renders five children: the styled inner view, a Pressable, and
-  // three Texts — a simple one, one with mixed styling, and one that wraps.
-  EXPECT(outer->childItems().size() == 5);
+  // Six children: the styled inner view, a Pressable, three Texts — simple,
+  // mixed-style, and wrapping — and an Image.
+  EXPECT(outer->childItems().size() == 6);
   QQuickItem* inner = outer->childItems().at(0);
   EXPECT_NEAR(inner->width(), 64.0);
   EXPECT_NEAR(inner->height(), 32.0);
@@ -541,6 +545,24 @@ void metroBundleRendersThroughReact() {
   QQuickItem* wrapped = outer->childItems().at(4);
   EXPECT(wrapped->height() > 30.0);
   EXPECT(wrapped->width() <= 320.0);
+
+  // The Image's source reaches the item as a URL. The app inlines a PNG as a
+  // data URI, so this needs no network or file access.
+  QQuickItem* image = outer->childItems().at(5);
+  // The app's source is a data URI, which Qt Quick's Image cannot read, so this
+  // platform decodes it and serves it back through its own image provider.
+  const QString source = image->property("source").toUrl().toString();
+  EXPECT(source.startsWith(QStringLiteral("image://rnqnx/")));
+
+  // Qt loads image sources asynchronously, including data URIs, so the item
+  // reports Loading until the decode finishes. Waiting for Ready is what proves
+  // the bytes were actually decoded rather than only assigned.
+  for (int i = 0; i < 200 && image->property("status").toInt() == 2; ++i) {
+    fixture.host().pumpEvents();
+  }
+  EXPECT(image->property("status").toInt() == 1);  // Image.Ready
+  EXPECT_NEAR(image->width(), 40.0);
+  EXPECT_NEAR(image->height(), 24.0);
 }
 
 /// A JavaScript error reaches the host instead of aborting the process.

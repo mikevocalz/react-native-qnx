@@ -96,10 +96,10 @@ and platform constants.
    `backgroundColor`, `borderRadius`, `opacity`, and transforms are silently
    ignored. Start there: they are the difference between a correct tree and a
    visible app. Record each in `docs/component-support.md`.
-2. **`Image`.** The next missing component: it needs a
-   `QQuickImageProvider` for http(s)/file/data sources and the image manager
-   wired up. `numberOfLines` still has no ellipsis, and multi-touch and pointer
-   capture remain unimplemented.
+2. **`ScrollView`.** The next missing component, backed by Qt's `Flickable`,
+   and the one that `FlatList` and `SectionList` need. Smaller gaps still open:
+   bundler assets for `Image`, `resizeMode`, image load events, `numberOfLines`
+   ellipsis, multi-touch, and pointer capture.
 3. **On glass.** Everything so far runs under the offscreen QPA plugin. Render
    the playground into a real `QQuickWindow` on macOS and look at it.
 4. **Input.** No touch or pointer events reach JavaScript yet; the

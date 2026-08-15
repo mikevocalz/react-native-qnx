@@ -10,18 +10,18 @@ Legend: ✅ works and is covered by a host test · ⚠ partial, with the limit n
 
 ## Components
 
-| Component            | Status | Notes                                                                                                   |
-| -------------------- | ------ | ------------------------------------------------------------------------------------------------------- |
-| `View`               | ⚠      | Mounts, lays out, and paints background, corner radius, and opacity.                                    |
-| `Text`               | ⚠      | Renders with string, font size, colour, mixed styling, and wrapping. No ellipsis or inline attachments. |
-| `Image`              | ❌     | Needs `QQuickImageProvider` and the image manager.                                                      |
-| `ScrollView`         | ❌     | `Flickable` is the intended backing.                                                                    |
-| `TextInput`          | ❌     | Needs Qt Quick's text input plus IME.                                                                   |
-| `Switch`             | ❌     |                                                                                                         |
-| `ActivityIndicator`  | ❌     |                                                                                                         |
-| `Modal`              | ❌     |                                                                                                         |
-| `FlatList`/`Section` | ❌     | Upstream JavaScript over `ScrollView`; blocked on `ScrollView`.                                         |
-| `Pressable`          | ✅     | Renders and `onPress` fires from a real pointer press; covered by a host test. `Button` is untested.    |
+| Component            | Status | Notes                                                                                                                                                  |
+| -------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `View`               | ⚠      | Mounts, lays out, and paints background, corner radius, and opacity.                                                                                   |
+| `Text`               | ⚠      | Renders with string, font size, colour, mixed styling, and wrapping. No ellipsis or inline attachments.                                                |
+| `Image`              | ⚠      | Renders from `data:` URIs through this platform's image provider. Bundler assets, `defaultSource`, `getSize`, `prefetch`, and load events are missing. |
+| `ScrollView`         | ❌     | `Flickable` is the intended backing.                                                                                                                   |
+| `TextInput`          | ❌     | Needs Qt Quick's text input plus IME.                                                                                                                  |
+| `Switch`             | ❌     |                                                                                                                                                        |
+| `ActivityIndicator`  | ❌     |                                                                                                                                                        |
+| `Modal`              | ❌     |                                                                                                                                                        |
+| `FlatList`/`Section` | ❌     | Upstream JavaScript over `ScrollView`; blocked on `ScrollView`.                                                                                        |
+| `Pressable`          | ✅     | Renders and `onPress` fires from a real pointer press; covered by a host test. `Button` is untested.                                                   |
 
 ## `View` props
 
@@ -49,6 +49,18 @@ Legend: ✅ works and is covered by a host test · ⚠ partial, with the limit n
 | `numberOfLines`            | ⚠      | Limits the measured lines; no ellipsis.                                                                   |
 | Attachments (inline views) | ❌     | Reported as zero-sized, as React Native's generic manager does.                                           |
 | Font family                | ⚠      | Passed to Qt if named; no font registration, so an unavailable family silently falls back.                |
+
+## `Image`
+
+| Aspect                                    | Status | Notes                                                                                                             |
+| ----------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------- |
+| `data:` URIs                              | ✅     | Decoded by `QnxImageProvider` and served as `image://rnqnx/…`, because Qt Quick's `Image` cannot read data URIs.  |
+| `file:` and `http(s):`                    | ⚠      | Passed straight to Qt, which fetches them. Untested here — the playground uses a data URI so it needs no network. |
+| Bundler assets (`require('./x.png')`)     | ❌     | Needs `resolveAssetSource` and the asset registry.                                                                |
+| `defaultSource`, `loadingIndicatorSource` | ❌     | Not carried to the item.                                                                                          |
+| `onLoad`, `onError`, `onLoadEnd`          | ❌     | No load lifecycle events reach JavaScript.                                                                        |
+| `Image.getSize`, `prefetch`               | ❌     | Static methods are absent from the platform's `Image`.                                                            |
+| `resizeMode`                              | ❌     | Qt's `fillMode` is not wired to it.                                                                               |
 
 ## Platform modules
 

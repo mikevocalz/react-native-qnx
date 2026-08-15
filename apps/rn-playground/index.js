@@ -12,6 +12,7 @@ const React = require('react');
 const AppRegistry = require('react-native/Libraries/ReactNative/AppRegistry').AppRegistry;
 const View = require('react-native/Libraries/Components/View/View').default;
 const Text = require('react-native/Libraries/Text/Text').default;
+const Image = require('react-native/Libraries/Image/Image').default;
 const Pressable = require('react-native/Libraries/Components/Pressable/Pressable').default;
 
 function PlaygroundApp() {
@@ -81,7 +82,16 @@ function PlaygroundApp() {
       { style: { fontSize: 16 }, collapsable: false },
       'This sentence is deliberately long enough that it must wrap onto more ' +
         'than one line inside a three hundred and twenty point wide parent.'
-    )
+    ),
+    // A 2x2 magenta PNG inlined as a data URI, so the playground needs no
+    // network or file access to prove the image path.
+    React.createElement(Image, {
+      style: { width: 40, height: 24 },
+      collapsable: false,
+      source: {
+        uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAEElEQVR4nGP4z/AfiBggFAA31gf5btK+fQAAAABJRU5ErkJggg==',
+      },
+    })
   );
 }
 

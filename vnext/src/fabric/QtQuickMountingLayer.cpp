@@ -4,6 +4,7 @@
 
 #include <QColor>
 #include <QFont>
+#include <QUrl>
 #include <QList>
 #include <QQuickItem>
 
@@ -270,6 +271,21 @@ MountError QtQuickMountingLayer::updateText(
   if (style.hasColor) {
     item->setProperty("color", QColor::fromRgba(style.color));
   }
+  lastError_.clear();
+  return MountError::None;
+}
+
+MountError QtQuickMountingLayer::updateImageSource(
+    Tag tag,
+    const QString& uri) {
+  const auto mounted = items_.constFind(tag);
+  if (mounted == items_.constEnd()) {
+    return failWith(
+        MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
+  }
+
+  mounted->item->setProperty(
+      "source", QUrl(factory_.resolveImageSource(uri)));
   lastError_.clear();
   return MountError::None;
 }

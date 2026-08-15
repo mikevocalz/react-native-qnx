@@ -734,3 +734,33 @@ validate:macos`.
 - **Results:** CTest 9/9 with Hermes, 7/7 default, seventeen host cases.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — `Image`.
+
+## 2026-08-14 – Image
+
+- **Goal:** Render an `<Image>`.
+- **Three prerequisites, each found by running it rather than by reading:**
+  - `Image` is a fourth platform-resolved JavaScript file, after `Platform` and
+    `BaseViewConfig`. Without an override the import is undefined and React
+    throws "Element type is invalid". The override is deliberately minimal and
+    its omissions are listed in `docs/component-support.md`.
+  - `SourceCode` is needed before an image resolves, because `getDevServer`
+    reads `scriptURL`. `QnxSourceCode` reports the bundle the host evaluated.
+  - Qt Quick's `Image` does not read `data:` URIs; the item stays in `Loading`
+    forever. `QnxImageProvider` decodes them and serves them back through an
+    `image://` URL, which is Qt's supported mechanism and was already the plan
+    recorded in `NEXT_ACTIONS`.
+- **A stub left as a stub, deliberately:** React Native's generic C++
+  `ImageManager` does not fetch or decode. That is correct here — Qt loads the
+  source itself — so it is used as-is rather than replaced, and the reason is
+  recorded where it is registered.
+- **Also fixed along the way:** the platform package's `Image.js` avoided object
+  rest destructuring, which Babel lowers to an `@babel/runtime` helper that is
+  not installed; adding a runtime dependency for one line was not worth it.
+- **Evidence:** the test asserts the provider URL, the styled size, and that the
+  item reaches `Image.Ready`; the rendered frame contains exactly 960 magenta
+  pixels, which is 40x24. Mutation check with the build verified first: making
+  the source resolver a pass-through fails the case.
+- **Results:** CTest 9/9 with Hermes, 7/7 default, seventeen host cases.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 —
+  `ScrollView` over Qt's `Flickable`.

@@ -1,5 +1,32 @@
 # TEST_STATUS.md
 
+## Image renders — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.
+- The playground renders an `<Image>` from a 2x2 PNG inlined as a `data:` URI,
+  so nothing depends on the network or the filesystem. The test asserts the
+  source became an `image://rnqnx/…` URL, the size is the styled 40x24, and the
+  item reaches `Image.Ready` — which is what proves the bytes were decoded
+  rather than merely assigned. The rendered frame contains exactly 960 magenta
+  pixels, which is 40x24.
+- Three things had to exist first, each found by running it:
+  - `Image` is a fourth platform-resolved JavaScript file, after `Platform` and
+    `BaseViewConfig`. Without an override the import is undefined and React
+    throws "Element type is invalid".
+  - `SourceCode` is required before an image can resolve, because
+    `getDevServer` reads `scriptURL` from it. `QnxSourceCode` reports the bundle
+    the host actually evaluated.
+  - Qt Quick's `Image` does not read `data:` URIs — the item stays in `Loading`
+    forever. `QnxImageProvider` decodes them and serves them back through an
+    `image://` URL, which is Qt's supported mechanism.
+- React Native's generic C++ `ImageManager` is a documented stub that does not
+  fetch or decode. That is correct here: Qt loads the source itself, so the
+  manager has nothing to do on this platform.
+- Mutation check, build verified first: making the source resolver a pass-through
+  fails the case, because the data URI never becomes a provider URL.
+- Evidence level: host only. Nothing cross-compiled for QNX, nothing run on the
+  Pi 4.
+
 ## Text wraps and mixes styles — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.

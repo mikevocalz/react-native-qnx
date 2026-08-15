@@ -109,6 +109,8 @@ set(RNQNX_REACT_NATIVE_MODULES
   react/renderer/observers/events
   react/performance/timeline
   react/timing
+  react/renderer/components/image
+  react/renderer/imagemanager
   react/renderer/animated
   react/renderer/observers/mutation
   react/renderer/observers/intersection
@@ -266,6 +268,8 @@ set(RNQNX_REACT_NATIVE_RENDERER_TARGETS
   react_renderer_mounting
   react_performance_timeline
   react_timing
+  rrc_image
+  react_renderer_imagemanager
   react_renderer_animated
   react_renderer_observers_mutation
   react_renderer_observers_intersection

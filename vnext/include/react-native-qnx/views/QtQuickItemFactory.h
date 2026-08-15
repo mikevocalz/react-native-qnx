@@ -4,6 +4,8 @@
 #include <QHash>
 #include <QString>
 
+#include "react-native-qnx/views/QnxImageProvider.h"
+
 QT_BEGIN_NAMESPACE
 class QQmlComponent;
 class QQmlEngine;
@@ -49,10 +51,16 @@ class QtQuickItemFactory {
 
   QString lastError() const;
 
+  /// Resolves an image source for a Qt item, translating `data:` URIs into
+  /// `image://` URLs this platform serves. Other schemes pass through.
+  QString resolveImageSource(const QString& uri);
+
  private:
   QQmlComponent* componentFor(const QString& componentName);
 
   QQmlEngine& engine_;
+  /// Owned by the QML engine once registered, per QQmlEngine::addImageProvider.
+  QnxImageProvider* imageProvider_{nullptr};
   QHash<QString, QByteArray> sources_;
   QHash<QString, QQmlComponent*> components_;
   QString lastError_;
