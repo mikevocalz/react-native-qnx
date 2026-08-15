@@ -259,11 +259,15 @@ else()
           # Needs React Native's headers, so it lives with the adapter rather
           # than in the Qt-only view library.
           vnext/src/fabric/QtTouchDispatcher.cpp
+          vnext/src/fabric/QtScrollBridge.cpp
+          vnext/include/react-native-qnx/fabric/QtScrollBridge.h
         )
         target_link_libraries(rnqnx_fabric_adapter PUBLIC
           rnqnx_react_native_renderer
           rnqnx_views_qt
         )
+        # QtScrollBridge declares a slot, so it needs moc.
+        set_target_properties(rnqnx_fabric_adapter PROPERTIES AUTOMOC ON)
         rnqnx_enable_strict_warnings(rnqnx_fabric_adapter)
 
         add_executable(shadow_view_mutation_adapter_host_test

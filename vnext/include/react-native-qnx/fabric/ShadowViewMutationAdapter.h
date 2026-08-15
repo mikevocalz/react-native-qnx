@@ -6,6 +6,7 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 #include <QHash>
+#include <QSet>
 #include <QString>
 
 #include <vector>
@@ -58,6 +59,10 @@ class ShadowViewMutationAdapter {
   void applyImage(const facebook::react::ShadowView& view);
   void registerEventEmitter(const facebook::react::ShadowView& view);
 
+  /// Connects a scrollable item's position changes to its shadow view's
+  /// ScrollViewEventEmitter, so `onScroll` reaches JavaScript.
+  void connectScrollEvents(const facebook::react::ShadowView& view);
+
   MountError applyOne(
       const facebook::react::ShadowViewMutation& mutation,
       QString& detail);
@@ -65,6 +70,9 @@ class ShadowViewMutationAdapter {
   QtQuickMountingLayer& layer_;
   QtTouchDispatcher* touchDispatcher_{nullptr};
   QHash<QString, QString> componentTypes_;
+  /// Tags whose scroll signals are already connected, so a second Update does
+  /// not attach a duplicate handler.
+  QSet<Tag> scrollConnected_;
 };
 
 /// Converts React Native's view props to the visual style the mounting layer

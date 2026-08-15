@@ -96,6 +96,15 @@ function PlaygroundApp() {
         // collapsed the scroll view to zero height without it.
         style: { width: 100, height: 50, flexShrink: 0 },
         collapsable: false,
+        // The host test scrolls the Qt Flickable directly and reads these
+        // back, which is how a scroll reaching JavaScript is proven.
+        onScroll: (event) => {
+          globalThis.__scrolls = (globalThis.__scrolls ?? 0) + 1;
+          globalThis.__lastScrollY = event.nativeEvent.contentOffset.y;
+          globalThis.__lastScrollContentHeight =
+            event.nativeEvent.contentSize.height;
+        },
+        scrollEventThrottle: 16,
       },
       React.createElement(View, {
         style: { width: 100, height: 300, backgroundColor: '#8800ff' },

@@ -1,10 +1,15 @@
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 
+#include "react-native-qnx/fabric/QtScrollBridge.h"
+
 #include <QColor>
+#include <QMetaMethod>
+#include <QQuickItem>
 #include <QStringList>
 
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/components/image/ImageProps.h>
+#include <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
 #include <react/renderer/components/text/ParagraphState.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ConcreteState.h>
@@ -198,6 +203,53 @@ void ShadowViewMutationAdapter::applyText(const ShadowView& view) {
   }
 }
 
+void ShadowViewMutationAdapter::connectScrollEvents(const ShadowView& view) {
+  if (scrollConnected_.contains(view.tag)) {
+    return;
+  }
+
+  const auto emitter =
+      std::dynamic_pointer_cast<const facebook::react::ScrollViewEventEmitter>(
+          view.eventEmitter);
+  if (emitter == nullptr) {
+    return;
+  }
+
+  QQuickItem* item = layer_.itemForTag(view.tag);
+  if (item == nullptr ||
+      item->property("contentItem").value<QQuickItem*>() == nullptr) {
+    return;
+  }
+
+  // Qt emits contentXChanged/contentYChanged as the Flickable moves. The item
+  // is the connection context, so the handler dies with it.
+  const auto emitScroll = [emitter, item]() {
+    facebook::react::ScrollEvent event;
+    event.contentOffset = {
+        .x = static_cast<facebook::react::Float>(
+            item->property("contentX").toDouble()),
+        .y = static_cast<facebook::react::Float>(
+            item->property("contentY").toDouble())};
+    event.contentSize = {
+        .width = static_cast<facebook::react::Float>(
+            item->property("contentWidth").toDouble()),
+        .height = static_cast<facebook::react::Float>(
+            item->property("contentHeight").toDouble())};
+    event.containerSize = {
+        .width = static_cast<facebook::react::Float>(item->width()),
+        .height = static_cast<facebook::react::Float>(item->height())};
+    event.zoomScale = 1.0F;
+    emitter->onScroll(event);
+  };
+
+  // The bridge is parented to the item, so it dies with it.
+  auto* bridge = new QtScrollBridge(emitScroll, item);
+  QObject::connect(item, SIGNAL(contentXChanged()), bridge, SLOT(notify()));
+  QObject::connect(item, SIGNAL(contentYChanged()), bridge, SLOT(notify()));
+
+  scrollConnected_.insert(view.tag);
+}
+
 void ShadowViewMutationAdapter::registerEventEmitter(const ShadowView& view) {
   if (touchDispatcher_ == nullptr) {
     return;
@@ -239,6 +291,7 @@ MountError ShadowViewMutationAdapter::applyOne(
         return layoutError;
       }
       registerEventEmitter(view);
+      connectScrollEvents(view);
       applyText(view);
       applyImage(view);
       return layer_.updateStyle(view.tag, toViewStyle(view));

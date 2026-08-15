@@ -15,7 +15,7 @@ Legend: ✅ works and is covered by a host test · ⚠ partial, with the limit n
 | `View`               | ⚠      | Mounts, lays out, and paints background, corner radius, and opacity.                                                                                   |
 | `Text`               | ⚠      | Renders with string, font size, colour, mixed styling, and wrapping. No ellipsis or inline attachments.                                                |
 | `Image`              | ⚠      | Renders from `data:` URIs through this platform's image provider. Bundler assets, `defaultSource`, `getSize`, `prefetch`, and load events are missing. |
-| `ScrollView`         | ⚠      | Mounts as a Qt `Flickable` that clips and scrolls. No scroll events, no `contentContainerStyle`, no momentum tuning.                                   |
+| `ScrollView`         | ⚠      | Mounts as a Qt `Flickable` that clips and scrolls. `onScroll` carries `contentOffset`, `contentSize` and `containerSize`. No `contentContainerStyle`, no momentum/begin/end events, no `scrollTo`, `zoomScale` is always 1. |
 | `TextInput`          | ❌     | Needs Qt Quick's text input plus IME.                                                                                                                  |
 | `Switch`             | ❌     |                                                                                                                                                        |
 | `ActivityIndicator`  | ❌     |                                                                                                                                                        |

@@ -585,6 +585,72 @@ void metroBundleRendersThroughReact() {
   EXPECT_NEAR(image->height(), 24.0);
 }
 
+/// Scrolling the Qt Flickable delivers onScroll to JavaScript.
+///
+/// This is the return path for scrolling: mounting a ScrollView only produces a
+/// Flickable, and nothing virtualised — FlatList, SectionList, sticky headers —
+/// updates until the offset gets back to JavaScript.
+void scrollEventsReachJavaScript() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.host().startSurface(kSurfaceId, "RNQnxPlayground", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* scroll = fixture.root().childItems().at(0)->childItems().at(5);
+  EXPECT(scroll->property("contentHeight").toDouble() > scroll->height());
+
+  auto& runtime = fixture.host().runtime();
+  // Nothing has scrolled yet, so a later count proves the events came from the
+  // scroll rather than from mounting.
+  EXPECT(runtime.global().getProperty(runtime, "__scrolls").isUndefined());
+
+  // Driving contentY is what a flick, a wheel, or a scrollTo all end up doing;
+  // it is the property Flickable animates and the one Qt notifies on.
+  scroll->setProperty("contentY", 120.0);
+
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  const auto scrolls = runtime.global().getProperty(runtime, "__scrolls");
+  if (!scrolls.isNumber()) {
+    fail(
+        "onScroll ran in JavaScript",
+        __FILE__,
+        __LINE__,
+        "globalThis.__scrolls was never set");
+  }
+  EXPECT(scrolls.getNumber() >= 1.0);
+
+  // The offset is carried, not just the fact that something moved: a scroll
+  // event with the wrong contentOffset is useless to a virtualised list.
+  const auto offsetY = runtime.global().getProperty(runtime, "__lastScrollY");
+  EXPECT(offsetY.isNumber());
+  EXPECT_NEAR(offsetY.getNumber(), 120.0);
+
+  // contentSize travels too, and it is the size this platform computed from the
+  // Flickable's children rather than one React Native supplied.
+  const auto contentHeight =
+      runtime.global().getProperty(runtime, "__lastScrollContentHeight");
+  EXPECT(contentHeight.isNumber());
+  EXPECT_NEAR(contentHeight.getNumber(), 300.0);
+}
+
 /// A JavaScript error reaches the host instead of aborting the process.
 ///
 /// Before ExceptionsManager existed, React reached for it while reporting any
@@ -884,6 +950,7 @@ int main(int argc, char** argv) {
       {"aSuccessfulRenderReportsNoErrors", aSuccessfulRenderReportsNoErrors},
       {"renderedTreeIsPainted", renderedTreeIsPainted},
       {"pointerEventsReachJavaScript", pointerEventsReachJavaScript},
+      {"scrollEventsReachJavaScript", scrollEventsReachJavaScript},
 #endif
 #endif
   };
