@@ -250,13 +250,25 @@ MountError ShadowViewMutationAdapter::applyOne(
       }
       return layer_.destroy(mutation.oldChildShadowView.tag);
 
-    case ShadowViewMutation::Type::Insert:
-      return layer_.insert(
+    case ShadowViewMutation::Type::Insert: {
+      const MountError error = layer_.insert(
           mutation.parentTag, mutation.newChildShadowView.tag, mutation.index);
+      if (error != MountError::None) {
+        return error;
+      }
+      // Qt's Flickable does not derive its content size from its children, so
+      // it is recomputed whenever they change.
+      return layer_.updateScrollContentSize(mutation.parentTag);
+    }
 
-    case ShadowViewMutation::Type::Remove:
-      return layer_.remove(
+    case ShadowViewMutation::Type::Remove: {
+      const MountError error = layer_.remove(
           mutation.parentTag, mutation.oldChildShadowView.tag, mutation.index);
+      if (error != MountError::None) {
+        return error;
+      }
+      return layer_.updateScrollContentSize(mutation.parentTag);
+    }
 
     case ShadowViewMutation::Type::Update: {
       const ShadowView& view = mutation.newChildShadowView;
@@ -268,7 +280,15 @@ MountError ShadowViewMutationAdapter::applyOne(
       }
       applyText(view);
       applyImage(view);
-      return layer_.updateStyle(view.tag, toViewStyle(view));
+      const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
+      if (styleError != MountError::None) {
+        return styleError;
+      }
+      // A child resizing changes what its scrollable parent has to cover.
+      if (mutation.parentTag >= 0) {
+        layer_.updateScrollContentSize(mutation.parentTag);
+      }
+      return MountError::None;
     }
   }
 

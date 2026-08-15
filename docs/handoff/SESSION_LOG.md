@@ -764,3 +764,33 @@ validate:macos`.
 - **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
 - **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 —
   `ScrollView` over Qt's `Flickable`.
+
+## 2026-08-14 – ScrollView, and the module-architecture decision
+
+- **Decision recorded:** asked directly whether these modules should be Nitro,
+  the project owner chose that modules React Native's own JavaScript requires by
+  name stay C++ against React Native's generated specs, while everything an
+  application calls is a Nitro HybridObject. The reason it cannot be otherwise:
+  `TurboModuleRegistry.getEnforcing` reads a global that Nitro's registry does
+  not populate, and the call sites are inside React Native's source. Written up
+  in `docs/handoff/DECISIONS.md` and noted on ADR-0004.
+- **Implemented:** `ScrollView` mapped to a Qt `Flickable`, `DeviceInfo` as a
+  C++ module reporting Qt's primary screen, and two platform behaviours:
+  children of an item exposing a `contentItem` are mounted there, because that
+  is what a Flickable actually scrolls; and `contentWidth`/`contentHeight` are
+  recomputed on every insert, remove, and child layout change, because Qt does
+  not derive them from children the way React Native does.
+- **Problems discovered:**
+  - `Dimensions.js:126` reads `getConstants().Dimensions`, so a flat constants
+    object throws "Cannot read property 'screen' of undefined".
+  - The scroll view first laid out at zero height. React Native's `ScrollView`
+    base style is shrinkable and the parent's children already overflowed it, so
+    Yoga collapsed it — correct behaviour, fixed in the app with
+    `flexShrink: 0`, not in the platform.
+- **Evidence:** the rendered frame contains exactly 5000 purple pixels, which is
+  100x50 — the 300pt-tall content clipped to its viewport. Mutation check with
+  the build verified first: removing the `contentItem` redirect fails the case.
+- **Results:** CTest 9/9 with Hermes, 7/7 default, seventeen host cases.
+- **QNX result:** Unchanged. Nothing cross-compiled, nothing run on the Pi 4.
+- **Recommended continuation point:** `NEXT_ACTIONS.md` action 3 — try a
+  `FlatList`, and deliver scroll events to JavaScript.

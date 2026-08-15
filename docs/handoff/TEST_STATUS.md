@@ -1,5 +1,34 @@
 # TEST_STATUS.md
 
+## ScrollView scrolls — 2026-08-14
+
+- CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.
+- The playground renders a 100x50 `<ScrollView>` containing a 100x300 view. The
+  test asserts the child is mounted into the Flickable's `contentItem` rather
+  than onto the Flickable itself, and that `contentHeight` is 300 against a 50pt
+  frame. The rendered frame contains exactly 5000 purple pixels — 100x50 — which
+  is the content clipped to the viewport.
+- Two platform behaviours had to be handled:
+  - A Flickable scrolls its `contentItem`, so children mounted directly on it
+    would never move. Any item exposing a `contentItem` now receives its children
+    there; a plain Item has no such property and is unaffected.
+  - Qt does not derive `contentWidth`/`contentHeight` from children the way
+    React Native does, so they are recomputed on every insert, remove, and child
+    layout change.
+- `DeviceInfo` was required first: `Dimensions` reads it and `ScrollView` reads
+  `Dimensions`. It reports Qt's primary screen geometry and device pixel ratio.
+  `Dimensions.js:126` reads `getConstants().Dimensions`, so the metrics are
+  nested under that key — a flat object throws "Cannot read property 'screen' of
+  undefined".
+- A layout surprise worth recording: the scroll view first laid out at zero
+  height. React Native's `ScrollView` base style is shrinkable, and the parent's
+  children already overflowed it, so Yoga collapsed it. The app sets
+  `flexShrink: 0`; the platform was behaving correctly.
+- Mutation check, build verified first: removing the `contentItem` redirect
+  fails the case.
+- Evidence level: host only. Nothing cross-compiled for QNX, nothing run on the
+  Pi 4.
+
 ## Image renders — 2026-08-14
 
 - CTest 9/9 with Hermes, 7/7 by default; seventeen host cases.

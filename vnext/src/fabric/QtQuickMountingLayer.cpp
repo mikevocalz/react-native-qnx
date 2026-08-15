@@ -5,6 +5,8 @@
 #include <QColor>
 #include <QFont>
 #include <QUrl>
+
+#include <algorithm>
 #include <QList>
 #include <QQuickItem>
 
@@ -111,18 +113,26 @@ MountError QtQuickMountingLayer::insert(
         QStringLiteral("Child tag %1 is not mounted").arg(childTag));
   }
 
-  const int childCount = static_cast<int>(parent->item->childItems().size());
+  // A Flickable scrolls its `contentItem`, not itself, so children mounted
+  // directly on it would never move. Any item exposing a `contentItem` gets its
+  // children there; a plain Item has no such property and is unaffected.
+  QQuickItem* parentItem = parent->item;
+  if (auto* content = parentItem->property("contentItem").value<QQuickItem*>()) {
+    parentItem = content;
+  }
+
+  const int childCount = static_cast<int>(parentItem->childItems().size());
   if (index < 0 || index > childCount) {
     return failWith(
         MountError::IndexOutOfRange,
         QStringLiteral("Index %1 is outside 0..%2").arg(index).arg(childCount));
   }
 
-  child->item->setParentItem(parent->item);
+  child->item->setParentItem(parentItem);
 
   // setParentItem appends, so the item only needs restacking when it is not
   // already last. childItems() order is the stacking order Qt paints in.
-  const QList<QQuickItem*> children = parent->item->childItems();
+  const QList<QQuickItem*> children = parentItem->childItems();
   if (index < children.size() - 1) {
     child->item->stackBefore(children.at(index));
   }
@@ -149,7 +159,12 @@ MountError QtQuickMountingLayer::remove(
         QStringLiteral("Child tag %1 is not mounted").arg(childTag));
   }
 
-  if (child->item->parentItem() != parent->item) {
+  QQuickItem* parentItem = parent->item;
+  if (auto* content = parentItem->property("contentItem").value<QQuickItem*>()) {
+    parentItem = content;
+  }
+
+  if (child->item->parentItem() != parentItem) {
     return failWith(
         MountError::NotAChildOfParent,
         QStringLiteral("Tag %1 is not a child of tag %2")
@@ -161,7 +176,7 @@ MountError QtQuickMountingLayer::remove(
   // means our tree has diverged from the shadow tree, which is a defect worth
   // surfacing rather than papering over.
   const int actualIndex =
-      static_cast<int>(parent->item->childItems().indexOf(child->item));
+      static_cast<int>(parentItem->childItems().indexOf(child->item));
   if (actualIndex != index) {
     return failWith(
         MountError::IndexOutOfRange,
@@ -286,6 +301,32 @@ MountError QtQuickMountingLayer::updateImageSource(
 
   mounted->item->setProperty(
       "source", QUrl(factory_.resolveImageSource(uri)));
+  lastError_.clear();
+  return MountError::None;
+}
+
+MountError QtQuickMountingLayer::updateScrollContentSize(Tag tag) {
+  const auto mounted = items_.constFind(tag);
+  if (mounted == items_.constEnd()) {
+    return failWith(
+        MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
+  }
+
+  auto* content = mounted->item->property("contentItem").value<QQuickItem*>();
+  if (content == nullptr) {
+    // Not a scrollable item; nothing to compute.
+    return MountError::None;
+  }
+
+  qreal width = 0;
+  qreal height = 0;
+  for (const QQuickItem* child : content->childItems()) {
+    width = std::max(width, child->x() + child->width());
+    height = std::max(height, child->y() + child->height());
+  }
+
+  mounted->item->setProperty("contentWidth", width);
+  mounted->item->setProperty("contentHeight", height);
   lastError_.clear();
   return MountError::None;
 }

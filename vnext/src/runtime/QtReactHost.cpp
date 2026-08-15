@@ -9,6 +9,7 @@
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
 #include <react/renderer/components/image/ImageComponentDescriptor.h>
+#include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
@@ -187,6 +188,8 @@ std::vector<std::string> registeredComponentNames() {
                       ConcreteShadowNode::Name()),
       std::string(
           facebook::react::ImageComponentDescriptor::ConcreteShadowNode::Name()),
+      std::string(facebook::react::ScrollViewComponentDescriptor::
+                      ConcreteShadowNode::Name()),
   };
 }
 
@@ -224,6 +227,9 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<
             facebook::react::ImageComponentDescriptor>());
+    providerRegistry->add(
+        facebook::react::concreteComponentDescriptorProvider<
+            facebook::react::ScrollViewComponentDescriptor>());
 
     // Without a fallback, an unregistered component name throws
     // std::invalid_argument out of ComponentDescriptorRegistry::at
@@ -474,6 +480,11 @@ void QtReactHost::installTurboModuleBinding() {
         // Without this, every JavaScript error aborts the process: React
         // reaches for ExceptionsManager while reporting, getEnforcing throws,
         // and the throw escapes.
+        if (name == QnxDeviceInfo::kModuleName) {
+          // Dimensions reads this, and ScrollView reads Dimensions.
+          return std::make_shared<QnxDeviceInfo>(callInvoker);
+        }
+
         if (name == QnxSourceCode::kModuleName) {
           // getDevServer and resolveAssetSource read scriptURL from this, so
           // <Image> cannot render without it. The value is the bundle the host

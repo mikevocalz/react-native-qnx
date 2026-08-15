@@ -134,6 +134,10 @@ forwards the responder claim so the rest of a gesture follows the responder.
 `Pressable` renders and its `onPress` fires from a real pointer press. One
 pointer only.
 
+`ScrollView` mounts as a Qt `Flickable`, with children routed into its
+`contentItem` and its content size recomputed as they change, so it clips and
+scrolls.
+
 `Image` renders from `data:` URIs, decoded by this platform's image provider
 because Qt Quick cannot read them, with `SourceCode` implemented as the
 TurboModule the image path needs.

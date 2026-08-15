@@ -31,3 +31,10 @@ All new QNX application-facing native APIs use Nitro Modules. Nitrogen-generated
 ## Notes
 
 Do not generate empty TurboModules merely to silence linker errors.
+
+Where the boundary falls, confirmed by the project owner on 2026-08-14: modules
+React Native's own JavaScript requires by name are implemented in C++ against
+React Native's generated `…CxxSpec` classes, because `TurboModuleRegistry` reads
+a global that Nitro's registry does not populate and those call sites are inside
+React Native's source. Everything an application calls is a Nitro HybridObject.
+See `docs/handoff/DECISIONS.md`.

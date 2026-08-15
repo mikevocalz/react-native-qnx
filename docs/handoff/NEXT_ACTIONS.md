@@ -96,8 +96,10 @@ and platform constants.
    `backgroundColor`, `borderRadius`, `opacity`, and transforms are silently
    ignored. Start there: they are the difference between a correct tree and a
    visible app. Record each in `docs/component-support.md`.
-2. **`ScrollView`.** The next missing component, backed by Qt's `Flickable`,
-   and the one that `FlatList` and `SectionList` need. Smaller gaps still open:
+2. **`FlatList`, and scroll events.** `FlatList` and `SectionList` are upstream
+   JavaScript over `ScrollView`, which now exists — try one and find out what is
+   missing rather than assuming. Scroll events do not reach JavaScript yet, so
+   `onScroll` and anything virtualised will not update. Smaller gaps still open:
    bundler assets for `Image`, `resizeMode`, image load events, `numberOfLines`
    ellipsis, multi-touch, and pointer capture.
 3. **On glass.** Everything so far runs under the offscreen QPA plugin. Render

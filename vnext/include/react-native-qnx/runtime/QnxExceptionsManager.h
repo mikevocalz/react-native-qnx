@@ -80,4 +80,19 @@ class QnxSourceCode
   std::string scriptUrl_;
 };
 
+/// React Native's DeviceInfo module.
+///
+/// `Dimensions` reads its constants, and `ScrollView` reads `Dimensions`, so
+/// this is required before a scroll view can render. Values come from Qt's
+/// primary screen rather than from a placeholder; a headless run reports the
+/// offscreen platform's screen, which is real for that run.
+class QnxDeviceInfo
+    : public facebook::react::NativeDeviceInfoCxxSpec<QnxDeviceInfo> {
+ public:
+  explicit QnxDeviceInfo(
+      std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+
+  facebook::jsi::Object getConstants(facebook::jsi::Runtime& runtime);
+};
+
 }  // namespace rnqnx::runtime

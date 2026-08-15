@@ -67,6 +67,10 @@ constexpr const char* kViewSource = "import QtQuick\nRectangle { visible: true }
 constexpr const char* kTextSource = "import QtQuick\nText { visible: true }\n";
 constexpr const char* kImageSource =
     "import QtQuick\nImage { visible: true }\n";
+// Flickable is Qt Quick's scrollable container; clip keeps content inside the
+// viewport, which is what a React Native ScrollView does.
+constexpr const char* kScrollViewSource =
+    "import QtQuick\nFlickable { visible: true; clip: true }\n";
 
 class TestFailure final : public std::runtime_error {
  public:
@@ -150,6 +154,10 @@ class Fixture {
     // what draws it.
     factory_.registerType(QStringLiteral("Text"), QByteArray(kTextSource));
     factory_.registerType(QStringLiteral("Image"), QByteArray(kImageSource));
+    factory_.registerType(
+        QStringLiteral("ScrollView"), QByteArray(kScrollViewSource));
+    adapter_.mapComponent(
+        QStringLiteral("ScrollView"), QStringLiteral("ScrollView"));
     adapter_.mapComponent(QStringLiteral("Image"), QStringLiteral("Image"));
     adapter_.mapComponent(QStringLiteral("Paragraph"), QStringLiteral("Text"));
   }
@@ -508,9 +516,9 @@ void metroBundleRendersThroughReact() {
   EXPECT(outer->property("color").value<QColor>() == QColor(0x20, 0x40, 0x80));
   EXPECT_NEAR(outer->property("radius").toDouble(), 12.0);
 
-  // Six children: the styled inner view, a Pressable, three Texts — simple,
-  // mixed-style, and wrapping — and an Image.
-  EXPECT(outer->childItems().size() == 6);
+  // Seven children: the styled inner view, a Pressable, three Texts — simple,
+  // mixed-style, and wrapping — a ScrollView, and an Image.
+  EXPECT(outer->childItems().size() == 7);
   QQuickItem* inner = outer->childItems().at(0);
   EXPECT_NEAR(inner->width(), 64.0);
   EXPECT_NEAR(inner->height(), 32.0);
@@ -546,9 +554,21 @@ void metroBundleRendersThroughReact() {
   EXPECT(wrapped->height() > 30.0);
   EXPECT(wrapped->width() <= 320.0);
 
+  // The ScrollView is a Flickable. Its child is mounted into the Flickable's
+  // contentItem rather than onto the Flickable itself, because that is what
+  // actually scrolls, and its content size is computed from that child — Qt
+  // does not derive it the way React Native does.
+  QQuickItem* scroll = outer->childItems().at(5);
+  EXPECT_NEAR(scroll->height(), 50.0);
+  auto* content = scroll->property("contentItem").value<QQuickItem*>();
+  EXPECT(content != nullptr);
+  EXPECT(content->childItems().size() == 1);
+  EXPECT_NEAR(scroll->property("contentHeight").toDouble(), 300.0);
+  EXPECT(scroll->property("contentHeight").toDouble() > scroll->height());
+
   // The Image's source reaches the item as a URL. The app inlines a PNG as a
   // data URI, so this needs no network or file access.
-  QQuickItem* image = outer->childItems().at(5);
+  QQuickItem* image = outer->childItems().at(6);
   // The app's source is a data URI, which Qt Quick's Image cannot read, so this
   // platform decodes it and serves it back through its own image provider.
   const QString source = image->property("source").toUrl().toString();

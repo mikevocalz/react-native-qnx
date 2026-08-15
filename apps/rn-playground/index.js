@@ -13,6 +13,7 @@ const AppRegistry = require('react-native/Libraries/ReactNative/AppRegistry').Ap
 const View = require('react-native/Libraries/Components/View/View').default;
 const Text = require('react-native/Libraries/Text/Text').default;
 const Image = require('react-native/Libraries/Image/Image').default;
+const ScrollView = require('react-native/Libraries/Components/ScrollView/ScrollView').default;
 const Pressable = require('react-native/Libraries/Components/Pressable/Pressable').default;
 
 function PlaygroundApp() {
@@ -85,6 +86,22 @@ function PlaygroundApp() {
     ),
     // A 2x2 magenta PNG inlined as a data URI, so the playground needs no
     // network or file access to prove the image path.
+    // A ScrollView whose content is taller than its frame, so the Flickable
+    // has something to scroll.
+    React.createElement(
+      ScrollView,
+      {
+        // flexShrink: 0 is deliberate. React Native's ScrollView base style is
+        // shrinkable, and this parent's children already overflow it, so Yoga
+        // collapsed the scroll view to zero height without it.
+        style: { width: 100, height: 50, flexShrink: 0 },
+        collapsable: false,
+      },
+      React.createElement(View, {
+        style: { width: 100, height: 300, backgroundColor: '#8800ff' },
+        collapsable: false,
+      })
+    ),
     React.createElement(Image, {
       style: { width: 40, height: 24 },
       collapsable: false,
