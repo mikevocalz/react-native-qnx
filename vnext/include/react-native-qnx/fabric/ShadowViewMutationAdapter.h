@@ -58,6 +58,7 @@ class ShadowViewMutationAdapter {
   void applyText(const facebook::react::ShadowView& view);
   void applyImage(const facebook::react::ShadowView& view);
   void applyTextInput(const facebook::react::ShadowView& view);
+  void applyActivityIndicator(const facebook::react::ShadowView& view);
   void registerEventEmitter(const facebook::react::ShadowView& view);
 
   /// Connects an editable item's text changes to its shadow view's

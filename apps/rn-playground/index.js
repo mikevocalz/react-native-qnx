@@ -21,6 +21,8 @@ const FlatList = require('react-native/Libraries/Lists/FlatList').default;
 // that translates the public `value`/`defaultValue`/`onChangeText` surface to
 // the native single-line textinput descriptor.
 const TextInput = require('react-native/Libraries/Components/TextInput/TextInput').default;
+const ActivityIndicator =
+  require('react-native/Libraries/Components/ActivityIndicator/ActivityIndicator').default;
 
 function PlaygroundApp() {
   return React.createElement(
@@ -192,6 +194,20 @@ function TextInputApp() {
   );
 }
 
+function ActivityIndicatorApp() {
+  return React.createElement(
+    View,
+    { style: { width: 200, height: 200, backgroundColor: '#eeeeee' }, collapsable: false },
+    React.createElement(ActivityIndicator, {
+      size: 'large',
+      color: '#00aa66',
+      collapsable: false,
+      animating: true,
+    })
+  );
+}
+
 AppRegistry.registerComponent('RNQnxPlayground', () => PlaygroundApp);
 AppRegistry.registerComponent('RNQnxFlatList', () => FlatListApp);
 AppRegistry.registerComponent('RNQnxTextInput', () => TextInputApp);
+AppRegistry.registerComponent('RNQnxActivityIndicator', () => ActivityIndicatorApp);

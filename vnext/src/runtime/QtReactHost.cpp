@@ -202,6 +202,9 @@ std::vector<std::string> registeredComponentNames() {
                       ConcreteShadowNode::Name()),
       std::string(facebook::react::TextInputComponentDescriptor::
                       ConcreteShadowNode::Name()),
+      std::string(
+          facebook::react::ActivityIndicatorViewComponentDescriptor::
+              ConcreteShadowNode::Name()),
   };
 }
 
@@ -251,6 +254,12 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<
             facebook::react::TextInputComponentDescriptor>());
+    // codegen'd FBReactNativeSpec component; ActivityIndicatorView is the
+    // Fabric name for RCTActivityIndicatorView (componentNameByReactViewName
+    // leaves the non-RCT-prefixed name unchanged).
+    providerRegistry->add(
+        facebook::react::concreteComponentDescriptorProvider<
+            facebook::react::ActivityIndicatorViewComponentDescriptor>());
 
     // Without a fallback, an unregistered component name throws
     // std::invalid_argument out of ComponentDescriptorRegistry::at

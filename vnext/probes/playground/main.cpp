@@ -44,6 +44,42 @@ constexpr const char* kTextInputSource =
     "import QtQuick\nTextInput { visible: true }\n";
 constexpr const char* kScrollViewSource =
     "import QtQuick\nFlickable { visible: true; clip: true }\n";
+constexpr const char* kActivityIndicatorSource =
+    "import QtQuick\n"
+    "Item {\n"
+    "  id: root\n"
+    "  property color color: '#999999'\n"
+    "  property bool animating: true\n"
+    "  property bool hidesWhenStopped: true\n"
+    "  property string size: 'small'\n"
+    "  visible: animating || !hidesWhenStopped\n"
+    "  Rectangle {\n"
+    "    id: track\n"
+    "    anchors.centerIn: parent\n"
+    "    width: Math.min(parent.width, parent.height) * 0.8\n"
+    "    height: width\n"
+    "    radius: width / 2\n"
+    "    color: 'transparent'\n"
+    "    border.width: width * 0.1\n"
+    "    border.color: root.color\n"
+    "    Rectangle {\n"
+    "      id: arm\n"
+    "      x: track.width / 2 - width / 2\n"
+    "      y: track.height / 2 - height\n"
+    "      width: track.width * 0.12\n"
+    "      height: track.height * 0.4\n"
+    "      color: root.color\n"
+    "      transformOrigin: Item.Bottom\n"
+    "      NumberAnimation on rotation {\n"
+    "        from: 0\n"
+    "        to: 360\n"
+    "        duration: 1000\n"
+    "        loops: Animation.Infinite\n"
+    "        running: root.animating\n"
+    "      }\n"
+    "    }\n"
+    "  }\n"
+    "}\n";
 constexpr int kWindowWidth = 640;
 constexpr int kWindowHeight = 480;
 
@@ -98,6 +134,9 @@ int main(int argc, char** argv) {
       QStringLiteral("ScrollView"), QByteArray(kScrollViewSource));
   factory.registerType(
       QStringLiteral("TextInput"), QByteArray(kTextInputSource));
+  factory.registerType(
+      QStringLiteral("ActivityIndicatorView"),
+      QByteArray(kActivityIndicatorSource));
 
   rnqnx::fabric::QtQuickMountingLayer layer(
       factory, *window.contentItem(), kSurfaceId);
@@ -109,6 +148,9 @@ int main(int argc, char** argv) {
       QStringLiteral("ScrollView"), QStringLiteral("ScrollView"));
   adapter.mapComponent(
       QStringLiteral("TextInput"), QStringLiteral("TextInput"));
+  adapter.mapComponent(
+      QStringLiteral("ActivityIndicatorView"),
+      QStringLiteral("ActivityIndicatorView"));
 
   rnqnx::runtime::QtReactHost host(adapter);
   host.installTurboModuleBinding();

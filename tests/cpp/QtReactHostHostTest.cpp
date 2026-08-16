@@ -79,6 +79,42 @@ constexpr const char* kScrollViewSource =
 // other types; everything else is set from props at mount time.
 constexpr const char* kTextInputSource =
     "import QtQuick\nTextInput { visible: true }\n";
+constexpr const char* kActivityIndicatorSource =
+    "import QtQuick\n"
+    "Item {\n"
+    "  id: root\n"
+    "  property color color: '#999999'\n"
+    "  property bool animating: true\n"
+    "  property bool hidesWhenStopped: true\n"
+    "  property string size: 'small'\n"
+    "  visible: animating || !hidesWhenStopped\n"
+    "  Rectangle {\n"
+    "    id: track\n"
+    "    anchors.centerIn: parent\n"
+    "    width: Math.min(parent.width, parent.height) * 0.8\n"
+    "    height: width\n"
+    "    radius: width / 2\n"
+    "    color: 'transparent'\n"
+    "    border.width: width * 0.1\n"
+    "    border.color: root.color\n"
+    "    Rectangle {\n"
+    "      id: arm\n"
+    "      x: track.width / 2 - width / 2\n"
+    "      y: track.height / 2 - height\n"
+    "      width: track.width * 0.12\n"
+    "      height: track.height * 0.4\n"
+    "      color: root.color\n"
+    "      transformOrigin: Item.Bottom\n"
+    "      NumberAnimation on rotation {\n"
+    "        from: 0\n"
+    "        to: 360\n"
+    "        duration: 1000\n"
+    "        loops: Animation.Infinite\n"
+    "        running: root.animating\n"
+    "      }\n"
+    "    }\n"
+    "  }\n"
+    "}\n";
 
 class TestFailure final : public std::runtime_error {
  public:
@@ -166,10 +202,16 @@ class Fixture {
         QStringLiteral("ScrollView"), QByteArray(kScrollViewSource));
     factory_.registerType(
         QStringLiteral("TextInput"), QByteArray(kTextInputSource));
+    factory_.registerType(
+        QStringLiteral("ActivityIndicatorView"),
+        QByteArray(kActivityIndicatorSource));
     adapter_.mapComponent(
         QStringLiteral("ScrollView"), QStringLiteral("ScrollView"));
     adapter_.mapComponent(
         QStringLiteral("TextInput"), QStringLiteral("TextInput"));
+    adapter_.mapComponent(
+        QStringLiteral("ActivityIndicatorView"),
+        QStringLiteral("ActivityIndicatorView"));
     adapter_.mapComponent(QStringLiteral("Image"), QStringLiteral("Image"));
     adapter_.mapComponent(QStringLiteral("Paragraph"), QStringLiteral("Text"));
   }
@@ -917,6 +959,47 @@ void textInputMounts() {
   EXPECT(changeTextValue.getString(rt).utf8(rt) == "typedX");
 }
 
+/// FBReactNativeSpec's codegen'd ActivityIndicatorView descriptor is
+/// registered, mounts, and has its props applied to the QML item.
+void activityIndicatorMounts() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxActivityIndicator", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* outer = fixture.root().childItems().at(0);
+  EXPECT(outer->childItems().size() == 1);
+  QQuickItem* indicator = outer->childItems().at(0);
+  EXPECT_NEAR(indicator->width(), 36.0);
+  EXPECT_NEAR(indicator->height(), 36.0);
+
+  // The props reached the item, not just its geometry.
+  EXPECT(indicator->property("animating").toBool() == true);
+  EXPECT(indicator->property("hidesWhenStopped").toBool() == true);
+  EXPECT(indicator->property("size").toString() == QStringLiteral("large"));
+  EXPECT(indicator->property("color").value<QColor>() == QColor(QStringLiteral("#00aa66")));
+}
+
 /// A JavaScript error reaches the host instead of aborting the process.
 ///
 /// Before ExceptionsManager existed, React reached for it while reporting any
@@ -1219,6 +1302,7 @@ int main(int argc, char** argv) {
       {"scrollEventsReachJavaScript", scrollEventsReachJavaScript},
       {"flatListRendersAndVirtualises", flatListRendersAndVirtualises},
       {"textInputMounts", textInputMounts},
+      {"activityIndicatorMounts", activityIndicatorMounts},
 #endif
 #endif
   };

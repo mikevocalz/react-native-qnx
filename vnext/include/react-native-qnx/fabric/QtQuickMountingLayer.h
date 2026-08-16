@@ -83,6 +83,15 @@ struct TextInputStyle {
   int maxLength{0};
 };
 
+/// The properties of an activity indicator this platform can apply.
+struct ActivityIndicatorStyle {
+  bool animating{true};
+  bool hidesWhenStopped{true};
+  bool hasColor{false};
+  std::uint32_t color{0};
+  QString size;
+};
+
 enum class MountError : std::uint8_t {
   None,
   UnknownComponentType,
@@ -150,6 +159,10 @@ class QtQuickMountingLayer {
   /// `TextInput` surface; a plain Item silently ignores the unknown properties,
   /// so the mapping is what keeps this honest rather than a type check.
   MountError updateTextInput(Tag tag, const TextInputStyle& style);
+
+  /// Applies activity-indicator properties. The QML item exposes `color`,
+  /// `animating`, `hidesWhenStopped`, and `size`.
+  MountError updateActivityIndicator(Tag tag, const ActivityIndicatorStyle& style);
 
   /// Points an image item at a source URI. `file:` and `http(s):` are fetched by
   /// Qt; `data:` URIs are decoded by this platform and served back through its

@@ -11,6 +11,7 @@
 #include <QStringList>
 
 #include <react/renderer/core/LayoutMetrics.h>
+#include <react/renderer/components/FBReactNativeSpec/Props.h>
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
 #include <react/renderer/components/text/ParagraphState.h>
@@ -237,6 +238,32 @@ void ShadowViewMutationAdapter::applyTextInput(const ShadowView& view) {
   layer_.updateTextInput(view.tag, style);
 }
 
+void ShadowViewMutationAdapter::applyActivityIndicator(const ShadowView& view) {
+  if (componentNameOf(view) != QStringLiteral("ActivityIndicatorView")) {
+    return;
+  }
+  const auto* props =
+      dynamic_cast<const facebook::react::ActivityIndicatorViewProps*>(
+          view.props.get());
+  if (props == nullptr) {
+    return;
+  }
+
+  ActivityIndicatorStyle style;
+  style.animating = props->animating;
+  style.hidesWhenStopped = props->hidesWhenStopped;
+  if (facebook::react::isColorMeaningful(props->color)) {
+    style.hasColor = true;
+    style.color = packColor(props->color);
+  }
+  style.size =
+      props->size == facebook::react::ActivityIndicatorViewSize::Large
+          ? QStringLiteral("large")
+          : QStringLiteral("small");
+
+  layer_.updateActivityIndicator(view.tag, style);
+}
+
 void ShadowViewMutationAdapter::connectTextInputEvents(const ShadowView& view) {
   if (textInputConnected_.contains(view.tag)) {
     return;
@@ -372,6 +399,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       applyText(view);
       applyImage(view);
       applyTextInput(view);
+      applyActivityIndicator(view);
       return layer_.updateStyle(view.tag, toViewStyle(view));
     }
 
@@ -413,6 +441,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       applyText(view);
       applyImage(view);
       applyTextInput(view);
+      applyActivityIndicator(view);
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) {
         return styleError;
