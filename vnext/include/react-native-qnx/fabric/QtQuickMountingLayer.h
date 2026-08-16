@@ -185,6 +185,10 @@ class QtQuickMountingLayer {
   /// image provider, because Qt Quick's `Image` does not read them.
   MountError updateImageSource(Tag tag, const QString& uri);
 
+  /// Sets Qt Quick's `Image.fillMode` (Stretch=0, PreserveAspectFit=1,
+  /// PreserveAspectCrop=2) from React Native's `resizeMode`.
+  MountError updateImageFillMode(Tag tag, int fillMode);
+
   /// Recomputes a scrollable item's content size from its mounted children.
   /// Qt's `Flickable` will not scroll past `contentWidth`/`contentHeight`, and
   /// unlike React Native it does not infer them from its children.

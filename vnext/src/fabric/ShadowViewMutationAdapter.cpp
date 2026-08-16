@@ -202,6 +202,29 @@ void ShadowViewMutationAdapter::applyImage(const ShadowView& view) {
   if (!uri.isEmpty()) {
     layer_.updateImageSource(view.tag, uri);
   }
+
+  const auto* props =
+      dynamic_cast<const facebook::react::ImageProps*>(view.props.get());
+  if (props == nullptr) {
+    return;
+  }
+
+  // Map React Native's ImageResizeMode to Qt Quick's Image.fillMode.
+  // Qt Quick values are: Stretch=0, PreserveAspectFit=1, PreserveAspectCrop=2.
+  int fillMode = 0;
+  switch (props->resizeMode) {
+    case facebook::react::ImageResizeMode::Cover:
+      fillMode = 2;
+      break;
+    case facebook::react::ImageResizeMode::Contain:
+      fillMode = 1;
+      break;
+    case facebook::react::ImageResizeMode::Stretch:
+    default:
+      fillMode = 0;
+      break;
+  }
+  layer_.updateImageFillMode(view.tag, fillMode);
 }
 
 void ShadowViewMutationAdapter::applyText(const ShadowView& view) {

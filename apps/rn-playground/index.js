@@ -259,6 +259,7 @@ function ImageApp() {
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
   return React.createElement(Image, {
     style: { width: 32, height: 32 },
+    resizeMode: 'contain',
     source: { uri: source },
     onLoadStart: () => {
       globalThis.__imageLoadStart = (globalThis.__imageLoadStart ?? 0) + 1;

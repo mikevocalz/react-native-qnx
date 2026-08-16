@@ -1172,6 +1172,7 @@ void imageLoadEvents() {
   QQuickItem* image = fixture.root().childItems().at(0);
   EXPECT(image->width() == 32.0);
   EXPECT(image->height() == 32.0);
+  EXPECT(image->property("fillMode").toInt() == 1);
 
   auto& rt = fixture.host().runtime();
   const auto loadStart =
