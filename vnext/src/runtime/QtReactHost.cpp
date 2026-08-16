@@ -11,6 +11,7 @@
 #include <react/renderer/components/image/ImageComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/renderer/components/iostextinput/TextInputComponentDescriptor.h>
+#include <react/renderer/components/switch/iosswitch/react/renderer/components/switch/AppleSwitchComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
@@ -205,6 +206,8 @@ std::vector<std::string> registeredComponentNames() {
       std::string(
           facebook::react::ActivityIndicatorViewComponentDescriptor::
               ConcreteShadowNode::Name()),
+      std::string(facebook::react::SwitchComponentDescriptor::
+                      ConcreteShadowNode::Name()),
   };
 }
 
@@ -260,6 +263,13 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<
             facebook::react::ActivityIndicatorViewComponentDescriptor>());
+    // iOS switch descriptor has no Apple dependency in its shadow node and
+    // props, but its .mm implementation is not built here. A QNX
+    // SwitchShadowNode.cpp provides the component name and a default intrinsic
+    // size.
+    providerRegistry->add(
+        facebook::react::concreteComponentDescriptorProvider<
+            facebook::react::SwitchComponentDescriptor>());
 
     // Without a fallback, an unregistered component name throws
     // std::invalid_argument out of ComponentDescriptorRegistry::at

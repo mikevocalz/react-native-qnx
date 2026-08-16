@@ -311,6 +311,32 @@ MountError QtQuickMountingLayer::updateActivityIndicator(
   return MountError::None;
 }
 
+MountError QtQuickMountingLayer::updateSwitch(
+    Tag tag,
+    const SwitchStyle& style) {
+  const auto mounted = items_.constFind(tag);
+  if (mounted == items_.constEnd()) {
+    return failWith(
+        MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
+  }
+
+  QQuickItem* item = mounted->item;
+  item->setProperty("value", style.value);
+  item->setProperty("disabled", style.disabled);
+  if (style.hasTrackOnColor) {
+    item->setProperty("trackOnColor", QColor::fromRgba(style.trackOnColor));
+  }
+  if (style.hasTrackOffColor) {
+    item->setProperty("trackOffColor", QColor::fromRgba(style.trackOffColor));
+  }
+  if (style.hasThumbColor) {
+    item->setProperty("thumbColor", QColor::fromRgba(style.thumbColor));
+  }
+
+  lastError_.clear();
+  return MountError::None;
+}
+
 MountError QtQuickMountingLayer::updateText(
     Tag tag,
     const TextStyle& style) {

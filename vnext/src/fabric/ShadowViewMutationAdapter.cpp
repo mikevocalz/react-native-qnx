@@ -1,6 +1,7 @@
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 
 #include "react-native-qnx/fabric/QtScrollBridge.h"
+#include "react-native-qnx/fabric/QtSwitchBridge.h"
 
 #include <react/renderer/components/iostextinput/TextInputProps.h>
 #include <react/renderer/components/textinput/TextInputEventEmitter.h>
@@ -11,6 +12,7 @@
 #include <QStringList>
 
 #include <react/renderer/core/LayoutMetrics.h>
+#include <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
 #include <react/renderer/components/FBReactNativeSpec/Props.h>
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
@@ -264,6 +266,75 @@ void ShadowViewMutationAdapter::applyActivityIndicator(const ShadowView& view) {
   layer_.updateActivityIndicator(view.tag, style);
 }
 
+void ShadowViewMutationAdapter::applySwitch(const ShadowView& view) {
+  if (componentNameOf(view) != QStringLiteral("Switch")) {
+    return;
+  }
+  const auto* props =
+      dynamic_cast<const facebook::react::SwitchProps*>(view.props.get());
+  if (props == nullptr) {
+    return;
+  }
+
+  SwitchStyle style;
+  style.value = props->value;
+  style.disabled = props->disabled;
+  if (facebook::react::isColorMeaningful(props->onTintColor)) {
+    style.hasTrackOnColor = true;
+    style.trackOnColor = packColor(props->onTintColor);
+  }
+  if (facebook::react::isColorMeaningful(props->tintColor)) {
+    style.hasTrackOffColor = true;
+    style.trackOffColor = packColor(props->tintColor);
+  }
+  if (facebook::react::isColorMeaningful(props->thumbTintColor)) {
+    style.hasThumbColor = true;
+    style.thumbColor = packColor(props->thumbTintColor);
+  }
+
+  if (auto* bridge = switchBridges_.value(view.tag, nullptr)) {
+    bridge->setExpectedValue(style.value);
+  }
+
+  layer_.updateSwitch(view.tag, style);
+}
+
+void ShadowViewMutationAdapter::connectSwitchEvents(const ShadowView& view) {
+  if (switchBridges_.contains(view.tag)) {
+    return;
+  }
+
+  const auto emitter =
+      std::dynamic_pointer_cast<const facebook::react::SwitchEventEmitter>(
+          view.eventEmitter);
+  if (emitter == nullptr) {
+    return;
+  }
+
+  QQuickItem* item = layer_.itemForTag(view.tag);
+  if (item == nullptr) {
+    return;
+  }
+
+  const auto* props =
+      dynamic_cast<const facebook::react::SwitchProps*>(view.props.get());
+  const bool initialValue = props != nullptr ? props->value : false;
+
+  const auto emitChange = [emitter, viewTag = view.tag](bool value) {
+    facebook::react::SwitchEventEmitter::OnChange event;
+    event.value = value;
+    event.target = static_cast<int>(viewTag);
+    emitter->onChange(event);
+  };
+
+  auto* bridge =
+      new QtSwitchBridge(emitChange, item, initialValue, item);
+  QObject::connect(
+      item, SIGNAL(valueChanged()), bridge, SLOT(notify()));
+
+  switchBridges_.insert(view.tag, bridge);
+}
+
 void ShadowViewMutationAdapter::connectTextInputEvents(const ShadowView& view) {
   if (textInputConnected_.contains(view.tag)) {
     return;
@@ -396,10 +467,12 @@ MountError ShadowViewMutationAdapter::applyOne(
       registerEventEmitter(view);
       connectScrollEvents(view);
       connectTextInputEvents(view);
+      connectSwitchEvents(view);
       applyText(view);
       applyImage(view);
       applyTextInput(view);
       applyActivityIndicator(view);
+      applySwitch(view);
       return layer_.updateStyle(view.tag, toViewStyle(view));
     }
 
@@ -407,6 +480,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (touchDispatcher_ != nullptr) {
         touchDispatcher_->forgetTag(mutation.oldChildShadowView.tag);
       }
+      switchBridges_.remove(mutation.oldChildShadowView.tag);
       return layer_.destroy(mutation.oldChildShadowView.tag);
 
     case ShadowViewMutation::Type::Insert: {
@@ -438,10 +512,12 @@ MountError ShadowViewMutationAdapter::applyOne(
         return layoutError;
       }
       connectTextInputEvents(view);
+      connectSwitchEvents(view);
       applyText(view);
       applyImage(view);
       applyTextInput(view);
       applyActivityIndicator(view);
+      applySwitch(view);
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) {
         return styleError;

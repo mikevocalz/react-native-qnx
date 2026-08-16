@@ -21,6 +21,8 @@ struct MutationFailure {
   QString detail;
 };
 
+class QtSwitchBridge;
+
 /// Translates a React Native mount transaction into QtQuickMountingLayer calls.
 ///
 /// The switch is over facebook::react::ShadowViewMutation::Type
@@ -59,6 +61,7 @@ class ShadowViewMutationAdapter {
   void applyImage(const facebook::react::ShadowView& view);
   void applyTextInput(const facebook::react::ShadowView& view);
   void applyActivityIndicator(const facebook::react::ShadowView& view);
+  void applySwitch(const facebook::react::ShadowView& view);
   void registerEventEmitter(const facebook::react::ShadowView& view);
 
   /// Connects an editable item's text changes to its shadow view's
@@ -68,6 +71,10 @@ class ShadowViewMutationAdapter {
   /// Connects a scrollable item's position changes to its shadow view's
   /// ScrollViewEventEmitter, so `onScroll` reaches JavaScript.
   void connectScrollEvents(const facebook::react::ShadowView& view);
+
+  /// Connects a switch item's value changes to its shadow view's
+  /// SwitchEventEmitter, so `onValueChange` reaches JavaScript.
+  void connectSwitchEvents(const facebook::react::ShadowView& view);
 
   MountError applyOne(
       const facebook::react::ShadowViewMutation& mutation,
@@ -81,6 +88,8 @@ class ShadowViewMutationAdapter {
   QSet<Tag> scrollConnected_;
   /// Tags whose text-change signal is already connected, for the same reason.
   QSet<Tag> textInputConnected_;
+  /// Switch bridges, indexed by tag, so `applySwitch` can pre-arm the guard.
+  QHash<Tag, QtSwitchBridge*> switchBridges_;
 };
 
 /// Converts React Native's view props to the visual style the mounting layer

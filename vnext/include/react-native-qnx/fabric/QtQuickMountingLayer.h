@@ -92,6 +92,18 @@ struct ActivityIndicatorStyle {
   QString size;
 };
 
+/// The properties of a switch this platform can apply.
+struct SwitchStyle {
+  bool value{false};
+  bool disabled{false};
+  bool hasTrackOnColor{false};
+  bool hasTrackOffColor{false};
+  bool hasThumbColor{false};
+  std::uint32_t trackOnColor{0};
+  std::uint32_t trackOffColor{0};
+  std::uint32_t thumbColor{0};
+};
+
 enum class MountError : std::uint8_t {
   None,
   UnknownComponentType,
@@ -163,6 +175,10 @@ class QtQuickMountingLayer {
   /// Applies activity-indicator properties. The QML item exposes `color`,
   /// `animating`, `hidesWhenStopped`, and `size`.
   MountError updateActivityIndicator(Tag tag, const ActivityIndicatorStyle& style);
+
+  /// Applies switch properties. The QML item exposes `value`, `disabled`,
+  /// `onTintColor`, `thumbTintColor`, and `tintColor`.
+  MountError updateSwitch(Tag tag, const SwitchStyle& style);
 
   /// Points an image item at a source URI. `file:` and `http(s):` are fetched by
   /// Qt; `data:` URIs are decoded by this platform and served back through its

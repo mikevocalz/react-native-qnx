@@ -23,6 +23,7 @@ const FlatList = require('react-native/Libraries/Lists/FlatList').default;
 const TextInput = require('react-native/Libraries/Components/TextInput/TextInput').default;
 const ActivityIndicator =
   require('react-native/Libraries/Components/ActivityIndicator/ActivityIndicator').default;
+const Switch = require('react-native/Libraries/Components/Switch/Switch').default;
 
 function PlaygroundApp() {
   return React.createElement(
@@ -207,7 +208,28 @@ function ActivityIndicatorApp() {
   );
 }
 
+function SwitchApp() {
+  const valueState = React.useState(false);
+  const value = valueState[0];
+  const setValue = valueState[1];
+  return React.createElement(
+    View,
+    { style: { width: 200, height: 60 }, collapsable: false },
+    React.createElement(Switch, {
+      value,
+      onValueChange: (newValue) => {
+        globalThis.__switchValueChange = (globalThis.__switchValueChange ?? 0) + 1;
+        globalThis.__switchLastValue = newValue;
+        setValue(newValue);
+      },
+      trackColor: { false: '#767577', true: '#81b0ff' },
+      thumbColor: '#f4f3f4',
+    })
+  );
+}
+
 AppRegistry.registerComponent('RNQnxPlayground', () => PlaygroundApp);
 AppRegistry.registerComponent('RNQnxFlatList', () => FlatListApp);
 AppRegistry.registerComponent('RNQnxTextInput', () => TextInputApp);
 AppRegistry.registerComponent('RNQnxActivityIndicator', () => ActivityIndicatorApp);
+AppRegistry.registerComponent('RNQnxSwitch', () => SwitchApp);

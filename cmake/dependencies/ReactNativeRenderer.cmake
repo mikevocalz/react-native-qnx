@@ -270,6 +270,31 @@ target_link_libraries(rrc_textinput
 )
 target_compile_options(rrc_textinput PRIVATE -w)
 
+# iOS switch descriptor: the .mm sources are Apple-only, so this target uses
+# a QNX SwitchShadowNode.cpp that defines the component name and a default
+# intrinsic size. `SwitchComponentName` is "Switch".
+set(RNQNX_SWITCH_DIR "${REACT_COMMON_DIR}/react/renderer/components/switch")
+set(RNQNX_SWITCH_IOS_DIR
+  "${RNQNX_SWITCH_DIR}/iosswitch/react/renderer/components/switch")
+add_library(rrc_switch OBJECT
+  "${CMAKE_CURRENT_SOURCE_DIR}/vnext/src/fabric/SwitchShadowNode.cpp")
+target_include_directories(rrc_switch SYSTEM PUBLIC
+  "${RNQNX_SWITCH_DIR}"
+  "${RNQNX_SWITCH_IOS_DIR}"
+  "${REACT_COMMON_DIR}"
+)
+target_link_libraries(rrc_switch
+  react_codegen_rncore
+  react_renderer_componentregistry
+  react_renderer_core
+  react_renderer_graphics
+  rrc_view
+  react_utils
+  rnqnx_folly
+  yogacore
+)
+target_compile_options(rrc_switch PRIVATE -w)
+
 # React Native ships two CMakeLists for JSI and they are not equivalent:
 # ReactCommon/jsi/CMakeLists.txt:17 globs `jsi/*.cpp`, so it includes
 # JSIDynamic.cpp, while ReactCommon/jsi/jsi/CMakeLists.txt:9 builds jsi.cpp
@@ -342,6 +367,7 @@ set(RNQNX_REACT_NATIVE_RENDERER_TARGETS
   react_renderer_attributedstring
   rrc_text
   rrc_textinput
+  rrc_switch
   react_renderer_dom
   react_renderer_bridging
   react_renderer_uimanager_consistency

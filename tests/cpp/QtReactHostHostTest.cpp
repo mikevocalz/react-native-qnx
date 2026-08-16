@@ -115,6 +115,39 @@ constexpr const char* kActivityIndicatorSource =
     "    }\n"
     "  }\n"
     "}\n";
+constexpr const char* kSwitchSource =
+    "import QtQuick\n"
+    "Rectangle {\n"
+    "  id: root\n"
+    "  property bool value: false\n"
+    "  property bool disabled: false\n"
+    "  property color trackOnColor: '#4cd964'\n"
+    "  property color trackOffColor: '#ffffff'\n"
+    "  property color thumbColor: '#ffffff'\n"
+    "  visible: true\n"
+    "  Rectangle {\n"
+    "    id: track\n"
+    "    anchors.fill: parent\n"
+    "    radius: parent.height / 2\n"
+    "    color: root.value ? root.trackOnColor : root.trackOffColor\n"
+    "  }\n"
+    "  Rectangle {\n"
+    "    id: thumb\n"
+    "    width: parent.height - 4\n"
+    "    height: width\n"
+    "    radius: width / 2\n"
+    "    color: root.thumbColor\n"
+    "    anchors.verticalCenter: parent.verticalCenter\n"
+    "    x: root.value ? parent.width - width - 2 : 2\n"
+    "  }\n"
+    "  MouseArea {\n"
+    "    anchors.fill: parent\n"
+    "    enabled: !root.disabled\n"
+    "    onClicked: {\n"
+    "      root.value = !root.value;\n"
+    "    }\n"
+    "  }\n"
+    "}\n";
 
 class TestFailure final : public std::runtime_error {
  public:
@@ -205,6 +238,8 @@ class Fixture {
     factory_.registerType(
         QStringLiteral("ActivityIndicatorView"),
         QByteArray(kActivityIndicatorSource));
+    factory_.registerType(
+        QStringLiteral("Switch"), QByteArray(kSwitchSource));
     adapter_.mapComponent(
         QStringLiteral("ScrollView"), QStringLiteral("ScrollView"));
     adapter_.mapComponent(
@@ -212,6 +247,8 @@ class Fixture {
     adapter_.mapComponent(
         QStringLiteral("ActivityIndicatorView"),
         QStringLiteral("ActivityIndicatorView"));
+    adapter_.mapComponent(
+        QStringLiteral("Switch"), QStringLiteral("Switch"));
     adapter_.mapComponent(QStringLiteral("Image"), QStringLiteral("Image"));
     adapter_.mapComponent(QStringLiteral("Paragraph"), QStringLiteral("Text"));
   }
@@ -1000,6 +1037,67 @@ void activityIndicatorMounts() {
   EXPECT(indicator->property("color").value<QColor>() == QColor(QStringLiteral("#00aa66")));
 }
 
+/// The iOS switch descriptor is rendered as a QML switch, responds to a press,
+/// and delivers the new value to JavaScript as `onValueChange`.
+void switchToggles() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxSwitch", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* outer = fixture.root().childItems().at(0);
+  EXPECT(outer->childItems().size() == 1);
+  QQuickItem* switchItem = outer->childItems().at(0);
+  EXPECT(switchItem->property("value").toBool() == false);
+
+  // Toggle the QML property directly. The valueChanged signal reaches the
+  // bridge, which emits the native onChange event, and the JS wrapper turns
+  // that into onValueChange.
+  switchItem->setProperty("value", true);
+
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(switchItem->property("value").toBool() == true);
+
+  auto& rt = fixture.host().runtime();
+  const auto valueChange = rt.global().getProperty(rt, "__switchValueChange");
+  if (!valueChange.isNumber()) {
+    fail(
+        "onValueChange ran in JavaScript",
+        __FILE__,
+        __LINE__,
+        "globalThis.__switchValueChange was never set");
+  }
+  EXPECT(valueChange.getNumber() >= 1.0);
+
+  const auto lastValue = rt.global().getProperty(rt, "__switchLastValue");
+  EXPECT(lastValue.isBool());
+  EXPECT(lastValue.getBool() == true);
+}
+
 /// A JavaScript error reaches the host instead of aborting the process.
 ///
 /// Before ExceptionsManager existed, React reached for it while reporting any
@@ -1303,6 +1401,7 @@ int main(int argc, char** argv) {
       {"flatListRendersAndVirtualises", flatListRendersAndVirtualises},
       {"textInputMounts", textInputMounts},
       {"activityIndicatorMounts", activityIndicatorMounts},
+      {"switchToggles", switchToggles},
 #endif
 #endif
   };

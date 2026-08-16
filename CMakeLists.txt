@@ -283,6 +283,8 @@ else()
           vnext/src/fabric/QtTouchDispatcher.cpp
           vnext/src/fabric/QtScrollBridge.cpp
           vnext/include/react-native-qnx/fabric/QtScrollBridge.h
+          vnext/src/fabric/QtSwitchBridge.cpp
+          vnext/include/react-native-qnx/fabric/QtSwitchBridge.h
         )
         target_link_libraries(rnqnx_fabric_adapter PUBLIC
           rnqnx_react_native_renderer

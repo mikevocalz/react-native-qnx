@@ -80,6 +80,39 @@ constexpr const char* kActivityIndicatorSource =
     "    }\n"
     "  }\n"
     "}\n";
+constexpr const char* kSwitchSource =
+    "import QtQuick\n"
+    "Rectangle {\n"
+    "  id: root\n"
+    "  property bool value: false\n"
+    "  property bool disabled: false\n"
+    "  property color trackOnColor: '#4cd964'\n"
+    "  property color trackOffColor: '#ffffff'\n"
+    "  property color thumbColor: '#ffffff'\n"
+    "  visible: true\n"
+    "  Rectangle {\n"
+    "    id: track\n"
+    "    anchors.fill: parent\n"
+    "    radius: parent.height / 2\n"
+    "    color: root.value ? root.trackOnColor : root.trackOffColor\n"
+    "  }\n"
+    "  Rectangle {\n"
+    "    id: thumb\n"
+    "    width: parent.height - 4\n"
+    "    height: width\n"
+    "    radius: width / 2\n"
+    "    color: root.thumbColor\n"
+    "    anchors.verticalCenter: parent.verticalCenter\n"
+    "    x: root.value ? parent.width - width - 2 : 2\n"
+    "  }\n"
+    "  MouseArea {\n"
+    "    anchors.fill: parent\n"
+    "    enabled: !root.disabled\n"
+    "    onClicked: {\n"
+    "      root.value = !root.value;\n"
+    "    }\n"
+    "  }\n"
+    "}\n";
 constexpr int kWindowWidth = 640;
 constexpr int kWindowHeight = 480;
 
@@ -137,6 +170,8 @@ int main(int argc, char** argv) {
   factory.registerType(
       QStringLiteral("ActivityIndicatorView"),
       QByteArray(kActivityIndicatorSource));
+  factory.registerType(
+      QStringLiteral("Switch"), QByteArray(kSwitchSource));
 
   rnqnx::fabric::QtQuickMountingLayer layer(
       factory, *window.contentItem(), kSurfaceId);
@@ -151,6 +186,8 @@ int main(int argc, char** argv) {
   adapter.mapComponent(
       QStringLiteral("ActivityIndicatorView"),
       QStringLiteral("ActivityIndicatorView"));
+  adapter.mapComponent(
+      QStringLiteral("Switch"), QStringLiteral("Switch"));
 
   rnqnx::runtime::QtReactHost host(adapter);
   host.installTurboModuleBinding();
