@@ -390,6 +390,18 @@ function ImageDefaultApp() {
   });
 }
 
+function ImageGetSizeApp() {
+  const Image = require('react-native/Libraries/Image/Image.ios').default;
+  const source =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
+  Image.getSize(source).then(({ width, height }) => {
+    globalThis.__imageGetSize = { width, height };
+  }).catch((e) => {
+    globalThis.__imageGetSizeError = e.message;
+  });
+  return null;
+}
+
 function SectionListApp() {
   const sections = [
     { title: 'A', data: ['one', 'two'] },
@@ -459,5 +471,6 @@ AppRegistry.registerComponent('RNQnxSafeAreaView', () => SafeAreaViewApp);
 AppRegistry.registerComponent('RNQnxImageBackground', () => ImageBackgroundApp);
 AppRegistry.registerComponent('RNQnxImage', () => ImageApp);
 AppRegistry.registerComponent('RNQnxImageDefault', () => ImageDefaultApp);
+AppRegistry.registerComponent('RNQnxImageGetSize', () => ImageGetSizeApp);
 AppRegistry.registerComponent('RNQnxButton', () => ButtonApp);
 AppRegistry.registerComponent('RNQnxModal', () => ModalApp);

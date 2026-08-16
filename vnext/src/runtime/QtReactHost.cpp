@@ -34,6 +34,7 @@
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/renderer/animated/AnimatedModule.h>
 #include <react/renderer/animated/NativeAnimatedNodesManagerProvider.h>
+#include "react-native-qnx/runtime/QnxImageLoader.h"
 
 #include <folly/dynamic.h>
 
@@ -594,6 +595,10 @@ void QtReactHost::installTurboModuleBinding() {
           return std::make_shared<facebook::react::AnimatedModule>(
               callInvoker,
               std::make_shared<facebook::react::NativeAnimatedNodesManagerProvider>());
+        }
+
+        if (name == rnqnx::runtime::QnxImageLoader::kModuleName) {
+          return std::make_shared<rnqnx::runtime::QnxImageLoader>(callInvoker);
         }
 
         // React Native's own generic C++ modules. Two of the modules this

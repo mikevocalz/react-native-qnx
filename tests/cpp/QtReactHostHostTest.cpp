@@ -1646,6 +1646,43 @@ void imageDefaultSourceFires() {
   EXPECT(uri.isString());
 }
 
+/// `Image.getSize` resolves through the `ImageLoader` TurboModule.
+void imageGetSize() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxImageGetSize", 640.0F, 480.0F);
+  for (int i = 0; i < 30; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+
+  auto& rt = fixture.host().runtime();
+  const auto result = rt.global().getProperty(rt, "__imageGetSize");
+  EXPECT(result.isObject());
+  const auto obj = result.getObject(rt);
+  EXPECT(obj.getProperty(rt, "width").asNumber() == 1.0);
+  EXPECT(obj.getProperty(rt, "height").asNumber() == 1.0);
+
+  const auto error = rt.global().getProperty(rt, "__imageGetSizeError");
+  EXPECT(error.isUndefined());
+}
+
 /// `ImageBackground` mounts as a View with an Image and a child Text.
 void imageBackgroundMounts() {
   Fixture fixture;
@@ -2029,6 +2066,7 @@ int main(int argc, char** argv) {
       {"viewTransformApplies", viewTransformApplies},
       {"imageLoadEvents", imageLoadEvents},
       {"imageDefaultSourceFires", imageDefaultSourceFires},
+      {"imageGetSize", imageGetSize},
       {"imageBackgroundMounts", imageBackgroundMounts},
       {"modalMounts", modalMounts},
 #endif
