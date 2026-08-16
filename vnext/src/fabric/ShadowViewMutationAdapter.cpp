@@ -11,6 +11,7 @@
 #include <QMetaMethod>
 #include <QQuickItem>
 #include <QStringList>
+#include <QtMath>
 
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
@@ -19,6 +20,7 @@
 #include <react/renderer/components/scrollview/BaseScrollViewProps.h>
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
+#include <react/renderer/components/view/ViewEventEmitter.h>
 #include <react/renderer/components/text/BaseParagraphProps.h>
 #include <react/renderer/components/text/ParagraphState.h>
 #include <react/renderer/components/view/ViewProps.h>
@@ -75,21 +77,6 @@ QString fragmentStyleAttribute(const facebook::react::TextAttributes& attributes
     parts << QStringLiteral("font-style:italic");
   }
   return parts.join(QLatin1Char(';'));
-}
-
-/// The first image source's URI, or empty when the view is not an Image.
-///
-/// React Native's ImageProps carries a list so a platform can pick by scale or
-/// size (`components/image/ImageProps.h:28`). This takes the first: Qt Quick's
-/// Image loads one URL and does its own scaling, and choosing among candidates
-/// needs the display metrics work that is not done yet.
-QString imageSourceUri(const ShadowView& view) {
-  const auto* props =
-      dynamic_cast<const facebook::react::ImageProps*>(view.props.get());
-  if (props == nullptr || props->sources.empty()) {
-    return {};
-  }
-  return QString::fromStdString(props->sources.front().uri);
 }
 
 TextStyle paragraphTextStyle(const ShadowView& view) {
@@ -196,6 +183,24 @@ ViewStyle toViewStyle(const ShadowView& view) {
     style.borderColor = packColor(border.borderColors.left);
   }
 
+  for (const auto& op : viewProps->transform.operations) {
+    switch (op.type) {
+      case facebook::react::TransformOperationType::Translate:
+        style.translateX += static_cast<float>(op.x.value);
+        style.translateY += static_cast<float>(op.y.value);
+        break;
+      case facebook::react::TransformOperationType::Scale:
+        style.scale *= static_cast<float>(op.x.value);
+        break;
+      case facebook::react::TransformOperationType::Rotate:
+        style.rotation +=
+            static_cast<float>(qRadiansToDegrees(op.z.value));
+        break;
+      default:
+        break;
+    }
+  }
+
   return style;
 }
 
@@ -223,15 +228,20 @@ void ShadowViewMutationAdapter::mapComponent(
 }
 
 void ShadowViewMutationAdapter::applyImage(const ShadowView& view) {
-  const QString uri = imageSourceUri(view);
-  if (!uri.isEmpty()) {
-    layer_.updateImageSource(view.tag, uri);
-  }
-
   const auto* props =
       dynamic_cast<const facebook::react::ImageProps*>(view.props.get());
   if (props == nullptr) {
     return;
+  }
+
+  QString uri;
+  if (!props->sources.empty()) {
+    uri = QString::fromStdString(props->sources.front().uri);
+  } else if (!props->defaultSource.uri.empty()) {
+    uri = QString::fromStdString(props->defaultSource.uri);
+  }
+  if (!uri.isEmpty()) {
+    layer_.updateImageSource(view.tag, uri);
   }
 
   // Map React Native's ImageResizeMode to Qt Quick's Image.fillMode.
@@ -285,6 +295,14 @@ void ShadowViewMutationAdapter::applyTextInput(const ShadowView& view) {
   if (attributes.foregroundColor) {
     style.hasColor = true;
     style.color = static_cast<std::uint32_t>(*attributes.foregroundColor);
+  }
+
+  style.placeholder = QString::fromStdString(props->placeholder);
+  style.multiline = props->multiline;
+  if (facebook::react::isColorMeaningful(props->placeholderTextColor)) {
+    style.hasPlaceholderTextColor = true;
+    style.placeholderTextColor =
+        static_cast<std::uint32_t>(*props->placeholderTextColor);
   }
 
   layer_.updateTextInput(view.tag, style);
@@ -426,6 +444,24 @@ void ShadowViewMutationAdapter::connectImageEvents(const ShadowView& view) {
   imageBridges_.insert(view.tag, bridge);
 }
 
+namespace {
+facebook::react::TextInputEventEmitter::Metrics makeTextInputMetrics(
+    QQuickItem* item,
+    facebook::react::Tag tag,
+    int eventCount) {
+  facebook::react::TextInputEventEmitter::Metrics metrics{};
+  metrics.text = item->property("text").toString().toStdString();
+  metrics.target = tag;
+  metrics.eventCount = eventCount;
+  metrics.containerSize = {
+      .width = static_cast<facebook::react::Float>(item->width()),
+      .height = static_cast<facebook::react::Float>(item->height())};
+  metrics.layoutMeasurement = metrics.containerSize;
+  metrics.zoomScale = 1.0F;
+  return metrics;
+}
+}  // namespace
+
 void ShadowViewMutationAdapter::connectTextInputEvents(const ShadowView& view) {
   if (textInputConnected_.contains(view.tag)) {
     return;
@@ -438,7 +474,8 @@ void ShadowViewMutationAdapter::connectTextInputEvents(const ShadowView& view) {
     return;
   }
 
-  QQuickItem* item = layer_.itemForTag(view.tag);
+  const facebook::react::Tag tag = view.tag;
+  QQuickItem* item = layer_.itemForTag(tag);
   // A plain Item has no `text` property, so this also rejects a TextInput
   // component mapped onto a QML type that cannot edit.
   if (item == nullptr || !item->property("text").isValid()) {
@@ -448,22 +485,63 @@ void ShadowViewMutationAdapter::connectTextInputEvents(const ShadowView& view) {
   // eventCount is React Native's ordering token: JavaScript compares it against
   // the count it last sent so it can drop an update that crossed a keystroke in
   // flight. It has to increase per emission, so it is owned here.
-  auto eventCount = std::make_shared<int>(0);
-  const auto emitChange = [emitter, item, eventCount]() {
-    facebook::react::TextInputEventEmitter::Metrics metrics{};
-    metrics.text = item->property("text").toString().toStdString();
-    metrics.eventCount = ++(*eventCount);
-    metrics.containerSize = {
-        .width = static_cast<facebook::react::Float>(item->width()),
-        .height = static_cast<facebook::react::Float>(item->height())};
-    metrics.layoutMeasurement = metrics.containerSize;
-    metrics.zoomScale = 1.0F;
+  auto changeCount = std::make_shared<int>(0);
+  const auto emitChange = [emitter, item, tag, changeCount]() {
+    auto metrics = makeTextInputMetrics(item, tag, ++(*changeCount));
     emitter->onChange(metrics);
   };
 
+  auto focusCount = std::make_shared<int>(0);
+
+  auto keyCount = std::make_shared<int>(0);
+  const auto emitKeyPress = [emitter, item, keyCount]() {
+    facebook::react::TextInputEventEmitter::KeyPressMetrics metrics{};
+    metrics.text = item->property("lastKeyText").toString().toStdString();
+    metrics.eventCount = ++(*keyCount);
+    emitter->onKeyPress(metrics);
+  };
+
+  auto submitCount = std::make_shared<int>(0);
+  const auto emitSubmit = [emitter, item, tag, submitCount]() {
+    auto metrics = makeTextInputMetrics(item, tag, ++(*submitCount));
+    emitter->onSubmitEditing(metrics);
+  };
+
+  auto selectionCount = std::make_shared<int>(0);
+  const auto emitSelection = [emitter, item, tag, selectionCount]() {
+    auto metrics = makeTextInputMetrics(item, tag, ++(*selectionCount));
+    const int start = item->property("selectionStart").toInt();
+    const int end = item->property("selectionEnd").toInt();
+    metrics.selectionRange = {
+        .location = start,
+        .length = end - start,
+    };
+    emitter->onSelectionChange(metrics);
+  };
+
   // The bridge is parented to the item, so it dies with it.
-  auto* bridge = new QtScrollBridge(emitChange, item);
-  QObject::connect(item, SIGNAL(textChanged()), bridge, SLOT(notify()));
+  auto* changeBridge = new QtScrollBridge(emitChange, item);
+  QObject::connect(item, SIGNAL(textChanged()), changeBridge, SLOT(notify()));
+
+  QObject::connect(
+      item, &QQuickItem::activeFocusChanged, [emitter, item, tag, focusCount](bool) {
+        auto metrics = makeTextInputMetrics(item, tag, ++(*focusCount));
+        if (item->hasActiveFocus()) {
+          emitter->onFocus(metrics);
+        } else {
+          emitter->onBlur(metrics);
+        }
+      });
+
+  auto* keyBridge = new QtScrollBridge(emitKeyPress, item);
+  QObject::connect(item, SIGNAL(keyPressed()), keyBridge, SLOT(notify()));
+
+  auto* submitBridge = new QtScrollBridge(emitSubmit, item);
+  QObject::connect(item, SIGNAL(submitEditing()), submitBridge, SLOT(notify()));
+
+  auto* selectionBridge = new QtScrollBridge(emitSelection, item);
+  QObject::connect(
+      item, SIGNAL(selectionChanged()), selectionBridge, SLOT(notify()));
 
   textInputConnected_.insert(view.tag);
 }
@@ -488,7 +566,7 @@ void ShadowViewMutationAdapter::connectScrollEvents(const ShadowView& view) {
 
   // Qt emits contentXChanged/contentYChanged as the Flickable moves. The item
   // is the connection context, so the handler dies with it.
-  const auto emitScroll = [emitter, item]() {
+  const auto makeScrollEvent = [item]() {
     facebook::react::ScrollEvent event;
     event.contentOffset = {
         .x = static_cast<facebook::react::Float>(
@@ -504,13 +582,58 @@ void ShadowViewMutationAdapter::connectScrollEvents(const ShadowView& view) {
         .width = static_cast<facebook::react::Float>(item->width()),
         .height = static_cast<facebook::react::Float>(item->height())};
     event.zoomScale = 1.0F;
-    emitter->onScroll(event);
+    return event;
+  };
+
+  const auto emitScroll = [emitter, makeScrollEvent]() {
+    emitter->onScroll(makeScrollEvent());
+  };
+
+  const auto emitScrollBeginDrag = [emitter, makeScrollEvent]() {
+    emitter->onScrollBeginDrag(makeScrollEvent());
+  };
+
+  const auto emitMomentumScrollBegin = [emitter, makeScrollEvent]() {
+    emitter->onMomentumScrollBegin(makeScrollEvent());
+  };
+
+  const auto emitMomentumScrollEnd = [emitter, makeScrollEvent]() {
+    emitter->onMomentumScrollEnd(makeScrollEvent());
+  };
+
+  const auto emitScrollEndDrag = [emitter, item, makeScrollEvent]() {
+    facebook::react::ScrollEndDragEvent event{makeScrollEvent()};
+    event.velocity = {
+        .x = static_cast<facebook::react::Float>(
+            item->property("horizontalVelocity").toDouble()),
+        .y = static_cast<facebook::react::Float>(
+            item->property("verticalVelocity").toDouble())};
+    event.targetContentOffset = event.contentOffset;
+    emitter->onScrollEndDrag(event);
   };
 
   // The bridge is parented to the item, so it dies with it.
-  auto* bridge = new QtScrollBridge(emitScroll, item);
-  QObject::connect(item, SIGNAL(contentXChanged()), bridge, SLOT(notify()));
-  QObject::connect(item, SIGNAL(contentYChanged()), bridge, SLOT(notify()));
+  auto* scrollBridge = new QtScrollBridge(emitScroll, item);
+  QObject::connect(
+      item, SIGNAL(contentXChanged()), scrollBridge, SLOT(notify()));
+  QObject::connect(
+      item, SIGNAL(contentYChanged()), scrollBridge, SLOT(notify()));
+
+  auto* beginDragBridge = new QtScrollBridge(emitScrollBeginDrag, item);
+  QObject::connect(
+      item, SIGNAL(dragStarted()), beginDragBridge, SLOT(notify()));
+
+  auto* endDragBridge = new QtScrollBridge(emitScrollEndDrag, item);
+  QObject::connect(item, SIGNAL(dragEnded()), endDragBridge, SLOT(notify()));
+
+  auto* momentumBeginBridge =
+      new QtScrollBridge(emitMomentumScrollBegin, item);
+  QObject::connect(
+      item, SIGNAL(flickStarted()), momentumBeginBridge, SLOT(notify()));
+
+  auto* momentumEndBridge = new QtScrollBridge(emitMomentumScrollEnd, item);
+  QObject::connect(
+      item, SIGNAL(flickEnded()), momentumEndBridge, SLOT(notify()));
 
   scrollConnected_.insert(view.tag);
 }
@@ -554,6 +677,11 @@ MountError ShadowViewMutationAdapter::applyOne(
           layer_.updateLayout(view.tag, toLayoutFrame(view.layoutMetrics));
       if (layoutError != MountError::None) {
         return layoutError;
+      }
+      if (auto viewEmitter =
+              std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(
+                  view.eventEmitter)) {
+        viewEmitter->onLayout(view.layoutMetrics);
       }
       registerEventEmitter(view);
       connectScrollEvents(view);
@@ -603,6 +731,11 @@ MountError ShadowViewMutationAdapter::applyOne(
           layer_.updateLayout(view.tag, toLayoutFrame(view.layoutMetrics));
       if (layoutError != MountError::None) {
         return layoutError;
+      }
+      if (auto viewEmitter =
+              std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(
+                  view.eventEmitter)) {
+        viewEmitter->onLayout(view.layoutMetrics);
       }
       connectTextInputEvents(view);
       connectSwitchEvents(view);
@@ -672,6 +805,30 @@ MutationFailure ShadowViewMutationAdapter::dispatchCommand(
     const double x = args[0].asDouble();
     const double y = args[1].asDouble();
     const MountError error = layer_.scrollTo(tag, x, y, false);
+    if (error != MountError::None) {
+      return MutationFailure{
+          .type = ShadowViewMutation::Type::Update,
+          .tag = tag,
+          .error = error,
+          .detail = layer_.lastError()};
+    }
+    return MutationFailure{};
+  }
+
+  if (commandName == "focus") {
+    const MountError error = layer_.focusTextInput(tag);
+    if (error != MountError::None) {
+      return MutationFailure{
+          .type = ShadowViewMutation::Type::Update,
+          .tag = tag,
+          .error = error,
+          .detail = layer_.lastError()};
+    }
+    return MutationFailure{};
+  }
+
+  if (commandName == "blur") {
+    const MountError error = layer_.blurTextInput(tag);
     if (error != MountError::None) {
       return MutationFailure{
           .type = ShadowViewMutation::Type::Update,

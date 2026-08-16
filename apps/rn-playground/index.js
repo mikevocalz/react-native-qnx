@@ -17,6 +17,7 @@ const ImageBackground = require('react-native/Libraries/Image/ImageBackground').
 const ScrollView = require('react-native/Libraries/Components/ScrollView/ScrollView').default;
 const Pressable = require('react-native/Libraries/Components/Pressable/Pressable').default;
 const FlatList = require('react-native/Libraries/Lists/FlatList').default;
+const SectionList = require('react-native/Libraries/Lists/SectionList').default;
 // React Native's TextInput.js branches on Platform.OS and has no third
 // branch, so on qnx it renders nothing. This uses the QNX platform override
 // that translates the public `value`/`defaultValue`/`onChangeText` surface to
@@ -26,6 +27,7 @@ const ActivityIndicator =
   require('react-native/Libraries/Components/ActivityIndicator/ActivityIndicator').default;
 const Switch = require('react-native/Libraries/Components/Switch/Switch').default;
 const SafeAreaView = require('react-native/Libraries/Components/SafeAreaView/SafeAreaView').default;
+const Button = require('react-native/Libraries/Components/Button').default;
 const Modal = require('react-native/Libraries/Modal/Modal').default;
 
 function PlaygroundApp() {
@@ -115,6 +117,18 @@ function PlaygroundApp() {
           globalThis.__lastScrollY = event.nativeEvent.contentOffset.y;
           globalThis.__lastScrollContentHeight = event.nativeEvent.contentSize.height;
         },
+        onScrollBeginDrag: () => {
+          globalThis.__scrollBeginDrag = (globalThis.__scrollBeginDrag ?? 0) + 1;
+        },
+        onScrollEndDrag: () => {
+          globalThis.__scrollEndDrag = (globalThis.__scrollEndDrag ?? 0) + 1;
+        },
+        onMomentumScrollBegin: () => {
+          globalThis.__momentumScrollBegin = (globalThis.__momentumScrollBegin ?? 0) + 1;
+        },
+        onMomentumScrollEnd: () => {
+          globalThis.__momentumScrollEnd = (globalThis.__momentumScrollEnd ?? 0) + 1;
+        },
         scrollEventThrottle: 16,
       },
       React.createElement(View, {
@@ -196,6 +210,24 @@ function TextEllipsisApp() {
   );
 }
 
+function TextInputMultilineApp() {
+  return React.createElement(
+    View,
+    { style: { width: 200, height: 80 }, collapsable: false },
+    React.createElement(TextInput, {
+      style: { width: 200, height: 80, fontSize: 16 },
+      collapsable: false,
+      multiline: true,
+      defaultValue: 'line one',
+      placeholder: 'type multiple lines',
+      placeholderTextColor: '#ff0000',
+      onChangeText: (text) => {
+        globalThis.__multilineText = text;
+      },
+    })
+  );
+}
+
 function TextInputApp() {
   return React.createElement(
     View,
@@ -205,6 +237,14 @@ function TextInputApp() {
       collapsable: false,
       defaultValue: 'typed',
       placeholder: 'enter text',
+      onFocus: (event) => {
+        globalThis.__inputFocus = (globalThis.__inputFocus ?? 0) + 1;
+        globalThis.__inputFocusText = event.nativeEvent.text;
+      },
+      onBlur: (event) => {
+        globalThis.__inputBlur = (globalThis.__inputBlur ?? 0) + 1;
+        globalThis.__inputBlurText = event.nativeEvent.text;
+      },
       onChange: (event) => {
         globalThis.__inputChanges = (globalThis.__inputChanges ?? 0) + 1;
         globalThis.__inputText = event.nativeEvent.text;
@@ -212,6 +252,17 @@ function TextInputApp() {
       onChangeText: (text) => {
         globalThis.__inputChangeText = (globalThis.__inputChangeText ?? 0) + 1;
         globalThis.__inputTextFromChangeText = text;
+      },
+      onKeyPress: (event) => {
+        globalThis.__inputKeyPress = (globalThis.__inputKeyPress ?? 0) + 1;
+        globalThis.__inputLastKey = event.nativeEvent.key;
+      },
+      onSubmitEditing: (event) => {
+        globalThis.__inputSubmit = (globalThis.__inputSubmit ?? 0) + 1;
+        globalThis.__inputSubmitText = event.nativeEvent.text;
+      },
+      onSelectionChange: (event) => {
+        globalThis.__inputSelection = event.nativeEvent.selection;
       },
     })
   );
@@ -289,6 +340,85 @@ function ImageBackgroundApp() {
   );
 }
 
+function TransformApp() {
+  return React.createElement(
+    View,
+    {
+      style: {
+        width: 100,
+        height: 50,
+        left: 50,
+        top: 60,
+        backgroundColor: '#0000ff',
+        transform: [
+          { translateX: 20 },
+          { translateY: 10 },
+          { rotate: '45deg' },
+          { scale: 1.5 },
+        ],
+      },
+      collapsable: false,
+    }
+  );
+}
+
+function ViewLayoutApp() {
+  return React.createElement(
+    View,
+    {
+      style: { width: 120, height: 60, backgroundColor: '#00ff00' },
+      collapsable: false,
+      onLayout: (event) => {
+        globalThis.__viewLayout = event.nativeEvent.layout;
+      },
+    },
+    React.createElement(View, { style: { width: 20, height: 20 } })
+  );
+}
+
+function ImageDefaultApp() {
+  const fallback =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
+  return React.createElement(Image, {
+    style: { width: 32, height: 32 },
+    resizeMode: 'contain',
+    defaultSource: { uri: fallback },
+    onLoad: (event) => {
+      globalThis.__imageDefaultLoad = (globalThis.__imageDefaultLoad ?? 0) + 1;
+      globalThis.__imageDefaultUri = event.nativeEvent.source.uri;
+    },
+  });
+}
+
+function SectionListApp() {
+  const sections = [
+    { title: 'A', data: ['one', 'two'] },
+    { title: 'B', data: ['three'] },
+  ];
+  return React.createElement(SectionList, {
+    style: { width: 200, height: 120 },
+    collapsable: false,
+    sections,
+    keyExtractor: (item) => item,
+    renderSectionHeader: ({ section }) =>
+      React.createElement(Text, { style: { fontSize: 18 } }, section.title),
+    renderItem: ({ item }) =>
+      React.createElement(Text, { style: { fontSize: 14 } }, item),
+    onViewableItemsChanged: ({ viewableItems }) => {
+      globalThis.__sectionListViewable = viewableItems.length;
+    },
+  });
+}
+
+function ButtonApp() {
+  return React.createElement(Button, {
+    title: 'OK',
+    onPress: () => {
+      globalThis.__buttonPress = (globalThis.__buttonPress ?? 0) + 1;
+    },
+  });
+}
+
 function ImageApp() {
   const source =
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
@@ -313,12 +443,21 @@ function ImageApp() {
 }
 
 AppRegistry.registerComponent('RNQnxPlayground', () => PlaygroundApp);
+AppRegistry.registerComponent('RNQnxViewLayout', () => ViewLayoutApp);
+AppRegistry.registerComponent('RNQnxTransform', () => TransformApp);
 AppRegistry.registerComponent('RNQnxFlatList', () => FlatListApp);
+AppRegistry.registerComponent('RNQnxSectionList', () => SectionListApp);
 AppRegistry.registerComponent('RNQnxTextEllipsis', () => TextEllipsisApp);
 AppRegistry.registerComponent('RNQnxTextInput', () => TextInputApp);
+AppRegistry.registerComponent(
+  'RNQnxTextInputMultiline',
+  () => TextInputMultilineApp
+);
 AppRegistry.registerComponent('RNQnxActivityIndicator', () => ActivityIndicatorApp);
 AppRegistry.registerComponent('RNQnxSwitch', () => SwitchApp);
 AppRegistry.registerComponent('RNQnxSafeAreaView', () => SafeAreaViewApp);
 AppRegistry.registerComponent('RNQnxImageBackground', () => ImageBackgroundApp);
 AppRegistry.registerComponent('RNQnxImage', () => ImageApp);
+AppRegistry.registerComponent('RNQnxImageDefault', () => ImageDefaultApp);
+AppRegistry.registerComponent('RNQnxButton', () => ButtonApp);
 AppRegistry.registerComponent('RNQnxModal', () => ModalApp);

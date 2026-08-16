@@ -50,6 +50,10 @@ struct ViewStyle {
   float borderWidth{0.0F};
   bool hasBorderColor{false};
   std::uint32_t borderColor{0};
+  float translateX{0.0F};
+  float translateY{0.0F};
+  float scale{1.0F};
+  float rotation{0.0F};
 };
 
 /// The text attributes this platform carries onto a text item. Mirrored from
@@ -82,9 +86,13 @@ struct TextInputStyle {
   float fontSize{0.0F};
   bool hasColor{false};
   std::uint32_t color{0};
+  bool hasPlaceholderTextColor{false};
+  std::uint32_t placeholderTextColor{0};
   bool readOnly{false};
   bool secure{false};
+  bool multiline{false};
   int maxLength{0};
+  QString placeholder;
 };
 
 /// The properties of an activity indicator this platform can apply.
@@ -175,6 +183,12 @@ class QtQuickMountingLayer {
   /// `TextInput` surface; a plain Item silently ignores the unknown properties,
   /// so the mapping is what keeps this honest rather than a type check.
   MountError updateTextInput(Tag tag, const TextInputStyle& style);
+
+  /// Gives a mounted text field active focus.
+  MountError focusTextInput(Tag tag);
+
+  /// Removes active focus from a mounted text field.
+  MountError blurTextInput(Tag tag);
 
   /// Applies activity-indicator properties. The QML item exposes `color`,
   /// `animating`, `hidesWhenStopped`, and `size`.

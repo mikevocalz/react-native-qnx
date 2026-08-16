@@ -246,6 +246,17 @@ MountError QtQuickMountingLayer::updateStyle(Tag tag, const ViewStyle& style) {
     }
   }
 
+  // Apply the simple 2D transform operations. The base position is stored by
+  // updateLayout so that translate can be applied on top of the layout frame.
+  const auto baseX =
+      item->property("layoutX").value<qreal>();
+  const auto baseY =
+      item->property("layoutY").value<qreal>();
+  item->setX(baseX + static_cast<qreal>(style.translateX));
+  item->setY(baseY + static_cast<qreal>(style.translateY));
+  item->setScale(static_cast<qreal>(style.scale));
+  item->setRotation(static_cast<qreal>(style.rotation));
+
   lastError_.clear();
   return MountError::None;
 }
@@ -261,12 +272,12 @@ MountError QtQuickMountingLayer::updateTextInput(
 
   QQuickItem* item = mounted->item;
 
-  // Setting `text` unconditionally would fight the user: every keystroke
-  // produces a props update carrying the text React last knew about, and
-  // writing it back moves the cursor. Only a genuine difference is applied,
-  // which is the same rule React Native's own platforms follow.
-  if (item->property("text").toString() != style.text) {
-    item->setProperty("text", style.text);
+  // The editable control is inside a wrapper; set text on the actual
+  // TextInput/TextEdit so the cursor and user input are not reset.
+  QQuickItem* textField = item->findChild<QQuickItem*>(
+      style.multiline ? "qnx-text-edit" : "qnx-text-input");
+  if (textField && textField->property("text").toString() != style.text) {
+    textField->setProperty("text", style.text);
   }
 
   if (style.fontSize > 0.0F) {
@@ -285,7 +296,37 @@ MountError QtQuickMountingLayer::updateTextInput(
   if (style.maxLength > 0) {
     item->setProperty("maximumLength", style.maxLength);
   }
+  item->setProperty("multiline", style.multiline);
+  if (!style.placeholder.isEmpty()) {
+    item->setProperty("placeholderText", style.placeholder);
+  }
+  if (style.hasPlaceholderTextColor) {
+    item->setProperty(
+        "placeholderTextColor", QColor::fromRgba(style.placeholderTextColor));
+  }
 
+  lastError_.clear();
+  return MountError::None;
+}
+
+MountError QtQuickMountingLayer::focusTextInput(Tag tag) {
+  const auto mounted = items_.constFind(tag);
+  if (mounted == items_.constEnd()) {
+    return failWith(
+        MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
+  }
+  mounted->item->forceActiveFocus();
+  lastError_.clear();
+  return MountError::None;
+}
+
+MountError QtQuickMountingLayer::blurTextInput(Tag tag) {
+  const auto mounted = items_.constFind(tag);
+  if (mounted == items_.constEnd()) {
+    return failWith(
+        MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
+  }
+  mounted->item->setFocus(false);
   lastError_.clear();
   return MountError::None;
 }
@@ -490,6 +531,8 @@ MountError QtQuickMountingLayer::updateLayout(
   }
 
   QQuickItem* item = mounted->item;
+  item->setProperty("layoutX", static_cast<qreal>(frame.x));
+  item->setProperty("layoutY", static_cast<qreal>(frame.y));
   item->setX(static_cast<qreal>(frame.x));
   item->setY(static_cast<qreal>(frame.y));
   item->setWidth(static_cast<qreal>(frame.width));

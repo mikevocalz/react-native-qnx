@@ -80,10 +80,105 @@ constexpr const char* kImageSource =
 // viewport, which is what a React Native ScrollView does.
 constexpr const char* kScrollViewSource =
     "import QtQuick\nFlickable { visible: true; clip: true }\n";
-// Qt Quick's TextInput is the editable single-line item. `visible` matches the
-// other types; everything else is set from props at mount time.
-constexpr const char* kTextInputSource =
-    "import QtQuick\nTextInput { visible: true }\n";
+// React Native's TextInput renders behind a single-line QML `TextInput` or a
+// multi-line `TextEdit`, both hosted in an `Item` that provides a `text`
+// property, `textChanged` signal, and an overlaid placeholder `Text`.
+constexpr const char* kTextInputSource = R"TEXTINPUT(import QtQuick
+FocusScope {
+  id: root
+  visible: true
+  clip: false
+
+  property string text: ""
+  property string placeholderText: ""
+  property color placeholderTextColor: "#999999"
+  property bool readOnly: false
+  property bool multiline: false
+  property int echoMode: TextInput.Normal
+  property int maximumLength: 0
+  property font font
+  property color color
+
+  signal submitEditing()
+  signal keyPressed()
+  signal selectionChanged()
+  property string lastKeyText: ""
+  property int selectionStart: 0
+  property int selectionEnd: 0
+
+  function mapKeyText(event) {
+    if (event.key === Qt.Key_Backspace) return "";
+    if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) return "\n";
+    if (event.key === Qt.Key_Tab) return "\t";
+    if (event.key === Qt.Key_Escape) return "\x1B";
+    return event.text;
+  }
+
+  TextInput {
+    id: input
+    objectName: "qnx-text-input"
+    anchors.fill: parent
+    visible: !root.multiline
+    focus: !root.multiline
+    readOnly: root.readOnly
+    echoMode: root.echoMode
+    maximumLength: root.maximumLength > 0 ? root.maximumLength : 32767
+    font: root.font
+    color: root.color
+    onTextChanged: {
+      if (root.text !== input.text) {
+        root.text = input.text;
+      }
+    }
+    onAccepted: { root.submitEditing(); }
+    onCursorPositionChanged: {
+      root.selectionStart = input.selectionStart;
+      root.selectionEnd = input.selectionEnd;
+      root.selectionChanged();
+    }
+    Keys.onPressed: {
+      root.lastKeyText = root.mapKeyText(event);
+      root.keyPressed();
+    }
+  }
+
+  TextEdit {
+    id: edit
+    objectName: "qnx-text-edit"
+    anchors.fill: parent
+    visible: root.multiline
+    focus: root.multiline
+    readOnly: root.readOnly
+    font: root.font
+    color: root.color
+    wrapMode: TextEdit.WordWrap
+    onTextChanged: {
+      if (root.text !== edit.text) {
+        root.text = edit.text;
+      }
+    }
+    onCursorPositionChanged: {
+      root.selectionStart = edit.selectionStart;
+      root.selectionEnd = edit.selectionEnd;
+      root.selectionChanged();
+    }
+    Keys.onPressed: {
+      root.lastKeyText = root.mapKeyText(event);
+      root.keyPressed();
+    }
+  }
+
+  Text {
+    id: placeholder
+    anchors.fill: parent
+    text: root.placeholderText
+    color: root.placeholderTextColor
+    font: root.font
+    visible: root.text === "" && root.placeholderText !== ""
+    z: -1
+  }
+}
+)TEXTINPUT";
 constexpr const char* kActivityIndicatorSource =
     "import QtQuick\n"
     "Item {\n"
@@ -749,6 +844,43 @@ void scrollEventsReachJavaScript() {
       runtime.global().getProperty(runtime, "__lastScrollContentHeight");
   EXPECT(contentHeight.isNumber());
   EXPECT_NEAR(contentHeight.getNumber(), 300.0);
+
+  // The momentum and drag events are also wired through the Flickable's
+  // signals. Directly invoking those signals proves the event path without
+  // needing real input events in the host test.
+  QMetaObject::invokeMethod(
+      scroll, "dragStarted", Qt::DirectConnection);
+  QMetaObject::invokeMethod(
+      scroll, "dragEnded", Qt::DirectConnection);
+  QMetaObject::invokeMethod(
+      scroll, "flickStarted", Qt::DirectConnection);
+  QMetaObject::invokeMethod(
+      scroll, "flickEnded", Qt::DirectConnection);
+
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  const auto beginDrag =
+      runtime.global().getProperty(runtime, "__scrollBeginDrag");
+  EXPECT(beginDrag.isNumber());
+  EXPECT(beginDrag.getNumber() >= 1.0);
+
+  const auto endDrag =
+      runtime.global().getProperty(runtime, "__scrollEndDrag");
+  EXPECT(endDrag.isNumber());
+  EXPECT(endDrag.getNumber() >= 1.0);
+
+  const auto momentumBegin =
+      runtime.global().getProperty(runtime, "__momentumScrollBegin");
+  EXPECT(momentumBegin.isNumber());
+  EXPECT(momentumBegin.getNumber() >= 1.0);
+
+  const auto momentumEnd =
+      runtime.global().getProperty(runtime, "__momentumScrollEnd");
+  EXPECT(momentumEnd.isNumber());
+  EXPECT(momentumEnd.getNumber() >= 1.0);
 }
 
 /// FlatList renders and virtualises on this platform.
@@ -915,6 +1047,47 @@ void flatListRendersAndVirtualises() {
   }
 }
 
+/// SectionList is upstream JavaScript over VirtualizedList, so it should
+/// render if VirtualizedList, ScrollView, View, and Text all work.
+void sectionListRenders() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxSectionList", 640.0F, 480.0F);
+  for (int i = 0; i < 40; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  auto& rt = fixture.host().runtime();
+  const auto viewable =
+      rt.global().getProperty(rt, "__sectionListViewable");
+  if (!viewable.isNumber()) {
+    fail(
+        "SectionList did not report viewable items",
+        __FILE__,
+        __LINE__,
+        "globalThis.__sectionListViewable was never set");
+  }
+  EXPECT(viewable.getNumber() >= 1.0);
+}
+
 /// A TextInput mounts as an editable Qt Quick item.
 ///
 /// React Native's TextInput.js branches on Platform.OS with no third branch, so
@@ -967,6 +1140,16 @@ void textInputMounts() {
     fixture.host().pumpEvents();
   }
   EXPECT(input->hasActiveFocus());
+
+  auto& rt = fixture.host().runtime();
+
+  const auto focus = rt.global().getProperty(rt, "__inputFocus");
+  EXPECT(focus.isNumber());
+  EXPECT(focus.getNumber() >= 1.0);
+  const auto focusText = rt.global().getProperty(rt, "__inputFocusText");
+  EXPECT(focusText.isString());
+  EXPECT(focusText.getString(rt).utf8(rt) == "typed");
+
   QKeyEvent key(QEvent::KeyPress, Qt::Key_X, Qt::NoModifier, QStringLiteral("X"));
   QCoreApplication::sendEvent(&fixture.window(), &key);
 
@@ -977,7 +1160,46 @@ void textInputMounts() {
 
   EXPECT(input->property("text").toString() == QStringLiteral("typedX"));
 
-  auto& rt = fixture.host().runtime();
+  const auto keyPressCount = rt.global().getProperty(rt, "__inputKeyPress");
+  EXPECT(keyPressCount.isNumber());
+  EXPECT(keyPressCount.getNumber() >= 1.0);
+  const auto lastKey = rt.global().getProperty(rt, "__inputLastKey");
+  EXPECT(lastKey.isString());
+  EXPECT(lastKey.getString(rt).utf8(rt) == "X");
+
+  const auto selection = rt.global().getProperty(rt, "__inputSelection");
+  EXPECT(selection.isObject());
+  const auto selectionObj = selection.getObject(rt);
+  EXPECT(selectionObj.getProperty(rt, "start").asNumber() == 5.0);
+  EXPECT(selectionObj.getProperty(rt, "end").asNumber() == 5.0);
+
+  QKeyEvent returnKey(
+      QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier, QStringLiteral("\r"));
+  QCoreApplication::sendEvent(&fixture.window(), &returnKey);
+
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  const auto submit = rt.global().getProperty(rt, "__inputSubmit");
+  EXPECT(submit.isNumber());
+  EXPECT(submit.getNumber() >= 1.0);
+  const auto submitText = rt.global().getProperty(rt, "__inputSubmitText");
+  EXPECT(submitText.isString());
+  EXPECT(submitText.getString(rt).utf8(rt) == "typedX");
+  const auto lastKeyEnter = rt.global().getProperty(rt, "__inputLastKey");
+  EXPECT(lastKeyEnter.isString());
+  EXPECT(lastKeyEnter.getString(rt).utf8(rt) == "Enter");
+
+  input->setFocus(false);
+  for (int i = 0; i < 5; ++i) {
+    fixture.host().pumpEvents();
+  }
+  const auto blur = rt.global().getProperty(rt, "__inputBlur");
+  EXPECT(blur.isNumber());
+  EXPECT(blur.getNumber() >= 1.0);
+
   const auto changes = rt.global().getProperty(rt, "__inputChanges");
   if (!changes.isNumber()) {
     fail(
@@ -1003,6 +1225,76 @@ void textInputMounts() {
       rt.global().getProperty(rt, "__inputTextFromChangeText");
   EXPECT(changeTextValue.isString());
   EXPECT(changeTextValue.getString(rt).utf8(rt) == "typedX");
+}
+
+/// `TextInput` with a `placeholder` and `placeholderTextColor` applies both to
+/// the underlying QML item.
+void textInputPlaceholder() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(kSurfaceId, "RNQnxTextInput", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* outer = fixture.root().childItems().at(0);
+  QQuickItem* input = outer->childItems().at(0);
+  EXPECT(input->property("placeholderText").toString() ==
+         QStringLiteral("enter text"));
+  EXPECT(input->property("multiline").toBool() == false);
+}
+
+/// `TextInput` with `multiline: true` loads the `TextEdit` component.
+void textInputMultiline() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxTextInputMultiline", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* outer = fixture.root().childItems().at(0);
+  QQuickItem* input = outer->childItems().at(0);
+  EXPECT(input->property("multiline").toBool() == true);
+  EXPECT(input->property("placeholderText").toString() ==
+         QStringLiteral("type multiple lines"));
+  EXPECT(input->property("text").toString() ==
+         QStringLiteral("line one"));
 }
 
 /// `Text` with `numberOfLines` applies `elide` and `wrapMode` to the QML item.
@@ -1141,6 +1433,35 @@ void switchToggles() {
   EXPECT(lastValue.getBool() == true);
 }
 
+/// Button is pure upstream JavaScript over View, Text and the touch system.
+/// It needs `NativeAnimated` because `TouchableOpacity` drives native opacity.
+void buttonMounts() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxButton", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+}
+
 /// SafeAreaView has no platform fork; with zero insets it should mount as a
 /// View and receive the same layout and styling.
 void safeAreaViewMounts() {
@@ -1173,6 +1494,76 @@ void safeAreaViewMounts() {
   EXPECT(outer->childItems().size() == 1);
   QQuickItem* safe = outer->childItems().at(0);
   EXPECT(safe != nullptr);
+}
+
+/// View `onLayout` reaches JavaScript with the laid-out frame.
+void viewLayoutFires() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(kSurfaceId, "RNQnxViewLayout", 640.0F, 480.0F);
+  for (int i = 0; i < 40; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  auto& rt = fixture.host().runtime();
+  const auto layout = rt.global().getProperty(rt, "__viewLayout");
+  EXPECT(layout.isObject());
+  const auto layoutObj = layout.getObject(rt);
+  EXPECT(layoutObj.getProperty(rt, "width").asNumber() == 120.0);
+  EXPECT(layoutObj.getProperty(rt, "height").asNumber() == 60.0);
+}
+
+/// View `transform` (translate, rotate, scale) reaches the Qt item.
+void viewTransformApplies() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxTransform", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* transformed = fixture.root().childItems().at(0);
+  EXPECT(transformed != nullptr);
+
+  EXPECT_NEAR(transformed->x(), 70.0);
+  EXPECT_NEAR(transformed->y(), 70.0);
+  EXPECT_NEAR(transformed->scale(), 1.5);
+  EXPECT_NEAR(transformed->rotation(), 45.0);
 }
 
 /// The Image component dispatches `onLoadStart`, `onLoad`, and `onLoadEnd`
@@ -1218,6 +1609,41 @@ void imageLoadEvents() {
   EXPECT(load.isNumber() && load.getNumber() >= 1.0);
   EXPECT(loadEnd.isNumber() && loadEnd.getNumber() >= 1.0);
   EXPECT(!loadError.isNumber() || loadError.getNumber() == 0.0);
+}
+
+/// `Image` `defaultSource` is used when no primary source is provided.
+void imageDefaultSourceFires() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxImageDefault", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  auto& rt = fixture.host().runtime();
+  const auto load = rt.global().getProperty(rt, "__imageDefaultLoad");
+  EXPECT(load.isNumber());
+  EXPECT(load.getNumber() >= 1.0);
+  const auto uri = rt.global().getProperty(rt, "__imageDefaultUri");
+  EXPECT(uri.isString());
 }
 
 /// `ImageBackground` mounts as a View with an Image and a child Text.
@@ -1590,12 +2016,19 @@ int main(int argc, char** argv) {
       {"pointerEventsReachJavaScript", pointerEventsReachJavaScript},
       {"scrollEventsReachJavaScript", scrollEventsReachJavaScript},
       {"flatListRendersAndVirtualises", flatListRendersAndVirtualises},
+      {"sectionListRenders", sectionListRenders},
       {"textInputMounts", textInputMounts},
+      {"textInputPlaceholder", textInputPlaceholder},
+      {"textInputMultiline", textInputMultiline},
       {"textEllipsis", textEllipsis},
       {"activityIndicatorMounts", activityIndicatorMounts},
       {"switchToggles", switchToggles},
+      {"buttonMounts", buttonMounts},
       {"safeAreaViewMounts", safeAreaViewMounts},
+      {"viewLayoutFires", viewLayoutFires},
+      {"viewTransformApplies", viewTransformApplies},
       {"imageLoadEvents", imageLoadEvents},
+      {"imageDefaultSourceFires", imageDefaultSourceFires},
       {"imageBackgroundMounts", imageBackgroundMounts},
       {"modalMounts", modalMounts},
 #endif

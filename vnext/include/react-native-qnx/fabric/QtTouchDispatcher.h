@@ -7,6 +7,8 @@
 #include <QHash>
 #include <QObject>
 
+#include <react/renderer/components/view/TouchEvent.h>
+
 #include <memory>
 
 QT_BEGIN_NAMESPACE
@@ -56,10 +58,16 @@ class QtTouchDispatcher final : public QObject {
   /// Deepest mounted item containing \a windowPoint, or -1.
   Tag hitTest(const QPointF& windowPoint) const;
 
+  enum class TouchKind { Start, Move, End };
+  void emitTouchEvent(
+      const facebook::react::Touch& changed,
+      TouchKind kind);
+
   QtQuickMountingLayer& layer_;
   QQuickItem& rootItem_;
   QHash<Tag, std::shared_ptr<const facebook::react::TouchEventEmitter>>
       emitters_;
+  QHash<int, facebook::react::Touch> activeTouches_;
   Tag activeTag_{-1};
   Tag responderTag_{-1};
   int dispatchedCount_{0};

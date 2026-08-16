@@ -30,6 +30,10 @@
 #include <react/nativemodule/defaults/DefaultTurboModules.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/UIManager.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
+#include <react/renderer/animated/AnimatedModule.h>
+#include <react/renderer/animated/NativeAnimatedNodesManagerProvider.h>
 
 #include <folly/dynamic.h>
 
@@ -320,10 +324,33 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
   };
 }
 
+namespace {
+class QnxFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
+ public:
+  bool cxxNativeAnimatedEnabled() override {
+    return true;
+  }
+  // The shared backend requires a UIManagerAnimationDelegate that this host
+  // does not yet set, so keep the per-module C++ Animated implementation.
+  bool useSharedAnimatedBackend() override {
+    return false;
+  }
+};
+} // namespace
+
 class QtReactHost::Impl {
  public:
   explicit Impl(fabric::ShadowViewMutationAdapter& adapter)
       : delegate(adapter) {
+    // TouchableOpacity and Button are driven by the native Animated driver.
+    // Enabling the per-module C++ backend exposes AnimatedModule without
+    // requiring a platform-specific implementation.
+    static std::once_flag featureFlagOverride;
+    std::call_once(featureFlagOverride, []() {
+      facebook::react::ReactNativeFeatureFlags::override(
+          std::make_unique<QnxFeatureFlags>());
+    });
+
     // Microtasks are off by default in Hermes. React Native's scheduler and
     // React itself queue them, and NativeMicrotasks forwards straight to
     // Runtime::queueMicrotask, which throws when the queue is disabled.
@@ -561,6 +588,12 @@ void QtReactHost::installTurboModuleBinding() {
                     << QString::fromStdString(error.stack);
                 impl->javaScriptErrors.push_back(error);
               });
+        }
+
+        if (name == facebook::react::AnimatedModule::kModuleName) {
+          return std::make_shared<facebook::react::AnimatedModule>(
+              callInvoker,
+              std::make_shared<facebook::react::NativeAnimatedNodesManagerProvider>());
         }
 
         // React Native's own generic C++ modules. Two of the modules this

@@ -92,9 +92,9 @@ and platform constants.
 
 **What remains, roughly in the order it will be missed:**
 
-1. **`TextInput` JS wrapper is done.** `packages/react-native-qnx/Libraries/Components/TextInput/TextInput.js` now routes `TextInput` to the iOS single-line descriptor on QNX, so apps can write `<TextInput>`. Still missing underneath it: focus, blur, submit and selection events, the `focus`/`blur` commands, multiline, `placeholder` (which needs QtQuick.Controls' `TextField`, a module this platform does not yet depend on), and IME.
-2. **Scroll gaps.** `scrollTo` and `scrollToEnd` now reach the `Flickable` via imperative commands. Still missing: `scrollBeginDrag`, `scrollEndDrag`, and momentum events, `contentContainerStyle`, and `zoomScale` (hard-coded to 1). `SectionList` is untested.
-3. **Smaller component gaps.** Bundler assets for `Image`; multi-touch; and pointer capture. `resizeMode`, `Image` load events, `ImageBackground`, `numberOfLines` ellipsis, `KeyboardAvoidingView`, and `ActivityIndicator`/`Switch`/`Modal`/`SafeAreaView`/`StatusBar`/`RefreshControl` are now covered — see `docs/component-support.md`.
+1. **`TextInput` JS wrapper, placeholder, multiline, focus/blur, submit, selection, and key-press events are done.** `packages/react-native-qnx/Libraries/Components/TextInput/TextInput.js` now routes `TextInput` to the iOS single-line descriptor on QNX, and the QML wrapper supports a placeholder overlay, `TextInput`/`TextEdit` switching, and the `focus`/`blur` imperative commands. Still missing: IME.
+2. **Scroll gaps.** `scrollTo`, `scrollToEnd`, `onScroll`, `onScrollBeginDrag`, `onScrollEndDrag`, `onMomentumScrollBegin`, and `onMomentumScrollEnd` now reach the `Flickable`. Still missing: `contentContainerStyle`, `zoomScale` (hard-coded to 1), and full `velocity`/`targetContentOffset` fidelity.
+3. **Smaller component gaps.** Bundler assets (`require('./x.png')`), `Image.getSize`/`prefetch`, and real `NativeAnimated` view updates (opacity/value back-propagation). `resizeMode`, `defaultSource`, `Image` load events, `ImageBackground`, `numberOfLines` ellipsis, `KeyboardAvoidingView`, `Button`, `TouchableOpacity`, multi-touch, pointer capture, and `ActivityIndicator`/`Switch`/`Modal`/`SafeAreaView`/`StatusBar`/`RefreshControl` are now covered — see `docs/component-support.md`.
 4. **Nitro for app-facing modules.** ADR-0004 settled the boundary: React
    Native's own modules stay C++ TurboModules because that is what its
    JavaScript looks up, and Nitro is for the modules an app author writes. No

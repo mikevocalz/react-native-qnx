@@ -6,6 +6,7 @@
 #include <QList>
 #include <QMouseEvent>
 #include <QQuickItem>
+#include <QTouchEvent>
 
 #include <utility>
 
@@ -15,28 +16,20 @@ namespace {
 using facebook::react::Touch;
 using facebook::react::TouchEvent;
 
-/// Builds the single-pointer touch event React Native expects. All three lists
-/// carry the same touch because there is one pointer: `touches` is everything
-/// currently down, `changedTouches` is what this event is about, and
-/// `targetTouches` is what started on the target (TouchEvent.h:20-38).
-TouchEvent makeTouchEvent(Tag target, const QPointF& windowPoint, const QPointF& localPoint, double timestampSeconds) {
-  Touch touch;
-  touch.identifier = 0;
-  touch.target = target;
-  touch.pagePoint = {
-      .x = static_cast<facebook::react::Float>(windowPoint.x()),
-      .y = static_cast<facebook::react::Float>(windowPoint.y())};
-  touch.screenPoint = touch.pagePoint;
-  touch.offsetPoint = {
-      .x = static_cast<facebook::react::Float>(localPoint.x()),
-      .y = static_cast<facebook::react::Float>(localPoint.y())};
-  touch.timestamp = static_cast<facebook::react::Float>(timestampSeconds);
-  touch.force = 1.0F;
-
+/// Builds the React Native touch payload from the current active set.
+/// `changed` is the touch this event is about. `targetTouches` is every active
+/// touch that started on the same view as `changed`.
+TouchEvent makeTouchEvent(
+    const QHash<int, Touch>& activeTouches,
+    const Touch& changed) {
   TouchEvent event;
-  event.touches = {touch};
-  event.changedTouches = {touch};
-  event.targetTouches = {touch};
+  for (auto it = activeTouches.cbegin(); it != activeTouches.cend(); ++it) {
+    event.touches.insert(it.value());
+    if (it.value().target == changed.target) {
+      event.targetTouches.insert(it.value());
+    }
+  }
+  event.changedTouches.insert(changed);
   return event;
 }
 
@@ -61,6 +54,13 @@ void QtTouchDispatcher::forgetTag(Tag tag) {
   emitters_.remove(tag);
   if (activeTag_ == tag) {
     activeTag_ = -1;
+  }
+  for (auto it = activeTouches_.begin(); it != activeTouches_.end();) {
+    if (it.value().target == tag) {
+      it = activeTouches_.erase(it);
+    } else {
+      ++it;
+    }
   }
 }
 
@@ -116,57 +116,183 @@ Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
   return -1;
 }
 
-bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
-  const auto type = event->type();
-  if (type != QEvent::MouseButtonPress && type != QEvent::MouseMove &&
-      type != QEvent::MouseButtonRelease) {
-    return QObject::eventFilter(watched, event);
+void QtTouchDispatcher::emitTouchEvent(const Touch& changed, TouchKind kind) {
+  const auto emitter = emitters_.value(changed.target);
+  if (emitter == nullptr) {
+    return;
   }
 
-  auto* mouseEvent = static_cast<QMouseEvent*>(event);
-  const QPointF windowPoint = mouseEvent->position();
-  const double timestampSeconds =
-      static_cast<double>(mouseEvent->timestamp()) / 1000.0;
-
-  if (type == QEvent::MouseButtonPress) {
-    activeTag_ = hitTest(windowPoint);
-  }
-
-  // A claimed responder wins over the hit test for the rest of the gesture.
-  if (responderTag_ >= 0) {
-    activeTag_ = responderTag_;
-  }
-
-  if (activeTag_ < 0) {
-    return QObject::eventFilter(watched, event);
-  }
-
-  const auto emitter = emitters_.value(activeTag_);
-  QQuickItem* item = layer_.itemForTag(activeTag_);
-  if (emitter == nullptr || item == nullptr) {
-    activeTag_ = -1;
-    return QObject::eventFilter(watched, event);
-  }
-
-  const TouchEvent touchEvent = makeTouchEvent(
-      activeTag_, windowPoint, item->mapFromScene(windowPoint), timestampSeconds);
-
-  switch (type) {
-    case QEvent::MouseButtonPress:
+  const TouchEvent touchEvent = makeTouchEvent(activeTouches_, changed);
+  switch (kind) {
+    case TouchKind::Start:
       emitter->onTouchStart(touchEvent);
       break;
-    case QEvent::MouseMove:
+    case TouchKind::Move:
       emitter->onTouchMove(touchEvent);
       break;
-    case QEvent::MouseButtonRelease:
+    case TouchKind::End:
       emitter->onTouchEnd(touchEvent);
-      activeTag_ = -1;
-      break;
-    default:
       break;
   }
-
   ++dispatchedCount_;
+}
+
+bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
+  const auto type = event->type();
+
+  // Classic single-pointer mouse path. Keeping it means desktop tests and
+  // pointer-only devices continue to work without synthesising touch events.
+  if (type == QEvent::MouseButtonPress || type == QEvent::MouseMove ||
+      type == QEvent::MouseButtonRelease) {
+    auto* mouseEvent = static_cast<QMouseEvent*>(event);
+    const QPointF windowPoint = mouseEvent->position();
+    const double timestampSeconds =
+        static_cast<double>(mouseEvent->timestamp()) / 1000.0;
+
+    if (type == QEvent::MouseButtonPress) {
+      activeTag_ = hitTest(windowPoint);
+    }
+
+    // A claimed responder wins over the hit test for the rest of the gesture.
+    if (responderTag_ >= 0) {
+      activeTag_ = responderTag_;
+    }
+
+    if (activeTag_ < 0) {
+      return QObject::eventFilter(watched, event);
+    }
+
+    const auto emitter = emitters_.value(activeTag_);
+    QQuickItem* item = layer_.itemForTag(activeTag_);
+    if (emitter == nullptr || item == nullptr) {
+      activeTag_ = -1;
+      return QObject::eventFilter(watched, event);
+    }
+
+    Touch touch;
+    touch.identifier = 0;
+    touch.target = activeTag_;
+    touch.pagePoint = {
+        .x = static_cast<facebook::react::Float>(windowPoint.x()),
+        .y = static_cast<facebook::react::Float>(windowPoint.y())};
+    touch.screenPoint = touch.pagePoint;
+    touch.offsetPoint = {
+        .x = static_cast<facebook::react::Float>(
+            item->mapFromScene(windowPoint).x()),
+        .y = static_cast<facebook::react::Float>(
+            item->mapFromScene(windowPoint).y())};
+    touch.timestamp = static_cast<facebook::react::Float>(timestampSeconds);
+    touch.force = 1.0F;
+
+    // For the single-pointer path all three touch lists carry the same touch.
+    TouchEvent touchEvent;
+    touchEvent.touches = {touch};
+    touchEvent.changedTouches = {touch};
+    touchEvent.targetTouches = {touch};
+
+    switch (type) {
+      case QEvent::MouseButtonPress:
+        emitter->onTouchStart(touchEvent);
+        break;
+      case QEvent::MouseMove:
+        emitter->onTouchMove(touchEvent);
+        break;
+      case QEvent::MouseButtonRelease:
+        emitter->onTouchEnd(touchEvent);
+        activeTag_ = -1;
+        break;
+      default:
+        break;
+    }
+
+    ++dispatchedCount_;
+    return QObject::eventFilter(watched, event);
+  }
+
+  if (type != QEvent::TouchBegin && type != QEvent::TouchUpdate &&
+      type != QEvent::TouchEnd) {
+    return QObject::eventFilter(watched, event);
+  }
+
+  auto* touchEvent = static_cast<QTouchEvent*>(event);
+  const double timestampSeconds =
+      static_cast<double>(touchEvent->timestamp()) / 1000.0;
+
+  for (const QEventPoint& point : touchEvent->points()) {
+    const QPointF scenePos = point.scenePosition();
+    const int id = point.id();
+
+    switch (point.state()) {
+      case QEventPoint::Pressed: {
+        Tag target = hitTest(scenePos);
+        if (responderTag_ >= 0) {
+          target = responderTag_;
+        }
+        if (target < 0) {
+          continue;
+        }
+        QQuickItem* item = layer_.itemForTag(target);
+        if (item == nullptr) {
+          continue;
+        }
+        Touch touch;
+        touch.identifier = id;
+        touch.target = target;
+        touch.pagePoint = {
+            .x = static_cast<facebook::react::Float>(scenePos.x()),
+            .y = static_cast<facebook::react::Float>(scenePos.y())};
+        touch.screenPoint = touch.pagePoint;
+        touch.offsetPoint = {
+            .x = static_cast<facebook::react::Float>(
+                item->mapFromScene(scenePos).x()),
+            .y = static_cast<facebook::react::Float>(
+                item->mapFromScene(scenePos).y())};
+        touch.timestamp =
+            static_cast<facebook::react::Float>(timestampSeconds);
+        touch.force = 1.0F;
+        activeTouches_.insert(id, touch);
+        emitTouchEvent(touch, TouchKind::Start);
+        break;
+      }
+      case QEventPoint::Updated: {
+        auto it = activeTouches_.find(id);
+        if (it == activeTouches_.end()) {
+          continue;
+        }
+        QQuickItem* item = layer_.itemForTag(it.value().target);
+        if (item == nullptr) {
+          continue;
+        }
+        Touch& touch = it.value();
+        touch.pagePoint = {
+            .x = static_cast<facebook::react::Float>(scenePos.x()),
+            .y = static_cast<facebook::react::Float>(scenePos.y())};
+        touch.screenPoint = touch.pagePoint;
+        touch.offsetPoint = {
+            .x = static_cast<facebook::react::Float>(
+                item->mapFromScene(scenePos).x()),
+            .y = static_cast<facebook::react::Float>(
+                item->mapFromScene(scenePos).y())};
+        touch.timestamp =
+            static_cast<facebook::react::Float>(timestampSeconds);
+        emitTouchEvent(touch, TouchKind::Move);
+        break;
+      }
+      case QEventPoint::Released: {
+        auto it = activeTouches_.find(id);
+        if (it == activeTouches_.end()) {
+          continue;
+        }
+        const Touch touch = it.value();
+        activeTouches_.erase(it);
+        emitTouchEvent(touch, TouchKind::End);
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
   return QObject::eventFilter(watched, event);
 }
 
