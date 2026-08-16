@@ -200,6 +200,8 @@ std::vector<std::string> registeredComponentNames() {
           facebook::react::ImageComponentDescriptor::ConcreteShadowNode::Name()),
       std::string(facebook::react::ScrollViewComponentDescriptor::
                       ConcreteShadowNode::Name()),
+      std::string(facebook::react::TextInputComponentDescriptor::
+                      ConcreteShadowNode::Name()),
   };
 }
 

@@ -17,11 +17,10 @@ const ScrollView = require('react-native/Libraries/Components/ScrollView/ScrollV
 const Pressable = require('react-native/Libraries/Components/Pressable/Pressable').default;
 const FlatList = require('react-native/Libraries/Lists/FlatList').default;
 // React Native's TextInput.js branches on Platform.OS and has no third
-// branch, so on qnx it renders nothing. This reaches the native component
-// directly, the same one that file would render on Apple platforms — the JS
-// wrapper is a separate problem from whether the native seam works.
-const SinglelineTextInput =
-  require('react-native/Libraries/Components/TextInput/RCTSingelineTextInputNativeComponent').default;
+// branch, so on qnx it renders nothing. This uses the QNX platform override
+// that translates the public `value`/`defaultValue`/`onChangeText` surface to
+// the native single-line textinput descriptor.
+const TextInput = require('react-native/Libraries/Components/TextInput/TextInput').default;
 
 function PlaygroundApp() {
   return React.createElement(
@@ -176,14 +175,18 @@ function TextInputApp() {
   return React.createElement(
     View,
     { style: { width: 200, height: 60 }, collapsable: false },
-    React.createElement(SinglelineTextInput, {
+    React.createElement(TextInput, {
       style: { width: 200, height: 40, fontSize: 18 },
       collapsable: false,
-      text: 'typed',
+      defaultValue: 'typed',
       placeholder: 'enter text',
       onChange: (event) => {
         globalThis.__inputChanges = (globalThis.__inputChanges ?? 0) + 1;
         globalThis.__inputText = event.nativeEvent.text;
+      },
+      onChangeText: (text) => {
+        globalThis.__inputChangeText = (globalThis.__inputChangeText ?? 0) + 1;
+        globalThis.__inputTextFromChangeText = text;
       },
     })
   );

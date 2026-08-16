@@ -904,6 +904,17 @@ void textInputMounts() {
   const auto text = rt.global().getProperty(rt, "__inputText");
   EXPECT(text.isString());
   EXPECT(text.getString(rt).utf8(rt) == "typedX");
+
+  // The wrapper also surfaces the same text as `onChangeText`, which is the
+  // public API most React Native apps use.
+  const auto changeTextCount = rt.global().getProperty(rt, "__inputChangeText");
+  EXPECT(changeTextCount.isNumber());
+  EXPECT(changeTextCount.getNumber() >= 1.0);
+
+  const auto changeTextValue =
+      rt.global().getProperty(rt, "__inputTextFromChangeText");
+  EXPECT(changeTextValue.isString());
+  EXPECT(changeTextValue.getString(rt).utf8(rt) == "typedX");
 }
 
 /// A JavaScript error reaches the host instead of aborting the process.
