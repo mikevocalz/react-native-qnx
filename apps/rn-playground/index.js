@@ -25,6 +25,7 @@ const ActivityIndicator =
   require('react-native/Libraries/Components/ActivityIndicator/ActivityIndicator').default;
 const Switch = require('react-native/Libraries/Components/Switch/Switch').default;
 const SafeAreaView = require('react-native/Libraries/Components/SafeAreaView/SafeAreaView').default;
+const Modal = require('react-native/Libraries/Modal/Modal').default;
 
 function PlaygroundApp() {
   return React.createElement(
@@ -240,6 +241,19 @@ function SafeAreaViewApp() {
   );
 }
 
+function ModalApp() {
+  return React.createElement(
+    Modal,
+    {
+      visible: true,
+      transparent: false,
+      collapsable: false,
+      style: { flex: 1, backgroundColor: '#336699' },
+    },
+    React.createElement(Text, { style: { color: '#ffffff' } }, 'Modal')
+  );
+}
+
 function ImageApp() {
   const source =
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
@@ -269,3 +283,4 @@ AppRegistry.registerComponent('RNQnxActivityIndicator', () => ActivityIndicatorA
 AppRegistry.registerComponent('RNQnxSwitch', () => SwitchApp);
 AppRegistry.registerComponent('RNQnxSafeAreaView', () => SafeAreaViewApp);
 AppRegistry.registerComponent('RNQnxImage', () => ImageApp);
+AppRegistry.registerComponent('RNQnxModal', () => ModalApp);

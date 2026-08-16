@@ -196,6 +196,8 @@ int main(int argc, char** argv) {
       QStringLiteral("Switch"), QStringLiteral("Switch"));
   adapter.mapComponent(
       QStringLiteral("SafeAreaView"), QStringLiteral("View"));
+  adapter.mapComponent(
+      QStringLiteral("ModalHostView"), QStringLiteral("View"));
 
   rnqnx::runtime::QtReactHost host(adapter);
   host.installTurboModuleBinding();

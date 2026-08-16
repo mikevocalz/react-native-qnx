@@ -13,6 +13,7 @@
 #include <react/renderer/components/iostextinput/TextInputComponentDescriptor.h>
 #include <react/renderer/components/switch/iosswitch/react/renderer/components/switch/AppleSwitchComponentDescriptor.h>
 #include <react/renderer/components/safeareaview/SafeAreaViewComponentDescriptor.h>
+#include <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
@@ -211,6 +212,8 @@ std::vector<std::string> registeredComponentNames() {
                       ConcreteShadowNode::Name()),
       std::string(facebook::react::SafeAreaViewComponentDescriptor::
                       ConcreteShadowNode::Name()),
+      std::string(facebook::react::ModalHostViewComponentDescriptor::
+                      ConcreteShadowNode::Name()),
   };
 }
 
@@ -278,6 +281,10 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<
             facebook::react::SafeAreaViewComponentDescriptor>());
+    // Modal is portable; on QNX it renders as a full-screen overlay item.
+    providerRegistry->add(
+        facebook::react::concreteComponentDescriptorProvider<
+            facebook::react::ModalHostViewComponentDescriptor>());
 
     // Without a fallback, an unregistered component name throws
     // std::invalid_argument out of ComponentDescriptorRegistry::at

@@ -320,6 +320,31 @@ target_link_libraries(rrc_safeareaview
 )
 target_compile_options(rrc_safeareaview PRIVATE -w)
 
+# Modal is a portable shadow node; its own upstream target is not built by
+# the dependencies included in this project, so it is assembled here.
+set(RNQNX_MODAL_DIR "${REACT_COMMON_DIR}/react/renderer/components/modal")
+add_library(rrc_modal OBJECT
+  "${RNQNX_MODAL_DIR}/ModalHostViewComponentDescriptor.cpp"
+  "${RNQNX_MODAL_DIR}/ModalHostViewShadowNode.cpp"
+  "${RNQNX_MODAL_DIR}/ModalHostViewState.cpp"
+  "${RNQNX_MODAL_DIR}/platform/cxx/ModalHostViewUtils.cpp")
+target_include_directories(rrc_modal SYSTEM PUBLIC
+  "${RNQNX_MODAL_DIR}"
+  "${REACT_COMMON_DIR}"
+)
+target_link_libraries(rrc_modal
+  react_codegen_rncore
+  react_renderer_componentregistry
+  react_renderer_core
+  react_renderer_graphics
+  react_renderer_imagemanager
+  rrc_image
+  rrc_view
+  rnqnx_folly
+  yogacore
+)
+target_compile_options(rrc_modal PRIVATE -w)
+
 # React Native ships two CMakeLists for JSI and they are not equivalent:
 # ReactCommon/jsi/CMakeLists.txt:17 globs `jsi/*.cpp`, so it includes
 # JSIDynamic.cpp, while ReactCommon/jsi/jsi/CMakeLists.txt:9 builds jsi.cpp
@@ -394,6 +419,7 @@ set(RNQNX_REACT_NATIVE_RENDERER_TARGETS
   rrc_textinput
   rrc_switch
   rrc_safeareaview
+  rrc_modal
   react_renderer_dom
   react_renderer_bridging
   react_renderer_uimanager_consistency
