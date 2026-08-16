@@ -1005,6 +1005,40 @@ void textInputMounts() {
   EXPECT(changeTextValue.getString(rt).utf8(rt) == "typedX");
 }
 
+/// `Text` with `numberOfLines` applies `elide` and `wrapMode` to the QML item.
+void textEllipsis() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxTextEllipsis", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* root = fixture.root().childItems().at(0);
+  EXPECT(root->childItems().size() == 1);
+  QQuickItem* text = root->childItems().at(0);
+  EXPECT(text->property("elide").toInt() == 1);  // Text.ElideRight
+  EXPECT(text->property("wrapMode").toInt() == 0);  // Text.NoWrap
+}
+
 /// FBReactNativeSpec's codegen'd ActivityIndicatorView descriptor is
 /// registered, mounts, and has its props applied to the QML item.
 void activityIndicatorMounts() {
@@ -1522,6 +1556,7 @@ int main(int argc, char** argv) {
       {"scrollEventsReachJavaScript", scrollEventsReachJavaScript},
       {"flatListRendersAndVirtualises", flatListRendersAndVirtualises},
       {"textInputMounts", textInputMounts},
+      {"textEllipsis", textEllipsis},
       {"activityIndicatorMounts", activityIndicatorMounts},
       {"switchToggles", switchToggles},
       {"safeAreaViewMounts", safeAreaViewMounts},

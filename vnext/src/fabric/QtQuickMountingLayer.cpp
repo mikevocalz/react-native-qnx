@@ -351,7 +351,16 @@ MountError QtQuickMountingLayer::updateText(
   // The text layout manager measures with wrapping, so the item has to wrap
   // too. Without this the measured height says two lines while the paint says
   // one, and the text runs outside its own frame.
-  item->setProperty("wrapMode", 4);  // Text.Wrap
+  if (style.maximumNumberOfLines == 1) {
+    item->setProperty("wrapMode", 0);  // Text.NoWrap
+    item->setProperty("elide", style.elideMode);
+  } else if (style.maximumNumberOfLines > 1) {
+    item->setProperty("wrapMode", 4);  // Text.Wrap
+    item->setProperty("maximumLineCount", style.maximumNumberOfLines);
+    item->setProperty("elide", style.elideMode);
+  } else {
+    item->setProperty("wrapMode", 4);  // Text.Wrap
+  }
 
   // Rich text preserves per-fragment styling; plain text is used otherwise so
   // that markup characters in ordinary strings are never interpreted.

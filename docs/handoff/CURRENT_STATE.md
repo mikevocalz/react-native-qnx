@@ -153,7 +153,7 @@ and `onLoadStart`, `onLoad`, `onLoadEnd`, and `onError` reach JavaScript.
 `Text` renders too, measured by this platform's own `TextLayoutManager` using
 `QTextLayout` — React Native's generic C++ manager does not measure at all and
 would have collapsed every string to nothing. Mixed styling within a paragraph
-is carried as Qt rich text, and long text wraps.
+is carried as Qt rich text, long text wraps, and `numberOfLines` ellipses.
 
 JavaScript errors are reported to the host rather than aborting the process:
 `QnxExceptionsManager` implements React Native's ExceptionsManager over the

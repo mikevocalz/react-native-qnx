@@ -176,6 +176,25 @@ function FlatListApp() {
   );
 }
 
+function TextEllipsisApp() {
+  return React.createElement(
+    View,
+    {
+      style: { width: 200, height: 40 },
+      collapsable: false,
+    },
+    React.createElement(
+      Text,
+      {
+        style: { fontSize: 16 },
+        numberOfLines: 1,
+        ellipsizeMode: 'tail',
+      },
+      'A very long string that should be truncated with an ellipsis'
+    )
+  );
+}
+
 function TextInputApp() {
   return React.createElement(
     View,
@@ -279,6 +298,7 @@ function ImageApp() {
 
 AppRegistry.registerComponent('RNQnxPlayground', () => PlaygroundApp);
 AppRegistry.registerComponent('RNQnxFlatList', () => FlatListApp);
+AppRegistry.registerComponent('RNQnxTextEllipsis', () => TextEllipsisApp);
 AppRegistry.registerComponent('RNQnxTextInput', () => TextInputApp);
 AppRegistry.registerComponent('RNQnxActivityIndicator', () => ActivityIndicatorApp);
 AppRegistry.registerComponent('RNQnxSwitch', () => SwitchApp);

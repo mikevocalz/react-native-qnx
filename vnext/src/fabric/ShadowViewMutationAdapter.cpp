@@ -19,6 +19,7 @@
 #include <react/renderer/components/scrollview/BaseScrollViewProps.h>
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
+#include <react/renderer/components/text/BaseParagraphProps.h>
 #include <react/renderer/components/text/ParagraphState.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ConcreteState.h>
@@ -133,6 +134,29 @@ TextStyle paragraphTextStyle(const ShadowView& view) {
   // More than one styled fragment means Qt Quick's single font and colour
   // cannot express the paragraph, so the rich-text form is used instead.
   style.mixedStyles = fragmentCount > 1;
+
+  const auto* paragraphProps =
+      dynamic_cast<const facebook::react::BaseParagraphProps*>(
+          view.props.get());
+  if (paragraphProps != nullptr) {
+    style.maximumNumberOfLines =
+        paragraphProps->paragraphAttributes.maximumNumberOfLines;
+    switch (paragraphProps->paragraphAttributes.ellipsizeMode) {
+      case facebook::react::EllipsizeMode::Head:
+        style.elideMode = 0;  // Text.ElideLeft
+        break;
+      case facebook::react::EllipsizeMode::Tail:
+        style.elideMode = 1;  // Text.ElideRight
+        break;
+      case facebook::react::EllipsizeMode::Middle:
+        style.elideMode = 2;  // Text.ElideMiddle
+        break;
+      case facebook::react::EllipsizeMode::Clip:
+        style.elideMode = -1;  // Text.ElideNone (clip without ellipsis)
+        break;
+    }
+  }
+
   return style;
 }
 

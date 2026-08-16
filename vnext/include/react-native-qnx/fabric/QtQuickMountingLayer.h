@@ -66,6 +66,10 @@ struct TextStyle {
   std::uint32_t color{0};
   /// True when the paragraph has more than one styled fragment.
   bool mixedStyles{false};
+  /// React Native's `numberOfLines` (zero means no limit).
+  int maximumNumberOfLines{0};
+  /// Qt Quick `elide` value to use when `maximumNumberOfLines > 0`.
+  int elideMode{1};
 };
 
 /// The properties of an editable text field this platform can apply.
