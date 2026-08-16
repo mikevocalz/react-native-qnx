@@ -93,7 +93,7 @@ and platform constants.
 **What remains, roughly in the order it will be missed:**
 
 1. **`TextInput` JS wrapper is done.** `packages/react-native-qnx/Libraries/Components/TextInput/TextInput.js` now routes `TextInput` to the iOS single-line descriptor on QNX, so apps can write `<TextInput>`. Still missing underneath it: focus, blur, submit and selection events, the `focus`/`blur` commands, multiline, `placeholder` (which needs QtQuick.Controls' `TextField`, a module this platform does not yet depend on), and IME.
-2. **Scroll gaps.** `onScroll` carries offset, content size, and container size, but `scrollBeginDrag`, `scrollEndDrag`, and the momentum events are not emitted, `scrollTo` does not reach the `Flickable`, `contentContainerStyle` is ignored, and `zoomScale` is hard-coded to 1. `SectionList` is untested.
+2. **Scroll gaps.** `scrollTo` and `scrollToEnd` now reach the `Flickable` via imperative commands. Still missing: `scrollBeginDrag`, `scrollEndDrag`, and momentum events, `contentContainerStyle`, and `zoomScale` (hard-coded to 1). `SectionList` is untested.
 3. **Smaller component gaps.** Bundler assets for `Image`; `numberOfLines` ellipsis; multi-touch; and pointer capture. `resizeMode`, `Image` load events, and `ActivityIndicator`/`Switch`/`Modal`/`SafeAreaView`/`StatusBar`/`RefreshControl` are now covered — see `docs/component-support.md`.
 4. **Nitro for app-facing modules.** ADR-0004 settled the boundary: React
    Native's own modules stay C++ TurboModules because that is what its

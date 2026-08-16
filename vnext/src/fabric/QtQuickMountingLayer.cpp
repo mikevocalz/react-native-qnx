@@ -430,6 +430,47 @@ MountError QtQuickMountingLayer::updateScrollContentSize(Tag tag) {
   return MountError::None;
 }
 
+MountError QtQuickMountingLayer::scrollTo(Tag tag, double x, double y, bool) {
+  const auto mounted = items_.constFind(tag);
+  if (mounted == items_.constEnd()) {
+    return failWith(
+        MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
+  }
+
+  mounted->item->setProperty("contentX", static_cast<qreal>(x));
+  mounted->item->setProperty("contentY", static_cast<qreal>(y));
+  lastError_.clear();
+  return MountError::None;
+}
+
+MountError QtQuickMountingLayer::scrollToEnd(
+    Tag tag,
+    bool /*animated*/,
+    bool horizontal) {
+  const auto mounted = items_.constFind(tag);
+  if (mounted == items_.constEnd()) {
+    return failWith(
+        MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
+  }
+
+  const auto contentWidth =
+      mounted->item->property("contentWidth").toDouble();
+  const auto contentHeight =
+      mounted->item->property("contentHeight").toDouble();
+  const auto itemWidth = mounted->item->width();
+  const auto itemHeight = mounted->item->height();
+
+  if (horizontal) {
+    mounted->item->setProperty(
+        "contentX", std::max(0.0, contentWidth - itemWidth));
+  } else {
+    mounted->item->setProperty(
+        "contentY", std::max(0.0, contentHeight - itemHeight));
+  }
+  lastError_.clear();
+  return MountError::None;
+}
+
 MountError QtQuickMountingLayer::updateLayout(
     Tag tag,
     const LayoutFrame& frame) {

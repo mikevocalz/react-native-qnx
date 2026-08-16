@@ -16,6 +16,7 @@
 #include <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
 #include <react/renderer/components/FBReactNativeSpec/Props.h>
 #include <react/renderer/components/image/ImageEventEmitter.h>
+#include <react/renderer/components/scrollview/BaseScrollViewProps.h>
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
 #include <react/renderer/components/text/ParagraphState.h>
@@ -629,6 +630,63 @@ std::vector<MutationFailure> ShadowViewMutationAdapter::apply(
   }
 
   return failures;
+}
+
+MutationFailure ShadowViewMutationAdapter::dispatchCommand(
+    facebook::react::Tag tag,
+    const std::string& commandName,
+    const folly::dynamic& args,
+    const ShadowView* shadowView) {
+  if (commandName == "scrollTo") {
+    if (!args.isArray() || args.size() < 2) {
+      return MutationFailure{
+          .type = ShadowViewMutation::Type::Update,
+          .tag = tag,
+          .error = MountError::UnknownTag,
+          .detail = QStringLiteral("scrollTo expects [x, y]")};
+    }
+    const double x = args[0].asDouble();
+    const double y = args[1].asDouble();
+    const MountError error = layer_.scrollTo(tag, x, y, false);
+    if (error != MountError::None) {
+      return MutationFailure{
+          .type = ShadowViewMutation::Type::Update,
+          .tag = tag,
+          .error = error,
+          .detail = layer_.lastError()};
+    }
+    return MutationFailure{};
+  }
+
+  if (commandName == "scrollToEnd") {
+    bool horizontal = false;
+    if (shadowView != nullptr) {
+      const auto* scrollProps =
+          dynamic_cast<const facebook::react::BaseScrollViewProps*>(
+              shadowView->props.get());
+      if (scrollProps != nullptr) {
+        horizontal = scrollProps->horizontal;
+      }
+    }
+    const bool animated =
+        args.isArray() && !args.empty() ? args[0].asBool() : false;
+    const MountError error = layer_.scrollToEnd(tag, animated, horizontal);
+    if (error != MountError::None) {
+      return MutationFailure{
+          .type = ShadowViewMutation::Type::Update,
+          .tag = tag,
+          .error = error,
+          .detail = layer_.lastError()};
+    }
+    return MutationFailure{};
+  }
+
+  return MutationFailure{
+      .type = ShadowViewMutation::Type::Update,
+      .tag = tag,
+      .error = MountError::UnknownTag,
+      .detail = QStringLiteral("Unknown command '%1'")
+                    .arg(QString::fromStdString(commandName))};
 }
 
 }  // namespace rnqnx::fabric

@@ -189,6 +189,14 @@ class QtQuickMountingLayer {
   /// PreserveAspectCrop=2) from React Native's `resizeMode`.
   MountError updateImageFillMode(Tag tag, int fillMode);
 
+  /// Scrolls a mounted `Flickable` to an absolute `(x, y)` offset. `animated`
+  /// is accepted but currently ignored — QML content position is set directly.
+  MountError scrollTo(Tag tag, double x, double y, bool /*animated*/);
+
+  /// Scrolls a mounted `Flickable` to the bottom (or right, if `horizontal`) of
+  /// its content. `animated` is accepted but ignored.
+  MountError scrollToEnd(Tag tag, bool /*animated*/, bool horizontal);
+
   /// Recomputes a scrollable item's content size from its mounted children.
   /// Qt's `Flickable` will not scroll past `contentWidth`/`contentHeight`, and
   /// unlike React Native it does not infer them from its children.

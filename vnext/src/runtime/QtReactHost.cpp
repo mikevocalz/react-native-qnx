@@ -135,10 +135,15 @@ void QtSchedulerDelegate::schedulerDidRequestPreliminaryViewAllocation(
 }
 
 void QtSchedulerDelegate::schedulerDidDispatchCommand(
-    const facebook::react::ShadowView& /*shadowView*/,
-    const std::string& /*commandName*/,
-    const folly::dynamic& /*args*/) {
-  // Imperative component commands. No component exposes one yet.
+    const facebook::react::ShadowView& shadowView,
+    const std::string& commandName,
+    const folly::dynamic& args) {
+  const auto failure = adapter_.dispatchCommand(
+      shadowView.tag, commandName, args, &shadowView);
+  if (failure.error != rnqnx::fabric::MountError::None) {
+    // Keep the same shape as mount failures so tests and logs can read them.
+    lastFailures_.push_back(failure);
+  }
 }
 
 void QtSchedulerDelegate::schedulerDidSendAccessibilityEvent(

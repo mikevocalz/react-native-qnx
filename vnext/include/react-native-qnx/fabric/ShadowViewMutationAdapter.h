@@ -57,6 +57,14 @@ class ShadowViewMutationAdapter {
   std::vector<MutationFailure> apply(
       const facebook::react::ShadowViewMutation::List& mutations);
 
+  /// Dispatches an imperative command to a mounted item, such as `ScrollView`'s
+  /// `scrollTo` or `scrollToEnd`.
+  MutationFailure dispatchCommand(
+      facebook::react::Tag tag,
+      const std::string& commandName,
+      const folly::dynamic& args,
+      const facebook::react::ShadowView* shadowView);
+
  private:
   void applyText(const facebook::react::ShadowView& view);
   void applyImage(const facebook::react::ShadowView& view);
