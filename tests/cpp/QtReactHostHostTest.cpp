@@ -1718,6 +1718,43 @@ void imageBackgroundMounts() {
   EXPECT(image->property("fillMode").toInt() == 2);  // Cover
 }
 
+/// `Image.resolveAssetSource` turns a bundler asset id into a URI.
+void imageResolveAssetSource() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  const std::string sourceUrl =
+      std::string("file://") + RNQNX_PLAYGROUND_BUNDLE_PATH;
+  EXPECT(fixture.host().evaluate(bundle, sourceUrl));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxImageResolveAsset", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+
+  auto& rt = fixture.host().runtime();
+  const auto resolved = rt.global().getProperty(rt, "__imageAssetResolved");
+  EXPECT(resolved.isObject());
+  const auto obj = resolved.getObject(rt);
+  const auto uri = obj.getProperty(rt, "uri");
+  EXPECT(uri.isString());
+  EXPECT(uri.getString(rt).utf8(rt).find("qnx-asset.png") != std::string::npos);
+}
+
 /// Modal mounts as a full-screen overlay with its child content.
 void modalMounts() {
   Fixture fixture;
@@ -2068,6 +2105,7 @@ int main(int argc, char** argv) {
       {"imageDefaultSourceFires", imageDefaultSourceFires},
       {"imageGetSize", imageGetSize},
       {"imageBackgroundMounts", imageBackgroundMounts},
+      {"imageResolveAssetSource", imageResolveAssetSource},
       {"modalMounts", modalMounts},
 #endif
 #endif

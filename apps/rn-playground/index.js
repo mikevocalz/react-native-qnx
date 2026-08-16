@@ -341,25 +341,17 @@ function ImageBackgroundApp() {
 }
 
 function TransformApp() {
-  return React.createElement(
-    View,
-    {
-      style: {
-        width: 100,
-        height: 50,
-        left: 50,
-        top: 60,
-        backgroundColor: '#0000ff',
-        transform: [
-          { translateX: 20 },
-          { translateY: 10 },
-          { rotate: '45deg' },
-          { scale: 1.5 },
-        ],
-      },
-      collapsable: false,
-    }
-  );
+  return React.createElement(View, {
+    style: {
+      width: 100,
+      height: 50,
+      left: 50,
+      top: 60,
+      backgroundColor: '#0000ff',
+      transform: [{ translateX: 20 }, { translateY: 10 }, { rotate: '45deg' }, { scale: 1.5 }],
+    },
+    collapsable: false,
+  });
 }
 
 function ViewLayoutApp() {
@@ -394,12 +386,20 @@ function ImageGetSizeApp() {
   const Image = require('react-native/Libraries/Image/Image.ios').default;
   const source =
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
-  Image.getSize(source).then(({ width, height }) => {
-    globalThis.__imageGetSize = { width, height };
-  }).catch((e) => {
-    globalThis.__imageGetSizeError = e.message;
-  });
+  Image.getSize(source)
+    .then(({ width, height }) => {
+      globalThis.__imageGetSize = { width, height };
+    })
+    .catch((e) => {
+      globalThis.__imageGetSizeError = e.message;
+    });
   return null;
+}
+
+function ImageResolveAssetApp() {
+  const Image = require('react-native/Libraries/Image/Image').default;
+  globalThis.__imageAssetResolved = Image.resolveAssetSource(require('./qnx-asset.png'));
+  return React.createElement(View, { style: { width: 1, height: 1 }, collapsable: false }, null);
 }
 
 function SectionListApp() {
@@ -414,8 +414,7 @@ function SectionListApp() {
     keyExtractor: (item) => item,
     renderSectionHeader: ({ section }) =>
       React.createElement(Text, { style: { fontSize: 18 } }, section.title),
-    renderItem: ({ item }) =>
-      React.createElement(Text, { style: { fontSize: 14 } }, item),
+    renderItem: ({ item }) => React.createElement(Text, { style: { fontSize: 14 } }, item),
     onViewableItemsChanged: ({ viewableItems }) => {
       globalThis.__sectionListViewable = viewableItems.length;
     },
@@ -461,10 +460,7 @@ AppRegistry.registerComponent('RNQnxFlatList', () => FlatListApp);
 AppRegistry.registerComponent('RNQnxSectionList', () => SectionListApp);
 AppRegistry.registerComponent('RNQnxTextEllipsis', () => TextEllipsisApp);
 AppRegistry.registerComponent('RNQnxTextInput', () => TextInputApp);
-AppRegistry.registerComponent(
-  'RNQnxTextInputMultiline',
-  () => TextInputMultilineApp
-);
+AppRegistry.registerComponent('RNQnxTextInputMultiline', () => TextInputMultilineApp);
 AppRegistry.registerComponent('RNQnxActivityIndicator', () => ActivityIndicatorApp);
 AppRegistry.registerComponent('RNQnxSwitch', () => SwitchApp);
 AppRegistry.registerComponent('RNQnxSafeAreaView', () => SafeAreaViewApp);
@@ -472,5 +468,6 @@ AppRegistry.registerComponent('RNQnxImageBackground', () => ImageBackgroundApp);
 AppRegistry.registerComponent('RNQnxImage', () => ImageApp);
 AppRegistry.registerComponent('RNQnxImageDefault', () => ImageDefaultApp);
 AppRegistry.registerComponent('RNQnxImageGetSize', () => ImageGetSizeApp);
+AppRegistry.registerComponent('RNQnxImageResolveAsset', () => ImageResolveAssetApp);
 AppRegistry.registerComponent('RNQnxButton', () => ButtonApp);
 AppRegistry.registerComponent('RNQnxModal', () => ModalApp);
