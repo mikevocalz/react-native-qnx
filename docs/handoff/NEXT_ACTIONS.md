@@ -92,24 +92,10 @@ and platform constants.
 
 **What remains, roughly in the order it will be missed:**
 
-1. **`TextInput`'s JavaScript wrapper.** The native seam works — the component
-   mounts, props apply, and typing reaches JavaScript as `onChange` — but React
-   Native's `TextInput.js` branches on `Platform.OS` with no third branch, so an
-   app writing `<TextInput>` still renders nothing. That file is ~900 lines, so
-   forking it wholesale is the wrong answer; decide how a platform override
-   reuses upstream logic before writing one. Still missing underneath it: focus,
-   blur, submit and selection events, the `focus`/`blur` commands, multiline,
-   `placeholder` (which needs QtQuick.Controls' `TextField`, a module this
-   platform does not yet depend on), and IME.
-2. **Scroll gaps.** `onScroll` carries offset, content size, and container size,
-   but `scrollBeginDrag`, `scrollEndDrag`, and the momentum events are not
-   emitted, `scrollTo` does not reach the `Flickable`, `contentContainerStyle`
-   is ignored, and `zoomScale` is hard-coded to 1. `SectionList` is untested.
-3. **Smaller component gaps.** Bundler assets for `Image`, `resizeMode`, image
-   load events, `numberOfLines` ellipsis, multi-touch, and pointer capture.
-4. **`Switch`, `ActivityIndicator`, `Modal`.** None mount; see
-   `docs/component-support.md`.
-5. **Nitro for app-facing modules.** ADR-0004 settled the boundary: React
+1. **`TextInput` JS wrapper is done.** `packages/react-native-qnx/Libraries/Components/TextInput/TextInput.js` now routes `TextInput` to the iOS single-line descriptor on QNX, so apps can write `<TextInput>`. Still missing underneath it: focus, blur, submit and selection events, the `focus`/`blur` commands, multiline, `placeholder` (which needs QtQuick.Controls' `TextField`, a module this platform does not yet depend on), and IME.
+2. **Scroll gaps.** `onScroll` carries offset, content size, and container size, but `scrollBeginDrag`, `scrollEndDrag`, and the momentum events are not emitted, `scrollTo` does not reach the `Flickable`, `contentContainerStyle` is ignored, and `zoomScale` is hard-coded to 1. `SectionList` is untested.
+3. **Smaller component gaps.** Bundler assets for `Image`; `numberOfLines` ellipsis; multi-touch; and pointer capture. `resizeMode`, `Image` load events, and `ActivityIndicator`/`Switch`/`Modal`/`SafeAreaView`/`StatusBar`/`RefreshControl` are now covered — see `docs/component-support.md`.
+4. **Nitro for app-facing modules.** ADR-0004 settled the boundary: React
    Native's own modules stay C++ TurboModules because that is what its
    JavaScript looks up, and Nitro is for the modules an app author writes. No
    Nitro `HybridObject` is registered yet.

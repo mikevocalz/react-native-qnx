@@ -138,9 +138,17 @@ pointer only.
 `contentItem` and its content size recomputed as they change, so it clips and
 scrolls.
 
+`ActivityIndicator`, `Switch`, `Modal`, `SafeAreaView`, `StatusBar`, and
+`RefreshControl` all mount with their primary props. `Switch` toggles and
+reports `onValueChange`; `Image` reports load lifecycle; `Modal` renders as a
+full-screen overlay; `SafeAreaView` behaves as a `View`; `StatusBar` and
+`RefreshControl` are no-ops on QNX. See `docs/component-support.md` for the
+full table.
+
 `Image` renders from `data:` URIs, decoded by this platform's image provider
 because Qt Quick cannot read them, with `SourceCode` implemented as the
-TurboModule the image path needs.
+TurboModule the image path needs. `resizeMode` maps to QML `Image.fillMode`,
+and `onLoadStart`, `onLoad`, `onLoadEnd`, and `onError` reach JavaScript.
 
 `Text` renders too, measured by this platform's own `TextLayoutManager` using
 `QTextLayout` — React Native's generic C++ manager does not measure at all and
@@ -153,11 +161,12 @@ generated spec, and a healthy render is asserted to report nothing.
 
 Remaining gaps: transforms and `onLayout` are unimplemented, per-corner radii
 collapse to one value because Qt Quick's `Rectangle` has a single `radius`, and
-only the left border edge is read for the same reason. There is no input pipeline, so nothing
-responds to touch. Seven of the nine TurboModules the bundle references are
-still unimplemented — the render does not touch them, but an error path would
-reach ExceptionsManager immediately. The rendering surface is the offscreen QPA
-plugin, not glass.
+only the left border edge is read for the same reason. Single-touch pointer
+events reach JavaScript, but multi-touch, pointer capture, and gesture
+recognisers are not implemented. Seven of the nine TurboModules the bundle
+references are still unimplemented — the render does not touch them, but an
+error path would reach ExceptionsManager immediately. The rendering surface is
+the offscreen QPA plugin, not glass.
 
 ## Installed-source boundaries
 
