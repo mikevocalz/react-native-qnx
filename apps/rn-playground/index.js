@@ -24,6 +24,7 @@ const TextInput = require('react-native/Libraries/Components/TextInput/TextInput
 const ActivityIndicator =
   require('react-native/Libraries/Components/ActivityIndicator/ActivityIndicator').default;
 const Switch = require('react-native/Libraries/Components/Switch/Switch').default;
+const SafeAreaView = require('react-native/Libraries/Components/SafeAreaView/SafeAreaView').default;
 
 function PlaygroundApp() {
   return React.createElement(
@@ -228,8 +229,20 @@ function SwitchApp() {
   );
 }
 
+function SafeAreaViewApp() {
+  return React.createElement(
+    SafeAreaView,
+    { style: { flex: 1, backgroundColor: '#336699' }, collapsable: false },
+    React.createElement(View, {
+      style: { width: 50, height: 50, backgroundColor: '#ff0000' },
+      collapsable: false,
+    })
+  );
+}
+
 AppRegistry.registerComponent('RNQnxPlayground', () => PlaygroundApp);
 AppRegistry.registerComponent('RNQnxFlatList', () => FlatListApp);
 AppRegistry.registerComponent('RNQnxTextInput', () => TextInputApp);
 AppRegistry.registerComponent('RNQnxActivityIndicator', () => ActivityIndicatorApp);
 AppRegistry.registerComponent('RNQnxSwitch', () => SwitchApp);
+AppRegistry.registerComponent('RNQnxSafeAreaView', () => SafeAreaViewApp);

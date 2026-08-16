@@ -249,6 +249,8 @@ class Fixture {
         QStringLiteral("ActivityIndicatorView"));
     adapter_.mapComponent(
         QStringLiteral("Switch"), QStringLiteral("Switch"));
+    adapter_.mapComponent(
+        QStringLiteral("SafeAreaView"), QStringLiteral("View"));
     adapter_.mapComponent(QStringLiteral("Image"), QStringLiteral("Image"));
     adapter_.mapComponent(QStringLiteral("Paragraph"), QStringLiteral("Text"));
   }
@@ -1098,6 +1100,40 @@ void switchToggles() {
   EXPECT(lastValue.getBool() == true);
 }
 
+/// SafeAreaView has no platform fork; with zero insets it should mount as a
+/// View and receive the same layout and styling.
+void safeAreaViewMounts() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxSafeAreaView", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* outer = fixture.root().childItems().at(0);
+  EXPECT(outer->childItems().size() == 1);
+  QQuickItem* safe = outer->childItems().at(0);
+  EXPECT(safe != nullptr);
+}
+
 /// A JavaScript error reaches the host instead of aborting the process.
 ///
 /// Before ExceptionsManager existed, React reached for it while reporting any
@@ -1402,6 +1438,7 @@ int main(int argc, char** argv) {
       {"textInputMounts", textInputMounts},
       {"activityIndicatorMounts", activityIndicatorMounts},
       {"switchToggles", switchToggles},
+      {"safeAreaViewMounts", safeAreaViewMounts},
 #endif
 #endif
   };

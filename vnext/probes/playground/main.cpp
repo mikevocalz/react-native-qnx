@@ -188,6 +188,8 @@ int main(int argc, char** argv) {
       QStringLiteral("ActivityIndicatorView"));
   adapter.mapComponent(
       QStringLiteral("Switch"), QStringLiteral("Switch"));
+  adapter.mapComponent(
+      QStringLiteral("SafeAreaView"), QStringLiteral("View"));
 
   rnqnx::runtime::QtReactHost host(adapter);
   host.installTurboModuleBinding();
