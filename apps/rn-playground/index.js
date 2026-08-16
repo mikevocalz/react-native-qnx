@@ -240,9 +240,32 @@ function SafeAreaViewApp() {
   );
 }
 
+function ImageApp() {
+  const source =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
+  return React.createElement(Image, {
+    style: { width: 32, height: 32 },
+    source: { uri: source },
+    onLoadStart: () => {
+      globalThis.__imageLoadStart = (globalThis.__imageLoadStart ?? 0) + 1;
+    },
+    onLoad: (event) => {
+      globalThis.__imageLoad = (globalThis.__imageLoad ?? 0) + 1;
+      globalThis.__imageLoadUri = event.nativeEvent.source.uri;
+    },
+    onLoadEnd: () => {
+      globalThis.__imageLoadEnd = (globalThis.__imageLoadEnd ?? 0) + 1;
+    },
+    onError: () => {
+      globalThis.__imageError = (globalThis.__imageError ?? 0) + 1;
+    },
+  });
+}
+
 AppRegistry.registerComponent('RNQnxPlayground', () => PlaygroundApp);
 AppRegistry.registerComponent('RNQnxFlatList', () => FlatListApp);
 AppRegistry.registerComponent('RNQnxTextInput', () => TextInputApp);
 AppRegistry.registerComponent('RNQnxActivityIndicator', () => ActivityIndicatorApp);
 AppRegistry.registerComponent('RNQnxSwitch', () => SwitchApp);
 AppRegistry.registerComponent('RNQnxSafeAreaView', () => SafeAreaViewApp);
+AppRegistry.registerComponent('RNQnxImage', () => ImageApp);

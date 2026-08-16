@@ -37,7 +37,13 @@ namespace {
 constexpr facebook::react::SurfaceId kSurfaceId = 1;
 constexpr const char* kViewSource = "import QtQuick\nRectangle { visible: true }\n";
 constexpr const char* kTextSource = "import QtQuick\nText { visible: true }\n";
-constexpr const char* kImageSource = "import QtQuick\nImage { visible: true }\n";
+constexpr const char* kImageSource =
+    "import QtQuick\n"
+    "Image {\n"
+    "  visible: true\n"
+    "  property var bridge: null\n"
+    "  onStatusChanged: { if (bridge) bridge.notify(); }\n"
+    "}\n";
 // Qt Quick's TextInput is the editable single-line item. `visible` matches the
 // other types; everything else is set from props at mount time.
 constexpr const char* kTextInputSource =

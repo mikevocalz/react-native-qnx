@@ -1,5 +1,6 @@
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 
+#include "react-native-qnx/fabric/QtImageBridge.h"
 #include "react-native-qnx/fabric/QtScrollBridge.h"
 #include "react-native-qnx/fabric/QtSwitchBridge.h"
 
@@ -14,6 +15,7 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
 #include <react/renderer/components/FBReactNativeSpec/Props.h>
+#include <react/renderer/components/image/ImageEventEmitter.h>
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
 #include <react/renderer/components/text/ParagraphState.h>
@@ -335,6 +337,47 @@ void ShadowViewMutationAdapter::connectSwitchEvents(const ShadowView& view) {
   switchBridges_.insert(view.tag, bridge);
 }
 
+void ShadowViewMutationAdapter::connectImageEvents(const ShadowView& view) {
+  if (imageBridges_.contains(view.tag)) {
+    return;
+  }
+
+  const auto emitter =
+      std::dynamic_pointer_cast<const facebook::react::ImageEventEmitter>(
+          view.eventEmitter);
+  if (emitter == nullptr) {
+    return;
+  }
+
+  QQuickItem* item = layer_.itemForTag(view.tag);
+  if (item == nullptr) {
+    return;
+  }
+
+  const auto* props =
+      dynamic_cast<const facebook::react::ImageProps*>(view.props.get());
+  facebook::react::ImageSource source;
+  if (props != nullptr && !props->sources.empty()) {
+    source = props->sources.front();
+  }
+
+  auto* bridge = new QtImageBridge(
+      item,
+      std::move(source),
+      [emitter]() { emitter->onLoadStart(); },
+      [emitter](const facebook::react::ImageSource& s) {
+        emitter->onLoad(s);
+      },
+      [emitter]() { emitter->onLoadEnd(); },
+      [emitter](const facebook::react::ImageErrorInfo& e) {
+        emitter->onError(e);
+      },
+      item);
+  item->setProperty("bridge", QVariant::fromValue<QObject*>(bridge));
+
+  imageBridges_.insert(view.tag, bridge);
+}
+
 void ShadowViewMutationAdapter::connectTextInputEvents(const ShadowView& view) {
   if (textInputConnected_.contains(view.tag)) {
     return;
@@ -468,6 +511,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       connectScrollEvents(view);
       connectTextInputEvents(view);
       connectSwitchEvents(view);
+      connectImageEvents(view);
       applyText(view);
       applyImage(view);
       applyTextInput(view);
@@ -481,6 +525,7 @@ MountError ShadowViewMutationAdapter::applyOne(
         touchDispatcher_->forgetTag(mutation.oldChildShadowView.tag);
       }
       switchBridges_.remove(mutation.oldChildShadowView.tag);
+      imageBridges_.remove(mutation.oldChildShadowView.tag);
       return layer_.destroy(mutation.oldChildShadowView.tag);
 
     case ShadowViewMutation::Type::Insert: {
@@ -513,6 +558,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       }
       connectTextInputEvents(view);
       connectSwitchEvents(view);
+      connectImageEvents(view);
       applyText(view);
       applyImage(view);
       applyTextInput(view);

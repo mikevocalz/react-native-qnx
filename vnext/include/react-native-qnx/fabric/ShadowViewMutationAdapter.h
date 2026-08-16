@@ -21,6 +21,7 @@ struct MutationFailure {
   QString detail;
 };
 
+class QtImageBridge;
 class QtSwitchBridge;
 
 /// Translates a React Native mount transaction into QtQuickMountingLayer calls.
@@ -76,6 +77,10 @@ class ShadowViewMutationAdapter {
   /// SwitchEventEmitter, so `onValueChange` reaches JavaScript.
   void connectSwitchEvents(const facebook::react::ShadowView& view);
 
+  /// Connects an image item's status changes to its shadow view's
+  /// ImageEventEmitter, so `onLoad`, `onError`, etc. reach JavaScript.
+  void connectImageEvents(const facebook::react::ShadowView& view);
+
   MountError applyOne(
       const facebook::react::ShadowViewMutation& mutation,
       QString& detail);
@@ -90,6 +95,8 @@ class ShadowViewMutationAdapter {
   QSet<Tag> textInputConnected_;
   /// Switch bridges, indexed by tag, so `applySwitch` can pre-arm the guard.
   QHash<Tag, QtSwitchBridge*> switchBridges_;
+  /// Image bridges, indexed by tag, so load/error events reach JavaScript.
+  QHash<Tag, QtImageBridge*> imageBridges_;
 };
 
 /// Converts React Native's view props to the visual style the mounting layer

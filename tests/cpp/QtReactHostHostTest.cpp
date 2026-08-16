@@ -70,7 +70,12 @@ constexpr SurfaceId kSurfaceId = 11;
 constexpr const char* kViewSource = "import QtQuick\nRectangle { visible: true }\n";
 constexpr const char* kTextSource = "import QtQuick\nText { visible: true }\n";
 constexpr const char* kImageSource =
-    "import QtQuick\nImage { visible: true }\n";
+    "import QtQuick\n"
+    "Image {\n"
+    "  visible: true\n"
+    "  property var bridge: null\n"
+    "  onStatusChanged: { if (bridge) bridge.notify(); }\n"
+    "}\n";
 // Flickable is Qt Quick's scrollable container; clip keeps content inside the
 // viewport, which is what a React Native ScrollView does.
 constexpr const char* kScrollViewSource =
@@ -1134,6 +1139,50 @@ void safeAreaViewMounts() {
   EXPECT(safe != nullptr);
 }
 
+/// The Image component dispatches `onLoadStart`, `onLoad`, and `onLoadEnd`
+/// events to JavaScript when a data: URI is loaded.
+void imageLoadEvents() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxImage", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* image = fixture.root().childItems().at(0);
+  EXPECT(image->width() == 32.0);
+  EXPECT(image->height() == 32.0);
+
+  auto& rt = fixture.host().runtime();
+  const auto loadStart =
+      rt.global().getProperty(rt, "__imageLoadStart");
+  const auto load = rt.global().getProperty(rt, "__imageLoad");
+  const auto loadEnd = rt.global().getProperty(rt, "__imageLoadEnd");
+  const auto loadError = rt.global().getProperty(rt, "__imageError");
+  EXPECT(loadStart.isNumber() && loadStart.getNumber() >= 1.0);
+  EXPECT(load.isNumber() && load.getNumber() >= 1.0);
+  EXPECT(loadEnd.isNumber() && loadEnd.getNumber() >= 1.0);
+  EXPECT(!loadError.isNumber() || loadError.getNumber() == 0.0);
+}
+
 /// A JavaScript error reaches the host instead of aborting the process.
 ///
 /// Before ExceptionsManager existed, React reached for it while reporting any
@@ -1439,6 +1488,7 @@ int main(int argc, char** argv) {
       {"activityIndicatorMounts", activityIndicatorMounts},
       {"switchToggles", switchToggles},
       {"safeAreaViewMounts", safeAreaViewMounts},
+      {"imageLoadEvents", imageLoadEvents},
 #endif
 #endif
   };

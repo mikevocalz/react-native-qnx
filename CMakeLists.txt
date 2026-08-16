@@ -285,6 +285,8 @@ else()
           vnext/include/react-native-qnx/fabric/QtScrollBridge.h
           vnext/src/fabric/QtSwitchBridge.cpp
           vnext/include/react-native-qnx/fabric/QtSwitchBridge.h
+          vnext/src/fabric/QtImageBridge.cpp
+          vnext/include/react-native-qnx/fabric/QtImageBridge.h
         )
         target_link_libraries(rnqnx_fabric_adapter PUBLIC
           rnqnx_react_native_renderer
