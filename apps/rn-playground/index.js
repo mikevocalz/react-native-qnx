@@ -13,6 +13,7 @@ const AppRegistry = require('react-native/Libraries/ReactNative/AppRegistry').Ap
 const View = require('react-native/Libraries/Components/View/View').default;
 const Text = require('react-native/Libraries/Text/Text').default;
 const Image = require('react-native/Libraries/Image/Image').default;
+const ImageBackground = require('react-native/Libraries/Image/ImageBackground').default;
 const ScrollView = require('react-native/Libraries/Components/ScrollView/ScrollView').default;
 const Pressable = require('react-native/Libraries/Components/Pressable/Pressable').default;
 const FlatList = require('react-native/Libraries/Lists/FlatList').default;
@@ -273,6 +274,21 @@ function ModalApp() {
   );
 }
 
+function ImageBackgroundApp() {
+  const source =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
+  return React.createElement(
+    ImageBackground,
+    {
+      style: { width: 64, height: 64 },
+      imageStyle: { width: 64, height: 64 },
+      source: { uri: source },
+      resizeMode: 'cover',
+    },
+    React.createElement(Text, { style: { color: '#ffffff' } }, 'Background')
+  );
+}
+
 function ImageApp() {
   const source =
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
@@ -303,5 +319,6 @@ AppRegistry.registerComponent('RNQnxTextInput', () => TextInputApp);
 AppRegistry.registerComponent('RNQnxActivityIndicator', () => ActivityIndicatorApp);
 AppRegistry.registerComponent('RNQnxSwitch', () => SwitchApp);
 AppRegistry.registerComponent('RNQnxSafeAreaView', () => SafeAreaViewApp);
+AppRegistry.registerComponent('RNQnxImageBackground', () => ImageBackgroundApp);
 AppRegistry.registerComponent('RNQnxImage', () => ImageApp);
 AppRegistry.registerComponent('RNQnxModal', () => ModalApp);

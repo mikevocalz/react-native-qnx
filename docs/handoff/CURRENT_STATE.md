@@ -149,6 +149,7 @@ full table.
 because Qt Quick cannot read them, with `SourceCode` implemented as the
 TurboModule the image path needs. `resizeMode` maps to QML `Image.fillMode`,
 and `onLoadStart`, `onLoad`, `onLoadEnd`, and `onError` reach JavaScript.
+`ImageBackground` composes `Image` and `View` with a QNX-specific override.
 
 `Text` renders too, measured by this platform's own `TextLayoutManager` using
 `QTextLayout` — React Native's generic C++ manager does not measure at all and

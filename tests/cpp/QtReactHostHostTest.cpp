@@ -1220,6 +1220,41 @@ void imageLoadEvents() {
   EXPECT(!loadError.isNumber() || loadError.getNumber() == 0.0);
 }
 
+/// `ImageBackground` mounts as a View with an Image and a child Text.
+void imageBackgroundMounts() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxImageBackground", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* root = fixture.root().childItems().at(0);
+  EXPECT(root->childItems().size() == 2);
+  QQuickItem* image = root->childItems().at(0);
+  EXPECT(image->width() == 64.0);
+  EXPECT(image->height() == 64.0);
+  EXPECT(image->property("fillMode").toInt() == 2);  // Cover
+}
+
 /// Modal mounts as a full-screen overlay with its child content.
 void modalMounts() {
   Fixture fixture;
@@ -1561,6 +1596,7 @@ int main(int argc, char** argv) {
       {"switchToggles", switchToggles},
       {"safeAreaViewMounts", safeAreaViewMounts},
       {"imageLoadEvents", imageLoadEvents},
+      {"imageBackgroundMounts", imageBackgroundMounts},
       {"modalMounts", modalMounts},
 #endif
 #endif
