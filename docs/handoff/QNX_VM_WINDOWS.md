@@ -135,7 +135,32 @@ cmake --preset qnx-x86_64-debug
 cmake --build --preset qnx-x86_64-debug --target rnqnx_g0_cxx20_probe
 ```
 
-Copy and run:
+### Using the repo scripts
+
+`scripts/deploy-qnx.sh` and `scripts/run-qnx.sh` now accept optional SSH key,
+port, extra options, and a remote directory. `scripts/vm-qnx.sh` is a convenience
+wrapper that hard-codes the defaults for this local VM.
+
+From Git Bash in the repo root, with the VM running:
+
+```bash
+./scripts/vm-qnx.sh deploy-run x86_64 rnqnx_g0_cxx20_probe Debug
+```
+
+This is equivalent to:
+
+```bash
+export QNX_TARGET_IP=127.0.0.1
+export QNX_TARGET_USER=root
+export QNX_SSH_PORT=2222
+export QNX_TARGET_DIR=/data/home/root
+export QNX_SSH_KEY="$HOME/.ssh/id_ed25519_qnx"
+export QNX_SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o MACs=hmac-sha2-256"
+./scripts/deploy-qnx.sh x86_64 rnqnx_g0_cxx20_probe Debug
+./scripts/run-qnx.sh x86_64 rnqnx_g0_cxx20_probe
+```
+
+### Manual SCP/SSH
 
 ```powershell
 scp -i C:\Users\Owner\.ssh\id_ed25519_qnx `
