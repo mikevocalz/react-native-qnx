@@ -6,11 +6,13 @@
 QNX SDP 8.0.2, then run it on a real AArch64 QNX target with Screen/display and
 SSH. This remains the only unclosed Milestone 0 exit gate.
 
-**Partial progress:** A QNX x86_64 VM now runs on the Windows PC and validates
-non-Screen binaries (see `docs/handoff/QNX_VM_WINDOWS.md`). The G0 C++20 probe
-was built for `qnx-x86_64-debug`, deployed, and ran successfully. This proves
-the cross-compile, SCP/SSH deploy, and runtime loop, but it is not a substitute
-for the AArch64+Screen target that `rnqnx_playground` requires.
+**Partial progress:** A QNX x86_64 VM now runs on the Windows PC. The G0 C++20
+probe and the Screen-only Milestone 0 executable `rnqnx_playground` were both
+built for `qnx-x86_64-debug`, deployed, and ran successfully inside the VM.
+`rnqnx_playground` uses a software/dummy WFD blitter because the installed SDP
+lacks the QEMU virtio-drm graphics package, but it still validates the Screen
+library linkage, `QnxScreenSurface` lifecycle, and cross-compiled runtime loop.
+See `docs/handoff/QNX_VM_WINDOWS.md` for the workaround.
 
 **Files:**
 

@@ -48,6 +48,12 @@ such as React Native 0.87, Metro 0.87, or TypeScript 7 can be substituted.
   over SSH. It printed the expected
   `RNQNX_G0_CXX20_OK ranges=12 designated=21 thread=34 jthread=unsupported`
   result.
+- The Screen-only Milestone 0 executable `rnqnx_playground` now runs on the
+  same QNX x86_64 VM by switching the guest's Screen configuration from the
+  missing virtio-drm GPU stack to a software/dummy WFD blitter. It initialized a
+  1280x720 surface, rendered 600 alternating blue/black frames, and exited
+  cleanly. This validates `QnxScreenSurface`, the QNX Screen lifecycle, and the
+  cross-compiled link against `libscreen.so.1` end-to-end.
 - The workspace lockfile was regenerated with exact direct dependency pins.
 - `validate:dependencies` verifies direct resolutions, peer baselines, the
   Hermes tag, resolved Expo internals, and named symbols in installed RN, Yoga,

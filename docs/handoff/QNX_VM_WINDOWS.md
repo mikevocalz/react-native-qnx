@@ -175,31 +175,89 @@ ssh -i C:\Users\Owner\.ssh\id_ed25519_qnx `
   'chmod +x /data/home/root/rnqnx_g0_cxx20_probe && /data/home/root/rnqnx_g0_cxx20_probe'
 ```
 
-## Attempted: enabling Screen/graphics
+## Enabling Screen with the software/dummy WFD blitter
 
 `mkqnximage --graphics=yes` for QEMU x86_64 expects a virtio-drm graphics stack
 (`sbin/drm-virtio`, `lib/dll/screen-virtiodrm.so`, Mesa/EGL/GLES libraries under
 `usr/lib/graphics/virtio-drm/`, etc.) that is **not present** in this installed
-QNX SDP 8.0.2. The build completes with warnings and the resulting image logs:
+QNX SDP 8.0.2. To run the Milestone 0 Screen executable without a real GPU,
+switch the generated `output/build/system.build` graphics section to the
+installed software/dummy WFD blitter.
+
+After a normal `mkqnximage --build` (which will warn about missing virtio-drm
+files), edit the graphics section in `output/build/system.build` so the system
+partition contains:
 
 ```text
-libkhronos: dlopen() err Library cannot be found, path: 'libwfdcfg-virtio-generic.so'
-Unable to access /dev/screen
+[type=link] /bin/drm-virtio=/system/bin/true
+/lib/dll/screen-sw.so=lib/dll/screen-sw.so
+
+/graphics/driver/libWFDdummy.so=usr/lib/graphics/dummy/libWFDdummy.so
+/graphics/driver/libwfdcfg-dummy.so=usr/lib/graphics/dummy/libwfdcfg-dummy.so
+
+/graphics/driver/graphics.conf={
+begin khronos
+  begin wfd device 1
+    pipeline-ids = 1,2,3,4,5
+    display-ids = 1
+    wfd-dlls = libwfdcfg-dummy.so libWFDdummy.so
+  end wfd device
+end khronos
+
+begin winmgr
+  begin globals
+    blit-config = sw
+    alloc-config = stdbuf
+  end globals
+
+  begin display 1
+    video-mode = 800 x 480 @ 60
+    cursor = off
+  end display
+
+  begin class framebuffer
+    display = 1
+    pipeline = 1
+    format = rgba8888
+    usage = sw
+  end class
+end winmgr
+}
 ```
 
-The VM still boots to a headless shell because the missing components are only
-needed for Screen initialization. Replacing the virtio-drm configuration with
-the installed `screen-vmwgfxdrm.so` (VMware SVGA) or `screen-sw.so` (software)
-driver would require rewriting `graphics.conf` and matching the QEMU display
-device; that is not currently implemented.
+Then rebuild the system/data partitions and disk with `rebuild-disk.sh` and boot
+as usual. `screen` starts, `/dev/screen` exists, and `rnqnx_playground` runs
+successfully.
+
+The first attempt with the VMware SVGA driver (`screen-vmwgfxdrm.so` +
+`-vga vmware`) failed at `open_drm_dev` because QEMU 11.1.0's VMware SVGA
+emulation does not expose a DRM device that the QNX driver can open.
+
+## Validated commands
+
+```bash
+# Build the Screen executable
+cmake --preset qnx-x86_64-debug
+cmake --build --preset qnx-x86_64-debug --target rnqnx_playground
+
+# Deploy and run inside the VM
+./scripts/vm-qnx.sh deploy-run x86_64 rnqnx_playground Debug
+```
+
+Expected output:
+
+```text
+rnqnx_playground: Screen surface initialized (1280x720)
+rnqnx_playground: exiting cleanly after 600 frames
+```
 
 ## Limitations
 
-- The VM is **x86_64** and is currently headless. `rnqnx_playground` fails at
-  `screen_create_context` because the virtio-drm Screen stack is not installed.
-- This is a validation harness for non-graphical QNX binaries and for the
-  deploy/SSH loop, not a substitute for the AArch64+Screen Raspberry Pi 4 target
-  required by `QNX-RN-008`.
+- The VM is **x86_64**, not AArch64, and uses a **software/dummy** Screen
+  blitter. This validates the Screen code path and resource lifecycle but not a
+  real GPU/display driver or the AArch64le build.
+- This is not a substitute for the AArch64+Screen Raspberry Pi 4 target required
+  by `QNX-RN-008`.
 - `mkqnximage` itself is not fully fixed; the scripts are workarounds that edit
   generated build files. A proper fix belongs in the QNX tooling or in the
   supported Ubuntu 24.04 build host.

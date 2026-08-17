@@ -10,14 +10,16 @@
   `q++`, the Screen headers, and `libscreen` available.
 - **Problem (partially resolved):** A QNX x86_64 VM now boots on the same Windows
   PC under QEMU 11.1.0, with SSH access on `root@127.0.0.1:2222`. The G0 C++20
-  probe was cross-built for QNX x86_64, copied to the VM, and ran successfully,
-  producing the expected `RNQNX_G0_CXX20_OK ranges=12 designated=21 thread=34
-  jthread=unsupported` output. See `docs/handoff/QNX_VM_WINDOWS.md` for the
-  exact workaround and reproduction steps.
-- **Problem (remaining):** No QNX AArch64 runtime target with Screen/display and
-  a named SSH user/key is configured, so `rnqnx_playground` still cannot be
-  validated. The current x86_64 VM is headless; `rnqnx_playground` fails at
-  `screen_create_context` because there is no Screen/display context.
+  probe and the Screen-only Milestone 0 executable `rnqnx_playground` were both
+  cross-built for QNX x86_64, deployed, and run successfully inside the VM.
+  `rnqnx_playground` initialized a 1280x720 Screen surface, rendered 600 frames,
+  and exited cleanly using a software/dummy WFD configuration. See
+  `docs/handoff/QNX_VM_WINDOWS.md` for the exact workaround and reproduction
+  steps.
+- **Problem (remaining):** No physical QNX AArch64 runtime target with a real
+  display/GPU and a named SSH user/key is configured. The x86_64 QEMU VM uses a
+  software/dummy Screen blitter, so it validates the code path and resource
+  lifecycle but not an actual GPU/display driver or the AArch64le build.
 - **Reproduction:** Previously `./scripts/configure-qnx.sh aarch64 Debug` failed
   with `Environment variable QNX_HOST is not set`. It now configures and builds.
 - **Current status:**
