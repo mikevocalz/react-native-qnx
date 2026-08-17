@@ -17,3 +17,4 @@ This directory records significant architectural decisions for `react-native-qnx
 | [0009](0009-fabric-only.md)                 | Fabric-only renderer architecture          | Accepted               | 2026-08-13 |
 | [0010](0010-macos-qt-development-host.md)   | macOS as a development host                | Accepted               | 2026-08-14 |
 | [0011](0011-qt-module-licensing.md)         | Qt module licensing gate                   | Proposed               | 2026-08-14 |
+|| [0012](0012-quick-controls-styling.md)      | Quick Controls style for QNX               | Proposed               | 2026-08-14 |         | Qt module licensing gate                   | Proposed               | 2026-08-14 |

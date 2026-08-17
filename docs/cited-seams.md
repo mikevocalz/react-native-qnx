@@ -522,6 +522,10 @@ committed generated output exist.
   `lib/cmake/Qt6` and `mkspecs` mentions `qqnx_imf`, `slog2`, and `qqnx_pps` as
   disabled features on macOS. These confirm QNX-specific symbols are present in
   the Qt source tree; they are not macOS build evidence.
+- The `qt` keg contains `QtQuickControls2Basic`, `QtQuickControls2Fusion`,
+  `QtQuickControls2Material`, `QtQuickControls2Universal`, and
+  `QtQuickControls2Imagine` frameworks, plus `QtLabsStyleKit` (Technology
+  Preview). ADR-0012 selects `Basic` as the default style.
 - Installed Expo Modules Core has Apple/Android runtime installers only; no QNX
   `globalThis.expo` installer or registry exists.
 - Installed Expo Metro defaults omit `qnx`; adding a resolver platform is a
