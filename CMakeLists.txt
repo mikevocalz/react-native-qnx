@@ -125,7 +125,9 @@ else()
 
     # Qt Quick view work is developed against an installed host Qt (ADR-0010).
     # It is optional so that a host without Qt still builds and tests the rest.
-    find_package(Qt6 6.11.1 COMPONENTS Core Gui Qml Quick QUIET)
+    # The host component list is the source of truth; see docs/build-qt-modules.md.
+    set(RNQNX_QT_HOST_MODULES Core Gui Qml Quick)
+    find_package(Qt6 6.11.1 COMPONENTS ${RNQNX_QT_HOST_MODULES} QUIET)
     if(Qt6_FOUND)
       message(STATUS "Qt ${Qt6_VERSION} found; building Qt Quick host targets (minimum 6.11.1)")
 
