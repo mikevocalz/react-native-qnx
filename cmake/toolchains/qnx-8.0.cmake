@@ -44,35 +44,53 @@ set(QNX_TARGET "$ENV{QNX_TARGET}")
 file(TO_CMAKE_PATH "${QNX_HOST}" QNX_HOST)
 file(TO_CMAKE_PATH "${QNX_TARGET}" QNX_TARGET)
 
-set(CMAKE_C_COMPILER   "${QNX_HOST}/usr/bin/qcc")
-set(CMAKE_CXX_COMPILER "${QNX_HOST}/usr/bin/q++")
+# Locate the QNX wrapper compilers.  On Windows the host tools have a .exe
+# extension, so find_program is used instead of a hard-coded path/existence test.
+find_program(CMAKE_C_COMPILER
+  NAMES qcc qcc.exe
+  HINTS "${QNX_HOST}/usr/bin"
+  NO_DEFAULT_PATH
+  REQUIRED
+)
+find_program(CMAKE_CXX_COMPILER
+  NAMES q++ q++.exe
+  HINTS "${QNX_HOST}/usr/bin"
+  NO_DEFAULT_PATH
+  REQUIRED
+)
 
-if(NOT EXISTS "${CMAKE_C_COMPILER}")
-  message(FATAL_ERROR "QNX C compiler not found at ${CMAKE_C_COMPILER}. Verify QNX_HOST.")
-endif()
-
-if(NOT EXISTS "${CMAKE_CXX_COMPILER}")
-  message(FATAL_ERROR "QNX C++ compiler not found at ${CMAKE_CXX_COMPILER}. Verify QNX_HOST.")
-endif()
-
-# qcc/q++ target variant flags. These map the toolchain to the target CPU.
+# qcc/q++ target variant flags. These map the wrapper to the target CPU.
 if(QNX_TARGET_ARCH STREQUAL "aarch64")
   set(QNX_COMPILER_VARIANT "gcc_ntoaarch64le")
+  set(RNQNX_QNX_TOOL_PREFIX "aarch64-unknown-nto-qnx8.0.0")
 elseif(QNX_TARGET_ARCH STREQUAL "x86_64")
   set(QNX_COMPILER_VARIANT "gcc_ntox86_64")
+  set(RNQNX_QNX_TOOL_PREFIX "x86_64-pc-nto-qnx8.0.0")
 endif()
 
 set(QNX_TARGET_CFLAGS  "-V${QNX_COMPILER_VARIANT}")
 set(QNX_TARGET_LDFLAGS "-V${QNX_COMPILER_VARIANT}")
-
-set(CMAKE_C_COMPILER_TARGET   "${QNX_COMPILER_VARIANT}")
-set(CMAKE_CXX_COMPILER_TARGET "${QNX_COMPILER_VARIANT}")
 
 set(CMAKE_C_FLAGS   "${QNX_TARGET_CFLAGS}" CACHE STRING "Initial C compile flags" FORCE)
 set(CMAKE_CXX_FLAGS "${QNX_TARGET_CFLAGS} -std=c++20" CACHE STRING "Initial C++ compile flags" FORCE)
 set(CMAKE_EXE_LINKER_FLAGS    "${QNX_TARGET_LDFLAGS}" CACHE STRING "Initial linker flags" FORCE)
 set(CMAKE_SHARED_LINKER_FLAGS "${QNX_TARGET_LDFLAGS}" CACHE STRING "Initial shared linker flags" FORCE)
 set(CMAKE_MODULE_LINKER_FLAGS "${QNX_TARGET_LDFLAGS}" CACHE STRING "Initial module linker flags" FORCE)
+
+# Static archives need the cross-target archiver/ranlib. CMake does not infer
+# these from the compiler wrapper, so locate them explicitly.
+find_program(CMAKE_AR
+  NAMES ${RNQNX_QNX_TOOL_PREFIX}-ar ${RNQNX_QNX_TOOL_PREFIX}-ar.exe
+  HINTS "${QNX_HOST}/usr/bin"
+  NO_DEFAULT_PATH
+  REQUIRED
+)
+find_program(CMAKE_RANLIB
+  NAMES ${RNQNX_QNX_TOOL_PREFIX}-ranlib ${RNQNX_QNX_TOOL_PREFIX}-ranlib.exe
+  HINTS "${QNX_HOST}/usr/bin"
+  NO_DEFAULT_PATH
+  REQUIRED
+)
 
 set(CMAKE_FIND_ROOT_PATH "${QNX_TARGET}")
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)

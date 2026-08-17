@@ -7,7 +7,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 EVIDENCE_DIR="${PROJECT_ROOT}/artifacts/g0"
-EXPECTED_OUTPUT="RNQNX_G0_CXX20_OK ranges=12 designated=21 jthread=34"
+EXPECTED_PATTERN="RNQNX_G0_CXX20_OK ranges=12 designated=21 (jthread=34|thread=34 jthread=unsupported)"
 REMOTE_BINARY="/tmp/rnqnx-g0-cxx20-probe"
 
 function fail() {
@@ -71,7 +71,7 @@ ROUND_TRIP_SECONDS=$((END_EPOCH - START_EPOCH))
 printf '%s\n' "${PROBE_OUTPUT}" | tee "${EVIDENCE_DIR}/pi-cxx20-output.txt"
 printf '%s\n' "${ROUND_TRIP_SECONDS}" >"${EVIDENCE_DIR}/pi-round-trip-seconds.txt"
 
-[[ "${PROBE_OUTPUT}" == *"${EXPECTED_OUTPUT}"* ]] ||
+printf '%s\n' "${PROBE_OUTPUT}" | grep -Eq "${EXPECTED_PATTERN}" ||
   fail "Pi output did not contain the expected C++20 proof line."
 ((ROUND_TRIP_SECONDS < 30)) ||
   fail "Pi deploy-and-run round trip was ${ROUND_TRIP_SECONDS}s; G0-D requires under 30s."

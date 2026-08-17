@@ -1,5 +1,29 @@
 # TEST_STATUS.md
 
+## QNX cross-compile matrix on Windows host — 2026-08-16
+
+- QNX SDP 8.0.2 is installed at `C:\Users\Owner\qnx800`; `qcc -V`/`q++ -V` confirm
+  both the `gcc_ntoaarch64le` and `gcc_ntox86_64` targets.
+- `vnext/cmake/qnx-aarch64le.toolchain.cmake` is fixed to find the Windows-hosted
+  QNX compilers/archiver (`qcc.exe`, `q++.exe`, `aarch64-unknown-nto-qnx8.0.0-
+  ar.exe`) and pass the `-Vgcc_ntoaarch64le` target flag.
+- `cmake/toolchains/qnx-8.0.cmake` is fixed to find the Windows-hosted QNX
+  compilers, select the right target-specific archiver/ranlib for aarch64 and
+  x86_64, and pass the matching `-V<variant>` flag.
+- All four QNX presets configure and build on this Windows PC:
+  - `qnx-aarch64-debug` → `rnqnx_playground` (AArch64 ELF, links `libscreen.so.1`),
+    `libqnx_platform.a`, `rnqnx_g0_cxx20_probe`
+  - `qnx-aarch64-release` → same targets, Release
+  - `qnx-x86_64-debug` → `rnqnx_playground` (x86_64 ELF), `libqnx_platform.a`,
+    `rnqnx_g0_cxx20_probe`
+  - `qnx-x86_64-release` → same targets, Release
+- `cmake --fresh --preset qnx-pi4` and `cmake --build --preset qnx-pi4` produce a
+  QNX AArch64 `rnqnx_g0_cxx20_probe`. This SDP's libc++ disables experimental
+  `stop_token`, so the probe falls back to `std::thread` and reports
+  `jthread=unsupported`; ranges and designated initializers still pass.
+- Evidence level: cross-compiled QNX ELF on a Windows PC. Nothing has run on a
+  QNX target yet.
+
 ## TextInput types, and an event-beat use-after-free — 2026-08-15
 
 - CTest 9/9; twenty `qt_react_host_host_test` cases, 55 host cases in total.

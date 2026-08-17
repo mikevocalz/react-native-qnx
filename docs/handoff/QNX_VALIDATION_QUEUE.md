@@ -19,7 +19,7 @@ reported as an SDP, ABI, driver, compositor, or hardware result.
 
 ## QNX-GFX-001 — Screen context/window/buffer lifecycle
 
-**Status:** Implemented but awaiting Linux validation
+**Status:** Cross-compiled successfully for QNX
 
 **Priority:** High
 
@@ -54,6 +54,13 @@ header. Stop and record an exact mismatch instead of adapting from memory.
 cmake --build --preset qnx-aarch64-debug --target qnx_platform
 ```
 
+**Cross-compiled evidence (2026-08-16, Windows x86-64 host):**
+
+- `qnx_platform` builds with the QNX SDP 8.0 Windows toolchain (`qcc`/`q++` 12.2.0,
+  target `gcc_ntoaarch64le`). See `artifacts/g0/qcc-V.txt` and
+  `build/qnx-aarch64-debug/libqnx_platform.a`.
+- Target evidence still required before advancing to a verified target state.
+
 **Required target evidence:**
 
 1. Context and typed application-window creation succeed.
@@ -68,7 +75,7 @@ state.
 
 ## QNX-GFX-002 — ARGB fill, buffer acquisition, and presentation
 
-**Status:** Implemented but awaiting Linux validation
+**Status:** Cross-compiled successfully for QNX
 
 **Priority:** High
 
@@ -95,6 +102,12 @@ state.
 cmake --build --preset qnx-aarch64-debug --target rnqnx_playground
 ```
 
+**Cross-compiled evidence (2026-08-16, Windows x86-64 host):**
+
+- `rnqnx_playground` builds and links `libscreen.so.1` for AArch64 QNX; see
+  `build/qnx-aarch64-debug/bin/rnqnx_playground`.
+- Target run evidence still required to confirm the window, colors, and frame loop.
+
 **Required target evidence:**
 
 ```bash
@@ -108,12 +121,14 @@ Record tearing, stale frames, format mismatches, and every returned `errno`.
 
 ## QNX-RN-008 — End-to-end Milestone 0 QNX validation
 
-**Status:** Blocked
+**Status:** Blocked on target runtime evidence
 
 **Priority:** High
 
-**Blocker:** No licensed QNX SDP 8.0.2 build host or QNX target is available in
-the current workspace. See `BLOCKERS.md`.
+**Blocker:** The QNX SDP 8.0.2 build host is configured on this Windows PC and
+the `qnx-aarch64-debug` preset cross-builds successfully. The remaining gap is a
+  QNX AArch64 target with Screen/display and SSH credentials to run
+  `rnqnx_playground`. See `BLOCKERS.md`.
 
 **Required environment:**
 

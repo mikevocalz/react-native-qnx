@@ -2,13 +2,15 @@
 
 ## Active — G0-A toolchain truth
 
-- [ ] Obtain access to a supported x86-64 QNX SDP 8.0 development host with a
-      deployed QNX Everywhere license.
-- [ ] Capture the installed SDP/package identity and complete `qcc -V`/`q++ -V`
-      output without license or account data.
-- [ ] Audit the installed compiler target against `gcc_ntoaarch64le`.
-- [ ] Cross-build the concepts/ranges/designated-initializer/`std::jthread`
-      probe with the `qnx-pi4` preset.
+- [x] Obtain access to a supported x86-64 QNX SDP 8.0 development host with a
+      deployed QNX Everywhere license (Windows host with SDP 8.0 at
+      `C:\Users\Owner\qnx800`).
+- [x] Capture the installed SDP/package identity and complete `qcc -V`/`q++ -V`
+      output without license or account data (recorded in `artifacts/g0/`).
+- [x] Audit the installed compiler target against `gcc_ntoaarch64le`.
+- [x] Cross-build the concepts/ranges/designated-initializer/`std::jthread`
+      probe with the `qnx-pi4` preset; `std::jthread` is unsupported in this SDP's
+      libc++, so the probe falls back to `std::thread` and reports the gap.
 - [ ] Run that exact binary on the physical Pi 4 and record its output.
 
 ## Blocked behind G0-A — G0-D device loop

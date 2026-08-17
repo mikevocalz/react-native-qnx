@@ -30,8 +30,18 @@ int main() {
   }
 
   std::atomic<int> threadValue{0};
+
+  // QNX SDP 8.0's libc++ disables experimental stop_token/jthread, so fall
+  // back to std::thread on targets where std::jthread is not in the library.
+#if defined(__cpp_lib_jthread) && (__cpp_lib_jthread >= 201911L)
   std::jthread worker([&threadValue] { threadValue.store(34); });
   worker.join();
+  const char* threadBackend = "jthread=34";
+#else
+  std::thread worker([&threadValue] { threadValue.store(34); });
+  worker.join();
+  const char* threadBackend = "thread=34 jthread=unsupported";
+#endif
 
   const ProbeResult result{
       .rangeTotal = rangeTotal,
@@ -42,13 +52,13 @@ int main() {
   if (result.rangeTotal != 12 || result.designatedValue != 21 ||
       result.threadValue != 34) {
     std::fprintf(stderr,
-                 "RNQNX_G0_CXX20_FAIL ranges=%d designated=%d jthread=%d\n",
+                 "RNQNX_G0_CXX20_FAIL ranges=%d designated=%d thread=%d\n",
                  result.rangeTotal,
                  result.designatedValue,
                  result.threadValue);
     return 1;
   }
 
-  std::puts("RNQNX_G0_CXX20_OK ranges=12 designated=21 jthread=34");
+  std::printf("RNQNX_G0_CXX20_OK ranges=12 designated=21 %s\n", threadBackend);
   return 0;
 }

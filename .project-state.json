@@ -4,12 +4,12 @@
   "activeMilestone": "Milestone 0: Compatibility and Toolchain",
   "activeBranch": "main",
   "latestKnownGoodCommit": "db1401ab83c73f756fa8a34d2b2751fe0de7bacc",
-  "repositoryBuildable": false,
+  "repositoryBuildable": true,
   "developmentMode": "mac-first",
   "currentAuthoringHost": {
-    "operatingSystem": "macOS 26.6.1",
-    "architecture": "arm64",
-    "qnxToolchainAvailable": false
+    "operatingSystem": "Windows",
+    "architecture": "x86_64",
+    "qnxToolchainAvailable": true
   },
   "dependencyBaseline": {
     "reactNative": "0.86.2",
@@ -25,8 +25,10 @@
     "macos": {
       "status": "host-validation-passed"
     },
-    "linuxQnxBuildHost": {
-      "status": "not-configured"
+    "qnxBuildHost": {
+      "operatingSystem": "Windows",
+      "architecture": "x86_64",
+      "status": "qnx-cross-compilation-passed"
     },
     "qnxRuntimeTarget": {
       "status": "not-configured"
@@ -37,12 +39,12 @@
     "qnxScreenHostEmulation": "passed-with-asan-and-ubsan",
     "installedDependencySourceContracts": "passed",
     "dependencySecurityAudit": "blocked-upstream-image-size-advisories",
-    "linuxQnxCompilation": "not-run",
+    "qnxCrossCompilation": "passed",
     "qnxRuntimeTests": "not-run"
   },
-  "lastSuccessfulCommand": "bash scripts/validate-macos.sh",
-  "lastFailingCommand": "bash scripts/configure-qnx.sh aarch64 Debug",
-  "lastTestedHost": "macOS 26.6.1 arm64 (authoring host)",
+  "lastSuccessfulCommand": "cmake --fresh --preset qnx-aarch64-debug && cmake --build --preset qnx-aarch64-debug",
+  "lastFailingCommand": "bash scripts/configure-qnx.sh aarch64 Debug (resolved: QNX SDP 8.0.2 Windows host configured)",
+  "lastTestedHost": "Windows x86-64 with QNX SDP 8.0.2",
   "lastTestedTarget": null,
   "completedTasks": [
     "QNX-RN-000",
@@ -55,7 +57,7 @@
     "QNX-RN-007"
   ],
   "activeTasks": ["QNX-RN-008"],
-  "blockedTasks": ["QNX-RN-008", "UPSTREAM-DEP-001"],
-  "nextRecommendedTask": "Validate the installed QNX Screen API, cross-compile on the licensed Ubuntu/QNX host, and run rnqnx_playground on a QNX target",
-  "updatedAt": "2026-08-15T01:41:15Z"
+  "blockedTasks": ["UPSTREAM-DEP-001"],
+  "nextRecommendedTask": "Run rnqnx_playground and rnqnx_g0_cxx20_probe on a QNX AArch64 target with Screen and SSH",
+  "updatedAt": "2026-08-16T21:45:00Z"
 }

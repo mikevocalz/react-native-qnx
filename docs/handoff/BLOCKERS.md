@@ -3,28 +3,33 @@
 ## QNX-RN-008 — Licensed QNX build and runtime environment unavailable
 
 - **First observed:** 2026-07-19
+- **Updated:** 2026-08-16
 - **Affected milestone:** Milestone 0 exit gate
-- **Problem:** The current macOS arm64 workspace has no QNX SDP 8.0.2,
-  `QNX_HOST`, `QNX_TARGET`, `qcc`/`q++`, installed Screen header/library, or QNX
-  runtime target.
-- **Reproduction:** Run `./scripts/configure-qnx.sh aarch64 Debug` without the
-  SDP environment.
-- **Current error:** CMake stops with `Environment variable QNX_HOST is not set`
-  and instructions to source the SDP environment script.
-- **Affected files:** `cmake/toolchains/qnx-8.0.cmake`, `CMakeLists.txt`,
+- **Problem (resolved):** A licensed QNX SDP 8.0.2 is now installed on this Windows
+  x86-64 PC at `C:\Users\Owner\qnx800`, with `QNX_HOST`, `QNX_TARGET`, `qcc`,
+  `q++`, the Screen headers, and `libscreen` available.
+- **Problem (remaining):** No QNX AArch64 runtime target with Screen/display and
+  SSH credentials is configured, so the cross-built binaries cannot be run yet.
+- **Reproduction:** Previously `./scripts/configure-qnx.sh aarch64 Debug` failed
+  with `Environment variable QNX_HOST is not set`. It now configures and builds.
+- **Current status:**
+  - `cmake --fresh --preset qnx-aarch64-debug` succeeds.
+  - `cmake --build --preset qnx-aarch64-debug` produces `rnqnx_playground`
+    linked against `libscreen.so.1` and the `libqnx_platform.a` static library
+    for AArch64 QNX.
+  - `cmake --build --preset qnx-pi4` produces `rnqnx_g0_cxx20_probe` for
+    AArch64 QNX; this SDP's libc++ lacks `std::jthread`, so the probe falls back
+    to `std::thread` and reports `jthread=unsupported`.
+- **Affected files:** `vnext/cmake/qnx-aarch64le.toolchain.cmake`,
+  `CMakeLists.txt`, `vnext/probes/cxx20/main.cpp`, `scripts/validate-g0-a.sh`,
   `native/platform/qnx/**`, and `scripts/{doctor,configure-qnx,build-qnx}.sh`.
-- **Work completed:** The concrete Screen wrapper is compiled and tested on
-  macOS against a test-only documented API subset with strict warnings,
-  ASan, and UBSan. Failure cleanup and buffer sequencing are covered.
-- **Why that is insufficient:** The fake cannot prove installed header
-  signatures/constants, qcc compatibility, `libscreen` linkage, BSP behavior,
-  compositor behavior, or target resource cleanup.
-- **External prerequisite:** Licensed QNX SDP 8.0.2 and target BSP on an x86-64
-  Ubuntu 24.04 host, plus a QNX target with Screen and a display.
-- **Next investigation:** Follow QNX-RN-008 in `QNX_VALIDATION_QUEUE.md` and
-  record the installed header/source symbols before changing any native seam.
-- **Scope:** Blocks QNX Milestone 0 completion only; macOS host work remains
-  available.
+- **External prerequisite:** A QNX AArch64 target with Screen/display and a named
+  SSH user/key (not root). Set `QNX_TARGET_IP` and `QNX_TARGET_USER` to run
+  `scripts/validate-g0-a.sh` and `scripts/deploy-qnx.sh`.
+- **Next investigation:** Deploy and run `rnqnx_playground` and
+  `rnqnx_g0_cxx20_probe` on the QNX target; record `slog2info` and stdout.
+- **Scope:** Blocks QNX Milestone 0 exit until target evidence is captured;
+  host and cross-compile work is unblocked.
 
 ## Milestone 1 — Hermes QNX build recipe absent
 

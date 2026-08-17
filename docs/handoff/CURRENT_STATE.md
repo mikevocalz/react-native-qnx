@@ -3,12 +3,16 @@
 ## Outcome
 
 The macOS-host Milestone 0 foundation is complete and reproducible. The QNX
-Milestone 0 exit gate is not complete because this workspace has no licensed QNX
-SDP, installed `screen/screen.h`, Linux cross-compiler, or runtime target.
+Milestone 0 exit gate is partially complete: a licensed QNX SDP 8.0.2 is now
+installed on this Windows PC, the AArch64 cross-compiler is verified, and both
+the `qnx-aarch64-debug` and `qnx-pi4` presets build successfully. The only
+remaining gate is running the resulting binaries on a physical or virtual QNX
+AArch64 target with Screen and SSH access.
 
 ## Current baseline
 
-- Authoring mode: mac-first; QNX remains the production target.
+- Authoring mode: mac-first; QNX remains the production target. The QNX SDP 8.0.2
+  Windows host toolchain is also configured and validated for cross-compilation.
 - Direct runtime/tooling line: React Native 0.86.2, React 19.2.3, Expo 57.0.12,
   Metro 0.84.4, Nitro Modules/Nitrogen 0.36.5, TypeScript 6.0.3, and pnpm
   11.21.0.
@@ -27,6 +31,11 @@ such as React Native 0.87, Metro 0.87, or TypeScript 7 can be substituted.
 
 ## Finished in the current working tree
 
+- The QNX SDP 8.0.2 Windows host toolchain is installed and produces AArch64 QNX
+  binaries; `qcc -V`/`q++ -V` are captured in `artifacts/g0/`.
+- The `qnx-pi4` and `qnx-aarch64-debug` presets configure and build successfully
+  on the Windows PC, producing `rnqnx_g0_cxx20_probe` and `rnqnx_playground`
+  linked against `libscreen.so.1` for AArch64 QNX.
 - The workspace lockfile was regenerated with exact direct dependency pins.
 - `validate:dependencies` verifies direct resolutions, peer baselines, the
   Hermes tag, resolved Expo internals, and named symbols in installed RN, Yoga,

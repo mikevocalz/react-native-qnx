@@ -32,19 +32,41 @@ if(NOT RNQNX_QCC_TARGET STREQUAL "gcc_ntoaarch64le")
     "The qnx-pi4 preset requires gcc_ntoaarch64le; got ${RNQNX_QCC_TARGET}. Record qcc -V before changing this lock.")
 endif()
 
-set(CMAKE_C_COMPILER "${RNQNX_QNX_HOST}/usr/bin/qcc")
-set(CMAKE_CXX_COMPILER "${RNQNX_QNX_HOST}/usr/bin/q++")
-set(CMAKE_C_COMPILER_TARGET "${RNQNX_QCC_TARGET}")
-set(CMAKE_CXX_COMPILER_TARGET "${RNQNX_QCC_TARGET}")
+# On Windows the QNX host tools ship as .exe; find_program tolerates the
+# extension while preserving the explicit QNX host path.
+find_program(CMAKE_C_COMPILER
+  NAMES qcc qcc.exe
+  HINTS "${RNQNX_QNX_HOST}/usr/bin"
+  NO_DEFAULT_PATH
+  REQUIRED
+)
+find_program(CMAKE_CXX_COMPILER
+  NAMES q++ q++.exe
+  HINTS "${RNQNX_QNX_HOST}/usr/bin"
+  NO_DEFAULT_PATH
+  REQUIRED
+)
+
+find_program(CMAKE_AR
+  NAMES aarch64-unknown-nto-qnx8.0.0-ar aarch64-unknown-nto-qnx8.0.0-ar.exe
+  HINTS "${RNQNX_QNX_HOST}/usr/bin"
+  NO_DEFAULT_PATH
+  REQUIRED
+)
+
+find_program(CMAKE_RANLIB
+  NAMES aarch64-unknown-nto-qnx8.0.0-ranlib aarch64-unknown-nto-qnx8.0.0-ranlib.exe
+  HINTS "${RNQNX_QNX_HOST}/usr/bin"
+  NO_DEFAULT_PATH
+  REQUIRED
+)
+
 set(CMAKE_SYSROOT "${RNQNX_QNX_TARGET}")
 
-if(NOT EXISTS "${CMAKE_C_COMPILER}")
-  message(FATAL_ERROR "Installed qcc not found at ${CMAKE_C_COMPILER}")
-endif()
-
-if(NOT EXISTS "${CMAKE_CXX_COMPILER}")
-  message(FATAL_ERROR "Installed q++ not found at ${CMAKE_CXX_COMPILER}")
-endif()
+# qcc/q++ select the OS/CPU variant with -V.  The wrapper ignores CMake's
+# generic compiler-target property, so pass the variant through the flags.
+set(CMAKE_C_FLAGS "-V${RNQNX_QCC_TARGET}" CACHE STRING "Initial C compile flags" FORCE)
+set(CMAKE_CXX_FLAGS "-V${RNQNX_QCC_TARGET}" CACHE STRING "Initial C++ compile flags" FORCE)
 
 set(CMAKE_FIND_ROOT_PATH "${RNQNX_QNX_TARGET}")
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)

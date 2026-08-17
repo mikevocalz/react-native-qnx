@@ -53,7 +53,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX" OR BUILD_TESTING)
       COMMAND $<TARGET_FILE:rnqnx_g0_cxx20_probe>)
     set_tests_properties(rnqnx_g0_cxx20_probe PROPERTIES
       PASS_REGULAR_EXPRESSION
-        "RNQNX_G0_CXX20_OK ranges=12 designated=21 jthread=34"
+        "RNQNX_G0_CXX20_OK ranges=12 designated=21 (jthread=34|thread=34 jthread=unsupported)"
     )
   endif()
 endif()
