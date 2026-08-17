@@ -1,5 +1,8 @@
 # Build outputs
 build/
+third-party/hermes-*
+python-embed/
+
 *.o
 *.a
 *.so

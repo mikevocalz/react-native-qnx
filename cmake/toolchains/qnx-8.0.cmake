@@ -71,8 +71,14 @@ endif()
 set(QNX_TARGET_CFLAGS  "-V${QNX_COMPILER_VARIANT}")
 set(QNX_TARGET_LDFLAGS "-V${QNX_COMPILER_VARIANT}")
 
-set(CMAKE_C_FLAGS   "${QNX_TARGET_CFLAGS}" CACHE STRING "Initial C compile flags" FORCE)
-set(CMAKE_CXX_FLAGS "${QNX_TARGET_CFLAGS} -std=c++20" CACHE STRING "Initial C++ compile flags" FORCE)
+# Architecture-specific device headers (e.g. machine/endian.h) live in a
+# per-arch subdirectory; adding it as a system include path avoids the need
+# to patch upstream code like Hermes' bundled llvh for QNX.
+set(QNX_TARGET_ARCH_INCLUDES
+    "-isystem ${QNX_TARGET}/usr/include/devs/include_${QNX_TARGET_ARCH} -isystem ${QNX_TARGET}/usr/include/devs/sys")
+
+set(CMAKE_C_FLAGS   "${QNX_TARGET_CFLAGS} ${QNX_TARGET_ARCH_INCLUDES}" CACHE STRING "Initial C compile flags" FORCE)
+set(CMAKE_CXX_FLAGS "${QNX_TARGET_CFLAGS} -std=c++20 ${QNX_TARGET_ARCH_INCLUDES}" CACHE STRING "Initial C++ compile flags" FORCE)
 set(CMAKE_EXE_LINKER_FLAGS    "${QNX_TARGET_LDFLAGS}" CACHE STRING "Initial linker flags" FORCE)
 set(CMAKE_SHARED_LINKER_FLAGS "${QNX_TARGET_LDFLAGS}" CACHE STRING "Initial shared linker flags" FORCE)
 set(CMAKE_MODULE_LINKER_FLAGS "${QNX_TARGET_LDFLAGS}" CACHE STRING "Initial module linker flags" FORCE)
