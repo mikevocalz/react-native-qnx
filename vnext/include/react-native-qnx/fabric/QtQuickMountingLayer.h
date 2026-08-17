@@ -56,6 +56,14 @@ struct ViewStyle {
   float translateY{0.0F};
   float scale{1.0F};
   float rotation{0.0F};
+  bool accessible{false};
+  QString accessibilityLabel;
+  QString accessibilityRole;
+  QString accessibilityHint;
+  QString accessibilityValue;
+  bool accessibilityStateDisabled{false};
+  bool accessibilityStateSelected{false};
+  bool accessibilityStateChecked{false};
 };
 
 /// The text attributes this platform carries onto a text item. Mirrored from

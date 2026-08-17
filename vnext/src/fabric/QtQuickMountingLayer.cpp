@@ -257,6 +257,28 @@ MountError QtQuickMountingLayer::updateStyle(Tag tag, const ViewStyle& style) {
   item->setScale(static_cast<qreal>(style.scale));
   item->setRotation(static_cast<qreal>(style.rotation));
 
+  // Forward accessibility information as dynamic QML properties. These do not
+  // enable a screen reader by themselves, but they make the values observable
+  // from C++ and QML for future accessibility integration or testing.
+  item->setProperty("accessible", style.accessible);
+  if (style.accessible) {
+    item->setProperty(
+        "accessibilityLabel",
+        style.accessibilityLabel.isEmpty() ? QVariant() : QVariant(style.accessibilityLabel));
+    item->setProperty(
+        "accessibilityRole",
+        style.accessibilityRole.isEmpty() ? QVariant() : QVariant(style.accessibilityRole));
+    item->setProperty(
+        "accessibilityHint",
+        style.accessibilityHint.isEmpty() ? QVariant() : QVariant(style.accessibilityHint));
+    item->setProperty(
+        "accessibilityValue",
+        style.accessibilityValue.isEmpty() ? QVariant() : QVariant(style.accessibilityValue));
+    item->setProperty("accessibilityStateDisabled", style.accessibilityStateDisabled);
+    item->setProperty("accessibilityStateSelected", style.accessibilityStateSelected);
+    item->setProperty("accessibilityStateChecked", style.accessibilityStateChecked);
+  }
+
   lastError_.clear();
   return MountError::None;
 }

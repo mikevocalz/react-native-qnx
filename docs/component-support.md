@@ -55,7 +55,7 @@ compositions over parts that already work, and 6 need native work.
 | `onLayout`                                                                              | ✅     | Emitted via `ViewEventEmitter` when the shadow node layout is applied.                                                                                                            |
 | `onTouchStart`/`Move`/`End`                                                             | ⚠      | Single pointer via mouse and multi-pointer via `QTouchEvent`. Each active touch is captured to the view it started on (responder gestures override the target).                   |
 | Responder props (`onStartShouldSetResponder`, `onResponderGrant`, `onResponderRelease`) | ✅     | React's responder negotiation runs on top of the touch events and is covered by a host test.                                                                                      |
-| Accessibility props                                                                     | ❌     | Qt Quick's accessibility bridge is not connected.                                                                                                                                 |
+| Accessibility props                                                                     | ⚠      | `accessible`, `accessibilityLabel`, `accessibilityRole`, `accessibilityHint`, `accessibilityValue`, and `accessibilityState` are forwarded as QML dynamic properties so they can be read by tests or a future bridge. Qt Quick's accessibility engine is not connected, so there is no screen reader output. |
 
 ## `Text`
 
