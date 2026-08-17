@@ -65,7 +65,11 @@ The working scripts are stored in `C:\Users\Owner\qnx-vm-test`:
 
 - `fix-and-rebuild.sh` — sets `HOME`, sources the SDP environment, substitutes
   the `__LIB*` placeholders in `output/build/ifs.build` and
-  `output/build/system.build`, then runs `mkifs` and `mkqnx6fsimg`.
+  `output/build/system.build`, patches the graphics section to the software/dummy
+  WFD blitter, then runs `mkifs` and `mkqnx6fsimg`.
+- `patch-system-build-for-screen.sh` — called by `fix-and-rebuild.sh`; replaces
+  the generated QEMU virtio-drm graphics block in `output/build/system.build`
+  with the software/dummy Screen configuration.
 - `rebuild-disk.sh` — sets `HOST_UNAME=WINNT` and `MKFS_PATH` correctly, then
   runs the QNX `builddisk` script to regenerate `output/disk-qemu`.
 - `runimage-fixed.sh` — not fully functional because of the `rng-random` issue
@@ -76,8 +80,16 @@ Typical rebuild flow after the first `mkqnximage --build`:
 
 ```bash
 # From Git Bash or the QNX bash, in qnx-vm-test/
-bash fix-and-rebuild.sh   # fix placeholders and rebuild IFS/system/data
+bash fix-and-rebuild.sh   # fix placeholders + graphics patch, rebuild IFS/system/data
 bash rebuild-disk.sh      # regenerate disk-qemu
+```
+
+A full regeneration from scratch is:
+
+```bash
+mkqnximage --build=all --force
+bash fix-and-rebuild.sh
+bash rebuild-disk.sh
 ```
 
 ## Booting the VM
