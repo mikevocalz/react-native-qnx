@@ -22,6 +22,21 @@ runner and records only sanitized evidence.
 
 Source: [QNX Everywhere introduction and license acquisition](https://www.qnx.com/developers/docs/qnxeverywhere/introduction.html).
 
+## Qt module posture
+
+ADR-0011 records the per-module licensing gate. Under the open-source (LGPLv3)
+posture, the following are excluded unless the owner moves to a Qt commercial
+license:
+
+- `Qt Virtual Keyboard` — GPLv3-only open-source; required for on-screen
+  keyboard on touchscreen targets.
+- `Qt Quick 3D`, `Qt Graphs`, `Qt Lottie Animation`, `Qt Quick Timeline`,
+  `Qt Quick 3D Physics`, `Qt Canvas Painter`, `Qt Qml Compiler`, `Qt HTTP Server`,
+  `Qt MQTT`, `Qt OPC UA` — all GPLv3-only in the open-source edition.
+
+All other modules are presumed available under LGPLv3 open-source terms, subject
+to re-audit against the pinned Qt LTS source.
+
 ## Qt for QNX stop gate
 
 The platform specification assumes Qt 6 can be built from source for the Everywhere target under
@@ -31,8 +46,8 @@ QNX is available under Qt for Device Creation Professional.
 
 The repository therefore will not download, build, deploy, package, or
 redistribute Qt for QNX until the owner obtains a documented determination for
-the exact QNX Everywhere/non-commercial scenario. When resolved, ADR-0001 must
-record:
+the exact QNX Everywhere/non-commercial scenario. When resolved, ADR-0001 and
+ADR-0011 must record:
 
 - the authorized Qt source/distribution channel and exact tag;
 - commercial or open-source license basis for each required module;

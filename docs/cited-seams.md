@@ -512,9 +512,16 @@ committed generated output exist.
 
 ## Qt and Expo boundaries
 
-- No Qt source tag is pinned or installed. `QQuickItem`, `QQuickWindow`,
+- The Qt 6.11.1 source is not installed. `QQuickItem`, `QQuickWindow`,
   `QQmlComponent`, QPA implementation paths, plugin filenames, and private/public
   boundaries are **not yet authorized implementation seams**.
+- Qt module licensing is cited from
+  [Qt 6.11 Licensing](https://doc.qt.io/qt-6.11/licensing.html) and recorded in
+  ADR-0011; it must be re-checked against the pinned source tree.
+- The `qtbase` keg contains `FindSlog2.cmake` and `FindPPS.cmake` under
+  `lib/cmake/Qt6` and `mkspecs` mentions `qqnx_imf`, `slog2`, and `qqnx_pps` as
+  disabled features on macOS. These confirm QNX-specific symbols are present in
+  the Qt source tree; they are not macOS build evidence.
 - Installed Expo Modules Core has Apple/Android runtime installers only; no QNX
   `globalThis.expo` installer or registry exists.
 - Installed Expo Metro defaults omit `qnx`; adding a resolver platform is a
