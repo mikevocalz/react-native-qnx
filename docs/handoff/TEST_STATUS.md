@@ -546,7 +546,7 @@
 
 - Host: macOS 26.6.1, Darwin 25.6.0 arm64, Apple Clang 21.0.0.21000099,
   Homebrew Qt 6.11.1 at `/opt/homebrew/opt/qt`.
-- `find_package(Qt6 6.8 COMPONENTS Core Gui Qml Quick QUIET)` resolves with no
+- `find_package(Qt6 6.11.1 COMPONENTS Core Gui Qml Quick QUIET)` resolves with no
   `CMAKE_PREFIX_PATH` hint on this machine; CMake logged
   `Qt 6.11.1 found; building Qt Quick host targets`.
 - `rnqnx_views_qt` and `rnqnx_qtquick_host_probe` compile clean under

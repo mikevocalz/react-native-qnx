@@ -125,9 +125,9 @@ else()
 
     # Qt Quick view work is developed against an installed host Qt (ADR-0010).
     # It is optional so that a host without Qt still builds and tests the rest.
-    find_package(Qt6 6.8 COMPONENTS Core Gui Qml Quick QUIET)
+    find_package(Qt6 6.11.1 COMPONENTS Core Gui Qml Quick QUIET)
     if(Qt6_FOUND)
-      message(STATUS "Qt ${Qt6_VERSION} found; building Qt Quick host targets")
+      message(STATUS "Qt ${Qt6_VERSION} found; building Qt Quick host targets (minimum 6.11.1)")
 
       add_library(rnqnx_views_qt STATIC
         vnext/src/views/qt/QtQuickItemFactory.cpp
