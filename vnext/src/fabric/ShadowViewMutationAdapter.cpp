@@ -176,11 +176,37 @@ ViewStyle toViewStyle(const ShadowView& view) {
   // collapses. Taking the top-left is faithful when all four agree and lossy
   // otherwise; the loss is recorded in docs/component-support.md.
   style.borderRadius = border.borderRadii.topLeft.horizontal;
-  style.borderWidth = static_cast<float>(border.borderWidths.left);
 
-  if (facebook::react::isColorMeaningful(border.borderColors.left)) {
-    style.hasBorderColor = true;
-    style.borderColor = packColor(border.borderColors.left);
+  // Qt Quick's Rectangle has a single border width and colour. If all four
+  // edges agree we can represent them faithfully; otherwise we collapse to the
+  // top edge and record the lossy case in component-support.md.
+  const float topWidth = static_cast<float>(border.borderWidths.top);
+  const bool uniformWidth =
+      (border.borderWidths.top == border.borderWidths.right) &&
+      (border.borderWidths.right == border.borderWidths.bottom) &&
+      (border.borderWidths.bottom == border.borderWidths.left);
+  style.borderWidth = uniformWidth
+      ? topWidth
+      : static_cast<float>(border.borderWidths.top);
+  style.borderWidthIsUniform = uniformWidth;
+
+  const bool uniformColor =
+      border.borderColors.top == border.borderColors.right &&
+      border.borderColors.right == border.borderColors.bottom &&
+      border.borderColors.bottom == border.borderColors.left;
+  if (uniformColor) {
+    if (facebook::react::isColorMeaningful(border.borderColors.top)) {
+      style.hasBorderColor = true;
+      style.borderColor = packColor(border.borderColors.top);
+      style.borderColorIsUniform = true;
+    }
+  } else {
+    // Non-uniform border colours: still draw the top edge so something appears.
+    if (facebook::react::isColorMeaningful(border.borderColors.top)) {
+      style.hasBorderColor = true;
+      style.borderColor = packColor(border.borderColors.top);
+    }
+    style.borderColorIsUniform = false;
   }
 
   for (const auto& op : viewProps->transform.operations) {

@@ -48,8 +48,10 @@ struct ViewStyle {
   float opacity{1.0F};
   float borderRadius{0.0F};
   float borderWidth{0.0F};
+  bool borderWidthIsUniform{true};
   bool hasBorderColor{false};
   std::uint32_t borderColor{0};
+  bool borderColorIsUniform{true};
   float translateX{0.0F};
   float translateY{0.0F};
   float scale{1.0F};
