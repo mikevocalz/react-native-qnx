@@ -78,6 +78,10 @@ QString fragmentStyleAttribute(const facebook::react::TextAttributes& attributes
       *attributes.fontStyle == facebook::react::FontStyle::Italic) {
     parts << QStringLiteral("font-style:italic");
   }
+  if (!attributes.fontFamily.empty()) {
+    parts << QStringLiteral("font-family:'%1'").arg(
+        QString::fromStdString(attributes.fontFamily));
+  }
   return parts.join(QLatin1Char(';'));
 }
 
@@ -116,6 +120,10 @@ TextStyle paragraphTextStyle(const ShadowView& view) {
               fragment.textAttributes.foregroundColor)) {
         style.hasColor = true;
         style.color = packColor(fragment.textAttributes.foregroundColor);
+      }
+      if (!fragment.textAttributes.fontFamily.empty()) {
+        style.fontFamily =
+            QString::fromStdString(fragment.textAttributes.fontFamily);
       }
     }
   }
@@ -448,6 +456,9 @@ void ShadowViewMutationAdapter::applyTextInput(const ShadowView& view) {
   if (attributes.foregroundColor) {
     style.hasColor = true;
     style.color = static_cast<std::uint32_t>(*attributes.foregroundColor);
+  }
+  if (!attributes.fontFamily.empty()) {
+    style.fontFamily = QString::fromStdString(attributes.fontFamily);
   }
 
   style.placeholder = QString::fromStdString(props->placeholder);

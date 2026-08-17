@@ -85,6 +85,7 @@ struct TextStyle {
   int maximumNumberOfLines{0};
   /// Qt Quick `elide` value to use when `maximumNumberOfLines > 0`.
   int elideMode{1};
+  QString fontFamily;
 };
 
 /// The properties of an editable text field this platform can apply.
@@ -104,6 +105,7 @@ struct TextInputStyle {
   bool multiline{false};
   int maxLength{0};
   QString placeholder;
+  QString fontFamily;
 };
 
 /// The properties of an activity indicator this platform can apply.

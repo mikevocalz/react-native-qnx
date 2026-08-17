@@ -67,7 +67,7 @@ compositions over parts that already work, and 6 need native work.
 | Wrapping                   | ✅     | Measured with `QTextLayout` against the available width; the item is set to wrap so paint matches layout. |
 | `numberOfLines`            | ✅     | Limits measured lines and sets Qt Quick `maximumLineCount`; `elide` is applied when the line limit is active. |
 | Attachments (inline views) | ❌     | Not supported by Qt Quick `Text`; React Native's generic manager reports them as zero-sized, so no text/attachment layout is available. |
-| Font family                | ⚠      | Passed to Qt if named; no font registration, so an unavailable family silently falls back.                |
+| Font family                | ✅     | Passed to Qt, with bundled font files (`*.ttf`, `*.otf`, `*.ttc`) auto-registered from `assets/fonts` and system font directories before falling back. |
 
 ## `Image`
 

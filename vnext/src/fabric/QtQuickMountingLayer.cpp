@@ -3,12 +3,84 @@
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
 #include <QColor>
+#include <QCoreApplication>
+#include <QDir>
+#include <QFile>
 #include <QFont>
+#include <QFontDatabase>
+#include <QHash>
+#include <QStandardPaths>
+#include <QStringList>
 #include <QUrl>
 
 #include <algorithm>
 #include <QList>
 #include <QQuickItem>
+
+namespace {
+
+// Directories searched for bundled/native font files, in addition to system
+// font locations. Qt QNX deployments usually ship assets under the executable.
+QStringList defaultFontSearchPaths() {
+  QStringList paths;
+  paths << QCoreApplication::applicationDirPath() + QStringLiteral("/assets/fonts");
+  paths << QCoreApplication::applicationDirPath() + QStringLiteral("/fonts");
+  for (const auto& path : QStandardPaths::standardLocations(
+           QStandardPaths::FontsLocation)) {
+    paths << path;
+  }
+  return paths;
+}
+
+// Try to load a font file whose name matches the requested family. Returns the
+// actual font-family name reported by Qt, or the requested family if no file
+// could be loaded. Loading is attempted once per family per process and the
+// result is cached.
+QString resolveFontFamily(const QString& requested) {
+  if (requested.isEmpty()) {
+    return requested;
+  }
+
+  static QHash<QString, QString> resolved;
+  if (resolved.contains(requested)) {
+    return resolved.value(requested);
+  }
+
+  const QStringList exts = {
+      QStringLiteral(".ttf"),
+      QStringLiteral(".otf"),
+      QStringLiteral(".ttc"),
+  };
+
+  for (const auto& dir : defaultFontSearchPaths()) {
+    if (!QDir(dir).exists()) {
+      continue;
+    }
+    for (const auto& ext : exts) {
+      const QString fileName = requested + ext;
+      const QString lowerFileName = requested.toLower() + ext;
+      for (const auto& name : {fileName, lowerFileName}) {
+        const QString path = dir + QLatin1Char('/') + name;
+        if (QFile::exists(path)) {
+          const int id = QFontDatabase::addApplicationFont(path);
+          if (id >= 0) {
+            const QStringList families =
+                QFontDatabase::applicationFontFamilies(id);
+            if (!families.isEmpty()) {
+              resolved.insert(requested, families.first());
+              return families.first();
+            }
+          }
+        }
+      }
+    }
+  }
+
+  resolved.insert(requested, requested);
+  return requested;
+}
+
+} // namespace
 
 namespace rnqnx::fabric {
 
@@ -302,9 +374,14 @@ MountError QtQuickMountingLayer::updateTextInput(
     textField->setProperty("text", style.text);
   }
 
-  if (style.fontSize > 0.0F) {
+  if (style.fontSize > 0.0F || !style.fontFamily.isEmpty()) {
     QFont font = item->property("font").value<QFont>();
-    font.setPixelSize(static_cast<int>(style.fontSize));
+    if (style.fontSize > 0.0F) {
+      font.setPixelSize(static_cast<int>(style.fontSize));
+    }
+    if (!style.fontFamily.isEmpty()) {
+      font.setFamily(resolveFontFamily(style.fontFamily));
+    }
     item->setProperty("font", font);
   }
   if (style.hasColor) {
@@ -435,11 +512,16 @@ MountError QtQuickMountingLayer::updateText(
     item->setProperty("text", style.text);
   }
 
-  if (style.fontSize > 0.0F) {
+  if (style.fontSize > 0.0F || !style.fontFamily.isEmpty()) {
     // `font` is a grouped property holding a QFont value, so it is read,
     // modified, and written back rather than set through a dotted name.
     QFont font = item->property("font").value<QFont>();
-    font.setPixelSize(static_cast<int>(style.fontSize));
+    if (style.fontSize > 0.0F) {
+      font.setPixelSize(static_cast<int>(style.fontSize));
+    }
+    if (!style.fontFamily.isEmpty()) {
+      font.setFamily(resolveFontFamily(style.fontFamily));
+    }
     item->setProperty("font", font);
   }
   if (style.hasColor) {
