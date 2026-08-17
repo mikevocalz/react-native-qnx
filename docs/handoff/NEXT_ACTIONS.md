@@ -14,6 +14,10 @@ lacks the QEMU virtio-drm graphics package, but it still validates the Screen
 library linkage, `QnxScreenSurface` lifecycle, and cross-compiled runtime loop.
 See `docs/handoff/QNX_VM_WINDOWS.md` for the workaround.
 
+Additionally, `rnqnx_playground` compiles and links successfully for
+`qnx-aarch64-debug`; `ntoaarch64-readelf` reports `Machine: AArch64`, confirming
+the code and dependencies cross-build for the Pi target architecture.
+
 **Files:**
 
 - `cmake/toolchains/qnx-8.0.cmake`
@@ -43,11 +47,18 @@ See `docs/handoff/QNX_VM_WINDOWS.md` for the workaround.
    ./scripts/build-qnx.sh aarch64 Debug
    ```
 
-4. With `QNX_TARGET_IP` set, deploy and run:
+4. With `QNX_TARGET_IP` and `QNX_TARGET_USER` set, deploy and run:
 
    ```bash
    ./scripts/deploy-qnx.sh aarch64 rnqnx_playground Debug
    ./scripts/run-qnx.sh aarch64 rnqnx_playground
+   ```
+
+   Or use the convenience wrapper that builds, deploys, runs, and captures
+   evidence in `artifacts/g0-pi/`:
+
+   ```bash
+   ./scripts/validate-qnx-pi.sh
    ```
 
 5. Run the executable repeatedly and use target-appropriate Screen/resource
