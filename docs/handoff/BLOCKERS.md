@@ -19,7 +19,9 @@
 - **Problem (remaining):** No physical QNX AArch64 runtime target with a real
   display/GPU and a named SSH user/key is configured. The x86_64 QEMU VM uses a
   software/dummy Screen blitter, so it validates the code path and resource
-  lifecycle but not an actual GPU/display driver or the AArch64le build.
+  lifecycle but not an actual GPU/display driver. The `rnqnx_playground` binary
+  does compile and link successfully for `qnx-aarch64-debug` and `ntoaarch64-readelf`
+  reports `Machine: AArch64`, so the remaining gap is physical hardware to run it.
 - **Reproduction:** Previously `./scripts/configure-qnx.sh aarch64 Debug` failed
   with `Environment variable QNX_HOST is not set`. It now configures and builds.
 - **Current status:**
