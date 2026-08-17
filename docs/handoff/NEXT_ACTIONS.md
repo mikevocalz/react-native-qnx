@@ -38,7 +38,14 @@ the code and dependencies cross-build for the Pi target architecture.
    `screen_get_window_property_pv`, `screen_fill`, `screen_post_window`,
    `screen_destroy_window`, `screen_destroy_context`, and their referenced
    `SCREEN_*` constants. Reconcile the test-only header from that installed file.
-3. Run:
+3. Verify the installed Screen header contains the symbols used by
+   `QnxScreenSurface`:
+
+   ```bash
+   ./scripts/audit-screen-symbols.sh
+   ```
+
+4. Run:
 
    ```bash
    pnpm install --frozen-lockfile
@@ -47,7 +54,7 @@ the code and dependencies cross-build for the Pi target architecture.
    ./scripts/build-qnx.sh aarch64 Debug
    ```
 
-4. With `QNX_TARGET_IP` and `QNX_TARGET_USER` set, deploy and run:
+5. With `QNX_TARGET_IP` and `QNX_TARGET_USER` set, deploy and run:
 
    ```bash
    ./scripts/deploy-qnx.sh aarch64 rnqnx_playground Debug
@@ -61,7 +68,7 @@ the code and dependencies cross-build for the Pi target architecture.
    ./scripts/validate-qnx-pi.sh
    ```
 
-5. Run the executable repeatedly and use target-appropriate Screen/resource
+6. Run the executable repeatedly and use target-appropriate Screen/resource
    diagnostics to check cleanup. Record exact commands and output in
    `TEST_STATUS.md`; advance the two QNX-GFX queue entries only with evidence.
 

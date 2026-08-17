@@ -77,6 +77,9 @@ mkdir -p "${EVIDENCE_DIR}"
 
 cd "${PROJECT_ROOT}"
 
+echo "Auditing Screen symbols used by QnxScreenSurface..."
+./scripts/audit-screen-symbols.sh
+
 echo "Configuring and building qnx-x86_64-debug..."
 cmake --preset qnx-x86_64-debug
 cmake --build --preset qnx-x86_64-debug --target rnqnx_g0_cxx20_probe

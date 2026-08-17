@@ -58,6 +58,10 @@ such as React Native 0.87, Metro 0.87, or TypeScript 7 can be substituted.
   validation: it sources the QNX SDP environment, builds the G0 probe and
   `rnqnx_playground` for `qnx-x86_64-debug`, deploys and runs them on the local
   QEMU VM, and captures the outputs and round-trip timings in `artifacts/g0-vm/`.
+- A new repo script, `scripts/audit-screen-symbols.sh`, verifies that every
+  Screen function and constant used by `QnxScreenSurface` exists in the
+  installed QNX `screen/screen.h` header. All 26 audited symbols are present in
+  QNX SDP 8.0.2.
 - The Screen executable `rnqnx_playground` also compiles and links for
   `qnx-aarch64-debug`; `ntoaarch64-readelf` reports `Machine: AArch64`. This
   confirms the Screen code and its QNX dependencies cross-build for the target
