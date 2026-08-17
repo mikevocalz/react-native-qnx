@@ -65,6 +65,12 @@ class ShadowViewMutationAdapter {
       const folly::dynamic& args,
       const facebook::react::ShadowView* shadowView);
 
+  /// Applies a props delta to an already-mounted view. This is the synchronous
+  /// path the `NativeAnimated` backend uses for direct property updates such
+  /// as `opacity` and `transform`.
+  void synchronouslyUpdateViewOnUIThread(
+      facebook::react::Tag tag, const folly::dynamic& props);
+
  private:
   void applyText(const facebook::react::ShadowView& view);
   void applyImage(const facebook::react::ShadowView& view);

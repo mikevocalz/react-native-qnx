@@ -204,6 +204,78 @@ ViewStyle toViewStyle(const ShadowView& view) {
   return style;
 }
 
+namespace {
+
+std::uint32_t packColorFromDynamic(const folly::dynamic& value) {
+  if (value.isInt()) {
+    return static_cast<std::uint32_t>(value.asInt());
+  }
+  return 0;
+}
+
+ViewStyle viewStyleFromDynamic(const folly::dynamic& props) {
+  ViewStyle style;
+
+  if (props.count("opacity")) {
+    style.opacity = static_cast<float>(props["opacity"].asDouble());
+  }
+
+  if (props.count("backgroundColor")) {
+    const auto packed = packColorFromDynamic(props["backgroundColor"]);
+    if (packed != 0u) {
+      style.hasBackgroundColor = true;
+      style.backgroundColor = packed;
+    }
+  }
+
+  if (props.count("borderRadius")) {
+    style.borderRadius = static_cast<float>(props["borderRadius"].asDouble());
+  }
+
+  if (props.count("borderWidth")) {
+    style.borderWidth = static_cast<float>(props["borderWidth"].asDouble());
+  }
+
+  if (props.count("borderColor")) {
+    const auto packed = packColorFromDynamic(props["borderColor"]);
+    if (packed != 0u) {
+      style.hasBorderColor = true;
+      style.borderColor = packed;
+    }
+  }
+
+  if (props.count("transform")) {
+    for (const auto& op : props["transform"]) {
+      if (!op.isObject()) {
+        continue;
+      }
+      for (const auto& item : op.items()) {
+        const auto& rawKey = item.first;
+        const auto& rawValue = item.second;
+        if (rawValue.isNull()) {
+          continue;
+        }
+        const std::string key = rawKey.asString();
+        if (key == "translateX") {
+          style.translateX += static_cast<float>(rawValue.asDouble());
+        } else if (key == "translateY") {
+          style.translateY += static_cast<float>(rawValue.asDouble());
+        } else if (key == "scale") {
+          style.scale *= static_cast<float>(rawValue.asDouble());
+        } else if (key == "rotate") {
+          // React Native's native transform uses radians, Qt Quick uses degrees.
+          style.rotation +=
+              static_cast<float>(qRadiansToDegrees(rawValue.asDouble()));
+        }
+      }
+    }
+  }
+
+  return style;
+}
+
+}  // namespace
+
 LayoutFrame toLayoutFrame(const facebook::react::LayoutMetrics& metrics) {
   return LayoutFrame{
       .x = metrics.frame.origin.x,
@@ -215,6 +287,12 @@ LayoutFrame toLayoutFrame(const facebook::react::LayoutMetrics& metrics) {
 
 ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer)
     : layer_(layer) {}
+
+void ShadowViewMutationAdapter::synchronouslyUpdateViewOnUIThread(
+    facebook::react::Tag tag,
+    const folly::dynamic& props) {
+  layer_.updateStyle(tag, viewStyleFromDynamic(props));
+}
 
 void ShadowViewMutationAdapter::setTouchDispatcher(
     QtTouchDispatcher* dispatcher) {

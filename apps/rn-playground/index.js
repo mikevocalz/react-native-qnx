@@ -9,6 +9,7 @@
  */
 
 const React = require('react');
+const Animated = require('react-native/Libraries/Animated/Animated').default;
 const AppRegistry = require('react-native/Libraries/ReactNative/AppRegistry').AppRegistry;
 const View = require('react-native/Libraries/Components/View/View').default;
 const Text = require('react-native/Libraries/Text/Text').default;
@@ -421,6 +422,23 @@ function SectionListApp() {
   });
 }
 
+function NativeAnimatedApp() {
+  const opacity = React.useRef(new Animated.Value(0.5)).current;
+  return React.createElement(
+    Animated.View,
+    {
+      style: {
+        width: 100,
+        height: 50,
+        backgroundColor: '#ff0000',
+        opacity,
+      },
+      collapsable: false,
+    },
+    null
+  );
+}
+
 function ButtonApp() {
   return React.createElement(Button, {
     title: 'OK',
@@ -469,5 +487,6 @@ AppRegistry.registerComponent('RNQnxImage', () => ImageApp);
 AppRegistry.registerComponent('RNQnxImageDefault', () => ImageDefaultApp);
 AppRegistry.registerComponent('RNQnxImageGetSize', () => ImageGetSizeApp);
 AppRegistry.registerComponent('RNQnxImageResolveAsset', () => ImageResolveAssetApp);
+AppRegistry.registerComponent('RNQnxNativeAnimated', () => NativeAnimatedApp);
 AppRegistry.registerComponent('RNQnxButton', () => ButtonApp);
 AppRegistry.registerComponent('RNQnxModal', () => ModalApp);

@@ -175,9 +175,11 @@ void QtSchedulerDelegate::schedulerDidSetIsJSResponder(
 }
 
 void QtSchedulerDelegate::schedulerShouldSynchronouslyUpdateViewOnUIThread(
-    facebook::react::Tag /*tag*/,
-    const folly::dynamic& /*props*/) {
-  // The native-driver animation path. Animated is not wired up yet.
+    facebook::react::Tag tag,
+    const folly::dynamic& props) {
+  // The native-driver animation path: apply the prop delta directly to the
+  // mounted Qt Quick item without a full shadow-tree commit.
+  adapter_.synchronouslyUpdateViewOnUIThread(tag, props);
 }
 
 void QtSchedulerDelegate::schedulerDidUpdateShadowTree(
@@ -481,6 +483,11 @@ class QtReactHost::Impl {
   /// them yet; keeping them is what makes that possible later.
   std::unordered_map<std::string, facebook::jsi::Value> callableModules;
   std::unordered_map<int, std::unique_ptr<QTimer>> timers;
+  /// Drives the NativeAnimated `onRender` callback while at least one animation
+  /// is active. Created on first use and reused for later animations.
+  std::unique_ptr<QTimer> animationTimer;
+  /// The latest frame callback provided by NativeAnimated.
+  std::function<void()> animationFrame;
   std::vector<JavaScriptError> javaScriptErrors;
   /// The source URL of the most recently evaluated script, reported by the
   /// SourceCode module.
@@ -592,9 +599,33 @@ void QtReactHost::installTurboModuleBinding() {
         }
 
         if (name == facebook::react::AnimatedModule::kModuleName) {
+          auto startOnRender =
+              [impl](std::function<void()>&& onRender, bool /*isAsync*/) {
+                impl->animationFrame = std::move(onRender);
+                if (!impl->animationTimer) {
+                  impl->animationTimer = std::make_unique<QTimer>();
+                  impl->animationTimer->setInterval(16);
+                  QObject::connect(
+                      impl->animationTimer.get(),
+                      &QTimer::timeout,
+                      [impl]() {
+                        if (impl->animationFrame) {
+                          impl->animationFrame();
+                        }
+                      });
+                }
+                impl->animationTimer->start();
+              };
+          auto stopOnRender =
+              [impl](bool /*isAsync*/) {
+                if (impl->animationTimer) {
+                  impl->animationTimer->stop();
+                }
+              };
           return std::make_shared<facebook::react::AnimatedModule>(
               callInvoker,
-              std::make_shared<facebook::react::NativeAnimatedNodesManagerProvider>());
+              std::make_shared<facebook::react::NativeAnimatedNodesManagerProvider>(
+                  std::move(startOnRender), std::move(stopOnRender)));
         }
 
         if (name == rnqnx::runtime::QnxImageLoader::kModuleName) {

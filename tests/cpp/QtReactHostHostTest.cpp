@@ -1755,6 +1755,38 @@ void imageResolveAssetSource() {
   EXPECT(uri.getString(rt).utf8(rt).find("qnx-asset.png") != std::string::npos);
 }
 
+/// `NativeAnimated` updates a view prop on the mounted Qt Quick item.
+void nativeAnimatedOpacity() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxNativeAnimated", 640.0F, 480.0F);
+  for (int i = 0; i < 60; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* view = fixture.root().childItems().at(0);
+  const double opacity = view->property("opacity").toDouble();
+  EXPECT(std::abs(opacity - 0.5) < 0.05);
+}
+
 /// Modal mounts as a full-screen overlay with its child content.
 void modalMounts() {
   Fixture fixture;
@@ -2106,6 +2138,7 @@ int main(int argc, char** argv) {
       {"imageGetSize", imageGetSize},
       {"imageBackgroundMounts", imageBackgroundMounts},
       {"imageResolveAssetSource", imageResolveAssetSource},
+      {"nativeAnimatedOpacity", nativeAnimatedOpacity},
       {"modalMounts", modalMounts},
 #endif
 #endif
