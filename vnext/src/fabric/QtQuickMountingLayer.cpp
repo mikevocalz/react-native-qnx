@@ -300,16 +300,24 @@ MountError QtQuickMountingLayer::updateStyle(Tag tag, const ViewStyle& style) {
   QQuickItem* item = mounted->item;
   item->setOpacity(static_cast<qreal>(style.opacity));
 
-  // These are QML properties of Rectangle rather than QQuickItem members, so
-  // they go through the metaobject. A component type whose QML source is not a
-  // Rectangle simply will not have them, and setProperty is a no-op there.
+  // The QML View is now an Item with either a uniform Rectangle or a per-corner
+  // Shape child. Set all properties on the root; the relevant child reads them.
   if (style.hasBackgroundColor) {
-    item->setProperty("color", QColor::fromRgba(style.backgroundColor));
+    item->setProperty("backgroundColor", QColor::fromRgba(style.backgroundColor));
   }
+  item->setProperty("borderWidth", static_cast<qreal>(style.borderWidth));
+  item->setProperty("borderColor", QColor::fromRgba(style.borderColor));
   item->setProperty("radius", static_cast<qreal>(style.borderRadius));
+  item->setProperty("topLeftRadius", static_cast<qreal>(style.topLeftRadius));
+  item->setProperty("topRightRadius", static_cast<qreal>(style.topRightRadius));
+  item->setProperty("bottomRightRadius", static_cast<qreal>(style.bottomRightRadius));
+  item->setProperty("bottomLeftRadius", static_cast<qreal>(style.bottomLeftRadius));
+  item->setProperty("usePerCornerRadius", !style.borderRadiusIsUniform);
 
   if (style.borderWidth > 0.0F || style.hasBorderColor) {
-    // `border` is a grouped property holding a QQuickPen.
+    // `border` is a grouped property holding a QQuickPen. This is used when the
+    // QML View is a plain Rectangle; it is ignored when the per-corner Shape is
+    // active.
     if (auto* border = item->property("border").value<QObject*>()) {
       border->setProperty("width", static_cast<qreal>(style.borderWidth));
       if (style.hasBorderColor) {

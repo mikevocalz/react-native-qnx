@@ -202,6 +202,10 @@ ViewStyle toViewStyle(const ShadowView& view) {
       ? topLeftRadius
       : std::max({topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius});
   style.borderRadiusIsUniform = uniformRadius;
+  style.topLeftRadius = topLeftRadius;
+  style.topRightRadius = topRightRadius;
+  style.bottomRightRadius = bottomRightRadius;
+  style.bottomLeftRadius = bottomLeftRadius;
 
   // Qt Quick's Rectangle has a single border width and colour. If all four
   // edges agree we can represent them faithfully; otherwise we collapse to the

@@ -48,6 +48,10 @@ struct ViewStyle {
   float opacity{1.0F};
   float borderRadius{0.0F};
   bool borderRadiusIsUniform{true};
+  float topLeftRadius{0.0F};
+  float topRightRadius{0.0F};
+  float bottomRightRadius{0.0F};
+  float bottomLeftRadius{0.0F};
   float borderWidth{0.0F};
   bool borderWidthIsUniform{true};
   bool hasBorderColor{false};
