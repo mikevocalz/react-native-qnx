@@ -3,8 +3,14 @@
 ## 1. Complete QNX-RN-008 on the licensed build host and target
 
 **Objective:** Compile the current Screen-only executable against the installed
-QNX SDP 8.0.2, then run it on a real target. This is the only remaining
-Milestone 0 exit gate.
+QNX SDP 8.0.2, then run it on a real AArch64 QNX target with Screen/display and
+SSH. This remains the only unclosed Milestone 0 exit gate.
+
+**Partial progress:** A QNX x86_64 VM now runs on the Windows PC and validates
+non-Screen binaries (see `docs/handoff/QNX_VM_WINDOWS.md`). The G0 C++20 probe
+was built for `qnx-x86_64-debug`, deployed, and ran successfully. This proves
+the cross-compile, SCP/SSH deploy, and runtime loop, but it is not a substitute
+for the AArch64+Screen target that `rnqnx_playground` requires.
 
 **Files:**
 

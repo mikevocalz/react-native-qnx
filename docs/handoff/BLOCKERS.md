@@ -3,13 +3,21 @@
 ## QNX-RN-008 — Licensed QNX build and runtime environment unavailable
 
 - **First observed:** 2026-07-19
-- **Updated:** 2026-08-16
+- **Updated:** 2026-08-17
 - **Affected milestone:** Milestone 0 exit gate
 - **Problem (resolved):** A licensed QNX SDP 8.0.2 is now installed on this Windows
   x86-64 PC at `C:\Users\Owner\qnx800`, with `QNX_HOST`, `QNX_TARGET`, `qcc`,
   `q++`, the Screen headers, and `libscreen` available.
+- **Problem (partially resolved):** A QNX x86_64 VM now boots on the same Windows
+  PC under QEMU 11.1.0, with SSH access on `root@127.0.0.1:2222`. The G0 C++20
+  probe was cross-built for QNX x86_64, copied to the VM, and ran successfully,
+  producing the expected `RNQNX_G0_CXX20_OK ranges=12 designated=21 thread=34
+  jthread=unsupported` output. See `docs/handoff/QNX_VM_WINDOWS.md` for the
+  exact workaround and reproduction steps.
 - **Problem (remaining):** No QNX AArch64 runtime target with Screen/display and
-  SSH credentials is configured, so the cross-built binaries cannot be run yet.
+  a named SSH user/key is configured, so `rnqnx_playground` still cannot be
+  validated. The current x86_64 VM is headless; `rnqnx_playground` fails at
+  `screen_create_context` because there is no Screen/display context.
 - **Reproduction:** Previously `./scripts/configure-qnx.sh aarch64 Debug` failed
   with `Environment variable QNX_HOST is not set`. It now configures and builds.
 - **Current status:**
@@ -20,6 +28,8 @@
   - `cmake --build --preset qnx-pi4` produces `rnqnx_g0_cxx20_probe` for
     AArch64 QNX; this SDP's libc++ lacks `std::jthread`, so the probe falls back
     to `std::thread` and reports `jthread=unsupported`.
+  - `cmake --build --preset qnx-x86_64-debug` produces `rnqnx_g0_cxx20_probe` for
+    QNX x86_64, which runs inside the QEMU VM described above.
 - **Affected files:** `vnext/cmake/qnx-aarch64le.toolchain.cmake`,
   `CMakeLists.txt`, `vnext/probes/cxx20/main.cpp`, `scripts/validate-g0-a.sh`,
   `native/platform/qnx/**`, and `scripts/{doctor,configure-qnx,build-qnx}.sh`.
@@ -27,9 +37,11 @@
   SSH user/key (not root). Set `QNX_TARGET_IP` and `QNX_TARGET_USER` to run
   `scripts/validate-g0-a.sh` and `scripts/deploy-qnx.sh`.
 - **Next investigation:** Deploy and run `rnqnx_playground` and
-  `rnqnx_g0_cxx20_probe` on the QNX target; record `slog2info` and stdout.
-- **Scope:** Blocks QNX Milestone 0 exit until target evidence is captured;
-  host and cross-compile work is unblocked.
+  `rnqnx_g0_cxx20_probe` on a QNX AArch64 target with Screen; record
+  `slog2info` and stdout. Until that hardware is available, the x86_64 VM can
+  exercise non-Screen binaries and the deploy/SSH loop.
+- **Scope:** Blocks QNX Milestone 0 exit until AArch64+Screen target evidence is
+  captured; host and cross-compile work is unblocked.
 
 ## Milestone 1 — Hermes QNX build recipe absent
 

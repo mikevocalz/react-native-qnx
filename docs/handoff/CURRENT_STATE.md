@@ -36,6 +36,18 @@ such as React Native 0.87, Metro 0.87, or TypeScript 7 can be substituted.
 - The `qnx-pi4` and `qnx-aarch64-debug` presets configure and build successfully
   on the Windows PC, producing `rnqnx_g0_cxx20_probe` and `rnqnx_playground`
   linked against `libscreen.so.1` for AArch64 QNX.
+- A QNX x86_64 VM boots under QEMU 11.1.0 on the same Windows PC with SSH on
+  `root@127.0.0.1:2222`. `mkqnximage` required two Windows-specific workarounds:
+  setting `HOME=/cygdrive/c/Users/Owner` for the license check, and manually
+  resolving the `__LIB*` library placeholders that the SDP's `mkifs`/`mkqnx6fsimg`
+  did not expand on Windows. The resulting IFS boots, mounts the system/data
+  partitions, starts `sshd`, and accepts a deployed ED25519 key. Details and
+  reproduction scripts are in `docs/handoff/QNX_VM_WINDOWS.md`.
+- The full build-deploy-run loop was exercised for `rnqnx_g0_cxx20_probe`: built
+  with the `qnx-x86_64-debug` preset, copied to the VM over SCP, and executed
+  over SSH. It printed the expected
+  `RNQNX_G0_CXX20_OK ranges=12 designated=21 thread=34 jthread=unsupported`
+  result.
 - The workspace lockfile was regenerated with exact direct dependency pins.
 - `validate:dependencies` verifies direct resolutions, peer baselines, the
   Hermes tag, resolved Expo internals, and named symbols in installed RN, Yoga,
