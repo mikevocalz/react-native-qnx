@@ -34,7 +34,10 @@
 #include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/renderer/animated/AnimatedModule.h>
 #include <react/renderer/animated/NativeAnimatedNodesManagerProvider.h>
+#include "react-native-qnx/runtime/QnxFileReaderModule.h"
 #include "react-native-qnx/runtime/QnxImageLoader.h"
+#include "react-native-qnx/runtime/QnxSegmentFetcher.h"
+#include "react-native-qnx/runtime/QnxWebSocketModule.h"
 
 #include <folly/dynamic.h>
 
@@ -630,6 +633,22 @@ void QtReactHost::installTurboModuleBinding() {
 
         if (name == rnqnx::runtime::QnxImageLoader::kModuleName) {
           return std::make_shared<rnqnx::runtime::QnxImageLoader>(callInvoker);
+        }
+
+        // No-op modules for platform APIs that are referenced by React Native
+        // bundles but not wired to a QNX-native backend. Installing them
+        // prevents getEnforcing from throwing during TurboModule resolution;
+        // each method reports its unsupported status honestly.
+        if (name == rnqnx::runtime::QnxWebSocketModule::kModuleName) {
+          return std::make_shared<rnqnx::runtime::QnxWebSocketModule>(
+              callInvoker);
+        }
+        if (name == rnqnx::runtime::QnxFileReaderModule::kModuleName) {
+          return std::make_shared<rnqnx::runtime::QnxFileReaderModule>(
+              callInvoker);
+        }
+        if (name == rnqnx::runtime::QnxSegmentFetcher::kModuleName) {
+          return std::make_shared<rnqnx::runtime::QnxSegmentFetcher>(callInvoker);
         }
 
         // React Native's own generic C++ modules. Two of the modules this

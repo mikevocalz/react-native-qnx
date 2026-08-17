@@ -91,5 +91,5 @@ compositions over parts that already work, and 6 need native work.
 | `NativeMicrotasksCxx`, `NativeIdleCallbacksCxx`         | ✅     | React Native's own C++ modules, via `DefaultTurboModules`.              |
 | `ExceptionsManager`                                     | ✅     | Reports to the host and logs; `dismissRedbox` is an honest no-op.       |
 | `DeviceInfo`, `SourceCode`                              | ✅     | Real values: screen metrics from Qt, and the bundle the host evaluated. |
-| `FileReaderModule`, `SegmentFetcher`, `WebSocketModule` | ❌     | Referenced by the bundle; unused by the render path.                    |
+| `FileReaderModule`, `SegmentFetcher`, `WebSocketModule` | ✅     | Installed as honest no-op TurboModules so bundles that reference them do not crash on lookup. `FileReaderModule` and `SegmentFetcher` reject with an explanatory error; `WebSocketModule` operations are no-ops because there is no QNX socket backend wired yet. |
 | `UIManager`                                             | n/a    | Not a TurboModule; bridgeless React Native serves it from JS.           |
