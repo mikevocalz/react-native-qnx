@@ -383,6 +383,28 @@ function ImageDefaultApp() {
   });
 }
 
+function ImageLoadingApp() {
+  const primary =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
+  const loading =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJ7XAAAAAASUVORK5CYII=';
+  return React.createElement(Image, {
+    style: { width: 32, height: 32 },
+    resizeMode: 'contain',
+    source: { uri: primary },
+    loadingIndicatorSource: { uri: loading },
+    onLoad: (event) => {
+      globalThis.__imageLoadingPrimaryLoad =
+        (globalThis.__imageLoadingPrimaryLoad ?? 0) + 1;
+      globalThis.__imageLoadingPrimaryUri = event.nativeEvent.source.uri;
+    },
+    onError: () => {
+      globalThis.__imageLoadingError =
+        (globalThis.__imageLoadingError ?? 0) + 1;
+    },
+  });
+}
+
 function ImageGetSizeApp() {
   const Image = require('react-native/Libraries/Image/Image.ios').default;
   const source =
@@ -485,6 +507,7 @@ AppRegistry.registerComponent('RNQnxSafeAreaView', () => SafeAreaViewApp);
 AppRegistry.registerComponent('RNQnxImageBackground', () => ImageBackgroundApp);
 AppRegistry.registerComponent('RNQnxImage', () => ImageApp);
 AppRegistry.registerComponent('RNQnxImageDefault', () => ImageDefaultApp);
+AppRegistry.registerComponent('RNQnxImageLoading', () => ImageLoadingApp);
 AppRegistry.registerComponent('RNQnxImageGetSize', () => ImageGetSizeApp);
 AppRegistry.registerComponent('RNQnxImageResolveAsset', () => ImageResolveAssetApp);
 AppRegistry.registerComponent('RNQnxNativeAnimated', () => NativeAnimatedApp);

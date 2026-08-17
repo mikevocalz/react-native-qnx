@@ -1646,6 +1646,56 @@ void imageDefaultSourceFires() {
   EXPECT(uri.isString());
 }
 
+/// `Image` `loadingIndicatorSource` is shown while the primary source loads and
+/// the primary source's load events still reach JavaScript.
+void imageLoadingIndicator() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().setWidth(640);
+  fixture.window().setHeight(480);
+  fixture.window().show();
+  fixture.host().startSurface(
+      kSurfaceId, "RNQnxImageLoading", 640.0F, 480.0F);
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.rootChildCount() == 1);
+
+  QQuickItem* image = fixture.root().childItems().at(0);
+  EXPECT(image->width() == 32.0);
+  EXPECT(image->height() == 32.0);
+
+  // The overlay item for the loading indicator should exist and should have
+  // a valid source while the primary image is loading or completed.
+  QQuickItem* loadingImage = image->findChild<QQuickItem*>("loadingImage");
+  // It may be hidden once the primary source is Ready.
+  EXPECT(loadingImage != nullptr);
+
+  auto& rt = fixture.host().runtime();
+  const auto primaryLoad =
+      rt.global().getProperty(rt, "__imageLoadingPrimaryLoad");
+  EXPECT(primaryLoad.isNumber() && primaryLoad.getNumber() >= 1.0);
+  const auto primaryUri =
+      rt.global().getProperty(rt, "__imageLoadingPrimaryUri");
+  EXPECT(primaryUri.isString());
+
+  const auto error = rt.global().getProperty(rt, "__imageLoadingError");
+  EXPECT(!error.isNumber() || error.getNumber() == 0.0);
+}
+
 /// `Image.getSize` resolves through the `ImageLoader` TurboModule.
 void imageGetSize() {
   Fixture fixture;
@@ -2135,6 +2185,7 @@ int main(int argc, char** argv) {
       {"viewTransformApplies", viewTransformApplies},
       {"imageLoadEvents", imageLoadEvents},
       {"imageDefaultSourceFires", imageDefaultSourceFires},
+      {"imageLoadingIndicator", imageLoadingIndicator},
       {"imageGetSize", imageGetSize},
       {"imageBackgroundMounts", imageBackgroundMounts},
       {"imageResolveAssetSource", imageResolveAssetSource},

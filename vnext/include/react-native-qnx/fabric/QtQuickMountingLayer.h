@@ -207,6 +207,10 @@ class QtQuickMountingLayer {
   /// PreserveAspectCrop=2) from React Native's `resizeMode`.
   MountError updateImageFillMode(Tag tag, int fillMode);
 
+  /// Points the loading-indicator image at a source URI. This is shown while
+  /// the primary source is still loading.
+  MountError updateImageLoadingSource(Tag tag, const QString& uri);
+
   /// Scrolls a mounted `Flickable` to an absolute `(x, y)` offset. `animated`
   /// is accepted but currently ignored — QML content position is set directly.
   MountError scrollTo(Tag tag, double x, double y, bool /*animated*/);

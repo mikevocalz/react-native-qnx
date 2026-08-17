@@ -322,6 +322,12 @@ void ShadowViewMutationAdapter::applyImage(const ShadowView& view) {
     layer_.updateImageSource(view.tag, uri);
   }
 
+  const QString loadingUri =
+      props->loadingIndicatorSource.uri.empty()
+          ? QString()
+          : QString::fromStdString(props->loadingIndicatorSource.uri);
+  layer_.updateImageLoadingSource(view.tag, loadingUri);
+
   // Map React Native's ImageResizeMode to Qt Quick's Image.fillMode.
   // Qt Quick values are: Stretch=0, PreserveAspectFit=1, PreserveAspectCrop=2.
   int fillMode = 0;

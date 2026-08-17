@@ -65,7 +65,7 @@ compositions over parts that already work, and 6 need native work.
 | `fontSize`, `color`        | ✅     | Applied per fragment.                                                                                     |
 | Mixed styling in one block | ✅     | Carried as Qt rich text, because Qt Quick's `Text` applies one font and colour to the whole item.         |
 | Wrapping                   | ✅     | Measured with `QTextLayout` against the available width; the item is set to wrap so paint matches layout. |
-| `numberOfLines`            | ⚠      | Limits the measured lines; no ellipsis.                                                                   |
+| `numberOfLines`            | ✅     | Limits measured lines and sets Qt Quick `maximumLineCount`; `elide` is applied when the line limit is active. |
 | Attachments (inline views) | ❌     | Reported as zero-sized, as React Native's generic manager does.                                           |
 | Font family                | ⚠      | Passed to Qt if named; no font registration, so an unavailable family silently falls back.                |
 
@@ -76,8 +76,10 @@ compositions over parts that already work, and 6 need native work.
 | `data:` URIs                              | ✅     | Decoded by `QnxImageProvider` and served as `image://rnqnx/…`, because Qt Quick's `Image` cannot read data URIs.           |
 | `file:` and `http(s):`                    | ⚠      | Passed straight to Qt, which fetches them. Untested here — the playground uses a data URI so it needs no network.          |
 | Bundler assets (`require('./x.png')`)     | ✅     | Resolved through `Image.resolveAssetSource` and covered by a host test.                                                    |
-| `defaultSource`, `loadingIndicatorSource` | ❌     | Not carried to the item.                                                                                                   |
-| `onLoad`, `onError`, `onLoadEnd`          | ❌     | No load lifecycle events reach JavaScript.                                                                                 |
+| `defaultSource`                         | ✅     | Used as the image URI when no primary `source` is provided; covered by a host test.                                        |
+| `loadingIndicatorSource`                | ✅     | Resolved like `source`/`defaultSource` and shown as an overlaid child `Image` while the primary source is loading; hidden on `Ready` or `Error`. Covered by a host test. |
+| `onLoad`, `onError`, `onLoadEnd`          | ✅     | QML `Image.status` changes are bridged to `ImageEventEmitter`; covered by a host test.                                     |
+| `http(s):` sources                       | ⚠     | Passed straight to Qt Quick's `Image`; not exercised by the existing host tests.                                           |
 | `Image.getSize`, `prefetch`               | ✅     | `ImageLoader` TurboModule resolves `getSize` for `data:`, `file:`, `qrc:`, and absolute paths. `prefetch` is a no-op stub. |
 | `resizeMode`                              | ✅     | Maps to QML `Image.fillMode`. Covered by a host test.                                                                      |
 

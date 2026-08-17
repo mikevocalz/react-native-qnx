@@ -454,6 +454,21 @@ MountError QtQuickMountingLayer::updateImageFillMode(Tag tag, int fillMode) {
   return MountError::None;
 }
 
+MountError QtQuickMountingLayer::updateImageLoadingSource(
+    Tag tag,
+    const QString& uri) {
+  const auto mounted = items_.constFind(tag);
+  if (mounted == items_.constEnd()) {
+    return failWith(
+        MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
+  }
+
+  mounted->item->setProperty(
+      "loadingSource", QUrl(factory_.resolveImageSource(uri)));
+  lastError_.clear();
+  return MountError::None;
+}
+
 MountError QtQuickMountingLayer::updateScrollContentSize(Tag tag) {
   const auto mounted = items_.constFind(tag);
   if (mounted == items_.constEnd()) {

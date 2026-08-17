@@ -40,8 +40,20 @@ constexpr const char* kTextSource = "import QtQuick\nText { visible: true }\n";
 constexpr const char* kImageSource =
     "import QtQuick\n"
     "Image {\n"
+    "  id: root\n"
     "  visible: true\n"
     "  property var bridge: null\n"
+    "  property string loadingSource: \"\"\n"
+    "  Image {\n"
+    "    id: loadingImage\n"
+    "    objectName: \"loadingImage\"\n"
+    "    anchors.fill: parent\n"
+    "    source: root.loadingSource\n"
+    "    visible: root.loadingSource !== \"\" &&\n"
+    "             root.status !== Image.Ready &&\n"
+    "             root.status !== Image.Error\n"
+    "    z: -1\n"
+    "  }\n"
     "  onStatusChanged: { if (bridge) bridge.notify(); }\n"
     "}\n";
 // React Native's TextInput renders behind a single-line QML `TextInput` or a
