@@ -54,6 +54,10 @@ such as React Native 0.87, Metro 0.87, or TypeScript 7 can be substituted.
   1280x720 surface, rendered 600 alternating blue/black frames, and exited
   cleanly. This validates `QnxScreenSurface`, the QNX Screen lifecycle, and the
   cross-compiled link against `libscreen.so.1` end-to-end.
+- A new repo script, `scripts/validate-qnx-vm.sh`, automates the full VM
+  validation: it sources the QNX SDP environment, builds the G0 probe and
+  `rnqnx_playground` for `qnx-x86_64-debug`, deploys and runs them on the local
+  QEMU VM, and captures the outputs and round-trip timings in `artifacts/g0-vm/`.
 - The workspace lockfile was regenerated with exact direct dependency pins.
 - `validate:dependencies` verifies direct resolutions, peer baselines, the
   Hermes tag, resolved Expo internals, and named symbols in installed RN, Yoga,

@@ -92,6 +92,37 @@ bash fix-and-rebuild.sh
 bash rebuild-disk.sh
 ```
 
+## Validating the react-native-qnx Milestone 0 binaries on the VM
+
+Once the VM is booted and reachable on `root@127.0.0.1:2222`, the repo script
+`scripts/validate-qnx-vm.sh` automates the whole loop:
+
+```bash
+# From Git Bash in the react-native-qnx repo root.
+./scripts/validate-qnx-vm.sh
+```
+
+It builds `rnqnx_g0_cxx20_probe` and `rnqnx_playground` for the
+`qnx-x86_64-debug` preset, deploys them over SSH, runs them, and records the
+results under `artifacts/g0-vm/`:
+
+```text
+cxx20-output.txt
+cxx20-round-trip-seconds.txt
+playground-output.txt
+playground-round-trip-seconds.txt
+qcc-V.txt
+qxx-V.txt
+```
+
+Expected outputs:
+
+```text
+RNQNX_G0_CXX20_OK ranges=12 designated=21 thread=34 jthread=unsupported
+rnqnx_playground: Screen surface initialized (1280x720)
+rnqnx_playground: exiting cleanly after 600 frames
+```
+
 ## Booting the VM
 
 Use the raw disk image and boot the IFS directly. The disk MBR bootable flag
