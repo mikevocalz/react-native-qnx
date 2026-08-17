@@ -699,9 +699,18 @@ void ShadowViewMutationAdapter::connectScrollEvents(const ShadowView& view) {
     return;
   }
 
+  const float zoomScale = [view]() -> float {
+    const auto* scrollProps =
+        dynamic_cast<const facebook::react::BaseScrollViewProps*>(
+            view.props.get());
+    return scrollProps != nullptr
+        ? static_cast<float>(scrollProps->zoomScale)
+        : 1.0F;
+  }();
+
   // Qt emits contentXChanged/contentYChanged as the Flickable moves. The item
   // is the connection context, so the handler dies with it.
-  const auto makeScrollEvent = [item]() {
+  const auto makeScrollEvent = [item, zoomScale]() {
     facebook::react::ScrollEvent event;
     event.contentOffset = {
         .x = static_cast<facebook::react::Float>(
@@ -716,7 +725,7 @@ void ShadowViewMutationAdapter::connectScrollEvents(const ShadowView& view) {
     event.containerSize = {
         .width = static_cast<facebook::react::Float>(item->width()),
         .height = static_cast<facebook::react::Float>(item->height())};
-    event.zoomScale = 1.0F;
+    event.zoomScale = zoomScale;
     return event;
   };
 
