@@ -47,6 +47,7 @@ struct ViewStyle {
   std::uint32_t backgroundColor{0};
   float opacity{1.0F};
   float borderRadius{0.0F};
+  bool borderRadiusIsUniform{true};
   float borderWidth{0.0F};
   bool borderWidthIsUniform{true};
   bool hasBorderColor{false};

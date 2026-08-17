@@ -13,6 +13,8 @@
 #include <QStringList>
 #include <QtMath>
 
+#include <algorithm>
+
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
 #include <react/renderer/components/FBReactNativeSpec/Props.h>
@@ -173,9 +175,25 @@ ViewStyle toViewStyle(const ShadowView& view) {
   const auto border = viewProps->resolveBorderMetrics(view.layoutMetrics);
 
   // Qt Quick's Rectangle carries a single radius, so a per-corner radius
-  // collapses. Taking the top-left is faithful when all four agree and lossy
-  // otherwise; the loss is recorded in docs/component-support.md.
-  style.borderRadius = border.borderRadii.topLeft.horizontal;
+  // collapses. When all four agree we use that value; otherwise we fall back to
+  // the largest radius so rounded corners still appear (the exact per-corner
+  // shape would need a custom QML path).
+  const float topLeftRadius =
+      static_cast<float>(border.borderRadii.topLeft.horizontal);
+  const float topRightRadius =
+      static_cast<float>(border.borderRadii.topRight.horizontal);
+  const float bottomRightRadius =
+      static_cast<float>(border.borderRadii.bottomRight.horizontal);
+  const float bottomLeftRadius =
+      static_cast<float>(border.borderRadii.bottomLeft.horizontal);
+  const bool uniformRadius =
+      (topLeftRadius == topRightRadius) &&
+      (topRightRadius == bottomRightRadius) &&
+      (bottomRightRadius == bottomLeftRadius);
+  style.borderRadius = uniformRadius
+      ? topLeftRadius
+      : std::max({topLeftRadius, topRightRadius, bottomRightRadius, bottomLeftRadius});
+  style.borderRadiusIsUniform = uniformRadius;
 
   // Qt Quick's Rectangle has a single border width and colour. If all four
   // edges agree we can represent them faithfully; otherwise we collapse to the
