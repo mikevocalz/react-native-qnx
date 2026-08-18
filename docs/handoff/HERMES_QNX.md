@@ -48,6 +48,10 @@ run without building a host Hermes.
   also links successfully.
 - `bin/rnqnx_hermes_qnx_probe` builds for QNX x86_64 and links against the
   cross-compiled `libhermesvmlean.so` + `libjsi.a` through `rnqnx_hermes`.
+- The probe runs on the QNX x86_64 QEMU VM. It currently `SIGSEGV` in
+  `hermes::vm::DictPropertyMap::lookupEntryFor` during `Runtime::initJSBuiltins`.
+  The core shows the crash is in the first JS runtime construction, not in the
+  build or JSI link.
 
 ## Fixes required and applied
 
@@ -128,6 +132,37 @@ ninja -C build/rnqnx-qnx-x86_64 rnqnx_hermes_qnx_probe
 
 This produces `build/rnqnx-qnx-x86_64/bin/rnqnx_hermes_qnx_probe`, which runs
 the same JSI runtime checks as the host Hermes probe.
+
+## Running the QNX Hermes probe
+
+Start the QNX x86_64 QEMU VM with host networking and port 2222 forwarded to the
+guest sshd, deploy the probe and shared library, then run:
+
+```powershell
+# Start the VM (QEMU needs the disk-qemu.vmdk descriptor to point to the flat
+# disk-qemu file; the descriptor may need the extent name patched to "disk-qemu").
+& 'C:\Program Files\qemu\qemu-system-x86_64.exe' -m 1G -smp 2 -cpu max `
+  -serial file:C:\Users\Owner\qnx-vm-test\output\qemu.out `
+  -display none `
+  -kernel C:\Users\Owner\qnx-vm-test\output\ifs.bin `
+  -drive file=C:\Users\Owner\qnx-vm-test\output\disk-qemu.vmdk,if=ide,id=drv0 `
+  -netdev user,id=net0,hostfwd=tcp::2222-:22 `
+  -device virtio-net-pci,netdev=net0,mac=52:54:00:6a:a4:2d
+
+# Deploy and run (SSH key at C:\Users\Owner\.ssh\id_ed25519_qnx)
+scp -o MACs=hmac-sha2-256 -P 2222 -i C:\Users\Owner\.ssh\id_ed25519_qnx `
+  build/rnqnx-qnx-x86_64/bin/rnqnx_hermes_qnx_probe root@127.0.0.1:/data/home/root/
+scp -o MACs=hmac-sha2-256 -P 2222 -i C:\Users\Owner\.ssh\id_ed25519_qnx `
+  build/hermes-qnx-x86_64/lib/libhermesvmlean.so root@127.0.0.1:/data/home/root/
+
+ssh -o MACs=hmac-sha2-256 -p 2222 -i C:\Users\Owner\.ssh\id_ed25519_qnx `
+  root@127.0.0.1 'cd /data/home/root && LD_LIBRARY_PATH=. ./rnqnx_hermes_qnx_probe'
+```
+
+Current status: the probe reaches `Runtime::initJSBuiltins` and then
+`SIGSEGV` inside `hermes::vm::DictPropertyMap::lookupEntryFor`. The core dump
+backtrace (analyzed with `ntox86_64-gdb`) shows the crash is in JS runtime
+construction, not in the build or JSI link.
 
 ## Patch files
 

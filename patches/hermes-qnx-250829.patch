@@ -72,7 +72,7 @@ index fb7d03c..7520c79 100644
  # Bytecode compiled InternalJavaScript target
  add_hermes_library(hermesInternalBytecode
 diff --git a/lib/Support/OSCompatPosix.cpp b/lib/Support/OSCompatPosix.cpp
-index e9b6692..83ddb27 100644
+index e9b6692..97d9bfa 100644
 --- a/lib/Support/OSCompatPosix.cpp
 +++ b/lib/Support/OSCompatPosix.cpp
 @@ -225,6 +225,11 @@ void vm_free_aligned(void *p, size_t sz) {
@@ -87,7 +87,36 @@ index e9b6692..83ddb27 100644
  static constexpr int kVMReserveProt = PROT_NONE;
  static constexpr int kVMReserveFlags =
      MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
-@@ -273,28 +278,34 @@ void vm_unused(void *p, size_t sz) {
+@@ -239,13 +244,28 @@ void vm_release_aligned(void *p, size_t sz) {
+ }
+ 
+ llvh::ErrorOr<void *> vm_commit(void *p, size_t sz) {
++#ifdef __QNXNTO__
++  // QNX does not allow us to re-mmap over an existing reserved range with
++  // MAP_FIXED. Use mprotect to flip the reserved pages to read/write instead.
++  if (::mprotect(p, sz, kVMAllocateProt) != 0) {
++    return std::error_code(errno, std::generic_category());
++  }
++  return p;
++#else
+   return vm_mmap(p, sz, kVMAllocateProt, kVMAllocateFlags | MAP_FIXED, false);
++#endif
+ }
+ 
+ void vm_uncommit(void *p, size_t sz) {
++#ifdef __QNXNTO__
++  int ret = ::mprotect(p, sz, kVMReserveProt);
++  (void)ret;
++  assert(ret == 0 && "uncommit failed");
++#else
+   auto res = vm_mmap(p, sz, kVMReserveProt, kVMReserveFlags | MAP_FIXED, false);
+   (void)res;
+   assert(res && "uncommit failed");
++#endif
+ }
+ 
+ void vm_hugepage(void *p, size_t sz) {
+@@ -273,28 +293,34 @@ void vm_unused(void *p, size_t sz) {
  
  /// On the mach kernel, \p MADV_FREE causes the OS to deduct this memory from
  /// the process's physical footprint.
@@ -129,7 +158,7 @@ index e9b6692..83ddb27 100644
  }
  
  void vm_name(void *p, size_t sz, const char *name) {
-@@ -324,6 +335,11 @@ bool vm_madvise(void *p, size_t sz, MAdvice advice) {
+@@ -324,6 +350,11 @@ bool vm_madvise(void *p, size_t sz, MAdvice advice) {
        "Precondition: pointer is page-aligned.");
  #endif
  
@@ -141,7 +170,7 @@ index e9b6692..83ddb27 100644
    int param = MADV_NORMAL;
    switch (advice) {
      case MAdvice::Random:
-@@ -334,6 +350,7 @@ bool vm_madvise(void *p, size_t sz, MAdvice advice) {
+@@ -334,6 +365,7 @@ bool vm_madvise(void *p, size_t sz, MAdvice advice) {
        break;
    }
    return madvise(p, sz, param) == 0;
@@ -149,7 +178,7 @@ index e9b6692..83ddb27 100644
  }
  
  llvh::ErrorOr<size_t> vm_footprint(char *start, char *end) {
-@@ -424,6 +441,13 @@ llvh::ErrorOr<size_t> vm_footprint(char *start, char *end) {
+@@ -424,6 +456,13 @@ llvh::ErrorOr<size_t> vm_footprint(char *start, char *end) {
  }
  
  int pages_in_ram(const void *p, size_t sz, llvh::SmallVectorImpl<int> *runs) {
@@ -163,7 +192,7 @@ index e9b6692..83ddb27 100644
    const auto PS = page_size();
    {
      // Align region start down to page boundary.
-@@ -460,6 +484,7 @@ int pages_in_ram(const void *p, size_t sz, llvh::SmallVectorImpl<int> *runs) {
+@@ -460,6 +499,7 @@ int pages_in_ram(const void *p, size_t sz, llvh::SmallVectorImpl<int> *runs) {
      }
    }
    return totalIn;
@@ -171,7 +200,7 @@ index e9b6692..83ddb27 100644
  }
  
  uint64_t peak_rss() {
-@@ -487,6 +512,9 @@ uint64_t current_rss() {
+@@ -487,6 +527,9 @@ uint64_t current_rss() {
            &infoCount) != KERN_SUCCESS)
      return 0;
    return info.resident_size * page_size_real();
@@ -181,7 +210,7 @@ index e9b6692..83ddb27 100644
  #else
    FILE *fp = fopen("/proc/self/statm", "r");
    if (!fp) {
-@@ -609,6 +637,12 @@ uint64_t global_thread_id() {
+@@ -609,6 +652,12 @@ uint64_t global_thread_id() {
    return syscall(__NR_gettid);
  }
  
@@ -194,24 +223,29 @@ index e9b6692..83ddb27 100644
  #else
  #error "Thread ID not supported on this platform"
  #endif
-@@ -636,6 +670,16 @@ std::pair<const void *, size_t> thread_stack_bounds_impl() {
+@@ -636,6 +685,21 @@ std::pair<const void *, size_t> thread_stack_bounds_impl() {
    return {origin, size};
  }
  
 +#elif defined(__QNXNTO__)
 +
 +std::pair<const void *, size_t> thread_stack_bounds_impl() {
-+  // QNX does not provide pthread_getattr_np/pthread_get_stackaddr_np. Return a
-+  // large conservative stack range to avoid asserts until a native query is
-+  // implemented.
-+  static constexpr size_t kFallbackStackSize = 8 * 1024 * 1024;
-+  return {nullptr, kFallbackStackSize};
++  // QNX does not provide pthread_getattr_np/pthread_get_stackaddr_np. Use the
++  // current frame as a conservative high-water estimate and the default thread
++  // stack size. This keeps StackOverflowGuard from immediately tripping on the
++  // first native stack check.
++  size_t stackSize = ::pthread_attr_getdefaultstacksize();
++  if (stackSize == 0) {
++    stackSize = 1 * 1024 * 1024;
++  }
++  void *currentFrame = __builtin_frame_address(0);
++  return {currentFrame, stackSize};
 +}
 +
  #else
  
  std::pair<const void *, size_t> thread_stack_bounds_impl() {
-@@ -682,6 +726,8 @@ void set_thread_name(const char *name) {
+@@ -682,6 +746,8 @@ void set_thread_name(const char *name) {
    prctl(PR_SET_NAME, name);
  #elif defined(__APPLE__)
    ::pthread_setname_np(name);
@@ -220,7 +254,7 @@ index e9b6692..83ddb27 100644
  #endif
    // Do nothing if the platform doesn't support it.
  }
-@@ -728,9 +774,15 @@ std::chrono::microseconds thread_cpu_time() {
+@@ -728,9 +794,15 @@ std::chrono::microseconds thread_cpu_time() {
    return microseconds(total);
  }
  
@@ -238,7 +272,7 @@ index e9b6692..83ddb27 100644
  
  // Platform-specific implementations of thread_page_fault_count
  
-@@ -760,9 +812,16 @@ bool thread_page_fault_count(int64_t *outMinorFaults, int64_t *outMajorFaults) {
+@@ -760,9 +832,16 @@ bool thread_page_fault_count(int64_t *outMinorFaults, int64_t *outMajorFaults) {
    return ret == 0;
  }
  
