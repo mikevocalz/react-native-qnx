@@ -46,6 +46,8 @@ run without building a host Hermes.
   builds and links successfully.
 - `lib/libhermesvmlean.so` (the lean QNX x86_64 Hermes VM shared library)
   also links successfully.
+- `bin/rnqnx_hermes_qnx_probe` builds for QNX x86_64 and links against the
+  cross-compiled `libhermesvmlean.so` + `libjsi.a` through `rnqnx_hermes`.
 
 ## Fixes required and applied
 
@@ -108,6 +110,24 @@ Emscripten (return 0 for RSS/VA).
 - The shared `libhermesvmlean.so` and `libjsi.a`/`libhermesapi.a` targets
   should be built and validated next.
 - The aarch64 cross-build needs to be verified on the Raspberry Pi/QSTI target.
+
+## Using the cross-built Hermes in react-native-qnx
+
+`cmake/dependencies/HermesQNX.cmake` creates an `rnqnx_hermes` INTERFACE target
+that mirrors the host `rnqnx_hermes` but uses the prebuilt QNX artifacts. To
+build the QNX Hermes/JSI probe during a QNX configure:
+
+```powershell
+cmake -B build/rnqnx-qnx-x86_64 -G Ninja `
+  -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/qnx-8.0.cmake `
+  -DQNX_TARGET_ARCH=x86_64 `
+  -DRNQNX_BUILD_HERMES_QNX=ON
+
+ninja -C build/rnqnx-qnx-x86_64 rnqnx_hermes_qnx_probe
+```
+
+This produces `build/rnqnx-qnx-x86_64/bin/rnqnx_hermes_qnx_probe`, which runs
+the same JSI runtime checks as the host Hermes probe.
 
 ## Patch files
 

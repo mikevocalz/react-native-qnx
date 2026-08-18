@@ -33,6 +33,7 @@ option(RNQNX_FETCH_REACT_NATIVE_DEPS
 # Hermes is a long build and is not needed by most changes, so it is opt-in:
 #   cmake --preset macos-host-tests -DRNQNX_BUILD_HERMES=ON
 option(RNQNX_BUILD_HERMES "Build Hermes from source for the host" OFF)
+option(RNQNX_BUILD_HERMES_QNX "Link the cross-built QNX Hermes/JSI probe" OFF)
 
 # This target is the executable G0-A language/runtime proof. Compiling it on a
 # host validates the TU itself; only a qcc cross-build followed by execution on
@@ -79,6 +80,22 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     target_link_libraries(rnqnx_playground PRIVATE qnx_platform)
     rnqnx_enable_strict_warnings(rnqnx_playground)
     set_target_properties(rnqnx_playground PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    )
+  endif()
+
+  if(RNQNX_BUILD_HERMES_QNX)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/HermesQNX.cmake)
+
+    add_executable(rnqnx_hermes_qnx_probe
+      vnext/probes/hermes/main.cpp
+    )
+    target_link_libraries(rnqnx_hermes_qnx_probe PRIVATE
+      rnqnx_hermes
+      Threads::Threads
+    )
+    rnqnx_enable_strict_warnings(rnqnx_hermes_qnx_probe)
+    set_target_properties(rnqnx_hermes_qnx_probe PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     )
   endif()
