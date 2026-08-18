@@ -164,6 +164,41 @@ Current status: the probe reaches `Runtime::initJSBuiltins` and then
 backtrace (analyzed with `ntox86_64-gdb`) shows the crash is in JS runtime
 construction, not in the build or JSI link.
 
+### GDB analysis of the crash
+
+```
+#0 hermes::vm::DictPropertyMap::lookupEntryFor(...)
+#1 hermes::vm::DictPropertyMap::find(...)
+#2 hermes::vm::JSObject::findProperty(...)
+...
+#5 hermes::vm::Runtime::initJSBuiltins(...)
+#6 hermes::vm::Runtime::Runtime(...)
+```
+
+At frame `0`:
+- `rdi` (first argument, `DictPropertyMap *self`) = `0x9d267800000000`
+- `rsi` (`SymbolID`) = `0x1e1`
+
+`0x9d267800000000` is not a canonical x86_64 user-space pointer (top 16 bits are
+`0x9d26` instead of `0x0000`). Masking with the `HermesValue` `kDataMask`
+(`0x0000ffffffffffff`) would yield `0x267800000000`, which is a valid 48-bit
+pointer. This means `DictPropertyMap::lookupEntryFor` is being called with an
+un-masked `HermesValue` object tag in the `self` pointer, or the GC segment base
+used by `CompressedPointer`/`GCPointer` decoding was placed at an invalid
+`0x9d26...` virtual address by the `StorageProvider`.
+
+Attempts so far:
+- Added QNX `mprotect`-based `vm_commit`/`vm_uncommit` stubs in
+  `lib/Support/OSCompatPosix.cpp` (no change to the crash).
+- Tried `StorageProvider::mallocProvider()` for the `Runtime` heap on QNX
+  (no change to the crash).
+
+This points to a `HermesValue`/`GCPointer` decoding or `StorageProvider` heap
+base issue rather than a simple `mmap`/`mprotect` problem. The next step is to
+trace `Runtime::alloc` and `PropStorage::create` to see whether the
+`DictPropertyMap` address is genuinely `0x9d267800000000` or whether a
+`SmallHermesValue`/`HermesValue` is being passed without decoding.
+
 ## Patch files
 
 The source-level changes made in the downloaded `third-party/hermes-250829098`
