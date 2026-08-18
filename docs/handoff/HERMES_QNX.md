@@ -88,6 +88,20 @@ so `libhermesvm-config.h` got an empty `HERMESVM_SIZEOF_VOID_P`. Explicitly set
 - Runtime testing on the QNX x86_64 VM is needed after the library links.
 - The aarch64 cross-build needs to be verified on the Raspberry Pi/QSTI target.
 
+## Patch files
+
+The source-level changes made in the downloaded `third-party/hermes-250829098`
+tree are captured in:
+
+- `patches/hermes-qnx-250829.patch`
+
+Apply the patch before configuring Hermes for QNX:
+
+```powershell
+cd third-party/hermes-250829098
+git apply ../../patches/hermes-qnx-250829.patch
+```
+
 ## Recommended next steps
 
 1. Let the current `libhermesvmlean_a.a` build finish and fix any new errors.
