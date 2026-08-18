@@ -72,10 +72,91 @@ index fb7d03c..7520c79 100644
  # Bytecode compiled InternalJavaScript target
  add_hermes_library(hermesInternalBytecode
 diff --git a/lib/Support/OSCompatPosix.cpp b/lib/Support/OSCompatPosix.cpp
-index e9b6692..97d9bfa 100644
+index e9b6692..4b51d76 100644
 --- a/lib/Support/OSCompatPosix.cpp
 +++ b/lib/Support/OSCompatPosix.cpp
-@@ -225,6 +225,11 @@ void vm_free_aligned(void *p, size_t sz) {
+@@ -145,6 +145,10 @@ static void vm_munmap(void *addr, size_t sz) {
+ #endif
+ }
+ 
++#ifdef __QNXNTO__
++// (QNX helpers are defined later, after kVMAllocateProt/kVMAllocateFlags.)
++#endif
++
+ static char *alignAlloc(void *p, size_t alignment) {
+   return reinterpret_cast<char *>(
+       llvh::alignTo(reinterpret_cast<uintptr_t>(p), alignment));
+@@ -179,6 +183,46 @@ vm_mmap_aligned(void *addr, size_t sz, size_t alignment, int prot, int flags) {
+ static constexpr int kVMAllocateFlags = MAP_PRIVATE | MAP_ANONYMOUS;
+ static constexpr int kVMAllocateProt = PROT_READ | PROT_WRITE;
+ 
++#ifdef __QNXNTO__
++// QNX's mmap() can return very high virtual addresses that x86_64 user-space
++// cannot use. Force allocations into the low (sub-0x7f...) canonical range with
++// MAP_FIXED and a simple bump allocator. The base (2 TB) is far above the
++// usual load/QNX image area but well below the x86_64 user-space canonical
++// limit (0x7fffffffffff).
++static uintptr_t qnxNextVA = 0x100000000;
++
++static llvh::ErrorOr<void *>
++qnx_vm_allocate_aligned(size_t sz, size_t alignment) {
++  // Round the cursor up to the requested alignment.
++  qnxNextVA = (qnxNextVA + alignment - 1) & ~(alignment - 1);
++  const size_t excess = sz + alignment;
++  for (size_t attempts = 0; attempts < 64; ++attempts) {
++    void *raw = ::mmap(
++        (void *)qnxNextVA,
++        excess,
++        kVMAllocateProt,
++        kVMAllocateFlags | MAP_FIXED,
++        -1,
++        0);
++    if (raw != MAP_FAILED) {
++      char *aligned = alignAlloc(raw, alignment);
++      size_t front = static_cast<char *>(aligned) - static_cast<char *>(raw);
++      size_t back = excess - front - sz;
++      if (front) {
++        ::munmap(raw, front);
++      }
++      if (back) {
++        ::munmap(aligned + sz, back);
++      }
++      qnxNextVA = reinterpret_cast<uintptr_t>(aligned) + sz;
++      return aligned;
++    }
++    qnxNextVA += alignment;
++  }
++  return std::error_code(errno, std::generic_category());
++}
++#endif
++
+ llvh::ErrorOr<void *> vm_allocate(size_t sz, void *hint) {
+   assert(sz % page_size() == 0);
+ #ifndef NDEBUG
+@@ -186,7 +230,11 @@ llvh::ErrorOr<void *> vm_allocate(size_t sz, void *hint) {
+     return vm_allocate_aligned(sz, testPgSz);
+   }
+ #endif // !NDEBUG
++#ifdef __QNXNTO__
++  return qnx_vm_allocate_aligned(sz, page_size_real());
++#else
+   return vm_mmap(hint, sz, kVMAllocateProt, kVMAllocateFlags, true);
++#endif
+ }
+ 
+ llvh::ErrorOr<void *>
+@@ -197,6 +245,10 @@ vm_allocate_aligned(size_t sz, size_t alignment, void *hint) {
+   // alignment requirement here to avoid creating bugs on other platforms.
+   assert(llvh::isPowerOf2_64(alignment));
+ 
++#ifdef __QNXNTO__
++  return qnx_vm_allocate_aligned(sz, alignment);
++#endif
++
+   // Opportunistically allocate without alignment constraint,
+   // and see if the memory happens to be aligned.
+   // While this may be unlikely on the first allocation request,
+@@ -225,6 +277,11 @@ void vm_free_aligned(void *p, size_t sz) {
    vm_free(p, sz);
  }
  
@@ -87,7 +168,7 @@ index e9b6692..97d9bfa 100644
  static constexpr int kVMReserveProt = PROT_NONE;
  static constexpr int kVMReserveFlags =
      MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
-@@ -239,13 +244,28 @@ void vm_release_aligned(void *p, size_t sz) {
+@@ -239,13 +296,28 @@ void vm_release_aligned(void *p, size_t sz) {
  }
  
  llvh::ErrorOr<void *> vm_commit(void *p, size_t sz) {
@@ -116,7 +197,7 @@ index e9b6692..97d9bfa 100644
  }
  
  void vm_hugepage(void *p, size_t sz) {
-@@ -273,28 +293,34 @@ void vm_unused(void *p, size_t sz) {
+@@ -273,28 +345,34 @@ void vm_unused(void *p, size_t sz) {
  
  /// On the mach kernel, \p MADV_FREE causes the OS to deduct this memory from
  /// the process's physical footprint.
@@ -158,7 +239,7 @@ index e9b6692..97d9bfa 100644
  }
  
  void vm_name(void *p, size_t sz, const char *name) {
-@@ -324,6 +350,11 @@ bool vm_madvise(void *p, size_t sz, MAdvice advice) {
+@@ -324,6 +402,11 @@ bool vm_madvise(void *p, size_t sz, MAdvice advice) {
        "Precondition: pointer is page-aligned.");
  #endif
  
@@ -170,7 +251,7 @@ index e9b6692..97d9bfa 100644
    int param = MADV_NORMAL;
    switch (advice) {
      case MAdvice::Random:
-@@ -334,6 +365,7 @@ bool vm_madvise(void *p, size_t sz, MAdvice advice) {
+@@ -334,6 +417,7 @@ bool vm_madvise(void *p, size_t sz, MAdvice advice) {
        break;
    }
    return madvise(p, sz, param) == 0;
@@ -178,7 +259,7 @@ index e9b6692..97d9bfa 100644
  }
  
  llvh::ErrorOr<size_t> vm_footprint(char *start, char *end) {
-@@ -424,6 +456,13 @@ llvh::ErrorOr<size_t> vm_footprint(char *start, char *end) {
+@@ -424,6 +508,13 @@ llvh::ErrorOr<size_t> vm_footprint(char *start, char *end) {
  }
  
  int pages_in_ram(const void *p, size_t sz, llvh::SmallVectorImpl<int> *runs) {
@@ -192,7 +273,7 @@ index e9b6692..97d9bfa 100644
    const auto PS = page_size();
    {
      // Align region start down to page boundary.
-@@ -460,6 +499,7 @@ int pages_in_ram(const void *p, size_t sz, llvh::SmallVectorImpl<int> *runs) {
+@@ -460,6 +551,7 @@ int pages_in_ram(const void *p, size_t sz, llvh::SmallVectorImpl<int> *runs) {
      }
    }
    return totalIn;
@@ -200,7 +281,7 @@ index e9b6692..97d9bfa 100644
  }
  
  uint64_t peak_rss() {
-@@ -487,6 +527,9 @@ uint64_t current_rss() {
+@@ -487,6 +579,9 @@ uint64_t current_rss() {
            &infoCount) != KERN_SUCCESS)
      return 0;
    return info.resident_size * page_size_real();
@@ -210,7 +291,7 @@ index e9b6692..97d9bfa 100644
  #else
    FILE *fp = fopen("/proc/self/statm", "r");
    if (!fp) {
-@@ -609,6 +652,12 @@ uint64_t global_thread_id() {
+@@ -609,6 +704,12 @@ uint64_t global_thread_id() {
    return syscall(__NR_gettid);
  }
  
@@ -223,7 +304,7 @@ index e9b6692..97d9bfa 100644
  #else
  #error "Thread ID not supported on this platform"
  #endif
-@@ -636,6 +685,21 @@ std::pair<const void *, size_t> thread_stack_bounds_impl() {
+@@ -636,6 +737,21 @@ std::pair<const void *, size_t> thread_stack_bounds_impl() {
    return {origin, size};
  }
  
@@ -245,7 +326,7 @@ index e9b6692..97d9bfa 100644
  #else
  
  std::pair<const void *, size_t> thread_stack_bounds_impl() {
-@@ -682,6 +746,8 @@ void set_thread_name(const char *name) {
+@@ -682,6 +798,8 @@ void set_thread_name(const char *name) {
    prctl(PR_SET_NAME, name);
  #elif defined(__APPLE__)
    ::pthread_setname_np(name);
@@ -254,7 +335,7 @@ index e9b6692..97d9bfa 100644
  #endif
    // Do nothing if the platform doesn't support it.
  }
-@@ -728,9 +794,15 @@ std::chrono::microseconds thread_cpu_time() {
+@@ -728,9 +846,15 @@ std::chrono::microseconds thread_cpu_time() {
    return microseconds(total);
  }
  
@@ -272,7 +353,7 @@ index e9b6692..97d9bfa 100644
  
  // Platform-specific implementations of thread_page_fault_count
  
-@@ -760,9 +832,16 @@ bool thread_page_fault_count(int64_t *outMinorFaults, int64_t *outMajorFaults) {
+@@ -760,9 +884,16 @@ bool thread_page_fault_count(int64_t *outMinorFaults, int64_t *outMajorFaults) {
    return ret == 0;
  }
  

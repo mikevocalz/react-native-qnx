@@ -193,11 +193,16 @@ Attempts so far:
 - Tried `StorageProvider::mallocProvider()` for the `Runtime` heap on QNX
   (no change to the crash).
 
-This points to a `HermesValue`/`GCPointer` decoding or `StorageProvider` heap
-base issue rather than a simple `mmap`/`mprotect` problem. The next step is to
-trace `Runtime::alloc` and `PropStorage::create` to see whether the
-`DictPropertyMap` address is genuinely `0x9d267800000000` or whether a
-`SmallHermesValue`/`HermesValue` is being passed without decoding.
+Attempts to force low virtual addresses for the GC heap (`qnx_vm_allocate_aligned`
+using `MAP_FIXED` starting at `0x100000000`) did not change the crash; `rdi`
+remained `0x9d267800000000`. This means the `DictPropertyMap`/`propStorage_` is
+not coming from `VMAllocateStorageProvider::newStorage`/`vm_allocate_aligned` as
+expected, or the pointer `0x9d267800000000` is being stored without `HermesValue`
+decoding.
+
+Next: instrument `DictPropertyMap::create`, `JSObject::findProperty`, and
+`HermesValue::getPointer()`/`getObject()` to see exactly where the
+`0x9d267800000000` handle value is produced.
 
 ## Patch files
 
