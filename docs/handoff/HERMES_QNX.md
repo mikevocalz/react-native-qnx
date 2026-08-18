@@ -193,16 +193,17 @@ Attempts so far:
 - Tried `StorageProvider::mallocProvider()` for the `Runtime` heap on QNX
   (no change to the crash).
 
-Attempts to force low virtual addresses for the GC heap (`qnx_vm_allocate_aligned`
-using `MAP_FIXED` starting at `0x100000000`) did not change the crash; `rdi`
-remained `0x9d267800000000`. This means the `DictPropertyMap`/`propStorage_` is
-not coming from `VMAllocateStorageProvider::newStorage`/`vm_allocate_aligned` as
-expected, or the pointer `0x9d267800000000` is being stored without `HermesValue`
-decoding.
+The `0x9d267800000000` pointer is a real `GCCell *` inside a 4 GB contiguous
+heap: `0x9d260000000000` (a 4 GB-aligned virtual address) + `0x78000000`
+(offset ~120 MB). This means `ContiguousVAStorageProvider` is being used (likely
+`HERMESVM_CONTIGUOUS_HEAP=ON` in the CMake cache), and
+`oscompat::vm_reserve_aligned` is returning a non-canonical high virtual address.
 
-Next: instrument `DictPropertyMap::create`, `JSObject::findProperty`, and
-`HermesValue::getPointer()`/`getObject()` to see exactly where the
-`0x9d267800000000` handle value is produced.
+The fix in `lib/Support/OSCompatPosix.cpp` is to use the same `MAP_FIXED` bump
+allocator for `vm_reserve_aligned` on QNX, forcing the contiguous heap base and
+all `vm_allocate`/`vm_allocate_aligned` calls into the low (sub-0x7f...)
+canonical x86_64 range. The QNX `mmap` hint test confirmed `0x100000000` is
+honored, so the allocator starts there and moves forward in `alignment` steps.
 
 ## Patch files
 
