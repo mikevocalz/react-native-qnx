@@ -2,11 +2,10 @@
 
 ## TL;DR
 
-Hermes for QNX is **feasible but not plug-and-play**. CMake configures cleanly
-for QNX x86_64 using the existing `cmake/toolchains/qnx-8.0.cmake`, a
-Windows `hermesc.exe` from `hermes-compiler`, and a small Python interpreter.
-Building the first non-trivial target (`libhermesConsoleHost.a`) reaches QNX
-headers and libc++ compatibility errors that need source-level patches.
+Hermes for QNX is **compiling**. CMake configures and the lean VM (`libhermesvmlean_a.a`)
+is currently building for QNX x86_64. The fixes so far are in the repo's toolchain and
+a small `machine/endian.h` shim; the remaining changes were made in the downloaded
+Hermes source tree.
 
 ## Build recipe used
 
@@ -28,6 +27,7 @@ cmake -S third-party/hermes-250829098 -B build/hermes-qnx-x86_64 -G Ninja `
   -DHERMESVM_ALLOW_JIT=0 `
   -DHERMES_ALLOW_BOOST_CONTEXT=0 `
   -DLLVM_HOST_TRIPLE=x86_64-unknown-nto-qnx8.0.0 `
+  -DCMAKE_SIZEOF_VOID_P=8 `
   -DCMAKE_BUILD_TYPE=MinSizeRel `
   -DPython_EXECUTABLE=C:\Users\Owner\python-embed\python.exe
 ```
@@ -41,69 +41,60 @@ run without building a host Hermes.
 - QCC 12.2 is detected and produces code for `gcc_ntox86_64`.
 - `HAVE_COMPUTED_GOTO` succeeds, so the indirect-threaded interpreter can be
   used on QNX.
-- `libhermesPlatform.a` compiles and links successfully.
-- The lean-library build path (`HERMES_BUILD_LEAN_LIBHERMES=ON`) excludes the
-  compiler and avoids needing `shermes`.
+- `libhermesPlatform.a` and `libhermesConsoleHost.a` compile and link.
+- `lib/VM/CMakeFiles/hermesVMRuntime_obj.dir` is in progress (the lean VM is
+  currently compiling).
 
-## Errors found in the first build
+## Fixes required and applied
 
-### 1. `machine/endian.h` not found
+### 1. `machine/endian.h` missing
 
-`llvh/Support/Host.h` includes `<machine/endian.h>` (BSD-style). QNX 8.0 ships
-this under `usr/include/devs/include_<arch>/machine/endian.h`, not the
-standard `usr/include` tree.
+`llvh/Support/Host.h` expects `<machine/endian.h>`, which QNX does not ship in
+`usr/include/`. Added `cmake/qnx-hermes-shims/machine/endian.h` that defines
+`BYTE_ORDER`, `BIG_ENDIAN`, and `LITTLE_ENDIAN` using GCC `__BYTE_ORDER__`
+builtins. The toolchain now adds this shim directory as a system include path.
 
-**Fix applied in toolchain:** `cmake/toolchains/qnx-8.0.cmake` now adds the
-architecture-specific `devs/include_<arch>` path. It must be done carefully;
-adding `devs/sys` globally makes libc++ pick up internal `sys/stddef.h` and
-`sys/time.h` and break.
+### 2. QNX API visibility (`isatty` etc.)
 
-### 2. `__utime64_scale64_floor` not declared
+QNX hides `isatty`, `getenv`, and other POSIX.1-1988 functions in C++ unless a
+feature-test macro like `_QNX_SOURCE` is defined. Added `-D_QNX_SOURCE` to the
+QNX toolchain flags.
 
-Caused by `<sys/time.h>` resolving to the internal `devs/sys/time.h` when the
-`devs` tree is put on the include path. The public `usr/include/sys/time.h`
-should be used instead.
+### 3. `CMAKE_SIZEOF_VOID_P` empty for cross-build
 
-**Implication:** the toolchain should only expose the bare minimum of `devs`
-(generally `devs/include_<arch>` for `machine/endian.h`) and should keep
-`usr/include/sys` first. If `devs/sys` is needed for `sys/_types.h`, it must be
-placed *after* the standard `usr/include` paths.
+CMake's `CMAKE_SIZEOF_VOID_P` was not populated for the QNX cross toolchain,
+so `libhermesvm-config.h` got an empty `HERMESVM_SIZEOF_VOID_P`. Explicitly set
+`-DCMAKE_SIZEOF_VOID_P=8`.
 
-### 3. `::isatty` not declared in `hermes/Support/OSCompat.h`
+### 4. `llvh/lib/Support/Unix/Path.inc` QNX incompatibilities
 
-QNX has `isatty` in `<unistd.h>`, but `OSCompat.h` is wrapping the global
-function. For QNX the wrapper needs either an explicit `using ::isatty;` with
-`<unistd.h>` or a `#include <unistd.h>` before the `inline`.
+- QNX `statvfs` uses `f_flag` instead of `f_flags`.
+- QNX does not define `MNT_LOCAL`.
+- Added `__QNXNTO__` guards in `Path.inc` and treated the local-filesystem
+  check as `return true`.
 
-### 4. `__utime64_scale64_floor` and other internal time macros
+### 5. Hermes `InternalJavaScript` needs `shermes` for the native path
 
-These are part of the QNX kernel/driver `bintime` API and are not meant to be
-visible in user-space headers. This confirms that the `devs/sys` path must not
-shadow the public `usr/include/sys` tree.
+`shermes` (Hermes-to-C compiler) is not in the `hermes-compiler` package. With
+`HERMESVM_INTERNAL_JAVASCRIPT_NATIVE=OFF` the build still tried to generate
+`internal_unit.c`. Patched `lib/InternalJavaScript/CMakeLists.txt` to guard the
+`internal_unit.c` generation and `hermesInternalUnit` target with
+`if(HERMESVM_INTERNAL_JAVASCRIPT_NATIVE)`.
+
+## Remaining risks
+
+- The full `libhermesvmlean_a.a` build is still running; there may be more QNX
+  header/compat issues in the VM or JSI layers.
+- Runtime testing on the QNX x86_64 VM is needed after the library links.
+- The aarch64 cross-build needs to be verified on the Raspberry Pi/QSTI target.
 
 ## Recommended next steps
 
-1. **Create a Hermes/QNX patch set** under `patches/hermes-qnx/` (or fork
-   `third-party/hermes`) that:
-   - Replaces or shims `<machine/endian.h>` with QNX's public endian helpers
-     (`<gulliver.h>` or `<qh/endian.h>`).
-   - Adds `#include <unistd.h>` in `hermes/Support/OSCompat.h` for `__QNXNTO__`.
-   - Fixes any remaining `pthread_getname_np` / `pthread_setname_np` and
-     `mallinfo`/`mallctl` differences.
-2. **Refine `cmake/toolchains/qnx-8.0.cmake`** to avoid exposing `devs/sys` and
-   to keep the public `usr/include` sysroot first.
-3. **Build `libhermesConsoleHost.a`**, then `libhermes.a`, then `libhermes.so`
-   or `libhermes.a` to validate the full VM for QNX.
-4. **Wire the QNX build into `CMakeLists.txt`** so `rnqnx_qnx` links against
-   the cross-built Hermes instead of the host `jsc`/`hermes` stub, or keep the
-   current interpreter bridge until Hermes is ready.
-
-## Decision
-
-Hermes on QNX is **proven to be configurable** with the existing toolchain and
-prebuilt host tools, but it requires a focused porting effort to patch llvh and
-Hermes for QNX headers. The payoff is large (real bytecode execution, smaller
-memory, JSI integration). It should be a follow-on milestone, not a same-day
-fix.
+1. Let the current `libhermesvmlean_a.a` build finish and fix any new errors.
+2. Build `libhermesvm.so` / `libhermes.a` and `libjsi.a` for the full QNX
+   runtime.
+3. Wire the QNX Hermes binaries into `react-native-qnx/CMakeLists.txt` in place
+   of the current host-only `hermes`/`jsc` stubs.
+4. Validate on the QNX x86_64 VM and then on the aarch64le Raspberry Pi target.
 
 Generated with [Devin](https://devin.ai)

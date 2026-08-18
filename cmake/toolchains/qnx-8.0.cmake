@@ -68,14 +68,14 @@ elseif(QNX_TARGET_ARCH STREQUAL "x86_64")
   set(RNQNX_QNX_TOOL_PREFIX "x86_64-pc-nto-qnx8.0.0")
 endif()
 
-set(QNX_TARGET_CFLAGS  "-V${QNX_COMPILER_VARIANT}")
+set(QNX_TARGET_CFLAGS  "-V${QNX_COMPILER_VARIANT} -D_QNX_SOURCE")
 set(QNX_TARGET_LDFLAGS "-V${QNX_COMPILER_VARIANT}")
 
-# Architecture-specific device headers (e.g. machine/endian.h) live in a
-# per-arch subdirectory; adding it as a system include path avoids the need
-# to patch upstream code like Hermes' bundled llvh for QNX.
+# Hermes' bundled llvh expects <machine/endian.h>, which QNX does not ship in
+# the public sysroot. Provide a shim directory that sits next to this toolchain.
+get_filename_component(_QNX_TOOLCHAIN_DIR "${CMAKE_CURRENT_LIST_DIR}" DIRECTORY)
 set(QNX_TARGET_ARCH_INCLUDES
-    "-isystem ${QNX_TARGET}/usr/include/devs/include_${QNX_TARGET_ARCH} -isystem ${QNX_TARGET}/usr/include/devs/sys")
+    "-isystem ${_QNX_TOOLCHAIN_DIR}/qnx-hermes-shims")
 
 set(CMAKE_C_FLAGS   "${QNX_TARGET_CFLAGS} ${QNX_TARGET_ARCH_INCLUDES}" CACHE STRING "Initial C compile flags" FORCE)
 set(CMAKE_CXX_FLAGS "${QNX_TARGET_CFLAGS} -std=c++20 ${QNX_TARGET_ARCH_INCLUDES}" CACHE STRING "Initial C++ compile flags" FORCE)
