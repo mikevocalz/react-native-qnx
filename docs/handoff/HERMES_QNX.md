@@ -195,15 +195,25 @@ Attempts so far:
 
 The `0x9d267800000000` pointer is a real `GCCell *` inside a 4 GB contiguous
 heap: `0x9d260000000000` (a 4 GB-aligned virtual address) + `0x78000000`
-(offset ~120 MB). This means `ContiguousVAStorageProvider` is being used (likely
-`HERMESVM_CONTIGUOUS_HEAP=ON` in the CMake cache), and
-`oscompat::vm_reserve_aligned` is returning a non-canonical high virtual address.
+(offset ~120 MB). Instrumentation shows that `Runtime::create` on this build
+uses `StorageProvider::mmapProvider()`, and `oscompat::qnx_vm_allocate_aligned`
+successfully returns low, canonical addresses starting near `0x1000000000`. The
+`0x9d260000000000` base used by the crashing `DictPropertyMap` is therefore *not*
+coming from `qnx_vm_allocate_aligned`, nor from the `ContiguousVA` reservation
+path that is forced by the QNX bump allocator. The high base is allocated
+through some other `mmap` code path and has not yet been traced to its source.
 
-The fix in `lib/Support/OSCompatPosix.cpp` is to use the same `MAP_FIXED` bump
-allocator for `vm_reserve_aligned` on QNX, forcing the contiguous heap base and
-all `vm_allocate`/`vm_allocate_aligned` calls into the low (sub-0x7f...)
-canonical x86_64 range. The QNX `mmap` hint test confirmed `0x100000000` is
-honored, so the allocator starts there and moves forward in `alignment` steps.
+The current `lib/Support/OSCompatPosix.cpp` fix on top of the QNX workarounds:
+
+1. `qnxNextVA` starts at `0x1000000000` (64 GB) instead of `0x100000000`
+   (4 GB) to avoid collisions with the QNX image/loader area. The low range
+   `0x100000000` works in standalone `mmap` tests but is unavailable in the
+   Hermes process; the 64 GB base is still well below the x86_64 canonical
+   limit and is confirmed free by `mmap` probes.
+2. `vm_commit` on QNX uses `mmap(..., MAP_FIXED)` instead of `mprotect`. On
+   QNX, `mprotect` only flips protection bits and does not necessarily back
+   `MAP_NORESERVE` `PROT_NONE` reservations with real pages. Re-mmapping with
+   `MAP_FIXED` over the reserved range commits the pages.
 
 ## Patch files
 
@@ -221,11 +231,15 @@ git apply ../../patches/hermes-qnx-250829.patch
 
 ## Recommended next steps
 
-1. Let the current `libhermesvmlean_a.a` build finish and fix any new errors.
-2. Build `libhermesvm.so` / `libhermes.a` and `libjsi.a` for the full QNX
+1. Trace the origin of the `0x9d260000000000` 4 GB mapping. It is not from
+   `qnx_vm_allocate_aligned` and not from the patched `vm_reserve_aligned`;
+   use `pidin` or `/proc/<pid>/as` on QNX to see which mapped region contains
+   `0x9d260000000000` and which allocator created it.
+2. Let the current `libhermesvmlean_a.a` build finish and fix any new errors.
+3. Build `libhermesvm.so` / `libhermes.a` and `libjsi.a` for the full QNX
    runtime.
-3. Wire the QNX Hermes binaries into `react-native-qnx/CMakeLists.txt` in place
+4. Wire the QNX Hermes binaries into `react-native-qnx/CMakeLists.txt` in place
    of the current host-only `hermes`/`jsc` stubs.
-4. Validate on the QNX x86_64 VM and then on the aarch64le Raspberry Pi target.
+5. Validate on the QNX x86_64 VM and then on the aarch64le Raspberry Pi target.
 
 Generated with [Devin](https://devin.ai)
