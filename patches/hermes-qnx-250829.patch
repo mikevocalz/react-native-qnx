@@ -20,6 +20,18 @@ index dd55605..eb45fd8 100644
  #else
    return !!(STATVFS_F_FLAG(Vfs) & MNT_LOCAL);
  #endif
+diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
+index 5729137..986b26e 100644
+--- a/lib/CMakeLists.txt
++++ b/lib/CMakeLists.txt
+@@ -161,7 +161,6 @@ target_link_libraries(hermesvmlean_a PUBLIC
+   hermesHBCBackendLean_obj
+   hermesInst_obj
+   hermesInstrumentation_obj
+-  hermesInternalUnit_obj
+   hermesInternalJavaScript_obj
+   hermesPlatformUnicode_obj
+   hermesPlatform_obj
 diff --git a/lib/InternalJavaScript/CMakeLists.txt b/lib/InternalJavaScript/CMakeLists.txt
 index fb7d03c..7520c79 100644
 --- a/lib/InternalJavaScript/CMakeLists.txt

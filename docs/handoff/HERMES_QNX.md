@@ -44,6 +44,8 @@ run without building a host Hermes.
 - `libhermesPlatform.a`, `libhermesConsoleHost.a`, and `libjsi.a` compile and link.
 - `lib/libhermesvmlean_a.a` (the lean QNX x86_64 Hermes VM static library)
   builds and links successfully.
+- `lib/libhermesvmlean.so` (the lean QNX x86_64 Hermes VM shared library)
+  also links successfully.
 
 ## Fixes required and applied
 
@@ -81,7 +83,14 @@ so `libhermesvm-config.h` got an empty `HERMESVM_SIZEOF_VOID_P`. Explicitly set
 `internal_unit.c` generation and `hermesInternalUnit` target with
 `if(HERMESVM_INTERNAL_JAVASCRIPT_NATIVE)`.
 
-### 6. `lib/Support/OSCompatPosix.cpp` and `lib/VM/Instrumentation/ProcessStats.cpp`
+### 6. `lib/CMakeLists.txt`
+
+With `HERMESVM_INTERNAL_JAVASCRIPT_NATIVE=OFF`, the `hermesInternalUnit_obj`
+target does not exist, but `lib/CMakeLists.txt` still tried to link it into
+`hermesvmlean_a`. Removed the redundant `hermesInternalUnit_obj` dependency;
+`hermesInternalJavaScript_obj` already resolves to the correct target.
+
+### 7. `lib/Support/OSCompatPosix.cpp` and `lib/VM/Instrumentation/ProcessStats.cpp`
 
 QNX lacks `MAP_NORESERVE`, `madvise`/`MADV_*`, `mincore`, `pthread_getattr_np`,
 `SA_RESTART`, `CLOCK_THREAD_CPUTIME_ID` for some configurations, and
