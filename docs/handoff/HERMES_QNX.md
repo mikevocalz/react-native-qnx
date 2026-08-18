@@ -41,9 +41,9 @@ run without building a host Hermes.
 - QCC 12.2 is detected and produces code for `gcc_ntox86_64`.
 - `HAVE_COMPUTED_GOTO` succeeds, so the indirect-threaded interpreter can be
   used on QNX.
-- `libhermesPlatform.a` and `libhermesConsoleHost.a` compile and link.
-- `lib/VM/CMakeFiles/hermesVMRuntime_obj.dir` is in progress (the lean VM is
-  currently compiling).
+- `libhermesPlatform.a`, `libhermesConsoleHost.a`, and `libjsi.a` compile and link.
+- `lib/libhermesvmlean_a.a` (the lean QNX x86_64 Hermes VM static library)
+  builds and links successfully.
 
 ## Fixes required and applied
 
@@ -81,11 +81,23 @@ so `libhermesvm-config.h` got an empty `HERMESVM_SIZEOF_VOID_P`. Explicitly set
 `internal_unit.c` generation and `hermesInternalUnit` target with
 `if(HERMESVM_INTERNAL_JAVASCRIPT_NATIVE)`.
 
+### 6. `lib/Support/OSCompatPosix.cpp` and `lib/VM/Instrumentation/ProcessStats.cpp`
+
+QNX lacks `MAP_NORESERVE`, `madvise`/`MADV_*`, `mincore`, `pthread_getattr_np`,
+`SA_RESTART`, `CLOCK_THREAD_CPUTIME_ID` for some configurations, and
+`/proc/self/statm`. Added `__QNXNTO__` stub branches so the VM links: no-op
+memory advice, no thread page-fault count, stubbed stack bounds, and
+process-memory stats returning 0. `ProcessStats.cpp` treats QNX like
+Emscripten (return 0 for RSS/VA).
+
 ## Remaining risks
 
-- The full `libhermesvmlean_a.a` build is still running; there may be more QNX
-  header/compat issues in the VM or JSI layers.
+- `libhermesvmlean_a.a` links but still uses stubbed QNX OSCompat (memory
+  advice, thread IDs, page-fault counts, stack bounds, process RSS). This is
+  fine for bootstrapping but may need real QNX APIs before production.
 - Runtime testing on the QNX x86_64 VM is needed after the library links.
+- The shared `libhermesvmlean.so` and `libjsi.a`/`libhermesapi.a` targets
+  should be built and validated next.
 - The aarch64 cross-build needs to be verified on the Raspberry Pi/QSTI target.
 
 ## Patch files

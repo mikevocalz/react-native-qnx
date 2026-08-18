@@ -59,6 +59,205 @@ index fb7d03c..7520c79 100644
  
  # Bytecode compiled InternalJavaScript target
  add_hermes_library(hermesInternalBytecode
+diff --git a/lib/Support/OSCompatPosix.cpp b/lib/Support/OSCompatPosix.cpp
+index e9b6692..83ddb27 100644
+--- a/lib/Support/OSCompatPosix.cpp
++++ b/lib/Support/OSCompatPosix.cpp
+@@ -225,6 +225,11 @@ void vm_free_aligned(void *p, size_t sz) {
+   vm_free(p, sz);
+ }
+ 
++// QNX 8.0 does not define MAP_NORESERVE; the flag is ignored for our purposes.
++#ifndef MAP_NORESERVE
++#define MAP_NORESERVE 0
++#endif
++
+ static constexpr int kVMReserveProt = PROT_NONE;
+ static constexpr int kVMReserveFlags =
+     MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
+@@ -273,28 +278,34 @@ void vm_unused(void *p, size_t sz) {
+ 
+ /// On the mach kernel, \p MADV_FREE causes the OS to deduct this memory from
+ /// the process's physical footprint.
+-#define MADV_UNUSED MADV_FREE
++  madvise(p, sz, MADV_FREE);
+ 
+ #elif defined(__linux__)
+ 
+ /// On linux, telling the OS that we \p MADV_DONTNEED some pages will cause it
+ /// to immediately deduct their size from the process's resident set.
+-#define MADV_UNUSED MADV_DONTNEED
++  madvise(p, sz, MADV_DONTNEED);
+ 
+-#else
+-#error "Don't know how to return memory to the OS on this platform."
+-#endif // __MACH__, __linux__
++#elif defined(__QNXNTO__)
+ 
+-  madvise(p, sz, MADV_UNUSED);
++// QNX does not expose an equivalent madvise hint, so this is a no-op.
++  (void)p;
++  (void)sz;
+ 
+-#undef MADV_UNUSED
++#else
++#error "Don't know how to return memory to the OS on this platform."
++#endif // __MACH__, __linux__, __QNXNTO__
+ }
+ 
+ void vm_prefetch(void *p, size_t sz) {
+   assert(
+       reinterpret_cast<intptr_t>(p) % page_size() == 0 &&
+       "Precondition: pointer is page-aligned.");
++#ifdef __QNXNTO__
++  (void)sz;
++#else
+   madvise(p, sz, MADV_WILLNEED);
++#endif
+ }
+ 
+ void vm_name(void *p, size_t sz, const char *name) {
+@@ -324,6 +335,11 @@ bool vm_madvise(void *p, size_t sz, MAdvice advice) {
+       "Precondition: pointer is page-aligned.");
+ #endif
+ 
++#ifdef __QNXNTO__
++  (void)sz;
++  (void)advice;
++  return true;
++#else
+   int param = MADV_NORMAL;
+   switch (advice) {
+     case MAdvice::Random:
+@@ -334,6 +350,7 @@ bool vm_madvise(void *p, size_t sz, MAdvice advice) {
+       break;
+   }
+   return madvise(p, sz, param) == 0;
++#endif
+ }
+ 
+ llvh::ErrorOr<size_t> vm_footprint(char *start, char *end) {
+@@ -424,6 +441,13 @@ llvh::ErrorOr<size_t> vm_footprint(char *start, char *end) {
+ }
+ 
+ int pages_in_ram(const void *p, size_t sz, llvh::SmallVectorImpl<int> *runs) {
++#ifdef __QNXNTO__
++  (void)p;
++  (void)sz;
++  (void)runs;
++  return -1;
++#else
++
+   const auto PS = page_size();
+   {
+     // Align region start down to page boundary.
+@@ -460,6 +484,7 @@ int pages_in_ram(const void *p, size_t sz, llvh::SmallVectorImpl<int> *runs) {
+     }
+   }
+   return totalIn;
++#endif
+ }
+ 
+ uint64_t peak_rss() {
+@@ -487,6 +512,9 @@ uint64_t current_rss() {
+           &infoCount) != KERN_SUCCESS)
+     return 0;
+   return info.resident_size * page_size_real();
++#elif defined(__QNXNTO__)
++  // QNX does not expose a /proc/self/statm equivalent in the standard runtime.
++  return 0;
+ #else
+   FILE *fp = fopen("/proc/self/statm", "r");
+   if (!fp) {
+@@ -609,6 +637,12 @@ uint64_t global_thread_id() {
+   return syscall(__NR_gettid);
+ }
+ 
++#elif defined(__QNXNTO__)
++
++uint64_t global_thread_id() {
++  return 0;
++}
++
+ #else
+ #error "Thread ID not supported on this platform"
+ #endif
+@@ -636,6 +670,16 @@ std::pair<const void *, size_t> thread_stack_bounds_impl() {
+   return {origin, size};
+ }
+ 
++#elif defined(__QNXNTO__)
++
++std::pair<const void *, size_t> thread_stack_bounds_impl() {
++  // QNX does not provide pthread_getattr_np/pthread_get_stackaddr_np. Return a
++  // large conservative stack range to avoid asserts until a native query is
++  // implemented.
++  static constexpr size_t kFallbackStackSize = 8 * 1024 * 1024;
++  return {nullptr, kFallbackStackSize};
++}
++
+ #else
+ 
+ std::pair<const void *, size_t> thread_stack_bounds_impl() {
+@@ -682,6 +726,8 @@ void set_thread_name(const char *name) {
+   prctl(PR_SET_NAME, name);
+ #elif defined(__APPLE__)
+   ::pthread_setname_np(name);
++#elif defined(__QNXNTO__)
++  ::pthread_setname_np(pthread_self(), name);
+ #endif
+   // Do nothing if the platform doesn't support it.
+ }
+@@ -728,9 +774,15 @@ std::chrono::microseconds thread_cpu_time() {
+   return microseconds(total);
+ }
+ 
+-#else // !(__APPLE__ && __MACH__), !__linux__
++#elif defined(__QNXNTO__)
++
++std::chrono::microseconds thread_cpu_time() {
++  return std::chrono::microseconds::max();
++}
++
++#else // !(__APPLE__ && __MACH__), !__linux__, !__QNXNTO__
+ #error "Thread CPU Time not supported on this platform"
+-#endif // thread_cpu_time: (__APPLE__ && __MACH__), __linux__
++#endif // thread_cpu_time: (__APPLE__ && __MACH__), __linux__, __QNXNTO__
+ 
+ // Platform-specific implementations of thread_page_fault_count
+ 
+@@ -760,9 +812,16 @@ bool thread_page_fault_count(int64_t *outMinorFaults, int64_t *outMajorFaults) {
+   return ret == 0;
+ }
+ 
+-#else // !(__APPLE__ && __MACH__), !__linux__
++#elif defined(__QNXNTO__)
++
++bool thread_page_fault_count(int64_t *outMinorFaults, int64_t *outMajorFaults) {
++  *outMinorFaults = *outMajorFaults = 0;
++  return false;
++}
++
++#else // !(__APPLE__ && __MACH__), !__linux__, !__QNXNTO__
+ #error "Thread page fault count not supported on this platform"
+-#endif // thread_page_fault_count: (__APPLE__ && __MACH__), __linux__
++#endif // thread_page_fault_count: (__APPLE__ && __MACH__), __linux__, __QNXNTO__
+ 
+ std::string thread_name() {
+   constexpr int kMaxThreadNameSize = 100;
+diff --git a/lib/VM/Instrumentation/ProcessStats.cpp b/lib/VM/Instrumentation/ProcessStats.cpp
+index eef6b8c..4b9bc3f 100644
+--- a/lib/VM/Instrumentation/ProcessStats.cpp
++++ b/lib/VM/Instrumentation/ProcessStats.cpp
+@@ -69,7 +69,7 @@ ProcessStats::Info getProcessStatSnapshot() {
+   const size_t PS = getpagesize();
+   rss *= PS / 1024;
+   va *= PS / 1024;
+-#elif defined(__EMSCRIPTEN__)
++#elif defined(__EMSCRIPTEN__) || defined(__QNXNTO__)
+   rss = va = 0;
+ #else
+ #error "Unsupported platform"
 diff --git a/lib/VM/Profiler/SamplingProfilerPosix.cpp b/lib/VM/Profiler/SamplingProfilerPosix.cpp
 index b6ad40e..ce27e80 100644
 --- a/lib/VM/Profiler/SamplingProfilerPosix.cpp
