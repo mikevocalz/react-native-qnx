@@ -32,10 +32,43 @@ function majorVersion(version) {
   return match == null ? null : Number(match[1]);
 }
 
+/** @param {string} version */
+function versionParts(version) {
+  const match = /^(\d+)\.(\d+)\.(\d+)(?:-[0-9A-Za-z.-]+)?$/.exec(version);
+  if (match == null) return null;
+  return match.slice(1, 4).map(Number);
+}
+
+/** @param {number[]} a @param {number[]} b */
+function compareParts(a, b) {
+  for (let i = 0; i < 3; i += 1) {
+    if (a[i] !== b[i]) return a[i] < b[i] ? -1 : 1;
+  }
+  return 0;
+}
+
 /** @param {string | undefined} range @param {string} version */
-function rangeNamesVersion(range, version) {
+function simpleRangeAllowsVersion(range, version) {
   if (range == null) return false;
-  return range === version || range === `^${version}` || range === `~${version}`;
+  if (range === version || range === '*') return true;
+
+  const actual = versionParts(version);
+  const prefix = range[0];
+  const base = versionParts(prefix === '^' || prefix === '~' ? range.slice(1) : range);
+  if (actual == null || base == null) return false;
+
+  if (prefix === '~') {
+    return actual[0] === base[0] && actual[1] === base[1] && compareParts(actual, base) >= 0;
+  }
+
+  if (prefix === '^') {
+    if (compareParts(actual, base) < 0) return false;
+    if (base[0] > 0) return actual[0] === base[0];
+    if (base[1] > 0) return actual[0] === 0 && actual[1] === base[1];
+    return actual[0] === 0 && actual[1] === 0 && actual[2] === base[2];
+  }
+
+  return false;
 }
 
 /**
@@ -126,12 +159,12 @@ async function main() {
     'Expo tested React Native version'
   );
   assertTrue(
-    rangeNamesVersion(reactNative.peerDependencies?.react, react.version),
+    simpleRangeAllowsVersion(reactNative.peerDependencies?.react, react.version),
     `React Native peer range ${reactNative.peerDependencies?.react ?? '<missing>'} does not name React ${react.version}`
   );
   assertEqual(nitrogen.version, nitro.version, 'Nitrogen/Nitro release line');
   assertTrue(
-    rangeNamesVersion(nitrogen.dependencies?.['react-native-nitro-modules'], nitro.version),
+    simpleRangeAllowsVersion(nitrogen.dependencies?.['react-native-nitro-modules'], nitro.version),
     `Nitrogen does not depend on the selected Nitro release ${nitro.version}`
   );
   assertTrue(
@@ -163,14 +196,14 @@ async function main() {
 
   if (expoMetro.dependencies?.metro != null) {
     assertTrue(
-      rangeNamesVersion(expoMetro.dependencies.metro, metro.version),
+      simpleRangeAllowsVersion(expoMetro.dependencies.metro, metro.version),
       `@expo/metro dependency ${expoMetro.dependencies.metro} does not name Metro ${metro.version}`
     );
   }
 
   if (rnMetroConfig.dependencies?.['metro-config'] != null) {
     assertTrue(
-      rangeNamesVersion(rnMetroConfig.dependencies['metro-config'], metroConfig.version),
+      simpleRangeAllowsVersion(rnMetroConfig.dependencies['metro-config'], metroConfig.version),
       `@react-native/metro-config dependency ${rnMetroConfig.dependencies['metro-config']} does not name metro-config ${metroConfig.version}`
     );
   }
