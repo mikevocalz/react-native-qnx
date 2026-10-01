@@ -4,8 +4,9 @@ import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
-const require = createRequire(import.meta.url);
 const root = process.cwd();
+const EXPECTED_PNPM = '12.8.1';
+const EXPECTED_EXPO_SDK_MAJOR = 58;
 
 /** @param {string} file */
 async function readJson(file) {
@@ -25,10 +26,16 @@ function exactVersion(value) {
   return /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(value);
 }
 
-/** @param {string} value */
-function minimumCaretVersion(value) {
-  const match = /^\^(\d+\.\d+\.\d+)$/.exec(value);
-  return match?.[1] ?? null;
+/** @param {string} version */
+function majorVersion(version) {
+  const match = /^(\d+)\./.exec(version);
+  return match == null ? null : Number(match[1]);
+}
+
+/** @param {string | undefined} range @param {string} version */
+function rangeNamesVersion(range, version) {
+  if (range == null) return false;
+  return range === version || range === `^${version}` || range === `~${version}`;
 }
 
 /**
@@ -39,6 +46,16 @@ function minimumCaretVersion(value) {
 function assertEqual(actual, expected, label) {
   if (actual !== expected) {
     throw new Error(`${label}: expected ${expected}, got ${actual ?? '<missing>'}`);
+  }
+}
+
+/**
+ * @param {boolean} condition
+ * @param {string} label
+ */
+function assertTrue(condition, label) {
+  if (!condition) {
+    throw new Error(label);
   }
 }
 
@@ -60,7 +77,7 @@ async function main() {
   const workspace = await readJson(path.join(root, 'package.json'));
   const dependencies = workspace.devDependencies ?? {};
 
-  assertEqual(workspace.packageManager, 'pnpm@11.21.0', 'Workspace package manager');
+  assertEqual(workspace.packageManager, `pnpm@${EXPECTED_PNPM}`, 'Workspace package manager');
 
   for (const [name, version] of Object.entries(dependencies)) {
     if (!exactVersion(version)) {
@@ -69,9 +86,10 @@ async function main() {
   }
 
   const directPackages = [
-    '@react-native/jest-preset',
+    '@react-native/metro-config',
     '@types/node',
     '@types/react',
+    'babel-preset-expo',
     'expo',
     'metro',
     'nitrogen',
@@ -95,36 +113,67 @@ async function main() {
   const reactNative = manifests.get('react-native').manifest;
   const expo = manifests.get('expo').manifest;
   const metro = manifests.get('metro').manifest;
+  const rnMetroConfig = manifests.get('@react-native/metro-config').manifest;
+  const babelPresetExpo = manifests.get('babel-preset-expo').manifest;
   const nitrogen = manifests.get('nitrogen').manifest;
   const nitro = manifests.get('react-native-nitro-modules').manifest;
 
-  assertEqual(
-    minimumCaretVersion(reactNative.peerDependencies?.react),
-    react.version,
-    'React Native peer baseline'
-  );
+  assertEqual(majorVersion(expo.version), EXPECTED_EXPO_SDK_MAJOR, 'Expo SDK major');
   assertEqual(expo.devDependencies?.react, react.version, 'Expo tested React version');
   assertEqual(
     expo.devDependencies?.['react-native'],
     reactNative.version,
     'Expo tested React Native version'
   );
-  assertEqual(nitrogen.version, nitro.version, 'Nitrogen/Nitro release line');
-  assertEqual(
-    minimumCaretVersion(nitrogen.dependencies?.['react-native-nitro-modules']),
-    nitro.version,
-    'Nitrogen Nitro dependency baseline'
+  assertTrue(
+    rangeNamesVersion(reactNative.peerDependencies?.react, react.version),
+    `React Native peer range ${reactNative.peerDependencies?.react ?? '<missing>'} does not name React ${react.version}`
   );
+  assertEqual(nitrogen.version, nitro.version, 'Nitrogen/Nitro release line');
+  assertTrue(
+    rangeNamesVersion(nitrogen.dependencies?.['react-native-nitro-modules'], nitro.version),
+    `Nitrogen does not depend on the selected Nitro release ${nitro.version}`
+  );
+  assertTrue(
+    majorVersion(babelPresetExpo.version) === EXPECTED_EXPO_SDK_MAJOR,
+    `babel-preset-expo must be on SDK ${EXPECTED_EXPO_SDK_MAJOR}, got ${babelPresetExpo.version}`
+  );
+
+  const rnMetroRequire = createRequire(manifests.get('@react-native/metro-config').manifestPath);
+  const metroConfig = await readJson(rnMetroRequire.resolve('metro-config/package.json'));
+  assertEqual(metroConfig.version, metro.version, 'React Native Metro config / Metro release line');
 
   const expoRequire = createRequire(manifests.get('expo').manifestPath);
   const expoModules = await readJson(expoRequire.resolve('expo-modules-core/package.json'));
   const expoMetro = await readJson(expoRequire.resolve('@expo/metro/package.json'));
   const expoMetroConfig = await readJson(expoRequire.resolve('@expo/metro-config/package.json'));
 
-  assertEqual(expoModules.version, '57.0.10', 'Expo Modules Core resolved version');
-  assertEqual(expoMetro.version, '56.0.0', 'Expo Metro fork resolved version');
-  assertEqual(expoMetro.dependencies?.metro, metro.version, 'Expo Metro upstream version');
-  assertEqual(expoMetroConfig.version, '57.0.8', 'Expo Metro config resolved version');
+  for (const [label, manifest] of [
+    ['expo-modules-core', expoModules],
+    ['@expo/metro', expoMetro],
+    ['@expo/metro-config', expoMetroConfig],
+  ]) {
+    assertEqual(
+      majorVersion(manifest.version),
+      EXPECTED_EXPO_SDK_MAJOR,
+      `${label} SDK major`
+    );
+    console.log(`RESOLVED: ${label}@${manifest.version}`);
+  }
+
+  if (expoMetro.dependencies?.metro != null) {
+    assertTrue(
+      rangeNamesVersion(expoMetro.dependencies.metro, metro.version),
+      `@expo/metro dependency ${expoMetro.dependencies.metro} does not name Metro ${metro.version}`
+    );
+  }
+
+  if (rnMetroConfig.dependencies?.['metro-config'] != null) {
+    assertTrue(
+      rangeNamesVersion(rnMetroConfig.dependencies['metro-config'], metroConfig.version),
+      `@react-native/metro-config dependency ${rnMetroConfig.dependencies['metro-config']} does not name metro-config ${metroConfig.version}`
+    );
+  }
 
   const reactNativeRoot = path.dirname(manifests.get('react-native').manifestPath);
   const nitroRoot = path.dirname(manifests.get('react-native-nitro-modules').manifestPath);
@@ -139,14 +188,17 @@ async function main() {
   assertEqual(xcodeUuid.version, '11.1.1', 'xcode uuid security override');
   assertEqual(typeof xcodeRequire('uuid').v4, 'function', 'xcode uuid.v4 CommonJS contract');
 
+  const hermesCompiler = reactNative.dependencies?.['hermes-compiler'];
+  assertTrue(typeof hermesCompiler === 'string', 'React Native must declare hermes-compiler');
   const hermesV1 = (
     await readFile(path.join(reactNativeRoot, 'sdks/.hermesv1version'), 'utf8')
   ).trim();
   assertEqual(
     hermesV1,
-    `hermes-v${reactNative.dependencies?.['hermes-compiler']}`,
+    `hermes-v${hermesCompiler}`,
     'React Native Hermes v1 source tag'
   );
+  console.log(`BUNDLED: Hermes ${hermesV1}`);
 
   await assertSourceContract(
     reactNativeRoot,
