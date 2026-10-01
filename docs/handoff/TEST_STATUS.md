@@ -1,5 +1,34 @@
 # TEST_STATUS.md
 
+## Current Expo SDK 58 / main validation — 2026-10-01
+
+- Merged code baseline: `47c3d668b0ba61eaf81ce8083b87c3bf82c876ce`.
+- Main workflow `SDK 58 validation` run 36896516617: **passed**.
+- Main workflow `Pi tooling quality` run 36896516638: **passed**.
+- Exact direct line: Expo 58.0.0, React Native 0.88.0-rc.3, React 19.3.0,
+  Metro 0.87.1, Nitro/Nitrogen 0.37.1, TypeScript 7.0.2, Node 26+, pnpm
+  12.8.1.
+- Frozen `pnpm-lock.yaml` install passes.
+- Prettier passes across the merged repository.
+- `validate:dependencies`, TypeScript, and `pnpm peers check` pass.
+- Metro 0.87.1 produces a production bundle for `--platform qnx`; the
+  validation run reports a roughly 772 KB bundle.
+- Repository architecture/package/codegen-state checks pass.
+- Linux C++ host smoke tests pass with CMake 3.31.10.
+- `pnpm audit:dependencies` passes at the configured moderate threshold after
+  scoped patched transitive overrides.
+- Pi scripts pass Bash syntax and ShellCheck.
+- **Evidence boundary:** this current CI does not install the optional full Qt +
+  Hermes host renderer stack and does not use a licensed QNX toolchain.
+  Therefore it does not replace the historical full host-renderer evidence or
+  establish current QNX runtime proof.
+- **Next target evidence:** QNX SDP 8.0.5 + QSTI 0.5.0 build 50 on physical
+  Raspberry Pi 4/5 via `pnpm pi:preflight` and `pnpm pi:install`.
+
+The dated sections below are historical evidence from the pre-SDK58 line unless
+they explicitly say otherwise.
+
+
 ## QNX cross-compile matrix on Windows host — 2026-08-16
 
 - QNX SDP 8.0.2 is installed at `C:\Users\Owner\qnx800`; `qcc -V`/`q++ -V` confirm
