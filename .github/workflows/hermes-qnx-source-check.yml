@@ -1,0 +1,43 @@
+name: Hermes QNX source check
+
+on:
+  pull_request:
+    paths:
+      - 'cmake/dependencies/Hermes*.cmake'
+      - 'cmake/ImportHermesHostCompilers.cmake'
+      - 'scripts/patch-hermes-qnx.mjs'
+      - 'scripts/*hermes-qnx.sh'
+      - '.github/workflows/hermes-qnx-source-check.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'cmake/dependencies/Hermes*.cmake'
+      - 'cmake/ImportHermesHostCompilers.cmake'
+      - 'patches/hermes-qnx-260318099.0.2.patch'
+      - 'scripts/*hermes-qnx.sh'
+      - '.github/workflows/hermes-qnx-source-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Fetch audited Hermes source
+        run: |
+          git clone --filter=blob:none --no-checkout https://github.com/facebook/hermes.git /tmp/hermes
+          git -C /tmp/hermes fetch --depth 1 origin 4188b63f24026ca62b79dc81d95db122a59c6089
+          git -C /tmp/hermes checkout --detach 4188b63f24026ca62b79dc81d95db122a59c6089
+          test "$(git -C /tmp/hermes rev-parse HEAD)" = "4188b63f24026ca62b79dc81d95db122a59c6089"
+      - name: Verify transforms against exact source
+        run: |
+          node scripts/patch-hermes-qnx.mjs /tmp/hermes
+          git -C /tmp/hermes diff --check
+          test -n "$(git -C /tmp/hermes status --short)"
+      - name: Reject historical runtime workaround
+        run: |
+          ! grep -q 'qnxNextVA' scripts/patch-hermes-qnx.mjs
+          ! grep -q 'memset(static_cast<SHRuntime' scripts/patch-hermes-qnx.mjs
