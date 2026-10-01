@@ -1,0 +1,53 @@
+name: Pi tooling quality
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'docs/getting-started/**'
+      - 'package.json'
+      - '.github/workflows/pi-tooling-quality.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/**'
+      - 'docs/getting-started/**'
+      - 'package.json'
+      - '.github/workflows/pi-tooling-quality.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  shell:
+    name: Shell syntax and lint
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      - name: Bash syntax
+        run: |
+          bash -n \
+            scripts/lib/qnx-target.sh \
+            scripts/pi-preflight.sh \
+            scripts/install-pi.sh \
+            scripts/deploy-qnx.sh \
+            scripts/run-qnx.sh \
+            scripts/log-qnx.sh
+
+      - name: ShellCheck
+        run: |
+          shellcheck \
+            scripts/lib/qnx-target.sh \
+            scripts/pi-preflight.sh \
+            scripts/install-pi.sh \
+            scripts/deploy-qnx.sh \
+            scripts/run-qnx.sh \
+            scripts/log-qnx.sh
