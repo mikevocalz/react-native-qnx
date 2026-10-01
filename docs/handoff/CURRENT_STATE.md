@@ -2,35 +2,54 @@
 
 ## Outcome
 
-The macOS-host Milestone 0 foundation is complete and reproducible. The QNX
-Milestone 0 exit gate is partially complete: a licensed QNX SDP 8.0.2 is now
-installed on this Windows PC, the AArch64 cross-compiler is verified, and both
-the `qnx-aarch64-debug` and `qnx-pi4` presets build successfully. The only
-remaining gate is running the resulting binaries on a physical or virtual QNX
-AArch64 target with Screen and SSH access.
+`main` now contains the Raspberry Pi/QSTI install lane and the Expo SDK 58
+migration. The exact merged SDK-58 tree passed the permanent GitHub Actions
+validation on 2026-10-01: frozen install, Prettier, dependency/source contracts,
+TypeScript 7, peer checks, a production Metro bundle for `--platform qnx`,
+repository architecture/codegen checks, Linux C++ host tests with CMake 3.31.10,
+and the dependency security audit. The Pi shell tooling also passes Bash syntax
+and ShellCheck on `main`.
+
+QNX target proof is deliberately split by generation. Existing QNX SDP 8.0.2
+cross-build and x86_64 VM/Screen results remain valid historical evidence from
+the pre-SDK58 line. The current physical target baseline is QNX SDP 8.0.5 with
+QSTI 0.5.0 build 50 on Raspberry Pi 4 or Raspberry Pi 5. That physical Pi run,
+SDK-58 QNX cross-compilation, and the full React Native + Hermes + Qt Quick
+runtime on QNX remain to be proven.
 
 ## Current baseline
 
-- Authoring mode: mac-first; QNX remains the production target. The QNX SDP 8.0.2
-  Windows host toolchain is also configured and validated for cross-compilation.
-- Direct runtime/tooling line: React Native 0.86.2, React 19.2.3, Expo 57.0.12,
-  Metro 0.84.4, Nitro Modules/Nitrogen 0.36.5, TypeScript 6.0.3, and pnpm
-  11.21.0.
-- Resolved Expo internals: `expo-modules-core` 57.0.10, `@expo/metro` 56.0.0,
-  and `@expo/metro-config` 57.0.8.
-- A scoped `xcode>uuid` override replaces vulnerable uuid 7.0.3 with 11.1.1;
-  the installed CommonJS `uuid.v4()` seam is validated.
-- Hermes identity from installed React Native source:
-  `hermes-v250829098.0.16` / `hermes-compiler` 250829098.0.16.
-- Yoga is the source snapshot bundled in React Native 0.86.2; no independent
-  Yoga version is asserted.
-
-These are exact, mutually compatible pins for the current Expo 57 / React Native
-0.86 platform line. They are not a claim that incompatible next release lines
-such as React Native 0.87, Metro 0.87, or TypeScript 7 can be substituted.
+- Direct runtime/tooling line: Expo 58.0.0 / SDK 58, React Native
+  0.88.0-rc.3, React 19.3.0, Metro 0.87.1,
+  `@react-native/metro-config` 0.88.0-rc.3, `babel-preset-expo` 58.0.4,
+  Nitro Modules/Nitrogen 0.37.1, TypeScript 7.0.2, Node 26+, and pnpm 12.8.1.
+- Resolved Expo internals: `expo-modules-core` 58.0.9,
+  `@expo/metro` 58.0.0-rc.0, and `@expo/metro-config` 58.0.6.
+- Hermes identity is intentionally split: `hermes-compiler` 260318099.0.4
+  and bundled source tag `hermes-v260318099.0.2`.
+- The dependency audit is clean at the configured moderate threshold. Scoped
+  overrides pin patched xmldom, js-yaml, brace-expansion, and uuid versions,
+  and `validate:dependencies` checks those resolved contracts.
+- Current physical target baseline: QNX SDP 8.0.5, QSTI 0.5.0 build 50,
+  Raspberry Pi 4/5, stock target identity `qnxuser@qnxpi.local`.
+- Historical QNX proof: QNX SDP 8.0.2 on Windows x86-64 cross-built AArch64
+  Screen binaries and ran the C++20 and Screen probes in a QNX x86_64 VM.
+  Those results are not silently promoted to SDK-58/QNX-8.0.5 proof.
+- The old RN 0.86 Hermes/QNX patch is quarantined as historical work until it
+  is rebased onto `hermes-v260318099.0.2`.
 
 ## Finished in the current working tree
 
+- Expo SDK 58 / React Native 0.88 migration is merged with a regenerated
+  pnpm 12 lockfile and current exact direct pins.
+- Permanent `SDK 58 validation` CI passes on `main`, including the real
+  production QNX Metro bundle, Linux C++ host smoke suite, and clean security
+  audit.
+- The Pi 4/5 same-day lane is merged: `scripts/pi-preflight.sh` validates
+  AArch64le, Screen and SSH; `scripts/install-pi.sh` builds, atomically
+  deploys, runs and captures stdout/slog2/screenshot evidence.
+- The current Pi runbook is
+  `docs/getting-started/raspberry-pi-today.md`.
 - The QNX SDP 8.0.2 Windows host toolchain is installed and produces AArch64 QNX
   binaries; `qcc -V`/`q++ -V` are captured in `artifacts/g0/`.
 - The `qnx-pi4` and `qnx-aarch64-debug` presets configure and build successfully
@@ -82,11 +101,18 @@ such as React Native 0.87, Metro 0.87, or TypeScript 7 can be substituted.
 - Validation, bootstrap, configure, build, deploy, architecture, manifest, and
   codegen-applicability scripts now fail explicitly instead of reporting
   placeholder success.
-- The registry audit remains non-clean because no fixed `image-size` release is
-  published for two Metro development-tool denial-of-service advisories. See
-  `BLOCKERS.md`; Metro must not process untrusted assets.
+- The current SDK-58 dependency audit is clean at the configured moderate
+  threshold. Historical dependency advisories are retained in `BLOCKERS.md`
+  only as resolved context.
 
-## Qt Quick view layer (host)
+## Historical Qt Quick view layer evidence (pre-SDK58 baseline)
+
+The detailed renderer evidence below was produced on the React Native
+0.86 / Expo 57 host line. It remains useful architectural and regression
+evidence, but the complete Qt + Hermes renderer path has not yet been rerun
+under the SDK-58/RN-0.88 line. The current SDK-58 CI proves source contracts,
+QNX Metro bundling and the Linux C++ host suite without claiming that optional
+Qt/Hermes host targets were built on that runner.
 
 `QtQuickItemFactory` implements ADR-0002's cached-`QQmlComponent` strategy
 against installed Qt 6.11.1 on macOS, per ADR-0010. It compiles one component
@@ -228,14 +254,25 @@ cited to these installed source files and symbols.
 
 ## Verification scope
 
-See `TEST_STATUS.md` for command results. Host format/type/source/architecture
-checks and the sanitizer-backed C++ suite pass. No QNX translation unit has been
-compiled against an installed SDP, and no QNX binary has run.
+See `TEST_STATUS.md` for command results. On the current SDK-58 line, frozen
+dependency installation, formatting, source contracts, TypeScript, peers,
+production QNX Metro bundling, architecture/codegen checks, Linux C++ host
+tests, and the dependency audit pass.
+
+Separately, historical QNX SDP 8.0.2 evidence includes AArch64
+cross-compilation plus successful x86_64 VM execution of the C++20 and Screen
+probes. Current SDK-58 QNX cross-compilation, current QSTI physical-Pi execution,
+and the full React Native + Hermes + Qt Quick runtime on QNX have not yet been
+proven.
 
 ## Repository state
 
-The working tree is clean and pushed. Repository-local material that is not part
-of the published repository is excluded through `.git/info/exclude` rather than a
-tracked ignore file. Continue with `NEXT_ACTIONS.md` and
-`QNX_VALIDATION_QUEUE.md`; do not mark Milestone 0 exited until QNX-RN-008
-passes.
+`main` is merged through the SDK-58, formatting, security-hardening, Pi tooling,
+and permanent validation PRs. The latest known-good merged commit is
+`47c3d668b0ba61eaf81ce8083b87c3bf82c876ce`, validated by main-branch
+GitHub Actions runs 36896516617 and 36896516638.
+
+Continue with `NEXT_ACTIONS.md` and `QNX_VALIDATION_QUEUE.md`. Do not mark
+the current physical-target gate complete until the QSTI Pi run is captured,
+and do not claim the full RN/Hermes/Qt QNX runtime until that stack is rebased,
+cross-built and executed on the current QNX line.

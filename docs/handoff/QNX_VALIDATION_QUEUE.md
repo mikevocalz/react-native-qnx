@@ -1,166 +1,161 @@
 # QNX Validation Queue
 
-This queue separates host evidence from licensed QNX compilation and runtime
-evidence. Host compilation against the test-only Screen subset must never be
-reported as an SDP, ABI, driver, compositor, or hardware result.
+This queue separates host evidence, historical QNX evidence, current QNX
+cross-compilation, and current physical-hardware proof. A previous successful
+QNX run is never promoted across a React Native/Hermes or QNX SDP baseline
+change without revalidation.
+
+## Current target baseline
+
+- QNX SDP 8.0.5
+- QSTI 0.5.0 build 50
+- Raspberry Pi 4 / Raspberry Pi 5
+- AArch64le
+- Stock target identity: `qnxuser@qnxpi.local`
+- Current JS/tooling line: Expo 58.0.0, React Native 0.88.0-rc.3,
+  React 19.3.0, Metro 0.87.1
 
 ## Allowed states
 
-- Implemented and verified on macOS
-- Implemented and verified on Linux
-- Cross-compiled successfully for QNX
-- Verified on a virtual QNX target
-- Verified on physical QNX hardware
-- Implemented but awaiting Linux validation
-- Implemented but awaiting QNX target validation
-- Partially implemented
+- Verified on current physical QNX hardware
+- Verified on current virtual QNX target
+- Cross-compiled on current QNX baseline
+- Host-verified on current SDK line
+- Historical QNX evidence; current revalidation required
+- Implemented; current target validation pending
 - Blocked
 - Not started
 
 ## QNX-GFX-001 — Screen context/window/buffer lifecycle
 
-**Status:** Cross-compiled successfully for QNX
-
-**Priority:** High
+**Status:** Historical QNX cross-compile/runtime evidence; current physical
+validation pending.
 
 **Production files:**
 
 - `native/platform/qnx/screen/QnxScreenSurface.h`
 - `native/platform/qnx/screen/QnxScreenSurface.cpp`
 
-**Current host evidence (2026-08-13):**
+**Historical evidence:**
 
-- The production translation unit compiles as C++20 with Apple Clang under
-  `-Wall -Wextra -Wpedantic -Werror` against the isolated test-only QNX 8 Screen
-  subset.
-- ASan/UBSan host tests cover typed window creation, usage/format/size setup,
-  double-buffer creation, exact cleanup order, idempotent destruction, move
-  ownership, retry after failure, count mismatch, and every partial-initialize
-  failure. Eight aggregate cases pass with zero fake live resources.
-- This evidence does not validate installed QNX declarations or behavior.
+- QNX SDP 8.0.2 cross-built `qnx_platform` for AArch64.
+- The same Screen wrapper ran successfully through the x86_64 QNX VM path.
+- Host tests cover context/window/buffer creation, partial-failure cleanup,
+  idempotent destruction, move ownership and buffer refresh behavior.
 
-**Installed-SDP source gate:**
+**Current source gate:** Before adapting Screen code, compare every used
+function/property/constant with the installed QNX 8.0.5 `screen/screen.h`.
+`scripts/audit-screen-symbols.sh` is the checked-in audit helper.
 
-Before compiling, cite the installed `screen/screen.h` declarations and constants
-for every Screen call/property in the two production files. Verify the fake's
-opaque handles, C signatures, and numeric constants against that installed
-header. Stop and record an exact mismatch instead of adapting from memory.
-
-**Required QNX build-host commands:**
+**Current target command path:**
 
 ```bash
-./scripts/doctor.sh
-./scripts/configure-qnx.sh aarch64 Debug
-cmake --build --preset qnx-aarch64-debug --target qnx_platform
+pnpm pi:preflight
+pnpm pi:install
 ```
 
-**Cross-compiled evidence (2026-08-16, Windows x86-64 host):**
+**Advance to current physical verification only when:**
 
-- `qnx_platform` builds with the QNX SDP 8.0 Windows toolchain (`qcc`/`q++` 12.2.0,
-  target `gcc_ntoaarch64le`). See `artifacts/g0/qcc-V.txt` and
-  `build/qnx-aarch64-debug/libqnx_platform.a`.
-- Target evidence still required before advancing to a verified target state.
+1. Context and application-window creation succeed on QSTI build 50.
+2. Render buffers are created with the expected format/dimensions.
+3. Normal shutdown destroys resources cleanly.
+4. Repeated runs do not accumulate Screen resources.
+5. Exact SDP/QSTI/board evidence is recorded.
 
-**Required target evidence:**
+## QNX-GFX-002 — ARGB fill, buffer acquisition and presentation
 
-1. Context and typed application-window creation succeed.
-2. Two render buffers are created with the selected format and dimensions.
-3. Normal shutdown and every reproducible startup failure destroy all resources
-   exactly once.
-4. Repeated launches do not accumulate Screen resources.
-
-**Advance state only when:** The installed-header audit and cross-compile output
-are attached to `TEST_STATUS.md`; target evidence is required for any target
-state.
-
-## QNX-GFX-002 — ARGB fill, buffer acquisition, and presentation
-
-**Status:** Cross-compiled successfully for QNX
-
-**Priority:** High
+**Status:** Historical QNX VM pass; current physical display/GPU evidence
+pending.
 
 **Production files:**
 
 - `native/platform/qnx/screen/QnxScreenSurface.cpp`
 - `native/platform/qnx/application/main.cpp`
 
-**Current host evidence (2026-08-13):**
+**Historical evidence:**
 
-- The suite checks the exact signed ARGB `SCREEN_BLIT_COLOR` value and terminated
-  token/value list passed to `screen_fill`.
-- It checks that `fill()` and `present()` use the same buffer, and that the
-  production code re-queries `SCREEN_PROPERTY_RENDER_BUFFERS` after every post
-  rather than cycling stale handles.
-- It checks that storage is available for both pointers returned by the
-  double-buffered render-buffer property.
-- The fake rotates its available-buffer list after a successful post; this is a
-  behavioral test double, not a compositor model.
+- QNX SDP 8.0.2 produced the AArch64 `rnqnx_playground` binary linked against
+  `libscreen.so.1`.
+- The x86_64 QNX VM run initialized a 1280x720 surface, rendered 600 frames and
+  exited cleanly using the VM's software/dummy WFD configuration.
+- Host tests check fill color encoding, buffer selection and post sequencing.
 
-**Required QNX build-host commands:**
+**Current physical evidence required:**
 
-```bash
-cmake --build --preset qnx-aarch64-debug --target rnqnx_playground
-```
+- Visible Screen output on Pi/QSTI.
+- No post/fill errors.
+- stdout and slog2 captured.
+- Screenshot captured when the QNX screenshot utility is available.
+- Repeated launch/exit behavior remains clean.
 
-**Cross-compiled evidence (2026-08-16, Windows x86-64 host):**
+## QNX-RN-008 — Current end-to-end physical Pi validation
 
-- `rnqnx_playground` builds and links `libscreen.so.1` for AArch64 QNX; see
-  `build/qnx-aarch64-debug/bin/rnqnx_playground`.
-- Target run evidence still required to confirm the window, colors, and frame loop.
+**Status:** Implemented; current target validation pending.
 
-**Required target evidence:**
+**Priority:** Highest.
 
-```bash
-./scripts/deploy-qnx.sh aarch64 rnqnx_playground Debug
-./scripts/run-qnx.sh aarch64 rnqnx_playground
-```
+**Current environment:**
 
-Confirm the 1280×720 window becomes visible, alternates the intended ARGB blue
-and black fills for up to 600 frames, posts without errors, and exits cleanly.
-Record tearing, stale frames, format mismatches, and every returned `errno`.
-
-## QNX-RN-008 — End-to-end Milestone 0 QNX validation
-
-**Status:** Blocked on target runtime evidence
-
-**Priority:** High
-
-**Blocker:** The QNX SDP 8.0.2 build host is configured on this Windows PC and
-the `qnx-aarch64-debug` preset cross-builds successfully. The remaining gap is a
-QNX AArch64 target with Screen/display and SSH credentials to run
-`rnqnx_playground`. See `BLOCKERS.md`.
-
-**Required environment:**
-
-- x86-64 Ubuntu 24.04 host
-- licensed QNX SDP 8.0.2 with `QNX_HOST`/`QNX_TARGET` sourced
-- installed target BSP, Screen headers, and `libscreen`
-- AArch64 QNX target with Screen service and display
+- Licensed QNX SDP 8.0.5 host environment.
+- Pi 4 or Pi 5 running QSTI 0.5.0 build 50.
+- Screen/display available.
+- SSH access, defaulting to `qnxuser@qnxpi.local`.
 
 **Commands:**
 
 ```bash
+export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
 pnpm install --frozen-lockfile
-./scripts/doctor.sh
-./scripts/configure-qnx.sh aarch64 Debug
-./scripts/build-qnx.sh aarch64 Debug
-export QNX_TARGET_IP=<target-ip>
-./scripts/deploy-qnx.sh aarch64 rnqnx_playground Debug
-./scripts/run-qnx.sh aarch64 rnqnx_playground
+pnpm pi:preflight
+pnpm pi:install
 ```
 
 **Exit criteria:**
 
-- `doctor.sh` exits zero.
-- The installed Screen header/source gate for QNX-GFX-001 is complete.
-- The build produces `build/qnx-aarch64-debug/bin/rnqnx_playground` with warnings
-  as errors enabled.
-- QNX-GFX-001 and QNX-GFX-002 reach a QNX target-verified state with recorded
-  evidence.
+- Preflight confirms AArch64le + Screen.
+- Current-line AArch64 build completes.
+- Atomic deploy succeeds.
+- `rnqnx_playground` initializes and exits cleanly.
+- Evidence directory contains the run output and available target diagnostics.
+- The exact board, QSTI build and SDP are recorded in `TEST_STATUS.md`.
+
+## QNX-RN-009 — SDK-58 full React Native/Qt/Hermes target revalidation
+
+**Status:** Not started on current QNX baseline.
+
+**Host evidence available now:**
+
+- SDK-58 dependency/source contracts pass.
+- TypeScript and peers pass.
+- Production Metro bundle for `--platform qnx` passes.
+- Linux C++ host smoke tests pass.
+- Dependency audit passes.
+
+**Not yet proven:**
+
+- Current RN 0.88 renderer cross-build for QNX.
+- Current Qt Quick component backend on QNX.
+- Current Hermes runtime on QNX.
+- Full JSX → Metro → Hermes → React/Fabric → Qt Quick rendering on QNX.
+
+**Advance only when:** the exact current dependency/source line is cross-built
+with the licensed QNX toolchain and executed on a QNX target.
+
+## QNX-HERMES-001 — Rebase historical Hermes QNX work
+
+**Status:** Current source rebase required.
+
+- Current bundled source: `hermes-v260318099.0.2`.
+- Current compiler package: `hermes-compiler` 260318099.0.4.
+- Historical patch: `patches/hermes-qnx-250829.patch` from the RN 0.86 /
+  Hermes 250829 source line.
+
+Every historical QNX change must be re-audited before reuse. Do not apply the
+old patch wholesale to the current source.
 
 ## Queue discipline
 
-Add an entry whenever a QNX-only source file is created or modified on a host.
-Each entry must name the installed upstream source file/symbol that authorizes
-the seam, the host checks performed, and the exact commands still required for
-QNX compilation and runtime validation.
+Add or update an entry whenever a QNX-only source seam changes. Each entry must
+name the upstream installed source/symbol authorizing the seam, identify whether
+its evidence is host, historical QNX, current cross-build, virtual target, or
+physical target, and list the exact command still required to advance state.

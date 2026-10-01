@@ -1,51 +1,86 @@
 {
   "schemaVersion": 1,
   "project": "react-native-qnx",
-  "activeMilestone": "Milestone 0: Compatibility and Toolchain",
+  "activeMilestone": "Milestone 0: Physical Pi validation and SDK 58 QNX revalidation",
   "activeBranch": "main",
-  "latestKnownGoodCommit": "db1401ab83c73f756fa8a34d2b2751fe0de7bacc",
+  "latestKnownGoodCommit": "47c3d668b0ba61eaf81ce8083b87c3bf82c876ce",
   "repositoryBuildable": true,
-  "developmentMode": "mac-first",
+  "developmentMode": "host-first-with-pi-target-lane",
   "currentAuthoringHost": {
     "operatingSystem": "Windows",
     "architecture": "x86_64",
     "qnxToolchainAvailable": true
   },
   "dependencyBaseline": {
-    "reactNative": "0.86.2",
-    "react": "19.2.3",
-    "expo": "57.0.12",
-    "metro": "0.84.4",
-    "nitroModules": "0.36.5",
-    "nitrogen": "0.36.5",
-    "packageManager": "pnpm@11.21.0",
-    "lastRegistryAudit": "2026-08-13"
+    "reactNative": "0.88.0-rc.3",
+    "react": "19.3.0",
+    "expo": "58.0.0",
+    "metro": "0.87.1",
+    "reactNativeMetroConfig": "0.88.0-rc.3",
+    "babelPresetExpo": "58.0.4",
+    "nitroModules": "0.37.1",
+    "nitrogen": "0.37.1",
+    "typescript": "7.0.2",
+    "node": ">=26.0.0",
+    "packageManager": "pnpm@12.8.1",
+    "expoModulesCore": "58.0.9",
+    "expoMetro": "58.0.0-rc.0",
+    "expoMetroConfig": "58.0.6",
+    "hermesCompiler": "260318099.0.4",
+    "hermesSource": "hermes-v260318099.0.2",
+    "lastRegistryAudit": "2026-10-01"
+  },
+  "targetBaseline": {
+    "qnxSdp": "8.0.5",
+    "qsti": "0.5.0 build 50",
+    "boards": ["Raspberry Pi 4", "Raspberry Pi 5"],
+    "defaultTarget": "qnxuser@qnxpi.local"
   },
   "validationHosts": {
+    "linux": {
+      "operatingSystem": "Ubuntu 24.04",
+      "status": "sdk58-validation-passed",
+      "node": "26.10.0",
+      "cmake": "3.31.10"
+    },
     "macos": {
-      "status": "host-validation-passed"
+      "status": "historical-host-renderer-validation-passed-pre-sdk58"
     },
     "qnxBuildHost": {
       "operatingSystem": "Windows",
       "architecture": "x86_64",
-      "status": "qnx-cross-compilation-passed"
+      "qnxSdp": "8.0.2",
+      "status": "historical-qnx-cross-compilation-passed-pre-sdk58"
     },
     "qnxRuntimeTarget": {
-      "status": "not-configured"
+      "status": "historical-x86_64-vm-screen-pass-pre-sdk58; physical-pi-current-line-not-run"
     }
   },
   "verification": {
-    "macosHostTests": "passed",
-    "qnxScreenHostEmulation": "passed-with-asan-and-ubsan",
-    "installedDependencySourceContracts": "passed",
-    "dependencySecurityAudit": "blocked-upstream-image-size-advisories",
-    "qnxCrossCompilation": "passed",
-    "qnxRuntimeTests": "not-run"
+    "sdk58FrozenInstall": "passed",
+    "sdk58Formatting": "passed",
+    "sdk58DependencySourceContracts": "passed",
+    "sdk58PeerDependencies": "passed",
+    "sdk58QnxMetroProductionBundle": "passed",
+    "sdk58RepositoryArchitectureAndCodegen": "passed",
+    "sdk58LinuxCppHostTests": "passed",
+    "sdk58DependencySecurityAudit": "passed",
+    "piToolingQuality": "passed",
+    "fullReactQtHermesHostOnSdk58": "not-proven-by-current-ci",
+    "qnxCrossCompilationOnSdk58": "not-run",
+    "qnxRuntimeOnSdk58": "not-run",
+    "physicalPiQstiRun": "not-run"
   },
-  "lastSuccessfulCommand": "cmake --fresh --preset qnx-aarch64-debug && cmake --build --preset qnx-aarch64-debug",
-  "lastFailingCommand": "bash scripts/configure-qnx.sh aarch64 Debug (resolved: QNX SDP 8.0.2 Windows host configured)",
-  "lastTestedHost": "Windows x86-64 with QNX SDP 8.0.2",
-  "lastTestedTarget": null,
+  "historicalEvidence": {
+    "qnxSdp802Aarch64CrossBuild": "passed",
+    "qnxSdp802X8664VmCxx20Probe": "passed",
+    "qnxSdp802X8664VmScreenProbe": "passed",
+    "reactNative086QtHermesHostRenderer": "passed"
+  },
+  "lastSuccessfulCommand": "GitHub Actions main runs 36896516617 (SDK 58 validation) and 36896516638 (Pi tooling quality)",
+  "lastFailingCommand": null,
+  "lastTestedHost": "GitHub Actions Ubuntu 24.04 with Node 26.10.0 and CMake 3.31.10",
+  "lastTestedTarget": "QNX x86_64 VM on the historical pre-SDK58 line; current QSTI Pi 4/5 target not yet run",
   "completedTasks": [
     "QNX-RN-000",
     "QNX-RN-001",
@@ -54,10 +89,13 @@
     "QNX-RN-004",
     "QNX-RN-005",
     "QNX-RN-006",
-    "QNX-RN-007"
+    "QNX-RN-007",
+    "SDK58-MIGRATION",
+    "SDK58-SECURITY-HARDENING",
+    "PI-QSTI-INSTALL-LANE"
   ],
-  "activeTasks": ["QNX-RN-008"],
-  "blockedTasks": ["UPSTREAM-DEP-001"],
-  "nextRecommendedTask": "Run rnqnx_playground and rnqnx_g0_cxx20_probe on a QNX AArch64 target with Screen and SSH",
-  "updatedAt": "2026-08-16T21:45:00Z"
+  "activeTasks": ["QNX-RN-008", "SDK58-QNX-REVALIDATION", "HERMES-QNX-REBASE"],
+  "blockedTasks": [],
+  "nextRecommendedTask": "On a licensed QNX SDP 8.0.5 host, run pnpm pi:preflight and pnpm pi:install against QSTI 0.5.0 build 50 on a Pi 4/5; then rebase the Hermes QNX work onto hermes-v260318099.0.2.",
+  "updatedAt": "2026-10-01T17:03:06Z"
 }
