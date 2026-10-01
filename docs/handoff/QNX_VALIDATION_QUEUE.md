@@ -127,8 +127,8 @@ Record tearing, stale frames, format mismatches, and every returned `errno`.
 
 **Blocker:** The QNX SDP 8.0.2 build host is configured on this Windows PC and
 the `qnx-aarch64-debug` preset cross-builds successfully. The remaining gap is a
-  QNX AArch64 target with Screen/display and SSH credentials to run
-  `rnqnx_playground`. See `BLOCKERS.md`.
+QNX AArch64 target with Screen/display and SSH credentials to run
+`rnqnx_playground`. See `BLOCKERS.md`.
 
 **Required environment:**
 

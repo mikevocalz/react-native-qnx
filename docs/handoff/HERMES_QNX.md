@@ -10,7 +10,6 @@
 > source audit, cross-build, and target run. The physical Pi Screen lane does
 > not enable `RNQNX_BUILD_HERMES_QNX` and is unaffected by this quarantine.
 
-
 ## TL;DR
 
 Hermes for QNX is **compiling**. CMake configures and the lean VM (`libhermesvmlean_a.a`)
@@ -187,6 +186,7 @@ construction, not in the build or JSI link.
 ```
 
 At frame `0`:
+
 - `rdi` (first argument, `DictPropertyMap *self`) = `0x9d267800000000`
 - `rsi` (`SymbolID`) = `0x1e1`
 
@@ -199,6 +199,7 @@ used by `CompressedPointer`/`GCPointer` decoding was placed at an invalid
 `0x9d26...` virtual address by the `StorageProvider`.
 
 Attempts so far:
+
 - Added QNX `mprotect`-based `vm_commit`/`vm_uncommit` stubs in
   `lib/Support/OSCompatPosix.cpp` (no change to the crash).
 - Tried `StorageProvider::mallocProvider()` for the `Runtime` heap on QNX
@@ -209,7 +210,7 @@ heap: `0x9d260000000000` (a 4 GB-aligned virtual address) + `0x78000000`
 (offset ~120 MB). Instrumentation shows that `Runtime::create` on this build
 uses `StorageProvider::mmapProvider()`, and `oscompat::qnx_vm_allocate_aligned`
 successfully returns low, canonical addresses starting near `0x1000000000`. The
-`0x9d260000000000` base used by the crashing `DictPropertyMap` is therefore *not*
+`0x9d260000000000` base used by the crashing `DictPropertyMap` is therefore _not_
 coming from `qnx_vm_allocate_aligned`, nor from the `ContiguousVA` reservation
 path that is forced by the QNX bump allocator. The high base is allocated
 through some other `mmap` code path and has not yet been traced to its source.
