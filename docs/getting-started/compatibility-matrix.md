@@ -1,147 +1,153 @@
 # Dependency Compatibility Matrix
 
-This matrix records the installed compatibility line used by `react-native-qnx`. Direct workspace dependencies use exact versions in `package.json` and `pnpm-lock.yaml`. Resolved entries are dependencies selected by that locked graph; bundled entries are source snapshots shipped by React Native rather than independently versioned project dependencies.
+This matrix records the active dependency and target baseline for
+`react-native-qnx`. Direct workspace dependencies are exact pins in
+`package.json` and `pnpm-lock.yaml`. Resolved entries are selected by that
+lockfile. Bundled entries are source snapshots shipped by React Native.
 
-No entry in this matrix implies that an upstream library already supports QNX. QNX integration remains repository work and requires validation against the licensed QNX SDK and target hardware.
+Nothing in this matrix implies upstream QNX support. QNX compatibility requires
+separate cross-build and target evidence.
 
-## Registry audit snapshot
+## Registry audit snapshot — 2026-10-01
 
-The npm registry was queried on 2026-08-13. The audit distinguished an
-individually newest release from the newest line whose installed manifests and
-source contracts agree:
+Expo SDK 58 is the selected product line. The published `expo@58.0.0` package
+currently uses the npm `next` dist-tag rather than `latest`, but its own
+manifest tests React 19.3.0 with React Native 0.88.0-rc.3. The repository
+therefore follows that SDK contract and keeps the remaining direct tooling on
+current published versions.
 
-| Component      | Registry `latest` | Selected | Selection reason                                                          |
-| -------------- | ----------------- | -------- | ------------------------------------------------------------------------- |
-| React Native   | 0.87.0            | 0.86.2   | Expo 57.0.12's installed development baseline is React Native 0.86.2.     |
-| RN Jest preset | 0.87.0            | 0.86.2   | Must stay on the same release line as React Native.                       |
-| React          | 19.2.8            | 19.2.3   | Matches RN 0.86.2's bundled Fabric reconciler and Expo's tested baseline. |
-| Expo           | 57.0.12           | 57.0.12  | Current registry release and selected SDK line.                           |
-| Metro          | 0.87.0            | 0.84.4   | Resolved `@expo/metro` 56.0.0 pins the Metro family to 0.84.4.            |
-| Nitro Modules  | 0.36.5            | 0.36.5   | Current registry release; Nitrogen is pinned to the same release line.    |
-| Nitrogen       | 0.36.5            | 0.36.5   | Current registry release and matches the Nitro runtime.                   |
-| TypeScript     | 7.0.2             | 6.0.3    | Current Expo 57 template/tooling line uses TypeScript 6.0.3.              |
-| Node.js types  | 26.2.0            | 24.13.3  | Models Node 24 LTS so code cannot silently depend on Node 26-only APIs.   |
-| Prettier       | 3.9.6             | 3.9.6    | Current registry release.                                                 |
-| pnpm           | 11.21.0           | 11.21.0  | Current registry release and exact package-manager identity.              |
+| Component | Selected | Status / reason |
+| --- | --- | --- |
+| Expo | 58.0.0 | SDK 58 product baseline |
+| React Native | 0.88.0-rc.3 | Expo 58 tested development baseline |
+| React | 19.3.0 | Expo 58 tested development baseline |
+| Metro | 0.87.1 | Current Metro release resolved coherently with the selected RN Metro config |
+| `@react-native/metro-config` | 0.88.0-rc.3 | RN 0.88 support-package line used by SDK 58 tooling |
+| `babel-preset-expo` | 58.0.4 | Current SDK 58 Babel preset |
+| Nitro Modules | 0.37.1 | Current published release |
+| Nitrogen | 0.37.1 | Matches Nitro Modules |
+| TypeScript | 7.0.2 | Current published release |
+| `@types/react` | 19.3.0 | Current React 19.3 typings |
+| `@types/node` | 26.6.3 | Current Node typings |
+| Prettier | 3.9.9 | Current published release |
+| pnpm | 12.8.1 | Current package-manager pin |
+| Node.js | 26+ | Runtime floor aligned with current Node 26 typings |
 
-React Native 0.87, Metro 0.87, and TypeScript 7 are therefore known newer
-releases, not overlooked updates. Advancing to them is a coupled compatibility
-upgrade rather than a safe patch refresh. Registry tags are time-sensitive; the
-date above must be refreshed during the next dependency update.
+## Locked Expo graph
 
-## Legend
+The SDK-58 lockfile regenerated from npm resolves:
 
-- **Pin:** exact direct workspace version
-- **Resolved:** exact transitive version in the current lockfile
-- **Bundled:** identity read from the installed React Native source/package metadata
-- **Target:** component supplied by the installed QNX SDP or BSP and validated at configure/runtime
-- **Not pinned:** future dependency; no compatibility or QNX-support claim has been made
+| Component | Locked version | Scope |
+| --- | --- | --- |
+| `expo-modules-core` | 58.0.9 | Expo native module core; source contracts are audited, QNX implementation is separate |
+| `@expo/metro` | 58.0.0-rc.0 | Expo Metro fork used by SDK 58 |
+| `@expo/metro-config` | 58.0.6 | Expo Metro defaults used for source-contract comparison |
+| Hermes compiler | 260318099.0.4 | React Native 0.88 compiler package |
+| Hermes source tag | `hermes-v260318099.0.2` | Source snapshot recorded by React Native |
+| `xcode > uuid` | 11.1.1 | Scoped override; validator checks `uuid.v4()` compatibility |
 
 ## Platform and toolchain
 
-| Component                  | Status                      | Version / requirement       | Notes                                                                                                                                                                       |
-| -------------------------- | --------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| macOS host                 | Supported host validation   | Darwin with Apple Clang     | Runs authoring checks and sanitizer-backed C++ host tests. It does not provide QNX compile or runtime proof.                                                                |
-| Linux host                 | Supported host validation   | Linux with Clang or GCC     | Runs the same non-QNX host test path.                                                                                                                                       |
-| QNX build host             | Required for QNX validation | x86-64 Ubuntu 22.04 LTS     | Canonical host shared by current QNX/Qt guidance; macOS is authoring/host-test only.                                                                                        |
-| QNX SDP                    | Target                      | 8.0.2                       | Current release as of 2026-08-14, supplied by the project owner. The installed package/build must still be captured at G0-A and is authoritative for QNX headers/libraries. |
-| QNX Software Center        | Host prerequisite           | Licensed compatible release | Installs and licenses SDP/QSTI; the project does not pin or redistribute this proprietary installer.                                                                        |
-| QNX compiler (`qcc`/`q++`) | Target                      | SDP-provided                | `scripts/doctor.sh` validates availability after the SDP environment is sourced.                                                                                            |
-| CMake                      | Host prerequisite           | 3.28.0 or newer             | Matches `cmake_minimum_required`.                                                                                                                                           |
-| Ninja                      | Host prerequisite           | 1.11.0 or newer             | Generator used by the checked-in presets.                                                                                                                                   |
-| Node.js                    | Host prerequisite           | 24.3.0 or newer             | Matches the workspace engine constraint and the selected React Native line.                                                                                                 |
-| pnpm                       | Pin                         | 11.21.0                     | Exact workspace package-manager identity.                                                                                                                                   |
-| Python                     | Host prerequisite           | 3.11 or newer               | Required by current/future React Native tooling and codegen.                                                                                                                |
+| Component | Status | Version / requirement | Notes |
+| --- | --- | --- | --- |
+| macOS host | Authoring / host validation | current macOS + Apple Clang | Does not provide QNX runtime proof |
+| Linux host | Authoring / host validation | current x86-64 Linux | Runs non-QNX host checks |
+| Windows x86-64 QNX host | Historical proven build host | QNX SDP 8.0.2 | Existing AArch64 cross-build evidence was captured here |
+| Current Pi build baseline | Target | QNX SDP 8.0.5 | Required for the current September 2026 QSTI lane |
+| Raspberry Pi QSTI | Target image | 0.5.0 build 50 | Current Pi 4 / Pi 5 image baseline |
+| CMake | Host prerequisite | >= 3.31.9 | Matches `cmake_minimum_required` and doctor |
+| Ninja | Host prerequisite | >= 1.11 | Checked by doctor |
+| Node.js | Host prerequisite | >= 26.0.0 | Aligns runtime with current Node typings |
+| pnpm | Exact pin | 12.8.1 | Reproducible package-manager identity |
+| Python | Host prerequisite | >= 3.11 | Used by native/tooling workflows |
 
 ## React Native runtime
 
-| Component                   | Status             | Version / identity                  | Evidence and scope                                                                                                                                                                           |
-| --------------------------- | ------------------ | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| React Native                | Pin                | 0.86.2                              | Installed manifest and lockfile; the project must supply the out-of-tree QNX platform.                                                                                                       |
-| React                       | Pin                | 19.2.3                              | Matches the React Native peer baseline and Expo's tested development version.                                                                                                                |
-| Yoga                        | Bundled            | React Native 0.86.2 source snapshot | No standalone Yoga version is inferred. The installed public declaration `YGNodeCalculateLayout` is audited in `ReactCommon/yoga/yoga/YGNode.h`.                                             |
-| Hermes                      | Bundled            | `hermes-v250829098.0.16`            | Read from React Native's installed `sdks/.hermesv1version`; the version component is `v250829098.0.16`. This identifies source only—Hermes has not been cross-compiled or validated for QNX. |
-| Hermes compiler package     | Bundled dependency | 250829098.0.16                      | React Native 0.86.2 package metadata; not proof of QNX portability.                                                                                                                          |
-| Fabric scheduler            | Bundled            | React Native 0.86.2 source snapshot | Installed `ReactCommon/react/renderer/scheduler/Scheduler.h` contains `class Scheduler final`. No QNX renderer seam is claimed yet.                                                          |
-| Fabric mounting coordinator | Bundled            | React Native 0.86.2 source snapshot | Installed `ReactCommon/react/renderer/mounting/MountingCoordinator.h` contains `class MountingCoordinator final`.                                                                            |
+| Component | Status | Version / identity | Evidence and scope |
+| --- | --- | --- | --- |
+| React Native | Pin | 0.88.0-rc.3 | Out-of-tree QNX platform supplies the missing platform integration |
+| React | Pin | 19.3.0 | Matches Expo 58 |
+| Yoga | Bundled | RN 0.88 source snapshot | No standalone Yoga version is inferred |
+| Hermes | Bundled | `hermes-v260318099.0.2` | Source identity only; QNX port must be rebased and retested |
+| Fabric scheduler | Bundled | RN 0.88 source snapshot | Source symbols are checked by validator |
+| Fabric mounting | Bundled | RN 0.88 source snapshot | Source symbols are checked by validator |
+
+The existing `patches/hermes-qnx-250829.patch` belongs to the prior
+RN-0.86/Hermes-250829 source line. It is not valid SDK-58 evidence until rebased
+against `260318099.0.2`.
 
 ## Expo, Metro, and TypeScript
 
-| Component               | Status     | Version          | Evidence and scope                                                                                                                                                                                             |
-| ----------------------- | ---------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Expo package / SDK line | Pin        | 57.0.12 / SDK 57 | Expo's installed manifest tests against React Native 0.86.2 and React 19.2.3. A QNX Expo platform has not been implemented or validated.                                                                       |
-| Metro                   | Pin        | 0.84.4           | Direct workspace Metro pin and the upstream Metro version required by resolved `@expo/metro`. No QNX Metro resolver exists yet.                                                                                |
-| `expo-modules-core`     | Resolved   | 57.0.10          | Resolved through Expo's installed dependency graph. `android/src/main/cpp/ExpoModulesHostObject.h` contains `class ExpoModulesHostObject`; this Android source is contract evidence, not a QNX implementation. |
-| `@expo/metro`           | Resolved   | 56.0.0           | Expo's Metro fork/wrapper; its installed manifest resolves upstream `metro` 0.84.4.                                                                                                                            |
-| `@expo/metro-config`    | Resolved   | 57.0.8           | Expo Metro configuration selected by the locked Expo graph.                                                                                                                                                    |
-| `xcode` → `uuid`        | Override   | 3.0.1 → 11.1.1   | Scoped override replaces vulnerable uuid 7.0.3. Installed `xcode/lib/pbxProject.js` uses `uuid.v4()`, and the validator checks that exact CommonJS symbol.                                                     |
-| Expo Router             | Not pinned | —                | No direct workspace package or QNX compatibility claim exists yet.                                                                                                                                             |
-| TypeScript              | Pin        | 6.0.3            | Exact workspace compiler pin.                                                                                                                                                                                  |
+| Component | Status | Version | Notes |
+| --- | --- | --- | --- |
+| Expo / SDK | Pin | 58.0.0 / SDK 58 | Published package; intentionally selected despite current `next` dist-tag |
+| `babel-preset-expo` | Pin | 58.0.4 | Playground Babel preset |
+| Metro | Pin | 0.87.1 | QNX resolver extends the RN Metro defaults |
+| `@react-native/metro-config` | Pin | 0.88.0-rc.3 | Used by `@rn-qnx/metro-config-qnx` |
+| `expo-modules-core` | Resolved | 58.0.9 | Android source is contract evidence only, not a QNX implementation |
+| `@expo/metro` | Resolved | 58.0.0-rc.0 | SDK-58 Metro fork |
+| `@expo/metro-config` | Resolved | 58.0.6 | SDK-58 Expo Metro config |
+| TypeScript | Pin | 7.0.2 | Current published compiler |
 
 ## Native interop
 
-| Component                  | Status | Version | Installed source contract and scope                                                                                                                                                     |
-| -------------------------- | ------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| React Native Nitro Modules | Pin    | 0.36.5  | `cpp/registry/HybridObjectRegistry.hpp` contains `registerHybridObjectConstructor`; `cpp/entrypoint/InstallNitro.hpp` contains `void install(`. Neither symbol establishes QNX support. |
-| Nitrogen                   | Pin    | 0.36.5  | Exact code-generator pin on the same release line as Nitro Modules. No `nitro.json` contract or generated QNX output exists yet.                                                        |
+| Component | Status | Version | Scope |
+| --- | --- | --- | --- |
+| React Native Nitro Modules | Pin | 0.37.1 | Registry/current source contract; QNX runtime still repository work |
+| Nitrogen | Pin | 0.37.1 | Matches Nitro runtime |
+| Expo Modules Core | Resolved | 58.0.9 | QNX package scaffolds exist; implementation remains separate |
 
 ## Graphics and text
 
-| Component       | Status               | Notes                                                                                                                                                                                                                                                                    |
-| --------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Qt 6 / Qt Quick | Locked, not pinned   | Component backend per ADR-0001. Current release is 6.11.1 with 6.12 in beta as of 2026-08-14; the macOS development host builds against 6.11.1 per ADR-0010. The exact LTS tag for the target, QNX source seams, build result, and licensing decision remain G0-B gates. |
-| Skia            | Superseded direction | Not the component backend. Any future leaf/canvas use requires its own decision and QNX proof.                                                                                                                                                                           |
-| Text stack      | Qt-tag dependent     | HarfBuzz/FreeType and other third-party identities must be recorded from the exact Qt source/build rather than invented.                                                                                                                                                 |
-| Image codecs    | Not pinned           | Codec choices and provenance follow the proven Qt build or a later explicit dependency decision.                                                                                                                                                                         |
+| Component | Status | Notes |
+| --- | --- | --- |
+| Qt 6 / Qt Quick | Selected backend | Host renderer uses Qt Quick; target Qt/QPA proof is still a QNX milestone |
+| QNX Screen | Target API | Direct Screen smoke app is the physical-device baseline beneath Qt QPA |
+| EGL / GLES | Target-dependent | Checked from the installed QNX SDP/BSP |
+| Vulkan | Future / target-dependent | Not required for the same-day Screen lane |
 
-## QNX target libraries
+## Validation rules
 
-| Component          | Status           | Source             | Scope                                                                                                                     |
-| ------------------ | ---------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------- |
-| QNX Screen         | Target           | QNX SDP / BSP      | Window system beneath Qt QPA plus a direct G0/bare-Screen probe; not the Fabric component backend. Must be target-tested. |
-| EGL                | Target           | QNX SDP / BSP      | Graphics integration used only as required by the proven Qt/QPA build; not established by host tests.                     |
-| OpenGL ES          | Target           | QNX SDP / BSP      | Capability is target/BSP dependent and must be established during Qt G0-B.                                                |
-| Vulkan / Vulkan SC | Target-dependent | QNX SDP / BSP      | Future backend; not required for Milestone 0.                                                                             |
-| TLS provider       | Not pinned       | QNX-approved stack | Must be selected against BSP capabilities and security policy.                                                            |
-
-## Automated dependency and source audit
-
-After `pnpm install`, run:
+After installing dependencies:
 
 ```bash
+pnpm install --frozen-lockfile
 pnpm validate:dependencies
+pnpm typecheck
+pnpm test:js
 ```
 
-The validator checks exact direct versions, React/React Native/Expo compatibility declarations, the resolved Expo packages above, the Hermes source tag, and the named installed source files/symbols. Those checks protect against upstream source-shape drift. They do not replace QNX compilation, linkage, or target testing.
+The dependency validator checks exact direct pins, Expo 58's React/RN baseline,
+resolved SDK-58 packages, Hermes identity, Nitro pairing, the uuid override, and
+selected installed source symbols. These checks detect upstream drift but do not
+replace compilation.
 
-### Security audit status
-
-Run `pnpm audit:dependencies` with registry access. The 2026-08-13 audit found
-and removed the `uuid` advisory with the scoped, source-checked override above.
-Two high-severity `image-size` denial-of-service advisories remain in Metro's
-development-only dependency graph. The registry has no fixed release: latest is
-2.0.2 while the advisories affect versions through 2.0.2, and even Metro 0.87.0
-still declares `image-size ^1.0.2`. This is recorded as `UPSTREAM-DEP-001` in
-`docs/handoff/BLOCKERS.md`; do not process untrusted assets with Metro until it
-is resolved.
-
-For the QNX toolchain and target path, also run on the licensed Ubuntu host:
+For the current Raspberry Pi path:
 
 ```bash
-qcc -V
-q++ -V
-cmake --version
-ninja --version
-node --version
-pnpm --version
-./scripts/doctor.sh
+export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
+./scripts/pi-preflight.sh
+./scripts/install-pi.sh
 ```
+
+A passing Pi lane proves the QNX AArch64 toolchain -> deploy -> QNX Screen
+runtime loop. It does not by itself prove the full React Native + Hermes + Qt
+Quick stack on the target.
+
+## Security audit
+
+Do not carry forward the August 2026 dependency-audit result as if it applied to
+this graph. Run `pnpm audit:dependencies` against the SDK-58 lockfile and
+record any current findings in `docs/handoff/BLOCKERS.md`.
 
 ## Updating this matrix
 
-1. Audit registry releases and choose the newest mutually compatible React Native/React/Expo/Metro line; do not independently select incompatible latest versions.
-2. Confirm compatibility declarations and required native symbols in installed package source.
-3. Record direct pins, resolved graph versions, and bundled source identities separately.
-4. Update `package.json`, `pnpm-lock.yaml`, this matrix, and ADR-0008.
-5. Run `pnpm validate:macos` (or the Linux host equivalent) and record results in `docs/handoff/TEST_STATUS.md`.
-6. Queue every QNX-specific change in `docs/handoff/QNX_VALIDATION_QUEUE.md`, then validate it on the licensed QNX build host/target.
+1. Select the requested Expo SDK.
+2. Read Expo's published React/React Native baseline.
+3. Query current direct package versions.
+4. Regenerate the lockfile from npm.
+5. Run dependency/source-contract validation.
+6. Rebase source patches whose upstream identity changed.
+7. Run host validation.
+8. Cross-build with the licensed QNX toolchain.
+9. Run the physical Pi evidence lane before claiming target support.

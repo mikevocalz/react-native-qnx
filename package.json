@@ -5,10 +5,10 @@
   "description": "Production-grade React Native out-of-tree platform for QNX",
   "license": "MIT",
   "author": "react-native-qnx contributors",
-  "packageManager": "pnpm@11.21.0",
+  "packageManager": "pnpm@12.8.1",
   "engines": {
-    "node": ">=24.3.0",
-    "pnpm": ">=11.21.0"
+    "node": ">=26.0.0",
+    "pnpm": ">=12.8.1"
   },
   "scripts": {
     "doctor": "bash scripts/doctor.sh",
@@ -33,18 +33,17 @@
     "pi:install": "bash scripts/install-pi.sh"
   },
   "devDependencies": {
-    "@react-native/babel-preset": "0.86.2",
-    "@react-native/jest-preset": "0.86.2",
-    "@react-native/metro-config": "0.86.2",
-    "@types/node": "24.13.3",
-    "@types/react": "19.2.18",
-    "expo": "57.0.12",
-    "metro": "0.84.4",
-    "nitrogen": "0.36.5",
-    "prettier": "3.9.6",
-    "react": "19.2.3",
-    "react-native": "0.86.2",
-    "react-native-nitro-modules": "0.36.5",
-    "typescript": "6.0.3"
+    "@react-native/metro-config": "0.88.0-rc.3",
+    "@types/node": "26.6.3",
+    "@types/react": "19.3.0",
+    "babel-preset-expo": "58.0.4",
+    "expo": "58.0.0",
+    "metro": "0.87.1",
+    "nitrogen": "0.37.1",
+    "prettier": "3.9.9",
+    "react": "19.3.0",
+    "react-native": "0.88.0-rc.3",
+    "react-native-nitro-modules": "0.37.1",
+    "typescript": "7.0.2"
   }
 }

@@ -7,8 +7,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-REQUIRED_PNPM_VERSION="11.21.0"
-MINIMUM_NODE_VERSION="24.3.0"
+REQUIRED_PNPM_VERSION="12.8.1"
+MINIMUM_NODE_VERSION="26.0.0"
 MINIMUM_CMAKE_VERSION="3.31.9"
 
 version_at_least() {
@@ -72,11 +72,11 @@ if [[ -z "${CMAKE_VERSION}" ]] ||
   exit 1
 fi
 
-# Node.js 24 LTS via NodeSource or another supported installer.
+# Node.js 26 via NodeSource or another supported installer.
 if ! command -v node >/dev/null 2>&1 ||
   ! version_at_least "$(node --version | sed 's/^v//')" "${MINIMUM_NODE_VERSION}"; then
-  echo "Installing Node.js 24 LTS..."
-  curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+  echo "Installing Node.js 26..."
+  curl -fsSL https://deb.nodesource.com/setup_26.x | sudo -E bash -
   ${APT} install -y nodejs
 fi
 if ! version_at_least "$(node --version | sed 's/^v//')" "${MINIMUM_NODE_VERSION}"; then

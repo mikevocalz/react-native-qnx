@@ -7,8 +7,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-MINIMUM_NODE_VERSION="24.3.0"
-REQUIRED_PNPM_VERSION="11.21.0"
+MINIMUM_NODE_VERSION="26.0.0"
+REQUIRED_PNPM_VERSION="12.8.1"
 
 version_at_least() {
   local current="$1"
@@ -77,12 +77,12 @@ echo "pnpm: $(pnpm --version)"
 
 # CMake
 if ! command -v cmake >/dev/null 2>&1; then
-  echo "CMake not found. Install CMake 3.28 or newer, e.g. via Homebrew: brew install cmake"
+  echo "CMake not found. Install CMake 3.31.9 or newer, e.g. via Homebrew: brew install cmake"
   exit 1
 fi
 CMAKE_VERSION=$(cmake --version | head -n1 | awk '{print $3}')
-if ! version_at_least "${CMAKE_VERSION}" "3.28.0"; then
-  echo "CMake ${CMAKE_VERSION} is too old. Require 3.28.0 or newer."
+if ! version_at_least "${CMAKE_VERSION}" "3.31.9"; then
+  echo "CMake ${CMAKE_VERSION} is too old. Require 3.31.9 or newer."
   exit 1
 fi
 echo "cmake: ${CMAKE_VERSION}"
