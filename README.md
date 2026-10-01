@@ -3,8 +3,9 @@
 Foundation for a production-grade React Native out-of-tree platform for QNX.
 The current JavaScript/tooling line is Expo SDK 58.0.0, React Native
 0.88.0-rc.3, React 19.3.0, Metro 0.87.1, and Nitro Modules/Nitrogen 0.37.1.
-Existing QNX compile/runtime evidence remains tied to the older dependency
-baseline until the new line is revalidated against the licensed QNX toolchain.
+Current host validation is green; QNX SDP 8.0.2 compile/VM results are retained
+as historical evidence while current SDP 8.0.5/QSTI physical-target validation
+remains pending.
 
 ## Goal
 
@@ -18,25 +19,26 @@ those seams are implemented and validated here.
 
 ## Current scope
 
-**The React Native host renderer exists and has rendered end to end.** The
-complete render path was established on the previous dependency baseline. Expo
-SDK 58 / React Native 0.88 source-contract and host-build revalidation is
-required before that earlier host result is reported as an SDK-58 validation
-result.
+**SDK-58 host/tooling validation is green.** The merged `main` branch passes
+frozen dependency installation, Prettier, dependency/source contracts,
+TypeScript 7, peer checks, a production Metro bundle for `--platform qnx`,
+repository architecture/codegen checks, Linux C++ host smoke tests, and the
+dependency security audit.
 
-What exists: React Native's renderer built from source, a Qt Quick mounting
-layer, the `ShadowViewMutation` adapter, a Hermes runtime host with the
-scheduler, event beat, component registry and TurboModule adapter React Native
-requires, the JavaScript platform package, and a Metro configuration.
-`docs/component-support.md` is the honest table of what works — today that is
-`View` with layout, background, radius, border and opacity, and little else.
+**The full Qt/Hermes host renderer has historical end-to-end evidence.** The
+JSX → Metro → Hermes → React/Fabric → Qt Quick pipeline was proven on the prior
+React Native 0.86 / Expo 57 host line. The current SDK-58 CI does not install
+the optional Qt/Hermes host stack, so that complete renderer path still needs a
+deliberate RN 0.88 rerun rather than inheriting the old result.
 
-**None of this has run on QNX.** Every result is from the development host
-(`docs/adr/0010-macos-qt-development-host.md`). A real QNX configure, compile,
-deploy, or runtime result requires a licensed QNX SDP on a supported host and a
-target; see `docs/handoff/BLOCKERS.md`. Host tests are not QNX proof.
+**QNX proof is split by layer.** The native Screen/C++20 probes cross-built for
+AArch64 and ran in a QNX x86_64 VM on the historical SDP 8.0.2 line. The full
+React Native + Hermes + Qt Quick runtime has not run on QNX. The repository now
+has a physical Pi 4/5 install/evidence lane for the current SDP 8.0.5 / QSTI
+0.5.0 build-50 baseline, but that physical run has not yet been captured.
 
-See `docs/handoff/CURRENT_STATE.md`, `docs/handoff/QNX_VALIDATION_QUEUE.md`, and `.project-state.json` for the latest state.
+See `docs/handoff/CURRENT_STATE.md`, `docs/handoff/QNX_VALIDATION_QUEUE.md`,
+and `.project-state.json` for the exact evidence boundaries.
 
 ## Repository layout
 
@@ -116,10 +118,30 @@ This runs on the development host, not on QNX. See
 `docs/adr/0010-macos-qt-development-host.md` for what that does and does not
 prove, and `docs/component-support.md` for what actually works.
 
+## Raspberry Pi 4/5 quick install
+
+For the current QNX Everywhere QSTI lane, use QNX SDP 8.0.5 with QSTI 0.5.0
+build 50 on Raspberry Pi 4 or Raspberry Pi 5. The stock target defaults are
+`qnxuser@qnxpi.local`.
+
+```bash
+export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
+
+pnpm pi:preflight
+pnpm pi:install
+```
+
+The install lane verifies AArch64le + Screen, builds the QNX AArch64 target,
+deploys atomically, runs the Screen probe, and stores stdout, slog2, and
+screenshot evidence when the QNX screenshot utility is present.
+
+See `docs/getting-started/raspberry-pi-today.md` for flashing, first login,
+SSH details, evidence layout, and troubleshooting.
+
 ## Build and deploy on QNX
 
-Run the QNX path on the x86-64 Ubuntu 22.04 workstation with a licensed QNX SDP
-8.0 installation:
+For the current Pi/QSTI lane, run the QNX path from a supported x86-64
+development host with a licensed QNX SDP 8.0.5 installation:
 
 ```bash
 # Install freely redistributable host prerequisites.
@@ -141,8 +163,9 @@ Run the QNX path on the x86-64 Ubuntu 22.04 workstation with a licensed QNX SDP
 ./scripts/run-qnx.sh aarch64 rnqnx_playground
 ```
 
-Set both `QNX_TARGET_IP` and the verified `QNX_TARGET_USER` before deployment;
-the scripts never assume root SSH. Detailed prerequisites and commands are in
+The Pi helpers default to `qnxuser@qnxpi.local`; set `QNX_TARGET_IP`,
+`QNX_TARGET_USER`, or `QNX_SSH_KEY` only when your target differs. The
+scripts never assume root SSH. Detailed prerequisites and commands are in
 `docs/getting-started/build-and-deploy.md`.
 
 ## License
