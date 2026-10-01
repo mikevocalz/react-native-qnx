@@ -201,7 +201,7 @@ check_cmd ninja "1.11"
 
 echo ""
 echo "[4/8] Node.js tooling" | tee -a "${LOG_FILE}"
-check_cmd node "24.3.0"
+check_cmd node "26.0.0"
 check_exact_cmd_version pnpm "12.8.1"
 if [[ -f "${PROJECT_ROOT}/package.json" ]]; then
   ok "package.json found"
