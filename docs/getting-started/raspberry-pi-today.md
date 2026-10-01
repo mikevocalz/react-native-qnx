@@ -129,6 +129,23 @@ For a quick re-deploy of an already-built binary:
 
     RNQNX_SKIP_BUILD=1 ./scripts/install-pi.sh
 
+## Verify and inventory the evidence
+
+After a successful install run, turn the captured directory into a checked
+evidence record:
+
+```bash
+pnpm pi:evidence:verify
+# or verify a specific run:
+pnpm pi:evidence:verify -- artifacts/pi/<UTC timestamp>
+```
+
+The verifier checks the required preflight/compiler/run proof, validates the
+AArch64le and Screen markers, requires the clean-shutdown line, and writes
+`manifest.json` with SHA-256 + byte size for every captured evidence file.
+The screenshot remains optional because the QNX target utility may not be
+installed.
+
 ## What success means today
 
 A green install proves the physical-board lane:
