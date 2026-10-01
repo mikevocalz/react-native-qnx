@@ -199,9 +199,7 @@
     {
       "name": "qnx-pi4",
       "configurePreset": "qnx-pi4",
-      "targets": [
-        "rnqnx_g0_cxx20_probe"
-      ]
+      "targets": ["rnqnx_g0_cxx20_probe"]
     },
     {
       "name": "qnx-aarch64-release",
@@ -218,9 +216,7 @@
     {
       "name": "qnx-pi",
       "configurePreset": "qnx-pi",
-      "targets": [
-        "rnqnx_g0_cxx20_probe"
-      ]
+      "targets": ["rnqnx_g0_cxx20_probe"]
     }
   ],
   "testPresets": [
