@@ -1,0 +1,73 @@
+name: SDK 58 validation
+
+on:
+  push:
+    branches:
+      - main
+      - ci/sdk58-validation
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sdk58-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Use Node 26
+        uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+
+      - name: Install pnpm
+        run: npm install --global pnpm@12.8.1
+
+      - name: Install exact lockfile
+        run: pnpm install --frozen-lockfile
+
+      - name: Format
+        run: pnpm format:check
+
+      - name: Validate manifests and dependency contracts
+        run: |
+          pnpm validate:manifests
+          pnpm validate:dependencies
+          pnpm typecheck
+          pnpm peers check
+
+      - name: Bundle playground for QNX
+        run: |
+          cd apps/rn-playground
+          ../../node_modules/.bin/metro build index.js --platform qnx --dev false --out /tmp/rnqnx-playground.bundle.js
+          test -s /tmp/rnqnx-playground.bundle.js
+          du -h /tmp/rnqnx-playground.bundle.js
+
+      - name: Validate repository structure and codegen state
+        run: |
+          pnpm test:js
+          pnpm build:packages
+          pnpm validate:architecture
+          pnpm codegen:check
+
+      - name: Install repository CMake floor
+        run: |
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Linux host C++ smoke tests
+        run: |
+          cmake --version
+          pnpm test:cpp:host
+
+      - name: Security audit
+        run: pnpm audit:dependencies
