@@ -35,6 +35,7 @@ option(RNQNX_FETCH_REACT_NATIVE_DEPS
 option(RNQNX_BUILD_HERMES "Build Hermes from source for the host" OFF)
 option(RNQNX_BUILD_HERMES_QNX "Link the cross-built QNX Hermes/JSI probe" OFF)
 option(RNQNX_BUILD_NITRO_QNX "Build the QNX Nitro shared C++ runtime" OFF)
+option(RNQNX_BUILD_EXPO_MODULES_QNX "Build the QNX Expo Modules JSI bootstrap" OFF)
 
 # This target is the executable G0-A language/runtime proof. Compiling it on a
 # host validates the TU itself; only a qcc cross-build followed by execution on
@@ -87,6 +88,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
 
   if(RNQNX_BUILD_NITRO_QNX)
     add_subdirectory(packages/qnx-nitro-runtime)
+  endif()
+
+  if(RNQNX_BUILD_EXPO_MODULES_QNX)
+    add_subdirectory(packages/expo-modules-core-qnx)
   endif()
 
   if(RNQNX_BUILD_HERMES_QNX)
