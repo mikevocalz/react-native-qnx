@@ -9,6 +9,7 @@ on:
       - apps/**/package.json
       - packages/**/package.json
       - pnpm-workspace.yaml
+      - scripts/validate-dependencies.mjs
       - .github/workflows/refresh-sdk58-lockfile.yml
 
 permissions:
