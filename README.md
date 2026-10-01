@@ -56,7 +56,7 @@ Workspace dependencies are exact pins, not ranges:
 
 - Expo 58.0.0 / SDK 58
 - React Native 0.88.0-rc.3 and React 19.3.0
-- Metro 0.87.1 and `@react-native/metro-config` 0.88.0-rc.1
+- Metro 0.87.1 and `@react-native/metro-config` 0.88.0-rc.3
 - `babel-preset-expo` 58.0.4
 - Nitro Modules and Nitrogen 0.37.1
 - TypeScript 7.0.2
