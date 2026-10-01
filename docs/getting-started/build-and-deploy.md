@@ -23,11 +23,26 @@ The dependency audit verifies the exact workspace pins (including pnpm 11.21.0, 
 
 Do not record this result as a QNX compile or runtime pass. QNX-specific follow-up belongs in `docs/handoff/QNX_VALIDATION_QUEUE.md`.
 
+## Raspberry Pi 4/5 fast path
+
+For the current QNX Everywhere QSTI, use the dedicated physical-board lane before running the older milestone-by-milestone commands below:
+
+```bash
+export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
+./scripts/install-pi.sh
+```
+
+It preflights the host and target, verifies AArch64le + /dev/screen, builds the matching QNX AArch64 target, deploys atomically, runs on the Pi, and captures stdout, screenshot evidence when the QNX utility is present, and slog2 output. Defaults match the stock QSTI: `qnxuser@qnxpi.local`.
+
+The current October 2026 target baseline is QSTI 0.5.0 build 50 for either Raspberry Pi 4 or Raspberry Pi 5, paired with QNX SDP 8.0.5. Existing repository cross-build evidence was produced on SDP 8.0.2, so it remains historical evidence rather than a claim that 8.0.5 has already passed this repository.
+
+See `raspberry-pi-today.md` for the full runbook.
+
 ## QNX host requirements
 
 - x86-64 Ubuntu 22.04 LTS for the canonical QNX/Qt cross-build
-- QNX SDP 8.0 installed through QNX Software Center, with its exact installed
-  update/build recorded during G0-A
+- QNX SDP 8.0.5 for the current Pi QSTI lane (or the exact installed SDP used
+  for a reproducible historical validation), with package/build identity recorded
 - An active QNX license
 - BSP/graphics packages that provide the target Screen implementation
 - Network access to the QNX target device
@@ -46,8 +61,8 @@ This installs the non-QNX host prerequisites, including CMake, Ninja, Node.js, p
 ## Install and activate QNX SDP 8.0
 
 1. Install QNX Software Center through your licensed QNX channel.
-2. Install QNX SDP 8.0 and the current Raspberry Pi 4 QSTI/BSP/graphics
-   packages for the target board.
+2. Install QNX SDP 8.0.5 and the current Raspberry Pi 4 or Raspberry Pi 5
+   QSTI package for the target board.
 3. Activate the license.
 4. Source the SDP environment script in every build shell. For example:
 
