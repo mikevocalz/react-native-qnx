@@ -30,7 +30,8 @@
     "validate:manifests": "node scripts/validate-manifests.mjs",
     "validate:architecture": "node scripts/validate-architecture.mjs",
     "pi:preflight": "bash scripts/pi-preflight.sh",
-    "pi:install": "bash scripts/install-pi.sh"
+    "pi:install": "bash scripts/install-pi.sh",
+    "qnx:validate:805": "bash scripts/validate-qnx-805-cross.sh"
   },
   "devDependencies": {
     "@react-native/metro-config": "0.88.0-rc.3",
