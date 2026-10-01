@@ -22,7 +22,7 @@ current published versions.
 | React Native | 0.88.0-rc.3 | Expo 58 tested development baseline |
 | React | 19.3.0 | Expo 58 tested development baseline |
 | Metro | 0.87.1 | Current Metro release resolved coherently with the selected RN Metro config |
-| `@react-native/metro-config` | 0.88.0-rc.1 | RN 0.88 support-package line used by SDK 58 tooling |
+| `@react-native/metro-config` | 0.88.0-rc.3 | RN 0.88 support-package line used by SDK 58 tooling |
 | `babel-preset-expo` | 58.0.4 | Current SDK 58 Babel preset |
 | Nitro Modules | 0.37.1 | Current published release |
 | Nitrogen | 0.37.1 | Matches Nitro Modules |
@@ -83,7 +83,7 @@ against `260318099.0.2`.
 | Expo / SDK | Pin | 58.0.0 / SDK 58 | Published package; intentionally selected despite current `next` dist-tag |
 | `babel-preset-expo` | Pin | 58.0.4 | Playground Babel preset |
 | Metro | Pin | 0.87.1 | QNX resolver extends the RN Metro defaults |
-| `@react-native/metro-config` | Pin | 0.88.0-rc.1 | Used by `@rn-qnx/metro-config-qnx` |
+| `@react-native/metro-config` | Pin | 0.88.0-rc.3 | Used by `@rn-qnx/metro-config-qnx` |
 | `expo-modules-core` | Resolved | 58.0.9 | Android source is contract evidence only, not a QNX implementation |
 | `@expo/metro` | Resolved | 58.0.0-rc.0 | SDK-58 Metro fork |
 | `@expo/metro-config` | Resolved | 58.0.6 | SDK-58 Expo Metro config |
