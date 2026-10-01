@@ -1,9 +1,10 @@
 # react-native-qnx
 
 Foundation for a production-grade React Native out-of-tree platform for QNX.
-The current compatibility line is QNX SDP 8.0 (installed update/build still to
-be captured), React Native 0.86.2, React 19.2.3, Expo 57.0.12, Metro 0.84.4, and
-Nitro Modules/Nitrogen 0.36.5.
+The current JavaScript/tooling line is Expo SDK 58.0.0, React Native
+0.88.0-rc.3, React 19.3.0, Metro 0.87.1, and Nitro Modules/Nitrogen 0.37.1.
+Existing QNX compile/runtime evidence remains tied to the older dependency
+baseline until the new line is revalidated against the licensed QNX toolchain.
 
 ## Goal
 
@@ -17,11 +18,11 @@ those seams are implemented and validated here.
 
 ## Current scope
 
-**A React Native app renders.** On the macOS development host, Metro bundles
-`apps/rn-playground` for the `qnx` platform, Hermes evaluates it, React
-reconciles, and the tree is painted as Qt Quick items with Yoga's layout and the
-styles the JSX declares. That path is covered by host tests that read pixels
-back from a rendered frame, and `rnqnx_playground_host` shows it in a window.
+**The React Native host renderer exists and has rendered end to end.** The
+complete render path was established on the previous dependency baseline. Expo
+SDK 58 / React Native 0.88 source-contract and host-build revalidation is
+required before that earlier host result is reported as an SDK-58 validation
+result.
 
 What exists: React Native's renderer built from source, a Qt Quick mounting
 layer, the `ShadowViewMutation` adapter, a Hermes runtime host with the
@@ -52,22 +53,28 @@ See `docs/handoff/CURRENT_STATE.md`, `docs/handoff/QNX_VALIDATION_QUEUE.md`, and
 
 Workspace dependencies are exact pins, not ranges:
 
-- React Native 0.86.2 and React 19.2.3
-- Expo 57.0.12
-- Metro 0.84.4
-- Nitro Modules and Nitrogen 0.36.5
-- TypeScript 6.0.3
-- pnpm 11.21.0
+- Expo 58.0.0 / SDK 58
+- React Native 0.88.0-rc.3 and React 19.3.0
+- Metro 0.87.1 and `@react-native/metro-config` 0.88.0-rc.3
+- `babel-preset-expo` 58.0.4
+- Nitro Modules and Nitrogen 0.37.1
+- TypeScript 7.0.2
+- Node.js 26+ with `@types/node` 26.6.3
+- pnpm 12.8.1
 
-The Expo dependency graph resolves `expo-modules-core` 57.0.10, `@expo/metro` 56.0.0, and `@expo/metro-config` 57.0.8. React Native 0.86.2 identifies its Hermes source as `hermes-v250829098.0.16`; Yoga is the bundled React Native source snapshot and is not assigned an invented standalone version. Run `pnpm validate:dependencies` to verify the installed versions and audited upstream source symbols.
+The refreshed SDK-58 graph resolves `expo-modules-core` 58.0.9,
+`@expo/metro` 58.0.0-rc.0, and `@expo/metro-config` 58.0.6. React Native
+0.88.0-rc.3 resolves `hermes-compiler` 260318099.0.4 while its bundled Hermes
+source tag is `hermes-v260318099.0.2`. Yoga remains the source snapshot bundled
+by React Native and is not assigned an invented standalone version. Run
+`pnpm validate:dependencies` to verify installed versions and audited upstream
+source symbols.
 
 The complete provenance and compatibility record is in `docs/getting-started/compatibility-matrix.md`.
 
-The lockfile also scopes `xcode` to patched `uuid` 11.1.1 and validates its
-installed `uuid.v4()` call site. Two unpatched `image-size` denial-of-service
-advisories remain in Metro's development-only graph; no fixed package is
-published as of 2026-08-13. See `docs/handoff/BLOCKERS.md` before enabling Metro
-for untrusted assets.
+The lockfile also scopes `xcode` to `uuid` 11.1.1 and validates the installed
+`uuid.v4()` call site. Security findings are re-audited against the refreshed
+SDK-58 lockfile rather than carrying forward the August 2026 audit result.
 
 ## Validate on macOS
 
