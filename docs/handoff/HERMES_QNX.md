@@ -1,5 +1,16 @@
 # Hermes QNX Feasibility
 
+> **SDK 58 migration note (2026-10-01):** The experiments below were performed
+> against React Native 0.86.2 / Hermes `250829098.0.16`. The active repository
+> line is now Expo SDK 58 / React Native 0.88.0-rc.3, whose installed Hermes
+> compiler/source identity is `260318099.0.4`. Therefore
+> `patches/hermes-qnx-250829.patch`, the `third-party/hermes-250829098`
+> paths, and the recorded x86_64 runtime behavior are **historical evidence**.
+> They must not be applied to the new Hermes source without a clean rebase,
+> source audit, cross-build, and target run. The physical Pi Screen lane does
+> not enable `RNQNX_BUILD_HERMES_QNX` and is unaffected by this quarantine.
+
+
 ## TL;DR
 
 Hermes for QNX is **compiling**. CMake configures and the lean VM (`libhermesvmlean_a.a`)
