@@ -33,7 +33,8 @@
     "pi:install": "bash scripts/install-pi.sh",
     "qnx:validate:805": "bash scripts/validate-qnx-805-cross.sh",
     "hermes:qnx:prepare": "bash scripts/prepare-hermes-qnx.sh",
-    "hermes:qnx:configure": "bash scripts/configure-hermes-qnx.sh"
+    "hermes:qnx:configure": "bash scripts/configure-hermes-qnx.sh",
+    "validate:qnx-nitro": "node scripts/validate-qnx-nitro.mjs"
   },
   "devDependencies": {
     "@react-native/metro-config": "0.88.0-rc.3",
