@@ -1,0 +1,18 @@
+{
+  "name": "@rn-qnx/expo-modules-core-qnx",
+  "version": "0.1.0",
+  "description": "QNX JSI bootstrap for Expo Modules Core",
+  "license": "MIT",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "cpp",
+    "CMakeLists.txt"
+  ],
+  "peerDependencies": {
+    "expo-modules-core": "58.0.9",
+    "react-native": "0.88.0-rc.3"
+  }
+}
