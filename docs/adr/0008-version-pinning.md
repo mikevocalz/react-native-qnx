@@ -37,7 +37,7 @@ As of 2026-10-01 the direct development line is:
 - React Native 0.88.0-rc.3
 - React 19.3.0
 - Metro 0.87.1
-- `@react-native/metro-config` 0.88.0-rc.1
+- `@react-native/metro-config` 0.88.0-rc.3
 - `babel-preset-expo` 58.0.4
 - React Native Nitro Modules 0.37.1
 - Nitrogen 0.37.1
