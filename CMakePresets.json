@@ -156,6 +156,19 @@
         "BUILD_TESTING": "OFF",
         "QNX_TARGET_ARCH": "x86_64"
       }
+    },
+    {
+      "name": "qnx-pi",
+      "displayName": "Current QNX Raspberry Pi 4/5 Probe",
+      "description": "Cross-configures only the C++20 G0 probe for the current QNX 8 AArch64le Raspberry Pi 4/5 target. Runtime proof still requires the physical QSTI target.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/qnx-pi4",
+      "toolchainFile": "${sourceDir}/vnext/cmake/qnx-aarch64le.toolchain.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "OFF",
+        "RNQNX_G0_PROBE_ONLY": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -186,7 +199,9 @@
     {
       "name": "qnx-pi4",
       "configurePreset": "qnx-pi4",
-      "targets": ["rnqnx_g0_cxx20_probe"]
+      "targets": [
+        "rnqnx_g0_cxx20_probe"
+      ]
     },
     {
       "name": "qnx-aarch64-release",
@@ -199,6 +214,13 @@
     {
       "name": "qnx-x86_64-release",
       "configurePreset": "qnx-x86_64-release"
+    },
+    {
+      "name": "qnx-pi",
+      "configurePreset": "qnx-pi",
+      "targets": [
+        "rnqnx_g0_cxx20_probe"
+      ]
     }
   ],
   "testPresets": [
