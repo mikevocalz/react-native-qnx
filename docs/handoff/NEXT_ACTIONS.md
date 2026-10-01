@@ -1,113 +1,80 @@
 # NEXT_ACTIONS.md
 
-## 1. Complete QNX-RN-008 on the licensed build host and target
+## 1. Run the current physical Pi/QSTI validation lane
 
-**Objective:** Compile the current Screen-only executable against the installed
-QNX SDP 8.0.2, then run it on a real AArch64 QNX target with Screen/display and
-SSH. This remains the only unclosed Milestone 0 exit gate.
+**Objective:** Prove the merged Screen/device path on the current target
+baseline: QNX SDP 8.0.5 with QSTI 0.5.0 build 50 on Raspberry Pi 4 or
+Raspberry Pi 5.
 
-**Partial progress:** A QNX x86_64 VM now runs on the Windows PC. The G0 C++20
-probe and the Screen-only Milestone 0 executable `rnqnx_playground` were both
-built for `qnx-x86_64-debug`, deployed, and ran successfully inside the VM.
-`rnqnx_playground` uses a software/dummy WFD blitter because the installed SDP
-lacks the QEMU virtio-drm graphics package, but it still validates the Screen
-library linkage, `QnxScreenSurface` lifecycle, and cross-compiled runtime loop.
-See `docs/handoff/QNX_VM_WINDOWS.md` for the workaround.
+**What is already proven:** The older QNX SDP 8.0.2 line cross-built the
+AArch64 Screen/C++20 targets, and a QNX x86_64 VM successfully ran both the
+C++20 probe and `rnqnx_playground`. Those results are valuable historical
+evidence, but they predate Expo SDK 58 / React Native 0.88 and do not close the
+current physical-target gate.
 
-Additionally, `rnqnx_playground` compiles and links successfully for
-`qnx-aarch64-debug`; `ntoaarch64-readelf` reports `Machine: AArch64`, confirming
-the code and dependencies cross-build for the Pi target architecture.
+**Current tooling:**
 
-**Files:**
-
-- `cmake/toolchains/qnx-8.0.cmake`
-- `CMakeLists.txt`
-- `native/platform/qnx/application/main.cpp`
-- `native/platform/qnx/screen/QnxScreenSurface.{h,cpp}`
-- `tests/cpp/qnx-screen-fake/screen/screen.h`
-- `scripts/{doctor,configure-qnx,build-qnx,deploy-qnx,run-qnx}.sh`
+- `scripts/pi-preflight.sh` verifies the licensed host environment, AArch64
+  compiler target, SSH, target architecture, `/dev/screen`, and writable
+  deployment directory.
+- `scripts/install-pi.sh` configures/builds the AArch64 target, deploys
+  atomically, runs it, and captures stdout, slog2, and a Screen screenshot when
+  available.
+- Stock QSTI defaults are `qnxuser@qnxpi.local`; override only when the board
+  differs.
 
 **Procedure:**
 
-1. On x86-64 Ubuntu 24.04, install and license QNX SDP 8.0.2 plus the target
-   BSP/Screen development files. Source its environment script.
-2. Before changing native code, inspect the installed `screen/screen.h` and cite
-   the declarations/constants used by `QnxScreenSurface`: `screen_create_context`,
-   `screen_create_window_type`, `screen_set_window_property_iv`,
-   `screen_create_window_buffers`, `screen_get_window_property_iv`,
-   `screen_get_window_property_pv`, `screen_fill`, `screen_post_window`,
-   `screen_destroy_window`, `screen_destroy_context`, and their referenced
-   `SCREEN_*` constants. Reconcile the test-only header from that installed file.
-3. Verify the installed Screen header contains the symbols used by
-   `QnxScreenSurface`:
-
-   ```bash
-   ./scripts/audit-screen-symbols.sh
-   ```
-
-4. Run:
+1. Install/license QNX SDP 8.0.5 and the matching Pi 4 or Pi 5 QSTI package.
+2. Flash QSTI 0.5.0 build 50 and boot the Pi with its display attached.
+3. Source the SDP environment or set `QNX_SDP_ENV`.
+4. From the repository root run:
 
    ```bash
    pnpm install --frozen-lockfile
-   ./scripts/doctor.sh
-   ./scripts/configure-qnx.sh aarch64 Debug
-   ./scripts/build-qnx.sh aarch64 Debug
+   pnpm pi:preflight
+   pnpm pi:install
    ```
 
-5. With `QNX_TARGET_IP` and `QNX_TARGET_USER` set, deploy and run:
-
-   ```bash
-   ./scripts/deploy-qnx.sh aarch64 rnqnx_playground Debug
-   ./scripts/run-qnx.sh aarch64 rnqnx_playground
-   ```
-
-   Or use the convenience wrapper that builds, deploys, runs, and captures
-   evidence in `artifacts/g0-pi/`:
-
-   ```bash
-   ./scripts/validate-qnx-pi.sh
-   ```
-
-6. Run the executable repeatedly and use target-appropriate Screen/resource
-   diagnostics to check cleanup. Record exact commands and output in
-   `TEST_STATUS.md`; advance the two QNX-GFX queue entries only with evidence.
+5. Preserve the generated `artifacts/pi/<timestamp>/` evidence and record the
+   exact SDP/QSTI/board identity in `TEST_STATUS.md`.
+6. Repeat the run enough times to catch Screen cleanup/resource regressions.
 
 **Acceptance criteria:**
 
-- The installed header/source audit finds every used Screen symbol or work stops
-  with the exact mismatch recorded; no substitute API is invented.
-- `qnx_platform` and `rnqnx_playground` compile and link with warnings as errors.
-- The target shows the 1280×720 window alternating blue and black for up to 600
-  frames, and exits cleanly.
-- Repeated runs show no retained Screen context, window, or buffers.
+- Target reports AArch64le and Screen is ready.
+- The build uses the current licensed QNX 8.0.5 toolchain.
+- `rnqnx_playground` initializes Screen and exits cleanly.
+- stdout and slog2 evidence are captured; screenshot evidence is captured when
+  the QNX utility is present.
+- Repeated launches do not reveal retained Screen resources or startup drift.
 
-**Current blocker:** This macOS workspace has no licensed SDP or target. See
-`BLOCKERS.md`.
+**Current blocker:** Physical target execution has not yet been captured on the
+current QSTI line. The repository tooling itself is ready.
 
-## 2. Produce the exact-tag Hermes QNX feasibility record
+## 2. Rebase Hermes QNX work onto the RN 0.88 source line
 
-**Objective:** Turn the current Hermes identity into a source-backed QNX build
-plan without assuming Apple/Android build seams are portable.
+**Objective:** Turn the historical Hermes/QNX investigation into a current,
+source-backed port for Expo SDK 58 / React Native 0.88.
 
-**Installed evidence:**
+**Current installed evidence:**
 
 - `node_modules/react-native/sdks/.hermesv1version` →
-  `hermes-v250829098.0.16`
+  `hermes-v260318099.0.2`
+- React Native resolves `hermes-compiler` 260318099.0.4.
 - `node_modules/react-native/ReactCommon/react/runtime/hermes/HermesInstance.h`
-  → `HermesInstance::createJSRuntime`
-- `node_modules/react-native/ReactCommon/react/runtime/hermes/HermesInstance.cpp`
-  → `hermes::makeHermesRuntime`
-- `node_modules/react-native/ReactAndroid/hermes-engine/build.gradle.kts` and
-  `node_modules/react-native/sdks/hermes-engine/hermes-utils.rb` → platform
-  precedents only
+  still provides the runtime seam checked by `validate:dependencies`.
+- `patches/hermes-qnx-250829.patch` belongs to the older
+  `hermes-v250829098.0.16` source and must not be applied blindly.
 
-**Procedure:** Acquire the exact upstream Hermes tag separately, map its OS,
-thread, ICU, mmap, signal, and host-`hermesc` requirements to the installed QNX
-toolchain, and write an ADR/investigation note. Do not add a QNX CMake adapter
-until every called source symbol exists in that checkout.
+**Procedure:** Acquire/check out the exact current Hermes source, replay each QNX
+change deliberately, and re-audit OS, threads, mmap, signals, stack handling,
+and host-`hermesc` assumptions. Build/test first on the QNX VM where useful,
+then on AArch64/QSTI.
 
-**Dependency:** QNX-RN-008, because feasibility must be tested with the actual
-compiler and sysroot.
+**Dependency:** The native Screen Pi lane can proceed independently. A truthful
+full React Native/Hermes/QNX claim depends on both the current Hermes rebase and
+current QNX target validation.
 
 ## 3. Make the rendered app look and behave like an app
 
