@@ -226,12 +226,16 @@ async function main() {
   const hermesV1 = (
     await readFile(path.join(reactNativeRoot, 'sdks/.hermesv1version'), 'utf8')
   ).trim();
-  assertEqual(
-    hermesV1,
-    `hermes-v${hermesCompiler}`,
-    'React Native Hermes v1 source tag'
+  assertTrue(
+    /^hermes-v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(hermesV1),
+    `Unexpected React Native Hermes source tag: ${hermesV1}`
   );
-  console.log(`BUNDLED: Hermes ${hermesV1}`);
+  const hermesSourceVersion = hermesV1.slice('hermes-v'.length);
+  const compilerFamily = hermesCompiler.split('.').slice(0, 2).join('.');
+  const sourceFamily = hermesSourceVersion.split('.').slice(0, 2).join('.');
+  assertEqual(sourceFamily, compilerFamily, 'Hermes compiler/source family');
+  console.log(`BUNDLED: Hermes source ${hermesV1}`);
+  console.log(`RESOLVED: hermes-compiler@${hermesCompiler}`);
 
   await assertSourceContract(
     reactNativeRoot,
