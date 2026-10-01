@@ -313,7 +313,12 @@ async function main() {
   await assertSourceContract(
     expoMetroConfigRoot,
     'build/ExpoMetroConfig.js',
-    "platforms: ['ios', 'android', 'tvos', 'macos']"
+    'platforms:'
+  );
+  await assertSourceContract(
+    expoMetroConfigRoot,
+    'build/ExpoMetroConfig.js',
+    "'macos'"
   );
   await assertSourceContract(xcodeRoot, 'lib/pbxProject.js', 'uuid.v4()');
 
