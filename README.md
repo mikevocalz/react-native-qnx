@@ -64,9 +64,7 @@ Workspace dependencies are exact pins, not ranges:
 - pnpm 12.8.1
 
 The refreshed lockfile resolves `expo-modules-core` 58.0.9,
-`@expo/metro` 58.0.0-rc.0, and `@expo/metro-config` 58.0.6. React Native
-0.88.0-rc.3 identifies its Hermes compiler/source line as
-`260318099.0.4`. Yoga remains the source snapshot bundled by React Native and
+`@expo/metro` 58.0.0-rc.0, and `@expo/metro-config` 58.0.6. React Native 0.88.0-rc.3 resolves `hermes-compiler` 260318099.0.4 while its bundled Hermes source tag is `hermes-v260318099.0.2`. Yoga remains the source snapshot bundled by React Native and
 is not assigned an invented standalone version. Run
 `pnpm validate:dependencies` to verify installed versions and audited upstream
 source symbols.
