@@ -6,7 +6,7 @@
   both the `gcc_ntoaarch64le` and `gcc_ntox86_64` targets.
 - `vnext/cmake/qnx-aarch64le.toolchain.cmake` is fixed to find the Windows-hosted
   QNX compilers/archiver (`qcc.exe`, `q++.exe`, `aarch64-unknown-nto-qnx8.0.0-
-  ar.exe`) and pass the `-Vgcc_ntoaarch64le` target flag.
+ar.exe`) and pass the `-Vgcc_ntoaarch64le` target flag.
 - `cmake/toolchains/qnx-8.0.cmake` is fixed to find the Windows-hosted QNX
   compilers, select the right target-specific archiver/ranlib for aarch64 and
   x86_64, and pass the matching `-V<variant>` flag.

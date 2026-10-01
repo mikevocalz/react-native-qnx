@@ -36,7 +36,7 @@ checked.
      GPLv3-only modules);
    - build an on-screen keyboard as a React Native component over `<TextInput>`;
    - require a physical keyboard for text input.
-   This is recorded as a product-level gap until the owner makes that choice.
+     This is recorded as a product-level gap until the owner makes that choice.
 4. All other modules are presumed available under the LGPLv3 open-source
    license, subject to confirmation against the pinned source tree.
 5. No Tier 1 or Tier 2 module from Prompt 04 enters the build before this ADR
@@ -63,73 +63,74 @@ under the open-source posture.
 ## Per-module evidence (Qt 6.11.1)
 
 Sources:
+
 - [Qt 6.11 licensing page](https://doc.qt.io/qt-6.11/licensing.html)
 - [Qt for QNX](https://doc.qt.io/qt-6/qnx.html)
 - Homebrew Qt 6.11.1 kegs under `/opt/homebrew/Cellar` (inventory only)
 
 ### Tier 0 — mandatory, already in build
 
-| Module | macOS installed | Open-source license (per Qt 6.11 docs) | QNX build support | Notes |
-| ------ | --------------- | -------------------------------------- | ----------------- | ----- |
-| Qt Core | qtbase | LGPLv3 / GPLv2 | presumed | `FindSlog2.cmake` and `FindPPS.cmake` are present in `qtbase/lib/cmake/Qt6`; QNX symbols exist in Qt source. |
-| Qt GUI | qtbase | LGPLv3 / GPLv2 | presumed | `qqnx_imf` and `slog2`/`qqnx_pps` appear in `mkspecs` disabled-features on macOS, confirming QNX branches in Qt source. |
-| Qt Qml | qtdeclarative | LGPLv3 / GPLv2 | presumed | core to ADR-0002. |
-| Qt Quick | qtdeclarative | LGPLv3 / GPLv2 | presumed | component backend. |
-| Qt Quick Controls | qtdeclarative? (controls live in `qtdeclarative` since Qt 6.3) | LGPLv3 / GPLv2 | presumed | `TextInput`, `Switch`, etc. |
-| Qt Network | qtbase | LGPLv3 / GPLv2 | presumed | image loading, fetch. |
-| Qt Shader Tools | qtshadertools | LGPLv3 / GPLv2 | presumed | build-time shader tooling. |
+| Module            | macOS installed                                                | Open-source license (per Qt 6.11 docs) | QNX build support | Notes                                                                                                                   |
+| ----------------- | -------------------------------------------------------------- | -------------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Qt Core           | qtbase                                                         | LGPLv3 / GPLv2                         | presumed          | `FindSlog2.cmake` and `FindPPS.cmake` are present in `qtbase/lib/cmake/Qt6`; QNX symbols exist in Qt source.            |
+| Qt GUI            | qtbase                                                         | LGPLv3 / GPLv2                         | presumed          | `qqnx_imf` and `slog2`/`qqnx_pps` appear in `mkspecs` disabled-features on macOS, confirming QNX branches in Qt source. |
+| Qt Qml            | qtdeclarative                                                  | LGPLv3 / GPLv2                         | presumed          | core to ADR-0002.                                                                                                       |
+| Qt Quick          | qtdeclarative                                                  | LGPLv3 / GPLv2                         | presumed          | component backend.                                                                                                      |
+| Qt Quick Controls | qtdeclarative? (controls live in `qtdeclarative` since Qt 6.3) | LGPLv3 / GPLv2                         | presumed          | `TextInput`, `Switch`, etc.                                                                                             |
+| Qt Network        | qtbase                                                         | LGPLv3 / GPLv2                         | presumed          | image loading, fetch.                                                                                                   |
+| Qt Shader Tools   | qtshadertools                                                  | LGPLv3 / GPLv2                         | presumed          | build-time shader tooling.                                                                                              |
 
 ### Tier 1 — component-backing, adopt only when the feature lands
 
-| Module | macOS installed | Open-source license (per Qt 6.11 docs) | QNX build support | Notes |
-| ------ | --------------- | -------------------------------------- | ----------------- | ----- |
-| Qt Quick Effects | qtquickeffectmaker / `qtdeclarative` effects | LGPLv3 / GPLv2 | presumed | `filter`, blur, drop-shadow. |
-| Qt SVG | qtsvg | LGPLv3 / GPLv2 | presumed | SVG file rendering. |
-| Qt Quick Shapes | in Qt Quick (qtdeclarative) | LGPLv3 / GPLv2 | presumed | vector paths. |
-| Qt Multimedia | qtmultimedia | LGPLv3 / GPLv2 | verify QNX backend | video, audio, camera. |
-| Qt Quick Dialogs | qtquickdialogs | LGPLv3 / GPLv2 | verify | native file/color/dialogs. |
-| Qt Image Formats | qtimageformats | LGPLv3 / GPLv2 | presumed | extra image codecs. |
-| Qt SQL | qtsql (in qtbase) | LGPLv3 / GPLv2 | verify | local SQL. |
-| Qt Virtual Keyboard | qtvirtualkeyboard | **GPLv3** | — | **Excluded** from open-source build. Product decision required. |
-| Qt Qml Models | qtdeclarative | LGPLv3 / GPLv2 | presumed | model/view helpers. |
-| Qt Concurrent | qtbase | LGPLv3 / GPLv2 | presumed | off-thread work. |
+| Module              | macOS installed                              | Open-source license (per Qt 6.11 docs) | QNX build support  | Notes                                                           |
+| ------------------- | -------------------------------------------- | -------------------------------------- | ------------------ | --------------------------------------------------------------- |
+| Qt Quick Effects    | qtquickeffectmaker / `qtdeclarative` effects | LGPLv3 / GPLv2                         | presumed           | `filter`, blur, drop-shadow.                                    |
+| Qt SVG              | qtsvg                                        | LGPLv3 / GPLv2                         | presumed           | SVG file rendering.                                             |
+| Qt Quick Shapes     | in Qt Quick (qtdeclarative)                  | LGPLv3 / GPLv2                         | presumed           | vector paths.                                                   |
+| Qt Multimedia       | qtmultimedia                                 | LGPLv3 / GPLv2                         | verify QNX backend | video, audio, camera.                                           |
+| Qt Quick Dialogs    | qtquickdialogs                               | LGPLv3 / GPLv2                         | verify             | native file/color/dialogs.                                      |
+| Qt Image Formats    | qtimageformats                               | LGPLv3 / GPLv2                         | presumed           | extra image codecs.                                             |
+| Qt SQL              | qtsql (in qtbase)                            | LGPLv3 / GPLv2                         | verify             | local SQL.                                                      |
+| Qt Virtual Keyboard | qtvirtualkeyboard                            | **GPLv3**                              | —                  | **Excluded** from open-source build. Product decision required. |
+| Qt Qml Models       | qtdeclarative                                | LGPLv3 / GPLv2                         | presumed           | model/view helpers.                                             |
+| Qt Concurrent       | qtbase                                       | LGPLv3 / GPLv2                         | presumed           | off-thread work.                                                |
 
 ### Tier 2 — evaluate per concrete need
 
-| Module | macOS installed | Open-source license (per Qt 6.11 docs) | QNX build support | Notes |
-| ------ | --------------- | -------------------------------------- | ----------------- | ----- |
-| Qt Quick 3D | qtquick3d | **GPLv3** | — | Large; excluded from open-source build unless commercial. |
-| Qt Graphs | qtgraphs | **GPLv3** | — | Excluded from open-source build unless commercial. |
-| Qt Lottie Animation | qtlottie | **GPLv3** | — | Excluded from open-source build unless commercial. |
-| Qt Quick Timeline | qtquicktimeline | **GPLv3** | — | Excluded from open-source build unless commercial. |
-| Qt Quick 3D Physics | qtquick3dphysics | **GPLv3** | — | Excluded from open-source build unless commercial. |
-| Qt Canvas Painter | not installed (TP) | **GPLv3** | — | Technology Preview; not for stable public API. |
-| Qt Qml Compiler | not installed | **GPLv3** | — | Open-source Qt qmllint/qml compiler tooling; runtime AOT compiler is a commercial feature. |
-| Qt HTTP Server | qthttpserver | **GPLv3** | — | Excluded from open-source build unless commercial. |
-| Qt Remote Objects | qtremoteobjects | LGPLv3 / GPLv2 | verify | cross-process proxy. |
-| Qt SerialBus | qtserialbus | LGPLv3 / GPLv2 | verify | CAN/Modbus. |
-| Qt Serial Port | qtserialport | LGPLv3 / GPLv2 | verify | serial. |
-| Qt Positioning | qtpositioning | LGPLv3 / GPLv2 | verify | GPS/location. |
-| Qt Sensors | qtsensors | LGPLv3 / GPLv2 | **no QNX per docs** | Tier 3 per Prompt 04; do not use. |
-| Qt TextToSpeech | qtspeech | LGPLv3 / GPLv2 | verify | needs QNX backend. |
-| Qt WebSockets | qtwebsockets | LGPLv3 / GPLv2 | verify | real-time bus. |
-| Qt Print Support | in qtbase | LGPLv3 / GPLv2 | verify | printing. |
-| Qt PDF | qtpdf? not in Cellar | commercial / extension | — | Tier 2; extension module. Verify. |
-| Qt MQTT | not installed | **GPLv3** | — | Excluded from open-source build unless commercial. |
-| Qt OPC UA | not installed | **GPLv3** | — | Excluded from open-source build unless commercial. |
+| Module              | macOS installed      | Open-source license (per Qt 6.11 docs) | QNX build support   | Notes                                                                                      |
+| ------------------- | -------------------- | -------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------ |
+| Qt Quick 3D         | qtquick3d            | **GPLv3**                              | —                   | Large; excluded from open-source build unless commercial.                                  |
+| Qt Graphs           | qtgraphs             | **GPLv3**                              | —                   | Excluded from open-source build unless commercial.                                         |
+| Qt Lottie Animation | qtlottie             | **GPLv3**                              | —                   | Excluded from open-source build unless commercial.                                         |
+| Qt Quick Timeline   | qtquicktimeline      | **GPLv3**                              | —                   | Excluded from open-source build unless commercial.                                         |
+| Qt Quick 3D Physics | qtquick3dphysics     | **GPLv3**                              | —                   | Excluded from open-source build unless commercial.                                         |
+| Qt Canvas Painter   | not installed (TP)   | **GPLv3**                              | —                   | Technology Preview; not for stable public API.                                             |
+| Qt Qml Compiler     | not installed        | **GPLv3**                              | —                   | Open-source Qt qmllint/qml compiler tooling; runtime AOT compiler is a commercial feature. |
+| Qt HTTP Server      | qthttpserver         | **GPLv3**                              | —                   | Excluded from open-source build unless commercial.                                         |
+| Qt Remote Objects   | qtremoteobjects      | LGPLv3 / GPLv2                         | verify              | cross-process proxy.                                                                       |
+| Qt SerialBus        | qtserialbus          | LGPLv3 / GPLv2                         | verify              | CAN/Modbus.                                                                                |
+| Qt Serial Port      | qtserialport         | LGPLv3 / GPLv2                         | verify              | serial.                                                                                    |
+| Qt Positioning      | qtpositioning        | LGPLv3 / GPLv2                         | verify              | GPS/location.                                                                              |
+| Qt Sensors          | qtsensors            | LGPLv3 / GPLv2                         | **no QNX per docs** | Tier 3 per Prompt 04; do not use.                                                          |
+| Qt TextToSpeech     | qtspeech             | LGPLv3 / GPLv2                         | verify              | needs QNX backend.                                                                         |
+| Qt WebSockets       | qtwebsockets         | LGPLv3 / GPLv2                         | verify              | real-time bus.                                                                             |
+| Qt Print Support    | in qtbase            | LGPLv3 / GPLv2                         | verify              | printing.                                                                                  |
+| Qt PDF              | qtpdf? not in Cellar | commercial / extension                 | —                   | Tier 2; extension module. Verify.                                                          |
+| Qt MQTT             | not installed        | **GPLv3**                              | —                   | Excluded from open-source build unless commercial.                                         |
+| Qt OPC UA           | not installed        | **GPLv3**                              | —                   | Excluded from open-source build unless commercial.                                         |
 
 ### Tier 3 — excluded
 
-| Module | Reason |
-| ------ | ------ |
-| Qt Quick Layouts | Yoga is the layout authority; anchors/Qt layouts conflict. |
-| Qt Widgets / Quick Widgets / UI Tools | C++ widget stack; not used. |
-| Active Qt | Windows-only. |
-| Qt Wayland Compositor | not QNX. |
-| Qt Sensors | Qt docs list Android/iOS/Windows only; use §5 QNX paths instead. |
-| Qt WebView | QNX has no native webview to delegate. |
-| Qt WebEngine | Chromium; cross-build for QNX aarch64 out of scope; `react-native-webview` is a documented gap. |
-| Qt 3D / Qt Charts / Qt Data Visualization | deprecated upstream. |
+| Module                                    | Reason                                                                                          |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Qt Quick Layouts                          | Yoga is the layout authority; anchors/Qt layouts conflict.                                      |
+| Qt Widgets / Quick Widgets / UI Tools     | C++ widget stack; not used.                                                                     |
+| Active Qt                                 | Windows-only.                                                                                   |
+| Qt Wayland Compositor                     | not QNX.                                                                                        |
+| Qt Sensors                                | Qt docs list Android/iOS/Windows only; use §5 QNX paths instead.                                |
+| Qt WebView                                | QNX has no native webview to delegate.                                                          |
+| Qt WebEngine                              | Chromium; cross-build for QNX aarch64 out of scope; `react-native-webview` is a documented gap. |
+| Qt 3D / Qt Charts / Qt Data Visualization | deprecated upstream.                                                                            |
 
 ## Related files
 

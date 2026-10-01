@@ -186,11 +186,7 @@ async function main() {
     ['@expo/metro', expoMetro],
     ['@expo/metro-config', expoMetroConfig],
   ]) {
-    assertEqual(
-      majorVersion(manifest.version),
-      EXPECTED_EXPO_SDK_MAJOR,
-      `${label} SDK major`
-    );
+    assertEqual(majorVersion(manifest.version), EXPECTED_EXPO_SDK_MAJOR, `${label} SDK major`);
     console.log(`RESOLVED: ${label}@${manifest.version}`);
   }
 
@@ -310,16 +306,8 @@ async function main() {
     'src/requireNativeModule.ts',
     'export function requireNativeModule'
   );
-  await assertSourceContract(
-    expoMetroConfigRoot,
-    'build/ExpoMetroConfig.js',
-    'platforms:'
-  );
-  await assertSourceContract(
-    expoMetroConfigRoot,
-    'build/ExpoMetroConfig.js',
-    "'macos'"
-  );
+  await assertSourceContract(expoMetroConfigRoot, 'build/ExpoMetroConfig.js', 'platforms:');
+  await assertSourceContract(expoMetroConfigRoot, 'build/ExpoMetroConfig.js', "'macos'");
   await assertSourceContract(xcodeRoot, 'lib/pbxProject.js', 'uuid.v4()');
 
   console.log('validate:dependencies passed.');

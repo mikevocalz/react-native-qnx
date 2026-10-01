@@ -394,13 +394,11 @@ function ImageLoadingApp() {
     source: { uri: primary },
     loadingIndicatorSource: { uri: loading },
     onLoad: (event) => {
-      globalThis.__imageLoadingPrimaryLoad =
-        (globalThis.__imageLoadingPrimaryLoad ?? 0) + 1;
+      globalThis.__imageLoadingPrimaryLoad = (globalThis.__imageLoadingPrimaryLoad ?? 0) + 1;
       globalThis.__imageLoadingPrimaryUri = event.nativeEvent.source.uri;
     },
     onError: () => {
-      globalThis.__imageLoadingError =
-        (globalThis.__imageLoadingError ?? 0) + 1;
+      globalThis.__imageLoadingError = (globalThis.__imageLoadingError ?? 0) + 1;
     },
   });
 }
