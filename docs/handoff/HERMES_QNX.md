@@ -3,7 +3,7 @@
 > **SDK 58 migration note (2026-10-01):** The experiments below were performed
 > against React Native 0.86.2 / Hermes `250829098.0.16`. The active repository
 > line is now Expo SDK 58 / React Native 0.88.0-rc.3, whose installed Hermes
-> compiler/source identity is `260318099.0.4`. Therefore
+> compiler package is `260318099.0.4`, while the bundled Hermes source tag is `hermes-v260318099.0.2`. Therefore
 > `patches/hermes-qnx-250829.patch`, the `third-party/hermes-250829098`
 > paths, and the recorded x86_64 runtime behavior are **historical evidence**.
 > They must not be applied to the new Hermes source without a clean rebase,
