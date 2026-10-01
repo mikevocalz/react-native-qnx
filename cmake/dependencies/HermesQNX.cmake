@@ -1,11 +1,5 @@
-# Hermes for QNX, built out-of-tree and imported as a prebuilt library.
-#
-# This module creates an `rnqnx_hermes` INTERFACE target that mirrors the host
-# `rnqnx_hermes` from `Hermes.cmake`, but links the cross-compiled QNX artifacts
-# instead of building from source. The headers are the Hermes public/API headers
-# from the source tree; the JSI headers come from React Native's vendored copy
-# (the same ones the host build uses) because that is the layout the probes and
-# renderer include with `<jsi/jsi.h>`.
+# Import an out-of-tree QNX build of the exact Hermes source selected by the
+# current React Native package.
 
 include_guard(GLOBAL)
 
@@ -13,23 +7,46 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "QNX")
   message(FATAL_ERROR "HermesQNX.cmake is only for QNX cross-builds")
 endif()
 
-set(RNQNX_HERMES_QNX_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build/hermes-qnx-x86_64"
-  CACHE PATH "Directory containing the QNX cross-built Hermes artifacts")
+set(RNQNX_HERMES_QNX_TAG "hermes-v260318099.0.2"
+  CACHE STRING "Hermes source tag audited for QNX")
+set(RNQNX_HERMES_QNX_SOURCE_DIR
+  "${CMAKE_CURRENT_SOURCE_DIR}/third-party/hermes-260318099.0.2"
+  CACHE PATH "Patched Hermes source tree for QNX")
+set(RNQNX_HERMES_QNX_DIR
+  "${CMAKE_CURRENT_SOURCE_DIR}/build/hermes-qnx-${QNX_TARGET_ARCH}"
+  CACHE PATH "QNX Hermes build tree")
 
+if(NOT IS_DIRECTORY "${RNQNX_HERMES_QNX_SOURCE_DIR}")
+  message(FATAL_ERROR
+    "QNX Hermes source tree not found: ${RNQNX_HERMES_QNX_SOURCE_DIR}\n"
+    "Run scripts/prepare-hermes-qnx.sh first.")
+endif()
 if(NOT IS_DIRECTORY "${RNQNX_HERMES_QNX_DIR}")
   message(FATAL_ERROR
     "QNX Hermes build tree not found: ${RNQNX_HERMES_QNX_DIR}\n"
-    "Build it first (see docs/handoff/HERMES_QNX.md).")
+    "Run scripts/configure-hermes-qnx.sh ${QNX_TARGET_ARCH} first.")
 endif()
 
-set(_hermes_include "${CMAKE_CURRENT_SOURCE_DIR}/third-party/hermes-250829098/API")
-set(_hermes_public_include "${CMAKE_CURRENT_SOURCE_DIR}/third-party/hermes-250829098/public")
-set(_jsi_include "${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi")
+set(_rnqnx_hermes_tag_file "${RNQNX_HERMES_QNX_SOURCE_DIR}/.rnqnx-source-tag")
+if(NOT EXISTS "${_rnqnx_hermes_tag_file}")
+  message(FATAL_ERROR
+    "Prepared Hermes source is missing ${_rnqnx_hermes_tag_file}")
+endif()
+file(READ "${_rnqnx_hermes_tag_file}" _rnqnx_hermes_source_tag)
+string(STRIP "${_rnqnx_hermes_source_tag}" _rnqnx_hermes_source_tag)
+if(NOT _rnqnx_hermes_source_tag STREQUAL RNQNX_HERMES_QNX_TAG)
+  message(FATAL_ERROR
+    "Prepared Hermes source is ${_rnqnx_hermes_source_tag}, expected "
+    "${RNQNX_HERMES_QNX_TAG}.")
+endif()
 
+set(_hermes_include "${RNQNX_HERMES_QNX_SOURCE_DIR}/API")
+set(_hermes_public_include "${RNQNX_HERMES_QNX_SOURCE_DIR}/public")
+set(_jsi_include "${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi")
 set(_hermes_so "${RNQNX_HERMES_QNX_DIR}/lib/libhermesvmlean.so")
 set(_jsi_a "${RNQNX_HERMES_QNX_DIR}/jsi/libjsi.a")
 
-foreach(_f IN ITEMS ${_hermes_so} ${_jsi_a})
+foreach(_f IN ITEMS "${_hermes_so}" "${_jsi_a}")
   if(NOT EXISTS "${_f}")
     message(FATAL_ERROR "Missing QNX Hermes artifact: ${_f}")
   endif()
