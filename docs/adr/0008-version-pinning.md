@@ -58,7 +58,8 @@ The regenerated lockfile currently resolves:
 - `expo-modules-core` 58.0.9
 - `@expo/metro` 58.0.0-rc.0
 - `@expo/metro-config` 58.0.6
-- Hermes compiler/source identity `260318099.0.4`
+- `hermes-compiler` 260318099.0.4
+- bundled Hermes source tag `hermes-v260318099.0.2`
 
 Security overrides remain scoped to their consumer and require a source
 call-site check. The current `xcode>uuid` override resolves uuid 11.1.1; the
@@ -68,8 +69,8 @@ validator confirms that installed `xcode/lib/pbxProject.js` still calls
 React Native's installed `sdks/.hermesv1version` is the source of truth for
 the bundled Hermes identity. The previous QNX Hermes work was performed against
 the RN 0.86 Hermes line `250829098.0.16`. Its patch is historical evidence
-only until rebased and revalidated against the SDK-58/RN-0.88 Hermes line
-`260318099.0.4`.
+only until rebased and revalidated against the SDK-58/RN-0.88 Hermes source line
+`260318099.0.2` (with `hermes-compiler` 260318099.0.4).
 
 Yoga is recorded only as the source snapshot bundled with the selected React
 Native package. The project does not invent a standalone Yoga version.
