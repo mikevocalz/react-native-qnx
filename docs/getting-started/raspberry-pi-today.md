@@ -7,10 +7,10 @@ running QNX Screen.
 
 Use the current QNX Everywhere Quick Start Target Image (QSTI):
 
-| Board | QNX Software Center package | QSTI version | Build |
-| --- | --- | --- | --- |
-| Raspberry Pi 4 | com.qnx.qnx800.quickstart.rpi4 | 0.5.0.00050T202609021847L | 50 |
-| Raspberry Pi 5 | com.qnx.qnx800.quickstart.rpi5 | 0.5.0.00050T202609021847L | 50 |
+| Board          | QNX Software Center package    | QSTI version              | Build |
+| -------------- | ------------------------------ | ------------------------- | ----- |
+| Raspberry Pi 4 | com.qnx.qnx800.quickstart.rpi4 | 0.5.0.00050T202609021847L | 50    |
+| Raspberry Pi 5 | com.qnx.qnx800.quickstart.rpi5 | 0.5.0.00050T202609021847L | 50    |
 
 That QSTI line supports QNX SDP 8.0.5. QNX recommends an 8 GB or larger Pi 4 or
 Pi 5 for the current image.
