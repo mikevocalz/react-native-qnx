@@ -28,7 +28,6 @@
 The dated sections below are historical evidence from the pre-SDK58 line unless
 they explicitly say otherwise.
 
-
 ## QNX cross-compile matrix on Windows host — 2026-08-16
 
 - QNX SDP 8.0.2 is installed at `C:\Users\Owner\qnx800`; `qcc -V`/`q++ -V` confirm

@@ -33,10 +33,7 @@
   "targetBaseline": {
     "qnxSdp": "8.0.5",
     "qsti": "0.5.0 build 50",
-    "boards": [
-      "Raspberry Pi 4",
-      "Raspberry Pi 5"
-    ],
+    "boards": ["Raspberry Pi 4", "Raspberry Pi 5"],
     "defaultTarget": "qnxuser@qnxpi.local"
   },
   "validationHosts": {
@@ -97,11 +94,7 @@
     "SDK58-SECURITY-HARDENING",
     "PI-QSTI-INSTALL-LANE"
   ],
-  "activeTasks": [
-    "QNX-RN-008",
-    "SDK58-QNX-REVALIDATION",
-    "HERMES-QNX-REBASE"
-  ],
+  "activeTasks": ["QNX-RN-008", "SDK58-QNX-REVALIDATION", "HERMES-QNX-REBASE"],
   "blockedTasks": [],
   "nextRecommendedTask": "On a licensed QNX SDP 8.0.5 host, run pnpm pi:preflight and pnpm pi:install against QSTI 0.5.0 build 50 on a Pi 4/5; then rebase the Hermes QNX work onto hermes-v260318099.0.2.",
   "updatedAt": "2026-10-01T17:03:06Z"
