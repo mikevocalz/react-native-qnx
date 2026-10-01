@@ -1,0 +1,37 @@
+name: Format state docs
+# Temporary branch-only formatter; removed after it writes the two state files.
+
+on:
+  push:
+    branches:
+      - docs/current-state-sdk58
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: docs/current-state-sdk58
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Format state files
+        run: pnpm exec prettier --write .project-state.json docs/handoff/TEST_STATUS.md
+      - name: Commit formatting
+        run: |
+          if git diff --quiet -- .project-state.json docs/handoff/TEST_STATUS.md; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .project-state.json docs/handoff/TEST_STATUS.md
+          git commit -m "chore(format): normalize current state handoff"
+          git push origin HEAD:docs/current-state-sdk58
