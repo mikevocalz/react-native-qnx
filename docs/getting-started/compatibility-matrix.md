@@ -42,7 +42,8 @@ The SDK-58 lockfile regenerated from npm resolves:
 | `expo-modules-core` | 58.0.9 | Expo native module core; source contracts are audited, QNX implementation is separate |
 | `@expo/metro` | 58.0.0-rc.0 | Expo Metro fork used by SDK 58 |
 | `@expo/metro-config` | 58.0.6 | Expo Metro defaults used for source-contract comparison |
-| Hermes compiler | 260318099.0.4 | React Native 0.88 bundled Hermes source identity |
+| Hermes compiler | 260318099.0.4 | React Native 0.88 compiler package |
+| Hermes source tag | `hermes-v260318099.0.2` | Source snapshot recorded by React Native |
 | `xcode > uuid` | 11.1.1 | Scoped override; validator checks `uuid.v4()` compatibility |
 
 ## Platform and toolchain
@@ -67,13 +68,13 @@ The SDK-58 lockfile regenerated from npm resolves:
 | React Native | Pin | 0.88.0-rc.3 | Out-of-tree QNX platform supplies the missing platform integration |
 | React | Pin | 19.3.0 | Matches Expo 58 |
 | Yoga | Bundled | RN 0.88 source snapshot | No standalone Yoga version is inferred |
-| Hermes | Bundled | `hermes-v260318099.0.4` | Source identity only; QNX port must be rebased and retested |
+| Hermes | Bundled | `hermes-v260318099.0.2` | Source identity only; QNX port must be rebased and retested |
 | Fabric scheduler | Bundled | RN 0.88 source snapshot | Source symbols are checked by validator |
 | Fabric mounting | Bundled | RN 0.88 source snapshot | Source symbols are checked by validator |
 
 The existing `patches/hermes-qnx-250829.patch` belongs to the prior
 RN-0.86/Hermes-250829 source line. It is not valid SDK-58 evidence until rebased
-against `260318099.0.4`.
+against `260318099.0.2`.
 
 ## Expo, Metro, and TypeScript
 
