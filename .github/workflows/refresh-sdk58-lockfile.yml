@@ -57,5 +57,26 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Check peer dependencies
+        run: pnpm peers check
+
+      - name: Bundle playground for QNX
+        run: |
+          cd apps/rn-playground
+          ../../node_modules/.bin/metro build index.js --platform qnx --dev false --out /tmp/rnqnx-playground.bundle.js
+          test -s /tmp/rnqnx-playground.bundle.js
+
       - name: JavaScript tests
         run: pnpm test:js
+
+      - name: Validate architecture and codegen state
+        run: |
+          pnpm build:packages
+          pnpm validate:architecture
+          pnpm codegen:check
+
+      - name: C++ host smoke tests
+        run: pnpm test:cpp:host
+
+      - name: Security audit
+        run: pnpm audit:dependencies
