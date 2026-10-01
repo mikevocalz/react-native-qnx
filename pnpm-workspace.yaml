@@ -4,3 +4,7 @@ packages:
 
 overrides:
   'xcode>uuid': 11.1.1
+  '@expo/plist>@xmldom/xmldom': 0.8.15
+  'plist>@xmldom/xmldom': 0.9.12
+  '@expo/xcpretty>js-yaml': 4.3.2
+  'minimatch>brace-expansion': 5.0.12

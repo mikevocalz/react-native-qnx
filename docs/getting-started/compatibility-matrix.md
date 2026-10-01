@@ -136,9 +136,20 @@ Quick stack on the target.
 
 ## Security audit
 
-Do not carry forward the August 2026 dependency-audit result as if it applied to
-this graph. Run `pnpm audit:dependencies` against the SDK-58 lockfile and
-record any current findings in `docs/handoff/BLOCKERS.md`.
+The first SDK-58 audit on 2026-10-01 exposed 23 advisory instances, all
+collapsing to three transitive packages. Patched releases exist, so the
+workspace scopes explicit overrides instead of accepting the vulnerable graph:
+
+| Dependency path                | Vulnerable lock | Patched pin |
+| ------------------------------ | --------------: | ----------: |
+| `@expo/plist > @xmldom/xmldom` |          0.8.14 |      0.8.15 |
+| `plist > @xmldom/xmldom`       |          0.9.11 |      0.9.12 |
+| `@expo/xcpretty > js-yaml`     |           4.3.1 |       4.3.2 |
+| `minimatch > brace-expansion`  |           5.0.9 |      5.0.12 |
+
+These are checked by `scripts/validate-dependencies.mjs`; the audit must still
+run in CI so a new advisory or upstream graph change cannot silently bypass the
+pins. The existing `xcode > uuid` 11.1.1 override remains source-checked too.
 
 ## Updating this matrix
 

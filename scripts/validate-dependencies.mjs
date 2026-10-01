@@ -181,6 +181,22 @@ async function main() {
   const expoMetro = await readJson(expoRequire.resolve('@expo/metro/package.json'));
   const expoMetroConfig = await readJson(expoRequire.resolve('@expo/metro-config/package.json'));
 
+  const expoPlistManifestPath = expoRequire.resolve('@expo/plist/package.json');
+  const expoPlistRequire = createRequire(expoPlistManifestPath);
+  const expoPlistXmldom = await readJson(expoPlistRequire.resolve('@xmldom/xmldom/package.json'));
+
+  const expoXcprettyManifestPath = expoRequire.resolve('@expo/xcpretty/package.json');
+  const expoXcprettyRequire = createRequire(expoXcprettyManifestPath);
+  const expoXcprettyJsYaml = await readJson(expoXcprettyRequire.resolve('js-yaml/package.json'));
+
+  const expoFingerprintManifestPath = expoRequire.resolve('@expo/fingerprint/package.json');
+  const expoFingerprintRequire = createRequire(expoFingerprintManifestPath);
+  const minimatchManifestPath = expoFingerprintRequire.resolve('minimatch/package.json');
+  const minimatchRequire = createRequire(minimatchManifestPath);
+  const minimatchBraceExpansion = await readJson(
+    minimatchRequire.resolve('brace-expansion/package.json')
+  );
+
   for (const [label, manifest] of [
     ['expo-modules-core', expoModules],
     ['@expo/metro', expoMetro],
@@ -212,9 +228,22 @@ async function main() {
   const xcodeRoot = path.dirname(xcodeManifestPath);
   const xcodeRequire = createRequire(xcodeManifestPath);
   const xcodeUuid = await readJson(xcodeRequire.resolve('uuid/package.json'));
+  const simplePlistManifestPath = xcodeRequire.resolve('simple-plist/package.json');
+  const simplePlistRequire = createRequire(simplePlistManifestPath);
+  const plistManifestPath = simplePlistRequire.resolve('plist/package.json');
+  const plistRequire = createRequire(plistManifestPath);
+  const plistXmldom = await readJson(plistRequire.resolve('@xmldom/xmldom/package.json'));
   const nitrogenRoot = path.dirname(manifests.get('nitrogen').manifestPath);
 
   assertEqual(xcodeUuid.version, '11.1.1', 'xcode uuid security override');
+  assertEqual(expoPlistXmldom.version, '0.8.15', '@expo/plist xmldom security override');
+  assertEqual(plistXmldom.version, '0.9.12', 'plist xmldom security override');
+  assertEqual(expoXcprettyJsYaml.version, '4.3.2', '@expo/xcpretty js-yaml security override');
+  assertEqual(
+    minimatchBraceExpansion.version,
+    '5.0.12',
+    'minimatch brace-expansion security override'
+  );
   assertEqual(typeof xcodeRequire('uuid').v4, 'function', 'xcode uuid.v4 CommonJS contract');
 
   const hermesCompiler = reactNative.dependencies?.['hermes-compiler'];
