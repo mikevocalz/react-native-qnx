@@ -7,7 +7,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-REQUIRED_PNPM_VERSION="11.21.0"
+REQUIRED_PNPM_VERSION="12.8.1"
 MINIMUM_NODE_VERSION="24.3.0"
 MINIMUM_CMAKE_VERSION="3.31.9"
 
@@ -34,7 +34,7 @@ version_at_least() {
 
 echo "Bootstrapping react-native-qnx build host..."
 echo "Note: This script only installs freely redistributable tools."
-echo "      Install QNX SDP 8.0 and QNX Software Center separately."
+echo "      Install QNX SDP 8.0.5 for the current Pi QSTI lane and QNX Software Center separately."
 
 if [[ "$(id -u)" -eq 0 ]]; then
   APT="apt-get"
@@ -100,6 +100,6 @@ pnpm install --frozen-lockfile
 echo ""
 echo "Host bootstrap complete."
 echo "Next steps:"
-echo "  1. Install QNX SDP 8.0 through QNX Software Center and record its exact update/build."
+echo "  1. Install QNX SDP 8.0.5 through QNX Software Center for the current Pi QSTI and record its exact update/build."
 echo "  2. Source the SDP environment script."
 echo "  3. Run ./scripts/doctor.sh"
