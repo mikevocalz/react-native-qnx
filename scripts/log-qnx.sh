@@ -2,19 +2,12 @@
 set -euo pipefail
 
 # scripts/log-qnx.sh
-# Streams logs from the target QNX device.
+# Streams slog2 output from the configured QNX target.
 
-if [[ -z "${QNX_TARGET_IP:-}" ]]; then
-  echo "ERROR: QNX_TARGET_IP is not set."
-  exit 1
-fi
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/lib/qnx-target.sh
+source "${SCRIPT_DIR}/lib/qnx-target.sh"
 
-if [[ -z "${QNX_TARGET_USER:-}" ]]; then
-  echo "ERROR: QNX_TARGET_USER is not set. Use the verified account for this QSTI image."
-  exit 1
-fi
-
-TARGET_USER="${QNX_TARGET_USER}"
-
-echo "Streaming slog2info from ${TARGET_USER}@${QNX_TARGET_IP}..."
-ssh "${TARGET_USER}@${QNX_TARGET_IP}" "slog2info -w" || true
+rnqnx_target_init
+echo "Streaming slog2info from $(rnqnx_target_address)..."
+rnqnx_ssh "slog2info -w" || true

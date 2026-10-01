@@ -28,7 +28,9 @@
     "audit:dependencies": "pnpm audit --audit-level moderate",
     "validate:dependencies": "node scripts/validate-dependencies.mjs",
     "validate:manifests": "node scripts/validate-manifests.mjs",
-    "validate:architecture": "node scripts/validate-architecture.mjs"
+    "validate:architecture": "node scripts/validate-architecture.mjs",
+    "pi:preflight": "bash scripts/pi-preflight.sh",
+    "pi:install": "bash scripts/install-pi.sh"
   },
   "devDependencies": {
     "@react-native/babel-preset": "0.86.2",
