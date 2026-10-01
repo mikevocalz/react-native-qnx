@@ -1,0 +1,39 @@
+name: Expo QNX autolinking
+
+on:
+  pull_request:
+    paths:
+      - 'packages/expo-qnx-autolinking/**'
+      - 'packages/expo-qnx-config-plugins/**'
+      - 'scripts/validate-qnx-expo-autolinking.mjs'
+      - 'tests/js/expo-qnx-autolinking.test.mjs'
+      - '.github/workflows/expo-qnx-autolinking.yml'
+      - 'package.json'
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/expo-qnx-autolinking/**'
+      - 'packages/expo-qnx-config-plugins/**'
+      - 'scripts/validate-qnx-expo-autolinking.mjs'
+      - 'tests/js/expo-qnx-autolinking.test.mjs'
+      - '.github/workflows/expo-qnx-autolinking.yml'
+      - 'package.json'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm validate:qnx-expo-autolinking
+      - run: pnpm test:js
+      - run: pnpm format:check

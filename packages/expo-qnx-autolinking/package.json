@@ -1,0 +1,18 @@
+{
+  "name": "@rn-qnx/expo-qnx-autolinking",
+  "version": "0.1.0",
+  "description": "QNX resolver layered on Expo Modules Autolinking",
+  "license": "MIT",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "bin": {
+    "expo-qnx-autolinking": "bin/expo-qnx-autolinking.js"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "peerDependencies": {
+    "expo": "58.0.0"
+  }
+}
