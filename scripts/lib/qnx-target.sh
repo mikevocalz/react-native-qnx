@@ -99,6 +99,9 @@ rnqnx_target_address() {
 }
 
 rnqnx_ssh() {
+  # Arguments are intentionally assembled on the client and forwarded as the
+  # remote command. Callers quote remote values before passing them here.
+  # shellcheck disable=SC2029
   ssh "${RNQNX_SSH_ARGS[@]}" "$(rnqnx_target_address)" "$@"
 }
 
