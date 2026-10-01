@@ -1,4 +1,4 @@
-# ADR-0008: Compatible-current version pinning and source contracts
+# ADR-0008: Current-compatible version pinning and source contracts
 
 ## Status
 
@@ -6,81 +6,127 @@ Accepted
 
 ## Context
 
-React Native, React, Expo, Metro, Hermes, Nitro Modules, Nitrogen, and TypeScript move on independent release cadences. Selecting the absolute newest release of each package can produce a graph that the package maintainers do not declare or test together. Floating ranges also make source-level native seams drift between installs.
+React Native, React, Expo, Metro, Hermes, Nitro Modules, Nitrogen, TypeScript,
+Node, and pnpm move on independent release cadences. An out-of-tree platform
+cannot safely mix arbitrary "latest" packages when Expo or React Native declares
+a specific compatibility line, but it also should not stay frozen on an old
+ecosystem after that line moves.
 
-An out-of-tree QNX platform must distinguish three kinds of identity:
+The project therefore distinguishes:
 
-1. exact direct workspace dependencies;
-2. exact transitive versions resolved by the lockfile; and
-3. source snapshots bundled inside React Native.
+1. exact direct workspace pins;
+2. exact transitive versions resolved by the lockfile;
+3. source snapshots bundled inside React Native; and
+4. QNX-specific patches whose applicability must be re-proven after upstream
+   source changes.
 
-None of those identities alone demonstrates QNX support. Native seams must be tied to an installed source file and symbol, then separately compiled and exercised with the licensed QNX SDK/target.
+None of those identities alone demonstrates QNX support. Native seams must be
+tied to installed source and then separately compiled and exercised with the
+licensed QNX SDK/target.
 
 ## Decision
 
-Use the newest audited **mutually compatible release line**, then pin every direct dependency exactly. Do not advance React Native, React, Expo, or Metro independently when their installed manifests identify a different tested/peer baseline.
+Track the newest requested Expo SDK line, use the React/React Native versions
+that Expo itself tests for that SDK, and keep the remaining direct npm tooling
+on current published versions when they install coherently. Pin every direct
+dependency exactly.
 
-The current direct line is:
+As of 2026-10-01 the direct development line is:
 
-- React Native 0.86.2
-- React 19.2.3
-- Expo 57.0.12
-- Metro 0.84.4
-- React Native Nitro Modules 0.36.5
-- Nitrogen 0.36.5
-- TypeScript 6.0.3
-- pnpm 11.21.0
+- Expo 58.0.0 / SDK 58
+- React Native 0.88.0-rc.3
+- React 19.3.0
+- Metro 0.87.1
+- `@react-native/metro-config` 0.88.0-rc.1
+- `babel-preset-expo` 58.0.4
+- React Native Nitro Modules 0.37.1
+- Nitrogen 0.37.1
+- TypeScript 7.0.2
+- `@types/react` 19.3.0
+- `@types/node` 26.6.3
+- Prettier 3.9.9
+- Node.js 26+
+- pnpm 12.8.1
 
-The current locked Expo graph is recorded separately:
+Expo 58.0.0 is intentionally selected even though npm still labels SDK 57 as
+`latest` and SDK 58 as `next` on 2026-10-01. SDK 58 is the product target,
+and its published Expo manifest tests React 19.3.0 with React Native
+0.88.0-rc.3.
 
-- `expo-modules-core` 57.0.10
-- `@expo/metro` 56.0.0, resolving upstream Metro 0.84.4
-- `@expo/metro-config` 57.0.8
+The regenerated lockfile currently resolves:
 
-Security overrides are scoped to the installed consumer and require a source
+- `expo-modules-core` 58.0.9
+- `@expo/metro` 58.0.0-rc.0
+- `@expo/metro-config` 58.0.6
+- Hermes compiler/source identity `260318099.0.4`
+
+Security overrides remain scoped to their consumer and require a source
 call-site check. The current `xcode>uuid` override resolves uuid 11.1.1; the
-validator confirms installed `xcode/lib/pbxProject.js` calls `uuid.v4()` and that
-the overridden CommonJS package still exports that function. Audit findings with
-no published compatible fix are recorded as blockers and are not silently
-ignored.
+validator confirms that installed `xcode/lib/pbxProject.js` still calls
+`uuid.v4()` and that the overridden CommonJS package exports that function.
 
-React Native's installed `sdks/.hermesv1version` records `hermes-v250829098.0.16` (version component `v250829098.0.16`). Yoga is recorded only as the source snapshot bundled with React Native 0.86.2; the project must not invent a standalone Yoga version.
+React Native's installed `sdks/.hermesv1version` is the source of truth for
+the bundled Hermes identity. The previous QNX Hermes work was performed against
+the RN 0.86 Hermes line `250829098.0.16`. Its patch is historical evidence
+only until rebased and revalidated against the SDK-58/RN-0.88 Hermes line
+`260318099.0.4`.
 
-`scripts/validate-dependencies.mjs` is the executable version/source contract. In addition to versions and compatibility declarations, it checks these installed native source seams:
+Yoga is recorded only as the source snapshot bundled with the selected React
+Native package. The project does not invent a standalone Yoga version.
 
-- React Native `ReactCommon/react/renderer/scheduler/Scheduler.h` → `class Scheduler final`
-- React Native `ReactCommon/react/renderer/mounting/MountingCoordinator.h` → `class MountingCoordinator final`
-- React Native `ReactCommon/yoga/yoga/YGNode.h` → `YGNodeCalculateLayout`
-- Nitro Modules `cpp/registry/HybridObjectRegistry.hpp` → `registerHybridObjectConstructor`
-- Nitro Modules `cpp/entrypoint/InstallNitro.hpp` → `void install(`
-- Expo Modules Core `android/src/main/cpp/ExpoModulesHostObject.h` → `class ExpoModulesHostObject`
+## Executable source contract
 
-These checks prove that the audited source contracts are present in the installed packages. They make no claim that Hermes, Nitro Modules, Expo Modules Core, Metro, or Fabric already supports QNX. Every future QNX adapter must be validated independently and tracked in `docs/handoff/QNX_VALIDATION_QUEUE.md`.
+`scripts/validate-dependencies.mjs` validates:
+
+- every direct workspace dependency is an exact installed pin;
+- Expo is SDK 58 and its tested React/React Native versions match the workspace;
+- the selected React Native peer range accepts React 19.3.0;
+- Nitro Modules and Nitrogen remain on one compatible release line;
+- Expo's resolved core/Metro packages remain on SDK 58;
+- the RN Metro config resolves the selected Metro 0.87.x line;
+- React Native's Hermes source tag matches its installed compiler identity;
+- selected Fabric, Yoga, Expo Modules, Nitro, and Metro source symbols still
+  exist.
+
+Those checks detect upstream source-shape drift. They do not claim that Hermes,
+Nitro Modules, Expo Modules Core, Metro, or Fabric supports QNX without the
+separate QNX build/runtime gates.
 
 ## Update procedure
 
-1. Query current releases for all coupled packages.
-2. Choose the newest graph whose installed peer/development/dependency declarations agree.
-3. Install with the candidate exact direct pins and regenerate `pnpm-lock.yaml`.
-4. Inspect installed native source and update every file/symbol contract that changed.
-5. Update the compatibility matrix and this ADR.
-6. Run `pnpm validate:macos` or the equivalent Linux host validation.
-7. Perform the queued compile/runtime checks on the licensed Ubuntu/QNX host and target before declaring QNX compatibility.
+1. Check the requested Expo SDK and its published React/React Native baseline.
+2. Query current registry releases for the remaining direct packages.
+3. Select exact pins and regenerate `pnpm-lock.yaml` from the npm registry.
+4. Run `pnpm validate:dependencies` and repair source contracts based on the
+   actually installed packages.
+5. Run TypeScript, JavaScript, package, and host-native validation.
+6. Update this ADR and the compatibility matrix with the exact resolved graph.
+7. Rebase any QNX-specific upstream patches when their source identity changes.
+8. Run QNX cross-compilation and physical-target validation before declaring
+   the new line QNX-compatible.
 
 ## Consequences
 
-- Installs are reproducible at the direct and lockfile levels.
-- The compatibility line can lag an independently published latest package when the newest releases are not mutually compatible.
-- Bundled source identities are explicit without assigning unsupported semantic versions.
-- Upstream source-shape drift fails validation before a native adapter silently compiles against the wrong contract.
-- Host source-contract checks and QNX compatibility claims remain deliberately separate.
+- Direct installs are deterministic.
+- Expo's SDK contract wins over blindly following an incompatible npm dist-tag.
+- Standalone developer tooling can remain current without pretending all
+  package families have the same release cadence.
+- A React Native/Hermes upgrade invalidates unproven source patches until they
+  are rebased and retested.
+- Host evidence and QNX hardware evidence remain separate.
 
 ## Alternatives considered
 
-- **Semver ranges:** rejected because installs can drift without review and break native source contracts.
-- **Absolute latest of every package:** rejected because individually current releases are not necessarily a declared/tested combination.
-- **Version pins without source-symbol checks:** rejected because a package version alone is insufficient evidence for a native seam.
-- **Treating bundled Yoga or Hermes as an inferred standalone release:** rejected because that would fabricate provenance not established by installed React Native source.
+- **Floating semver ranges:** rejected because native seams can drift between
+  installs.
+- **npm `latest` for every package without compatibility checks:** rejected
+  because Expo SDK 58 currently requires a React Native 0.88 release-candidate
+  line while some React Native support packages still expose 0.87.x as their
+  stable dist-tag.
+- **Keep SDK 57 because it is still npm `latest`:** rejected because SDK 58 is
+  the selected product baseline.
+- **Reuse the RN 0.86 Hermes QNX patch unchanged:** rejected because the bundled
+  Hermes source identity changed.
 
 ## Related files
 
@@ -89,4 +135,5 @@ These checks prove that the audited source contracts are present in the installe
 - `pnpm-lock.yaml`
 - `scripts/validate-dependencies.mjs`
 - `docs/getting-started/compatibility-matrix.md`
+- `docs/handoff/HERMES_QNX.md`
 - `docs/handoff/QNX_VALIDATION_QUEUE.md`
