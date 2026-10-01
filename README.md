@@ -109,6 +109,24 @@ This runs on the development host, not on QNX. See
 `docs/adr/0010-macos-qt-development-host.md` for what that does and does not
 prove, and `docs/component-support.md` for what actually works.
 
+## Raspberry Pi 4/5 quick install
+
+For a physical Pi running the current QNX Everywhere QSTI, the repository now has a dedicated same-day lane. It defaults to `qnxuser@qnxpi.local`, validates the AArch64/QNX Screen target, builds a Release binary, deploys it atomically, runs it, and captures stdout, a Screen screenshot when available, and recent slog2 output:
+
+```bash
+# Source your licensed QNX SDP environment first, or point at it:
+export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
+
+./scripts/install-pi.sh
+# or: pnpm pi:install
+```
+
+As of October 1, 2026, QNX's current Raspberry Pi 4/5 QSTI is the 0.5.0 build-50 line for QNX SDP 8.0.5. The repository's prior cross-compile evidence was captured on SDP 8.0.2, so the new preflight records the actual compiler and target identity instead of silently treating those versions as interchangeable.
+
+This lane proves the native QNX Screen/device path. The complete React Native + Hermes + Qt Quick renderer is still a separate target-integration milestone and is not represented as Pi-ready yet.
+
+See `docs/getting-started/raspberry-pi-today.md` for the flash, first-login, SSH, troubleshooting, and Pi 4/Pi 5 details.
+
 ## Build and deploy on QNX
 
 Run the QNX path on the x86-64 Ubuntu 22.04 workstation with a licensed QNX SDP
