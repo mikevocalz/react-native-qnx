@@ -52,9 +52,14 @@ rnqnx_target_init
 
 CONFIG="${RNQNX_PI_CONFIG:-Release}"
 APP="rnqnx_playground"
+RUNS="${RNQNX_PI_RUNS:-3}"
 
 if [[ "${CONFIG}" != "Release" && "${CONFIG}" != "Debug" ]]; then
   echo "ERROR: RNQNX_PI_CONFIG must be Release or Debug." >&2
+  exit 1
+fi
+if [[ ! "${RUNS}" =~ ^[0-9]+$ ]] || ((10#${RUNS} < 1 || 10#${RUNS} > 20)); then
+  echo "ERROR: RNQNX_PI_RUNS must be an integer from 1 through 20." >&2
   exit 1
 fi
 
@@ -68,6 +73,7 @@ echo " react-native-qnx · Raspberry Pi install"
 echo "========================================"
 echo "Target: $(rnqnx_target_address)"
 echo "Config: ${CONFIG}"
+echo "Validation runs: ${RUNS}"
 echo "Remote dir: ${QNX_TARGET_DIR}"
 echo "Evidence: ${EVIDENCE_DIR}"
 echo
@@ -97,23 +103,37 @@ echo
 echo "[4/4] Running on QNX Screen and collecting evidence"
 set +e
 RUN_OUTPUT="$(
-  rnqnx_ssh "sh -s -- '${QNX_TARGET_DIR}' '${APP}'" <<'RNQNX_REMOTE'
+  rnqnx_ssh "sh -s -- '${QNX_TARGET_DIR}' '${APP}' '${RUNS}'" <<'RNQNX_REMOTE'
 target_dir="$1"
 app="$2"
+runs="$3"
 cd "$target_dir" || exit 30
-log_file="${app}.run.log"
 screenshot_file="${app}.bmp"
-rm -f "$log_file" "$screenshot_file"
-"./$app" >"$log_file" 2>&1 &
-pid=$!
-sleep 2
-if command -v screenshot >/dev/null 2>&1; then
-  screenshot -file="$screenshot_file" >/dev/null 2>&1 || true
-fi
-wait "$pid"
-rc=$?
-cat "$log_file"
-exit "$rc"
+rm -f "${app}".run-*.log "$screenshot_file"
+
+run=1
+while [ "$run" -le "$runs" ]; do
+  log_file="${app}.run-${run}.log"
+  echo "RNQNX_RUN_BEGIN=${run}/${runs}"
+  "./$app" >"$log_file" 2>&1 &
+  pid=$!
+
+  if [ "$run" -eq 1 ]; then
+    sleep 2
+    if command -v screenshot >/dev/null 2>&1; then
+      screenshot -file="$screenshot_file" >/dev/null 2>&1 || true
+    fi
+  fi
+
+  wait "$pid"
+  rc=$?
+  cat "$log_file"
+  echo "RNQNX_RUN_END=${run}/${runs} rc=${rc}"
+  if [ "$rc" -ne 0 ]; then
+    exit "$rc"
+  fi
+  run=$((run + 1))
+done
 RNQNX_REMOTE
 )"
 RUN_RC=$?
@@ -126,14 +146,16 @@ if ((RUN_RC != 0)); then
   exit "${RUN_RC}"
 fi
 
-grep -Eq 'rnqnx_playground: Screen surface initialized \([0-9]+x[0-9]+\)' "${EVIDENCE_DIR}/playground-output.txt" || {
-  echo "ERROR: Screen initialization proof line was not found." >&2
+SCREEN_INIT_COUNT="$(grep -Ec 'rnqnx_playground: Screen surface initialized \([0-9]+x[0-9]+\)' "${EVIDENCE_DIR}/playground-output.txt" || true)"
+CLEAN_EXIT_COUNT="$(grep -Ec 'rnqnx_playground: exiting cleanly after [0-9]+ frames' "${EVIDENCE_DIR}/playground-output.txt" || true)"
+if ((10#${SCREEN_INIT_COUNT} != 10#${RUNS})); then
+  echo "ERROR: expected ${RUNS} Screen initialization proof lines, found ${SCREEN_INIT_COUNT}." >&2
   exit 1
-}
-grep -Eq 'rnqnx_playground: exiting cleanly after [0-9]+ frames' "${EVIDENCE_DIR}/playground-output.txt" || {
-  echo "ERROR: clean shutdown proof line was not found." >&2
+fi
+if ((10#${CLEAN_EXIT_COUNT} != 10#${RUNS})); then
+  echo "ERROR: expected ${RUNS} clean shutdown proof lines, found ${CLEAN_EXIT_COUNT}." >&2
   exit 1
-}
+fi
 
 REMOTE_SCREENSHOT="${QNX_TARGET_DIR}/${APP}.bmp"
 if rnqnx_ssh "test -f '${REMOTE_SCREENSHOT}'"; then
@@ -153,12 +175,19 @@ fi
 
 printf '%s\n' "$(rnqnx_target_address)" >"${EVIDENCE_DIR}/target.txt"
 printf '%s\n' "${CONFIG}" >"${EVIDENCE_DIR}/config.txt"
+printf '%s\n' "${RUNS}" >"${EVIDENCE_DIR}/run-count.txt"
 date -u +%Y-%m-%dT%H:%M:%SZ >"${EVIDENCE_DIR}/completed-at.txt"
+
+echo
+echo "Verifying and hashing evidence..."
+node "${PROJECT_ROOT}/scripts/verify-pi-evidence.mjs" "${EVIDENCE_DIR}"
 
 echo
 echo "Raspberry Pi install smoke pass complete."
 echo "Binary: ${QNX_TARGET_DIR}/${APP}"
 echo "Evidence: ${EVIDENCE_DIR}"
+echo "Repeated clean runs: ${RUNS}"
+echo "Manifest: ${EVIDENCE_DIR}/manifest.json"
 echo
 echo "This proves the native QNX Screen deployment lane. The full React Native +"
 echo "Hermes + Qt Quick renderer remains a separate target-integration milestone."
