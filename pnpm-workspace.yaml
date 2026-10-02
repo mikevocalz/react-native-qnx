@@ -8,3 +8,9 @@ overrides:
   'plist>@xmldom/xmldom': 0.9.12
   '@expo/xcpretty>js-yaml': 4.3.2
   'minimatch>brace-expansion': 5.0.12
+
+# Temporary, narrowly scoped exception for the unpatched transitive node-forge
+# advisory pulled through Expo CLI. Keep all other moderate+ advisories blocking.
+audit:
+  ignore:
+    - GHSA-86w9-cpqp-85rv
