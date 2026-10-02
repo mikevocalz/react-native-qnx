@@ -35,6 +35,27 @@ if (!install.includes('void install(jsi::Runtime& runtime);')) {
   throw new Error('Nitro synchronous install(jsi::Runtime&) contract changed.');
 }
 
+const installSource = await readFile(
+  path.join(nitroRoot, 'cpp/entrypoint/InstallNitro.cpp'),
+  'utf8'
+);
+if (!installSource.includes('KnownGlobalPropertyName::NITRO_MODULES_PROXY')) {
+  throw new Error('Nitro global proxy installation contract changed.');
+}
+
+const globals = await readFile(path.join(nitroRoot, 'cpp/utils/CommonGlobals.cpp'), 'utf8');
+if (!globals.includes('return "NitroModulesProxy";')) {
+  throw new Error('NitroModulesProxy global name changed.');
+}
+
+const proxy = await readFile(
+  path.join(nitroRoot, 'cpp/entrypoint/HybridNitroModulesProxy.cpp'),
+  'utf8'
+);
+if (!proxy.includes('registerHybridMethod("createHybridObject"')) {
+  throw new Error('Nitro createHybridObject proxy contract changed.');
+}
+
 const registry = await readFile(
   path.join(nitroRoot, 'cpp/registry/HybridObjectRegistry.hpp'),
   'utf8'
@@ -52,6 +73,17 @@ if (!qnxRuntime.includes('margelo::nitro::install(runtime);')) {
 }
 if (qnxRuntime.includes('install(runtime,') || qnxRuntime.includes('CallInvokerDispatcher')) {
   throw new Error('QNX Nitro runtime must not invent an async dispatcher in this milestone.');
+}
+
+const integrationProbe = await readFile(
+  path.join(root, 'vnext/probes/runtime-qnx/main.cpp'),
+  'utf8'
+);
+if (
+  !integrationProbe.includes("NitroModulesProxy.createHybridObject('QnxPlatformInfo')") ||
+  !integrationProbe.includes('rnqnx::nitro::installQnxNitroRuntime(*runtime)')
+) {
+  throw new Error('Combined QNX runtime probe no longer exercises Nitro through JSI.');
 }
 
 console.log('validate:qnx-nitro passed for react-native-nitro-modules 0.37.1');
