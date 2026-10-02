@@ -39,6 +39,27 @@ and `QtQuickMountingLayer`.
 | `Qml`           | Qt Qml    | 0    | `QQmlComponent` type compilation           | LGPLv3 / GPLv2               | yes            | TBD            | TBD                  |
 | `Quick`         | Qt Quick  | 0    | `QQuickItem`, `QQuickWindow`, scene graph  | LGPLv3 / GPLv2               | yes            | TBD            | TBD                  |
 
+## QNX minimum build (Qt 6.11.x)
+
+The QNX renderer now has the same minimum module set as the host:
+`Core`, `Gui`, `Qml`, and `Quick`. Qt for QNX is cross-built from source;
+there is no assumption that the stock QSTI contains a matching prebuilt Qt.
+
+The repository bootstrap intentionally builds only `qtbase` and
+`qtdeclarative`, which contain the required modules and their dependencies:
+
+```bash
+export RNQNX_QT_SOURCE_DIR=/path/to/qt-6.11.x
+export RNQNX_QT_HOST_PATH=/path/to/matching/host/Qt
+pnpm qt:qnx:bootstrap
+```
+
+The bootstrap installs the target build into
+`build/qt-qnx-aarch64-install` by default and writes
+`rnqnx-qt-qnx.env` containing the generated Qt QNX toolchain and prefixes.
+The physical-target size/build-time cells remain TBD until the licensed QNX
+cross-build and Raspberry Pi validation are executed.
+
 ## Target build candidate modules
 
 These modules are the ones from ADR-0011 that are **not** currently in the host
