@@ -43,4 +43,15 @@ if (!installer.includes('expo.setProperty(runtime, "modules"')) {
   throw new Error('QNX Expo installer must expose the modules registry.');
 }
 
+const integrationProbe = await readFile(
+  path.join(root, 'vnext/probes/runtime-qnx/main.cpp'),
+  'utf8'
+);
+if (
+  !integrationProbe.includes('rnqnx::expo::installExpoModulesQnx(*runtime)') ||
+  !integrationProbe.includes('expo.modules.ExpoQnxPlatform')
+) {
+  throw new Error('Combined QNX runtime probe no longer exercises Expo Modules through JSI.');
+}
+
 console.log('validate:qnx-expo-modules passed for expo-modules-core 58.0.9');
