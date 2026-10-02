@@ -626,6 +626,31 @@ void hostInstallsBridgelessGlobals() {
 }
 #endif
 
+
+/// Platform constants must track the React Native line this repository builds.
+void platformConstantsReportCurrentReactNativeVersion() {
+  Fixture fixture;
+  fixture.host().installPlatformConstants();
+
+  auto& runtime = fixture.host().runtime();
+  const auto constantsValue =
+      runtime.global().getProperty(runtime, "__RNQNX_PLATFORM_CONSTANTS");
+  EXPECT(constantsValue.isObject());
+  const auto constants = constantsValue.getObject(runtime);
+
+  const auto versionValue = constants.getProperty(runtime, "reactNativeVersion");
+  EXPECT(versionValue.isObject());
+  const auto version = versionValue.getObject(runtime);
+
+  EXPECT_NEAR(version.getProperty(runtime, "major").getNumber(), 0.0);
+  EXPECT_NEAR(version.getProperty(runtime, "minor").getNumber(), 88.0);
+  EXPECT_NEAR(version.getProperty(runtime, "patch").getNumber(), 0.0);
+  const auto prerelease = version.getProperty(runtime, "prerelease");
+  EXPECT(prerelease.isString());
+  EXPECT(
+      prerelease.getString(runtime).utf8(runtime) == std::string("rc.3"));
+}
+
 /// The Metro bundle evaluates in Hermes and installs React Native's globals.
 ///
 /// This stops before starting the surface. Rendering needs two things that do
@@ -2160,6 +2185,8 @@ int main(int argc, char** argv) {
       {"javaScriptBuildsTheTreeThroughFabricUIManager",
        javaScriptBuildsTheTreeThroughFabricUIManager},
       {"hostInstallsBridgelessGlobals", hostInstallsBridgelessGlobals},
+      {"platformConstantsReportCurrentReactNativeVersion",
+       platformConstantsReportCurrentReactNativeVersion},
 
 #ifdef RNQNX_PLAYGROUND_BUNDLE_PATH
       {"metroProducesABundleForQnx", metroProducesABundleForQnx},
