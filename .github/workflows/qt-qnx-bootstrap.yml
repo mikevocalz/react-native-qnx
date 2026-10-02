@@ -1,0 +1,43 @@
+name: Qt QNX bootstrap source check
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/bootstrap-qt-qnx.sh'
+      - 'scripts/lib/qnx-sdp.sh'
+      - 'scripts/install-pi.sh'
+      - 'scripts/validate-runtime-qnx.sh'
+      - 'scripts/validate-qt-qnx-bootstrap.mjs'
+      - 'docs/build-qt-modules.md'
+      - '.github/workflows/qt-qnx-bootstrap.yml'
+      - 'package.json'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/bootstrap-qt-qnx.sh'
+      - 'scripts/lib/qnx-sdp.sh'
+      - 'scripts/install-pi.sh'
+      - 'scripts/validate-runtime-qnx.sh'
+      - 'scripts/validate-qt-qnx-bootstrap.mjs'
+      - 'docs/build-qt-modules.md'
+      - '.github/workflows/qt-qnx-bootstrap.yml'
+      - 'package.json'
+
+permissions:
+  contents: read
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm validate:qnx-qt-bootstrap
+      - run: bash -n scripts/lib/qnx-sdp.sh scripts/bootstrap-qt-qnx.sh
+      - run: pnpm format:check
