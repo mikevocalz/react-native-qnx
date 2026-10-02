@@ -71,6 +71,11 @@ function assertContains(text, expression, label) {
   }
 }
 
+/** @param {string} text @param {RegExp} expression @returns {number} */
+function countMatches(text, expression) {
+  return text.match(expression)?.length ?? 0;
+}
+
 /** @typedef {{ absolute: string, relative: string }} EvidenceFile */
 /** @param {string} directory @param {string} [base] @returns {Promise<EvidenceFile[]>} */
 async function walkFiles(directory, base = directory) {
@@ -126,16 +131,41 @@ async function main() {
     readFile(path.join(evidenceDir, 'target.txt'), 'utf8'),
   ]);
 
-  assertContains(
+  let runCount = 1;
+  try {
+    const runCountText = await readFile(path.join(evidenceDir, 'run-count.txt'), 'utf8');
+    runCount = Number.parseInt(runCountText.trim(), 10);
+    if (!Number.isInteger(runCount) || runCount < 1 || runCount > 20) {
+      throw new Error('Evidence check failed: run-count.txt must contain an integer from 1 through 20');
+    }
+  } catch (error) {
+    if (!(
+      error instanceof Error &&
+      'code' in error &&
+      /** @type {NodeJS.ErrnoException} */ (error).code === 'ENOENT'
+    )) {
+      throw error;
+    }
+  }
+
+  const screenInitCount = countMatches(
     output,
-    /rnqnx_playground: Screen surface initialized \([0-9]+x[0-9]+\)/,
-    'Screen initialization proof line'
+    /rnqnx_playground: Screen surface initialized \([0-9]+x[0-9]+\)/g
   );
-  assertContains(
+  const cleanExitCount = countMatches(
     output,
-    /rnqnx_playground: exiting cleanly after [0-9]+ frames/,
-    'clean shutdown proof line'
+    /rnqnx_playground: exiting cleanly after [0-9]+ frames/g
   );
+  if (screenInitCount !== runCount) {
+    throw new Error(
+      `Evidence check failed: expected ${runCount} Screen initialization proof line(s), found ${screenInitCount}`
+    );
+  }
+  if (cleanExitCount !== runCount) {
+    throw new Error(
+      `Evidence check failed: expected ${runCount} clean shutdown proof line(s), found ${cleanExitCount}`
+    );
+  }
   assertContains(preflight, /^machine=aarch64le$/m, 'target reports aarch64le');
   assertContains(preflight, /^screen=ready$/m, 'QNX Screen reports ready');
   assertContains(preflight, /^target_dir=writable$/m, 'deployment directory is writable');
@@ -176,6 +206,7 @@ async function main() {
     evidenceDirectory: path.relative(root, evidenceDir).split(path.sep).join('/'),
     target: target.trim(),
     configuration: config.trim(),
+    runCount,
     completedAt: completedAt.trim(),
     checks: {
       aarch64le: true,
@@ -183,6 +214,7 @@ async function main() {
       targetDirectoryWritable: true,
       screenInitialized: true,
       cleanShutdown: true,
+      repeatedRuns: runCount > 1,
       qccAarch64Variant: true,
       screenshotCaptured,
     },
@@ -196,6 +228,7 @@ async function main() {
   console.log(`Directory: ${evidenceDir}`);
   console.log(`Target: ${manifest.target}`);
   console.log(`Configuration: ${manifest.configuration}`);
+  console.log(`Validated runs: ${manifest.runCount}`);
   console.log(`Screenshot: ${screenshotCaptured ? 'captured' : 'not available'}`);
   console.log(`Manifest: ${manifestPath}`);
 }
