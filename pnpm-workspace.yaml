@@ -8,3 +8,12 @@ overrides:
   'plist>@xmldom/xmldom': 0.9.12
   '@expo/xcpretty>js-yaml': 4.3.2
   'minimatch>brace-expansion': 5.0.12
+
+
+audit:
+  level: moderate
+  ignore:
+    # 2026-10-02: node-forge <=1.4.0 is pulled only through Expo CLI tooling.
+    # GHSA-86w9-cpqp-85rv currently has no patched npm release. Keep this
+    # exception specific; remove it as soon as Forge/Expo publishes a fix.
+    - GHSA-86w9-cpqp-85rv
