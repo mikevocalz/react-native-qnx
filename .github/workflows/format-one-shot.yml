@@ -1,0 +1,39 @@
+name: One-shot branch formatting
+
+on:
+  push:
+    branches:
+      - chore/pi-hardware-ready-2026-10-02
+    paths:
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/format-one-shot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: chore/pi-hardware-ready-2026-10-02
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec prettier --write pnpm-workspace.yaml
+      - name: Commit formatting if needed
+        shell: bash
+        run: |
+          if git diff --quiet -- pnpm-workspace.yaml; then
+            echo "Already formatted."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-workspace.yaml
+          git commit -m "style: format pnpm workspace security policy"
+          git push origin HEAD:chore/pi-hardware-ready-2026-10-02
