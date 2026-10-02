@@ -63,14 +63,14 @@ The SDK-58 lockfile regenerated from npm resolves:
 
 ## React Native runtime
 
-| Component        | Status  | Version / identity      | Evidence and scope                                                 |
-| ---------------- | ------- | ----------------------- | ------------------------------------------------------------------ |
-| React Native     | Pin     | 0.88.0-rc.3             | Out-of-tree QNX platform supplies the missing platform integration |
-| React            | Pin     | 19.3.0                  | Matches Expo 58                                                    |
-| Yoga             | Bundled | RN 0.88 source snapshot | No standalone Yoga version is inferred                             |
+| Component        | Status  | Version / identity      | Evidence and scope                                                       |
+| ---------------- | ------- | ----------------------- | ------------------------------------------------------------------------ |
+| React Native     | Pin     | 0.88.0-rc.3             | Out-of-tree QNX platform supplies the missing platform integration       |
+| React            | Pin     | 19.3.0                  | Matches Expo 58                                                          |
+| Yoga             | Bundled | RN 0.88 source snapshot | No standalone Yoga version is inferred                                   |
 | Hermes           | Bundled | `hermes-v260318099.0.2` | QNX source rebase/tooling implemented; licensed target build/run pending |
-| Fabric scheduler | Bundled | RN 0.88 source snapshot | Source symbols are checked by validator                            |
-| Fabric mounting  | Bundled | RN 0.88 source snapshot | Source symbols are checked by validator                            |
+| Fabric scheduler | Bundled | RN 0.88 source snapshot | Source symbols are checked by validator                                  |
+| Fabric mounting  | Bundled | RN 0.88 source snapshot | Source symbols are checked by validator                                  |
 
 The historical `patches/hermes-qnx-250829.patch` remains quarantined as
 pre-SDK58 evidence. The current path uses the audited
@@ -93,11 +93,12 @@ SDP 8.0.5 cross-build and Pi execution remain hardware gates.
 
 ## Native interop
 
-| Component                  | Status   | Version | Scope                                                               |
-| -------------------------- | -------- | ------- | ------------------------------------------------------------------- |
-| React Native Nitro Modules | Pin      | 0.37.1  | Registry/current source contract; QNX runtime still repository work |
-| Nitrogen                   | Pin      | 0.37.1  | Matches Nitro runtime                                               |
-| Expo Modules Core          | Resolved | 58.0.9  | QNX package scaffolds exist; implementation remains separate        |
+| Component                  | Status   | Version | Scope                                                                                                             |
+| -------------------------- | -------- | ------- | ----------------------------------------------------------------------------------------------------------------- |
+| React Native Nitro Modules | Pin      | 0.37.1  | Synchronous QNX runtime + `QnxPlatformInfo` HybridObject implemented; target run pending                          |
+| Nitrogen                   | Pin      | 0.37.1  | Matches Nitro runtime; generated Apple/Android paths are not treated as QNX support                               |
+| Expo Modules Core          | Resolved | 58.0.9  | QNX JSI registry/bootstrap implemented; package-specific QNX modules and target run pending                       |
+| Expo QNX autolinking       | Repo     | 0.1.0   | QNX resolver/CMake generator implemented on top of Expo discovery; target-package implementations remain explicit |
 
 ## Graphics and text
 
