@@ -311,10 +311,7 @@ async function main() {
       rnThirdPartyPodspecs.get('DoubleConversion.podspec'),
       'DoubleConversion'
     ),
-    fastFloat: extractPodspecVersion(
-      rnThirdPartyPodspecs.get('fast_float.podspec'),
-      'fast_float'
-    ),
+    fastFloat: extractPodspecVersion(rnThirdPartyPodspecs.get('fast_float.podspec'), 'fast_float'),
     boost: extractPodspecVersion(rnThirdPartyPodspecs.get('boost.podspec'), 'boost'),
   };
 
