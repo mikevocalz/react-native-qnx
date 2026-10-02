@@ -180,6 +180,36 @@ a clean shutdown for every run, and writes SHA-256 + byte size for every
 captured evidence file. The screenshot remains optional because the QNX target
 utility may not be installed.
 
+## Stage 2: prove Hermes + Nitro + Expo Modules together
+
+Once `pnpm pi:install` is green, keep the Pi running and execute:
+
+```bash
+pnpm qnx:runtime:validate
+```
+
+That command uses the exact current Hermes source selected by React Native,
+cross-builds Hermes for QNX AArch64, enables the QNX Nitro and Expo Modules
+targets, builds `rnqnx_runtime_qnx_probe`, deploys the executable plus
+`libhermesvmlean.so`, and runs one JavaScript-driven integration test on the
+Pi.
+
+The target pass marker is:
+
+```text
+RNQNX_RUNTIME_QNX_OK hermes nitro expo arch=aarch64
+```
+
+The probe does not merely instantiate the C++ classes. JavaScript running inside
+Hermes calls
+`NitroModulesProxy.createHybridObject('QnxPlatformInfo')`, exercises its
+properties/method, and then resolves `expo.modules.ExpoQnxPlatform`. Evidence
+is stored under `artifacts/pi-runtime/<UTC timestamp>/`.
+
+A pass here proves the current Hermes/Nitro/Expo JSI seams on the physical QNX
+target. It still does not prove the full React Native Fabric + Qt Quick renderer;
+that is the next target-integration gate.
+
 ## What success means today
 
 A green install proves the physical-board lane:
