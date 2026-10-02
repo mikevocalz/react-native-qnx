@@ -108,6 +108,22 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     set_target_properties(rnqnx_hermes_qnx_probe PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     )
+
+    if(RNQNX_BUILD_NITRO_QNX AND RNQNX_BUILD_EXPO_MODULES_QNX)
+      add_executable(rnqnx_runtime_qnx_probe
+        vnext/probes/runtime-qnx/main.cpp
+      )
+      target_link_libraries(rnqnx_runtime_qnx_probe PRIVATE
+        rnqnx_hermes
+        rnqnx_nitro_qnx
+        rnqnx_expo_modules_qnx
+        Threads::Threads
+      )
+      rnqnx_enable_strict_warnings(rnqnx_runtime_qnx_probe)
+      set_target_properties(rnqnx_runtime_qnx_probe PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+      )
+    endif()
   endif()
 
 else()
