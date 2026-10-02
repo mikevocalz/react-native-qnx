@@ -1,5 +1,6 @@
-# Builds the React Native 0.86.2 renderer modules needed to run a real shadow
-# tree, using React Native's own per-module CMakeLists rather than a rewritten
+# Builds the renderer modules from the installed React Native package needed
+# to run a real shadow tree, using React Native's own per-module CMakeLists rather
+# than a rewritten
 # build. Each module directory under ReactCommon ships an add_library plus its
 # link list; adding those directories keeps this file honest, because the source
 # lists and flags stay owned by React Native.
