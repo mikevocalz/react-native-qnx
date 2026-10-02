@@ -835,3 +835,29 @@ An intermittent failure is a defect until proven otherwise — this one was 3 in
 when the bug is reintroduced is not a test: the dedicated regression case
 written for this was deleted rather than kept for reassurance, and the
 detection it claimed was replaced with a measured one under ASan.
+
+
+## 2026-10-02 – Hardware-ready QNX cleanup
+
+- **Goal:** Finish all non-hardware work before purchasing the Raspberry Pi and
+  turn the first physical session into a deterministic validation run.
+- **Repository state entering the session:** PRs #7–#12 were already merged;
+  no pull requests were open.
+- **Reconciled implementation:** current SDP 8.0.5 cross-build tooling, RN 0.88
+  Hermes QNX source rebase, evidence verifier, synchronous Nitro QNX runtime,
+  Expo Modules QNX JSI bootstrap, and Expo QNX autolinking are all in-tree.
+- **Hardware-lane hardening:** `scripts/install-pi.sh` now defaults to three
+  launch/exit cycles, requires an init/clean-shutdown pair for every run, writes
+  `run-count.txt`, and invokes the evidence verifier automatically.
+- **Evidence verifier:** supports historical one-run evidence while validating
+  explicit repeated-run counts and records `runCount` /
+  `checks.repeatedRuns` in the manifest.
+- **Tests:** the synthetic Pi evidence test now covers a three-run pass and
+  corrupted/incomplete run output.
+- **Documentation repaired:** removed stale Expo 57/RN 0.86 deployment text,
+  corrected the Qt 6.11.1 CMake message, documented the hardware shopping list,
+  and changed Hermes/Nitro/Expo status from "not implemented" to
+  "implemented; physical target validation pending."
+- **Remaining work:** requires the licensed SDP/current QSTI physical target:
+  Screen run first, then Hermes, Nitro/Expo target proof, then the full
+  React/Fabric/Qt Quick target runtime.
