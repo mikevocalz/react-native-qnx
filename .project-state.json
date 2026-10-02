@@ -77,7 +77,8 @@
     "nitroQnxRuntime": "implemented-source-check-passed-target-run-pending",
     "expoModulesQnx": "implemented-source-check-passed-target-run-pending",
     "expoQnxAutolinking": "implemented-source-check-passed",
-    "piRepeatedRunEvidence": "implemented-ci-pending-physical-target"
+    "piRepeatedRunEvidence": "implemented-ci-pending-physical-target",
+    "qnxCombinedHermesNitroExpoProbe": "implemented-source-contract-ci-pending-target-run"
   },
   "historicalEvidence": {
     "qnxSdp802Aarch64CrossBuild": "passed",
@@ -105,7 +106,8 @@
     "QNX-NITRO-SYNC-RUNTIME",
     "QNX-EXPO-MODULES-JSI",
     "QNX-EXPO-AUTOLINKING",
-    "PI-EVIDENCE-MANIFEST"
+    "PI-EVIDENCE-MANIFEST",
+    "QNX-COMBINED-RUNTIME-PROBE"
   ],
   "activeTasks": [
     "QNX-RN-008",
@@ -114,6 +116,6 @@
     "QNX-FULL-RUNTIME-TARGET"
   ],
   "blockedTasks": [],
-  "nextRecommendedTask": "On a licensed QNX SDP 8.0.5 host with QSTI 0.5.0 build 50 on a Pi 4/5, run pnpm pi:preflight and pnpm pi:install. Preserve the verified manifest, then build/run the current Hermes QNX probe and move Nitro/Expo validation onto that runtime before the full Qt/Fabric target.",
-  "updatedAt": "2026-10-02T14:30:00Z"
+  "nextRecommendedTask": "On a licensed QNX SDP 8.0.5 host with QSTI 0.5.0 build 50 on a Pi 4/5, run pnpm pi:preflight and pnpm pi:install. Preserve the verified manifest, then run pnpm qnx:runtime:validate to prove Hermes + Nitro + Expo through JSI before moving the full React/Fabric/Qt Quick runtime onto the target.",
+  "updatedAt": "2026-10-02T15:05:00Z"
 }
