@@ -12,7 +12,12 @@ const files = {
   'completed-at.txt': '2026-10-01T17:00:00Z\n',
   'config.txt': 'Release\n',
   'target.txt': 'qnxuser@qnxpi.local\n',
+  'run-count.txt': '3\n',
   'playground-output.txt':
+    'rnqnx_playground: Screen surface initialized (1280x720)\n' +
+    'rnqnx_playground: exiting cleanly after 600 frames\n' +
+    'rnqnx_playground: Screen surface initialized (1280x720)\n' +
+    'rnqnx_playground: exiting cleanly after 600 frames\n' +
     'rnqnx_playground: Screen surface initialized (1280x720)\n' +
     'rnqnx_playground: exiting cleanly after 600 frames\n',
   'slog2-tail.txt': 'synthetic slog2 evidence\n',
@@ -37,9 +42,11 @@ const manifest = JSON.parse(await readFile(path.join(fixture, 'manifest.json'), 
 assert.equal(manifest.schemaVersion, 1);
 assert.equal(manifest.target, 'qnxuser@qnxpi.local');
 assert.equal(manifest.configuration, 'Release');
+assert.equal(manifest.runCount, 3);
 assert.equal(manifest.checks.aarch64le, true);
 assert.equal(manifest.checks.screenReady, true);
 assert.equal(manifest.checks.cleanShutdown, true);
+assert.equal(manifest.checks.repeatedRuns, true);
 assert.equal(manifest.checks.screenshotCaptured, false);
 assert.match(manifest.files['playground-output.txt'].sha256, /^[a-f0-9]{64}$/);
 
@@ -48,12 +55,40 @@ await writeFile(
   'rnqnx_playground: Screen surface initialized (1280x720)\n'
 );
 
-const bad = spawnSync(
+const badInitCount = spawnSync(
   process.execPath,
   [path.join(root, 'scripts', 'verify-pi-evidence.mjs'), fixture],
   { cwd: root, encoding: 'utf8' }
 );
-assert.notEqual(bad.status, 0);
-assert.match(bad.stderr, /clean shutdown proof line/);
+assert.notEqual(badInitCount.status, 0);
+assert.match(badInitCount.stderr, /Screen initialization proof line/);
+
+await writeFile(
+  path.join(fixture, 'playground-output.txt'),
+  'rnqnx_playground: Screen surface initialized (1280x720)\n' +
+    'rnqnx_playground: exiting cleanly after 600 frames\n' +
+    'rnqnx_playground: Screen surface initialized (1280x720)\n' +
+    'rnqnx_playground: exiting cleanly after 600 frames\n' +
+    'rnqnx_playground: Screen surface initialized (1280x720)\n'
+);
+
+const badCleanExitCount = spawnSync(
+  process.execPath,
+  [path.join(root, 'scripts', 'verify-pi-evidence.mjs'), fixture],
+  { cwd: root, encoding: 'utf8' }
+);
+assert.notEqual(badCleanExitCount.status, 0);
+assert.match(badCleanExitCount.stderr, /clean shutdown proof line/);
+
+for (const malformedRunCount of ['3junk', '3.5']) {
+  await writeFile(path.join(fixture, 'run-count.txt'), `${malformedRunCount}\n`);
+  const malformed = spawnSync(
+    process.execPath,
+    [path.join(root, 'scripts', 'verify-pi-evidence.mjs'), fixture],
+    { cwd: root, encoding: 'utf8' }
+  );
+  assert.notEqual(malformed.status, 0);
+  assert.match(malformed.stderr, /run-count\.txt must contain an integer from 1 through 20/);
+}
 
 console.log('pi-evidence.test.mjs passed');
