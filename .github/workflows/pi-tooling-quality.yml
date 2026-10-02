@@ -38,6 +38,7 @@ jobs:
             scripts/lib/qnx-target.sh \
             scripts/pi-preflight.sh \
             scripts/install-pi.sh \
+            scripts/validate-runtime-qnx.sh \
             scripts/deploy-qnx.sh \
             scripts/run-qnx.sh \
             scripts/log-qnx.sh
