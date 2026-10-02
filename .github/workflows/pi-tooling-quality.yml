@@ -36,6 +36,8 @@ jobs:
         run: |
           bash -n \
             scripts/lib/qnx-target.sh \
+            scripts/lib/qnx-sdp.sh \
+            scripts/bootstrap-qt-qnx.sh \
             scripts/pi-preflight.sh \
             scripts/install-pi.sh \
             scripts/validate-runtime-qnx.sh \
