@@ -80,4 +80,15 @@ const badCleanExitCount = spawnSync(
 assert.notEqual(badCleanExitCount.status, 0);
 assert.match(badCleanExitCount.stderr, /clean shutdown proof line/);
 
+for (const malformedRunCount of ['3junk', '3.5']) {
+  await writeFile(path.join(fixture, 'run-count.txt'), `${malformedRunCount}\n`);
+  const malformed = spawnSync(
+    process.execPath,
+    [path.join(root, 'scripts', 'verify-pi-evidence.mjs'), fixture],
+    { cwd: root, encoding: 'utf8' }
+  );
+  assert.notEqual(malformed.status, 0);
+  assert.match(malformed.stderr, /run-count\.txt must contain an integer from 1 through 20/);
+}
+
 console.log('pi-evidence.test.mjs passed');
