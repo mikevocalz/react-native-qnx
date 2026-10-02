@@ -106,6 +106,24 @@ async function assertSourceContract(packageRoot, relativePath, symbol) {
   console.log(`SOURCE: ${relativePath} -> ${symbol}`);
 }
 
+/** @param {string} source @param {RegExp} pattern @param {string} label */
+function extractRequiredMatch(source, pattern, label) {
+  const match = pattern.exec(source);
+  if (match == null) {
+    throw new Error(`Could not extract ${label}`);
+  }
+  return match[1];
+}
+
+/** @param {string} source @param {string} label */
+function extractPodspecVersion(source, label) {
+  return extractRequiredMatch(
+    source,
+    /spec\.version\s*=\s*['"]([^'"]+)['"]/,
+    `${label} podspec version`
+  );
+}
+
 async function main() {
   const workspace = await readJson(path.join(root, 'package.json'));
   const dependencies = workspace.devDependencies ?? {};
@@ -221,6 +239,91 @@ async function main() {
   }
 
   const reactNativeRoot = path.dirname(manifests.get('react-native').manifestPath);
+
+  // Keep the hand-built cross-platform C++ dependency layer tied to the exact
+  // React Native package installed in this workspace. These versions can stay
+  // numerically unchanged across RN releases, so package.json alone cannot
+  // detect a stale CMake dependency contract.
+  const thirdPartyCmake = await readFile(
+    path.join(root, 'cmake/dependencies/ReactNativeThirdParty.cmake'),
+    'utf8'
+  );
+  const rnHelpers = await readFile(
+    path.join(reactNativeRoot, 'scripts/cocoapods/helpers.rb'),
+    'utf8'
+  );
+  const rnThirdPartyPodspecs = new Map();
+  for (const file of [
+    'fmt.podspec',
+    'glog.podspec',
+    'DoubleConversion.podspec',
+    'fast_float.podspec',
+    'boost.podspec',
+  ]) {
+    rnThirdPartyPodspecs.set(
+      file,
+      await readFile(path.join(reactNativeRoot, 'third-party-podspecs', file), 'utf8')
+    );
+  }
+
+  const cmakeThirdPartyVersions = {
+    folly: extractRequiredMatch(
+      thirdPartyCmake,
+      /set\(RNQNX_FOLLY_VERSION\s+"([^"]+)"\)/,
+      'RNQNX_FOLLY_VERSION'
+    ),
+    fmt: extractRequiredMatch(
+      thirdPartyCmake,
+      /set\(RNQNX_FMT_VERSION\s+"([^"]+)"\)/,
+      'RNQNX_FMT_VERSION'
+    ),
+    glog: extractRequiredMatch(
+      thirdPartyCmake,
+      /set\(RNQNX_GLOG_VERSION\s+"([^"]+)"\)/,
+      'RNQNX_GLOG_VERSION'
+    ),
+    doubleConversion: extractRequiredMatch(
+      thirdPartyCmake,
+      /set\(RNQNX_DOUBLE_CONVERSION_VERSION\s+"([^"]+)"\)/,
+      'RNQNX_DOUBLE_CONVERSION_VERSION'
+    ),
+    fastFloat: extractRequiredMatch(
+      thirdPartyCmake,
+      /set\(RNQNX_FAST_FLOAT_VERSION\s+"([^"]+)"\)/,
+      'RNQNX_FAST_FLOAT_VERSION'
+    ),
+    boost: extractRequiredMatch(
+      thirdPartyCmake,
+      /set\(RNQNX_BOOST_VERSION\s+"([^"]+)"\)/,
+      'RNQNX_BOOST_VERSION'
+    ),
+  };
+
+  const reactNativeThirdPartyVersions = {
+    folly: extractRequiredMatch(
+      rnHelpers,
+      /@@folly_config\s*=\s*\{[\s\S]*?:version\s*=>\s*['"]([^'"]+)['"]/,
+      'React Native Folly version'
+    ),
+    fmt: extractPodspecVersion(rnThirdPartyPodspecs.get('fmt.podspec'), 'fmt'),
+    glog: extractPodspecVersion(rnThirdPartyPodspecs.get('glog.podspec'), 'glog'),
+    doubleConversion: extractPodspecVersion(
+      rnThirdPartyPodspecs.get('DoubleConversion.podspec'),
+      'DoubleConversion'
+    ),
+    fastFloat: extractPodspecVersion(rnThirdPartyPodspecs.get('fast_float.podspec'), 'fast_float'),
+    boost: extractPodspecVersion(rnThirdPartyPodspecs.get('boost.podspec'), 'boost'),
+  };
+
+  for (const [name, expected] of Object.entries(reactNativeThirdPartyVersions)) {
+    assertEqual(
+      cmakeThirdPartyVersions[name],
+      expected,
+      `CMake ${name} dependency pin for React Native ${reactNative.version}`
+    );
+    console.log(`CXX PIN: ${name}@${expected}`);
+  }
+
   const nitroRoot = path.dirname(manifests.get('react-native-nitro-modules').manifestPath);
   const expoModulesRoot = path.dirname(expoRequire.resolve('expo-modules-core/package.json'));
   const expoMetroConfigRoot = path.dirname(expoRequire.resolve('@expo/metro-config/package.json'));
