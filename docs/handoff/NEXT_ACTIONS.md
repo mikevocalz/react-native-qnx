@@ -76,19 +76,19 @@ the licensed QNX SDP 8.0.5 toolchain and the physical AArch64le target.
 **After the Screen lane passes:**
 
 ```bash
-pnpm hermes:qnx:prepare
-pnpm hermes:qnx:configure -- aarch64
-cmake --build build/hermes-qnx-aarch64 --parallel --target hermesvmlean jsi
+pnpm qnx:runtime:validate
 ```
 
-Then configure the platform with `RNQNX_BUILD_HERMES_QNX=ON`, build
-`rnqnx_hermes_qnx_probe`, deploy it with the same target helpers, and execute
-it on the Pi. Preserve compiler, ELF, stdout, and target logs as current-line
-evidence.
+The command prepares and cross-builds the exact Hermes source, enables the QNX
+Hermes/Nitro/Expo targets, builds and deploys `rnqnx_runtime_qnx_probe` plus
+`libhermesvmlean.so`, and runs JavaScript through Hermes that calls both
+`QnxPlatformInfo` through `NitroModulesProxy` and
+`expo.modules.ExpoQnxPlatform`. Preserve the resulting
+`artifacts/pi-runtime/<timestamp>/` evidence.
 
 **Dependency:** This does not block the native Screen bring-up. A full React
-Native/Hermes/QNX claim still requires the current Hermes binary to execute on
-the Pi and then be wired into the target React/Fabric/Qt runtime.
+Native/Hermes/QNX claim still requires the combined runtime probe to execute on
+the Pi and then the React/Fabric/Qt renderer to be moved onto that runtime.
 
 ## 3. Make the rendered app look and behave like an app
 
