@@ -682,9 +682,12 @@ void QtReactHost::installPlatformConstants() {
   // package.json and asserted by validate:dependencies.
   auto version = facebook::jsi::Object(runtime);
   version.setProperty(runtime, "major", 0);
-  version.setProperty(runtime, "minor", 86);
-  version.setProperty(runtime, "patch", 2);
-  version.setProperty(runtime, "prerelease", facebook::jsi::Value::null());
+  version.setProperty(runtime, "minor", 88);
+  version.setProperty(runtime, "patch", 0);
+  version.setProperty(
+      runtime,
+      "prerelease",
+      facebook::jsi::String::createFromUtf8(runtime, "rc.3"));
   constants.setProperty(runtime, "reactNativeVersion", version);
 
   runtime.global().setProperty(
