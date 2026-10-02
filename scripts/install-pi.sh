@@ -8,43 +8,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-source_qnx_environment() {
-  if [[ -n "${QNX_HOST:-}" && -n "${QNX_TARGET:-}" ]]; then
-    return
-  fi
-
-  local candidates=()
-  if [[ -n "${QNX_SDP_ENV:-}" ]]; then
-    candidates+=("${QNX_SDP_ENV}")
-  fi
-  candidates+=(
-    "${HOME}/qnx800/qnxsdp-env.sh"
-    "${HOME}/qnx80x/qnxsdp-env.sh"
-  )
-
-  if [[ -n "${USERNAME:-}" ]]; then
-    candidates+=(
-      "/c/Users/${USERNAME}/qnx800/qnxsdp-env.sh"
-      "/cygdrive/c/Users/${USERNAME}/qnx800/qnxsdp-env.sh"
-    )
-  fi
-
-  local candidate
-  for candidate in "${candidates[@]}"; do
-    if [[ -f "${candidate}" ]]; then
-      echo "Sourcing QNX SDP environment: ${candidate}"
-      # shellcheck disable=SC1090
-      source "${candidate}"
-      return
-    fi
-  done
-
-  echo "ERROR: QNX SDP environment is not active." >&2
-  echo "Source qnxsdp-env.sh first, or set QNX_SDP_ENV to its full path." >&2
-  exit 1
-}
-
-source_qnx_environment
+# shellcheck source=scripts/lib/qnx-sdp.sh
+source "${SCRIPT_DIR}/lib/qnx-sdp.sh"
+rnqnx_source_sdp_environment
 
 # shellcheck source=scripts/lib/qnx-target.sh
 source "${SCRIPT_DIR}/lib/qnx-target.sh"
