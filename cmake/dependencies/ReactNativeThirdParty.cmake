@@ -1,5 +1,6 @@
 # React Native's C++ third-party dependencies, fetched at the exact versions
-# React Native 0.86.2 itself pins.
+# selected by the installed React Native package. validate:dependencies checks
+# these values against that package so an RN upgrade cannot silently drift them.
 #
 # Versions come from the installed package, not from upstream "latest":
 #   folly 2024.11.18.00      node_modules/react-native/scripts/cocoapods/helpers.rb:50
