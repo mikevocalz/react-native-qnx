@@ -55,12 +55,29 @@ await writeFile(
   'rnqnx_playground: Screen surface initialized (1280x720)\n'
 );
 
-const bad = spawnSync(
+const badInitCount = spawnSync(
   process.execPath,
   [path.join(root, 'scripts', 'verify-pi-evidence.mjs'), fixture],
   { cwd: root, encoding: 'utf8' }
 );
-assert.notEqual(bad.status, 0);
-assert.match(bad.stderr, /clean shutdown proof line/);
+assert.notEqual(badInitCount.status, 0);
+assert.match(badInitCount.stderr, /Screen initialization proof line/);
+
+await writeFile(
+  path.join(fixture, 'playground-output.txt'),
+  'rnqnx_playground: Screen surface initialized (1280x720)\n' +
+    'rnqnx_playground: exiting cleanly after 600 frames\n' +
+    'rnqnx_playground: Screen surface initialized (1280x720)\n' +
+    'rnqnx_playground: exiting cleanly after 600 frames\n' +
+    'rnqnx_playground: Screen surface initialized (1280x720)\n'
+);
+
+const badCleanExitCount = spawnSync(
+  process.execPath,
+  [path.join(root, 'scripts', 'verify-pi-evidence.mjs'), fixture],
+  { cwd: root, encoding: 'utf8' }
+);
+assert.notEqual(badCleanExitCount.status, 0);
+assert.match(badCleanExitCount.stderr, /clean shutdown proof line/);
 
 console.log('pi-evidence.test.mjs passed');
