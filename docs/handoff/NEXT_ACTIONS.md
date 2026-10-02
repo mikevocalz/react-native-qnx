@@ -36,9 +36,12 @@ current physical-target gate.
    pnpm pi:install
    ```
 
-5. Preserve the generated `artifacts/pi/<timestamp>/` evidence and record the
-   exact SDP/QSTI/board identity in `TEST_STATUS.md`.
-6. Repeat the run enough times to catch Screen cleanup/resource regressions.
+5. The installer performs three launch/exit cycles by default, verifies every
+   Screen initialization and clean shutdown, then writes a SHA-256 inventory to
+   `artifacts/pi/<timestamp>/manifest.json`.
+6. Preserve the generated evidence and record the exact SDP/QSTI/board identity
+   in `TEST_STATUS.md`. Increase `RNQNX_PI_RUNS` for a longer cleanup/resource
+   soak when useful.
 
 **Acceptance criteria:**
 
@@ -52,29 +55,40 @@ current physical-target gate.
 **Current blocker:** Physical target execution has not yet been captured on the
 current QSTI line. The repository tooling itself is ready.
 
-## 2. Rebase Hermes QNX work onto the RN 0.88 source line
+## 2. Build and run the current Hermes QNX port on the Pi
 
-**Objective:** Turn the historical Hermes/QNX investigation into a current,
-source-backed port for Expo SDK 58 / React Native 0.88.
+**Objective:** Validate the already-merged RN 0.88 Hermes/QNX source rebase with
+the licensed QNX SDP 8.0.5 toolchain and the physical AArch64le target.
 
-**Current installed evidence:**
+**Already implemented:**
 
-- `node_modules/react-native/sdks/.hermesv1version` →
-  `hermes-v260318099.0.2`
-- React Native resolves `hermes-compiler` 260318099.0.4.
-- `node_modules/react-native/ReactCommon/react/runtime/hermes/HermesInstance.h`
-  still provides the runtime seam checked by `validate:dependencies`.
-- `patches/hermes-qnx-250829.patch` belongs to the older
-  `hermes-v250829098.0.16` source and must not be applied blindly.
+- React Native selects `hermes-v260318099.0.2`.
+- The audited Hermes source commit is
+  `4188b63f24026ca62b79dc81d95db122a59c6089`.
+- `scripts/prepare-hermes-qnx.sh` prepares that exact source and applies the
+  current QNX patcher rather than replaying the old RN 0.86 patch.
+- `scripts/configure-hermes-qnx.sh` performs the QNX cross-configuration using
+  the matching host `hermesc`.
+- `cmake/dependencies/HermesQNX.cmake` imports the cross-built Hermes/JSI
+  artifacts into the platform.
+- Hermes QNX source-contract CI is green on the merged implementation.
 
-**Procedure:** Acquire/check out the exact current Hermes source, replay each QNX
-change deliberately, and re-audit OS, threads, mmap, signals, stack handling,
-and host-`hermesc` assumptions. Build/test first on the QNX VM where useful,
-then on AArch64/QSTI.
+**After the Screen lane passes:**
 
-**Dependency:** The native Screen Pi lane can proceed independently. A truthful
-full React Native/Hermes/QNX claim depends on both the current Hermes rebase and
-current QNX target validation.
+```bash
+pnpm qnx:runtime:validate
+```
+
+The command prepares and cross-builds the exact Hermes source, enables the QNX
+Hermes/Nitro/Expo targets, builds and deploys `rnqnx_runtime_qnx_probe` plus
+`libhermesvmlean.so`, and runs JavaScript through Hermes that calls both
+`QnxPlatformInfo` through `NitroModulesProxy` and
+`expo.modules.ExpoQnxPlatform`. Preserve the resulting
+`artifacts/pi-runtime/<timestamp>/` evidence.
+
+**Dependency:** This does not block the native Screen bring-up. A full React
+Native/Hermes/QNX claim still requires the combined runtime probe to execute on
+the Pi and then the React/Fabric/Qt renderer to be moved onto that runtime.
 
 ## 3. Make the rendered app look and behave like an app
 
@@ -90,27 +104,32 @@ and platform constants.
 3. **Smaller component gaps.** Bundler assets (`require('./x.png')`) and real `NativeAnimated` view updates (opacity/value back-propagation). `resizeMode`, `defaultSource`, `Image` load events, `ImageBackground`, `Image.getSize`/`prefetch`, `numberOfLines` ellipsis, `KeyboardAvoidingView`, `Button`, `TouchableOpacity`, multi-touch, pointer capture, and `ActivityIndicator`/`Switch`/`Modal`/`SafeAreaView`/`StatusBar`/`RefreshControl` are now covered — see `docs/component-support.md`.
 4. **Nitro for app-facing modules.** ADR-0004 settled the boundary: React
    Native's own modules stay C++ TurboModules because that is what its
-   JavaScript looks up, and Nitro is for the modules an app author writes. No
-   Nitro `HybridObject` is registered yet.
+   JavaScript looks up, and Nitro is for the modules an app author writes. The
+   merged QNX Nitro runtime now registers a synchronous `QnxPlatformInfo`
+   HybridObject. Async callbacks/Promises remain intentionally unavailable until
+   the QNX React/Qt runtime supplies the real JS/event-loop dispatcher.
 
 **Acceptance criteria for the next slice:** a `TextInput` accepts typed
 characters in the windowed playground and its `onChangeText` reaches
 JavaScript, proven the way the touch and scroll paths were — by reading the
 value back out of the runtime, with the assertion mutation-checked.
 
-## 4. Design Nitro, Expo Modules, and Metro QNX extensions separately
+## 4. Target-validate the merged Nitro and Expo QNX extensions
 
-Installed source establishes the following contracts and gaps:
+The source-backed designs are now implemented as separate layers:
 
-- Nitro C++: `margelo::nitro::install` and
-  `HybridObjectRegistry::registerHybridObjectConstructor` exist, but Nitrogen's
-  generated platforms are iOS/Android only.
-- Expo Modules Core: `ensureNativeModulesAreInstalled` expects the
-  `ExpoModulesCore` TurboModule and `globalThis.expo`; installed native installers
-  are Apple/Android only.
-- Expo Metro: `getDefaultConfig` is available through `expo/metro-config`, but
-  its default platforms omit `qnx`.
+- **Nitro QNX:** `@rn-qnx/qnx-nitro-runtime` builds Nitro's audited shared C++
+  sources on QNX, installs Nitro into JSI, and registers the synchronous
+  `QnxPlatformInfo` HybridObject.
+- **Expo Modules QNX:** `@rn-qnx/expo-modules-core-qnx` installs
+  `globalThis.expo.modules` through a QNX JSI registry and ships an
+  `ExpoQnxPlatform` proof module.
+- **Expo QNX autolinking:** `@rn-qnx/expo-qnx-autolinking` reuses Expo's
+  package discovery and adds the missing QNX resolver/CMake generation path.
 
-Treat these as three explicit source-backed designs, not one guessed platform
-shim. Each native file created on macOS must receive its own QNX validation queue
-entry.
+Their source-contract and host/tooling checks are green. What remains is
+physical QNX validation and integration with the full target runtime. Do not
+treat these source implementations as proof that arbitrary Android/iOS Expo or
+Nitro modules work on QNX: each native package still needs an explicit QNX
+implementation/target, and Nitro async work still needs the actual QNX JS
+dispatcher.

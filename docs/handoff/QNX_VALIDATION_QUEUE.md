@@ -141,17 +141,62 @@ pnpm pi:install
 **Advance only when:** the exact current dependency/source line is cross-built
 with the licensed QNX toolchain and executed on a QNX target.
 
-## QNX-HERMES-001 — Rebase historical Hermes QNX work
+## QNX-HERMES-001 — Current Hermes QNX source rebase
 
-**Status:** Current source rebase required.
+**Status:** Implemented; current QNX cross-build/runtime validation pending.
 
 - Current bundled source: `hermes-v260318099.0.2`.
+- Audited source commit:
+  `4188b63f24026ca62b79dc81d95db122a59c6089`.
 - Current compiler package: `hermes-compiler` 260318099.0.4.
-- Historical patch: `patches/hermes-qnx-250829.patch` from the RN 0.86 /
-  Hermes 250829 source line.
+- `scripts/prepare-hermes-qnx.sh` starts from the exact audited source and
+  applies the current patcher.
+- `scripts/configure-hermes-qnx.sh` supplies the QNX toolchain and matching
+  host `hermesc`.
+- The old `patches/hermes-qnx-250829.patch` remains historical and is not the
+  current port path.
+- Source-contract CI is green.
 
-Every historical QNX change must be re-audited before reuse. Do not apply the
-old patch wholesale to the current source.
+**Advance to current verification only when:** Hermes/JSI cross-build with the
+licensed SDP 8.0.5 toolchain and `rnqnx_hermes_qnx_probe` executes on the
+physical AArch64le QSTI target.
+
+## QNX-NITRO-001 — Synchronous Nitro QNX runtime
+
+**Status:** Implemented; current target validation pending.
+
+The repository builds Nitro's audited 0.37.1 shared C++ sources on QNX,
+provides the platform logger/thread shims, calls `margelo::nitro::install`,
+and registers `QnxPlatformInfo` through `HybridObjectRegistry`.
+
+**Intentional boundary:** async callbacks/Promises are not claimed until the
+full QNX React/Qt runtime supplies Nitro's real JS/event-loop dispatcher.
+
+**Advance when:** `RNQNX_BUILD_NITRO_QNX=ON` cross-builds on SDP 8.0.5 and a
+Nitro HybridObject call is executed through Hermes on the Pi.
+
+## QNX-EXPO-001 — Expo Modules Core QNX JSI bootstrap
+
+**Status:** Implemented; current target validation pending.
+
+The QNX bootstrap installs a native module registry and
+`globalThis.expo.modules` HostObject, with `ExpoQnxPlatform` as the proof
+module. It deliberately does not pretend existing Apple/Android Expo packages
+have QNX implementations.
+
+**Advance when:** `RNQNX_BUILD_EXPO_MODULES_QNX=ON` cross-builds on SDP 8.0.5
+and JavaScript resolves/calls the proof module through the Pi Hermes runtime.
+
+## QNX-EXPO-002 — Expo QNX autolinking
+
+**Status:** Implemented; package-integration target validation pending.
+
+`@rn-qnx/expo-qnx-autolinking` reuses Expo's discovery phase and supplies the
+QNX-specific resolver/generator. QNX package metadata supports
+`platforms: ["qnx"]`, CMake target paths, and module declarations.
+
+**Advance when:** a real QNX Expo module is autolinked into the physical-target
+application build and resolves at runtime.
 
 ## Queue discipline
 

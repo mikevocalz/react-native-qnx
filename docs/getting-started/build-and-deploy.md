@@ -19,7 +19,10 @@ From the repository root:
 pnpm validate:macos
 ```
 
-The dependency audit verifies the exact workspace pins (including pnpm 11.21.0, React Native 0.86.2, React 19.2.3, Expo 57.0.12, Metro 0.84.4, Nitro/Nitrogen 0.36.5, and TypeScript 6.0.3), resolved Expo packages, Hermes source identity, and installed source symbols.
+The dependency audit verifies the current workspace pins (Expo 58.0.0, React
+Native 0.88.0-rc.3, React 19.3.0, Metro 0.87.1, Nitro/Nitrogen 0.37.1,
+TypeScript 7.0.2, Node 26+, and pnpm 12.8.1), resolved Expo packages, Hermes
+source identity, and installed source symbols.
 
 Do not record this result as a QNX compile or runtime pass. QNX-specific follow-up belongs in `docs/handoff/QNX_VALIDATION_QUEUE.md`.
 
@@ -156,7 +159,10 @@ Deploy the exact CMake target name and configuration:
 ./scripts/deploy-qnx.sh aarch64 rnqnx_playground Debug
 ```
 
-The deploy script selects `build/qnx-aarch64-debug/bin/rnqnx_playground`, copies it to `/tmp/rnqnx_playground`, and makes it executable. Use `Release` only after building the matching Release preset.
+The deploy script selects `build/qnx-aarch64-debug/bin/rnqnx_playground`,
+uploads through a temporary filename, then atomically promotes it to
+`/data/home/qnxuser/rnqnx/rnqnx_playground` by default. Use `Release` only
+after building the matching Release preset.
 
 ## Run and inspect
 
@@ -212,7 +218,13 @@ If it fails, preserve the exact configure error in the handoff rather than bypas
 
 ## Next step
 
-Pass G0-A, then G0-D, before beginning the Qt G0-B source build/on-glass proof.
-Only after G0-B and G0-C may P1 Hermes begin. None of Qt Quick, Hermes, Fabric,
-Nitro, or Expo currently has a demonstrated QNX implementation in this
-repository.
+The current hardware gate is the physical QSTI Screen pass. The repository
+already contains the RN 0.88 Hermes-QNX source rebase/tooling, the synchronous
+Nitro QNX runtime, the Expo Modules QNX JSI bootstrap, and Expo QNX autolinking.
+Those are implemented source seams, not yet physical-target proof.
+
+After the Screen lane passes on the Pi, build and run the current Hermes QNX
+probe on the licensed SDP 8.0.5 toolchain, then cross-build the Qt Quick/Fabric
+runtime for QNX and move the host-proven JSX → Metro → Hermes → React/Fabric →
+Qt Quick pipeline onto the Pi. Nitro and Expo target validation follow on that
+same runtime.

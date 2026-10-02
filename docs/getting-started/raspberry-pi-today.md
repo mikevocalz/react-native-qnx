@@ -3,6 +3,29 @@
 This is the shortest supported path from this repository to a physical Raspberry Pi
 running QNX Screen.
 
+## What to buy
+
+For this repository, the simplest target is a **Raspberry Pi 5 with 8 GB RAM**.
+QNX's current QSTI supports both Pi 4 and Pi 5 and requires an 8 GB-or-larger
+board, so 8 GB is the minimum configuration we are treating as the supported
+hardware baseline.
+
+Bring these pieces for the first session:
+
+- Raspberry Pi 5, 8 GB RAM (recommended), or an 8 GB+ Raspberry Pi 4
+- 64 GB or larger quality microSD card (QNX requires at least 32 GB; 64 GB gives
+  us more working room for images, logs, and experiments)
+- Raspberry Pi 27 W USB-C power supply for Pi 5
+- active cooler or a case with active cooling for sustained Pi 5 work
+- micro-HDMI-to-HDMI cable and an HDMI display for the first graphical boot
+- Ethernet cable for the least-friction first bring-up; Wi-Fi can be configured
+  afterward
+- USB keyboard/mouse for local recovery and first-login troubleshooting
+- microSD reader if your development computer does not already have one
+
+Do not buy an NVMe HAT or special accelerator for the first pass. The QSTI
+microSD path is the shortest route to proving this platform on real hardware.
+
 ## Known-good target baseline for October 2026
 
 Use the current QNX Everywhere Quick Start Target Image (QSTI):
@@ -109,21 +132,32 @@ or, if pnpm is already available:
 
     pnpm pi:install
 
-The default is an AArch64 Release build. The installer:
+The default is an AArch64 Release build with **three clean launch/exit cycles**.
+The installer:
 
 1. runs the Pi preflight
 2. configures the QNX AArch64 preset
-3. builds rnqnx_playground
+3. builds `rnqnx_playground`
 4. uploads through a temporary filename and atomically moves it into place
-5. runs it against QNX Screen
-6. captures stdout
-7. captures a Screen BMP while the app is visible when screenshot is available
-8. captures a recent slog2 snapshot
-9. stores the complete evidence set under artifacts/pi/<UTC timestamp>/
+5. runs it against QNX Screen three times by default
+6. requires every run to initialize Screen and exit cleanly
+7. captures stdout plus a Screen BMP during the first visible run when
+   `screenshot` is available
+8. captures a recent `slog2` snapshot
+9. stores the complete evidence set under `artifacts/pi/<UTC timestamp>/`
+10. verifies the evidence and writes a SHA-256 inventory to `manifest.json`
 
 For a Debug pass:
 
     RNQNX_PI_CONFIG=Debug ./scripts/install-pi.sh
+
+For a quick single-run debug pass:
+
+    RNQNX_PI_RUNS=1 ./scripts/install-pi.sh
+
+For a five-run cleanup/resource soak:
+
+    RNQNX_PI_RUNS=5 ./scripts/install-pi.sh
 
 For a quick re-deploy of an already-built binary:
 
@@ -131,8 +165,8 @@ For a quick re-deploy of an already-built binary:
 
 ## Verify and inventory the evidence
 
-After a successful install run, turn the captured directory into a checked
-evidence record:
+A successful `pnpm pi:install` now verifies the captured run automatically
+and writes `manifest.json`. You can rerun the verifier at any time:
 
 ```bash
 pnpm pi:evidence:verify
@@ -141,10 +175,40 @@ pnpm pi:evidence:verify -- artifacts/pi/<UTC timestamp>
 ```
 
 The verifier checks the required preflight/compiler/run proof, validates the
-AArch64le and Screen markers, requires the clean-shutdown line, and writes
-`manifest.json` with SHA-256 + byte size for every captured evidence file.
-The screenshot remains optional because the QNX target utility may not be
-installed.
+AArch64le and Screen markers, verifies the requested repeated-run count, requires
+a clean shutdown for every run, and writes SHA-256 + byte size for every
+captured evidence file. The screenshot remains optional because the QNX target
+utility may not be installed.
+
+## Stage 2: prove Hermes + Nitro + Expo Modules together
+
+Once `pnpm pi:install` is green, keep the Pi running and execute:
+
+```bash
+pnpm qnx:runtime:validate
+```
+
+That command uses the exact current Hermes source selected by React Native,
+cross-builds Hermes for QNX AArch64, enables the QNX Nitro and Expo Modules
+targets, builds `rnqnx_runtime_qnx_probe`, deploys the executable plus
+`libhermesvmlean.so`, and runs one JavaScript-driven integration test on the
+Pi.
+
+The target pass marker is:
+
+```text
+RNQNX_RUNTIME_QNX_OK hermes nitro expo arch=aarch64
+```
+
+The probe does not merely instantiate the C++ classes. JavaScript running inside
+Hermes calls
+`NitroModulesProxy.createHybridObject('QnxPlatformInfo')`, exercises its
+properties/method, and then resolves `expo.modules.ExpoQnxPlatform`. Evidence
+is stored under `artifacts/pi-runtime/<UTC timestamp>/`.
+
+A pass here proves the current Hermes/Nitro/Expo JSI seams on the physical QNX
+target. It still does not prove the full React Native Fabric + Qt Quick renderer;
+that is the next target-integration gate.
 
 ## What success means today
 

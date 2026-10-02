@@ -1,5 +1,32 @@
 # TEST_STATUS.md
 
+## Current QNX integration source/tooling validation — 2026-10-02
+
+- Main includes merged PRs #7–#12 on top of the SDK-58 baseline:
+  current SDP 8.0.5 cross-build evidence tooling, the RN 0.88 Hermes-QNX source
+  rebase, physical Pi evidence verification, the synchronous Nitro QNX runtime,
+  Expo Modules Core QNX JSI bootstrap, and Expo QNX autolinking.
+- PR #8 head passed `Hermes QNX source check`, `Pi tooling quality`, and
+  `SDK 58 validation`.
+- PR #9 head passed `Nitro QNX source check`, `Pi tooling quality`, and
+  `SDK 58 validation`.
+- PR #10 head passed `Nitro QNX source check`, `Pi tooling quality`, and
+  `SDK 58 validation`.
+- PR #11 head passed `Expo Modules QNX source check`,
+  `Nitro QNX source check`, `Pi tooling quality`, and `SDK 58 validation`.
+- PR #12 head passed `Expo QNX autolinking`,
+  `Expo Modules QNX source check`, `Nitro QNX source check`, and
+  `Pi tooling quality`. Its SDK-58 validation run was cancelled during the
+  merge sequence; the immediately prior merged #11 head had the full SDK-58
+  suite green.
+- The hardened hardware lane now defaults to three Screen launch/exit cycles,
+  requires all three to initialize and shut down cleanly, and automatically
+  validates/hashes the evidence into `manifest.json`.
+- **Evidence boundary:** none of the above replaces the still-missing physical
+  QSTI run. Hermes/Nitro/Expo source implementation is not being promoted to
+  QNX runtime proof until it is cross-built with the licensed current SDP and
+  executed on the target.
+
 ## Current Expo SDK 58 / main validation — 2026-10-01
 
 - Merged code baseline: `47c3d668b0ba61eaf81ce8083b87c3bf82c876ce`.
