@@ -129,6 +129,9 @@ export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
 
 pnpm pi:preflight
 pnpm pi:install
+
+# after the Screen lane is green:
+pnpm qnx:runtime:validate
 ```
 
 The install lane verifies AArch64le + Screen, builds the QNX AArch64 target,
