@@ -36,6 +36,10 @@ option(RNQNX_BUILD_HERMES "Build Hermes from source for the host" OFF)
 option(RNQNX_BUILD_HERMES_QNX "Link the cross-built QNX Hermes/JSI probe" OFF)
 option(RNQNX_BUILD_NITRO_QNX "Build the QNX Nitro shared C++ runtime" OFF)
 option(RNQNX_BUILD_EXPO_MODULES_QNX "Build the QNX Expo Modules JSI bootstrap" OFF)
+option(RNQNX_BUILD_REACT_QNX
+  "Build the full React Native + Hermes + Fabric + Qt Quick QNX target graph" OFF)
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxReactQt.cmake)
 
 # This target is the executable G0-A language/runtime proof. Compiling it on a
 # host validates the TU itself; only a qcc cross-build followed by execution on
@@ -126,6 +130,41 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     endif()
   endif()
 
+  if(RNQNX_BUILD_REACT_QNX)
+    if(NOT RNQNX_BUILD_HERMES_QNX)
+      message(FATAL_ERROR
+        "RNQNX_BUILD_REACT_QNX requires RNQNX_BUILD_HERMES_QNX=ON")
+    endif()
+    if(NOT RNQNX_FETCH_REACT_NATIVE_DEPS)
+      message(FATAL_ERROR
+        "RNQNX_BUILD_REACT_QNX requires RNQNX_FETCH_REACT_NATIVE_DEPS=ON")
+    endif()
+
+    find_package(Qt6 6.11.1 REQUIRED COMPONENTS Core Gui Qml Quick)
+    message(STATUS
+      "Qt ${Qt6_VERSION} found; building full React/Fabric/Qt Quick QNX targets")
+
+    rnqnx_add_qt_views_target()
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/ReactNativeThirdParty.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/ReactNativeRenderer.cmake)
+    rnqnx_add_fabric_adapter_target()
+    rnqnx_add_react_host_target()
+
+    add_executable(rnqnx_react_qnx_probe
+      vnext/probes/react-qnx/main.cpp
+    )
+    target_link_libraries(rnqnx_react_qnx_probe PRIVATE
+      rnqnx_react_host
+      Qt6::Quick
+      Qt6::Qml
+      Qt6::Gui
+    )
+    rnqnx_enable_strict_warnings(rnqnx_react_qnx_probe)
+    set_target_properties(rnqnx_react_qnx_probe PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    )
+  endif()
+
 else()
   message(STATUS "Configuring react-native-qnx for host development")
 
@@ -174,22 +213,7 @@ else()
     if(Qt6_FOUND)
       message(STATUS "Qt ${Qt6_VERSION} found; building Qt Quick host targets (minimum 6.11.1)")
 
-      add_library(rnqnx_views_qt STATIC
-        vnext/src/views/qt/QtQuickItemFactory.cpp
-        vnext/src/views/qt/QnxImageProvider.cpp
-        vnext/src/fabric/QtQuickMountingLayer.cpp
-      )
-      target_include_directories(rnqnx_views_qt PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/vnext/include
-      )
-      target_link_libraries(rnqnx_views_qt PUBLIC Qt6::Quick Qt6::Qml Qt6::Gui)
-      # Qt defines `emit`, `signals`, and `slots` as macros. React Native's
-      # react/bridging/EventEmitter.h declares a method named `emit`, which the
-      # macro shreds into a syntax error. QT_NO_KEYWORDS turns the macros off;
-      # nothing here uses them, and Qt's Q_EMIT/Q_SIGNALS spellings remain
-      # available if a Q_OBJECT class ever needs them.
-      target_compile_definitions(rnqnx_views_qt PUBLIC QT_NO_KEYWORDS)
-      rnqnx_enable_strict_warnings(rnqnx_views_qt)
+      rnqnx_add_qt_views_target()
 
       # Compiling real React Native renderer headers requires folly and glog,
       # which the installed package does not vendor. Fetching is opt-out because
@@ -221,20 +245,7 @@ else()
         include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/ReactNativeRenderer.cmake)
 
         if(RNQNX_BUILD_REACT_HOST)
-          add_library(rnqnx_react_host STATIC
-            vnext/src/runtime/QtReactHost.cpp
-            vnext/src/runtime/QnxExceptionsManager.cpp
-            vnext/src/runtime/QnxFileReaderModule.cpp
-            vnext/src/runtime/QnxImageLoader.cpp
-            vnext/src/runtime/QnxSegmentFetcher.cpp
-            vnext/src/runtime/QnxWebSocketModule.cpp
-          )
-          target_link_libraries(rnqnx_react_host PUBLIC
-            rnqnx_fabric_adapter
-            rnqnx_react_native_renderer
-            rnqnx_hermes
-          )
-          rnqnx_enable_strict_warnings(rnqnx_react_host)
+          rnqnx_add_react_host_target()
 
           add_executable(qt_react_host_host_test
             tests/cpp/QtReactHostHostTest.cpp
@@ -326,25 +337,7 @@ else()
             "RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0"
         )
 
-        add_library(rnqnx_fabric_adapter STATIC
-          vnext/src/fabric/ShadowViewMutationAdapter.cpp
-          # Needs React Native's headers, so it lives with the adapter rather
-          # than in the Qt-only view library.
-          vnext/src/fabric/QtTouchDispatcher.cpp
-          vnext/src/fabric/QtScrollBridge.cpp
-          vnext/include/react-native-qnx/fabric/QtScrollBridge.h
-          vnext/src/fabric/QtSwitchBridge.cpp
-          vnext/include/react-native-qnx/fabric/QtSwitchBridge.h
-          vnext/src/fabric/QtImageBridge.cpp
-          vnext/include/react-native-qnx/fabric/QtImageBridge.h
-        )
-        target_link_libraries(rnqnx_fabric_adapter PUBLIC
-          rnqnx_react_native_renderer
-          rnqnx_views_qt
-        )
-        # QtScrollBridge declares a slot, so it needs moc.
-        set_target_properties(rnqnx_fabric_adapter PROPERTIES AUTOMOC ON)
-        rnqnx_enable_strict_warnings(rnqnx_fabric_adapter)
+        rnqnx_add_fabric_adapter_target()
 
         add_executable(shadow_view_mutation_adapter_host_test
           tests/cpp/ShadowViewMutationAdapterHostTest.cpp
