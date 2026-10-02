@@ -114,9 +114,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
         vnext/probes/runtime-qnx/main.cpp
       )
       target_link_libraries(rnqnx_runtime_qnx_probe PRIVATE
-        rnqnx_hermes
         rnqnx_nitro_qnx
         rnqnx_expo_modules_qnx
+        rnqnx_hermes
         Threads::Threads
       )
       rnqnx_enable_strict_warnings(rnqnx_runtime_qnx_probe)
