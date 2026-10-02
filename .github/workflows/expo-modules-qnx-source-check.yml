@@ -7,6 +7,9 @@ on:
       - 'scripts/validate-qnx-expo-modules.mjs'
       - '.github/workflows/expo-modules-qnx-source-check.yml'
       - 'package.json'
+      - 'vnext/probes/runtime-qnx/**'
+      - 'scripts/validate-runtime-qnx.sh'
+      - 'CMakeLists.txt'
   push:
     branches:
       - main
@@ -15,6 +18,9 @@ on:
       - 'scripts/validate-qnx-expo-modules.mjs'
       - '.github/workflows/expo-modules-qnx-source-check.yml'
       - 'package.json'
+      - 'vnext/probes/runtime-qnx/**'
+      - 'scripts/validate-runtime-qnx.sh'
+      - 'CMakeLists.txt'
 
 permissions:
   contents: read
