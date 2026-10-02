@@ -266,6 +266,7 @@ async function main() {
     );
   }
 
+  /** @type {Record<string, string>} */
   const cmakeThirdPartyVersions = {
     folly: extractRequiredMatch(
       thirdPartyCmake,
