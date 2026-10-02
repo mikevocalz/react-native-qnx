@@ -52,10 +52,19 @@ foreach(_f IN ITEMS "${_hermes_so}" "${_jsi_a}")
   endif()
 endforeach()
 
+# React Native's renderer CMake expects a target named `jsi`. The QNX Hermes
+# build produces that exact implementation as libjsi.a out-of-tree, so expose it
+# as the canonical target instead of compiling a second JSI copy.
+if(NOT TARGET jsi)
+  add_library(jsi INTERFACE)
+  target_link_libraries(jsi INTERFACE "${_jsi_a}")
+  target_include_directories(jsi SYSTEM INTERFACE "${_jsi_include}")
+endif()
+
 add_library(rnqnx_hermes INTERFACE)
 target_link_libraries(rnqnx_hermes INTERFACE
   "${_hermes_so}"
-  "${_jsi_a}"
+  jsi
 )
 target_include_directories(rnqnx_hermes SYSTEM INTERFACE
   "${_hermes_include}"
