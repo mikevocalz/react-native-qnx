@@ -409,7 +409,7 @@ else()
         PASS_REGULAR_EXPRESSION "RNQNX_QTQUICK_HOST_OK items=1000"
       )
     else()
-      message(STATUS "Qt6 >= 6.8 not found; skipping Qt Quick host targets")
+      message(STATUS "Qt6 >= 6.11.1 not found; skipping Qt Quick host targets")
     endif()
   endif()
 
