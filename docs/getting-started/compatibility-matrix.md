@@ -68,13 +68,15 @@ The SDK-58 lockfile regenerated from npm resolves:
 | React Native     | Pin     | 0.88.0-rc.3             | Out-of-tree QNX platform supplies the missing platform integration |
 | React            | Pin     | 19.3.0                  | Matches Expo 58                                                    |
 | Yoga             | Bundled | RN 0.88 source snapshot | No standalone Yoga version is inferred                             |
-| Hermes           | Bundled | `hermes-v260318099.0.2` | Source identity only; QNX port must be rebased and retested        |
+| Hermes           | Bundled | `hermes-v260318099.0.2` | QNX source rebase/tooling implemented; licensed target build/run pending |
 | Fabric scheduler | Bundled | RN 0.88 source snapshot | Source symbols are checked by validator                            |
 | Fabric mounting  | Bundled | RN 0.88 source snapshot | Source symbols are checked by validator                            |
 
-The existing `patches/hermes-qnx-250829.patch` belongs to the prior
-RN-0.86/Hermes-250829 source line. It is not valid SDK-58 evidence until rebased
-against `260318099.0.2`.
+The historical `patches/hermes-qnx-250829.patch` remains quarantined as
+pre-SDK58 evidence. The current path uses the audited
+`hermes-v260318099.0.2` source checkout plus
+`scripts/patch-hermes-qnx.mjs`; source-contract CI is green, while the real
+SDP 8.0.5 cross-build and Pi execution remain hardware gates.
 
 ## Expo, Metro, and TypeScript
 
