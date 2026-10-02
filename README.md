@@ -132,8 +132,9 @@ pnpm pi:install
 ```
 
 The install lane verifies AArch64le + Screen, builds the QNX AArch64 target,
-deploys atomically, runs the Screen probe, and stores stdout, slog2, and
-screenshot evidence when the QNX screenshot utility is present.
+deploys atomically, runs three clean Screen launch/exit cycles by default, stores
+stdout/slog2/screenshot evidence, and automatically verifies + hashes the run
+into `manifest.json`.
 
 See `docs/getting-started/raspberry-pi-today.md` for flashing, first login,
 SSH details, evidence layout, and troubleshooting.
