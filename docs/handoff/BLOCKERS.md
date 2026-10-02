@@ -3,15 +3,15 @@
 ## QNX-RN-008 — Current physical QNX AArch64 validation pending
 
 - **First observed:** 2026-07-19
-- **Updated:** 2026-10-01
+- **Updated:** 2026-10-02
 - **Affected milestone:** Current physical-target exit gate
 - **Current target baseline:** QNX SDP 8.0.5 with QSTI 0.5.0 build 50 on
   Raspberry Pi 4 or Raspberry Pi 5.
 - **Ready now:** The repository has a same-day physical-target lane:
   `scripts/pi-preflight.sh` validates the host toolchain, SSH, AArch64le and
   `/dev/screen`; `scripts/install-pi.sh` configures/builds, deploys
-  atomically, runs the Screen probe, and captures stdout, slog2 and a screenshot
-  when the target utility is available.
+  atomically, runs three clean Screen cycles by default, captures stdout/slog2
+  and a screenshot when available, then verifies and hashes the evidence.
 - **Historical proof:** QNX SDP 8.0.2 on Windows x86-64 successfully
   cross-built the AArch64 C++20/Screen targets. A QNX x86_64 VM also ran the
   C++20 probe and `rnqnx_playground`; the Screen probe initialized a 1280x720
@@ -36,23 +36,21 @@
 - **Scope:** Blocks calling the current physical Pi/QNX target verified. It does
   not block host development or the already-merged SDK-58 tooling line.
 
-## Milestone 1 — Hermes QNX rebase and current target runtime not proven
+## Milestone 1 — Current Hermes/Qt target runtime not proven
 
-- **Updated:** 2026-10-01
+- **Updated:** 2026-10-02
 - **Current source identity:** React Native 0.88.0-rc.3 resolves
   `hermes-compiler` 260318099.0.4 and records bundled Hermes source
   `hermes-v260318099.0.2`.
-- **Historical work:** `patches/hermes-qnx-250829.patch` and the prior QNX
-  Hermes experiments belong to React Native 0.86.2 /
-  `hermes-v250829098.0.16`.
-- **Problem:** The historical patch has not been rebased onto the current Hermes
-  source, and the full React Native + Hermes + Qt Quick stack has not been
-  cross-built or executed on current QNX.
-- **Required work:** Re-audit each QNX Hermes source change against
-  `hermes-v260318099.0.2`, rebuild for QNX, validate first in the QNX VM where
-  useful, then validate AArch64 on the current Pi/QSTI target.
+- **Resolved software work:** The current Hermes QNX source rebase is merged.
+  Exact-source preparation, the current QNX patcher, host-`hermesc`
+  cross-configuration, and the CMake import layer are in-tree and their
+  source-contract CI is green.
+- **Remaining external proof:** Cross-build Hermes/JSI with licensed QNX SDP
+  8.0.5, execute `rnqnx_hermes_qnx_probe` on AArch64le QSTI, then move the
+  host-proven React/Fabric/Qt Quick runtime onto the target.
 - **Scope:** Does not block the native Screen/Pi lane. It blocks a truthful
-  current-line React Native/Hermes runtime-on-QNX claim.
+  current-line React Native/Hermes/Qt runtime-on-QNX claim.
 
 ## RESOLVED — UPSTREAM-DEP-001 dependency audit blocker
 
@@ -72,7 +70,8 @@
 ## Active blocker summary
 
 1. Physical QSTI Pi 4/5 evidence on the current QNX SDP 8.0.5 line.
-2. SDK-58/current-line QNX cross-compilation evidence.
-3. Hermes QNX patch rebase and full RN + Hermes + Qt Quick target runtime proof.
+2. Licensed SDP 8.0.5 cross-build/runtime proof for the current Hermes, Nitro,
+   and Expo QNX seams.
+3. Full RN + Hermes + Fabric + Qt Quick target runtime proof.
 
 There is no current npm dependency-audit blocker.
