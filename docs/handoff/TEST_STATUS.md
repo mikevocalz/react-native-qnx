@@ -12,12 +12,13 @@
   `SDK 58 validation`.
 - PR #10 head passed `Nitro QNX source check`, `Pi tooling quality`, and
   `SDK 58 validation`.
-- PR #11 head passed `Expo Modules QNX source check`, `Nitro QNX source
-  check`, `Pi tooling quality`, and `SDK 58 validation`.
-- PR #12 head passed `Expo QNX autolinking`, `Expo Modules QNX source
-  check`, `Nitro QNX source check`, and `Pi tooling quality`. Its SDK-58
-  validation run was cancelled during the merge sequence; the immediately prior
-  merged #11 head had the full SDK-58 suite green.
+- PR #11 head passed `Expo Modules QNX source check`,
+  `Nitro QNX source check`, `Pi tooling quality`, and `SDK 58 validation`.
+- PR #12 head passed `Expo QNX autolinking`,
+  `Expo Modules QNX source check`, `Nitro QNX source check`, and
+  `Pi tooling quality`. Its SDK-58 validation run was cancelled during the
+  merge sequence; the immediately prior merged #11 head had the full SDK-58
+  suite green.
 - The hardened hardware lane now defaults to three Screen launch/exit cycles,
   requires all three to initialize and shut down cleanly, and automatically
   validates/hashes the evidence into `manifest.json`.
