@@ -13,9 +13,12 @@ and ShellCheck on `main`.
 QNX target proof is deliberately split by generation. Existing QNX SDP 8.0.2
 cross-build and x86_64 VM/Screen results remain valid historical evidence from
 the pre-SDK58 line. The current physical target baseline is QNX SDP 8.0.5 with
-QSTI 0.5.0 build 50 on Raspberry Pi 4 or Raspberry Pi 5. That physical Pi run,
-SDK-58 QNX cross-compilation, and the full React Native + Hermes + Qt Quick
-runtime on QNX remain to be proven.
+QSTI 0.5.0 build 50 on Raspberry Pi 4 or Raspberry Pi 5. That physical Pi run and the full React Native + Hermes + Qt Quick runtime on
+QNX remain to be proven. Current SDP 8.0.5 cross-build tooling, the RN 0.88
+Hermes QNX source rebase, synchronous Nitro QNX runtime, Expo Modules QNX JSI
+bootstrap, and Expo QNX autolinking are now implemented; they still require
+licensed-toolchain/physical-target execution before being promoted to QNX
+runtime proof.
 
 ## Current baseline
 
@@ -35,8 +38,9 @@ runtime on QNX remain to be proven.
 - Historical QNX proof: QNX SDP 8.0.2 on Windows x86-64 cross-built AArch64
   Screen binaries and ran the C++20 and Screen probes in a QNX x86_64 VM.
   Those results are not silently promoted to SDK-58/QNX-8.0.5 proof.
-- The old RN 0.86 Hermes/QNX patch is quarantined as historical work until it
-  is rebased onto `hermes-v260318099.0.2`.
+- The old RN 0.86 Hermes/QNX patch remains quarantined as historical work; the
+  current RN 0.88 port uses the exact `hermes-v260318099.0.2` source and the
+  current patch-preparation pipeline instead.
 
 ## Finished in the current working tree
 
@@ -48,6 +52,17 @@ runtime on QNX remain to be proven.
 - The Pi 4/5 same-day lane is merged: `scripts/pi-preflight.sh` validates
   AArch64le, Screen and SSH; `scripts/install-pi.sh` builds, atomically
   deploys, runs and captures stdout/slog2/screenshot evidence.
+- The hardware install lane is hardened for repeatability: it performs three
+  launch/exit cycles by default, requires every Screen init/clean shutdown
+  marker, and automatically writes a verified SHA-256 evidence manifest.
+- The RN 0.88 Hermes/QNX source rebase is merged against
+  `hermes-v260318099.0.2`, including exact-source preparation, QNX
+  cross-configuration, and import tooling.
+- The synchronous Nitro 0.37.1 QNX runtime is merged with a
+  `QnxPlatformInfo` HybridObject proof seam; async dispatch remains explicitly
+  deferred to the real QNX JS event loop.
+- The Expo Modules Core QNX JSI bootstrap and Expo QNX autolinking/config
+  tooling are merged on the SDK 58 line.
 - The current Pi runbook is
   `docs/getting-started/raspberry-pi-today.md`.
 - The QNX SDP 8.0.2 Windows host toolchain is installed and produces AArch64 QNX
