@@ -1,0 +1,42 @@
+name: React Fabric Qt QNX source check
+
+on:
+  pull_request:
+    paths:
+      - 'CMakeLists.txt'
+      - 'cmake/RnqnxReactQt.cmake'
+      - 'cmake/dependencies/HermesQNX.cmake'
+      - 'cmake/dependencies/ReactNativeRenderer.cmake'
+      - 'vnext/probes/react-qnx/**'
+      - 'scripts/validate-react-qnx-source.mjs'
+      - '.github/workflows/react-qnx-source-check.yml'
+      - 'package.json'
+  push:
+    branches:
+      - main
+    paths:
+      - 'CMakeLists.txt'
+      - 'cmake/RnqnxReactQt.cmake'
+      - 'cmake/dependencies/HermesQNX.cmake'
+      - 'cmake/dependencies/ReactNativeRenderer.cmake'
+      - 'vnext/probes/react-qnx/**'
+      - 'scripts/validate-react-qnx-source.mjs'
+      - '.github/workflows/react-qnx-source-check.yml'
+      - 'package.json'
+
+permissions:
+  contents: read
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm validate:qnx-react
+      - run: pnpm format:check
