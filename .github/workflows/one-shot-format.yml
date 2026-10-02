@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - chore/pi-hardware-ready-2026-10-02
-    paths-ignore:
-      - '.github/workflows/one-shot-format.yml'
 
 permissions:
   contents: write
