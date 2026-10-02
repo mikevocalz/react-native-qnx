@@ -134,8 +134,14 @@ async function main() {
   let runCount = 1;
   try {
     const runCountText = await readFile(path.join(evidenceDir, 'run-count.txt'), 'utf8');
-    runCount = Number.parseInt(runCountText.trim(), 10);
-    if (!Number.isInteger(runCount) || runCount < 1 || runCount > 20) {
+    const runCountValue = runCountText.trim();
+    if (!/^\d+$/.test(runCountValue)) {
+      throw new Error(
+        'Evidence check failed: run-count.txt must contain an integer from 1 through 20'
+      );
+    }
+    runCount = Number(runCountValue);
+    if (!Number.isSafeInteger(runCount) || runCount < 1 || runCount > 20) {
       throw new Error(
         'Evidence check failed: run-count.txt must contain an integer from 1 through 20'
       );
