@@ -12,7 +12,12 @@ const files = {
   'completed-at.txt': '2026-10-01T17:00:00Z\n',
   'config.txt': 'Release\n',
   'target.txt': 'qnxuser@qnxpi.local\n',
+  'run-count.txt': '3\n',
   'playground-output.txt':
+    'rnqnx_playground: Screen surface initialized (1280x720)\n' +
+    'rnqnx_playground: exiting cleanly after 600 frames\n' +
+    'rnqnx_playground: Screen surface initialized (1280x720)\n' +
+    'rnqnx_playground: exiting cleanly after 600 frames\n' +
     'rnqnx_playground: Screen surface initialized (1280x720)\n' +
     'rnqnx_playground: exiting cleanly after 600 frames\n',
   'slog2-tail.txt': 'synthetic slog2 evidence\n',
@@ -37,9 +42,11 @@ const manifest = JSON.parse(await readFile(path.join(fixture, 'manifest.json'), 
 assert.equal(manifest.schemaVersion, 1);
 assert.equal(manifest.target, 'qnxuser@qnxpi.local');
 assert.equal(manifest.configuration, 'Release');
+assert.equal(manifest.runCount, 3);
 assert.equal(manifest.checks.aarch64le, true);
 assert.equal(manifest.checks.screenReady, true);
 assert.equal(manifest.checks.cleanShutdown, true);
+assert.equal(manifest.checks.repeatedRuns, true);
 assert.equal(manifest.checks.screenshotCaptured, false);
 assert.match(manifest.files['playground-output.txt'].sha256, /^[a-f0-9]{64}$/);
 
