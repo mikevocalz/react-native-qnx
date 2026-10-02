@@ -836,7 +836,6 @@ when the bug is reintroduced is not a test: the dedicated regression case
 written for this was deleted rather than kept for reassurance, and the
 detection it claimed was replaced with a measured one under ASan.
 
-
 ## 2026-10-02 – Hardware-ready QNX cleanup
 
 - **Goal:** Finish all non-hardware work before purchasing the Raspberry Pi and
