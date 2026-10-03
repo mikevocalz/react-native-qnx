@@ -5,10 +5,12 @@ import path from 'node:path';
 
 const root = process.cwd();
 
+/** @param {string} relative */
 async function read(relative) {
   return readFile(path.join(root, relative), 'utf8');
 }
 
+/** @param {string} source @param {string} text @param {string} label */
 function requireText(source, text, label) {
   if (!source.includes(text)) {
     throw new Error(`${label}: missing ${JSON.stringify(text)}`);
