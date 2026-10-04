@@ -3,13 +3,18 @@
 #include <hermes/hermes.h>
 #include <QCoreApplication>
 #include <QElapsedTimer>
+#include <QEvent>
 #include <QThread>
 #ifdef RNQNX_ENABLE_WEBSOCKETS
 #include <QWebSocket>
 #include <QWebSocketServer>
 #endif
 
+#include <atomic>
+#include <chrono>
 #include <cstdlib>
+#include <mutex>
+#include <thread>
 #include <iostream>
 #include <vector>
 
@@ -19,18 +24,28 @@ using Module = rnqnx::runtime::QnxWebSocketModule;
 
 class Invoker final : public react::CallInvoker {
  public:
-  std::vector<react::CallFunc> pending;
   void invokeAsync(react::CallFunc&& call) noexcept override {
-    pending.push_back(std::move(call));
+    std::lock_guard<std::mutex> lock(mutex_);
+    pending_.push_back(std::move(call));
   }
   void invokeSync(react::CallFunc&&) override { std::abort(); }
-  void drain(jsi::Runtime& rt) {
-    auto calls = std::move(pending);
-    pending.clear();
-    for (auto& call : calls) {
-      call(rt);
-    }
+  bool hasPending() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return !pending_.empty();
   }
+  void drain(jsi::Runtime& rt) {
+    if (std::this_thread::get_id() != owner_) std::abort();
+    std::vector<react::CallFunc> calls;
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      calls.swap(pending_);
+    }
+    for (auto& call : calls) call(rt);
+  }
+ private:
+  const std::thread::id owner_{std::this_thread::get_id()};
+  std::mutex mutex_;
+  std::vector<react::CallFunc> pending_;
 };
 
 void check(bool condition, const char* message) {
@@ -124,15 +139,65 @@ int main(int argc, char** argv) {
   call(rt, *module, "ping", 999);
   QElapsedTimer timer;
   timer.start();
-  while (invoker->pending.empty() && timer.elapsed() < 3000) {
+  while (!invoker->hasPending() && timer.elapsed() < 3000) {
     QCoreApplication::processEvents();
   }
-  check(!invoker->pending.empty(), "callback queued before destruction");
+  check(invoker->hasPending(), "callback queued before destruction");
   connect(3); // Also leave a native command pending at destruction.
   module.reset();
   invoker->drain(rt);
   QCoreApplication::processEvents();
   check(eval(rt, "events.length === 5").getBool(), "queued callbacks dropped after invalidation");
+  // Repeat on an actual separate JS thread while the application thread owns
+  // socket events and deferred QObject deletion. No runtime access leaves JS.
+  std::atomic_bool finished{false};
+  std::thread jsThread([&] {
+    {
+      auto jsRuntime = facebook::hermes::makeHermesRuntime();
+      auto& js = *jsRuntime;
+      auto jsInvoker = std::make_shared<Invoker>();
+      auto jsModule = std::make_unique<Module>(jsInvoker);
+      eval(js, "globalThis.events = []; globalThis.__rctDeviceEventEmitter = {"
+               "emit(name, event) { events.push({name, ...event}); }};");
+      call(js, *jsModule, "connect", jsi::String::createFromUtf8(js, url),
+           jsi::Value::null(), jsi::Object(js), 30);
+      const auto waitJs = [&](int expected) {
+        QElapsedTimer timeout;
+        timeout.start();
+        while (eval(js, "events.length").getNumber() < expected && timeout.elapsed() < 3000) {
+          jsInvoker->drain(js);
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        check(eval(js, "events.length").getNumber() == expected, "cross-thread event count");
+      };
+      waitJs(1);
+      call(js, *jsModule, "send", jsi::String::createFromAscii(js, "threaded"), 30);
+      waitJs(2);
+      check(eval(js, "events[1].data === 'threaded' && events[1].id === 30").getBool(),
+            "cross-thread echo payload");
+      call(js, *jsModule, "ping", 998);
+      QElapsedTimer pendingTimeout;
+      pendingTimeout.start();
+      while (!jsInvoker->hasPending() && pendingTimeout.elapsed() < 3000) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      }
+      check(jsInvoker->hasPending(), "cross-thread callback pending");
+      jsModule.reset(); // On JS thread: Qt transport must be deleted on app thread.
+      jsInvoker->drain(js);
+      check(eval(js, "events.length === 2").getBool(), "cross-thread invalidation");
+    }
+    finished.store(true);
+  });
+  QElapsedTimer threadTimeout;
+  threadTimeout.start();
+  while (!finished.load() && threadTimeout.elapsed() < 10000) {
+    QCoreApplication::processEvents();
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+    QThread::msleep(1);
+  }
+  check(finished.load(), "JS thread completed");
+  jsThread.join();
+  QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
 #else
   threw = false;
   try {

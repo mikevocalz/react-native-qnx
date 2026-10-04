@@ -1,6 +1,7 @@
 #include "react-native-qnx/runtime/QtWebSocketTransport.h"
 
 #include <QCoreApplication>
+#include <QCryptographicHash>
 #include <QElapsedTimer>
 #include <QNetworkRequest>
 #include <QTcpServer>
@@ -124,6 +125,10 @@ int main(int argc, char** argv) {
   for (int id = 5; id <= 8; ++id) {
     check(count(id, Kind::Failed) == 1, "invalid handshake rejected");
   }
+  transport->connectSocket(22, url, {QStringLiteral("chat\n")}, {});
+  transport->connectSocket(23, url, {}, {{"X-Test\n", "value"}});
+  check(count(22, Kind::Failed) == 1 && count(23, Kind::Failed) == 1,
+        "terminal newlines rejected in protocols and header names");
   transport->sendText(9, QStringLiteral("not connected"));
   check(count(9, Kind::Failed) == 1, "unknown socket fails");
 
@@ -191,6 +196,74 @@ int main(int argc, char** argv) {
   until([&] { return count(17, Kind::Failed) == 1; }, "untrusted TLS fails closed");
   check(count(17, Kind::Open) == 0 && count(17, Kind::Closed) == 0,
         "untrusted TLS never opens or duplicates close");
+  check(!events.back().data.contains(QStringLiteral("timed out")),
+        "TLS rejected by handshake rather than timeout");
+
+  connect(18);
+  transport->closeSocket(18, 1000, QString(124, QLatin1Char('x')));
+  check(count(18, Kind::Failed) == 1, "oversized close reason rejected");
+  connect(19);
+  peers.back()->abort();
+  until([&] { return count(19, Kind::Failed) == 1; }, "abrupt peer loss fails");
+  check(count(19, Kind::Closed) == 0, "abrupt peer loss is terminal once");
+
+  // Minimal RFC6455 peer accepts the handshake, observes ping/close frames,
+  // and deliberately never acknowledges close so the closing deadline is real.
+  QTcpServer rawServer;
+  check(rawServer.listen(QHostAddress::LocalHost, 0), "raw server listen");
+  bool pingSeen = false;
+  bool closeSeen = false;
+  QObject::connect(&rawServer, &QTcpServer::newConnection, &app, [&] {
+    auto* peer = rawServer.nextPendingConnection();
+    peer->setParent(&rawServer);
+    auto buffer = std::make_shared<QByteArray>();
+    auto upgraded = std::make_shared<bool>(false);
+    QObject::connect(peer, &QTcpSocket::readyRead, peer,
+        [&, peer, buffer, upgraded] {
+      buffer->append(peer->readAll());
+      if (!*upgraded) {
+        const auto end = buffer->indexOf("\r\n\r\n");
+        if (end < 0) return;
+        QByteArray key;
+        for (const auto& line : buffer->left(end).split('\n')) {
+          if (line.toLower().startsWith("sec-websocket-key:")) {
+            key = line.mid(line.indexOf(':') + 1).trimmed();
+          }
+        }
+        check(!key.isEmpty(), "raw handshake key");
+        const auto accept = QCryptographicHash::hash(
+            key + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11",
+            QCryptographicHash::Sha1).toBase64();
+        peer->write("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\n"
+                    "Connection: Upgrade\r\nSec-WebSocket-Accept: " + accept + "\r\n\r\n");
+        buffer->remove(0, end + 4);
+        *upgraded = true;
+      }
+      while (buffer->size() >= 2) {
+        const auto length = static_cast<unsigned char>((*buffer)[1]) & 0x7f;
+        check(length < 126, "control frame length");
+        const bool masked = (static_cast<unsigned char>((*buffer)[1]) & 0x80) != 0;
+        const auto frameSize = 2 + (masked ? 4 : 0) + length;
+        if (buffer->size() < frameSize) return;
+        const auto opcode = static_cast<unsigned char>((*buffer)[0]) & 0x0f;
+        if (opcode == 9) pingSeen = true;
+        if (opcode == 8) closeSeen = true;
+        buffer->remove(0, frameSize);
+      }
+    });
+  });
+  transport->connectSocket(20,
+      QUrl(QStringLiteral("ws://127.0.0.1:%1/").arg(rawServer.serverPort())), {}, {});
+  until([&] { return count(20, Kind::Open) == 1; }, "raw peer open");
+  transport->ping(20);
+  until([&] { return pingSeen; }, "ping reaches peer as control frame");
+  transport->closeSocket(20, 1000, QStringLiteral("timeout"));
+  until([&] { return count(20, Kind::Failed) == 1; }, "close deadline");
+  check(closeSeen && count(20, Kind::Closed) == 0, "close sent with one timeout event");
+
+  connect(21);
+  transport->sendText(21, QString(16 * 1024 * 1024 + 1, QLatin1Char('x')));
+  check(count(21, Kind::Failed) == 1, "outgoing message bound");
 
   connect(13);
   transport->sendText(13, QStringLiteral("pending at destruction"));

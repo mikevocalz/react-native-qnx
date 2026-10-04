@@ -66,6 +66,20 @@ jobs:
             qnx_websocket_module_disabled_host_test
       - name: Run actual loopback and Hermes contracts
         run: ctest --test-dir build/websocket -R websocket --output-on-failure --no-tests=error
+      - name: Verify default dependency isolation and target acceptance guard
+        run: |
+          cmake -S . -B build/websocket-disabled -G Ninja \
+            -DCMAKE_DISABLE_FIND_PACKAGE_Qt6=TRUE \
+            -DRNQNX_ENABLE_WEBSOCKETS=OFF \
+            -DRNQNX_FETCH_REACT_NATIVE_DEPS=OFF
+          cmake --build build/websocket-disabled --parallel 2
+          ctest --test-dir build/websocket-disabled --output-on-failure --no-tests=error
+          if cmake -DCMAKE_SYSTEM_NAME=QNX -DRNQNX_ENABLE_WEBSOCKETS=ON \
+              -P cmake/RnqnxWebSockets.cmake > /tmp/websocket-qnx-guard.log 2>&1; then
+            echo "QNX acceptance guard unexpectedly allowed configuration"
+            exit 1
+          fi
+          grep -q 'host-only pending licensed SDP' /tmp/websocket-qnx-guard.log
       - name: Retain test evidence
         if: always()
         uses: actions/upload-artifact@v4

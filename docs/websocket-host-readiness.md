@@ -54,12 +54,13 @@ ctest --test-dir build/websocket -R websocket --output-on-failure
 `RNQNX_BUILD_WEBSOCKET_JSI_TESTS` is separately opt-in because it builds the
 repository-pinned Hermes revision. It tests the actual RN TurboModule dispatcher,
 JS event shapes, disabled-feature error, invalid arguments, and queued-callback
-invalidation. It does not replace the complete Fabric/renderer test suite.
+invalidation, including creation and destruction on a separate JS thread. It does not replace the complete Fabric/renderer test suite.
 
 The standalone transport test uses real loopback WebSocket servers for text,
 binary, headers, subprotocols, concurrent sockets, ping, close, connection refusal,
-opening timeout, cancellation, duplicate IDs, invalid input, destruction with work
-pending, and untrusted TLS rejection. ASan and UBSan instrument the transport and
+opening/closing timeouts, wire-level ping, cancellation, duplicate IDs, malformed
+header tokens, message-size limits, destruction with work pending, and untrusted
+TLS rejection. ASan and UBSan instrument the transport and
 test/module translation units when `RNQNX_ENABLE_HOST_SANITIZERS=ON`; Qt and Hermes
 are not themselves sanitizer-instrumented. Leak detection is disabled for
 process-lifetime Qt/Hermes singletons, as in the other host tests.

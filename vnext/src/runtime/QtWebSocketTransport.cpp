@@ -12,7 +12,7 @@ namespace {
 constexpr quint64 kMessageLimit = 16 * 1024 * 1024;
 bool token(const QByteArray& value) {
   static const QRegularExpression expression(
-      QStringLiteral("^[!#$%&'*+.^_`|~0-9A-Za-z-]+$"));
+      QRegularExpression::anchoredPattern(QStringLiteral("[!#$%&'*+.^_`|~0-9A-Za-z-]+")));
   return expression.match(QString::fromLatin1(value)).hasMatch();
 }
 } // namespace
