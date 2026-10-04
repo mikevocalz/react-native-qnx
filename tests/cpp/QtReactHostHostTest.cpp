@@ -1773,7 +1773,7 @@ void imageLoaderPromiseContract() {
     globalThis.__imageContractDone = false;
     globalThis.__imageContractError = null;
     (async () => {
-      const loader = __turboModuleProxy('ImageLoader');
+      const loader = nativeModuleProxy.ImageLoader;
       const uri = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
       const check = (ok, message) => { if (!ok) throw Error(message); };
       const rejects = async (promise) => {

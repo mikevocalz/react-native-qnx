@@ -57,6 +57,14 @@ teardown while a request is pending. It also resolves and reads a prefetched
 entry through the real Qt Quick provider. CI runs this test with exact Qt
 6.11.1 and uploads its CTest evidence.
 
+The full `QtReactHostHostTest` also contains `imageLoaderPromiseContract`, which
+uses the real bridgeless `nativeModuleProxy.ImageLoader` in Hermes after loading
+the Metro bundle. It checks Promise resolution shapes, metadata prefetch,
+truthful cache entries, actual Error rejections and invalid arguments. This case
+and existing `imageGetSize` passed locally under ASan using the full-host graph
+build repairs from draft PR #28. The target adapter and its allocation site were
+rebuilt together; no QNX execution or whole-renderer-suite pass is implied.
+
 These checks are host evidence. QNX SDP 8.0.5 cross-compilation, Qt Network
 module size/build-time measurements, physical Pi networking/TLS/plugin behavior
 and on-glass rendering remain pending. No physical-target gate is promoted.

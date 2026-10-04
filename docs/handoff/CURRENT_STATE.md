@@ -5,8 +5,10 @@
 Added real asynchronous image fetching/header handling, bounded decoded memory
 prefetch/query and shared Qt Quick provider reuse. The exact Qt 6.11.1 Linux
 loopback HTTP/cache/provider test passed locally; the QnxImageLoader translation
-unit compiles against the pinned RN 0.88 headers. Full Hermes Promise integration
-is added to QtReactHostHostTest and awaits the full renderer build/CI result.
+unit compiles against the pinned RN 0.88 headers. The existing Image.getSize and new Hermes Promise contract cases also pass
+locally under ASan, using the full-host graph build repairs from draft PR #28.
+The image adapter/backend/provider/factory and host allocation site were rebuilt
+together for that targeted integration run; this is not a full-suite pass.
 See `docs/image-loader.md` for commands, contract and limits. The dedicated
 image-loader workflow runs real local HTTP tests, without external services.
 

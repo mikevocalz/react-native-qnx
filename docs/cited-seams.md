@@ -557,6 +557,9 @@ React Native 0.88.0-rc.3 package, before implementing these calls:
   `AsyncCallback`; `Error.h`: actual JS Error rejection. The callback wrapper
   retains JS functions through `LongLivedObjectCollection` and schedules them
   through `CallInvoker`, rather than capturing a raw JSI runtime.
+- React Native `ReactCommon/react/nativemodule/core/ReactCommon/TurboModuleBinding.cpp`:
+  `install` selects `nativeModuleProxy` in bridgeless mode; the Hermes contract
+  test uses that real module lookup.
 - React Native `src/private/specs_DEPRECATED/modules/NativeImageLoaderIOS.js`:
   method names, `[width,height]` versus `{width,height}` results, metadata
   arguments and Promise query-cache map. This QNX core adapter preserves that
