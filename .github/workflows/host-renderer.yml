@@ -1,0 +1,60 @@
+name: SDK 58 full host renderer
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: host-renderer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  renderer:
+    name: Qt 6.11 / RN 0.88 / Hermes host tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      QT_QPA_PLATFORM: offscreen
+      QT_QUICK_BACKEND: software
+      QSG_RHI_BACKEND: software
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libclang-dev
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Install exact host Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          cache: true
+      - name: Build and run the required full renderer graph
+        run: node scripts/validate-host-renderer.mjs
+      - name: Preserve exact-run test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: host-renderer-${{ github.sha }}
+          path: |
+            build/linux-host-renderer/evidence/
+            build/linux-host-renderer/Testing/Temporary/
+            build/linux-host-renderer/CMakeCache.txt
+            build/linux-host-renderer/CMakeFiles/CMakeConfigureLog.yaml
+          if-no-files-found: warn

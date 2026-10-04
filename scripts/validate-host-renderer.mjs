@@ -1,0 +1,60 @@
+#!/usr/bin/env node
+
+import { spawnSync } from 'node:child_process';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
+
+// This lane must fail closed: CTest success with only the two smoke tests is
+// not evidence that Qt, Fabric, the current Hermes source or Metro ran.
+const preset = 'linux-host-renderer';
+const build = path.resolve('build', preset);
+const expectedTests = [
+  'rnqnx_g0_cxx20_probe',
+  'qnx_screen_surface_host_test',
+  'rnqnx_hermes_probe',
+  'qt_react_host_host_test',
+  'rnqnx_rn_headers_probe',
+  'shadow_view_mutation_adapter_host_test',
+  'shadow_tree_mounting_host_test',
+  'qtquick_mounting_layer_host_test',
+  'rnqnx_qtquick_host_probe',
+];
+
+/** @param {string} command @param {string[]} args @param {boolean} capture */
+function run(command, args, capture = false) {
+  const result = spawnSync(command, args, {
+    encoding: 'utf8',
+    stdio: capture ? 'pipe' : 'inherit',
+    env: {
+      ...process.env,
+      QT_QPA_PLATFORM: 'offscreen',
+      QSG_RHI_BACKEND: 'software',
+      QT_QUICK_BACKEND: 'software',
+    },
+  });
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    if (capture) process.stderr.write(result.stderr ?? '');
+    throw new Error(`${command} failed (${result.signal ?? result.status})`);
+  }
+  return result.stdout;
+}
+
+if (process.platform !== 'linux') {
+  throw new Error('The reproducible full-renderer lane currently targets Linux.');
+}
+run('cmake', ['--preset', preset]);
+run('cmake', ['--build', '--preset', preset]);
+const inventory = run('ctest', ['--test-dir', build, '--show-only=json-v1'], true);
+const registered = new Set(
+  JSON.parse(inventory).tests.map(/** @param {{name: string}} test */ (test) => test.name)
+);
+for (const name of expectedTests) {
+  if (!registered.has(name)) throw new Error(`Required host-renderer test missing: ${name}`);
+}
+mkdirSync(path.join(build, 'evidence'), { recursive: true });
+writeFileSync(path.join(build, 'evidence', 'ctest-inventory.json'), inventory);
+run('ctest', ['--preset', preset, '--output-junit', path.join(build, 'evidence', 'ctest.xml')]);
+console.log(
+  'RNQNX_FULL_HOST_RENDERER_OK Qt Hermes Fabric Metro host tests passed (not QNX target proof)'
+);

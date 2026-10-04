@@ -169,6 +169,17 @@
         "BUILD_TESTING": "OFF",
         "RNQNX_G0_PROBE_ONLY": "ON"
       }
+    },
+    {
+      "name": "linux-host-renderer",
+      "displayName": "Linux full React/Fabric/Qt/Hermes host tests",
+      "inherits": "linux-host-tests",
+      "binaryDir": "${sourceDir}/build/linux-host-renderer",
+      "cacheVariables": {
+        "RNQNX_REQUIRE_FULL_HOST_RENDERER": "ON",
+        "RNQNX_BUILD_HERMES": "ON",
+        "RNQNX_FETCH_REACT_NATIVE_DEPS": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -217,6 +228,11 @@
       "name": "qnx-pi",
       "configurePreset": "qnx-pi",
       "targets": ["rnqnx_g0_cxx20_probe"]
+    },
+    {
+      "name": "linux-host-renderer",
+      "configurePreset": "linux-host-renderer",
+      "jobs": 2
     }
   ],
   "testPresets": [
@@ -232,6 +248,17 @@
       "configurePreset": "linux-host-tests",
       "output": {
         "outputOnFailure": true
+      }
+    },
+    {
+      "name": "linux-host-renderer",
+      "configurePreset": "linux-host-renderer",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "timeout": 180
       }
     }
   ]
