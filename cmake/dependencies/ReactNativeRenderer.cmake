@@ -92,6 +92,10 @@ foreach(platform_dir IN ITEMS
 endforeach()
 
 set(RNQNX_REACT_NATIVE_MODULES
+  react/cxxstableapi
+  jserrorhandler
+  react/renderer/observers/resize
+  react/nativemodule/resizeobserver
   react/debug
   callinvoker
   react/utils
@@ -172,7 +176,34 @@ foreach(module IN LISTS RNQNX_REACT_NATIVE_MODULES)
     "${REACT_COMMON_DIR}/${module}"
     "${CMAKE_BINARY_DIR}/react-native/${module}"
   )
+  # Upstream Apple-oriented .cpp files use #pragma mark. GCC diagnoses these,
+  # unlike Clang. Preserve the diagnostics without failing RN's own -Werror;
+  # this PRIVATE setting does not relax warnings for our adapter or tests.
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    get_property(_rnqnx_module_targets DIRECTORY "${REACT_COMMON_DIR}/${module}"
+      PROPERTY BUILDSYSTEM_TARGETS)
+    foreach(_rnqnx_target IN LISTS _rnqnx_module_targets)
+      get_target_property(_rnqnx_type ${_rnqnx_target} TYPE)
+      if(NOT _rnqnx_type STREQUAL "INTERFACE_LIBRARY")
+        target_compile_options(${_rnqnx_target} PRIVATE -Wno-error=unknown-pragmas)
+      endif()
+    endforeach()
+  endif()
 endforeach()
+
+# RN 0.88's redbox AnsiParser.h uses uint8_t without including <cstdint>.
+# libc++ supplies it transitively; libstdc++ does not. Supply the standard
+# header for this one upstream translation unit without editing node_modules.
+set_property(SOURCE "${REACT_COMMON_DIR}/react/debug/redbox/AnsiParser.cpp"
+  TARGET_DIRECTORY react_debug APPEND PROPERTY COMPILE_OPTIONS
+  "$<$<COMPILE_LANG_AND_ID:CXX,GNU,Clang,AppleClang>:-include;cstdint>")
+
+# The generated RN feature flags source spells a Clang-only diagnostic as
+# `#pragma GCC diagnostic ignored "-Wglobal-constructors"`. Keep it visible as
+# a warning on GCC, but don't turn that upstream pragma into a build failure.
+set_property(SOURCE "${REACT_COMMON_DIR}/react/featureflags/ReactNativeFeatureFlags.cpp"
+  TARGET_DIRECTORY react_featureflags APPEND PROPERTY COMPILE_OPTIONS
+  "$<$<CXX_COMPILER_ID:GNU>:-Wno-error=pragmas>")
 
 # `react_codegen_rncore` is codegen output, so it has no CMakeLists to add.
 # ReactCommon/react/renderer/components/rncore/ holds five headers that each
@@ -369,6 +400,10 @@ add_library(yoga ALIAS yogacore)
 # them, so consumers link this aggregate instead of guessing a subset.
 add_library(rnqnx_react_native_renderer INTERFACE)
 set(RNQNX_REACT_NATIVE_RENDERER_TARGETS
+  react_cxxstableapi
+  jserrorhandler
+  react_renderer_observers_resize
+  react_nativemodule_resizeobserver
   react_debug
   react_utils
   react_featureflags

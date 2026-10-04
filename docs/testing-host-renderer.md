@@ -55,3 +55,11 @@ PR #27; this lane does not suppress that audit.
   narrowly suppresses that type's deprecation. This custom single-thread host
   retains the same path with the same local diagnostic scope; it does not
   claim the buffered callable-module ordering of a full `ReactInstance`.
+- The current RN target graph also needs upstream `react/cxxstableapi`,
+  `jserrorhandler`, `react/renderer/observers/resize` and
+  `react/nativemodule/resizeobserver`. These are built from their shipped
+  CMakeLists rather than empty alias targets.
+- `react/debug/redbox/AnsiParser.h` omits `<cstdint>` for `uint8_t`. The build
+  supplies that standard header to its one translation unit. RN's compiled
+  sources retain nonfatal GCC diagnostics for Apple-only pragmas; first-party
+  code and tests retain strict warnings-as-errors.
