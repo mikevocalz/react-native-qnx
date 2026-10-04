@@ -4,22 +4,19 @@
 
 namespace rnqnx::runtime {
 
-/// No-op WebSocketModule for the QNX platform.
-///
-/// React Native's WebSocket implementation is not wired to a native socket
-/// backend on this platform. The module is installed so that bundles that merely
-/// reference it do not crash on TurboModule resolution, but every operation is
-/// a no-op or warning. A real implementation would need Qt WebSockets or an
-/// equivalent QNX-native async socket library integrated with the runtime's
-/// event loop.
+/// React Native's WebSocketModule, backed by an explicitly opt-in Qt transport.
+/// With the feature disabled, socket operations throw an actionable error.
 class QnxWebSocketModule final : public facebook::react::TurboModule {
  public:
   static constexpr const char* kModuleName = "WebSocketModule";
 
   explicit QnxWebSocketModule(
       std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
+  ~QnxWebSocketModule() override;
 
  private:
+  struct Impl;
+  std::shared_ptr<Impl> impl_;
   void registerMethods();
 
   static facebook::jsi::Value connect(

@@ -2,6 +2,8 @@ include_guard(GLOBAL)
 
 get_filename_component(RNQNX_REACT_QT_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 
+include(${CMAKE_CURRENT_LIST_DIR}/RnqnxWebSockets.cmake)
+
 function(rnqnx_add_qt_views_target)
   if(TARGET rnqnx_views_qt)
     return()
@@ -78,5 +80,9 @@ function(rnqnx_add_react_host_target)
     rnqnx_hermes
     Qt6::Network
   )
+  if(RNQNX_ENABLE_WEBSOCKETS)
+    target_compile_definitions(rnqnx_react_host PRIVATE RNQNX_ENABLE_WEBSOCKETS)
+    target_link_libraries(rnqnx_react_host PUBLIC rnqnx_websocket_transport)
+  endif()
   rnqnx_enable_strict_warnings(rnqnx_react_host)
 endfunction()

@@ -109,3 +109,19 @@ The isolated host test finds Core, Gui, Network, Qml and Quick at the same
 This is a draft implementation, not acceptance of Network on the QNX target;
 those measurements and licensed SDP/runtime verification still block target
 acceptance under the rule above.
+
+## Opt-in host WebSocket experiment (not a target module addition)
+
+`RNQNX_ENABLE_WEBSOCKETS=ON` requires `Core`, `Network`, and `WebSockets` at Qt
+6.11.1 for the experimental host transport. It defaults to **OFF** and is rejected
+when `CMAKE_SYSTEM_NAME=QNX`. This does not change `RNQNX_QT_HOST_MODULES`, the
+baseline renderer dependencies, or the accepted QNX subset.
+
+Network provides the asynchronous TCP/TLS substrate; Tier 2 WebSockets provides
+the RFC 6455 handshake, framing, and lifecycle for RN's WebSocket API. Both are
+LGPLv3/GPLv2 open-source modules under the ADR-0011 posture. Their optional host
+use is justified by real loopback and TurboModule contract tests. Target
+binary-size and cross-build-time deltas, including transitive TLS costs, are
+still **TBD** and remain acceptance blockers. See
+[host WebSocket readiness](websocket-host-readiness.md) for reproducible tests,
+limitations, and the evidence required before removing the target guard.
