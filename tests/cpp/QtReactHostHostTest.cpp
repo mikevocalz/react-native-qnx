@@ -458,6 +458,56 @@ void timerCallbacksRunMicrotaskCheckpoints() {
   EXPECT(done.isBool() && done.getBool());
 }
 
+void throwingMicrotasksAreReportedAndRecover() {
+  Fixture fixture;
+  EXPECT(!fixture.host().evaluate(
+      "HermesInternal.enqueueJob(() => { throw new Error('checkpoint-boom'); });",
+      "checkpoint-error.js"));
+  EXPECT(fixture.host().lastError().contains(QStringLiteral("checkpoint-boom")));
+  EXPECT(fixture.host().javaScriptErrors().size() == 1);
+  EXPECT(fixture.host().javaScriptErrors().front().isFatal);
+  EXPECT(fixture.host().evaluate("globalThis.recovered = true", "recovery.js"));
+  EXPECT(fixture.host().lastError().isEmpty());
+  auto& runtime = fixture.host().runtime();
+  EXPECT(runtime.global().getProperty(runtime, "recovered").getBool());
+}
+
+void throwingTimerCallbacksAreReportedAndRecover() {
+  Fixture fixture;
+  fixture.host().installTimers();
+  EXPECT(fixture.host().evaluate(
+      "setTimeout(() => { throw new Error('timer-boom'); }, 0)", "timer-error.js"));
+  QElapsedTimer deadline;
+  deadline.start();
+  while (fixture.host().javaScriptErrors().empty() && deadline.elapsed() < 1000) {
+    fixture.host().pumpEvents();
+  }
+  EXPECT(fixture.host().javaScriptErrors().size() == 1);
+  EXPECT(fixture.host().lastError().contains(QStringLiteral("timer-boom")));
+  EXPECT(fixture.host().evaluate("1 + 1", "timer-recovery.js"));
+  EXPECT(fixture.host().lastError().isEmpty());
+}
+
+void schedulerErrorsPreserveAndContainJavaScriptHandlers() {
+  Fixture fixture;
+  EXPECT(!fixture.host().evaluate(
+      "globalThis.ErrorUtils = {reportError() {}, reportFatalError(error) {"
+      "globalThis.forwardedError = error.message; }};"
+      "HermesInternal.enqueueJob(() => { throw new Error('hook-boom'); });",
+      "error-hook.js"));
+  auto& runtime = fixture.host().runtime();
+  EXPECT(runtime.global().getProperty(runtime, "forwardedError")
+             .asString(runtime).utf8(runtime) == "hook-boom");
+  EXPECT(fixture.host().javaScriptErrors().size() == 1);
+  EXPECT(!fixture.host().evaluate(
+      "ErrorUtils.reportFatalError = () => { throw new Error('handler-boom'); };"
+      "HermesInternal.enqueueJob(() => { throw new Error('original-boom'); });",
+      "broken-error-hook.js"));
+  EXPECT(fixture.host().lastError().contains(QStringLiteral("original-boom")));
+  EXPECT(fixture.host().javaScriptErrors().size() == 2);
+  EXPECT(fixture.host().evaluate("1 + 1", "hook-recovery.js"));
+}
+
 void schedulerInstallsTheFabricUIManager() {
   Fixture fixture;
   // Constructing the Scheduler queues UIManagerBinding::createAndInstallIfNeeded
@@ -2257,6 +2307,10 @@ int main(int argc, char** argv) {
        javaScriptErrorsAreReportedNotSwallowed},
       {"evaluateRejectsReentrantJavaScript", evaluateRejectsReentrantJavaScript},
       {"timerCallbacksRunMicrotaskCheckpoints", timerCallbacksRunMicrotaskCheckpoints},
+      {"throwingMicrotasksAreReportedAndRecover", throwingMicrotasksAreReportedAndRecover},
+      {"throwingTimerCallbacksAreReportedAndRecover", throwingTimerCallbacksAreReportedAndRecover},
+      {"schedulerErrorsPreserveAndContainJavaScriptHandlers",
+       schedulerErrorsPreserveAndContainJavaScriptHandlers},
       {"schedulerInstallsTheFabricUIManager",
        schedulerInstallsTheFabricUIManager},
       {"surfaceCommitMountsThroughTheDelegate",

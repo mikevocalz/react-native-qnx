@@ -26,6 +26,7 @@
 #include <react/renderer/mounting/ShadowTree.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+#include <jserrorhandler/ErrorUtils.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <react/nativemodule/defaults/DefaultTurboModules.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
@@ -380,7 +381,36 @@ class QtReactHost::Impl {
           --runtimeExecutionDepth;
         };
 
-    runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
+    // RN's default error handler calls JS ErrorUtils and may throw if a
+    // bootstrap bundle has not installed it. scheduleWork is noexcept, so
+    // checkpoint/timer errors need a host-owned reporting boundary instead.
+    runtimeScheduler = std::make_shared<RuntimeScheduler>(
+        runtimeExecutor,
+        facebook::react::HighResTimeStamp::now,
+        [this](facebook::jsi::Runtime& runtime, facebook::jsi::JSError& error) {
+          ++taskErrorSequence;
+          const auto previousReports = javaScriptErrors.size();
+          // Preserve an installed JS error hook, but never let a missing or
+          // broken ErrorUtils handler escape through scheduleWork's noexcept.
+          try {
+            const auto utils = runtime.global().getProperty(runtime, "ErrorUtils");
+            if (utils.isObject()) {
+              const auto object = utils.asObject(runtime);
+              if (object.hasProperty(runtime, "reportFatalError") &&
+                  object.hasProperty(runtime, "reportError")) {
+                facebook::react::handleJSError(runtime, error, true);
+              }
+            }
+          } catch (...) {
+            qWarning() << "ErrorUtils reporting failed; retaining the host error";
+          }
+          if (javaScriptErrors.size() == previousReports) {
+            javaScriptErrors.push_back(
+                {error.getMessage(), error.getStack(), true});
+          }
+          lastError = QString::fromStdString(error.getMessage());
+          qWarning().noquote() << "[js task error]" << lastError;
+        });
     facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(
         *runtime, runtimeScheduler);
 
@@ -494,6 +524,7 @@ class QtReactHost::Impl {
   }
 
   int runtimeExecutionDepth{0};
+  std::size_t taskErrorSequence{0};
   std::unique_ptr<facebook::jsi::Runtime> runtime;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler;
   std::shared_ptr<const ContextContainer> contextContainer;
@@ -557,6 +588,7 @@ bool QtReactHost::evaluate(
   }
   try {
     std::exception_ptr evaluationError;
+    const auto previousTaskError = impl_->taskErrorSequence;
     impl_->runtimeScheduler->scheduleWork(
         [&](facebook::jsi::Runtime& runtime) {
           try {
@@ -568,6 +600,11 @@ bool QtReactHost::evaluate(
         });
     if (evaluationError) {
       std::rethrow_exception(evaluationError);
+    }
+    if (impl_->taskErrorSequence != previousTaskError) {
+      // The script itself may succeed while its microtask checkpoint fails.
+      // Keep the host error from that checkpoint rather than clearing it.
+      return false;
     }
     impl_->scriptUrl = sourceUrl;
     impl_->lastError.clear();

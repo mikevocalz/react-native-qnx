@@ -88,3 +88,13 @@ The suite exposed two real event-loop/input bugs, plus outdated QML fixtures:
 Additional regression cases cover rejected reentrant evaluation without side
 effects, timer Promise microtasks completing without a manual drain, and a real
 Metro-bundled React `useState` update changing Yoga/Qt geometry from 64 to 96.
+
+Scheduler errors are reported to the host without requiring JS `ErrorUtils`
+during bootstrap. Valid JS error hooks are preserved behind a protected boundary;
+a throwing error hook cannot replace the original failure or escape it. A throwing microtask causes
+`evaluate` to return false and preserve `lastError`; timer-task failures are
+recorded without aborting the process. Both paths have recovery regressions.
+
+This host is not a sandbox for untrusted/unbounded JavaScript. RN's upstream
+microtask retry ceiling and its fatal behavior after an excessive throwing-job
+burst remain unchanged; ordinary single task/checkpoint failures are covered.
