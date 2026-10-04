@@ -14,6 +14,8 @@
   because upstream `FBReactNativeSpecJSI.h` emits `#pragma mark` under `-Werror`.
   No runtime test was reached. Shared Qt/Hermes build fixes are being handled
   separately; the PR remains draft until linked CTest execution succeeds.
+  With the in-progress host-graph fixes applied, the revised probe TU compiles
+  successfully (exit 0); this is compilation, not linked/runtime evidence.
 - QNX SDP 8.0.5 compilation, Pi execution and pixel evidence: not run.
 
 ## Current QNX integration source/tooling validation — 2026-10-02

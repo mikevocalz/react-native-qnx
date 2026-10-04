@@ -6,6 +6,12 @@ const AppRegistry = require('react-native/Libraries/ReactNative/AppRegistry').Ap
 const View = require('react-native/Libraries/Components/View/View').default;
 
 function ReactRenderProbe() {
+  React.useLayoutEffect(() => {
+    globalThis.__rnqnxProbeUnmounted = false;
+    return () => {
+      globalThis.__rnqnxProbeUnmounted = true;
+    };
+  }, []);
   const state = React.useState(false);
   const updated = state[0];
   const setUpdated = state[1];

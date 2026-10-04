@@ -65,6 +65,8 @@ for (const token of [
   'assertGeometry(root, true)',
   'host.delegate().mountedTransactionCount()',
   'host.javaScriptErrors()',
+  'layer.mountedCount() == 1',
+  '__rnqnxProbeUnmounted',
   'RNQNX_REACT_RENDER_OK platform=',
   'geometry-only',
 ]) {
@@ -76,7 +78,7 @@ for (const token of [
   'vnext/probes/react-qnx/main.cpp',
   'react-probe.js --platform qnx --dev false',
   'ReactRenderProbeNegative.cmake',
-  'COMMAND $<TARGET_FILE:${target}> -platform offscreen',
+  'ReactRenderProbePositive.cmake',
 ]) {
   requireText(probeGraph, token, 'shared bundled React probe');
 }
@@ -86,6 +88,8 @@ for (const token of [
   "require('react-native/Libraries/Components/View/View')",
   "AppRegistry.registerComponent('RNQnxReactRenderProbe'",
   'setUpdated(true)',
+  'React.useLayoutEffect(',
+  'globalThis.__rnqnxProbeUnmounted = true',
 ]) {
   requireText(fixture, token, 'real React fixture');
 }

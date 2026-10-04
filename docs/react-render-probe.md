@@ -10,10 +10,12 @@ on host and QNX. It verifies:
    (12, 16), with the fixture's background colors.
 3. A real React `useState` update produces another transaction, changes the
    child to 72×24 at (40, 16), and changes its background color.
-4. Stopping the surface produces another transaction and removes the items.
+4. Stopping the surface produces another transaction, runs the React layout-effect
+   cleanup, removes the items, and leaves only the borrowed root in the mounting
+   registry. Merely detaching leaked items does not pass.
 
 Each asynchronous stage has a five-second deadline. JS exceptions, host errors,
-mount failures, incorrect geometry, and missing/empty/throwing bundles fail the
+mount failures, incorrect geometry, and missing/empty/throwing/unregistered bundles fail the
 process; only the completed sequence emits `RNQNX_REACT_RENDER_OK`.
 
 ## Evidence boundary
@@ -49,7 +51,9 @@ ctest --test-dir build/react-probe --output-on-failure \
 A host without Qt skips the optional graph on the current main branch; therefore
 success of the basic two-test C++ smoke suite proves nothing about this probe.
 The explicit build target above must exist, and CTest must list the render and
-bad-bundle tests. The bad-bundle test checks nonzero exit, the matching error
+bad-bundle tests. The positive CTest wrapper requires both exit 0 and the success marker on
+stdout (CTest pass-regex alone ignores nonzero exits). The bad-bundle test checks
+nonzero exit, the matching error
 marker, and absence of the success marker, rather than accepting crashes.
 
 ## Later QNX run

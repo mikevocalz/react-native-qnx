@@ -136,11 +136,26 @@ int main(int argc, char** argv) {
       throw std::runtime_error("bundle-evaluate: " + host.lastError().toStdString());
     }
 
+    // RN's SurfaceHandler/UIManager startup is noexcept. Reject an unrelated
+    // valid script before that boundary instead of terminating the process.
+    require(host.evaluate(R"JS((function () {
+      const registry = globalThis.RN$AppRegistry;
+      if (!registry || typeof registry.runApplication !== 'function' ||
+          typeof registry.getRunnable !== 'function' ||
+          typeof registry.getRunnable('RNQnxReactRenderProbe') !== 'function') {
+        throw new Error('probe-component-not-registered');
+      }
+    })();)JS", "probe-registration.js"), "bundle-registration");
+
     host.startSurface(kSurfaceId, "RNQnxReactRenderProbe", 240.0F, 160.0F);
     waitFor(host, [&] {
       return host.delegate().mountedTransactionCount() > 0 && !root.childItems().empty();
     }, "initial-mount-timeout");
     assertGeometry(root, false);
+    require(layer.mountedCount() == 3, "initial-mounted-count");
+    const auto initialCleanup = host.runtime().global().getProperty(
+        host.runtime(), "__rnqnxProbeUnmounted");
+    require(initialCleanup.isBool() && !initialCleanup.getBool(), "react-mount-effect");
 
     const int initialTransactions = host.delegate().mountedTransactionCount();
     require(host.evaluate("globalThis.__rnqnxUpdateProbe();", "probe-update.js"), "update-evaluate");
@@ -148,11 +163,16 @@ int main(int argc, char** argv) {
       return host.delegate().mountedTransactionCount() > initialTransactions;
     }, "update-mount-timeout");
     assertGeometry(root, true);
+    require(layer.mountedCount() == 3, "updated-mounted-count");
 
     const int updatedTransactions = host.delegate().mountedTransactionCount();
     host.stopSurface(kSurfaceId);
     waitFor(host, [&] {
-      return host.delegate().mountedTransactionCount() > updatedTransactions && root.childItems().empty();
+      const auto cleanup = host.runtime().global().getProperty(
+          host.runtime(), "__rnqnxProbeUnmounted");
+      return host.delegate().mountedTransactionCount() > updatedTransactions &&
+          root.childItems().empty() && layer.mountedCount() == 1 &&
+          cleanup.isBool() && cleanup.getBool();
     }, "unmount-timeout");
 #ifdef __QNXNTO__
     constexpr const char* platform = "qnx";

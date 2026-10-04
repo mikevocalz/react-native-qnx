@@ -5,7 +5,9 @@
 - Replaced UIManager-plus-arithmetic success with a real bundled React surface,
   initial geometry/colors, state update, and unmount assertions.
 - Shared C++/Metro implementation is built for the host and QNX; host CTest
-  includes missing/empty/throwing-bundle rejection. Output labels its platform
+  includes missing/empty/throwing/unregistered-bundle rejection.
+- Review hardened unmount against detached-but-leaked items and a no-op React
+  cleanup; the positive CTest wrapper checks exit status as well as stdout. Output labels its platform
   and geometry-only scope; source validator does not claim execution.
 - Source/TypeScript/JS/codegen/architecture/package checks and production Metro
   bundling pass. Basic host smoke passes 2/2, with Qt graph skipped there.

@@ -12,6 +12,7 @@ function(rnqnx_add_react_render_probe target)
     DEPENDS
       "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground/react-probe.js"
       "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground/metro.config.js"
+      "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground/babel.config.js"
       "${CMAKE_CURRENT_SOURCE_DIR}/packages/metro-config-qnx/src/index.js"
       "${CMAKE_CURRENT_SOURCE_DIR}/packages/react-native-qnx/Libraries/Utilities/Platform.js"
       "${CMAKE_CURRENT_SOURCE_DIR}/packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js"
@@ -31,10 +32,10 @@ function(rnqnx_add_react_render_probe target)
     target_compile_definitions(${target} PRIVATE
       RNQNX_REACT_PROBE_BUNDLE_PATH="${bundle}")
     add_test(NAME ${target}
-      COMMAND $<TARGET_FILE:${target}> -platform offscreen)
-    set_tests_properties(${target} PROPERTIES
-      TIMEOUT 30
-      PASS_REGULAR_EXPRESSION "RNQNX_REACT_RENDER_OK platform=host bundled-react.*unmount=empty geometry-only")
+      COMMAND "${CMAKE_COMMAND}"
+        "-DPROBE=$<TARGET_FILE:${target}>"
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/cmake/ReactRenderProbePositive.cmake")
+    set_tests_properties(${target} PROPERTIES TIMEOUT 30)
     add_test(NAME ${target}_rejects_bad_bundles
       COMMAND "${CMAKE_COMMAND}"
         "-DPROBE=$<TARGET_FILE:${target}>"
