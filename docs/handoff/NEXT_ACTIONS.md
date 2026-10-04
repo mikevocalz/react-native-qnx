@@ -8,6 +8,16 @@ merge. When upstream publishes a fixed release, replace the temporary patch
 and attestation together and rerun all dependency and Metro checks. Do not
 interpret the guarded pass as a clean raw registry audit.
 
+## Bundled React probe follow-through (2026-10-04)
+
+The shared probe and companion PR #28 (`24ba958`) passed 11/11 combined native
+CTests. Once the companion changes are integrated, rerun the full host renderer
+preset plus both probe CTests on the final combined commit before promoting it.
+Keep this draft dependent on that host graph; its standalone main baseline is
+not a passing native build. Follow [the shared probe runbook](../react-render-probe.md)
+for later deployment of the binary **and** Metro bundle to QNX. Keep geometry,
+pixel/on-glass, and physical-target results separate.
+
 ## 1. Run the current physical Pi/QSTI validation lane
 
 **Objective:** Prove the merged Screen/device path on the current target

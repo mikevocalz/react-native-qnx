@@ -10,6 +10,17 @@ not registry-clean. See `docs/security/braces.md`. QNX target evidence is unchan
 The focused change includes the patch, pnpm configuration/lockfile, audit and
 regression scripts, and this handoff. Remote CI for the proposed commit is pending.
 
+## 2026-10-04 bundled React probe readiness
+
+The QNX probe now has a shared host-testable production Metro fixture and checks
+real React initial mount, state update, Fabric/Yoga geometry, and unmount. It
+reports geometry-only evidence with an explicit host/QNX label. Source checks,
+production Metro bundling and basic host checks pass. The real positive and four
+negative probe runners pass with companion host-renderer PR #28 commit `24ba958`;
+that graph is a prerequisite. Actual combined CMake/CTest passed 11/11, including
+45 host-runtime cases and the two probe tests. No QNX cross-build,
+pixel, or device claim is made. See [probe instructions](../react-render-probe.md).
+
 ## Outcome
 
 `main` now contains the Raspberry Pi/QSTI install lane and the Expo SDK 58

@@ -161,19 +161,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     rnqnx_add_fabric_adapter_target()
     rnqnx_add_react_host_target()
 
-    add_executable(rnqnx_react_qnx_probe
-      vnext/probes/react-qnx/main.cpp
-    )
-    target_link_libraries(rnqnx_react_qnx_probe PRIVATE
-      rnqnx_react_host
-      Qt6::Quick
-      Qt6::Qml
-      Qt6::Gui
-    )
-    rnqnx_enable_strict_warnings(rnqnx_react_qnx_probe)
-    set_target_properties(rnqnx_react_qnx_probe PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    )
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxReactProbe.cmake)
+    rnqnx_add_react_render_probe(rnqnx_react_qnx_probe)
   endif()
 
 else()
@@ -261,6 +250,8 @@ else()
 
         if(RNQNX_BUILD_REACT_HOST)
           rnqnx_add_react_host_target()
+          include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxReactProbe.cmake)
+          rnqnx_add_react_render_probe(rnqnx_react_render_host_probe)
 
           add_executable(qt_react_host_host_test
             tests/cpp/QtReactHostHostTest.cpp

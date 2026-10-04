@@ -18,6 +18,40 @@ additional differential/boundary assertions pass. Original stack exhaustion
 reproduced before patch; patched code rejects excessive depth. These are host
 results only. See `docs/security/braces.md` for scope and removal instructions.
 
+## 2026-10-04 bundled React probe (Linux x86-64 cloud host)
+
+- Node 26.10.0, pnpm 12.8.1, CMake 3.31.10, Clang 19.1.7 and Qt 6.11.1.
+- `pnpm validate:qnx-react`, `pnpm typecheck`, `pnpm test:js`,
+  `pnpm validate:architecture`, `pnpm codegen:check`, `pnpm build:packages`,
+  `pnpm format:check`: exit 0. Source checks alone are not runtime evidence.
+- Production Metro `react-probe.js --platform qnx --dev false`: exit 0,
+  172 real React/React Native modules. `pnpm test:cpp:host`: initial basic
+  smoke 2/2 passed with optional Qt skipped; not evidence for this executable.
+- Native integration was tested with companion PR #28 commit
+  `24ba958d046066f54faae30847de1c52b972f4ba`. This probe revision's
+  source/fixture/CMake files were overlaid temporarily, then removed and the
+  companion checkout restored. This is a paired integration result; main alone
+  lacks the required RN 0.88 build/scheduler/error-handler fixes.
+- `cmake --build build/linux-host-renderer --target rnqnx_react_render_host_probe`:
+  exit 0. `ctest --test-dir build/linux-host-renderer -V -R
+'^rnqnx_react_render_host_probe'`: exit 0, **2/2** registered tests passed.
+  Positive output: `RNQNX_REACT_RENDER_OK platform=host bundled-react
+initial=160x100/48x24 update=72x24 unmount=empty geometry-only transactions=3`.
+  Missing, empty, throwing and non-registering bundles all reject cleanly.
+- `cmake --build --preset linux-host-renderer` and
+  `ctest --preset linux-host-renderer --output-on-failure`: exit 0, **11/11**
+  combined CTests passed, including all **45 QtReactHost** cases (59.41 seconds).
+- Configuration used the companion Linux renderer preset, Qt/host-sysroot prefix,
+  and `-DCMAKE_CXX_FLAGS=-I/tmp/qnx-host-sysroot/usr/include
+-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`. A stale compiler-detection cache was
+  recovered by restoring `CMAKE_EXECUTABLE_FORMAT=ELF` after inspecting the actual
+  ELF compiler output; dependencies were rebuilt afterward, not bypassed.
+- The positive-runner harness also rejects nonzero exit with a success marker,
+  stderr-only success, missing success and an explicit error marker. Those
+  harness-only checks do not constitute React execution evidence.
+- The existing main-line braces dependency audit is handled separately in #27.
+  QNX SDP 8.0.5 compilation, Pi execution and pixel/on-glass evidence: **not run**.
+
 ## Current QNX integration source/tooling validation — 2026-10-02
 
 - Main includes merged PRs #7–#12 on top of the SDK-58 baseline:
