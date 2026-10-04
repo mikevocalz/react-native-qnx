@@ -860,3 +860,19 @@ detection it claimed was replaced with a measured one under ASan.
 - **Remaining work:** requires the licensed SDP/current QSTI physical target:
   Screen run first, then Hermes, Nitro/Expo target proof, then the full
   React/Fabric/Qt Quick target runtime.
+
+## 2026-10-03 — braces depth-exhaustion backport
+
+- Investigated current main 8d521ea7b599f58288ebde76558c9b2d48622014 and the
+  dependency-audit failure; no fixed npm release or duplicate open PR existed.
+- Backported only PR #72 library diffs, pinned to commit
+  28d440b5dd449dbf1fe6f3506cf94ecca4d02660, onto published braces 3.0.3.
+- Added exact installed-source attestation, depth/compatibility regression tests,
+  and a fail-closed audit classification that leaves the raw finding visible.
+- Regenerated the lockfile with pnpm 12.8.1; it also records the four existing
+  workspace manifests omitted from the prior lockfile, without dependency bumps.
+- Local JS, typecheck, dependency/source contracts, peer/build/architecture/codegen,
+  formatting, production QNX Metro bundle (772 KB), and Linux C++ host (2/2 CTest)
+  checks pass. CMake 3.31.10 was installed after the initial missing-tool failure.
+  Remote CI remains pending. No publish, merge, QNX build, or target run.
+- Continue with exact-head CI and eventual removal after an official fixed release.

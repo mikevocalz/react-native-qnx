@@ -1,5 +1,15 @@
 # BLOCKERS.md
 
+## GHSA-vfj7-8cjw-p6xm — No official braces fixed release
+
+As of 2026-10-03, npm latest is 3.0.3 and upstream PR #72 is still open.
+The checked-in depth-guard backport mitigates the tested string/AST depth paths.
+The guarded audit verifies every installed implementation before accepting this
+one finding as locally mitigated; it retains other moderate+ failures. Raw
+registry audit remains nonzero. Replace the backport when an official release
+is available, following `docs/security/braces.md`. Physical QNX blockers below
+are unaffected.
+
 ## QNX-RN-008 — Current physical QNX AArch64 validation pending
 
 - **First observed:** 2026-07-19
