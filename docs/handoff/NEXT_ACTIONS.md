@@ -1,5 +1,13 @@
 # NEXT_ACTIONS.md
 
+## Dependency-security follow-through (2026-10-03)
+
+Review the braces depth backport and guarded audit in `docs/security/braces.md`.
+Require the draft PR's exact head to pass SDK 58 validation before considering
+merge. When upstream publishes a fixed release, replace the temporary patch
+and attestation together and rerun all dependency and Metro checks. Do not
+interpret the guarded pass as a clean raw registry audit.
+
 ## 1. Run the current physical Pi/QSTI validation lane
 
 **Objective:** Prove the merged Screen/device path on the current target

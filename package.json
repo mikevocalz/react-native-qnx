@@ -25,7 +25,7 @@
     "test:cpp:host": "node scripts/run-cpp-host-tests.mjs",
     "codegen:check": "node scripts/codegen-check.mjs",
     "build:packages": "node scripts/build-packages.mjs",
-    "audit:dependencies": "pnpm audit --audit-level moderate",
+    "audit:dependencies": "node scripts/audit-dependencies.mjs",
     "validate:dependencies": "node scripts/validate-dependencies.mjs",
     "validate:manifests": "node scripts/validate-manifests.mjs",
     "validate:architecture": "node scripts/validate-architecture.mjs",

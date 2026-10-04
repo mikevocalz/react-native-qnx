@@ -1,5 +1,23 @@
 # TEST_STATUS.md
 
+## 2026-10-03 braces security backport
+
+Host: Linux cloud workspace, Node 26.10.0, pnpm 12.8.1. No QNX SDK or target.
+The frozen install applies the pinned five-library-file backport. Local
+TypeScript, JavaScript security/compatibility/tamper/audit-policy tests,
+manifest/dependency contracts, peers, package build, architecture, codegen
+applicability, and production QNX Metro bundling pass (exit 0). Prettier passes.
+The guarded audit passes with an explicit locally-mitigated GHSA message;
+raw registry audit still reports braces 3.0.3. Linux C++ host validation passes
+2/2 CTest executables with GCC 14.2, CMake 3.31.10 and ASan/UBSan (exit 0).
+CMake was initially absent and was installed before this successful run. Optional
+Qt targets were skipped because Qt 6.11.1 is unavailable. Remote CI is pending.
+
+Independent Node 24.19.0 review: 774 upstream/backport tests and 48,277
+additional differential/boundary assertions pass. Original stack exhaustion
+reproduced before patch; patched code rejects excessive depth. These are host
+results only. See `docs/security/braces.md` for scope and removal instructions.
+
 ## Current QNX integration source/tooling validation — 2026-10-02
 
 - Main includes merged PRs #7–#12 on top of the SDK-58 baseline:
