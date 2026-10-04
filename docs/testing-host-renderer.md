@@ -59,7 +59,8 @@ PR #27; this lane does not suppress that audit.
   `jserrorhandler`, `react/renderer/observers/resize` and
   `react/nativemodule/resizeobserver`. These are built from their shipped
   CMakeLists rather than empty alias targets.
-- `react/debug/redbox/AnsiParser.h` omits `<cstdint>` for `uint8_t`. The build
-  supplies that standard header to its one translation unit. RN's compiled
+- `react/debug/redbox/AnsiParser.h` and inspector `network/HttpUtils.h` omit
+  `<cstdint>` for their integer types. The build supplies that standard header
+  to those two translation units. RN's compiled
   sources retain nonfatal GCC diagnostics for Apple-only pragmas; first-party
   code and tests retain strict warnings-as-errors.

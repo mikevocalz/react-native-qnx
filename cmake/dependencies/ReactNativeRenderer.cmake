@@ -176,7 +176,6 @@ foreach(module IN LISTS RNQNX_REACT_NATIVE_MODULES)
     "${REACT_COMMON_DIR}/${module}"
     "${CMAKE_BINARY_DIR}/react-native/${module}"
   )
-
 endforeach()
 
 # RN 0.88's redbox AnsiParser.h uses uint8_t without including <cstdint>.
@@ -184,6 +183,11 @@ endforeach()
 # header for this one upstream translation unit without editing node_modules.
 set_property(SOURCE "${REACT_COMMON_DIR}/react/debug/redbox/AnsiParser.cpp"
   TARGET_DIRECTORY react_debug APPEND PROPERTY COMPILE_OPTIONS
+  "$<$<COMPILE_LANG_AND_ID:CXX,GNU,Clang,AppleClang>:-include;cstdint>")
+
+# The same missing standard include affects HttpUtils.h's uint16_t.
+set_property(SOURCE "${REACT_COMMON_DIR}/jsinspector-modern/network/HttpUtils.cpp"
+  TARGET_DIRECTORY jsinspector_network APPEND PROPERTY COMPILE_OPTIONS
   "$<$<COMPILE_LANG_AND_ID:CXX,GNU,Clang,AppleClang>:-include;cstdint>")
 
 # `react_codegen_rncore` is codegen output, so it has no CMakeLists to add.
