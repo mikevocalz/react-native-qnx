@@ -1,0 +1,74 @@
+name: Experimental WebSocket host tests
+
+on:
+  pull_request:
+    paths:
+      - 'vnext/**'
+      - 'tests/cpp/*WebSocket*'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/websocket-host.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'vnext/**'
+      - 'tests/cpp/*WebSocket*'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/websocket-host.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  loopback-and-jsi:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Install build and TLS dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libicu-dev libssl-dev openssl
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.11.1
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          modules: qtwebsockets
+          cache: true
+      - name: Configure explicit optional backend and real JSI tests
+        run: |
+          cmake -S . -B build/websocket -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DRNQNX_ENABLE_WEBSOCKETS=ON \
+            -DRNQNX_FETCH_REACT_NATIVE_DEPS=OFF \
+            -DRNQNX_BUILD_WEBSOCKET_JSI_TESTS=ON \
+            -DRNQNX_ENABLE_HOST_SANITIZERS=ON
+      - name: Build transport and both module modes
+        run: |
+          cmake --build build/websocket --parallel 2 --target \
+            qt_websocket_transport_host_test \
+            qnx_websocket_module_enabled_host_test \
+            qnx_websocket_module_disabled_host_test
+      - name: Run actual loopback and Hermes contracts
+        run: ctest --test-dir build/websocket -R websocket --output-on-failure --no-tests=error
+      - name: Retain test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: websocket-host-test-results
+          path: build/websocket/Testing/Temporary/
