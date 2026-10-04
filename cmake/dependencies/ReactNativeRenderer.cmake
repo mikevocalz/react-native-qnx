@@ -58,9 +58,9 @@ add_library(glog_init ALIAS rnqnx_glog_init)
 # <FBReactNativeSpec/FBReactNativeSpecJSI.h>, and React Native ships that
 # pre-generated header under React/ in the Apple pod layout even though it is
 # plain C++/JSI. Same artifact Android calls react_codegen_rncore.
-include_directories("${RNQNX_REACT_NATIVE_DIR}/React")
-include_directories("${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi")
-include_directories("${RNQNX_REACT_NATIVE_DIR}/ReactCommon/callinvoker")
+include_directories(SYSTEM "${RNQNX_REACT_NATIVE_DIR}/React")
+include_directories(SYSTEM "${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi")
+include_directories(SYSTEM "${RNQNX_REACT_NATIVE_DIR}/ReactCommon/callinvoker")
 
 # Third-party include roots the React Native module targets assume are global,
 # the way React Native's own Android assembler provides them.
@@ -71,6 +71,7 @@ include_directories(SYSTEM
   "${rnqnx_fast_float_SOURCE_DIR}/include"
   "${RNQNX_DOUBLE_CONVERSION_STAGE}"
   "${rnqnx_boost_SOURCE_DIR}"
+  "${rnqnx_boost_config_SOURCE_DIR}/include"
 )
 
 foreach(platform_dir IN ITEMS
@@ -87,7 +88,7 @@ foreach(platform_dir IN ITEMS
   # resolves from the module's own root rather than from ReactCommon.
   react/nativemodule/core
 )
-  include_directories("${REACT_COMMON_DIR}/${platform_dir}")
+  include_directories(SYSTEM "${REACT_COMMON_DIR}/${platform_dir}")
 endforeach()
 
 set(RNQNX_REACT_NATIVE_MODULES

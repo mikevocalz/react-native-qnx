@@ -1,0 +1,57 @@
+# Current-line full host renderer validation
+
+The ordinary `test:cpp:host` lane remains a fast smoke lane on machines without
+Qt. A successful smoke run does **not** validate the renderer. The separate
+`SDK 58 full host renderer` workflow requires Qt 6.11.1, the frozen SDK 58 / React
+Native 0.88.0-rc.3 dependencies, and Hermes source commit
+`4188b63f24026ca62b79dc81d95db122a59c6089` selected by that RN release.
+
+On Linux with GCC/Clang, CMake 3.31.9+, Ninja, OpenGL/EGL development packages,
+Python, ICU development headers/libraries, and Qt 6.11.1 Core/Gui/Qml/Quick installed:
+
+```sh
+pnpm install --frozen-lockfile
+export CMAKE_PREFIX_PATH=/path/to/Qt/6.11.1/gcc_64
+node scripts/validate-host-renderer.mjs
+```
+
+First configuration fetches the pinned native dependencies and Hermes source.
+The build uses two parallel jobs to stay within ordinary CI runner memory.
+There is no warm-cache requirement. The strict CMake option rejects missing Qt,
+disabled Hermes, disabled dependency fetching, or disabled tests. The runner
+also rejects any missing test from its nine-test inventory before executing
+CTest. The dedicated workflow saves the inventory, JUnit and CTest/configure
+logs under an artifact named for the run's exact commit.
+
+Coverage includes the actual Hermes runtime, installed RN headers, Qt items,
+Fabric mutation conversion and ShadowTree mounting, plus the production Metro
+playground bundle through React, Hermes, Yoga and Qt. The QtReactHost suite also
+checks painted output, JS events, text inputs, lists, animation and lifecycle
+behavior. It runs headlessly with Qt's software backend. Existing ASan/UBSan
+instrumentation is enabled; third-party source targets are not all instrumented.
+
+This is Linux host evidence only. It does not establish a licensed QNX SDP
+8.0.5 cross-build, QNX Screen/QPA behavior, a physical Pi result, or on-device
+performance. The known main-branch dependency audit fix remains separate in
+PR #27; this lane does not suppress that audit.
+
+## Native source seams used by this lane
+
+- React Native's trimmed Boost 1.84.0 archive only includes
+  `boost/config/stdlib/libcpp.hpp`. GCC's standard library selection in
+  `boost/config/detail/select_stdlib_config.hpp` requires `libstdcpp3.hpp`.
+  `cmake/dependencies/ReactNativeThirdParty.cmake` supplies the missing
+  configuration headers from hash-pinned official
+  [Boost.Config 1.84.0](https://github.com/boostorg/config/tree/boost-1.84.0/include/boost/config).
+  The trimmed Boost implementation and its version remain unchanged.
+- RN's generated `React/FBReactNativeSpec/FBReactNativeSpecJSI.h` contains Apple
+  `#pragma mark` directives. Its installed include roots are marked SYSTEM,
+  matching the existing treatment of RN's other headers, so upstream pragmas
+  do not become project `-Werror` failures on GCC.
+- The exact Hermes `CMakeLists.txt` checks `ICU_FOUND` even with Intl disabled.
+  The Linux lane installs ICU development headers/libraries explicitly.
+- RN 0.88 `ReactInstance::createJSCallInvoker()` still uses
+  `RuntimeSchedulerCallInvoker` in its non-buffered compatibility path and
+  narrowly suppresses that type's deprecation. This custom single-thread host
+  retains the same path with the same local diagnostic scope; it does not
+  claim the buffered callable-module ordering of a full `ReactInstance`.

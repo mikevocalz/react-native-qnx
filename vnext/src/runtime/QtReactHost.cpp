@@ -564,9 +564,27 @@ const std::vector<JavaScriptError>& QtReactHost::javaScriptErrors() const {
 }
 
 void QtReactHost::installTurboModuleBinding() {
+  // RN 0.88 deprecates this invoker in favor of ReactInstance's buffered
+  // executor. This standalone synchronous host does not own a ReactInstance
+  // or its callable-module queue. Keep RN's compatibility path, just as
+  // ReactInstance::createJSCallInvoker() does with buffering disabled. Scope
+  // the diagnostic to this exact use; migrating the host to a buffered JS
+  // queue is a separate runtime change, not a reason to disable -Werror.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
   auto callInvoker =
       std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(
           impl_->runtimeScheduler);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
   auto* impl = impl_.get();
 
   facebook::react::TurboModuleBinding::install(
