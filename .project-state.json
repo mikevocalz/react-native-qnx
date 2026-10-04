@@ -120,9 +120,12 @@
     "fixture": "apps/rn-playground/react-probe.js",
     "sourceAndMetroChecks": "passed",
     "basicHostSmoke": "passed-2-of-2-Qt-skipped",
-    "fullHostRuntime": "pending-current-line-host-build",
+    "fullHostRuntime": "passed-paired-with-PR28",
     "qnxCrossBuild": "pending-licensed-SDP-8.0.5",
     "qnxDevice": "not-run",
-    "evidenceScope": "geometry-properties-only-no-pixels"
+    "evidenceScope": "geometry-properties-only-no-pixels",
+    "companionHostCommit": "24ba958d046066f54faae30847de1c52b972f4ba",
+    "combinedCtest": "11-of-11-passed-including-45-host-runtime-cases",
+    "probeCtest": "2-of-2-passed-including-four-bad-bundle-cases"
   }
 }

@@ -26,8 +26,12 @@ QNX Screen, or physical-device result. The output explicitly labels
 `geometry-only`. `validate:qnx-react` checks source contracts only; the new
 Metro CI step proves bundling only. Neither is runtime evidence.
 
-The exact Qt/Hermes/RN host compile and runtime check is still pending for this
-change until the separate current-line host-renderer build work succeeds.
+The probe was compiled/linked and its positive and four negative runners passed
+on Linux against the companion [host-renderer PR #28](https://github.com/mikevocalz/react-native-qnx/pull/28),
+commit `24ba958d046066f54faae30847de1c52b972f4ba`. Those host fixes are a runtime
+prerequisite: the main-branch graph alone is not a verified passing combination.
+The shared target also passed its actual CMake build and both CTests. The full
+combined host suite passed **11/11 CTests**, including **45 QtReactHost cases**.
 A licensed QNX SDP 8.0.5 cross-build and execution on the actual Pi remain
 separate pending gates. No target output is checked in or fabricated.
 

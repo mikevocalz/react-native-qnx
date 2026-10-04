@@ -30,10 +30,6 @@ Rectangle {
   color: backgroundColor
   property real borderWidth: 0
   property color borderColor: "transparent"
-  property real topLeftRadius: 0
-  property real topRightRadius: 0
-  property real bottomRightRadius: 0
-  property real bottomLeftRadius: 0
   property bool usePerCornerRadius: false
 }
 )QML";
@@ -49,7 +45,11 @@ void near(qreal actual, qreal expected, const char* reason) {
 }
 
 void assertHealthy(rnqnx::runtime::QtReactHost& host) {
-  require(host.delegate().lastFailures().empty(), "fabric-mount-failure");
+  if (!host.delegate().lastFailures().empty()) {
+    const auto& failure = host.delegate().lastFailures().front();
+    throw std::runtime_error("fabric-mount-failure tag=" + std::to_string(failure.tag) +
+                             ": " + failure.detail.toStdString());
+  }
   if (!host.javaScriptErrors().empty()) {
     throw std::runtime_error("javascript-error: " + host.javaScriptErrors().back().message);
   }

@@ -548,6 +548,10 @@ committed generated output exist.
   `QtCore/qobject.h::property`, `QtCore/qelapsedtimer.h::start/elapsed`, and
   `QtCore/qthread.h::msleep` back the geometry/property assertions and bounded
   event pumping. `QtGui/qcolor.h` supplies exact color comparison.
-- Evidence level: source/header verified and Metro bundled; full native probe
-  execution pending the current-line host build. QNX header/build/device and
+- Qt 6.11.1 `QtQuick/private/qquickrectangle_p.h` declares corner radii as
+  inherited FINAL properties. The fixture must not redeclare those properties;
+  doing so prevents the QML View from being created.
+- Evidence level: source/header verified, Metro bundled, and standalone native
+  positive/four-negative runners pass with companion host PR #28 `24ba958`.
+  The actual shared target passed 2/2 CTests; the combined host graph passed 11/11. QNX header/build/device and
   pixel evidence are separate pending gates. No new Qt module is linked.

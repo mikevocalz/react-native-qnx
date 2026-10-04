@@ -5,8 +5,10 @@
 The QNX probe now has a shared host-testable production Metro fixture and checks
 real React initial mount, state update, Fabric/Yoga geometry, and unmount. It
 reports geometry-only evidence with an explicit host/QNX label. Source checks,
-production Metro bundling and basic host checks pass; full current-line Qt/Hermes
-execution is pending the separate host-renderer build work. No QNX cross-build,
+production Metro bundling and basic host checks pass. The real positive and four
+negative probe runners pass with companion host-renderer PR #28 commit `24ba958`;
+that graph is a prerequisite. Actual combined CMake/CTest passed 11/11, including
+45 host-runtime cases and the two probe tests. No QNX cross-build,
 pixel, or device claim is made. See [probe instructions](../react-render-probe.md).
 
 ## Outcome

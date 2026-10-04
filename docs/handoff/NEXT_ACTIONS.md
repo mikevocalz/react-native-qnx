@@ -2,9 +2,11 @@
 
 ## Bundled React probe follow-through (2026-10-04)
 
-Build `rnqnx_react_render_host_probe` with Qt 6.11.1 and Hermes enabled, then run
-both its normal and bad-bundle CTests. Record actual command/output before
-promoting host readiness. Follow [the shared probe runbook](../react-render-probe.md)
+The shared probe and companion PR #28 (`24ba958`) passed 11/11 combined native
+CTests. Once the companion changes are integrated, rerun the full host renderer
+preset plus both probe CTests on the final combined commit before promoting it.
+Keep this draft dependent on that host graph; its standalone main baseline is
+not a passing native build. Follow [the shared probe runbook](../react-render-probe.md)
 for later deployment of the binary **and** Metro bundle to QNX. Keep geometry,
 pixel/on-glass, and physical-target results separate.
 

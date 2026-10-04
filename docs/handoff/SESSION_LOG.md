@@ -11,8 +11,14 @@
   and geometry-only scope; source validator does not claim execution.
 - Source/TypeScript/JS/codegen/architecture/package checks and production Metro
   bundling pass. Basic host smoke passes 2/2, with Qt graph skipped there.
-- Full current-line renderer compile/runtime is pending separate build work;
-  target toolchain, device, and pixels are unverified. Draft PR, no merge.
+- Found and fixed the probe's Qt 6.11 FINAL-property redeclarations. Real
+  initial mount then exposed missing scheduler task boundaries; companion PR #28
+  `24ba958d046066f54faae30847de1c52b972f4ba` fixes them.
+- Actual shared probe CMake target and positive/four-negative runners passed
+  2/2; the combined native suite passed 11/11 CTests including 45 host cases.
+  Restored the companion checkout after testing. Main alone is not a verified
+  passing runtime baseline without #28. Target toolchain/device/pixels remain
+  unverified. Draft PR, no merge.
 
 ## 2026-07-19 16:12 UTC-04:00 – Initial bootstrap
 
