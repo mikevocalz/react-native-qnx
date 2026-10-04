@@ -555,3 +555,39 @@ committed generated output exist.
   positive/four-negative runners pass with companion host PR #28 `24ba958`.
   The actual shared target passed 2/2 CTests; the combined host graph passed 11/11. QNX header/build/device and
   pixel evidence are separate pending gates. No new Qt module is linked.
+
+## Image loader HTTP, decoded cache and Promise seam (2026-10-04)
+
+Inspected installed Qt 6.11.1 Linux headers under `include/`, and the installed
+React Native 0.88.0-rc.3 package, before implementing these calls:
+
+- `QtNetwork/qnetworkaccessmanager.h`: `QNetworkAccessManager::get`;
+  `QtNetwork/qnetworkrequest.h`: `setRawHeader`, `setTransferTimeout`,
+  `RedirectPolicyAttribute`/`ManualRedirectPolicy`, `HttpStatusCodeAttribute`,
+  `CookieLoadControlAttribute`, `CookieSaveControlAttribute`,
+  `AuthenticationReuseAttribute` and `Manual`.
+- `QtNetwork/qnetworkreply.h`: `readyRead` (QIODevice), `finished`, `error`,
+  `rawHeader`, `abort`, `setReadBufferSize`; `QtCore/qtimer.h`:
+  `setSingleShot`, `start`, `timeout`; `QtCore/qobject.h`: context-bound
+  `connect` and `deleteLater`.
+- `QtGui/qimagereader.h`: `size`, `read`; `QtGui/qimage.h`: `sizeInBytes`;
+  `QtCore/qbuffer.h`, `qfile.h`, `qbytearray.h`: bounded input and
+  `AbortOnBase64DecodingErrors`; `QtCore/qcache.h`: bounded cost/LRU storage;
+  `QtCore/qmutex.h`: `QMutexLocker`; `QtCore/qcryptographichash.h`: SHA-256 keys.
+- `QtQuick/qquickimageprovider.h`: `requestImage`; existing provider/factory
+  reuse path. `QtNetwork/qtcpserver.h`, `qtcpsocket.h` are used only by the
+  deterministic local HTTP test.
+- React Native `ReactCommon/react/bridging/Promise.h`: `AsyncPromise`, `get`,
+  `resolve`, `reject`; `Dynamic.h`: `Bridging<folly::dynamic>`; `Function.h`:
+  `AsyncCallback`; `Error.h`: actual JS Error rejection. The callback wrapper
+  retains JS functions through `LongLivedObjectCollection` and schedules them
+  through `CallInvoker`, rather than capturing a raw JSI runtime.
+- React Native `ReactCommon/react/nativemodule/core/ReactCommon/TurboModuleBinding.cpp`:
+  `install` selects `nativeModuleProxy` in bridgeless mode; the Hermes contract
+  test uses that real module lookup.
+- React Native `src/private/specs_DEPRECATED/modules/NativeImageLoaderIOS.js`:
+  method names, `[width,height]` versus `{width,height}` results, metadata
+  arguments and Promise query-cache map. This QNX core adapter preserves that
+  existing contract; it does not introduce application TurboModules.
+
+Network module target measurements are pending in `docs/build-qt-modules.md`.

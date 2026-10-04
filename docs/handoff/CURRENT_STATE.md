@@ -21,6 +21,22 @@ that graph is a prerequisite. Actual combined CMake/CTest passed 11/11, includin
 45 host-runtime cases and the two probe tests. No QNX cross-build,
 pixel, or device claim is made. See [probe instructions](../react-render-probe.md).
 
+## 2026-10-04 image-loader implementation (host only)
+
+Added real asynchronous image fetching/header handling, bounded decoded memory
+prefetch/query and shared Qt Quick provider reuse. The exact Qt 6.11.1 Linux
+loopback HTTP/cache/provider test passed locally; the QnxImageLoader translation
+unit compiles against the pinned RN 0.88 headers. The existing Image.getSize and new Hermes Promise contract cases also pass
+locally under ASan, using the full-host graph build repairs from draft PR #28.
+The image adapter/backend/provider/factory and host allocation site were rebuilt
+together for that targeted integration run; this is not a full-suite pass.
+See `docs/image-loader.md` for commands, contract and limits. The dedicated
+image-loader workflow runs real local HTTP tests, without external services.
+
+QNX SDP/Pi execution and Qt Network size/build-time deltas remain pending.
+The existing SDK58 audit finding is separate and tracked by draft PR #27;
+this image change does not bypass or downgrade that audit gate.
+
 ## Outcome
 
 `main` now contains the Raspberry Pi/QSTI install lane and the Expo SDK 58

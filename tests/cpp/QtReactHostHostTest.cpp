@@ -1890,6 +1890,61 @@ void imageGetSize() {
   EXPECT(error.isUndefined());
 }
 
+/// Exercise real Hermes Promise shapes and validation through the core adapter.
+void imageLoaderPromiseContract() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle((std::istreambuf_iterator<char>(bundleFile)),
+                           std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+  EXPECT(fixture.host().evaluate(R"JS(
+    globalThis.__imageContractDone = false;
+    globalThis.__imageContractError = null;
+    (async () => {
+      const loader = nativeModuleProxy.ImageLoader;
+      const uri = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
+      const check = (ok, message) => { if (!ok) throw Error(message); };
+      const rejects = async (promise) => {
+        check(promise && typeof promise.then === 'function', 'not a Promise');
+        let rejected = false;
+        try { await promise; } catch (error) { rejected = error instanceof Error; }
+        check(rejected, 'expected Error rejection');
+      };
+      check(await loader.prefetchImage(uri) === true, 'prefetch result');
+      const size = await loader.getSize(uri);
+      check(Array.isArray(size) && size[0] === 1 && size[1] === 1, 'size array');
+      const headersSize = await loader.getSizeWithHeaders(uri, {});
+      check(headersSize.width === 1 && headersSize.height === 1, 'headers size object');
+      const cache = await loader.queryCache([uri, 'file:///definitely-missing-image']);
+      check(cache[uri] === 'memory' && Object.keys(cache).length === 1, 'query cache');
+      check(await loader.prefetchImageWithMetadata(uri, 'test-root', 1) === true, 'metadata prefetch');
+      await rejects(loader.prefetchImage('file:///definitely-missing-image'));
+      await rejects(loader.prefetchImage('data:image/png;base64,!!!!'));
+      await rejects(loader.getSize(7));
+      await rejects(loader.getSizeWithHeaders(uri, null));
+      await rejects(loader.getSizeWithHeaders(uri, {'X-Key': 123}));
+      await rejects(loader.queryCache([uri, 7]));
+      await rejects(loader.queryCache(null));
+      globalThis.__imageContractDone = true;
+    })().catch(error => { globalThis.__imageContractError = String(error); });
+  )JS", "image-contract.js"));
+  auto& rt = fixture.host().runtime();
+  QElapsedTimer deadline;
+  deadline.start();
+  while (deadline.elapsed() < 5000 &&
+         !rt.global().getProperty(rt, "__imageContractDone").getBool() &&
+         rt.global().getProperty(rt, "__imageContractError").isNull()) {
+    rt.drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+  EXPECT(rt.global().getProperty(rt, "__imageContractError").isNull());
+  EXPECT(rt.global().getProperty(rt, "__imageContractDone").getBool());
+}
+
 /// `ImageBackground` mounts as a View with an Image and a child Text.
 void imageBackgroundMounts() {
   Fixture fixture;
@@ -2353,6 +2408,7 @@ int main(int argc, char** argv) {
       {"imageLoadingIndicator", imageLoadingIndicator},
       {"metroStateUpdateCommitsThroughScheduler", metroStateUpdateCommitsThroughScheduler},
       {"imageGetSize", imageGetSize},
+      {"imageLoaderPromiseContract", imageLoaderPromiseContract},
       {"imageBackgroundMounts", imageBackgroundMounts},
       {"imageResolveAssetSource", imageResolveAssetSource},
       {"nativeAnimatedOpacity", nativeAnimatedOpacity},
