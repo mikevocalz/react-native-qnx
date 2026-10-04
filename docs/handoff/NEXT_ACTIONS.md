@@ -1,5 +1,23 @@
 # NEXT_ACTIONS.md
 
+## Dependency-security follow-through (2026-10-03)
+
+Review the braces depth backport and guarded audit in `docs/security/braces.md`.
+Require the draft PR's exact head to pass SDK 58 validation before considering
+merge. When upstream publishes a fixed release, replace the temporary patch
+and attestation together and rerun all dependency and Metro checks. Do not
+interpret the guarded pass as a clean raw registry audit.
+
+## Bundled React probe follow-through (2026-10-04)
+
+The shared probe and companion PR #28 (`24ba958`) passed 11/11 combined native
+CTests. Once the companion changes are integrated, rerun the full host renderer
+preset plus both probe CTests on the final combined commit before promoting it.
+Keep this draft dependent on that host graph; its standalone main baseline is
+not a passing native build. Follow [the shared probe runbook](../react-render-probe.md)
+for later deployment of the binary **and** Metro bundle to QNX. Keep geometry,
+pixel/on-glass, and physical-target results separate.
+
 ## 2026-10-04 image-loader implementation (host only)
 
 Added real asynchronous image fetching/header handling, bounded decoded memory

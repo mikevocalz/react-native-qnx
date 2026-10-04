@@ -531,6 +531,31 @@ committed generated output exist.
 - Installed Expo Metro defaults omit `qnx`; adding a resolver platform is a
   future source-backed design, not current functionality.
 
+## Shared bundled React geometry probe (2026-10-04)
+
+- React Native 0.88.0-rc.3 installed source:
+  `Libraries/ReactNative/AppRegistryImpl.js::registerComponent` and
+  `ReactCommon/react/renderer/uimanager/AppRegistryBinding.cpp::startSurface/stopSurface`
+  define the real bundle registration and surface lifecycle. The fixture uses
+  installed React 19.3.0 `useState` and the RN View component, not a hand-written
+  Fabric tree. The production Metro bundle was built successfully.
+- Existing platform interface:
+  `vnext/include/react-native-qnx/runtime/QtReactHost.h::evaluate/startSurface/stopSurface/pumpEvents`
+  and `QtSchedulerDelegate::mountedTransactionCount/lastFailures`; the probe
+  consumes these without injecting native nodes or success globals.
+- Qt 6.11.1 installed host headers:
+  `QtQuick/qquickitem.h::childItems/x/y/width/height`,
+  `QtCore/qobject.h::property`, `QtCore/qelapsedtimer.h::start/elapsed`, and
+  `QtCore/qthread.h::msleep` back the geometry/property assertions and bounded
+  event pumping. `QtGui/qcolor.h` supplies exact color comparison.
+- Qt 6.11.1 `QtQuick/private/qquickrectangle_p.h` declares corner radii as
+  inherited FINAL properties. The fixture must not redeclare those properties;
+  doing so prevents the QML View from being created.
+- Evidence level: source/header verified, Metro bundled, and standalone native
+  positive/four-negative runners pass with companion host PR #28 `24ba958`.
+  The actual shared target passed 2/2 CTests; the combined host graph passed 11/11. QNX header/build/device and
+  pixel evidence are separate pending gates. No new Qt module is linked.
+
 ## Image loader HTTP, decoded cache and Promise seam (2026-10-04)
 
 Inspected installed Qt 6.11.1 Linux headers under `include/`, and the installed

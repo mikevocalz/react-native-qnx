@@ -1,5 +1,26 @@
 # CURRENT_STATE.md
 
+## 2026-10-03 dependency security update
+
+The earlier clean-audit statements below describe the 2026-10-01 baseline.
+GHSA-vfj7-8cjw-p6xm subsequently flags transitive braces 3.0.3. This change
+backports the upstream depth guard and adds an installed-source-verified audit
+gate; the raw registry finding remains visible and is labeled locally mitigated,
+not registry-clean. See `docs/security/braces.md`. QNX target evidence is unchanged.
+The focused change includes the patch, pnpm configuration/lockfile, audit and
+regression scripts, and this handoff. Remote CI for the proposed commit is pending.
+
+## 2026-10-04 bundled React probe readiness
+
+The QNX probe now has a shared host-testable production Metro fixture and checks
+real React initial mount, state update, Fabric/Yoga geometry, and unmount. It
+reports geometry-only evidence with an explicit host/QNX label. Source checks,
+production Metro bundling and basic host checks pass. The real positive and four
+negative probe runners pass with companion host-renderer PR #28 commit `24ba958`;
+that graph is a prerequisite. Actual combined CMake/CTest passed 11/11, including
+45 host-runtime cases and the two probe tests. No QNX cross-build,
+pixel, or device claim is made. See [probe instructions](../react-render-probe.md).
+
 ## 2026-10-04 image-loader implementation (host only)
 
 Added real asynchronous image fetching/header handling, bounded decoded memory

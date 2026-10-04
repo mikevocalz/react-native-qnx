@@ -25,7 +25,7 @@ void QnxWebSocketModule::registerMethods() {
 // expected RCTEventEmitter events.
 
 facebook::jsi::Value QnxWebSocketModule::connect(
-    facebook::jsi::Runtime& rt,
+    facebook::jsi::Runtime& /*rt*/,
     facebook::react::TurboModule& /*tm*/,
     const facebook::jsi::Value* /*args*/,
     size_t /*count*/) {
@@ -33,7 +33,7 @@ facebook::jsi::Value QnxWebSocketModule::connect(
 }
 
 facebook::jsi::Value QnxWebSocketModule::send(
-    facebook::jsi::Runtime& rt,
+    facebook::jsi::Runtime& /*rt*/,
     facebook::react::TurboModule& /*tm*/,
     const facebook::jsi::Value* /*args*/,
     size_t /*count*/) {
@@ -41,7 +41,7 @@ facebook::jsi::Value QnxWebSocketModule::send(
 }
 
 facebook::jsi::Value QnxWebSocketModule::sendBinary(
-    facebook::jsi::Runtime& rt,
+    facebook::jsi::Runtime& /*rt*/,
     facebook::react::TurboModule& /*tm*/,
     const facebook::jsi::Value* /*args*/,
     size_t /*count*/) {
@@ -49,7 +49,7 @@ facebook::jsi::Value QnxWebSocketModule::sendBinary(
 }
 
 facebook::jsi::Value QnxWebSocketModule::ping(
-    facebook::jsi::Runtime& rt,
+    facebook::jsi::Runtime& /*rt*/,
     facebook::react::TurboModule& /*tm*/,
     const facebook::jsi::Value* /*args*/,
     size_t /*count*/) {
@@ -57,7 +57,7 @@ facebook::jsi::Value QnxWebSocketModule::ping(
 }
 
 facebook::jsi::Value QnxWebSocketModule::close(
-    facebook::jsi::Runtime& rt,
+    facebook::jsi::Runtime& /*rt*/,
     facebook::react::TurboModule& /*tm*/,
     const facebook::jsi::Value* /*args*/,
     size_t /*count*/) {
@@ -65,7 +65,7 @@ facebook::jsi::Value QnxWebSocketModule::close(
 }
 
 facebook::jsi::Value QnxWebSocketModule::addListener(
-    facebook::jsi::Runtime& rt,
+    facebook::jsi::Runtime& /*rt*/,
     facebook::react::TurboModule& /*tm*/,
     const facebook::jsi::Value* /*args*/,
     size_t /*count*/) {
@@ -73,7 +73,7 @@ facebook::jsi::Value QnxWebSocketModule::addListener(
 }
 
 facebook::jsi::Value QnxWebSocketModule::removeListeners(
-    facebook::jsi::Runtime& rt,
+    facebook::jsi::Runtime& /*rt*/,
     facebook::react::TurboModule& /*tm*/,
     const facebook::jsi::Value* /*args*/,
     size_t /*count*/) {

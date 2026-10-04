@@ -1,5 +1,57 @@
 # TEST_STATUS.md
 
+## 2026-10-03 braces security backport
+
+Host: Linux cloud workspace, Node 26.10.0, pnpm 12.8.1. No QNX SDK or target.
+The frozen install applies the pinned five-library-file backport. Local
+TypeScript, JavaScript security/compatibility/tamper/audit-policy tests,
+manifest/dependency contracts, peers, package build, architecture, codegen
+applicability, and production QNX Metro bundling pass (exit 0). Prettier passes.
+The guarded audit passes with an explicit locally-mitigated GHSA message;
+raw registry audit still reports braces 3.0.3. Linux C++ host validation passes
+2/2 CTest executables with GCC 14.2, CMake 3.31.10 and ASan/UBSan (exit 0).
+CMake was initially absent and was installed before this successful run. Optional
+Qt targets were skipped because Qt 6.11.1 is unavailable. Remote CI is pending.
+
+Independent Node 24.19.0 review: 774 upstream/backport tests and 48,277
+additional differential/boundary assertions pass. Original stack exhaustion
+reproduced before patch; patched code rejects excessive depth. These are host
+results only. See `docs/security/braces.md` for scope and removal instructions.
+
+## 2026-10-04 bundled React probe (Linux x86-64 cloud host)
+
+- Node 26.10.0, pnpm 12.8.1, CMake 3.31.10, Clang 19.1.7 and Qt 6.11.1.
+- `pnpm validate:qnx-react`, `pnpm typecheck`, `pnpm test:js`,
+  `pnpm validate:architecture`, `pnpm codegen:check`, `pnpm build:packages`,
+  `pnpm format:check`: exit 0. Source checks alone are not runtime evidence.
+- Production Metro `react-probe.js --platform qnx --dev false`: exit 0,
+  172 real React/React Native modules. `pnpm test:cpp:host`: initial basic
+  smoke 2/2 passed with optional Qt skipped; not evidence for this executable.
+- Native integration was tested with companion PR #28 commit
+  `24ba958d046066f54faae30847de1c52b972f4ba`. This probe revision's
+  source/fixture/CMake files were overlaid temporarily, then removed and the
+  companion checkout restored. This is a paired integration result; main alone
+  lacks the required RN 0.88 build/scheduler/error-handler fixes.
+- `cmake --build build/linux-host-renderer --target rnqnx_react_render_host_probe`:
+  exit 0. `ctest --test-dir build/linux-host-renderer -V -R
+'^rnqnx_react_render_host_probe'`: exit 0, **2/2** registered tests passed.
+  Positive output: `RNQNX_REACT_RENDER_OK platform=host bundled-react
+initial=160x100/48x24 update=72x24 unmount=empty geometry-only transactions=3`.
+  Missing, empty, throwing and non-registering bundles all reject cleanly.
+- `cmake --build --preset linux-host-renderer` and
+  `ctest --preset linux-host-renderer --output-on-failure`: exit 0, **11/11**
+  combined CTests passed, including all **45 QtReactHost** cases (59.41 seconds).
+- Configuration used the companion Linux renderer preset, Qt/host-sysroot prefix,
+  and `-DCMAKE_CXX_FLAGS=-I/tmp/qnx-host-sysroot/usr/include
+-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`. A stale compiler-detection cache was
+  recovered by restoring `CMAKE_EXECUTABLE_FORMAT=ELF` after inspecting the actual
+  ELF compiler output; dependencies were rebuilt afterward, not bypassed.
+- The positive-runner harness also rejects nonzero exit with a success marker,
+  stderr-only success, missing success and an explicit error marker. Those
+  harness-only checks do not constitute React execution evidence.
+- The existing main-line braces dependency audit is handled separately in #27.
+  QNX SDP 8.0.5 compilation, Pi execution and pixel/on-glass evidence: **not run**.
+
 ## 2026-10-04 image-loader implementation (host only)
 
 Added real asynchronous image fetching/header handling, bounded decoded memory

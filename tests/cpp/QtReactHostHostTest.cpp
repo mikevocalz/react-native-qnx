@@ -5,8 +5,9 @@
  * Qt Quick items.
  *
  * These are the five pieces React Native ships no generic implementation of.
- * Host evidence only: JavaScript runs on the test thread, no bundle is loaded,
- * and nothing here has been cross-compiled for QNX or run on the Pi 4.
+ * Host evidence only: JavaScript runs on the test thread. The full lane loads
+ * the real Metro playground bundle. None of this is QNX cross-build/device
+ * evidence.
  */
 
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
@@ -67,13 +68,27 @@ using rnqnx::runtime::QtReactHost;
 using rnqnx::views::QtQuickItemFactory;
 
 constexpr SurfaceId kSurfaceId = 11;
-constexpr const char* kViewSource = "import QtQuick\nRectangle { visible: true }\n";
+constexpr const char* kViewSource =
+    "import QtQuick\n"
+    "Rectangle { id: root; visible: true; property alias backgroundColor: root.color }\n";
 constexpr const char* kTextSource = "import QtQuick\nText { visible: true }\n";
 constexpr const char* kImageSource =
     "import QtQuick\n"
     "Image {\n"
+    "  id: root\n"
     "  visible: true\n"
     "  property var bridge: null\n"
+    "  property string loadingSource: \"\"\n"
+    "  Image {\n"
+    "    id: loadingImage\n"
+    "    objectName: \"loadingImage\"\n"
+    "    anchors.fill: parent\n"
+    "    source: root.loadingSource\n"
+    "    visible: root.loadingSource !== \"\" &&\n"
+    "             root.status !== Image.Ready &&\n"
+    "             root.status !== Image.Error\n"
+    "    z: -1\n"
+    "  }\n"
     "  onStatusChanged: { if (bridge) bridge.notify(); }\n"
     "}\n";
 // Flickable is Qt Quick's scrollable container; clip keeps content inside the
@@ -404,6 +419,93 @@ void javaScriptErrorsAreReportedNotSwallowed() {
   Fixture fixture;
   EXPECT(!fixture.host().evaluate("throw new Error('deliberate');", "test.js"));
   EXPECT(fixture.host().lastError().contains(QStringLiteral("deliberate")));
+}
+
+void evaluateRejectsReentrantJavaScript() {
+  Fixture fixture;
+  auto& runtime = fixture.host().runtime();
+  runtime.global().setProperty(
+      runtime, "tryNestedEvaluate",
+      facebook::jsi::Function::createFromHostFunction(
+          runtime, facebook::jsi::PropNameID::forAscii(runtime, "tryNestedEvaluate"), 0,
+          [&fixture](facebook::jsi::Runtime&, const facebook::jsi::Value&,
+                     const facebook::jsi::Value*, size_t) {
+            return facebook::jsi::Value(fixture.host().evaluate(
+                "globalThis.nestedSideEffect = true", "nested.js"));
+          }));
+  EXPECT(fixture.host().evaluate(
+      "globalThis.nestedResult = tryNestedEvaluate()", "outer.js"));
+  EXPECT(!runtime.global().getProperty(runtime, "nestedResult").getBool());
+  EXPECT(runtime.global().getProperty(runtime, "nestedSideEffect").isUndefined());
+}
+
+void timerCallbacksRunMicrotaskCheckpoints() {
+  Fixture fixture;
+  fixture.host().installTimers();
+  EXPECT(fixture.host().evaluate(
+      "setTimeout(() => Promise.resolve().then(() => {"
+      "globalThis.timerMicrotaskDone = true; }), 0)", "timer-task.js"));
+  auto& runtime = fixture.host().runtime();
+  QElapsedTimer deadline;
+  deadline.start();
+  while (deadline.elapsed() < 1000 &&
+         runtime.global().getProperty(runtime, "timerMicrotaskDone").isUndefined()) {
+    // Intentionally do not drainMicrotasks here. Timer entry must do that via
+    // RN's scheduler, just as a running application expects.
+    fixture.host().pumpEvents();
+  }
+  const auto done = runtime.global().getProperty(runtime, "timerMicrotaskDone");
+  EXPECT(done.isBool() && done.getBool());
+}
+
+void throwingMicrotasksAreReportedAndRecover() {
+  Fixture fixture;
+  EXPECT(!fixture.host().evaluate(
+      "HermesInternal.enqueueJob(() => { throw new Error('checkpoint-boom'); });",
+      "checkpoint-error.js"));
+  EXPECT(fixture.host().lastError().contains(QStringLiteral("checkpoint-boom")));
+  EXPECT(fixture.host().javaScriptErrors().size() == 1);
+  EXPECT(fixture.host().javaScriptErrors().front().isFatal);
+  EXPECT(fixture.host().evaluate("globalThis.recovered = true", "recovery.js"));
+  EXPECT(fixture.host().lastError().isEmpty());
+  auto& runtime = fixture.host().runtime();
+  EXPECT(runtime.global().getProperty(runtime, "recovered").getBool());
+}
+
+void throwingTimerCallbacksAreReportedAndRecover() {
+  Fixture fixture;
+  fixture.host().installTimers();
+  EXPECT(fixture.host().evaluate(
+      "setTimeout(() => { throw new Error('timer-boom'); }, 0)", "timer-error.js"));
+  QElapsedTimer deadline;
+  deadline.start();
+  while (fixture.host().javaScriptErrors().empty() && deadline.elapsed() < 1000) {
+    fixture.host().pumpEvents();
+  }
+  EXPECT(fixture.host().javaScriptErrors().size() == 1);
+  EXPECT(fixture.host().lastError().contains(QStringLiteral("timer-boom")));
+  EXPECT(fixture.host().evaluate("1 + 1", "timer-recovery.js"));
+  EXPECT(fixture.host().lastError().isEmpty());
+}
+
+void schedulerErrorsPreserveAndContainJavaScriptHandlers() {
+  Fixture fixture;
+  EXPECT(!fixture.host().evaluate(
+      "globalThis.ErrorUtils = {reportError() {}, reportFatalError(error) {"
+      "globalThis.forwardedError = error.message; }};"
+      "HermesInternal.enqueueJob(() => { throw new Error('hook-boom'); });",
+      "error-hook.js"));
+  auto& runtime = fixture.host().runtime();
+  EXPECT(runtime.global().getProperty(runtime, "forwardedError")
+             .asString(runtime).utf8(runtime) == "hook-boom");
+  EXPECT(fixture.host().javaScriptErrors().size() == 1);
+  EXPECT(!fixture.host().evaluate(
+      "ErrorUtils.reportFatalError = () => { throw new Error('handler-boom'); };"
+      "HermesInternal.enqueueJob(() => { throw new Error('original-boom'); });",
+      "broken-error-hook.js"));
+  EXPECT(fixture.host().lastError().contains(QStringLiteral("original-boom")));
+  EXPECT(fixture.host().javaScriptErrors().size() == 2);
+  EXPECT(fixture.host().evaluate("1 + 1", "hook-recovery.js"));
 }
 
 void schedulerInstallsTheFabricUIManager() {
@@ -1722,6 +1824,36 @@ void imageLoadingIndicator() {
 }
 
 /// `Image.getSize` resolves through the `ImageLoader` TurboModule.
+void metroStateUpdateCommitsThroughScheduler() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle((std::istreambuf_iterator<char>(bundleFile)),
+                           std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+  fixture.host().startSurface(kSurfaceId, "RNQnxHostStateUpdate", 640.0F, 480.0F);
+  QElapsedTimer deadline;
+  deadline.start();
+  while (fixture.rootChildCount() == 0 && deadline.elapsed() < 1000) {
+    fixture.host().pumpEvents();
+  }
+  EXPECT(fixture.rootChildCount() == 1);
+  QQuickItem* view = fixture.root().childItems().at(0);
+  EXPECT_NEAR(view->width(), 64.0);
+  const int initialTransactions = fixture.host().delegate().mountedTransactionCount();
+  EXPECT(fixture.host().evaluate("globalThis.__hostUpdateWidth()", "state-update.js"));
+  deadline.restart();
+  while (view->width() != 96.0 && deadline.elapsed() < 1000) {
+    fixture.host().pumpEvents();
+  }
+  EXPECT_NEAR(view->width(), 96.0);
+  EXPECT(fixture.host().delegate().mountedTransactionCount() > initialTransactions);
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+}
+
 void imageGetSize() {
   Fixture fixture;
   fixture.host().installTurboModuleBinding();
@@ -2228,6 +2360,12 @@ int main(int argc, char** argv) {
       {"runtimeEvaluatesJavaScript", runtimeEvaluatesJavaScript},
       {"javaScriptErrorsAreReportedNotSwallowed",
        javaScriptErrorsAreReportedNotSwallowed},
+      {"evaluateRejectsReentrantJavaScript", evaluateRejectsReentrantJavaScript},
+      {"timerCallbacksRunMicrotaskCheckpoints", timerCallbacksRunMicrotaskCheckpoints},
+      {"throwingMicrotasksAreReportedAndRecover", throwingMicrotasksAreReportedAndRecover},
+      {"throwingTimerCallbacksAreReportedAndRecover", throwingTimerCallbacksAreReportedAndRecover},
+      {"schedulerErrorsPreserveAndContainJavaScriptHandlers",
+       schedulerErrorsPreserveAndContainJavaScriptHandlers},
       {"schedulerInstallsTheFabricUIManager",
        schedulerInstallsTheFabricUIManager},
       {"surfaceCommitMountsThroughTheDelegate",
@@ -2268,6 +2406,7 @@ int main(int argc, char** argv) {
       {"imageLoadEvents", imageLoadEvents},
       {"imageDefaultSourceFires", imageDefaultSourceFires},
       {"imageLoadingIndicator", imageLoadingIndicator},
+      {"metroStateUpdateCommitsThroughScheduler", metroStateUpdateCommitsThroughScheduler},
       {"imageGetSize", imageGetSize},
       {"imageLoaderPromiseContract", imageLoaderPromiseContract},
       {"imageBackgroundMounts", imageBackgroundMounts},
