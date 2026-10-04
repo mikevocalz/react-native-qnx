@@ -28,7 +28,7 @@
     "expoMetroConfig": "58.0.6",
     "hermesCompiler": "260318099.0.4",
     "hermesSource": "hermes-v260318099.0.2",
-    "lastRegistryAudit": "2026-10-01"
+    "lastRegistryAudit": "2026-10-03"
   },
   "targetBaseline": {
     "qnxSdp": "8.0.5",
@@ -64,7 +64,7 @@
     "sdk58QnxMetroProductionBundle": "passed",
     "sdk58RepositoryArchitectureAndCodegen": "passed",
     "sdk58LinuxCppHostTests": "passed",
-    "sdk58DependencySecurityAudit": "passed",
+    "sdk58DependencySecurityAudit": "local-guarded-gate-passed; braces-registry-finding-locally-mitigated; remote-ci-pending",
     "piToolingQuality": "passed",
     "fullReactQtHermesHostOnSdk58": "not-proven-by-current-ci",
     "qnxCrossCompilationOnSdk58": "not-run",
@@ -114,5 +114,25 @@
   ],
   "blockedTasks": [],
   "nextRecommendedTask": "On a licensed QNX SDP 8.0.5 host with QSTI 0.5.0 build 50 on a Pi 4/5, run pnpm pi:preflight and pnpm pi:install. Preserve the verified manifest, then run pnpm qnx:runtime:validate to prove Hermes + Nitro + Expo through JSI before moving the full React/Fabric/Qt Quick runtime onto the target.",
-  "updatedAt": "2026-10-02T15:05:00Z"
+  "updatedAt": "2026-10-03T23:12:00Z",
+  "dependencySecurityMitigation": {
+    "advisory": "GHSA-vfj7-8cjw-p6xm",
+    "package": "braces@3.0.3",
+    "upstreamPatchCommit": "28d440b5dd449dbf1fe6f3506cf94ecca4d02660",
+    "status": "local-backport-verified; official-fixed-release-unavailable",
+    "documentation": "docs/security/braces.md"
+  },
+  "reactRenderProbeReadiness": {
+    "updated": "2026-10-04",
+    "fixture": "apps/rn-playground/react-probe.js",
+    "sourceAndMetroChecks": "passed",
+    "basicHostSmoke": "passed-2-of-2-Qt-skipped",
+    "fullHostRuntime": "passed-paired-with-PR28",
+    "qnxCrossBuild": "pending-licensed-SDP-8.0.5",
+    "qnxDevice": "not-run",
+    "evidenceScope": "geometry-properties-only-no-pixels",
+    "companionHostCommit": "24ba958d046066f54faae30847de1c52b972f4ba",
+    "combinedCtest": "11-of-11-passed-including-45-host-runtime-cases",
+    "probeCtest": "2-of-2-passed-including-four-bad-bundle-cases"
+  }
 }

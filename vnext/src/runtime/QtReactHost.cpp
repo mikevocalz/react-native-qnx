@@ -26,6 +26,7 @@
 #include <react/renderer/mounting/ShadowTree.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+#include <jserrorhandler/ErrorUtils.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <react/nativemodule/defaults/DefaultTurboModules.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
@@ -48,6 +49,7 @@
 #include <QMetaObject>
 
 #include <algorithm>
+#include <exception>
 #include <utility>
 
 namespace rnqnx::runtime {
@@ -369,10 +371,46 @@ class QtReactHost::Impl {
     // through; a real JS thread replaces this without changing anything above.
     facebook::react::RuntimeExecutor runtimeExecutor =
         [this](std::function<void(facebook::jsi::Runtime&)>&& callback) {
-          callback(*runtime);
+          ++runtimeExecutionDepth;
+          try {
+            callback(*runtime);
+          } catch (...) {
+            --runtimeExecutionDepth;
+            throw;
+          }
+          --runtimeExecutionDepth;
         };
 
-    runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
+    // RN's default error handler calls JS ErrorUtils and may throw if a
+    // bootstrap bundle has not installed it. scheduleWork is noexcept, so
+    // checkpoint/timer errors need a host-owned reporting boundary instead.
+    runtimeScheduler = std::make_shared<RuntimeScheduler>(
+        runtimeExecutor,
+        facebook::react::HighResTimeStamp::now,
+        [this](facebook::jsi::Runtime& runtime, facebook::jsi::JSError& error) {
+          ++taskErrorSequence;
+          const auto previousReports = javaScriptErrors.size();
+          // Preserve an installed JS error hook, but never let a missing or
+          // broken ErrorUtils handler escape through scheduleWork's noexcept.
+          try {
+            const auto utils = runtime.global().getProperty(runtime, "ErrorUtils");
+            if (utils.isObject()) {
+              const auto object = utils.asObject(runtime);
+              if (object.hasProperty(runtime, "reportFatalError") &&
+                  object.hasProperty(runtime, "reportError")) {
+                facebook::react::handleJSError(runtime, error, true);
+              }
+            }
+          } catch (...) {
+            qWarning() << "ErrorUtils reporting failed; retaining the host error";
+          }
+          if (javaScriptErrors.size() == previousReports) {
+            javaScriptErrors.push_back(
+                {error.getMessage(), error.getStack(), true});
+          }
+          lastError = QString::fromStdString(error.getMessage());
+          qWarning().noquote() << "[js task error]" << lastError;
+        });
     facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(
         *runtime, runtimeScheduler);
 
@@ -402,7 +440,16 @@ class QtReactHost::Impl {
     SchedulerToolbox toolbox{};
     toolbox.contextContainer = contextContainer;
     toolbox.componentRegistryFactory = makeComponentRegistryFactory();
-    toolbox.runtimeExecutor = runtimeExecutor;
+    // UIManager uses this executor for AppRegistry start/update/stop. Those
+    // calls must also enter scheduler tasks; invoking React directly can leave
+    // its initial callbackNode stale before a later useState update.
+    toolbox.runtimeExecutor =
+        [scheduler = std::weak_ptr<RuntimeScheduler>(runtimeScheduler)](
+            std::function<void(facebook::jsi::Runtime&)>&& callback) {
+          if (auto runtimeScheduler = scheduler.lock()) {
+            runtimeScheduler->scheduleWork(std::move(callback));
+          }
+        };
     toolbox.bridgelessBindingsExecutor = std::nullopt;
     toolbox.eventBeatFactory =
         [scheduler = runtimeScheduler](
@@ -476,6 +523,8 @@ class QtReactHost::Impl {
     surfaces.clear();
   }
 
+  int runtimeExecutionDepth{0};
+  std::size_t taskErrorSequence{0};
   std::unique_ptr<facebook::jsi::Runtime> runtime;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler;
   std::shared_ptr<const ContextContainer> contextContainer;
@@ -528,9 +577,35 @@ const std::shared_ptr<const ContextContainer>& QtReactHost::contextContainer()
 bool QtReactHost::evaluate(
     const std::string& source,
     const std::string& sourceUrl) {
+  // completeRoot schedules rendering for the end of an RN event-loop tick.
+  // Evaluating directly in JSI bypasses that tick and can also re-enter React's
+  // task scheduling while it is still assigning a callback node. This host's
+  // executor is synchronous, so scheduling a task at an idle boundary preserves
+  // evaluate's synchronous contract while running microtasks and rendering.
+  if (impl_->runtimeExecutionDepth != 0) {
+    impl_->lastError = QStringLiteral("Cannot re-enter an active JavaScript task");
+    return false;
+  }
   try {
-    impl_->runtime->evaluateJavaScript(
-        std::make_unique<facebook::jsi::StringBuffer>(source), sourceUrl);
+    std::exception_ptr evaluationError;
+    const auto previousTaskError = impl_->taskErrorSequence;
+    impl_->runtimeScheduler->scheduleWork(
+        [&](facebook::jsi::Runtime& runtime) {
+          try {
+            runtime.evaluateJavaScript(
+                std::make_unique<facebook::jsi::StringBuffer>(source), sourceUrl);
+          } catch (...) {
+            evaluationError = std::current_exception();
+          }
+        });
+    if (evaluationError) {
+      std::rethrow_exception(evaluationError);
+    }
+    if (impl_->taskErrorSequence != previousTaskError) {
+      // The script itself may succeed while its microtask checkpoint fails.
+      // Keep the host error from that checkpoint rather than clearing it.
+      return false;
+    }
     impl_->scriptUrl = sourceUrl;
     impl_->lastError.clear();
     return true;
@@ -564,9 +639,27 @@ const std::vector<JavaScriptError>& QtReactHost::javaScriptErrors() const {
 }
 
 void QtReactHost::installTurboModuleBinding() {
+  // RN 0.88 deprecates this invoker in favor of ReactInstance's buffered
+  // executor. This standalone synchronous host does not own a ReactInstance
+  // or its callable-module queue. Keep RN's compatibility path, just as
+  // ReactInstance::createJSCallInvoker() does with buffering disabled. Scope
+  // the diagnostic to this exact use; migrating the host to a buffered JS
+  // queue is a separate runtime change, not a reason to disable -Werror.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
   auto callInvoker =
       std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(
           impl_->runtimeScheduler);
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
   auto* impl = impl_.get();
 
   facebook::react::TurboModuleBinding::install(
@@ -730,7 +823,12 @@ void QtReactHost::installTimers() {
                 // The callback runs on the thread the timer fires on, which is
                 // the thread that owns the event loop — the same thread that
                 // owns this runtime.
-                callback->call(*impl->runtime);
+                // Timer callbacks are JS tasks too. A direct JSI call skips
+                // RN's microtask/rendering checkpoint and can strand updates.
+                impl->runtimeScheduler->scheduleWork(
+                    [callback](facebook::jsi::Runtime& runtime) {
+                      callback->call(runtime);
+                    });
                 if (!repeating) {
                   impl->timers.erase(handle);
                 }

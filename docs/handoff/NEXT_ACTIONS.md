@@ -1,5 +1,39 @@
 # NEXT_ACTIONS.md
 
+## Dependency-security follow-through (2026-10-03)
+
+Review the braces depth backport and guarded audit in `docs/security/braces.md`.
+Require the draft PR's exact head to pass SDK 58 validation before considering
+merge. When upstream publishes a fixed release, replace the temporary patch
+and attestation together and rerun all dependency and Metro checks. Do not
+interpret the guarded pass as a clean raw registry audit.
+
+## Bundled React probe follow-through (2026-10-04)
+
+The shared probe and companion PR #28 (`24ba958`) passed 11/11 combined native
+CTests. Once the companion changes are integrated, rerun the full host renderer
+preset plus both probe CTests on the final combined commit before promoting it.
+Keep this draft dependent on that host graph; its standalone main baseline is
+not a passing native build. Follow [the shared probe runbook](../react-render-probe.md)
+for later deployment of the binary **and** Metro bundle to QNX. Keep geometry,
+pixel/on-glass, and physical-target results separate.
+
+## 2026-10-04 image-loader implementation (host only)
+
+Added real asynchronous image fetching/header handling, bounded decoded memory
+prefetch/query and shared Qt Quick provider reuse. The exact Qt 6.11.1 Linux
+loopback HTTP/cache/provider test passed locally; the QnxImageLoader translation
+unit compiles against the pinned RN 0.88 headers. The existing Image.getSize and new Hermes Promise contract cases also pass
+locally under ASan, using the full-host graph build repairs from draft PR #28.
+The image adapter/backend/provider/factory and host allocation site were rebuilt
+together for that targeted integration run; this is not a full-suite pass.
+See `docs/image-loader.md` for commands, contract and limits. The dedicated
+image-loader workflow runs real local HTTP tests, without external services.
+
+QNX SDP/Pi execution and Qt Network size/build-time deltas remain pending.
+The existing SDK58 audit finding is separate and tracked by draft PR #27;
+this image change does not bypass or downgrade that audit gate.
+
 ## 1. Run the current physical Pi/QSTI validation lane
 
 **Objective:** Prove the merged Screen/device path on the current target

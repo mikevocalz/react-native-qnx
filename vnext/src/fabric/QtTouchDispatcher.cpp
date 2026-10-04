@@ -184,11 +184,15 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
     touch.timestamp = static_cast<facebook::react::Float>(timestampSeconds);
     touch.force = 1.0F;
 
-    // For the single-pointer path all three touch lists carry the same touch.
+    // `touches`/`targetTouches` contain only active contacts. On release the
+    // ending contact belongs solely in changedTouches, exactly as in the
+    // multi-touch path below. Otherwise React never releases its responder.
     TouchEvent touchEvent;
-    touchEvent.touches = {touch};
     touchEvent.changedTouches = {touch};
-    touchEvent.targetTouches = {touch};
+    if (type != QEvent::MouseButtonRelease) {
+      touchEvent.touches = {touch};
+      touchEvent.targetTouches = {touch};
+    }
 
     switch (type) {
       case QEvent::MouseButtonPress:

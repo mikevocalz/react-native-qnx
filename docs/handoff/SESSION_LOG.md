@@ -1,5 +1,41 @@
 # SESSION_LOG.md
 
+## 2026-10-04 — Replace arithmetic-only React QNX probe
+
+- Replaced UIManager-plus-arithmetic success with a real bundled React surface,
+  initial geometry/colors, state update, and unmount assertions.
+- Shared C++/Metro implementation is built for the host and QNX; host CTest
+  includes missing/empty/throwing/unregistered-bundle rejection.
+- Review hardened unmount against detached-but-leaked items and a no-op React
+  cleanup; the positive CTest wrapper checks exit status as well as stdout. Output labels its platform
+  and geometry-only scope; source validator does not claim execution.
+- Source/TypeScript/JS/codegen/architecture/package checks and production Metro
+  bundling pass. Basic host smoke passes 2/2, with Qt graph skipped there.
+- Found and fixed the probe's Qt 6.11 FINAL-property redeclarations. Real
+  initial mount then exposed missing scheduler task boundaries; companion PR #28
+  `24ba958d046066f54faae30847de1c52b972f4ba` fixes them.
+- Actual shared probe CMake target and positive/four-negative runners passed
+  2/2; the combined native suite passed 11/11 CTests including 45 host cases.
+  Restored the companion checkout after testing. Main alone is not a verified
+  passing runtime baseline without #28. Target toolchain/device/pixels remain
+  unverified. Draft PR, no merge.
+
+## 2026-10-04 image-loader implementation (host only)
+
+Added real asynchronous image fetching/header handling, bounded decoded memory
+prefetch/query and shared Qt Quick provider reuse. The exact Qt 6.11.1 Linux
+loopback HTTP/cache/provider test passed locally; the QnxImageLoader translation
+unit compiles against the pinned RN 0.88 headers. The existing Image.getSize and new Hermes Promise contract cases also pass
+locally under ASan, using the full-host graph build repairs from draft PR #28.
+The image adapter/backend/provider/factory and host allocation site were rebuilt
+together for that targeted integration run; this is not a full-suite pass.
+See `docs/image-loader.md` for commands, contract and limits. The dedicated
+image-loader workflow runs real local HTTP tests, without external services.
+
+QNX SDP/Pi execution and Qt Network size/build-time deltas remain pending.
+The existing SDK58 audit finding is separate and tracked by draft PR #27;
+this image change does not bypass or downgrade that audit gate.
+
 ## 2026-07-19 16:12 UTC-04:00 – Initial bootstrap
 
 - **Goal:** Bootstrap the repository for Milestone 0 (Compatibility and Toolchain).
@@ -860,3 +896,19 @@ detection it claimed was replaced with a measured one under ASan.
 - **Remaining work:** requires the licensed SDP/current QSTI physical target:
   Screen run first, then Hermes, Nitro/Expo target proof, then the full
   React/Fabric/Qt Quick target runtime.
+
+## 2026-10-03 — braces depth-exhaustion backport
+
+- Investigated current main 8d521ea7b599f58288ebde76558c9b2d48622014 and the
+  dependency-audit failure; no fixed npm release or duplicate open PR existed.
+- Backported only PR #72 library diffs, pinned to commit
+  28d440b5dd449dbf1fe6f3506cf94ecca4d02660, onto published braces 3.0.3.
+- Added exact installed-source attestation, depth/compatibility regression tests,
+  and a fail-closed audit classification that leaves the raw finding visible.
+- Regenerated the lockfile with pnpm 12.8.1; it also records the four existing
+  workspace manifests omitted from the prior lockfile, without dependency bumps.
+- Local JS, typecheck, dependency/source contracts, peer/build/architecture/codegen,
+  formatting, production QNX Metro bundle (772 KB), and Linux C++ host (2/2 CTest)
+  checks pass. CMake 3.31.10 was installed after the initial missing-tool failure.
+  Remote CI remains pending. No publish, merge, QNX build, or target run.
+- Continue with exact-head CI and eventual removal after an official fixed release.

@@ -29,7 +29,8 @@ for (const token of [
   'rnqnx_add_qt_views_target()',
   'rnqnx_add_fabric_adapter_target()',
   'rnqnx_add_react_host_target()',
-  'add_executable(rnqnx_react_qnx_probe',
+  'rnqnx_add_react_render_probe(rnqnx_react_qnx_probe)',
+  'rnqnx_add_react_render_probe(rnqnx_react_render_host_probe)',
 ]) {
   requireText(cmake, token, 'QNX React target graph');
 }
@@ -58,9 +59,41 @@ for (const token of [
   'QtReactHost host(adapter)',
   'host.hasFabricUIManager()',
   'host.evaluate(',
-  'RNQNX_REACT_QNX_OK hermes fabric qtquick',
+  'host.startSurface(',
+  'host.stopSurface(',
+  'assertGeometry(root, false)',
+  'assertGeometry(root, true)',
+  'host.delegate().mountedTransactionCount()',
+  'host.javaScriptErrors()',
+  'layer.mountedCount() == 1',
+  '__rnqnxProbeUnmounted',
+  'RNQNX_REACT_RENDER_OK platform=',
+  'geometry-only',
 ]) {
   requireText(probe, token, 'QNX React runtime probe');
 }
 
-console.log('validate:qnx-react passed');
+const probeGraph = await read('cmake/RnqnxReactProbe.cmake');
+for (const token of [
+  'vnext/probes/react-qnx/main.cpp',
+  'react-probe.js --platform qnx --dev false',
+  'ReactRenderProbeNegative.cmake',
+  'ReactRenderProbePositive.cmake',
+]) {
+  requireText(probeGraph, token, 'shared bundled React probe');
+}
+const fixture = await read('apps/rn-playground/react-probe.js');
+for (const token of [
+  "const React = require('react')",
+  "require('react-native/Libraries/Components/View/View')",
+  "AppRegistry.registerComponent('RNQnxReactRenderProbe'",
+  'setUpdated(true)',
+  'React.useLayoutEffect(',
+  'globalThis.__rnqnxProbeUnmounted = true',
+]) {
+  requireText(fixture, token, 'real React fixture');
+}
+if (probe.includes('6 * 7') || probe.includes('startEmptySurface(')) {
+  throw new Error('The React probe must exercise a bundled React surface');
+}
+console.log('validate:qnx-react source contract passed (not runtime evidence)');

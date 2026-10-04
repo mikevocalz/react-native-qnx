@@ -94,6 +94,22 @@ QNX size and build time columns are filled by running the QNX cross-build
 before/after a module is added. The `scripts/validate-g0-a.sh` flow (when a
 licensed SDP is available) is the entry point for these numbers.
 
+## Image-loader Network dependency (host implementation; target review open)
+
+The React host now explicitly finds and links `Qt6::Network` in
+`cmake/RnqnxReactQt.cmake`. This is a Tier 0 Qt Base module (LGPLv3/GPLv2),
+required for `QNetworkAccessManager` asynchronous HTTP(S), caller headers, TLS
+validation, error handling and bounded requests. Qml/Quick already use Qt
+Network transitively, but this direct use is deliberately declared rather than
+relying on transitive include/link behavior. No Qt WebSockets or HttpServer
+module is needed for the image implementation or its local HTTP fixture.
+
+The isolated host test finds Core, Gui, Network, Qml and Quick at the same
+6.11.1 source line. The QNX binary-size and cross-build-time delta remain TBD.
+This is a draft implementation, not acceptance of Network on the QNX target;
+those measurements and licensed SDP/runtime verification still block target
+acceptance under the rule above.
+
 ## Opt-in host WebSocket experiment (not a target module addition)
 
 `RNQNX_ENABLE_WEBSOCKETS=ON` requires `Core`, `Network`, and `WebSockets` at Qt

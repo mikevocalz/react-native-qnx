@@ -63,11 +63,14 @@ function(rnqnx_add_react_host_target)
 
   rnqnx_add_fabric_adapter_target()
 
+  find_package(Qt6 6.11.1 REQUIRED COMPONENTS Network)
+
   add_library(rnqnx_react_host STATIC
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtReactHost.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxExceptionsManager.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxFileReaderModule.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxImageLoader.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtImageCache.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxSegmentFetcher.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxWebSocketModule.cpp"
   )
@@ -75,6 +78,7 @@ function(rnqnx_add_react_host_target)
     rnqnx_fabric_adapter
     rnqnx_react_native_renderer
     rnqnx_hermes
+    Qt6::Network
   )
   if(RNQNX_ENABLE_WEBSOCKETS)
     target_compile_definitions(rnqnx_react_host PRIVATE RNQNX_ENABLE_WEBSOCKETS)

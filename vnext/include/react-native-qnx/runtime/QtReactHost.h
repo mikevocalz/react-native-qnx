@@ -148,7 +148,8 @@ class QtReactHost {
   QtSchedulerDelegate& delegate();
 
   /// Evaluates JavaScript on the runtime. Returns false and fills
-  /// `lastError()` when the script throws.
+  /// `lastError()` when the script throws. Must be called on the owning
+  /// thread at an idle JS boundary; reentrant evaluation returns false.
   bool evaluate(const std::string& source, const std::string& sourceUrl);
 
   /// True when `global.nativeFabricUIManager` is installed, which is what

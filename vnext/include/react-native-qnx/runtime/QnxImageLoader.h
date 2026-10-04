@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ReactCommon/TurboModule.h>
+#include "react-native-qnx/runtime/QtImageCache.h"
 
 namespace rnqnx::runtime {
 
@@ -14,7 +15,12 @@ class QnxImageLoader final : public facebook::react::TurboModule {
   explicit QnxImageLoader(std::shared_ptr<facebook::react::CallInvoker> jsInvoker);
 
  private:
+  QtImageCache cache_;
   void registerMethods();
+  static facebook::jsi::Value load(
+      facebook::jsi::Runtime& rt, facebook::react::TurboModule& tm,
+      const facebook::jsi::Value* args, size_t count, bool headers,
+      bool prefetch);
 
   static facebook::jsi::Value getSize(
       facebook::jsi::Runtime& rt,

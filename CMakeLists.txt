@@ -7,6 +7,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(RNQNX_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 option(RNQNX_ENABLE_HOST_SANITIZERS "Enable ASan and UBSan for host tests" ON)
+option(RNQNX_REQUIRE_FULL_HOST_RENDERER
+  "Require the Qt/Hermes/React host graph instead of silently skipping it" OFF)
 option(RNQNX_G0_PROBE_ONLY "Build only the G0 C++20 probe on QNX" OFF)
 
 function(rnqnx_enable_strict_warnings target)
@@ -38,6 +40,15 @@ option(RNQNX_BUILD_NITRO_QNX "Build the QNX Nitro shared C++ runtime" OFF)
 option(RNQNX_BUILD_EXPO_MODULES_QNX "Build the QNX Expo Modules JSI bootstrap" OFF)
 option(RNQNX_BUILD_REACT_QNX
   "Build the full React Native + Hermes + Fabric + Qt Quick QNX target graph" OFF)
+
+if(RNQNX_REQUIRE_FULL_HOST_RENDERER)
+  if(CMAKE_SYSTEM_NAME STREQUAL "QNX" OR NOT BUILD_TESTING OR
+     NOT RNQNX_BUILD_HERMES OR NOT RNQNX_FETCH_REACT_NATIVE_DEPS)
+    message(FATAL_ERROR
+      "RNQNX_REQUIRE_FULL_HOST_RENDERER requires a host build with "
+      "BUILD_TESTING, RNQNX_BUILD_HERMES and RNQNX_FETCH_REACT_NATIVE_DEPS enabled")
+  endif()
+endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxReactQt.cmake)
 
@@ -150,19 +161,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     rnqnx_add_fabric_adapter_target()
     rnqnx_add_react_host_target()
 
-    add_executable(rnqnx_react_qnx_probe
-      vnext/probes/react-qnx/main.cpp
-    )
-    target_link_libraries(rnqnx_react_qnx_probe PRIVATE
-      rnqnx_react_host
-      Qt6::Quick
-      Qt6::Qml
-      Qt6::Gui
-    )
-    rnqnx_enable_strict_warnings(rnqnx_react_qnx_probe)
-    set_target_properties(rnqnx_react_qnx_probe PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    )
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxReactProbe.cmake)
+    rnqnx_add_react_render_probe(rnqnx_react_qnx_probe)
   endif()
 
 else()
@@ -209,7 +209,11 @@ else()
     # It is optional so that a host without Qt still builds and tests the rest.
     # The host component list is the source of truth; see docs/build-qt-modules.md.
     set(RNQNX_QT_HOST_MODULES Core Gui Qml Quick)
-    find_package(Qt6 6.11.1 COMPONENTS ${RNQNX_QT_HOST_MODULES} QUIET)
+    if(RNQNX_REQUIRE_FULL_HOST_RENDERER)
+      find_package(Qt6 6.11.1 REQUIRED COMPONENTS ${RNQNX_QT_HOST_MODULES})
+    else()
+      find_package(Qt6 6.11.1 COMPONENTS ${RNQNX_QT_HOST_MODULES} QUIET)
+    endif()
     if(Qt6_FOUND)
       message(STATUS "Qt ${Qt6_VERSION} found; building Qt Quick host targets (minimum 6.11.1)")
 
@@ -246,6 +250,8 @@ else()
 
         if(RNQNX_BUILD_REACT_HOST)
           rnqnx_add_react_host_target()
+          include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxReactProbe.cmake)
+          rnqnx_add_react_render_probe(rnqnx_react_render_host_probe)
 
           add_executable(qt_react_host_host_test
             tests/cpp/QtReactHostHostTest.cpp
