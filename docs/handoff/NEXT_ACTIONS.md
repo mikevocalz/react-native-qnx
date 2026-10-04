@@ -1,5 +1,13 @@
 # NEXT_ACTIONS.md
 
+## Dependency-security follow-through (2026-10-03)
+
+Review the braces depth backport and guarded audit in `docs/security/braces.md`.
+Require the draft PR's exact head to pass SDK 58 validation before considering
+merge. When upstream publishes a fixed release, replace the temporary patch
+and attestation together and rerun all dependency and Metro checks. Do not
+interpret the guarded pass as a clean raw registry audit.
+
 ## Bundled React probe follow-through (2026-10-04)
 
 The shared probe and companion PR #28 (`24ba958`) passed 11/11 combined native

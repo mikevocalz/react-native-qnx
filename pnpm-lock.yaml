@@ -169,6 +169,9 @@ overrides:
   '@expo/xcpretty>js-yaml': 4.3.2
   minimatch>brace-expansion: 5.0.12
 
+patchedDependencies:
+  braces@3.0.3: 6d25bdb49d4029cb4e4527d85fb4925dcf5707f7e93fc8e616518c66dad996c9
+
 importers:
 
   .:
@@ -223,6 +226,27 @@ importers:
         specifier: workspace:*
         version: link:../../packages/metro-config-qnx
 
+  packages/expo-modules-core-qnx:
+    dependencies:
+      expo-modules-core:
+        specifier: 58.0.9
+        version: 58.0.9(react-native@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
+      react-native:
+        specifier: 0.88.0-rc.3
+        version: 0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
+
+  packages/expo-qnx-autolinking:
+    dependencies:
+      expo:
+        specifier: 58.0.0
+        version: 58.0.0(@babel/core@7.29.7(supports-color@8.1.1))(react-native@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)
+
+  packages/expo-qnx-config-plugins:
+    dependencies:
+      expo:
+        specifier: 58.0.0
+        version: 58.0.0(@babel/core@7.29.7(supports-color@8.1.1))(react-native@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)
+
   packages/metro-config-qnx:
     dependencies:
       '@react-native/metro-config':
@@ -234,6 +258,15 @@ importers:
       metro-config:
         specifier: 0.87.1
         version: 0.87.1(supports-color@8.1.1)
+
+  packages/qnx-nitro-runtime:
+    dependencies:
+      react-native:
+        specifier: 0.88.0-rc.3
+        version: 0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
+      react-native-nitro-modules:
+        specifier: 0.37.1
+        version: 0.37.1(react-native@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
 
   packages/react-native-qnx:
     dependencies:
@@ -3875,7 +3908,7 @@ snapshots:
     dependencies:
       balanced-match: 4.0.4
 
-  braces@3.0.3:
+  braces@3.0.3(patch_hash=6d25bdb49d4029cb4e4527d85fb4925dcf5707f7e93fc8e616518c66dad996c9):
     dependencies:
       fill-range: 7.1.1
 
@@ -4572,7 +4605,7 @@ snapshots:
 
   micromatch@4.0.8:
     dependencies:
-      braces: 3.0.3
+      braces: 3.0.3(patch_hash=6d25bdb49d4029cb4e4527d85fb4925dcf5707f7e93fc8e616518c66dad996c9)
       picomatch: 2.3.2
 
   mime-db@1.52.0: {}
