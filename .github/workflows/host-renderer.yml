@@ -36,7 +36,7 @@ jobs:
       - name: Install native build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libclang-dev libicu-dev
+          sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libclang-dev libicu-dev
           python3 -m pip install --user --break-system-packages cmake==3.31.10
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Install exact host Qt

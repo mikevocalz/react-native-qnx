@@ -6,7 +6,7 @@ Qt. A successful smoke run does **not** validate the renderer. The separate
 Native 0.88.0-rc.3 dependencies, and Hermes source commit
 `4188b63f24026ca62b79dc81d95db122a59c6089` selected by that RN release.
 
-On Linux with GCC/Clang, CMake 3.31.9+, Ninja, OpenGL/EGL development packages,
+On Linux with Clang (using the system libstdc++ ABI), CMake 3.31.9+, Ninja, OpenGL/EGL development packages,
 Python, ICU development headers/libraries, and Qt 6.11.1 Core/Gui/Qml/Quick installed:
 
 ```sh

@@ -178,7 +178,10 @@
       "cacheVariables": {
         "RNQNX_REQUIRE_FULL_HOST_RENDERER": "ON",
         "RNQNX_BUILD_HERMES": "ON",
-        "RNQNX_FETCH_REACT_NATIVE_DEPS": "ON"
+        "RNQNX_FETCH_REACT_NATIVE_DEPS": "ON",
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF"
       }
     }
   ],
