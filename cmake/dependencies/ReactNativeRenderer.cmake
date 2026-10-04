@@ -178,6 +178,12 @@ foreach(module IN LISTS RNQNX_REACT_NATIVE_MODULES)
   )
 endforeach()
 
+# RN 0.88 feature flags use 16-byte atomic state. Linux/libstdc++ emits
+# __atomic_*_16 calls; unlike Apple's runtime this needs an explicit libatomic.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  target_link_libraries(react_featureflags atomic)
+endif()
+
 # RN 0.88's redbox AnsiParser.h uses uint8_t without including <cstdint>.
 # libc++ supplies it transitively; libstdc++ does not. Supply the standard
 # header for this one upstream translation unit without editing node_modules.

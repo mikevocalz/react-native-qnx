@@ -64,3 +64,5 @@ PR #27; this lane does not suppress that audit.
   to those two translation units. RN's compiled
   sources retain nonfatal GCC diagnostics for Apple-only pragmas; first-party
   code and tests retain strict warnings-as-errors.
+- RN 0.88's feature-flag accessor uses 16-byte atomic state. The Linux graph
+  links `libatomic` explicitly for the emitted `__atomic_*_16` operations.
