@@ -14,3 +14,6 @@ overrides:
 audit:
   ignore:
     - GHSA-86w9-cpqp-85rv
+
+patchedDependencies:
+  braces@3.0.3: patches/braces@3.0.3.patch
