@@ -1,5 +1,21 @@
 # TEST_STATUS.md
 
+## 2026-10-04 bundled React probe (Linux cloud host)
+
+- Node 26.10.0 and pnpm 12.8.1; CMake 3.31.10.
+- `pnpm validate:qnx-react`, `pnpm typecheck`, `pnpm test:js`,
+  `pnpm validate:architecture`, `pnpm codegen:check`, `pnpm build:packages`:
+  exit 0. These are source/JS/package checks, not React native runtime evidence.
+- `metro build react-probe.js --platform qnx --dev false --out <output>`
+  from `apps/rn-playground`: exit 0, 172 modules. Real React/React Native bundle.
+- `pnpm test:cpp:host`: exit 0, 2/2 basic tests; optional Qt graph skipped in
+  that preset. This does **not** test the new executable.
+- Standalone probe TU compile with the full host graph command: exit 1 on GCC
+  because upstream `FBReactNativeSpecJSI.h` emits `#pragma mark` under `-Werror`.
+  No runtime test was reached. Shared Qt/Hermes build fixes are being handled
+  separately; the PR remains draft until linked CTest execution succeeds.
+- QNX SDP 8.0.5 compilation, Pi execution and pixel evidence: not run.
+
 ## Current QNX integration source/tooling validation — 2026-10-02
 
 - Main includes merged PRs #7–#12 on top of the SDK-58 baseline:

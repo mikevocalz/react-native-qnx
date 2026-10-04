@@ -1,5 +1,14 @@
 # CURRENT_STATE.md
 
+## 2026-10-04 bundled React probe readiness
+
+The QNX probe now has a shared host-testable production Metro fixture and checks
+real React initial mount, state update, Fabric/Yoga geometry, and unmount. It
+reports geometry-only evidence with an explicit host/QNX label. Source checks,
+production Metro bundling and basic host checks pass; full current-line Qt/Hermes
+execution is pending the separate host-renderer build work. No QNX cross-build,
+pixel, or device claim is made. See [probe instructions](../react-render-probe.md).
+
 ## Outcome
 
 `main` now contains the Raspberry Pi/QSTI install lane and the Expo SDK 58

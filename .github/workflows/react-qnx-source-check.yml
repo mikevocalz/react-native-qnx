@@ -5,6 +5,9 @@ on:
     paths:
       - 'CMakeLists.txt'
       - 'cmake/RnqnxReactQt.cmake'
+      - 'cmake/RnqnxReactProbe.cmake'
+      - 'apps/rn-playground/react-probe.js'
+      - 'tests/cmake/ReactRenderProbeNegative.cmake'
       - 'cmake/dependencies/HermesQNX.cmake'
       - 'cmake/dependencies/ReactNativeRenderer.cmake'
       - 'vnext/probes/react-qnx/**'
@@ -17,6 +20,9 @@ on:
     paths:
       - 'CMakeLists.txt'
       - 'cmake/RnqnxReactQt.cmake'
+      - 'cmake/RnqnxReactProbe.cmake'
+      - 'apps/rn-playground/react-probe.js'
+      - 'tests/cmake/ReactRenderProbeNegative.cmake'
       - 'cmake/dependencies/HermesQNX.cmake'
       - 'cmake/dependencies/ReactNativeRenderer.cmake'
       - 'vnext/probes/react-qnx/**'
@@ -40,3 +46,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm validate:qnx-react
       - run: pnpm format:check
+      - name: Build real React probe bundle (source lane only)
+        run: |
+          cd apps/rn-playground
+          ../../node_modules/.bin/metro build react-probe.js --platform qnx --dev false --out /tmp/rnqnx-react-probe.bundle.js
+          test -s /tmp/rnqnx-react-probe.bundle.js

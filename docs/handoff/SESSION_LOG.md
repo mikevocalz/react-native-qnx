@@ -1,5 +1,17 @@
 # SESSION_LOG.md
 
+## 2026-10-04 — Replace arithmetic-only React QNX probe
+
+- Replaced UIManager-plus-arithmetic success with a real bundled React surface,
+  initial geometry/colors, state update, and unmount assertions.
+- Shared C++/Metro implementation is built for the host and QNX; host CTest
+  includes missing/empty/throwing-bundle rejection. Output labels its platform
+  and geometry-only scope; source validator does not claim execution.
+- Source/TypeScript/JS/codegen/architecture/package checks and production Metro
+  bundling pass. Basic host smoke passes 2/2, with Qt graph skipped there.
+- Full current-line renderer compile/runtime is pending separate build work;
+  target toolchain, device, and pixels are unverified. Draft PR, no merge.
+
 ## 2026-07-19 16:12 UTC-04:00 – Initial bootstrap
 
 - **Goal:** Bootstrap the repository for Milestone 0 (Compatibility and Toolchain).

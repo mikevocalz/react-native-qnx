@@ -114,5 +114,15 @@
   ],
   "blockedTasks": [],
   "nextRecommendedTask": "On a licensed QNX SDP 8.0.5 host with QSTI 0.5.0 build 50 on a Pi 4/5, run pnpm pi:preflight and pnpm pi:install. Preserve the verified manifest, then run pnpm qnx:runtime:validate to prove Hermes + Nitro + Expo through JSI before moving the full React/Fabric/Qt Quick runtime onto the target.",
-  "updatedAt": "2026-10-02T15:05:00Z"
+  "updatedAt": "2026-10-02T15:05:00Z",
+  "reactRenderProbeReadiness": {
+    "updated": "2026-10-04",
+    "fixture": "apps/rn-playground/react-probe.js",
+    "sourceAndMetroChecks": "passed",
+    "basicHostSmoke": "passed-2-of-2-Qt-skipped",
+    "fullHostRuntime": "pending-current-line-host-build",
+    "qnxCrossBuild": "pending-licensed-SDP-8.0.5",
+    "qnxDevice": "not-run",
+    "evidenceScope": "geometry-properties-only-no-pixels"
+  }
 }

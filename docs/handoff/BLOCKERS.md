@@ -1,5 +1,13 @@
 # BLOCKERS.md
 
+## Bundled React probe readiness (2026-10-04)
+
+The new shared probe requires the current RN 0.88 / Hermes / Qt 6.11.1 host
+renderer to compile and run before its runtime checks can be called verified.
+Source and Metro checks are not substitutes. Keep this change draft until the
+separate host-renderer lane has exercised it. Licensed SDP and Pi execution
+remain required afterward. See [probe instructions](../react-render-probe.md).
+
 ## QNX-RN-008 — Current physical QNX AArch64 validation pending
 
 - **First observed:** 2026-07-19

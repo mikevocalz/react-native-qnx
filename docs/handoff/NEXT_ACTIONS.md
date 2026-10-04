@@ -1,5 +1,13 @@
 # NEXT_ACTIONS.md
 
+## Bundled React probe follow-through (2026-10-04)
+
+Build `rnqnx_react_render_host_probe` with Qt 6.11.1 and Hermes enabled, then run
+both its normal and bad-bundle CTests. Record actual command/output before
+promoting host readiness. Follow [the shared probe runbook](../react-render-probe.md)
+for later deployment of the binary **and** Metro bundle to QNX. Keep geometry,
+pixel/on-glass, and physical-target results separate.
+
 ## 1. Run the current physical Pi/QSTI validation lane
 
 **Objective:** Prove the merged Screen/device path on the current target
