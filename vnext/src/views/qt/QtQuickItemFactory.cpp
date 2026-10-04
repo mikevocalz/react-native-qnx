@@ -1,4 +1,5 @@
 #include "react-native-qnx/views/QtQuickItemFactory.h"
+#include "react-native-qnx/views/DecodedImageCache.h"
 
 #include <QQmlComponent>
 #include <QQmlEngine>
@@ -27,6 +28,10 @@ QtQuickItemFactory::QtQuickItemFactory(QQmlEngine& engine) : engine_(engine) {
 }
 
 QString QtQuickItemFactory::resolveImageSource(const QString& uri) {
+  if (DecodedImageCache::shared().contains(uri)) {
+    return QStringLiteral("image://%1/cache/%2")
+        .arg(QLatin1String(QnxImageProvider::providerId()), DecodedImageCache::key(uri));
+  }
   const QString provided = imageProvider_->registerDataUri(uri);
   return provided.isEmpty() ? uri : provided;
 }

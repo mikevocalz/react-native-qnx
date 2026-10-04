@@ -1,4 +1,5 @@
 #include "react-native-qnx/views/QnxImageProvider.h"
+#include "react-native-qnx/views/DecodedImageCache.h"
 
 #include <QByteArray>
 #include <QCryptographicHash>
@@ -54,7 +55,9 @@ QImage QnxImageProvider::requestImage(
     const QString& id,
     QSize* size,
     const QSize& requestedSize) {
-  const QImage image = images_.value(id);
+  const QImage image = id.startsWith(QLatin1String("cache/"))
+      ? DecodedImageCache::shared().image(id.mid(6))
+      : images_.value(id);
   if (image.isNull()) {
     return image;
   }
