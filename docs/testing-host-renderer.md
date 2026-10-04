@@ -66,3 +66,25 @@ PR #27; this lane does not suppress that audit.
   code and tests retain strict warnings-as-errors.
 - RN 0.88's feature-flag accessor uses 16-byte atomic state. The Linux graph
   links `libatomic` explicitly for the emitted `__atomic_*_16` operations.
+
+## Runtime regressions exposed by the full lane
+
+The suite exposed two real event-loop/input bugs, plus outdated QML fixtures:
+
+- `UIManagerBinding::completeRoot` now queues asynchronous rendering updates.
+  Source evaluation, native timer callbacks, and UIManager's AppRegistry
+  start/update/stop executor enter a real `RuntimeScheduler::scheduleWork` task, so its microtask and rendering
+  checkpoints run. Direct JSI evaluation left manual Fabric commits and timed
+  React state updates pending. The synchronous host rejects reentrant source
+  evaluation instead of letting references escape into a later task.
+- Mouse release now reports its ending contact only in `changedTouches`.
+  `touches` and `targetTouches` are empty, matching the existing multi-touch
+  path and React's responder-release contract.
+- The test View aliases `backgroundColor` to Rectangle's paint color, matching
+  the production View wrapper's style contract. The test Image uses the same
+  loading-indicator overlay as the playground. Existing color, pixel, loading,
+  responder and virtualized-list assertions remain enabled.
+
+Additional regression cases cover rejected reentrant evaluation without side
+effects, timer Promise microtasks completing without a manual drain, and a real
+Metro-bundled React `useState` update changing Yoga/Qt geometry from 64 to 96.

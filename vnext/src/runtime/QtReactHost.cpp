@@ -48,6 +48,7 @@
 #include <QMetaObject>
 
 #include <algorithm>
+#include <exception>
 #include <utility>
 
 namespace rnqnx::runtime {
@@ -369,7 +370,14 @@ class QtReactHost::Impl {
     // through; a real JS thread replaces this without changing anything above.
     facebook::react::RuntimeExecutor runtimeExecutor =
         [this](std::function<void(facebook::jsi::Runtime&)>&& callback) {
-          callback(*runtime);
+          ++runtimeExecutionDepth;
+          try {
+            callback(*runtime);
+          } catch (...) {
+            --runtimeExecutionDepth;
+            throw;
+          }
+          --runtimeExecutionDepth;
         };
 
     runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
@@ -402,7 +410,16 @@ class QtReactHost::Impl {
     SchedulerToolbox toolbox{};
     toolbox.contextContainer = contextContainer;
     toolbox.componentRegistryFactory = makeComponentRegistryFactory();
-    toolbox.runtimeExecutor = runtimeExecutor;
+    // UIManager uses this executor for AppRegistry start/update/stop. Those
+    // calls must also enter scheduler tasks; invoking React directly can leave
+    // its initial callbackNode stale before a later useState update.
+    toolbox.runtimeExecutor =
+        [scheduler = std::weak_ptr<RuntimeScheduler>(runtimeScheduler)](
+            std::function<void(facebook::jsi::Runtime&)>&& callback) {
+          if (auto runtimeScheduler = scheduler.lock()) {
+            runtimeScheduler->scheduleWork(std::move(callback));
+          }
+        };
     toolbox.bridgelessBindingsExecutor = std::nullopt;
     toolbox.eventBeatFactory =
         [scheduler = runtimeScheduler](
@@ -476,6 +493,7 @@ class QtReactHost::Impl {
     surfaces.clear();
   }
 
+  int runtimeExecutionDepth{0};
   std::unique_ptr<facebook::jsi::Runtime> runtime;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler;
   std::shared_ptr<const ContextContainer> contextContainer;
@@ -528,9 +546,29 @@ const std::shared_ptr<const ContextContainer>& QtReactHost::contextContainer()
 bool QtReactHost::evaluate(
     const std::string& source,
     const std::string& sourceUrl) {
+  // completeRoot schedules rendering for the end of an RN event-loop tick.
+  // Evaluating directly in JSI bypasses that tick and can also re-enter React's
+  // task scheduling while it is still assigning a callback node. This host's
+  // executor is synchronous, so scheduling a task at an idle boundary preserves
+  // evaluate's synchronous contract while running microtasks and rendering.
+  if (impl_->runtimeExecutionDepth != 0) {
+    impl_->lastError = QStringLiteral("Cannot re-enter an active JavaScript task");
+    return false;
+  }
   try {
-    impl_->runtime->evaluateJavaScript(
-        std::make_unique<facebook::jsi::StringBuffer>(source), sourceUrl);
+    std::exception_ptr evaluationError;
+    impl_->runtimeScheduler->scheduleWork(
+        [&](facebook::jsi::Runtime& runtime) {
+          try {
+            runtime.evaluateJavaScript(
+                std::make_unique<facebook::jsi::StringBuffer>(source), sourceUrl);
+          } catch (...) {
+            evaluationError = std::current_exception();
+          }
+        });
+    if (evaluationError) {
+      std::rethrow_exception(evaluationError);
+    }
     impl_->scriptUrl = sourceUrl;
     impl_->lastError.clear();
     return true;
@@ -748,7 +786,12 @@ void QtReactHost::installTimers() {
                 // The callback runs on the thread the timer fires on, which is
                 // the thread that owns the event loop — the same thread that
                 // owns this runtime.
-                callback->call(*impl->runtime);
+                // Timer callbacks are JS tasks too. A direct JSI call skips
+                // RN's microtask/rendering checkpoint and can strand updates.
+                impl->runtimeScheduler->scheduleWork(
+                    [callback](facebook::jsi::Runtime& runtime) {
+                      callback->call(runtime);
+                    });
                 if (!repeating) {
                   impl->timers.erase(handle);
                 }
