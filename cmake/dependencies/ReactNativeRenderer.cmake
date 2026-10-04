@@ -58,9 +58,9 @@ add_library(glog_init ALIAS rnqnx_glog_init)
 # <FBReactNativeSpec/FBReactNativeSpecJSI.h>, and React Native ships that
 # pre-generated header under React/ in the Apple pod layout even though it is
 # plain C++/JSI. Same artifact Android calls react_codegen_rncore.
-include_directories("${RNQNX_REACT_NATIVE_DIR}/React")
-include_directories("${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi")
-include_directories("${RNQNX_REACT_NATIVE_DIR}/ReactCommon/callinvoker")
+include_directories(SYSTEM "${RNQNX_REACT_NATIVE_DIR}/React")
+include_directories(SYSTEM "${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi")
+include_directories(SYSTEM "${RNQNX_REACT_NATIVE_DIR}/ReactCommon/callinvoker")
 
 # Third-party include roots the React Native module targets assume are global,
 # the way React Native's own Android assembler provides them.
@@ -71,6 +71,7 @@ include_directories(SYSTEM
   "${rnqnx_fast_float_SOURCE_DIR}/include"
   "${RNQNX_DOUBLE_CONVERSION_STAGE}"
   "${rnqnx_boost_SOURCE_DIR}"
+  "${rnqnx_boost_config_SOURCE_DIR}/include"
 )
 
 foreach(platform_dir IN ITEMS
@@ -87,10 +88,14 @@ foreach(platform_dir IN ITEMS
   # resolves from the module's own root rather than from ReactCommon.
   react/nativemodule/core
 )
-  include_directories("${REACT_COMMON_DIR}/${platform_dir}")
+  include_directories(SYSTEM "${REACT_COMMON_DIR}/${platform_dir}")
 endforeach()
 
 set(RNQNX_REACT_NATIVE_MODULES
+  react/cxxstableapi
+  jserrorhandler
+  react/renderer/observers/resize
+  react/nativemodule/resizeobserver
   react/debug
   callinvoker
   react/utils
@@ -172,6 +177,24 @@ foreach(module IN LISTS RNQNX_REACT_NATIVE_MODULES)
     "${CMAKE_BINARY_DIR}/react-native/${module}"
   )
 endforeach()
+
+# RN 0.88 feature flags use 16-byte atomic state. Linux/libstdc++ emits
+# __atomic_*_16 calls; unlike Apple's runtime this needs an explicit libatomic.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  target_link_libraries(react_featureflags atomic)
+endif()
+
+# RN 0.88's redbox AnsiParser.h uses uint8_t without including <cstdint>.
+# libc++ supplies it transitively; libstdc++ does not. Supply the standard
+# header for this one upstream translation unit without editing node_modules.
+set_property(SOURCE "${REACT_COMMON_DIR}/react/debug/redbox/AnsiParser.cpp"
+  TARGET_DIRECTORY react_debug APPEND PROPERTY COMPILE_OPTIONS
+  "$<$<COMPILE_LANG_AND_ID:CXX,GNU,Clang,AppleClang>:-include;cstdint>")
+
+# The same missing standard include affects HttpUtils.h's uint16_t.
+set_property(SOURCE "${REACT_COMMON_DIR}/jsinspector-modern/network/HttpUtils.cpp"
+  TARGET_DIRECTORY jsinspector_network APPEND PROPERTY COMPILE_OPTIONS
+  "$<$<COMPILE_LANG_AND_ID:CXX,GNU,Clang,AppleClang>:-include;cstdint>")
 
 # `react_codegen_rncore` is codegen output, so it has no CMakeLists to add.
 # ReactCommon/react/renderer/components/rncore/ holds five headers that each
@@ -368,6 +391,10 @@ add_library(yoga ALIAS yogacore)
 # them, so consumers link this aggregate instead of guessing a subset.
 add_library(rnqnx_react_native_renderer INTERFACE)
 set(RNQNX_REACT_NATIVE_RENDERER_TARGETS
+  react_cxxstableapi
+  jserrorhandler
+  react_renderer_observers_resize
+  react_nativemodule_resizeobserver
   react_debug
   react_utils
   react_featureflags

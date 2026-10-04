@@ -282,6 +282,19 @@ function ActivityIndicatorApp() {
   );
 }
 
+// A small real React state-update regression for the native host scheduler.
+function HostStateUpdateApp() {
+  const state = React.useState(64);
+  const width = state[0];
+  const setWidth = state[1];
+  globalThis.__hostUpdateWidth = () => setWidth(96);
+  globalThis.__hostStateRenderWidth = width;
+  return React.createElement(View, {
+    collapsable: false,
+    style: { width, height: 20 },
+  });
+}
+
 function SwitchApp() {
   const valueState = React.useState(false);
   const value = valueState[0];
@@ -511,3 +524,5 @@ AppRegistry.registerComponent('RNQnxImageResolveAsset', () => ImageResolveAssetA
 AppRegistry.registerComponent('RNQnxNativeAnimated', () => NativeAnimatedApp);
 AppRegistry.registerComponent('RNQnxButton', () => ButtonApp);
 AppRegistry.registerComponent('RNQnxModal', () => ModalApp);
+
+AppRegistry.registerComponent('RNQnxHostStateUpdate', () => HostStateUpdateApp);

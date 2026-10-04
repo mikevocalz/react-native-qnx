@@ -90,7 +90,19 @@ FetchContent_Declare(rnqnx_boost
   SOURCE_SUBDIR ${RNQNX_NO_UPSTREAM_BUILD}
 )
 
+# RN's trimmed Boost contains only libc++ configuration. Linux's Qt binary
+# SDK uses libstdc++, so supply the missing platform/compiler configuration
+# headers from the exact matching upstream Boost.Config release. This does not
+# replace the trimmed Boost implementation headers or change the Boost version.
+FetchContent_Declare(rnqnx_boost_config
+  URL "https://github.com/boostorg/config/archive/refs/tags/boost-${RNQNX_BOOST_VERSION}.tar.gz"
+  URL_HASH SHA256=4c45e04b689e79234cf1ef60f966c93755dca2ff433e72db5b4f367f94007aa9
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  SOURCE_SUBDIR ${RNQNX_NO_UPSTREAM_BUILD}
+)
+
 FetchContent_MakeAvailable(
+  rnqnx_boost_config
   rnqnx_boost
   rnqnx_folly
   rnqnx_fmt
@@ -196,7 +208,8 @@ target_compile_options(rnqnx_double_conversion PRIVATE -w)
 
 add_library(rnqnx_boost INTERFACE)
 target_include_directories(rnqnx_boost SYSTEM INTERFACE
-  "${rnqnx_boost_SOURCE_DIR}")
+  "${rnqnx_boost_SOURCE_DIR}"
+  "${rnqnx_boost_config_SOURCE_DIR}/include")
 
 # Headers, usable on their own by translation units that only read folly types.
 add_library(rnqnx_folly INTERFACE)
