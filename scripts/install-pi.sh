@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# One-command Raspberry Pi 4/5 QSTI lane:
+# One-command Raspberry Pi physical-target lane:
+# Pi 4/5 use the stock QSTI baseline. Pi 400 can use QNX's documented custom
+# BCM2711 image adaptation once Screen + SSH are healthy.
 # host/QNX preflight -> AArch64 build -> atomic deploy -> on-glass run
 # -> stdout/slog2/screenshot evidence.
 
@@ -53,6 +55,15 @@ rnqnx_target_init
 CONFIG="${RNQNX_PI_CONFIG:-Release}"
 APP="rnqnx_playground"
 RUNS="${RNQNX_PI_RUNS:-3}"
+BOARD="${RNQNX_PI_BOARD:-unknown}"
+
+case "${BOARD}" in
+  unknown|pi4|pi5|pi400) ;;
+  *)
+    echo "ERROR: RNQNX_PI_BOARD must be one of: unknown, pi4, pi5, pi400." >&2
+    exit 1
+    ;;
+esac
 
 if [[ "${CONFIG}" != "Release" && "${CONFIG}" != "Debug" ]]; then
   echo "ERROR: RNQNX_PI_CONFIG must be Release or Debug." >&2
@@ -72,6 +83,7 @@ echo "========================================"
 echo " react-native-qnx · Raspberry Pi install"
 echo "========================================"
 echo "Target: $(rnqnx_target_address)"
+echo "Board: ${BOARD}"
 echo "Config: ${CONFIG}"
 echo "Validation runs: ${RUNS}"
 echo "Remote dir: ${QNX_TARGET_DIR}"
@@ -174,6 +186,7 @@ if ((SLOG_RC != 0)); then
 fi
 
 printf '%s\n' "$(rnqnx_target_address)" >"${EVIDENCE_DIR}/target.txt"
+printf '%s\n' "${BOARD}" >"${EVIDENCE_DIR}/board.txt"
 printf '%s\n' "${CONFIG}" >"${EVIDENCE_DIR}/config.txt"
 printf '%s\n' "${RUNS}" >"${EVIDENCE_DIR}/run-count.txt"
 date -u +%Y-%m-%dT%H:%M:%SZ >"${EVIDENCE_DIR}/completed-at.txt"
@@ -185,6 +198,7 @@ node "${PROJECT_ROOT}/scripts/verify-pi-evidence.mjs" "${EVIDENCE_DIR}"
 echo
 echo "Raspberry Pi install smoke pass complete."
 echo "Binary: ${QNX_TARGET_DIR}/${APP}"
+echo "Board: ${BOARD}"
 echo "Evidence: ${EVIDENCE_DIR}"
 echo "Repeated clean runs: ${RUNS}"
 echo "Manifest: ${EVIDENCE_DIR}/manifest.json"
