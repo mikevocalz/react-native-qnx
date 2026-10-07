@@ -131,6 +131,20 @@ async function main() {
     readFile(path.join(evidenceDir, 'target.txt'), 'utf8'),
   ]);
 
+  let board = 'unknown';
+  try {
+    board = (await readFile(path.join(evidenceDir, 'board.txt'), 'utf8')).trim();
+  } catch (error) {
+    if (!(
+      error instanceof Error &&
+      'code' in error &&
+      /** @type {NodeJS.ErrnoException} */ (error).code === 'ENOENT'
+    )) {
+      throw error;
+    }
+  }
+  assertContains(board, /^(unknown|pi4|pi5|pi400)$/, 'Raspberry Pi board label');
+
   let runCount = 1;
   try {
     const runCountText = await readFile(path.join(evidenceDir, 'run-count.txt'), 'utf8');
@@ -213,6 +227,7 @@ async function main() {
     generatedAt: new Date().toISOString(),
     evidenceDirectory: path.relative(root, evidenceDir).split(path.sep).join('/'),
     target: target.trim(),
+    board,
     configuration: config.trim(),
     runCount,
     completedAt: completedAt.trim(),
@@ -224,6 +239,7 @@ async function main() {
       cleanShutdown: true,
       repeatedRuns: runCount > 1,
       qccAarch64Variant: true,
+      boardRecorded: board !== 'unknown',
       screenshotCaptured,
     },
     files: inventory,
@@ -235,6 +251,7 @@ async function main() {
   console.log('Pi evidence verified.');
   console.log(`Directory: ${evidenceDir}`);
   console.log(`Target: ${manifest.target}`);
+  console.log(`Board: ${manifest.board}`);
   console.log(`Configuration: ${manifest.configuration}`);
   console.log(`Validated runs: ${manifest.runCount}`);
   console.log(`Screenshot: ${screenshotCaptured ? 'captured' : 'not available'}`);
