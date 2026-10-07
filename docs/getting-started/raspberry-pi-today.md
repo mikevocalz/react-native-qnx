@@ -3,12 +3,18 @@
 This is the shortest supported path from this repository to a physical Raspberry Pi
 running QNX Screen.
 
+**Using a Raspberry Pi 400?** Do not flash the stock Pi 4 QSTI unchanged. QNX
+documents a separate BCM2711 custom-image adaptation for the Pi 400. Follow
+`docs/getting-started/raspberry-pi-400.md`, then return to the preflight/install
+steps here once SSH and QNX Screen are running.
+
 ## What to buy
 
 For this repository, the simplest target is a **Raspberry Pi 5 with 8 GB RAM**.
-QNX's current QSTI supports both Pi 4 and Pi 5 and requires an 8 GB-or-larger
-board, so 8 GB is the minimum configuration we are treating as the supported
-hardware baseline.
+QNX's current QSTI supports both Pi 4 and Pi 5 and recommends an 8 GB-or-larger
+board, so 8 GB is the minimum configuration we are treating as the stock-QSTI
+hardware baseline. The 4 GB Pi 400 is tracked separately as an experimental
+custom-image target.
 
 Bring these pieces for the first session:
 
@@ -110,6 +116,10 @@ Override only what is different on your target:
     export QNX_TARGET_IP=192.168.1.50
     export QNX_TARGET_USER=qnxuser
     export QNX_SSH_KEY=$HOME/.ssh/id_ed25519
+
+For a Pi 400 custom-image run, also label the evidence explicitly:
+
+    export RNQNX_PI_BOARD=pi400
 
 The preflight fails early unless all of these are true:
 
