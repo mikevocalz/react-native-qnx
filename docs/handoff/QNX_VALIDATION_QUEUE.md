@@ -9,7 +9,8 @@ change without revalidation.
 
 - QNX SDP 8.0.5
 - QSTI 0.5.0 build 50
-- Raspberry Pi 4 / Raspberry Pi 5
+- Raspberry Pi 4 / Raspberry Pi 5 — stock QSTI baseline
+- Raspberry Pi 400 — experimental QNX custom-image adaptation; physical proof pending
 - AArch64le
 - Stock target identity: `qnxuser@qnxpi.local`
 - Current JS/tooling line: Expo 58.0.0, React Native 0.88.0-rc.3,
@@ -97,7 +98,8 @@ pending.
 **Current environment:**
 
 - Licensed QNX SDP 8.0.5 host environment.
-- Pi 4 or Pi 5 running QSTI 0.5.0 build 50.
+- Pi 4 or Pi 5 running QSTI 0.5.0 build 50, **or** a Pi 400 running the
+  QNX-documented BCM2711 custom-image adaptation.
 - Screen/display available.
 - SSH access, defaulting to `qnxuser@qnxpi.local`.
 
@@ -105,6 +107,8 @@ pending.
 
 ```bash
 export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
+# For Pi 400 evidence only:
+# export RNQNX_PI_BOARD=pi400
 pnpm install --frozen-lockfile
 pnpm pi:preflight
 pnpm pi:install
