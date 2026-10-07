@@ -131,6 +131,14 @@ the BCM2711 Pi 4 custom image with the Pi 400 DTB and Wi-Fi firmware. See
 and SSH are up, use the same repository deployment lane with
 `RNQNX_PI_BOARD=pi400`.
 
+For development-host choice, use an x86-64 machine. Windows 11 x64 is a current
+QNX SDP 8.0.5 host option; Ubuntu 22.04/24.04 and RHEL 9 are also supported.
+macOS and ARM-based development hosts are not supported by QNX SDP 8.0.5. If
+your spare Windows PC is too old for Windows 11, the recommended fallback is to
+install Ubuntu 24.04 x86-64 on that PC and use it as the dedicated QNX
+build/debug station. The Pi 400 guide includes the Windows-version check and
+host decision matrix.
+
 ```bash
 export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
 
