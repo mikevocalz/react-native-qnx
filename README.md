@@ -118,11 +118,18 @@ This runs on the development host, not on QNX. See
 `docs/adr/0010-macos-qt-development-host.md` for what that does and does not
 prove, and `docs/component-support.md` for what actually works.
 
-## Raspberry Pi 4/5 quick install
+## Raspberry Pi 4/5 + Pi 400 quick install
 
 For the current QNX Everywhere QSTI lane, use QNX SDP 8.0.5 with QSTI 0.5.0
 build 50 on Raspberry Pi 4 or Raspberry Pi 5. The stock target defaults are
 `qnxuser@qnxpi.local`.
+
+Raspberry Pi 400 is an **experimental custom-image target**, not part of the
+stock Pi 4/5 QSTI baseline. QNX has published a Pi 400 QNX 8 recipe that adapts
+the BCM2711 Pi 4 custom image with the Pi 400 DTB and Wi-Fi firmware. See
+`docs/getting-started/raspberry-pi-400.md` before flashing it. Once QNX Screen
+and SSH are up, use the same repository deployment lane with
+`RNQNX_PI_BOARD=pi400`.
 
 ```bash
 export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
@@ -139,8 +146,9 @@ deploys atomically, runs three clean Screen launch/exit cycles by default, store
 stdout/slog2/screenshot evidence, and automatically verifies + hashes the run
 into `manifest.json`.
 
-See `docs/getting-started/raspberry-pi-today.md` for flashing, first login,
-SSH details, evidence layout, and troubleshooting.
+See `docs/getting-started/raspberry-pi-today.md` for the stock Pi 4/5 QSTI
+lane. See `docs/getting-started/raspberry-pi-400.md` for the experimental
+Pi 400 QNX 8 custom-image path.
 
 ## Build and deploy on QNX
 
