@@ -35,12 +35,65 @@ For a first bring-up, have:
 - micro-HDMI cable and display
 - Ethernet cable if possible for the first networking pass
 - mouse
-- a Linux build host, or the QNX-supported container workflow for the CTI build
+- an x86-64 development host for QNX SDP: Windows 11, Ubuntu 22.04/24.04, or RHEL 9
 
 The Pi 400 has 4 GB RAM. QNX's current general QSTI documentation recommends
 8 GB or more for Pi 4/5, so the Pi 400 is not being promoted as the repository's
 preferred performance target. It is still useful for physical AArch64 + Screen
 bring-up.
+
+## Development host: use the spare Windows PC first
+
+For this Pi 400 bring-up, a spare x86-64 Windows PC is useful because the current
+QNX SDP 8.0.5 host baseline supports Windows 11 x64, Ubuntu Desktop 22.04/24.04,
+and RHEL 9. QNX SDP 8.0.5 does not support macOS hosts or ARM-based development
+hosts.
+
+That means the recommended lab layout is:
+
+```text
+Mac
+  -> editing, Git/GitHub, notes, serial/log viewing, and orchestration
+
+Old x86-64 PC
+  -> QNX SDP 8.0.5 build/debug host
+  -> Ethernet/USB-UART connection to the Pi 400
+
+Raspberry Pi 400
+  -> QNX target
+```
+
+Before installing QNX on the PC, record the Windows version and architecture:
+
+```bat
+winver
+systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"System Type"
+```
+
+Host decision:
+
+- **Windows 11 x64:** preferred Windows path for the current SDP 8.0.5 baseline.
+- **Windows 10 x64:** legacy/deprecated host. Do not treat it as the repository's
+  current validated baseline. Prefer upgrading the PC to Windows 11 if supported,
+  or use Ubuntu 24.04 x86-64 on the same hardware.
+- **Windows 7/8/8.1 or 32-bit Windows:** unsupported for this QNX 8 lane. Install
+  Ubuntu 24.04 x86-64 on the PC instead.
+- **PC cannot run a supported 64-bit OS:** do not use it as the QNX build host.
+
+If the old PC cannot run Windows 11, the preferred recovery path is to install
+Ubuntu 24.04 x86-64 on a spare SSD or use dual boot. This preserves the machine
+as a dedicated QNX build/debug station and avoids relying on an unsupported
+macOS or ARM-host toolchain.
+
+The repository's current helper scripts are POSIX-shell-oriented. On a native
+Windows QNX installation, validate the QNX toolchain first and use the Windows
+environment supplied by QNX; do not assume the bash helpers are automatically
+equivalent. Ubuntu x86-64 is the lowest-friction path for running the repository
+automation unchanged.
+
+For first hardware bring-up, connect the old PC to the Pi 400 over Ethernet and,
+when available, a 3.3 V USB-to-TTL UART adapter. The Mac can remain on the same
+LAN for source control and log review while the x86-64 host performs QNX builds.
 
 ## 1. Build the stock Pi 4 CTI once
 
