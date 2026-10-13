@@ -1,5 +1,13 @@
 # BLOCKERS.md
 
+## 2026-10-13 dependency security update
+
+The source-map-js, compression and shell-quote audit blockers are fixed with
+published compatible versions. The guarded gate passes locally; raw braces and
+the pre-existing node-forge exception are not claimed resolved upstream.
+See [dependency fixes](../security/dependency-updates-2026-10.md). Physical
+Pi and licensed QNX toolchain gates below remain open.
+
 ## GHSA-vfj7-8cjw-p6xm — No official braces fixed release
 
 As of 2026-10-03, npm latest is 3.0.3 and upstream PR #72 is still open.

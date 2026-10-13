@@ -1,5 +1,13 @@
 # SESSION_LOG.md
 
+## 2026-10-13 dependency security update
+
+Restored and blob-verified the PR #32 snapshot at `5a827281`. Reproduced the
+three advisory failures, then pinned compatible published fixes and verified
+the regression tests. No audit policy was relaxed. Host JS/tooling and guarded
+audit checks pass; exact-commit CI remains pending. No merge or deployment.
+See [dependency fixes](../security/dependency-updates-2026-10.md).
+
 ## 2026-10-04 — Replace arithmetic-only React QNX probe
 
 - Replaced UIManager-plus-arithmetic success with a real bundled React surface,
