@@ -33,10 +33,7 @@
   "targetBaseline": {
     "qnxSdp": "8.0.5",
     "qsti": "0.5.0 build 50",
-    "boards": [
-      "Raspberry Pi 4",
-      "Raspberry Pi 5"
-    ],
+    "boards": ["Raspberry Pi 4", "Raspberry Pi 5"],
     "defaultTarget": "qnxuser@qnxpi.local",
     "experimentalBoards": [
       "Raspberry Pi 400 (QNX custom-image adaptation; physical validation pending)"
