@@ -7,10 +7,10 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "QNX")
   message(FATAL_ERROR "HermesQNX.cmake is only for QNX cross-builds")
 endif()
 
-set(RNQNX_HERMES_QNX_TAG "hermes-v260318099.0.2"
+set(RNQNX_HERMES_QNX_TAG "hermes-v260318099.0.5"
   CACHE STRING "Hermes source tag audited for QNX")
 set(RNQNX_HERMES_QNX_SOURCE_DIR
-  "${CMAKE_CURRENT_SOURCE_DIR}/third-party/hermes-260318099.0.2"
+  "${CMAKE_CURRENT_SOURCE_DIR}/third-party/hermes-260318099.0.5"
   CACHE PATH "Patched Hermes source tree for QNX")
 set(RNQNX_HERMES_QNX_DIR
   "${CMAKE_CURRENT_SOURCE_DIR}/build/hermes-qnx-${QNX_TARGET_ARCH}"
