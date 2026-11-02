@@ -12,7 +12,7 @@ assert.equal(root.devDependencies['nitro-core'], version);
 assert.equal(manifest.peerDependencies['nitro-core'], version);
 const c = await read('packages/qnx-nitro-runtime/CMakeLists.txt');
 const h = await read('packages/qnx-nitro-runtime/cpp/QnxPlatformInfo.hpp');
-const src = await read('packages/qnx-nitro-runtime/cpp/QnxPlatformInfo.cpp');
+const src = await read('packages/qnx-nitro-runtime/cpp/generated/QnxPlatformInfo.binding.cpp');
 const js = await read('packages/qnx-nitro-runtime/index.js');
 const p = await read('vnext/probes/runtime-qnx/main.cpp');
 assert.match(c, /native\/cpp\/src/);

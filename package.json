@@ -39,7 +39,9 @@
     "validate:qnx-expo-modules": "node scripts/validate-qnx-expo-modules.mjs",
     "validate:qnx-expo-autolinking": "node scripts/validate-qnx-expo-autolinking.mjs",
     "qnx:runtime:validate": "bash scripts/validate-runtime-qnx.sh",
-    "validate:qnx-react": "node scripts/validate-react-qnx-source.mjs"
+    "validate:qnx-react": "node scripts/validate-react-qnx-source.mjs",
+    "nitro:platform:generate": "node scripts/nitro-platform-codegen.mjs --write",
+    "nitro:platform:check": "node scripts/nitro-platform-codegen.mjs --check"
   },
   "devDependencies": {
     "@react-native/metro-config": "0.88.1",

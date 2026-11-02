@@ -57,6 +57,7 @@ add_library(rnqnx_nitro_qnx STATIC
   cpp/ThreadUtils.cpp
   cpp/QnxNitroRuntime.cpp
   cpp/QnxPlatformInfo.cpp
+  cpp/generated/QnxPlatformInfo.binding.cpp
 )
 
 target_include_directories(rnqnx_nitro_qnx PUBLIC

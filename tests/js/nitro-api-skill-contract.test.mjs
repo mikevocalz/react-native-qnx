@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 /** @param {string} filename */
 const read = (filename) => readFile(filename, 'utf8');
 const runtime = await read('packages/qnx-nitro-runtime/cpp/QnxNitroRuntime.cpp');
-const info = await read('packages/qnx-nitro-runtime/cpp/QnxPlatformInfo.cpp');
+const info = await read('packages/qnx-nitro-runtime/cpp/generated/QnxPlatformInfo.binding.cpp');
 const header = await read('packages/qnx-nitro-runtime/cpp/QnxPlatformInfo.hpp');
 const js = await read('packages/qnx-nitro-runtime/index.js');
 const types = await read('packages/qnx-nitro-runtime/index.d.ts');

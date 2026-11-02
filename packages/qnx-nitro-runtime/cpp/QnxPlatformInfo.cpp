@@ -1,23 +1,10 @@
 #include "QnxPlatformInfo.hpp"
 
-#include <NitroModules/HybridClass.hpp>
 
 namespace rnqnx::nitro {
 
 std::shared_ptr<QnxPlatformInfo> QnxPlatformInfo::create() {
   return std::make_shared<QnxPlatformInfo>();
-}
-
-const std::shared_ptr<const margelo::nitro::HybridClass>&
-QnxPlatformInfo::Class::get() {
-  static const auto cls = margelo::nitro::HybridClass::create<Class>(
-      [](margelo::nitro::HybridClass& descriptor) {
-        descriptor.registerHybridConstructor(&QnxPlatformInfo::create);
-        descriptor.registerHybridProperty("platform", &QnxPlatformInfo::getPlatform);
-        descriptor.registerHybridProperty("architecture", &QnxPlatformInfo::getArchitecture);
-        descriptor.registerHybridMethod("add", &QnxPlatformInfo::add);
-      });
-  return cls;
 }
 
 std::string QnxPlatformInfo::getPlatform() {
