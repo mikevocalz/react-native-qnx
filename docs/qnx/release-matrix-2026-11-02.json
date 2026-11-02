@@ -1,0 +1,112 @@
+{
+  "asOf": "2026-11-02",
+  "scope": "public QNX release notes; installed QNX Software Center entitlement inventory not inspected",
+  "sdp": {
+    "version": "8.0.5",
+    "releaseNotes": "https://www.qnx.com/developers/docs/relnotes8.0/com.qnx.doc.release_notes/topic/8.0.5_prod_release_notes/8.0.5_rn.html",
+    "gaDate": "2026-06-25"
+  },
+  "qsti": {
+    "version": "0.5.0",
+    "build": 50,
+    "internalVersion": "0.5.0.00050T202609021847L",
+    "rpi4Package": "com.qnx.qnx800.quickstart.rpi4",
+    "rpi5Package": "com.qnx.qnx800.quickstart.rpi5",
+    "qemuPackage": "com.qnx.qnx800.quickstart.qemu",
+    "notes": "QEMU QSTI 0.5.0 build 50 supports Ubuntu 22.04/24.04 hosts per QNX docs",
+    "releaseNotes": "https://qnx.com/developers/docs/qnxeverywhere/rel_notes.html"
+  },
+  "bsp": {
+    "rpi4": {
+      "build": 670,
+      "package": "com.qnx.qnx800_ea.bsp.raspberrypi_bcm2711_rpi4",
+      "internalVersion": "0.3.0.00670T202606081017L",
+      "releaseNotes": "https://www.qnx.com/developers/docs/BSP8.0/com.qnx.doc.bsp.releasenotes/topic/rel_sdp80.bsp.broadcom.rpi4.bcm2711.html"
+    },
+    "rpi5": {
+      "build": 568,
+      "package": "com.qnx.qnx800.bsp.hw.raspberrypi_bcm2712_rpi5",
+      "internalVersion": "0.4.0.00568T202606081017L",
+      "releaseNotes": "https://www.qnx.com/developers/docs/BSP8.0/com.qnx.doc.bsp.releasenotes/topic/rel_sdp80.bsp.broadcom.rpi5.bcm2712.html"
+    }
+  },
+  "packages": [
+    {
+      "group": "USB/HID",
+      "name": "QNX SDP 8.0 OS Services - HID",
+      "package": "com.qnx.qnx800.target.os_services.hid",
+      "build": 19,
+      "date": "2026-10-06",
+      "notes": "Check io-usb/io-hid memory/parse fix; rebuild affected BSP images after installing compatible packages",
+      "releaseNotes": "https://www.qnx.com/developers/docs/relnotes8.0/com.qnx.doc.release_notes/topic/8.0.5_prod_release_notes/8.0.5_os_libraries.html"
+    },
+    {
+      "group": "Connectivity",
+      "name": "QNX SDP 8.0 Connectivity - Characters",
+      "package": "com.qnx.qnx800.target.connectivity.char",
+      "build": 61,
+      "date": "2026-09-03",
+      "notes": "Pairs with serial and io-char updates; rebuild BSP images",
+      "releaseNotes": "https://www.qnx.com/developers/docs/relnotes8.0/com.qnx.doc.release_notes/topic/8.0.5_prod_release_notes/8.0.5_connectivity.html"
+    },
+    {
+      "group": "Connectivity",
+      "name": "QNX SDP 8.0 Connectivity - Serial",
+      "package": "com.qnx.qnx800.target.connectivity.devc",
+      "build": 52,
+      "date": "2026-09-03",
+      "notes": "Install only appropriate BSP/connectivity set",
+      "releaseNotes": "https://www.qnx.com/developers/docs/relnotes8.0/com.qnx.doc.release_notes/topic/8.0.5_prod_release_notes/8.0.5_connectivity.html"
+    },
+    {
+      "group": "Connectivity",
+      "name": "QNX SDP 8.0 Connectivity - io-char",
+      "package": "com.qnx.qnx800.target.connectivity.io_char",
+      "build": 52,
+      "date": "2026-09-03",
+      "notes": "Verify board support package dependencies",
+      "releaseNotes": "https://www.qnx.com/developers/docs/relnotes8.0/com.qnx.doc.release_notes/topic/8.0.5_prod_release_notes/8.0.5_connectivity.html"
+    },
+    {
+      "group": "Networking",
+      "name": "QNX SDP 8.0 Networking - OpenSSH",
+      "package": "com.qnx.qnx800.target.net.openSSH",
+      "build": 9,
+      "date": "2026-09-14",
+      "notes": "OpenSSH 10.4p1 changes sshd-auth packaging; update mkqnximage or older BSP image buildfiles before deploying",
+      "releaseNotes": "https://www.qnx.com/developers/docs/relnotes8.0/com.qnx.doc.release_notes/topic/8.0.5_prod_release_notes/8.0.5_networking.html"
+    },
+    {
+      "group": "QNX Everywhere",
+      "name": "QNX Everywhere Sample Applications",
+      "package": "com.qnx.qnx800.target.screen.demos.qnxeverywhere",
+      "build": 343,
+      "date": "2026-09-16",
+      "notes": "Useful independent Screen/graphics validation examples",
+      "releaseNotes": "https://qnx.com/developers/docs/qnxeverywhere/rel_notes.html"
+    },
+    {
+      "group": "OS Utilities",
+      "name": "BSD tar / libarchive",
+      "package": "com.qnx.qnx800.osr.bsdtar",
+      "build": 91,
+      "date": "2026-09-03",
+      "notes": "libarchive 3.8.8 security/compatibility utility update, not a graphics runtime prerequisite",
+      "releaseNotes": "https://www.qnx.com/developers/docs/relnotes8.0/com.qnx.doc.release_notes/topic/8.0.5_prod_release_notes/8.0.5_osr.html"
+    }
+  ],
+  "currentRepoEvidence": {
+    "sdp": "8.0.5",
+    "qstiVersion": "0.5.0",
+    "qstiBuild": 50,
+    "qtMinimum": "6.11.1",
+    "qnxRuntimeDeviceStatus": "pending",
+    "qnxScreenHistoricalProof": "QNX 8.0.2 VM, not SDP 8.0.5 target proof"
+  },
+  "caveats": [
+    "Hardware BSP/QSTI and individual package release numbers are separate products; compare each package ID, not just numeric version.",
+    "Raspberry Pi 400 is not named as an officially validated QSTI target in the cited QNX docs; use the experimental Pi400 bring-up PR for extra evidence.",
+    "Qt 6.12 LTS may be evaluated in a separate ABI/build lane; do not raise minimum from 6.11.1 without QNX source and Marathon device proof.",
+    "Only QNX Software Center for the account can confirm all entitled/latest platform components; this manifest covers publicly verified release notes."
+  ]
+}
