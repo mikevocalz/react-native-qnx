@@ -42,16 +42,16 @@
     "validate:qnx-react": "node scripts/validate-react-qnx-source.mjs"
   },
   "devDependencies": {
-    "@react-native/metro-config": "0.88.0-rc.3",
-    "@types/node": "26.6.3",
+    "@react-native/metro-config": "0.88.1",
+    "@types/node": "26.6.6",
     "@types/react": "19.3.0",
-    "babel-preset-expo": "58.0.4",
-    "expo": "58.0.0",
-    "metro": "0.87.1",
+    "babel-preset-expo": "58.0.23",
+    "expo": "58.0.22",
+    "metro": "0.87.2",
     "nitrogen": "0.37.1",
     "prettier": "3.9.9",
     "react": "19.3.0",
-    "react-native": "0.88.0-rc.3",
+    "react-native": "0.88.1",
     "react-native-nitro-modules": "0.37.1",
     "typescript": "7.0.2"
   }
