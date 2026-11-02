@@ -89,3 +89,7 @@ Track exact failures and commit evidence. Code and dependency changes remain dra
 ## Skills order
 
 For every public Nitro API change: `api-design` first; `build-nitro-modules` second; `cpp`/language skill for owned native implementation; `react-native-best-practices` for profiling; `react-native-testing` for tests; `github-actions` for CI. For networking or persistent storage specifically, consult `nitro-fetch` or `react-native-mmkv` skill **only if that API is in scope**. See `SKILLS_AND_ROSTER.md`.
+
+## Additional non-QNX compile gate
+
+`tests/native/nitro-v1-host/CMakeLists.txt` and `.github/workflows/nitro-v1-host.yml` compile the **actual** `nitro-core@1.0-alpha` C++ source and the changed `QnxPlatformInfo` bridge on Linux with C++20. A passing compile verifies C++ headers, templates and source-object compatibility; it does not verify QNX SDP linking, runtime JSI correctness, Fabric/Qt or physical device support. Do not turn compiler failures into ignored warnings or substitute a standalone fake class.

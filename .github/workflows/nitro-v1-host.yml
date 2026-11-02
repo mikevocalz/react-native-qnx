@@ -1,0 +1,57 @@
+name: Nitro v1 native C++ source and host compile
+
+on:
+  pull_request:
+    paths:
+      - 'packages/qnx-nitro-runtime/**'
+      - 'tests/native/nitro-v1-host/**'
+      - 'scripts/validate-qnx-nitro.mjs'
+      - 'tests/js/nitro-*.test.mjs'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/nitro-v1-host.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-and-compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - name: Frozen exact Nitro alpha graph
+        run: pnpm install --frozen-lockfile
+      - name: Nitro/JSI static source and package contracts
+        run: |
+          pnpm validate:dependencies
+          pnpm validate:qnx-nitro
+          pnpm test:js
+          pnpm typecheck
+      - name: Linux C++20 compiler and CMake prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build clang
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Compile the actual Nitro core and QNX adapter sources on Linux
+        run: |
+          mkdir -p build/nitro-v1-linux-host/evidence
+          cmake -S tests/native/nitro-v1-host -B build/nitro-v1-linux-host -G Ninja -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build/nitro-v1-linux-host --target rnqnx_nitro_qnx -j 4
+          git rev-parse HEAD > build/nitro-v1-linux-host/evidence/commit.txt
+      - name: Save compile evidence (NOT a QNX runtime claim)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nitro-v1-host-${{ github.sha }}
+          path: |
+            build/nitro-v1-linux-host/evidence/
+            build/nitro-v1-linux-host/CMakeCache.txt
+            build/nitro-v1-linux-host/CMakeFiles/CMakeConfigureLog.yaml
+          if-no-files-found: warn
