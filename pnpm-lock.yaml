@@ -202,9 +202,12 @@ importers:
       metro:
         specifier: 0.87.1
         version: 0.87.1(supports-color@8.1.1)
+      nitro-core:
+        specifier: 1.0.0-alpha.nightly.105.g69d365fc9b18
+        version: 1.0.0-alpha.nightly.105.g69d365fc9b18
       nitrogen:
-        specifier: 0.37.1
-        version: 0.37.1(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
+        specifier: 1.0.0-alpha.nightly.105.g69d365fc9b18
+        version: 1.0.0-alpha.nightly.105.g69d365fc9b18
       prettier:
         specifier: 3.9.9
         version: 3.9.9
@@ -215,8 +218,8 @@ importers:
         specifier: 0.88.1
         version: 0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
       react-native-nitro-modules:
-        specifier: 0.37.1
-        version: 0.37.1(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
+        specifier: 1.0.0-alpha.nightly.105.g69d365fc9b18
+        version: 1.0.0-alpha.nightly.105.g69d365fc9b18(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -269,12 +272,15 @@ importers:
 
   packages/qnx-nitro-runtime:
     dependencies:
+      nitro-core:
+        specifier: 1.0.0-alpha.nightly.105.g69d365fc9b18
+        version: 1.0.0-alpha.nightly.105.g69d365fc9b18
       react-native:
         specifier: 0.88.1
         version: 0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
       react-native-nitro-modules:
-        specifier: 0.37.1
-        version: 0.37.1(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
+        specifier: 1.0.0-alpha.nightly.105.g69d365fc9b18
+        version: 1.0.0-alpha.nightly.105.g69d365fc9b18(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
 
   packages/react-native-qnx:
     dependencies:
@@ -2027,8 +2033,11 @@ packages:
     resolution: {integrity: sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==}
     engines: {node: '>= 0.6'}
 
-  nitrogen@0.37.1:
-    resolution: {integrity: sha512-RMK1n8xV7B38JorfLCFexgPEDp7/4CnM/AR0R3UfikufXo8qB8TecgtY+sW0xjOjZJYwW5bJJI/kyZjusYk4JA==}
+  nitro-core@1.0.0-alpha.nightly.105.g69d365fc9b18:
+    resolution: {integrity: sha512-+3gvXKKLgp5FofLE3JBHFmr10qZYWcElJjZVGNfpBZnDFrucnA6Mc5U0ptW8opUq1vZa6DqoRMK7K9eb4v6GHQ==}
+
+  nitrogen@1.0.0-alpha.nightly.105.g69d365fc9b18:
+    resolution: {integrity: sha512-/9w37XiwnHG0zC6jwSlYLu5lTarmrxpMIFm3PIFeIPY0l7HMaqzFeDLRM4EywCnupM2D/L350UEpljvulXE0VA==}
     hasBin: true
 
   node-forge@1.4.2:
@@ -2160,11 +2169,11 @@ packages:
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
 
-  react-native-nitro-modules@0.37.1:
-    resolution: {integrity: sha512-KpW6EQVQ/bfegpCGxN9Be+ndvsfj56t4IESEvCASu9gWpJa/NDfHpIeIwCOvZQ3eXmLEj6YD4wCLqcC1FJPr2w==}
+  react-native-nitro-modules@1.0.0-alpha.nightly.105.g69d365fc9b18:
+    resolution: {integrity: sha512-aVLBanaeV1Envu6e6yF6bmDpgPKEKKGD3L2anwTrt8EmR2TZX1FfkKxvleqYoYSbNn9nH0rwrWQLnTSU6u1FEA==}
     peerDependencies:
       react: '*'
-      react-native: '*'
+      react-native: '>=0.88.0'
 
   react-native@0.88.1:
     resolution: {integrity: sha512-wajWcLZ93GCN7k4Uwh4CS4L2Ah8ohcvkOXnvIYmh4Yvuqho5j3APZ9qozK+nQrHWSgauq4h8D3HN5DKK84SrHA==}
@@ -4613,16 +4622,15 @@ snapshots:
 
   negotiator@1.0.0: {}
 
-  nitrogen@0.37.1(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0):
+  nitro-core@1.0.0-alpha.nightly.105.g69d365fc9b18: {}
+
+  nitrogen@1.0.0-alpha.nightly.105.g69d365fc9b18:
     dependencies:
       chalk: 5.6.2
-      react-native-nitro-modules: 0.37.1(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
+      nitro-core: 1.0.0-alpha.nightly.105.g69d365fc9b18
       ts-morph: 28.0.0
       yargs: 18.1.0
       zod: 4.6.6
-    transitivePeerDependencies:
-      - react
-      - react-native
 
   node-forge@1.4.2: {}
 
@@ -4756,8 +4764,9 @@ snapshots:
 
   react-is@18.3.1: {}
 
-  react-native-nitro-modules@0.37.1(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0):
+  react-native-nitro-modules@1.0.0-alpha.nightly.105.g69d365fc9b18(react-native@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0):
     dependencies:
+      nitro-core: 1.0.0-alpha.nightly.105.g69d365fc9b18
       react: 19.3.0
       react-native: 0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
 
