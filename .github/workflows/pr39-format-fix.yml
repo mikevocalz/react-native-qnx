@@ -1,0 +1,45 @@
+name: PR39 Expo Modules 2.0 compatibility formatter (temporary)
+
+on:
+  push:
+    branches: [feat/expo-modules2-qnx-20261102]
+    paths:
+      - .github/workflows/pr39-format-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.repository == 'mikevocalz/react-native-qnx'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: feat/expo-modules2-qnx-20261102
+          persist-credentials: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Format Expo module compatibility source and docs
+        run: |
+          pnpm exec prettier --write docs/expo/EXPO_MODULES_2_QNX.md scripts/validate-expo-modules2.mjs
+          pnpm format:check
+      - name: Commit formatted files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/expo/EXPO_MODULES_2_QNX.md scripts/validate-expo-modules2.mjs
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "style(expo): format SDK58 module compatibility verification"
+          git push origin HEAD:feat/expo-modules2-qnx-20261102
+      - name: Confirm public API and native source checks
+        run: |
+          node scripts/validate-expo-modules2.mjs
+          pnpm validate:qnx-expo-modules
+          pnpm test:js
+          pnpm typecheck
