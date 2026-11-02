@@ -1,10 +1,11 @@
 # Nitro API engineering skills and reference roster
 
-This roster reuses the existing Nitro Forge conventions. It does **not** assert that the listed external agents or people are participating. Skills must be installed/read and their *effect on the patch* recorded with a version/commit; a skill name alone is not proof.
+This roster reuses the existing Nitro Forge conventions. It does **not** assert that the listed external agents or people are participating. Skills must be installed/read and their _effect on the patch_ recorded with a version/commit; a skill name alone is not proof.
 
 ## Directly inspected skill-source revisions (2026-11-02)
 
 Margelo's maintained `react-native-skills` source:
+
 - Repo https://github.com/margelo/react-native-skills
 - HEAD inspected: `1e9e17be6f41c838db472d6a4b943fc26355a3be`
 - `api-design`, source `skills/api-design/SKILL.md` — write the public TypeScript contract and 2–3 valid call sites, verify errors and cleanup before native implementation.
@@ -79,13 +80,13 @@ These are **responsibilities**, not staffed teams or endorsements. Technical wor
 
 ## Skill evidence table
 
-| Skill | Source revision | Decision it influenced | Checked-in evidence | Skill installed/executed? |
-| --- | --- | --- | --- | --- |
-| api-design | Margelo `1e9e17b` | explicit narrow `createQnxPlatformInfo` type and call sites | API_CONTRACTS.md, index.d.ts | source read; local CLI install not verified |
-| build-nitro-modules | Margelo `1e9e17b` | block fabricated QNX Nitrogen generation, document v1 class proof exception | NITRO_V1_MIGRATION.md, API_CONTRACTS.md | source read; local CLI install not verified |
-| cpp | Margelo `1e9e17b` | correct v1 native header ownership and include paths | NitroLogger.cpp, ThreadUtils.cpp, CMakeLists.txt | source read; compile not verified |
-| nitro-fetch | Margelo `1e9e17b` | explicitly *not* swap QNX networking to unimplemented Nitro Fetch | API_CONTRACTS.md | source read; native compatibility not verified |
-| react-native-testing | Callstack source pending exact SKILL read | demand Hermes and physical-device tests, not just manifest checks | migration checklist | not verified |
-| expo-module | Expo source pending exact SKILL read | separate Expo 2 beta JSI/Swift/Kotlin capability review | linked Expo PR | not verified |
+| Skill                | Source revision                           | Decision it influenced                                                      | Checked-in evidence                              | Skill installed/executed?                      |
+| -------------------- | ----------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------- |
+| api-design           | Margelo `1e9e17b`                         | explicit narrow `createQnxPlatformInfo` type and call sites                 | API_CONTRACTS.md, index.d.ts                     | source read; local CLI install not verified    |
+| build-nitro-modules  | Margelo `1e9e17b`                         | block fabricated QNX Nitrogen generation, document v1 class proof exception | NITRO_V1_MIGRATION.md, API_CONTRACTS.md          | source read; local CLI install not verified    |
+| cpp                  | Margelo `1e9e17b`                         | correct v1 native header ownership and include paths                        | NitroLogger.cpp, ThreadUtils.cpp, CMakeLists.txt | source read; compile not verified              |
+| nitro-fetch          | Margelo `1e9e17b`                         | explicitly _not_ swap QNX networking to unimplemented Nitro Fetch           | API_CONTRACTS.md                                 | source read; native compatibility not verified |
+| react-native-testing | Callstack source pending exact SKILL read | demand Hermes and physical-device tests, not just manifest checks           | migration checklist                              | not verified                                   |
+| expo-module          | Expo source pending exact SKILL read      | separate Expo 2 beta JSI/Swift/Kotlin capability review                     | linked Expo PR                                   | not verified                                   |
 
-This table distinguishes source review from a tool-driven agent skill execution, a successful test, a source-derived rule or a hypothetical platform API. 
+This table distinguishes source review from a tool-driven agent skill execution, a successful test, a source-derived rule or a hypothetical platform API.

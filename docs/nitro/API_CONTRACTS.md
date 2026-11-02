@@ -47,7 +47,8 @@ A portable API should be a source-generated, QNX/Marathon-capability-aware Hybri
 
 ```ts
 type NativePlatform = 'qnx' | 'marathon';
-type NativeFeature = 'text-input' | 'safe-area' | 'notifications' | 'background-tasks' | 'media' | 'bluetooth' | 'gpu';
+type NativeFeature =
+  'text-input' | 'safe-area' | 'notifications' | 'background-tasks' | 'media' | 'bluetooth' | 'gpu';
 
 interface NativePlatformCapabilities {
   readonly platform: NativePlatform;
@@ -56,7 +57,7 @@ interface NativePlatformCapabilities {
 }
 ```
 
-This is an *API sketch*, not an executable `.nitro.ts` file: it intentionally adds no unsupported generated fields and no implementation promises. Each platform adapter must return **accurate** capability values from permissions/OS support and handle mandatory failures explicitly. A shell-owned permission is not a generic available feature. For third-party modules prefer their upstream generated Nitro specs and typed exports when the v1 generator supports the target.
+This is an _API sketch_, not an executable `.nitro.ts` file: it intentionally adds no unsupported generated fields and no implementation promises. Each platform adapter must return **accurate** capability values from permissions/OS support and handle mandatory failures explicitly. A shell-owned permission is not a generic available feature. For third-party modules prefer their upstream generated Nitro specs and typed exports when the v1 generator supports the target.
 
 ## API design review — decisions made
 
@@ -72,19 +73,19 @@ This is an *API sketch*, not an executable `.nitro.ts` file: it intentionally ad
 
 ## Test matrix / proof
 
-| Gate | Test class | Pass criterion | Current evidence |
-| --- | --- | --- | --- |
-| v1 upstream API | source | `HybridClassRegistry`, descriptor, constructor and `getHybridClass` align with inspected pinned source | source inspected |
-| QNX file include paths | source | `NitroModules/*.hpp` resolves to `nitro-core/native/cpp/include` | source changes proposed |
-| JS contract | unit / TypeScript | exported wrapper and `index.d.ts` match `new QnxPlatformInfo`, no v0 calls | new static checks added |
-| JS installation | Hermes native | proxy installed first, missing installer throws, repeated registration safe | **not run** |
-| Thread & lifetime | C++ ASan/TSan | no callbacks after runtime destroyed; async unsupported fails clearly | **not run** |
-| Typed codegen | Nitrogen | generated .nitro.ts, QNX/Marathon native backend compiled | **blocked on upstream target support** |
-| QNX hardware | SDP 8.0.5 Pi4/5 | signed/offline reproducible binary; arch/add assertions; 3 clean runs | **not run** |
-| Marathon hardware | Linux/Wayland | a separate Linux build; no QNX ELF reuse; QML/Wayland integration | **not run** |
-| Consumer app | Expo/Metro | published-package-like install, no private workspace assumptions | **not run** |
+| Gate                   | Test class        | Pass criterion                                                                                         | Current evidence                       |
+| ---------------------- | ----------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------- |
+| v1 upstream API        | source            | `HybridClassRegistry`, descriptor, constructor and `getHybridClass` align with inspected pinned source | source inspected                       |
+| QNX file include paths | source            | `NitroModules/*.hpp` resolves to `nitro-core/native/cpp/include`                                       | source changes proposed                |
+| JS contract            | unit / TypeScript | exported wrapper and `index.d.ts` match `new QnxPlatformInfo`, no v0 calls                             | new static checks added                |
+| JS installation        | Hermes native     | proxy installed first, missing installer throws, repeated registration safe                            | **not run**                            |
+| Thread & lifetime      | C++ ASan/TSan     | no callbacks after runtime destroyed; async unsupported fails clearly                                  | **not run**                            |
+| Typed codegen          | Nitrogen          | generated .nitro.ts, QNX/Marathon native backend compiled                                              | **blocked on upstream target support** |
+| QNX hardware           | SDP 8.0.5 Pi4/5   | signed/offline reproducible binary; arch/add assertions; 3 clean runs                                  | **not run**                            |
+| Marathon hardware      | Linux/Wayland     | a separate Linux build; no QNX ELF reuse; QML/Wayland integration                                      | **not run**                            |
+| Consumer app           | Expo/Metro        | published-package-like install, no private workspace assumptions                                       | **not run**                            |
 
-Track exact failures and commit evidence. Code and dependency changes remain draft until genuine native and QNX/Marathon tests are green. 
+Track exact failures and commit evidence. Code and dependency changes remain draft until genuine native and QNX/Marathon tests are green.
 
 ## Skills order
 

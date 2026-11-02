@@ -4,16 +4,17 @@
 
 ## V0.37 -> V1 concrete breaking changes
 
-| Area | 0.37.x | 1.0 alpha | react-native-qnx change |
-| --- | --- | --- | --- |
-| Native source | react-native-nitro-modules/cpp/core,entrypoint,registry,... | nitro-core/native/cpp/{src,include/NitroModules} | explicit CMake source inventory and v1 includes |
-| Registration | HybridObjectRegistry registerHybridObjectConstructor | HybridClassRegistry registerHybridClass | QnxNitroRuntime.cpp v1 registry |
-| Module metadata | loadHybridMethods + Prototype | immutable HybridClass::create with Class/Base | QnxPlatformInfo Class descriptors and prototype methods |
-| JS interface | NitroModules.createHybridObject(name) | NitroModules.getHybridClass(name) and new Constructor() | QNX wrapper and Hermes runtime probe |
-| JS package | react-native-nitro-modules import | nitro-core publicly exports NitroModules | use nitro-core in custom QNX host |
-| Threading | no QNX dispatcher | no QNX dispatcher yet | sync only; no Promises/callbacks until verified Qt/JS event-loop adapter |
+| Area            | 0.37.x                                                      | 1.0 alpha                                               | react-native-qnx change                                                  |
+| --------------- | ----------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Native source   | react-native-nitro-modules/cpp/core,entrypoint,registry,... | nitro-core/native/cpp/{src,include/NitroModules}        | explicit CMake source inventory and v1 includes                          |
+| Registration    | HybridObjectRegistry registerHybridObjectConstructor        | HybridClassRegistry registerHybridClass                 | QnxNitroRuntime.cpp v1 registry                                          |
+| Module metadata | loadHybridMethods + Prototype                               | immutable HybridClass::create with Class/Base           | QnxPlatformInfo Class descriptors and prototype methods                  |
+| JS interface    | NitroModules.createHybridObject(name)                       | NitroModules.getHybridClass(name) and new Constructor() | QNX wrapper and Hermes runtime probe                                     |
+| JS package      | react-native-nitro-modules import                           | nitro-core publicly exports NitroModules                | use nitro-core in custom QNX host                                        |
+| Threading       | no QNX dispatcher                                           | no QNX dispatcher yet                                   | sync only; no Promises/callbacks until verified Qt/JS event-loop adapter |
 
 Upstream v1 symbols inspected:
+
 - https://github.com/margelo/nitro/blob/v1.0.0-alpha.nightly.105.g69d365fc9b18/packages/nitro-core/native/cpp/include/NitroModules/HybridClassRegistry.hpp
 - https://github.com/margelo/nitro/blob/v1.0.0-alpha.nightly.105.g69d365fc9b18/packages/nitro-core/native/cpp/include/NitroModules/HybridClass.hpp
 - https://github.com/margelo/nitro/blob/v1.0.0-alpha.nightly.105.g69d365fc9b18/packages/nitro-core/native/cpp/include/NitroModules/InstallNitro.hpp
@@ -35,6 +36,7 @@ corepack pnpm test:js
 If the exact alpha is not on npm for all three packages, or any upstream release API moved again: STOP and update the entire pinned triple to a single available tag; never mix alpha builds or fake lockfile resolutions.
 
 Native proof on licensed QNX SDP 8.0.5:
+
 ```sh
 source "$QNX_SDP_ENV"
 ./scripts/validate-qnx-805-cross.sh

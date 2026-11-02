@@ -19,7 +19,11 @@ const core = JSON.parse(await read(coreManifestPath));
 const nitro = JSON.parse(await read(nitroManifestPath));
 const nitrogen = JSON.parse(await read(nitrogenManifestPath));
 
-for (const [name, manifest] of [['nitro-core', core], ['react-native-nitro-modules', nitro], ['nitrogen', nitrogen]]) {
+for (const [name, manifest] of [
+  ['nitro-core', core],
+  ['react-native-nitro-modules', nitro],
+  ['nitrogen', nitrogen],
+]) {
   assert.equal(manifest.version, expected, `${name} must be pinned to exact same Nitro alpha`);
 }
 assert.equal(nitro.dependencies['nitro-core'], expected);
@@ -34,7 +38,8 @@ for (const p of [
   'src/HybridClassRegistry.cpp',
   'src/HybridObject.cpp',
   'src/InstallNitro.cpp',
-]) await access(path.join(base, p));
+])
+  await access(path.join(base, p));
 const reg = await read(path.join(base, 'include/NitroModules/HybridClassRegistry.hpp'));
 const hybr = await read(path.join(base, 'include/NitroModules/HybridClass.hpp'));
 assert.match(reg, /registerHybridClass/);
