@@ -10,7 +10,7 @@
 | react-native | 0.88.0-rc.3 | **0.88.1** (latest stable) | Expo 58 / RN0.88 release family |
 | react | 19.3.0 | **19.3.0** | Expo 58 tested React family; unchanged |
 | @react-native/metro-config | 0.88.0-rc.3 | **0.88.1** | matching RN patch |
-| metro | 0.87.1 | **0.87.2** | current stable Metro |
+| metro | 0.87.1 | **0.87.1 (SDK-compatible)** | Expo 58.0.22 pins @expo/metro to 0.87.1; Metro 0.87.2 is published but is not the tested graph |
 | babel-preset-expo | 58.0.4 | **58.0.23** | Expo SDK58 patch |
 | @types/node | 26.6.3 | **26.6.6** | patch upgrade |
 | @types/react | 19.3.0 | **19.3.0** | unchanged |
@@ -47,3 +47,26 @@ Only check off a command when its actual exit code and log are attached. Inspect
 ## Why not Nitro v1 in this PR?
 
 Nitro and Nitrogen v1 are pre-release alpha-nightlies and their runtime C++ source was reorganized into a new `nitro-core` package. The QNX Nitro 0.37 CMake source list and `HybridObjectRegistry` APIs will not compile unchanged. Keep this stable RN/Expo upgrade independent and follow with a dedicated v1 migration PR (see companion PR).
+
+## Verified Metro dependency compatibility gate
+
+The networked lockfile-refresh job confirmed that both
+`@react-native/metro-config@0.88.1` and `@expo/metro` in
+`expo@58.0.22` resolve `metro-config@0.87.1` / require
+`metro@0.87.1`. Direct `metro@0.87.2` is newer on npm but
+**fails the pinned Expo Metro dependency contract**; this repo must
+use `metro@0.87.1` until Expo's release train supports 0.87.2.
+The dependency validator therefore retains exact Metro consistency
+checks rather than weakening them to permit an unsupported mix.
+
+## xcode v4 / UUID transitive security contract
+
+The installed `expo@58.0.22` graph resolves Apache `xcode@4.0.0`. Its documented source no longer depends on the external `uuid` package: it calls Node's `crypto.randomUUID()` instead. Removed the obsolete `xcode>uuid` override for this release line. The validator now audits whichever interface the **installed** xcode major actually uses: v4 native crypto; v3 transitive `uuid@11.1.1` with CJS v4. This is a source-derived API migration, not a blanket security-audit exception.
+
+## Expo Metro 58 out-of-tree platform source change
+
+The published `@expo/metro-config@58.0.20` no longer hardcodes a literal `'macos'` platform in its resolver list. Its source uses `['ios', 'android', ...OUT_OF_TREE_PLATFORMS]`. The dependency validator now checks the current out-of-tree registration symbol instead of an obsolete hardcoded platform name. Marathon remains a separate explicit Metro platform; Expo's default list is not assumed to contain it.
+
+## Regenerated dependency graph
+
+A branch-scoped GitHub Actions run using Node 26.10.0 and pnpm 12.8.1 has now regenerated and committed the exact `pnpm-lock.yaml` (933 changed lines). The generated graph passed `pnpm install --frozen-lockfile` in the regeneration job. **This is not final compatibility proof:** native React Native/Hermes source checks, TypeScript, host renderer and security audit remain subject to normal CI. The one-shot write-enabled workflow was removed after committing the lockfile; remaining CI is read-only.
