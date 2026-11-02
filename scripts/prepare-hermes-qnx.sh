@@ -4,9 +4,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-EXPECTED_TAG="hermes-v260318099.0.2"
-EXPECTED_COMMIT="4188b63f24026ca62b79dc81d95db122a59c6089"
-SOURCE_DIR="${RNQNX_HERMES_SOURCE_DIR:-${PROJECT_ROOT}/third-party/hermes-260318099.0.2}"
+EXPECTED_TAG="hermes-v260318099.0.5"
+EXPECTED_COMMIT="9a115f15785851f4ff2747ebb090ddd066fc8ad2"
+SOURCE_DIR="${RNQNX_HERMES_SOURCE_DIR:-${PROJECT_ROOT}/third-party/hermes-260318099.0.5}"
 RN_TAG_FILE="${PROJECT_ROOT}/node_modules/react-native/sdks/.hermesv1version"
 
 fail() {

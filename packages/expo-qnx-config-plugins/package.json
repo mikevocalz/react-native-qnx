@@ -10,6 +10,6 @@
     "index.d.ts"
   ],
   "peerDependencies": {
-    "expo": "58.0.0"
+    "expo": "58.0.22"
   }
 }
