@@ -440,7 +440,7 @@ async function main() {
     'export function requireNativeModule'
   );
   await assertSourceContract(expoMetroConfigRoot, 'build/ExpoMetroConfig.js', 'platforms:');
-  await assertSourceContract(expoMetroConfigRoot, 'build/ExpoMetroConfig.js', "'macos'");
+  await assertSourceContract(expoMetroConfigRoot, 'build/ExpoMetroConfig.js', 'OUT_OF_TREE_PLATFORMS');
   if (majorVersion(xcode.version) >= 4) {
     assertTrue(xcode.dependencies?.uuid == null, 'xcode v4 should no longer need uuid');
     await assertSourceContract(xcodeRoot, 'lib/pbxProject.js', 'crypto.randomUUID()');

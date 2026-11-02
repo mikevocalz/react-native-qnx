@@ -62,3 +62,7 @@ checks rather than weakening them to permit an unsupported mix.
 ## xcode v4 / UUID transitive security contract
 
 The installed `expo@58.0.22` graph resolves Apache `xcode@4.0.0`. Its documented source no longer depends on the external `uuid` package: it calls Node's `crypto.randomUUID()` instead. Removed the obsolete `xcode>uuid` override for this release line. The validator now audits whichever interface the **installed** xcode major actually uses: v4 native crypto; v3 transitive `uuid@11.1.1` with CJS v4. This is a source-derived API migration, not a blanket security-audit exception.
+
+## Expo Metro 58 out-of-tree platform source change
+
+The published `@expo/metro-config@58.0.20` no longer hardcodes a literal `'macos'` platform in its resolver list. Its source uses `['ios', 'android', ...OUT_OF_TREE_PLATFORMS]`. The dependency validator now checks the current out-of-tree registration symbol instead of an obsolete hardcoded platform name. Marathon remains a separate explicit Metro platform; Expo's default list is not assumed to contain it.
