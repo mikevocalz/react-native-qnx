@@ -74,3 +74,7 @@ A branch-scoped GitHub Actions run using Node 26.10.0 and pnpm 12.8.1 has now re
 ## SDK 58 Expo Modules patch-family source checks
 
 The older standalone QNX validators hardcoded `expo-modules-core@58.0.9` and `expo-modules-autolinking@58.0.6`. The installed SDK 58.0.22 graph resolves Expo Modules Core **58.0.29** and its own current 58.x autolinking release. The QNX core validator now compares the **exact installed core release against the peer pin in `@rn-qnx/expo-modules-core-qnx`**; autolinking checks the exact installed Expo version against `@rn-qnx/expo-qnx-autolinking` and verifies the autolinker remains in SDK 58's family. Native JSI/bootstrap symbols and custom-platform autolinking contracts are still checked independently and may fail on real API drift.
+
+## Verified Hermes v1 source commit (2026-11-02)
+
+SDK 58 / RN 0.88.1 now selects `hermes-v260318099.0.5` and `hermes-compiler@260318099.0.5`. The authoritative upstream annotated tag at `meta/hermes` points to commit **`9a115f15785851f4ff2747ebb090ddd066fc8ad2`** (verified against GitHub's actual git tag ref). Both `cmake/dependencies/Hermes.cmake` and the QNX Hermes source-preparation/CMake scripts have been updated to that exact commit and source directory. This replaces the previous RN0.88 RC tag `hermes-v260318099.0.2` / commit `4188b63f24026ca62b79dc81d95db122a59c6089`. This is a **source-provenance update**, not a passing Hermes native compile. C++/SDK runtime tests and QNX Pi execution remain required.
