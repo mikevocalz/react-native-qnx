@@ -42,7 +42,7 @@ jobs:
       - name: Compile the actual Nitro core and QNX adapter sources on Linux
         run: |
           mkdir -p build/nitro-v1-linux-host/evidence
-          cmake -S tests/native/nitro-v1-host -B build/nitro-v1-linux-host -G Ninja -DCMAKE_BUILD_TYPE=Debug
+          cmake -S tests/native/nitro-v1-host -B build/nitro-v1-linux-host -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
           cmake --build build/nitro-v1-linux-host --target rnqnx_nitro_qnx -j 4
           git rev-parse HEAD > build/nitro-v1-linux-host/evidence/commit.txt
       - name: Save compile evidence (NOT a QNX runtime claim)

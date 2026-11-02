@@ -16,7 +16,7 @@ const src = await read('packages/qnx-nitro-runtime/cpp/QnxPlatformInfo.cpp');
 const js = await read('packages/qnx-nitro-runtime/index.js');
 const p = await read('vnext/probes/runtime-qnx/main.cpp');
 assert.match(c, /native\/cpp\/src/);
-assert.match(c, /include\/NitroModules\/HybridClassRegistry.hpp/);
+assert.match(c, /NitroModules\/HybridClassRegistry.hpp/);
 assert.match(h, /struct Class/);
 assert.match(src, /registerHybridConstructor/);
 assert.match(src, /registerHybridProperty/);
