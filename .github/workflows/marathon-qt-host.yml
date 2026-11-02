@@ -69,11 +69,19 @@ jobs:
           sha256sum build/marathon-host/evidence/marathon-offscreen.png > build/marathon-host/evidence/SHA256SUMS
       - name: Verify changed image invalidates the Marathon bundle
         run: |
+          set -euo pipefail
+          bundle=build/marathon-host/rnqnx-marathon-playground.bundle.js
+          test -s "$bundle"
+          before_mtime=$(stat -c %Y "$bundle")
           touch apps/rn-playground/qnx-asset.png
-          ninja -C build/marathon-host -n rnqnx_marathon_host \
-            | tee build/marathon-host/evidence/asset-incremental-plan.txt
+          # A Ninja dry run can stop at CMake's pending regeneration and never
+          # display the Metro edge. Perform the real incremental bundle build.
+          cmake --build build/marathon-host --target rnqnx_marathon_playground_bundle -- -v \
+            2>&1 | tee build/marathon-host/evidence/asset-incremental-rebuild.txt
           grep -F 'Build experimental MarathonOS React Native Metro bundle' \
-            build/marathon-host/evidence/asset-incremental-plan.txt
+            build/marathon-host/evidence/asset-incremental-rebuild.txt
+          after_mtime=$(stat -c %Y "$bundle")
+          test "$after_mtime" -gt "$before_mtime"
       - name: Preserve CI evidence (offscreen host only)
         if: always()
         uses: actions/upload-artifact@v4
