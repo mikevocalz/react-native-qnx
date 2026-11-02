@@ -33,6 +33,10 @@ function(rnqnx_add_marathon_host)
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground"
     DEPENDS
       "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground/index.js"
+      # Metro embeds dimensions and hashes from this PNG in the RN fixture.
+      # Track it exactly as the original QNX bundle target does, so changing
+      # the asset always invalidates the Marathon bundle in incremental builds.
+      "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground/qnx-asset.png"
       "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground/metro.marathon.config.js"
       "${CMAKE_CURRENT_SOURCE_DIR}/packages/metro-config-marathon/src/index.js"
       "${CMAKE_CURRENT_SOURCE_DIR}/packages/react-native-marathon/Libraries/Utilities/Platform.js"

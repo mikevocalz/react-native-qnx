@@ -12,6 +12,11 @@ assert.match(cmake, /if\(RNQNX_BUILD_REACT_QNX\)/);
 assert.match(native, /target_link_libraries\(rnqnx_marathon_host PRIVATE rnqnx_react_host\)/);
 assert.match(native, /--platform marathon --dev false/);
 assert.match(native, /metro\.marathon\.config\.js/);
+assert.match(
+  native,
+  /DEPENDS[\s\S]*?apps\/rn-playground\/qnx-asset\.png/,
+  'Metro must rebuild the Marathon bundle when qnx-asset.png changes'
+);
 assert.match(native, /NOT TARGET rnqnx_react_host/);
 // Only inspect active CMake statements. Comments must be allowed to explain
 // why native MarathonOS builds do NOT link QNX Screen or SDP libraries.

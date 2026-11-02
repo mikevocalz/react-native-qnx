@@ -32,7 +32,16 @@ export WAYLAND_DISPLAY=marathon-wayland-0
 
 Desktop entry `apps/rn-playground/rnqnx-marathon-playground.desktop` is for **development only**, not native signed `.marathon` distribution. Marathon's runner currently documents QML/Keel entrypoints; schema/runner work must be approved upstream first.
 
-## Validation gates (not yet achieved)
+## Verified on development-host CI
+
+The Linux Qt 6.11 / Hermes / Fabric host was compiled, linked, and run with
+an offscreen screenshot in the successful [native host CI job](https://github.com/mikevocalz/react-native-qnx/actions/runs/41519519981/job/125531620418).
+This verifies host build integration **only**, not a MarathonOS device or its
+sandboxed application runner. The CMake dependency list includes the imported
+`qnx-asset.png`, and CI verifies its timestamp invalidates the Marathon bundle
+in an incremental Ninja build. No content change to the asset is needed.
+
+## Validation gates (some host-only, target work pending)
 
 1. Frozen install/JS tests and both Metro bundles succeed with exact installed package graph.
 2. Linux CMake target builds and links with zero QNX headers/libscreen dependencies.

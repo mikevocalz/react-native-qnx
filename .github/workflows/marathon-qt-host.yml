@@ -67,6 +67,13 @@ jobs:
           test -s build/marathon-host/evidence/marathon-offscreen.png
           git rev-parse HEAD > build/marathon-host/evidence/commit.txt
           sha256sum build/marathon-host/evidence/marathon-offscreen.png > build/marathon-host/evidence/SHA256SUMS
+      - name: Verify changed image invalidates the Marathon bundle
+        run: |
+          touch apps/rn-playground/qnx-asset.png
+          ninja -C build/marathon-host -n rnqnx_marathon_host \
+            | tee build/marathon-host/evidence/asset-incremental-plan.txt
+          grep -F 'Build experimental MarathonOS React Native Metro bundle' \
+            build/marathon-host/evidence/asset-incremental-plan.txt
       - name: Preserve CI evidence (offscreen host only)
         if: always()
         uses: actions/upload-artifact@v4
