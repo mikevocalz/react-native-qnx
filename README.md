@@ -2,7 +2,7 @@
 
 Foundation for a production-grade React Native out-of-tree platform for QNX.
 The current JavaScript/tooling line is Expo SDK 58.0.0, React Native
-0.88.0-rc.3, React 19.3.0, Metro 0.87.1, and Nitro Modules/Nitrogen 0.37.1.
+0.88.1, React 19.3.0, Metro 0.87.1, and Nitro Modules/Nitrogen 0.37.1.
 Current host validation is green; QNX SDP 8.0.2 compile/VM results are retained
 as historical evidence while current SDP 8.0.5/QSTI physical-target validation
 remains pending.
@@ -56,8 +56,8 @@ and `.project-state.json` for the exact evidence boundaries.
 Workspace dependencies are exact pins, not ranges:
 
 - Expo 58.0.0 / SDK 58
-- React Native 0.88.0-rc.3 and React 19.3.0
-- Metro 0.87.1 and `@react-native/metro-config` 0.88.0-rc.3
+- React Native 0.88.1 and React 19.3.0
+- Metro 0.87.1 and `@react-native/metro-config` 0.88.1
 - `babel-preset-expo` 58.0.4
 - Nitro Modules and Nitrogen 0.37.1
 - TypeScript 7.0.2
@@ -66,8 +66,8 @@ Workspace dependencies are exact pins, not ranges:
 
 The refreshed SDK-58 graph resolves `expo-modules-core` 58.0.9,
 `@expo/metro` 58.0.0-rc.0, and `@expo/metro-config` 58.0.6. React Native
-0.88.0-rc.3 resolves `hermes-compiler` 260318099.0.4 while its bundled Hermes
-source tag is `hermes-v260318099.0.2`. Yoga remains the source snapshot bundled
+0.88.1 resolves `hermes-compiler` 260318099.0.5 while its bundled Hermes
+source tag is `hermes-v260318099.0.5`. Yoga remains the source snapshot bundled
 by React Native and is not assigned an invented standalone version. Run
 `pnpm validate:dependencies` to verify installed versions and audited upstream
 source symbols.
@@ -118,26 +118,18 @@ This runs on the development host, not on QNX. See
 `docs/adr/0010-macos-qt-development-host.md` for what that does and does not
 prove, and `docs/component-support.md` for what actually works.
 
-## Raspberry Pi 4/5 + Pi 400 quick install
+## Raspberry Pi 4/5 + experimental Pi 400 quick install
 
 For the current QNX Everywhere QSTI lane, use QNX SDP 8.0.5 with QSTI 0.5.0
 build 50 on Raspberry Pi 4 or Raspberry Pi 5. The stock target defaults are
 `qnxuser@qnxpi.local`.
 
-Raspberry Pi 400 is an **experimental custom-image target**, not part of the
-stock Pi 4/5 QSTI baseline. QNX has published a Pi 400 QNX 8 recipe that adapts
-the BCM2711 Pi 4 custom image with the Pi 400 DTB and Wi-Fi firmware. See
-`docs/getting-started/raspberry-pi-400.md` before flashing it. Once QNX Screen
-and SSH are up, use the same repository deployment lane with
-`RNQNX_PI_BOARD=pi400`.
-
-For development-host choice, use an x86-64 machine. Windows 11 x64 is a current
-QNX SDP 8.0.5 host option; Ubuntu 22.04/24.04 and RHEL 9 are also supported.
-macOS and ARM-based development hosts are not supported by QNX SDP 8.0.5. If
-your spare Windows PC is too old for Windows 11, the recommended fallback is to
-install Ubuntu 24.04 x86-64 on that PC and use it as the dedicated QNX
-build/debug station. The Pi 400 guide includes the Windows-version check and
-host decision matrix.
+Raspberry Pi 400 is an **experimental custom-image target**, not part of
+the stock Pi 4/5 QSTI baseline. QNX's Pi 400 recipe adapts the BCM2711 Pi 4
+custom image with the Pi 400 DTB and Wi-Fi firmware. Follow
+`docs/getting-started/raspberry-pi-400.md` before flashing, then use
+`RNQNX_PI_BOARD=pi400` to label evidence from the same deployment lane.
+No QNX device/React Native runtime proof is claimed for Pi 400.
 
 ```bash
 export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
@@ -154,9 +146,9 @@ deploys atomically, runs three clean Screen launch/exit cycles by default, store
 stdout/slog2/screenshot evidence, and automatically verifies + hashes the run
 into `manifest.json`.
 
-See `docs/getting-started/raspberry-pi-today.md` for the stock Pi 4/5 QSTI
-lane. See `docs/getting-started/raspberry-pi-400.md` for the experimental
-Pi 400 QNX 8 custom-image path.
+See `docs/getting-started/raspberry-pi-today.md` for stock Pi 4/5
+flashing, login, and evidence collection. Use
+`docs/getting-started/raspberry-pi-400.md` for the separate Pi 400 recipe.
 
 ## Build and deploy on QNX
 

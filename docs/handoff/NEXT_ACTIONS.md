@@ -1,12 +1,5 @@
 # NEXT_ACTIONS.md
 
-## 2026-10-13 dependency security update
-
-Check every workflow on the exact updated PR #32 commit before merge review.
-Keep QNX/physical-device gates pending. The three October dependency fixes and
-their behavioral regressions are described in
-[dependency fixes](../security/dependency-updates-2026-10.md).
-
 ## Dependency-security follow-through (2026-10-03)
 
 Review the braces depth backport and guarded audit in `docs/security/braces.md`.

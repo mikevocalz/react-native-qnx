@@ -1,12 +1,5 @@
 # CURRENT_STATE.md
 
-## 2026-10-13 dependency security update
-
-Updated the three vulnerable transitive packages on the Pi 400 PR branch.
-The guarded audit passes; braces remains visibly locally mitigated and the
-existing node-forge exception is unchanged. Exact-commit CI is pending.
-No target evidence changed. See [dependency fixes](../security/dependency-updates-2026-10.md).
-
 ## 2026-10-03 dependency security update
 
 The earlier clean-audit statements below describe the 2026-10-01 baseline.

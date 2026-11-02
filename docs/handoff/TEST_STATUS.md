@@ -1,16 +1,5 @@
 # TEST_STATUS.md
 
-## 2026-10-13 dependency security update
-
-Linux, Node 26.10.0 / pnpm 12.8.1: frozen install, source/dependency contracts,
-TypeScript, peers, all JavaScript tests (including the three new security tests),
-package builds, architecture/codegen checks and the production QNX Metro bundle
-pass. Each new regression first failed with its vulnerable dependency. The
-guarded audit passes; raw registry findings remain as documented in
-[dependency fixes](../security/dependency-updates-2026-10.md). Linux C++ smoke
-passes 2/2 with GCC 14.2, CMake 3.31.10 and ASan/UBSan; optional Qt/Hermes targets
-were not available in this restored workspace. Remote CI is pending.
-
 ## 2026-10-03 braces security backport
 
 Host: Linux cloud workspace, Node 26.10.0, pnpm 12.8.1. No QNX SDK or target.

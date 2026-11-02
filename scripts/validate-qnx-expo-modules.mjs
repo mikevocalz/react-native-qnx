@@ -12,8 +12,14 @@ const coreManifest = expoRequire.resolve('expo-modules-core/package.json');
 const coreRoot = path.dirname(coreManifest);
 const core = JSON.parse(await readFile(coreManifest, 'utf8'));
 
-if (core.version !== '58.0.9') {
-  throw new Error(`Expected expo-modules-core 58.0.9, got ${core.version}`);
+const qnxPeerManifest = JSON.parse(
+  await readFile(path.join(root, 'packages/expo-modules-core-qnx/package.json'), 'utf8')
+);
+const requiredVersion = qnxPeerManifest.peerDependencies?.['expo-modules-core'];
+if (core.version !== requiredVersion || !core.version.startsWith('58.')) {
+  throw new Error(
+    `QNX Expo Modules peer requires ${requiredVersion}; installed expo-modules-core is ${core.version}`
+  );
 }
 
 const ensure = await readFile(
@@ -54,4 +60,4 @@ if (
   throw new Error('Combined QNX runtime probe no longer exercises Expo Modules through JSI.');
 }
 
-console.log('validate:qnx-expo-modules passed for expo-modules-core 58.0.9');
+console.log(`validate:qnx-expo-modules passed for expo-modules-core ${core.version}`);

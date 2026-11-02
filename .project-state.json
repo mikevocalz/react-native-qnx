@@ -28,12 +28,15 @@
     "expoMetroConfig": "58.0.6",
     "hermesCompiler": "260318099.0.4",
     "hermesSource": "hermes-v260318099.0.2",
-    "lastRegistryAudit": "2026-10-13"
+    "lastRegistryAudit": "2026-10-03"
   },
   "targetBaseline": {
     "qnxSdp": "8.0.5",
     "qsti": "0.5.0 build 50",
-    "boards": ["Raspberry Pi 4", "Raspberry Pi 5"],
+    "boards": [
+      "Raspberry Pi 4",
+      "Raspberry Pi 5"
+    ],
     "defaultTarget": "qnxuser@qnxpi.local",
     "experimentalBoards": [
       "Raspberry Pi 400 (QNX custom-image adaptation; physical validation pending)"
@@ -117,7 +120,7 @@
   ],
   "blockedTasks": [],
   "nextRecommendedTask": "On a licensed QNX SDP 8.0.5 host with QSTI 0.5.0 build 50 on a Pi 4/5, run pnpm pi:preflight and pnpm pi:install. Preserve the verified manifest, then run pnpm qnx:runtime:validate to prove Hermes + Nitro + Expo through JSI before moving the full React/Fabric/Qt Quick runtime onto the target.",
-  "updatedAt": "2026-10-13T09:03:00Z",
+  "updatedAt": "2026-11-02T20:18:10Z",
   "dependencySecurityMitigation": {
     "advisory": "GHSA-vfj7-8cjw-p6xm",
     "package": "braces@3.0.3",
@@ -137,15 +140,5 @@
     "companionHostCommit": "24ba958d046066f54faae30847de1c52b972f4ba",
     "combinedCtest": "11-of-11-passed-including-45-host-runtime-cases",
     "probeCtest": "2-of-2-passed-including-four-bad-bundle-cases"
-  },
-  "dependencySecurityUpdate": {
-    "date": "2026-10-13",
-    "branch": "feat/pi400-qnx8-bringup",
-    "sourceMapJs": "1.2.2",
-    "compression": "1.8.2",
-    "shellQuote": "1.11.0",
-    "status": "local-regressions-and-guarded-audit-passed; exact-commit-ci-pending",
-    "documentation": "docs/security/dependency-updates-2026-10.md",
-    "qnxEvidenceChanged": false
   }
 }
