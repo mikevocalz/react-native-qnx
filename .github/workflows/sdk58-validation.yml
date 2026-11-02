@@ -35,6 +35,9 @@ jobs:
       - name: Install exact lockfile
         run: pnpm install --frozen-lockfile
 
+      - name: Verify security override contract
+        run: node scripts/validate-security-overrides.mjs
+
       - name: Format
         run: pnpm format:check
 

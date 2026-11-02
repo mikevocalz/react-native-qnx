@@ -1,6 +1,6 @@
 # Dependency modernization: Expo 58 stable and React Native 0.88 stable
 
-**DRAFT: package manifests updated, lockfile and native code compilation still blocked.** Date: 2026-11-02. This PR cannot be merged as-is.
+**DRAFT: real pnpm lockfile now regenerated and security-audited in CI; QNX target runtime/device validation still pending.** Date: 2026-11-02. Do not merge without the final full CI review.
 
 ## Exact npm observations (2026-11-02)
 
@@ -21,7 +21,7 @@ Expo 58 uses `expo-modules-core` on its 58.x release train, currently published 
 
 ## Material risk and blocking actions
 
-- This PR intentionally does **not** fabricate a pnpm lockfile. Run `scripts/regenerate-sdk58-lockfile.sh` from Node26/pnpm12 on a networked host, commit the generated `pnpm-lock.yaml`, and run frozen installs.
+- GitHub Actions successfully regenerated and committed a real `pnpm-lock.yaml` on a networked runner after the verified security overrides. Re-run frozen install, native source checks, and the security audit on the final commit; do not hand-edit package integrity data.
 - `scripts/validate-dependencies.mjs` checks Expo's tested RN/React versions and Metro peer contracts; it must pass before merging. If expo@58.0.22 expects a different RN 0.88 patch, choose the exact Expo-tested patch after inspecting installed `expo/package.json` rather than weakening the check.
 - `cmake/dependencies/ReactNativeThirdParty.cmake` pins C++ libraries against the previous RN RC; audit installed RN 0.88.1 podspec versions, regenerate CMake pins and ensure source symbols match.
 - Hermes source/bytecode version must come from installed RN 0.88.1 `sdks/.hermesv1version` and `hermes-compiler`; rebase any QNX Hermes patch against that exact source.
