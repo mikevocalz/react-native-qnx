@@ -1,0 +1,53 @@
+name: PR38 Nitro v1 alpha exact lockfile bootstrap (temporary)
+
+on:
+  push:
+    branches: [feat/nitro-v1-native-qnx-20261102]
+    paths:
+      - .github/workflows/pr38-nitro-lockfile-refresh.yml
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate-nitro-v1:
+    if: github.repository == 'mikevocalz/react-native-qnx'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: feat/nitro-v1-native-qnx-20261102
+          persist-credentials: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - name: Generate exact matching Nitro v1 and Nitrogen alpha graph
+        run: |
+          pnpm install --lockfile-only --ignore-scripts --no-frozen-lockfile
+          pnpm install --frozen-lockfile
+          git diff --check
+      - name: Commit generated lockfile only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "chore(lock): resolve exact Nitro 1 alpha core/codegen package graph"
+          git push origin HEAD:feat/nitro-v1-native-qnx-20261102
+      - name: Run Nitro source/ABI contracts without false device claims
+        run: |
+          pnpm validate:dependencies
+          pnpm validate:qnx-nitro
+          pnpm test:js
+          pnpm typecheck
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr38-nitro-v1-lockfile
+          path: pnpm-lock.yaml
+          if-no-files-found: error
