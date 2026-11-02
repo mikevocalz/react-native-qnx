@@ -331,7 +331,7 @@ async function main() {
   const xcodeManifestPath = expoRequire.resolve('xcode/package.json');
   const xcodeRoot = path.dirname(xcodeManifestPath);
   const xcodeRequire = createRequire(xcodeManifestPath);
-  const xcodeUuid = await readJson(xcodeRequire.resolve('uuid/package.json'));
+  const xcode = await readJson(xcodeManifestPath);
   const simplePlistManifestPath = xcodeRequire.resolve('simple-plist/package.json');
   const simplePlistRequire = createRequire(simplePlistManifestPath);
   const plistManifestPath = simplePlistRequire.resolve('plist/package.json');
@@ -339,7 +339,7 @@ async function main() {
   const plistXmldom = await readJson(plistRequire.resolve('@xmldom/xmldom/package.json'));
   const nitrogenRoot = path.dirname(manifests.get('nitrogen').manifestPath);
 
-  assertEqual(xcodeUuid.version, '11.1.1', 'xcode uuid security override');
+  // xcode@4 removed its old transitive uuid dependency and uses node:crypto instead.
   assertEqual(expoPlistXmldom.version, '0.8.15', '@expo/plist xmldom security override');
   assertEqual(plistXmldom.version, '0.9.12', 'plist xmldom security override');
   assertEqual(expoXcprettyJsYaml.version, '4.3.2', '@expo/xcpretty js-yaml security override');
@@ -348,7 +348,6 @@ async function main() {
     '5.0.12',
     'minimatch brace-expansion security override'
   );
-  assertEqual(typeof xcodeRequire('uuid').v4, 'function', 'xcode uuid.v4 CommonJS contract');
 
   const hermesCompiler = reactNative.dependencies?.['hermes-compiler'];
   assertTrue(typeof hermesCompiler === 'string', 'React Native must declare hermes-compiler');
@@ -440,8 +439,21 @@ async function main() {
     'export function requireNativeModule'
   );
   await assertSourceContract(expoMetroConfigRoot, 'build/ExpoMetroConfig.js', 'platforms:');
-  await assertSourceContract(expoMetroConfigRoot, 'build/ExpoMetroConfig.js', "'macos'");
-  await assertSourceContract(xcodeRoot, 'lib/pbxProject.js', 'uuid.v4()');
+  await assertSourceContract(
+    expoMetroConfigRoot,
+    'build/ExpoMetroConfig.js',
+    'OUT_OF_TREE_PLATFORMS'
+  );
+  const xcodeMajor = majorVersion(xcode.version);
+  if (xcodeMajor != null && xcodeMajor >= 4) {
+    assertTrue(xcode.dependencies?.uuid == null, 'xcode v4 should no longer need uuid');
+    await assertSourceContract(xcodeRoot, 'lib/pbxProject.js', 'crypto.randomUUID()');
+  } else {
+    const xcodeUuid = await readJson(xcodeRequire.resolve('uuid/package.json'));
+    assertEqual(xcodeUuid.version, '11.1.1', 'legacy xcode uuid security override');
+    assertEqual(typeof xcodeRequire('uuid').v4, 'function', 'legacy xcode uuid.v4 contract');
+    await assertSourceContract(xcodeRoot, 'lib/pbxProject.js', 'uuid.v4()');
+  }
 
   console.log('validate:dependencies passed.');
 }
