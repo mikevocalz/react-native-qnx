@@ -52,7 +52,7 @@ function(rnqnx_add_marathon_host)
   add_dependencies(rnqnx_marathon_host rnqnx_marathon_playground_bundle)
   target_compile_definitions(rnqnx_marathon_host PRIVATE
     RNQNX_MARATHON_HOST=1
-    RNQNX_PLAYGROUND_BUNDLE_PATH="\"${RNQNX_MARATHON_BUNDLE}\""
+    RNQNX_PLAYGROUND_BUNDLE_PATH="${RNQNX_MARATHON_BUNDLE}"
   )
   set_target_properties(rnqnx_marathon_host PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
