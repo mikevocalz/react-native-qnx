@@ -27,7 +27,12 @@ const targets = [
 /** @param {string} source */
 export function parseSpec(source) {
   const file = ts.createSourceFile('PlatformInfo.nitro.ts', source, ts.ScriptTarget.Latest, true);
-  assert.equal(file.parseDiagnostics.length, 0, 'Invalid TypeScript spec syntax');
+  const diagnostics = 'parseDiagnostics' in file ? file.parseDiagnostics : [];
+  assert.equal(
+    Array.isArray(diagnostics) ? diagnostics.length : 0,
+    0,
+    'Invalid TypeScript spec syntax'
+  );
   const classes = file.statements.filter(ts.isClassDeclaration);
   assert.equal(classes.length, 1, 'Exactly one exported Nitro HybridObject class required');
   const cls = classes[0];
@@ -39,7 +44,9 @@ export function parseSpec(source) {
   const props = [];
   const methods = [];
   for (const m of cls.members) {
-    assert.ok(ts.isIdentifier(m.name), 'Computed/string-literal members not supported');
+    if (m.name == null || !ts.isIdentifier(m.name)) {
+      throw new Error('Computed/string-literal members not supported');
+    }
     if (ts.isPropertyDeclaration(m)) {
       assert.ok((ts.getModifiers(m) ?? []).some((mod) => mod.kind === ts.SyntaxKind.ReadonlyKeyword));
       assert.equal(m.type?.kind, ts.SyntaxKind.StringKeyword, 'Only string getters supported');
