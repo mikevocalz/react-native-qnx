@@ -7,7 +7,7 @@ const root = await read('package.json');
 assert.equal(root.devDependencies.expo, '58.0.22');
 assert.equal(root.devDependencies['react-native'], '0.88.1');
 assert.equal(root.devDependencies.react, '19.3.0');
-assert.equal(root.devDependencies.metro, '0.87.2');
+assert.equal(root.devDependencies.metro, '0.87.1');
 assert.equal(root.devDependencies['@react-native/metro-config'], '0.88.1');
 assert.equal(root.devDependencies['babel-preset-expo'], '58.0.23');
 

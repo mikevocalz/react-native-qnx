@@ -10,7 +10,7 @@
 | react-native | 0.88.0-rc.3 | **0.88.1** (latest stable) | Expo 58 / RN0.88 release family |
 | react | 19.3.0 | **19.3.0** | Expo 58 tested React family; unchanged |
 | @react-native/metro-config | 0.88.0-rc.3 | **0.88.1** | matching RN patch |
-| metro | 0.87.1 | **0.87.2** | current stable Metro |
+| metro | 0.87.1 | **0.87.1 (SDK-compatible)** | Expo 58.0.22 pins @expo/metro to 0.87.1; Metro 0.87.2 is published but is not the tested graph |
 | babel-preset-expo | 58.0.4 | **58.0.23** | Expo SDK58 patch |
 | @types/node | 26.6.3 | **26.6.6** | patch upgrade |
 | @types/react | 19.3.0 | **19.3.0** | unchanged |
@@ -48,6 +48,13 @@ Only check off a command when its actual exit code and log are attached. Inspect
 
 Nitro and Nitrogen v1 are pre-release alpha-nightlies and their runtime C++ source was reorganized into a new `nitro-core` package. The QNX Nitro 0.37 CMake source list and `HybridObjectRegistry` APIs will not compile unchanged. Keep this stable RN/Expo upgrade independent and follow with a dedicated v1 migration PR (see companion PR).
 
-## Verified Metro patch-family compatibility gate
+## Verified Metro dependency compatibility gate
 
-The first networked CI install found `@react-native/metro-config@0.88.1` resolving its own `metro-config@0.87.1` while the workspace's direct Metro CLI is `metro@0.87.2`. These packages are released independently. The validator now requires the **same Metro major/minor family** and explicitly logs the patch split instead of requiring an impossible duplicate patch number. This is **not** a compatibility proof: the lockfile-refresh job must additionally produce a real QNX Metro production bundle before committing the generated lockfile. Reject a major/minor split. Current SDP/Hermes native rebuild and physical device acceptance remain independent.
+The networked lockfile-refresh job confirmed that both
+`@react-native/metro-config@0.88.1` and `@expo/metro` in
+`expo@58.0.22` resolve `metro-config@0.87.1` / require
+`metro@0.87.1`. Direct `metro@0.87.2` is newer on npm but
+**fails the pinned Expo Metro dependency contract**; this repo must
+use `metro@0.87.1` until Expo's release train supports 0.87.2.
+The dependency validator therefore retains exact Metro consistency
+checks rather than weakening them to permit an unsupported mix.

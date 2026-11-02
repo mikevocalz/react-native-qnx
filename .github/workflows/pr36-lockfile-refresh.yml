@@ -1,4 +1,4 @@
-name: PR36 exact lockfile regeneration (temporary)
+name: PR36 exact Expo-compatible lockfile regeneration (temporary)
 
 on:
   push:
