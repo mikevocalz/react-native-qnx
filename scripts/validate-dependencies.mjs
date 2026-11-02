@@ -349,7 +349,6 @@ async function main() {
     'minimatch brace-expansion security override'
   );
 
-
   const hermesCompiler = reactNative.dependencies?.['hermes-compiler'];
   assertTrue(typeof hermesCompiler === 'string', 'React Native must declare hermes-compiler');
   const hermesV1 = (
@@ -440,7 +439,11 @@ async function main() {
     'export function requireNativeModule'
   );
   await assertSourceContract(expoMetroConfigRoot, 'build/ExpoMetroConfig.js', 'platforms:');
-  await assertSourceContract(expoMetroConfigRoot, 'build/ExpoMetroConfig.js', 'OUT_OF_TREE_PLATFORMS');
+  await assertSourceContract(
+    expoMetroConfigRoot,
+    'build/ExpoMetroConfig.js',
+    'OUT_OF_TREE_PLATFORMS'
+  );
   const xcodeMajor = majorVersion(xcode.version);
   if (xcodeMajor != null && xcodeMajor >= 4) {
     assertTrue(xcode.dependencies?.uuid == null, 'xcode v4 should no longer need uuid');

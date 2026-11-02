@@ -30,4 +30,6 @@ assert.match(exported, /return requireNativeModule\('ExpoQnxPlatform'\)/);
 const types = await readFile('packages/expo-modules-core-qnx/index.d.ts', 'utf8');
 assert.match(types, /requireQnxExpoPlatformModule\(\): ExpoQnxPlatformModule;/);
 
-console.log('Expo 58 native module API contract verified. Expo Modules API 2.0 native QNX bindings remain unsupported.');
+console.log(
+  'Expo 58 native module API contract verified. Expo Modules API 2.0 native QNX bindings remain unsupported.'
+);

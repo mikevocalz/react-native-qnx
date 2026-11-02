@@ -50,18 +50,18 @@ no change is made to the JSI native module installer ABI or registry behavior.
 
 ## Current capability matrix
 
-| Surface | QNX | Marathon Linux/Wayland | Android / Apple SDK 58 |
-| --- | --- | --- | --- |
-| Expo Modules SDK 58 JavaScript imports | existing QNX JSI bootstrap; runtime proof pending | no native Expo installer yet | supported SDK 58 |
-| Legacy Expo definition DSL binding | custom QNX C++ registry only | not implemented | supported |
-| Expo Modules API **2.0** annotation binding generator | **unsupported**, needs upstream/compiler design | **unsupported**, needs Linux/Wayland integration | beta Swift/Kotlin |
-| Synchronous `ExpoQnxPlatform` getter | existing C++ module, physical run pending | not implemented | QNX-only API not applicable |
-| Async calls / Events / SharedObject | no general QNX binding proof | not implemented | SDK-dependent API; verify individually |
-| QNX/Marathon Expo autolinking | QNX-specific resolver already exists | must be added as separate target, not spoof `qnx` | native Apple/Android |
+| Surface                                               | QNX                                               | Marathon Linux/Wayland                            | Android / Apple SDK 58                 |
+| ----------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------- | -------------------------------------- |
+| Expo Modules SDK 58 JavaScript imports                | existing QNX JSI bootstrap; runtime proof pending | no native Expo installer yet                      | supported SDK 58                       |
+| Legacy Expo definition DSL binding                    | custom QNX C++ registry only                      | not implemented                                   | supported                              |
+| Expo Modules API **2.0** annotation binding generator | **unsupported**, needs upstream/compiler design   | **unsupported**, needs Linux/Wayland integration  | beta Swift/Kotlin                      |
+| Synchronous `ExpoQnxPlatform` getter                  | existing C++ module, physical run pending         | not implemented                                   | QNX-only API not applicable            |
+| Async calls / Events / SharedObject                   | no general QNX binding proof                      | not implemented                                   | SDK-dependent API; verify individually |
+| QNX/Marathon Expo autolinking                         | QNX-specific resolver already exists              | must be added as separate target, not spoof `qnx` | native Apple/Android                   |
 
 ## Implementation sequencing
 
-1. Keep Expo SDK 58 and *verified installed* RN 0.88 and
+1. Keep Expo SDK 58 and _verified installed_ RN 0.88 and
    `expo-modules-core@58.x` patch aligned. PR #36 has exact proposed pins
    but the lockfile and native ABI remain pending.
 2. Add required-vs-optional public API as in this PR without modifying the
