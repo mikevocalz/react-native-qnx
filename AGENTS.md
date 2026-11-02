@@ -32,4 +32,4 @@ Every PR: architecture boundary, source inspection, changed files, skill/version
 
 ## Route to workstreams
 
-See `docs/marathon/ROSTER.md`. Every change needs a DRI and independent reviewer. See `docs/marathon/SKILLS.md` for exact approved skill sources and evidence table. 
+See `docs/marathon/ROSTER.md`. Every change needs a DRI and independent reviewer. See `docs/marathon/SKILLS.md` for exact approved skill sources and evidence table.

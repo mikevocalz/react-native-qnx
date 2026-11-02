@@ -53,16 +53,16 @@ JS / React Native / Expo (shared application source)
 
 ## Milestones / exit gates
 
-| Gate | Requirements | Evidence |
-| --- | --- | --- |
-| M0 audit | local reproducible host dependencies and authoritative current upstream interfaces | dated compatibility matrix + source references |
-| M1 bundle | Marathon Metro production JS bundle, Platform.OS and resolver test; QNX bundle remains identical | bundle hashes, tests |
-| M2 Wayland host | Qt/JSI/Fabric renders a RN view into an xdg-shell window with touch and text; no QNX-specific libs | Linux native build, window screenshot, logs |
-| M3 app shell | foreground/background, back/forward, IME, permission-denied, rotation, scale, safe areas | device/simulator video, log tests |
-| M4 modules | explicit Nitro v1 alpha and Expo API v2 beta capability matrix, no fabricated "works" rows | C++ symbols, generate/build/runtime logs |
-| M5 package | confirmed upstream runner support for native executable or reviewed helper, signed .marathon installer and permissions | valid manifest lint, install/launch/uninstall logs |
-| M6 physical device | HackberryPi CM5 and one phone, QNX Pi separately | distinct trace logs, screenshots, 3 clean launch/exit cycles |
+| Gate               | Requirements                                                                                                           | Evidence                                                     |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| M0 audit           | local reproducible host dependencies and authoritative current upstream interfaces                                     | dated compatibility matrix + source references               |
+| M1 bundle          | Marathon Metro production JS bundle, Platform.OS and resolver test; QNX bundle remains identical                       | bundle hashes, tests                                         |
+| M2 Wayland host    | Qt/JSI/Fabric renders a RN view into an xdg-shell window with touch and text; no QNX-specific libs                     | Linux native build, window screenshot, logs                  |
+| M3 app shell       | foreground/background, back/forward, IME, permission-denied, rotation, scale, safe areas                               | device/simulator video, log tests                            |
+| M4 modules         | explicit Nitro v1 alpha and Expo API v2 beta capability matrix, no fabricated "works" rows                             | C++ symbols, generate/build/runtime logs                     |
+| M5 package         | confirmed upstream runner support for native executable or reviewed helper, signed .marathon installer and permissions | valid manifest lint, install/launch/uninstall logs           |
+| M6 physical device | HackberryPi CM5 and one phone, QNX Pi separately                                                                       | distinct trace logs, screenshots, 3 clean launch/exit cycles |
 
 ## Performance and security acceptance
 
-Measure cold/warm start, first contentful frame, 60fps/120fps where panel supports, dropped frames, input latency, per-process RSS/PSS, suspend/resume retention, thermal and crash behavior; targets are hypotheses until measured. No custom frame scheduler fighting Marathon compositor frame callbacks. Denied permission fails closed. No root access, bypass of bubblewrap, fake shell identity or unrestricted system bus. Source/binaries and any Qt modules must pass MIT/Qt licensing review. 
+Measure cold/warm start, first contentful frame, 60fps/120fps where panel supports, dropped frames, input latency, per-process RSS/PSS, suspend/resume retention, thermal and crash behavior; targets are hypotheses until measured. No custom frame scheduler fighting Marathon compositor frame callbacks. Denied permission fails closed. No root access, bypass of bubblewrap, fake shell identity or unrestricted system bus. Source/binaries and any Qt modules must pass MIT/Qt licensing review.
