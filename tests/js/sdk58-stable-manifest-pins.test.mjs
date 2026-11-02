@@ -30,5 +30,5 @@ for (const file of [
   }
 }
 const expo = await read('packages/expo-modules-core-qnx/package.json');
-assert.equal(expo.peerDependencies['expo-modules-core'], '58.0.28');
+assert.equal(expo.peerDependencies['expo-modules-core'], '58.0.29');
 console.log('sdk58-stable-manifest-pins.test.mjs passed');
