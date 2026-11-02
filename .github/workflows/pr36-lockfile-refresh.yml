@@ -1,4 +1,4 @@
-name: PR36 exact Expo-compatible lockfile regeneration (temporary)
+name: PR36 SDK58 xcode4 source-aligned lockfile regeneration (temporary)
 
 on:
   push:

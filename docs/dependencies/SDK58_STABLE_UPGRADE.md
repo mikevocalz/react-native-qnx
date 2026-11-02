@@ -58,3 +58,7 @@ The networked lockfile-refresh job confirmed that both
 use `metro@0.87.1` until Expo's release train supports 0.87.2.
 The dependency validator therefore retains exact Metro consistency
 checks rather than weakening them to permit an unsupported mix.
+
+## xcode v4 / UUID transitive security contract
+
+The installed `expo@58.0.22` graph resolves Apache `xcode@4.0.0`. Its documented source no longer depends on the external `uuid` package: it calls Node's `crypto.randomUUID()` instead. Removed the obsolete `xcode>uuid` override for this release line. The validator now audits whichever interface the **installed** xcode major actually uses: v4 native crypto; v3 transitive `uuid@11.1.1` with CJS v4. This is a source-derived API migration, not a blanket security-audit exception.
