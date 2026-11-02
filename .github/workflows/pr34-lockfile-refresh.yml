@@ -33,6 +33,9 @@ jobs:
           git diff --check
           pnpm test:js
           pnpm typecheck
+          cd apps/rn-playground
+          ../../node_modules/.bin/metro build index.js --config metro.marathon.config.js --platform marathon --dev false --out /tmp/pr34-marathon.bundle.js
+          test -s /tmp/pr34-marathon.bundle.js
       - name: Commit generated lockfile only
         run: |
           git config user.name "github-actions[bot]"

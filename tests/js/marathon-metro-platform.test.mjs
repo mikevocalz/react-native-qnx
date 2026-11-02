@@ -10,59 +10,91 @@ const {
 const qnx = require('../../packages/react-native-qnx');
 const marathon = require('../../packages/react-native-marathon');
 
+/** @param {unknown} resolution */
+function sourceFilePath(resolution) {
+  assert.ok(
+    resolution !== null && typeof resolution === 'object' && 'filePath' in resolution,
+    'Expected a source-file resolution'
+  );
+  return resolution.filePath;
+}
+
+/** @param {unknown} resolution */
+function resolutionKind(resolution) {
+  assert.ok(
+    resolution !== null && typeof resolution === 'object' && 'type' in resolution,
+    'Expected a Metro resolution'
+  );
+  return resolution.type;
+}
+
 assert.equal(MARATHON_PLATFORM, 'marathon');
 assert.notEqual(marathon.OVERRIDES_ROOT, qnx.OVERRIDES_ROOT);
 
 const nativeSource = path.join(
   process.cwd(),
-  'node_modules', 'react-native', 'Libraries', 'Utilities', 'Platform.js'
+  'node_modules',
+  'react-native',
+  'Libraries',
+  'Utilities',
+  'Platform.js'
 );
 const textInputSource = path.join(
   process.cwd(),
-  'node_modules', 'react-native', 'Libraries', 'Components', 'TextInput',
+  'node_modules',
+  'react-native',
+  'Libraries',
+  'Components',
+  'TextInput',
   'TextInput.js'
 );
+
+/** @param {string} filePath */
 const source = (filePath) => ({
   resolveRequest() {
     return { type: 'sourceFile', filePath };
   },
 });
+
 const resolver = createMarathonResolveRequest(
   marathon.OVERRIDES_ROOT,
   qnx.OVERRIDES_ROOT
 );
-const marathonPlatform = resolver(source(nativeSource), './Platform', 'marathon');
 assert.equal(
-  marathonPlatform.filePath,
+  sourceFilePath(resolver(source(nativeSource), './Platform', 'marathon')),
   path.join(marathon.OVERRIDES_ROOT, 'Utilities', 'Platform.js'),
-  'Marathon Platform overrides QNX identity'
+  'Marathon must override the QNX platform identity'
 );
-const sharedQnxOverride = resolver(source(textInputSource), './TextInput', 'marathon');
 assert.equal(
-  sharedQnxOverride.filePath,
+  sourceFilePath(resolver(source(textInputSource), './TextInput', 'marathon')),
   path.join(qnx.OVERRIDES_ROOT, 'Components', 'TextInput', 'TextInput.js'),
-  'Portable QNX UI component JS overrides reused on Marathon'
+  'Portable Qt/React component source should be reused'
 );
 assert.equal(
-  resolver(source(nativeSource), './Platform', 'qnx').filePath,
+  sourceFilePath(resolver(source(nativeSource), './Platform', 'qnx')),
   nativeSource,
-  'Marathon resolver must not affect qnx'
+  'Marathon resolver must not affect QNX'
 );
 assert.equal(
-  resolver(source(nativeSource), './Platform', 'ios').filePath,
+  sourceFilePath(resolver(source(nativeSource), './Platform', 'ios')),
   nativeSource,
   'Marathon resolver must not affect iOS'
 );
 assert.equal(
-  resolver(source('/tmp/external/package.js'), 'package', 'marathon').filePath,
+  sourceFilePath(resolver(source('/tmp/external/package.js'), 'package', 'marathon')),
   '/tmp/external/package.js',
-  'Third-party source is not rewritten'
+  'Third-party code must remain unchanged'
 );
 assert.equal(
-  resolver({ resolveRequest() { return { type: 'assetFiles', filePaths: [] }; } },
-    'image.png', 'marathon').type,
+  resolutionKind(
+    resolver(
+      { resolveRequest() { return { type: 'assetFiles', filePaths: [] }; } },
+      'image.png',
+      'marathon'
+    )
+  ),
   'assetFiles',
-  'Asset resolutions are unchanged'
+  'Metro assets must resolve normally'
 );
 
 const platform = require('../../packages/react-native-marathon/Libraries/Utilities/Platform');
@@ -70,9 +102,17 @@ assert.equal(platform.OS, 'marathon');
 assert.equal(platform.select({ marathon: 'MAR', qnx: 'QNX', native: 'fallback' }), 'MAR');
 assert.equal(platform.select({ native: 'native' }), 'native');
 assert.equal(platform.select({ default: 'fallback' }), 'fallback');
-assert.throws(() => platform.Version, /must install __RNQNX_PLATFORM_CONSTANTS/);
-globalThis.__RNQNX_PLATFORM_CONSTANTS = { osVersion: 'test-only', isTesting: true };
+
+assert.throws(
+  () => platform.Version,
+  /must install __RNQNX_PLATFORM_CONSTANTS/,
+  'Do not invent the OS version before the native host has started'
+);
+Object.defineProperty(globalThis, '__RNQNX_PLATFORM_CONSTANTS', {
+  configurable: true,
+  value: { osVersion: 'test-only', isTesting: true },
+});
 assert.equal(platform.Version, 'test-only');
-delete globalThis.__RNQNX_PLATFORM_CONSTANTS;
+Reflect.deleteProperty(globalThis, '__RNQNX_PLATFORM_CONSTANTS');
 
 console.log('marathon-metro-platform.test.mjs passed');
