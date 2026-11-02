@@ -2,6 +2,7 @@
 
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { generate as verifyPlatformBindings } from './nitro-platform-codegen.mjs';
 
 const packageRoot = path.join(process.cwd(), 'packages');
 
@@ -24,6 +25,7 @@ async function findNitroConfigs(directory) {
 }
 
 async function main() {
+  await verifyPlatformBindings('--check');
   const configs = await findNitroConfigs(packageRoot);
   if (configs.length === 0) {
     console.log(

@@ -51,7 +51,9 @@ const thread = await read(path.join(root, 'packages/qnx-nitro-runtime/cpp/Thread
 assert.ok(logger.includes('#include <NitroModules/NitroLogger.hpp>'));
 assert.ok(thread.includes('#include <NitroModules/ThreadUtils.hpp>'));
 const runtime = await read(path.join(root, 'packages/qnx-nitro-runtime/cpp/QnxNitroRuntime.cpp'));
-const klass = await read(path.join(root, 'packages/qnx-nitro-runtime/cpp/QnxPlatformInfo.cpp'));
+const klass = await read(
+  path.join(root, 'packages/qnx-nitro-runtime/cpp/generated/QnxPlatformInfo.binding.cpp')
+);
 const cmake = await read(path.join(root, 'packages/qnx-nitro-runtime/CMakeLists.txt'));
 const probe = await read(path.join(root, 'vnext/probes/runtime-qnx/main.cpp'));
 assert.match(runtime, /HybridClassRegistry::registerHybridClass/);
