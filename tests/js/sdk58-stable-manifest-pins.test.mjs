@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+/** @param {string} p */
 const read = async (p) => JSON.parse(await readFile(p, 'utf8'));
 const root = await read('package.json');
 assert.equal(root.devDependencies.expo, '58.0.22');
