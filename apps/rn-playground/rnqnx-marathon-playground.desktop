@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=React Native Marathon Playground (Experimental)
+Comment=Development-only Qt/Fabric/Hermes Wayland playground
+Exec=rnqnx_marathon_host
+Terminal=false
+Categories=Development;
+StartupWMClass=org.rnqnx.marathon.playground
+# This is a normal native desktop entry, NOT a signed .marathon package.

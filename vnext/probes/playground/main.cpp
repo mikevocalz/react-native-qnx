@@ -303,7 +303,15 @@ constexpr int kWindowHeight = 480;
 
 int main(int argc, char** argv) {
   QGuiApplication app(argc, argv);
+#ifdef RNQNX_MARATHON_HOST
+  // Qt Wayland uses desktopFileName for xdg_toplevel app_id. Marathon's app
+  // identity/manifest must ultimately match the upstream-approved runner.
+  QCoreApplication::setApplicationName(QStringLiteral("rnqnx-marathon"));
+  QGuiApplication::setDesktopFileName(
+      QStringLiteral("org.rnqnx.marathon.playground"));
+#else
   QCoreApplication::setApplicationName(QStringLiteral("rnqnx-playground"));
+#endif
 
   QCommandLineParser parser;
   parser.setApplicationDescription(
@@ -336,7 +344,11 @@ int main(int argc, char** argv) {
   const QByteArray bundle = bundleFile.readAll();
 
   QQuickWindow window;
+#ifdef RNQNX_MARATHON_HOST
+  window.setTitle(QStringLiteral("React Native MarathonOS playground"));
+#else
   window.setTitle(QStringLiteral("react-native-qnx playground"));
+#endif
   window.setWidth(kWindowWidth);
   window.setHeight(kWindowHeight);
   window.setColor(QColor(Qt::white));
