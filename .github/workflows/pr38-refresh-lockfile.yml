@@ -1,0 +1,48 @@
+name: One-shot Nitro v1 alpha lockfile alignment
+
+on:
+  push:
+    branches:
+      - feat/nitro-v1-native-qnx-20261102
+    paths:
+      - .github/workflows/pr38-refresh-lockfile.yml
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    if: github.repository == 'mikevocalz/react-native-qnx'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: feat/nitro-v1-native-qnx-20261102
+          persist-credentials: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - name: Resolve actual Nitro v1 alpha native dependencies
+        run: pnpm install --lockfile-only
+      - run: pnpm install --frozen-lockfile
+      - name: Normalize reviewed Nitro skill ledger
+        run: pnpm exec prettier --write docs/nitro/SKILLS_AND_ROSTER.md
+      - name: Verify v1 source, type safety and security
+        run: |
+          pnpm format:check
+          pnpm validate:dependencies
+          pnpm validate:qnx-nitro
+          pnpm test:js
+          pnpm typecheck
+          pnpm audit:dependencies
+      - name: Commit actual lockfile and formatted ledger only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml docs/nitro/SKILLS_AND_ROSTER.md
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore(nitro): lock alpha on audited SDK58 and correct skill provenance"
+          git push origin HEAD:feat/nitro-v1-native-qnx-20261102

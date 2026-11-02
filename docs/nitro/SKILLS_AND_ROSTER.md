@@ -23,10 +23,10 @@ Use these with the real `SKILL.md` files and SHA, not a guessed skill title.
 - `margelo/react-native-skills:build-nitro-modules`
 - `margelo/react-native-skills:cpp`
 - `callstackincubator/agent-skills:react-native-best-practices`
-- `callstackincubator/agent-skills:react-native-testing`
+- repository JS/native test gates
 - `callstackincubator/agent-skills:upgrading-react-native` when moving RN/JSI/ABI versions
 - `callstackincubator/agent-skills:github-actions` when editing CI
-- `expo/skills:expo-module` for Expo-module bridges; `upgrading-expo` or verified current named skill when bumping Expo SDK
+- `expo/skills:expo-module` for Expo-module bridges; `expo-upgrade` (official Expo skill) when bumping Expo SDK
 
 ### Tier B — conditional on actual code
 
@@ -34,7 +34,7 @@ Use these with the real `SKILL.md` files and SHA, not a guessed skill title.
 - `margelo/react-native-skills:nitro-fetch`: HTTP, WebSocket, native decoding, cold-start prewarm. Must validate current API source.
 - `margelo/react-native-skills:react-native-mmkv`: encrypted or multi-process native storage, v4 migration.
 - `callstackincubator/agent-skills:create-react-native-library`: independent standalone native module packaging and consumer example.
-- `callstackincubator/agent-skills:agent-device`, `dogfood`: physical-device QA. Only if the tooling actually supports that OS.
+- `Argent/agent-device` (separate repo, only for supported devices): physical-device QA. Only if the tooling actually supports that OS.
 - `expo/skills:expo-dev-client` or current verified Expo development-client skill: a supported native build, never assume Expo Go covers custom QNX/Marathon modules.
 - `petergyang/no-ai-slop`: strict evidence and removal of invented success/stubs.
 - `WorldFlowAI/everything-claude-code`: planning/testing/review. Inspect PRs and actual source state before claiming content merged.
@@ -48,7 +48,7 @@ npx skills@latest add margelo/react-native-skills --skill cpp
 npx skills@latest add margelo/react-native-skills --skill nitro-fetch
 npx skills@latest add callstackincubator/agent-skills --skill react-native-best-practices
 npx skills@latest add callstackincubator/agent-skills --skill upgrading-react-native
-npx skills@latest add callstackincubator/agent-skills --skill react-native-testing
+npx skills@latest add callstackincubator/agent-skills --skill github-actions
 npx skills@latest add callstackincubator/agent-skills --skill github-actions
 ```
 
