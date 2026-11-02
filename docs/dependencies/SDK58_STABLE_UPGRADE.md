@@ -70,3 +70,7 @@ The published `@expo/metro-config@58.0.20` no longer hardcodes a literal `'macos
 ## Regenerated dependency graph
 
 A branch-scoped GitHub Actions run using Node 26.10.0 and pnpm 12.8.1 has now regenerated and committed the exact `pnpm-lock.yaml` (933 changed lines). The generated graph passed `pnpm install --frozen-lockfile` in the regeneration job. **This is not final compatibility proof:** native React Native/Hermes source checks, TypeScript, host renderer and security audit remain subject to normal CI. The one-shot write-enabled workflow was removed after committing the lockfile; remaining CI is read-only.
+
+## SDK 58 Expo Modules patch-family source checks
+
+The older standalone QNX validators hardcoded `expo-modules-core@58.0.9` and `expo-modules-autolinking@58.0.6`. The installed SDK 58.0.22 graph resolves Expo Modules Core **58.0.29** and its own current 58.x autolinking release. The QNX core validator now compares the **exact installed core release against the peer pin in `@rn-qnx/expo-modules-core-qnx`**; autolinking checks the exact installed Expo version against `@rn-qnx/expo-qnx-autolinking` and verifies the autolinker remains in SDK 58's family. Native JSI/bootstrap symbols and custom-platform autolinking contracts are still checked independently and may fail on real API drift.

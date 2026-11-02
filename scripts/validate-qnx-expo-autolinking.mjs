@@ -12,8 +12,15 @@ const autolinkingManifest = expoRequire.resolve('expo-modules-autolinking/packag
 const autolinkingRoot = path.dirname(autolinkingManifest);
 const manifest = JSON.parse(await readFile(autolinkingManifest, 'utf8'));
 
-if (manifest.version !== '58.0.6') {
-  throw new Error(`Expected expo-modules-autolinking 58.0.6, got ${manifest.version}`);
+const expo = JSON.parse(await readFile(expoManifest, 'utf8'));
+const qnxAutolinking = JSON.parse(
+  await readFile(path.join(root, 'packages/expo-qnx-autolinking/package.json'), 'utf8')
+);
+if (expo.version !== qnxAutolinking.peerDependencies?.expo) {
+  throw new Error('Expo autolinking host must match the QNX package Expo peer exactly.');
+}
+if (!manifest.version.startsWith('58.')) {
+  throw new Error(`Expected Expo SDK 58 autolinking, got ${manifest.version}`);
 }
 
 const types = await readFile(path.join(autolinkingRoot, 'src/types.ts'), 'utf8');
@@ -40,4 +47,4 @@ if (results == null || typeof results !== 'object') {
   throw new Error('Expo QNX search phase did not return SearchResults.');
 }
 
-console.log('validate:qnx-expo-autolinking passed for expo-modules-autolinking 58.0.6');
+console.log(`validate:qnx-expo-autolinking passed for expo-modules-autolinking ${manifest.version}`);
