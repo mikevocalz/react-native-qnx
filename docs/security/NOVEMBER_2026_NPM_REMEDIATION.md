@@ -1,7 +1,6 @@
 # November 2026 npm audit remediation — Expo SDK 58 / RN 0.88
 
-Status: **security changes proposed**, actual `pnpm audit` and native-runtime compatibility
-must be verified in CI after the real generated lockfile is committed.
+Status: **security overrides and a real lockfile committed**. The one-shot regeneration job passed frozen install, source/JS checks, and the configured security audit on 2026-11-02 (GitHub Actions job 125509264858). Full final-commit CI and QNX/Marathon native runtime compatibility remain separate gates.
 
 On 2026-11-02, PR #36's current frozen dependency graph completed install,
 type checking and host C++ smoke tests, but `pnpm audit:dependencies` found
@@ -25,8 +24,8 @@ The last row is supported by the published security release for
 `glob` / `minimatch` contain major version changes, so **do not**
 treat a clean audit as sufficient compatibility proof. Check the Expo
 CLI, Metro bundles, native QNX/Marathon host graph and file glob tests
-independently. The selective `@expo/cli`, `react-devtools-core`,
-`nitrogen`, `glob` parent overrides reduce unrelated changes.
+independently. The selective `@expo/cli`, `react-devtools-core`, `nitrogen`, `glob`,
+`@expo/fingerprint`, and `@ts-morph/common` parent overrides reduce unrelated changes.
 
 ## Required check sequence
 
@@ -41,11 +40,10 @@ pnpm audit:dependencies
 # Plus: SDK58 QNX production Metro bundle and the full Qt/Hermes host tests.
 ```
 
-The one-time GitHub workflow for this branch executes the resolver on a
-networked runner, commits **only** the generated `pnpm-lock.yaml`, then
-verifies frozen install, core dependency contracts and the audit.
-If the workflow cannot resolve a valid graph, or tests fail, leave the PR
-in draft and inspect logs. Do not generate integrity hashes by hand.
+The one-time GitHub job regenerated the lockfile and checked frozen install,
+source contracts and the audit. Its write-enabled workflow has been removed
+from this PR after use; normal validation retains read-only token permissions.
+Subsequent updates must rerun the real audit without advisory suppressions.
 
 The source-verified patched `braces@3.0.3` remains a separate, explicitly
 audited local backport in `scripts/lib/braces-security.mjs`.
