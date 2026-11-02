@@ -4,18 +4,18 @@
 
 ## Exact npm observations (2026-11-02)
 
-| Package | Prior baseline | Selected registry release | Why |
-| --- | --- | --- | --- |
-| expo | 58.0.0 | **58.0.22** (latest) | stable SDK 58 patch |
-| react-native | 0.88.0-rc.3 | **0.88.1** (latest stable) | Expo 58 / RN0.88 release family |
-| react | 19.3.0 | **19.3.0** | Expo 58 tested React family; unchanged |
-| @react-native/metro-config | 0.88.0-rc.3 | **0.88.1** | matching RN patch |
-| metro | 0.87.1 | **0.87.1 (SDK-compatible)** | Expo 58.0.22 pins @expo/metro to 0.87.1; Metro 0.87.2 is published but is not the tested graph |
-| babel-preset-expo | 58.0.4 | **58.0.23** | Expo SDK58 patch |
-| @types/node | 26.6.3 | **26.6.6** | patch upgrade |
-| @types/react | 19.3.0 | **19.3.0** | unchanged |
-| typescript | 7.0.2 | **7.0.2** | unchanged confirmed |
-| nitrogen / react-native-nitro-modules | 0.37.1 | **0.37.1 here** | stable Nitro kept for isolated v1 alpha migration PR |
+| Package                               | Prior baseline | Selected registry release   | Why                                                                                            |
+| ------------------------------------- | -------------- | --------------------------- | ---------------------------------------------------------------------------------------------- |
+| expo                                  | 58.0.0         | **58.0.22** (latest)        | stable SDK 58 patch                                                                            |
+| react-native                          | 0.88.0-rc.3    | **0.88.1** (latest stable)  | Expo 58 / RN0.88 release family                                                                |
+| react                                 | 19.3.0         | **19.3.0**                  | Expo 58 tested React family; unchanged                                                         |
+| @react-native/metro-config            | 0.88.0-rc.3    | **0.88.1**                  | matching RN patch                                                                              |
+| metro                                 | 0.87.1         | **0.87.1 (SDK-compatible)** | Expo 58.0.22 pins @expo/metro to 0.87.1; Metro 0.87.2 is published but is not the tested graph |
+| babel-preset-expo                     | 58.0.4         | **58.0.23**                 | Expo SDK58 patch                                                                               |
+| @types/node                           | 26.6.3         | **26.6.6**                  | patch upgrade                                                                                  |
+| @types/react                          | 19.3.0         | **19.3.0**                  | unchanged                                                                                      |
+| typescript                            | 7.0.2          | **7.0.2**                   | unchanged confirmed                                                                            |
+| nitrogen / react-native-nitro-modules | 0.37.1         | **0.37.1 here**             | stable Nitro kept for isolated v1 alpha migration PR                                           |
 
 Expo 58 uses `expo-modules-core` on its 58.x release train, currently published at 58.0.29; the downstream QNX peer contract is updated. **Expo Modules API 2.0 beta** is a change in native authoring bindings WITHIN Expo SDK58, NOT `expo-modules-core@2`. It needs a separate native bridge review, not a fake major-version bump.
 
