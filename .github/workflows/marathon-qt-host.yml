@@ -55,6 +55,8 @@ jobs:
           cmake -S . -B build/marathon-host -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
             -DBUILD_TESTING=ON \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++ \
             -DRNQNX_BUILD_HERMES=ON \
             -DRNQNX_FETCH_REACT_NATIVE_DEPS=ON \
             -DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON \
