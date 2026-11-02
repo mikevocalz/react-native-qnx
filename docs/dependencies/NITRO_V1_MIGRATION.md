@@ -61,3 +61,7 @@ Add a real Qt JS-thread dispatcher with cancel/shutdown lifetime tests for Nitro
 ## Revert
 
 Revert the native class migration, restore the 0.37.1 source list and registration/JS probe, reinstall original locked packages (from main if stable upgrade is held). Never downgrade only one of Nitro/Nitrogen/nitro-core.
+
+## Alpha source compile finding (2026-11-02)
+
+The real Linux/Clang C++20 job compiled the upstream Nitro v1.0 alpha sources and found that `nitro-core/native/cpp/include/NitroModules/NitroLogger.hpp` uses `std::unique_ptr` but omits `#include <memory>`. This is an upstream header-order bug. The scoped `cpp/NitroCoreCompat.hpp` preinclude supplies that C++ standard header to **only** `rnqnx_nitro_qnx` on Clang/GCC. It does not change installed npm sources or suppress diagnostics. The workaround must be removed once a verified newer Nitro v1 fixes the header. A successful Linux compile would still not prove QNX SDP/linker behavior.

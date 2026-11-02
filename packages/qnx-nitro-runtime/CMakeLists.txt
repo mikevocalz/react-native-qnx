@@ -68,6 +68,17 @@ target_include_directories(rnqnx_nitro_qnx PUBLIC
 target_compile_definitions(rnqnx_nitro_qnx PUBLIC
   NITRO_VERSION="1.0.0-alpha.nightly.105.g69d365fc9b18"
 )
+# Nitro v1.0.0-alpha.nightly.105 has an upstream header-order defect:
+# NitroLogger.hpp uses std::unique_ptr without including <memory>.
+# Force an explicit compatibility preinclude only on this adapter target.
+# Remove when the pinned core adds the missing include; do not edit node_modules.
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+  target_compile_options(rnqnx_nitro_qnx PRIVATE
+    "-include" "${CMAKE_CURRENT_SOURCE_DIR}/cpp/NitroCoreCompat.hpp")
+else()
+  message(FATAL_ERROR "Nitro v1 alpha compatibility preinclude requires Clang/GCC")
+endif()
+
 target_link_libraries(rnqnx_nitro_qnx PUBLIC Threads::Threads)
 target_compile_features(rnqnx_nitro_qnx PUBLIC cxx_std_20)
 if(COMMAND rnqnx_enable_strict_warnings)
