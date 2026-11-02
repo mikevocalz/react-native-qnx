@@ -41,6 +41,10 @@ jobs:
           git diff --check
           pnpm validate:dependencies
           pnpm test:js
+          pnpm typecheck
+          cd apps/rn-playground
+          ../../node_modules/.bin/metro build index.js --platform qnx --dev false --out /tmp/pr36-qnx.bundle.js
+          test -s /tmp/pr36-qnx.bundle.js
 
       - name: Commit only generated pnpm lockfile
         run: |

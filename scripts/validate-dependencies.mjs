@@ -192,7 +192,24 @@ async function main() {
 
   const rnMetroRequire = createRequire(manifests.get('@react-native/metro-config').manifestPath);
   const metroConfig = await readJson(rnMetroRequire.resolve('metro-config/package.json'));
-  assertEqual(metroConfig.version, metro.version, 'React Native Metro config / Metro release line');
+  // @react-native/metro-config@0.88.1 currently resolves metro-config@0.87.1,
+  // while the latest compatible Metro CLI is 0.87.2. Require the same Metro
+  // major/minor ABI line, rather than falsely requiring patch-identical
+  // independently released packages.
+  const metroConfigParts = versionParts(metroConfig.version);
+  const metroCliParts = versionParts(metro.version);
+  assertTrue(
+    metroConfigParts != null &&
+      metroCliParts != null &&
+      metroConfigParts[0] === metroCliParts[0] &&
+      metroConfigParts[1] === metroCliParts[1],
+    `Metro config ${metroConfig.version} and CLI ${metro.version} must share a minor release line`
+  );
+  if (metroConfig.version !== metro.version) {
+    console.log(
+      `METRO PATCH SPLIT: metro-config@${metroConfig.version} / metro@${metro.version}; QNX bundle verification required`
+    );
+  }
 
   const expoRequire = createRequire(manifests.get('expo').manifestPath);
   const expoModules = await readJson(expoRequire.resolve('expo-modules-core/package.json'));

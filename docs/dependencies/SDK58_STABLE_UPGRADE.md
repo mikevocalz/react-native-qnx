@@ -47,3 +47,7 @@ Only check off a command when its actual exit code and log are attached. Inspect
 ## Why not Nitro v1 in this PR?
 
 Nitro and Nitrogen v1 are pre-release alpha-nightlies and their runtime C++ source was reorganized into a new `nitro-core` package. The QNX Nitro 0.37 CMake source list and `HybridObjectRegistry` APIs will not compile unchanged. Keep this stable RN/Expo upgrade independent and follow with a dedicated v1 migration PR (see companion PR).
+
+## Verified Metro patch-family compatibility gate
+
+The first networked CI install found `@react-native/metro-config@0.88.1` resolving its own `metro-config@0.87.1` while the workspace's direct Metro CLI is `metro@0.87.2`. These packages are released independently. The validator now requires the **same Metro major/minor family** and explicitly logs the patch split instead of requiring an impossible duplicate patch number. This is **not** a compatibility proof: the lockfile-refresh job must additionally produce a real QNX Metro production bundle before committing the generated lockfile. Reject a major/minor split. Current SDP/Hermes native rebuild and physical device acceptance remain independent.
