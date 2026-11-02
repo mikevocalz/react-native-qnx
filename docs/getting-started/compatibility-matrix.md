@@ -16,22 +16,22 @@ manifest tests React 19.3.0 with React Native 0.88.1. The repository
 therefore follows that SDK contract and keeps the remaining direct tooling on
 current published versions.
 
-| Component                    | Selected    | Status / reason                                                             |
-| ---------------------------- | ----------- | --------------------------------------------------------------------------- |
-| Expo                         | 58.0.0      | SDK 58 product baseline                                                     |
-| React Native                 | 0.88.1 | Expo 58 tested development baseline                                         |
-| React                        | 19.3.0      | Expo 58 tested development baseline                                         |
-| Metro                        | 0.87.1      | Current Metro release resolved coherently with the selected RN Metro config |
-| `@react-native/metro-config` | 0.88.1 | RN 0.88 support-package line used by SDK 58 tooling                         |
-| `babel-preset-expo`          | 58.0.4      | Current SDK 58 Babel preset                                                 |
-| Nitro Modules                | 0.37.1      | Current published release                                                   |
-| Nitrogen                     | 0.37.1      | Matches Nitro Modules                                                       |
-| TypeScript                   | 7.0.2       | Current published release                                                   |
-| `@types/react`               | 19.3.0      | Current React 19.3 typings                                                  |
-| `@types/node`                | 26.6.3      | Current Node typings                                                        |
-| Prettier                     | 3.9.9       | Current published release                                                   |
-| pnpm                         | 12.8.1      | Current package-manager pin                                                 |
-| Node.js                      | 26+         | Runtime floor aligned with current Node 26 typings                          |
+| Component                    | Selected | Status / reason                                                             |
+| ---------------------------- | -------- | --------------------------------------------------------------------------- |
+| Expo                         | 58.0.0   | SDK 58 product baseline                                                     |
+| React Native                 | 0.88.1   | Expo 58 tested development baseline                                         |
+| React                        | 19.3.0   | Expo 58 tested development baseline                                         |
+| Metro                        | 0.87.1   | Current Metro release resolved coherently with the selected RN Metro config |
+| `@react-native/metro-config` | 0.88.1   | RN 0.88 support-package line used by SDK 58 tooling                         |
+| `babel-preset-expo`          | 58.0.4   | Current SDK 58 Babel preset                                                 |
+| Nitro Modules                | 0.37.1   | Current published release                                                   |
+| Nitrogen                     | 0.37.1   | Matches Nitro Modules                                                       |
+| TypeScript                   | 7.0.2    | Current published release                                                   |
+| `@types/react`               | 19.3.0   | Current React 19.3 typings                                                  |
+| `@types/node`                | 26.6.3   | Current Node typings                                                        |
+| Prettier                     | 3.9.9    | Current published release                                                   |
+| pnpm                         | 12.8.1   | Current package-manager pin                                                 |
+| Node.js                      | 26+      | Runtime floor aligned with current Node 26 typings                          |
 
 ## Locked Expo graph
 
@@ -65,7 +65,7 @@ The SDK-58 lockfile regenerated from npm resolves:
 
 | Component        | Status  | Version / identity      | Evidence and scope                                                       |
 | ---------------- | ------- | ----------------------- | ------------------------------------------------------------------------ |
-| React Native     | Pin     | 0.88.1             | Out-of-tree QNX platform supplies the missing platform integration       |
+| React Native     | Pin     | 0.88.1                  | Out-of-tree QNX platform supplies the missing platform integration       |
 | React            | Pin     | 19.3.0                  | Matches Expo 58                                                          |
 | Yoga             | Bundled | RN 0.88 source snapshot | No standalone Yoga version is inferred                                   |
 | Hermes           | Bundled | `hermes-v260318099.0.5` | QNX source rebase/tooling implemented; licensed target build/run pending |
@@ -85,7 +85,7 @@ SDP 8.0.5 cross-build and Pi execution remain hardware gates.
 | Expo / SDK                   | Pin      | 58.0.0 / SDK 58 | Published package; intentionally selected despite current `next` dist-tag |
 | `babel-preset-expo`          | Pin      | 58.0.4          | Playground Babel preset                                                   |
 | Metro                        | Pin      | 0.87.1          | QNX resolver extends the RN Metro defaults                                |
-| `@react-native/metro-config` | Pin      | 0.88.1     | Used by `@rn-qnx/metro-config-qnx`                                        |
+| `@react-native/metro-config` | Pin      | 0.88.1          | Used by `@rn-qnx/metro-config-qnx`                                        |
 | `expo-modules-core`          | Resolved | 58.0.9          | Android source is contract evidence only, not a QNX implementation        |
 | `@expo/metro`                | Resolved | 58.0.0-rc.0     | SDK-58 Metro fork                                                         |
 | `@expo/metro-config`         | Resolved | 58.0.6          | SDK-58 Expo Metro config                                                  |
