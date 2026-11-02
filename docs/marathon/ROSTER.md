@@ -23,7 +23,7 @@ Status: proposed responsibilities; **not** claims of people hired, assigned, or 
 - Metro resolver and platform identity -> host runtime wiring -> Wayland view and input -> permissions and lifecycle -> launcher/packaging.
 - Nitro/Expo migrations are deliberately isolated from the baseline host render path, until compile and runtime proofs exist.
 - QNX smoke/regression is a gate for changing shared Qt or JS overrides, not a reason to misrepresent incomplete device evidence.
-- Upstream Marshathon compatibility review is required before saying "out-of-box" or including official store packaging claims.
+- Upstream Marathon compatibility review is required before saying "out-of-box" or including official store packaging claims.
 
 ## Handoff / stop conditions
 
@@ -42,16 +42,9 @@ Each agent records: goal; relevant exact files; version/skill source + commit; p
 
 ## Nitro/API-first owner pairing
 
-The **SDK/API design** reviewer owns the TypeScript contract and 2–3 caller
-examples *before* C++ code is changed. The **Nitrogen/codegen** reviewer owns
-the evidence that a platform generator supports QNX/Marathon. Until upstream
-support exists, a hand-built `HybridClass` is an isolated test proof, not a
-public generated Nitro module. The **Qt/JSI lifetime** reviewer checks
-dispatcher shutdown, module disposal and no callbacks after Hermes teardown.
-The **Expo module** reviewer separates SDK 58 API 2.0 beta Swift/Kotlin
-annotation bindings from the QNX and Marathon JSI host.
+- **SDK/API design:** Own the TypeScript contract and 2–3 caller examples before C++ code is changed.
+- **Nitrogen/codegen:** Verify that the platform generator supports QNX/Marathon. Until upstream support exists, a hand-built `HybridClass` is only an isolated proof, not a public generated Nitro module.
+- **Qt/JSI lifetime:** Review dispatcher shutdown, module disposal, and no callbacks after Hermes teardown.
+- **Expo Modules:** Separate SDK 58 API 2.0 beta Swift/Kotlin annotation bindings from the QNX and Marathon JSI host.
 
-All of these tasks require the exact Margelo `api-design`,
-`build-nitro-modules` and `cpp` skills. Do not silently substitute a
-generic native-module tutorial. See `docs/marathon/SKILLS.md` and
-the stacked Nitro v1 PR #38.
+All owners must use the exact Margelo `api-design`, `build-nitro-modules` and `cpp` skills where applicable. Do not silently substitute a generic native-module tutorial. See `docs/marathon/SKILLS.md` and Nitro v1 PR #38.
