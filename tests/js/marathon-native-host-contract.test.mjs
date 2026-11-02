@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+/** @param {string} file */
 const read = (file) => readFile(file, 'utf8');
 const cmake = await read('CMakeLists.txt');
 const native = await read('cmake/RnqnxMarathonHost.cmake');
