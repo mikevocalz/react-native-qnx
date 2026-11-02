@@ -39,3 +39,19 @@ Each agent records: goal; relevant exact files; version/skill source + commit; p
 | Nitro / Expo | upstream prerelease API diff, C++ compile, codegen, async error semantics |
 | Security | bwrap permission-denied, secrets/storage restrictions, no privileged IPC |
 | Release | zero regressions on original QNX Metro output, separate evidence labels |
+
+## Nitro/API-first owner pairing
+
+The **SDK/API design** reviewer owns the TypeScript contract and 2–3 caller
+examples *before* C++ code is changed. The **Nitrogen/codegen** reviewer owns
+the evidence that a platform generator supports QNX/Marathon. Until upstream
+support exists, a hand-built `HybridClass` is an isolated test proof, not a
+public generated Nitro module. The **Qt/JSI lifetime** reviewer checks
+dispatcher shutdown, module disposal and no callbacks after Hermes teardown.
+The **Expo module** reviewer separates SDK 58 API 2.0 beta Swift/Kotlin
+annotation bindings from the QNX and Marathon JSI host.
+
+All of these tasks require the exact Margelo `api-design`,
+`build-nitro-modules` and `cpp` skills. Do not silently substitute a
+generic native-module tutorial. See `docs/marathon/SKILLS.md` and
+the stacked Nitro v1 PR #38.

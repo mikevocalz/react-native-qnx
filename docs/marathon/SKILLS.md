@@ -2,6 +2,55 @@
 
 Read actual source SKILL.md before an implementation claim. Below are **required skill selections**, not a statement that they were installed or executed. Freeze source commit SHA at implementation time. Treat skills as development guidance, not a substitute for QNX/Marathon upstream source.
 
+## Mandatory API-first Nitro skills (existing Nitro Forge roster)
+
+The existing Nitro Forge conventions take precedence over generic guesses about
+Nitro. For every native/JSI module API, read the exact sources before writing
+any method shape or handwritten bridge. Source inspected November 2, 2026:
+[Margelo react-native-skills](https://github.com/margelo/react-native-skills)
+commit `1e9e17be6f41c838db472d6a4b943fc26355a3be`.
+
+Apply the ordered skill pipeline:
+
+1. `api-design`: public TypeScript shape, typed call sites, errors, disposal,
+   cancellation, and platform promises.
+2. `build-nitro-modules`: `.nitro.ts` generated specs, Nitrogen outputs,
+   native implementation, ownership and codegen testing.
+3. `cpp`: RAII and JSI lifetime, thread/Qt ownership, CMake includes,
+   signal/callback discipline. Use `kotlin` and `swift` only for real
+   Android/Apple implementation slices.
+4. `nitro-fetch`: opt-in only for HTTP/WebSocket/TextDecoder work. No
+   assumption that Nitro Fetch currently supports QNX or Marathon.
+5. `react-native-mmkv`: opt-in only for a persistent-store task; verify the
+   latest v4 API and native/OS implementation before claiming support.
+6. Callstack `react-native-best-practices`,
+   `upgrading-react-native`, `react-native-testing`,
+   `github-actions` and `create-react-native-library`, each
+   when its code/CI/packaging scope warrants it.
+7. Expo `expo-module` and relevant SDK upgrade/migration skill before
+   changing Expo Modules or Expo config. SDK 58 Expo Modules API 2.0 beta
+   currently documents Swift/Kotlin bindings; QNX/Marathon JSI compatibility
+   must be proved independently.
+
+The upstream v1 Nitrogen source inspected for PR #38 currently restricts
+generation to Apple/Android, **not** QNX or Marathon. Do not fabricate
+generated QNX code. The hand-written v1 HybridClass is a synchronous
+experimental proof only. The long-term objective is a properly generated
+QNX/Marathon native platform target with a typed API and real tests.
+
+Selected source references:
+
+- [Margelo API design](https://github.com/margelo/react-native-skills/tree/main/skills/api-design)
+- [Margelo Nitro modules](https://github.com/margelo/react-native-skills/tree/main/skills/build-nitro-modules)
+- [Margelo C++](https://github.com/margelo/react-native-skills/tree/main/skills/cpp)
+- [Margelo Nitro networking](https://github.com/margelo/react-native-skills/tree/main/skills/react-native-nitro-fetch)
+- [Expo Modules](https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-module/SKILL.md)
+- [Callstack skills](https://github.com/callstackincubator/agent-skills/tree/main/skills)
+
+Do not claim a skill was installed or run just because source SKILL.md was
+inspected. Require PR proof rows for installed version, applied decision,
+implementation, test output and any incomplete device evidence.
+
 ## Tier 0: relevant for every PR
 
 | Skill (exact) | Canonical repository | Trigger | Required outcome |

@@ -7,7 +7,7 @@ This is a Fabric-only, Hermes-first out-of-tree React Native platform. QNX is an
 1. Read `README.md`, `docs/handoff/CURRENT_STATE.md`, `docs/component-support.md`, `docs/marathon/ARCHITECTURE.md`, `docs/marathon/ROSTER.md`, `docs/marathon/SKILLS.md` and the relevant ADRs completely.
 2. Inspect current base, existing PRs, exact npm tags, Expo SDK compatibility, upstream Marathon manifests and source interfaces. Never rely on memory for changing APIs.
 3. Select roles from the roster by workstream, attach concrete path ownership and deliverable/acceptance evidence.
-4. Install and **read** exact relevant skill SKILL.md files. Record upstream commit SHA, selected version, and what decision the skill changed. No skill invocation may be claimed without proof.
+4. Install and **read** exact relevant skill SKILL.md files. For Nitro and native APIs, use Margelo `api-design` → `build-nitro-modules` → `cpp` first; add `nitro-fetch`, `react-native-mmkv`, `swift` or `kotlin` only when the API actually needs them. Record upstream commit SHA, selected version, and what decision the skill changed. No skill invocation may be claimed without proof.
 5. Make one small vertical slice at a time; expose an opt-in CMake or Metro feature flag until a device run proves it.
 6. Run the repository's dependency, typecheck, Metro bundle, host native/ASan, CMake and runtime gates. Separate host-only, Linux/Wayland, emulator, QNX VM and physical hardware evidence.
 7. Document measured results, missing tests, known incompatibilities, upstream collaboration needs, and rollback in each PR. Leave PR in draft if the runtime/target result is missing.
