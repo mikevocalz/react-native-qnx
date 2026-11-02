@@ -4,7 +4,10 @@ on:
   pull_request:
     paths:
       - 'packages/qnx-nitro-runtime/**'
+      - 'cmake/RnqnxNitroV1.cmake'
+      - 'native/platform/linux-host/nitro/**'
       - 'tests/native/nitro-v1-host/**'
+      - 'tests/js/nitro-dual-host-contract.test.mjs'
       - 'scripts/validate-qnx-nitro.mjs'
       - 'tests/js/nitro-*.test.mjs'
       - 'pnpm-lock.yaml'
@@ -39,11 +42,11 @@ jobs:
           sudo apt-get install -y ninja-build clang
           python3 -m pip install --user --break-system-packages cmake==3.31.10
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-      - name: Compile the actual Nitro core and QNX adapter sources on Linux
+      - name: Compile the shared Nitro v1 core and both distinct QNX/Marathon adapters on Linux
         run: |
           mkdir -p build/nitro-v1-linux-host/evidence
           cmake -S tests/native/nitro-v1-host -B build/nitro-v1-linux-host -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-          cmake --build build/nitro-v1-linux-host --target rnqnx_nitro_qnx -j 4
+          cmake --build build/nitro-v1-linux-host --target rnqnx_nitro_qnx rnqnx_nitro_marathon -j 4
           git rev-parse HEAD > build/nitro-v1-linux-host/evidence/commit.txt
       - name: Save compile evidence (NOT a QNX runtime claim)
         if: always()
