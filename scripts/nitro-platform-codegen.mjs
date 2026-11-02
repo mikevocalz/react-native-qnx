@@ -48,7 +48,9 @@ export function parseSpec(source) {
       throw new Error('Computed/string-literal members not supported');
     }
     if (ts.isPropertyDeclaration(m)) {
-      assert.ok((ts.getModifiers(m) ?? []).some((mod) => mod.kind === ts.SyntaxKind.ReadonlyKeyword));
+      assert.ok(
+        (ts.getModifiers(m) ?? []).some((mod) => mod.kind === ts.SyntaxKind.ReadonlyKeyword)
+      );
       assert.equal(m.type?.kind, ts.SyntaxKind.StringKeyword, 'Only string getters supported');
       assert.equal(m.questionToken, undefined, 'No optional property support');
       props.push(m.name.text);
@@ -65,7 +67,11 @@ export function parseSpec(source) {
       throw new Error('Unsupported Nitro spec member');
     }
   }
-  assert.deepEqual(props, ['platform', 'architecture'], 'Platform proof fields changed; review codegen');
+  assert.deepEqual(
+    props,
+    ['platform', 'architecture'],
+    'Platform proof fields changed; review codegen'
+  );
   assert.deepEqual(methods, ['add'], 'Platform proof methods changed; review codegen');
   return { props, methods };
 }

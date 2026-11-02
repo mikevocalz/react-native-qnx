@@ -1,10 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import {
-  generate,
-  parseSpec,
-  renderBinding,
-} from '../../scripts/nitro-platform-codegen.mjs';
+import { generate, parseSpec, renderBinding } from '../../scripts/nitro-platform-codegen.mjs';
 
 const source = await readFile('packages/qnx-nitro-runtime/specs/PlatformInfo.nitro.ts', 'utf8');
 const parsed = parseSpec(source);
