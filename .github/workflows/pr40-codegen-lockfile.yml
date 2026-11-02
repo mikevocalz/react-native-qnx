@@ -1,0 +1,50 @@
+name: One-shot Nitro v1 typed codegen compatibility fix
+
+on:
+  push:
+    branches:
+      - feat/nitro-v1-typed-platform-bindings-20261102
+    paths:
+      - .github/workflows/pr40-codegen-lockfile.yml
+      - package.json
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-lock:
+    if: github.repository == 'mikevocalz/react-native-qnx'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: feat/nitro-v1-typed-platform-bindings-20261102
+          persist-credentials: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - name: Resolve exact TS6 companion to TS7 and Nitro v1 alpha
+        run: pnpm install --lockfile-only
+      - run: pnpm install --frozen-lockfile
+      - name: Format only touched JS/spec/docs files
+        run: |
+          pnpm exec prettier --write             scripts/nitro-platform-codegen.mjs             tests/js/nitro-platform-codegen.test.mjs             docs/nitro/PLATFORM_CODEGEN_POC.md             packages/qnx-nitro-runtime/specs/PlatformInfo.nitro.ts             scripts/codegen-check.mjs             package.json
+          pnpm format:check
+      - name: Test generated bindings and full JS source
+        run: |
+          pnpm nitro:platform:check
+          pnpm codegen:check
+          pnpm test:js
+          pnpm typecheck
+          pnpm validate:qnx-nitro
+      - name: Commit verified lockfile and formatting, never generated output guesses
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml scripts/nitro-platform-codegen.mjs             tests/js/nitro-platform-codegen.test.mjs             docs/nitro/PLATFORM_CODEGEN_POC.md             packages/qnx-nitro-runtime/specs/PlatformInfo.nitro.ts             scripts/codegen-check.mjs package.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "fix(nitro): use official TypeScript 6 AST API alongside TypeScript 7"
+          git push origin HEAD:feat/nitro-v1-typed-platform-bindings-20261102

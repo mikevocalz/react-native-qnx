@@ -4,6 +4,13 @@ Status: **working, limited TypeScript-to-C++ binding-generation proof**.
 This is **not an upstream Nitrogen QNX/Marathon backend** and does not
 establish production device compatibility.
 
+The repo's TypeScript 7.0.2 is deliberately retained for type checking,
+but TypeScript 7 no longer exports `createSourceFile` or the Compiler API.
+The generator therefore uses Microsoft's official
+`@typescript/typescript6@6.0.2` compatibility package for AST parsing,
+installed **side by side**, without downgrading the repository's compiler.
+See https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/ .
+
 The inspected Nitro v1 alpha `nitrogen/src/getPlatformSpecs.ts`
 currently permits `apple` and `android`. It does not expose QNX or
 Marathon targets. To avoid maintaining two hand-written C++ registration

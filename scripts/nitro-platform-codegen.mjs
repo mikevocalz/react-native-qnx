@@ -8,7 +8,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
-const ts = require('typescript');
+// TS 7 exposes only its native CLI; the compiler AST API lives in this
+// official side-by-side compatibility package.
+const ts = require('@typescript/typescript6');
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const specPath = 'packages/qnx-nitro-runtime/specs/PlatformInfo.nitro.ts';
 const targets = [
