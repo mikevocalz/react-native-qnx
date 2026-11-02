@@ -31,7 +31,13 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Format only touched JS/spec/docs files
         run: |
-          pnpm exec prettier --write             scripts/nitro-platform-codegen.mjs             tests/js/nitro-platform-codegen.test.mjs             docs/nitro/PLATFORM_CODEGEN_POC.md             packages/qnx-nitro-runtime/specs/PlatformInfo.nitro.ts             scripts/codegen-check.mjs             package.json
+          pnpm exec prettier --write scripts/nitro-platform-codegen.mjs
+          pnpm exec prettier --write tests/js/nitro-platform-codegen.test.mjs
+          pnpm exec prettier --write docs/nitro/PLATFORM_CODEGEN_POC.md
+          pnpm exec prettier --write packages/qnx-nitro-runtime/specs/PlatformInfo.nitro.ts
+          pnpm exec prettier --write scripts/codegen-check.mjs
+          pnpm exec prettier --write scripts/validate-qnx-nitro.mjs
+          pnpm exec prettier --write package.json
           pnpm format:check
       - name: Test generated bindings and full JS source
         run: |
@@ -44,7 +50,14 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pnpm-lock.yaml scripts/nitro-platform-codegen.mjs             tests/js/nitro-platform-codegen.test.mjs             docs/nitro/PLATFORM_CODEGEN_POC.md             packages/qnx-nitro-runtime/specs/PlatformInfo.nitro.ts             scripts/codegen-check.mjs scripts/validate-qnx-nitro.mjs package.json
+          git add pnpm-lock.yaml
+          git add scripts/nitro-platform-codegen.mjs
+          git add tests/js/nitro-platform-codegen.test.mjs
+          git add docs/nitro/PLATFORM_CODEGEN_POC.md
+          git add packages/qnx-nitro-runtime/specs/PlatformInfo.nitro.ts
+          git add scripts/codegen-check.mjs
+          git add scripts/validate-qnx-nitro.mjs
+          git add package.json
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "fix(nitro): use official TypeScript 6 AST API alongside TypeScript 7"
+          git commit -m "fix(nitro): verify TS6 parser alongside TS7 CLI and format bindings"
           git push origin HEAD:feat/nitro-v1-typed-platform-bindings-20261102
