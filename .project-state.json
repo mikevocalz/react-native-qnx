@@ -34,7 +34,10 @@
     "qnxSdp": "8.0.5",
     "qsti": "0.5.0 build 50",
     "boards": ["Raspberry Pi 4", "Raspberry Pi 5"],
-    "defaultTarget": "qnxuser@qnxpi.local"
+    "defaultTarget": "qnxuser@qnxpi.local",
+    "experimentalBoards": [
+      "Raspberry Pi 400 (QNX custom-image adaptation; physical validation pending)"
+    ]
   },
   "validationHosts": {
     "linux": {
@@ -114,7 +117,7 @@
   ],
   "blockedTasks": [],
   "nextRecommendedTask": "On a licensed QNX SDP 8.0.5 host with QSTI 0.5.0 build 50 on a Pi 4/5, run pnpm pi:preflight and pnpm pi:install. Preserve the verified manifest, then run pnpm qnx:runtime:validate to prove Hermes + Nitro + Expo through JSI before moving the full React/Fabric/Qt Quick runtime onto the target.",
-  "updatedAt": "2026-10-03T23:12:00Z",
+  "updatedAt": "2026-11-02T20:18:10Z",
   "dependencySecurityMitigation": {
     "advisory": "GHSA-vfj7-8cjw-p6xm",
     "package": "braces@3.0.3",
