@@ -9,6 +9,6 @@
     "Libraries"
   ],
   "peerDependencies": {
-    "react-native": "0.88.0-rc.3"
+    "react-native": "0.88.1"
   }
 }

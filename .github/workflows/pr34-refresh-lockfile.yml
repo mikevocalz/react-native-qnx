@@ -1,0 +1,46 @@
+name: One-shot Marathon Metro SDK58 lockfile regeneration
+
+on:
+  push:
+    branches:
+      - feat/marathon-metro-platform-20261102
+    paths:
+      - .github/workflows/pr34-refresh-lockfile.yml
+      - packages/metro-config-marathon/package.json
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    if: github.repository == 'mikevocalz/react-native-qnx'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: feat/marathon-metro-platform-20261102
+          persist-credentials: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - name: Regenerate lock for newly introduced Marathon workspaces
+        run: pnpm install --lockfile-only
+      - run: pnpm install --frozen-lockfile
+      - name: Verify exact native and JS dependency graph
+        run: |
+          pnpm format:check
+          pnpm validate:dependencies
+          pnpm test:js
+          pnpm typecheck
+          pnpm audit:dependencies
+      - name: Commit only resolver-proven pnpm lockfile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore(marathon): lock SDK58-compatible Metro workspace graph"
+          git push origin HEAD:feat/marathon-metro-platform-20261102

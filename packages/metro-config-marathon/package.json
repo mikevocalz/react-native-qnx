@@ -13,7 +13,7 @@
     "@rn-qnx/react-native-marathon": "workspace:*"
   },
   "peerDependencies": {
-    "@react-native/metro-config": "0.88.0-rc.3",
+    "@react-native/metro-config": "0.88.1",
     "metro-config": "0.87.1"
   },
   "scripts": {
