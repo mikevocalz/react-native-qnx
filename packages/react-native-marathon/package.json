@@ -1,0 +1,14 @@
+{
+  "name": "@rn-qnx/react-native-marathon",
+  "version": "0.1.0",
+  "description": "Experimental MarathonOS React Native JavaScript platform overrides",
+  "license": "MIT",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "Libraries"
+  ],
+  "peerDependencies": {
+    "react-native": "0.88.1"
+  }
+}
