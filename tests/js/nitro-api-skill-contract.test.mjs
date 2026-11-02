@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+/** @param {string} filename */
 const read = (filename) => readFile(filename, 'utf8');
 const runtime = await read('packages/qnx-nitro-runtime/cpp/QnxNitroRuntime.cpp');
 const info = await read('packages/qnx-nitro-runtime/cpp/QnxPlatformInfo.cpp');
