@@ -10,6 +10,7 @@ import path from 'node:path';
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const expected = '1.0.0-alpha.nightly.105.g69d365fc9b18';
+/** @param {string} p */
 const read = (p) => readFile(p, 'utf8');
 const coreManifestPath = require.resolve('nitro-core/package.json');
 const nitroManifestPath = require.resolve('react-native-nitro-modules/package.json');
