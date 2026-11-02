@@ -24,7 +24,7 @@ Apply the ordered skill pipeline:
 5. `react-native-mmkv`: opt-in only for a persistent-store task; verify the
    latest v4 API and native/OS implementation before claiming support.
 6. Callstack `react-native-best-practices`,
-   `upgrading-react-native`, `react-native-testing`,
+   `upgrading-react-native`, repository native test gates,
    `github-actions` and `create-react-native-library`, each
    when its code/CI/packaging scope warrants it.
 7. Expo `expo-module` and relevant SDK upgrade/migration skill before
@@ -37,6 +37,8 @@ generation to Apple/Android, **not** QNX or Marathon. Do not fabricate
 generated QNX code. The hand-written v1 HybridClass is a synchronous
 experimental proof only. The long-term objective is a properly generated
 QNX/Marathon native platform target with a typed API and real tests.
+
+The Callstack skill directory contains neither a `react-native-testing` nor a `dogfood` skill. Use the repository's real JS/C++/device gates for tests, and source Argent's `agent-device` independently when appropriate.
 
 Selected source references:
 
@@ -53,15 +55,15 @@ implementation, test output and any incomplete device evidence.
 
 ## Tier 0: relevant for every PR
 
-| Skill (exact)               | Canonical repository                                           | Trigger                     | Required outcome                                           |
-| --------------------------- | -------------------------------------------------------------- | --------------------------- | ---------------------------------------------------------- |
-| expo-overview               | https://github.com/expo/skills                                 | Expo/Metro module work      | SDK architecture and correct platform boundaries           |
-| expo-upgrade                | https://github.com/expo/skills                                 | package upgrades            | Expo 58/RN 0.88 peer and breaking-change checks            |
-| react-native-best-practices | https://github.com/callstackincubator/agent-skills             | every native implementation | event loop, startup, memory, Fabric performance review     |
-| upgrading-react-native      | https://github.com/callstackincubator/agent-skills             | RN 0.88 rc -> stable        | upstream code/template differences + native source audit   |
-| react-native-testing        | https://github.com/callstackincubator/agent-skills             | tests and CI                | host unit, native conformance and user-centered assertions |
-| github-actions              | https://github.com/callstackincubator/agent-skills             | CI change                   | deterministic artifacts and security/scoped permissions    |
-| code-review                 | trusted owner's installed skill bundle only; do not invent URL | each PR if installed        | independent blocker and regression review                  |
+| Skill (exact)               | Canonical repository                                           | Trigger                     | Required outcome                                          |
+| --------------------------- | -------------------------------------------------------------- | --------------------------- | --------------------------------------------------------- |
+| expo-overview               | https://github.com/expo/skills                                 | Expo/Metro module work      | SDK architecture and correct platform boundaries          |
+| expo-upgrade                | https://github.com/expo/skills                                 | package upgrades            | Expo 58/RN 0.88 peer and breaking-change checks           |
+| react-native-best-practices | https://github.com/callstackincubator/agent-skills             | every native implementation | event loop, startup, memory, Fabric performance review    |
+| upgrading-react-native      | https://github.com/callstackincubator/agent-skills             | RN 0.88 rc -> stable        | upstream code/template differences + native source audit  |
+| writing-user-docs           | https://github.com/callstackincubator/agent-skills             | test and developer guides   | reproducible instructions and honest hardware limitations |
+| github-actions              | https://github.com/callstackincubator/agent-skills             | CI change                   | deterministic artifacts and security/scoped permissions   |
+| code-review                 | trusted owner's installed skill bundle only; do not invent URL | each PR if installed        | independent blocker and regression review                 |
 
 ## Tier 1: when affected
 
@@ -73,8 +75,7 @@ implementation, test output and any incomplete device evidence.
 | expo-data-fetching          | https://github.com/expo/skills                     | network module, cancellation, offline/retry, permissions |
 | expo-animation              | https://github.com/expo/skills                     | reduced motion, native Animated timing                   |
 | react-navigation            | https://github.com/callstackincubator/agent-skills | Back, stack routing, navigation                          |
-| agent-device                | https://github.com/callstackincubator/agent-skills | physical device automation (only if supported)           |
-| dogfood                     | https://github.com/callstackincubator/agent-skills | exploratory persona QA on actual test builds             |
+| agent-device                | https://github.com/Argent/agent-device             | iOS/Android automation only where supported              |
 | create-react-native-library | https://github.com/callstackincubator/agent-skills | publishing stand-alone Nitro/Expo platform libraries     |
 
 ## Platform-specific research (not pretending these are installed agent skills)
@@ -89,7 +90,7 @@ npx skills@latest add expo/skills --skill expo-upgrade
 npx skills@latest add expo/skills --skill expo-native-ui
 npx skills@latest add callstackincubator/agent-skills --skill upgrading-react-native
 npx skills@latest add callstackincubator/agent-skills --skill react-native-best-practices
-npx skills@latest add callstackincubator/agent-skills --skill react-native-testing
+npx skills@latest add callstackincubator/agent-skills --skill writing-user-docs
 npx skills@latest add callstackincubator/agent-skills --skill github-actions
 ```
 
@@ -101,6 +102,6 @@ Check exact skill names and repository state before running, and use the team's 
 | --------------------------- | -------------------- | ------------- | ------------- | ---------------- | ---------------- | ----------------------------- |
 | expo-upgrade                | TODO                 | package graph | TODO          | TODO             | TODO             | TODO                          |
 | react-native-best-practices | TODO                 | Qt/Fabric     | TODO          | TODO             | TODO             | TODO                          |
-| react-native-testing        | TODO                 | CI            | TODO          | TODO             | TODO             | TODO                          |
+| github-actions              | TODO                 | CI            | TODO          | TODO             | TODO             | TODO                          |
 
 Rows with TODO remain **unverified**; do not check a skill as executed until the proof row is complete. QNX/Marathon tests are still required after skills.
