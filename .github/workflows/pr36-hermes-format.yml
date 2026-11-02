@@ -1,0 +1,44 @@
+name: PR36 Hermes SDK58 docs formatting (temporary)
+
+on:
+  push:
+    branches: [chore/sdk58-stable-pins-20261102]
+    paths:
+      - .github/workflows/pr36-hermes-format.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.repository == 'mikevocalz/react-native-qnx'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: chore/sdk58-stable-pins-20261102
+          persist-credentials: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Normalize changed SDK58/Hermes docs
+        run: |
+          pnpm exec prettier --write README.md docs/getting-started/compatibility-matrix.md docs/dependencies/SDK58_STABLE_UPGRADE.md
+          pnpm format:check
+      - name: Commit only formatted docs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md docs/getting-started/compatibility-matrix.md docs/dependencies/SDK58_STABLE_UPGRADE.md
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "style(hermes): format upgraded SDK58 native compatibility docs"
+          git push origin HEAD:chore/sdk58-stable-pins-20261102
+      - name: Run source checks
+        run: |
+          pnpm validate:dependencies
+          pnpm typecheck
+          pnpm test:js
