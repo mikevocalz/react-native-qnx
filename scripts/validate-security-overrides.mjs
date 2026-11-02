@@ -13,10 +13,11 @@ const expected = {
 };
 for (const [name, version] of Object.entries(expected)) {
   assert.ok(
-    workspace.split('\n').some((line) =>
-      line.trim() === `'${name}': ${version}` ||
-      line.trim() === `${name}: ${version}`
-    ),
+    workspace
+      .split('\n')
+      .some(
+        (line) => line.trim() === `'${name}': ${version}` || line.trim() === `${name}: ${version}`
+      ),
     `Missing audited security override ${name}@${version}`
   );
 }
