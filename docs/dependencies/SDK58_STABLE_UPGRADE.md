@@ -66,3 +66,7 @@ The installed `expo@58.0.22` graph resolves Apache `xcode@4.0.0`. Its documented
 ## Expo Metro 58 out-of-tree platform source change
 
 The published `@expo/metro-config@58.0.20` no longer hardcodes a literal `'macos'` platform in its resolver list. Its source uses `['ios', 'android', ...OUT_OF_TREE_PLATFORMS]`. The dependency validator now checks the current out-of-tree registration symbol instead of an obsolete hardcoded platform name. Marathon remains a separate explicit Metro platform; Expo's default list is not assumed to contain it.
+
+## Regenerated dependency graph
+
+A branch-scoped GitHub Actions run using Node 26.10.0 and pnpm 12.8.1 has now regenerated and committed the exact `pnpm-lock.yaml` (933 changed lines). The generated graph passed `pnpm install --frozen-lockfile` in the regeneration job. **This is not final compatibility proof:** native React Native/Hermes source checks, TypeScript, host renderer and security audit remain subject to normal CI. The one-shot write-enabled workflow was removed after committing the lockfile; remaining CI is read-only.
