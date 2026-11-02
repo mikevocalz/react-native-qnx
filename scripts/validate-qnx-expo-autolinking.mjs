@@ -47,4 +47,6 @@ if (results == null || typeof results !== 'object') {
   throw new Error('Expo QNX search phase did not return SearchResults.');
 }
 
-console.log(`validate:qnx-expo-autolinking passed for expo-modules-autolinking ${manifest.version}`);
+console.log(
+  `validate:qnx-expo-autolinking passed for expo-modules-autolinking ${manifest.version}`
+);
