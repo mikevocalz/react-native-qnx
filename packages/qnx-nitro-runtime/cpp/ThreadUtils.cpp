@@ -1,4 +1,4 @@
-#include "ThreadUtils.hpp"
+#include <NitroModules/ThreadUtils.hpp>
 
 #include <pthread.h>
 #include <stdexcept>

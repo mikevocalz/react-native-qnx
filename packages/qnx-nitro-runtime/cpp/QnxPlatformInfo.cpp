@@ -1,16 +1,30 @@
 #include "QnxPlatformInfo.hpp"
 
-#include "Prototype.hpp"
+#include <NitroModules/HybridClass.hpp>
 
 namespace rnqnx::nitro {
 
-QnxPlatformInfo::QnxPlatformInfo() : HybridObject(TAG) {}
+std::shared_ptr<QnxPlatformInfo> QnxPlatformInfo::create() {
+  return std::make_shared<QnxPlatformInfo>();
+}
 
-std::string QnxPlatformInfo::getPlatform() const {
+const std::shared_ptr<const margelo::nitro::HybridClass>&
+QnxPlatformInfo::Class::get() {
+  static const auto cls = margelo::nitro::HybridClass::create<Class>(
+      [](margelo::nitro::HybridClass& descriptor) {
+        descriptor.registerHybridConstructor(&QnxPlatformInfo::create);
+        descriptor.registerHybridProperty("platform", &QnxPlatformInfo::getPlatform);
+        descriptor.registerHybridProperty("architecture", &QnxPlatformInfo::getArchitecture);
+        descriptor.registerHybridMethod("add", &QnxPlatformInfo::add);
+      });
+  return cls;
+}
+
+std::string QnxPlatformInfo::getPlatform() {
   return "qnx";
 }
 
-std::string QnxPlatformInfo::getArchitecture() const {
+std::string QnxPlatformInfo::getArchitecture() {
 #if defined(__aarch64__)
   return "aarch64";
 #elif defined(__x86_64__)
@@ -20,17 +34,8 @@ std::string QnxPlatformInfo::getArchitecture() const {
 #endif
 }
 
-double QnxPlatformInfo::add(double left, double right) const {
+double QnxPlatformInfo::add(double left, double right) {
   return left + right;
-}
-
-void QnxPlatformInfo::loadHybridMethods() {
-  HybridObject::loadHybridMethods();
-  registerHybrids(this, [](margelo::nitro::Prototype& prototype) {
-    prototype.registerHybridGetter("platform", &QnxPlatformInfo::getPlatform);
-    prototype.registerHybridGetter("architecture", &QnxPlatformInfo::getArchitecture);
-    prototype.registerHybridMethod("add", &QnxPlatformInfo::add);
-  });
 }
 
 } // namespace rnqnx::nitro

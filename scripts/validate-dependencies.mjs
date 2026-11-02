@@ -144,6 +144,7 @@ async function main() {
     'expo',
     'metro',
     'nitrogen',
+    'nitro-core',
     'prettier',
     'react',
     'react-native',
@@ -168,6 +169,7 @@ async function main() {
   const babelPresetExpo = manifests.get('babel-preset-expo').manifest;
   const nitrogen = manifests.get('nitrogen').manifest;
   const nitro = manifests.get('react-native-nitro-modules').manifest;
+  const nitroCore = manifests.get('nitro-core').manifest;
 
   assertEqual(majorVersion(expo.version), EXPECTED_EXPO_SDK_MAJOR, 'Expo SDK major');
   assertEqual(expo.devDependencies?.react, react.version, 'Expo tested React version');
@@ -181,10 +183,9 @@ async function main() {
     `React Native peer range ${reactNative.peerDependencies?.react ?? '<missing>'} does not name React ${react.version}`
   );
   assertEqual(nitrogen.version, nitro.version, 'Nitrogen/Nitro release line');
-  assertTrue(
-    simpleRangeAllowsVersion(nitrogen.dependencies?.['react-native-nitro-modules'], nitro.version),
-    `Nitrogen does not depend on the selected Nitro release ${nitro.version}`
-  );
+  assertEqual(nitroCore.version, nitro.version, 'Nitro v1 core/platform release line');
+  assertEqual(nitrogen.dependencies?.['nitro-core'], nitroCore.version, 'Nitrogen runtime core');
+  assertEqual(nitro.dependencies?.['nitro-core'], nitroCore.version, 'Nitro RN native core');
   assertTrue(
     majorVersion(babelPresetExpo.version) === EXPECTED_EXPO_SDK_MAJOR,
     `babel-preset-expo must be on SDK ${EXPECTED_EXPO_SDK_MAJOR}, got ${babelPresetExpo.version}`
@@ -325,7 +326,7 @@ async function main() {
     console.log(`CXX PIN: ${name}@${expected}`);
   }
 
-  const nitroRoot = path.dirname(manifests.get('react-native-nitro-modules').manifestPath);
+  const nitroCoreRoot = path.dirname(manifests.get('nitro-core').manifestPath);
   const expoModulesRoot = path.dirname(expoRequire.resolve('expo-modules-core/package.json'));
   const expoMetroConfigRoot = path.dirname(expoRequire.resolve('@expo/metro-config/package.json'));
   const xcodeManifestPath = expoRequire.resolve('xcode/package.json');
@@ -416,13 +417,25 @@ async function main() {
     'createJSRuntime('
   );
   await assertSourceContract(
-    nitroRoot,
-    'cpp/registry/HybridObjectRegistry.hpp',
-    'registerHybridObjectConstructor'
+    nitroCoreRoot,
+    'native/cpp/include/NitroModules/HybridClassRegistry.hpp',
+    'registerHybridClass'
   );
-  await assertSourceContract(nitroRoot, 'cpp/entrypoint/InstallNitro.hpp', 'void install(');
-  await assertSourceContract(nitroRoot, 'src/HybridObject.ts', "android?: 'c++' | 'kotlin'");
-  await assertSourceContract(nitrogenRoot, 'src/getPlatformSpecs.ts', "ios: ['swift', 'c++']");
+  await assertSourceContract(
+    nitroCoreRoot,
+    'native/cpp/include/NitroModules/HybridClass.hpp',
+    'registerHybridConstructor'
+  );
+  await assertSourceContract(
+    nitroCoreRoot,
+    'native/cpp/include/NitroModules/InstallNitro.hpp',
+    'void install('
+  );
+  await assertSourceContract(
+    nitrogenRoot,
+    'src/getPlatformSpecs.ts',
+    "const platformSchema = z.enum(['apple', 'android'])"
+  );
   await assertSourceContract(
     expoModulesRoot,
     'android/src/main/cpp/ExpoModulesHostObject.h',

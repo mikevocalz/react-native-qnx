@@ -66,7 +66,8 @@ int main() {
   if (!evaluateToString(
           *runtime,
           "(() => {"
-          "  const platform = NitroModulesProxy.createHybridObject('QnxPlatformInfo');"
+          "  const PlatformInfo = NitroModulesProxy.getHybridClass('QnxPlatformInfo');"
+          "  const platform = new PlatformInfo();"
           "  return platform.platform + '|' + platform.architecture + '|' + platform.add(20, 22);"
           "})()",
           "qnx|" + arch + "|42",

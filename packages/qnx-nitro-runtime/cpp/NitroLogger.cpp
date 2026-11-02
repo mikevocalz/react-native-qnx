@@ -1,4 +1,4 @@
-#include "NitroLogger.hpp"
+#include <NitroModules/NitroLogger.hpp>
 
 #include <cstdio>
 
