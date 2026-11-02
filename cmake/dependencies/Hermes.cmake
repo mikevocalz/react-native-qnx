@@ -1,15 +1,15 @@
 # Hermes host integration for the exact source line selected by React Native.
 #
-# React Native 0.88.0-rc.3 records hermes-v260318099.0.2 in
+# React Native 0.88.1 records hermes-v260318099.0.5 in
 # node_modules/react-native/sdks/.hermesv1version. The npm compiler package is
-# a related but distinct 260318099.0.4 release, so source and compiler identity
+# the matching 260318099.0.5 release, so source and compiler identity
 # are validated separately.
 
 include_guard(GLOBAL)
 include(FetchContent)
 
-set(RNQNX_HERMES_EXPECTED_TAG "hermes-v260318099.0.2")
-set(RNQNX_HERMES_EXPECTED_COMMIT "4188b63f24026ca62b79dc81d95db122a59c6089")
+set(RNQNX_HERMES_EXPECTED_TAG "hermes-v260318099.0.5")
+set(RNQNX_HERMES_EXPECTED_COMMIT "9a115f15785851f4ff2747ebb090ddd066fc8ad2")
 
 set(_rnqnx_hermes_version_file
   "${RNQNX_REACT_NATIVE_DIR}/sdks/.hermesv1version")

@@ -18,7 +18,7 @@ esac
 [[ -n "${QNX_HOST:-}" ]] || { echo "ERROR: QNX_HOST is not set" >&2; exit 1; }
 [[ -n "${QNX_TARGET:-}" ]] || { echo "ERROR: QNX_TARGET is not set" >&2; exit 1; }
 
-SOURCE_DIR="${RNQNX_HERMES_SOURCE_DIR:-${PROJECT_ROOT}/third-party/hermes-260318099.0.2}"
+SOURCE_DIR="${RNQNX_HERMES_SOURCE_DIR:-${PROJECT_ROOT}/third-party/hermes-260318099.0.5}"
 BUILD_DIR="${RNQNX_HERMES_BUILD_DIR:-${PROJECT_ROOT}/build/hermes-qnx-${ARCH}}"
 IMPORT_FILE="${PROJECT_ROOT}/cmake/ImportHermesHostCompilers.cmake"
 

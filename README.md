@@ -2,7 +2,7 @@
 
 Foundation for a production-grade React Native out-of-tree platform for QNX.
 The current JavaScript/tooling line is Expo SDK 58.0.0, React Native
-0.88.0-rc.3, React 19.3.0, Metro 0.87.1, and Nitro Modules/Nitrogen 0.37.1.
+0.88.1, React 19.3.0, Metro 0.87.1, and Nitro Modules/Nitrogen 0.37.1.
 Current host validation is green; QNX SDP 8.0.2 compile/VM results are retained
 as historical evidence while current SDP 8.0.5/QSTI physical-target validation
 remains pending.
@@ -56,8 +56,8 @@ and `.project-state.json` for the exact evidence boundaries.
 Workspace dependencies are exact pins, not ranges:
 
 - Expo 58.0.0 / SDK 58
-- React Native 0.88.0-rc.3 and React 19.3.0
-- Metro 0.87.1 and `@react-native/metro-config` 0.88.0-rc.3
+- React Native 0.88.1 and React 19.3.0
+- Metro 0.87.1 and `@react-native/metro-config` 0.88.1
 - `babel-preset-expo` 58.0.4
 - Nitro Modules and Nitrogen 0.37.1
 - TypeScript 7.0.2
@@ -66,8 +66,8 @@ Workspace dependencies are exact pins, not ranges:
 
 The refreshed SDK-58 graph resolves `expo-modules-core` 58.0.9,
 `@expo/metro` 58.0.0-rc.0, and `@expo/metro-config` 58.0.6. React Native
-0.88.0-rc.3 resolves `hermes-compiler` 260318099.0.4 while its bundled Hermes
-source tag is `hermes-v260318099.0.2`. Yoga remains the source snapshot bundled
+0.88.1 resolves `hermes-compiler` 260318099.0.5 while its bundled Hermes
+source tag is `hermes-v260318099.0.5`. Yoga remains the source snapshot bundled
 by React Native and is not assigned an invented standalone version. Run
 `pnpm validate:dependencies` to verify installed versions and audited upstream
 source symbols.
