@@ -1,6 +1,7 @@
 // Static source-level contract; actual compilation/target proof remains required.
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+/** @param {string} p */
 const read = (p) => readFile(p, 'utf8');
 const root = JSON.parse(await read('package.json'));
 const manifest = JSON.parse(await read('packages/qnx-nitro-runtime/package.json'));
