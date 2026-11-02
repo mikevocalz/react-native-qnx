@@ -17,7 +17,7 @@
 | typescript | 7.0.2 | **7.0.2** | unchanged confirmed |
 | nitrogen / react-native-nitro-modules | 0.37.1 | **0.37.1 here** | stable Nitro kept for isolated v1 alpha migration PR |
 
-Expo 58 uses `expo-modules-core` on its 58.x release train, currently published at 58.0.28; the downstream QNX peer contract is updated. **Expo Modules API 2.0 beta** is a change in native authoring bindings WITHIN Expo SDK58, NOT `expo-modules-core@2`. It needs a separate native bridge review, not a fake major-version bump.
+Expo 58 uses `expo-modules-core` on its 58.x release train, currently published at 58.0.29; the downstream QNX peer contract is updated. **Expo Modules API 2.0 beta** is a change in native authoring bindings WITHIN Expo SDK58, NOT `expo-modules-core@2`. It needs a separate native bridge review, not a fake major-version bump.
 
 ## Material risk and blocking actions
 
@@ -28,7 +28,7 @@ Expo 58 uses `expo-modules-core` on its 58.x release train, currently published 
 - Old `qnx` Metro output and compiled QNX Screen/Qt target must not regress; test the Marathon Metro platform PR separately.
 - Re-audit pnpm overrides, patched `braces`, `xmldom`, `uuid`, `js-yaml` and every security exception under the new graph. Don't relabel raw audit warnings clean without patched-source proof.
 - Complete the repo's standalone SDK58, host renderer, CMake and QNX target proof queue. This PR alters JS/package metadata only, NOT compiled C++ runtime ABI.
-- The `expo-modules-core` peer v58.0.28 is a target based on published SDK58; verify it matches Expo's actual resolved dependency before merge.
+- The `expo-modules-core` peer v58.0.29 is a target based on published SDK58; verify it matches Expo's actual resolved dependency before merge.
 
 ## Reproduction / exit criteria
 
