@@ -7,6 +7,12 @@ get_filename_component(RNQNX_NITRO_V1_REPO_ROOT
   "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 set(RNQNX_NITRO_V1_COMPAT
   "${RNQNX_NITRO_V1_REPO_ROOT}/packages/qnx-nitro-runtime/cpp/NitroCoreCompat.hpp")
+# The global include guard is shared by QNX and Marathon subdirectories, so
+# freeze these paths in the internal CMake cache for both adapter scopes.
+set(RNQNX_NITRO_V1_REPO_ROOT "${RNQNX_NITRO_V1_REPO_ROOT}" CACHE INTERNAL
+  "Portable Nitro v1 shared repository root" FORCE)
+set(RNQNX_NITRO_V1_COMPAT "${RNQNX_NITRO_V1_COMPAT}" CACHE INTERNAL
+  "Portable Nitro v1 compatibility include" FORCE)
 
 function(rnqnx_add_nitro_v1_core)
   if(TARGET rnqnx_nitro_core)
@@ -69,7 +75,7 @@ function(rnqnx_add_nitro_v1_core)
     "${RNQNX_NITRO_ROOT}/include"
   )
   target_compile_definitions(rnqnx_nitro_core PUBLIC
-    NITRO_VERSION="1.0.0-alpha.nightly.105.g69d365fc9b18"
+    NITRO_VERSION=\"1.0.0-alpha.nightly.105.g69d365fc9b18\"
   )
   target_link_libraries(rnqnx_nitro_core PUBLIC Threads::Threads)
   target_compile_features(rnqnx_nitro_core PUBLIC cxx_std_20)
