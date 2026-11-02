@@ -1,7 +1,7 @@
 # Distinct native Nitro v1 QNX and MarathonOS C++ adapters
 
 **Experimental, stacked after Nitro v1 codegen PR #40.** This implements
-a shared *portable C++ Nitro core* build with two independent native
+a shared _portable C++ Nitro core_ build with two independent native
 adapter libraries. It does not grant official Nitrogen code generation
 support or prove a full native Wayland UI application.
 
@@ -35,21 +35,21 @@ cmake --build build/nitro-v1-host \
   --target rnqnx_nitro_qnx rnqnx_nitro_marathon -j 4
 ```
 
-The code signs/cross compiles *neither* artifact on this host lane.
+The code signs/cross compiles _neither_ artifact on this host lane.
 Required remaining gates:
 
 - [ ] A successful Linux CI compile of both archives, with warnings and logs.
 - [ ] QNX SDP 8.0.5 native cross-build and actual Pi runtime verification.
 - [ ] MarathonOS Alpine/musl AArch64 cross-build and QEMU/CM5 run.
 - [ ] A real Qt/JSI runtime calling `installMarathonNitroRuntime`, then
-  new `MarathonPlatformInfo` returning marathon/architecture/42.
+      new `MarathonPlatformInfo` returning marathon/architecture/42.
 - [ ] Dynamic linker/closure checks for all C++ symbols under Hermes.
 - [ ] Synchronous/async-dispatcher lifetime tests before events/Promises.
 - [ ] Upstream Nitrogen's QNX/Marathon platform generator and autolinking.
 
 There is no QNX native binary executing on Linux, only separately
 compiled platform code. The Marathon adapter's installer currently
-handles a *single synchronous proof class*; it does not claim support
+handles a _single synchronous proof class_; it does not claim support
 for arbitrary third-party Nitro modules.
 
 ## API and engineering skills

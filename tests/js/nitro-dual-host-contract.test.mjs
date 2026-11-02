@@ -7,8 +7,12 @@ const source = (filename) => readFile(filename, 'utf8');
 const core = await source('cmake/RnqnxNitroV1.cmake');
 const qnx = await source('packages/qnx-nitro-runtime/CMakeLists.txt');
 const marathon = await source('native/platform/linux-host/nitro/CMakeLists.txt');
-const qnxClass = await source('packages/qnx-nitro-runtime/cpp/generated/QnxPlatformInfo.binding.cpp');
-const marathonClass = await source('native/platform/linux-host/nitro/generated/MarathonPlatformInfo.binding.cpp');
+const qnxClass = await source(
+  'packages/qnx-nitro-runtime/cpp/generated/QnxPlatformInfo.binding.cpp'
+);
+const marathonClass = await source(
+  'native/platform/linux-host/nitro/generated/MarathonPlatformInfo.binding.cpp'
+);
 const runtime = await source('native/platform/linux-host/nitro/MarathonNitroRuntime.cpp');
 const tests = await source('tests/native/nitro-v1-host/CMakeLists.txt');
 const workflow = await source('.github/workflows/nitro-v1-host.yml');
