@@ -48,11 +48,12 @@
     "babel-preset-expo": "58.0.23",
     "expo": "58.0.22",
     "metro": "0.87.2",
-    "nitrogen": "0.37.1",
+    "nitrogen": "1.0.0-alpha.nightly.105.g69d365fc9b18",
     "prettier": "3.9.9",
     "react": "19.3.0",
     "react-native": "0.88.1",
-    "react-native-nitro-modules": "0.37.1",
-    "typescript": "7.0.2"
+    "react-native-nitro-modules": "1.0.0-alpha.nightly.105.g69d365fc9b18",
+    "typescript": "7.0.2",
+    "nitro-core": "1.0.0-alpha.nightly.105.g69d365fc9b18"
   }
 }

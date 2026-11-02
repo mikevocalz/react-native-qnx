@@ -1,89 +1,55 @@
 #!/usr/bin/env node
-
+// Nitro v1 alpha source, install, ABI, runtime-probe contract gate.
+// The QNX target is not considered proven until a licensed SDP cross-build
+// and a real QNX VM/Pi execution succeed.
+import assert from 'node:assert/strict';
 import { readFile, access } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
-const manifestPath = require.resolve('react-native-nitro-modules/package.json');
-const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+const expected = '1.0.0-alpha.nightly.105.g69d365fc9b18';
+const read = (p) => readFile(p, 'utf8');
+const coreManifestPath = require.resolve('nitro-core/package.json');
+const nitroManifestPath = require.resolve('react-native-nitro-modules/package.json');
+const nitrogenManifestPath = require.resolve('nitrogen/package.json');
+const core = JSON.parse(await read(coreManifestPath));
+const nitro = JSON.parse(await read(nitroManifestPath));
+const nitrogen = JSON.parse(await read(nitrogenManifestPath));
 
-if (manifest.version !== '0.37.1') {
-  throw new Error(`Expected react-native-nitro-modules 0.37.1, got ${manifest.version}`);
+for (const [name, manifest] of [['nitro-core', core], ['react-native-nitro-modules', nitro], ['nitrogen', nitrogen]]) {
+  assert.equal(manifest.version, expected, `${name} must be pinned to exact same Nitro alpha`);
 }
+assert.equal(nitro.dependencies['nitro-core'], expected);
+assert.equal(nitrogen.dependencies['nitro-core'], expected);
 
-const nitroRoot = path.dirname(manifestPath);
-const requiredSource = [
-  'cpp/core/HybridObject.cpp',
-  'cpp/entrypoint/InstallNitro.cpp',
-  'cpp/entrypoint/InstallNitro.hpp',
-  'cpp/registry/HybridObjectRegistry.cpp',
-  'cpp/registry/HybridObjectRegistry.hpp',
-  'cpp/threading/Dispatcher.cpp',
-  'cpp/threading/ThreadPool.cpp',
-  'cpp/platform/NitroLogger.hpp',
-  'cpp/platform/ThreadUtils.hpp',
-];
-
-for (const relative of requiredSource) {
-  await access(path.join(nitroRoot, relative));
-}
-
-const install = await readFile(path.join(nitroRoot, 'cpp/entrypoint/InstallNitro.hpp'), 'utf8');
-if (!install.includes('void install(jsi::Runtime& runtime);')) {
-  throw new Error('Nitro synchronous install(jsi::Runtime&) contract changed.');
-}
-
-const installSource = await readFile(
-  path.join(nitroRoot, 'cpp/entrypoint/InstallNitro.cpp'),
-  'utf8'
-);
-if (!installSource.includes('KnownGlobalPropertyName::NITRO_MODULES_PROXY')) {
-  throw new Error('Nitro global proxy installation contract changed.');
-}
-
-const globals = await readFile(path.join(nitroRoot, 'cpp/utils/CommonGlobals.cpp'), 'utf8');
-if (!globals.includes('return "NitroModulesProxy";')) {
-  throw new Error('NitroModulesProxy global name changed.');
-}
-
-const proxy = await readFile(
-  path.join(nitroRoot, 'cpp/entrypoint/HybridNitroModulesProxy.cpp'),
-  'utf8'
-);
-if (!proxy.includes('registerHybridMethod("createHybridObject"')) {
-  throw new Error('Nitro createHybridObject proxy contract changed.');
-}
-
-const registry = await readFile(
-  path.join(nitroRoot, 'cpp/registry/HybridObjectRegistry.hpp'),
-  'utf8'
-);
-if (!registry.includes('registerHybridObjectConstructor')) {
-  throw new Error('Nitro HybridObjectRegistry constructor contract changed.');
-}
-
-const qnxRuntime = await readFile(
-  path.join(root, 'packages/qnx-nitro-runtime/cpp/QnxNitroRuntime.cpp'),
-  'utf8'
-);
-if (!qnxRuntime.includes('margelo::nitro::install(runtime);')) {
-  throw new Error('QNX Nitro runtime must keep the synchronous upstream installer.');
-}
-if (qnxRuntime.includes('install(runtime,') || qnxRuntime.includes('CallInvokerDispatcher')) {
-  throw new Error('QNX Nitro runtime must not invent an async dispatcher in this milestone.');
-}
-
-const integrationProbe = await readFile(
-  path.join(root, 'vnext/probes/runtime-qnx/main.cpp'),
-  'utf8'
-);
-if (
-  !integrationProbe.includes("NitroModulesProxy.createHybridObject('QnxPlatformInfo')") ||
-  !integrationProbe.includes('rnqnx::nitro::installQnxNitroRuntime(*runtime)')
-) {
-  throw new Error('Combined QNX runtime probe no longer exercises Nitro through JSI.');
-}
-
-console.log('validate:qnx-nitro passed for react-native-nitro-modules 0.37.1');
+const base = path.join(path.dirname(coreManifestPath), 'native/cpp');
+for (const p of [
+  'include/NitroModules/HybridClassRegistry.hpp',
+  'include/NitroModules/HybridClass.hpp',
+  'include/NitroModules/HybridObject.hpp',
+  'include/NitroModules/InstallNitro.hpp',
+  'src/HybridClassRegistry.cpp',
+  'src/HybridObject.cpp',
+  'src/InstallNitro.cpp',
+]) await access(path.join(base, p));
+const reg = await read(path.join(base, 'include/NitroModules/HybridClassRegistry.hpp'));
+const hybr = await read(path.join(base, 'include/NitroModules/HybridClass.hpp'));
+assert.match(reg, /registerHybridClass/);
+assert.match(hybr, /registerHybridConstructor/);
+assert.match(hybr, /registerHybridProperty/);
+assert.match(hybr, /registerHybridMethod/);
+const runtime = await read(path.join(root, 'packages/qnx-nitro-runtime/cpp/QnxNitroRuntime.cpp'));
+const klass = await read(path.join(root, 'packages/qnx-nitro-runtime/cpp/QnxPlatformInfo.cpp'));
+const cmake = await read(path.join(root, 'packages/qnx-nitro-runtime/CMakeLists.txt'));
+const probe = await read(path.join(root, 'vnext/probes/runtime-qnx/main.cpp'));
+assert.match(runtime, /HybridClassRegistry::registerHybridClass/);
+assert.match(runtime, /margelo::nitro::install\(runtime\)/);
+assert.doesNotMatch(runtime, /HybridObjectRegistry|install\(runtime,/);
+assert.match(klass, /HybridClass::create<Class>/);
+assert.match(cmake, /nitro-core/);
+assert.match(cmake, /GlobalErrorHandler\.cpp/);
+assert.match(probe, /NitroModulesProxy\.getHybridClass\('QnxPlatformInfo'\)/);
+assert.doesNotMatch(probe, /NitroModulesProxy\.createHybridObject/);
+console.log('Nitro v1 source/ABI contracts found; actual QNX native execution NOT yet proven.');

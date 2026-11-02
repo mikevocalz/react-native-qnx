@@ -1,25 +1,21 @@
 #include "QnxNitroRuntime.hpp"
-
 #include "QnxPlatformInfo.hpp"
 
-#include "HybridObjectRegistry.hpp"
-#include "InstallNitro.hpp"
-#include <memory>
+#include <NitroModules/HybridClassRegistry.hpp>
+#include <NitroModules/InstallNitro.hpp>
 
 namespace rnqnx::nitro {
 
 void installQnxNitroRuntime(facebook::jsi::Runtime& runtime) {
-  if (!margelo::nitro::HybridObjectRegistry::hasHybridObject("QnxPlatformInfo")) {
-    margelo::nitro::HybridObjectRegistry::registerHybridObjectConstructor(
-        "QnxPlatformInfo",
-        []() -> std::shared_ptr<margelo::nitro::HybridObject> {
-          return std::make_shared<QnxPlatformInfo>();
-        });
+  // Nitro v1 changed the global registry from HybridObject constructors to
+  // immutable HybridClass descriptors, with real JavaScript constructors.
+  if (!margelo::nitro::HybridClassRegistry::hasHybridClass("QnxPlatformInfo")) {
+    margelo::nitro::HybridClassRegistry::registerHybridClass(
+        "QnxPlatformInfo", QnxPlatformInfo::Class::get());
   }
 
-  // Start with Nitro's documented synchronous installer. A dispatcher is not
-  // invented here; callbacks/Promises remain disabled until the QNX runtime
-  // wires Nitro to the actual JS/Qt event-loop dispatcher.
+  // Synchronous methods are the only enabled mode. A real Qt/JS dispatcher
+  // must be installed before exposing Promises or callbacks in either OS.
   margelo::nitro::install(runtime);
 }
 
