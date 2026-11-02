@@ -55,13 +55,16 @@ const klass = await read(
   path.join(root, 'packages/qnx-nitro-runtime/cpp/generated/QnxPlatformInfo.binding.cpp')
 );
 const cmake = await read(path.join(root, 'packages/qnx-nitro-runtime/CMakeLists.txt'));
+const sharedCmake = await read(path.join(root, 'cmake/RnqnxNitroV1.cmake'));
 const probe = await read(path.join(root, 'vnext/probes/runtime-qnx/main.cpp'));
 assert.match(runtime, /HybridClassRegistry::registerHybridClass/);
 assert.match(runtime, /margelo::nitro::install\(runtime\)/);
 assert.doesNotMatch(runtime, /HybridObjectRegistry|install\(runtime,/);
 assert.match(klass, /HybridClass::create<Class>/);
-assert.match(cmake, /nitro-core/);
-assert.match(cmake, /GlobalErrorHandler\.cpp/);
+assert.match(cmake, /RnqnxNitroV1\.cmake/);
+assert.match(cmake, /rnqnx_configure_nitro_v1_adapter/);
+assert.match(sharedCmake, /nitro-core/);
+assert.match(sharedCmake, /GlobalErrorHandler\.cpp/);
 assert.match(probe, /NitroModulesProxy\.getHybridClass\('QnxPlatformInfo'\)/);
 assert.doesNotMatch(probe, /NitroModulesProxy\.createHybridObject/);
 console.log('Nitro v1 source/ABI contracts found; actual QNX native execution NOT yet proven.');

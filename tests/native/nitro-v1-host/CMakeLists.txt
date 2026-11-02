@@ -12,4 +12,6 @@ set(RNQNX_REACT_NATIVE_DIR "${RNQNX_REPO_ROOT}/node_modules/react-native")
 set(RNQNX_NITRO_ROOT "${RNQNX_REPO_ROOT}/node_modules/react-native-nitro-modules")
 set(RNQNX_NITRO_CORE_ROOT "${RNQNX_REPO_ROOT}/node_modules/nitro-core")
 add_subdirectory("${RNQNX_REPO_ROOT}/packages/qnx-nitro-runtime"
-  "${CMAKE_BINARY_DIR}/nitro-runtime")
+  "${CMAKE_BINARY_DIR}/qnx-nitro-runtime")
+add_subdirectory("${RNQNX_REPO_ROOT}/native/platform/linux-host/nitro"
+  "${CMAKE_BINARY_DIR}/marathon-nitro-runtime")

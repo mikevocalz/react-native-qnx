@@ -25,7 +25,7 @@ bool ThreadUtils::isUIThread() {
 
 std::shared_ptr<Dispatcher> ThreadUtils::createUIThreadDispatcher() {
   throw std::runtime_error(
-      "QNX Nitro UI dispatcher is not installed. Use synchronous HybridObjects "
+      "Qt/JS Nitro UI dispatcher is not installed. Use synchronous HybridObjects "
       "until the React/Qt runtime supplies the real dispatcher.");
 }
 
