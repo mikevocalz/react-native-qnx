@@ -5,6 +5,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+/** @param {string} path */
 const read = (path) => readFile(path, 'utf8');
 const manifest = JSON.parse(await read('docs/qnx/release-matrix-2026-11-02.json'));
 const cmake = await read('CMakeLists.txt');

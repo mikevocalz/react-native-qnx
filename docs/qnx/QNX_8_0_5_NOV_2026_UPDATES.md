@@ -4,17 +4,17 @@
 
 ## What is actually new and worth doing
 
-| Item | Latest verified public source | Action for react-native-qnx |
-| --- | --- | --- |
-| QNX SDP | **8.0.5** (June 25, 2026) | Keep baseline, update QSC installed packages, verify qcc/q++ and SDK headers |
-| QNX Everywhere QSTI Pi 4/5 | **0.5.0 build 50**, September 16 update | Use matching Pi 4/5 image; do not mistake build 50 for a downgrade from old 0.4.x build 297 |
-| RPi4 BSP | **build 670**, September 17 | Refresh when building a BSP/CTI, verify screen, input, console, networking |
-| RPi5 BSP | **build 568**, September 17 | Refresh when building a BSP/CTI, confirm experimental maturity warning |
-| QNX USB/HID | **build 19**, October 6 | Apply and rebuild relevant USB/HID binaries when testing keyboard/touch/camera |
-| Connectivity char/serial/io-char | **builds 61/52/52**, September | Install matched components per BSP notes |
-| OpenSSH | **build 9**, September 14, OpenSSH 10.4p1 | Verify sshd-auth / sshd-session packaging before changing VM/Pi target images |
-| QNX Everywhere graphics samples | **build 343**, September 16 | Use independent Screen tests for GPU/display diagnosis |
-| libarchive / BSD tar | **build 91**, September | Optional operational/security update |
+| Item                             | Latest verified public source             | Action for react-native-qnx                                                                 |
+| -------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------- |
+| QNX SDP                          | **8.0.5** (June 25, 2026)                 | Keep baseline, update QSC installed packages, verify qcc/q++ and SDK headers                |
+| QNX Everywhere QSTI Pi 4/5       | **0.5.0 build 50**, September 16 update   | Use matching Pi 4/5 image; do not mistake build 50 for a downgrade from old 0.4.x build 297 |
+| RPi4 BSP                         | **build 670**, September 17               | Refresh when building a BSP/CTI, verify screen, input, console, networking                  |
+| RPi5 BSP                         | **build 568**, September 17               | Refresh when building a BSP/CTI, confirm experimental maturity warning                      |
+| QNX USB/HID                      | **build 19**, October 6                   | Apply and rebuild relevant USB/HID binaries when testing keyboard/touch/camera              |
+| Connectivity char/serial/io-char | **builds 61/52/52**, September            | Install matched components per BSP notes                                                    |
+| OpenSSH                          | **build 9**, September 14, OpenSSH 10.4p1 | Verify sshd-auth / sshd-session packaging before changing VM/Pi target images               |
+| QNX Everywhere graphics samples  | **build 343**, September 16               | Use independent Screen tests for GPU/display diagnosis                                      |
+| libarchive / BSD tar             | **build 91**, September                   | Optional operational/security update                                                        |
 
 Authoritative release URLs and package IDs/internal versions are machine-readable in `release-matrix-2026-11-02.json`. QNX Software Center is the final authority for packages available under each license; online docs can lag or exclude entitled-only components.
 
