@@ -247,6 +247,21 @@ importers:
         specifier: 58.0.0
         version: 58.0.0(@babel/core@7.29.7(supports-color@8.1.1))(react-native@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2)
 
+  packages/metro-config-marathon:
+    dependencies:
+      '@react-native/metro-config':
+        specifier: 0.88.0-rc.3
+        version: 0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
+      '@rn-qnx/react-native-marathon':
+        specifier: workspace:*
+        version: link:../react-native-marathon
+      '@rn-qnx/react-native-qnx':
+        specifier: workspace:*
+        version: link:../react-native-qnx
+      metro-config:
+        specifier: 0.87.1
+        version: 0.87.1(supports-color@8.1.1)
+
   packages/metro-config-qnx:
     dependencies:
       '@react-native/metro-config':
@@ -267,6 +282,12 @@ importers:
       react-native-nitro-modules:
         specifier: 0.37.1
         version: 0.37.1(react-native@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
+
+  packages/react-native-marathon:
+    dependencies:
+      react-native:
+        specifier: 0.88.0-rc.3
+        version: 0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.0-rc.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
 
   packages/react-native-qnx:
     dependencies:

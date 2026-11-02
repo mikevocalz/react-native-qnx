@@ -1,0 +1,56 @@
+name: Marathon Metro platform conformance
+
+on:
+  pull_request:
+    paths:
+      - 'packages/metro-config-marathon/**'
+      - 'packages/react-native-marathon/**'
+      - 'apps/rn-playground/metro.marathon.config.js'
+      - 'apps/rn-playground/index.js'
+      - 'tests/js/marathon-metro-platform.test.mjs'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/marathon-metro.yml'
+  push:
+    branches: [feat/marathon-metro-platform-20261102]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  metro:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - name: Frozen workspace install
+        run: pnpm install --frozen-lockfile
+      - name: Source contracts
+        run: |
+          pnpm format:check
+          pnpm test:js
+          pnpm typecheck
+          pnpm validate:dependencies
+      - name: Production QNX and Marathon bundles
+        run: |
+          mkdir -p build/marathon-metro-evidence
+          cd apps/rn-playground
+          ../../node_modules/.bin/metro build index.js --platform qnx --dev false --out ../../build/marathon-metro-evidence/playground.qnx.js
+          ../../node_modules/.bin/metro build index.js --config metro.marathon.config.js --platform marathon --dev false --out ../../build/marathon-metro-evidence/playground.marathon.js
+          test -s ../../build/marathon-metro-evidence/playground.qnx.js
+          test -s ../../build/marathon-metro-evidence/playground.marathon.js
+          cd ../..
+          sha256sum build/marathon-metro-evidence/playground.*.js > build/marathon-metro-evidence/SHA256SUMS
+          git rev-parse HEAD > build/marathon-metro-evidence/commit.txt
+      - name: Archive exact branch evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: marathon-metro-${{ github.sha }}
+          path: build/marathon-metro-evidence/
+          if-no-files-found: warn
