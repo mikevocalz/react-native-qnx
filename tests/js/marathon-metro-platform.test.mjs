@@ -56,10 +56,7 @@ const source = (filePath) => ({
   },
 });
 
-const resolver = createMarathonResolveRequest(
-  marathon.OVERRIDES_ROOT,
-  qnx.OVERRIDES_ROOT
-);
+const resolver = createMarathonResolveRequest(marathon.OVERRIDES_ROOT, qnx.OVERRIDES_ROOT);
 assert.equal(
   sourceFilePath(resolver(source(nativeSource), './Platform', 'marathon')),
   path.join(marathon.OVERRIDES_ROOT, 'Utilities', 'Platform.js'),
@@ -88,7 +85,11 @@ assert.equal(
 assert.equal(
   resolutionKind(
     resolver(
-      { resolveRequest() { return { type: 'assetFiles', filePaths: [] }; } },
+      {
+        resolveRequest() {
+          return { type: 'assetFiles', filePaths: [] };
+        },
+      },
       'image.png',
       'marathon'
     )
