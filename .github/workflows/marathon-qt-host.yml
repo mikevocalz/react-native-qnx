@@ -1,0 +1,96 @@
+name: Marathon native Qt/Hermes/Fabric host proof
+
+on:
+  pull_request:
+    paths:
+      - 'cmake/RnqnxMarathonHost.cmake'
+      - 'CMakeLists.txt'
+      - 'vnext/probes/playground/main.cpp'
+      - 'packages/metro-config-marathon/**'
+      - 'packages/react-native-marathon/**'
+      - 'tests/js/marathon-native-host-contract.test.mjs'
+      - '.github/workflows/marathon-qt-host.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-qt-host:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    env:
+      QT_QPA_PLATFORM: offscreen
+      QT_QUICK_BACKEND: software
+      QSG_RHI_BACKEND: software
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - name: Frozen SDK58 workspace
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm test:js
+          pnpm typecheck
+      - name: Install Linux C++ / Qt host prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libclang-dev libicu-dev
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Install repo-pinned Qt 6.11.1
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          cache: true
+      - name: Build existing Qt/Fabric/Hermes host as Marathon executable
+        run: |
+          mkdir -p build/marathon-host/evidence
+          cmake -S . -B build/marathon-host -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DBUILD_TESTING=ON \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DRNQNX_BUILD_HERMES=ON \
+            -DRNQNX_FETCH_REACT_NATIVE_DEPS=ON \
+            -DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON \
+            -DRNQNX_BUILD_MARATHON_HOST=ON
+          cmake --build build/marathon-host --target rnqnx_marathon_host -j 4
+          ./build/marathon-host/bin/rnqnx_marathon_host -platform offscreen \
+            --screenshot build/marathon-host/evidence/marathon-offscreen.png
+          test -s build/marathon-host/evidence/marathon-offscreen.png
+          git rev-parse HEAD > build/marathon-host/evidence/commit.txt
+          sha256sum build/marathon-host/evidence/marathon-offscreen.png > build/marathon-host/evidence/SHA256SUMS
+      - name: Verify changed image invalidates the Marathon bundle
+        run: |
+          set -euo pipefail
+          bundle=build/marathon-host/rnqnx-marathon-playground.bundle.js
+          test -s "$bundle"
+          before_mtime=$(stat -c %Y "$bundle")
+          touch apps/rn-playground/qnx-asset.png
+          # A Ninja dry run can stop at CMake's pending regeneration and never
+          # display the Metro edge. Perform the real incremental bundle build.
+          cmake --build build/marathon-host --target rnqnx_marathon_playground_bundle -- -v \
+            2>&1 | tee build/marathon-host/evidence/asset-incremental-rebuild.txt
+          # Ninja -v prints the actual command, not CMake's COMMENT label.
+          # Assert that the real Metro bundle command ran after the asset touch.
+          grep -F 'metro build index.js' \
+            build/marathon-host/evidence/asset-incremental-rebuild.txt
+          after_mtime=$(stat -c %Y "$bundle")
+          test "$after_mtime" -gt "$before_mtime"
+      - name: Preserve CI evidence (offscreen host only)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: marathon-native-qt-${{ github.sha }}
+          path: |
+            build/marathon-host/evidence/
+            build/marathon-host/CMakeCache.txt
+            build/marathon-host/Testing/Temporary/
+          if-no-files-found: warn

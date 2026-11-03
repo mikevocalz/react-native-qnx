@@ -40,6 +40,8 @@ option(RNQNX_BUILD_NITRO_QNX "Build the QNX Nitro shared C++ runtime" OFF)
 option(RNQNX_BUILD_EXPO_MODULES_QNX "Build the QNX Expo Modules JSI bootstrap" OFF)
 option(RNQNX_BUILD_REACT_QNX
   "Build the full React Native + Hermes + Fabric + Qt Quick QNX target graph" OFF)
+option(RNQNX_BUILD_MARATHON_HOST
+  "Build the experimental Linux/Wayland MarathonOS React Native host" OFF)
 
 if(RNQNX_REQUIRE_FULL_HOST_RENDERER)
   if(CMAKE_SYSTEM_NAME STREQUAL "QNX" OR NOT BUILD_TESTING OR
@@ -428,4 +430,24 @@ else()
     endif()
   endif()
 
+endif()
+
+# Opt-in native Linux Wayland host. Always configured after the existing
+# host Qt/Fabric/Hermes graph; never add or relink QNX Screen targets.
+if(RNQNX_BUILD_MARATHON_HOST)
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(FATAL_ERROR "RNQNX_BUILD_MARATHON_HOST is Linux-only")
+  endif()
+  if(NOT BUILD_TESTING OR NOT RNQNX_BUILD_HERMES OR NOT RNQNX_FETCH_REACT_NATIVE_DEPS)
+    message(FATAL_ERROR
+      "Marathon host requires BUILD_TESTING=ON, RNQNX_BUILD_HERMES=ON and "
+      "RNQNX_FETCH_REACT_NATIVE_DEPS=ON")
+  endif()
+  if(NOT TARGET rnqnx_react_host)
+    message(FATAL_ERROR
+      "Marathon host requires the existing Qt/Hermes/Fabric renderer target; "
+      "install the documented Qt host modules (>=6.11.1)")
+  endif()
+  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxMarathonHost.cmake)
+  rnqnx_add_marathon_host()
 endif()
