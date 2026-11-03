@@ -78,7 +78,9 @@ jobs:
           # display the Metro edge. Perform the real incremental bundle build.
           cmake --build build/marathon-host --target rnqnx_marathon_playground_bundle -- -v \
             2>&1 | tee build/marathon-host/evidence/asset-incremental-rebuild.txt
-          grep -F 'Build experimental MarathonOS React Native Metro bundle' \
+          # Ninja -v prints the actual command, not CMake's COMMENT label.
+          # Assert that the real Metro bundle command ran after the asset touch.
+          grep -F 'metro build index.js' \
             build/marathon-host/evidence/asset-incremental-rebuild.txt
           after_mtime=$(stat -c %Y "$bundle")
           test "$after_mtime" -gt "$before_mtime"
