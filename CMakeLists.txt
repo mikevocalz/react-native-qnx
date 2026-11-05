@@ -42,6 +42,13 @@ option(RNQNX_BUILD_REACT_QNX
   "Build the full React Native + Hermes + Fabric + Qt Quick QNX target graph" OFF)
 option(RNQNX_BUILD_MARATHON_HOST
   "Build the experimental Linux/Wayland MarathonOS React Native host" OFF)
+option(RNQNX_BUILD_FORGE_QNX
+  "Build the opt-in native Forge Rust engine owner for QNX" OFF)
+
+if(RNQNX_BUILD_FORGE_QNX)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxForge.cmake)
+  rnqnx_add_forge_runtime(QNX)
+endif()
 
 if(RNQNX_REQUIRE_FULL_HOST_RENDERER)
   if(CMAKE_SYSTEM_NAME STREQUAL "QNX" OR NOT BUILD_TESTING OR
