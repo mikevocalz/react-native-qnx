@@ -80,7 +80,8 @@ bytes.writeUInt32LE(bytes.length, 2);
 bytes.writeUInt32LE(54, 10);
 bytes.writeUInt32LE(40, 14);
 if (process.env.QNX_TEST_MODE === 'bad-bmp') bytes.write('NO');
-fs.writeFileSync(process.argv[2].slice('-file='.length), bytes);
+const image = process.env.QNX_TEST_MODE === 'truncated' ? bytes.subarray(0, 32) : bytes;
+fs.writeFileSync(process.argv[2].slice('-file='.length), image);
 `,
     { mode: 0o755 }
   );
@@ -154,7 +155,8 @@ fs.writeFileSync(process.argv[2].slice('-file='.length), bytes);
     2,
     'oversized port rejected'
   );
-  equal(run(['status'], { QNX_TARGET_IP: 'host;touch-bad' }).status, 1, 'target injection rejected');
+  const unsafeTarget = run(['status'], { QNX_TARGET_IP: 'host;touch-bad' });
+  equal(unsafeTarget.status, 1, 'target injection rejected');
 
   const output = path.join(temporary, 'screen.bmp');
   equal(run(['screenshot', '--out', output]).status, 0, 'valid capture');
@@ -165,13 +167,17 @@ fs.writeFileSync(process.argv[2].slice('-file='.length), bytes);
   await symlink(output, link);
   equal(run(['screenshot', '--out', link]).status, 1, 'symlink cannot overwrite');
   equal((await readFile(output)).length, 58, 'original capture untouched');
-  for (const mode of ['capture-failure', 'bad-bmp', 'oversize']) {
+  for (const mode of ['capture-failure', 'bad-bmp', 'truncated', 'oversize']) {
     const destination = path.join(temporary, `${mode}.bmp`);
     const captured = run(['screenshot', '--out', destination], { QNX_TEST_MODE: mode });
     assert.notEqual(captured.status, 0);
     cases += 1;
     if (mode === 'oversize') {
       assert.match(captured.stderr, /32 MiB capture limit/);
+      cases += 1;
+    }
+    if (mode === 'truncated') {
+      assert.match(captured.stderr, /incomplete or invalid BMP/);
       cases += 1;
     }
     await assert.rejects(readFile(destination), /ENOENT/);
