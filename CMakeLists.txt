@@ -186,6 +186,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     rnqnx_add_fabric_adapter_target()
     rnqnx_add_react_host_target()
 
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxInputLifecycle.cmake)
+    rnqnx_add_input_lifecycle_probe()
+
     if(RNQNX_ENABLE_NITRO_QT_DISPATCHER)
       if(NOT RNQNX_BUILD_NITRO_QNX)
         message(FATAL_ERROR "Qt Nitro dispatcher requires RNQNX_BUILD_NITRO_QNX")
@@ -304,6 +307,8 @@ else()
 
         if(RNQNX_BUILD_REACT_HOST)
           rnqnx_add_react_host_target()
+          include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxInputLifecycle.cmake)
+          rnqnx_add_input_lifecycle_probe()
           if(RNQNX_ENABLE_NITRO_QT_DISPATCHER)
             add_subdirectory(packages/qnx-nitro-runtime)
             include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxNitroQt.cmake)

@@ -17,6 +17,7 @@
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
 #include <react/renderer/components/view/ViewShadowNode.h>
+#include <react/renderer/core/RawEvent.h>
 #include <react/renderer/element/ComponentBuilder.h>
 #include <react/renderer/element/Element.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
@@ -720,12 +721,12 @@ void mountTouchFixture(Fixture& fixture) {
   fixture.host().startEmptySurface(kSurfaceId, 640.0F, 480.0F);
   const std::string script = R"JS(
     globalThis.touchEvents = [];
-    const fabric = globalThis.nativeFabricUIManager;
+    var fabric = globalThis.nativeFabricUIManager;
     fabric.registerEventHandler((instance, type, payload) => {
       if (type.startsWith('topTouch')) touchEvents.push({type, payload});
     });
-    const surfaceId = )JS" + std::to_string(kSurfaceId) + R"JS(;
-    const node = fabric.createNode(501, 'View', surfaceId,
+    var surfaceId = )JS" + std::to_string(kSurfaceId) + R"JS(;
+    var node = fabric.createNode(501, 'View', surfaceId,
       {width: 160, height: 80, collapsable: false}, {});
     const childSet = fabric.createChildSet();
     fabric.appendChildToSet(childSet, node);
@@ -919,6 +920,58 @@ void mouseCaptureCancellationDoesNotCreateHoverTouches() {
         touchEvents[1].payload.touches.length !== 0)
       throw new Error('lost mouse capture must cancel once without hover/end');
   )JS", "mouse-cancel-check.js"));
+}
+
+void mouseReleaseClearsCaptureBeforeNativeListeners() {
+  Fixture fixture(true);
+  mountTouchFixture(fixture);
+  auto& dispatcher = fixture.enableTouch();
+  bool ended = false;
+  auto listener = std::make_shared<const facebook::react::EventListener>(
+      [&](const facebook::react::RawEvent& event) {
+        if (event.type == "topTouchEnd") {
+          ended = true;
+          dispatcher.forgetTag(501);
+        }
+        return false;
+      });
+  fixture.host().scheduler().addEventListener(listener);
+  const QPointF point(20, 10);
+  QMouseEvent press(QEvent::MouseButtonPress, point, point,
+                    Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+  QMouseEvent release(QEvent::MouseButtonRelease, point, point,
+                      Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
+  QCoreApplication::sendEvent(&fixture.touchInputSource(), &press);
+  QCoreApplication::sendEvent(&fixture.touchInputSource(), &release);
+  fixture.host().scheduler().removeEventListener(listener);
+  EXPECT(ended);
+  flushTouchEvents(fixture);
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (touchEvents.length !== 2 || touchEvents[1].type !== 'topTouchEnd')
+      throw new Error('release listener removal emitted an extra cancellation');
+  )JS", "mouse-release-removal.js"));
+}
+
+void decoratedViewTargetsNearestRegisteredAncestor() {
+  Fixture fixture(true);
+  mountTouchFixture(fixture);
+  auto* view = fixture.layer().itemForTag(501);
+  // Real View backgrounds/borders contain unregistered QML children.
+  QQuickItem decoration(view);
+  decoration.setWidth(160);
+  decoration.setHeight(80);
+  QQuickItem nestedDecoration(&decoration);
+  nestedDecoration.setWidth(160);
+  nestedDecoration.setHeight(80);
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {20, 10})});
+  sendTouch(fixture, QEvent::TouchEnd, {
+      QEventPoint(7, QEventPoint::Released, {20, 10}, {20, 10})});
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (touchEvents.length !== 2 || touchEvents.some(e =>
+        e.payload.changedTouches[0].target !== 501))
+      throw new Error('unregistered decoration swallowed its View target');
+  )JS", "decorated-view-touch.js"));
 }
 
 #ifdef RNQNX_PLAYGROUND_BUNDLE_PATH
@@ -2611,6 +2664,8 @@ int main(int argc, char** argv) {
       {"forgettingTouchTargetCancelsAndClearsResponder", forgettingTouchTargetCancelsAndClearsResponder},
       {"windowDeactivationCancelsTouchStream", windowDeactivationCancelsTouchStream},
       {"mouseCaptureCancellationDoesNotCreateHoverTouches", mouseCaptureCancellationDoesNotCreateHoverTouches},
+      {"mouseReleaseClearsCaptureBeforeNativeListeners", mouseReleaseClearsCaptureBeforeNativeListeners},
+      {"decoratedViewTargetsNearestRegisteredAncestor", decoratedViewTargetsNearestRegisteredAncestor},
       {"runtimeEvaluatesJavaScript", runtimeEvaluatesJavaScript},
       {"javaScriptErrorsAreReportedNotSwallowed",
        javaScriptErrorsAreReportedNotSwallowed},

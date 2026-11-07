@@ -147,10 +147,19 @@ Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
 
   // Reverse-map the item to its tag. The registry is small — one entry per
   // mounted view — and this runs once per pointer event.
-  for (auto iterator = emitters_.constBegin(); iterator != emitters_.constEnd();
-       ++iterator) {
-    if (layer_.itemForTag(iterator.key()) == target) {
-      return iterator.key();
+  for (const QQuickItem* candidate = target; candidate != &rootItem_;
+       candidate = candidate->parentItem()) {
+    if (candidate == nullptr) {
+      break;
+    }
+    for (auto iterator = emitters_.constBegin(); iterator != emitters_.constEnd();
+         ++iterator) {
+      if (layer_.itemForTag(iterator.key()) == candidate) {
+        return iterator.key();
+      }
+    }
+    if (!inputLifecycleEnabled_) {
+      break;
     }
   }
   return -1;
@@ -286,9 +295,9 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
         emitter->onTouchMove(touchEvent);
         break;
       case QEvent::MouseButtonRelease:
-        emitter->onTouchEnd(touchEvent);
         activeTag_ = -1;
         mouseTouch_.reset();
+        emitter->onTouchEnd(touchEvent);
         break;
       default:
         break;
