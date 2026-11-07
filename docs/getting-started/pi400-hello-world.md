@@ -116,4 +116,12 @@ Hermes tests ran. This does not establish reliable graphics startup on cold
 boot. The gears demo is not this React Native application.
 
 **Status: bundle prepared; physical React Native rendering not yet verified.**
-Qt licensing and the matching target Qt/native host remain outstanding.
+The temporary Qt evaluation is active as recorded below. The matching target
+Qt/native host and physical rendering remain outstanding.
+
+## Temporary Qt evaluation
+
+The owner requested and activated a Qt for Device Creation Enterprise evaluation.
+The account displays an expiry of 17 November 2026. Qt 6.12.0 LTS source has
+been acquired through that account; target compilation and a rendered Qt Quick
+window remain pending. See ADR-0001 for the restricted evaluation scope.

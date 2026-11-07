@@ -1,6 +1,19 @@
 # QNX Toolchain Evidence
 
-## Versions this document targets
+## Current measured status (2026-11-06)
+
+The licensed Linux/amd64 development container has QNX SDP 8.0.5. The physical
+Pi 400 has executed the cross-built C++20 and Hermes probes. G0-A and the
+under-30-second G0-D deploy/run check have measured evidence below. Qt 6.12.0
+LTS source is selected for the temporarily licensed evaluation; a Qt target
+build and real React Native rendering are still pending.
+
+## Historical baseline (2026-08-14, superseded)
+
+The following baseline described the workspace before the licensed SDP and Pi
+were available. It is retained as history, not the current gate status.
+
+### Versions then targeted
 
 - QNX SDP 8.0.2 — the current release as of 2026-08-14, supplied by the project
   owner rather than read from an installation. The installed package identity is
@@ -10,13 +23,13 @@
 - Qt 6.11.1 is the current release, with 6.12 in beta. The macOS development
   host builds against 6.11.1 (ADR-0010); the target pins an LTS chosen at G0-B.
 
-## Gate status
+### Gate status at that baseline
 
 G0-A is **blocked**, not passed. The current macOS arm64 workspace has no QNX
 SDP environment, `qcc`, `q++`, sysroot, configured QSTI Pi, or target SSH user.
 No C++ translation unit has been compiled with qcc and no QNX binary has run.
 
-## Publicly verified configuration
+### Public configuration at that baseline
 
 The current QNX Everywhere Porting Guide's CMake example specifies:
 
@@ -74,3 +87,26 @@ Commit only a sanitized transcript here containing:
 5. measured deploy-and-run seconds, target model, and QNX OS identity.
 
 Do not replace this blocked status with anticipated output.
+
+## Physical Pi 400 timed check — 2026-11-06
+
+The licensed Linux/amd64 SDP 8.0.5 build of `rnqnx_g0_cxx20_probe` was
+rechecked with CMake/Ninja (`qnx-aarch64-debug`, no work to do). Both `qcc -V`
+and `q++ -V` reported GCC 12.2.0 targets `gcc_ntox86_64`,
+`gcc_ntoaarch64le`, and their `_cxx`/`_gpp` variants.
+
+An equivalent measured deploy/run check used Mac `scp -O`, a separate SSH
+`chmod`, and a separate SSH execution against the physical Pi 400, including
+three password-authenticated connections. This is not a claim that the
+Linux-only `validate-g0-a.sh` was run unchanged.
+
+```text
+RNQNX_G0_CXX20_OK ranges=12 designated=21 thread=34 jthread=unsupported
+DEPLOY_RUN_SECONDS=8.177
+```
+
+This is below G0-D's 30-second threshold. G0-A's thread fallback remains
+explicit: this SDP's standard library does not provide `std::jthread`.
+The target has the QNX Everywhere 8.0.5 package set; its kernel identifies as
+QNX 8.0.0. Graphics remains a separately verified manual compatibility setup,
+with recovery boot selected; this timing does not prove Qt or RN rendering.
