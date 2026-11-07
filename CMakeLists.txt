@@ -40,8 +40,17 @@ option(RNQNX_BUILD_NITRO_QNX "Build the QNX Nitro shared C++ runtime" OFF)
 option(RNQNX_BUILD_EXPO_MODULES_QNX "Build the QNX Expo Modules JSI bootstrap" OFF)
 option(RNQNX_BUILD_REACT_QNX
   "Build the full React Native + Hermes + Fabric + Qt Quick QNX target graph" OFF)
+option(RNQNX_BUILD_PLAYGROUND_QNX
+  "Build the visual Qt Quick/Fabric playground for QNX" OFF)
 option(RNQNX_BUILD_MARATHON_HOST
   "Build the experimental Linux/Wayland MarathonOS React Native host" OFF)
+
+if(RNQNX_BUILD_PLAYGROUND_QNX)
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL "QNX" OR NOT RNQNX_BUILD_REACT_QNX)
+    message(FATAL_ERROR
+      "RNQNX_BUILD_PLAYGROUND_QNX requires QNX and RNQNX_BUILD_REACT_QNX=ON")
+  endif()
+endif()
 
 if(RNQNX_REQUIRE_FULL_HOST_RENDERER)
   if(CMAKE_SYSTEM_NAME STREQUAL "QNX" OR NOT BUILD_TESTING OR
@@ -162,6 +171,17 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/ReactNativeRenderer.cmake)
     rnqnx_add_fabric_adapter_target()
     rnqnx_add_react_host_target()
+
+    if(RNQNX_BUILD_PLAYGROUND_QNX)
+      add_executable(rnqnx_playground_qnx vnext/probes/playground/main.cpp)
+      target_link_libraries(rnqnx_playground_qnx PRIVATE rnqnx_react_host)
+      rnqnx_enable_strict_warnings(rnqnx_playground_qnx)
+      # Lean Hermes consumes precompiled bytecode, supplied with --bundle.
+      target_compile_definitions(rnqnx_playground_qnx PRIVATE
+        RNQNX_PLAYGROUND_BUNDLE_PATH="")
+      set_target_properties(rnqnx_playground_qnx PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+    endif()
 
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxReactProbe.cmake)
     rnqnx_add_react_render_probe(rnqnx_react_qnx_probe)

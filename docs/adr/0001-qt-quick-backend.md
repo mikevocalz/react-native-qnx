@@ -2,8 +2,9 @@
 
 ## Status
 
-Accepted architecture; G0-B implementation is blocked pending real toolchain,
-target, source, and licensing evidence.
+Accepted architecture; G0-B source/build bring-up is in progress under the
+restricted evaluation below. A rendered Qt Quick window on the Pi remains
+unverified.
 
 ## Context
 

@@ -2,7 +2,9 @@
 
 ## Status
 
-Proposed 2026-08-14. Evidence is from the installed Qt 6.11.1 Homebrew kegs and
+Accepted only for the restricted Pi 400 evaluation subset recorded below.
+The broader open-source module matrix remains Proposed (2026-08-14). Its
+historical evidence is from the installed Qt 6.11.1 Homebrew kegs and
 Qt's online documentation; the ADR must be re-audited against the pinned Qt LTS
 source tree once that source is available in the workspace.
 
@@ -71,6 +73,36 @@ valid license determination.
 Sources: [Qt account licenses](https://account.qt.io/s/),
 [Device Creation tiers](https://www.qt.io/development/qt-framework/target-devices),
 [Qt for QNX](https://doc.qt.io/qt-6/qnx.html).
+
+### Source audit and restricted runtime subset
+
+The private 6.12.0 evaluation build includes Core, Gui, Network, Qml, Quick,
+and their QmlMeta/Models/WorkerScript dependencies. Quick Shapes is also
+required: the existing playground's View factory imports `QtQuick.Shapes`.
+This records that existing dependency explicitly, rather than rewriting the
+renderer to remove it. Shader Tools supplies matching build-time shader
+processing. No other Tier 1/2 adoption is accepted by this evaluation record.
+
+The exact 6.12.0 checkout headers in `qtbase/src/corelib/global/qglobal.h`,
+`qtbase/src/gui/kernel/qguiapplication.cpp`,
+`qtbase/src/network/kernel/qnetworkinterface.cpp`,
+`qtdeclarative/src/qml/qml/qqmlengine.cpp`,
+`qtdeclarative/src/quick/items/qquickitem.cpp`,
+`qtdeclarative/src/qmlmodels/qqmlobjectmodel.cpp`,
+`qtdeclarative/src/quickshapes/qquickshape.cpp`, and
+`qtshadertools/src/shadertools/qshaderbaker.cpp` all offer
+`LicenseRef-Qt-Commercial` alongside their open-source alternatives.
+The checked top-level `LICENSES/LicenseRef-Qt-Commercial.txt` refers to the
+licensee's applicable written/accepted agreement; the active evaluation is
+the basis here. This does not resolve production or redistribution rights.
+
+Qt's QNX implementation is
+`qtbase/src/plugins/platforms/qnx/{CMakeLists.txt,qqnxintegration.cpp,qnx.json}`.
+The source declares `QQnxIntegrationPlugin`, output `qqnx`, type `platforms`,
+key `qnx`, linking Screen and optional EGL. The actual built artifact and
+runtime dependencies remain to be verified. Its reference AArch64 toolchain
+is `coin/provisioning/common/shared/cmake_toolchain_files/qnx-toolchain-aarch64le.cmake`.
+The experiment uses system version 800 and preserves `_QNX_SOURCE`.
 
 ## Consequences
 

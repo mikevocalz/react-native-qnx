@@ -63,6 +63,12 @@ find_program(CMAKE_RANLIB
 
 set(CMAKE_SYSROOT "${RNQNX_QNX_TARGET}")
 
+# CMake's QCC MOC predefinitions command includes COMPILER_ARG1 but omits
+# CMAKE_CXX_FLAGS and COMPILER_TARGET. Keep its architecture and native header
+# feature surface identical to ordinary compilation.
+set(CMAKE_C_COMPILER_ARG1 "-V${RNQNX_QCC_TARGET} -D_QNX_SOURCE")
+set(CMAKE_CXX_COMPILER_ARG1 "-V${RNQNX_QCC_TARGET} -D_QNX_SOURCE")
+
 # qcc/q++ select the OS/CPU variant with -V.  The wrapper ignores CMake's
 # generic compiler-target property, so pass the variant through the flags.
 # Strict language modes otherwise select a smaller sched_param layout in the

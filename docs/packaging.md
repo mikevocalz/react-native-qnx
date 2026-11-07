@@ -88,6 +88,16 @@ Sources: [Qt account licenses](https://account.qt.io/s/),
 [Device Creation tiers](https://www.qt.io/development/qt-framework/target-devices),
 [Qt for QNX](https://doc.qt.io/qt-6/qnx.html).
 
+### Evaluation deployment subset
+
+ADR-0011's restricted evaluation decision also records QmlMeta, Qml Models,
+Qml WorkerScript and Quick Shapes, required by the existing Qt Quick runner.
+The source headers were checked against the acquired 6.12.0 archive. Only
+selected build targets and their actual runtime closure will be deployed;
+Quick Controls, Quick Layouts, Widgets and other optional modules remain
+outside this application deployment. Binary size, target build time and
+rendered-window proof remain pending.
+
 ## npm packages
 
 `@rn-qnx` is provisional. Do not publish until the owner supplies the real npm

@@ -39,9 +39,10 @@ The JavaScript bundle alone is not executable on QNX. The actual application
 needs the existing React Native/Fabric/Hermes/Qt Quick native host, matching
 QNX AArch64 libraries, a working QPA/Screen configuration, and the deployed
 bundle. The current QNX CMake graph exposes the geometry-only
-`rnqnx_react_qnx_probe`; the visual playground runner is currently wired as the
-host executable `rnqnx_playground_host`. Reusing that visual runner for QNX is
-still required before calling this a physical Hello World pass.
+`rnqnx_react_qnx_probe`; the existing visual runner is now also exposed as the opt-in
+`rnqnx_playground_qnx` target. Its source and 640×480 window are shared with
+`rnqnx_playground_host`; the QNX visual target has not yet completed its
+cross-build or physical rendering check.
 
 The repository's [ADR-0001](../adr/0001-qt-quick-backend.md) requires a documented
 licensing determination before acquiring, building, or deploying Qt for QNX.
@@ -125,3 +126,40 @@ The owner requested and activated a Qt for Device Creation Enterprise evaluation
 The account displays an expiry of 17 November 2026. Qt 6.12.0 LTS source has
 been acquired through that account; target compilation and a rendered Qt Quick
 window remain pending. See ADR-0001 for the restricted evaluation scope.
+
+## Opt-in QNX visual runner
+
+With the licensed matching Qt QNX build available, configure the existing QNX
+preset with `RNQNX_BUILD_HERMES_QNX=ON`, `RNQNX_BUILD_REACT_QNX=ON`,
+`RNQNX_FETCH_REACT_NATIVE_DEPS=ON`, and `RNQNX_BUILD_PLAYGROUND_QNX=ON`.
+Set `CMAKE_PREFIX_PATH` to the matching target Qt SDK and build
+`rnqnx_playground_qnx`. The new flag defaults OFF and rejects host builds or
+a missing React target graph. Both negative cases were checked.
+
+Deploy the actual Qt platform/QML plugins and shared-library dependency closure,
+including `QtQuick.Shapes`, Qml Models/WorkerScript, PNG support and fonts. The
+unchanged View factory imports Shapes even for this small app. Run the visual
+target with `--bundle hello-world.hbc`; its file-loading path preserves binary
+bytecode. The target build, dependency closure and rendered image remain pending.
+
+CMake's QCC MOC predefinitions command omits normal compiler flags and its generic
+compiler-target setting. The canonical toolchain now repeats the locked ARM
+selector and `_QNX_SOURCE` in `CMAKE_CXX_COMPILER_ARG1`, which that command does
+include. The generated Qt Core predefinitions command was checked, Qt Core
+compilation passed that previously failing step, and a fresh C++20 target plus
+the existing Hermes bytecode checks passed on the recovered physical Pi.
+
+A subsequent minimal automatic graphics experiment also failed a reboot/power
+cycle test (black/no HDMI and no physical Ethernet link). The exact saved
+recovery boot config was restored from the Mac; the recovery image checksum was
+verified and system/data partitions were untouched. Network access and manual
+DRM/Screen/gears then returned, with both physical probes passing again.
+Automatic graphics remains disabled. The stock startup script's conditional
+desktop-client launch is a source-backed difference from the successful manual
+path, not a proven explanation of the boot failure; no helper log was created
+by the failed boot.
+
+For the preserved 640×480 window, select `QT_QPA_PLATFORM=qnx:no-fullscreen`.
+Qt 6.12.0's `qqnxintegration.cpp` enables `FullScreenApplication` unless that
+parameter is present; this environment setting preserves the existing window
+contract rather than changing the runner's dimensions.
