@@ -22,6 +22,18 @@
 
 namespace {
 void require(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
+QQuickItem* findEditor(QQuickItem* item) {
+  if (item->objectName() == QStringLiteral("qnx-text-input")) return item;
+  for (auto* child : item->childItems()) {
+    if (auto* editor = findEditor(child)) return editor;
+  }
+  return nullptr;
+}
+unsigned editorCount(QQuickItem* item) {
+  unsigned count = item->objectName() == QStringLiteral("qnx-text-input") ? 1U : 0U;
+  for (auto* child : item->childItems()) count += editorCount(child);
+  return count;
+}
 void run() {
   QQmlEngine engine;
   QQuickWindow window;
@@ -69,8 +81,8 @@ void run() {
   const auto script = [&](const char* code) { require(host.evaluate(code, "text-input-driver"), "TextInput driver failed"); settle(); };
   window.show(); window.requestActivate();
   host.startSurface(11, "RNQnxTextInputProbe", 320, 240);
-  until([&] { return window.contentItem()->findChild<QQuickItem*>("qnx-text-input") != nullptr; }, "React TextInput did not mount");
-  QPointer<QQuickItem> field = window.contentItem()->findChild<QQuickItem*>("qnx-text-input");
+  until([&] { return layer.mountedCount() == 4 && editorCount(window.contentItem()) == 2; }, "React TextInput did not mount");
+  QPointer<QQuickItem> field = findEditor(window.contentItem());
   require(field->property("text").toString() == QStringLiteral("A😀e\u0301"), "initial React value mismatch");
   require(number("changes") == 0, "initial JS value emitted native change");
   script("__rnqnxTextInputFocus()");
@@ -142,8 +154,8 @@ void run() {
   require(previous.isNull(), "surface stop retained editor"); settle();
   require(number("changes") == 3, "queued event reached deleted React input");
   host.startSurface(11, "RNQnxTextInputProbe", 320, 240);
-  until([&] { return window.contentItem()->findChild<QQuickItem*>("qnx-text-input") != nullptr; }, "TextInput remount failed");
-  field = window.contentItem()->findChild<QQuickItem*>("qnx-text-input");
+  until([&] { return layer.mountedCount() == 4 && editorCount(window.contentItem()) == 2; }, "TextInput remount failed");
+  field = findEditor(window.contentItem());
   script("__rnqnxTextInputFocus()");
   QKeyEvent again(QEvent::KeyPress, Qt::Key_Z, Qt::NoModifier, QStringLiteral("Z"));
   QCoreApplication::sendEvent(&window, &again);
