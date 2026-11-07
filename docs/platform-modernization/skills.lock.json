@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "reviewed_on": "2026-11-07",
+  "scope": "Source snapshots used for delivery-plan design; not npm dependency pins or proof of skill installation.",
+  "skills": [
+    {
+      "name": "api-design",
+      "repository": "margelo/react-native-skills",
+      "commit": "1e9e17be6f41c838db472d6a4b943fc26355a3be",
+      "path": "skills/api-design/SKILL.md",
+      "url": "https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md",
+      "sha256": "98a45be3e104842eb02b9ce44b232c2a479d301e5bcfaa520c401c19f63f72de",
+      "status": "source-read-and-applied-to-plan",
+      "decision": "Require public contracts, examples, errors, ownership and cleanup before bindings.",
+      "cli_install_verified": false,
+      "runtime_compatibility_verified": false
+    },
+    {
+      "name": "build-nitro-modules",
+      "repository": "margelo/react-native-skills",
+      "commit": "1e9e17be6f41c838db472d6a4b943fc26355a3be",
+      "path": "skills/build-nitro-modules/SKILL.md",
+      "url": "https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md",
+      "sha256": "809278e7f0890c288f9e91d1e9381c50910df80680241491f397328adb6654e4",
+      "status": "source-read-and-applied-to-plan",
+      "decision": "Keep generated-source provenance and native lifetime explicit; adapt examples to audited v1 APIs.",
+      "cli_install_verified": false,
+      "runtime_compatibility_verified": false
+    },
+    {
+      "name": "cpp",
+      "repository": "margelo/react-native-skills",
+      "commit": "1e9e17be6f41c838db472d6a4b943fc26355a3be",
+      "path": "skills/cpp/SKILL.md",
+      "url": "https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md",
+      "sha256": "087ef92aaf629d6b88715d301385e30cdbe1805bad753e5b30aa740bf21d501c",
+      "status": "source-read-and-applied-to-plan",
+      "decision": "Use RAII and one native owner; avoid callback-under-lock and repeated queue hops.",
+      "cli_install_verified": false,
+      "runtime_compatibility_verified": false
+    },
+    {
+      "name": "react-native-best-practices",
+      "repository": "callstackincubator/agent-skills",
+      "commit": "59e9d17446a248b21d86f078fcd0bd2d36db1ca4",
+      "path": "skills/react-native-best-practices/SKILL.md",
+      "url": "https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md",
+      "sha256": "3edbf6e2b024140fe32a07f64ab4009545b663a94a2c3d9e49ca319741da18ce",
+      "status": "source-read-and-applied-to-plan",
+      "decision": "Measure baseline and candidate interactions before performance changes; adapt tools to supported platforms.",
+      "cli_install_verified": false,
+      "runtime_compatibility_verified": false
+    },
+    {
+      "name": "writing-user-docs",
+      "repository": "callstackincubator/agent-skills",
+      "commit": "59e9d17446a248b21d86f078fcd0bd2d36db1ca4",
+      "path": "skills/writing-user-docs/SKILL.md",
+      "url": "https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/writing-user-docs/SKILL.md",
+      "sha256": "29a1a761d79e70db2dcf289755b1cf7282612dd5443dba9266d68e8a5fa3595e",
+      "status": "source-read-not-applied",
+      "decision": "Scope check: these are internal engineering RFCs, outside this skill; reserve for later user guides.",
+      "cli_install_verified": false,
+      "runtime_compatibility_verified": false
+    }
+  ]
+}
