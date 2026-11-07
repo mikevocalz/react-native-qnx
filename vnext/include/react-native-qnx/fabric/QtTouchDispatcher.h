@@ -10,6 +10,7 @@
 #include <react/renderer/components/view/TouchEvent.h>
 
 #include <memory>
+#include <optional>
 
 QT_BEGIN_NAMESPACE
 class QQuickItem;
@@ -25,13 +26,21 @@ namespace rnqnx::fabric {
 /// deepest mounted item, and calls the shadow view's `TouchEventEmitter`
 /// (`components/view/TouchEventEmitter.h:28-31`).
 ///
-/// Scope today is a single pointer — press, move, release — which is what
-/// `Pressable` and the touch handlers need. Multi-touch, pointer capture, and
-/// the JS responder negotiation are not implemented, and
-/// `docs/component-support.md` records that rather than implying otherwise.
+/// Mouse and multi-touch contacts are captured until release. The opt-in input
+/// lifecycle mode adds cancellation and terminal-coordinate fixes. The JS
+/// responder can select the target; gesture recognition is not provided.
 class QtTouchDispatcher final : public QObject {
  public:
-  QtTouchDispatcher(QtQuickMountingLayer& layer, QQuickItem& rootItem);
+  QtTouchDispatcher(
+      QtQuickMountingLayer& layer,
+      QQuickItem& rootItem,
+      bool enableInputLifecycle =
+#if defined(RNQNX_ENABLE_INPUT_LIFECYCLE) && RNQNX_ENABLE_INPUT_LIFECYCLE
+          true
+#else
+          false
+#endif
+  );
 
   /// Associates a tag with the shadow view's emitter. The adapter calls this as
   /// mutations arrive; a null emitter unregisters.
@@ -58,7 +67,8 @@ class QtTouchDispatcher final : public QObject {
   /// Deepest mounted item containing \a windowPoint, or -1.
   Tag hitTest(const QPointF& windowPoint) const;
 
-  enum class TouchKind { Start, Move, End };
+  enum class TouchKind { Start, Move, End, Cancel };
+  void cancelMouseTouch();
   void emitTouchEvent(
       const facebook::react::Touch& changed,
       TouchKind kind);
@@ -68,7 +78,9 @@ class QtTouchDispatcher final : public QObject {
   QHash<Tag, std::shared_ptr<const facebook::react::TouchEventEmitter>>
       emitters_;
   QHash<int, facebook::react::Touch> activeTouches_;
+  const bool inputLifecycleEnabled_;
   Tag activeTag_{-1};
+  std::optional<facebook::react::Touch> mouseTouch_;
   Tag responderTag_{-1};
   int dispatchedCount_{0};
 };

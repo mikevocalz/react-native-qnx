@@ -3,6 +3,8 @@
 
 #include <NitroModules/HybridClassRegistry.hpp>
 #include <NitroModules/InstallNitro.hpp>
+#include <stdexcept>
+#include <utility>
 
 namespace rnqnx::nitro {
 
@@ -14,9 +16,20 @@ void installQnxNitroRuntime(facebook::jsi::Runtime& runtime) {
         "QnxPlatformInfo", QnxPlatformInfo::Class::get());
   }
 
-  // Synchronous methods are the only enabled mode. A real Qt/JS dispatcher
-  // must be installed before exposing Promises or callbacks in either OS.
+  // This overload intentionally installs no dispatcher. Async hosts must use
+  // the owned-dispatcher overload before exposing Promises or callbacks.
   margelo::nitro::install(runtime);
+}
+
+void installQnxNitroRuntime(
+    facebook::jsi::Runtime& runtime,
+    std::shared_ptr<margelo::nitro::Dispatcher> dispatcher) {
+  if (!dispatcher) {
+    throw std::invalid_argument("QNX async Nitro requires an owned JS dispatcher");
+  }
+  installQnxNitroRuntime(runtime);
+  margelo::nitro::Dispatcher::installRuntimeGlobalDispatcher(
+      runtime, std::move(dispatcher));
 }
 
 } // namespace rnqnx::nitro

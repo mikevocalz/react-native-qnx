@@ -1,0 +1,62 @@
+{
+  "artifacts": {
+    "rnqnx_nitro_qt_test": {
+      "bytes": 6526928,
+      "sha256": "3e45c6b5ae36798e82d65f0bff967ddd4dc1989963b474bc3ef0e1448cf8ec6f"
+    },
+    "rnqnx_playground_qnx.async-candidate": {
+      "bytes": 6344880,
+      "sha256": "8161ed8246886542aea551b7d251adc8fba7795d5f09e24fdd21653e2b074517"
+    },
+    "hermesc-260318099.0.5-linux": {
+      "bytes": 4503472,
+      "sha256": "779ca1886d05cb2f6cda2e90d6ec5dfb0f69563a1734c9404c955009876a6f50"
+    },
+    "hello-world-async.png": {
+      "bytes": 24696,
+      "sha256": "e2783976a89c42594a60a9b4657cff70844a5f8a1131e98b8ff1ad400ae14209"
+    },
+    "chained.hbc": {
+      "bytes": 408,
+      "sha256": "ec173b69d7a2a02a44b3be3b0af5994de399908efacad2183b554cc8546a3078"
+    },
+    "recover.hbc": {
+      "bytes": 374,
+      "sha256": "3fa6c8e81f772cfa14c9335da3e2f31440161d13326b9eb93c68b167f638ca88"
+    },
+    "reject.hbc": {
+      "bytes": 633,
+      "sha256": "893a1e37b59952e274192e99dab8c57775b03f22727116d9870c147d9712613e"
+    },
+    "resolve.hbc": {
+      "bytes": 515,
+      "sha256": "59ec92d11aa8bc4596604c0d67b2ecfaa6b4a3608e6d4b7eb9543712a1692146"
+    },
+    "setup.hbc": {
+      "bytes": 1140,
+      "sha256": "1bdd2f7a5c2573188963735e50bb5025a3df6da73ac70cdbe93f51c2463ef8da"
+    },
+    "void.hbc": {
+      "bytes": 512,
+      "sha256": "e6d081fa5afe0d8f26403bdb35286be8f853518c2606116db8e42c98a0be851c"
+    }
+  },
+  "source_patches": {
+    "Dispatcher.hpp": {
+      "original_sha256": "8b4aecfc3c6d2bf2e2ca344ba459df67f74b2dfc09bdc4420d6ff5e95ff55879",
+      "patched_sha256": "fee25993e6ee713a79732a49ddbd6378a8195e350e1548c580228c2fe10f30c3"
+    },
+    "Callback.hpp": {
+      "original_sha256": "7cd598bcb0b4281fcb2e20a8c380c6651008c9b149a6674e80302df6d44a28c7",
+      "patched_sha256": "886b0aa38d1b3c97bf4894fad49bb58f1547d2db82e5203e80814d68ac9a6108"
+    }
+  },
+  "fixture_sources": {
+    "void.js": "024cdc86fc58515dc5fbf0d778f84e6a96fe933af9b0cdc27bc4a78405278248",
+    "resolve.js": "f6eac493ac58609657df27d6ba59a95b2bd8a1965c3fe38b1bb57c2e320b913c",
+    "reject.js": "a7b531f75162a1fd207807fc9280849aaef03095cad7bd77d66be3952d0cad52",
+    "recover.js": "00ecd6a10c561f6cc012a780521c2260eb66f8a069ea4b4af27620b1c87a4bd9",
+    "setup.js": "53e1a0feabd4e154952f697ebb25ed7c84435cdff93cf96c296b495413c9987c",
+    "chained.js": "9f47f0e3de63f87658ddfd60780056ae479e1bd5e762e8e184a76c28a40b1f19"
+  }
+}

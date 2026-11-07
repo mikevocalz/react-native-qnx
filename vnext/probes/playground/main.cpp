@@ -6,7 +6,7 @@
 // bundle, start a surface, run the event loop.
 //
 // Usage:
-//   rnqnx_playground_host [--bundle <path>] [--screenshot <path>]
+//   rnqnx_playground_host [--bundle <path>] [--screenshot <path>] [--fullscreen]
 //
 // With --screenshot it renders, writes a PNG, and exits, which is how it stays
 // useful on a machine with no display.
@@ -14,7 +14,15 @@
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
+#include "react-native-qnx/fabric/QtTouchDispatcher.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
+
+#ifdef RNQNX_PLAYGROUND_NITRO_QNX
+#include "QnxNitroRuntime.hpp"
+#ifdef RNQNX_PLAYGROUND_NITRO_QT
+#include "QtNitroDispatcher.hpp"
+#endif
+#endif
 
 #include <QByteArray>
 #include <QColor>
@@ -27,6 +35,7 @@
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
+#include <QScreen>
 #include <QString>
 #include <QTimer>
 
@@ -325,6 +334,10 @@ int main(int argc, char** argv) {
       QStringLiteral("screenshot"),
       QStringLiteral("Render once, write a PNG here, and exit."),
       QStringLiteral("path"));
+  const QCommandLineOption fullscreenOption(
+      QStringLiteral("fullscreen"),
+      QStringLiteral("Fill the current monitor and use its size for the React surface."));
+  parser.addOption(fullscreenOption);
   parser.addOption(bundleOption);
   parser.addOption(screenshotOption);
   parser.process(app);
@@ -352,6 +365,13 @@ int main(int argc, char** argv) {
   window.setWidth(kWindowWidth);
   window.setHeight(kWindowHeight);
   window.setColor(QColor(Qt::white));
+  if (parser.isSet(fullscreenOption)) {
+    if (window.screen() == nullptr) {
+      std::fprintf(stderr, "No screen is available for fullscreen mode\n");
+      return 1;
+    }
+    window.setGeometry(window.screen()->geometry());
+  }
 
   QQmlEngine engine;
   rnqnx::views::QtQuickItemFactory factory(engine);
@@ -388,7 +408,24 @@ int main(int argc, char** argv) {
   adapter.mapComponent(
       QStringLiteral("ModalHostView"), QStringLiteral("View"));
 
+#if RNQNX_ENABLE_INPUT_LIFECYCLE
+  // Outlive the host: stopping its surface can still remove captured targets.
+  rnqnx::fabric::QtTouchDispatcher touchDispatcher(layer, *window.contentItem());
+  adapter.setTouchDispatcher(&touchDispatcher);
+  window.installEventFilter(&touchDispatcher);
+#endif
   rnqnx::runtime::QtReactHost host(adapter);
+#if RNQNX_ENABLE_INPUT_LIFECYCLE
+  host.delegate().setTouchDispatcher(&touchDispatcher);
+#endif
+#ifdef RNQNX_PLAYGROUND_NITRO_QNX
+#ifdef RNQNX_PLAYGROUND_NITRO_QT
+  rnqnx::nitro::installQnxNitroRuntime(
+      host.runtime(), std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue()));
+#else
+  rnqnx::nitro::installQnxNitroRuntime(host.runtime());
+#endif
+#endif
   host.installTurboModuleBinding();
   host.installComponentProvider();
   host.installPlatformConstants();
@@ -402,12 +439,16 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  window.show();
+  if (parser.isSet(fullscreenOption)) {
+    window.showFullScreen();
+  } else {
+    window.show();
+  }
   host.startSurface(
       kSurfaceId,
       "RNQnxPlayground",
-      static_cast<float>(kWindowWidth),
-      static_cast<float>(kWindowHeight));
+      static_cast<float>(window.width()),
+      static_cast<float>(window.height()));
 
   if (parser.isSet(screenshotOption)) {
     for (int i = 0; i < 20; ++i) {

@@ -1,11 +1,11 @@
 # react-native-qnx
 
 Foundation for a production-grade React Native out-of-tree platform for QNX.
-The current JavaScript/tooling line is Expo SDK 58.0.0, React Native
-0.88.1, React 19.3.0, Metro 0.87.1, and Nitro Modules/Nitrogen 0.37.1.
-Current host validation is green; QNX SDP 8.0.2 compile/VM results are retained
-as historical evidence while current SDP 8.0.5/QSTI physical-target validation
-remains pending.
+The current line is Expo 58.0.22 / SDK 58, React Native 0.88.1, React 19.3.0,
+Metro 0.87.1 and pinned Nitro v1 alpha 105 (core, RN adapter and Nitrogen).
+The physical Pi 400 runs fullscreen React Native Hello World on QNX SDP 8.0.5;
+optional Qt/Nitro callback and Promise tests also pass. This remains experimental
+evidence from a private evaluation; graphics autostart and production gates remain open.
 
 ## Goal
 
@@ -19,23 +19,22 @@ those seams are implemented and validated here.
 
 ## Current scope
 
-**SDK-58 host/tooling validation is green.** The merged `main` branch passes
-frozen dependency installation, Prettier, dependency/source contracts,
-TypeScript 7, peer checks, a production Metro bundle for `--platform qnx`,
-repository architecture/codegen checks, Linux C++ host smoke tests, and the
-dependency security audit.
+**Current local validation:** dependency/source contracts, TypeScript, JS tests,
+platform codegen and formatting pass. The full RN 0.88/Hermes/Qt 6.12 host suite
+passes 13/13 CTests, including the optional owned Nitro dispatcher and source
+patch contract. Hosted jobs are currently refused before runner startup because
+of GitHub account billing/spending limits; local evidence is separate from CI.
 
-**The full Qt/Hermes host renderer has historical end-to-end evidence.** The
-JSX → Metro → Hermes → React/Fabric → Qt Quick pipeline was proven on the prior
-React Native 0.86 / Expo 57 host line. The current SDK-58 CI does not install
-the optional Qt/Hermes host stack, so that complete renderer path still needs a
-deliberate RN 0.88 rerun rather than inheriting the old result.
+**Physical QNX proof:** Pi 400/QNX 8.0.5 as qnxuser renders the exact Hello World
+title at 1920×1080 through Fabric/Hermes/Qt Quick. The optional
+[Qt dispatcher](docs/nitro/QT_DISPATCHER.md) passes callbacks, typed/void Promises,
+errors, checkpoints and teardown races. See the
+[device receipt](docs/evidence/pi400-nitro-qt-2026-11-07.md).
 
-**QNX proof is split by layer.** The native Screen/C++20 probes cross-built for
-AArch64 and ran in a QNX x86_64 VM on the historical SDP 8.0.2 line. The full
-React Native + Hermes + Qt Quick runtime has not run on QNX. The repository now
-has a physical Pi 4/5 install/evidence lane for the current SDP 8.0.5 / QSTI
-0.5.0 build-50 baseline, but that physical run has not yet been captured.
+Historical SDP 8.0.2 Screen/C++20 compile/VM results remain separately labeled.
+Broader Pi 4/5 QSTI, generated/third-party Nitro modules, Forge bindings, graphics
+cold boot and production packaging are not established by this Hello World slice.
+Qt uses the private evaluation through 17 November 2026, without a distribution claim.
 
 See `docs/handoff/CURRENT_STATE.md`, `docs/handoff/QNX_VALIDATION_QUEUE.md`,
 and `.project-state.json` for the exact evidence boundaries.
@@ -55,17 +54,17 @@ and `.project-state.json` for the exact evidence boundaries.
 
 Workspace dependencies are exact pins, not ranges:
 
-- Expo 58.0.0 / SDK 58
+- Expo 58.0.22 / SDK 58
 - React Native 0.88.1 and React 19.3.0
 - Metro 0.87.1 and `@react-native/metro-config` 0.88.1
-- `babel-preset-expo` 58.0.4
-- Nitro Modules and Nitrogen 0.37.1
+- `babel-preset-expo` 58.0.23
+- Nitro core, RN adapter and Nitrogen `1.0.0-alpha.nightly.105.g69d365fc9b18`
 - TypeScript 7.0.2
-- Node.js 26+ with `@types/node` 26.6.3
+- Node.js 26+ with `@types/node` 26.6.6
 - pnpm 12.8.1
 
-The refreshed SDK-58 graph resolves `expo-modules-core` 58.0.9,
-`@expo/metro` 58.0.0-rc.0, and `@expo/metro-config` 58.0.6. React Native
+The refreshed SDK-58 graph resolves `expo-modules-core` 58.0.29,
+`@expo/metro` 58.0.0, and `@expo/metro-config` 58.0.20. React Native
 0.88.1 resolves `hermes-compiler` 260318099.0.5 while its bundled Hermes
 source tag is `hermes-v260318099.0.5`. Yoga remains the source snapshot bundled
 by React Native and is not assigned an invented standalone version. Run
@@ -129,7 +128,7 @@ the stock Pi 4/5 QSTI baseline. QNX's Pi 400 recipe adapts the BCM2711 Pi 4
 custom image with the Pi 400 DTB and Wi-Fi firmware. Follow
 `docs/getting-started/raspberry-pi-400.md` before flashing, then use
 `RNQNX_PI_BOARD=pi400` to label evidence from the same deployment lane.
-No QNX device/React Native runtime proof is claimed for Pi 400.
+Physical Pi 400 Hello World/Nitro evidence is recorded above; broader QSTI and component support remain separate gates.
 
 ```bash
 export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
@@ -179,6 +178,15 @@ The Pi helpers default to `qnxuser@qnxpi.local`; set `QNX_TARGET_IP`,
 `QNX_TARGET_USER`, or `QNX_SSH_KEY` only when your target differs. The
 scripts never assume root SSH. Detailed prerequisites and commands are in
 `docs/getting-started/build-and-deploy.md`.
+
+## Shared Forge Rust engines
+
+The opt-in Forge native slice reuses Nitro Forge's Rust engines and per-document
+C++ adapter. Host and physical Pi400/QNX8.0.5 probes verify real Tally editing,
+undo/redo, saved-document reopening, FIFO and owner teardown. The target build
+uses an explicit experimental Rust std/dependency compatibility patch; Nitro
+JavaScript bindings remain pending. See [the shared engine guide](docs/native-modules/forge-rust-qnx.md)
+for build commands, exact target evidence and remaining ABI/lifecycle boundaries.
 
 ## License
 

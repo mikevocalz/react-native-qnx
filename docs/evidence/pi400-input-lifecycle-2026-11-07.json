@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-07",
+  "source_commit": "634ef0ac0069a23aab0d75a7d7e5e4ed47c7331f",
+  "input_code_commit": "843730f",
+  "fixture_commit": "a58196d",
+  "target": "physical Pi 400 / QNX SDP 8.0.5 / Qt 6.12.0 / qnxuser",
+  "artifacts": {
+    "rnqnx_input_lifecycle_probe": {
+      "sha256": "85ca3c0b784837075287ea2b5079ba77185ece6958ee87def671ea16bce51141",
+      "bytes": 6063560,
+      "readback_matches_local": true
+    },
+    "input-lifecycle-setup.hbc": {
+      "sha256": "8187ac357eebdf83168a90b62b4f64de87c72a23d828aeb4f676183f0ff822d0",
+      "bytes": 942,
+      "readback_matches_local": true
+    },
+    "rnqnx_playground_qnx.input-candidate": {
+      "sha256": "35be1cf3cf1d08adbd211bbea2b5d1b2f22fe3c3092b7e2e43f52101c5a103a8",
+      "bytes": 6350512,
+      "readback_matches_local": true
+    },
+    "hello-world-input.png": {
+      "sha256": "365068ead9f0dd33473f32fdf9af20c2a5a98cad57c1b7472361e521979636f3",
+      "bytes": 24677,
+      "readback_matches_local": null
+    }
+  },
+  "input_marker": "RNQNX_INPUT_LIFECYCLE_OK decorated-hit terminal multi-contact cancel deactivate unmount mouse-reentrant",
+  "input_exit": 0,
+  "render_marker": "RNQNX_HELLO_NITRO_V1_OK platform=qnx architecture=aarch64 add=42",
+  "render_size": [1920, 1080],
+  "render_exit": 0,
+  "synthetic_qt_input": true,
+  "usb_hardware_input_verified": false,
+  "qnx_js_handler_delivery_verified": false,
+  "rngh_reanimated_support": false,
+  "wayland_verified": false
+}

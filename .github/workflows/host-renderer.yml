@@ -16,7 +16,11 @@ concurrency:
 
 jobs:
   renderer:
-    name: Qt 6.11 / RN 0.88 / Hermes host tests
+    name: Qt 6.11 / RN 0.88 / Hermes (input lifecycle ${{ matrix.input-lifecycle }})
+    strategy:
+      fail-fast: false
+      matrix:
+        input-lifecycle: ['OFF', 'ON']
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
@@ -51,12 +55,13 @@ jobs:
         run: |
           mkdir -p build/linux-host-renderer/evidence
           git rev-parse HEAD > build/linux-host-renderer/evidence/commit.txt
+          cmake --preset linux-host-renderer -DRNQNX_ENABLE_INPUT_LIFECYCLE=${{ matrix.input-lifecycle }}
           node scripts/validate-host-renderer.mjs
       - name: Preserve exact-run test evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: host-renderer-${{ github.event.pull_request.head.sha || github.sha }}
+          name: host-renderer-${{ github.event.pull_request.head.sha || github.sha }}-input-${{ matrix.input-lifecycle }}
           path: |
             build/linux-host-renderer/evidence/
             build/linux-host-renderer/Testing/Temporary/

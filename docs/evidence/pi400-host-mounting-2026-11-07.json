@@ -1,0 +1,102 @@
+{
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "compiler": "Apple clang 21.0.0 (clang-2100.3.34.2)",
+  "qt": "6.12.0",
+  "profile": "MinSizeRel (-Os -DNDEBUG), C++20; benchmark unsanitized",
+  "nodes": 1000,
+  "processes_per_variant": 3,
+  "warmup_runs_discarded_per_process": 1,
+  "measured_runs_per_process": 5,
+  "baseline_revision": "f67214c",
+  "scan_revision": "6a6a127",
+  "optimized_mount_source_sha256": "0d6771b6e66951f5422c5a1fbfaacc8ace73b16874d4c480b2e6e18659f9edac",
+  "summary": [
+    {
+      "variant": "baseline",
+      "workload": "siblings",
+      "samples": 15,
+      "metrics": {
+        "insertMs": {
+          "medianMs": 0.21425,
+          "minMs": 0.208958,
+          "maxMs": 0.226625
+        },
+        "removeMs": {
+          "medianMs": 0.203042,
+          "minMs": 0.198458,
+          "maxMs": 0.208333
+        }
+      }
+    },
+    {
+      "variant": "baseline",
+      "workload": "unrelated",
+      "samples": 15,
+      "metrics": {
+        "toggleMs": {
+          "medianMs": 0.417625,
+          "minMs": 0.41,
+          "maxMs": 0.432958
+        }
+      }
+    },
+    {
+      "variant": "current",
+      "workload": "siblings",
+      "samples": 15,
+      "metrics": {
+        "insertMs": {
+          "medianMs": 18.707708,
+          "minMs": 18.432125,
+          "maxMs": 36.351
+        },
+        "removeMs": {
+          "medianMs": 18.914709,
+          "minMs": 18.289792,
+          "maxMs": 20.184958
+        }
+      }
+    },
+    {
+      "variant": "current",
+      "workload": "unrelated",
+      "samples": 15,
+      "metrics": {
+        "toggleMs": {
+          "medianMs": 25.600666,
+          "minMs": 24.810708,
+          "maxMs": 26.355917
+        }
+      }
+    },
+    {
+      "variant": "optimized",
+      "workload": "siblings",
+      "samples": 15,
+      "metrics": {
+        "insertMs": {
+          "medianMs": 5.416791,
+          "minMs": 5.099042,
+          "maxMs": 5.883208
+        },
+        "removeMs": {
+          "medianMs": 6.050209,
+          "minMs": 5.841625,
+          "maxMs": 6.214
+        }
+      }
+    },
+    {
+      "variant": "optimized",
+      "workload": "unrelated",
+      "samples": 15,
+      "metrics": {
+        "toggleMs": {
+          "medianMs": 0.604292,
+          "minMs": 0.591542,
+          "maxMs": 0.670625
+        }
+      }
+    }
+  ]
+}

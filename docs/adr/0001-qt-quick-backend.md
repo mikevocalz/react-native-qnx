@@ -2,8 +2,12 @@
 
 ## Status
 
-Accepted architecture; G0-B implementation is blocked pending real toolchain,
-target, source, and licensing evidence.
+Accepted architecture; the selected Qt 6.12.0 QNX runtime cross-built under the
+restricted evaluation below. A standalone Qt Quick window rendered on the Pi
+as `qnxuser` and exited zero. The physical
+React Native Hello World rendered through Fabric/Hermes/Qt Quick on 2026-11-07.
+This verifies that small entry, not all component APIs; automatic graphics
+startup remains disabled.
 
 ## Context
 
@@ -53,6 +57,36 @@ owner must obtain a documented licensing determination for this exact
 non-commercial QNX Everywhere use. This ADR does not interpret either license or
 claim that an open-source source build bypasses the Qt-for-QNX product terms.
 
+## Pi 400 evaluation authorization (2026-11-06)
+
+The owner requested the free ten-day Qt evaluation. The signed-in commercial
+Qt portal was inspected and showed **Qt for Device Creation Enterprise,
+Evaluation, Active**, expiring **17 November 2026**. This records a temporary
+evaluation basis for the private Pi 400 bring-up, not a production or
+redistribution authorization. The open-source QNX licensing question remains
+unresolved outside this evaluation.
+
+The licensed account Downloads page supplied Qt **6.12.0 LTS**, full-framework
+UNIX source archive `qt-everywhere-src-6.12.0.tar.xz`, SHA-256
+`98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165`.
+Its top-level `.tag` is `ef25002ed292b132d1ed3246bfcee1d24a9cd966`.
+The archive also matches the portal-provided `md5sums-6.12.0` value
+`ac677cc64158740f257fd37a5b4c5ffb`. These are integrity checks, not an
+independently verified vendor signature. Account identifiers, license numbers, credentials, and licensed
+source are excluded from the repository.
+
+Only qtbase (Core, Gui, Network), qtdeclarative (Qml, Quick), and qtshadertools
+(matching host shader tools) are selected for this experiment. Their exact
+source notices, QNX support, built dependencies, and deployment files must be
+checked before the target runtime is accepted. Other optional modules remain
+excluded. The evaluation does not accept this ADR's broader module matrix or
+authorize release packaging. After expiry, further licensed use requires a
+valid license determination.
+
+Sources: [Qt account licenses](https://account.qt.io/s/),
+[Device Creation tiers](https://www.qt.io/development/qt-framework/target-devices),
+[Qt for QNX](https://doc.qt.io/qt-6/qnx.html).
+
 ## Consequences
 
 - Fabric component views will own Qt Quick items rather than direct Screen
@@ -81,5 +115,6 @@ claim that an open-source source build bypasses the Qt-for-QNX product terms.
 - [QNX Everywhere June 2026 release notes](https://www.qnx.com/developers/docs/qnxeverywhere/rel_notes.html)
 - Platform specification §§3–6
 
-Installed/pinned Qt source paths and symbols remain intentionally absent until
-G0-B acquires and pins that source tree.
+The acquired source archive is pinned above. The physical Qt prerequisite and
+its deployment limits are recorded in
+[the Pi 400 bring-up guide](../getting-started/pi400-hello-world.md).

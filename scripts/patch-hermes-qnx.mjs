@@ -125,9 +125,11 @@ await replaceOnce(
 #error "Don't know how to return memory to the OS on this platform."
 #endif // __MACH__, __linux__, __QNXNTO__
 
+#if !defined(__QNXNTO__)
   madvise(p, sz, MADV_UNUSED);
 
-#undef MADV_UNUSED`,
+#undef MADV_UNUSED
+#endif`,
   'QNX vm_unused fallback'
 );
 
@@ -244,9 +246,50 @@ uint64_t global_thread_id() {
 
 await replaceOnce(
   'lib/Support/OSCompatPosix.cpp',
+  '#include <sys/resource.h>',
+  `#include <sys/resource.h>
+#if defined(__QNXNTO__)
+#include <cstdint>
+#include <devctl.h>
+#include <fcntl.h>
+#include <sys/procfs.h>
+#endif`,
+  'QNX thread status headers'
+);
+
+await replaceOnce(
+  'lib/Support/OSCompatPosix.cpp',
   '#else\n\nstd::pair<const void *, size_t> thread_stack_bounds_impl() {\n  pthread_attr_t attr;',
-  '#elif defined(__QNXNTO__)\n\nstd::pair<const void *, size_t> thread_stack_bounds_impl() {\n  size_t size = ::pthread_attr_getdefaultstacksize();\n  if (size == 0)\n    size = 1024 * 1024;\n  return {__builtin_frame_address(0), size};\n}\n\n#else\n\nstd::pair<const void *, size_t> thread_stack_bounds_impl() {\n  pthread_attr_t attr;',
-  'QNX stack bounds fallback'
+  `#elif defined(__QNXNTO__)
+
+std::pair<const void *, size_t> thread_stack_bounds_impl() {
+  // A nested function's frame is below its caller on QNX AArch64. It cannot
+  // serve as the stack high address: the guard's unsigned subtraction wraps.
+  const int fd = ::open("/proc/self/ctl", O_RDONLY);
+  if (fd == -1)
+    hermes_fatal("Unable to open current QNX thread status");
+  procfs_status status{};
+  const auto tid = ::pthread_self();
+  status.tid = tid;
+  const int result =
+      ::devctl(fd, DCMD_PROC_TIDSTATUS, &status, sizeof(status), nullptr);
+  ::close(fd);
+  const uintptr_t low = static_cast<uintptr_t>(status.stkbase);
+  const size_t size = status.stksize;
+  const uintptr_t high = low + size;
+  const uintptr_t frame =
+      reinterpret_cast<uintptr_t>(__builtin_frame_address(0));
+  if (result != 0 || status.tid != tid || size == 0 || high <= low ||
+      frame < low || frame >= high)
+    hermes_fatal("Unable to determine current QNX thread stack bounds");
+  return {reinterpret_cast<const void *>(high), size};
+}
+
+#else
+
+std::pair<const void *, size_t> thread_stack_bounds_impl() {
+  pthread_attr_t attr;`,
+  'QNX actual thread stack bounds'
 );
 
 await replaceOnce(

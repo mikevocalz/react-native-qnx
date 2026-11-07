@@ -111,6 +111,10 @@ FetchContent_MakeAvailable(
   rnqnx_fast_float
 )
 
+if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
+  include(${CMAKE_CURRENT_LIST_DIR}/QnxThirdPartyPatches.cmake)
+endif()
+
 # glog 0.3.5 is autotools-only: its public headers are generated from .h.in and
 # it needs a config.h. React Native substitutes the same token set in
 # PrepareGlogTask.kt, which is ported verbatim below, and ships the config.h that
@@ -257,6 +261,9 @@ add_library(rnqnx_folly_runtime STATIC
   "${rnqnx_folly_SOURCE_DIR}/folly/system/ThreadId.cpp"
 )
 target_link_libraries(rnqnx_folly_runtime PUBLIC rnqnx_folly)
+if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
+  target_link_libraries(rnqnx_folly_runtime PUBLIC socket)
+endif()
 # Third-party warnings are not ours to fix, and React Native compiles folly with
 # its own suppressions rather than clean.
 target_compile_options(rnqnx_folly_runtime PRIVATE -w -fexceptions -frtti)

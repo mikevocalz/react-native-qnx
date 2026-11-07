@@ -50,6 +50,8 @@ function(rnqnx_add_fabric_adapter_target)
     rnqnx_views_qt
   )
   set_target_properties(rnqnx_fabric_adapter PROPERTIES AUTOMOC ON)
+  target_compile_definitions(rnqnx_fabric_adapter PUBLIC
+    RNQNX_ENABLE_INPUT_LIFECYCLE=$<BOOL:${RNQNX_ENABLE_INPUT_LIFECYCLE}>)
   rnqnx_enable_strict_warnings(rnqnx_fabric_adapter)
 endfunction()
 
@@ -67,6 +69,7 @@ function(rnqnx_add_react_host_target)
 
   add_library(rnqnx_react_host STATIC
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtReactHost.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtRuntimeTaskQueue.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxExceptionsManager.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxFileReaderModule.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxImageLoader.cpp"

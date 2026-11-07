@@ -58,6 +58,46 @@ ADR-0011 must record:
 Sources: [Qt for QNX](https://doc.qt.io/qt-6/qnx.html) and
 [Qt licensing](https://doc.qt.io/qt-6/licensing.html).
 
+## Pi 400 evaluation authorization (2026-11-06)
+
+The owner requested the free ten-day Qt evaluation. The signed-in commercial
+Qt portal was inspected and showed **Qt for Device Creation Enterprise,
+Evaluation, Active**, expiring **17 November 2026**. This records a temporary
+evaluation basis for the private Pi 400 bring-up, not a production or
+redistribution authorization. The open-source QNX licensing question remains
+unresolved outside this evaluation.
+
+The licensed account Downloads page supplied Qt **6.12.0 LTS**, full-framework
+UNIX source archive `qt-everywhere-src-6.12.0.tar.xz`, SHA-256
+`98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165`.
+Its top-level `.tag` is `ef25002ed292b132d1ed3246bfcee1d24a9cd966`.
+The archive also matches the portal-provided `md5sums-6.12.0` value
+`ac677cc64158740f257fd37a5b4c5ffb`. These are integrity checks, not an
+independently verified vendor signature. Account identifiers, license numbers, credentials, and licensed
+source are excluded from the repository.
+
+Only qtbase (Core, Gui, Network), qtdeclarative (Qml, Quick), and qtshadertools
+(matching host shader tools) are selected for this experiment. Their exact
+source notices, QNX support, built dependencies, and deployment files must be
+checked before the target runtime is accepted. Other optional modules remain
+excluded. The evaluation does not accept this ADR's broader module matrix or
+authorize release packaging. After expiry, further licensed use requires a
+valid license determination.
+
+Sources: [Qt account licenses](https://account.qt.io/s/),
+[Device Creation tiers](https://www.qt.io/development/qt-framework/target-devices),
+[Qt for QNX](https://doc.qt.io/qt-6/qnx.html).
+
+### Evaluation deployment subset
+
+ADR-0011's restricted evaluation decision also records QmlMeta, Qml Models,
+Qml WorkerScript and Quick Shapes, required by the existing Qt Quick runner.
+The source headers were checked against the acquired 6.12.0 archive. Only
+selected build targets and their actual runtime closure will be deployed;
+Quick Controls, Quick Layouts, Widgets and other optional modules remain
+outside this application deployment. Binary size, target build time and
+rendered-window proof remain pending.
+
 ## npm packages
 
 `@rn-qnx` is provisional. Do not publish until the owner supplies the real npm
@@ -75,3 +115,12 @@ A release claiming QNX support requires, at minimum:
 4. cited installed/pinned native seams;
 5. generated Nitrogen output when a HybridObject spec changes;
 6. updated support/gap tables and an honest list of unimplemented capabilities.
+
+### Observed OpenGL runtime dependency
+
+The 6.12.0 QNX build also produces Qt OpenGL from qtbase, required by the
+selected Quick rendering path. It is included in this restricted private
+evaluation runtime. `qtbase/src/opengl/qopenglshaderprogram.cpp` offers
+`LicenseRef-Qt-Commercial` alongside LGPLv3/GPL alternatives. The built QNX QPA
+plugin is `plugins/platforms/libqqnx.so`; QML plugin filenames and the shared
+library closure were inspected from the built artifacts, rather than assumed.
