@@ -23,7 +23,8 @@ const SinglelineTextInputNativeComponent =
   require('react-native/Libraries/Components/TextInput/RCTSingelineTextInputNativeComponent').default;
 
 const forwardRef = React.forwardRef;
-const useState = React.useState;
+const { createStore } = require('zustand/vanilla');
+const { useStore } = require('zustand');
 
 const TextInput = forwardRef(function TextInput(props, ref) {
   const initialText = String(
@@ -33,22 +34,32 @@ const TextInput = forwardRef(function TextInput(props, ref) {
         ? props.defaultValue
         : ''
   );
-  const stateTuple = useState({
-    text: initialText,
-    mostRecentEventCount: 0,
-  });
-  const state = stateTuple[0];
-  const setState = stateTuple[1];
-
-  const currentText = props.value !== undefined ? String(props.value) : state.text;
+  if (
+    globalThis.__RNQNX_TEXT_INPUT_CONTRACT__ === true &&
+    props.secureTextEntry &&
+    props.multiline
+  ) {
+    throw new Error('RNQNX_TEXT_INPUT_SECURE_MULTILINE_UNSUPPORTED');
+  }
+  const storeRef = React.useRef(null);
+  if (storeRef.current === null) {
+    storeRef.current = createStore(() => ({
+      text: initialText,
+      mostRecentEventCount: 0,
+    }));
+  }
+  const store = storeRef.current;
+  const text = useStore(store, (state) => state.text);
+  const mostRecentEventCount = useStore(store, (state) => state.mostRecentEventCount);
+  const currentText = props.value !== undefined ? String(props.value) : text;
 
   const handleChange = (event) => {
     const text = event.nativeEvent.text;
     const eventCount = event.nativeEvent.eventCount;
     if (props.value === undefined) {
-      setState({ text, mostRecentEventCount: eventCount });
+      store.setState({ text, mostRecentEventCount: eventCount });
     } else {
-      setState(function (prev) {
+      store.setState(function (prev) {
         return { text: prev.text, mostRecentEventCount: eventCount };
       });
     }
@@ -71,7 +82,7 @@ const TextInput = forwardRef(function TextInput(props, ref) {
     Object.assign({}, props, {
       ref,
       text: currentText,
-      mostRecentEventCount: state.mostRecentEventCount,
+      mostRecentEventCount,
       onChange: handleChange,
       onFocus: passThrough(props.onFocus),
       onBlur: passThrough(props.onBlur),

@@ -74,7 +74,7 @@ class ShadowViewMutationAdapter {
  private:
   void applyText(const facebook::react::ShadowView& view);
   void applyImage(const facebook::react::ShadowView& view);
-  void applyTextInput(const facebook::react::ShadowView& view);
+  MountError applyTextInput(const facebook::react::ShadowView& view);
   void applyActivityIndicator(const facebook::react::ShadowView& view);
   void applySwitch(const facebook::react::ShadowView& view);
   void registerEventEmitter(const facebook::react::ShadowView& view);

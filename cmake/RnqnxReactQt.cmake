@@ -14,6 +14,14 @@ function(rnqnx_add_qt_views_target)
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QnxImageProvider.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtQuickMountingLayer.cpp"
   )
+  target_sources(rnqnx_views_qt PRIVATE "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtTextInputQml.cpp")
+  target_compile_definitions(rnqnx_views_qt PUBLIC RNQNX_ENABLE_TEXT_INPUT_CONTRACT=$<BOOL:${RNQNX_ENABLE_TEXT_INPUT_CONTRACT}>)
+  if(RNQNX_ENABLE_TEXT_INPUT_CONTRACT)
+    target_sources(rnqnx_views_qt PRIVATE
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtTextInputBridge.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtTextInputBridge.h")
+    set_target_properties(rnqnx_views_qt PROPERTIES AUTOMOC ON)
+  endif()
   target_include_directories(rnqnx_views_qt PUBLIC
     "${RNQNX_REACT_QT_ROOT}/vnext/include"
   )
@@ -91,4 +99,8 @@ function(rnqnx_add_react_host_target)
     target_link_libraries(rnqnx_react_host PUBLIC rnqnx_websocket_transport)
   endif()
   rnqnx_enable_strict_warnings(rnqnx_react_host)
+  if(RNQNX_ENABLE_TEXT_INPUT_CONTRACT)
+    include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxTextInput.cmake)
+    rnqnx_add_text_input_probe()
+  endif()
 endfunction()

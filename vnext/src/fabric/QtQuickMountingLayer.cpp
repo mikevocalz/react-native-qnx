@@ -1,6 +1,9 @@
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
 
 #include "react-native-qnx/views/QtQuickItemFactory.h"
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+#include "react-native-qnx/fabric/QtTextInputBridge.h"
+#endif
 
 #include <QColor>
 #include <QCoreApplication>
@@ -100,6 +103,8 @@ const char* describe(MountError error) {
       return "NotAChildOfParent";
     case MountError::IndexOutOfRange:
       return "IndexOutOfRange";
+    case MountError::UnsupportedTextInput:
+      return "unsupported-text-input";
     case MountError::ItemCreationFailed:
       return "ItemCreationFailed";
   }
@@ -290,6 +295,9 @@ MountError QtQuickMountingLayer::destroy(Tag tag) {
   }
 
   QQuickItem* item = mounted->item;
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  if (auto* bridge = item->findChild<QtTextInputBridge*>(QString(), Qt::FindDirectChildrenOnly)) bridge->invalidate();
+#endif
   items_.erase(mounted);
   mountedPointers_.remove(item);
 
@@ -387,6 +395,23 @@ MountError QtQuickMountingLayer::updateTextInput(
 
   QQuickItem* item = mounted->item;
 
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  auto* bridge = textInputBridge(tag);
+  if (bridge == nullptr) return failWith(MountError::UnsupportedTextInput, QStringLiteral("TextInput editor unavailable"));
+  bridge->beginJSUpdate();
+  struct EndUpdate {
+    QPointer<QtTextInputBridge> bridge;
+    ~EndUpdate() { if (bridge) bridge->endJSUpdate(); }
+  } endUpdate{bridge};
+  if (!bridge->configure(style.secure, style.multiline)) {
+    return failWith(MountError::UnsupportedTextInput, QStringLiteral("Secure multiline TextInput is unsupported"));
+  }
+  try {
+    bridge->applyJS(style.mostRecentEventCount, style.text, style.selectionStart, style.selectionEnd);
+  } catch (const std::exception&) {
+    return failWith(MountError::IndexOutOfRange, QStringLiteral("Invalid TextInput update"));
+  }
+#else
   // The editable control is inside a wrapper; set text on the actual
   // TextInput/TextEdit so the cursor and user input are not reset.
   QQuickItem* textField = item->findChild<QQuickItem*>(
@@ -394,6 +419,7 @@ MountError QtQuickMountingLayer::updateTextInput(
   if (textField && textField->property("text").toString() != style.text) {
     textField->setProperty("text", style.text);
   }
+#endif
 
   if (style.fontSize > 0.0F || !style.fontFamily.isEmpty()) {
     QFont font = item->property("font").value<QFont>();
@@ -428,6 +454,26 @@ MountError QtQuickMountingLayer::updateTextInput(
   lastError_.clear();
   return MountError::None;
 }
+
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+QtTextInputBridge* QtQuickMountingLayer::textInputBridge(Tag tag) {
+  auto* item = itemForTag(tag);
+  if (item == nullptr || !item->property("text").isValid()) return nullptr;
+  if (auto* bridge = item->findChild<QtTextInputBridge*>(QString(), Qt::FindDirectChildrenOnly)) return bridge;
+  return new QtTextInputBridge(*item);
+}
+MountError QtQuickMountingLayer::setTextAndSelection(Tag tag, int count,
+    const std::optional<QString>& text, int start, int end) {
+  auto* bridge = textInputBridge(tag);
+  if (bridge == nullptr) return failWith(MountError::UnknownTag, QStringLiteral("TextInput target unavailable"));
+  try { bridge->applyJS(count, text, start, end); }
+  catch (const std::exception&) {
+    return failWith(MountError::IndexOutOfRange, QStringLiteral("Invalid TextInput update"));
+  }
+  lastError_.clear();
+  return MountError::None;
+}
+#endif
 
 MountError QtQuickMountingLayer::focusTextInput(Tag tag) {
   const auto mounted = items_.constFind(tag);

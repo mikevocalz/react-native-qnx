@@ -227,6 +227,9 @@ importers:
       typescript:
         specifier: 7.0.2
         version: 7.0.2
+      zustand:
+        specifier: 5.1.0
+        version: 5.1.0(@types/react@19.3.0)(react@19.3.0)
 
   apps/rn-playground:
     dependencies:
@@ -236,6 +239,9 @@ importers:
       react-native:
         specifier: 0.88.1
         version: 0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
+      zustand:
+        specifier: 5.1.0
+        version: 5.1.0(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@rn-qnx/metro-config-qnx':
         specifier: workspace:*
@@ -312,6 +318,9 @@ importers:
       react-native:
         specifier: 0.88.1
         version: 0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
+      zustand:
+        specifier: 5.1.0
+        version: 5.1.0(@types/react@19.3.0)(react@19.3.0)
 
 packages:
 
@@ -2594,6 +2603,24 @@ packages:
 
   zod@4.6.6:
     resolution: {integrity: sha512-4UmzQUF5fxvfcYHlbjBmejU+w+hbDnWFx4aS8kBx7nPBHcO2SqPbpAG8snbdg+Xse4pRefR98hgjFgIMCI/UhA==}
+
+  zustand@5.1.0:
+    resolution: {integrity: sha512-ciJZlP48M1PTQbVQq81CGVFxHTLpZNrFjKqwjtCU34AWuXTZT/jrF3p9+fI84Cf1eSCMLapxqBy/SNTfwOBuqA==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
 
 snapshots:
 
@@ -5196,3 +5223,8 @@ snapshots:
       yargs-parser: 22.0.0
 
   zod@4.6.6: {}
+
+  zustand@5.1.0(@types/react@19.3.0)(react@19.3.0):
+    optionalDependencies:
+      '@types/react': 19.3.0
+      react: 19.3.0

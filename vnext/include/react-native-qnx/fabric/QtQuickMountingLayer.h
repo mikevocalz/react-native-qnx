@@ -1,11 +1,16 @@
 #pragma once
 
+#ifndef RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+#define RNQNX_ENABLE_TEXT_INPUT_CONTRACT 0
+#endif
+
 #include <QHash>
 #include <QList>
 #include <QSet>
 #include <QString>
 
 #include <cstdint>
+#include <optional>
 
 QT_BEGIN_NAMESPACE
 class QQuickItem;
@@ -16,6 +21,9 @@ class QtQuickItemFactory;
 }
 
 namespace rnqnx::fabric {
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+class QtTextInputBridge;
+#endif
 
 /// Mirrors facebook::react::Tag.
 /// Installed source: ReactCommon/react/renderer/core/ReactPrimitives.h:17
@@ -101,6 +109,11 @@ struct TextStyle {
 /// rather than faked. See `docs/component-support.md`.
 struct TextInputStyle {
   QString text;
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  int mostRecentEventCount{0};
+  int selectionStart{-1};
+  int selectionEnd{-1};
+#endif
   float fontSize{0.0F};
   bool hasColor{false};
   std::uint32_t color{0};
@@ -144,6 +157,7 @@ enum class MountError : std::uint8_t {
   NotAChildOfParent,
   IndexOutOfRange,
   ItemCreationFailed,
+  UnsupportedTextInput,
 };
 
 const char* describe(MountError error);
@@ -202,6 +216,11 @@ class QtQuickMountingLayer {
   /// `TextInput` surface; a plain Item silently ignores the unknown properties,
   /// so the mapping is what keeps this honest rather than a type check.
   MountError updateTextInput(Tag tag, const TextInputStyle& style);
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  QtTextInputBridge* textInputBridge(Tag tag);
+  MountError setTextAndSelection(Tag tag, int eventCount, const std::optional<QString>& text,
+                                 int start, int end);
+#endif
 
   /// Gives a mounted text field active focus.
   MountError focusTextInput(Tag tag);

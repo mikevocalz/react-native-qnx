@@ -10,5 +10,8 @@
   ],
   "peerDependencies": {
     "react-native": "0.88.1"
+  },
+  "dependencies": {
+    "zustand": "5.1.0"
   }
 }
