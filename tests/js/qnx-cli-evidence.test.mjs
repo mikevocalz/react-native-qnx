@@ -9,6 +9,7 @@ const root = process.cwd();
 const cli = path.join(root, 'packages/react-native-qnx-cli/src/cli.mjs');
 const temporary = await realpath(await mkdtemp(path.join(tmpdir(), 'rnqnx-evidence-')));
 
+/** @param {string[]} args */
 function run(args) {
   const result = spawnSync(process.execPath, [cli, ...args], {
     cwd: temporary,
@@ -42,21 +43,23 @@ try {
     'board.txt': 'pi400\n',
     'preflight/qcc-V.txt': 'gcc_ntoaarch64le\n',
     'preflight/qxx-V.txt': 'q++ compiler fixture\n',
-    'preflight/target-preflight.txt':
-      'machine=aarch64le\nscreen=ready\ntarget_dir=writable\n',
+    'preflight/target-preflight.txt': 'machine=aarch64le\nscreen=ready\ntarget_dir=writable\n',
   };
   for (const [file, value] of Object.entries(files)) {
     await writeFile(path.join(evidence, file), value);
   }
 
-  const dryRun = run(['evidence', 'verify', '--dir', 'artifacts/pi/2026-11-07-fixture', '--dry-run']);
+  const dryRun = run([
+    'evidence',
+    'verify',
+    '--dir',
+    'artifacts/pi/2026-11-07-fixture',
+    '--dry-run',
+  ]);
   assert.equal(dryRun.status, 0, dryRun.stderr);
   const plan = JSON.parse(dryRun.stdout);
   assert.equal(plan.executable, process.execPath);
-  assert.deepEqual(plan.args, [
-    path.join(temporary, 'scripts/verify-pi-evidence.mjs'),
-    evidence,
-  ]);
+  assert.deepEqual(plan.args, [path.join(temporary, 'scripts/verify-pi-evidence.mjs'), evidence]);
   assert.equal(plan.cwd, temporary);
   await assert.rejects(readFile(path.join(evidence, 'manifest.json')), /ENOENT/);
 
