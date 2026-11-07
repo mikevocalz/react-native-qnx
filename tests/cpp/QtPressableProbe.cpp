@@ -47,6 +47,12 @@ void run() {
   host.installComponentProvider();
   host.installPlatformConstants();
   host.installTimers();
+  if (std::getenv("RNQNX_PRESSABLE_DISABLE_REMOVED_TARGET_FIX") != nullptr) {
+    // Causality control: use this exact binary and bundle while restoring the
+    // pinned renderer's original null-target cancellation behavior.
+    host.runtime().global().setProperty(
+        host.runtime(), "__RNQNX_INPUT_LIFECYCLE__", false);
+  }
   const char* overridePath = std::getenv("RNQNX_PRESSABLE_FIXTURE");
   const std::string path = overridePath ? overridePath : RNQNX_PRESSABLE_FIXTURE;
   std::ifstream file(path, std::ios::binary);

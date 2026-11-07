@@ -71,7 +71,12 @@ function(rnqnx_add_input_lifecycle_probe)
     add_test(NAME rnqnx_pressable_rejects_interception COMMAND "${CMAKE_COMMAND}"
       "-DPROBE_PATH=$<TARGET_FILE:rnqnx_pressable_probe>"
       -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tests/cmake/PressableNegative.cmake")
-    set_tests_properties(rnqnx_pressable_probe rnqnx_pressable_rejects_interception PROPERTIES TIMEOUT 30
+    add_test(NAME rnqnx_pressable_rejects_disabled_cancellation COMMAND "${CMAKE_COMMAND}"
+      "-DPROBE_PATH=$<TARGET_FILE:rnqnx_pressable_probe>"
+      -DCONTROL=removed-target
+      -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tests/cmake/PressableNegative.cmake")
+    set_tests_properties(rnqnx_pressable_probe rnqnx_pressable_rejects_interception
+      rnqnx_pressable_rejects_disabled_cancellation PROPERTIES TIMEOUT 30
       ENVIRONMENT "QT_QUICK_BACKEND=software;ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1")
   endif()
 endfunction()
