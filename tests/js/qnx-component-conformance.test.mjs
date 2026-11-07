@@ -6,8 +6,10 @@ import path from 'node:path';
 const root = process.cwd();
 const app = path.join(root, 'apps/component-conformance');
 const require = createRequire(import.meta.url);
-const { SCENARIOS, createDocumentRows } = require(path.join(app, 'fixtures.js'));
-
+const fixture = require(path.join(app, 'fixtures.js'));
+/** @type {Array<{ id: string, status: string }>} */
+const SCENARIOS = fixture.SCENARIOS;
+const { createDocumentRows } = fixture;
 
 assert.equal(SCENARIOS.length, 8);
 assert.equal(new Set(SCENARIOS.map((scenario) => scenario.id)).size, SCENARIOS.length);
