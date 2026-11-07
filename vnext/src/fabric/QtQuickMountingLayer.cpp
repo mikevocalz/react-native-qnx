@@ -418,10 +418,14 @@ MountError QtQuickMountingLayer::updateTextInput(
         MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
   }
 
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  QPointer<QQuickItem> item = mounted->item;
+#else
   QQuickItem* item = mounted->item;
+#endif
 
 #if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
-  auto* bridge = textInputBridge(tag);
+  QPointer<QtTextInputBridge> bridge = textInputBridge(tag);
   if (bridge == nullptr) return failWith(MountError::UnsupportedTextInput, QStringLiteral("TextInput editor unavailable"));
   bridge->beginJSUpdate();
   struct EndUpdate {
@@ -431,11 +435,13 @@ MountError QtQuickMountingLayer::updateTextInput(
   if (!bridge->configure(style.secure, style.multiline)) {
     return failWith(MountError::UnsupportedTextInput, QStringLiteral("Secure multiline TextInput is unsupported"));
   }
+  if (!item || !bridge) return failWith(MountError::UnknownTag, QStringLiteral("TextInput target removed during update"));
   try {
     bridge->applyJS(style.mostRecentEventCount, style.text, style.selectionStart, style.selectionEnd);
   } catch (const std::exception&) {
     return failWith(MountError::IndexOutOfRange, QStringLiteral("Invalid TextInput update"));
   }
+  if (!item || !bridge) return failWith(MountError::UnknownTag, QStringLiteral("TextInput target removed during update"));
 #else
   // The editable control is inside a wrapper; set text on the actual
   // TextInput/TextEdit so the cursor and user input are not reset.
@@ -461,6 +467,9 @@ MountError QtQuickMountingLayer::updateTextInput(
   }
 
   item->setProperty("readOnly", style.readOnly);
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  if (!item || !bridge) return failWith(MountError::UnknownTag, QStringLiteral("TextInput target removed during update"));
+#endif
   // TextInput.Normal is 0 and TextInput.Password is 2
   // (lib/QtQuick.framework/Headers/qquicktextinput_p.h, EchoMode).
   item->setProperty("echoMode", style.secure ? 2 : 0);
@@ -468,6 +477,9 @@ MountError QtQuickMountingLayer::updateTextInput(
     item->setProperty("maximumLength", style.maxLength);
   }
   item->setProperty("multiline", style.multiline);
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  if (!item || !bridge) return failWith(MountError::UnknownTag, QStringLiteral("TextInput target removed during update"));
+#endif
   if (!style.placeholder.isEmpty()) {
     item->setProperty("placeholderText", style.placeholder);
   }

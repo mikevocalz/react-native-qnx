@@ -60,20 +60,27 @@ void QtTextInputBridge::updateTabEligibility() {
 bool QtTextInputBridge::configure(bool secure, bool multiline) {
   requireOwner();
   if (!live_ || !wrapper_) return false;
+  const QPointer<QtTextInputBridge> self(this);
+  const QPointer<QQuickItem> wrapper(wrapper_);
   secure_ = secure;
   if (secure && multiline) {
     // Fail before applying incoming text. Previously visible nonsecure content
     // must not remain visible when this unsupported secure mode is requested.
-    wrapper_->setProperty("readOnly", true);
-    wrapper_->setVisible(false);
+    wrapper->setProperty("readOnly", true);
+    if (!self || !wrapper) return false;
+    wrapper->setVisible(false);
+    if (!self || !wrapper) return false;
     hiddenUnsupported_ = true;
     return false;
   }
   field_ = wrapper_->findChild<QQuickItem*>(multiline ? "qnx-text-edit" : "qnx-text-input");
-  wrapper_->setProperty("echoMode", secure ? 2 : 0);
-  wrapper_->setProperty("multiline", multiline);
+  wrapper->setProperty("echoMode", secure ? 2 : 0);
+  if (!self || !wrapper) return false;
+  wrapper->setProperty("multiline", multiline);
+  if (!self || !wrapper) return false;
   if (hiddenUnsupported_) {
-    wrapper_->setVisible(true);
+    wrapper->setVisible(true);
+    if (!self || !wrapper) return false;
     hiddenUnsupported_ = false;
   }
   return !field_.isNull();
@@ -85,7 +92,10 @@ TextInputObservation QtTextInputBridge::observation() const {
           field_ ? field_->property("selectionEnd").toInt() : 0, generation_};
 }
 void QtTextInputBridge::emitEvent(TextInputEvent kind) {
-  if (!live_ || applyingJS_ || !field_ || !emit_) return;
+  const bool focusEvent = kind == TextInputEvent::Focus || kind == TextInputEvent::Blur;
+  // A JS write must not echo text/selection. Real focus transitions caused by
+  // that write still belong to the native lifecycle and must reach React.
+  if (!live_ || (applyingJS_ && !focusEvent) || !field_ || !emit_) return;
   const auto value = observation();
   const auto callback = emit_; // User cleanup can synchronously delete this object.
   callback(kind, value);      // Do not access members after this callback.
