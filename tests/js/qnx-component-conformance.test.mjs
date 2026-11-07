@@ -6,9 +6,8 @@ import path from 'node:path';
 const root = process.cwd();
 const app = path.join(root, 'apps/component-conformance');
 const require = createRequire(import.meta.url);
-const { SCENARIOS, createDocumentRows } = require(
-  path.join(app, 'fixtures.js')
-);
+const { SCENARIOS, createDocumentRows } = require(path.join(app, 'fixtures.js'));
+
 
 assert.equal(SCENARIOS.length, 8);
 assert.equal(new Set(SCENARIOS.map((scenario) => scenario.id)).size, SCENARIOS.length);
@@ -34,7 +33,7 @@ const entry = await readFile(path.join(app, 'index.js'), 'utf8');
 assert.match(entry, /AppRegistry\.registerComponent\('RNQnxPlayground'/);
 assert.match(entry, /require\('zustand'\)/);
 assert.match(entry, /require\('react-native\/Libraries\/Lists\/FlatList'\)/);
-assert.match(entry, /require\('\.\/fixtures\.cjs'\)/);
+assert.match(entry, /require\('\.\/fixtures\.js'\)/);
 assert.doesNotMatch(entry, /require\('react-native'\)/);
 assert.doesNotMatch(entry, /nitro-forge|NitroForge|premium\/assets/i);
 
