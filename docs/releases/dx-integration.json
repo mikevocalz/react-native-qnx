@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "cfc28165525e0d7c54192daf58b9b4318a26e83a",
+  "integrationBranch": "feat/qnx-integrated-dx-candidate",
+  "scope": "Combined source-checkout tooling and Linux host validation; not a production release",
+  "releaseGatePassed": false,
+  "inputs": [
+    {
+      "pr": 74,
+      "head": "c05fb1f009d1abab10d1d8109414d972d72b78bb",
+      "feature": "CLI evidence verification"
+    },
+    {
+      "pr": 75,
+      "head": "0a6eb3b2a826e9ff560e3b8f8060fc71e1b29e61",
+      "feature": "Component conformance app and host rendering"
+    },
+    {
+      "pr": 76,
+      "head": "7db5776ceafa4d6899822329b113a535af080d27",
+      "feature": "Read-only performance and cold-boot evidence qualification"
+    },
+    {
+      "pr": 77,
+      "head": "6ebb16143fc72d7b57f258dee64f5aa07a4903a2",
+      "feature": "Performance workload sources and host rendering"
+    },
+    {
+      "pr": 78,
+      "head": "2b5fa25dc05ef22ec3254710ff932c60919b127b",
+      "feature": "Restricted device diagnostics"
+    },
+    {
+      "pr": 79,
+      "head": "2d207403b0eaa2d3ffd328fccb3d4ee86a8c6d2f",
+      "feature": "Expo discovery and repeatable project preparation"
+    }
+  ],
+  "resolutions": [
+    "Retain both qnx:device and expo:qnx root commands",
+    "Retain conformance and performance captures in the host-renderer workflow",
+    "Add a fresh committed-source app workflow with optional Linux host rendering"
+  ],
+  "notClaimed": [
+    "Independent review or main-branch merge",
+    "Standalone package publication or clean-machine native toolchain installation",
+    "Physical QNX transport, graphics cold boot or stock QSTI qualification",
+    "Measured device performance, full native module registration or Expo Router parity"
+  ]
+}
