@@ -93,7 +93,7 @@ try {
   }
   const missingDir = run(['evidence', 'verify', '--dir', 'artifacts/pi/not-a-run']);
   assert.notEqual(missingDir.status, 0);
-  assert.match(missingDir.stderr, /ENOENT|no such file or directory/i);
+  assert.match(missingDir.stderr, /Missing required evidence file|ENOENT|no such file or directory/i);
 
   console.log(
     'qnx-cli-evidence.test.mjs passed (dry-run, real verifier, SHA-256 manifest, newest run, errors; synthetic host fixture only)'
