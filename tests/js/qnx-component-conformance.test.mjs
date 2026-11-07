@@ -7,7 +7,7 @@ const root = process.cwd();
 const app = path.join(root, 'apps/component-conformance');
 const require = createRequire(import.meta.url);
 const { SCENARIOS, createDocumentRows } = require(
-  path.join(app, 'fixtures.cjs')
+  path.join(app, 'fixtures.js')
 );
 
 assert.equal(SCENARIOS.length, 8);
