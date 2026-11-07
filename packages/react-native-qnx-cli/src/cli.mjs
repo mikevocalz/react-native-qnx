@@ -1,7 +1,16 @@
 #!/usr/bin/env node
 import { spawn } from 'node:child_process';
 import { constants } from 'node:os';
-import { access, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
+import {
+  access,
+  mkdir,
+  readFile,
+  writeFile,
+  rm,
+  realpath,
+  lstat,
+  readlink,
+} from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
@@ -125,6 +134,45 @@ async function execute(executable, args, cwd) {
   });
 }
 
+/** Resolve symlinks even when the final output directories do not exist yet.
+ * @param {string} file
+ * @param {Set<string>} [links]
+ * @returns {Promise<string>}
+ */
+async function resolveOutputPath(file, links = new Set()) {
+  try {
+    return await realpath(file);
+  } catch (error) {
+    if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error;
+    let stat;
+    try {
+      stat = await lstat(file);
+    } catch (statError) {
+      if (!(statError instanceof Error && 'code' in statError && statError.code === 'ENOENT'))
+        throw statError;
+    }
+    if (stat?.isSymbolicLink()) {
+      if (links.has(file)) throw new Error('Bundle output contains a symlink cycle.');
+      links.add(file);
+      return resolveOutputPath(path.resolve(path.dirname(file), await readlink(file)), links);
+    }
+    const parent = path.dirname(file);
+    if (parent === file) throw error;
+    return path.join(await resolveOutputPath(parent, links), path.basename(file));
+  }
+}
+
+/** @param {string} parent @param {string} child */
+function isInside(parent, child) {
+  const relative = path.relative(parent, child);
+  return (
+    relative !== '' &&
+    relative !== '..' &&
+    !relative.startsWith(`..${path.sep}`) &&
+    !path.isAbsolute(relative)
+  );
+}
+
 /** @param {string[]} argv @param {string} [cwd] */
 export async function main(argv, cwd = process.cwd()) {
   const { values, positionals } = parseArgs({
@@ -187,6 +235,13 @@ export async function main(argv, cwd = process.cwd()) {
     const output = path.resolve(root, values.out ?? `build/${name}.bundle.js`);
     if (!output.startsWith(path.join(root, 'build') + path.sep))
       throw new Error('Bundle output must be inside this checkout’s build/ directory.');
+    const realRoot = await realpath(root);
+    const realBuild = await resolveOutputPath(path.join(realRoot, 'build'));
+    const realOutput = await resolveOutputPath(output);
+    // Metro opens the output later; this rejects existing escapes, but cannot
+    // prevent another process from replacing a checked path before that open.
+    if (!isInside(realRoot, realBuild) || !isInside(realBuild, realOutput))
+      throw new Error('Bundle output symlinks must stay inside this checkout’s build/ directory.');
     const require = createRequire(path.join(root, 'package.json'));
     const metroPackage = require.resolve('metro/package.json');
     const metro = JSON.parse(await readFile(metroPackage, 'utf8'));

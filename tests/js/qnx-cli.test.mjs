@@ -45,6 +45,50 @@ try {
   assert.equal(bundlePlan.executable, process.execPath);
   assert.ok(bundlePlan.args[0].endsWith('/metro/src/cli.js'));
   assert.ok(bundlePlan.args.includes('qnx'));
+  const build = path.join(temporary, 'build');
+  await mkdir(build);
+  const nested = run([
+    'bundle-qnx',
+    '--app',
+    'dashboard',
+    '--out',
+    'build/new/nested/app.js',
+    '--dry-run',
+  ]);
+  assert.equal(nested.status, 0, nested.stderr);
+  assert.equal(JSON.parse(nested.stdout).args.at(-1), path.join(build, 'new/nested/app.js'));
+  await mkdir(path.join(build, 'inside'));
+  await writeFile(path.join(build, 'inside/existing.js'), 'previous bundle');
+  await symlink(path.join(build, 'inside'), path.join(build, 'inside-link'), 'dir');
+  for (const output of ['build/inside/existing.js', 'build/inside-link/new/app.js']) {
+    const valid = run(['bundle-qnx', '--app', 'dashboard', '--out', output, '--dry-run']);
+    assert.equal(valid.status, 0, valid.stderr);
+  }
+  const sentinel = path.join(temporary, 'apps/dashboard/index.js');
+  await symlink(path.dirname(sentinel), path.join(build, 'escaped-directory'), 'dir');
+  await symlink(sentinel, path.join(build, 'escaped-file.js'));
+  await symlink(path.join(temporary, 'missing-outside.js'), path.join(build, 'dangling-file.js'));
+  for (const output of [
+    'build/escaped-directory/index.js',
+    'build/escaped-file.js',
+    'build/dangling-file.js',
+  ]) {
+    const rejected = run(['bundle-qnx', '--app', 'dashboard', '--out', output, '--dry-run']);
+    assert.equal(rejected.status, 1, output);
+    assert.match(rejected.stderr, /symlinks must stay inside/);
+  }
+  assert.equal(await readFile(sentinel, 'utf8'), entry);
+  await rm(build, { recursive: true });
+  const external = await mkdtemp(path.join(tmpdir(), 'rnqnx-cli-external-'));
+  try {
+    await symlink(external, build, 'dir');
+    const rejected = run(['bundle-qnx', '--app', 'dashboard', '--dry-run']);
+    assert.equal(rejected.status, 1);
+    assert.match(rejected.stderr, /symlinks must stay inside/);
+  } finally {
+    await rm(build);
+    await rm(external, { recursive: true });
+  }
   assert.equal(run(['init', 'dashboard']).status, 1);
   assert.equal(await readFile(path.join(temporary, 'apps/dashboard/index.js'), 'utf8'), entry);
   for (const args of [
@@ -93,7 +137,7 @@ try {
   assert.equal(run(['run-qnx'], env).status, 37, 'run must preserve SSH failure');
   assert.equal(run(['log-qnx'], env).status, 37, 'log must preserve SSH failure');
   console.log(
-    'qnx-cli.test.mjs passed (init safety, option rejection, dry-run, real shell failure propagation; no device connection)'
+    'qnx-cli.test.mjs passed (init safety, output symlink confinement, option rejection, dry-run, real shell failure propagation; no device connection)'
   );
 } finally {
   await rm(temporary, { recursive: true, force: true });
