@@ -674,7 +674,9 @@ void javaScriptBuildsTheTreeThroughFabricUIManager() {
 
   // A surface is a fixed viewport even when its only root child uses flex and
   // percentages. The child's fixed-size descendants keep their own Yoga size.
-  const std::string fillScript = R"JS(
+  const std::string fillScript = R"JS({
+    const fabric = globalThis.nativeFabricUIManager;
+    const surfaceId = )JS" + std::to_string(kSurfaceId) + R"JS(;
     const fillingRoot = fabric.createNode(502, 'View', surfaceId,
       { flex: 1, width: '100%', height: '100%', collapsable: false }, {});
     const fixedChild = fabric.createNode(503, 'View', surfaceId,
@@ -683,8 +685,11 @@ void javaScriptBuildsTheTreeThroughFabricUIManager() {
     const fillingSet = fabric.createChildSet();
     fabric.appendChildToSet(fillingSet, fillingRoot);
     fabric.completeRoot(surfaceId, fillingSet);
-  )JS";
-  EXPECT(fixture.host().evaluate(fillScript, "surface-viewport.js"));
+  })JS";
+  if (!fixture.host().evaluate(fillScript, "surface-viewport.js")) {
+    fail("viewport script evaluated", __FILE__, __LINE__,
+         fixture.host().lastError().toStdString());
+  }
   EXPECT(fixture.host().delegate().lastFailures().empty());
   QQuickItem* filling = fixture.layer().itemForTag(502);
   QQuickItem* fixed = fixture.layer().itemForTag(503);

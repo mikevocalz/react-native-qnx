@@ -2,6 +2,7 @@
 
 #include <QHash>
 #include <QList>
+#include <QSet>
 #include <QString>
 
 #include <cstdint>
@@ -264,6 +265,8 @@ class QtQuickMountingLayer {
   QQuickItem& rootItem_;
   Tag rootTag_;
   QHash<Tag, MountedItem> items_;
+  // Non-owning membership index, kept in step with the tag registry.
+  QSet<QQuickItem*> mountedPointers_;
   QString lastError_;
 };
 

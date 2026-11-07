@@ -169,6 +169,14 @@ void fabricIndicesExcludeQmlDecorations() {
   CHECK_OK(fixture.layer().remove(2, 4, 0));
   CHECK(parent->childItems().size() == 1);
   CHECK(parent->childItems().at(0) == background);
+  CHECK_OK(fixture.layer().destroy(3));
+  CHECK_OK(fixture.createView(3));
+  CHECK_OK(fixture.layer().insert(2, 3, 0));
+  CHECK(parent->childItems().at(0) == background);
+  CHECK(parent->childItems().at(1) == fixture.layer().itemForTag(3));
+  CHECK_OK(fixture.layer().remove(2, 3, 0));
+  CHECK_OK(fixture.layer().destroy(3));
+  CHECK(parent->childItems().size() == 1);
 }
 
 void insertRejectsBadArguments() {

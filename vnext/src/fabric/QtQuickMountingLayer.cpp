@@ -10,7 +10,6 @@
 #include <QFontDatabase>
 #include <QHash>
 #include <QStandardPaths>
-#include <QSet>
 #include <QStringList>
 #include <QUrl>
 
@@ -113,6 +112,7 @@ QtQuickMountingLayer::QtQuickMountingLayer(
     Tag rootTag)
     : factory_(factory), rootItem_(rootItem), rootTag_(rootTag) {
   items_.insert(rootTag_, MountedItem{&rootItem_, false});
+  mountedPointers_.insert(&rootItem_);
 }
 
 QtQuickMountingLayer::~QtQuickMountingLayer() {
@@ -164,19 +164,15 @@ MountError QtQuickMountingLayer::create(
   }
 
   items_.insert(tag, MountedItem{item, true});
+  mountedPointers_.insert(item);
   lastError_.clear();
   return MountError::None;
 }
 
 QList<QQuickItem*> QtQuickMountingLayer::mountedChildren(QQuickItem* parent) const {
-  QSet<QQuickItem*> mounted;
-  mounted.reserve(items_.size());
-  for (const auto& item : items_) {
-    mounted.insert(item.item);
-  }
   QList<QQuickItem*> children;
   for (auto* child : parent->childItems()) {
-    if (mounted.contains(child)) {
+    if (mountedPointers_.contains(child)) {
       children.append(child);
     }
   }
@@ -295,6 +291,7 @@ MountError QtQuickMountingLayer::destroy(Tag tag) {
 
   QQuickItem* item = mounted->item;
   items_.erase(mounted);
+  mountedPointers_.remove(item);
 
   // Defensive: a well-formed transaction removes before it deletes.
   if (item->parentItem() != nullptr) {

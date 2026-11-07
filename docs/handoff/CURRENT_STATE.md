@@ -16,6 +16,13 @@ through 17 November 2026. Manual graphics requires the isolated legacy Pi 4
 DRM/Screen stack and named DRM ACLs. Recovery boot remains selected; automatic
 graphics startup remains disabled after failed boot tests. Full component,
 QSTI, async Nitro, performance, and production-packaging gates remain separate.
+Follow-up: the full host/Hermes graph now passes 11/11 CTests, including the
+viewport and original error-forwarding regressions. Host JSI uses one shared
+library to preserve exception identity. Cached pointer membership removes the
+all-registry scan; host mutation timings and remaining flat-sibling overhead
+are in [the follow-up report](../evidence/pi400-host-validation-2026-11-07.md).
+The optimized executable was independently captured on the Pi before promotion.
+
 Earlier no-QNX-pixel statements below describe older baselines and are
 superseded only for this measured Hello World slice.
 

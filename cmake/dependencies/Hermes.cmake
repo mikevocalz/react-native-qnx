@@ -53,6 +53,10 @@ set(HERMES_ENABLE_INTL OFF CACHE BOOL "" FORCE)
 set(HERMES_ENABLE_TEST_SUITE OFF CACHE BOOL "" FORCE)
 set(HERMES_ENABLE_DEBUGGER ON CACHE BOOL "" FORCE)
 set(HERMES_BUILD_APPLE_FRAMEWORK OFF CACHE BOOL "" FORCE)
+# Hermes and its consumers must share JSI's exception type identities across
+# dynamic-library boundaries. Static copies give Darwin duplicate JSError RTTI
+# and turn a JavaScript exception into the scheduler's non-JS fallback.
+set(HERMES_BUILD_SHARED_JSI ON CACHE BOOL "" FORCE)
 set(HERMES_ENABLE_TOOLS ON CACHE BOOL "" FORCE)
 set(JSI_DIR "${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi" CACHE PATH "" FORCE)
 

@@ -27,9 +27,24 @@ Nitrogen608files all matched pinned archives.
 Boundaries:
 - This is the synchronous existing QNX Nitro HybridClass proof; no async
   dispatcher, callbacks, third-party Nitro package or general codegen claim.
-- Full host/Hermes suite, including new viewport case, not rebuilt/run here.
+- Initial capture preceded the full host/Hermes suite; follow-up now passes 11/11.
 - Prior seven-host-CTest pass is earlier baseline evidence only.
-- No FPS/startup/RSS or larger-tree performance measurement.
+- No FPS/startup/RSS or QNX performance measurement; host mutation results below.
 - Automatic graphics startup remains disabled after failed boot tests.
 - Qt private evaluation expires 17 November2026; no release/distribution claim.
 - Licensed vendor binaries, credentials and source archives are excluded.
+
+Follow-up validation (same date):
+Full host/Hermes suite: 11/11 CTests passed with enabled host sanitizers.
+Viewport, original error-forwarding and decorated lifecycle cases passed.
+Cached pointer membership removes the per-mutation total-registry scan.
+Host mutation benchmark and remaining sibling cost:
+  docs/evidence/pi400-host-validation-2026-11-07.md
+Optimized QNX candidate:
+  RNQNX_HELLO_NITRO_V1_OK platform=qnx architecture=aarch64 add=42
+  RNQNX_PLAYGROUND_SCREENSHOT hello-world-optimized.png 640x480
+  EXIT=0
+  native SHA256: f0c57d889ddfa0123020f638d6df2021130f6f6196a24ec0c8c331f1e2a4b847
+  captured PNG SHA256: 3cb8b9aefe80afe5d0c3859d3930bca0f3ba38f9299d0faf7deff9c7542a507f
+Candidate pixels visually verified before promotion to continuous launch.
+The initial artifact hashes above remain the original capture's provenance.

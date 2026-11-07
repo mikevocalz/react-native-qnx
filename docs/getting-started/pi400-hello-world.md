@@ -242,11 +242,14 @@ maximum match the supplied viewport; fixed-size descendants retain their own
 Yoga sizes. Native window dimensions remain 640×480.
 
 The decorated-View ordering/removal regression passed under the host ASan
-configuration. A flex/percentage-root plus fixed-child regression was added to
-the full host/Hermes suite but that larger suite was not rebuilt/run here;
-the physical Hello World capture validates the actual QNX viewport path. The
-child-filter helper scans registered items per mutation; large-tree performance,
-startup time, FPS and RSS were not measured.
+configuration. The full host/Hermes suite subsequently passed 11/11 CTests, including the
+flex/percentage-root plus fixed-child regression and original error-forwarding
+checks. The child filter now uses cached non-owning pointer membership instead
+of scanning all registered items. Host mutation timings and their remaining
+flat-sibling cost are recorded in [the follow-up report](../evidence/pi400-host-validation-2026-11-07.md).
+The optimized QNX candidate separately passed Nitro checks, rendered capture
+and exit zero before replacing the continuously running app. QNX performance,
+startup time, FPS and RSS remain unmeasured.
 
 To repeat a one-shot capture, add `--screenshot output.png`; it intentionally
 exits afterward. Omit that option to keep the app running. Use the private Qt
