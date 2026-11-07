@@ -39,6 +39,18 @@ The optimized executable was independently captured on the Pi before promotion.
 Earlier no-QNX-pixel statements below describe older baselines and are
 superseded only for this measured Hello World slice.
 
+## 2026-11-07 Forge native target follow-up (PR42)
+
+The complete seven-engine Rust archive and QNX native owner now cross-build with
+licensed SDP8.0.5 and Rust1.99.1 source-built std. Physical Pi400 probes as qnxuser
+passed entropy/thread, separate Tally write/reopen, 500-task serial queue and owner
+lifecycle checks. Exact patch/toolchain/hashes and limitations are in
+[the receipt](../evidence/forge-qnx-2026-11-07.md). The opt-in getrandom0.3.4
+patch preserves all engines and existing entropy/error handling. Native flags
+remain default OFF; no app-facing JS binding or cross-alpha Nitro compatibility
+is claimed. Hosted jobs are blocked before startup by GitHub billing/spending
+limits. The existing fullscreen app/graphics/recovery boot were left intact.
+
 ## 2026-10-03 dependency security update
 
 The earlier clean-audit statements below describe the 2026-10-01 baseline.

@@ -1,0 +1,52 @@
+name: Forge shared Rust host
+
+on:
+  pull_request:
+    paths:
+      - 'CMakeLists.txt'
+      - 'cmake/RnqnxForge.cmake'
+      - 'native/platform/qnx/forge/**'
+      - 'tests/native/forge-host/**'
+      - '.github/workflows/forge-native-host.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-host:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CARGO_BUILD_JOBS: 2
+    steps:
+      - name: Check out QNX integration
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check out the exact shared engine source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: mikevocalz/nitro-forge
+          ref: 2f33f2fb204077c4a493788ee36890c76f03b31a
+          path: .deps/nitro-forge
+      - name: Install pinned build tooling
+        run: |
+          rustup toolchain install 1.99.1 --profile minimal
+          python3 -m pip install --user --break-system-packages cmake==4.4.4 ninja==1.13.2
+      - name: Build the real host Rust archive
+        working-directory: .deps/nitro-forge
+        run: cargo +1.99.1 build -p nf-sys --release --locked
+      - name: Configure the isolated host fixture
+        run: |
+          "$HOME/.local/bin/cmake" -S tests/native/forge-host -B build/forge-host -G Ninja \
+            -DCMAKE_MAKE_PROGRAM="$HOME/.local/bin/ninja" \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DRNQNX_ENABLE_HOST_SANITIZERS=ON \
+            -DRNQNX_FORGE_SOURCE_DIR="$GITHUB_WORKSPACE/.deps/nitro-forge" \
+            -DNF_RUST_LIBRARY="$GITHUB_WORKSPACE/.deps/nitro-forge/target/release/libnf_sys.a"
+      - name: Build the host adapter and probes
+        run: '"$HOME/.local/bin/cmake" --build build/forge-host --parallel 2'
+      - name: Run real engine and lifecycle checks
+        run: '"$HOME/.local/bin/ctest" --test-dir build/forge-host --output-on-failure'
+
+# This job executes on Linux. It does not substitute for QNX SDP compilation,
+# a QNX device run, Nitro/JS registration, or Qt/Fabric rendering evidence.

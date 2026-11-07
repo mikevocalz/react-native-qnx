@@ -128,7 +128,7 @@ the stock Pi 4/5 QSTI baseline. QNX's Pi 400 recipe adapts the BCM2711 Pi 4
 custom image with the Pi 400 DTB and Wi-Fi firmware. Follow
 `docs/getting-started/raspberry-pi-400.md` before flashing, then use
 `RNQNX_PI_BOARD=pi400` to label evidence from the same deployment lane.
-No QNX device/React Native runtime proof is claimed for Pi 400.
+Physical Pi 400 Hello World/Nitro evidence is recorded above; broader QSTI and component support remain separate gates.
 
 ```bash
 export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
@@ -178,6 +178,15 @@ The Pi helpers default to `qnxuser@qnxpi.local`; set `QNX_TARGET_IP`,
 `QNX_TARGET_USER`, or `QNX_SSH_KEY` only when your target differs. The
 scripts never assume root SSH. Detailed prerequisites and commands are in
 `docs/getting-started/build-and-deploy.md`.
+
+## Shared Forge Rust engines
+
+The opt-in Forge native slice reuses Nitro Forge's Rust engines and per-document
+C++ adapter. Host and physical Pi400/QNX8.0.5 probes verify real Tally editing,
+undo/redo, saved-document reopening, FIFO and owner teardown. The target build
+uses an explicit experimental Rust std/dependency compatibility patch; Nitro
+JavaScript bindings remain pending. See [the shared engine guide](docs/native-modules/forge-rust-qnx.md)
+for build commands, exact target evidence and remaining ABI/lifecycle boundaries.
 
 ## License
 

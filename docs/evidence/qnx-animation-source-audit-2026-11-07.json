@@ -1,0 +1,89 @@
+{
+  "audit_date": "2026-11-07",
+  "qnx_base": "e84b51430c239bc89dbd48ac35afab89f7c77c01",
+  "runtime_followup": "e9026fac8ce8deb5a8e6ba4c35d1dcc5592d478d",
+  "packages": [
+    {
+      "name": "react-native-reanimated",
+      "version": "4.7.1",
+      "tarball": "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-4.7.1.tgz",
+      "integrity": "sha512-HviDFSZ6V4KTRsrLS6hRbBJ4j63l/L8a5az0EoWdJwaMLYnBNyYISTDxwXpEYkMbAbLzCMCviIdiOxXHYQWcNA==",
+      "sha256": "fedb57534cd43865d76128ae91b23795b9cecdba511ff056f0fd5a0ea656219b",
+      "license": "MIT",
+      "peers": {
+        "react": "*",
+        "react-native": "0.86 - 0.88",
+        "react-native-worklets": "0.13.x"
+      },
+      "release_commit": "5fd93c32624c64c4020fb089171afde88a511d92",
+      "key_file": "Common/cpp/reanimated/Tools/PlatformDepMethodsHolder.h",
+      "key_file_git_blob": "08c3c9b893b2622ac056cae4c2d85476b5356c72",
+      "key_file_matches_release_commit": true
+    },
+    {
+      "name": "react-native-worklets",
+      "version": "0.13.1",
+      "tarball": "https://registry.npmjs.org/react-native-worklets/-/react-native-worklets-0.13.1.tgz",
+      "integrity": "sha512-sX55Vx89/Y9uJmvAbAGoHXBZvCWXtYPGWPJ9Z9yl0h76mP9A10ULlSrixzGqBFLXeQMBpIpyJEhWpzXP7GG6YA==",
+      "sha256": "9d7a0e35344d454a8c661e01b6846252f4b016ef813a178a84768aa1197c5f9c",
+      "license": "MIT",
+      "peers": {
+        "react": "*",
+        "@babel/core": "*",
+        "react-native": "0.86 - 0.88",
+        "@react-native/metro-config": "*"
+      },
+      "release_commit": "24e415d2c036a532cf7820ff0c400e49841bda50",
+      "key_file": "Common/cpp/worklets/SharedItems/UnpackerLoader.h",
+      "key_file_git_blob": "526c63c5c20f6825c83a3112f6df3f18e800fefd",
+      "key_file_matches_release_commit": true
+    },
+    {
+      "name": "react-native-gesture-handler",
+      "version": "3.5.0",
+      "tarball": "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-3.5.0.tgz",
+      "integrity": "sha512-bm8yepwMBUhEOSeU7WQbNNrstD0Hbv6i+XsApARBJSlb+WlRvyaQsobi+tZ5Uyr5kDVgXzg6kPb+CWY9zvyfEw==",
+      "sha256": "def16cdaf173779802dc558eea9719b4119d383ed85f4a0e6efe426a6799fb3a",
+      "license": "MIT",
+      "peers": {
+        "react": "*",
+        "react-native": "*"
+      },
+      "release_commit": "bbff42199d238724397ca94f4076246d8c02fb91",
+      "key_file": "src/specs/NativeRNGestureHandlerModule.ts",
+      "key_file_git_blob": "4d90d85997b87259d832d102ab170bd286c4308b",
+      "key_file_matches_release_commit": true
+    }
+  ],
+  "expo_baseline": {
+    "version": "58.0.22",
+    "tarball": "https://registry.npmjs.org/expo/-/expo-58.0.22.tgz",
+    "integrity": "sha512-9DmnUN+UxIRRmPLe+t7oOVwdnFzpq/9+1evMVXdFjiC4iwEF7iHCFU0AEm4o2A6HP6A7nTtCox7ADsobYvB/Lw==",
+    "bundledNativeModules_sha256": "3b2c9d80113acb8ff74b6203c884196f70299bce4da7bb4b46a7faa41d41300d",
+    "versions": {
+      "react-native-reanimated": "4.7.1",
+      "react-native-worklets": "0.13.0",
+      "react-native-gesture-handler": "~3.3.0"
+    }
+  },
+  "babel_smoke": {
+    "node": "v26.13.0",
+    "babel": "7.29.7",
+    "worklets": "0.13.1",
+    "hermesCompiler": "260318099.0.5",
+    "hbcBytes": 256,
+    "warnings": [],
+    "emitsBytecode": true,
+    "hbc_sha256": "4005b7bcf6764455e20f30a14173bc817e462ba64f4ce5704f8adeb6fbec7c0e",
+    "isolated_lock_sha256": "d820845589f2e37d3a79ea39583ae3241c17f3cf0d00bbd7951f100b19f8b726",
+    "input": "export function compute(value) { 'worklet'; return value + 1; }",
+    "options": {
+      "hermesBytecode": true,
+      "getHBCBinary": "pinned hermes-compiler 260318099.0.5 osx-bin/hermesc",
+      "envName": "production"
+    },
+    "native_execution": false
+  },
+  "project_dependencies_changed": false,
+  "qnx_library_runtime_validated": false
+}
