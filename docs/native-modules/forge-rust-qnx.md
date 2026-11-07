@@ -5,8 +5,9 @@ C++ adapter used by Nitro Forge. The host fixture exercises real Tally editing,
 formulas, undo/redo, snapshot restore, and reopening a saved document in a new
 process. It does not replace the Qt Quick/Fabric renderer.
 
-**Evidence boundary:** Linux host compilation and behavior are verified. A QNX
-cross build and device run are pending. This slice exposes an internal C++ owner;
+**Evidence boundary:** Linux host compilation and behavior are verified. The
+November 7 QNX cross-build and physical-device results are recorded in
+[the target receipt](../evidence/forge-qnx-2026-11-07.md). This slice exposes an internal C++ owner;
 it does not register a JavaScript API, generate QNX Nitro bindings, or establish
 Expo Modules API 2.0 support for these engines.
 
@@ -24,16 +25,16 @@ You need CMake 3.31.9 or later, a C++20 compiler, Ninja, Rust, and a prebuilt
 The CMake integration never runs Cargo and never substitutes a host archive
 during a QNX build.
 
-Three separate gaps block a QNX React Native feature claim:
+The following boundaries must be distinguished for a QNX React Native feature claim:
 
-- **Rust and SDP:** this development environment has no licensed QNX compiler or
-  target. Rust 1.99.1 lists `aarch64-unknown-qnx` and `x86_64-pc-qnx`, with
-  `target_os="qnx"`. The locked `getrandom` 0.3.4 used by the full `nf-sys` graph
-  selects its QNX backend using `target_os="nto"`; Folio's `lopdf`/`rand` chain
-  reaches that dependency. The compiler, target standard library, and dependency
-  configuration need a reviewed compatibility resolution before producing the
-  full QNX archive. Installing `qcc` alone is insufficient. This slice does not
-  patch dependencies, remove engines, or claim a successful QNX Cargo build.
+- **Rust and SDP:** November 7 target validation uses licensed SDP 8.0.5 and
+  Rust 1.99.1's `aarch64-unknown-qnx` target (`target_os="qnx"`). The locked
+  getrandom 0.3.4 recognizes the older `nto` name. The independently reviewed
+  opt-in patch below selects its existing QNX backend without removing engines
+  or changing global target cfg. Source-built std plus this patch produced the
+  complete archive and passed physical-device probes. This experimental build
+  does not change the default Cargo graph or establish an officially supported
+  prebuilt Rust target distribution.
 - **Nitro ABI:** this repository pins
   `1.0.0-alpha.nightly.105.g69d365fc9b18`, while the Forge implementation baseline
   uses `1.0.0-alpha.nightly.120.g33ef045b96c0`. The reused session and queue have
@@ -142,7 +143,7 @@ cancellation or per-document parallelism: documents share one worker, while
 each document preserves submission order. Its internal command envelope mirrors
 the existing native ABI and is not a proposed public JavaScript API.
 
-## Prepare a QNX build after resolving the toolchain gap
+## Build QNX from the audited target archive
 
 Use a licensed SDP environment and an audited QNX `nf-sys` archive built from
 the same Forge revision. Record the archive hash, Rust compiler/target,
@@ -150,8 +151,8 @@ dependency compatibility changes, SDK version, CPU, and native system libraries.
 `RNQNX_FORGE_RUST_TARGET` is an explicit declaration checked against CMake's
 target CPU; it is not proof of the archive's origin.
 
-The following is a target procedure to run once that artifact exists, not a
-record of a successful cross build:
+The target receipt identifies the exact artifact and experimental compatibility
+patch used for the November 7 build. Reproduce the native build with:
 
 ```bash
 # Source your licensed SDP environment before this command.
@@ -165,9 +166,11 @@ cmake -S . -B build/forge-qnx -G Ninja \
   -DRNQNX_FORGE_BUILD_PROBE=ON \
   -DRNQNX_FORGE_SOURCE_DIR="$RNQNX_FORGE_CHECKOUT" \
   -DRNQNX_FORGE_RUST_TARGET=aarch64-unknown-qnx \
-  -DNF_RUST_LIBRARY=/absolute/path/to/qnx/libnf_sys.a
+  -DNF_RUST_LIBRARY=/absolute/path/to/qnx/libnf_sys.a \
+  -DNF_RUST_SYSTEM_LIBRARIES="regex;fsnotify"
 cmake --build build/forge-qnx \
-  --target rnqnx_forge_runtime forge_shared_engine_roundtrip
+  --target rnqnx_forge_runtime rnqnx_forge_lifecycle_probe \
+    forge_shared_engine_roundtrip forge_serial_queue_test
 ```
 
 Supply `NF_RUST_SYSTEM_LIBRARIES` if the audited Rust build reports additional
@@ -183,6 +186,8 @@ target, run two separate invocations in a writable directory:
 ```bash
 ./forge_shared_engine_roundtrip write /tmp/forge-tally.nfd
 ./forge_shared_engine_roundtrip read /tmp/forge-tally.nfd
+./forge_serial_queue_test
+./rnqnx_forge_lifecycle_probe
 ```
 
 Capture both exit codes and stdout, the archive/executable hashes, target OS and
@@ -212,15 +217,80 @@ the Qt, Fabric, Hermes, Screen, Expo, Nitro package, or npm dependency graphs.
 The sources below were read as guidance; no local skill installation or device
 execution is implied.
 
-| Exact skill                             | Source revision                            | Applied decision                                                                               | Evidence                                             |
-| --------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| Margelo `api-design`                    | `1e9e17be6f41c838db472d6a4b943fc26355a3be` | Ready document factory, explicit errors/cleanup, native call sites before any JS binding claim | Native API above and lifecycle test                  |
-| Margelo `build-nitro-modules`           | `1e9e17be6f41c838db472d6a4b943fc26355a3be` | Isolate native owner until generated/runtime Nitro ABI and dispatcher are aligned              | No fabricated QNX HybridClass or generated bindings  |
-| Margelo `cpp`                           | `1e9e17be6f41c838db472d6a4b943fc26355a3be` | Owned inputs/results, worker disposal, deterministic drain/close, small source files           | ASan/UBSan host lifecycle and concurrency tests      |
-| Callstack `react-native-best-practices` | `59e9d17446a248b21d86f078fcd0bd2d36db1ca4` | Keep engine/I/O work off UI and JS threads; make no unmeasured performance claim               | Owned worker; Qt/JS integration explicitly pending   |
-| Callstack `writing-user-docs`           | `59e9d17446a248b21d86f078fcd0bd2d36db1ca4` | State prerequisites, failures, and evidence limits before target instructions                  | Separate host procedure and unexecuted QNX procedure |
+| Exact skill                             | Source revision                            | Applied decision                                                                               | Evidence                                            |
+| --------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Margelo `api-design`                    | `1e9e17be6f41c838db472d6a4b943fc26355a3be` | Ready document factory, explicit errors/cleanup, native call sites before any JS binding claim | Native API above and lifecycle test                 |
+| Margelo `build-nitro-modules`           | `1e9e17be6f41c838db472d6a4b943fc26355a3be` | Isolate native owner until generated/runtime Nitro ABI and dispatcher are aligned              | No fabricated QNX HybridClass or generated bindings |
+| Margelo `cpp`                           | `1e9e17be6f41c838db472d6a4b943fc26355a3be` | Owned inputs/results, worker disposal, deterministic drain/close, small source files           | ASan/UBSan host lifecycle and concurrency tests     |
+| Callstack `react-native-best-practices` | `59e9d17446a248b21d86f078fcd0bd2d36db1ca4` | Keep engine/I/O work off UI and JS threads; make no unmeasured performance claim               | Owned worker; Qt/JS integration explicitly pending  |
+| Callstack `writing-user-docs`           | `59e9d17446a248b21d86f078fcd0bd2d36db1ca4` | State prerequisites, failures, and evidence limits before target instructions                  | Separate host and physical-QNX procedures/receipts  |
 
 The independent native review caught a caller-thread disposal path. The
 implementation now retains live sessions on the worker until close or shutdown,
-with document destruction queuing its close. Remaining merge evidence is the
-licensed QNX build/device lane and subsequent generated Nitro/JS integration.
+with document destruction queuing its close. The November 7 follow-up now
+records licensed QNX build/device evidence. Hosted CI and maintainer review
+remain; generated Nitro/JS integration is a separate application feature.
+
+## QNX 8 Rust compatibility patch
+
+`patches/getrandom-0.3.4-qnx.patch` adds Rust's QNX 8 `target_os="qnx"`
+to the existing QNX file backend, native errno helper, and libc dependency
+selection (including the original Cargo manifest). It preserves `nto`, all
+versions/features, and the existing `/dev/urandom` reads and error handling.
+It neither supplies custom random bytes nor changes the compiler target cfg.
+An independent source review compared all extracted crate files and confirmed
+only these four files changed. Keep the pinned libc 0.2.190: the manifest's
+older minimum alone does not establish new-QNX support.
+
+Prepare a separate Forge source copy at the exact revision above and a separate
+copy of the published getrandom 0.3.4 crate. Before extraction, verify the crate
+archive SHA-256 against Forge's Cargo.lock:
+`899def5c37c4fd7b2664648c28120ecec138e4d395b459e5ca34f9cce2dd77fd`.
+Do not edit Cargo's registry cache. Apply the patch inside the copied crate:
+
+```bash
+patch --dry-run -p1 < /absolute/react-native-qnx/patches/getrandom-0.3.4-qnx.patch
+patch -p1 < /absolute/react-native-qnx/patches/getrandom-0.3.4-qnx.patch
+```
+
+The Rust 1.99.1 target has no prebuilt standard library. The diagnostic build
+uses that exact compiler's `rust-src`, with the explicitly unstable build-std
+mechanism enabled through `RUSTC_BOOTSTRAP=1`. This is source-built experimental
+target evidence, not a claim of a supported prebuilt Rust distribution:
+
+```bash
+# Source licensed QNX SDP first; install matching Rust 1.99.1 + rust-src.
+export CARGO_TARGET_DIR=/absolute/scratch/forge-rust-target
+export CARGO_BUILD_JOBS=2
+RUSTC_BOOTSTRAP=1 cargo build --offline -Zbuild-std=std,panic_unwind \
+  --target aarch64-unknown-qnx --release -p nf-sys \
+  --manifest-path /absolute/forge-source-copy/Cargo.toml \
+  --config 'patch.crates-io.getrandom.path="/absolute/getrandom-0.3.4-qnx"'
+```
+
+The path override requires a lockfile source adjustment. Verify that the only
+Forge Cargo.lock change removes getrandom's registry `source` and `checksum`;
+all package versions and dependency edges must remain unchanged. Retain this
+adjusted lockfile and use `--locked --offline` for subsequent builds. Cargo's
+build-std workspace can warn that the patch is unused there; verify the actual
+application compilation names the patched getrandom path. Build all seven
+engines through `-p nf-sys`; do not omit Folio to evade this dependency.
+
+With `RNQNX_FORGE_BUILD_PROBE=ON`, `rnqnx_forge_lifecycle_probe` also reuses the
+native owner fixture on QNX. Run it separately from the shared write/read and
+queue probes. No sanitizer result is implied by a normal target release build.
+
+The target validation also builds `tests/native/forge-rust-toolchain` using the
+same explicit getrandom path override and build-std flags above. Its checked-in
+lockfile requires that override. It checks one successful 32-byte OS entropy
+read and a thread returning 42; it does not statistically assess entropy quality.
+Use `--manifest-path tests/native/forge-rust-toolchain/Cargo.toml` and omit
+`-p nf-sys` when building this probe from the QNX repository.
+
+`rustc --print native-static-libs` reports
+`-lc -lm -lsocket -lregex -lfsnotify -lgcc_s -lc -lm -lsocket -lregex` for this
+archive. The SDK driver supplies libc/libgcc, and the shared package supplies
+m/socket; the explicit additional CMake libraries above complete that set.
+Run lifecycle tests under an external watchdog: per-future waits do not bound
+shutdown, joins or barriers. The reused fixture's output says "host QNX Forge
+seam"; physical-target metadata in the receipt establishes where it ran.

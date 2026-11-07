@@ -183,10 +183,11 @@ scripts never assume root SSH. Detailed prerequisites and commands are in
 ## Shared Forge Rust engines
 
 The opt-in Forge native slice reuses Nitro Forge's Rust engines and per-document
-C++ adapter. Its host fixture verifies real Tally editing, undo/redo, and saved
-document reopening. QNX cross-build/device validation and Nitro JavaScript
-bindings remain pending. See [the shared engine guide](docs/native-modules/forge-rust-qnx.md)
-for build commands, lifecycle behavior, and the QNX toolchain compatibility gap.
+C++ adapter. Host and physical Pi400/QNX8.0.5 probes verify real Tally editing,
+undo/redo, saved-document reopening, FIFO and owner teardown. The target build
+uses an explicit experimental Rust std/dependency compatibility patch; Nitro
+JavaScript bindings remain pending. See [the shared engine guide](docs/native-modules/forge-rust-qnx.md)
+for build commands, exact target evidence and remaining ABI/lifecycle boundaries.
 
 ## License
 
