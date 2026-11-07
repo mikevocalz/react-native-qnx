@@ -1,18 +1,25 @@
-// Proves that the Hermes build produces a usable JSI runtime on the development
-// host: evaluate JavaScript, read a value back through JSI, and exercise the
+// Proves that the Hermes build produces a usable JSI runtime on the host or
+// QNX target: evaluate JavaScript, read a value back through JSI, and exercise the
 // language features React Native's bundles depend on.
 //
 // The async-arrow case is deliberate. react-native-linux hit a Hermes build
 // where `async () => {}` bodies silently did not execute; that landmine is
 // asserted here so a regression is a failed build rather than a mystery at
-// runtime. See docs/handoff/TEST_STATUS.md.
+// runtime. QNX lean builds consume the compiled bytecode-smoke.js instead of
+// compiling source. See docs/handoff/TEST_STATUS.md.
 
 #include <hermes/hermes.h>
 #include <jsi/jsi.h>
 
 #include <cstdio>
+#include <fstream>
+#include <iterator>
 #include <memory>
 #include <string>
+
+#if defined(__QNXNTO__)
+#include <pthread.h>
+#endif
 
 namespace {
 
@@ -38,8 +45,42 @@ bool evaluateToInt(Runtime& runtime, const char* source, int expected, const cha
 
 }  // namespace
 
-int main() {
+static int runProbe(const char* bytecodePath) {
   std::unique_ptr<Runtime> runtime = makeHermesRuntime();
+
+  // A host function crossing the JSI boundary in both directions.
+  auto doubler = facebook::jsi::Function::createFromHostFunction(
+      *runtime,
+      facebook::jsi::PropNameID::forAscii(*runtime, "doubler"),
+      1,
+      [](Runtime&, const Value&, const Value* args, size_t count) -> Value {
+        if (count != 1 || !args[0].isNumber()) {
+          return Value::undefined();
+        }
+        return Value(args[0].getNumber() * 2);
+      });
+  runtime->global().setProperty(*runtime, "doubler", doubler);
+
+  if (bytecodePath != nullptr) {
+    std::ifstream input(bytecodePath, std::ios::binary);
+    if (!input) {
+      std::fprintf(stderr, "RNQNX_HERMES_FAIL cannot open bytecode file\n");
+      return 1;
+    }
+    std::string bytes{
+        std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
+    if (bytes.empty() || input.bad()) {
+      std::fprintf(stderr, "RNQNX_HERMES_FAIL cannot read bytecode file\n");
+      return 1;
+    }
+    const Value result = runtime->evaluateJavaScript(
+        std::make_unique<facebook::jsi::StringBuffer>(std::move(bytes)), bytecodePath);
+    if (!result.isNumber() || result.getNumber() != 42) {
+      std::fprintf(stderr, "RNQNX_HERMES_FAIL bytecode result\n");
+      return 1;
+    }
+    return 0;
+  }
 
   if (!evaluateToInt(*runtime, "1 + 1", 2, "arithmetic")) {
     return 1;
@@ -61,7 +102,7 @@ int main() {
   }
 
   // The react-native-linux landmine: an async arrow function whose body must
-  // actually run. A microtask drains it before the value is read.
+  // actually run before its first suspension.
   if (!evaluateToInt(
           *runtime,
           "(() => {"
@@ -75,22 +116,62 @@ int main() {
     return 1;
   }
 
-  // A host function crossing the JSI boundary in both directions.
-  auto doubler = facebook::jsi::Function::createFromHostFunction(
-      *runtime,
-      facebook::jsi::PropNameID::forAscii(*runtime, "doubler"),
-      1,
-      [](Runtime&, const Value&, const Value* args, size_t count) -> Value {
-        if (count != 1 || !args[0].isNumber()) {
-          return Value::undefined();
-        }
-        return Value(args[0].getNumber() * 2);
-      });
-  runtime->global().setProperty(*runtime, "doubler", doubler);
   if (!evaluateToInt(*runtime, "doubler(21)", 42, "host-function")) {
     return 1;
   }
 
-  std::printf("RNQNX_HERMES_OK arithmetic es6 async-arrow host-function\n");
+  return 0;
+}
+
+int main(int argc, char* argv[]) {
+  if (argc > 2) {
+    std::fprintf(stderr, "Usage: %s [probe.hbc]\n", argv[0]);
+    return 2;
+  }
+  const char* bytecodePath = argc == 2 ? argv[1] : nullptr;
+#if defined(__QNXNTO__)
+  if (bytecodePath == nullptr) {
+    std::fprintf(stderr, "QNX lean Hermes requires the compiled bytecode-smoke.js probe.\n");
+    return 2;
+  }
+#endif
+  if (const int result = runProbe(bytecodePath)) {
+    return result;
+  }
+#if defined(__QNXNTO__)
+  // Exercise actual thread stack bounds, including stacks that differ from
+  // the process default. A nested-frame approximation falsely overflows here.
+  for (const size_t stackSize : {256u * 1024u, 1024u * 1024u}) {
+    pthread_attr_t attr;
+    if (pthread_attr_init(&attr) != 0) {
+      return 1;
+    }
+    if (pthread_attr_setstacksize(&attr, stackSize) != 0) {
+      pthread_attr_destroy(&attr);
+      return 1;
+    }
+    struct ThreadProbe {
+      const char* path;
+      int result;
+    } output{bytecodePath, 1};
+    pthread_t thread;
+    const int created = pthread_create(
+        &thread, &attr,
+        [](void* rawOutput) -> void* {
+          auto* probe = static_cast<ThreadProbe*>(rawOutput);
+          probe->result = runProbe(probe->path);
+          return nullptr;
+        },
+        &output);
+    pthread_attr_destroy(&attr);
+    if (created != 0 || pthread_join(thread, nullptr) != 0 || output.result != 0) {
+      std::fprintf(stderr, "RNQNX_HERMES_FAIL thread stack=%zu\n", stackSize);
+      return 1;
+    }
+    std::printf("RNQNX_HERMES_QNX_STACK_OK bytes=%zu\n", stackSize);
+  }
+#endif
+  std::printf("RNQNX_HERMES_OK %s\n",
+              bytecodePath ? "bytecode" : "arithmetic es6 async-arrow host-function");
   return 0;
 }

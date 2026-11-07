@@ -65,8 +65,10 @@ set(CMAKE_SYSROOT "${RNQNX_QNX_TARGET}")
 
 # qcc/q++ select the OS/CPU variant with -V.  The wrapper ignores CMake's
 # generic compiler-target property, so pass the variant through the flags.
-set(CMAKE_C_FLAGS "-V${RNQNX_QCC_TARGET}" CACHE STRING "Initial C compile flags" FORCE)
-set(CMAKE_CXX_FLAGS "-V${RNQNX_QCC_TARGET}" CACHE STRING "Initial C++ compile flags" FORCE)
+# Strict language modes otherwise select a smaller sched_param layout in the
+# QNX headers, changing pthread_attr_t's ABI relative to the target libc.
+set(CMAKE_C_FLAGS "-V${RNQNX_QCC_TARGET} -D_QNX_SOURCE" CACHE STRING "Initial C compile flags" FORCE)
+set(CMAKE_CXX_FLAGS "-V${RNQNX_QCC_TARGET} -D_QNX_SOURCE" CACHE STRING "Initial C++ compile flags" FORCE)
 
 set(CMAKE_FIND_ROOT_PATH "${RNQNX_QNX_TARGET}")
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
