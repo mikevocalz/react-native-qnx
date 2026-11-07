@@ -1,0 +1,107 @@
+# Plan 15 — Current QNX documentation and example qualification
+
+## Status, scope and baseline
+
+This is a **documentation-only audit and implementation plan**, researched on **2026-11-07**. It turns selected current official manuals, release notes and examples into workstream requirements. It does not claim that every QNX document was read, install an SDK, change a boot image, or provide native execution evidence.
+
+The repository publication baseline is [`1baad40a98362ce151ea73bd6f0a6e1d3020926e`](https://github.com/mikevocalz/react-native-qnx/tree/1baad40a98362ce151ea73bd6f0a6e1d3020926e), after merged PRs42/44/45/46/47/48. Preserve the established SDP **8.0.5**, Qt **6.12**, Fabric/Hermes/Yoga/Qt Quick architecture and owned Nitro completion path. A matching release number does not establish matching deployed components. Plan 14 owns native systems probes and the supplied archive's 19-category mapping; this plan owns current-source qualification and updates to Plans 00–14.
+
+## Release and device findings
+
+The inspected [release index](https://www.qnx.com/developers/docs/relnotes8.0/index.html) lists SDP 8.0.5 as its newest base release. Component updates have separate build numbers and deployment instructions:
+
+| Official release evidence | Consequence for the project |
+| --- | --- |
+| [SDP 8.0.5](https://www.qnx.com/developers/docs/relnotes8.0/com.qnx.doc.release_notes/topic/8.0.5_prod_release_notes/8.0.5_rn.html), edition 2026-06-25 | Record actual kernel, libc, loader, compiler and target-library identities. Fixes can require rebuilding the target image; installing host packages alone is insufficient. |
+| [OS Services/HID build 19](https://www.qnx.com/developers/docs/relnotes8.0/com.qnx.doc.release_notes/topic/8.0.5_prod_release_notes/8.0.5_os_libraries.html), edition 2026-10-06 | Audit USB/HID package `com.qnx.qnx800.target.os_services.hid` and BSP prebuilt dependencies. Apply only board-relevant instructions in an isolated candidate image. |
+| [OpenSSH build 9](https://www.qnx.com/developers/docs/relnotes8.0/com.qnx.doc.release_notes/topic/8.0.5_prod_release_notes/8.0.5_networking.html), edition 2026-09-16 | OpenSSH 10.4p1 adds `sshd-auth`; older image recipes need helper-file updates. Prove the recovery connection after any candidate image change. |
+| [QNX Everywhere](https://qnx.com/developers/docs/qnxeverywhere/rel_notes.html), September 16 update revised September 22 | Pi 4/Pi 5/QEMU QSTI 0.5.0 build 50 and CTI-8.0.5r1 are documented. Second-display support is an available test opportunity, not proof of RN multi-display behavior. |
+
+The official [Pi 400 tutorial](https://devblog.qnx.com/qnx-on-pi-400-make-your-own-image/) describes adapting a Pi 4 image with different device-tree and Wi-Fi files. Its linked CTI base is **8.0.2**, despite the redirected article's newer URL. Treat it as an adaptation recipe requiring reconciliation with the selected 8.0.5 BSP. Stock Pi 4/5 QSTI support does not establish every Pi 400 peripheral. Pin firmware sources and licenses; retain a recoverable original image.
+
+[Qt's support page](https://doc.qt.io/qt-6/qnx-support.html) warns that SDP 8 Qt binaries are not supplied because installations can differ in binary compatibility. QNX's release host support and the project's host renderer are separate matrices. The [QNX porting guide](https://qnx.com/developers/docs/qnxeverywhere/com.qnx.doc.qpg/topic/port_Existing_ports.html) explicitly identifies `qnx-ports`, establishing its provenance. Its inspected Qt recipe still selects **6.8.1**; it is not a reason to replace the established 6.12 build.
+
+## Current-document checklist and required plan updates
+
+These are proposed implementation requirements, not completed fixes.
+
+| Domain / owning plans | Actionable requirement |
+| --- | --- |
+| Boot and dependencies — 00, 01, 11, 14 | Add package IDs/builds, BSP/CTI commit, firmware hashes, IFS hash, deployed library identities and Qt configuration to the receipt. Check post-release HID and SSH applicability independently. Distinguish VM, Pi 4, Pi 5 and Pi 400. |
+| Presentation and buffers — 03, 09 | Use the current `screen_post_window` contract: after `SCREEN_DONT_BLOCK`, acquire the next render buffer through the documented dequeue path. Posting is not a presentation timestamp. Preserve Qt QPA's ownership; direct Screen controls run as separate diagnostic applications. |
+| Input, text and devices — 02, 04, 11, 12 | Compare the `events` sample with Qt and RN observations to localize loss or remapping. Audit HID image versions, display identity, physical size and refresh. `screen_get_event` timeout yields `SCREEN_EVENT_NONE`; keep blocking waits off the shared GUI/JS owner. Test actual IME/accessibility providers separately. |
+| Security and resource managers — 06, 07, 14 | Review security-policy channel/path restrictions, not only process abilities. Validate received sizes using `ctp->size`, combine-message offsets and output capacity. `_IO_DEVCTL` and custom messages need explicit permission checks; JavaScript capability metadata is not authorization. |
+| Memory, scheduling and time — 03, 07, 09, 14 | Use `rcvid_t`, registered cross-process events and explicit `PTHREAD_PROCESS_SHARED` where appropriate. QNX 8 timers are per-core; runmasks must match configured clusters. Inventory clusters before affinity experiments. Do not inherit legacy interrupt, timer-tick or arbitrary-mask assumptions. |
+| Diagnostics — 01, 03, 08, 14 | Add bounded kernel traces, memory-analysis runs and optional PMU/IAPI investigations. Screen debug graphs average over one second and cannot establish p99 frame latency. Keep instrumented memory runs separate from release performance comparisons. |
+| Process supervision — 05, 08 | Evaluate the newly documented PLMS against HAM and the existing host/service boundary. PLMS can model dependencies, readiness and bounded recovery. Its `-k` launch-and-exit mode disables monitoring/recovery; `plmsctrl` is a debug utility. Neither PLMS availability nor documentation transfers safety certification to this application. |
+| Networking, TLS and audio — 06, 12, 14 | Qualify actual io-sock, resolver, TLS provider, certificate and trust-store behavior. Qt's current target page still includes io-pkt examples; reconcile commands with OS 8 and the BSP. Audio remains unsupported/unverified until a specific available framework, driver and release are proven. |
+| Marathon comparison — 13 | QNX documents Wayland/Weston on Screen, but the 8.0.5 release classifies it as optional experimental content. Keep it a separate investigation. It does not establish Linux compositor, cgroup, sandbox or application compatibility. |
+
+The current [audio migration page](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.qnxsdp.migration/topic/audio.html) says the initial SDP 8 lacks an audio framework; [BSP migration](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.qnxsdp.migration/topic/bsps.html) instructs removal of `io-audio`/`deva-*`. No later audio-enabling release was established in this audit. Older QSA/ALSA examples must not become a support claim.
+
+## Source index and inspection boundary
+
+**R** means the named body or relevant sections were read, not the entire linked manual. **I** means an index or linked destination was discovered without inspecting all child bodies. Release-table sources above are R. HTML manuals are mutable: dates below identify editions/page updates when shown, with access date 2026-11-07. Record new snapshots when implementing.
+
+| Official source | Coverage / version | Use |
+| --- | --- | --- |
+| [Documentation updates](https://www.qnx.com/developers/docs/relnotes8.0/com.qnx.doc.release_notes/topic/8.0.5_prod_release_notes/8.0.5_doc_rn.html) | R, 8.0.5 / June 25 | PMU, Screen overlays, IAPI; `/dev/shmem` clarification |
+| [QSTI Pi guide](https://qnx.com/developers/docs/qnxeverywhere/com.qnx.doc.target_images/topic/qsti/intro.html) | I, current guide | Installation/BSP follow-up |
+| [Qt target requirements](https://doc.qt.io/qt-6/qnx-target-requirements.html) | R, Qt 6.12 | Screen, fonts/DPI, logging, networking caveat |
+| [Qt port recipe](https://github.com/qnx-ports/build-files/blob/1964dba24df0b5360bf98b817717f1c5b04224e5/ports/qt/README.md) | R, commit `1964dba24df0b5360bf98b817717f1c5b04224e5` | Linux build, deployment example; recipe selects 6.8.1 |
+| [Screen post](https://qnx.com/developers/docs/8.0/com.qnx.doc.screen/topic/screen_post_window.html), [event retrieval](https://qnx.com/developers/docs/8.0/com.qnx.doc.screen/topic/screen_get_event.html) | R, OS 8 APIs | Buffer ownership and bounded input waits |
+| [EGL/OpenGL ES](https://qnx.com/developers/docs/8.0/com.qnx.doc.screen/topic/manual/cscreen_rendering-hardware-opengles.html), [Wayland](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.screen/topic/manual/cscreen_wayland.html) | R, OS 8 | Driver-dependent graphics paths |
+| [Screen utilities](https://qnx.com/developers/docs/8.0/com.qnx.doc.screen/topic/manual/cscreen_utilities.html) | I, OS 8 | screeninfo, GL tracing, other demos discovered |
+| [events](https://qnx.com/developers/docs/8.0/com.qnx.doc.screen/topic/manual/events_binary.html), [sw-vsync](https://qnx.com/developers/docs/8.0/com.qnx.doc.screen/topic/manual/sw-vsync.html), [sharewin](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.screen/topic/manual/sharewin.html) | R, June 11 | Input, finite software-rendering control, shared-window example |
+| [Offscreen gears](https://qnx.com/developers/docs/8.0/com.qnx.doc.screen/topic/manual/gles2-gears-offscreen.html), [debug graph types](https://qnx.com/developers/docs/8.0/com.qnx.doc.screen/topic/group__screen__debugging_1Screen_Debug_Graph_Types.html) | R, OS 8 | Offscreen rendering versus presentation; averaged diagnostics |
+| [Security policies](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.security.system/topic/manual/security_policies.html), [resource-manager security](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.security.system/topic/manual/write_resource_manager.html), [abilities](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.lib_ref/topic/p/procmgr_ability.html) | R, selected sections / June 11 | Policy scope, message validation, ability operations |
+| [Kernel migration](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.qnxsdp.migration/topic/kernel.html), [affinity/clusters](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.prog/topic/multicore_processor_affinity.html) | R, June 11 | OS 8 types, timers, synchronization, SMP |
+| [tracelogger](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.utilities/topic/t/tracelogger.html), [memory analysis](https://qnx.com/developers/docs/8.0/com.qnx.doc.ide.userguide/topic/analyze_mem_rsc_usage.html), [leak tools](https://qnx.com/developers/docs/8.0/com.qnx.doc.ide.userguide/topic/leak_selecting_tool.html) | R, June 11 | Finite tracing, librcheck, Valgrind tradeoffs |
+| [IAPI overview](https://qnx.com/developers/docs/8.0/com.qnx.doc.introspection/topic/overview.html) | R, June 11 | Process inspection and privileged dumper lifecycle |
+| [PLMS overview](https://qnx.com/developers/docs/8.0/com.qnx.doc.plms/topic/plms_overview.html), [configuration](https://qnx.com/developers/docs/8.0/com.qnx.doc.plms/topic/config_plms.html), [binary](https://qnx.com/developers/docs/8.0/com.qnx.doc.plms/topic/plms_binary.html), [abilities](https://qnx.com/developers/docs/8.0/com.qnx.doc.plms/topic/abilities.html) | R, OS 8 | Candidate supervision backend and limits |
+| [HAM](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.prog/topic/process_High_Availability.html) | R, June 11 | Existing recovery/heartbeat alternative |
+| [io-sock utilities](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.neutrino.io_sock/topic/utilities.html), [cryptography integration](https://qnx.com/developers/docs/8.0/com.qnx.doc.security.system/topic/manual/crypto_integrators.html) | R, selected OS 8 sections | Network tools and provider inventory; no inferred TLS version |
+| [Everywhere introduction](https://qnx.com/developers/docs/qnxeverywhere/introduction.html) | R, September 24 | Non-commercial licensing scope |
+
+Still pending: authenticated known-issues catalogs; installed QSC/package exports; current BSP source/build-file review; full CTI-8.0.5r1 instructions; individual PMU/API availability on the board; Screen DDK, WFDserver, VulkanSC and GPIO bodies; remaining port/test dashboards; target audio packages. No kernel, firmware, graphics driver or complete manual audit is claimed.
+
+## Architecture and API-first boundary
+
+Maintain one Qt/JS owner and the existing worker-completion route. Diagnostics run outside application JavaScript; do not expose arbitrary process memory, priorities, device commands or PLMS control. IAPI's dumper workflow requires a registered event, the DUMPER ability and completion of process termination; copying its registration alone would create a broken recovery path.
+
+No new public API is introduced here. Generic package integration belongs to Plan 10; its licensed Forge compatibility lane is optional, with no premium dependency in core controls or conformance. A capability emerging from this audit must enter Plan 06 through the actual **Nitro v1** contract: aligned core/adapter/Nitrogen, `HybridClass` registration and constructor APIs, declared units/errors, two or three realistic success/failure/disposal examples, supported generation and runtime proof. The existing [PlatformInfo spec](https://github.com/mikevocalz/react-native-qnx/blob/62d530bcd8cea578f59bb0d693e0402a5cadefde/packages/qnx-nitro-runtime/specs/PlatformInfo.nitro.ts) and [limited generator](https://github.com/mikevocalz/react-native-qnx/blob/62d530bcd8cea578f59bb0d693e0402a5cadefde/scripts/nitro-platform-codegen.mjs) do not establish arbitrary asynchronous resource generation. Cached reads stay cheap; blocking work runs on an owned native executor, with explicit cancellation and disposal.
+
+## Phased delivery, roster and skills
+
+| Slice | Proposed DRI and paths | Independent reviewer |
+| --- | --- | --- |
+| 1: component/source receipt | Release engineer; proposed `docs/platform-modernization/qnx-sources.json`, existing `scripts/validate-qnx-805-cross.sh` to inspect before extension | QNX toolchain reviewer |
+| 2: bounded reference controls | QNX graphics engineer; proposed `tests/native/qnx-reference-controls/`; reuse Plan 14 fixtures | Qt/Screen reviewer |
+| 3: diagnostics and supervision comparison | Systems engineer; Plan 03 tracing and Plan 08 backend fixtures | Security/lifetime reviewer |
+| 4: integrated candidate qualification | App/runtime engineer; Plan 12 conformance workload | Separate physical-device regression owner |
+
+All human assignments are **unassigned**. Dependencies: 00 coordinates evidence; 01 establishes reproducible baseline; 03 defines measurement; 06–09 own native services; 11 records devices; 12 qualifies integration; 14 supplies systems probes. Proposed `RNQNX_ENABLE_REFERENCE_CONTROLS` defaults **OFF**; unsupported targets reject QNX-only controls. Package/image updates require separate reviewed changes. Do not alter the established toolchain incidentally.
+
+Read/applied: Margelo `api-design` → `build-nitro-modules` → `cpp` at `1e9e17be6f41c838db472d6a4b943fc26355a3be` establish domain contracts, generator audits and RAII; Callstack `react-native-best-practices` at `59e9d17446a248b21d86f078fcd0bd2d36db1ca4` establishes measurement before optimization. The repository `qnx-native-api` skill adds the actual v1/Qt owner boundary. Generic skill examples yield to pinned source. These are source reads, not skill-installation or execution claims.
+
+## Acceptance, commands and rollback
+
+The receipt passes only when every selected component has a version/hash or an explicit unavailable status, source date, board applicability and owner. A missing component must never be recorded as working. Validate commands against installed binary help and headers: even official examples can contain stale options or typographical errors.
+
+Future reference commands, **not executed for this PR**:
+
+```sh
+pidin syspage=cluster
+sw-vsync -frame-limit=120 -interval=1 -nbuffers=2
+tracelogger -s 5 -S 8M -f /dev/shmem/rnqnx-doc-audit.kev
+```
+
+Run graphics controls only on the isolated candidate. Tracing requires the correct kernel/ability and exclusive ownership; do not overlap another logger or IDE capture. Require bounded completion, usable artifacts and recorded drops/overhead. Offscreen success proves no physical presentation behavior.
+
+For a changed image, require ten consecutive boot/recovery-connection successes, zero new unresolved libraries, and the applicable Plan 12 scenarios. Negative cases include denied abilities, malformed/combine messages, missing TLS trust, unavailable audio, display disconnect, killed service and missing diagnostic package. PLMS dry-run does not process `load_config` files; separately validate those files and actual dependency/restart behavior. Any claimed performance improvement must meet Plan 03's preregistered workload and tail-latency budget with release binaries; no hard-real-time JS claim follows from an RTOS.
+
+Keep host, QNX cross-build, VM, physical QNX and Marathon results separate. This PR performs source/document checks only; **no native build, boot, trace, package install or device test ran**. Implementation PRs publish exact runnable commands and artifact hashes.
+
+The inspected baseline `package.json` maps `pnpm qnx:validate:805` to `bash scripts/validate-qnx-805-cross.sh`. That existing cross-build gate does not replace candidate-image boot, deployment or physical-display validation.
+
+QNX Everywhere grants a non-commercial development license; production/redistribution, BSP firmware and Qt terms need their own review. Copy no SDK binaries or manuals into this PR; restrict diagnostic artifacts containing process memory or input. Rollback stops owned controls, disables the option, restores the matching previous image/libraries/bundle and rechecks its recovery connection. Preserve the previous source receipt so reversibility is verifiable.
