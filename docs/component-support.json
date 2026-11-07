@@ -6,9 +6,12 @@
       "host": "partial",
       "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Yoga layout, background, corner radius and opacity. Border, clipping and transform limits are listed below.",
+      "notes": "Yoga layout, background, corner radius and opacity. Border, clipping and transform limits are listed below. Optional default-OFF accessibility bridge has Pi400 native-only QAccessible generic View semantic-query and owned mounting proof; React JavaScript accessibility props, RN actions and reader output remain unverified.",
       "evidence": {
-        "pi400": ["docs/evidence/pi400-hello-world-2026-11-07.txt"],
+        "pi400": [
+          "docs/evidence/pi400-hello-world-2026-11-07.txt",
+          "docs/evidence/accessibility-view-qnx-2026-11-07.md"
+        ],
         "pi4Qsti": []
       }
     },
@@ -48,11 +51,14 @@
     {
       "name": "TextInput",
       "host": "partial",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Controlled/default text, focus/blur, edit/selection/key/submit events and basic styling. No IME or software keyboard is wired.",
+      "notes": "Controlled/default text, focus/blur, edit/selection/key/submit events and basic styling. Pi400 proof uses synthetic Qt input through actual React with the default-OFF TextInput contract enabled: edit counts, UTF-16 selection and Tab/Backtab focus traversal. Physical HID, software keyboard, IME provider and assistive technology remain unqualified.",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/text-input-qnx-2026-11-07.md",
+          "docs/evidence/text-input-focus-qnx-2026-11-07.md"
+        ],
         "pi4Qsti": []
       }
     },
