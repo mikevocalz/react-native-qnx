@@ -21,13 +21,13 @@ The [Pi runbook](https://github.com/mikevocalz/react-native-qnx/blob/e9026fac8ce
 
 Keep `rnqnx_react_host`, `rnqnx_fabric_adapter` and `rnqnx_views_qt` as shared source. Keep QNX's Qt QPA/Screen path and the Linux Qt Wayland client separate. Hermes executes JavaScript on the constructing Qt owner thread in #44; this plan must not describe it as an existing dedicated JS thread.
 
-| Work | Owner in the current candidate | Required constraint |
-| --- | --- | --- |
-| Qt item creation/mutation and host lifecycle | Qt owner thread | No worker may directly mutate a view or destroy an active runtime. |
-| JS entry and completion settlement | Existing owned queue and RN RuntimeScheduler | Preserve microtask/render checkpoints and error forwarding. |
-| Blocking QNX calls, Forge work, decoding and I/O | Explicit native worker/queue | Never block the GUI/JS owner waiting for another process or callback. |
-| Scene-graph work | Qt's documented render-thread contract | Do not infer GUI-thread safety from a signal name. |
-| Producer shutdown | Each native binding's owner | Stop admission and quiesce producers before the host's completion queue closes. |
+| Work                                             | Owner in the current candidate               | Required constraint                                                             |
+| ------------------------------------------------ | -------------------------------------------- | ------------------------------------------------------------------------------- |
+| Qt item creation/mutation and host lifecycle     | Qt owner thread                              | No worker may directly mutate a view or destroy an active runtime.              |
+| JS entry and completion settlement               | Existing owned queue and RN RuntimeScheduler | Preserve microtask/render checkpoints and error forwarding.                     |
+| Blocking QNX calls, Forge work, decoding and I/O | Explicit native worker/queue                 | Never block the GUI/JS owner waiting for another process or callback.           |
+| Scene-graph work                                 | Qt's documented render-thread contract       | Do not infer GUI-thread safety from a signal name.                              |
+| Producer shutdown                                | Each native binding's owner                  | Stop admission and quiesce producers before the host's completion queue closes. |
 
 Queue close drains accepted work; it does not cancel a stuck worker or impose a deadline. A non-returning accepted task, or owner-thread work that continually adds transitive settlement work, can prevent the drain from completing; late worker posts are rejected after admission closes. A worker waiting synchronously for JS can deadlock if the owner joins it. Binding lifecycle tests must address both cases before a module joins this runtime.
 
@@ -49,15 +49,15 @@ New experimental switches must default OFF and reject unsupported configurations
 
 ## Validation and measurable exit criteria
 
-| Gate | Required evidence | Failure condition |
-| --- | --- | --- |
-| Candidate provenance | Commit, lock/bundle/binary hashes, SDP/Qt/Hermes IDs, board/image, flags and plugins | A receipt cannot identify what ran. |
-| Host ownership | Existing runtime/dispatcher CTests plus the affected producer cases under supported ASan/UBSan | Wrong-thread mutation, callback after runtime destruction, double settlement or leaked accepted task. |
-| Configuration | Relevant graph builds with experiments ON and OFF; unsupported configuration fails | The OFF path or original QNX probe changes unexpectedly. |
-| Manual runtime repeatability | Proposed minimum: 10 launch/render/Nitro/exit trials on the known recovery setup, all bounded and separately recorded | A hang, missing first frame, nonzero unexplained exit, stale process or lost access. |
-| Recovery | An injected app failure leaves the target recoverable and the next controlled app launch succeeds | Recovery requires an undocumented boot/library replacement. |
-| Cold boot | After a separately reviewed startup fix, proposed minimum: 10 controlled boot/application cycles with HDMI and remote-health evidence | A boot loses expected display/network reachability or requires an unrecorded manual repair. |
-| Threading decision | Comparable latency/frame and memory measurements from plan 03 | A thread change is promoted without an improvement or a justified tradeoff. |
+| Gate                         | Required evidence                                                                                                                     | Failure condition                                                                                     |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Candidate provenance         | Commit, lock/bundle/binary hashes, SDP/Qt/Hermes IDs, board/image, flags and plugins                                                  | A receipt cannot identify what ran.                                                                   |
+| Host ownership               | Existing runtime/dispatcher CTests plus the affected producer cases under supported ASan/UBSan                                        | Wrong-thread mutation, callback after runtime destruction, double settlement or leaked accepted task. |
+| Configuration                | Relevant graph builds with experiments ON and OFF; unsupported configuration fails                                                    | The OFF path or original QNX probe changes unexpectedly.                                              |
+| Manual runtime repeatability | Proposed minimum: 10 launch/render/Nitro/exit trials on the known recovery setup, all bounded and separately recorded                 | A hang, missing first frame, nonzero unexplained exit, stale process or lost access.                  |
+| Recovery                     | An injected app failure leaves the target recoverable and the next controlled app launch succeeds                                     | Recovery requires an undocumented boot/library replacement.                                           |
+| Cold boot                    | After a separately reviewed startup fix, proposed minimum: 10 controlled boot/application cycles with HDMI and remote-health evidence | A boot loses expected display/network reachability or requires an unrecorded manual repair.           |
+| Threading decision           | Comparable latency/frame and memory measurements from plan 03                                                                         | A thread change is promoted without an improvement or a justified tradeoff.                           |
 
 Trial counts are proposed release criteria, not measured reliability guarantees. They do not establish a failure probability or real-time bound. Set explicit trial timeouts and the product's startup target after the first baseline measurement; do not invent millisecond results in this plan.
 
