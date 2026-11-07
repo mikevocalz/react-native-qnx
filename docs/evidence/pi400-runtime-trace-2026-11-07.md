@@ -13,7 +13,7 @@ at `db51cd4de2773720f6cc12ba7a48dab080d5bec4`. The root integrated these with ma
 for validation at `d05da14`; the application results below use that source graph.
 The trace-only Nitro test follow-up is
 `6c895ed63cd197a46a9cff1c64532e05ffa28dc4`, integrated by root as `1ffff9c`.
-Its actual host/target result is not yet recorded here.
+Its focused host and physical target results are recorded in the traced Nitro queue follow-up below.
 
 `RNQNX_ENABLE_FRAME_TRACE` defaults OFF and rejects unsupported operating
 systems. ON definitions propagate publicly through `rnqnx_runtime_trace` and
@@ -95,8 +95,8 @@ nonzero generation 2 for its start/stop. No records were dropped.
 
 This Hello World workload posted no owned native queue task, so its capture has
 no queue admission/execution records. It does not prove that hook. The new
-trace-only Nitro test must separately exercise and assert actual worker
-admission/execution before that target gate closes.
+trace-only Nitro test separately exercised actual worker admission/execution
+as recorded below.
 
 Timestamps are taken after acquiring the recorder lock, relative to session
 creation, which occurs after earlier playground setup. They are not process
@@ -139,8 +139,37 @@ reports write failure. No credentials, privileged kernel tracing or new target
 abilities were added. Existing private Qt evaluation rights remain unchanged;
 this receipt grants no production or redistribution license.
 
-The next bounded step is physical execution of the traced Nitro assertions,
-then separate input/Fabric/render-loop stage work and clock alignment before a
+The traced Nitro assertions now have physical evidence below; the next step is
+separate input/Fabric/render-loop stage work and clock alignment before a
 measured workload or optimization. Rollback disables `RNQNX_ENABLE_FRAME_TRACE`
 and deploys the recorded OFF executable through the existing application
 procedure. No boot, graphics or system service change is required.
+
+## Traced Nitro queue follow-up
+
+The reviewed test-only source `6c895ed63cd197a46a9cff1c64532e05ffa28dc4`
+was integrated as `1ffff9c`. Production source is unchanged from the trace
+candidate above. The focused host recorder/JSON/Nitro/host integration checks
+passed 4/4; the existing Qt host executable reports 55 inner tests passed.
+Both host and physical QNX emitted:
+
+```text
+RNQNX_NITRO_TRACE_OK admissions=11 executed=11 dropped=0 cross-thread=1 close=1
+RNQNX_NITRO_QT_OK worker callback promise error checkpoint drain close-race
+```
+
+The same existing real worker/callback/Promise/error/teardown workload now passes
+an explicit trace session. Every accepted correlation has exactly one execution
+begin/end in order, all closures execute on the owner, at least one admission
+originates on a different thread, no record drops, and close finishes. The test
+freezes only after host reset and retains every previous lifecycle assertion.
+Its separate close-race workload remains untraced.
+
+The physical app-user run exited zero under the 35-second external supervisor.
+The 6,554,240-byte executable was read back byte-for-byte; SHA-256
+`1b1e6ea6022b0b192026bc642ba9f33ff6e5319f32412ec87adebd42958e0185`.
+Raw log: `nitro-trace-physical.log` in the private artifact workspace. The earlier
+full-graph 20/20 ON and 18/18 OFF results retain their source attribution; the
+four focused tests above cover this subsequent test-only follow-up. The captured
+application frame was also inspected at original resolution and retains the
+exact Hello World title. No new physical-presentation observation follows.

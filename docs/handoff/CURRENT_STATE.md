@@ -1,5 +1,19 @@
 # CURRENT_STATE.md
 
+## 2026-11-07 bounded native tracing
+
+The default-OFF trace experiment now records actual host evaluation, surface
+start/stop and owned queue admission/execution/close with bounded storage,
+session-relative monotonic timestamps and explicit drops. Physical Pi 400
+application export, protected-file failure, OFF-path capture and traced Nitro
+worker/shutdown assertions passed. Host graphs passed 20/20 ON and 18/18 OFF,
+followed by 4/4 focused tests after adding queue correlation assertions. See the
+[trace receipt](../evidence/pi400-runtime-trace-2026-11-07.md).
+
+These are native boundary diagnostics. Input/Fabric/render-loop/presentation
+markers, clock alignment, tracing overhead and performance budgets remain open.
+No scheduling, boot, graphics or default-window policy changed.
+
 ## 2026-11-07 bounded application runtime trials
 
 The screenshot runner now fails on real React startup or surface-cleanup errors
