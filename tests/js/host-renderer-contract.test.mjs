@@ -47,6 +47,10 @@ if (process.platform === 'linux') {
         },
       });
     }
+    const build = path.join(root, 'build/linux-host-renderer');
+    mkdirSync(build, { recursive: true });
+    const cache = path.join(build, 'CMakeCache.txt');
+    writeFileSync(cache, 'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=OFF\n');
     assert.equal(invoke().status, 0);
     assert.equal(
       JSON.parse(
@@ -66,8 +70,32 @@ if (process.platform === 'linux') {
       assert.notEqual(result.status, 0);
       assert.match(result.stderr, new RegExp(`Required host-renderer test missing: ${missing}`));
     }
+    const textTests = [
+      'rnqnx_text_input_probe',
+      'rnqnx_text_input_bridge_test',
+      'rnqnx_text_input_rejects_interception',
+    ];
+    writeFileSync(cache, 'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=ON\n');
+    const allNames = [...names, ...textTests];
+    assert.equal(
+      invoke({ FAKE_INVENTORY: JSON.stringify({ tests: allNames.map((name) => ({ name })) }) })
+        .status,
+      0
+    );
+    for (const missing of textTests) {
+      const result = invoke({
+        FAKE_INVENTORY: JSON.stringify({
+          tests: allNames.filter((name) => name !== missing).map((name) => ({ name })),
+        }),
+      });
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, new RegExp(`Required host-renderer test missing: ${missing}`));
+    }
+    writeFileSync(cache, 'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=OFF\n');
     assert.notEqual(invoke({ FAKE_BUILD_STATUS: '7' }).status, 0);
-    assert.notEqual(invoke({ FAKE_TEST_STATUS: '8' }).status, 0);
+    const testFailure = invoke({ FAKE_TEST_STATUS: '8' });
+    assert.notEqual(testFailure.status, 0);
+    assert.match(testFailure.stderr, /ctest failed \(8\)/);
     assert.notEqual(invoke({ FAKE_INVENTORY: '{invalid' }).status, 0);
   } finally {
     rmSync(root, { recursive: true, force: true });

@@ -13,6 +13,10 @@ if(RNQNX_ENABLE_INPUT_LIFECYCLE AND NOT
    CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin|QNX)$")
   message(FATAL_ERROR "RNQNX_ENABLE_INPUT_LIFECYCLE requires a Linux, macOS or QNX Qt host")
 endif()
+option(RNQNX_ENABLE_TEXT_INPUT_CONTRACT "Enable experimental owned TextInput editing and selection contract" OFF)
+if(RNQNX_ENABLE_TEXT_INPUT_CONTRACT AND NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin|QNX)$")
+  message(FATAL_ERROR "RNQNX_ENABLE_TEXT_INPUT_CONTRACT requires Linux, Darwin or QNX Qt host")
+endif()
 option(RNQNX_REQUIRE_FULL_HOST_RENDERER
   "Require the Qt/Hermes/React host graph instead of silently skipping it" OFF)
 option(RNQNX_G0_PROBE_ONLY "Build only the G0 C++20 probe on QNX" OFF)
@@ -566,4 +570,8 @@ endif()
 
 if(RNQNX_ENABLE_NITRO_QT_DISPATCHER AND NOT TARGET rnqnx_nitro_qt)
   message(FATAL_ERROR "Qt Nitro dispatcher requires the full Qt/Hermes React host")
+endif()
+
+if(RNQNX_ENABLE_TEXT_INPUT_CONTRACT AND NOT TARGET rnqnx_react_host)
+  message(FATAL_ERROR "TextInput contract requires the full Qt/React host graph")
 endif()

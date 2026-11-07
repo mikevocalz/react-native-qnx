@@ -1,4 +1,7 @@
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+#include "react-native-qnx/fabric/QtTextInputBridge.h"
+#endif
 
 #include "react-native-qnx/fabric/QtImageBridge.h"
 #include "react-native-qnx/fabric/QtScrollBridge.h"
@@ -14,6 +17,8 @@
 #include <QtMath>
 
 #include <algorithm>
+#include <cmath>
+#include <limits>
 
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
@@ -434,14 +439,21 @@ void ShadowViewMutationAdapter::applyText(const ShadowView& view) {
   }
 }
 
-void ShadowViewMutationAdapter::applyTextInput(const ShadowView& view) {
+MountError ShadowViewMutationAdapter::applyTextInput(const ShadowView& view) {
   const auto* props =
       dynamic_cast<const facebook::react::TextInputProps*>(view.props.get());
   if (props == nullptr) {
-    return;
+    return MountError::None;
   }
 
   TextInputStyle style;
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  style.mostRecentEventCount = props->mostRecentEventCount;
+  if (props->selection) {
+    style.selectionStart = props->selection->start;
+    style.selectionEnd = props->selection->end;
+  }
+#endif
   style.text = QString::fromStdString(props->text);
   style.readOnly = props->readOnly || !props->editable;
   // Secure entry lives on the traits rather than the props themselves
@@ -473,7 +485,7 @@ void ShadowViewMutationAdapter::applyTextInput(const ShadowView& view) {
         static_cast<std::uint32_t>(*props->placeholderTextColor);
   }
 
-  layer_.updateTextInput(view.tag, style);
+  return layer_.updateTextInput(view.tag, style);
 }
 
 void ShadowViewMutationAdapter::applyActivityIndicator(const ShadowView& view) {
@@ -650,6 +662,29 @@ void ShadowViewMutationAdapter::connectTextInputEvents(const ShadowView& view) {
     return;
   }
 
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  auto* bridge = layer_.textInputBridge(tag);
+  if (bridge == nullptr) return;
+  bridge->setEmitter([emitter, item, tag](TextInputEvent kind, const TextInputObservation& value) {
+    auto metrics = makeTextInputMetrics(item, tag, value.eventCount);
+    metrics.text = value.text.toStdString();
+    metrics.selectionRange = {.location = value.selectionStart, .length = value.selectionEnd - value.selectionStart};
+    switch (kind) {
+      case TextInputEvent::Change: emitter->onChange(metrics); break;
+      case TextInputEvent::Selection: emitter->onSelectionChange(metrics); break;
+      case TextInputEvent::Focus: emitter->onFocus(metrics); break;
+      case TextInputEvent::Blur: emitter->onBlur(metrics); break;
+      case TextInputEvent::Submit: emitter->onSubmitEditing(metrics); break;
+      case TextInputEvent::Key: {
+        facebook::react::TextInputEventEmitter::KeyPressMetrics key{};
+        key.text = value.key.toStdString();
+        key.eventCount = value.eventCount;
+        emitter->onKeyPress(key);
+        break;
+      }
+    }
+  });
+#else
   // eventCount is React Native's ordering token: JavaScript compares it against
   // the count it last sent so it can drop an update that crossed a keystroke in
   // flight. It has to increase per emission, so it is owned here.
@@ -711,6 +746,7 @@ void ShadowViewMutationAdapter::connectTextInputEvents(const ShadowView& view) {
   QObject::connect(
       item, SIGNAL(selectionChanged()), selectionBridge, SLOT(notify()));
 
+#endif
   textInputConnected_.insert(view.tag);
 }
 
@@ -867,7 +903,8 @@ MountError ShadowViewMutationAdapter::applyOne(
       connectImageEvents(view);
       applyText(view);
       applyImage(view);
-      applyTextInput(view);
+      const auto textInputError = applyTextInput(view);
+      if (textInputError != MountError::None) { detail = layer_.lastError(); return textInputError; }
       applyActivityIndicator(view);
       applySwitch(view);
       return layer_.updateStyle(view.tag, toViewStyle(view));
@@ -877,6 +914,9 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (touchDispatcher_ != nullptr) {
         touchDispatcher_->forgetTag(mutation.oldChildShadowView.tag);
       }
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+      textInputConnected_.remove(mutation.oldChildShadowView.tag);
+#endif
       switchBridges_.remove(mutation.oldChildShadowView.tag);
       imageBridges_.remove(mutation.oldChildShadowView.tag);
       return layer_.destroy(mutation.oldChildShadowView.tag);
@@ -919,7 +959,8 @@ MountError ShadowViewMutationAdapter::applyOne(
       connectImageEvents(view);
       applyText(view);
       applyImage(view);
-      applyTextInput(view);
+      const auto textInputError = applyTextInput(view);
+      if (textInputError != MountError::None) { detail = layer_.lastError(); return textInputError; }
       applyActivityIndicator(view);
       applySwitch(view);
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
@@ -991,6 +1032,27 @@ MutationFailure ShadowViewMutationAdapter::dispatchCommand(
     }
     return MutationFailure{};
   }
+
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  if (commandName == "setTextAndSelection") {
+    const auto validInt = [](const folly::dynamic& value) {
+      return value.isNumber() && std::isfinite(value.asDouble()) &&
+          std::trunc(value.asDouble()) == value.asDouble() &&
+          value.asDouble() >= std::numeric_limits<int>::min() && value.asDouble() <= std::numeric_limits<int>::max();
+    };
+    if (!args.isArray() || args.size() != 4 || !validInt(args[0]) ||
+        !(args[1].isNull() || args[1].isString()) || !validInt(args[2]) || !validInt(args[3])) {
+      return MutationFailure{.type = ShadowViewMutation::Type::Update, .tag = tag,
+          .error = MountError::IndexOutOfRange, .detail = QStringLiteral("Invalid TextInput command arguments")};
+    }
+    const std::optional<QString> text = args[1].isNull() ? std::nullopt :
+        std::optional<QString>(QString::fromStdString(args[1].asString()));
+    const auto error = layer_.setTextAndSelection(tag, static_cast<int>(args[0].asDouble()), text,
+                                                 static_cast<int>(args[2].asDouble()), static_cast<int>(args[3].asDouble()));
+    return MutationFailure{.type = ShadowViewMutation::Type::Update, .tag = tag,
+        .error = error, .detail = error == MountError::None ? QString() : layer_.lastError()};
+  }
+#endif
 
   if (commandName == "focus") {
     const MountError error = layer_.focusTextInput(tag);

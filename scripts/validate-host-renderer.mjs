@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 // This lane must fail closed: CTest success with only the two smoke tests is
@@ -44,6 +44,14 @@ if (process.platform !== 'linux') {
   throw new Error('The reproducible full-renderer lane currently targets Linux.');
 }
 run('cmake', ['--preset', preset]);
+const cache = readFileSync(path.join(build, 'CMakeCache.txt'), 'utf8');
+if (/^RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=ON$/m.test(cache)) {
+  expectedTests.push(
+    'rnqnx_text_input_probe',
+    'rnqnx_text_input_bridge_test',
+    'rnqnx_text_input_rejects_interception'
+  );
+}
 run('cmake', ['--build', '--preset', preset]);
 const inventory = run('ctest', ['--test-dir', build, '--show-only=json-v1'], true);
 const registered = new Set(

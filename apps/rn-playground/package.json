@@ -6,7 +6,8 @@
   "main": "index.js",
   "dependencies": {
     "react": "19.3.0",
-    "react-native": "0.88.1"
+    "react-native": "0.88.1",
+    "zustand": "5.1.0"
   },
   "devDependencies": {
     "@rn-qnx/metro-config-qnx": "workspace:*"

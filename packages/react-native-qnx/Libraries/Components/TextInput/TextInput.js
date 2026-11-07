@@ -7,13 +7,15 @@
  * textinput descriptor; it is the same C++ shadow node that the QNX platform
  * already mounts and applies props to.
  *
- * Deliberately minimal: `value`/`defaultValue` become the native `text` prop,
- * `onChange` is translated to `onChangeText`, and `mostRecentEventCount` is
- * tracked so a controlled field does not fight native edits.
+ * The override forwards standard text, focus, submit and selection events and
+ * commands. Each component retains a vanilla Zustand store for text/edit count;
+ * native handles stay in refs.
  *
- * Gaps recorded in `docs/component-support.md` rather than stubbed here:
- * placeholder, multiline, focus/blur/submit/selection events and commands,
- * `focus`/`blur` imperative commands, and IME.
+ * The default native path remains available. With the experimental default-OFF
+ * TextInput contract enabled, the Qt bridge owns edit tokens, rejects stale
+ * text/selection commands and suppresses JS-write feedback. Secure multiline
+ * and secure input-method provider routes are unsupported and rejected.
+ * Hardware IME and accessibility qualification remain separate validation work.
  */
 
 'use strict';
@@ -23,7 +25,8 @@ const SinglelineTextInputNativeComponent =
   require('react-native/Libraries/Components/TextInput/RCTSingelineTextInputNativeComponent').default;
 
 const forwardRef = React.forwardRef;
-const useState = React.useState;
+const { createStore } = require('zustand/vanilla');
+const { useStore } = require('zustand');
 
 const TextInput = forwardRef(function TextInput(props, ref) {
   const initialText = String(
@@ -33,22 +36,32 @@ const TextInput = forwardRef(function TextInput(props, ref) {
         ? props.defaultValue
         : ''
   );
-  const stateTuple = useState({
-    text: initialText,
-    mostRecentEventCount: 0,
-  });
-  const state = stateTuple[0];
-  const setState = stateTuple[1];
-
-  const currentText = props.value !== undefined ? String(props.value) : state.text;
+  if (
+    globalThis.__RNQNX_TEXT_INPUT_CONTRACT__ === true &&
+    props.secureTextEntry &&
+    props.multiline
+  ) {
+    throw new Error('RNQNX_TEXT_INPUT_SECURE_MULTILINE_UNSUPPORTED');
+  }
+  const storeRef = React.useRef(null);
+  if (storeRef.current === null) {
+    storeRef.current = createStore(() => ({
+      text: initialText,
+      mostRecentEventCount: 0,
+    }));
+  }
+  const store = storeRef.current;
+  const text = useStore(store, (state) => state.text);
+  const mostRecentEventCount = useStore(store, (state) => state.mostRecentEventCount);
+  const currentText = props.value !== undefined ? String(props.value) : text;
 
   const handleChange = (event) => {
     const text = event.nativeEvent.text;
     const eventCount = event.nativeEvent.eventCount;
     if (props.value === undefined) {
-      setState({ text, mostRecentEventCount: eventCount });
+      store.setState({ text, mostRecentEventCount: eventCount });
     } else {
-      setState(function (prev) {
+      store.setState(function (prev) {
         return { text: prev.text, mostRecentEventCount: eventCount };
       });
     }
@@ -71,7 +84,7 @@ const TextInput = forwardRef(function TextInput(props, ref) {
     Object.assign({}, props, {
       ref,
       text: currentText,
-      mostRecentEventCount: state.mostRecentEventCount,
+      mostRecentEventCount,
       onChange: handleChange,
       onFocus: passThrough(props.onFocus),
       onBlur: passThrough(props.onBlur),

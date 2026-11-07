@@ -495,6 +495,9 @@ class QtReactHost::Impl {
     // platform is Fabric-only, so the answer is a flat true and it must be set
     // before any bundle is evaluated.
     runtime->global().setProperty(*runtime, "RN$Bridgeless", true);
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+    runtime->global().setProperty(*runtime, "__RNQNX_TEXT_INPUT_CONTRACT__", true);
+#endif
 #if defined(RNQNX_ENABLE_INPUT_LIFECYCLE) && RNQNX_ENABLE_INPUT_LIFECYCLE
     // Pinned RN's EventTarget dispatch skips null targets. Opt-in cancellation
     // must still retire a responder after its React element was unmounted.
