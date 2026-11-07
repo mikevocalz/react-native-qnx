@@ -43,6 +43,12 @@ endfunction()
 
 include(CTest)
 
+option(RNQNX_BUILD_QNX_SYSTEMS_PROBES "Build finite native systems diagnostics" OFF)
+if(RNQNX_BUILD_QNX_SYSTEMS_PROBES)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxSystemsProbes.cmake)
+  rnqnx_add_systems_probe()
+endif()
+
 # Installed React Native, resolved through the workspace rather than assumed.
 set(RNQNX_REACT_NATIVE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/node_modules/react-native")
 option(RNQNX_FETCH_REACT_NATIVE_DEPS
