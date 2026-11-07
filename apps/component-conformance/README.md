@@ -32,11 +32,11 @@ The generic `deploy-qnx` script does not provision the full runtime.
 
 ## What to exercise
 
-| ID | Manual action | Acceptance to record |
-| --- | --- | --- |
-| LIST-001 | Scroll 1,000 rows; select Document 0500; switch pages and return | Correct row selection, stable list, no phantom press |
-| INPUT-001 | Edit the field, toggle the switch, press twice and revisit | Correct controlled text, switch and press count; record focus behavior |
-| LAYOUT-001 | Resize wide/narrow; return to selected document | Layout changes without losing the selected row |
+| ID         | Manual action                                                    | Acceptance to record                                                   |
+| ---------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| LIST-001   | Scroll 1,000 rows; select Document 0500; switch pages and return | Correct row selection, stable list, no phantom press                   |
+| INPUT-001  | Edit the field, toggle the switch, press twice and revisit       | Correct controlled text, switch and press count; record focus behavior |
+| LAYOUT-001 | Resize wide/narrow; return to selected document                  | Layout changes without losing the selected row                         |
 
 The **Limits** page lists five later scenarios that remain blocked: interrupted
 gesture drawer, multilingual IME, non-premium Nitro document binding,
