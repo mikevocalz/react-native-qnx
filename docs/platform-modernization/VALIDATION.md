@@ -4,7 +4,7 @@ Readiness review on 2026-11-07. This PR changes program documentation, source/ow
 
 ## Candidate and scope
 
-Original program head `fab13fc69a7338df2e267971823897e9f54e174e`; premium-boundary follow-up `6edc6568fd889ee2d16dbb69b2600d8bc24bc331`. Readiness integrates main `cfcf2b4e7ec934171876773fd465271eac83de9f`, where PRs42/44/45/46 are merged. Their dated receipts remain evidence for their own implementation revisions, not a native validation pass for this documentation change.
+Original program head `fab13fc69a7338df2e267971823897e9f54e174e`; premium-boundary follow-up `6edc6568fd889ee2d16dbb69b2600d8bc24bc331`. Readiness integrates main `cfcf2b4e7ec934171876773fd465271eac83de9f`, where PRs42/44/45/46 are merged. Final integration also preserves main `95c3fce` (premium policy and manual-only compatibility workflow); the AGENTS conflict was resolved by retaining the program routing and the complete current premium policy. Their dated receipts remain evidence for their own implementation revisions, not a native validation pass for this documentation change.
 
 Program00 is published as [PR47](https://github.com/mikevocalz/react-native-qnx/pull/47). Workstreams01–13 are proposed and unpublished; their catalog paths and branches are proposed destinations, not existing delivery documents. Null URLs/commits deliberately record that state. No companion PR or full specification publication is claimed.
 
