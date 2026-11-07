@@ -2,6 +2,7 @@
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
+#include "react-native-qnx/runtime/QtRuntimeTaskQueue.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 #include "react-native-qnx/views/QtTextInputQml.h"
 #include <react/renderer/core/RawEvent.h>
@@ -78,14 +79,22 @@ void run() {
   const auto snapshot = [&] { return host.runtime().global().getPropertyAsObject(host.runtime(), "__rnqnxTextInputSnapshot"); };
   const auto number = [&](const char* key) { return snapshot().getProperty(host.runtime(), key).asNumber(); };
   const auto text = [&] { return QString::fromStdString(snapshot().getProperty(host.runtime(), "text").asString(host.runtime()).utf8(host.runtime())); };
-  const auto script = [&](const char* code) { require(host.evaluate(code, "text-input-driver"), "TextInput driver failed"); settle(); };
+  // Invoke functions already compiled into the fixture HBC. Lean Hermes does
+  // not accept inline source; runSync retains the owned JS entry/checkpoint.
+  const auto call = [&](const char* name, auto&&... args) {
+    host.taskQueue()->runSync([&] {
+      auto& runtime = host.runtime();
+      runtime.global().getPropertyAsFunction(runtime, name).call(runtime, args...);
+    });
+    settle();
+  };
   window.show(); window.requestActivate();
   host.startSurface(11, "RNQnxTextInputProbe", 320, 240);
   until([&] { return layer.mountedCount() == 4 && editorCount(window.contentItem()) == 2; }, "React TextInput did not mount");
   QPointer<QQuickItem> field = findEditor(window.contentItem());
   require(field->property("text").toString() == QStringLiteral("A😀e\u0301"), "initial React value mismatch");
   require(number("changes") == 0, "initial JS value emitted native change");
-  script("__rnqnxTextInputFocus()");
+  call("__rnqnxTextInputFocus");
   until([&] { return field->hasActiveFocus() && number("focus") >= 1; }, "React TextInput focus failed");
   QKeyEvent key(QEvent::KeyPress, Qt::Key_X, Qt::NoModifier, QStringLiteral("X"));
   QCoreApplication::sendEvent(&window, &key);
@@ -101,7 +110,7 @@ void run() {
   until([&] { return number("selectionEvents") >= 1 && number("selectionEventCount") == number("eventCount"); },
         "native selection did not reach React");
   assertSelection();
-  script("__rnqnxTextInputFocusSecond()");
+  call("__rnqnxTextInputFocusSecond");
   const auto secondSnapshot = [&] { return host.runtime().global().getPropertyAsObject(host.runtime(), "__rnqnxTextInputSecondSnapshot"); };
   const auto secondCount = [&](const char* key) { return secondSnapshot().getProperty(host.runtime(), key).asNumber(); };
   until([&] { return secondCount("focus") >= 1; }, "second React field focus failed");
@@ -112,7 +121,7 @@ void run() {
           text() == QStringLiteral("A😀e\u0301X"), "live TextInput tokens or state leaked across instances");
   require(secondSnapshot().getProperty(host.runtime(), "text").asString(host.runtime()).utf8(host.runtime()) == "secondY",
           "second React field text mismatch");
-  script("__rnqnxTextInputFocus()");
+  call("__rnqnxTextInputFocus");
   until([&] { return field->hasActiveFocus(); }, "first React field refocus failed");
   QInputMethodEvent preedit(QStringLiteral("に"), {});
   QCoreApplication::sendEvent(&window, &preedit); settle();
@@ -125,11 +134,11 @@ void run() {
   settle(); assertSelection();
   const auto nativeText = field->property("text").toString();
   const auto cursor = field->property("cursorPosition").toInt();
-  script("__rnqnxTextInputCommand(1, 'stale', 0, 0)");
+  call("__rnqnxTextInputCommand", 1, "stale", 0, 0);
   require(field->property("text").toString() == nativeText && field->property("cursorPosition").toInt() == cursor,
           "stale command changed text or selection");
   const auto selections = number("selectionEvents");
-  script("__rnqnxTextInputCommand(2, null, 1, 3)");
+  call("__rnqnxTextInputCommand", 2, nullptr, 1, 3);
   require(field->property("selectedText").toString() == QStringLiteral("😀"), "command selection was not UTF-16");
   require(number("changes") == 2 && number("eventCount") == 2 && number("selectionEvents") == selections,
           "JS-origin selection emitted feedback");
@@ -141,10 +150,10 @@ void run() {
   QInputMethodEvent pending(QStringLiteral("未"), {}); QCoreApplication::sendEvent(&window, &pending);
   QInputMethodEvent cancel(QString(), {}); QCoreApplication::sendEvent(&window, &cancel); settle();
   require(field->property("preeditText").toString().isEmpty() && number("changes") == 3, "cancel changed committed text");
-  script("__rnqnxTextInputSetValue('controlled')");
+  call("__rnqnxTextInputSetValue", "controlled");
   until([&] { return field->property("text").toString() == QStringLiteral("controlled"); }, "controlled JS value did not apply");
   require(number("changes") == 3 && number("eventCount") == 3, "controlled JS value echoed native change");
-  script("__rnqnxTextInputBlur()");
+  call("__rnqnxTextInputBlur");
   until([&] { return number("blur") >= 1; }, "React TextInput blur failed");
   require(number("blurEventCount") == 3, "blur advanced edit token");
   QPointer<QQuickItem> previous(field);
@@ -156,7 +165,7 @@ void run() {
   host.startSurface(11, "RNQnxTextInputProbe", 320, 240);
   until([&] { return layer.mountedCount() == 4 && editorCount(window.contentItem()) == 2; }, "TextInput remount failed");
   field = findEditor(window.contentItem());
-  script("__rnqnxTextInputFocus()");
+  call("__rnqnxTextInputFocus");
   QKeyEvent again(QEvent::KeyPress, Qt::Key_Z, Qt::NoModifier, QStringLiteral("Z"));
   QCoreApplication::sendEvent(&window, &again);
   until([&] { return number("changes") == 1; }, "remounted TextInput failed to edit");
