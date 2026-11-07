@@ -495,6 +495,11 @@ class QtReactHost::Impl {
     // platform is Fabric-only, so the answer is a flat true and it must be set
     // before any bundle is evaluated.
     runtime->global().setProperty(*runtime, "RN$Bridgeless", true);
+#if defined(RNQNX_ENABLE_INPUT_LIFECYCLE) && RNQNX_ENABLE_INPUT_LIFECYCLE
+    // Pinned RN's EventTarget dispatch skips null targets. Opt-in cancellation
+    // must still retire a responder after its React element was unmounted.
+    runtime->global().setProperty(*runtime, "__RNQNX_INPUT_LIFECYCLE__", true);
+#endif
 
     // NativeModules.js:185-192 throws unless one of `global.nativeModuleProxy`
     // or `global.__fbBatchedBridgeConfig` exists, and the bridgeless flag does

@@ -1,6 +1,6 @@
 # Current state
 
-Reconciled against `main` at `8657b25` on 2026-11-07. The structured dependency
+Reconciled against `main` at `5f17504` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the
 [compatibility matrix](../getting-started/compatibility-matrix.md) are generated
 from the package manifests and installed frozen graph. Run `pnpm validate:docs`
@@ -18,9 +18,27 @@ change. Evidence is curated separately from dependency versions.
 | Development host                                                       | Component and prop coverage; full native suite reported 16/16 in the dated receipt                                        | [Support table](../component-support.md), [runtime receipt](../evidence/pi400-runtime-baseline-2026-11-07.md) |
 
 These are historical prerequisite results from the cited revisions. A new PR
-must attach its own relevant validation. Synthetic input does not establish USB
-keyboard/touch behavior or React responder parity. Ten application trials do
+must attach its own relevant validation. The raw Fabric callback input receipt does not establish USB
+keyboard/touch behavior or real React responder behavior; the scoped Pressable
+follow-up below covers the latter. Ten application trials do
 not establish cold boot. Captures do not measure presentation timing.
+
+## React Pressable responder prerequisite
+
+Synthetic Qt input exercises the real production-bundled React Pressable
+and responder path on Pi 400/QNX 8.0.5. The probe caught a stale responder after
+unmount: RN's event path skipped cancellation when the native target was gone.
+An exact, opt-in RN patch preserves nullable cancellation and error forwarding.
+The same executable/HBC passes with the fix and reproduces the remount failure
+when only that fix is disabled. Delivery interception also fails as expected;
+a subsequent normal run succeeds. Readbacks matched both artifact hashes.
+
+Fresh host graphs passed 23/23 with input/tracing ON and 16/16 with both OFF.
+The existing input option stays OFF by default. The continuous Hello World app,
+recovery boot and window contract are preserved. This is historical prerequisite
+synthetic-input evidence, not validation of this integrated candidate or
+physical HID, RNGH or Worklets qualification. See the
+[responder receipt](../evidence/pressable-qnx-2026-11-07.md).
 
 ## Bounded native tracing prerequisite
 

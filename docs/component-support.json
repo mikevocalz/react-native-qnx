@@ -59,11 +59,11 @@
     {
       "name": "Pressable",
       "host": "supported",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Renders and delivers onPress from a host pointer press.",
+      "notes": "Host pointer press delivers onPress. Pi 400 synthetic Qt input exercises real React Pressable/responder dispatch and remount recovery; physical HID, RNGH and Worklets remain unverified.",
       "evidence": {
-        "pi400": [],
+        "pi400": ["docs/evidence/pressable-qnx-2026-11-07.md"],
         "pi4Qsti": []
       }
     },

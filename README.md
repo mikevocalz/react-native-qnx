@@ -48,13 +48,19 @@ pnpm validate:docs
 pnpm validate:macos
 ```
 
+The [React Pressable responder receipt](docs/evidence/pressable-qnx-2026-11-07.md)
+records 23/23 host CTests with input/tracing ON and 16/16 with both OFF. Physical
+Pi 400 synthetic Qt input exercises the production React Pressable responder
+path, including remount recovery and failure controls. This does not establish
+physical HID, RNGH or Worklets qualification; the input option remains OFF by
+default.
+
 The [bounded native tracing receipt](docs/evidence/pi400-runtime-trace-2026-11-07.md)
-records host graphs with 20/20 CTests ON and 18/18 OFF, followed by 4/4 focused
-queue-correlation checks. Physical Pi 400 export, protected-file failure,
-OFF-path capture and traced Nitro worker/shutdown assertions passed at the
-cited revisions. These native diagnostics do not establish input/Fabric/render-loop
-or presentation markers, tracing overhead, or performance budgets. The trace
-experiment remains OFF by default.
+retains earlier 20/20 ON, 18/18 OFF and 4/4 focused queue-correlation results.
+Physical Pi 400 export, protected-file failure, OFF-path capture and traced
+Nitro worker/shutdown assertions passed at the cited revisions. These native
+diagnostics do not establish input/Fabric/render-loop or presentation markers,
+tracing overhead, or performance budgets. Tracing remains OFF by default.
 
 `validate:macos` runs host checks. It does not cross-build or run QNX.
 The dated handoff records earlier billing refusals.
