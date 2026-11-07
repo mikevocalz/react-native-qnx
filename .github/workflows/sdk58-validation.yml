@@ -38,11 +38,6 @@ jobs:
       - name: Verify security override contract
         run: node scripts/validate-security-overrides.mjs
 
-      - name: Print formatter suggestions (temporary CI diagnosis)
-        run: |
-          pnpm exec prettier --write tests/js/qnx-cli-evidence.test.mjs
-          git diff -- tests/js/qnx-cli-evidence.test.mjs
-
       - name: Format
         run: pnpm format:check
 
