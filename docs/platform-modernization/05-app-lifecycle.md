@@ -36,19 +36,16 @@ interface LifecycleSnapshot {
   readonly hasVisibleSurface: boolean;
   readonly hasFocusedSurface: boolean;
 }
-interface ListenerSubscription { remove(): void }
+interface ListenerSubscription {
+  remove(): void;
+}
 interface BackgroundTask {
   finish(): Promise<void>;
 }
 interface AppLifecycle {
   readonly current: LifecycleSnapshot;
-  addOnStateChangedListener(
-    listener: (state: LifecycleSnapshot) => void,
-  ): ListenerSubscription;
-  beginBackgroundTask(options: {
-    kind: BackgroundKind;
-    reason: string;
-  }): Promise<BackgroundTask>;
+  addOnStateChangedListener(listener: (state: LifecycleSnapshot) => void): ListenerSubscription;
+  beginBackgroundTask(options: { kind: BackgroundKind; reason: string }): Promise<BackgroundTask>;
 }
 ```
 
@@ -68,7 +65,8 @@ subscription.remove();
 ```ts
 try {
   const task = await lifecycle.beginBackgroundTask({
-    kind: 'download', reason: 'Save the document for offline editing',
+    kind: 'download',
+    reason: 'Save the document for offline editing',
   });
   try {
     await documentDownload.run();
@@ -96,38 +94,38 @@ Implementation prerequisites are Plan 01's runtime baseline and ownership contra
 
 All human assignments remain **unassigned**. An implementing PR must name a DRI and a different reviewer before promotion from draft.
 
-| Responsibility | Proposed owner role and paths | Independent review |
-| --- | --- | --- |
-| Coordinator and runtime generation | Qt/JSI engineer; `vnext/src/runtime`, corresponding public headers | Hermes/runtime engineer |
-| Public lifecycle API | Native API architect; focused files in the existing native-module package selected at implementation | Nitro/codegen engineer |
-| QNX backend | QNX systems engineer; `native/platform/qnx` | QNX regression owner |
-| Marathon backend | Wayland integration engineer; `native/platform/linux-host` | Shell lifecycle/security maintainer |
-| Failure and retention evidence | QA engineer; `tests/cpp`, `tests/js`, Plan 12 application | Performance reviewer |
+| Responsibility                     | Proposed owner role and paths                                                                        | Independent review                  |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| Coordinator and runtime generation | Qt/JSI engineer; `vnext/src/runtime`, corresponding public headers                                   | Hermes/runtime engineer             |
+| Public lifecycle API               | Native API architect; focused files in the existing native-module package selected at implementation | Nitro/codegen engineer              |
+| QNX backend                        | QNX systems engineer; `native/platform/qnx`                                                          | QNX regression owner                |
+| Marathon backend                   | Wayland integration engineer; `native/platform/linux-host`                                           | Shell lifecycle/security maintainer |
+| Failure and retention evidence     | QA engineer; `tests/cpp`, `tests/js`, Plan 12 application                                            | Performance reviewer                |
 
 ## Skills and decisions
 
 The actual source files were read for this design. This records source-guided planning, not CLI installation, native execution or vendor approval.
 
-| Exact skill | Pinned source | Decision applied |
-| --- | --- | --- |
-| `api-design` | [Margelo, `1e9e17be6f41c838db472d6a4b943fc26355a3be`](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md) | Cached observations, async admission, explicit additive subscriptions and error paths |
-| `build-nitro-modules` | [Same revision](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md) | Native task ownership; typed specs before bindings; validate generator support for these async/resource shapes |
-| `cpp` | [Same revision](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md) | One owner queue, RAII and generation-scoped resources; no sleeps as readiness fixes |
-| `react-native-best-practices` | [Callstack, `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) | Compare identical foreground/background workloads before tuning |
+| Exact skill                   | Pinned source                                                                                                                                                                                         | Decision applied                                                                                               |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `api-design`                  | [Margelo, `1e9e17be6f41c838db472d6a4b943fc26355a3be`](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md)                        | Cached observations, async admission, explicit additive subscriptions and error paths                          |
+| `build-nitro-modules`         | [Same revision](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md)                                                     | Native task ownership; typed specs before bindings; validate generator support for these async/resource shapes |
+| `cpp`                         | [Same revision](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md)                                                                     | One owner queue, RAII and generation-scoped resources; no sleeps as readiness fixes                            |
+| `react-native-best-practices` | [Callstack, `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) | Compare identical foreground/background workloads before tuning                                                |
 
 The repository's limited platform-info code generator does not prove generation of this richer lifecycle API. Compile and deterministic-codegen evidence remain required.
 
 ## Acceptance, performance and evidence
 
-| Scenario | Required observable result |
-| --- | --- |
-| Focus lost but window still visible | No premature suspension; input focus updates once |
-| Last surface hidden; no lease | Visual producers settle, then issue no application-driven frames in the quiescent fixture |
-| Hidden audio/download lease | Authorized producer continues; hidden visual work remains idle; releasing the final lease changes activity |
-| Hide then immediately show | Old freeze/checkpoint replies cannot suspend the new generation |
-| First window still loading | App reaches its first frame without being frozen mid-launch |
-| Service disconnect or permission revocation | Lease failure is visible, work stops according to its contract, and no permission is silently retained |
-| 100 hide/show and close/reopen cycles | State restores, subscription/native resource counts return to baseline, and no callback enters destroyed Hermes |
+| Scenario                                    | Required observable result                                                                                      |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Focus lost but window still visible         | No premature suspension; input focus updates once                                                               |
+| Last surface hidden; no lease               | Visual producers settle, then issue no application-driven frames in the quiescent fixture                       |
+| Hidden audio/download lease                 | Authorized producer continues; hidden visual work remains idle; releasing the final lease changes activity      |
+| Hide then immediately show                  | Old freeze/checkpoint replies cannot suspend the new generation                                                 |
+| First window still loading                  | App reaches its first frame without being frozen mid-launch                                                     |
+| Service disconnect or permission revocation | Lease failure is visible, work stops according to its contract, and no permission is silently retained          |
+| 100 hide/show and close/reopen cycles       | State restores, subscription/native resource counts return to baseline, and no callback enters destroyed Hermes |
 
 Record idle CPU, wakeups, frame requests, resume-to-first-presentation p50/p95/p99 and retained memory. Set device-specific absolute budgets from Plan 03's repeated baseline before implementation promotion; this plan reports no measured improvement. A hidden compositor callback is not proof that RN actually repainted.
 
