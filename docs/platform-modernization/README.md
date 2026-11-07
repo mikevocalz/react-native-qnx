@@ -4,7 +4,7 @@ This program turns the MarathonOS and QNX Neutrino review into independently rev
 
 The owner requires [Nitro v1 API-first design](NITRO_V1_API_POLICY.md). The [Neutrino coverage map](NEUTRINO_REFERENCE_MAP.md) assigns all 19 archive categories. Published Plan15 covers the broader official QNX documentation/example audit; the source map below records the three official pages checked in this readiness review.
 
-**Publication baseline:** this expansion follows merged [program PR47](https://github.com/mikevocalz/react-native-qnx/pull/47) and is prepared against main `48e37f7550b4244f8a7936c01af75419e1fec416`. The current premium-product boundary and PR46 validation receipts are preserved.
+**Original expansion baseline:** this expansion follows merged [program PR47](https://github.com/mikevocalz/react-native-qnx/pull/47) and is prepared against main `48e37f7550b4244f8a7936c01af75419e1fec416`. The current premium-product boundary and PR46 validation receipts are preserved.
 
 Start with the [roster](ROSTER.md), [skills and native workflow](SKILLS.md), and [machine-readable catalog](catalog.json). The roster and catalog identify proposed ownership and dependencies. Each published delivery plan proposes architecture boundaries, exact paths, prerequisites, public contracts where relevant, implementation slices, failure tests, performance/security limits and rollback. Human implementation assignments are unassigned. Documentation PRs are independent; implementation dependencies still have to be satisfied.
 
@@ -23,6 +23,8 @@ Start with the [roster](ROSTER.md), [skills and native workflow](SKILLS.md), and
 | Existing QNX runtime and optional Forge experiments already provide useful foundations       | Reuse their code and exact evidence instead of creating competing hosts/queues                                        | 01, 10        |
 | A shared substantial app exposes interactions that unit probes miss                          | Run the same non-premium conformance workload on both targets; test licensed Forge packages separately and optionally | 12            |
 
+The expanded [current-QNX audit](https://github.com/mikevocalz/react-native-qnx/pull/63) contains67 unique source URLs, with selected-body, index/discovery and unavailable coverage distinguished. It includes DDK/WFD/VulkanSC/GPIO/CTI overviews and bounded dispositions for Containers, Hypervisor, cloud images and Momentics. Installed packages, hardware behavior and complete manual audits remain separate qualification work.
+
 ## Existing implementation PRs
 
 The main branch inspected for this program is `e84b51430c239bc89dbd48ac35afab89f7c77c01`. The package manifest, rather than historical README text, identifies the reviewed graph: RN `0.88.1`, React `19.3.0`, Expo `58.0.22`, Metro `0.87.1`, Nitro core/adapter/Nitrogen `1.0.0-alpha.nightly.105.g69d365fc9b18`.
@@ -40,30 +42,32 @@ PRs42,44,45 and46 are merged; the later program/publication base is `48e37f7550b
 
 ## Workstream catalog
 
-The PR URLs and dependency records are maintained in `catalog.json`. The predecessor program was merged as PR47 and this follow-up is published as [PR49](https://github.com/mikevocalz/react-native-qnx/pull/49). Workstreams01–12 and14–15 are now published as PRs50–63, with returned URLs and inspected heads in the catalog. They propose future behavior; their implementation gates remain open. Workstream13 in the Marathon repository is still unpublished, with a proposed destination and null PR/commit.
+Publication reconciliation uses main `24019f39a409cd0540c31f4e017b7003201bdca4`. Earlier source and readiness pins remain below for provenance.
 
-| Plan | Deliverable                                                                      | Publication                                                   |
-| ---- | -------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| 00   | Nitro v1 API contract, complete QNX source map, skills and delivery roster       | [#49](https://github.com/mikevocalz/react-native-qnx/pull/49) |
-| 01   | Runtime baseline, startup recovery and thread ownership                          | [#50](https://github.com/mikevocalz/react-native-qnx/pull/50) |
-| 02   | Input lifecycle, Worklets, Reanimated and Gesture Handler                        | [#51](https://github.com/mikevocalz/react-native-qnx/pull/51) |
-| 03   | Frame pacing, input latency and performance traces                               | [#52](https://github.com/mikevocalz/react-native-qnx/pull/52) |
-| 04   | Text composition, keyboard, focus and accessibility                              | [#53](https://github.com/mikevocalz/react-native-qnx/pull/53) |
-| 05   | Visibility, background policy and state restoration                              | [#54](https://github.com/mikevocalz/react-native-qnx/pull/54) |
-| 06   | Typed platform services, capabilities and permissions                            | [#55](https://github.com/mikevocalz/react-native-qnx/pull/55) |
-| 07   | Versioned QNX IPC, deadlines and event ownership                                 | [#56](https://github.com/mikevocalz/react-native-qnx/pull/56) |
-| 08   | Service isolation, supervision and recovery                                      | [#57](https://github.com/mikevocalz/react-native-qnx/pull/57) |
-| 09   | Measured shared-memory and media buffer ownership                                | [#58](https://github.com/mikevocalz/react-native-qnx/pull/58) |
-| 10   | Generic package hooks and optional licensed Forge compatibility                  | [#59](https://github.com/mikevocalz/react-native-qnx/pull/59) |
-| 11   | Device metrics, adaptive layouts and foldable profiles                           | [#60](https://github.com/mikevocalz/react-native-qnx/pull/60) |
-| 12   | Non-premium platform conformance application with optional licensed integrations | [#61](https://github.com/mikevocalz/react-native-qnx/pull/61) |
-| 13   | Marathon native client and managed runner contract                               | Proposed; unpublished                                         |
-| 14   | QNX 8 systems probes and legacy sample modernization                             | [#62](https://github.com/mikevocalz/react-native-qnx/pull/62) |
-| 15   | Current QNX documentation, examples and release audit                            | [#63](https://github.com/mikevocalz/react-native-qnx/pull/63) |
+The [catalog](catalog.json) records all16 published workstreams, immutable specification revisions and dependency PR links. At the 2026-11-07 API check, RNQNX PRs49–63 were merged; [Marathon fork PR1](https://github.com/mikevocalz/Marathon-Shell/pull/1) remained draft. These states are a dated observation, not a runtime-support claim. The original program PR47 is also merged.
+
+| Plan | Deliverable | Pull request | Observed state |
+| --- | --- | --- | --- |
+| 00 | Nitro v1 API contract, complete QNX source map, skills and delivery roster | [#49](https://github.com/mikevocalz/react-native-qnx/pull/49) | Merged documentation |
+| 01 | Runtime baseline, startup recovery and thread ownership | [#50](https://github.com/mikevocalz/react-native-qnx/pull/50) | Merged documentation |
+| 02 | Input lifecycle, Worklets, Reanimated and Gesture Handler | [#51](https://github.com/mikevocalz/react-native-qnx/pull/51) | Merged documentation |
+| 03 | Frame pacing, input latency and performance traces | [#52](https://github.com/mikevocalz/react-native-qnx/pull/52) | Merged documentation |
+| 04 | Text composition, keyboard, focus and accessibility | [#53](https://github.com/mikevocalz/react-native-qnx/pull/53) | Merged documentation |
+| 05 | Visibility, background policy and state restoration | [#54](https://github.com/mikevocalz/react-native-qnx/pull/54) | Merged documentation |
+| 06 | Typed platform services, capabilities and permissions | [#55](https://github.com/mikevocalz/react-native-qnx/pull/55) | Merged documentation |
+| 07 | Versioned QNX IPC, deadlines and event ownership | [#56](https://github.com/mikevocalz/react-native-qnx/pull/56) | Merged documentation |
+| 08 | Service isolation, supervision and recovery | [#57](https://github.com/mikevocalz/react-native-qnx/pull/57) | Merged documentation |
+| 09 | Measured shared-memory and media buffer ownership | [#58](https://github.com/mikevocalz/react-native-qnx/pull/58) | Merged documentation |
+| 10 | Generic package hooks and optional licensed Forge compatibility | [#59](https://github.com/mikevocalz/react-native-qnx/pull/59) | Merged documentation |
+| 11 | Device metrics, adaptive layouts and foldable profiles | [#60](https://github.com/mikevocalz/react-native-qnx/pull/60) | Merged documentation |
+| 12 | Non-premium platform conformance application with optional licensed integrations | [#61](https://github.com/mikevocalz/react-native-qnx/pull/61) | Merged documentation |
+| 13 | Marathon native client and managed runner contract | [Marathon #1](https://github.com/mikevocalz/Marathon-Shell/pull/1) | Open draft |
+| 14 | QNX 8 systems probes and legacy sample modernization | [#62](https://github.com/mikevocalz/react-native-qnx/pull/62) | Merged documentation |
+| 15 | Current QNX documentation, examples and release audit | [#63](https://github.com/mikevocalz/react-native-qnx/pull/63) | Merged documentation |
 
 ## Premium product boundary
 
-Nitro Forge is a separate premium product, not a platform component, default dependency or required conformance workload. Generic Nitro/package/lifecycle hooks belong in the platform; Forge production bindings and package configuration belong with Forge or its licensed consuming app. Core builds, CI and releases use non-premium fixtures. Plan10 is optional commercial compatibility work and is not a prerequisite for core plan12 acceptance. Preserve the existing opt-in external-checkout experiment as historical evidence without vendoring or redistributing premium content.
+Nitro Forge is a separate premium product, not a platform component, default dependency or required conformance workload. Generic Nitro/package/lifecycle hooks belong in the platform; Forge production bindings and package configuration belong with Forge or its licensed consuming app. Core builds, CI and releases use non-premium fixtures. Plan10 includes generic package hooks proved with non-premium fixtures; its licensed Forge consumer lane is optional and is not a prerequisite for core plan12 acceptance. Preserve the existing opt-in external-checkout experiment as historical evidence without vendoring or redistributing premium content.
 
 ## Execution order
 
@@ -73,7 +77,7 @@ Nitro Forge is a separate premium product, not a platform component, default dep
 4. Run the non-premium conformance app as capabilities become available; licensed package integration is a separate opt-in consumer check. Promote a target only after its own physical and failure-path evidence is attached.
 5. In the Marathon fork, review the ordinary native-client contract first and the managed runner/schema/security contract separately. Upstream acceptance is required before claiming official managed-app support.
 
-Plans describe feature-level dependencies, not a requirement to merge all documentation before beginning a small authorized implementation. They also do not require duplicating existing #42/#44/#45/#46 work. Keep native experiments opt-in and default OFF until their target gate is met.
+Plans describe feature-level dependencies, not a requirement to merge all documentation before beginning a small authorized implementation. They also do not require duplicating existing #42/#44/#45/#46/#48 work. Keep native experiments opt-in and default OFF until their target gate is met.
 
 ## The supplied Neutrino reference
 
