@@ -28,22 +28,22 @@ The existing constrained proof adapter remains useful. A hand-authored v1 experi
 
 ## Efficiency and semantics
 
-| API concern | Required design |
-| --- | --- |
-| Cheap local observation | Use a typed, cached synchronous property or small pure method. Do not add Promise/queue overhead without a real async boundary. |
-| IPC, I/O, hardware setup, heavy compute | Use an owned native execution context and asynchronous completion. A JS Promise around a synchronous blocking native call does not move that work off the JS/GUI owner. |
-| Native state | Return a ready resource/session from a factory. Keep one owner route and define disposal; avoid giant singleton objects and partially initialized handles. |
-| Repeated observations | Use additive listeners with owned, idempotent cleanup and an ordered initial snapshot. Keep generation and sequence bookkeeping internal unless it is part of the user's domain. |
-| Failure | Surface real Error failures, explicit unsupported required capabilities and predictable post-disposal behavior. Keep serialized error envelopes inside transport boundaries. |
-| Bulk data | Retain native ownership and expose deliberate copying or resource operations. Do not eagerly convert a large payload or claim zero-copy across unmeasured boundaries. |
-| Threading | Reuse the existing completion queue and RuntimeScheduler. Keep heavy native work on its owner; preserve Qt/JS affinity and avoid nested executor chains. |
-| Shutdown | Stop producers and account for accepted operations before host drain. Drain, cancellation, timeout and server-side-effect cancellation are distinct contracts. |
+| API concern                             | Required design                                                                                                                                                                  |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cheap local observation                 | Use a typed, cached synchronous property or small pure method. Do not add Promise/queue overhead without a real async boundary.                                                  |
+| IPC, I/O, hardware setup, heavy compute | Use an owned native execution context and asynchronous completion. A JS Promise around a synchronous blocking native call does not move that work off the JS/GUI owner.          |
+| Native state                            | Return a ready resource/session from a factory. Keep one owner route and define disposal; avoid giant singleton objects and partially initialized handles.                       |
+| Repeated observations                   | Use additive listeners with owned, idempotent cleanup and an ordered initial snapshot. Keep generation and sequence bookkeeping internal unless it is part of the user's domain. |
+| Failure                                 | Surface real Error failures, explicit unsupported required capabilities and predictable post-disposal behavior. Keep serialized error envelopes inside transport boundaries.     |
+| Bulk data                               | Retain native ownership and expose deliberate copying or resource operations. Do not eagerly convert a large payload or claim zero-copy across unmeasured boundaries.            |
+| Threading                               | Reuse the existing completion queue and RuntimeScheduler. Keep heavy native work on its owner; preserve Qt/JS affinity and avoid nested executor chains.                         |
+| Shutdown                                | Stop producers and account for accepted operations before host drain. Drain, cancellation, timeout and server-side-effect cancellation are distinct contracts.                   |
 
-Measure actual interaction latency, native work, allocation and copy counts before claiming an efficiency gain. Plan 03 defines the measurement lane; it does not prescribe a universal millisecond budget or RT priority.
+Measure actual interaction latency, native work, allocation and copy counts before claiming an efficiency gain. Proposed Plan03 must define the measurement lane; it does not prescribe a universal millisecond budget or RT priority.
 
 ## Forge and third-party boundaries
 
-Plan 10 first proves reusable package discovery/linking/lifecycle hooks using a non-premium fixture. Forge remains a separately licensed product: its production bindings and configuration belong with Forge or its consuming app, and its tests are optional and separately authorized. Core builds, conformance and releases must work with Forge absent. The optional compatibility lane must align Forge's audited alpha120 binding contract with the runtime's alpha105 baseline, either by adapting/regenerating the bindings or by a separately validated v1 runtime upgrade. Preserve the actual Factory/Document API and its documented typed-outer/JSON-payload limitation until a richer generator/engine contract is proven. Choose one worker owner instead of stacking a second pool around the QNX host.
+Proposed Plan10 must first prove reusable package discovery/linking/lifecycle hooks using a non-premium fixture. Forge remains a separately licensed product: its production bindings and configuration belong with Forge or its consuming app, and its tests are optional and separately authorized. Core builds, conformance and releases must work with Forge absent. The optional compatibility lane must align Forge's audited alpha120 binding contract with the runtime's alpha105 baseline, either by adapting/regenerating the bindings or by a separately validated v1 runtime upgrade. Preserve the actual Factory/Document API and its documented typed-outer/JSON-payload limitation until a richer generator/engine contract is proven. Choose one worker owner instead of stacking a second pool around the QNX host.
 
 RN core's existing internal TurboModule registry contracts remain framework integration details. They do not authorize old application-facing APIs. Worklets, Reanimated and RNGH must use their audited real bootstrap contracts through the separately reviewed architecture decision in Plan 02; disguising them as a Nitro facade would not implement those libraries.
 

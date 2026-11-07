@@ -41,12 +41,55 @@ No native compilation, ASan/UBSan, QNX cross-build, Qt/QNX/Marathon execution, p
 
 Revert these additive program/skill changes to remove their guidance. Future implementation remains separately scoped, reviewed and validated, with the existing renderer, recovery boot, licensing and permission boundaries preserved.
 
-## Follow-up expansion record
+## PR49 follow-up readiness record
 
-The expanded program is prepared against main `48e37f7550b4244f8a7936c01af75419e1fec416`, preserving PR47 and the owner's optional premium-product policy. It adds the Nitro v1 API contract, a 19-category legacy-source map, two new QNX source/probe workstreams, and detailed companion specifications. Publication URLs are recorded only from successful GitHub responses.
+Original follow-up head `f06bc134d71fe410207525e0348b2fa2481c369b`; readiness
+integrates main `1baad40a98362ce151ea73bd6f0a6e1d3020926e`, including merged PR48.
+This adds Nitro v1 API policy,19-category archive dispositions and proposed
+workstreams14/15. Program00 is published as PR49. During readiness, companion PRs50–63 were
+published for plans01–12 and14–15; the catalog records their returned URLs and
+inspected heads. Plan13 in Marathon remains unpublished. Publication is not
+implementation or approval of future runtime acceptance criteria.
 
-An independent fresh-context agent exercised both repository skills against an unsafe native temperature API proposal. It correctly rejected synchronous MsgSend hidden by a JS Promise, a receive-only timeout for SEND/REPLY, and shutdown joining a worker that still awaited JS. It also required real v1 generation and separate host/target evidence. This was a document/skill behavior review; no native code executed.
+The original authoring notes reported a fresh-context skill exercise, independent
+review of companion plans and checks across24 Markdown documents. The
+companion documents are now available in their separate PR heads. Raw exercise
+artifacts are not attached; those earlier exercise/check-count claims remain
+historical authoring reports, not reproduced readiness checks. The integrated
+documentation review below records what was actually checked after publication.
 
-Independent design review corrected initial-observation ordering, shared-buffer disposal/pinning, admitted-callback cleanup semantics, and completion-queue drain wording. The official-source audit distinguishes inspected sections from discovered indexes and pending manuals. Root review preserves current PR46 proof: host 14/14 ON, 13/13 OFF and deterministic Qt event injection on physical QNX; physical USB/touch and target JS-handler delivery remain separate gates.
+Readiness checks actually performed:
 
-Follow-up checks passed: 24 Markdown documents, 13 local relative links, all 16 unique workstream IDs with an acyclic implementation dependency graph, all 19 archive categories matched to the pinned inventory, and five source-byte SHA256 comparisons. Both project skills passed the actual skill-creator quick_validate.py again. An independent source reviewer approved Plans 14 and 15 after the message-queue/pipe coverage gap was corrected. Remote publication verification will be recorded after publication. Prettier and native checks from the predecessor record were not rerun or claimed for this follow-up. No native compilation, sanitizer run, cross-build, device execution or benchmark was performed for this follow-up. Earlier receipts do not become a pass for these new specifications.
+- Compared the Nitro v1 policy with the pinned repository class declaration,
+  `getHybridClass`/constructor entry, `HybridClassRegistry` registration and
+  constrained generator. Ran `pnpm nitro:platform:check`; it passed. No richer
+  binding generation, native runtime behavior or general QNX Nitrogen claim.
+- Verified the archive commit resolves to the recorded Programming tree via
+  GitHub's tree API. Its untruncated recursive inventory has530 blobs and19
+  categories, exactly matching the coverage JSON. No530-file body/PDF audit.
+- Inspected the official MsgSend, TimerTimeout and kernel migration pages for
+  SEND/REPLY blocking, immediate timeout placement/server cooperation and
+  receive-ID/runmask changes; the source map records this bounded coverage.
+  The broader official manuals/examples audit remains proposed Plan15.
+- Verified all five immutable skill source hashes and byte lengths. Both
+  repository skills passed the actual skill-creator validator in the existing
+  isolated Python/PyYAML6.0.3 environment; no project/global dependencies added.
+- Checked current Markdown links, JSON/YAML structure,16 unique workstream IDs,
+  acyclic implementation dependencies and19 coverage-to-workstream mappings.
+  Unpublished document paths are treated as proposed, not checked off as files.
+- Updated the program to include PR48's12 raw Fabric JS callbacks and negative
+  interception control on physical QNX. This reuses its dated receipt only;
+  hardware input, React component interaction and gesture support remain open.
+- Prettier and `git diff --check` passed on the final changed docs/skill files.
+
+Readiness DRI `/root`; independent reviewer `/root/renderer_build_audit` reviews
+source contracts, inventory and truthful publication/evidence limits. This is
+agent review, not vendor or maintainer endorsement. No human implementation
+assignment or companion-plan approval is implied.
+
+No native compilation, sanitizer test, QNX/Marathon execution, target deployment,
+boot change or benchmark ran for this documentation change. No dependency or
+production source changed; the premium optional-product boundary is preserved.
+Hosted CI remains subject to the existing account billing/spending-limit refusal,
+separate from local documentation/tooling checks. Rollback is reverting this
+additive policy/map/skill follow-up; implemented runtime evidence is unaffected.

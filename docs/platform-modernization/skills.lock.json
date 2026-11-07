@@ -15,7 +15,7 @@
       "cli_install_verified": false,
       "runtime_compatibility_verified": false,
       "byte_length": 28827,
-      "hash_scope": "verbatim upstream SKILL.md bytes; verified against base64 GitHub retrieval"
+      "hash_scope": "Verbatim immutable upstream SKILL.md bytes; SHA256 and byte_length verified during readiness review"
     },
     {
       "name": "build-nitro-modules",
@@ -29,7 +29,7 @@
       "cli_install_verified": false,
       "runtime_compatibility_verified": false,
       "byte_length": 39580,
-      "hash_scope": "verbatim upstream SKILL.md bytes; verified against base64 GitHub retrieval"
+      "hash_scope": "Verbatim immutable upstream SKILL.md bytes; SHA256 and byte_length verified during readiness review"
     },
     {
       "name": "cpp",
@@ -43,7 +43,7 @@
       "cli_install_verified": false,
       "runtime_compatibility_verified": false,
       "byte_length": 6092,
-      "hash_scope": "verbatim upstream SKILL.md bytes; verified against base64 GitHub retrieval"
+      "hash_scope": "Verbatim immutable upstream SKILL.md bytes; SHA256 and byte_length verified during readiness review"
     },
     {
       "name": "react-native-best-practices",
@@ -57,7 +57,7 @@
       "cli_install_verified": false,
       "runtime_compatibility_verified": false,
       "byte_length": 12348,
-      "hash_scope": "verbatim upstream SKILL.md bytes; verified against base64 GitHub retrieval"
+      "hash_scope": "Verbatim immutable upstream SKILL.md bytes; SHA256 and byte_length verified during readiness review"
     },
     {
       "name": "writing-user-docs",
@@ -71,7 +71,7 @@
       "cli_install_verified": false,
       "runtime_compatibility_verified": false,
       "byte_length": 4832,
-      "hash_scope": "verbatim upstream SKILL.md bytes; verified against base64 GitHub retrieval"
+      "hash_scope": "Verbatim immutable upstream SKILL.md bytes; SHA256 and byte_length verified during readiness review"
     }
   ]
 }
