@@ -1,5 +1,9 @@
 # Program validation record
 
+## Preserved predecessor PR47 readiness record
+
+The following record describes PR47 before merge. Its unpublished-workstream state and commands are historical; the follow-up record below tracks the expanded series separately.
+
 Readiness review on 2026-11-07. This PR changes program documentation, source/ownership records and repository skills. It changes no runtime, dependency, workflow, target image or boot configuration.
 
 ## Candidate and scope
@@ -36,3 +40,65 @@ Readiness DRI `/root`; independent reviewer `/root/renderer_build_audit` reviewe
 No native compilation, ASan/UBSan, QNX cross-build, Qt/QNX/Marathon execution, physical-device test or performance measurement was run for this documentation/skill PR. No runtime acceptance criterion is marked complete. Hosted CI is subject to the existing account billing/spending-limit refusal; local checks do not imply green hosted jobs.
 
 Revert these additive program/skill changes to remove their guidance. Future implementation remains separately scoped, reviewed and validated, with the existing renderer, recovery boot, licensing and permission boundaries preserved.
+
+## PR49 follow-up readiness record
+
+Original follow-up head `f06bc134d71fe410207525e0348b2fa2481c369b`; readiness
+integrates main `1baad40a98362ce151ea73bd6f0a6e1d3020926e`, including merged PR48.
+This adds Nitro v1 API policy,19-category archive dispositions and proposed
+workstreams14/15. Program00 is published as PR49. During readiness, companion PRs50–63 were
+published for plans01–12 and14–15; the catalog records their returned URLs and
+inspected heads. Plan13 in Marathon remains unpublished. Publication is not
+implementation or approval of future runtime acceptance criteria.
+
+The original authoring notes reported a fresh-context skill exercise, independent
+review of companion plans and checks across24 Markdown documents. The
+companion documents are now available in their separate PR heads. Raw exercise
+artifacts are not attached; those earlier exercise/check-count claims remain
+historical authoring reports, not reproduced readiness checks. The integrated
+documentation review below records what was actually checked after publication.
+
+Readiness checks actually performed:
+
+- Compared the Nitro v1 policy with the pinned repository class declaration,
+  `getHybridClass`/constructor entry, `HybridClassRegistry` registration and
+  constrained generator. Ran `pnpm nitro:platform:check`; it passed. No richer
+  binding generation, native runtime behavior or general QNX Nitrogen claim.
+- Verified the archive commit resolves to the recorded Programming tree via
+  GitHub's tree API. Its untruncated recursive inventory has530 blobs and19
+  categories, exactly matching the coverage JSON. No530-file body/PDF audit.
+- Inspected the official MsgSend, TimerTimeout and kernel migration pages for
+  SEND/REPLY blocking, immediate timeout placement/server cooperation and
+  receive-ID/runmask changes; the source map records this bounded coverage.
+  Plan15 reports its selected-section audit; broader manual coverage and target
+  qualification remain open. Selected release/HID/OpenSSH, Screen and PLMS
+  constraints were also cross-checked against official pages in this review.
+- Verified all five immutable skill source hashes and byte lengths. Both
+  repository skills passed the actual skill-creator validator in the existing
+  isolated Python/PyYAML6.0.3 environment; no project/global dependencies added.
+- Checked current Markdown links, JSON/YAML structure,16 unique workstream IDs,
+  acyclic implementation dependencies and19 coverage-to-workstream mappings.
+  Unpublished document paths are treated as proposed, not checked off as files.
+- Updated the program to include PR48's12 raw Fabric JS callbacks and negative
+  interception control on physical QNX. This reuses its dated receipt only;
+  hardware input, React component interaction and gesture support remain open.
+- Integrated all14 published companion heads locally for independent review.
+  The batch passes23 Markdown files,13 local prose links,16 workstream records,
+  all19 category mappings, JSON/YAML and acyclic dependency checks.
+- Fixed Plan04's prohibited React state example with a per-instance vanilla
+  Zustand store retained in a ref and subscribed through selectors; native
+  handles remain refs. Other13 companion changes are formatting only.
+- Prettier and `git diff --check` passed on all final changed documents.
+
+Readiness DRI `/root`; independent reviewer `/root/renderer_build_audit` read
+all14 companion plans plus the program/API policy, reviewed the Zustand fix and
+source/inventory/evidence boundaries, and found no remaining blocking issue.
+This approves the documentation proposals only. No human implementation
+assignment, runtime acceptance, vendor or maintainer endorsement is implied.
+
+No native compilation, sanitizer test, QNX/Marathon execution, target deployment,
+boot change or benchmark ran for this documentation change. No dependency or
+production source changed; the premium optional-product boundary is preserved.
+Hosted CI remains subject to the existing account billing/spending-limit refusal,
+separate from local documentation/tooling checks. Rollback is reverting this
+additive policy/map/skill follow-up; implemented runtime evidence is unaffected.

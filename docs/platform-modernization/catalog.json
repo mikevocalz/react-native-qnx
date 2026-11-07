@@ -1,28 +1,30 @@
 {
   "schema_version": 1,
   "reviewed_on": "2026-11-07",
-  "status": "program-with-proposed-workstreams",
+  "status": "published-delivery-plans-with-pending-implementation",
   "scope": "Documentation and repository skills; feature implementation and target validation remain separate.",
   "dependency_semantics": "Dependencies identify implementation/integrated acceptance prerequisites, not documentation merge requirements. Work can begin with a smaller slice as each plan explains.",
   "sources": {
     "rnqnx_main": "e84b51430c239bc89dbd48ac35afab89f7c77c01",
     "marathon_main": "c2c1b2fe32aeaa51edf75a45045cbfbbc08c4ac5",
-    "neutrino_reference": "b1fd3e9410c1a6a0d7217c3be7e324e900470d2a"
+    "neutrino_reference": "b1fd3e9410c1a6a0d7217c3be7e324e900470d2a",
+    "publication_rnqnx_main": "48e37f7550b4244f8a7936c01af75419e1fec416",
+    "readiness_rnqnx_main": "1baad40a98362ce151ea73bd6f0a6e1d3020926e"
   },
   "workstreams": [
     {
       "id": "00",
-      "title": "Program, native skills and ownership roster",
+      "title": "Nitro v1 API contract, complete QNX source map, skills and delivery roster",
       "repository": "mikevocalz/react-native-qnx",
-      "branch": "docs/qnx-marathon-00-program-skills",
+      "branch": "docs/qnx-marathon-00-v1-reference-followup",
       "document": "docs/platform-modernization/README.md",
       "implementation_dependencies": [],
       "existing_pr_dependencies": [],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
       "status": "published-program",
-      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/47",
-      "commit": "6edc6568fd889ee2d16dbb69b2600d8bc24bc331"
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/49",
+      "commit": "f06bc134d71fe410207525e0348b2fa2481c369b"
     },
     {
       "id": "01",
@@ -34,9 +36,9 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/50",
+      "commit": "ce2d3315dd710860f613efcfa3852e1b3d39efcc"
     },
     {
       "id": "02",
@@ -52,9 +54,9 @@
       ],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/51",
+      "commit": "b87f576f677ca98b0ed9a3eb840a9aaae12006bd"
     },
     {
       "id": "03",
@@ -66,9 +68,9 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/52",
+      "commit": "a70d8647f6ef69067fdbb4155433079a6c2e2af2"
     },
     {
       "id": "04",
@@ -80,9 +82,9 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/53",
+      "commit": "63af12dd86ad43179ab90fa2eb674822698ad4e0"
     },
     {
       "id": "05",
@@ -94,9 +96,9 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/54",
+      "commit": "4cc2e55d6d7d01bcd8a9b5dea1d3d8e3c04df768"
     },
     {
       "id": "06",
@@ -108,9 +110,9 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/55",
+      "commit": "ebdf2f0275b53402831fac430c95a75b857ad939"
     },
     {
       "id": "07",
@@ -122,9 +124,9 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/56",
+      "commit": "319d0ff3c50e77fc3cdbd5d040a978a9e4fa5db4"
     },
     {
       "id": "08",
@@ -136,9 +138,9 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/57",
+      "commit": "5aaa5d890ec4585fca1e7809264f8bf3ade864d1"
     },
     {
       "id": "09",
@@ -150,13 +152,13 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/58",
+      "commit": "bd3e971d53525db419de70a265a35c2937fd9125"
     },
     {
       "id": "10",
-      "title": "Optional licensed Forge package compatibility and native lifetime",
+      "title": "Generic package hooks and optional licensed Forge compatibility",
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-10-forge-bindings",
       "document": "docs/platform-modernization/10-forge-bindings.md",
@@ -167,9 +169,9 @@
       ],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null,
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/59",
+      "commit": "88fd78d13559143cb6c42a15f2402887c6d21be3",
       "optional_commercial_integration": true
     },
     {
@@ -182,9 +184,9 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/60",
+      "commit": "6c353174d4bc1f6a7291bc622a57b8a8b9223b2c"
     },
     {
       "id": "12",
@@ -196,9 +198,9 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null,
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/61",
+      "commit": "1662d3f22262af9426a2831072243df838562111",
       "optional_implementation_dependencies": ["10"]
     },
     {
@@ -214,7 +216,72 @@
       "status": "proposed-unpublished",
       "pull_request": null,
       "commit": null
+    },
+    {
+      "id": "14",
+      "title": "QNX 8 systems probes and legacy sample modernization",
+      "repository": "mikevocalz/react-native-qnx",
+      "branch": "docs/qnx-marathon-14-qnx-systems-probes",
+      "document": "docs/platform-modernization/14-qnx-systems-probes.md",
+      "implementation_dependencies": ["01", "07"],
+      "existing_pr_dependencies": [],
+      "human_dri": "unassigned",
+      "human_reviewer": "unassigned",
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/62",
+      "commit": "843fd202c02e5b6b081cc7cf94f48ac80711bfc0"
+    },
+    {
+      "id": "15",
+      "title": "Current QNX documentation, examples and release audit",
+      "repository": "mikevocalz/react-native-qnx",
+      "branch": "docs/qnx-marathon-15-current-qnx-docs",
+      "document": "docs/platform-modernization/15-current-qnx-docs.md",
+      "implementation_dependencies": [],
+      "existing_pr_dependencies": [],
+      "human_dri": "unassigned",
+      "human_reviewer": "unassigned",
+      "status": "published-plan",
+      "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/63",
+      "commit": "b3003d0cb7c76bd3f6fde893fee00310e7a3a28a"
     }
   ],
-  "publication_semantics": "Only workstreams with a returned pull_request URL are published. Null URL and commit denote proposed, unpublished work; document is a proposed path and need not exist until publication."
+  "publication_semantics": "Published PR URLs and inspected commits identify documentation, not implemented features. Workstream13 remains proposed/unpublished in the Marathon repository. Document paths for published RNQNX plans resolve in their exact PR commit until merged.",
+  "requirements": {
+    "native_api": "Nitro v1 API-first; actual new class/registration/constructor APIs with aligned core/runtime/generator",
+    "legacy_qnx_reference": "All 19 categories mapped with explicit dispositions",
+    "current_qnx_reference": "Official current documentation/examples/release audit in Plan 15; read/discovered/unverified scopes separated",
+    "premium_boundary": "Core build, CI, conformance and release use non-premium fixtures; licensed Forge integration is optional and separately authorized."
+  },
+  "predecessor_program": {
+    "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/47",
+    "status": "merged",
+    "head_commit": "d1592b0bb44c6df4e0e860ed9cdf77b722e1e058",
+    "merge_commit": "48e37f7550b4244f8a7936c01af75419e1fec416"
+  },
+  "existing_pr_status": {
+    "42": {
+      "status": "merged",
+      "merge_commit": "3df49bbac0221c8b8604aa59be0c620cc0ea2ac5"
+    },
+    "44": {
+      "status": "merged",
+      "merge_commit": "62d530bcd8cea578f59bb0d693e0402a5cadefde"
+    },
+    "45": {
+      "status": "merged",
+      "merge_commit": "54706609facb2fadba396fedf37d5679f99e728c"
+    },
+    "46": {
+      "status": "merged",
+      "merge_commit": "cfcf2b4e7ec934171876773fd465271eac83de9f",
+      "inspected_head": "e783e2f000f20ef849b96021387860beaa7b4e34"
+    },
+    "48": {
+      "status": "merged",
+      "merge_commit": "1baad40a98362ce151ea73bd6f0a6e1d3020926e",
+      "inspected_head": "173605c413fb19b6adcf682e9ec1293be9093c4d",
+      "scope": "Synthetic Qt input into raw Fabric JavaScript handler, not physical hardware or React component interaction"
+    }
+  }
 }

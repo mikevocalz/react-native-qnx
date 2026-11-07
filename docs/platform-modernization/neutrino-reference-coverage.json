@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "repository": "Himmele/My-Blog-Repository",
+  "commit": "b1fd3e9410c1a6a0d7217c3be7e324e900470d2a",
+  "programming_tree": "e6a12a8f5168711253e1432f169923298694b37b",
+  "inventory_file_count": 530,
+  "category_count": 19,
+  "scope": "Complete pinned path/category inventory with explicit dispositions and published-plan references. Plan14 reports representative file-body findings; inventory verification is not an audit of all530 source bodies or historical PDFs.",
+  "categories": [
+    {
+      "category": "AdvancedGraphicsTest",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/AdvancedGraphicsTest",
+      "plans": ["03", "09", "14", "15"],
+      "status": "mapped",
+      "recommendation": "Use graphics examples to identify timing/buffer questions; implement through the existing Qt QPA/Screen backend and current Screen samples. Do not port the old gf_* renderer."
+    },
+    {
+      "category": "Boost",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/Boost",
+      "plans": ["01", "10", "14"],
+      "status": "mapped",
+      "recommendation": "Use current C++20 ownership and supported dependency APIs; validate required Boost consumers separately. Do not add an old Boost layer for facilities already covered by the standard library."
+    },
+    {
+      "category": "Character I-O",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/Character%20I-O",
+      "plans": ["06", "07", "14"],
+      "status": "mapped",
+      "recommendation": "Keep serial/character-device operations inside a typed native service; validate devctl sizes, short I/O, termios configuration, permissions, cancellation and cleanup."
+    },
+    {
+      "category": "DLL-Test",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/DLL-Test",
+      "plans": ["10", "13", "14"],
+      "status": "mapped",
+      "recommendation": "Verify shared-library ABI, constructor/initialization order and missing-dependency errors. Do not unload registered Nitro classes while any runtime or descriptor can still reference their code."
+    },
+    {
+      "category": "Debugging",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/Debugging",
+      "plans": ["01", "03", "08", "14", "15"],
+      "status": "mapped",
+      "recommendation": "Use current debugger, slog2, kernel/application tracing and crash diagnostics. Capture symbols and candidate identities; redact app data."
+    },
+    {
+      "category": "Dynamic Linking",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/Dynamic%20Linking",
+      "plans": ["10", "13", "14"],
+      "status": "mapped",
+      "recommendation": "Audit deployment closure, RPATH/search paths, native registration and lifetime. Do not expose arbitrary dlopen paths or unload controls to app JavaScript."
+    },
+    {
+      "category": "File Systems",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/File%20Systems",
+      "plans": ["05", "06", "10", "14", "15"],
+      "status": "mapped",
+      "recommendation": "Use owned asynchronous storage with bounded reads/writes, permissions and explicit durability/atomic-replace semantics verified on the selected target filesystem."
+    },
+    {
+      "category": "MemoryBenchmark",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/MemoryBenchmark",
+      "plans": ["03", "09", "14"],
+      "status": "mapped",
+      "recommendation": "Measure actual payload sizes, copies, allocator behavior and target memory pressure. A synthetic allocator result is not an application or presentation benchmark."
+    },
+    {
+      "category": "MemoryManager",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/MemoryManager",
+      "plans": ["09", "14"],
+      "status": "mapped",
+      "recommendation": "Use 64-bit-safe sizes/offsets and correct alignment with RAII. Do not import the archived pointer-to-unsigned-int allocator into AArch64."
+    },
+    {
+      "category": "MultiThreadedResourceManager",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/MultiThreadedResourceManager",
+      "plans": ["07", "08", "14"],
+      "status": "mapped",
+      "recommendation": "Audit the framework locking/OCB model, authorization, bounded request work, cancellation and concurrent close. Validate lengths and report actual transferred bytes."
+    },
+    {
+      "category": "NetworkBenchmark",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/NetworkBenchmark",
+      "plans": ["03", "06", "07", "14", "15"],
+      "status": "mapped",
+      "recommendation": "Measure a bounded real transport workload with error/timeout and copy accounting. Keep raw sockets and blocking network work away from the GUI/JS owner."
+    },
+    {
+      "category": "Neutrino",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/Neutrino",
+      "plans": ["01", "03", "07", "08", "09", "14", "15"],
+      "status": "mapped",
+      "recommendation": "Modernize messages, pulses, events, synchronization, threads/TLS, clocks/timers, signals and scheduling against QNX 8. Separate ISR/driver work from app APIs."
+    },
+    {
+      "category": "Photon",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/Photon",
+      "plans": ["02", "04", "11", "14", "15"],
+      "status": "mapped",
+      "recommendation": "Use old UI examples as behavior prompts for focus, events, geometry and accessibility. Keep Fabric/Yoga/Qt Quick; do not revive Photon or replace the renderer."
+    },
+    {
+      "category": "Process Manager",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/Process%20Manager",
+      "plans": ["01", "08", "13", "14"],
+      "status": "mapped",
+      "recommendation": "Use explicit process ownership, readiness, bounded child supervision and safe argv/environment contracts. Do not expose arbitrary privileged process management to JavaScript."
+    },
+    {
+      "category": "RPC",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/RPC",
+      "plans": ["06", "07", "08", "14"],
+      "status": "mapped",
+      "recommendation": "Use a narrow versioned service contract and explicit timeout/unknown-outcome semantics. Do not transplant unreviewed legacy stubs or promise exactly-once business execution."
+    },
+    {
+      "category": "Resource Managers",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/Resource%20Managers",
+      "plans": ["06", "07", "14"],
+      "status": "mapped",
+      "recommendation": "Design the path namespace and native access policy deliberately; review per-operation authorization and target framework rules."
+    },
+    {
+      "category": "ResourceManagerClient",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/ResourceManagerClient",
+      "plans": ["06", "07", "14"],
+      "status": "mapped",
+      "recommendation": "Exercise clients against real resource-manager behavior, including denied open, malformed devctl, short transfers, disconnect and teardown."
+    },
+    {
+      "category": "SMP",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/SMP",
+      "plans": ["01", "03", "14"],
+      "status": "mapped",
+      "recommendation": "Test multicore ownership and affinity only for a measured need. Evaluate priority inversion/starvation and process-shared synchronization; do not copy scheduling constants."
+    },
+    {
+      "category": "SingleThreadedResourceManager",
+      "source": "https://github.com/Himmele/My-Blog-Repository/tree/b1fd3e9410c1a6a0d7217c3be7e324e900470d2a/QNX%20Neutrino%20RTOS/Programming/SingleThreadedResourceManager",
+      "plans": ["07", "08", "14"],
+      "status": "mapped",
+      "recommendation": "Start with a bounded understandable service fixture and prove readiness, request/reply, permissions, failure and shutdown before adding concurrency."
+    }
+  ],
+  "readiness_inventory_verified": true
+}

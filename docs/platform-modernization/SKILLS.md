@@ -2,7 +2,9 @@
 
 This series adds two repository-scoped skills: [QNX Native API](../../.agents/skills/qnx-native-api/SKILL.md) and [QNX Platform Validation](../../.agents/skills/qnx-platform-validation/SKILL.md). They are draft repository skill definitions, not a claim of installation into a personal skill directory. Their source travels with the PR branch.
 
-The exact upstream sources and SHA-256 of the read SKILL.md snapshots are recorded in [skills.lock.json](skills.lock.json). The source snapshots were retrieved and read for this design review. No `npx skills` installation or native implementation test is implied.
+The exact upstream sources and SHA-256 of the verbatim upstream SKILL.md files are recorded in [skills.lock.json](skills.lock.json). The source snapshots were retrieved and read for this design review. No `npx skills` installation or native implementation test is implied.
+
+Read the [Nitro v1 API-first contract](NITRO_V1_API_POLICY.md) before native implementation. The owner explicitly requires the new v1 APIs throughout the program.
 
 ## Ordered native skill pipeline
 

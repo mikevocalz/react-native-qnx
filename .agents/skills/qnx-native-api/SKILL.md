@@ -7,6 +7,8 @@ description: Design, implement, and review native APIs for react-native-qnx and 
 
 Read the repository's `AGENTS.md` first. Treat these as repository instructions, not evidence that a platform or library works. Find the repository root before resolving the paths below.
 
+The owner requires Nitro v1 API-first design. Read `docs/platform-modernization/NITRO_V1_API_POLICY.md`; use the actual v1 class, HybridClass registration and constructor APIs with an aligned runtime/core/generator. Do not translate a legacy synchronous API into a modern-looking Promise wrapper.
+
 ## Establish the source contract
 
 1. Read `docs/platform-modernization/SKILLS.md`, its `skills.lock.json`, and the workstream's delivery plan. Fetch and read the pinned upstream `api-design`, then `build-nitro-modules`, then `cpp` SKILL.md sources. Record which decision each source changes. Source reading, installing a skill, executing a test, and proving a device are separate statuses.
