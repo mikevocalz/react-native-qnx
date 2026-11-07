@@ -42,6 +42,8 @@ function(rnqnx_add_runtime_baseline_supervisor)
 endfunction()
 
 include(CTest)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxRuntimeTrace.cmake)
+rnqnx_add_runtime_trace()
 
 option(RNQNX_BUILD_QNX_SYSTEMS_PROBES "Build finite native systems diagnostics" OFF)
 if(RNQNX_BUILD_QNX_SYSTEMS_PROBES)

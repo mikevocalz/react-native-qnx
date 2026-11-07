@@ -54,6 +54,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace {
@@ -336,12 +337,20 @@ ComponentBuilder makeComponentBuilder(
 
 class Fixture {
  public:
-  explicit Fixture(bool enableInputLifecycle = RNQNX_ENABLE_INPUT_LIFECYCLE)
+  explicit Fixture(bool enableInputLifecycle = RNQNX_ENABLE_INPUT_LIFECYCLE
+#if RNQNX_ENABLE_FRAME_TRACE
+                   , std::shared_ptr<rnqnx::runtime::RuntimeTrace> trace = nullptr
+#endif
+                   )
       : factory_(engine_),
         layer_(factory_, *window_.contentItem(), kSurfaceId),
         adapter_(layer_),
         dispatcher_(layer_, *window_.contentItem(), enableInputLifecycle),
+#if RNQNX_ENABLE_FRAME_TRACE
+        host_(adapter_, std::move(trace)),
+#else
         host_(adapter_),
+#endif
         builder_(makeComponentBuilder(host_.contextContainer())) {
     factory_.registerType(QStringLiteral("View"), QByteArray(kViewSource));
     adapter_.mapComponent(QStringLiteral("View"), QStringLiteral("View"));
@@ -414,6 +423,47 @@ class Fixture {
   ComponentBuilder builder_;
   QObject touchInputSource_;
 };
+
+#if RNQNX_ENABLE_FRAME_TRACE
+void runtimeTraceFollowsOwnedHostBoundaries() {
+  using rnqnx::runtime::RuntimeTrace;
+  using rnqnx::runtime::TracePhase;
+  using rnqnx::runtime::TraceStage;
+  auto trace = std::make_shared<RuntimeTrace>(1000);
+  for (int trial = 0; trial < 2; ++trial) {
+    Fixture fixture(RNQNX_ENABLE_INPUT_LIFECYCLE, trace);
+    EXPECT(fixture.host().evaluate("1 + 1", "private-source-url-must-not-be-exported"));
+    fixture.host().startEmptySurface(kSurfaceId, 640.0F, 480.0F);
+    auto called = std::make_shared<bool>(false);
+    auto queue = fixture.host().taskQueue();
+    std::thread worker([queue, called] { queue->post([called] { *called = true; }); });
+    worker.join();
+    for (int i = 0; i < 20 && !*called; ++i) fixture.host().pumpEvents();
+    EXPECT(*called);
+    fixture.host().stopSurface(kSurfaceId);
+  }
+  const auto snapshot = trace->freeze();
+  EXPECT(snapshot.dropped == 0);
+  std::vector<std::uint64_t> generations;
+  bool evaluate = false;
+  bool executed = false;
+  bool closed = false;
+  for (const auto& event : snapshot.events) {
+    if (event.stage == TraceStage::SurfaceStart && event.phase == TracePhase::Begin) {
+      EXPECT(event.surface == kSurfaceId);
+      generations.push_back(event.surfaceGeneration);
+    }
+    evaluate = evaluate || event.stage == TraceStage::Evaluate;
+    executed = executed || event.stage == TraceStage::QueueExecute;
+    closed = closed || (event.stage == TraceStage::QueueClose && event.phase == TracePhase::End);
+  }
+  EXPECT(generations.size() == 2 && generations[0] != 0 && generations[0] != generations[1]);
+  EXPECT(evaluate && executed && closed);
+  std::ostringstream exported;
+  RuntimeTrace::writeJson(snapshot, exported);
+  EXPECT(exported.str().find("private-source-url") == std::string::npos);
+}
+#endif
 
 void runtimeEvaluatesJavaScript() {
   Fixture fixture;
@@ -2666,6 +2716,9 @@ int main(int argc, char** argv) {
       {"mouseCaptureCancellationDoesNotCreateHoverTouches", mouseCaptureCancellationDoesNotCreateHoverTouches},
       {"mouseReleaseClearsCaptureBeforeNativeListeners", mouseReleaseClearsCaptureBeforeNativeListeners},
       {"decoratedViewTargetsNearestRegisteredAncestor", decoratedViewTargetsNearestRegisteredAncestor},
+#if RNQNX_ENABLE_FRAME_TRACE
+      {"runtimeTraceFollowsOwnedHostBoundaries", runtimeTraceFollowsOwnedHostBoundaries},
+#endif
       {"runtimeEvaluatesJavaScript", runtimeEvaluatesJavaScript},
       {"javaScriptErrorsAreReportedNotSwallowed",
        javaScriptErrorsAreReportedNotSwallowed},

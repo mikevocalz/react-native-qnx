@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "clock": "std::chrono::steady_clock",
+  "clockScope": "session-relative; not aligned to Qt/QNX/display clocks",
+  "unit": "nanoseconds",
+  "timestampMeaning": "record-copy after recorder lock",
+  "threadIdentity": "session-local ordinal of std::thread::id; IDs may be reused",
+  "session": 1,
+  "dropped": 0,
+  "events": [
+    {
+      "sequence": 1,
+      "recordedAtNs": 23895018,
+      "thread": 1,
+      "surface": 0,
+      "surfaceGeneration": 0,
+      "correlation": 1,
+      "stage": "host.evaluate",
+      "phase": "begin",
+      "unwinding": false
+    },
+    {
+      "sequence": 2,
+      "recordedAtNs": 30463944,
+      "thread": 1,
+      "surface": 0,
+      "surfaceGeneration": 0,
+      "correlation": 1,
+      "stage": "host.evaluate",
+      "phase": "end",
+      "unwinding": false
+    },
+    {
+      "sequence": 3,
+      "recordedAtNs": 31248592,
+      "thread": 1,
+      "surface": 1,
+      "surfaceGeneration": 2,
+      "correlation": 3,
+      "stage": "surface.start",
+      "phase": "begin",
+      "unwinding": false
+    },
+    {
+      "sequence": 4,
+      "recordedAtNs": 600676759,
+      "thread": 1,
+      "surface": 1,
+      "surfaceGeneration": 2,
+      "correlation": 3,
+      "stage": "surface.start",
+      "phase": "end",
+      "unwinding": false
+    },
+    {
+      "sequence": 5,
+      "recordedAtNs": 746428833,
+      "thread": 1,
+      "surface": 1,
+      "surfaceGeneration": 2,
+      "correlation": 4,
+      "stage": "surface.stop",
+      "phase": "begin",
+      "unwinding": false
+    },
+    {
+      "sequence": 6,
+      "recordedAtNs": 747855703,
+      "thread": 1,
+      "surface": 1,
+      "surfaceGeneration": 2,
+      "correlation": 4,
+      "stage": "surface.stop",
+      "phase": "end",
+      "unwinding": false
+    },
+    {
+      "sequence": 7,
+      "recordedAtNs": 1888315203,
+      "thread": 1,
+      "surface": 0,
+      "surfaceGeneration": 0,
+      "correlation": 5,
+      "stage": "queue.close",
+      "phase": "begin",
+      "unwinding": false
+    },
+    {
+      "sequence": 8,
+      "recordedAtNs": 1888325444,
+      "thread": 1,
+      "surface": 0,
+      "surfaceGeneration": 0,
+      "correlation": 5,
+      "stage": "queue.close",
+      "phase": "end",
+      "unwinding": false
+    }
+  ]
+}

@@ -40,6 +40,7 @@
 #include <QTimer>
 
 #include <cstdio>
+#include <sstream>
 
 namespace {
 
@@ -337,6 +338,12 @@ int main(int argc, char** argv) {
   const QCommandLineOption fullscreenOption(
       QStringLiteral("fullscreen"),
       QStringLiteral("Fill the current monitor and use its size for the React surface."));
+#if RNQNX_ENABLE_FRAME_TRACE
+  const QCommandLineOption traceOption(QStringLiteral("trace-json"),
+      QStringLiteral("Export bounded native diagnostics after host shutdown (new file only)."),
+      QStringLiteral("path"));
+  parser.addOption(traceOption);
+#endif
   parser.addOption(fullscreenOption);
   parser.addOption(bundleOption);
   parser.addOption(screenshotOption);
@@ -414,7 +421,16 @@ int main(int argc, char** argv) {
   adapter.setTouchDispatcher(&touchDispatcher);
   window.installEventFilter(&touchDispatcher);
 #endif
+#if RNQNX_ENABLE_FRAME_TRACE
+  std::shared_ptr<rnqnx::runtime::RuntimeTrace> trace;
+  if (parser.isSet(traceOption)) trace = std::make_shared<rnqnx::runtime::RuntimeTrace>(16384);
+#endif
+  const int result = [&]() {
+#if RNQNX_ENABLE_FRAME_TRACE
+  rnqnx::runtime::QtReactHost host(adapter, trace);
+#else
   rnqnx::runtime::QtReactHost host(adapter);
+#endif
 #if RNQNX_ENABLE_INPUT_LIFECYCLE
   host.delegate().setTouchDispatcher(&touchDispatcher);
 #endif
@@ -501,4 +517,29 @@ int main(int argc, char** argv) {
   drainTimer.start(16);
 
   return QGuiApplication::exec();
+  }();
+#if RNQNX_ENABLE_FRAME_TRACE
+  if (trace) {
+    try {
+      const auto snapshot = trace->freeze();
+      std::ostringstream encoded;
+      rnqnx::runtime::RuntimeTrace::writeJson(snapshot, encoded);
+      const auto bytes = encoded.str();
+      QFile file(parser.value(traceOption));
+      if (!file.open(QIODevice::WriteOnly | QIODevice::NewOnly,
+                     QFileDevice::ReadOwner | QFileDevice::WriteOwner) ||
+          file.write(bytes.data(), static_cast<qint64>(bytes.size())) != static_cast<qint64>(bytes.size()) ||
+          !file.flush()) {
+        std::fprintf(stderr, "RNQNX_TRACE_EXPORT_FAILED\n");
+        return 1;
+      }
+      std::printf("RNQNX_TRACE_EXPORTED records=%zu dropped=%llu\n", snapshot.events.size(),
+                  static_cast<unsigned long long>(snapshot.dropped));
+    } catch (const std::exception&) {
+      std::fprintf(stderr, "RNQNX_TRACE_EXPORT_FAILED\n");
+      return 1;
+    }
+  }
+#endif
+  return result;
 }

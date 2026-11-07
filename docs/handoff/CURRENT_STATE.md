@@ -1,6 +1,6 @@
 # Current state
 
-Reconciled against `main` at `be71bc9` on 2026-11-07. The structured dependency
+Reconciled against `main` at `8657b25` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the
 [compatibility matrix](../getting-started/compatibility-matrix.md) are generated
 from the package manifests and installed frozen graph. Run `pnpm validate:docs`
@@ -21,6 +21,22 @@ These are historical prerequisite results from the cited revisions. A new PR
 must attach its own relevant validation. Synthetic input does not establish USB
 keyboard/touch behavior or React responder parity. Ten application trials do
 not establish cold boot. Captures do not measure presentation timing.
+
+## Bounded native tracing prerequisite
+
+The default-OFF trace experiment records actual host evaluation, surface
+start/stop and owned queue admission/execution/close with bounded storage,
+session-relative monotonic timestamps and explicit drops. Physical Pi 400
+application export, protected-file failure, OFF-path capture and traced Nitro
+worker/shutdown assertions passed. Host graphs passed 20/20 ON and 18/18 OFF,
+followed by 4/4 focused tests after adding queue correlation assertions. See the
+[trace receipt](../evidence/pi400-runtime-trace-2026-11-07.md) for exact candidate
+identities and flags. The earlier 16/16 host result above remains dated evidence.
+
+These are historical prerequisite native boundary diagnostics, not validation
+of this integrated candidate. Input/Fabric/render-loop/presentation markers,
+clock alignment, tracing overhead and performance budgets remain open. No
+scheduling, boot, graphics or default-window policy changed.
 
 ## What still blocks v1
 

@@ -348,8 +348,15 @@ class QnxFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults 
 
 class QtReactHost::Impl {
  public:
-  explicit Impl(fabric::ShadowViewMutationAdapter& adapter)
+  explicit Impl(fabric::ShadowViewMutationAdapter& adapter
+#if RNQNX_ENABLE_FRAME_TRACE
+                , std::shared_ptr<RuntimeTrace> traceSession = nullptr
+#endif
+                )
       : delegate(adapter) {
+#if RNQNX_ENABLE_FRAME_TRACE
+    trace = std::move(traceSession);
+#endif
     // TouchableOpacity and Button are driven by the native Animated driver.
     // Enabling the per-module C++ backend exposes AnimatedModule without
     // requiring a platform-specific implementation.
@@ -428,7 +435,11 @@ class QtReactHost::Impl {
           if (runtimeExecutionDepth == 0) {
             runtimeScheduler->scheduleWork([](facebook::jsi::Runtime&) {});
           }
-        });
+        }
+#if RNQNX_ENABLE_FRAME_TRACE
+        , trace
+#endif
+        );
 
     auto container = std::make_shared<ContextContainer>();
     // Scheduler.cpp:73-80 asserts on this key and dereferences it, so a missing
@@ -534,6 +545,11 @@ class QtReactHost::Impl {
       std::terminate();
     }
     for (auto& [surfaceId, handler] : surfaces) {
+#if RNQNX_ENABLE_FRAME_TRACE
+      const auto generation = surfaceGenerations.find(surfaceId);
+      TraceSpan stopTrace(trace, TraceStage::SurfaceStop, surfaceId,
+          generation == surfaceGenerations.end() ? 0 : generation->second);
+#endif
       if (handler->getStatus() == SurfaceHandler::Status::Running) {
         handler->stop();
       }
@@ -545,6 +561,10 @@ class QtReactHost::Impl {
     taskQueue->close();
   }
 
+#if RNQNX_ENABLE_FRAME_TRACE
+  std::shared_ptr<RuntimeTrace> trace;
+  std::unordered_map<SurfaceId, std::uint64_t> surfaceGenerations;
+#endif
   int runtimeExecutionDepth{0};
   std::size_t taskErrorSequence{0};
   std::unique_ptr<facebook::jsi::Runtime> runtime;
@@ -573,6 +593,12 @@ class QtReactHost::Impl {
 
 QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter)
     : impl_(std::make_unique<Impl>(adapter)) {}
+
+#if RNQNX_ENABLE_FRAME_TRACE
+QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter,
+                         std::shared_ptr<RuntimeTrace> trace)
+    : impl_(std::make_unique<Impl>(adapter, std::move(trace))) {}
+#endif
 
 QtReactHost::~QtReactHost() = default;
 
@@ -604,6 +630,9 @@ const std::shared_ptr<const ContextContainer>& QtReactHost::contextContainer()
 bool QtReactHost::evaluate(
     const std::string& source,
     const std::string& sourceUrl) {
+#if RNQNX_ENABLE_FRAME_TRACE
+  TraceSpan trace(impl_->trace, TraceStage::Evaluate);
+#endif
   // completeRoot schedules rendering for the end of an RN event-loop tick.
   // Evaluating directly in JSI bypasses that tick and can also re-enter React's
   // task scheduling while it is still assigning a callback node. This host's
@@ -942,6 +971,10 @@ void QtReactHost::startSurface(
     const std::string& moduleName,
     float width,
     float height) {
+#if RNQNX_ENABLE_FRAME_TRACE
+  const auto generation = impl_->trace ? impl_->trace->nextId() : 0;
+  TraceSpan trace(impl_->trace, TraceStage::SurfaceStart, surfaceId, generation);
+#endif
   auto handler = std::make_unique<SurfaceHandler>(moduleName, surfaceId);
   impl_->scheduler->registerSurface(*handler);
   handler->setProps(folly::dynamic::object());
@@ -949,6 +982,9 @@ void QtReactHost::startSurface(
       makeLayoutConstraints(width, height), facebook::react::LayoutContext{});
   handler->start();
   impl_->surfaces.emplace(surfaceId, std::move(handler));
+#if RNQNX_ENABLE_FRAME_TRACE
+  if (impl_->trace) impl_->surfaceGenerations[surfaceId] = generation;
+#endif
 }
 
 void QtReactHost::startEmptySurface(
@@ -964,6 +1000,10 @@ void QtReactHost::startEmptySurface(
       "}",
       "rnqnx-empty-surface-shim.js");
 
+#if RNQNX_ENABLE_FRAME_TRACE
+  const auto generation = impl_->trace ? impl_->trace->nextId() : 0;
+  TraceSpan trace(impl_->trace, TraceStage::SurfaceStart, surfaceId, generation);
+#endif
   auto handler = std::make_unique<SurfaceHandler>("", surfaceId);
   impl_->scheduler->registerSurface(*handler);
 
@@ -972,9 +1012,17 @@ void QtReactHost::startEmptySurface(
   handler->start();
 
   impl_->surfaces.emplace(surfaceId, std::move(handler));
+#if RNQNX_ENABLE_FRAME_TRACE
+  if (impl_->trace) impl_->surfaceGenerations[surfaceId] = generation;
+#endif
 }
 
 void QtReactHost::stopSurface(SurfaceId surfaceId) {
+#if RNQNX_ENABLE_FRAME_TRACE
+  const auto generation = impl_->surfaceGenerations.find(surfaceId);
+  TraceSpan trace(impl_->trace, TraceStage::SurfaceStop, surfaceId,
+                  generation == impl_->surfaceGenerations.end() ? 0 : generation->second);
+#endif
   const auto found = impl_->surfaces.find(surfaceId);
   if (found == impl_->surfaces.end()) {
     return;
@@ -985,6 +1033,9 @@ void QtReactHost::stopSurface(SurfaceId surfaceId) {
   }
   impl_->scheduler->unregisterSurface(*found->second);
   impl_->surfaces.erase(found);
+#if RNQNX_ENABLE_FRAME_TRACE
+  impl_->surfaceGenerations.erase(surfaceId);
+#endif
 }
 
 bool QtReactHost::commit(

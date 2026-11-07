@@ -48,6 +48,14 @@ pnpm validate:docs
 pnpm validate:macos
 ```
 
+The [bounded native tracing receipt](docs/evidence/pi400-runtime-trace-2026-11-07.md)
+records host graphs with 20/20 CTests ON and 18/18 OFF, followed by 4/4 focused
+queue-correlation checks. Physical Pi 400 export, protected-file failure,
+OFF-path capture and traced Nitro worker/shutdown assertions passed at the
+cited revisions. These native diagnostics do not establish input/Fabric/render-loop
+or presentation markers, tracing overhead, or performance budgets. The trace
+experiment remains OFF by default.
+
 `validate:macos` runs host checks. It does not cross-build or run QNX.
 The dated handoff records earlier billing refusals.
 [PR #68](https://github.com/mikevocalz/react-native-qnx/pull/68/checks) starts
