@@ -7,13 +7,15 @@
  * textinput descriptor; it is the same C++ shadow node that the QNX platform
  * already mounts and applies props to.
  *
- * Deliberately minimal: `value`/`defaultValue` become the native `text` prop,
- * `onChange` is translated to `onChangeText`, and `mostRecentEventCount` is
- * tracked so a controlled field does not fight native edits.
+ * The override forwards standard text, focus, submit and selection events and
+ * commands. Each component retains a vanilla Zustand store for text/edit count;
+ * native handles stay in refs.
  *
- * Gaps recorded in `docs/component-support.md` rather than stubbed here:
- * placeholder, multiline, focus/blur/submit/selection events and commands,
- * `focus`/`blur` imperative commands, and IME.
+ * The default native path remains available. With the experimental default-OFF
+ * TextInput contract enabled, the Qt bridge owns edit tokens, rejects stale
+ * text/selection commands and suppresses JS-write feedback. Secure multiline
+ * and secure input-method provider routes are unsupported and rejected.
+ * Hardware IME and accessibility qualification remain separate validation work.
  */
 
 'use strict';

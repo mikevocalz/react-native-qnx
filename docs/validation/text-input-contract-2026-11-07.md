@@ -1,7 +1,10 @@
-# Proposed bounded TextInput implementation slice
+# Historical preimplementation TextInput audit and contract
 
-Status: source audit and implementation contract. No production source,
-dependency, bundle or native build changed. Base is main
+Status: historical preimplementation source audit and proposed contract. At the
+time of this audit, no production source, dependency, bundle or native build
+had changed. The subsequent implementation and validation results are recorded
+in the [TextInput evidence receipt](../evidence/text-input-qnx-2026-11-07.md).
+Acceptance criteria below retain their proposal-era wording. The audit base is main
 `be71bc99e4664825f6c409e0704e57e66512375e` in the isolated
 `codex/text-input-contract` worktree. The canonical audit also inspected
 `d3648112dcdc1bfbe78e1d59c10fe89ba3379fa9`; the relevant TextInput sources match.
