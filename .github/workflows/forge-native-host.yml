@@ -1,13 +1,6 @@
 name: Forge shared Rust host
 
 on:
-  pull_request:
-    paths:
-      - 'CMakeLists.txt'
-      - 'cmake/RnqnxForge.cmake'
-      - 'native/platform/qnx/forge/**'
-      - 'tests/native/forge-host/**'
-      - '.github/workflows/forge-native-host.yml'
   workflow_dispatch:
 
 permissions:
@@ -50,3 +43,6 @@ jobs:
 
 # This job executes on Linux. It does not substitute for QNX SDP compilation,
 # a QNX device run, Nitro/JS registration, or Qt/Fabric rendering evidence.
+# Commercial compatibility validation is manual-only. Core platform PR validation
+# must not fetch or build premium Forge packages. Dispatch only with authorized
+# access to the separate Forge product; this workflow grants no redistribution rights.
