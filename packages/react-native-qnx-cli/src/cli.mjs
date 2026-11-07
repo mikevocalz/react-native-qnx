@@ -28,10 +28,12 @@ Usage: pnpm qnx <command> [options]
   deploy-qnx       Deploy one executable with the existing atomic deploy script
   run-qnx          Run one deployed executable
   log-qnx          Stream target slog2 output
+  evidence verify  Check captured Pi evidence and write its SHA-256 manifest
 
 Build/deploy: --arch aarch64|x86_64 (default aarch64)
 Build/configure/deploy: --config Debug|Release (default Debug)
 Deploy/run: --target <CMake-target> (default rnqnx_playground, the Screen probe)
+Evidence: --dir <path> (default: latest artifacts/pi directory)
 All commands: --help; executable commands: --dry-run (print argv without executing)
 
 bundle-qnx creates JavaScript only. The native runner requires the registered
@@ -187,6 +189,7 @@ export async function main(argv, cwd = process.cwd()) {
       arch: { type: 'string' },
       config: { type: 'string' },
       target: { type: 'string' },
+      dir: { type: 'string' },
     },
   });
   if (values.help || argv.length === 0) {
@@ -204,6 +207,7 @@ export async function main(argv, cwd = process.cwd()) {
     'deploy-qnx': ['arch', 'config', 'target', 'dry-run'],
     'run-qnx': ['arch', 'target', 'dry-run'],
     'log-qnx': ['dry-run'],
+    evidence: ['dir', 'dry-run'],
   };
   if (!Object.hasOwn(allowed, command))
     throw new Error(`Unknown command: ${command}. Run pnpm qnx --help.`);
@@ -211,8 +215,10 @@ export async function main(argv, cwd = process.cwd()) {
     if (!allowed[command].includes(option))
       throw new Error(`${command} does not accept --${option}.`);
   }
-  if (rest.length !== (command === 'init' ? 1 : 0))
+  if (rest.length !== (command === 'init' || command === 'evidence' ? 1 : 0))
     throw new Error(`Unexpected arguments for ${command}. Run pnpm qnx --help.`);
+  if (command === 'evidence' && rest[0] !== 'verify')
+    throw new Error('Use pnpm qnx evidence verify [--dir <path>].');
   const root = await findWorkspace(cwd);
   if (command === 'init') {
     await init(root, rest[0]);
@@ -228,7 +234,14 @@ export async function main(argv, cwd = process.cwd()) {
   let executable = 'bash';
   let args = [path.join(root, 'scripts', `${command === 'doctor' ? 'doctor' : command}.sh`)];
   let workingDirectory = root;
-  if (command === 'bundle-qnx') {
+  if (command === 'evidence') {
+    executable = process.execPath;
+    args = [path.join(root, 'scripts/verify-pi-evidence.mjs')];
+    if (values.dir !== undefined) {
+      if (!values.dir.trim()) throw new Error('--dir must be a non-empty path.');
+      args.push(path.resolve(cwd, values.dir));
+    }
+  } else if (command === 'bundle-qnx') {
     const name = appName(values.app);
     workingDirectory = path.join(root, 'apps', name);
     await access(path.join(workingDirectory, 'index.js'));
