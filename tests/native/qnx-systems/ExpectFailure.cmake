@@ -1,0 +1,15 @@
+if(FAULT STREQUAL "tls-mismatch")
+  set(expected "tls-worker-isolation")
+elseif(FAULT STREQUAL "early-eof")
+  set(expected "unexpected-eof")
+else()
+  message(FATAL_ERROR "Unsupported fault: ${FAULT}")
+endif()
+execute_process(COMMAND "${PROBE}" --inject "${FAULT}"
+  RESULT_VARIABLE status OUTPUT_VARIABLE output ERROR_VARIABLE error TIMEOUT 10)
+set(combined "${output}${error}")
+if(NOT "${status}" STREQUAL "1" OR NOT combined MATCHES "RNQNX_SYSTEMS_FAIL ${expected}" OR
+   combined MATCHES "RNQNX_SYSTEMS_OK|AddressSanitizer|UndefinedBehaviorSanitizer|LeakSanitizer|runtime error:")
+  message(FATAL_ERROR "Negative fixture failed: exit=${status}\n${combined}")
+endif()
+message(STATUS "Expected failure observed: ${FAULT}")

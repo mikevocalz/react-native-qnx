@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "reviewed_on": "2026-11-07",
-  "status": "published-delivery-plans-with-pending-implementation",
+  "status": "all-workstreams-published-implementation-pending",
   "scope": "Documentation and repository skills; feature implementation and target validation remain separate.",
   "dependency_semantics": "Dependencies identify implementation/integrated acceptance prerequisites, not documentation merge requirements. Work can begin with a smaller slice as each plan explains.",
   "sources": {
@@ -9,7 +9,8 @@
     "marathon_main": "c2c1b2fe32aeaa51edf75a45045cbfbbc08c4ac5",
     "neutrino_reference": "b1fd3e9410c1a6a0d7217c3be7e324e900470d2a",
     "publication_rnqnx_main": "48e37f7550b4244f8a7936c01af75419e1fec416",
-    "readiness_rnqnx_main": "1baad40a98362ce151ea73bd6f0a6e1d3020926e"
+    "readiness_rnqnx_main": "1baad40a98362ce151ea73bd6f0a6e1d3020926e",
+    "publication_reconciliation_main": "24019f39a409cd0540c31f4e017b7003201bdca4"
   },
   "workstreams": [
     {
@@ -19,12 +20,15 @@
       "branch": "docs/qnx-marathon-00-v1-reference-followup",
       "document": "docs/platform-modernization/README.md",
       "implementation_dependencies": [],
-      "existing_pr_dependencies": [],
+      "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/47"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-program",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/49",
-      "commit": "f06bc134d71fe410207525e0348b2fa2481c369b"
+      "commit": "e5f37bf52a0abf78e8512304e141445660e70b2c",
+      "merge_commit": "85a33e2637e963ae32649827a28596818e86c347",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/e5f37bf52a0abf78e8512304e141445660e70b2c/docs/platform-modernization/README.md",
+      "implementation_dependency_prs": []
     },
     {
       "id": "01",
@@ -36,9 +40,12 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/50",
-      "commit": "ce2d3315dd710860f613efcfa3852e1b3d39efcc"
+      "commit": "ce2d3315dd710860f613efcfa3852e1b3d39efcc",
+      "merge_commit": "6f94578331bc6079d71b60246214a6f8246fd7b5",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/ce2d3315dd710860f613efcfa3852e1b3d39efcc/docs/platform-modernization/01-runtime-baseline.md",
+      "implementation_dependency_prs": []
     },
     {
       "id": "02",
@@ -50,13 +57,17 @@
       "existing_pr_dependencies": [
         "https://github.com/mikevocalz/react-native-qnx/pull/44",
         "https://github.com/mikevocalz/react-native-qnx/pull/45",
-        "https://github.com/mikevocalz/react-native-qnx/pull/46"
+        "https://github.com/mikevocalz/react-native-qnx/pull/46",
+        "https://github.com/mikevocalz/react-native-qnx/pull/48"
       ],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/51",
-      "commit": "b87f576f677ca98b0ed9a3eb840a9aaae12006bd"
+      "commit": "b87f576f677ca98b0ed9a3eb840a9aaae12006bd",
+      "merge_commit": "f1950b82c16d65eb6e8bc4eb7c69b2511a71af6a",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/b87f576f677ca98b0ed9a3eb840a9aaae12006bd/docs/platform-modernization/02-input-worklets.md",
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"]
     },
     {
       "id": "03",
@@ -68,9 +79,12 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/52",
-      "commit": "a70d8647f6ef69067fdbb4155433079a6c2e2af2"
+      "commit": "a70d8647f6ef69067fdbb4155433079a6c2e2af2",
+      "merge_commit": "c4081d89dd57df654f9cf68d793245caaa311967",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/a70d8647f6ef69067fdbb4155433079a6c2e2af2/docs/platform-modernization/03-frame-pacing.md",
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"]
     },
     {
       "id": "04",
@@ -82,9 +96,12 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/53",
-      "commit": "63af12dd86ad43179ab90fa2eb674822698ad4e0"
+      "commit": "63af12dd86ad43179ab90fa2eb674822698ad4e0",
+      "merge_commit": "f009f8d729ff3a597bba6e692a227b10c81a138c",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/63af12dd86ad43179ab90fa2eb674822698ad4e0/docs/platform-modernization/04-text-accessibility.md",
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"]
     },
     {
       "id": "05",
@@ -96,9 +113,12 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/54",
-      "commit": "4cc2e55d6d7d01bcd8a9b5dea1d3d8e3c04df768"
+      "commit": "4cc2e55d6d7d01bcd8a9b5dea1d3d8e3c04df768",
+      "merge_commit": "f99a29e55a9904cd88cc2a25ef63b221271136fa",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/4cc2e55d6d7d01bcd8a9b5dea1d3d8e3c04df768/docs/platform-modernization/05-app-lifecycle.md",
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"]
     },
     {
       "id": "06",
@@ -110,9 +130,12 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/55",
-      "commit": "ebdf2f0275b53402831fac430c95a75b857ad939"
+      "commit": "ebdf2f0275b53402831fac430c95a75b857ad939",
+      "merge_commit": "7d716927e407c6edeaa3839e07a22ee137fa83a4",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/ebdf2f0275b53402831fac430c95a75b857ad939/docs/platform-modernization/06-platform-services.md",
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"]
     },
     {
       "id": "07",
@@ -124,9 +147,12 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/56",
-      "commit": "319d0ff3c50e77fc3cdbd5d040a978a9e4fa5db4"
+      "commit": "319d0ff3c50e77fc3cdbd5d040a978a9e4fa5db4",
+      "merge_commit": "d02f06e03058a39843d0046a556bf3dc03d18359",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/319d0ff3c50e77fc3cdbd5d040a978a9e4fa5db4/docs/platform-modernization/07-qnx-ipc.md",
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/55"]
     },
     {
       "id": "08",
@@ -138,9 +164,15 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/57",
-      "commit": "5aaa5d890ec4585fca1e7809264f8bf3ade864d1"
+      "commit": "5aaa5d890ec4585fca1e7809264f8bf3ade864d1",
+      "merge_commit": "f6dbd2ae11c050472ed66ac38550d17c65d292a7",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/5aaa5d890ec4585fca1e7809264f8bf3ade864d1/docs/platform-modernization/08-service-recovery.md",
+      "implementation_dependency_prs": [
+        "https://github.com/mikevocalz/react-native-qnx/pull/54",
+        "https://github.com/mikevocalz/react-native-qnx/pull/56"
+      ]
     },
     {
       "id": "09",
@@ -152,9 +184,15 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/58",
-      "commit": "bd3e971d53525db419de70a265a35c2937fd9125"
+      "commit": "bd3e971d53525db419de70a265a35c2937fd9125",
+      "merge_commit": "0310c8ffdab8b87c020b638e15b8d6ffbd321953",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/bd3e971d53525db419de70a265a35c2937fd9125/docs/platform-modernization/09-shared-buffers.md",
+      "implementation_dependency_prs": [
+        "https://github.com/mikevocalz/react-native-qnx/pull/52",
+        "https://github.com/mikevocalz/react-native-qnx/pull/56"
+      ]
     },
     {
       "id": "10",
@@ -169,10 +207,14 @@
       ],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/59",
       "commit": "88fd78d13559143cb6c42a15f2402887c6d21be3",
-      "optional_commercial_integration": true
+      "optional_commercial_integration": true,
+      "merge_commit": "1008900dfbf169419e60d55221ebf99e8a5928f5",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/88fd78d13559143cb6c42a15f2402887c6d21be3/docs/platform-modernization/10-forge-bindings.md",
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"],
+      "commercial_scope": "Generic package hooks use non-premium fixtures. Only the separately licensed Forge consumer lane is optional commercial integration."
     },
     {
       "id": "11",
@@ -184,9 +226,12 @@
       "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/60",
-      "commit": "6c353174d4bc1f6a7291bc622a57b8a8b9223b2c"
+      "commit": "6c353174d4bc1f6a7291bc622a57b8a8b9223b2c",
+      "merge_commit": "8383a1b32435919dd91974454013f821e07192fc",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/6c353174d4bc1f6a7291bc622a57b8a8b9223b2c/docs/platform-modernization/11-device-profiles.md",
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"]
     },
     {
       "id": "12",
@@ -195,13 +240,30 @@
       "branch": "docs/qnx-marathon-12-conformance-app",
       "document": "docs/platform-modernization/12-conformance-app.md",
       "implementation_dependencies": ["02", "03", "04", "05", "06", "11", "13"],
-      "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
+      "existing_pr_dependencies": [
+        "https://github.com/mikevocalz/react-native-qnx/pull/44",
+        "https://github.com/mikevocalz/react-native-qnx/pull/48"
+      ],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/61",
       "commit": "1662d3f22262af9426a2831072243df838562111",
-      "optional_implementation_dependencies": ["10"]
+      "optional_implementation_dependencies": ["10"],
+      "merge_commit": "c3240b213b9317b0b26d829e97cc81f3ab7fa97a",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/1662d3f22262af9426a2831072243df838562111/docs/platform-modernization/12-conformance-app.md",
+      "implementation_dependency_prs": [
+        "https://github.com/mikevocalz/react-native-qnx/pull/51",
+        "https://github.com/mikevocalz/react-native-qnx/pull/52",
+        "https://github.com/mikevocalz/react-native-qnx/pull/53",
+        "https://github.com/mikevocalz/react-native-qnx/pull/54",
+        "https://github.com/mikevocalz/react-native-qnx/pull/55",
+        "https://github.com/mikevocalz/react-native-qnx/pull/60",
+        "https://github.com/mikevocalz/Marathon-Shell/pull/1"
+      ],
+      "optional_implementation_dependency_prs": [
+        "https://github.com/mikevocalz/react-native-qnx/pull/59"
+      ]
     },
     {
       "id": "13",
@@ -213,9 +275,12 @@
       "existing_pr_dependencies": [],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "proposed-unpublished",
-      "pull_request": null,
-      "commit": null
+      "status": "published-draft-plan",
+      "pull_request": "https://github.com/mikevocalz/Marathon-Shell/pull/1",
+      "commit": "d16e6db81f5bafde099c5452995f8f46bd05a51c",
+      "merge_commit": null,
+      "document_url": "https://github.com/mikevocalz/Marathon-Shell/blob/d16e6db81f5bafde099c5452995f8f46bd05a51c/docs/rfcs/0013-react-native-client-contract.md",
+      "implementation_dependency_prs": []
     },
     {
       "id": "14",
@@ -227,9 +292,15 @@
       "existing_pr_dependencies": [],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/62",
-      "commit": "843fd202c02e5b6b081cc7cf94f48ac80711bfc0"
+      "commit": "843fd202c02e5b6b081cc7cf94f48ac80711bfc0",
+      "merge_commit": "cf0c0f0095ab06faff882af3572b5ed29525424f",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/843fd202c02e5b6b081cc7cf94f48ac80711bfc0/docs/platform-modernization/14-qnx-systems-probes.md",
+      "implementation_dependency_prs": [
+        "https://github.com/mikevocalz/react-native-qnx/pull/50",
+        "https://github.com/mikevocalz/react-native-qnx/pull/56"
+      ]
     },
     {
       "id": "15",
@@ -241,12 +312,15 @@
       "existing_pr_dependencies": [],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
-      "status": "published-plan",
+      "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/63",
-      "commit": "090e8982ccea97a842868ecbfd006cfedf7a3d04"
+      "commit": "27d6601b6748a954b7e0e1057f6bc4120a50ed0b",
+      "merge_commit": "24019f39a409cd0540c31f4e017b7003201bdca4",
+      "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/27d6601b6748a954b7e0e1057f6bc4120a50ed0b/docs/platform-modernization/15-current-qnx-docs.md",
+      "implementation_dependency_prs": []
     }
   ],
-  "publication_semantics": "Published PR URLs and inspected commits identify documentation, not implemented features. Workstream13 remains proposed/unpublished in the Marathon repository. Document paths for published RNQNX plans resolve in their exact PR commit until merged.",
+  "publication_semantics": "All 16 workstreams are published. PR/head/merge fields record the 2026-11-07 API observation; later changes belong to GitHub. Merging a documentation plan does not implement its acceptance criteria. Marathon plan13 is published in the owner fork, not upstream-approved.",
   "requirements": {
     "native_api": "Nitro v1 API-first; actual new class/registration/constructor APIs with aligned core/runtime/generator",
     "legacy_qnx_reference": "All 19 categories mapped with explicit dispositions",
@@ -283,5 +357,14 @@
       "inspected_head": "173605c413fb19b6adcf682e9ec1293be9093c4d",
       "scope": "Synthetic Qt input into raw Fabric JavaScript handler, not physical hardware or React component interaction"
     }
+  },
+  "commit_semantics": "Commit is the inspected PR-head revision of the delivery specification; merge_commit is present only when GitHub reported merged. Immutable document URLs remain valid if a branch changes or is deleted.",
+  "verification": {
+    "reviewed_on": "2026-11-07",
+    "workstream_prs": 16,
+    "observed_merged": 15,
+    "observed_open_draft": 1,
+    "companion_document_contents_fetched": 15,
+    "native_execution_by_publication_work": false
   }
 }
