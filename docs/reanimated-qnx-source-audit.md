@@ -144,5 +144,6 @@ retain a draft PR while required target evidence is absent.
 The opt-in also connects the playground window, mounting adapter and responder
 delegate to the dispatcher. See [the validation record](validation/qt-input-lifecycle-2026-11-07.md)
 for the completed macOS ON/OFF suite and deterministic injected-input probe on
-physical QNX. USB/touch hardware, target JS-handler delivery and Marathon/Wayland
-remain unverified; no general device input support is claimed.
+physical QNX. A later [JS-delivery proof](evidence/pi400-input-js-2026-11-07.md)
+checks raw Fabric callbacks; USB/touch hardware, React component interaction and
+Marathon/Wayland remain unverified. No general device input support is claimed.

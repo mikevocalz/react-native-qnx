@@ -1,5 +1,13 @@
 # Qt input lifecycle validation — 2026-11-07
 
+## Later follow-up: JavaScript delivery
+
+The [raw Fabric JavaScript-delivery receipt](../evidence/pi400-input-js-2026-11-07.md)
+now records12 callbacks on physical QNX and an interception control that fails
+at the intended JS assertion. This supersedes only the raw JS-delivery gap below;
+USB input, React component interaction and gesture recognition remain unverified.
+The earlier native-only results and artifact hashes remain historical evidence.
+
 ## Completed follow-up: macOS and physical QNX
 
 DRI `/root`; independent read-only reviewer `/root/renderer_build_audit` reviewed
