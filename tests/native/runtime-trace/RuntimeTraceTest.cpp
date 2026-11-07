@@ -6,6 +6,7 @@
 #include <condition_variable>
 #include <mutex>
 #include <iostream>
+#include <locale>
 #include <set>
 #include <sstream>
 #include <stdexcept>
@@ -96,6 +97,11 @@ void concurrentOrder() {
   const auto limited = threadLimit.freeze();
   require(limited.events.size() == 64 && limited.dropped == 1, "bounded thread registration");
 }
+class GroupedNumbers final : public std::numpunct<char> {
+ protected:
+  char do_thousands_sep() const override { return ','; }
+  std::string do_grouping() const override { return "\3"; }
+};
 void spansAndExport() {
   auto trace = std::make_shared<RuntimeTrace>(20);
   {
@@ -120,6 +126,13 @@ void spansAndExport() {
   bool rejected = false;
   try { RuntimeTrace::writeJson(snapshot, broken); } catch (const std::runtime_error&) { rejected = true; }
   require(rejected, "export error surfaced");
+  auto localized = snapshot;
+  localized.session = 1234567;
+  std::ostringstream grouped;
+  grouped.imbue(std::locale(std::locale::classic(), new GroupedNumbers));
+  RuntimeTrace::writeJson(localized, grouped);
+  require(grouped.str().find("\"session\":1234567") != std::string::npos &&
+          grouped.str().find("1,234,567") == std::string::npos, "locale-independent JSON numbers");
   RuntimeTrace another(1);
   require(another.freeze().session != snapshot.session, "session identity");
 }

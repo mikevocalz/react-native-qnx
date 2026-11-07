@@ -4,6 +4,8 @@
 #include <atomic>
 #include <exception>
 #include <ostream>
+#include <locale>
+#include <sstream>
 #include <stdexcept>
 
 namespace rnqnx::runtime {
@@ -79,22 +81,27 @@ TraceSnapshot RuntimeTrace::freeze() {
 }
 
 void RuntimeTrace::writeJson(const TraceSnapshot& snapshot, std::ostream& output) {
-  output << "{\"schemaVersion\":1,\"clock\":\"std::chrono::steady_clock\","
+  // Formatting is explicit export work, outside recorder locks and callbacks.
+  // Preserve JSON numbers even when the caller imbues a grouping locale.
+  std::ostringstream encoded;
+  encoded.imbue(std::locale::classic());
+  encoded << "{\"schemaVersion\":1,\"clock\":\"std::chrono::steady_clock\","
          << "\"clockScope\":\"session-relative; not aligned to Qt/QNX/display clocks\","
          << "\"unit\":\"nanoseconds\",\"timestampMeaning\":\"record-copy after recorder lock\","
          << "\"threadIdentity\":\"session-local ordinal of std::thread::id; IDs may be reused\","
          << "\"session\":" << snapshot.session << ",\"dropped\":" << snapshot.dropped << ",\"events\":[";
   bool first = true;
   for (const auto& event : snapshot.events) {
-    if (!first) output << ',';
+    if (!first) encoded << ',';
     first = false;
-    output << "{\"sequence\":" << event.sequence << ",\"recordedAtNs\":" << event.recordedAtNs
+    encoded << "{\"sequence\":" << event.sequence << ",\"recordedAtNs\":" << event.recordedAtNs
            << ",\"thread\":" << event.thread << ",\"surface\":" << event.surface
            << ",\"surfaceGeneration\":" << event.surfaceGeneration << ",\"correlation\":" << event.correlation
            << ",\"stage\":\"" << stageName(event.stage) << "\",\"phase\":\"" << phaseName(event.phase)
            << "\",\"unwinding\":" << (event.unwinding ? "true" : "false") << '}';
   }
-  output << "]}\n";
+  encoded << "]}\n";
+  output << encoded.str();
   if (!output) throw std::runtime_error("trace export failed");
 }
 
