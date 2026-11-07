@@ -26,14 +26,14 @@ Add a proposed `RNQNX_ENABLE_FRAME_TRACE` flag, default OFF and rejected on unsu
 
 Capture these stages where the actual platform exposes them:
 
-| Stage | Owner / meaning |
-| --- | --- |
-| Input receipt | Qt pointer event and original event timestamp; distinguish receipt time from hardware sample time. |
-| Native dispatch | Fabric/RNGH arbitration and enqueue, including coalescing or cancellation. |
-| JS/worklet execution | Start/end on the recorded RN or Worklets runtime owner, without assuming separate OS threads. |
-| Fabric work | Commit, mounting transaction and Qt mutation application. |
-| Qt frame work | Public render-loop callbacks and available synchronization/render timing. |
-| Presentation | Backend/compositor presentation evidence when obtainable; otherwise label swap/submission timing as such. |
+| Stage                | Owner / meaning                                                                                           |
+| -------------------- | --------------------------------------------------------------------------------------------------------- |
+| Input receipt        | Qt pointer event and original event timestamp; distinguish receipt time from hardware sample time.        |
+| Native dispatch      | Fabric/RNGH arbitration and enqueue, including coalescing or cancellation.                                |
+| JS/worklet execution | Start/end on the recorded RN or Worklets runtime owner, without assuming separate OS threads.             |
+| Fabric work          | Commit, mounting transaction and Qt mutation application.                                                 |
+| Qt frame work        | Public render-loop callbacks and available synchronization/render timing.                                 |
+| Presentation         | Backend/compositor presentation evidence when obtainable; otherwise label swap/submission timing as such. |
 
 An event reaching `frameSwapped` is not automatically physical input-to-photon evidence. If display presentation timestamps are unavailable on a target, publish input-to-submit separately and use an independently calibrated camera/scanout method for visible latency. Do not subtract timestamps from different clock domains without a measured mapping and uncertainty.
 
@@ -54,24 +54,24 @@ Two required trace scenarios define how this data will be consumed:
 
 Proposed roles below are responsibilities, not staffed assignments. Each implementation PR must name a DRI and a different reviewer.
 
-| Role | Path ownership and deliverable | Blocking review |
-| --- | --- | --- |
-| Runtime/performance DRI | Runtime/Fabric trace points and bounded recorder | Qt render-loop engineer |
-| QNX systems engineer | QNX trace adapter and exact target clocks | QNX scheduling reviewer |
-| Marathon/Wayland engineer | Client presentation and visibility integration | Compositor-interface reviewer |
-| Benchmark/QA engineer | Driver, manifests, raw samples, capture calibration | Independent statistics/evidence reviewer |
-| Release engineer | Opt-in build/configuration and per-profile budgets | QNX regression owner |
+| Role                      | Path ownership and deliverable                      | Blocking review                          |
+| ------------------------- | --------------------------------------------------- | ---------------------------------------- |
+| Runtime/performance DRI   | Runtime/Fabric trace points and bounded recorder    | Qt render-loop engineer                  |
+| QNX systems engineer      | QNX trace adapter and exact target clocks           | QNX scheduling reviewer                  |
+| Marathon/Wayland engineer | Client presentation and visibility integration      | Compositor-interface reviewer            |
+| Benchmark/QA engineer     | Driver, manifests, raw samples, capture calibration | Independent statistics/evidence reviewer |
+| Release engineer          | Opt-in build/configuration and per-profile budgets  | QNX regression owner                     |
 
 ## Skill evidence
 
 The following pinned sources were read and applied to this plan. They do not establish tool installation, benchmark execution or platform support.
 
-| Skill | Source revision | Decision |
-| --- | --- | --- |
-| [api-design](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md) | Margelo `1e9e17be6f41c838db472d6a4b943fc26355a3be` | Keep the first tracing contract internal; expose units and meaning rather than an ambiguous FPS property. |
-| [build-nitro-modules](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md) | Same Margelo revision | Avoid extra queue hops and synchronous native work in interactive callbacks; add no unnecessary HybridObject. |
-| [cpp](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md) | Same Margelo revision | Give buffers and thread-affine state explicit owners; separate capture from serialization. |
-| [react-native-best-practices](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) | Callstack `59e9d17446a248b21d86f078fcd0bd2d36db1ca4` | Measure, optimize, remeasure and revert changes that do not improve the actual interaction. |
+| Skill                                                                                                                                                                       | Source revision                                      | Decision                                                                                                      |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| [api-design](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md)                                       | Margelo `1e9e17be6f41c838db472d6a4b943fc26355a3be`   | Keep the first tracing contract internal; expose units and meaning rather than an ambiguous FPS property.     |
+| [build-nitro-modules](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md)                     | Same Margelo revision                                | Avoid extra queue hops and synchronous native work in interactive callbacks; add no unnecessary HybridObject. |
+| [cpp](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md)                                                     | Same Margelo revision                                | Give buffers and thread-affine state explicit owners; separate capture from serialization.                    |
+| [react-native-best-practices](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) | Callstack `59e9d17446a248b21d86f078fcd0bd2d36db1ca4` | Measure, optimize, remeasure and revert changes that do not improve the actual interaction.                   |
 
 Platform manuals and Marathon code are source audits, not invented “QNX performance” skills. Read Callstack's CI guidance at a recorded revision if a later slice changes workflows. Device automation examples for iOS/Android are not evidence that those tools support QNX.
 
