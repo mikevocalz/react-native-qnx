@@ -11,11 +11,10 @@ const require = createRequire(import.meta.url);
 const fixture = require(path.join(app, 'fixtures.js'));
 /** @type {Array<{ id: string, entry: string | null, status: string }>} */
 const workloads = fixture.WORKLOADS;
-assert.deepEqual(workloads.map((workload) => workload.id), [
-  'hello-world',
-  'list-1000',
-  'drawer-drag',
-]);
+assert.deepEqual(
+  workloads.map((workload) => workload.id),
+  ['hello-world', 'list-1000', 'drawer-drag']
+);
 assert.equal(workloads[2].status, 'blocked');
 assert.equal(workloads[2].entry, null);
 const rows = fixture.createRows();
