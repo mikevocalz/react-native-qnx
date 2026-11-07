@@ -20,9 +20,7 @@
       "branch": "docs/qnx-marathon-00-v1-reference-followup",
       "document": "docs/platform-modernization/README.md",
       "implementation_dependencies": [],
-      "existing_pr_dependencies": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/47"
-      ],
+      "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/47"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
       "status": "merged-documentation-plan",
@@ -39,9 +37,7 @@
       "branch": "docs/qnx-marathon-01-runtime-baseline",
       "document": "docs/platform-modernization/01-runtime-baseline.md",
       "implementation_dependencies": [],
-      "existing_pr_dependencies": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/44"
-      ],
+      "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
       "status": "merged-documentation-plan",
@@ -57,9 +53,7 @@
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-02-input-worklets",
       "document": "docs/platform-modernization/02-input-worklets.md",
-      "implementation_dependencies": [
-        "01"
-      ],
+      "implementation_dependencies": ["01"],
       "existing_pr_dependencies": [
         "https://github.com/mikevocalz/react-native-qnx/pull/44",
         "https://github.com/mikevocalz/react-native-qnx/pull/45",
@@ -73,9 +67,7 @@
       "commit": "b87f576f677ca98b0ed9a3eb840a9aaae12006bd",
       "merge_commit": "f1950b82c16d65eb6e8bc4eb7c69b2511a71af6a",
       "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/b87f576f677ca98b0ed9a3eb840a9aaae12006bd/docs/platform-modernization/02-input-worklets.md",
-      "implementation_dependency_prs": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/50"
-      ]
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"]
     },
     {
       "id": "03",
@@ -83,12 +75,8 @@
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-03-frame-pacing",
       "document": "docs/platform-modernization/03-frame-pacing.md",
-      "implementation_dependencies": [
-        "01"
-      ],
-      "existing_pr_dependencies": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/44"
-      ],
+      "implementation_dependencies": ["01"],
+      "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
       "status": "merged-documentation-plan",
@@ -96,9 +84,7 @@
       "commit": "a70d8647f6ef69067fdbb4155433079a6c2e2af2",
       "merge_commit": "c4081d89dd57df654f9cf68d793245caaa311967",
       "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/a70d8647f6ef69067fdbb4155433079a6c2e2af2/docs/platform-modernization/03-frame-pacing.md",
-      "implementation_dependency_prs": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/50"
-      ]
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"]
     },
     {
       "id": "04",
@@ -106,12 +92,8 @@
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-04-text-accessibility",
       "document": "docs/platform-modernization/04-text-accessibility.md",
-      "implementation_dependencies": [
-        "01"
-      ],
-      "existing_pr_dependencies": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/44"
-      ],
+      "implementation_dependencies": ["01"],
+      "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
       "status": "merged-documentation-plan",
@@ -119,9 +101,7 @@
       "commit": "63af12dd86ad43179ab90fa2eb674822698ad4e0",
       "merge_commit": "f009f8d729ff3a597bba6e692a227b10c81a138c",
       "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/63af12dd86ad43179ab90fa2eb674822698ad4e0/docs/platform-modernization/04-text-accessibility.md",
-      "implementation_dependency_prs": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/50"
-      ]
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"]
     },
     {
       "id": "05",
@@ -129,12 +109,8 @@
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-05-app-lifecycle",
       "document": "docs/platform-modernization/05-app-lifecycle.md",
-      "implementation_dependencies": [
-        "01"
-      ],
-      "existing_pr_dependencies": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/44"
-      ],
+      "implementation_dependencies": ["01"],
+      "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
       "status": "merged-documentation-plan",
@@ -142,9 +118,7 @@
       "commit": "4cc2e55d6d7d01bcd8a9b5dea1d3d8e3c04df768",
       "merge_commit": "f99a29e55a9904cd88cc2a25ef63b221271136fa",
       "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/4cc2e55d6d7d01bcd8a9b5dea1d3d8e3c04df768/docs/platform-modernization/05-app-lifecycle.md",
-      "implementation_dependency_prs": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/50"
-      ]
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"]
     },
     {
       "id": "06",
@@ -152,12 +126,8 @@
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-06-platform-services",
       "document": "docs/platform-modernization/06-platform-services.md",
-      "implementation_dependencies": [
-        "01"
-      ],
-      "existing_pr_dependencies": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/44"
-      ],
+      "implementation_dependencies": ["01"],
+      "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
       "status": "merged-documentation-plan",
@@ -165,9 +135,7 @@
       "commit": "ebdf2f0275b53402831fac430c95a75b857ad939",
       "merge_commit": "7d716927e407c6edeaa3839e07a22ee137fa83a4",
       "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/ebdf2f0275b53402831fac430c95a75b857ad939/docs/platform-modernization/06-platform-services.md",
-      "implementation_dependency_prs": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/50"
-      ]
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"]
     },
     {
       "id": "07",
@@ -175,12 +143,8 @@
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-07-qnx-ipc",
       "document": "docs/platform-modernization/07-qnx-ipc.md",
-      "implementation_dependencies": [
-        "06"
-      ],
-      "existing_pr_dependencies": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/44"
-      ],
+      "implementation_dependencies": ["06"],
+      "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
       "status": "merged-documentation-plan",
@@ -188,9 +152,7 @@
       "commit": "319d0ff3c50e77fc3cdbd5d040a978a9e4fa5db4",
       "merge_commit": "d02f06e03058a39843d0046a556bf3dc03d18359",
       "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/319d0ff3c50e77fc3cdbd5d040a978a9e4fa5db4/docs/platform-modernization/07-qnx-ipc.md",
-      "implementation_dependency_prs": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/55"
-      ]
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/55"]
     },
     {
       "id": "08",
@@ -198,13 +160,8 @@
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-08-service-recovery",
       "document": "docs/platform-modernization/08-service-recovery.md",
-      "implementation_dependencies": [
-        "05",
-        "07"
-      ],
-      "existing_pr_dependencies": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/44"
-      ],
+      "implementation_dependencies": ["05", "07"],
+      "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
       "status": "merged-documentation-plan",
@@ -223,13 +180,8 @@
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-09-shared-buffers",
       "document": "docs/platform-modernization/09-shared-buffers.md",
-      "implementation_dependencies": [
-        "03",
-        "07"
-      ],
-      "existing_pr_dependencies": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/44"
-      ],
+      "implementation_dependencies": ["03", "07"],
+      "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
       "status": "merged-documentation-plan",
@@ -248,9 +200,7 @@
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-10-forge-bindings",
       "document": "docs/platform-modernization/10-forge-bindings.md",
-      "implementation_dependencies": [
-        "01"
-      ],
+      "implementation_dependencies": ["01"],
       "existing_pr_dependencies": [
         "https://github.com/mikevocalz/react-native-qnx/pull/42",
         "https://github.com/mikevocalz/react-native-qnx/pull/44"
@@ -263,9 +213,7 @@
       "optional_commercial_integration": true,
       "merge_commit": "1008900dfbf169419e60d55221ebf99e8a5928f5",
       "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/88fd78d13559143cb6c42a15f2402887c6d21be3/docs/platform-modernization/10-forge-bindings.md",
-      "implementation_dependency_prs": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/50"
-      ],
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"],
       "commercial_scope": "Generic package hooks use non-premium fixtures. Only the separately licensed Forge consumer lane is optional commercial integration."
     },
     {
@@ -274,12 +222,8 @@
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-11-device-profiles",
       "document": "docs/platform-modernization/11-device-profiles.md",
-      "implementation_dependencies": [
-        "01"
-      ],
-      "existing_pr_dependencies": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/44"
-      ],
+      "implementation_dependencies": ["01"],
+      "existing_pr_dependencies": ["https://github.com/mikevocalz/react-native-qnx/pull/44"],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",
       "status": "merged-documentation-plan",
@@ -287,9 +231,7 @@
       "commit": "6c353174d4bc1f6a7291bc622a57b8a8b9223b2c",
       "merge_commit": "8383a1b32435919dd91974454013f821e07192fc",
       "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/6c353174d4bc1f6a7291bc622a57b8a8b9223b2c/docs/platform-modernization/11-device-profiles.md",
-      "implementation_dependency_prs": [
-        "https://github.com/mikevocalz/react-native-qnx/pull/50"
-      ]
+      "implementation_dependency_prs": ["https://github.com/mikevocalz/react-native-qnx/pull/50"]
     },
     {
       "id": "12",
@@ -297,15 +239,7 @@
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-12-conformance-app",
       "document": "docs/platform-modernization/12-conformance-app.md",
-      "implementation_dependencies": [
-        "02",
-        "03",
-        "04",
-        "05",
-        "06",
-        "11",
-        "13"
-      ],
+      "implementation_dependencies": ["02", "03", "04", "05", "06", "11", "13"],
       "existing_pr_dependencies": [
         "https://github.com/mikevocalz/react-native-qnx/pull/44",
         "https://github.com/mikevocalz/react-native-qnx/pull/48"
@@ -315,9 +249,7 @@
       "status": "merged-documentation-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/61",
       "commit": "1662d3f22262af9426a2831072243df838562111",
-      "optional_implementation_dependencies": [
-        "10"
-      ],
+      "optional_implementation_dependencies": ["10"],
       "merge_commit": "c3240b213b9317b0b26d829e97cc81f3ab7fa97a",
       "document_url": "https://github.com/mikevocalz/react-native-qnx/blob/1662d3f22262af9426a2831072243df838562111/docs/platform-modernization/12-conformance-app.md",
       "implementation_dependency_prs": [
@@ -356,10 +288,7 @@
       "repository": "mikevocalz/react-native-qnx",
       "branch": "docs/qnx-marathon-14-qnx-systems-probes",
       "document": "docs/platform-modernization/14-qnx-systems-probes.md",
-      "implementation_dependencies": [
-        "01",
-        "07"
-      ],
+      "implementation_dependencies": ["01", "07"],
       "existing_pr_dependencies": [],
       "human_dri": "unassigned",
       "human_reviewer": "unassigned",

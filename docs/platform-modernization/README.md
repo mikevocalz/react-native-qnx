@@ -23,7 +23,7 @@ Start with the [roster](ROSTER.md), [skills and native workflow](SKILLS.md), and
 | Existing QNX runtime and optional Forge experiments already provide useful foundations       | Reuse their code and exact evidence instead of creating competing hosts/queues                                        | 01, 10        |
 | A shared substantial app exposes interactions that unit probes miss                          | Run the same non-premium conformance workload on both targets; test licensed Forge packages separately and optionally | 12            |
 
-The expanded [current-QNX audit](https://github.com/mikevocalz/react-native-qnx/pull/63) contains67 unique source URLs, with selected-body, index/discovery and unavailable coverage distinguished. It includes DDK/WFD/VulkanSC/GPIO/CTI overviews and bounded dispositions for Containers, Hypervisor, cloud images and Momentics. Installed packages, hardware behavior and complete manual audits remain separate qualification work.
+The expanded [current-QNX audit](https://github.com/mikevocalz/react-native-qnx/pull/63) contains 67 unique source URLs, with selected-body, index/discovery and unavailable coverage distinguished. It includes DDK/WFD/VulkanSC/GPIO/CTI overviews and bounded dispositions for Containers, Hypervisor, cloud images and Momentics. Installed packages, hardware behavior and complete manual audits remain separate qualification work.
 
 ## Existing implementation PRs
 
@@ -44,26 +44,26 @@ PRs42,44,45 and46 are merged; the later program/publication base is `48e37f7550b
 
 Publication reconciliation uses main `24019f39a409cd0540c31f4e017b7003201bdca4`. Earlier source and readiness pins remain below for provenance.
 
-The [catalog](catalog.json) records all16 published workstreams, immutable specification revisions and dependency PR links. At the 2026-11-07 API check, RNQNX PRs49–63 were merged; [Marathon fork PR1](https://github.com/mikevocalz/Marathon-Shell/pull/1) remained draft. These states are a dated observation, not a runtime-support claim. The original program PR47 is also merged.
+The [catalog](catalog.json) records all 16 published workstreams, immutable specification revisions and dependency PR links. At the 2026-11-07 API check, RNQNX PRs49–63 were merged; [Marathon fork PR1](https://github.com/mikevocalz/Marathon-Shell/pull/1) remained draft. These states are a dated observation, not a runtime-support claim. The original program PR47 is also merged.
 
-| Plan | Deliverable | Pull request | Observed state |
-| --- | --- | --- | --- |
-| 00 | Nitro v1 API contract, complete QNX source map, skills and delivery roster | [#49](https://github.com/mikevocalz/react-native-qnx/pull/49) | Merged documentation |
-| 01 | Runtime baseline, startup recovery and thread ownership | [#50](https://github.com/mikevocalz/react-native-qnx/pull/50) | Merged documentation |
-| 02 | Input lifecycle, Worklets, Reanimated and Gesture Handler | [#51](https://github.com/mikevocalz/react-native-qnx/pull/51) | Merged documentation |
-| 03 | Frame pacing, input latency and performance traces | [#52](https://github.com/mikevocalz/react-native-qnx/pull/52) | Merged documentation |
-| 04 | Text composition, keyboard, focus and accessibility | [#53](https://github.com/mikevocalz/react-native-qnx/pull/53) | Merged documentation |
-| 05 | Visibility, background policy and state restoration | [#54](https://github.com/mikevocalz/react-native-qnx/pull/54) | Merged documentation |
-| 06 | Typed platform services, capabilities and permissions | [#55](https://github.com/mikevocalz/react-native-qnx/pull/55) | Merged documentation |
-| 07 | Versioned QNX IPC, deadlines and event ownership | [#56](https://github.com/mikevocalz/react-native-qnx/pull/56) | Merged documentation |
-| 08 | Service isolation, supervision and recovery | [#57](https://github.com/mikevocalz/react-native-qnx/pull/57) | Merged documentation |
-| 09 | Measured shared-memory and media buffer ownership | [#58](https://github.com/mikevocalz/react-native-qnx/pull/58) | Merged documentation |
-| 10 | Generic package hooks and optional licensed Forge compatibility | [#59](https://github.com/mikevocalz/react-native-qnx/pull/59) | Merged documentation |
-| 11 | Device metrics, adaptive layouts and foldable profiles | [#60](https://github.com/mikevocalz/react-native-qnx/pull/60) | Merged documentation |
-| 12 | Non-premium platform conformance application with optional licensed integrations | [#61](https://github.com/mikevocalz/react-native-qnx/pull/61) | Merged documentation |
-| 13 | Marathon native client and managed runner contract | [Marathon #1](https://github.com/mikevocalz/Marathon-Shell/pull/1) | Open draft |
-| 14 | QNX 8 systems probes and legacy sample modernization | [#62](https://github.com/mikevocalz/react-native-qnx/pull/62) | Merged documentation |
-| 15 | Current QNX documentation, examples and release audit | [#63](https://github.com/mikevocalz/react-native-qnx/pull/63) | Merged documentation |
+| Plan | Deliverable                                                                      | Pull request                                                       | Observed state       |
+| ---- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------ | -------------------- |
+| 00   | Nitro v1 API contract, complete QNX source map, skills and delivery roster       | [#49](https://github.com/mikevocalz/react-native-qnx/pull/49)      | Merged documentation |
+| 01   | Runtime baseline, startup recovery and thread ownership                          | [#50](https://github.com/mikevocalz/react-native-qnx/pull/50)      | Merged documentation |
+| 02   | Input lifecycle, Worklets, Reanimated and Gesture Handler                        | [#51](https://github.com/mikevocalz/react-native-qnx/pull/51)      | Merged documentation |
+| 03   | Frame pacing, input latency and performance traces                               | [#52](https://github.com/mikevocalz/react-native-qnx/pull/52)      | Merged documentation |
+| 04   | Text composition, keyboard, focus and accessibility                              | [#53](https://github.com/mikevocalz/react-native-qnx/pull/53)      | Merged documentation |
+| 05   | Visibility, background policy and state restoration                              | [#54](https://github.com/mikevocalz/react-native-qnx/pull/54)      | Merged documentation |
+| 06   | Typed platform services, capabilities and permissions                            | [#55](https://github.com/mikevocalz/react-native-qnx/pull/55)      | Merged documentation |
+| 07   | Versioned QNX IPC, deadlines and event ownership                                 | [#56](https://github.com/mikevocalz/react-native-qnx/pull/56)      | Merged documentation |
+| 08   | Service isolation, supervision and recovery                                      | [#57](https://github.com/mikevocalz/react-native-qnx/pull/57)      | Merged documentation |
+| 09   | Measured shared-memory and media buffer ownership                                | [#58](https://github.com/mikevocalz/react-native-qnx/pull/58)      | Merged documentation |
+| 10   | Generic package hooks and optional licensed Forge compatibility                  | [#59](https://github.com/mikevocalz/react-native-qnx/pull/59)      | Merged documentation |
+| 11   | Device metrics, adaptive layouts and foldable profiles                           | [#60](https://github.com/mikevocalz/react-native-qnx/pull/60)      | Merged documentation |
+| 12   | Non-premium platform conformance application with optional licensed integrations | [#61](https://github.com/mikevocalz/react-native-qnx/pull/61)      | Merged documentation |
+| 13   | Marathon native client and managed runner contract                               | [Marathon #1](https://github.com/mikevocalz/Marathon-Shell/pull/1) | Open draft           |
+| 14   | QNX 8 systems probes and legacy sample modernization                             | [#62](https://github.com/mikevocalz/react-native-qnx/pull/62)      | Merged documentation |
+| 15   | Current QNX documentation, examples and release audit                            | [#63](https://github.com/mikevocalz/react-native-qnx/pull/63)      | Merged documentation |
 
 ## Premium product boundary
 
