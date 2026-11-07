@@ -24,9 +24,9 @@ Source: [QNX Everywhere introduction and license acquisition](https://www.qnx.co
 
 ## Qt module posture
 
-ADR-0011 records the per-module licensing gate. Under the open-source (LGPLv3)
-posture, the following are excluded unless the owner moves to a Qt commercial
-license:
+ADR-0011 records module terms. The following stay outside the selected
+LGPL-compatible core; adding them requires a compatible GPL product decision
+or an independently chosen commercial route:
 
 - `Qt Virtual Keyboard` — GPLv3-only open-source; required for on-screen
   keyboard on touchscreen targets.
@@ -34,29 +34,28 @@ license:
   `Qt Quick 3D Physics`, `Qt Canvas Painter`, `Qt Qml Compiler`, `Qt HTTP Server`,
   `Qt MQTT`, `Qt OPC UA` — all GPLv3-only in the open-source edition.
 
-All other modules are presumed available under LGPLv3 open-source terms, subject
-to re-audit against the pinned Qt LTS source.
+Check every selected module against the pinned source notices; do not infer
+terms for uninspected modules.
 
-## Qt for QNX stop gate
+## Open-source Qt packaging
 
-The platform specification assumes Qt 6 can be built from source for the Everywhere target under
-LGPLv3 obligations. Qt's general licensing page documents LGPLv3 availability
-for eligible Qt components, but the current Qt-for-QNX page states that Qt for
-QNX is available under Qt for Device Creation Professional.
+The owner selected the open-source Qt route in
+[ADR-0013](adr/0013-open-source-qt.md). A paid Qt subscription is not a platform
+prerequisite. Marathon uses the Linux/Wayland target; QNX uses its own toolchain
+and runtime. Keep those target and artifact records separate.
 
-The repository therefore will not download, build, deploy, package, or
-redistribute Qt for QNX until the owner obtains a documented determination for
-the exact QNX Everywhere/non-commercial scenario. When resolved, ADR-0001 and
-ADR-0011 must record:
+Proceed with eligible public Qt sources and record the exact source channel,
+tag/hash, module/QPA license files and built library/plugin closure. Include
+the notices, corresponding source and library replacement/relinking materials
+required by the selected terms. The existing LGPL-compatible module subset
+stays in place; optional GPL-only modules need an explicit compatible product
+choice. A commercial Qt subscription is one optional route, not the default
+action or an approval stop for open-source development.
 
-- the authorized Qt source/distribution channel and exact tag;
-- commercial or open-source license basis for each required module;
-- dynamic-link/relink and corresponding-source obligations where applicable;
-- plugin, QML, font, and third-party notice packaging;
-- modules excluded because their license or QNX support is incompatible.
-
-Sources: [Qt for QNX](https://doc.qt.io/qt-6/qnx.html) and
-[Qt licensing](https://doc.qt.io/qt-6/licensing.html).
+Qt's [general licensing page](https://doc.qt.io/qt-6/licensing.html) documents
+the open-source option; [the LGPL terms](https://doc.qt.io/qt-6/lgpl.html) describe
+the associated conditions. The [QNX commercial product page](https://doc.qt.io/qt-6/qnx.html)
+does not replace the per-file/source audit for the selected open-source build.
 
 ## Pi 400 evaluation authorization (2026-11-06)
 
@@ -64,8 +63,8 @@ The owner requested the free ten-day Qt evaluation. The signed-in commercial
 Qt portal was inspected and showed **Qt for Device Creation Enterprise,
 Evaluation, Active**, expiring **17 November 2026**. This records a temporary
 evaluation basis for the private Pi 400 bring-up, not a production or
-redistribution authorization. The open-source QNX licensing question remains
-unresolved outside this evaluation.
+redistribution authorization for those artifacts.
+[ADR-0013](adr/0013-open-source-qt.md) selects the separate open-source Qt path.
 
 The licensed account Downloads page supplied Qt **6.12.0 LTS**, full-framework
 UNIX source archive `qt-everywhere-src-6.12.0.tar.xz`, SHA-256
@@ -81,8 +80,8 @@ Only qtbase (Core, Gui, Network), qtdeclarative (Qml, Quick), and qtshadertools
 source notices, QNX support, built dependencies, and deployment files must be
 checked before the target runtime is accepted. Other optional modules remain
 excluded. The evaluation does not accept this ADR's broader module matrix or
-authorize release packaging. After expiry, further licensed use requires a
-valid license determination.
+authorize release packaging. The expiry applies to these evaluation artifacts; it does not expire
+independently obtained open-source Qt.
 
 Sources: [Qt account licenses](https://account.qt.io/s/),
 [Device Creation tiers](https://www.qt.io/development/qt-framework/target-devices),

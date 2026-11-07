@@ -10,4 +10,4 @@ source "${SCRIPT_DIR}/lib/qnx-target.sh"
 
 rnqnx_target_init
 echo "Streaming slog2info from $(rnqnx_target_address)..."
-rnqnx_ssh "slog2info -w" || true
+rnqnx_ssh "slog2info -w"

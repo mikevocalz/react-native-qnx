@@ -41,7 +41,11 @@
     "qnx:runtime:validate": "bash scripts/validate-runtime-qnx.sh",
     "validate:qnx-react": "node scripts/validate-react-qnx-source.mjs",
     "nitro:platform:generate": "node scripts/nitro-platform-codegen.mjs --write",
-    "nitro:platform:check": "node scripts/nitro-platform-codegen.mjs --check"
+    "nitro:platform:check": "node scripts/nitro-platform-codegen.mjs --check",
+    "qnx": "node packages/react-native-qnx-cli/src/cli.mjs",
+    "docs:sync": "node scripts/validate-docs.mjs --write",
+    "validate:docs": "node scripts/validate-docs.mjs",
+    "validate:v1": "node scripts/validate-docs.mjs --release"
   },
   "devDependencies": {
     "@react-native/metro-config": "0.88.1",

@@ -8,12 +8,12 @@ async function main() {
 
   try {
     const entries = await readdir(testDir);
-    const testFiles = entries.filter((f) => f.endsWith('.test.mjs') || f.endsWith('.test.ts'));
+    const testFiles = entries
+      .filter((f) => f.endsWith('.test.mjs') || f.endsWith('.test.ts'))
+      .sort();
 
     if (testFiles.length === 0) {
-      console.log('No JavaScript tests found in tests/js. Skipping.');
-      process.exitCode = 0;
-      return;
+      throw new Error('No JavaScript tests found in tests/js.');
     }
 
     for (const file of testFiles) {
@@ -25,15 +25,6 @@ async function main() {
     console.log('All JavaScript tests passed.');
     process.exitCode = 0;
   } catch (err) {
-    if (
-      err instanceof Error &&
-      'code' in err &&
-      /** @type {NodeJS.ErrnoException} */ (err).code === 'ENOENT'
-    ) {
-      console.log('tests/js directory does not exist. Skipping.');
-      process.exitCode = 0;
-      return;
-    }
     console.error(err);
     process.exitCode = 1;
   }

@@ -2,6 +2,10 @@
 
 ## Status
 
+[ADR-0013](0013-open-source-qt.md) selects open-source Qt with no paid-license
+prerequisite. The historical evaluation subset and broader source/module
+inventory below keep their own evidence scopes.
+
 Accepted only for the restricted Pi 400 evaluation subset recorded below.
 The broader open-source module matrix remains Proposed (2026-08-14). Its
 historical evidence is from the installed Qt 6.11.1 Homebrew kegs and
@@ -50,8 +54,8 @@ The owner requested the free ten-day Qt evaluation. The signed-in commercial
 Qt portal was inspected and showed **Qt for Device Creation Enterprise,
 Evaluation, Active**, expiring **17 November 2026**. This records a temporary
 evaluation basis for the private Pi 400 bring-up, not a production or
-redistribution authorization. The open-source QNX licensing question remains
-unresolved outside this evaluation.
+redistribution authorization for those artifacts.
+[ADR-0013](0013-open-source-qt.md) selects the separate open-source Qt path.
 
 The licensed account Downloads page supplied Qt **6.12.0 LTS**, full-framework
 UNIX source archive `qt-everywhere-src-6.12.0.tar.xz`, SHA-256
@@ -67,8 +71,8 @@ Only qtbase (Core, Gui, Network), qtdeclarative (Qml, Quick), and qtshadertools
 source notices, QNX support, built dependencies, and deployment files must be
 checked before the target runtime is accepted. Other optional modules remain
 excluded. The evaluation does not accept this ADR's broader module matrix or
-authorize release packaging. After expiry, further licensed use requires a
-valid license determination.
+authorize release packaging. The expiry applies to these evaluation artifacts; it does not expire
+independently obtained open-source Qt.
 
 Sources: [Qt account licenses](https://account.qt.io/s/),
 [Device Creation tiers](https://www.qt.io/development/qt-framework/target-devices),
