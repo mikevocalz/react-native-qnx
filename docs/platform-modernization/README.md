@@ -1,64 +1,68 @@
 # QNX and Marathon delivery program
 
-This program turns the MarathonOS and QNX Neutrino review into independently reviewable delivery plans. It preserves React Native Fabric, Hermes, Yoga and the existing Qt Quick backend. The PR series contains engineering plans and two repository skills; it does not implement or certify the future features described in their acceptance criteria.
+This program turns the MarathonOS and QNX Neutrino review into independently reviewable delivery plans. It preserves React Native Fabric, Hermes, Yoga and the existing Qt Quick backend. This PR supplies the program, a proposed workstream catalog and two repository skills; it does not implement or certify the future features described in their acceptance criteria.
 
-Start with the [roster](ROSTER.md), [skills and native workflow](SKILLS.md), and [machine-readable catalog](catalog.json). Each workstream specifies architecture boundaries, paths, proposed DRI/reviewer roles, prerequisites, public contracts where relevant, implementation slices, failure tests, performance/security limits and rollback. Human implementation assignments are unassigned. Documentation PRs are independent; implementation dependencies still have to be satisfied.
+Start with the [roster](ROSTER.md), [skills and native workflow](SKILLS.md), and [machine-readable catalog](catalog.json). The roster and catalog identify proposed ownership and dependencies. Each future delivery plan must specify architecture boundaries, exact paths, prerequisites, public contracts where relevant, implementation slices, failure tests, performance/security limits and rollback. Human implementation assignments are unassigned. Documentation PRs are independent; implementation dependencies still have to be satisfied.
 
 ## What the source review changes
 
-| Source lesson | Application to this platform | Delivery plan |
-| --- | --- | --- |
-| Marathon treats gestures as interruptible native state with measured release behavior | Finish cancellation, real Worklets/RNGH/Reanimated seams and end-to-end gesture proof | 02 |
-| Its frame work measures presentation and repeated frames, and avoids unnecessary hidden work | Trace input through JS/Fabric/Qt to presentation; measure before changing scheduling | 03, 05 |
-| Its keyboard and lifecycle contracts cross a real application boundary | Implement composition, focus, keyboard geometry, visibility and background capability policy | 04, 05, 13 |
-| Typed native services separate UI from Linux platform integrations | Design common domain APIs with separate QNX and Marathon adapters and native authorization | 06, 07 |
-| QNX IPC and process isolation can preserve UI responsiveness and service recovery | Put blocking calls on owned workers, validate protocol/lifetime, reconnect with a new generation | 07, 08 |
-| Shared memory can reduce measured bulk-data copy cost | Introduce bounded buffer ownership only after profiling identifies the need | 09 |
-| Marathon profiles distinguish hardware capability from shell behavior | Derive viewport, scale, input and fold/hinge behavior from actual providers | 11 |
-| A native Wayland window is only one part of an app platform | Design app identity, navigation, lifecycle, permission and managed-runner packaging separately | 13 |
-| Existing QNX runtime and Forge experiments already provide useful foundations | Reuse their code and exact evidence instead of creating competing hosts/queues | 01, 10 |
-| A shared substantial app exposes interactions that unit probes miss | Run the same NYC-Tron/Forge-oriented conformance workload on both targets | 12 |
+| Source lesson                                                                                | Application to this platform                                                                                          | Delivery plan |
+| -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------- |
+| Marathon treats gestures as interruptible native state with measured release behavior        | Finish cancellation, real Worklets/RNGH/Reanimated seams and end-to-end gesture proof                                 | 02            |
+| Its frame work measures presentation and repeated frames, and avoids unnecessary hidden work | Trace input through JS/Fabric/Qt to presentation; measure before changing scheduling                                  | 03, 05        |
+| Its keyboard and lifecycle contracts cross a real application boundary                       | Implement composition, focus, keyboard geometry, visibility and background capability policy                          | 04, 05, 13    |
+| Typed native services separate UI from Linux platform integrations                           | Design common domain APIs with separate QNX and Marathon adapters and native authorization                            | 06, 07        |
+| QNX IPC and process isolation can preserve UI responsiveness and service recovery            | Put blocking calls on owned workers, validate protocol/lifetime, reconnect with a new generation                      | 07, 08        |
+| Shared memory can reduce measured bulk-data copy cost                                        | Introduce bounded buffer ownership only after profiling identifies the need                                           | 09            |
+| Marathon profiles distinguish hardware capability from shell behavior                        | Derive viewport, scale, input and fold/hinge behavior from actual providers                                           | 11            |
+| A native Wayland window is only one part of an app platform                                  | Design app identity, navigation, lifecycle, permission and managed-runner packaging separately                        | 13            |
+| Existing QNX runtime and Forge experiments already provide useful foundations                | Reuse their code and exact evidence instead of creating competing hosts/queues                                        | 01, 10        |
+| A shared substantial app exposes interactions that unit probes miss                          | Run the same non-premium conformance workload on both targets; test licensed Forge packages separately and optionally | 12            |
 
 ## Existing implementation PRs
 
 The main branch inspected for this program is `e84b51430c239bc89dbd48ac35afab89f7c77c01`. The package manifest, rather than historical README text, identifies the reviewed graph: RN `0.88.1`, React `19.3.0`, Expo `58.0.22`, Metro `0.87.1`, Nitro core/adapter/Nitrogen `1.0.0-alpha.nightly.105.g69d365fc9b18`.
 
-| Existing PR | Inspected head | Evidence to reuse | Scope still open |
-| --- | --- | --- | --- |
-| [#44 — Pi 400 runtime and Nitro](https://github.com/mikevocalz/react-native-qnx/pull/44) | `e9026fac8ce8deb5a8e6ba4c35d1dcc5592d478d` | Physical RN/Fabric/Hermes/Qt Quick, fullscreen Hello World, owned Qt/Nitro completion queue and teardown tests | Reliable graphics cold boot; measured performance; full module/lifecycle support |
-| [#46 — Pointer lifecycle](https://github.com/mikevocalz/react-native-qnx/pull/46) | `b2c1edafd70ccc4d3bb1a6545b29d1d30ee771c2` | Opt-in cancellation/lifecycle implementation and successful ON build | New runtime cases, full OFF validation, device gesture behavior |
-| [#45 — Animation integration audit](https://github.com/mikevocalz/react-native-qnx/pull/45) | `4cd69d69374ff6708528bde173f6b39ab5858017` | Source-backed Worklets/Reanimated/RNGH map and compatibility blockers | QNX runtime hooks, gesture adapter and animated property behavior |
-| [#42 — Shared Rust QNX host](https://github.com/mikevocalz/react-native-qnx/pull/42) | `5f6df2cf5ae49b3466d90eec8f5641a020bd3303` | Seven-engine cross-build and physical native proof, with functional Tally coverage | JS binding, Nitro alpha alignment, other-engine functionality and app interaction |
+| Existing PR                                                                                 | Inspected head                             | Evidence to reuse                                                                                              | Scope still open                                                                              |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| [#44 — Pi 400 runtime and Nitro](https://github.com/mikevocalz/react-native-qnx/pull/44)    | `e9026fac8ce8deb5a8e6ba4c35d1dcc5592d478d` | Physical RN/Fabric/Hermes/Qt Quick, fullscreen Hello World, owned Qt/Nitro completion queue and teardown tests | Reliable graphics cold boot; measured performance; full module/lifecycle support              |
+| [#46 — Pointer lifecycle](https://github.com/mikevocalz/react-native-qnx/pull/46)           | `e783e2f000f20ef849b96021387860beaa7b4e34` | Merged input fixes, host14/14 ON and13/13 OFF, synthetic Qt input on physical Pi400                            | USB/touch hardware, target JS-handler delivery, clock origin, Wayland and gesture recognition |
+| [#45 — Animation integration audit](https://github.com/mikevocalz/react-native-qnx/pull/45) | `4cd69d69374ff6708528bde173f6b39ab5858017` | Source-backed Worklets/Reanimated/RNGH map and compatibility blockers                                          | QNX runtime hooks, gesture adapter and animated property behavior                             |
+| [#42 — Shared Rust QNX host](https://github.com/mikevocalz/react-native-qnx/pull/42)        | `5f6df2cf5ae49b3466d90eec8f5641a020bd3303` | Seven-engine cross-build and physical native proof, with functional Tally coverage                             | JS binding, Nitro alpha alignment, other-engine functionality and app interaction             |
 
-These heads are a dated review snapshot. Re-read the PR and lockfile before implementation. Historical logs do not automatically validate a new revision. #44's JS shares the Qt owner thread; its queue is an existing prerequisite. The platform-info codegen adapter in main is constrained and is not general upstream QNX Nitrogen support.
+PRs42,44,45 and46 are now merged; main at readiness review is `cfcf2b4e7ec934171876773fd465271eac83de9f`. The original source snapshot above is retained as provenance. These heads are a dated review snapshot. Re-read the PR and lockfile before implementation. Historical logs do not automatically validate a new revision. #44's JS shares the Qt owner thread; its queue is an existing prerequisite. The platform-info codegen adapter in main is constrained and is not general upstream QNX Nitrogen support.
 
 ## Workstream catalog
 
-The PR URLs and dependency records are maintained in `catalog.json`. The initial review version may contain unassigned PR URLs while branches are being opened; the completed publication update fills them from returned GitHub results.
+The PR URLs and dependency records are maintained in `catalog.json`. Only program00 is published. Workstreams01–13 are proposed and unpublished: their document paths are proposed locations, not existing delivery specifications. Fill their URL and commit only after publication; this program does not claim that those PRs or documents exist.
 
-| Plan | Deliverable | Draft PR |
-| --- | --- | --- |
-| 00 | Program, native skills and ownership roster | Publication pending |
-| 01 | Runtime baseline, startup recovery and thread ownership | Publication pending |
-| 02 | Input lifecycle, Worklets, Reanimated and Gesture Handler | Publication pending |
-| 03 | Frame pacing, input latency and performance traces | Publication pending |
-| 04 | Text composition, keyboard, focus and accessibility | Publication pending |
-| 05 | Visibility, background policy and state restoration | Publication pending |
-| 06 | Typed platform services, capabilities and permissions | Publication pending |
-| 07 | Versioned QNX IPC, deadlines and event ownership | Publication pending |
-| 08 | Service isolation, supervision and recovery | Publication pending |
-| 09 | Measured shared-memory and media buffer ownership | Publication pending |
-| 10 | Forge JS bindings, Nitro ABI and native lifetime | Publication pending |
-| 11 | Device metrics, adaptive layouts and foldable profiles | Publication pending |
-| 12 | Shared NYC-Tron and Forge conformance application | Publication pending |
-| 13 | Marathon native client and managed runner contract | Publication pending |
+| Plan | Deliverable                                                          | Publication                                                   |
+| ---- | -------------------------------------------------------------------- | ------------------------------------------------------------- |
+| 00   | Program, native skills and ownership roster                          | [#47](https://github.com/mikevocalz/react-native-qnx/pull/47) |
+| 01   | Runtime baseline, startup recovery and thread ownership              | Proposed; unpublished                                         |
+| 02   | Input lifecycle, Worklets, Reanimated and Gesture Handler            | Proposed; unpublished                                         |
+| 03   | Frame pacing, input latency and performance traces                   | Proposed; unpublished                                         |
+| 04   | Text composition, keyboard, focus and accessibility                  | Proposed; unpublished                                         |
+| 05   | Visibility, background policy and state restoration                  | Proposed; unpublished                                         |
+| 06   | Typed platform services, capabilities and permissions                | Proposed; unpublished                                         |
+| 07   | Versioned QNX IPC, deadlines and event ownership                     | Proposed; unpublished                                         |
+| 08   | Service isolation, supervision and recovery                          | Proposed; unpublished                                         |
+| 09   | Measured shared-memory and media buffer ownership                    | Proposed; unpublished                                         |
+| 10   | Optional licensed Forge package compatibility and native lifetime    | Proposed; unpublished                                         |
+| 11   | Device metrics, adaptive layouts and foldable profiles               | Proposed; unpublished                                         |
+| 12   | Non-premium platform conformance app; licensed integrations optional | Proposed; unpublished                                         |
+| 13   | Marathon native client and managed runner contract                   | Proposed; unpublished                                         |
+
+## Premium product boundary
+
+Nitro Forge is a separate premium product, not a platform component, default dependency or required conformance workload. Generic Nitro/package/lifecycle hooks belong in the platform; Forge production bindings and package configuration belong with Forge or its licensed consuming app. Core builds, CI and releases use non-premium fixtures. Plan10 is optional commercial compatibility work and is not a prerequisite for core plan12 acceptance. Preserve the existing opt-in external-checkout experiment as historical evidence without vendoring or redistributing premium content.
 
 ## Execution order
 
 1. Review program boundaries and staff the roles; reconcile the runtime baseline from #44. Preserve the working recovery boot.
 2. Start input, measurement, text, lifecycle, typed services, Forge binding design and device metrics as separate slices. Implementation changes to shared runtime files must be sequenced by the integrator.
 3. Build QNX IPC behind the typed service contract, then recovery. Evaluate shared buffers only when the measurement plan shows a material copy-path cost.
-4. Run the substantial conformance app as capabilities become available. Promote a target only after its own physical and failure-path evidence is attached.
+4. Run the non-premium conformance app as capabilities become available; licensed package integration is a separate opt-in consumer check. Promote a target only after its own physical and failure-path evidence is attached.
 5. In the Marathon fork, review the ordinary native-client contract first and the managed runner/schema/security contract separately. Upstream acceptance is required before claiming official managed-app support.
 
 Plans describe feature-level dependencies, not a requirement to merge all documentation before beginning a small authorized implementation. They also do not require duplicating existing #42/#44/#45/#46 work. Keep native experiments opt-in and default OFF until their target gate is met.

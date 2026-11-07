@@ -14,6 +14,8 @@ Read the repository's `AGENTS.md` first. Treat these as repository instructions,
 3. Identify QNX versus Linux, Screen versus Wayland, and the JavaScript platform identity independently. Reuse Fabric, Hermes, Yoga, Qt Quick, and the existing platform adapters. Keep Yoga authoritative for layout.
 4. Check the exact Nitro API generation. Generic upstream skill examples may describe the older HybridObject/spec workflow. This repository's audited v1 alpha uses HybridClass conventions and a constrained platform-info generator. Inspect its supported type shapes; do not invent generated QNX bindings or assume arbitrary Promise/session support.
 
+Preserve the premium product boundary in `AGENTS.md`: generic package and lifecycle hooks belong here; Forge production bindings belong with the licensed product or consuming app. Never require premium packages for the core platform.
+
 ## Design before binding
 
 - Write the public TypeScript contract and two or three real call sites, including a failure and cleanup. Mark sketches as proposed until they typecheck and compile against the selected generator/runtime.

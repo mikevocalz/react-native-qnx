@@ -26,7 +26,7 @@ Read current PR evidence as well as main-branch handoff documents. Dated evidenc
 
 Exercise failed initialization, permission denial/revocation, service death/restart, native worker error, cancellation races, queue closure, late callback, stale generation, and repeated disposal where the change touches them. Assert that no JS callback enters a destroyed runtime and no Qt item is mutated from a worker. Separate operation cancellation, caller timeout, server side-effect cancellation, and shutdown completion.
 
-Use the shared conformance application for integrated gestures, text composition, list scrolling, Forge editing, lifecycle, and services when those features exist. Do not substitute property snapshots or passing type checks for visible behavior or actual accessibility output.
+Use a non-premium shared conformance application for integrated gestures, text composition, list scrolling, lifecycle, and services when those features exist. Licensed Forge package checks are separate, opt-in consumer tests; they are not a platform build, CI or release prerequisite. Do not substitute property snapshots or passing type checks for visible behavior or actual accessibility output.
 
 ## Measure before changing scheduling
 
