@@ -119,6 +119,19 @@ void run() {
           number("changes") == 0 && secondCount("changes") == 0 &&
           text() == QStringLiteral("A😀e\u0301") && secondEditor->property("text").toString() == QStringLiteral("second"),
           "Backtab changed native focus, text, or edit token");
+  const auto blurBeforeReadonly = number("blur");
+  const auto focusBeforeReadonly = number("focus");
+  call("__rnqnxTextInputSetEditable", false);
+  until([&] { return field->property("readOnly").toBool() && !field->hasActiveFocus(); }, "React editable=false did not release native focus");
+  until([&] { return number("blur") == blurBeforeReadonly + 1; }, "React readOnly transition swallowed native blur");
+  require(number("blurEventCount") == 0 && number("eventCount") == 0 && number("changes") == 0 &&
+          text() == QStringLiteral("A😀e\u0301"), "readOnly blur changed text or edit token");
+  call("__rnqnxTextInputSetEditable", true);
+  until([&] { return !field->property("readOnly").toBool(); }, "React editable=true did not restore editing");
+  call("__rnqnxTextInputFocus");
+  until([&] { return field->hasActiveFocus() && number("focus") == focusBeforeReadonly + 1; }, "restored editable TextInput did not refocus");
+  settle();
+  require(number("blur") == blurBeforeReadonly + 1, "readOnly transition emitted duplicate blur");
   QKeyEvent key(QEvent::KeyPress, Qt::Key_X, Qt::NoModifier, QStringLiteral("X"));
   QCoreApplication::sendEvent(&window, &key);
   until([&] { return number("changes") == 1; }, "JavaScript TextInput change count mismatch");

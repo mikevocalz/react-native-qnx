@@ -17,7 +17,7 @@ function TextInputProbe() {
   const secondNativeRef = React.useRef(null);
   const storeRef = React.useRef(null);
   if (storeRef.current === null) {
-    storeRef.current = createStore(() => ({ value: undefined, visible: true }));
+    storeRef.current = createStore(() => ({ value: undefined, visible: true, editable: true }));
     globalThis.__rnqnxTextInputSnapshot = {
       text: initialText,
       eventCount: 0,
@@ -44,6 +44,7 @@ function TextInputProbe() {
   const store = storeRef.current;
   const value = useStore(store, (state) => state.value);
   const visible = useStore(store, (state) => state.visible);
+  const editable = useStore(store, (state) => state.editable);
   const snapshot = globalThis.__rnqnxTextInputSnapshot;
   const secondSnapshot = globalThis.__rnqnxTextInputSecondSnapshot;
   const liveRef = () => {
@@ -59,6 +60,7 @@ function TextInputProbe() {
     Commands.setTextAndSelection(liveSecondRef(), count, textOrNull, start, end);
   globalThis.__rnqnxTextInputCommand = (count, textOrNull, start, end) =>
     Commands.setTextAndSelection(liveRef(), count, textOrNull, start, end);
+  globalThis.__rnqnxTextInputSetEditable = (editable) => store.setState({ editable });
   globalThis.__rnqnxTextInputSetValue = (text) => store.setState({ value: text });
   globalThis.__rnqnxTextInputFocus = () => Commands.focus(liveRef());
   globalThis.__rnqnxTextInputBlur = () => Commands.blur(liveRef());
@@ -72,6 +74,7 @@ function TextInputProbe() {
           ref: nativeRef,
           style: { width: 240, height: 40, fontSize: 18 },
           defaultValue: initialText,
+          editable,
           value,
           onChange: (event) => {
             snapshot.text = event.nativeEvent.text;

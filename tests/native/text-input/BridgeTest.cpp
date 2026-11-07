@@ -1,5 +1,9 @@
 #include "react-native-qnx/fabric/QtTextInputBridge.h"
 #include "react-native-qnx/views/QtTextInputQml.h"
+#if RNQNX_TEXT_INPUT_MOUNTING_TEST
+#include "react-native-qnx/fabric/QtQuickMountingLayer.h"
+#include "react-native-qnx/views/QtQuickItemFactory.h"
+#endif
 #include <QGuiApplication>
 #include <QQmlComponent>
 #include <QQmlEngine>
@@ -36,10 +40,12 @@ void checkKeyboardTraversal(QQmlComponent& component) {
           !firstEditor->activeFocusOnTab() && !secondEditor->activeFocusOnTab() &&
           !first->findChild<QQuickItem*>("qnx-text-edit")->activeFocusOnTab(), "editor has duplicate or missing tab stop");
   std::vector<QString> keys;
+  unsigned secondBlurs = 0;
   firstBridge->setEmitter([&](TextInputEvent event, const TextInputObservation& value) {
     if (event == TextInputEvent::Key) keys.push_back(value.key);
   });
   secondBridge->setEmitter([&](TextInputEvent event, const TextInputObservation& value) {
+    if (event == TextInputEvent::Blur) { ++secondBlurs; require(value.eventCount == 0, "readOnly blur advanced edit token"); }
     if (event == TextInputEvent::Key) keys.push_back(value.key);
   });
   window.show(); window.requestActivate(); first->forceActiveFocus();
@@ -62,13 +68,76 @@ void checkKeyboardTraversal(QQmlComponent& component) {
     require(window.activeFocusItem() == firstEditor, "Tab reached noneditable/disabled/hidden field");
   }
   second->setVisible(true); second->forceActiveFocus(); pump();
-  second->setProperty("readOnly", true); pump();
+  const auto blursBeforeReadonly = secondBlurs;
+  secondBridge->beginJSUpdate();
+  second->setProperty("readOnly", true);
+  secondBridge->endJSUpdate(); pump();
+  require(secondBlurs == blursBeforeReadonly + 1, "JS readOnly transition swallowed native blur");
   require(!second->hasActiveFocus() && !second->activeFocusOnTab(), "readOnly transition retained focus/tab eligibility");
   second->setProperty("readOnly", false); second->forceActiveFocus(); pump();
   secondBridge->invalidate(); pump();
   require(!second->hasActiveFocus() && !second->activeFocusOnTab(), "invalidated session retained focus/tab eligibility");
   require(firstBridge->eventCount() == 0 && secondBridge->eventCount() == 0, "focus traversal edited text");
 }
+// Exercise the documented callback-can-delete contract during JS-owned updates.
+void checkBlurDeletion(QQmlComponent& component) {
+  for (const bool secureMultiline : {false, true}) {
+    QQuickWindow window;
+    window.resize(320, 240);
+    std::unique_ptr<QObject> object(component.create());
+    auto* wrapper = qobject_cast<QQuickItem*>(object.get());
+    require(wrapper, "deletion wrapper unavailable");
+    wrapper->setParentItem(window.contentItem()); wrapper->setSize(QSizeF(120, 40));
+    QPointer<QtTextInputBridge> bridge = new QtTextInputBridge(*wrapper);
+    require(bridge->configure(false, false), "deletion editor unavailable");
+    unsigned blurs = 0;
+    bridge->setEmitter([&](TextInputEvent event, const TextInputObservation&) {
+      if (event == TextInputEvent::Blur) { ++blurs; object.reset(); }
+    });
+    window.show(); window.requestActivate(); wrapper->forceActiveFocus();
+    for (int i = 0; i < 10; ++i) QCoreApplication::processEvents();
+    require(wrapper->hasActiveFocus(), "deletion editor did not focus");
+    QPointer<QQuickItem> previous(wrapper);
+    bridge->beginJSUpdate();
+    if (secureMultiline) {
+      require(!bridge->configure(true, true), "deleted secure configuration succeeded");
+    } else {
+      wrapper->setProperty("readOnly", true);
+    }
+    if (bridge) bridge->endJSUpdate();
+    require(previous.isNull() && bridge.isNull() && blurs == 1, "blur callback deletion was suppressed or retained target");
+  }
+}
+#if RNQNX_TEXT_INPUT_MOUNTING_TEST
+void checkMountedBlurDeletion(QQmlEngine& engine) {
+  for (const bool secureMultiline : {false, true}) {
+    QQuickWindow window;
+    window.resize(320, 240);
+    rnqnx::views::QtQuickItemFactory factory(engine);
+    factory.registerType(QStringLiteral("TextInput"), QByteArray(rnqnx::views::textInputQml()));
+    QtQuickMountingLayer layer(factory, *window.contentItem(), 100);
+    require(layer.create(101, QStringLiteral("TextInput")) == MountError::None &&
+            layer.insert(100, 101, 0) == MountError::None, "mounted deletion editor unavailable");
+    TextInputStyle style;
+    require(layer.updateTextInput(101, style) == MountError::None, "mounted deletion configuration failed");
+    QPointer<QQuickItem> item = layer.itemForTag(101);
+    item->setSize(QSizeF(120, 40));
+    QPointer<QtTextInputBridge> bridge = layer.textInputBridge(101);
+    unsigned blurs = 0;
+    bridge->setEmitter([&](TextInputEvent event, const TextInputObservation&) {
+      if (event == TextInputEvent::Blur) { ++blurs; require(layer.destroy(101) == MountError::None, "blur deletion failed"); }
+    });
+    window.show(); window.requestActivate(); item->forceActiveFocus();
+    for (int i = 0; i < 10; ++i) QCoreApplication::processEvents();
+    require(item->hasActiveFocus(), "mounted deletion editor did not focus");
+    style.readOnly = true; style.secure = secureMultiline; style.multiline = secureMultiline;
+    const auto result = layer.updateTextInput(101, style);
+    require(result == (secureMultiline ? MountError::UnsupportedTextInput : MountError::UnknownTag) &&
+            item.isNull() && bridge.isNull() && blurs == 1 && layer.mountedCount() == 1,
+            "mount update accessed or retained deleted blur target");
+  }
+}
+#endif
 int main(int argc, char** argv) {
   QGuiApplication app(argc, argv);
   try {
@@ -77,6 +146,10 @@ int main(int argc, char** argv) {
     component.setData(rnqnx::views::textInputQml(), QUrl());
     require(component.isReady(), "TextInput QML unavailable");
     checkKeyboardTraversal(component);
+    checkBlurDeletion(component);
+#if RNQNX_TEXT_INPUT_MOUNTING_TEST
+    checkMountedBlurDeletion(engine);
+#endif
     std::vector<TextInputObservation> changes;
     std::vector<TextInputObservation> selections;
     std::unique_ptr<QObject> object(component.create());
