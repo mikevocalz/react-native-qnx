@@ -17,6 +17,10 @@ option(RNQNX_ENABLE_TEXT_INPUT_CONTRACT "Enable experimental owned TextInput edi
 if(RNQNX_ENABLE_TEXT_INPUT_CONTRACT AND NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin|QNX)$")
   message(FATAL_ERROR "RNQNX_ENABLE_TEXT_INPUT_CONTRACT requires Linux, Darwin or QNX Qt host")
 endif()
+option(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE "Enable experimental generic View Qt accessibility semantics" OFF)
+if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE AND NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin|QNX)$")
+  message(FATAL_ERROR "RNQNX_ENABLE_ACCESSIBILITY_BRIDGE requires Linux, Darwin or QNX Qt host")
+endif()
 option(RNQNX_REQUIRE_FULL_HOST_RENDERER
   "Require the Qt/Hermes/React host graph instead of silently skipping it" OFF)
 option(RNQNX_G0_PROBE_ONLY "Build only the G0 C++20 probe on QNX" OFF)
@@ -574,4 +578,8 @@ endif()
 
 if(RNQNX_ENABLE_TEXT_INPUT_CONTRACT AND NOT TARGET rnqnx_react_host)
   message(FATAL_ERROR "TextInput contract requires the full Qt/React host graph")
+endif()
+
+if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE AND NOT TARGET rnqnx_react_host)
+  message(FATAL_ERROR "Accessibility bridge requires the full Qt/React host graph")
 endif()

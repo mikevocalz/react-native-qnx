@@ -5,6 +5,9 @@
 #include "react-native-qnx/fabric/QtTextInputBridge.h"
 #endif
 
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+#include "react-native-qnx/fabric/QtViewAccessibility.h"
+#endif
 #include <QColor>
 #include <QCoreApplication>
 #include <QDir>
@@ -103,6 +106,8 @@ const char* describe(MountError error) {
       return "NotAChildOfParent";
     case MountError::IndexOutOfRange:
       return "IndexOutOfRange";
+    case MountError::UnsupportedAccessibility:
+      return "unsupported-accessibility";
     case MountError::UnsupportedTextInput:
       return "unsupported-text-input";
     case MountError::ItemCreationFailed:
@@ -168,7 +173,11 @@ MountError QtQuickMountingLayer::create(
         detail);
   }
 
-  items_.insert(tag, MountedItem{item, true});
+  MountedItem mounted{item, true};
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+  mounted.genericView = componentName == QStringLiteral("View");
+#endif
+  items_.insert(tag, mounted);
   mountedPointers_.insert(item);
   lastError_.clear();
   return MountError::None;
@@ -380,6 +389,22 @@ MountError QtQuickMountingLayer::updateStyle(Tag tag, const ViewStyle& style) {
     item->setProperty("accessibilityStateChecked", style.accessibilityStateChecked);
   }
 
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+  if (mounted->genericView) {
+    if (!style.accessible) {
+      for (const auto* name : {"accessibilityLabel", "accessibilityRole", "accessibilityHint", "accessibilityValue"}) {
+        item->setProperty(name, QVariant());
+      }
+      for (const auto* name : {"accessibilityStateDisabled", "accessibilityStateSelected", "accessibilityStateChecked"}) {
+        item->setProperty(name, false);
+      }
+    }
+    QString error;
+    if (!applyViewAccessibility(*item, style, error)) {
+      return failWith(MountError::UnsupportedAccessibility, error);
+    }
+  }
+#endif
   lastError_.clear();
   return MountError::None;
 }
