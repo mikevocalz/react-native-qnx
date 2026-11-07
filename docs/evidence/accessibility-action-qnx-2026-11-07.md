@@ -70,6 +70,78 @@ instrumentation; existing leak exclusions remain. No reader output, physical
 HID, IME, timing, memory-growth budget or presentation result is claimed.
 Marathon/Wayland and QNX VM were not exercised for this slice.
 
+## Final PR73 integration validation
+
+The final cross-build and physical run used exact source
+`79603fa65880107b6683d79052e02e5056fceb61`, including the deferred TextInput
+fix and the three prior evidence documents. All 499 tracked source blobs
+matched that revision. The private local `final73-source-manifest.sha256` has
+SHA-256 `a64f69a2eecc4d519ea0753e6e2679cdd608e17ab88d34e709b3cdd6dbf5b2f1`.
+The `c182889` results and artifacts above remain historical evidence for that
+candidate. The following artifacts were built and run for this final graph.
+
+Independent fresh production Metro bundles matched the cross-build inputs:
+action bundle 464815 bytes, SHA-256
+`d2323b9828f79a0206453e1098de46581dc16078e01122b12130f039469c346d`;
+TextInput bundle 470772 bytes, SHA-256
+`be51b1f80666000ad9715ba86361b82c121be0c90fba6df9ca869f26a6233def`.
+Local provenance is `/tmp/rnqnx-pr73-bundle-provenance.json`.
+
+| Physical gate at `79603fa`                       | Status and result                                                                      |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| Action native positive                           | 0; `RNQNX_ACCESSIBILITY_ACTION_NATIVE_OK`                                              |
+| Action missing-connection control                | 1; expected `Qt press did not reach owned activation receiver`                         |
+| Actual React action positive                     | 0; `RNQNX_ACCESSIBILITY_ACTION_OK`                                                     |
+| Action interception control                      | 1; expected `JavaScript accessibility action count mismatch`                           |
+| Unsupported action registration                  | 0; `RNQNX_ACCESSIBILITY_ACTION_REJECT_OK unsupported-registration`                     |
+| Actual React action recovery                     | 0; `RNQNX_ACCESSIBILITY_ACTION_OK`                                                     |
+| Generic View semantic positive/recovery          | 0/0; both `RNQNX_ACCESSIBILITY_VIEW_OK tree identity state update clear reject delete` |
+| Full combined native TextInput, two trials       | 0/0; both `RNQNX_TEXT_INPUT_BRIDGE_OK`                                                 |
+| Actual React TextInput positive/control/recovery | 0/1/0; success markers around expected `JavaScript TextInput change count mismatch`    |
+
+All 13 gates passed at their expected statuses and marker boundaries. TextInput
+ran the original combined fixture with deletion, FIFO, nested update, throwing
+observer and cancellation assertions retained. The
+[read-only blur receipt](text-input-readonly-blur-qnx-2026-11-07.md) records the
+failure history, deferred callback fix and separate exact PR72 results.
+
+| Final artifact                            |   Bytes | SHA-256                                                            |
+| ----------------------------------------- | ------: | ------------------------------------------------------------------ |
+| `accessibility-action-final73-probe.qnx`  | 6136344 | `59d751335326425a18a7e7e64d71592e8d577652c9f0ed20c855d400edfce8c5` |
+| `accessibility-action-final73-probe.hbc`  |  708408 | `7c84881d05a803a8d6b5d23059224ea32eb5a0764e69d01ad6fb27b75aeb83d4` |
+| `accessibility-action-final73-native.qnx` |   79680 | `5e240eb87c23d95b738ca2fc84a0e16a6ad556720f010da91e7568f570adefe1` |
+| `accessibility-view-final73.qnx`          |  188936 | `89801699f7eaf1229a7831309c039d2ecb363e148fc4f5e7c69e5035697e85bd` |
+| `text-input-final73-probe.qnx`            | 6155704 | `8c8c268510ea9980de10c3487a3b0dfd7ec2f938dfbd100da931642a7b98fadb` |
+| `text-input-final73-probe.hbc`            |  716048 | `931b3a4dd22d7385bfb7d742f9032bd283d93c1f86368afa39158239b2d54e84` |
+| `text-input-final73-native.qnx`           |  223064 | `f7e55f31df08fd9375bc4095f3379331ab5460f1b856877db54f2bccd962e5b6` |
+
+All seven readbacks in `final73-readback` matched local byte counts and hashes.
+Raw build, target and machine-readable receipts are respectively
+`/Users/mikevocalz/qnx-pi400-8.0.5/final73-build.log`,
+`/Users/mikevocalz/qnx-pi400-8.0.5/final73-physical.log` and
+`/Users/mikevocalz/qnx-pi400-8.0.5/final73-results.json`.
+The unique target directories were `final73-action-20261107-verified`,
+`final73-semantic-20261107-verified` and `final73-textinput-20261107-verified`.
+Original application PID 9433114 remained alive before and after every gate and
+at final checks. Five named process checks found no test leftovers. Boot,
+privileges and window configuration were unchanged.
+
+The latest full host graph passed 31/31 at compiled code `e60bae4`
+(`/tmp/rnqnx-readonly-deferred-ctest.log`). Canonical JavaScript, typecheck,
+architecture and docs checks passed after `0a256e7`; the `8799` follow-up changes
+C++ only, and `79603fa` adds documentation only. Hosted CI for the latest
+published head remains separate. PR72's updated `b661` source is pushed and ready
+for review with CI pending; its old finding is resolved. The PR71 thread awaits
+the main-branch merge. PR73 remains draft pending publication of this receipt
+and latest CI.
+
+This final run proves actual React registered activation, synthetic Qt semantic
+queries/mounting and synthetic TextInput behavior. Qt action-list/custom-label
+parity, RN disabled semantic state, value semantics, full assistive technology,
+physical HID, IME and performance qualification remain open. No licensed source
+or binary was uploaded or published. The receipt update itself reran no runtime
+tests; it verified the recorded raw markers and artifact/readback hashes.
+
 ## Reproduce and hand off
 
 Use the existing licensed host graph and dependency paths:
