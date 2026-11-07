@@ -13,7 +13,9 @@
       "status": "source-read-and-applied-to-plan",
       "decision": "Require public contracts, examples, errors, ownership and cleanup before bindings.",
       "cli_install_verified": false,
-      "runtime_compatibility_verified": false
+      "runtime_compatibility_verified": false,
+      "byte_length": 28827,
+      "hash_scope": "verbatim upstream SKILL.md bytes; verified against base64 GitHub retrieval"
     },
     {
       "name": "build-nitro-modules",
@@ -25,7 +27,9 @@
       "status": "source-read-and-applied-to-plan",
       "decision": "Keep generated-source provenance and native lifetime explicit; adapt examples to audited v1 APIs.",
       "cli_install_verified": false,
-      "runtime_compatibility_verified": false
+      "runtime_compatibility_verified": false,
+      "byte_length": 39580,
+      "hash_scope": "verbatim upstream SKILL.md bytes; verified against base64 GitHub retrieval"
     },
     {
       "name": "cpp",
@@ -37,7 +41,9 @@
       "status": "source-read-and-applied-to-plan",
       "decision": "Use RAII and one native owner; avoid callback-under-lock and repeated queue hops.",
       "cli_install_verified": false,
-      "runtime_compatibility_verified": false
+      "runtime_compatibility_verified": false,
+      "byte_length": 6092,
+      "hash_scope": "verbatim upstream SKILL.md bytes; verified against base64 GitHub retrieval"
     },
     {
       "name": "react-native-best-practices",
@@ -49,7 +55,9 @@
       "status": "source-read-and-applied-to-plan",
       "decision": "Measure baseline and candidate interactions before performance changes; adapt tools to supported platforms.",
       "cli_install_verified": false,
-      "runtime_compatibility_verified": false
+      "runtime_compatibility_verified": false,
+      "byte_length": 12348,
+      "hash_scope": "verbatim upstream SKILL.md bytes; verified against base64 GitHub retrieval"
     },
     {
       "name": "writing-user-docs",
@@ -61,7 +69,9 @@
       "status": "source-read-not-applied",
       "decision": "Scope check: these are internal engineering RFCs, outside this skill; reserve for later user guides.",
       "cli_install_verified": false,
-      "runtime_compatibility_verified": false
+      "runtime_compatibility_verified": false,
+      "byte_length": 4832,
+      "hash_scope": "verbatim upstream SKILL.md bytes; verified against base64 GitHub retrieval"
     }
   ]
 }

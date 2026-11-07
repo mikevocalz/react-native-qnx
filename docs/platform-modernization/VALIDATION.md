@@ -1,5 +1,9 @@
 # Program validation record
 
+## Preserved predecessor PR47 readiness record
+
+The following record describes PR47 before merge. Its unpublished-workstream state and commands are historical; the follow-up record below tracks the expanded series separately.
+
 Readiness review on 2026-11-07. This PR changes program documentation, source/ownership records and repository skills. It changes no runtime, dependency, workflow, target image or boot configuration.
 
 ## Candidate and scope
@@ -36,3 +40,13 @@ Readiness DRI `/root`; independent reviewer `/root/renderer_build_audit` reviewe
 No native compilation, ASan/UBSan, QNX cross-build, Qt/QNX/Marathon execution, physical-device test or performance measurement was run for this documentation/skill PR. No runtime acceptance criterion is marked complete. Hosted CI is subject to the existing account billing/spending-limit refusal; local checks do not imply green hosted jobs.
 
 Revert these additive program/skill changes to remove their guidance. Future implementation remains separately scoped, reviewed and validated, with the existing renderer, recovery boot, licensing and permission boundaries preserved.
+
+## Follow-up expansion record
+
+The expanded program is prepared against main `48e37f7550b4244f8a7936c01af75419e1fec416`, preserving PR47 and the owner's optional premium-product policy. It adds the Nitro v1 API contract, a 19-category legacy-source map, two new QNX source/probe workstreams, and detailed companion specifications. Publication URLs are recorded only from successful GitHub responses.
+
+An independent fresh-context agent exercised both repository skills against an unsafe native temperature API proposal. It correctly rejected synchronous MsgSend hidden by a JS Promise, a receive-only timeout for SEND/REPLY, and shutdown joining a worker that still awaited JS. It also required real v1 generation and separate host/target evidence. This was a document/skill behavior review; no native code executed.
+
+Independent design review corrected initial-observation ordering, shared-buffer disposal/pinning, admitted-callback cleanup semantics, and completion-queue drain wording. The official-source audit distinguishes inspected sections from discovered indexes and pending manuals. Root review preserves current PR46 proof: host 14/14 ON, 13/13 OFF and deterministic Qt event injection on physical QNX; physical USB/touch and target JS-handler delivery remain separate gates.
+
+Follow-up checks passed: 24 Markdown documents, 13 local relative links, all 16 unique workstream IDs with an acyclic implementation dependency graph, all 19 archive categories matched to the pinned inventory, and five source-byte SHA256 comparisons. Both project skills passed the actual skill-creator quick_validate.py again. An independent source reviewer approved Plans 14 and 15 after the message-queue/pipe coverage gap was corrected. Remote publication verification will be recorded after publication. Prettier and native checks from the predecessor record were not rerun or claimed for this follow-up. No native compilation, sanitizer run, cross-build, device execution or benchmark was performed for this follow-up. Earlier receipts do not become a pass for these new specifications.
