@@ -18,27 +18,27 @@ The [supplied revision](https://github.com/Himmele/My-Blog-Repository/tree/b1fd3
 
 Representative bodies read for this work include `Neutrino/{Threads,ThreadLocalStorage,Mutex_POSIX,Atomic,Scheduler,Signals_sync,TimerTimeout}.c`, `SMP/SMP.C`, `File Systems/FS.C`, `Debugging/DEBUG.C`, `Dynamic Linking/LoadShLib.c`, `Process Manager/fork_exec.c`, and `MultiThreadedResourceManager/MultiThreadedResourceManager.c`. Earlier review also inspected `MemoryManager/MemoryManager.cpp`. These examples motivate modern fixtures; none is vendored or executed.
 
-| Archive category | Disposition and implementation owner |
-| --- | --- |
-| AdvancedGraphicsTest | Legacy GF graphics; retain concepts, use existing Qt/Screen paths in 01/03/12 |
-| Boost | Audit a real dependency need; prefer existing C++20 facilities; no old Boost bundle import |
-| Character I-O | Bounded descriptor/terminal behavior and error probes here |
-| DLL-Test | Review C/C++ ABI boundaries; isolated loader fixtures here |
-| Debugging | Current symbols, crash receipts and trace provenance; 01/03/08 |
-| Dynamic Linking | Versioned initialization and safe lifetime/unload tests here |
-| File Systems | Permission, creation mode, offsets, short I/O and cleanup probes here |
-| MemoryBenchmark | Reproducible measurement in 03/09; no inherited benchmark claims |
-| MemoryManager | Replace allocator assumptions with size/alignment/ownership tests; 09 owns shared buffers |
-| MultiThreadedResourceManager | Bounded pool, message validation and concurrent-client tests; 07 owns transport |
-| NetworkBenchmark | Bounded loopback and fault tests; 03 measures, 06 owns public APIs |
-| Neutrino | Threads, synchronization, atomics, TLS, timers and signals here; IPC in 07 |
-| Photon | Historical UI reference only; no Photon renderer or widget port |
-| Process Manager | Spawn, child failure/reaping and descriptor inheritance; recovery stays in 08 |
-| RPC | Typed versioned service semantics in 06/07; no unreviewed legacy RPC stack |
-| Resource Managers | Namespace and authorization probes here; production services stay in 06/07 |
-| ResourceManagerClient | Denied access, malformed requests and exact returned byte counts |
-| SMP | Measured affinity/priority behavior; no interrupt-lock or runmask transplant |
-| SingleThreadedResourceManager | Baseline protocol/permission behavior, compared with bounded concurrent service |
+| Archive category              | Disposition and implementation owner                                                       |
+| ----------------------------- | ------------------------------------------------------------------------------------------ |
+| AdvancedGraphicsTest          | Legacy GF graphics; retain concepts, use existing Qt/Screen paths in 01/03/12              |
+| Boost                         | Audit a real dependency need; prefer existing C++20 facilities; no old Boost bundle import |
+| Character I-O                 | Bounded descriptor/terminal behavior and error probes here                                 |
+| DLL-Test                      | Review C/C++ ABI boundaries; isolated loader fixtures here                                 |
+| Debugging                     | Current symbols, crash receipts and trace provenance; 01/03/08                             |
+| Dynamic Linking               | Versioned initialization and safe lifetime/unload tests here                               |
+| File Systems                  | Permission, creation mode, offsets, short I/O and cleanup probes here                      |
+| MemoryBenchmark               | Reproducible measurement in 03/09; no inherited benchmark claims                           |
+| MemoryManager                 | Replace allocator assumptions with size/alignment/ownership tests; 09 owns shared buffers  |
+| MultiThreadedResourceManager  | Bounded pool, message validation and concurrent-client tests; 07 owns transport            |
+| NetworkBenchmark              | Bounded loopback and fault tests; 03 measures, 06 owns public APIs                         |
+| Neutrino                      | Threads, synchronization, atomics, TLS, timers and signals here; IPC in 07                 |
+| Photon                        | Historical UI reference only; no Photon renderer or widget port                            |
+| Process Manager               | Spawn, child failure/reaping and descriptor inheritance; recovery stays in 08              |
+| RPC                           | Typed versioned service semantics in 06/07; no unreviewed legacy RPC stack                 |
+| Resource Managers             | Namespace and authorization probes here; production services stay in 06/07                 |
+| ResourceManagerClient         | Denied access, malformed requests and exact returned byte counts                           |
+| SMP                           | Measured affinity/priority behavior; no interrupt-lock or runmask transplant               |
+| SingleThreadedResourceManager | Baseline protocol/permission behavior, compared with bounded concurrent service            |
 
 ## Proposed probe groups
 
@@ -75,12 +75,12 @@ No new diagnostic module is implied. The inspected [HybridClassRegistry](https:/
 
 ## Slices, roster and skills
 
-| Slice | Proposed owner/files | Independent reviewer |
-| --- | --- | --- |
-| Portable finite fixtures | C++ systems DRI; proposed `tests/native/qnx-systems/` | C++ lifetime reviewer |
+| Slice                              | Proposed owner/files                                                | Independent reviewer  |
+| ---------------------------------- | ------------------------------------------------------------------- | --------------------- |
+| Portable finite fixtures           | C++ systems DRI; proposed `tests/native/qnx-systems/`               | C++ lifetime reviewer |
 | QNX-only process/resource fixtures | QNX engineer; same directory with target-specific translation units | Security/IPC reviewer |
-| Build and evidence harness | Build engineer; CMake registration and proposed probe-run script | QNX regression owner |
-| Application integration checks | Runtime engineer; existing #44 tests and Plan 12 workload | Qt/JSI reviewer |
+| Build and evidence harness         | Build engineer; CMake registration and proposed probe-run script    | QNX regression owner  |
+| Application integration checks     | Runtime engineer; existing #44 tests and Plan 12 workload           | Qt/JSI reviewer       |
 
 Human assignments remain unassigned. Start with threads/TLS/short-I/O fixtures, then target-native boundaries, then measured scheduling/loader cases. A proposed `RNQNX_BUILD_QNX_SYSTEMS_PROBES` flag defaults OFF; QNX production fixtures reject unsupported targets, while portable host tests remain explicitly labeled. No broad capability grants or boot changes are added.
 
