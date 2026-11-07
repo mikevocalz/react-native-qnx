@@ -27,7 +27,10 @@ function(rnqnx_add_input_lifecycle_probe)
   target_compile_definitions(rnqnx_input_lifecycle_probe PRIVATE RNQNX_INPUT_FIXTURE="${fixture}")
   if(NOT CMAKE_SYSTEM_NAME STREQUAL "QNX" AND BUILD_TESTING)
     add_test(NAME rnqnx_input_lifecycle_probe COMMAND rnqnx_input_lifecycle_probe -platform offscreen)
-    set_tests_properties(rnqnx_input_lifecycle_probe PROPERTIES TIMEOUT 30
+    add_test(NAME rnqnx_input_lifecycle_rejects_interception COMMAND "${CMAKE_COMMAND}"
+      "-DPROBE_PATH=$<TARGET_FILE:rnqnx_input_lifecycle_probe>"
+      -P "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tests/cmake/InputLifecycleNegative.cmake")
+    set_tests_properties(rnqnx_input_lifecycle_probe rnqnx_input_lifecycle_rejects_interception PROPERTIES TIMEOUT 30
       ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1")
   endif()
 endfunction()
