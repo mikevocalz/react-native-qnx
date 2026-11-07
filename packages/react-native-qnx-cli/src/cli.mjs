@@ -236,7 +236,18 @@ export async function main(argv, cwd = process.cwd()) {
     if (!output.startsWith(path.join(root, 'build') + path.sep))
       throw new Error('Bundle output must be inside this checkout’s build/ directory.');
     const realRoot = await realpath(root);
-    const realBuild = await resolveOutputPath(path.join(realRoot, 'build'));
+    const buildAnchor = path.join(realRoot, 'build');
+    let buildStat;
+    try {
+      buildStat = await lstat(buildAnchor);
+    } catch (error) {
+      if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error;
+    }
+    if (buildStat?.isSymbolicLink())
+      throw new Error(
+        'Bundle output symlinks must stay inside build/: build/ itself must not be a symlink.'
+      );
+    const realBuild = await resolveOutputPath(buildAnchor);
     const realOutput = await resolveOutputPath(output);
     // Metro opens the output later; this rejects existing escapes, but cannot
     // prevent another process from replacing a checked path before that open.

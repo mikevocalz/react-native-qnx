@@ -79,6 +79,19 @@ try {
   }
   assert.equal(await readFile(sentinel, 'utf8'), entry);
   await rm(build, { recursive: true });
+  await symlink(path.dirname(sentinel), build, 'dir');
+  const redirectedBuild = run([
+    'bundle-qnx',
+    '--app',
+    'dashboard',
+    '--out',
+    'build/index.js',
+    '--dry-run',
+  ]);
+  assert.equal(redirectedBuild.status, 1);
+  assert.match(redirectedBuild.stderr, /build\/ itself must not be a symlink/);
+  assert.equal(await readFile(sentinel, 'utf8'), entry);
+  await rm(build);
   const external = await mkdtemp(path.join(tmpdir(), 'rnqnx-cli-external-'));
   try {
     await symlink(external, build, 'dir');
