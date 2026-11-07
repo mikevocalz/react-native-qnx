@@ -262,10 +262,9 @@ ViewStyle toViewStyle(const ShadowView& view) {
     }
   }
 
-  // Forward accessibility props as QML dynamic properties so a screen reader
-  // bridge or automated test can read them from the item later. Qt Quick does
-  // not provide a built-in accessibility engine on this platform, but exposing
-  // the values is a prerequisite for one.
+  // Preserve legacy dynamic metadata. The opt-in generic View bridge maps a
+  // bounded subset onto real Qt Accessible attached properties; an OS
+  // transport/consumer and RN accessibility actions are separate capabilities.
   style.accessible = viewProps->accessible;
   style.accessibilityLabel =
       QString::fromStdString(viewProps->accessibilityLabel);
@@ -282,6 +281,10 @@ ViewStyle toViewStyle(const ShadowView& view) {
         viewProps->accessibilityState->disabled;
     style.accessibilityStateSelected =
         viewProps->accessibilityState->selected;
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+    style.accessibilityStateCheckable = viewProps->accessibilityState->checked != facebook::react::AccessibilityState::None;
+    style.accessibilityStateMixed = viewProps->accessibilityState->checked == facebook::react::AccessibilityState::Mixed;
+#endif
     style.accessibilityStateChecked =
         viewProps->accessibilityState->checked ==
         facebook::react::AccessibilityState::Checked;

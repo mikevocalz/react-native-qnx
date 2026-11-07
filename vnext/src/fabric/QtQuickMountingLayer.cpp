@@ -5,6 +5,9 @@
 #include "react-native-qnx/fabric/QtTextInputBridge.h"
 #endif
 
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+#include "react-native-qnx/fabric/QtViewAccessibility.h"
+#endif
 #include <QColor>
 #include <QCoreApplication>
 #include <QDir>
@@ -103,6 +106,8 @@ const char* describe(MountError error) {
       return "NotAChildOfParent";
     case MountError::IndexOutOfRange:
       return "IndexOutOfRange";
+    case MountError::UnsupportedAccessibility:
+      return "unsupported-accessibility";
     case MountError::UnsupportedTextInput:
       return "unsupported-text-input";
     case MountError::ItemCreationFailed:
@@ -121,6 +126,20 @@ QtQuickMountingLayer::QtQuickMountingLayer(
 }
 
 QtQuickMountingLayer::~QtQuickMountingLayer() {
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  // Close every callback before changing any item's focus or deleting a tree.
+  // A destructor must not admit reentrant user mutation of the owned registry.
+  for (const auto& mounted : std::as_const(items_)) {
+    if (mounted.owned) {
+      if (auto* bridge = mounted.item->findChild<QtTextInputBridge*>(QString(), Qt::FindDirectChildrenOnly)) bridge->setEmitter({});
+    }
+  }
+  for (const auto& mounted : std::as_const(items_)) {
+    if (mounted.owned) {
+      if (auto* bridge = mounted.item->findChild<QtTextInputBridge*>(QString(), Qt::FindDirectChildrenOnly)) bridge->invalidate();
+    }
+  }
+#endif
   // Items are owned individually rather than through QObject parentage, so a
   // surviving tree is torn down one item at a time. QQuickItem's destructor
   // detaches any remaining visual children, so order does not matter.
@@ -168,7 +187,11 @@ MountError QtQuickMountingLayer::create(
         detail);
   }
 
-  items_.insert(tag, MountedItem{item, true});
+  MountedItem mounted{item, true};
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+  mounted.genericView = componentName == QStringLiteral("View");
+#endif
+  items_.insert(tag, mounted);
   mountedPointers_.insert(item);
   lastError_.clear();
   return MountError::None;
@@ -380,6 +403,22 @@ MountError QtQuickMountingLayer::updateStyle(Tag tag, const ViewStyle& style) {
     item->setProperty("accessibilityStateChecked", style.accessibilityStateChecked);
   }
 
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+  if (mounted->genericView) {
+    if (!style.accessible) {
+      for (const auto* name : {"accessibilityLabel", "accessibilityRole", "accessibilityHint", "accessibilityValue"}) {
+        item->setProperty(name, QVariant());
+      }
+      for (const auto* name : {"accessibilityStateDisabled", "accessibilityStateSelected", "accessibilityStateChecked"}) {
+        item->setProperty(name, false);
+      }
+    }
+    QString error;
+    if (!applyViewAccessibility(*item, style, error)) {
+      return failWith(MountError::UnsupportedAccessibility, error);
+    }
+  }
+#endif
   lastError_.clear();
   return MountError::None;
 }
@@ -393,24 +432,36 @@ MountError QtQuickMountingLayer::updateTextInput(
         MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
   }
 
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  QPointer<QQuickItem> item = mounted->item;
+#else
   QQuickItem* item = mounted->item;
+#endif
 
 #if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
-  auto* bridge = textInputBridge(tag);
+  QPointer<QtTextInputBridge> bridge = textInputBridge(tag);
   if (bridge == nullptr) return failWith(MountError::UnsupportedTextInput, QStringLiteral("TextInput editor unavailable"));
   bridge->beginJSUpdate();
   struct EndUpdate {
     QPointer<QtTextInputBridge> bridge;
-    ~EndUpdate() { if (bridge) bridge->endJSUpdate(); }
+    bool active{true};
+    ~EndUpdate() { if (active && bridge) bridge->cancelJSUpdate(); }
+    void finish() {
+      active = false; // Observers may throw. Cleanup must not finish twice.
+      if (bridge) bridge->endJSUpdate();
+    }
   } endUpdate{bridge};
+  const auto applyProperties = [&]() -> MountError {
   if (!bridge->configure(style.secure, style.multiline)) {
     return failWith(MountError::UnsupportedTextInput, QStringLiteral("Secure multiline TextInput is unsupported"));
   }
+  if (!item || !bridge) return failWith(MountError::UnknownTag, QStringLiteral("TextInput target removed during update"));
   try {
     bridge->applyJS(style.mostRecentEventCount, style.text, style.selectionStart, style.selectionEnd);
   } catch (const std::exception&) {
     return failWith(MountError::IndexOutOfRange, QStringLiteral("Invalid TextInput update"));
   }
+  if (!item || !bridge) return failWith(MountError::UnknownTag, QStringLiteral("TextInput target removed during update"));
 #else
   // The editable control is inside a wrapper; set text on the actual
   // TextInput/TextEdit so the cursor and user input are not reset.
@@ -436,6 +487,9 @@ MountError QtQuickMountingLayer::updateTextInput(
   }
 
   item->setProperty("readOnly", style.readOnly);
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  if (!item || !bridge) return failWith(MountError::UnknownTag, QStringLiteral("TextInput target removed during update"));
+#endif
   // TextInput.Normal is 0 and TextInput.Password is 2
   // (lib/QtQuick.framework/Headers/qquicktextinput_p.h, EchoMode).
   item->setProperty("echoMode", style.secure ? 2 : 0);
@@ -443,6 +497,9 @@ MountError QtQuickMountingLayer::updateTextInput(
     item->setProperty("maximumLength", style.maxLength);
   }
   item->setProperty("multiline", style.multiline);
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  if (!item || !bridge) return failWith(MountError::UnknownTag, QStringLiteral("TextInput target removed during update"));
+#endif
   if (!style.placeholder.isEmpty()) {
     item->setProperty("placeholderText", style.placeholder);
   }
@@ -453,6 +510,21 @@ MountError QtQuickMountingLayer::updateTextInput(
 
   lastError_.clear();
   return MountError::None;
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  };
+  const auto result = applyProperties();
+  const auto detail = lastError_;
+  endUpdate.finish(); // All Qt property/focus setter frames have returned.
+  if (result != MountError::None) {
+    lastError_ = detail;
+    return result;
+  }
+  if (!item || !bridge || itemForTag(tag) != item.data()) {
+    return failWith(MountError::UnknownTag, QStringLiteral("TextInput target removed during update"));
+  }
+  lastError_.clear();
+  return MountError::None;
+#endif
 }
 
 #if RNQNX_ENABLE_TEXT_INPUT_CONTRACT

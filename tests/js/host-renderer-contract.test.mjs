@@ -50,7 +50,9 @@ if (process.platform === 'linux') {
     const build = path.join(root, 'build/linux-host-renderer');
     mkdirSync(build, { recursive: true });
     const cache = path.join(build, 'CMakeCache.txt');
-    writeFileSync(cache, 'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=OFF\n');
+    const bothOff =
+      'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=OFF\nRNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=OFF\n';
+    writeFileSync(cache, bothOff);
     assert.equal(invoke().status, 0);
     assert.equal(
       JSON.parse(
@@ -91,7 +93,34 @@ if (process.platform === 'linux') {
       assert.notEqual(result.status, 0);
       assert.match(result.stderr, new RegExp(`Required host-renderer test missing: ${missing}`));
     }
-    writeFileSync(cache, 'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=OFF\n');
+    writeFileSync(
+      cache,
+      'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=OFF\nRNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON\n'
+    );
+    const accessibilityTest = 'rnqnx_accessibility_view_test';
+    const accessibilityPresent = invoke({
+      FAKE_INVENTORY: JSON.stringify({
+        tests: [...names, accessibilityTest].map((name) => ({ name })),
+      }),
+    });
+    assert.equal(accessibilityPresent.status, 0, accessibilityPresent.stderr);
+    const accessibilityMissing = invoke();
+    assert.notEqual(accessibilityMissing.status, 0);
+    assert.match(
+      accessibilityMissing.stderr,
+      /Required host-renderer test missing: rnqnx_accessibility_view_test/
+    );
+    writeFileSync(
+      cache,
+      'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=ON\nRNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON\n'
+    );
+    const bothPresent = invoke({
+      FAKE_INVENTORY: JSON.stringify({
+        tests: [...allNames, accessibilityTest].map((name) => ({ name })),
+      }),
+    });
+    assert.equal(bothPresent.status, 0, bothPresent.stderr);
+    writeFileSync(cache, bothOff);
     assert.notEqual(invoke({ FAKE_BUILD_STATUS: '7' }).status, 0);
     const testFailure = invoke({ FAKE_TEST_STATUS: '8' });
     assert.notEqual(testFailure.status, 0);

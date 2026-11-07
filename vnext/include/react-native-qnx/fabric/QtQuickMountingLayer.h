@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+#define RNQNX_ENABLE_ACCESSIBILITY_BRIDGE 0
+#endif
+
 #ifndef RNQNX_ENABLE_TEXT_INPUT_CONTRACT
 #define RNQNX_ENABLE_TEXT_INPUT_CONTRACT 0
 #endif
@@ -79,6 +83,10 @@ struct ViewStyle {
   bool accessibilityStateDisabled{false};
   bool accessibilityStateSelected{false};
   bool accessibilityStateChecked{false};
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+  bool accessibilityStateCheckable{false};
+  bool accessibilityStateMixed{false};
+#endif
 };
 
 /// The text attributes this platform carries onto a text item. Mirrored from
@@ -158,6 +166,7 @@ enum class MountError : std::uint8_t {
   IndexOutOfRange,
   ItemCreationFailed,
   UnsupportedTextInput,
+  UnsupportedAccessibility,
 };
 
 const char* describe(MountError error);
@@ -275,6 +284,9 @@ class QtQuickMountingLayer {
   struct MountedItem {
     QQuickItem* item{nullptr};
     bool owned{false};
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+    bool genericView{false};
+#endif
   };
 
   QList<QQuickItem*> mountedChildren(QQuickItem* parent) const;
