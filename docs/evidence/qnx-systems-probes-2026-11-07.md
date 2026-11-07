@@ -4,7 +4,8 @@ Source base: `24019f39a409cd0540c31f4e017b7003201bdca4`.
 Implementation: `61258b13bbd39dea9c5f9985d5922637e4018a42` on
 `codex/qnx-systems-probes`. The lockfile is unchanged; SHA-256:
 `e9602379b5849218cef9718da6db4430e36b51382fd787dcfbecb8269c0aaa52`.
-This implements the first portable native slice of Plan 14. Other Plan 14
+The branch subsequently integrated main `de5cef38a6dfc37db2ccbf7f2e06257607fe1800`
+without a source conflict. This implements the first portable native slice of Plan 14. Other Plan 14
 acceptance criteria remain open.
 
 The diagnostic target has no RN/Qt/Hermes/Nitro linkage. Its root and standalone
@@ -46,7 +47,7 @@ No TSan, broad leak, performance, SMP or real-time guarantee is claimed.
 
 The [run instructions](../../tests/native/qnx-systems/README.md) describe the
 three invocations and required external target watchdog. The root operator subsequently ran the physical target gate described below.
-Artifact readback remains to be recorded separately. Kernel short-write, EINTR, cancellation,
+Target artifact readback matched all 26,072 bytes and the SHA-256 above. Kernel short-write, EINTR, cancellation,
 resource-manager, scheduler and loader fixtures remain later slices.
 
 ## Physical Pi 400 follow-up
@@ -70,8 +71,8 @@ No watchdog expired. A successful launch after both deliberate failures checks
 application-level recovery for this fixture. The root operator retained the
 existing Hello World process and reported no boot or graphics change. The
 physical raw log remains outside version control as `systems-probe-physical.log`.
-The upload used the ELF hash recorded above; target artifact readback is pending
-this receipt. No visual or latency result follows from this native probe.
+The uploaded ELF was downloaded again and matched all 26,072 bytes and the
+SHA-256 recorded above. No visual or latency result follows from this native probe.
 
 ## Source and skill decisions
 
