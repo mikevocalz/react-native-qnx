@@ -57,6 +57,13 @@ compositions over parts that already work, and 6 need native work.
 | Responder props (`onStartShouldSetResponder`, `onResponderGrant`, `onResponderRelease`) | ✅     | React's responder negotiation runs on top of the touch events and is covered by a host test.                                                                                                                                                                                                                 |
 | Accessibility props                                                                     | ⚠      | `accessible`, `accessibilityLabel`, `accessibilityRole`, `accessibilityHint`, `accessibilityValue`, and `accessibilityState` are forwarded as QML dynamic properties so they can be read by tests or a future bridge. Qt Quick's accessibility engine is not connected, so there is no screen reader output. |
 
+With `RNQNX_ENABLE_INPUT_LIFECYCLE=ON` (default OFF), the dispatcher additionally
+handles touch cancellation, window deactivation, mouse-grab loss and target
+removal, and updates terminal coordinates and RN 0.88 high-resolution timestamps.
+This is an input prerequisite, not Reanimated or Gesture Handler support. See
+[the source audit and validation instructions](reanimated-qnx-source-audit.md).
+QNX device and Marathon/Wayland validation remain required.
+
 ## `Text`
 
 | Aspect                     | Status | Notes                                                                                                                                                  |

@@ -50,6 +50,8 @@ function(rnqnx_add_fabric_adapter_target)
     rnqnx_views_qt
   )
   set_target_properties(rnqnx_fabric_adapter PROPERTIES AUTOMOC ON)
+  target_compile_definitions(rnqnx_fabric_adapter PUBLIC
+    RNQNX_ENABLE_INPUT_LIFECYCLE=$<BOOL:${RNQNX_ENABLE_INPUT_LIFECYCLE}>)
   rnqnx_enable_strict_warnings(rnqnx_fabric_adapter)
 endfunction()
 
