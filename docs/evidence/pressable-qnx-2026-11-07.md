@@ -155,3 +155,13 @@ known-good application. A source rollback reverts this fixture/patch series and
 reinstalls the matching frozen lockfile. Physical input, pointer coordinate and
 synthesis fidelity, responder arbitration with native scrolling, RNGH and
 Worklets are separate next slices.
+
+## Hosted configuration-test compatibility follow-up
+
+Initial hosted JavaScript runs rejected the isolated configuration fixture:
+it required CMake 3.31.9, while those runners provide 3.31.6. The fixture now
+requires the 3.20 APIs it uses. The production project still requires 3.31.9;
+no native gate or functional assertion was removed. The actual fixture and full
+JavaScript suite passed with an isolated CMake 3.31.6 selected through
+`RNQNX_TEST_CMAKE`. This is test-tool compatibility evidence, not another device
+run. The updated head needs its own hosted results.

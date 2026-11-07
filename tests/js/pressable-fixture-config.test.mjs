@@ -10,9 +10,11 @@ const bundle = path.join(scratch, 'host-produced.bundle.js');
 writeFileSync(bundle, '// Configuration test input; not a production fixture.\n');
 // Use the host compiler only to configure a tiny graph. Switching this local
 // variable selects the actual module's QNX branch; it is not a QNX cross-build.
+// This isolated graph uses CMake 3.20 APIs; the production project's higher
+// toolchain requirement does not apply to this source-test fixture.
 writeFileSync(
   path.join(scratch, 'CMakeLists.txt'),
-  `cmake_minimum_required(VERSION 3.31.9)
+  `cmake_minimum_required(VERSION 3.20)
 project(PressableFixtureConfiguration LANGUAGES CXX)
 set(RNQNX_ENABLE_INPUT_LIFECYCLE ON)
 set(BUILD_TESTING OFF)
@@ -31,10 +33,14 @@ rnqnx_add_input_lifecycle_probe()
 /** @param {string} name @param {string[]} args */
 function configure(name, args) {
   const build = path.join(scratch, name);
-  const result = spawnSync('cmake', ['-S', scratch, '-B', build, '-G', 'Ninja', ...args], {
-    encoding: 'utf8',
-    timeout: 30000,
-  });
+  const result = spawnSync(
+    process.env.RNQNX_TEST_CMAKE || 'cmake',
+    ['-S', scratch, '-B', build, '-G', 'Ninja', ...args],
+    {
+      encoding: 'utf8',
+      timeout: 30000,
+    }
+  );
   return { build, result, diagnostics: `${result.stdout}\n${result.stderr}` };
 }
 try {
