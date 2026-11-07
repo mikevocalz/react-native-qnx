@@ -63,8 +63,10 @@ removal, and updates terminal coordinates and RN 0.88 high-resolution timestamps
 This is an input prerequisite, not Reanimated or Gesture Handler support. See
 [the source audit and validation instructions](reanimated-qnx-source-audit.md).
 The [validation receipt](validation/qt-input-lifecycle-2026-11-07.md) records host
-ON/OFF tests and synthetic Qt input on physical QNX. USB/touch hardware, target
-JS-handler delivery and Marathon/Wayland remain unverified.
+ON/OFF tests and synthetic Qt input on physical QNX. The later
+[JS-delivery proof](evidence/pi400-input-js-2026-11-07.md) checks raw Fabric
+JavaScript callbacks. USB/touch hardware, React component interaction and
+Marathon/Wayland remain unverified.
 
 ## `Text`
 

@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-07",
+  "base_commit": "48e37f7550b4244f8a7936c01af75419e1fec416",
+  "source_commit": "482ce0622d5175054fdffd9347e0d99dba5bde81",
+  "lock_sha256": "e9602379b5849218cef9718da6db4430e36b51382fd787dcfbecb8269c0aaa52",
+  "target": "physical Pi400 / QNX SDP8.0.5 / GCC12.2.0 / Qt6.12.0 / AArch64 / qnxuser",
+  "hermes_compiler": "260318099.0.5",
+  "artifacts": {
+    "rnqnx_input_lifecycle_probe.js-candidate": {
+      "bytes": 6067656,
+      "sha256": "726413e3f6af1865e8f1da874101a395be1e5711e1c6c7c0862995d90ca5a895",
+      "readback_matches_local": true
+    },
+    "input-js-setup.hbc": {
+      "bytes": 1191,
+      "sha256": "e76a33c3011d26c58b70277e5aa85b6627e6b2b93be00bb592f0016aeb004954",
+      "readback_matches_local": true
+    }
+  },
+  "positive": {
+    "exit": 0,
+    "marker": "RNQNX_INPUT_JS_OK events=12 terminal cancel ordering native-payload-parity"
+  },
+  "interception_control": {
+    "exit": 1,
+    "marker": "RNQNX_INPUT_LIFECYCLE_FAIL JavaScript input event count mismatch",
+    "js_success_marker_present": false
+  },
+  "synthetic_qt_input": true,
+  "raw_fabric_js_handler_verified": true,
+  "react_component_interaction_verified": false,
+  "usb_hardware_input_verified": false,
+  "rngh_worklets_reanimated_support": false,
+  "wayland_verified": false
+}
