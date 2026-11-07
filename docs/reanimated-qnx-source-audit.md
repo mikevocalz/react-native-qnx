@@ -134,3 +134,10 @@ coordinate conversion and a fresh gesture following cancellation. These tests
 cannot establish RNGH arbitration or UI worklet support. Subsequent integration
 needs pinned package builds plus real JS worklet/event tests and target runs;
 retain a draft PR while required target evidence is absent.
+
+## Implementation validation
+
+The opt-in also connects the playground window, mounting adapter and responder
+delegate to the dispatcher. See [the validation record](validation/qt-input-lifecycle-2026-11-07.md)
+for completed checks and the interrupted native runtime run. No device support
+or complete host-test pass is established by the current evidence.
