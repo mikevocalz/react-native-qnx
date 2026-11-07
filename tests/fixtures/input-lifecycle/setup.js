@@ -1,5 +1,10 @@
 const fabric = globalThis.nativeFabricUIManager;
-fabric.registerEventHandler(() => {});
+globalThis.__rnqnxInputEvents = [];
+fabric.registerEventHandler((instance, type, payload) => {
+  if (type.startsWith('topTouch')) {
+    globalThis.__rnqnxInputEvents.push({ type, payload });
+  }
+});
 const children = fabric.createChildSet();
 for (const tag of [501, 502]) {
   fabric.appendChildToSet(

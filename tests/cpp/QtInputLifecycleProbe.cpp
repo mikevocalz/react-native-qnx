@@ -62,6 +62,7 @@ void run() {
   QObject input;
   input.installEventFilter(&dispatcher);
   std::vector<Observed> events;
+  const bool interceptOnly = std::getenv("RNQNX_INPUT_INTERCEPT_TEST") != nullptr;
   bool forgetOnEnd = false;
   auto listener = std::make_shared<const facebook::react::EventListener>(
       [&](const facebook::react::RawEvent& event) {
@@ -77,7 +78,7 @@ void run() {
             touch.getProperty(runtime, "timestamp").asNumber(),
             payload.getPropertyAsObject(runtime, "touches").asArray(runtime).size(runtime)});
         if (forgetOnEnd && event.type == "topTouchEnd") dispatcher.forgetTag(501);
-        return true;  // Capture production payload; no queued JS test assertions.
+        return interceptOnly;  // Normally continue through Fabric to the real JS handler.
       });
   host.scheduler().addEventListener(listener);
   // Remove listener even if an assertion throws, before its captured state dies.
@@ -135,6 +136,33 @@ void run() {
   forgetOnEnd = true;
   mouse(QEvent::MouseButtonRelease, Qt::LeftButton, Qt::NoButton);
   require(events.size() == 12 && events.back().type == "topTouchEnd", "reentrant mouse release failed");
+  // The Qt-driven EventBeat and RN RuntimeScheduler must deliver the queued
+  // events to the fixture's actual JavaScript handler before surface teardown.
+  for (int i = 0; i < 20; ++i) {
+    host.runtime().drainMicrotasks();
+    host.pumpEvents();
+  }
+  auto& runtime = host.runtime();
+  auto delivered = runtime.global().getPropertyAsObject(runtime, "__rnqnxInputEvents").asArray(runtime);
+  require(delivered.size(runtime) == events.size(), "JavaScript input event count mismatch");
+  for (std::size_t i = 0; i < events.size(); ++i) {
+    const auto& expected = events[i];
+    auto received = delivered.getValueAtIndex(runtime, i).asObject(runtime);
+    require(received.getProperty(runtime, "type").asString(runtime).utf8(runtime) == expected.type,
+        "JavaScript input event ordering mismatch");
+    auto payload = received.getPropertyAsObject(runtime, "payload");
+    auto changed = payload.getPropertyAsObject(runtime, "changedTouches").asArray(runtime);
+    require(changed.size(runtime) == 1, "JavaScript changed contact count mismatch");
+    auto contact = changed.getValueAtIndex(runtime, 0).asObject(runtime);
+    require(contact.getProperty(runtime, "identifier").asNumber() == expected.id &&
+        contact.getProperty(runtime, "target").asNumber() == expected.target &&
+        contact.getProperty(runtime, "pageX").asNumber() == expected.x &&
+        contact.getProperty(runtime, "timestamp").asNumber() == expected.timestamp &&
+        payload.getPropertyAsObject(runtime, "touches").asArray(runtime).size(runtime) == expected.active,
+        "JavaScript input payload mismatch");
+  }
+  std::cout << "RNQNX_INPUT_JS_OK events=" << delivered.size(runtime)
+            << " terminal cancel ordering native-payload-parity\n";
   host.stopSurface(11);
   std::cout << "RNQNX_INPUT_LIFECYCLE_OK decorated-hit terminal multi-contact cancel deactivate unmount mouse-reentrant\n";
 }
