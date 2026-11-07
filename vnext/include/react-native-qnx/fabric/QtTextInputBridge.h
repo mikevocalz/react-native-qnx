@@ -44,6 +44,7 @@ class QtTextInputBridge final : public QObject {
   void keyPressed();
   void submitEditing();
   void focusChanged();
+  void updateTabEligibility();
 
  protected:
   bool eventFilter(QObject* watched, QEvent* event) override;

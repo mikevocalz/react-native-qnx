@@ -30,7 +30,7 @@ FocusScope {
   function mapKeyText(event) {
     if (event.key === Qt.Key_Backspace) return "";
     if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) return "\n";
-    if (event.key === Qt.Key_Tab) return "\t";
+    if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) return "\t";
     if (event.key === Qt.Key_Escape) return "\x1B";
     return event.text;
   }

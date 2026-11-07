@@ -27,8 +27,10 @@ QtTextInputBridge::QtTextInputBridge(QQuickItem& wrapper)
   for (const auto* name : {"qnx-text-input", "qnx-text-edit"}) {
     if (auto* child = wrapper.findChild<QQuickItem*>(name)) child->installEventFilter(this);
   }
+  QObject::connect(&wrapper, SIGNAL(readOnlyChanged()), this, SLOT(updateTabEligibility()));
   wrapper.installEventFilter(this);
   field_ = wrapper.findChild<QQuickItem*>("qnx-text-input");
+  updateTabEligibility();
 }
 void QtTextInputBridge::requireOwner() const {
   if (QThread::currentThread() != thread()) throw std::runtime_error("TextInput requires its Qt owner");
@@ -44,6 +46,16 @@ void QtTextInputBridge::invalidate() noexcept {
   ++selectionEpoch_;
   selectionQueued_ = false;
   emit_ = {};
+  updateTabEligibility();
+}
+void QtTextInputBridge::updateTabEligibility() {
+  const QPointer<QQuickItem> wrapper = wrapper_;
+  if (!wrapper) return;
+  const bool eligible = live_ && !wrapper->property("readOnly").toBool();
+  // Qt refuses to remove an active item from the tab chain. Release this
+  // wrapper's focus first when editing is disabled or the session is invalid.
+  if (!eligible && wrapper->hasActiveFocus()) wrapper->setFocus(false);
+  if (wrapper) wrapper->setActiveFocusOnTab(eligible);
 }
 bool QtTextInputBridge::configure(bool secure, bool multiline) {
   requireOwner();
