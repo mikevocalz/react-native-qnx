@@ -22,11 +22,11 @@ The [playground](https://github.com/mikevocalz/react-native-qnx/tree/e84b51430c2
 
 Relevant existing work must remain correctly labeled:
 
-| Existing work | Inspected revision | Evidence boundary |
-| --- | --- | --- |
-| [PR #44](https://github.com/mikevocalz/react-native-qnx/pull/44) | `e9026fac8ce8deb5a8e6ba4c35d1dcc5592d478d` | Physical Pi 400 runtime and owned Nitro completion queue; no application-level frame budget |
-| [PR #42](https://github.com/mikevocalz/react-native-qnx/pull/42) | `5f6df2cf5ae49b3466d90eec8f5641a020bd3303` | Historical default-OFF, external-checkout Forge experiment; compiling seven native engines does not prove JS/UI behavior or create a core conformance prerequisite |
-| [PR #45](https://github.com/mikevocalz/react-native-qnx/pull/45) | `4cd69d69374ff6708528bde173f6b39ab5858017` | Reanimated/Worklets/Gesture Handler source audit, not a QNX runtime integration |
+| Existing work                                                    | Inspected revision                         | Evidence boundary                                                                                                                                                       |
+| ---------------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [PR #44](https://github.com/mikevocalz/react-native-qnx/pull/44) | `e9026fac8ce8deb5a8e6ba4c35d1dcc5592d478d` | Physical Pi 400 runtime and owned Nitro completion queue; no application-level frame budget                                                                             |
+| [PR #42](https://github.com/mikevocalz/react-native-qnx/pull/42) | `5f6df2cf5ae49b3466d90eec8f5641a020bd3303` | Historical default-OFF, external-checkout Forge experiment; compiling seven native engines does not prove JS/UI behavior or create a core conformance prerequisite      |
+| [PR #45](https://github.com/mikevocalz/react-native-qnx/pull/45) | `4cd69d69374ff6708528bde173f6b39ab5858017` | Reanimated/Worklets/Gesture Handler source audit, not a QNX runtime integration                                                                                         |
 | [PR #46](https://github.com/mikevocalz/react-native-qnx/pull/46) | `e783e2f000f20ef849b96021387860beaa7b4e34` | Merged, default-OFF pointer lifecycle: host14/14 ON,13/13 OFF and injected Qt events on physical QNX; physical USB/touch and target JS-handler delivery remain unproven |
 
 [PR #48](https://github.com/mikevocalz/react-native-qnx/pull/48), head `173605c413fb19b6adcf682e9ec1293be9093c4d`, subsequently adds physical Pi400 synthetic input-to-raw-Fabric-JS proof (12 ordered callbacks and a failing interception control), with host15/15 ON and13/13 OFF. Physical USB/touch and React component/responder interaction still require their own application scenarios.
@@ -37,14 +37,14 @@ Marathon's [native lifecycle contract](https://github.com/patrickjquinn/Marathon
 
 Keep Fabric, Yoga, Hermes and the Qt Quick backend intact. The core application consumes native APIs owned by Plans 05, 06 and 11; it introduces no alternative bridge, renderer or production storage engine. Use a small test-only Nitro v1 document module to exercise generic native discovery, linkage, typed operations and lifetime without premium dependencies. Reuse NYC-Tron components only after inspecting their actual exports and exact dependency versions. Freeze the selected non-premium source commits in the implementing PR; no compatibility claim follows from their names alone.
 
-| Scenario | User workflow | Required observable behavior |
-| --- | --- | --- |
-| List and drawer | Scroll a long list, start opening the drawer, reverse it, then tap an item | Smooth interruption, correct final destination, no accidental item press after a cancelled gesture |
-| Text and focus | Edit Latin, Arabic, Devanagari and emoji text; move selection; open a modal; return | Composition survives controlled updates, selection stays valid, focus returns to the correct field |
-| Native document editor | Open a seeded non-premium fixture, edit, undo/redo, save, close and reopen | The expected revision and synthetic data return through the actual Nitro v1 binding; disposed handles fail predictably |
-| System state | Subscribe to one implemented capability; deny/revoke access; stop/restart its provider | Meaningful unavailable/error UI, bounded reconnect, latest snapshot, no duplicate listeners |
-| Lifecycle | Background with and without a permitted task; return after app recreation | Hidden visual work idles, allowed native work follows policy, document/route/scroll state restore |
-| Adaptive layout | Resize, attach a keyboard, change scale, exercise a two-region fixture | Readable usable layout, correct input targets, state retained; simulated topology labeled |
+| Scenario               | User workflow                                                                          | Required observable behavior                                                                                           |
+| ---------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| List and drawer        | Scroll a long list, start opening the drawer, reverse it, then tap an item             | Smooth interruption, correct final destination, no accidental item press after a cancelled gesture                     |
+| Text and focus         | Edit Latin, Arabic, Devanagari and emoji text; move selection; open a modal; return    | Composition survives controlled updates, selection stays valid, focus returns to the correct field                     |
+| Native document editor | Open a seeded non-premium fixture, edit, undo/redo, save, close and reopen             | The expected revision and synthetic data return through the actual Nitro v1 binding; disposed handles fail predictably |
+| System state           | Subscribe to one implemented capability; deny/revoke access; stop/restart its provider | Meaningful unavailable/error UI, bounded reconnect, latest snapshot, no duplicate listeners                            |
+| Lifecycle              | Background with and without a permitted task; return after app recreation              | Hidden visual work idles, allowed native work follows policy, document/route/scroll state restore                      |
+| Adaptive layout        | Resize, attach a keyboard, change scale, exercise a two-region fixture                 | Readable usable layout, correct input targets, state retained; simulated topology labeled                              |
 
 Use deterministic, synthetic documents and local image assets. Record font files and fallback behavior for each script. A missing font is a visible compatibility result, not a reason to replace a multilingual case with ASCII. Keep text and document contents out of routine traces.
 
@@ -78,13 +78,13 @@ Use proposed `RNQNX_BUILD_CONFORMANCE_APP=OFF` for native target registration an
 
 These are proposed responsibilities; human assignments and approvals remain **unassigned**.
 
-| Role | Concrete path ownership | Independent reviewer |
-| --- | --- | --- |
-| Application/NYC-Tron engineer | `apps/component-conformance`, fixture assets and component imports | RN/Fabric engineer |
-| Native fixture engineer | Proposed `apps/component-conformance/native-fixtures`; generic Nitro v1 document and lifetime behavior | C++/JSI lifetime reviewer |
-| Platform QA engineer | Proposed `tests/conformance`, scenario receipts and run driver | QNX/Marathon target owners |
-| Performance engineer | Shared measurement helpers under `apps/performance-lab` or `scripts`; one implementation | Runtime/graphics reviewer |
-| Accessibility and input reviewer | Multilingual, keyboard, focus and accessible-action scenarios | Product/application reviewer |
+| Role                             | Concrete path ownership                                                                                | Independent reviewer         |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------- |
+| Application/NYC-Tron engineer    | `apps/component-conformance`, fixture assets and component imports                                     | RN/Fabric engineer           |
+| Native fixture engineer          | Proposed `apps/component-conformance/native-fixtures`; generic Nitro v1 document and lifetime behavior | C++/JSI lifetime reviewer    |
+| Platform QA engineer             | Proposed `tests/conformance`, scenario receipts and run driver                                         | QNX/Marathon target owners   |
+| Performance engineer             | Shared measurement helpers under `apps/performance-lab` or `scripts`; one implementation               | Runtime/graphics reviewer    |
+| Accessibility and input reviewer | Multilingual, keyboard, focus and accessible-action scenarios                                          | Product/application reviewer |
 
 Source-read skills for this plan are Margelo [`api-design`, `build-nitro-modules`, `cpp`](https://github.com/margelo/react-native-skills/tree/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills) at `1e9e17be6f41c838db472d6a4b943fc26355a3be`, and [Callstack `react-native-best-practices`](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) at `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`. Applied decisions: realistic error/cleanup consumers, no handwritten substitute binding, native resource lifetime tests, and measure-before-optimize comparisons. No skill CLI install or test execution is claimed. Do not assume `agent-device` or an RN harness supports QNX/Marathon; establish its actual target capability before selecting it.
 
