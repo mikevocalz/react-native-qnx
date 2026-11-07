@@ -1,2 +1,19 @@
+const path = require('node:path');
+const { createRequire } = require('node:module');
 const withPublicEntry = require('../../packages/metro-config-qnx/public-entry');
-module.exports = withPublicEntry(require('./metro.marathon.config'), 'marathon');
+const base = require('./metro.marathon.config');
+const rnRequire = createRequire(require.resolve('react-native/package.json'));
+
+module.exports = withPublicEntry(
+  {
+    ...base,
+    resolver: {
+      ...base.resolver,
+      extraNodeModules: {
+        ...base.resolver?.extraNodeModules,
+        '@babel/runtime': path.dirname(rnRequire.resolve('@babel/runtime/package.json')),
+      },
+    },
+  },
+  'marathon'
+);
