@@ -97,26 +97,37 @@ if (process.platform === 'linux') {
       cache,
       'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=OFF\nRNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON\n'
     );
-    const accessibilityTest = 'rnqnx_accessibility_view_test';
+    const accessibilityTests = [
+      'rnqnx_accessibility_view_test',
+      'rnqnx_accessibility_action_probe',
+      'rnqnx_accessibility_action_native_test',
+      'rnqnx_accessibility_action_rejects_interception',
+      'rnqnx_accessibility_action_rejects_registration',
+    ];
     const accessibilityPresent = invoke({
       FAKE_INVENTORY: JSON.stringify({
-        tests: [...names, accessibilityTest].map((name) => ({ name })),
+        tests: [...names, ...accessibilityTests].map((name) => ({ name })),
       }),
     });
     assert.equal(accessibilityPresent.status, 0, accessibilityPresent.stderr);
-    const accessibilityMissing = invoke();
-    assert.notEqual(accessibilityMissing.status, 0);
-    assert.match(
-      accessibilityMissing.stderr,
-      /Required host-renderer test missing: rnqnx_accessibility_view_test/
-    );
+    for (const missing of accessibilityTests) {
+      const result = invoke({
+        FAKE_INVENTORY: JSON.stringify({
+          tests: [...names, ...accessibilityTests]
+            .filter((name) => name !== missing)
+            .map((name) => ({ name })),
+        }),
+      });
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, new RegExp(`Required host-renderer test missing: ${missing}`));
+    }
     writeFileSync(
       cache,
       'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=ON\nRNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON\n'
     );
     const bothPresent = invoke({
       FAKE_INVENTORY: JSON.stringify({
-        tests: [...allNames, accessibilityTest].map((name) => ({ name })),
+        tests: [...allNames, ...accessibilityTests].map((name) => ({ name })),
       }),
     });
     assert.equal(bothPresent.status, 0, bothPresent.stderr);

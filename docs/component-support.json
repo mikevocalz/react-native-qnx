@@ -6,11 +6,12 @@
       "host": "partial",
       "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Yoga layout, background, corner radius and opacity. Border, clipping and transform limits are listed below. Optional default-OFF accessibility bridge has Pi400 native-only QAccessible generic View semantic-query and owned mounting proof; React JavaScript accessibility props, RN actions and reader output remain unverified.",
+      "notes": "Yoga layout, background, corner radius and opacity. Border, clipping and transform limits are listed below. With the default-OFF accessibility bridge enabled, Pi400 evidence covers native generic View semantic queries and actual React registered activate delivery with semantic-label updates. Qt action-list/custom-label parity, RN disabled semantic state, values and reader output remain unqualified.",
       "evidence": {
         "pi400": [
           "docs/evidence/pi400-hello-world-2026-11-07.txt",
-          "docs/evidence/accessibility-view-qnx-2026-11-07.md"
+          "docs/evidence/accessibility-view-qnx-2026-11-07.md",
+          "docs/evidence/accessibility-action-qnx-2026-11-07.md"
         ],
         "pi4Qsti": []
       }

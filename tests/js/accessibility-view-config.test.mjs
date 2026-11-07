@@ -27,9 +27,10 @@ const source = readFileSync(
   'packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js',
   'utf8'
 );
-const styles = { opacity: true, color: { process: (value) => value } };
+const styles = { opacity: true, color: { process: (/** @type {unknown} */ value) => value } };
 const context = vm.createContext({
   module: { exports: {} },
+  /** @param {string} specifier */
   require(specifier) {
     assert.equal(specifier, 'react-native/Libraries/Components/View/ReactNativeStyleAttributes');
     return { default: styles };
