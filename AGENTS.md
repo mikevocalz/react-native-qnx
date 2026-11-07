@@ -51,3 +51,17 @@ Do not make Forge a built-in platform/system component, default dependency, bund
 The current default-OFF external-checkout adapter is a compatibility experiment, not permission to redistribute Forge or proof of seamless installation. Keep historical evidence; do not duplicate engines or remove working probes merely to change ownership boundaries. New integration must support install selected licensed package → import → build/run through documented tooling, without patching platform sources or hand-wiring each component. Verify ABI alignment, linkage, input, lifecycle, update and uninstall in an authorized consuming app. Core CI uses non-premium fixtures; commercial integration tests are explicitly opt-in and separately authorized. Removing Forge must leave the platform usable. Packaging must exclude external premium source/build outputs unless producing an expressly licensed consuming-app artifact.
 
 These rules apply to QNX and the Marathon native target and override earlier roadmap language implying Forge is a platform component or required conformance workload. Compatibility remains a measured acceptance goal, not a shipped feature claim.
+
+## Open-source Qt direction — owner clarification, November 7, 2026
+
+Use eligible open-source Qt components under their recorded LGPL/GPL terms.
+A paid Qt subscription is not a platform prerequisite, including for the
+Marathon Linux/Wayland target. Do not stop open-source development to request a
+commercial Qt purchase. The project's MIT LICENSE file is separate from paid
+vendor subscriptions.
+
+Preserve the earlier evaluation-artifact provenance and qualify a separately
+identified public-source build with its module/plugin notices and accompanying
+materials. Keep QNX SDP/runtime terms separate from Marathon and Qt. See
+`docs/adr/0013-open-source-qt.md`; it supersedes the former blanket Qt
+build/deploy licensing stop.

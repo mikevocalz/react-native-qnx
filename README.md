@@ -6,8 +6,9 @@ The experimental Pi 400 target renders Hello World at 1920×1080 on QNX SDP 8.0.
 ![React Native QNX Hello World on the Pi 400](docs/evidence/pi400-hello-world-fullscreen-2026-11-07.png)
 
 This is v1 preparation. Graphics cold boot, stock Pi 4 QSTI parity, performance
-measurements and production distribution remain open. The Pi 400 Qt runtime is
-a private evaluation expiring on 17 November 2026. Read
+measurements and release packaging remain open. Development follows the
+[open-source Qt path](docs/adr/0013-open-source-qt.md), with no paid Qt subscription
+prerequisite. The Pi 400 receipts retain their evaluation-artifact provenance. Read
 [the evidence boundaries](docs/handoff/CURRENT_STATE.md) and
 [v1 gates](docs/releases/v1-readiness.md) before selecting a target.
 
@@ -47,9 +48,10 @@ pnpm validate:docs
 pnpm validate:macos
 ```
 
-`validate:macos` runs host checks. It does not cross-build or run QNX. Hosted
-CI is blocked by account billing/spending limits as recorded in the dated
-handoff; local passes remain separate. `pnpm validate:v1` checks the release
+`validate:macos` runs host checks. It does not cross-build or run QNX.
+The dated handoff records earlier billing refusals.
+[PR #68](https://github.com/mikevocalz/react-native-qnx/pull/68/checks) starts
+hosted CI again; local passes remain separate. `pnpm validate:v1` checks the release
 record and exits nonzero while required acceptance evidence is missing.
 
 ## Know what is supported

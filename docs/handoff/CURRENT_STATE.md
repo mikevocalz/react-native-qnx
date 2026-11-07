@@ -31,11 +31,13 @@ not establish cold boot. Captures do not measure presentation timing.
   coverage need named target results. See the separate device columns in the
   [support table](../component-support.md).
 - Startup-to-first-frame, presented-frame interval and RSS are unmeasured.
-- Hosted CI jobs were refused before runner startup because of account billing
-  or spending limits. Local checks do not turn those jobs green.
-- Qt evaluation expires on 17 November 2026. Production distribution remains
-  blocked by [the packaging gate](../packaging.md); no LGPL or commercial
-  distribution determination is made by this PR.
+- The reviewed baseline had hosted CI billing/spending refusals.
+  [PR #68](https://github.com/mikevocalz/react-native-qnx/pull/68/checks) now starts
+  hosted jobs; candidate results remain separate from local checks.
+- Open-source Qt is the selected path, with no paid-license prerequisite, per
+  [ADR-0013](../adr/0013-open-source-qt.md). The older evaluation artifacts expire
+  on 17 November 2026; qualify the separate public-source build and its
+  accompanying materials through [packaging](../packaging.md).
 - The CLI and template are source-checkout tools. npm publication, generic
   Nitrogen QNX generation and a standalone native app template remain open.
 

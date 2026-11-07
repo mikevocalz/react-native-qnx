@@ -6,22 +6,22 @@
     "qnxSdp": "8.0.5",
     "stockTarget": "Pi 4/5 QSTI 0.5.0 build 50; full-runtime device result pending",
     "experimentalTarget": "Pi 400 custom BCM2711 image; scoped Hello World/Nitro/runtime/input receipts",
-    "qtTarget": "6.12.0 private evaluation; expires 2026-11-17; distribution unresolved",
+    "qtTarget": "Historical Pi 400 receipts: 6.12.0 evaluation expires 2026-11-17. Selected route: eligible open-source Qt per ADR-0013; separate public-source build receipt pending.",
     "hostedCi": "blocked before runner startup by billing/spending limits at the reviewed baseline",
     "performance": "unmeasured on QNX"
   },
   "gates": [
     {
       "id": "distribution",
-      "title": "Qt/QNX distribution posture",
-      "status": "blocked",
-      "acceptance": "Document the authorized source channel and license determination, exact module/plugin closure, notices and relinking/source obligations where applicable. Evaluation binaries cannot establish this gate.",
+      "title": "Open-source runtime packaging",
+      "status": "pending",
+      "acceptance": "Qualify the eligible public Qt source build, exact module/QPA notices and hashes, shared-library/plugin closure and applicable source/library replacement materials. Keep evaluation and QNX SDK payloads separate. No paid Qt subscription prerequisite.",
       "evidence": []
     },
     {
       "id": "ci",
       "title": "Candidate CI",
-      "status": "blocked",
+      "status": "pending",
       "acceptance": "Successful required checks for the release candidate on authorized runners; local checks remain separately labeled.",
       "evidence": []
     },

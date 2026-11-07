@@ -154,22 +154,38 @@ pipeline execution is claimed. DRI role: Codex implementation on behalf of the
 repository owner. Independent automated reviewer: CodeRabbit. Human release/QNX
 reviewers remain unassigned; no external author's participation is implied.
 
+## Owner clarification follow-up
+
+The owner selected the open-source Qt route in ADR-0013; a paid Qt subscription
+is not a project prerequisite. Active packaging, handoff, README and agent
+guidance now reflect that direction. The earlier release-check output in the
+log is a historical snapshot; the appended output has pending source-artifact
+and runtime gates. Hosted jobs on the initial PR candidate started successfully.
+
+Documentation/format checks, TypeScript and all 21 JS test modules passed again.
+During another disk-exhaustion episode, a watchdog test initially returned 2
+instead of 124. After removing only this checkout’s completed native build
+output, the unchanged suite passed. No assertion was weakened. Native code did
+not change and its earlier 7/7 result was not rerun for this docs-only correction.
+
 ## Limits, security, licensing and rollback
 
 QNX device, cold boot, stock QSTI parity, physical keyboard/touch, IME and QNX
 performance tests were not run. Startup/frame/RSS budgets are **unmeasured**.
-The [v1 record](../releases/v1-readiness.md) stays blocked/pending. The existing
+The [v1 record](../releases/v1-readiness.md) stays pending. The existing
 Pi 400 app, Qt evaluation payloads, graphics stack and recovery boot were not
 changed. No binary distribution, release tag or npm publication occurs.
 
 The root MIT file formalizes the manifest's existing project license.
-Third-party terms and Qt/QNX distribution decisions remain separate; the
-public-source LGPL rebuild is an investigation proposal. No vendor payload or
+Following the owner’s clarification, [ADR-0013](../adr/0013-open-source-qt.md)
+selects eligible open-source Qt with no paid-subscription prerequisite.
+The separate public-source build and its accompanying materials remain to be
+qualified; earlier evaluation-artifact provenance is preserved. No vendor payload or
 premium component is included. CLI subprocesses use validated argv and retain
 the shell scripts' existing target checks.
 
 Rollback: revert this PR; no native ABI, dependency pin, window or target boot
 migration is needed. Generated apps are explicit source additions; removing an
-app requires removing its workspace importer through pnpm. Next slice: resolve
-the distribution and authorized CI runner gates, then qualify cold boot and
+app requires removing its workspace importer through pnpm. Next slice: qualify
+public-source packaging and candidate CI, then qualify cold boot and
 component/performance behavior on the release board/image.
