@@ -27,7 +27,10 @@ function(rnqnx_add_qt_views_target)
     if(NOT QT_FEATURE_accessibility)
       message(FATAL_ERROR "Accessibility bridge requires Qt accessibility support")
     endif()
-    target_sources(rnqnx_views_qt PRIVATE "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtViewAccessibility.cpp")
+    target_sources(rnqnx_views_qt PRIVATE "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtViewAccessibility.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtAccessibilityActivation.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtAccessibilityActivation.h")
+    set_target_properties(rnqnx_views_qt PROPERTIES AUTOMOC ON)
   endif()
   target_include_directories(rnqnx_views_qt PUBLIC
     "${RNQNX_REACT_QT_ROOT}/vnext/include"
@@ -107,6 +110,8 @@ function(rnqnx_add_react_host_target)
   endif()
   rnqnx_enable_strict_warnings(rnqnx_react_host)
   if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE)
+    include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxAccessibilityActions.cmake)
+    rnqnx_add_accessibility_action_probe()
     add_executable(rnqnx_accessibility_view_test "${RNQNX_REACT_QT_ROOT}/tests/native/accessibility/ViewTest.cpp")
     target_link_libraries(rnqnx_accessibility_view_test PRIVATE rnqnx_views_qt)
     target_compile_definitions(rnqnx_accessibility_view_test PRIVATE RNQNX_ACCESSIBILITY_MOUNTING_TEST=1)

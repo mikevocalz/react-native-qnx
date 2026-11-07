@@ -273,6 +273,9 @@ class QtQuickMountingLayer {
 
   /// Borrowed; nullptr when the tag is not mounted.
   QQuickItem* itemForTag(Tag tag) const;
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+  bool isGenericView(Tag tag) const;
+#endif
 
   /// Number of tags currently known, including the root.
   int mountedCount() const;
