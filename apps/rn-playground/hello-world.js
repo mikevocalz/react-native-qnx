@@ -11,12 +11,18 @@ function HelloWorld() {
       collapsable: false,
       style: {
         flex: 1,
+        width: '100%',
+        height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#102033',
       },
     },
-    React.createElement(Text, { style: { color: '#ffffff', fontSize: 32 } }, 'Hello World!')
+    React.createElement(
+      Text,
+      { style: { color: '#ffffff', fontSize: 32 } },
+      'React Native QNX: Hello World'
+    )
   );
 }
 

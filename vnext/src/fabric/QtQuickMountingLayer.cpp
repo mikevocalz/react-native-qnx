@@ -10,6 +10,7 @@
 #include <QFontDatabase>
 #include <QHash>
 #include <QStandardPaths>
+#include <QSet>
 #include <QStringList>
 #include <QUrl>
 
@@ -167,6 +168,21 @@ MountError QtQuickMountingLayer::create(
   return MountError::None;
 }
 
+QList<QQuickItem*> QtQuickMountingLayer::mountedChildren(QQuickItem* parent) const {
+  QSet<QQuickItem*> mounted;
+  mounted.reserve(items_.size());
+  for (const auto& item : items_) {
+    mounted.insert(item.item);
+  }
+  QList<QQuickItem*> children;
+  for (auto* child : parent->childItems()) {
+    if (mounted.contains(child)) {
+      children.append(child);
+    }
+  }
+  return children;
+}
+
 MountError QtQuickMountingLayer::insert(
     Tag parentTag,
     Tag childTag,
@@ -193,7 +209,9 @@ MountError QtQuickMountingLayer::insert(
     parentItem = content;
   }
 
-  const int childCount = static_cast<int>(parentItem->childItems().size());
+  // Fabric indices exclude QML-owned backgrounds and other decorations.
+  const QList<QQuickItem*> children = mountedChildren(parentItem);
+  const int childCount = static_cast<int>(children.size());
   if (index < 0 || index > childCount) {
     return failWith(
         MountError::IndexOutOfRange,
@@ -202,10 +220,8 @@ MountError QtQuickMountingLayer::insert(
 
   child->item->setParentItem(parentItem);
 
-  // setParentItem appends, so the item only needs restacking when it is not
-  // already last. childItems() order is the stacking order Qt paints in.
-  const QList<QQuickItem*> children = parentItem->childItems();
-  if (index < children.size() - 1) {
+  // Append above the QML decorations, then order only against Fabric siblings.
+  if (index < childCount) {
     child->item->stackBefore(children.at(index));
   }
 
@@ -248,7 +264,7 @@ MountError QtQuickMountingLayer::remove(
   // means our tree has diverged from the shadow tree, which is a defect worth
   // surfacing rather than papering over.
   const int actualIndex =
-      static_cast<int>(parentItem->childItems().indexOf(child->item));
+      static_cast<int>(mountedChildren(parentItem).indexOf(child->item));
   if (actualIndex != index) {
     return failWith(
         MountError::IndexOutOfRange,

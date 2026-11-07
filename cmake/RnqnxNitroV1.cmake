@@ -29,6 +29,10 @@ function(rnqnx_add_nitro_v1_core)
     set(RNQNX_NITRO_CORE_ROOT "${RNQNX_NITRO_V1_REPO_ROOT}/node_modules/nitro-core")
   endif()
 
+  if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
+    include(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/dependencies/QnxNitroPatches.cmake)
+  endif()
+
   set(_core_src "${RNQNX_NITRO_CORE_ROOT}/native/cpp/src")
   set(_core_inc "${RNQNX_NITRO_CORE_ROOT}/native/cpp/include")
   if(NOT EXISTS "${_core_inc}/NitroModules/HybridClassRegistry.hpp" OR
@@ -79,7 +83,7 @@ function(rnqnx_add_nitro_v1_core)
   )
   target_link_libraries(rnqnx_nitro_core PUBLIC Threads::Threads)
   target_compile_features(rnqnx_nitro_core PUBLIC cxx_std_20)
-  if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+  if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU|QCC")
     message(FATAL_ERROR "Nitro 1.0 alpha compatibility preinclude requires Clang/GCC")
   endif()
   target_compile_options(rnqnx_nitro_core PRIVATE

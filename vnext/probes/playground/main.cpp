@@ -16,6 +16,10 @@
 #include "react-native-qnx/runtime/QtReactHost.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
+#ifdef RNQNX_PLAYGROUND_NITRO_QNX
+#include "QnxNitroRuntime.hpp"
+#endif
+
 #include <QByteArray>
 #include <QColor>
 #include <QCommandLineOption>
@@ -389,6 +393,9 @@ int main(int argc, char** argv) {
       QStringLiteral("ModalHostView"), QStringLiteral("View"));
 
   rnqnx::runtime::QtReactHost host(adapter);
+#ifdef RNQNX_PLAYGROUND_NITRO_QNX
+  rnqnx::nitro::installQnxNitroRuntime(host.runtime());
+#endif
   host.installTurboModuleBinding();
   host.installComponentProvider();
   host.installPlatformConstants();

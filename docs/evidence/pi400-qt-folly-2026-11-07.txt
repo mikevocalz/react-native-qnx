@@ -1,0 +1,24 @@
+Physical Raspberry Pi 400, QNX Everywhere / SDP 8.0.5
+Manual recovery boot; automatic graphics startup disabled
+
+Qt 6.12.0 selected runtime cross-build: exit 0
+Standalone Qt Quick smoke run as qnxuser:
+  PI400_QT_QUICK_WINDOW_CREATED
+  SSH_EXIT=0
+Screen capture: 640x480; visually verified centered "Qt Quick on QNX" text.
+Named qnxuser read/write ACL: /dev/drm/card0, /dev/drm/renderD128.
+No widened Screen administrative command permissions.
+This standalone window does not execute React Native.
+
+Folly QNX probe as qnxuser, portable per-message batch implementation:
+  RNQNX_FOLLY_STAGE main
+  RNQNX_FOLLY_STAGE worker-joined
+  RNQNX_FOLLY_STAGE socketpair
+  RNQNX_FOLLY_STAGE send-batch
+  RNQNX_FOLLY_STAGE receive-batch
+  RNQNX_FOLLY_QNX_OK threads=2 batch=2 syscall=ENOSYS
+  SSH_EXIT=0
+Native socket batching remains unverified; no Linux timeout parity claim.
+
+Evidence is a sanitized transcription of local build/device logs.
+Qt evaluation expires 17 November 2026; private evaluation only.

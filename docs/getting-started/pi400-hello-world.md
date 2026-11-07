@@ -2,7 +2,7 @@
 
 `apps/rn-playground/hello-world.js` is a separate static entry for the existing
 Qt Quick/Fabric playground runner. It registers the existing `RNQnxPlayground`
-surface and renders a centered white `Hello World!` on a dark background.
+surface and renders a centered white `React Native QNX: Hello World` on a dark background.
 It leaves the default playground, native window dimensions, Metro platform,
 renderer, and dependency versions unchanged.
 
@@ -41,8 +41,8 @@ QNX AArch64 libraries, a working QPA/Screen configuration, and the deployed
 bundle. The current QNX CMake graph exposes the geometry-only
 `rnqnx_react_qnx_probe`; the existing visual runner is now also exposed as the opt-in
 `rnqnx_playground_qnx` target. Its source and 640×480 window are shared with
-`rnqnx_playground_host`; the QNX visual target has not yet completed its
-cross-build or physical rendering check.
+`rnqnx_playground_host`; the QNX visual target completed its cross-build and physical Hello World
+rendering check on 2026-11-07.
 
 The repository's [ADR-0001](../adr/0001-qt-quick-backend.md) requires a documented
 licensing determination before acquiring, building, or deploying Qt for QNX.
@@ -63,8 +63,8 @@ Separately, the existing `rnqnx_g0_cxx20_probe` and direct-Screen
 binaries, not execution of this React Native entry. After reconnecting the Pi,
 the new C++20 probe executed and reported
 `RNQNX_G0_CXX20_OK ranges=12 designated=21 thread=34 jthread=unsupported`.
-The Hello World bundle was copied to the device, but has not been evaluated by
-a native React Native host there. The Screen probe has not run successfully
+At that preparation stage, the Hello World bundle had only been copied to the
+device. The later physical rendering result below supersedes that limitation. The Screen probe has not run successfully
 on the device. The seven available macOS CTests passed; they do not include a
 full Hermes/React Native application rendering pass.
 
@@ -116,23 +116,30 @@ controlled manual DRM/Screen/gears run remained remotely reachable while the
 Hermes tests ran. This does not establish reliable graphics startup on cold
 boot. The gears demo is not this React Native application.
 
-**Status: bundle prepared; physical React Native rendering not yet verified.**
-The temporary Qt evaluation is active as recorded below. The matching target
-Qt/native host and physical rendering remain outstanding.
+**Status (2026-11-07): physical React Native/Fabric/Hermes/Qt Quick Hello World verified.**
+The same app passed the existing synchronous Nitro v1 binding check. A 640×480
+capture shows the requested title centered over the full dark app background.
+The capture run exited zero; the app was then launched continuously for HDMI.
+See [captured evidence](../evidence/pi400-hello-world-2026-11-07.txt).
+Automatic graphics startup remains disabled; this is a manual recovery-boot run.
 
 ## Temporary Qt evaluation
 
 The owner requested and activated a Qt for Device Creation Enterprise evaluation.
-The account displays an expiry of 17 November 2026. Qt 6.12.0 LTS source has
-been acquired through that account; target compilation and a rendered Qt Quick
-window remain pending. See ADR-0001 for the restricted evaluation scope.
+The account displays an expiry of 17 November 2026. Qt 6.12.0 LTS source was
+acquired through that account. The selected target runtime cross-built, and a
+standalone Qt Quick window rendered on the physical Pi as `qnxuser`, exiting
+zero. A Screen capture verified the text `Qt Quick on QNX`. This prerequisite
+window does not execute React Native. See ADR-0001 for the restricted evaluation scope.
 
 ## Opt-in QNX visual runner
 
 With the licensed matching Qt QNX build available, configure the existing QNX
 preset with `RNQNX_BUILD_HERMES_QNX=ON`, `RNQNX_BUILD_REACT_QNX=ON`,
 `RNQNX_FETCH_REACT_NATIVE_DEPS=ON`, and `RNQNX_BUILD_PLAYGROUND_QNX=ON`.
-Set `CMAKE_PREFIX_PATH` to the matching target Qt SDK and build
+Use the matching target Qt SDK generated `qt.toolchain.cmake`, with
+`QT_CHAINLOAD_TOOLCHAIN_FILE` selecting the canonical QNX toolchain and
+`QT_HOST_PATH` selecting matching runnable host tools. Build
 `rnqnx_playground_qnx`. The new flag defaults OFF and rejects host builds or
 a missing React target graph. Both negative cases were checked.
 
@@ -140,7 +147,9 @@ Deploy the actual Qt platform/QML plugins and shared-library dependency closure,
 including `QtQuick.Shapes`, Qml Models/WorkerScript, PNG support and fonts. The
 unchanged View factory imports Shapes even for this small app. Run the visual
 target with `--bundle hello-world.hbc`; its file-loading path preserves binary
-bytecode. The target build, dependency closure and rendered image remain pending.
+bytecode. The React Native target cross-built, loaded the compiled Metro entry, and
+rendered on the physical Pi as `qnxuser`. The selected Qt runtime closure was
+also exercised independently by the standalone Qt Quick window.
 
 CMake's QCC MOC predefinitions command omits normal compiler flags and its generic
 compiler-target setting. The canonical toolchain now repeats the locked ARM
@@ -163,3 +172,84 @@ For the preserved 640×480 window, select `QT_QPA_PLATFORM=qnx:no-fullscreen`.
 Qt 6.12.0's `qqnxintegration.cpp` enables `FullScreenApplication` unless that
 parameter is present; this environment setting preserves the existing window
 contract rather than changing the runner's dimensions.
+
+## Physical Qt and Folly prerequisites (2026-11-07)
+
+The selected Qt 6.12.0 runtime includes Core, Gui, Network, OpenGL, Qml,
+QmlMeta, QmlModels, QmlWorkerScript, Quick and QuickShapes, the QNX QPA plugin,
+and the required QML plugins. It is installed privately under `/data/qt612`;
+system libraries were not replaced. Named-user read/write ACLs on
+`/dev/drm/card0` and `/dev/drm/renderD128` allowed `qnxuser` to initialize EGL.
+Screen's administrative command permissions were not widened. This manual
+setup has not been validated across reboot.
+
+Matching Linux host tools report 6.12.0. The account Qt Declarative source tag
+differs from the public host package's recorded revision; all 8,109 compared
+build source, tools and CMake members match the public tagged source bytes.
+This verifies the compared build content, not identical repository revisions.
+
+QNX-only, exact-source checked patches adapt pinned Folly/glog namespace,
+syscall-header and thread-ID assumptions. The Folly socket batch wrappers use
+their existing per-message portable fallback on QNX; native batching has not
+been accepted. `rnqnx_folly_qnx_probe` passed as `qnxuser`, checking main and
+worker thread IDs, unsupported syscall reporting, and a two-datagram batch
+round trip: `RNQNX_FOLLY_QNX_OK threads=2 batch=2 syscall=ENOSYS`, exit zero.
+This does not assert Linux syscall or batching timeout parity.
+
+The QNX React Native graph applies exact-source checked GCC portability
+transforms to its isolated build copy: namespace qualification, consistent
+header type identity, explicit failure on invalid enum values, size-type
+comparisons, and copy elision. Unused legacy JSExecutor includes are removed
+from three modern translation units. The retained deprecated TurboModule
+compatibility implementation has a scoped diagnostic guard; caller diagnostics
+remain active. Cosmetic unknown pragmas are ignored privately on upstream RN
+object/static targets; other warnings and `-Werror` remain enabled. These transforms modify the QNX source tree in place: configure from an
+isolated source/dependency checkout, rather than a dependency directory shared
+with host builds. This run used a separate checkout; the canonical host
+dependency installation was unchanged. Ordinary host configuration skips them.
+
+## Nitro v1 Hello World
+
+Enable the existing `RNQNX_BUILD_NITRO_QNX=ON` with the visual runner flags.
+The runner then links the real QNX Nitro adapter and installs it into the same
+Hermes runtime before evaluating the bundle. Build `hello-world-nitro.js` with
+the Metro command above and compile its output with the same pinned `hermesc`.
+Run with `--bundle hello-world-nitro.hbc`. The separate base entry remains
+available without Nitro.
+
+The entry uses Nitro v1's `getHybridClass()` and `new`, exercises the existing
+synchronous native getters and `add(20, 22)`, and prints:
+
+```text
+RNQNX_HELLO_NITRO_V1_OK platform=qnx architecture=aarch64 add=42
+RNQNX_PLAYGROUND_SCREENSHOT hello-world-nitro.png 640x480
+```
+
+This passed on the Pi with exit zero. The exact locked core, RN adapter and
+Nitrogen version is `1.0.0-alpha.nightly.105.g69d365fc9b18`. Official npm archive
+SHA-512 checks and comparisons of all 333 core, 280 adapter and 608 Nitrogen
+files matched the installed packages. A newer nightly was observed; no version
+upgrade was made. This uses the repository's constrained generated binding
+proof, not a claim of upstream Nitrogen QNX support. No Promise/callback
+dispatcher, third-party Nitro package, or general Nitro module compatibility
+was validated.
+
+The physical run exposed two shared renderer bugs: QML-owned background items
+were counted as Fabric children, hiding text behind its background; and a
+zero minimum surface constraint let Yoga shrink-wrap the root to the text.
+Insert/remove now count only registered Fabric children. Surface minimum and
+maximum match the supplied viewport; fixed-size descendants retain their own
+Yoga sizes. Native window dimensions remain 640×480.
+
+The decorated-View ordering/removal regression passed under the host ASan
+configuration. A flex/percentage-root plus fixed-child regression was added to
+the full host/Hermes suite but that larger suite was not rebuilt/run here;
+the physical Hello World capture validates the actual QNX viewport path. The
+child-filter helper scans registered items per mutation; large-tree performance,
+startup time, FPS and RSS were not measured.
+
+To repeat a one-shot capture, add `--screenshot output.png`; it intentionally
+exits afterward. Omit that option to keep the app running. Use the private Qt
+runtime and the same QPA/QML/font paths as the verified deployment. A power
+cycle still requires manual graphics setup; do not select the failed graphics
+autostart boot image.

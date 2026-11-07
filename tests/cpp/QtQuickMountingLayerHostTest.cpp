@@ -147,6 +147,30 @@ void insertParentsAndOrdersChildren() {
   CHECK(children.at(2) == fixture.layer().itemForTag(3));
 }
 
+void fabricIndicesExcludeQmlDecorations() {
+  Fixture fixture;
+  fixture.factory().registerType(QStringLiteral("DecoratedView"), QByteArray(
+      "import QtQuick\nItem { Rectangle { objectName: 'background'; anchors.fill: parent } }\n"));
+  CHECK_OK(fixture.layer().create(2, QStringLiteral("DecoratedView")));
+  CHECK_OK(fixture.layer().insert(kRootTag, 2, 0));
+  CHECK_OK(fixture.createView(3));
+  CHECK_OK(fixture.createView(4));
+  QQuickItem* parent = fixture.layer().itemForTag(2);
+  QQuickItem* background = parent->childItems().at(0);
+  CHECK_ERROR(fixture.layer().insert(2, 3, 1), MountError::IndexOutOfRange);
+  CHECK_OK(fixture.layer().insert(2, 3, 0));
+  CHECK_OK(fixture.layer().insert(2, 4, 0));
+  CHECK(parent->childItems().size() == 3);
+  CHECK(parent->childItems().at(0) == background);
+  CHECK(parent->childItems().at(1) == fixture.layer().itemForTag(4));
+  CHECK(parent->childItems().at(2) == fixture.layer().itemForTag(3));
+  CHECK_ERROR(fixture.layer().remove(2, 3, 0), MountError::IndexOutOfRange);
+  CHECK_OK(fixture.layer().remove(2, 3, 1));
+  CHECK_OK(fixture.layer().remove(2, 4, 0));
+  CHECK(parent->childItems().size() == 1);
+  CHECK(parent->childItems().at(0) == background);
+}
+
 void insertRejectsBadArguments() {
   Fixture fixture;
   CHECK_OK(fixture.createView(2));
@@ -307,6 +331,7 @@ int main(int argc, char** argv) {
       {"createLeavesItemUnparented", createLeavesItemUnparented},
       {"insertParentsAndOrdersChildren", insertParentsAndOrdersChildren},
       {"insertRejectsBadArguments", insertRejectsBadArguments},
+      {"fabricIndicesExcludeQmlDecorations", fabricIndicesExcludeQmlDecorations},
       {"removeDetachesWithoutDestroying", removeDetachesWithoutDestroying},
       {"removeRejectsIndexDisagreement", removeRejectsIndexDisagreement},
       {"destroyReleasesTagAndItem", destroyReleasesTagAndItem},

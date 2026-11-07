@@ -1,5 +1,24 @@
 # CURRENT_STATE.md
 
+## 2026-11-07 physical Pi 400 Hello World
+
+The physical Pi 400 running the QNX 8.0.5 target now renders the production
+React Native/Fabric/Hermes/Qt Quick entry as `qnxuser`. The app displays
+`React Native QNX: Hello World` in the preserved 640×480 window. The same
+entry exercises the existing synchronous Nitro v1 alpha 105 HybridClass
+(getters and add(20, 22)=42); screenshot run exited zero and the continuous
+app was then launched for HDMI. See
+[device evidence](../evidence/pi400-hello-world-2026-11-07.txt) and
+[bring-up instructions](../getting-started/pi400-hello-world.md).
+
+The selected Qt 6.12.0 target runtime was built under the private evaluation
+through 17 November 2026. Manual graphics requires the isolated legacy Pi 4
+DRM/Screen stack and named DRM ACLs. Recovery boot remains selected; automatic
+graphics startup remains disabled after failed boot tests. Full component,
+QSTI, async Nitro, performance, and production-packaging gates remain separate.
+Earlier no-QNX-pixel statements below describe older baselines and are
+superseded only for this measured Hello World slice.
+
 ## 2026-10-03 dependency security update
 
 The earlier clean-audit statements below describe the 2026-10-01 baseline.

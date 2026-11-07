@@ -168,6 +168,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
 
     rnqnx_add_qt_views_target()
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/ReactNativeThirdParty.cmake)
+    add_executable(rnqnx_folly_qnx_probe vnext/probes/folly-qnx/main.cpp)
+    target_link_libraries(rnqnx_folly_qnx_probe PRIVATE
+      rnqnx_folly_runtime Threads::Threads)
+    rnqnx_enable_strict_warnings(rnqnx_folly_qnx_probe)
+    set_target_properties(rnqnx_folly_qnx_probe PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies/ReactNativeRenderer.cmake)
     rnqnx_add_fabric_adapter_target()
     rnqnx_add_react_host_target()
@@ -175,6 +181,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     if(RNQNX_BUILD_PLAYGROUND_QNX)
       add_executable(rnqnx_playground_qnx vnext/probes/playground/main.cpp)
       target_link_libraries(rnqnx_playground_qnx PRIVATE rnqnx_react_host)
+      if(RNQNX_BUILD_NITRO_QNX)
+        target_link_libraries(rnqnx_playground_qnx PRIVATE rnqnx_nitro_qnx)
+        target_compile_definitions(rnqnx_playground_qnx PRIVATE
+          RNQNX_PLAYGROUND_NITRO_QNX=1)
+      endif()
       rnqnx_enable_strict_warnings(rnqnx_playground_qnx)
       # Lean Hermes consumes precompiled bytecode, supplied with --bundle.
       target_compile_definitions(rnqnx_playground_qnx PRIVATE

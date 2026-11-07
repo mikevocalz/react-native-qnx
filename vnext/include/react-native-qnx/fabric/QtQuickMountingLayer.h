@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QHash>
+#include <QList>
 #include <QString>
 
 #include <cstdint>
@@ -256,6 +257,7 @@ class QtQuickMountingLayer {
     bool owned{false};
   };
 
+  QList<QQuickItem*> mountedChildren(QQuickItem* parent) const;
   MountError failWith(MountError error, const QString& detail);
 
   views::QtQuickItemFactory& factory_;

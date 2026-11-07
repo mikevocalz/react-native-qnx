@@ -17,6 +17,9 @@ if(NOT TARGET rnqnx_folly_runtime)
 endif()
 
 set(REACT_COMMON_DIR "${RNQNX_REACT_NATIVE_DIR}/ReactCommon")
+if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
+  include(${CMAKE_CURRENT_LIST_DIR}/QnxReactNativePatches.cmake)
+endif()
 
 # This repository root, for sources outside node_modules.
 get_filename_component(RNQNX_REPO_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
@@ -178,9 +181,16 @@ foreach(module IN LISTS RNQNX_REACT_NATIVE_MODULES)
   )
 endforeach()
 
-# RN 0.88 feature flags use 16-byte atomic state. Linux/libstdc++ emits
+# This upstream object library implements retained deprecated bridge APIs. GCC
+# diagnoses their use inside the implementation; keep caller diagnostics intact.
+if(CMAKE_SYSTEM_NAME STREQUAL "QNX" AND
+   CMAKE_CXX_COMPILER_ID MATCHES "QCC|GNU")
+  target_compile_options(react_cxxreact PRIVATE -Wno-deprecated-declarations)
+endif()
+
+# RN 0.88 feature flags use 16-byte atomic state. Linux and QNX emit
 # __atomic_*_16 calls; unlike Apple's runtime this needs an explicit libatomic.
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "QNX")
   target_link_libraries(react_featureflags atomic)
 endif()
 
@@ -481,6 +491,14 @@ target_link_libraries(rnqnx_react_native_renderer INTERFACE
 # objects to this interface target puts them in every consumer's link line.
 foreach(rn_target IN LISTS RNQNX_REACT_NATIVE_RENDERER_TARGETS)
   get_target_property(rn_target_type ${rn_target} TYPE)
+  if(CMAKE_SYSTEM_NAME STREQUAL "QNX" AND
+     CMAKE_CXX_COMPILER_ID MATCHES "QCC|GNU" AND
+     (rn_target_type STREQUAL "OBJECT_LIBRARY" OR
+      rn_target_type STREQUAL "STATIC_LIBRARY"))
+    # RN's Clang-oriented headers use cosmetic '#pragma mark' sections. Keep
+    # every other upstream diagnostic, including -Werror, enabled under QCC.
+    target_compile_options(${rn_target} PRIVATE -Wno-unknown-pragmas)
+  endif()
   if(rn_target_type STREQUAL "OBJECT_LIBRARY")
     target_sources(rnqnx_react_native_renderer INTERFACE
       $<TARGET_OBJECTS:${rn_target}>)

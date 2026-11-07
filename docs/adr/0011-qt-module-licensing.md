@@ -213,3 +213,12 @@ Sources:
 - `Qt Quick Controls` is part of `qtdeclarative` since Qt 6.3; the `qt` Homebrew
   keg is a meta-package that pulls it in. The module still has an independent
   name and concern for the component library.
+
+### Observed OpenGL runtime dependency
+
+The 6.12.0 QNX build also produces Qt OpenGL from qtbase, required by the
+selected Quick rendering path. It is included in this restricted private
+evaluation runtime. `qtbase/src/opengl/qopenglshaderprogram.cpp` offers
+`LicenseRef-Qt-Commercial` alongside LGPLv3/GPL alternatives. The built QNX QPA
+plugin is `plugins/platforms/libqqnx.so`; QML plugin filenames and the shared
+library closure were inspected from the built artifacts, rather than assumed.

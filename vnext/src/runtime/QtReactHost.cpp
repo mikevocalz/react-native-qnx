@@ -897,7 +897,10 @@ facebook::react::LayoutConstraints makeLayoutConstraints(
     float width,
     float height) {
   facebook::react::LayoutConstraints constraints;
-  constraints.minimumSize = {.width = 0, .height = 0};
+  // A surface's viewport is fixed by its host window. A zero minimum allows
+  // Yoga to shrink-wrap the root, leaving flex and percentage children with
+  // an intrinsic-width viewport instead of the supplied surface dimensions.
+  constraints.minimumSize = {.width = width, .height = height};
   constraints.maximumSize = {.width = width, .height = height};
   // SurfaceHandler.cpp:43 asserts the direction is set, and it defaults to
   // Undefined, so this must happen before start().

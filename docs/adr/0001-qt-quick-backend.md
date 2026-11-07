@@ -2,9 +2,12 @@
 
 ## Status
 
-Accepted architecture; G0-B source/build bring-up is in progress under the
-restricted evaluation below. A rendered Qt Quick window on the Pi remains
-unverified.
+Accepted architecture; the selected Qt 6.12.0 QNX runtime cross-built under the
+restricted evaluation below. A standalone Qt Quick window rendered on the Pi
+as `qnxuser` and exited zero. The physical
+React Native Hello World rendered through Fabric/Hermes/Qt Quick on 2026-11-07.
+This verifies that small entry, not all component APIs; automatic graphics
+startup remains disabled.
 
 ## Context
 
@@ -112,5 +115,6 @@ Sources: [Qt account licenses](https://account.qt.io/s/),
 - [QNX Everywhere June 2026 release notes](https://www.qnx.com/developers/docs/qnxeverywhere/rel_notes.html)
 - Platform specification §§3–6
 
-Installed/pinned Qt source paths and symbols remain intentionally absent until
-G0-B acquires and pins that source tree.
+The acquired source archive is pinned above. The physical Qt prerequisite and
+its deployment limits are recorded in
+[the Pi 400 bring-up guide](../getting-started/pi400-hello-world.md).
