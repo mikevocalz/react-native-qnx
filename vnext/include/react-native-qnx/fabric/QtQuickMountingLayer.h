@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QHash>
+#include <QList>
+#include <QSet>
 #include <QString>
 
 #include <cstdint>
@@ -256,12 +258,15 @@ class QtQuickMountingLayer {
     bool owned{false};
   };
 
+  QList<QQuickItem*> mountedChildren(QQuickItem* parent) const;
   MountError failWith(MountError error, const QString& detail);
 
   views::QtQuickItemFactory& factory_;
   QQuickItem& rootItem_;
   Tag rootTag_;
   QHash<Tag, MountedItem> items_;
+  // Non-owning membership index, kept in step with the tag registry.
+  QSet<QQuickItem*> mountedPointers_;
   QString lastError_;
 };
 

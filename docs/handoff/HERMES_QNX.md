@@ -1,5 +1,19 @@
 # Hermes QNX Feasibility
 
+## Current physical AArch64 evidence (2026-11-06)
+
+Hermes `hermes-v260318099.0.5` / React Native 0.88.1 passed the lean-bytecode
+JSI probe on a physical Pi 400 running QNX 8.0.5, including 256 KiB and 1 MiB
+worker stacks and exit status zero. See [recipe and boundaries](../getting-started/pi400-hello-world.md)
+and [captured output](../evidence/pi400-hermes-2026-11-06.txt). This does not
+validate the historical x86_64 lane, a complete React Native host, or HDMI
+application rendering. Qt-for-QNX licensing remains unresolved.
+
+## Historical investigation
+
+The remaining notes describe older experiments, not the active dependency
+versions or the current AArch64 result.
+
 > **SDK 58 migration note (2026-10-01):** The experiments below were performed
 > against React Native 0.86.2 / Hermes `250829098.0.16`. The active repository
 > line is now Expo SDK 58 / React Native 0.88.0-rc.3, whose installed Hermes

@@ -112,6 +112,7 @@ QtQuickMountingLayer::QtQuickMountingLayer(
     Tag rootTag)
     : factory_(factory), rootItem_(rootItem), rootTag_(rootTag) {
   items_.insert(rootTag_, MountedItem{&rootItem_, false});
+  mountedPointers_.insert(&rootItem_);
 }
 
 QtQuickMountingLayer::~QtQuickMountingLayer() {
@@ -163,8 +164,19 @@ MountError QtQuickMountingLayer::create(
   }
 
   items_.insert(tag, MountedItem{item, true});
+  mountedPointers_.insert(item);
   lastError_.clear();
   return MountError::None;
+}
+
+QList<QQuickItem*> QtQuickMountingLayer::mountedChildren(QQuickItem* parent) const {
+  QList<QQuickItem*> children;
+  for (auto* child : parent->childItems()) {
+    if (mountedPointers_.contains(child)) {
+      children.append(child);
+    }
+  }
+  return children;
 }
 
 MountError QtQuickMountingLayer::insert(
@@ -193,7 +205,9 @@ MountError QtQuickMountingLayer::insert(
     parentItem = content;
   }
 
-  const int childCount = static_cast<int>(parentItem->childItems().size());
+  // Fabric indices exclude QML-owned backgrounds and other decorations.
+  const QList<QQuickItem*> children = mountedChildren(parentItem);
+  const int childCount = static_cast<int>(children.size());
   if (index < 0 || index > childCount) {
     return failWith(
         MountError::IndexOutOfRange,
@@ -202,10 +216,8 @@ MountError QtQuickMountingLayer::insert(
 
   child->item->setParentItem(parentItem);
 
-  // setParentItem appends, so the item only needs restacking when it is not
-  // already last. childItems() order is the stacking order Qt paints in.
-  const QList<QQuickItem*> children = parentItem->childItems();
-  if (index < children.size() - 1) {
+  // Append above the QML decorations, then order only against Fabric siblings.
+  if (index < childCount) {
     child->item->stackBefore(children.at(index));
   }
 
@@ -248,7 +260,7 @@ MountError QtQuickMountingLayer::remove(
   // means our tree has diverged from the shadow tree, which is a defect worth
   // surfacing rather than papering over.
   const int actualIndex =
-      static_cast<int>(parentItem->childItems().indexOf(child->item));
+      static_cast<int>(mountedChildren(parentItem).indexOf(child->item));
   if (actualIndex != index) {
     return failWith(
         MountError::IndexOutOfRange,
@@ -279,6 +291,7 @@ MountError QtQuickMountingLayer::destroy(Tag tag) {
 
   QQuickItem* item = mounted->item;
   items_.erase(mounted);
+  mountedPointers_.remove(item);
 
   // Defensive: a well-formed transaction removes before it deletes.
   if (item->parentItem() != nullptr) {

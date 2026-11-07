@@ -2,7 +2,9 @@
 
 ## Status
 
-Proposed 2026-08-14. Evidence is from the installed Qt 6.11.1 Homebrew kegs and
+Accepted only for the restricted Pi 400 evaluation subset recorded below.
+The broader open-source module matrix remains Proposed (2026-08-14). Its
+historical evidence is from the installed Qt 6.11.1 Homebrew kegs and
 Qt's online documentation; the ADR must be re-audited against the pinned Qt LTS
 source tree once that source is available in the workspace.
 
@@ -41,6 +43,66 @@ checked.
    license, subject to confirmation against the pinned source tree.
 5. No Tier 1 or Tier 2 module from Prompt 04 enters the build before this ADR
    is Accepted.
+
+## Pi 400 evaluation authorization (2026-11-06)
+
+The owner requested the free ten-day Qt evaluation. The signed-in commercial
+Qt portal was inspected and showed **Qt for Device Creation Enterprise,
+Evaluation, Active**, expiring **17 November 2026**. This records a temporary
+evaluation basis for the private Pi 400 bring-up, not a production or
+redistribution authorization. The open-source QNX licensing question remains
+unresolved outside this evaluation.
+
+The licensed account Downloads page supplied Qt **6.12.0 LTS**, full-framework
+UNIX source archive `qt-everywhere-src-6.12.0.tar.xz`, SHA-256
+`98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165`.
+Its top-level `.tag` is `ef25002ed292b132d1ed3246bfcee1d24a9cd966`.
+The archive also matches the portal-provided `md5sums-6.12.0` value
+`ac677cc64158740f257fd37a5b4c5ffb`. These are integrity checks, not an
+independently verified vendor signature. Account identifiers, license numbers, credentials, and licensed
+source are excluded from the repository.
+
+Only qtbase (Core, Gui, Network), qtdeclarative (Qml, Quick), and qtshadertools
+(matching host shader tools) are selected for this experiment. Their exact
+source notices, QNX support, built dependencies, and deployment files must be
+checked before the target runtime is accepted. Other optional modules remain
+excluded. The evaluation does not accept this ADR's broader module matrix or
+authorize release packaging. After expiry, further licensed use requires a
+valid license determination.
+
+Sources: [Qt account licenses](https://account.qt.io/s/),
+[Device Creation tiers](https://www.qt.io/development/qt-framework/target-devices),
+[Qt for QNX](https://doc.qt.io/qt-6/qnx.html).
+
+### Source audit and restricted runtime subset
+
+The private 6.12.0 evaluation build includes Core, Gui, Network, Qml, Quick,
+and their QmlMeta/Models/WorkerScript dependencies. Quick Shapes is also
+required: the existing playground's View factory imports `QtQuick.Shapes`.
+This records that existing dependency explicitly, rather than rewriting the
+renderer to remove it. Shader Tools supplies matching build-time shader
+processing. No other Tier 1/2 adoption is accepted by this evaluation record.
+
+The exact 6.12.0 checkout headers in `qtbase/src/corelib/global/qglobal.h`,
+`qtbase/src/gui/kernel/qguiapplication.cpp`,
+`qtbase/src/network/kernel/qnetworkinterface.cpp`,
+`qtdeclarative/src/qml/qml/qqmlengine.cpp`,
+`qtdeclarative/src/quick/items/qquickitem.cpp`,
+`qtdeclarative/src/qmlmodels/qqmlobjectmodel.cpp`,
+`qtdeclarative/src/quickshapes/qquickshape.cpp`, and
+`qtshadertools/src/shadertools/qshaderbaker.cpp` all offer
+`LicenseRef-Qt-Commercial` alongside their open-source alternatives.
+The checked top-level `LICENSES/LicenseRef-Qt-Commercial.txt` refers to the
+licensee's applicable written/accepted agreement; the active evaluation is
+the basis here. This does not resolve production or redistribution rights.
+
+Qt's QNX implementation is
+`qtbase/src/plugins/platforms/qnx/{CMakeLists.txt,qqnxintegration.cpp,qnx.json}`.
+The source declares `QQnxIntegrationPlugin`, output `qqnx`, type `platforms`,
+key `qnx`, linking Screen and optional EGL. The actual built artifact and
+runtime dependencies remain to be verified. Its reference AArch64 toolchain
+is `coin/provisioning/common/shared/cmake_toolchain_files/qnx-toolchain-aarch64le.cmake`.
+The experiment uses system version 800 and preserves `_QNX_SOURCE`.
 
 ## Consequences
 
@@ -151,3 +213,12 @@ Sources:
 - `Qt Quick Controls` is part of `qtdeclarative` since Qt 6.3; the `qt` Homebrew
   keg is a meta-package that pulls it in. The module still has an independent
   name and concern for the component library.
+
+### Observed OpenGL runtime dependency
+
+The 6.12.0 QNX build also produces Qt OpenGL from qtbase, required by the
+selected Quick rendering path. It is included in this restricted private
+evaluation runtime. `qtbase/src/opengl/qopenglshaderprogram.cpp` offers
+`LicenseRef-Qt-Commercial` alongside LGPLv3/GPL alternatives. The built QNX QPA
+plugin is `plugins/platforms/libqqnx.so`; QML plugin filenames and the shared
+library closure were inspected from the built artifacts, rather than assumed.

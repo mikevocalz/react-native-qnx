@@ -1,5 +1,44 @@
 # CURRENT_STATE.md
 
+## 2026-11-07 opt-in Qt/Nitro async runtime follow-up
+
+The pinned alpha 105 Qt dispatcher now passes physical Pi 400/QNX 8.0.5 callback,
+typed/void Promise, error, checkpoint, drain and teardown-race tests as qnxuser.
+Host suite and source-patch regression results are in the
+[receipt](../evidence/pi400-nitro-qt-2026-11-07.md). The optional dispatcher
+flag remains OFF by default. A separate candidate retained the exact title and
+1920×1080 fullscreen render; original live app PID 9433114 and recovery boot were
+left intact. Forge still needs matching typed bindings and worker-disposal
+integration; this does not make alpha 120 ABI-compatible or prove third-party
+modules, reload or suspend/resume. Hosted CI remains blocked by GitHub billing.
+
+## 2026-11-07 physical Pi 400 Hello World
+
+The physical Pi 400 running the QNX 8.0.5 target now renders the production
+React Native/Fabric/Hermes/Qt Quick entry as `qnxuser`. The app displays
+`React Native QNX: Hello World`. Default mode remains 640×480; the owner
+subsequently requested fullscreen, now verified and running at 1920×1080. The same
+entry exercises the existing synchronous Nitro v1 alpha 105 HybridClass
+(getters and add(20, 22)=42); screenshot run exited zero and the continuous
+app was then launched for HDMI. See
+[device evidence](../evidence/pi400-hello-world-2026-11-07.txt) and
+[bring-up instructions](../getting-started/pi400-hello-world.md).
+
+The selected Qt 6.12.0 target runtime was built under the private evaluation
+through 17 November 2026. Manual graphics requires the isolated legacy Pi 4
+DRM/Screen stack and named DRM ACLs. Recovery boot remains selected; automatic
+graphics startup remains disabled after failed boot tests. Full component,
+QSTI, async Nitro, performance, and production-packaging gates remain separate.
+Follow-up: the full host/Hermes graph now passes 11/11 CTests, including the
+viewport and original error-forwarding regressions. Host JSI uses one shared
+library to preserve exception identity. Cached pointer membership removes the
+all-registry scan; host mutation timings and remaining flat-sibling overhead
+are in [the follow-up report](../evidence/pi400-host-validation-2026-11-07.md).
+The optimized executable was independently captured on the Pi before promotion.
+
+Earlier no-QNX-pixel statements below describe older baselines and are
+superseded only for this measured Hello World slice.
+
 ## 2026-11-07 Forge native target follow-up (PR42)
 
 The complete seven-engine Rust archive and QNX native owner now cross-build with

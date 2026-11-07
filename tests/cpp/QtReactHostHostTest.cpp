@@ -671,6 +671,34 @@ void javaScriptBuildsTheTreeThroughFabricUIManager() {
   // The geometry is Yoga's, computed from props JavaScript supplied.
   EXPECT_NEAR(item->width(), 160.0);
   EXPECT_NEAR(item->height(), 80.0);
+
+  // A surface is a fixed viewport even when its only root child uses flex and
+  // percentages. The child's fixed-size descendants keep their own Yoga size.
+  const std::string fillScript = R"JS({
+    const fabric = globalThis.nativeFabricUIManager;
+    const surfaceId = )JS" + std::to_string(kSurfaceId) + R"JS(;
+    const fillingRoot = fabric.createNode(502, 'View', surfaceId,
+      { flex: 1, width: '100%', height: '100%', collapsable: false }, {});
+    const fixedChild = fabric.createNode(503, 'View', surfaceId,
+      { width: 120, height: 60, collapsable: false }, {});
+    fabric.appendChild(fillingRoot, fixedChild);
+    const fillingSet = fabric.createChildSet();
+    fabric.appendChildToSet(fillingSet, fillingRoot);
+    fabric.completeRoot(surfaceId, fillingSet);
+  })JS";
+  if (!fixture.host().evaluate(fillScript, "surface-viewport.js")) {
+    fail("viewport script evaluated", __FILE__, __LINE__,
+         fixture.host().lastError().toStdString());
+  }
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  QQuickItem* filling = fixture.layer().itemForTag(502);
+  QQuickItem* fixed = fixture.layer().itemForTag(503);
+  EXPECT(filling != nullptr);
+  EXPECT(fixed != nullptr);
+  EXPECT_NEAR(filling->width(), 640.0);
+  EXPECT_NEAR(filling->height(), 480.0);
+  EXPECT_NEAR(fixed->width(), 120.0);
+  EXPECT_NEAR(fixed->height(), 60.0);
 }
 
 #ifdef RNQNX_PLAYGROUND_BUNDLE_PATH

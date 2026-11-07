@@ -414,6 +414,22 @@ class QtReactHost::Impl {
     facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(
         *runtime, runtimeScheduler);
 
+    taskQueue = std::make_shared<QtRuntimeTaskQueue>(
+        [scheduler = std::weak_ptr<RuntimeScheduler>(runtimeScheduler)](
+            QtRuntimeTaskQueue::Task task) {
+          if (auto owner = scheduler.lock()) {
+            owner->scheduleWork(
+                [task = std::move(task)](facebook::jsi::Runtime&) { task(); });
+          }
+        },
+        [this]() { ++runtimeExecutionDepth; },
+        [this]() {
+          --runtimeExecutionDepth;
+          if (runtimeExecutionDepth == 0) {
+            runtimeScheduler->scheduleWork([](facebook::jsi::Runtime&) {});
+          }
+        });
+
     auto container = std::make_shared<ContextContainer>();
     // Scheduler.cpp:73-80 asserts on this key and dereferences it, so a missing
     // entry is a crash rather than a degraded mode.
@@ -514,6 +530,9 @@ class QtReactHost::Impl {
   }
 
   ~Impl() {
+    if (runtimeExecutionDepth != 0) {
+      std::terminate();
+    }
     for (auto& [surfaceId, handler] : surfaces) {
       if (handler->getStatus() == SurfaceHandler::Status::Running) {
         handler->stop();
@@ -521,12 +540,16 @@ class QtReactHost::Impl {
       scheduler->unregisterSurface(*handler);
     }
     surfaces.clear();
+    // React unmount cleanup may still invoke native callbacks or stop producers.
+    // Close admission only after those entries, while Hermes/scheduler live.
+    taskQueue->close();
   }
 
   int runtimeExecutionDepth{0};
   std::size_t taskErrorSequence{0};
   std::unique_ptr<facebook::jsi::Runtime> runtime;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler;
+  std::shared_ptr<QtRuntimeTaskQueue> taskQueue;
   std::shared_ptr<const ContextContainer> contextContainer;
   QtSchedulerDelegate delegate;
   std::shared_ptr<Scheduler> scheduler;
@@ -555,6 +578,10 @@ QtReactHost::~QtReactHost() = default;
 
 facebook::jsi::Runtime& QtReactHost::runtime() {
   return *impl_->runtime;
+}
+
+std::shared_ptr<QtRuntimeTaskQueue> QtReactHost::taskQueue() const {
+  return impl_->taskQueue;
 }
 
 Scheduler& QtReactHost::scheduler() {
@@ -897,7 +924,10 @@ facebook::react::LayoutConstraints makeLayoutConstraints(
     float width,
     float height) {
   facebook::react::LayoutConstraints constraints;
-  constraints.minimumSize = {.width = 0, .height = 0};
+  // A surface's viewport is fixed by its host window. A zero minimum allows
+  // Yoga to shrink-wrap the root, leaving flex and percentage children with
+  // an intrinsic-width viewport instead of the supplied surface dimensions.
+  constraints.minimumSize = {.width = width, .height = height};
   constraints.maximumSize = {.width = width, .height = height};
   // SurfaceHandler.cpp:43 asserts the direction is set, and it defaults to
   // Undefined, so this must happen before start().

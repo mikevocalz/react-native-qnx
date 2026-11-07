@@ -1,0 +1,58 @@
+Physical Raspberry Pi 400 - QNX SDP / Everywhere 8.0.5
+Qt 6.12.0 evaluation, Fabric, RN 0.88.1, Hermes hermes-v260318099.0.5
+Nitro core / RN adapter / Nitrogen 1.0.0-alpha.nightly.105.g69d365fc9b18
+User: qnxuser; manual DRM/Screen startup; recovery boot selected
+
+Real production Metro entry hello-world-nitro.js compiled with matching hermesc:
+RNQNX_HELLO_NITRO_V1_OK platform=qnx architecture=aarch64 add=42
+Running "RNQnxPlayground"
+RNQNX_PLAYGROUND_SCREENSHOT hello-world-nitro.png 640x480
+SSH_EXIT=0
+
+Image visually verified: centered "React Native QNX: Hello World" over full
+640x480 dark app background. Native window dimensions remain unchanged.
+After one-shot capture, launched continuously without --screenshot for HDMI.
+
+SHA-256:
+  native executable: 4cf476ff844fb5c0744f3022b30201359a0a7ea53d708ee7d922b933066865f5
+  production HBC: ec405c033b07c0cfe216eb95d3242b58d84bbf17fd2ee3d153153a6c528b1f1e
+  captured PNG: dfec0cafbb64c4c73fac76eadcc0be1dc63e0ce5d7645e19d01102ec7cc652c7
+
+Native full QNX build: exit 0
+Host decorated-View ASan regression: 1/1 CTest passed (16 inner cases)
+Fresh and repeated exact-source patch application: RN30files, Nitro7files
+Official npm SHA-512 and installed-content comparisons: core333,adapter280,
+Nitrogen608files all matched pinned archives.
+
+Boundaries:
+- This is the synchronous existing QNX Nitro HybridClass proof; no async
+  dispatcher, callbacks, third-party Nitro package or general codegen claim.
+- Initial capture preceded the full host/Hermes suite; follow-up now passes 11/11.
+- Prior seven-host-CTest pass is earlier baseline evidence only.
+- No FPS/startup/RSS or QNX performance measurement; host mutation results below.
+- Automatic graphics startup remains disabled after failed boot tests.
+- Qt private evaluation expires 17 November2026; no release/distribution claim.
+- Licensed vendor binaries, credentials and source archives are excluded.
+
+Follow-up validation (same date):
+Full host/Hermes suite: 11/11 CTests passed with enabled host sanitizers.
+Viewport, original error-forwarding and decorated lifecycle cases passed.
+Cached pointer membership removes the per-mutation total-registry scan.
+Host mutation benchmark and remaining sibling cost:
+  docs/evidence/pi400-host-validation-2026-11-07.md
+Optimized QNX candidate:
+  RNQNX_HELLO_NITRO_V1_OK platform=qnx architecture=aarch64 add=42
+  RNQNX_PLAYGROUND_SCREENSHOT hello-world-optimized.png 640x480
+  EXIT=0
+  native SHA256: f0c57d889ddfa0123020f638d6df2021130f6f6196a24ec0c8c331f1e2a4b847
+  captured PNG SHA256: 3cb8b9aefe80afe5d0c3859d3930bca0f3ba38f9299d0faf7deff9c7542a507f
+Candidate pixels visually verified before promotion to continuous launch.
+The initial artifact hashes above remain the original capture's provenance.
+
+Owner-requested fullscreen follow-up:
+  RNQNX_HELLO_NITRO_V1_OK platform=qnx architecture=aarch64 add=42
+  RNQNX_PLAYGROUND_SCREENSHOT hello-world-fullscreen.png 1920x1080
+  EXIT=0
+  fullscreen PNG SHA256: a41ee57ea8628c1fc42d2f516c8fb11fdc1562fcb608fe9f0b514078b6ce0cb8
+Explicit --fullscreen uses monitor geometry and actual startup surface size.
+Default mode remains640x480; device launcher now selects fullscreen.

@@ -1,6 +1,6 @@
 # Nitro v1 API contracts and platform-native lifecycle
 
-Reviewed 2026-11-02. This is a **migration/proof API**, not a claim of general QNX or Marathon Nitro 1.0 support.
+Reviewed 2026-11-07. This is a **migration/proof API**, not a claim of general QNX or Marathon Nitro 1.0 support.
 
 ## Source provenance and status
 
@@ -94,3 +94,18 @@ For every public Nitro API change: `api-design` first; `build-nitro-modules` sec
 ## Additional non-QNX compile gate
 
 `tests/native/nitro-v1-host/CMakeLists.txt` and `.github/workflows/nitro-v1-host.yml` compile the **actual** `nitro-core@1.0-alpha` C++ source and the changed `QnxPlatformInfo` bridge on Linux with C++20. A passing compile verifies C++ headers, templates and source-object compatibility; it does not verify QNX SDP linking, runtime JSI correctness, Fabric/Qt or physical device support. Do not turn compiler failures into ignored warnings or substitute a standalone fake class.
+
+## Physical Pi 400 synchronous proof (2026-11-07)
+
+The existing QNX class now cross-builds with SDP 8.0.5 and runs inside the
+actual React Native/Fabric/Hermes/Qt Quick Hello World app. Its v1
+`getHybridClass()` constructor, two getters and `add(20, 22)` passed as
+`qnxuser`, followed by a verified 640×480 rendered capture and exit zero.
+See [device evidence](../evidence/pi400-hello-world-2026-11-07.txt).
+Official npm SHA-512 checks and complete installed-file comparisons passed
+for core (333 files), RN adapter (280), and Nitrogen (608), all locked to
+nightly 105. This supersedes the older no-physical-run statement only for
+this synchronous proof. The later opt-in [Qt dispatcher](QT_DISPATCHER.md)
+also has physical callback/Promise/checkpoint/teardown evidence. General QNX
+codegen and third-party Nitro modules remain unverified. The normal upstream RN
+TurboModule startup plumbing remains; Nitro serves this app-native proof.
