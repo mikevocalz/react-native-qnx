@@ -41,8 +41,12 @@ function text(value, label, pattern) {
 /** @param {string} root @param {string} candidate */
 function inside(root, candidate) {
   const relative = path.relative(root, candidate);
-  return relative !== '' && !path.isAbsolute(relative) &&
-    relative !== '..' && !relative.startsWith(`..${path.sep}`);
+  return (
+    relative !== '' &&
+    !path.isAbsolute(relative) &&
+    relative !== '..' &&
+    !relative.startsWith(`..${path.sep}`)
+  );
 }
 /** @param {string} file */
 async function optionalStat(file) {
@@ -65,8 +69,11 @@ export async function validateDescriptors(input) {
   const result = [];
   for (const item of input) {
     const descriptor = object(item, 'Module descriptor');
-    const packageName = text(descriptor.packageName, 'package name',
-      /^(?:@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*$/);
+    const packageName = text(
+      descriptor.packageName,
+      'package name',
+      /^(?:@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*$/
+    );
     const target = text(descriptor.target, 'CMake target', /^[A-Za-z_][A-Za-z0-9_.+-]*$/);
     const binaryName = packageName.replace(/[^A-Za-z0-9_.-]/g, '_');
     if (names.has(packageName) || targets.has(target) || binaries.has(binaryName)) {
@@ -79,9 +86,13 @@ export async function validateDescriptors(input) {
     if (!path.isAbsolute(root)) throw new Error('Module root must be absolute.');
     const packageRoot = await realpath(root);
     const cmakeListsPath = text(descriptor.cmakeListsPath, 'CMake source path', /\S/);
-    if (path.isAbsolute(cmakeListsPath) || path.win32.isAbsolute(cmakeListsPath) ||
-        cmakeListsPath.includes('\\') || cmakeListsPath.split('/').includes('..') ||
-        path.basename(cmakeListsPath) !== 'CMakeLists.txt') {
+    if (
+      path.isAbsolute(cmakeListsPath) ||
+      path.win32.isAbsolute(cmakeListsPath) ||
+      cmakeListsPath.includes('\\') ||
+      cmakeListsPath.split('/').includes('..') ||
+      path.basename(cmakeListsPath) !== 'CMakeLists.txt'
+    ) {
       throw new Error('CMake source path must name an in-module CMakeLists.txt.');
     }
     const cmakeFile = path.resolve(packageRoot, cmakeListsPath);
@@ -99,14 +110,21 @@ export async function validateDescriptors(input) {
       throw new Error('Module class list must be an array of at most 256 names.');
     }
     const modules = descriptor.modules.map((name) =>
-      text(name, 'module class', /^[A-Za-z_][A-Za-z0-9_.:]*$/));
+      text(name, 'module class', /^[A-Za-z_][A-Za-z0-9_.:]*$/)
+    );
     result.push({
-      packageName, packageRoot, cmakeListsPath, target, modules, binaryName,
+      packageName,
+      packageRoot,
+      cmakeListsPath,
+      target,
+      modules,
+      binaryName,
       version: text(descriptor.version, 'module version', /^[0-9A-Za-z.+-]{1,128}$/),
     });
   }
-  return result.sort((a, b) => a.packageName < b.packageName ? -1 :
-    a.packageName > b.packageName ? 1 : 0);
+  return result.sort((a, b) =>
+    a.packageName < b.packageName ? -1 : a.packageName > b.packageName ? 1 : 0
+  );
 }
 
 /** @param {string} project @param {string} requested @param {boolean} createParents */
@@ -141,8 +159,12 @@ async function checkFiles(output, files) {
   for (const [name, expected] of files) {
     const file = path.join(output, name);
     const info = await lstat(file);
-    if (!info.isFile() || info.isSymbolicLink() || info.size !== Buffer.byteLength(expected) ||
-        await readFile(file, 'utf8') !== expected) {
+    if (
+      !info.isFile() ||
+      info.isSymbolicLink() ||
+      info.size !== Buffer.byteLength(expected) ||
+      (await readFile(file, 'utf8')) !== expected
+    ) {
       throw new Error(`Prepared file differs or is unsafe: ${name}; choose a new --out.`);
     }
   }
@@ -160,21 +182,32 @@ export async function prepareProject(project, requested, descriptors, options = 
   const { generateQnxCMake } = require('../../expo-qnx-autolinking/src/index.js');
   const withQnxProject = require('../../expo-qnx-config-plugins/index.js');
   const relative = path.relative(projectRoot, output).split(path.sep).join('/');
-  const config = withQnxProject({}, {
-    targetArch: arch,
-    autolinkingJson: `${relative}/modules.json`,
-    autolinkingCMake: `${relative}/modules.cmake`,
-  });
+  const config = withQnxProject(
+    {},
+    {
+      targetArch: arch,
+      autolinkingJson: `${relative}/modules.json`,
+      autolinkingCMake: `${relative}/modules.cmake`,
+    }
+  );
   const files = new Map([
-    ['modules.json', JSON.stringify({ schemaVersion: 1, platform: 'qnx', modules }, null, 2) + '\n'],
+    [
+      'modules.json',
+      JSON.stringify({ schemaVersion: 1, platform: 'qnx', modules }, null, 2) + '\n',
+    ],
     ['modules.cmake', generateQnxCMake(modules)],
     ['config.json', JSON.stringify(config, null, 2) + '\n'],
   ]);
   const manifest = {
-    schemaVersion: 1, platform: 'qnx', targetArch: arch, moduleCount: modules.length,
-    nativeBuildVerified: false, runtimeVerified: false,
+    schemaVersion: 1,
+    platform: 'qnx',
+    targetArch: arch,
+    moduleCount: modules.length,
+    nativeBuildVerified: false,
+    runtimeVerified: false,
     files: [...files].map(([name, contents]) => ({
-      name, bytes: Buffer.byteLength(contents),
+      name,
+      bytes: Buffer.byteLength(contents),
       sha256: createHash('sha256').update(contents).digest('hex'),
     })),
   };
@@ -202,14 +235,23 @@ export async function prepareProject(project, requested, descriptors, options = 
 /** @param {string[]} argv @param {string} [cwd] */
 export async function main(argv, cwd = process.cwd()) {
   const { values, positionals, tokens } = parseArgs({
-    args: argv, allowPositionals: true, strict: true, tokens: true,
+    args: argv,
+    allowPositionals: true,
+    strict: true,
+    tokens: true,
     options: {
-      help: { type: 'boolean', short: 'h' }, project: { type: 'string' },
-      out: { type: 'string' }, arch: { type: 'string' },
-      'dry-run': { type: 'boolean' }, check: { type: 'boolean' },
+      help: { type: 'boolean', short: 'h' },
+      project: { type: 'string' },
+      out: { type: 'string' },
+      arch: { type: 'string' },
+      'dry-run': { type: 'boolean' },
+      check: { type: 'boolean' },
     },
   });
-  if (values.help || argv.length === 0) { console.log(help); return 0; }
+  if (values.help || argv.length === 0) {
+    console.log(help);
+    return 0;
+  }
   const seen = new Set();
   for (const token of tokens) {
     if (token.kind !== 'option') continue;
@@ -223,9 +265,13 @@ export async function main(argv, cwd = process.cwd()) {
   if (command === 'inspect' && Object.keys(values).some((key) => key !== 'project')) {
     throw new Error('inspect accepts only --project.');
   }
-  if ((values.project !== undefined && !values.project.trim()) ||
-      (values.out !== undefined && !values.out.trim())) throw new Error('Paths must not be empty.');
-  if (values.check && values['dry-run']) throw new Error('--check and --dry-run cannot be combined.');
+  if (
+    (values.project !== undefined && !values.project.trim()) ||
+    (values.out !== undefined && !values.out.trim())
+  )
+    throw new Error('Paths must not be empty.');
+  if (values.check && values['dry-run'])
+    throw new Error('--check and --dry-run cannot be combined.');
   if (values.arch && !['aarch64', 'x86_64'].includes(values.arch)) {
     throw new Error('Use --arch aarch64 or x86_64.');
   }
@@ -234,17 +280,21 @@ export async function main(argv, cwd = process.cwd()) {
   if (!pkg.name) throw new Error('Project package.json must declare its name.');
   const { findQnxExpoModules } = require('../../expo-qnx-autolinking/src/index.js');
   const modules = await findQnxExpoModules(project);
-  const report = command === 'inspect'
-    ? { platform: 'qnx', modules: await validateDescriptors(modules), runtimeVerified: false }
-    : await prepareProject(project, values.out ?? 'build/expo-qnx', modules, {
-      arch: values.arch, check: values.check, dryRun: values['dry-run'],
-    });
+  const report =
+    command === 'inspect'
+      ? { platform: 'qnx', modules: await validateDescriptors(modules), runtimeVerified: false }
+      : await prepareProject(project, values.out ?? 'build/expo-qnx', modules, {
+          arch: values.arch,
+          check: values.check,
+          dryRun: values['dry-run'],
+        });
   console.log(JSON.stringify(report, null, 2));
   return 0;
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  try { process.exitCode = await main(process.argv.slice(2)); }
-  catch (error) {
+  try {
+    process.exitCode = await main(process.argv.slice(2));
+  } catch (error) {
     console.error(`expo-qnx: ${error instanceof Error ? error.message : error}`);
     process.exitCode = 1;
   }
