@@ -91,22 +91,22 @@ The generic slice depends on #44 and Plan 01; #42 is optional compatibility evid
 
 These are proposed implementation responsibilities; no human assignment or external maintainer approval is asserted.
 
-| Role | Concrete ownership | Independent reviewer |
-| --- | --- | --- |
-| Native API/Nitro DRI | Generic hooks in `packages/qnx-nitro-runtime/`; audited generator integration; proposed `tests/native/package-integration/` | Nitro v1/codegen reviewer |
-| Licensed product engineer | Forge-owned spec/binding/package paths, starting from audited `packages/ignition-v1-lab/`; preserve `nf-sys`, queue ownership and NFD1 | Native ownership reviewer |
-| Qt/Hermes engineer | Generic host producer-disposal seam and existing dispatcher | Runtime lifetime reviewer |
-| Dependency/build engineer | Generic discovery/linking, exact pins/lockfiles and target guards; retain `cmake/RnqnxForge.cmake` as compatibility-only | QNX toolchain owner |
-| Consumer/QA engineer | Non-premium core fixture; separately owned, authorized licensed-app Tally fixture | Independent device reviewer |
+| Role                      | Concrete ownership                                                                                                                     | Independent reviewer        |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| Native API/Nitro DRI      | Generic hooks in `packages/qnx-nitro-runtime/`; audited generator integration; proposed `tests/native/package-integration/`            | Nitro v1/codegen reviewer   |
+| Licensed product engineer | Forge-owned spec/binding/package paths, starting from audited `packages/ignition-v1-lab/`; preserve `nf-sys`, queue ownership and NFD1 | Native ownership reviewer   |
+| Qt/Hermes engineer        | Generic host producer-disposal seam and existing dispatcher                                                                            | Runtime lifetime reviewer   |
+| Dependency/build engineer | Generic discovery/linking, exact pins/lockfiles and target guards; retain `cmake/RnqnxForge.cmake` as compatibility-only               | QNX toolchain owner         |
+| Consumer/QA engineer      | Non-premium core fixture; separately owned, authorized licensed-app Tally fixture                                                      | Independent device reviewer |
 
 Sources were read in the required order and applied to this plan, not executed as a native build:
 
-| Skill / exact revision | Decision changed |
-| --- | --- |
-| [Margelo api-design, `1e9e17be6f41c838db472d6a4b943fc26355a3be`](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md) | Preserve ready document handles, actual errors and cleanup; show caller workflows before implementation. |
-| [Margelo build-nitro-modules, same revision](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md) | Require matching generated/runtime bindings and native-state ownership; do not invent a QNX decorator or broad codegen claim. |
-| [Margelo cpp, same revision](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md) | One owner route, RAII resources, copied buffers and no worker-to-JS blocking cycle. |
-| [Callstack react-native-best-practices, `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) | Measure edit-to-visible behavior and memory while engine work stays off the shared GUI/JS thread. |
+| Skill / exact revision                                                                                                                                                                                                            | Decision changed                                                                                                              |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| [Margelo api-design, `1e9e17be6f41c838db472d6a4b943fc26355a3be`](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md)                                         | Preserve ready document handles, actual errors and cleanup; show caller workflows before implementation.                      |
+| [Margelo build-nitro-modules, same revision](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md)                                                    | Require matching generated/runtime bindings and native-state ownership; do not invent a QNX decorator or broad codegen claim. |
+| [Margelo cpp, same revision](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md)                                                                                    | One owner route, RAII resources, copied buffers and no worker-to-JS blocking cycle.                                           |
+| [Callstack react-native-best-practices, `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) | Measure edit-to-visible behavior and memory while engine work stays off the shared GUI/JS thread.                             |
 
 The skills are guidance; actual pinned v1 source wins over generic examples. Read the upgrade/CI skills at recorded revisions if those implementation scopes change. CLI installation, generated QNX documents and device results are not claimed here.
 
