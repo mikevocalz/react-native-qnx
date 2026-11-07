@@ -1,0 +1,40 @@
+name: Phase source diagnostics
+
+on:
+  pull_request:
+    branches: [feat/qnx-integrated-dx-candidate]
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Capture exact formatter output without changing checked-out source
+        run: |
+          mkdir -p /tmp/phase-format
+          for file in packages/react-native-qnx-cli/src/bin.mjs packages/react-native-qnx-cli/src/project.mjs tests/js/qnx-external-project.test.mjs tests/js/qnx-external-project-metro.test.mjs docs/getting-started/external-project-bundles.md; do
+            mkdir -p "/tmp/phase-format/$(dirname "$file")"
+            pnpm exec prettier "$file" > "/tmp/phase-format/$file"
+          done
+      - name: Run actual external project tests
+        run: |
+          node tests/js/qnx-external-project.test.mjs
+          node tests/js/qnx-external-project-metro.test.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: phase1-format-${{ github.event.pull_request.head.sha }}
+          path: /tmp/phase-format/
+          retention-days: 1
