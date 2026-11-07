@@ -57,6 +57,21 @@ jobs:
           git rev-parse HEAD > build/linux-host-renderer/evidence/commit.txt
           cmake --preset linux-host-renderer -DRNQNX_ENABLE_INPUT_LIFECYCLE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=${{ matrix.input-lifecycle }}
           node scripts/validate-host-renderer.mjs
+      - name: Render performance workloads (Linux host only)
+        run: |
+          set -euo pipefail
+          evidence="$PWD/build/linux-host-renderer/evidence"
+          for workload in hello-world list-1000; do
+            entry=index.js
+            if [ "$workload" = hello-world ]; then entry=hello-world.js; fi
+            (
+              cd apps/performance-lab
+              timeout 90s ../../node_modules/.bin/metro build "$entry" --config metro.config.js --platform qnx --dev false --max-workers 2 --out "$evidence/$workload.bundle.js"
+            )
+            timeout 30s build/linux-host-renderer/bin/rnqnx_playground_host --bundle "$evidence/$workload.bundle.js" --screenshot "$evidence/$workload.png" 2>&1 | tee "$evidence/$workload-render.log"
+            test -s "$evidence/$workload.png"
+            sha256sum "$evidence/$workload.bundle.js" "$evidence/$workload.png" > "$evidence/$workload.sha256"
+          done
       - name: Preserve exact-run test evidence
         if: always()
         uses: actions/upload-artifact@v4
