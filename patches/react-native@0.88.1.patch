@@ -1,0 +1,52 @@
+diff --git a/Libraries/Renderer/implementations/ReactFabric-dev.js b/Libraries/Renderer/implementations/ReactFabric-dev.js
+--- a/Libraries/Renderer/implementations/ReactFabric-dev.js
++++ b/Libraries/Renderer/implementations/ReactFabric-dev.js
+@@ -1307,7 +1307,9 @@
+           (_enableNativeEventTargetEventDispatching =
+             "function" === typeof event && event()));
+         if (_enableNativeEventTargetEventDispatching)
+-          null != eventTarget &&
++          (null != eventTarget ||
++            (globalThis.__RNQNX_INPUT_LIFECYCLE__ === true &&
++              "topTouchCancel" === topLevelType)) &&
+             reactPrivateInterface.dispatchNativeEvent(
+               eventTarget,
+               topLevelType,
+diff --git a/Libraries/Renderer/implementations/ReactFabric-prod.js b/Libraries/Renderer/implementations/ReactFabric-prod.js
+--- a/Libraries/Renderer/implementations/ReactFabric-prod.js
++++ b/Libraries/Renderer/implementations/ReactFabric-prod.js
+@@ -1338,7 +1338,9 @@
+       (_enableNativeEventTargetEventDispatching =
+         "function" === typeof event && event()));
+     if (_enableNativeEventTargetEventDispatching)
+-      null != eventTarget &&
++      (null != eventTarget ||
++        (globalThis.__RNQNX_INPUT_LIFECYCLE__ === true &&
++          "topTouchCancel" === topLevelType)) &&
+         reactPrivateInterface.dispatchNativeEvent(
+           eventTarget,
+           topLevelType,
+diff --git a/src/private/renderer/events/dispatchNativeEvent.js b/src/private/renderer/events/dispatchNativeEvent.js
+--- a/src/private/renderer/events/dispatchNativeEvent.js
++++ b/src/private/renderer/events/dispatchNativeEvent.js
+@@ -37,7 +37,7 @@
+  * enableNativeEventTargetEventDispatching is enabled.
+  */
+ export default function dispatchNativeEvent(
+-  target: EventTarget,
++  target: EventTarget | null,
+   type: string,
+   payload: {[string]: unknown},
+ ): void {
+@@ -45,6 +45,11 @@
+   processResponderEvent(type, target, payload);
+ 
+   try {
++    // A removed QNX input target still needs responder cancellation.
++    // Keep this inside try so pending responder errors reach the finally block.
++    if (target == null) {
++      return;
++    }
+     // Normal EventTarget dispatch
+     const bubbleConfig = customBubblingEventTypes[type];
+     const directConfig = customDirectEventTypes[type];
