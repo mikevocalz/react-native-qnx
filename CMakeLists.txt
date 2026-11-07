@@ -7,6 +7,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(RNQNX_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 option(RNQNX_ENABLE_HOST_SANITIZERS "Enable ASan and UBSan for host tests" ON)
+option(RNQNX_ENABLE_INPUT_LIFECYCLE
+  "Enable experimental Qt pointer cancellation and terminal payload fixes" OFF)
+if(RNQNX_ENABLE_INPUT_LIFECYCLE AND NOT
+   CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin|QNX)$")
+  message(FATAL_ERROR "RNQNX_ENABLE_INPUT_LIFECYCLE requires a Linux, macOS or QNX Qt host")
+endif()
 option(RNQNX_REQUIRE_FULL_HOST_RENDERER
   "Require the Qt/Hermes/React host graph instead of silently skipping it" OFF)
 option(RNQNX_G0_PROBE_ONLY "Build only the G0 C++20 probe on QNX" OFF)
@@ -187,6 +193,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     rnqnx_add_fabric_adapter_target()
     rnqnx_add_react_host_target()
 
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxInputLifecycle.cmake)
+    rnqnx_add_input_lifecycle_probe()
+
     if(RNQNX_ENABLE_NITRO_QT_DISPATCHER)
       if(NOT RNQNX_BUILD_NITRO_QNX)
         message(FATAL_ERROR "Qt Nitro dispatcher requires RNQNX_BUILD_NITRO_QNX")
@@ -305,6 +314,8 @@ else()
 
         if(RNQNX_BUILD_REACT_HOST)
           rnqnx_add_react_host_target()
+          include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxInputLifecycle.cmake)
+          rnqnx_add_input_lifecycle_probe()
           if(RNQNX_ENABLE_NITRO_QT_DISPATCHER)
             add_subdirectory(packages/qnx-nitro-runtime)
             include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxNitroQt.cmake)

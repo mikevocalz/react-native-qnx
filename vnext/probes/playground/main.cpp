@@ -14,6 +14,7 @@
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
+#include "react-native-qnx/fabric/QtTouchDispatcher.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
@@ -407,7 +408,16 @@ int main(int argc, char** argv) {
   adapter.mapComponent(
       QStringLiteral("ModalHostView"), QStringLiteral("View"));
 
+#if RNQNX_ENABLE_INPUT_LIFECYCLE
+  // Outlive the host: stopping its surface can still remove captured targets.
+  rnqnx::fabric::QtTouchDispatcher touchDispatcher(layer, *window.contentItem());
+  adapter.setTouchDispatcher(&touchDispatcher);
+  window.installEventFilter(&touchDispatcher);
+#endif
   rnqnx::runtime::QtReactHost host(adapter);
+#if RNQNX_ENABLE_INPUT_LIFECYCLE
+  host.delegate().setTouchDispatcher(&touchDispatcher);
+#endif
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
 #ifdef RNQNX_PLAYGROUND_NITRO_QT
   rnqnx::nitro::installQnxNitroRuntime(
