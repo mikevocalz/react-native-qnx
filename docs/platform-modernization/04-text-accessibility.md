@@ -29,17 +29,33 @@ Use Qt's input-method events/queries for preedit, commit, selection, surrounding
 Keep the existing React Native component API as the public surface. These are proposed conformance usages, not proof the missing behavior works today. The implementation test fixture will supply imports and actual test drivers.
 
 ```tsx
-// A controlled editor: stale React updates must not overwrite newer native edits.
-const [text, setText] = useState('');
-return (
-  <TextInput
-    value={text}
-    onChangeText={setText}
-    multiline
-    accessibilityLabel="Document title"
-  />
-);
+import { useRef } from 'react';
+import { TextInput } from 'react-native';
+import { useStore } from 'zustand';
+import { createStore } from 'zustand/vanilla';
+
+type EditorState = { text: string; setText: (text: string) => void };
+const createEditorStore = () =>
+  createStore<EditorState>()((set) => ({
+    text: '',
+    setText: (text) => set({ text }),
+  }));
+
+// Each editor owns its store; selectors subscribe only to the values it needs.
+function ControlledEditor() {
+  const storeRef = useRef<ReturnType<typeof createEditorStore> | null>(null);
+  if (storeRef.current === null) storeRef.current = createEditorStore();
+  const text = useStore(storeRef.current, (state) => state.text);
+  const setText = useStore(storeRef.current, (state) => state.setText);
+  return (
+    <TextInput value={text} onChangeText={setText} multiline accessibilityLabel="Document title" />
+  );
+}
 ```
+
+The consumer fixture must supply its audited Zustand dependency. Application/component
+state stays in Zustand; native resources and imperative handles stay in refs and
+are excluded from persisted state. This example adds no platform dependency.
 
 Exercise this field with Japanese composition, Arabic bidirectional text, combining marks and emoji; move the cursor during pending correction, then deliver a delayed React update. Assert the resulting text and selection, not merely that an event fired.
 
@@ -81,38 +97,38 @@ Proposed options `RNQNX_ENABLE_TEXT_INPUT_METHOD` and `RNQNX_ENABLE_ACCESSIBILIT
 
 Human assignments remain open. Each implementation slice must name a DRI and an independent reviewer; the following roster specifies responsibilities.
 
-| Role | Owned paths and evidence | Independent review |
-| --- | --- | --- |
-| Qt text-input DRI | `vnext/src/views/qt/QtQuickItemFactory.cpp`, focused new text adapter, corresponding headers | RN controlled-edit/event reviewer |
-| RN platform engineer | `packages/react-native-qnx/Libraries/Components/TextInput/TextInput.js`, Keyboard/inset overrides | Qt focus/IME reviewer |
-| Accessibility engineer | Proposed focused Qt accessibility adapter and semantic tests | Accessibility QA reviewer |
-| OS integration engineer | `native/platform/qnx/`, `native/platform/linux-host/` provider implementations | Security and shell-interface reviewer |
-| Conformance QA | `tests/cpp/QtReactHostHostTest.cpp`, JS fixtures, separate device receipts | Reviewer independent of implementation |
+| Role                    | Owned paths and evidence                                                                          | Independent review                     |
+| ----------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Qt text-input DRI       | `vnext/src/views/qt/QtQuickItemFactory.cpp`, focused new text adapter, corresponding headers      | RN controlled-edit/event reviewer      |
+| RN platform engineer    | `packages/react-native-qnx/Libraries/Components/TextInput/TextInput.js`, Keyboard/inset overrides | Qt focus/IME reviewer                  |
+| Accessibility engineer  | Proposed focused Qt accessibility adapter and semantic tests                                      | Accessibility QA reviewer              |
+| OS integration engineer | `native/platform/qnx/`, `native/platform/linux-host/` provider implementations                    | Security and shell-interface reviewer  |
+| Conformance QA          | `tests/cpp/QtReactHostHostTest.cpp`, JS fixtures, separate device receipts                        | Reviewer independent of implementation |
 
 ## Skills applied
 
 These exact sources were read for the plan. The table records source guidance, not local CLI installation or executed runtime tests.
 
-| Skill / source | Applied decision |
-| --- | --- |
-| [Margelo api-design, `1e9e17be6f41c838db472d6a4b943fc26355a3be`](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md) | Keep standard TextInput/Keyboard behavior; make availability and listener cleanup explicit rather than inventing platform-prefixed editing methods. |
-| [Margelo build-nitro-modules, same revision](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md) | Separate RN core registry requirements from application native APIs; do not claim a new generated Nitro keyboard provider. |
-| [Margelo cpp, same revision](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md) | Own sessions, focus-target generations and callback cleanup; isolate OS adapters from view code. |
-| [Callstack react-native-best-practices, `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) | Profile actual input latency and re-render work before changing controlled-component behavior. |
+| Skill / source                                                                                                                                                                                                                    | Applied decision                                                                                                                                    |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Margelo api-design, `1e9e17be6f41c838db472d6a4b943fc26355a3be`](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md)                                         | Keep standard TextInput/Keyboard behavior; make availability and listener cleanup explicit rather than inventing platform-prefixed editing methods. |
+| [Margelo build-nitro-modules, same revision](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md)                                                    | Separate RN core registry requirements from application native APIs; do not claim a new generated Nitro keyboard provider.                          |
+| [Margelo cpp, same revision](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md)                                                                                    | Own sessions, focus-target generations and callback cleanup; isolate OS adapters from view code.                                                    |
+| [Callstack react-native-best-practices, `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) | Profile actual input latency and re-render work before changing controlled-component behavior.                                                      |
 
 Any new application-facing service API must additionally have a pinned v1 spec, valid caller/error/cleanup examples and proven platform codegen. RN core's existing registry exception does not authorize unrelated third-party shims. No fabricated accessibility or device-automation skill is recorded.
 
 ## Acceptance and future validation
 
-| Area | Required behavior / negative case |
-| --- | --- |
-| Composition | Preedit/commit/cancel and selection match expected text for multilingual fixtures; stale controlled updates cannot revert newer edits. |
-| Focus | Modal restore returns to a live intended field; deleted/recycled fields receive no late edit; hardware traversal is deterministic. |
-| Privacy | Secure text is absent from logs/traces/clipboard-by-default and inaccessible surrounding-text payloads; predictions/correction honor the requested secure mode. |
-| Keyboard geometry | Actual show/hide/resize events move the caret into view once; missing keyboard/provider does not generate success events. |
-| Accessibility | Semantic tree and actions reflect live props; focus order survives virtualization; supported reader output is separately demonstrated. |
-| Lifetime | At least 100 host mount/focus/unmount cycles with pending events produce no stale callbacks or growing native allocations; physical repeated editing survives resume. |
-| Performance | Measure key/commit-to-visible p50/p95/p99 under a populated screen with Plan 03; record the device-specific budget before claiming improvement. |
+| Area              | Required behavior / negative case                                                                                                                                     |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Composition       | Preedit/commit/cancel and selection match expected text for multilingual fixtures; stale controlled updates cannot revert newer edits.                                |
+| Focus             | Modal restore returns to a live intended field; deleted/recycled fields receive no late edit; hardware traversal is deterministic.                                    |
+| Privacy           | Secure text is absent from logs/traces/clipboard-by-default and inaccessible surrounding-text payloads; predictions/correction honor the requested secure mode.       |
+| Keyboard geometry | Actual show/hide/resize events move the caret into view once; missing keyboard/provider does not generate success events.                                             |
+| Accessibility     | Semantic tree and actions reflect live props; focus order survives virtualization; supported reader output is separately demonstrated.                                |
+| Lifetime          | At least 100 host mount/focus/unmount cycles with pending events produce no stale callbacks or growing native allocations; physical repeated editing survives resume. |
+| Performance       | Measure key/commit-to-visible p50/p95/p99 under a populated screen with Plan 03; record the device-specific budget before claiming improvement.                       |
 
 Existing implementation gates include `pnpm validate:dependencies`, `pnpm typecheck`, `pnpm test:js`, `pnpm validate:architecture` and `cmake --preset linux-host-renderer`, followed by its build and CTest presets. These commands were inspected but not executed for this documentation change. Add tests to actual target names, require a nonzero test count and preserve ON/OFF coverage; do not equate a prop-shape test with behavior.
 
