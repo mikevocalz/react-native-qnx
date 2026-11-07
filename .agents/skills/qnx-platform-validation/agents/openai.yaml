@@ -1,0 +1,4 @@
+interface:
+  display_name: "QNX Platform Validation"
+  short_description: "Verify native changes with precise platform evidence"
+  default_prompt: "Use $qnx-platform-validation to validate this native change and report its exact evidence boundaries."

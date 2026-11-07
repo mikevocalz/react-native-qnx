@@ -1,0 +1,4 @@
+interface:
+  display_name: "QNX Native API"
+  short_description: "Design and validate QNX and Marathon native APIs"
+  default_prompt: "Use $qnx-native-api to design and implement a typed native API for React Native QNX."

@@ -34,6 +34,12 @@ Every PR: architecture boundary, source inspection, changed files, skill/version
 
 See `docs/marathon/ROSTER.md`. Every change needs a DRI and independent reviewer. See `docs/marathon/SKILLS.md` for exact approved skill sources and evidence table.
 
+## Marathon/QNX delivery program (2026-11-07)
+
+For the source-grounded improvement series, start with `docs/platform-modernization/README.md`, `ROSTER.md`, and `SKILLS.md`. The repository skills are `.agents/skills/qnx-native-api/SKILL.md` and `.agents/skills/qnx-platform-validation/SKILL.md`; read them when their scope applies. Preserve the ordered Margelo native skill pipeline and record exact source evidence.
+
+The program distinguishes dated main-branch documentation, active prerequisite PR evidence, delivery plans, and implemented behavior. Read current source and PR receipts before repeating an older unsupported/pending statement. A plan merge does not implement its acceptance criteria or promote host evidence to physical-device proof.
+
 ## Premium component boundary — owner decision, November 7, 2026
 
 Nitro Forge is a separately sold premium component product. React Native QNX provides generic native runtime, rendering, Nitro v1 module integration, package discovery/linking, lifecycle and platform services so licensed developers can install selected Forge packages in their own apps with minimal setup. Nitro Modules is infrastructure; Nitro Forge is a separate commercial product.
