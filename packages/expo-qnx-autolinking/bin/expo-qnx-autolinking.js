@@ -8,10 +8,16 @@ const { findExpoModulesForPlatform, generateExpoPlatformCMake } = require('../sr
 
 async function main() {
   const { values, tokens } = parseArgs({
-    args: process.argv.slice(2), strict: true, allowPositionals: false, tokens: true,
+    args: process.argv.slice(2),
+    strict: true,
+    allowPositionals: false,
+    tokens: true,
     options: {
-      'project-root': { type: 'string' }, platform: { type: 'string' },
-      json: { type: 'string' }, cmake: { type: 'string' }, help: { type: 'boolean' },
+      'project-root': { type: 'string' },
+      platform: { type: 'string' },
+      json: { type: 'string' },
+      cmake: { type: 'string' },
+      help: { type: 'boolean' },
     },
   });
   const seen = new Set();
@@ -20,12 +26,17 @@ async function main() {
     if (seen.has(token.name)) throw new Error(`Duplicate option --${token.name}.`);
     seen.add(token.name);
   }
-  const usage = 'expo-qnx-autolinking --project-root <root> [--platform qnx|marathon] [--json file] [--cmake file]';
-  if (values.help) { console.log(usage); return; }
+  const usage =
+    'expo-qnx-autolinking --project-root <root> [--platform qnx|marathon] [--json file] [--cmake file]';
+  if (values.help) {
+    console.log(usage);
+    return;
+  }
   const platform = values.platform ?? 'qnx';
   if (!['qnx', 'marathon'].includes(platform)) throw new Error('Use --platform qnx or marathon.');
   for (const name of ['project-root', 'json', 'cmake']) {
-    if (values[name] !== undefined && !values[name].trim()) throw new Error(`--${name} must not be empty.`);
+    if (values[name] !== undefined && !values[name].trim())
+      throw new Error(`--${name} must not be empty.`);
   }
   if (!values.json && !values.cmake) throw new Error(`Usage: ${usage}`);
   const projectRoot = path.resolve(values['project-root'] ?? process.cwd());
@@ -39,7 +50,10 @@ async function main() {
   if (values.json) {
     const file = path.resolve(values.json);
     fs.mkdirSync(path.dirname(file), { recursive: true });
-    fs.writeFileSync(file, `${JSON.stringify({ schemaVersion: 1, platform, modules: descriptors }, null, 2)}\n`);
+    fs.writeFileSync(
+      file,
+      `${JSON.stringify({ schemaVersion: 1, platform, modules: descriptors }, null, 2)}\n`
+    );
   }
   if (values.cmake) {
     const file = path.resolve(values.cmake);

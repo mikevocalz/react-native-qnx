@@ -34,10 +34,14 @@ function resolveExpoSearchResults(searchResults, requestedPlatform = 'qnx') {
     if (!raw || !Array.isArray(raw.platforms) || !raw.platforms.includes(platform)) continue;
     const native = raw[platform];
     if (!native || typeof native !== 'object' || Array.isArray(native)) {
-      throw new Error(`Expo module ${packageName} declares platform "${platform}" but has no ${platform} config object.`);
+      throw new Error(
+        `Expo module ${packageName} declares platform "${platform}" but has no ${platform} config object.`
+      );
     }
     if (typeof native.target !== 'string' || native.target.length === 0) {
-      throw new Error(`Expo module ${packageName} must declare ${platform}.target for CMake autolinking.`);
+      throw new Error(
+        `Expo module ${packageName} must declare ${platform}.target for CMake autolinking.`
+      );
     }
     const cmakeListsPath =
       typeof native.cmakeListsPath === 'string' && native.cmakeListsPath.length > 0
@@ -47,8 +51,12 @@ function resolveExpoSearchResults(searchResults, requestedPlatform = 'qnx') {
       ? native.modules.filter((name) => typeof name === 'string' && name.length > 0)
       : [];
     descriptors.push({
-      packageName, packageRoot: revision.path, version: revision.version,
-      cmakeListsPath, target: native.target, modules,
+      packageName,
+      packageRoot: revision.path,
+      version: revision.version,
+      cmakeListsPath,
+      target: native.target,
+      modules,
       binaryName: sanitizeBinaryName(packageName),
     });
   }
@@ -81,24 +89,32 @@ function generateExpoPlatformCMake(descriptors, requestedPlatform = 'qnx') {
   const targets = new Set();
   const binaries = new Set();
   for (const descriptor of descriptors) {
-    if (!/^[A-Za-z_][A-Za-z0-9_.+-]*$/.test(descriptor.target) ||
-        !/^[A-Za-z0-9_.-]+$/.test(descriptor.binaryName) ||
-        descriptor.binaryName === '.' || descriptor.binaryName === '..') {
+    if (
+      !/^[A-Za-z_][A-Za-z0-9_.+-]*$/.test(descriptor.target) ||
+      !/^[A-Za-z0-9_.-]+$/.test(descriptor.binaryName) ||
+      descriptor.binaryName === '.' ||
+      descriptor.binaryName === '..'
+    ) {
       throw new Error('Invalid Expo native CMake target or binary directory.');
     }
     if (targets.has(descriptor.target) || binaries.has(descriptor.binaryName)) {
       throw new Error('Duplicate Expo native target or binary directory.');
     }
-    targets.add(descriptor.target); binaries.add(descriptor.binaryName);
+    targets.add(descriptor.target);
+    binaries.add(descriptor.binaryName);
     const cmakeFile = path.resolve(descriptor.packageRoot, descriptor.cmakeListsPath);
     const moduleDir = path.dirname(cmakeFile);
     if (/[\x00-\x1f";$]/.test(moduleDir + descriptor.packageName)) {
       throw new Error('Unsupported CMake metacharacters in Expo native module identity/path.');
     }
     if (!fs.existsSync(cmakeFile)) {
-      throw new Error(`QNX Expo module ${descriptor.packageName} is missing ${descriptor.cmakeListsPath}`);
+      throw new Error(
+        `QNX Expo module ${descriptor.packageName} is missing ${descriptor.cmakeListsPath}`
+      );
     }
-    lines.push(`add_subdirectory("${quoteCMake(moduleDir)}" "\${CMAKE_BINARY_DIR}/expo-${platform}/${descriptor.binaryName}")`);
+    lines.push(
+      `add_subdirectory("${quoteCMake(moduleDir)}" "\${CMAKE_BINARY_DIR}/expo-${platform}/${descriptor.binaryName}")`
+    );
     lines.push(
       `if(NOT TARGET ${descriptor.target})`,
       `  message(FATAL_ERROR "QNX Expo module ${descriptor.packageName} did not define target ${descriptor.target}")`,
@@ -113,6 +129,10 @@ function generateQnxCMake(descriptors) {
 }
 
 module.exports = {
-  findQnxExpoModules, generateQnxCMake, resolveQnxSearchResults,
-  findExpoModulesForPlatform, generateExpoPlatformCMake, resolveExpoSearchResults,
+  findQnxExpoModules,
+  generateQnxCMake,
+  resolveQnxSearchResults,
+  findExpoModulesForPlatform,
+  generateExpoPlatformCMake,
+  resolveExpoSearchResults,
 };
