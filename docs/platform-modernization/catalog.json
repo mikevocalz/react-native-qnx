@@ -38,7 +38,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/50",
-      "commit": "0b8b010c0e961ae4376cab3234a0da12fb3ea008"
+      "commit": "ce2d3315dd710860f613efcfa3852e1b3d39efcc"
     },
     {
       "id": "02",
@@ -56,7 +56,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/51",
-      "commit": "c234f21b0822221339a16e9e23518c9cf35771a5"
+      "commit": "b87f576f677ca98b0ed9a3eb840a9aaae12006bd"
     },
     {
       "id": "03",
@@ -70,7 +70,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/52",
-      "commit": "5a86aad645568265aae26b258d93c02cf51f3006"
+      "commit": "a70d8647f6ef69067fdbb4155433079a6c2e2af2"
     },
     {
       "id": "04",
@@ -84,7 +84,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/53",
-      "commit": "80b981ce948cb30e274ad54d6866decd45461872"
+      "commit": "63af12dd86ad43179ab90fa2eb674822698ad4e0"
     },
     {
       "id": "05",
@@ -98,7 +98,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/54",
-      "commit": "6313d149353835be5f986b4aa342067765c99b07"
+      "commit": "4cc2e55d6d7d01bcd8a9b5dea1d3d8e3c04df768"
     },
     {
       "id": "06",
@@ -112,7 +112,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/55",
-      "commit": "6ad11276ba5a131e0f301515849c5837ca644252"
+      "commit": "ebdf2f0275b53402831fac430c95a75b857ad939"
     },
     {
       "id": "07",
@@ -126,7 +126,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/56",
-      "commit": "a551e24d02c521981a2c9d5889ecbde10c67eb04"
+      "commit": "319d0ff3c50e77fc3cdbd5d040a978a9e4fa5db4"
     },
     {
       "id": "08",
@@ -140,7 +140,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/57",
-      "commit": "29bb1dfff49e34cc224ef2018d916c5760dc8dad"
+      "commit": "5aaa5d890ec4585fca1e7809264f8bf3ade864d1"
     },
     {
       "id": "09",
@@ -154,7 +154,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/58",
-      "commit": "459662eba3e4ddf8a2ad22653c28fb385c9aad3a"
+      "commit": "bd3e971d53525db419de70a265a35c2937fd9125"
     },
     {
       "id": "10",
@@ -171,7 +171,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/59",
-      "commit": "7b9e5f12dd9a036c4c1626fab98a4ff831e3deed",
+      "commit": "88fd78d13559143cb6c42a15f2402887c6d21be3",
       "optional_commercial_integration": true
     },
     {
@@ -186,7 +186,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/60",
-      "commit": "e72dbeb7121d24913ae103277cfd6923ea28d0ea"
+      "commit": "6c353174d4bc1f6a7291bc622a57b8a8b9223b2c"
     },
     {
       "id": "12",
@@ -200,7 +200,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/61",
-      "commit": "b3a1408c9e1abad01c05a7672bd46c9c38031f0f",
+      "commit": "1662d3f22262af9426a2831072243df838562111",
       "optional_implementation_dependencies": ["10"]
     },
     {
@@ -229,7 +229,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/62",
-      "commit": "31a70999b45be5e03a0f1d7481b9da84d0e20509"
+      "commit": "843fd202c02e5b6b081cc7cf94f48ac80711bfc0"
     },
     {
       "id": "15",
@@ -243,7 +243,7 @@
       "human_reviewer": "unassigned",
       "status": "published-plan",
       "pull_request": "https://github.com/mikevocalz/react-native-qnx/pull/63",
-      "commit": "a23c34e1ce10c35bb23e4fc93dfef6b0212d83ba"
+      "commit": "b3003d0cb7c76bd3f6fde893fee00310e7a3a28a"
     }
   ],
   "publication_semantics": "Published PR URLs and inspected commits identify documentation, not implemented features. Workstream13 remains proposed/unpublished in the Marathon repository. Document paths for published RNQNX plans resolve in their exact PR commit until merged.",
