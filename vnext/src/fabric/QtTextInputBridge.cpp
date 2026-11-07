@@ -40,12 +40,41 @@ void QtTextInputBridge::setEmitter(Emit callback) {
   emit_ = std::move(callback);
 }
 void QtTextInputBridge::beginJSUpdate() { requireOwner(); ++applyingJS_; }
-void QtTextInputBridge::endJSUpdate() { requireOwner(); --applyingJS_; }
+void QtTextInputBridge::endJSUpdate() {
+  requireOwner();
+  if (!applyingJS_) throw std::logic_error("Unbalanced TextInput JS update");
+  --applyingJS_;
+  if (applyingJS_ || drainingFocus_) return;
+  drainingFocus_ = true;
+  const QPointer<QtTextInputBridge> self(this);
+  struct ResetDrain {
+    QPointer<QtTextInputBridge> bridge;
+    ~ResetDrain() { if (bridge) bridge->drainingFocus_ = false; }
+  } reset{this};
+  try {
+    while (self && live_ && !applyingJS_ && !pendingFocus_.empty()) {
+      // Pop before invoking user code. Deletion cannot invalidate this payload,
+      // and nested updates append after every already accepted observation.
+      auto event = std::move(pendingFocus_.front());
+      pendingFocus_.pop_front();
+      const auto callback = emit_;
+      if (callback) callback(event.kind, event.value);
+    }
+  } catch (...) {
+    if (self) pendingFocus_.clear();
+    throw;
+  }
+}
+void QtTextInputBridge::cancelJSUpdate() noexcept {
+  if (applyingJS_) --applyingJS_;
+  pendingFocus_.clear();
+}
 void QtTextInputBridge::invalidate() noexcept {
   live_ = false;
   ++selectionEpoch_;
   selectionQueued_ = false;
   emit_ = {};
+  pendingFocus_.clear();
   updateTabEligibility();
 }
 void QtTextInputBridge::updateTabEligibility() {
@@ -93,12 +122,18 @@ TextInputObservation QtTextInputBridge::observation() const {
 }
 void QtTextInputBridge::emitEvent(TextInputEvent kind) {
   const bool focusEvent = kind == TextInputEvent::Focus || kind == TextInputEvent::Blur;
-  // A JS write must not echo text/selection. Real focus transitions caused by
-  // that write still belong to the native lifecycle and must reach React.
-  if (!live_ || (applyingJS_ && !focusEvent) || !field_ || !emit_) return;
+  if (!live_ || !field_ || !emit_) return;
+  if (applyingJS_ && !focusEvent) return;
   const auto value = observation();
-  const auto callback = emit_; // User cleanup can synchronously delete this object.
-  callback(kind, value);      // Do not access members after this callback.
+  if (focusEvent && (applyingJS_ || drainingFocus_)) {
+    // Qt still owns its focus-notification/property-write stack here. Deliver
+    // only after the outer JS update finishes, so observers can safely delete
+    // the wrapper. Preserve the actual transition's count/text snapshot.
+    pendingFocus_.push_back({kind, value});
+    return;
+  }
+  const auto callback = emit_;
+  callback(kind, value); // No access after user code, which may delete this.
 }
 void QtTextInputBridge::textChanged() {
   if (!live_ || applyingJS_ || !field_) return;
@@ -141,15 +176,22 @@ bool QtTextInputBridge::applyJS(int eventCount, const std::optional<QString>& te
                                int selectionStart, int selectionEnd) {
   requireOwner();
   if (!live_ || !field_ || eventCount != eventCount_) return false;
-  ++applyingJS_;
-  struct Reset {
+  beginJSUpdate();
+  const QPointer<QtTextInputBridge> self(this);
+  struct FinishUpdate {
     QPointer<QtTextInputBridge> bridge;
-    unsigned& value;
-    ~Reset() { if (bridge) --value; }
-  } reset{this, applyingJS_};
+    bool active{true};
+    ~FinishUpdate() { if (active && bridge) bridge->cancelJSUpdate(); }
+    void finish() {
+      active = false;
+      if (bridge) bridge->endJSUpdate();
+    }
+  } update{this};
+  const auto applyProperties = [&]() -> bool {
   bool changed = false;
   if (text && field_->property("text").toString() != *text) {
     field_->setProperty("text", *text);
+    if (!self || !field_) return false;
     changed = true;
   }
   const auto size = field_->property("text").toString().size();
@@ -161,6 +203,7 @@ bool QtTextInputBridge::applyJS(int eventCount, const std::optional<QString>& te
       throw std::runtime_error("TextInput selection method unavailable");
     }
   }
+  if (!self) return false;
   if (changed && field_) {
     ++selectionEpoch_; // A real JS replacement supersedes queued native selection.
     selectionQueued_ = false;
@@ -169,6 +212,10 @@ bool QtTextInputBridge::applyJS(int eventCount, const std::optional<QString>& te
     lastEnd_ = field_->property("selectionEnd").toInt();
   }
   return true;
+  };
+  const bool result = applyProperties();
+  update.finish(); // Direct commands also finish outside every Qt setter.
+  return self && live_ && result;
 }
 bool QtTextInputBridge::eventFilter(QObject* watched, QEvent* event) {
   // Invalidated fields can still exist briefly while Qt detaches the item.

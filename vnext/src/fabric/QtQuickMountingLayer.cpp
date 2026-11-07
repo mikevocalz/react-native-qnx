@@ -126,6 +126,20 @@ QtQuickMountingLayer::QtQuickMountingLayer(
 }
 
 QtQuickMountingLayer::~QtQuickMountingLayer() {
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  // Close every callback before changing any item's focus or deleting a tree.
+  // A destructor must not admit reentrant user mutation of the owned registry.
+  for (const auto& mounted : std::as_const(items_)) {
+    if (mounted.owned) {
+      if (auto* bridge = mounted.item->findChild<QtTextInputBridge*>(QString(), Qt::FindDirectChildrenOnly)) bridge->setEmitter({});
+    }
+  }
+  for (const auto& mounted : std::as_const(items_)) {
+    if (mounted.owned) {
+      if (auto* bridge = mounted.item->findChild<QtTextInputBridge*>(QString(), Qt::FindDirectChildrenOnly)) bridge->invalidate();
+    }
+  }
+#endif
   // Items are owned individually rather than through QObject parentage, so a
   // surviving tree is torn down one item at a time. QQuickItem's destructor
   // detaches any remaining visual children, so order does not matter.
@@ -430,8 +444,14 @@ MountError QtQuickMountingLayer::updateTextInput(
   bridge->beginJSUpdate();
   struct EndUpdate {
     QPointer<QtTextInputBridge> bridge;
-    ~EndUpdate() { if (bridge) bridge->endJSUpdate(); }
+    bool active{true};
+    ~EndUpdate() { if (active && bridge) bridge->cancelJSUpdate(); }
+    void finish() {
+      active = false; // Observers may throw. Cleanup must not finish twice.
+      if (bridge) bridge->endJSUpdate();
+    }
   } endUpdate{bridge};
+  const auto applyProperties = [&]() -> MountError {
   if (!bridge->configure(style.secure, style.multiline)) {
     return failWith(MountError::UnsupportedTextInput, QStringLiteral("Secure multiline TextInput is unsupported"));
   }
@@ -490,6 +510,21 @@ MountError QtQuickMountingLayer::updateTextInput(
 
   lastError_.clear();
   return MountError::None;
+#if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
+  };
+  const auto result = applyProperties();
+  const auto detail = lastError_;
+  endUpdate.finish(); // All Qt property/focus setter frames have returned.
+  if (result != MountError::None) {
+    lastError_ = detail;
+    return result;
+  }
+  if (!item || !bridge || itemForTag(tag) != item.data()) {
+    return failWith(MountError::UnknownTag, QStringLiteral("TextInput target removed during update"));
+  }
+  lastError_.clear();
+  return MountError::None;
+#endif
 }
 
 #if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
