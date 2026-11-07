@@ -18,6 +18,7 @@ function(rnqnx_add_accessibility_action_probe)
       WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/apps/rn-playground"
       DEPENDS "${root}/apps/rn-playground/accessibility-action-probe.js"
         "${root}/apps/rn-playground/metro.config.js" "${root}/apps/rn-playground/babel.config.js"
+        "${root}/packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js"
         "${root}/pnpm-lock.yaml" VERBATIM)
   endif()
   set(fixture "${bundle}")
