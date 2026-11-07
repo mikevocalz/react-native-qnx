@@ -2,6 +2,7 @@
 
 #include <QMetaObject>
 
+#include <exception>
 #include <stdexcept>
 #include <utility>
 
@@ -12,6 +13,14 @@ QtRuntimeTaskQueue::QtRuntimeTaskQueue(
     : execute_(std::move(execute)),
       enterJS_(std::move(enterJS)),
       leaveJS_(std::move(leaveJS)) {}
+
+#if RNQNX_ENABLE_FRAME_TRACE
+QtRuntimeTaskQueue::QtRuntimeTaskQueue(Execute execute, Task enterJS, Task leaveJS,
+                                     std::shared_ptr<RuntimeTrace> trace)
+    : QtRuntimeTaskQueue(std::move(execute), std::move(enterJS), std::move(leaveJS)) {
+  trace_ = std::move(trace);
+}
+#endif
 
 QtRuntimeTaskQueue::~QtRuntimeTaskQueue() {
   // The host must close while its runtime is alive, on the owning thread.
@@ -39,6 +48,23 @@ void QtRuntimeTaskQueue::post(Task task) {
   if (weak.expired()) {
     throw std::logic_error("Qt JavaScript task queue requires shared ownership");
   }
+#if RNQNX_ENABLE_FRAME_TRACE
+  std::uint64_t traceCorrelation = 0;
+  if (trace_) {
+    traceCorrelation = trace_->nextId();
+    task = [trace = trace_, original = std::move(task), traceCorrelation]() mutable {
+      trace->record(TraceStage::QueueExecute, TracePhase::Begin, traceCorrelation);
+      struct End {
+        std::shared_ptr<RuntimeTrace> trace;
+        std::uint64_t correlation;
+        int exceptions{std::uncaught_exceptions()};
+        ~End() { trace->record(TraceStage::QueueExecute, TracePhase::End, correlation,
+                               0, 0, std::uncaught_exceptions() > exceptions); }
+      } end{trace, traceCorrelation};
+      original();
+    };
+  }
+#endif
   std::unique_lock lock(mutex_);
   // A drained completion can resolve a native Promise which then posts its JS
   // settlement. Admit that owner-thread chain, but close worker admission.
@@ -64,6 +90,9 @@ void QtRuntimeTaskQueue::post(Task task) {
     }
     wakePending_ = true;
   }
+#if RNQNX_ENABLE_FRAME_TRACE
+  if (trace_) trace_->record(TraceStage::QueueAdmission, TracePhase::Instant, traceCorrelation);
+#endif
 }
 
 void QtRuntimeTaskQueue::drain() {
@@ -121,6 +150,9 @@ void QtRuntimeTaskQueue::leaveJS() noexcept {
 }
 
 void QtRuntimeTaskQueue::close() {
+#if RNQNX_ENABLE_FRAME_TRACE
+  TraceSpan span(trace_, TraceStage::QueueClose);
+#endif
   requireOwner();
   if (draining_ || entryDepth_ != 0) {
     throw std::runtime_error("Cannot close an active JavaScript task queue");

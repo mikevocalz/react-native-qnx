@@ -21,8 +21,10 @@ those seams are implemented and validated here.
 
 **Current local validation:** dependency/source contracts, TypeScript, JS tests,
 platform codegen and formatting pass. The full RN 0.88/Hermes/Qt 6.12 host suite
-passes 13/13 CTests, including the optional owned Nitro dispatcher and source
-patch contract. Hosted jobs are currently refused before runner startup because
+passes 20/20 CTests with tracing/input lifecycle ON and 18/18 with tracing OFF,
+including the owned Nitro dispatcher and source patch contract. See the
+[trace receipt](docs/evidence/pi400-runtime-trace-2026-11-07.md) for exact flags,
+follow-up tests and evidence limits. Hosted jobs are refused before runner startup because
 of GitHub account billing/spending limits; local evidence is separate from CI.
 
 **Physical QNX proof:** Pi 400/QNX 8.0.5 as qnxuser renders the exact Hello World

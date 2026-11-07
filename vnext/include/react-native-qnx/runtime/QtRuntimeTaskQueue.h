@@ -1,5 +1,7 @@
 #pragma once
 
+#include "react-native-qnx/runtime/RuntimeTrace.h"
+
 #include <QObject>
 
 #include <list>
@@ -20,6 +22,10 @@ class QtRuntimeTaskQueue final
   using Execute = std::function<void(Task)>;
 
   QtRuntimeTaskQueue(Execute execute, Task enterJS, Task leaveJS);
+#if RNQNX_ENABLE_FRAME_TRACE
+  QtRuntimeTaskQueue(Execute execute, Task enterJS, Task leaveJS,
+                     std::shared_ptr<RuntimeTrace> trace);
+#endif
   ~QtRuntimeTaskQueue();
 
   void post(Task task);
@@ -44,6 +50,9 @@ class QtRuntimeTaskQueue final
   // Distinct from RN's uninstrumented deque<Task> template in host ASan builds.
   std::list<Task> pending_;
   std::unique_ptr<QObject> context_{std::make_unique<QObject>()};
+#if RNQNX_ENABLE_FRAME_TRACE
+  std::shared_ptr<RuntimeTrace> trace_;
+#endif
   Execute execute_;
   Task enterJS_;
   Task leaveJS_;

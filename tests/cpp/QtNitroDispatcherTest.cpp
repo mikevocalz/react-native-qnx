@@ -21,6 +21,9 @@
 #include <iterator>
 #include <iostream>
 #include <optional>
+#if RNQNX_ENABLE_FRAME_TRACE
+#include <map>
+#endif
 #include <stdexcept>
 #include <thread>
 #include <vector>
@@ -66,7 +69,12 @@ double number(QtReactHost& host, const char* name) {
 }
 
 void exercise(rnqnx::fabric::ShadowViewMutationAdapter& adapter) {
+#if RNQNX_ENABLE_FRAME_TRACE
+  auto trace = std::make_shared<rnqnx::runtime::RuntimeTrace>(1000);
+  auto host = std::make_unique<QtReactHost>(adapter, trace);
+#else
   auto host = std::make_unique<QtReactHost>(adapter);
+#endif
   auto dispatcher = std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host->taskQueue());
   rnqnx::nitro::installQnxNitroRuntime(host->runtime(), dispatcher);
   const auto owner = std::this_thread::get_id();
@@ -209,6 +217,63 @@ void exercise(rnqnx::fabric::ShadowViewMutationAdapter& adapter) {
   }
   callback.callAndForget();  // Closed admission must not throw into native code.
   QCoreApplication::processEvents();  // Posted wakeup must not touch dead Hermes.
+#if RNQNX_ENABLE_FRAME_TRACE
+  using rnqnx::runtime::TracePhase;
+  using rnqnx::runtime::TraceStage;
+  const auto snapshot = trace->freeze();
+  require(snapshot.dropped == 0, "Nitro trace overflowed");
+  struct Counts {
+    unsigned admitted = 0;
+    unsigned began = 0;
+    unsigned ended = 0;
+    unsigned producer = 0;
+    unsigned executor = 0;
+    unsigned endThread = 0;
+    std::uint64_t admittedSequence = 0;
+    std::uint64_t beginSequence = 0;
+    std::uint64_t endSequence = 0;
+  };
+  std::map<std::uint64_t, Counts> operations;
+  unsigned ownerTraceThread = 0;
+  bool closeEnded = false;
+  for (const auto& event : snapshot.events) {
+    if (event.stage == TraceStage::Evaluate && ownerTraceThread == 0) ownerTraceThread = event.thread;
+    if (event.stage == TraceStage::QueueAdmission) {
+      auto& operation = operations[event.correlation];
+      ++operation.admitted;
+      operation.producer = event.thread;
+      operation.admittedSequence = event.sequence;
+      require(event.phase == TracePhase::Instant, "Nitro trace admission phase changed");
+    } else if (event.stage == TraceStage::QueueExecute) {
+      auto& operation = operations[event.correlation];
+      if (event.phase == TracePhase::Begin) {
+        ++operation.began;
+        operation.executor = event.thread;
+        operation.beginSequence = event.sequence;
+      } else if (event.phase == TracePhase::End) {
+        ++operation.ended;
+        operation.endThread = event.thread;
+        operation.endSequence = event.sequence;
+      }
+    } else if (event.stage == TraceStage::QueueClose && event.phase == TracePhase::End) {
+      closeEnded = true;
+    }
+  }
+  require(ownerTraceThread != 0 && closeEnded && !operations.empty(), "Nitro trace missed owner/close/admission");
+  bool crossThread = false;
+  for (const auto& [correlation, operation] : operations) {
+    require(correlation != 0 && operation.admitted == 1 && operation.began == 1 && operation.ended == 1,
+            "Nitro trace admission/execution correlation mismatch");
+    require(operation.executor == ownerTraceThread && operation.endThread == ownerTraceThread,
+            "Nitro trace execution was not on owner");
+    require(operation.admittedSequence < operation.beginSequence && operation.beginSequence < operation.endSequence,
+            "Nitro trace admission/execution order changed");
+    crossThread = crossThread || operation.producer != operation.executor;
+  }
+  require(crossThread, "Nitro trace missed actual worker admission");
+  std::cout << "RNQNX_NITRO_TRACE_OK admissions=" << operations.size()
+            << " executed=" << operations.size() << " dropped=0 cross-thread=1 close=1\n";
+#endif
 }
 
 void raceClose(rnqnx::fabric::ShadowViewMutationAdapter& adapter) {

@@ -137,6 +137,12 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory();
 class QtReactHost {
  public:
   QtReactHost(fabric::ShadowViewMutationAdapter& adapter);
+#if RNQNX_ENABLE_FRAME_TRACE
+  /// Native diagnostics only. Caller retains the session through host teardown,
+  /// then freezes/exports it outside runtime callbacks.
+  QtReactHost(fabric::ShadowViewMutationAdapter& adapter,
+              std::shared_ptr<RuntimeTrace> trace);
+#endif
   ~QtReactHost();
 
   QtReactHost(const QtReactHost&) = delete;
