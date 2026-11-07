@@ -34,16 +34,11 @@ const useConformance = create((set) => ({
   setText: (text) => set({ text }),
   setToggle: (toggle) => set({ toggle }),
   press: () => set((state) => ({ presses: state.presses + 1 })),
-  setWidth: (width) =>
-    set((state) => (state.width === width ? state : { width })),
+  setWidth: (width) => set((state) => (state.width === width ? state : { width })),
 }));
 
 function Label({ children, color = MUTED, size = 14, style }) {
-  return h(
-    Text,
-    { style: [{ color, fontSize: size, lineHeight: size + 6 }, style] },
-    children
-  );
+  return h(Text, { style: [{ color, fontSize: size, lineHeight: size + 6 }, style] }, children);
 }
 
 function Heading({ title, detail }) {
@@ -254,11 +249,7 @@ function LimitationsPage() {
             marginBottom: 8,
           },
         },
-        h(
-          Label,
-          { color: INK },
-          scenario.id + ' / ' + scenario.title + ' / ' + scenario.status
-        ),
+        h(Label, { color: INK }, scenario.id + ' / ' + scenario.title + ' / ' + scenario.status),
         h(Label, null, scenario.expectation)
       )
     )
