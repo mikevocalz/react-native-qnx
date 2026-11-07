@@ -20,8 +20,14 @@
 
 using namespace rnqnx::fabric;
 void require(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
+struct ClearEmitter {
+  QPointer<QtTextInputBridge> bridge;
+  ~ClearEmitter() { if (bridge) bridge->setEmitter({}); }
+};
 // A real window dispatches keys to two independently owned FocusScopes.
 void checkKeyboardTraversal(QQmlComponent& component) {
+  std::vector<QString> keys;
+  unsigned secondBlurs = 0;
   QQuickWindow window;
   window.resize(320, 240);
   std::unique_ptr<QObject> firstObject(component.create());
@@ -39,8 +45,6 @@ void checkKeyboardTraversal(QQmlComponent& component) {
   require(first->activeFocusOnTab() && second->activeFocusOnTab() &&
           !firstEditor->activeFocusOnTab() && !secondEditor->activeFocusOnTab() &&
           !first->findChild<QQuickItem*>("qnx-text-edit")->activeFocusOnTab(), "editor has duplicate or missing tab stop");
-  std::vector<QString> keys;
-  unsigned secondBlurs = 0;
   firstBridge->setEmitter([&](TextInputEvent event, const TextInputObservation& value) {
     if (event == TextInputEvent::Key) keys.push_back(value.key);
   });
@@ -48,6 +52,8 @@ void checkKeyboardTraversal(QQmlComponent& component) {
     if (event == TextInputEvent::Blur) { ++secondBlurs; require(value.eventCount == 0, "readOnly blur advanced edit token"); }
     if (event == TextInputEvent::Key) keys.push_back(value.key);
   });
+  ClearEmitter clearFirst{firstBridge};
+  ClearEmitter clearSecond{secondBridge};
   window.show(); window.requestActivate(); first->forceActiveFocus();
   const auto pump = [] { for (int i = 0; i < 10; ++i) QCoreApplication::processEvents(); };
   pump();
@@ -82,6 +88,7 @@ void checkKeyboardTraversal(QQmlComponent& component) {
 // Exercise the documented callback-can-delete contract during JS-owned updates.
 void checkBlurDeletion(QQmlComponent& component) {
   for (const bool secureMultiline : {false, true}) {
+    unsigned blurs = 0;
     QQuickWindow window;
     window.resize(320, 240);
     std::unique_ptr<QObject> object(component.create());
@@ -90,13 +97,13 @@ void checkBlurDeletion(QQmlComponent& component) {
     wrapper->setParentItem(window.contentItem()); wrapper->setSize(QSizeF(120, 40));
     QPointer<QtTextInputBridge> bridge = new QtTextInputBridge(*wrapper);
     require(bridge->configure(false, false), "deletion editor unavailable");
-    unsigned blurs = 0;
-    bridge->setEmitter([&](TextInputEvent event, const TextInputObservation&) {
-      if (event == TextInputEvent::Blur) { ++blurs; object.reset(); }
-    });
+    ClearEmitter clear{bridge};
     window.show(); window.requestActivate(); wrapper->forceActiveFocus();
     for (int i = 0; i < 10; ++i) QCoreApplication::processEvents();
     require(wrapper->hasActiveFocus(), "deletion editor did not focus");
+    bridge->setEmitter([&](TextInputEvent event, const TextInputObservation&) {
+      if (event == TextInputEvent::Blur) { ++blurs; object.reset(); }
+    });
     QPointer<QQuickItem> previous(wrapper);
     bridge->beginJSUpdate();
     if (secureMultiline) {
@@ -108,9 +115,66 @@ void checkBlurDeletion(QQmlComponent& component) {
     require(previous.isNull() && bridge.isNull() && blurs == 1, "blur callback deletion was suppressed or retained target");
   }
 }
+void checkFocusTransactions(QQmlComponent& component) {
+  std::vector<TextInputEvent> events;
+  std::vector<QString> snapshots;
+  QQuickWindow window;
+  window.resize(320, 240);
+  std::unique_ptr<QObject> object(component.create());
+  auto* wrapper = qobject_cast<QQuickItem*>(object.get());
+  require(wrapper, "transaction wrapper unavailable");
+  wrapper->setParentItem(window.contentItem()); wrapper->setSize(QSizeF(120, 40));
+  QPointer<QtTextInputBridge> bridge = new QtTextInputBridge(*wrapper);
+  ClearEmitter clear{bridge};
+  require(bridge->configure(false, false), "transaction editor unavailable");
+  window.show(); window.requestActivate(); wrapper->forceActiveFocus();
+  for (int i = 0; i < 10; ++i) QCoreApplication::processEvents();
+  require(wrapper->hasActiveFocus(), "transaction editor did not focus");
+  bool nested = false;
+  bridge->setEmitter([&](TextInputEvent kind, const TextInputObservation& value) {
+    events.push_back(kind); snapshots.push_back(value.text);
+    require(value.eventCount == 0, "focus transaction advanced edit count");
+    if (!nested) {
+      nested = true;
+      bridge->beginJSUpdate(); wrapper->forceActiveFocus(); bridge->endJSUpdate();
+    }
+  });
+  bridge->beginJSUpdate();
+  wrapper->setFocus(false);
+  wrapper->forceActiveFocus();
+  bridge->beginJSUpdate(); wrapper->setFocus(false); bridge->endJSUpdate();
+  require(events.empty(), "nested JS scope delivered focus inside Qt setters");
+  require(bridge->applyJS(0, QStringLiteral("JS"), 0, 0), "transaction JS value failed");
+  bridge->endJSUpdate();
+  const std::vector<TextInputEvent> expected{TextInputEvent::Blur, TextInputEvent::Focus, TextInputEvent::Blur, TextInputEvent::Focus};
+  require(events == expected && bridge->eventCount() == 0, "focus transaction FIFO/reentrant ordering or no-echo mismatch");
+  require(snapshots.size() == 4 && snapshots[0].isEmpty() && snapshots[1].isEmpty() && snapshots[2].isEmpty() &&
+          snapshots[3] == QStringLiteral("JS"), "focus payload was resampled instead of captured at transition");
+  // A throwing observer propagates from explicit finish, clears the remaining
+  // queue, and leaves the bridge usable for a subsequent owned transaction.
+  events.clear();
+  bridge->setEmitter([&](TextInputEvent kind, const TextInputObservation&) {
+    events.push_back(kind);
+    throw std::runtime_error("synthetic focus observer failure");
+  });
+  bridge->beginJSUpdate(); wrapper->setFocus(false); wrapper->forceActiveFocus();
+  bool threw = false;
+  try { bridge->endJSUpdate(); }
+  catch (const std::runtime_error& error) { threw = std::string(error.what()) == "synthetic focus observer failure"; }
+  require(threw && events == std::vector<TextInputEvent>{TextInputEvent::Blur}, "focus observer exception was hidden or queue replayed");
+  bridge->setEmitter([&](TextInputEvent kind, const TextInputObservation&) { events.push_back(kind); });
+  bridge->beginJSUpdate(); wrapper->setFocus(false); bridge->cancelJSUpdate();
+  require(events.size() == 1, "exception cancellation invoked observer");
+  bridge->beginJSUpdate(); wrapper->forceActiveFocus(); bridge->endJSUpdate();
+  require(events.size() == 2 && events.back() == TextInputEvent::Focus, "focus drain did not recover after throw/cancel");
+  events.clear();
+  bridge->beginJSUpdate(); wrapper->setFocus(false); bridge->invalidate(); bridge->endJSUpdate();
+  require(events.empty(), "invalidated transaction retained queued focus observation");
+}
 #if RNQNX_TEXT_INPUT_MOUNTING_TEST
 void checkMountedBlurDeletion(QQmlEngine& engine) {
   for (const bool secureMultiline : {false, true}) {
+    unsigned blurs = 0;
     QQuickWindow window;
     window.resize(320, 240);
     rnqnx::views::QtQuickItemFactory factory(engine);
@@ -123,20 +187,56 @@ void checkMountedBlurDeletion(QQmlEngine& engine) {
     QPointer<QQuickItem> item = layer.itemForTag(101);
     item->setSize(QSizeF(120, 40));
     QPointer<QtTextInputBridge> bridge = layer.textInputBridge(101);
-    unsigned blurs = 0;
-    bridge->setEmitter([&](TextInputEvent event, const TextInputObservation&) {
-      if (event == TextInputEvent::Blur) { ++blurs; require(layer.destroy(101) == MountError::None, "blur deletion failed"); }
-    });
+    ClearEmitter clear{bridge};
     window.show(); window.requestActivate(); item->forceActiveFocus();
     for (int i = 0; i < 10; ++i) QCoreApplication::processEvents();
     require(item->hasActiveFocus(), "mounted deletion editor did not focus");
+    bridge->setEmitter([&](TextInputEvent event, const TextInputObservation&) {
+      if (event == TextInputEvent::Blur) { ++blurs; require(layer.destroy(101) == MountError::None, "blur deletion failed"); }
+    });
     style.readOnly = true; style.secure = secureMultiline; style.multiline = secureMultiline;
     const auto result = layer.updateTextInput(101, style);
     require(result == (secureMultiline ? MountError::UnsupportedTextInput : MountError::UnknownTag) &&
-            item.isNull() && bridge.isNull() && blurs == 1 && layer.mountedCount() == 1,
+            item.isNull() && bridge.isNull() && blurs == 1 && layer.mountedCount() == 1 &&
+            layer.lastError() == (secureMultiline ? QStringLiteral("Secure multiline TextInput is unsupported") : QStringLiteral("TextInput target removed during update")),
             "mount update accessed or retained deleted blur target");
   }
 }
+void checkMountedThrowAndTeardown(QQmlEngine& engine) {
+  unsigned teardownCallbacks = 0;
+  QQuickWindow window;
+  window.resize(320, 240);
+  rnqnx::views::QtQuickItemFactory factory(engine);
+  factory.registerType(QStringLiteral("TextInput"), QByteArray(rnqnx::views::textInputQml()));
+  QPointer<QtTextInputBridge> previous;
+  {
+    QtQuickMountingLayer layer(factory, *window.contentItem(), 100);
+    require(layer.create(101, QStringLiteral("TextInput")) == MountError::None && layer.insert(100, 101, 0) == MountError::None, "throw editor unavailable");
+    TextInputStyle style;
+    require(layer.updateTextInput(101, style) == MountError::None, "throw editor configuration failed");
+    auto* item = layer.itemForTag(101); item->setSize(QSizeF(120, 40));
+    previous = layer.textInputBridge(101);
+    window.show(); window.requestActivate(); item->forceActiveFocus();
+    for (int i = 0; i < 10; ++i) QCoreApplication::processEvents();
+    require(item->hasActiveFocus(), "throw editor did not focus");
+    previous->setEmitter([](TextInputEvent kind, const TextInputObservation&) {
+      if (kind == TextInputEvent::Blur) throw std::runtime_error("synthetic mounted observer failure");
+    });
+    style.readOnly = true;
+    bool threw = false;
+    try { layer.updateTextInput(101, style); }
+    catch (const std::runtime_error& error) { threw = std::string(error.what()) == "synthetic mounted observer failure"; }
+    require(threw && previous, "mounted observer did not throw from explicit finish");
+    previous->setEmitter({}); style.readOnly = false;
+    require(layer.updateTextInput(101, style) == MountError::None, "mounted scope did not recover after observer throw");
+    item->forceActiveFocus();
+    // This callback stays armed across the layer destructor. Its captured state
+    // outlives the layer, and it does not mutate the registry on failure.
+    previous->setEmitter([&](TextInputEvent, const TextInputObservation&) { ++teardownCallbacks; });
+  }
+  require(previous.isNull() && teardownCallbacks == 0, "layer teardown admitted TextInput callback");
+}
+
 #endif
 int main(int argc, char** argv) {
   QGuiApplication app(argc, argv);
@@ -147,8 +247,10 @@ int main(int argc, char** argv) {
     require(component.isReady(), "TextInput QML unavailable");
     checkKeyboardTraversal(component);
     checkBlurDeletion(component);
+    checkFocusTransactions(component);
 #if RNQNX_TEXT_INPUT_MOUNTING_TEST
     checkMountedBlurDeletion(engine);
+    checkMountedThrowAndTeardown(engine);
 #endif
     std::vector<TextInputObservation> changes;
     std::vector<TextInputObservation> selections;
@@ -165,6 +267,7 @@ int main(int argc, char** argv) {
       }
       if (event == TextInputEvent::Selection) selections.push_back(value);
     });
+    ClearEmitter clearMain{bridge};
     require(bridge->configure(false, false), "ordinary TextInput unavailable");
     require(bridge->applyJS(0, QStringLiteral("A😀e\u0301")), "initial JS write rejected");
     require(bridge->eventCount() == 0 && changes.empty(), "JS-origin change feedback");

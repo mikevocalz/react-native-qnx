@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <deque>
 #include <optional>
 
 namespace rnqnx::fabric {
@@ -30,7 +31,10 @@ class QtTextInputBridge final : public QObject {
   explicit QtTextInputBridge(QQuickItem& wrapper);
   void setEmitter(Emit callback);
   void beginJSUpdate();
+  // Explicit finish can invoke observers and throw; never call it from a destructor.
   void endJSUpdate();
+  // Exceptional exit balances the scope and discards pending observations.
+  void cancelJSUpdate() noexcept;
   bool configure(bool secure, bool multiline);
   bool applyJS(int eventCount, const std::optional<QString>& text,
                int selectionStart = -1, int selectionEnd = -1);
@@ -63,7 +67,13 @@ class QtTextInputBridge final : public QObject {
   int lastSelectionCount_{-1};
   std::uint64_t selectionEpoch_{0};
   bool selectionQueued_{false};
+  struct PendingFocus {
+    TextInputEvent kind;
+    TextInputObservation value;
+  };
+  std::deque<PendingFocus> pendingFocus_;
   unsigned applyingJS_{0};
+  bool drainingFocus_{false};
   bool live_{true};
   bool secure_{false};
   bool hiddenUnsupported_{false};
