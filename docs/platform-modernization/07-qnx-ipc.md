@@ -28,13 +28,13 @@ Create a transport owner that holds connections, a bounded request queue, cancel
 
 Define an explicit wire codec rather than sending in-memory C++ objects. Proposed framing:
 
-| Field | Required semantics |
-| --- | --- |
-| Protocol version and header size | Negotiate supported versions; reject unknown required fields |
-| Operation and payload size | Allowlisted operations; validate actual received bytes and claimed lengths |
-| Request ID and service generation | Correlate exactly once; reject late responses from an old connection |
-| Status and reply size | Distinguish transport failure from service refusal; bound both directions |
-| Payload | Fixed-width scalar encoding, explicit byte order, checked offsets; no pointers or native `size_t` |
+| Field                             | Required semantics                                                                                |
+| --------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Protocol version and header size  | Negotiate supported versions; reject unknown required fields                                      |
+| Operation and payload size        | Allowlisted operations; validate actual received bytes and claimed lengths                        |
+| Request ID and service generation | Correlate exactly once; reject late responses from an old connection                              |
+| Status and reply size             | Distinguish transport failure from service refusal; bound both directions                         |
+| Payload                           | Fixed-width scalar encoding, explicit byte order, checked offsets; no pointers or native `size_t` |
 
 Start with a proposed 64 KiB maximum message, including its header. Larger data requires the separately justified Plan 09 path. Validate lengths before allocation and check subtraction/addition for overflow. Treat pulses, protocol messages, connection handling, and receive errors as distinct native paths. Store receive IDs as `rcvid_t` throughout deferred replies and unblock bookkeeping.
 
@@ -84,23 +84,23 @@ Prefer a reviewed resource manager or existing service when filesystem/credentia
 
 ## Work slices, roster, and skills
 
-| Slice / owner role | Proposed files and deliverable | Independent reviewer |
-| --- | --- | --- |
-| Protocol engineer, DRI | New `native/platform/qnx/services/ipc/` codec and version contract | Security engineer |
-| QNX systems engineer | Connection/event RAII, cooperative server fixture, bounded worker | Qt/JSI lifetime engineer |
-| Nitro API engineer | Plan 06 session integration under `packages/qnx-nitro-runtime/cpp/` | API architect |
-| QA engineer | Proposed `tests/native/qnx-ipc/` process fixtures and malformed-input tests | QNX regression owner |
+| Slice / owner role     | Proposed files and deliverable                                              | Independent reviewer     |
+| ---------------------- | --------------------------------------------------------------------------- | ------------------------ |
+| Protocol engineer, DRI | New `native/platform/qnx/services/ipc/` codec and version contract          | Security engineer        |
+| QNX systems engineer   | Connection/event RAII, cooperative server fixture, bounded worker           | Qt/JSI lifetime engineer |
+| Nitro API engineer     | Plan 06 session integration under `packages/qnx-nitro-runtime/cpp/`         | API architect            |
+| QA engineer            | Proposed `tests/native/qnx-ipc/` process fixtures and malformed-input tests | QNX regression owner     |
 
 All roles are proposed and human assignments are open. Implement codec and native process fixtures first, then cancellation/events, then the typed service adapter. A proposed `RNQNX_ENABLE_SERVICE_IPC` flag defaults OFF and rejects non-QNX production builds. Host fakes belong only to test targets. Plans 01/#44 and 06 are prerequisites for integration; Plan 08 covers recovery; Plan 09 must not be bundled into the first transport slice.
 
 Exact skills read, in order: Margelo [`api-design`](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md), [`build-nitro-modules`](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md), and [`cpp`](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md), all at `1e9e17be6f41c838db472d6a4b943fc26355a3be`; Callstack [`react-native-best-practices`](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md), at `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`.
 
-| Skill | Decision applied | Evidence limit |
-| --- | --- | --- |
-| `api-design` | Typed domain API; visible errors and asynchronous remote work | Source read; API sketches uncompiled |
-| `build-nitro-modules` | One owned session; no fabricated Promise codegen | Source read; existing generator remains limited |
-| `cpp` | RAII buffers/connections and explicit cancellation lifetime | Source read; no new native tests run |
-| `react-native-best-practices` | Measure queue/owner delay and bounded memory before tuning | Source read; no latency results |
+| Skill                         | Decision applied                                              | Evidence limit                                  |
+| ----------------------------- | ------------------------------------------------------------- | ----------------------------------------------- |
+| `api-design`                  | Typed domain API; visible errors and asynchronous remote work | Source read; API sketches uncompiled            |
+| `build-nitro-modules`         | One owned session; no fabricated Promise codegen              | Source read; existing generator remains limited |
+| `cpp`                         | RAII buffers/connections and explicit cancellation lifetime   | Source read; no new native tests run            |
+| `react-native-best-practices` | Measure queue/owner delay and bounded memory before tuning    | Source read; no latency results                 |
 
 ## Acceptance, evidence, and rollback
 
