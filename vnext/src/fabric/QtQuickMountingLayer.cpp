@@ -162,6 +162,13 @@ QQuickItem* QtQuickMountingLayer::itemForTag(Tag tag) const {
   return items_.value(tag, MountedItem{}).item;
 }
 
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+bool QtQuickMountingLayer::isGenericView(Tag tag) const {
+  const auto mounted = items_.constFind(tag);
+  return mounted != items_.constEnd() && mounted->owned && mounted->genericView;
+}
+#endif
+
 MountError QtQuickMountingLayer::failWith(
     MountError error,
     const QString& detail) {

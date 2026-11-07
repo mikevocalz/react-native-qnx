@@ -53,7 +53,13 @@ if (/^RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=ON$/m.test(cache)) {
   );
 }
 if (/^RNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON$/m.test(cache)) {
-  expectedTests.push('rnqnx_accessibility_view_test');
+  expectedTests.push(
+    'rnqnx_accessibility_view_test',
+    'rnqnx_accessibility_action_probe',
+    'rnqnx_accessibility_action_native_test',
+    'rnqnx_accessibility_action_rejects_interception',
+    'rnqnx_accessibility_action_rejects_registration'
+  );
 }
 run('cmake', ['--build', '--preset', preset]);
 const inventory = run('ctest', ['--test-dir', build, '--show-only=json-v1'], true);

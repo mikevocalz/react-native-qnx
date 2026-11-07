@@ -6,6 +6,7 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 #include <QHash>
+#include <QPointer>
 #include <QSet>
 #include <QString>
 
@@ -21,6 +22,7 @@ struct MutationFailure {
   QString detail;
 };
 
+class QtAccessibilityActivation;
 class QtImageBridge;
 class QtSwitchBridge;
 
@@ -39,6 +41,11 @@ class QtSwitchBridge;
 class ShadowViewMutationAdapter {
  public:
   explicit ShadowViewMutationAdapter(QtQuickMountingLayer& layer);
+  ~ShadowViewMutationAdapter();
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+  ShadowViewMutationAdapter(const ShadowViewMutationAdapter&) = delete;
+  ShadowViewMutationAdapter& operator=(const ShadowViewMutationAdapter&) = delete;
+#endif
 
   /// Routes shadow-view event emitters to a touch dispatcher as mutations
   /// arrive. Optional: without one, mounted views simply receive no input.
@@ -72,6 +79,10 @@ class ShadowViewMutationAdapter {
       facebook::react::Tag tag, const folly::dynamic& props);
 
  private:
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+  MountError applyAccessibilityActions(const facebook::react::ShadowView& view, QString& detail);
+  QHash<Tag, QPointer<QtAccessibilityActivation>> accessibilityActivations_;
+#endif
   void applyText(const facebook::react::ShadowView& view);
   void applyImage(const facebook::react::ShadowView& view);
   MountError applyTextInput(const facebook::react::ShadowView& view);

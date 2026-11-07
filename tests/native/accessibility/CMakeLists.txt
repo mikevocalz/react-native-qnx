@@ -21,3 +21,21 @@ if(BUILD_TESTING AND NOT CMAKE_CROSSCOMPILING)
  add_test(NAME rnqnx_accessibility_view_test COMMAND rnqnx_accessibility_view_test -platform offscreen)
  set_tests_properties(rnqnx_accessibility_view_test PROPERTIES TIMEOUT 15 ENVIRONMENT "QT_QUICK_BACKEND=software;ASAN_OPTIONS=detect_leaks=0:halt_on_error=1")
 endif()
+
+add_executable(rnqnx_accessibility_action_test ActionTest.cpp
+ "${root}/vnext/src/fabric/QtViewAccessibility.cpp"
+ "${root}/vnext/src/fabric/QtAccessibilityActivation.cpp"
+ "${root}/vnext/include/react-native-qnx/fabric/QtAccessibilityActivation.h")
+set_target_properties(rnqnx_accessibility_action_test PROPERTIES AUTOMOC ON)
+target_include_directories(rnqnx_accessibility_action_test PRIVATE "${root}/vnext/include")
+target_compile_definitions(rnqnx_accessibility_action_test PRIVATE QT_NO_KEYWORDS RNQNX_ENABLE_ACCESSIBILITY_BRIDGE=1)
+target_link_libraries(rnqnx_accessibility_action_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick)
+target_compile_options(rnqnx_accessibility_action_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "QNX")
+ target_compile_options(rnqnx_accessibility_action_test PRIVATE -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer)
+ target_link_options(rnqnx_accessibility_action_test PRIVATE -fsanitize=address,undefined)
+endif()
+if(BUILD_TESTING AND NOT CMAKE_CROSSCOMPILING)
+ add_test(NAME rnqnx_accessibility_action_test COMMAND rnqnx_accessibility_action_test -platform offscreen)
+ set_tests_properties(rnqnx_accessibility_action_test PROPERTIES TIMEOUT 15 ENVIRONMENT "QT_QUICK_BACKEND=software;ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1")
+endif()

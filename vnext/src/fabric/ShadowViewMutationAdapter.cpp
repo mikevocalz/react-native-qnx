@@ -1,3 +1,6 @@
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+#include "react-native-qnx/fabric/QtAccessibilityActivation.h"
+#endif
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
 #include "react-native-qnx/fabric/QtTextInputBridge.h"
@@ -19,6 +22,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <utility>
 
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
@@ -854,6 +858,48 @@ void ShadowViewMutationAdapter::connectScrollEvents(const ShadowView& view) {
   scrollConnected_.insert(view.tag);
 }
 
+ShadowViewMutationAdapter::~ShadowViewMutationAdapter() {
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+  for (const auto& receiver : std::as_const(accessibilityActivations_)) {
+    if (receiver) { receiver->invalidate(); delete receiver.data(); }
+  }
+#endif
+}
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+MountError ShadowViewMutationAdapter::applyAccessibilityActions(const ShadowView& view, QString& detail) {
+  // Replace the receiver on every props/emitter update. QObject destruction also
+  // cancels its posted calls; an old generation cannot invoke a new emitter.
+  if (auto previous = accessibilityActivations_.take(view.tag)) {
+    previous->invalidate(); delete previous.data();
+  }
+  if (!layer_.isGenericView(view.tag)) return MountError::None;
+  auto* item = layer_.itemForTag(view.tag);
+  const auto props = std::dynamic_pointer_cast<const facebook::react::ViewProps>(view.props);
+  if (!item || !props) return MountError::None;
+  bool registered = false;
+  for (const auto& action : props->accessibilityActions) {
+    if (action.name != "activate" || registered) {
+      detail = QStringLiteral("Only one registered accessibility activate action is supported");
+      return MountError::UnsupportedAccessibility;
+    }
+    registered = true;
+  }
+  if (!registered) return MountError::None;
+  const auto emitter = std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(view.eventEmitter);
+  AccessibilityActivationPolicy policy{props->accessible, registered, props->onAccessibilityAction && bool(emitter),
+    props->accessibilityState.has_value() && props->accessibilityState->disabled};
+  auto* receiver = new QtAccessibilityActivation(*item, policy, [emitter] {
+    if (emitter) emitter->onAccessibilityAction("activate");
+  });
+  if (!receiver->connectPress(detail)) {
+    delete receiver;
+    return MountError::UnsupportedAccessibility;
+  }
+  accessibilityActivations_.insert(view.tag, receiver);
+  return MountError::None;
+}
+#endif
+
 void ShadowViewMutationAdapter::registerEventEmitter(const ShadowView& view) {
   if (touchDispatcher_ == nullptr) {
     return;
@@ -910,10 +956,21 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (textInputError != MountError::None) { detail = layer_.lastError(); return textInputError; }
       applyActivityIndicator(view);
       applySwitch(view);
-      return layer_.updateStyle(view.tag, toViewStyle(view));
+      const auto styleError = layer_.updateStyle(view.tag, toViewStyle(view));
+      if (styleError != MountError::None) return styleError;
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+      return applyAccessibilityActions(view, detail);
+#else
+      return MountError::None;
+#endif
     }
 
     case ShadowViewMutation::Type::Delete:
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+      if (auto previous = accessibilityActivations_.take(mutation.oldChildShadowView.tag)) {
+        previous->invalidate(); delete previous.data();
+      }
+#endif
       if (touchDispatcher_ != nullptr) {
         touchDispatcher_->forgetTag(mutation.oldChildShadowView.tag);
       }
@@ -946,6 +1003,13 @@ MountError ShadowViewMutationAdapter::applyOne(
 
     case ShadowViewMutation::Type::Update: {
       const ShadowView& view = mutation.newChildShadowView;
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+      // Close the old admission before any property change can notify Qt or
+      // fail validation. A failed update must not leave a stale action active.
+      if (auto previous = accessibilityActivations_.take(view.tag)) {
+        previous->invalidate(); delete previous.data();
+      }
+#endif
       registerEventEmitter(view);
       const MountError layoutError =
           layer_.updateLayout(view.tag, toLayoutFrame(view.layoutMetrics));
@@ -970,6 +1034,10 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (styleError != MountError::None) {
         return styleError;
       }
+#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+      const auto actionError = applyAccessibilityActions(view, detail);
+      if (actionError != MountError::None) return actionError;
+#endif
       // A child resizing changes what its scrollable parent has to cover.
       if (mutation.parentTag >= 0) {
         layer_.updateScrollContentSize(mutation.parentTag);

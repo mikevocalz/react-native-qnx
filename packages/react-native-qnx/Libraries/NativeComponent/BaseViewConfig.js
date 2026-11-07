@@ -6,15 +6,9 @@
  * unknown platform the import is undefined, and the first thing React touches
  * is `bubblingEventTypes`.
  *
- * The event tables below are the platform-independent ones React's event
- * system needs; the iOS file adds accessibility and force-touch events that
- * have no QNX equivalent yet, and those are deliberately absent rather than
- * declared and unimplemented. `validAttributes` comes from React Native's own
- * generic style attribute table, so the prop surface is React Native's rather
- * than a list invented here.
- *
- * This grows as the mounting layer learns props: today it applies layout, and
- * `docs/component-support.md` is where the gaps are recorded.
+ * The tables describe RN's standard prop/event transport. Native semantic-tree
+ * and action behavior remain controlled by the experimental accessibility flag;
+ * admitting a prop does not establish an OS accessibility consumer.
  */
 
 'use strict';
@@ -66,6 +60,7 @@ const bubblingEventTypes = {
 
 const directEventTypes = {
   topLayout: { registrationName: 'onLayout' },
+  topAccessibilityAction: { registrationName: 'onAccessibilityAction' },
 };
 
 // React's Fabric renderer runs the JavaScript responder system itself, driven by
@@ -101,6 +96,13 @@ module.exports = {
     testID: true,
     pointerEvents: true,
     onLayout: true,
+    accessible: true,
+    accessibilityLabel: true,
+    accessibilityHint: true,
+    accessibilityRole: true,
+    accessibilityState: true,
+    accessibilityActions: true,
+    onAccessibilityAction: true,
   },
 };
 module.exports.default = module.exports;
