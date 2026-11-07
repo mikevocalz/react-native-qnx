@@ -102,3 +102,26 @@ production source changed; the premium optional-product boundary is preserved.
 Hosted CI remains subject to the existing account billing/spending-limit refusal,
 separate from local documentation/tooling checks. Rollback is reverting this
 additive policy/map/skill follow-up; implemented runtime evidence is unaffected.
+
+## PR63 source expansion during merge review
+
+PRs49–62 were merged through normal GitHub rules after the documentation checks
+above. PR63 advanced from reviewed `b3003d0` to source head
+`090e8982ccea97a842868ecbfd006cfedf7a3d04` during the merge pass. The exact-head
+guard stopped its merge; the new26-line source expansion was reviewed separately.
+The catalog now records that inspected source head, with this follow-up retaining
+the final formatting and integration changes.
+
+The addition covers selected DDK allocation/GPU, WFD, VulkanSC, GPIO, CTI and
+adjacent-product documentation. Primary QNX pages were checked for hardware-bound
+allocation, deferred GPU initialization, the listed WFD platforms, GPIO's
+unavailable-field/synopsis caveat, duplicate package resolution, container image
+limitations, separate hypervisor installation, published cloud architectures and
+Momentics trace/qconn fixes. These are source checks, not target qualification.
+
+Independent reviewer `/root/renderer_build_audit` reviewed the new scope and
+permission, optional-product and evidence boundaries. Catalog/link/JSON and
+formatting checks were repeated against the combined final tree. No cloud
+resources, credentials, package installation, hardware experiments or paid
+service changes were performed. Plan13 remains unpublished; the runtime
+acceptance gates in every merged plan remain future implementation work.
