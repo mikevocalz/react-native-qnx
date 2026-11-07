@@ -4,7 +4,8 @@
 
 The physical Pi 400 running the QNX 8.0.5 target now renders the production
 React Native/Fabric/Hermes/Qt Quick entry as `qnxuser`. The app displays
-`React Native QNX: Hello World` in the preserved 640×480 window. The same
+`React Native QNX: Hello World`. Default mode remains 640×480; the owner
+subsequently requested fullscreen, now verified and running at 1920×1080. The same
 entry exercises the existing synchronous Nitro v1 alpha 105 HybridClass
 (getters and add(20, 22)=42); screenshot run exited zero and the continuous
 app was then launched for HDMI. See

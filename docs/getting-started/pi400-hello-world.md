@@ -256,3 +256,15 @@ exits afterward. Omit that option to keep the app running. Use the private Qt
 runtime and the same QPA/QML/font paths as the verified deployment. A power
 cycle still requires manual graphics setup; do not select the failed graphics
 autostart boot image.
+
+## Fullscreen on the Pi monitor
+
+The owner requested fullscreen after the initial windowed proof. Pass
+`--fullscreen` to size the window to the current monitor and start the React
+surface with the actual window dimensions. Default mode remains 640×480.
+The physical Pi capture verified 1920×1080 with the title centered, the full
+background rendered, the Nitro v1 success marker, and exit zero. The device
+launch script now includes `--fullscreen` and was restarted continuously.
+This does not add dynamic monitor-resize handling or change text size/orientation.
+
+![Physical Pi fullscreen capture](../evidence/pi400-hello-world-fullscreen-2026-11-07.png)
