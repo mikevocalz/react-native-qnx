@@ -34,12 +34,12 @@ type NetworkSnapshot =
   | { readonly state: 'disconnected' }
   | { readonly state: 'unknown' };
 
-interface ListenerSubscription { remove(): void }
+interface ListenerSubscription {
+  remove(): void;
+}
 interface NetworkMonitor {
   getSnapshot(): Promise<NetworkSnapshot>;
-  addOnSnapshotChangedListener(
-    listener: (snapshot: NetworkSnapshot) => void,
-  ): ListenerSubscription;
+  addOnSnapshotChangedListener(listener: (snapshot: NetworkSnapshot) => void): ListenerSubscription;
   addOnErrorListener(listener: (error: Error) => void): ListenerSubscription;
   dispose(): Promise<void>;
 }
@@ -103,13 +103,13 @@ Plan 01/#44 provide runtime ownership; Plan 07 supplies QNX IPC where selected; 
 
 ## Proposed roster and file ownership
 
-| Responsibility | Proposed ownership | Independent review |
-| --- | --- | --- |
-| API architect, DRI | New domain specs beneath `packages/qnx-nitro-runtime/specs/` and caller examples | Nitro/JSI engineer |
-| C++ service engineer | New focused provider/session files beneath `packages/qnx-nitro-runtime/cpp/` | Qt ownership engineer |
-| QNX engineer | Proposed `native/platform/qnx/services/` | Security engineer |
-| Marathon engineer | Proposed `native/platform/linux-host/services/` | Shell integration reviewer |
-| QA/performance engineer | Proposed service fixtures, native tests, device receipts | Independent QNX regression owner |
+| Responsibility          | Proposed ownership                                                               | Independent review               |
+| ----------------------- | -------------------------------------------------------------------------------- | -------------------------------- |
+| API architect, DRI      | New domain specs beneath `packages/qnx-nitro-runtime/specs/` and caller examples | Nitro/JSI engineer               |
+| C++ service engineer    | New focused provider/session files beneath `packages/qnx-nitro-runtime/cpp/`     | Qt ownership engineer            |
+| QNX engineer            | Proposed `native/platform/qnx/services/`                                         | Security engineer                |
+| Marathon engineer       | Proposed `native/platform/linux-host/services/`                                  | Shell integration reviewer       |
+| QA/performance engineer | Proposed service fixtures, native tests, device receipts                         | Independent QNX regression owner |
 
 All roles require named assignment in implementation PRs. External maintainers are reference/review targets, not claimed participants.
 
@@ -117,12 +117,12 @@ All roles require named assignment in implementation PRs. External maintainers a
 
 The following exact sources were read for this plan; that is source-review evidence, not CLI installation or native-test evidence.
 
-| Skill | Source revision | Decision applied |
-| --- | --- | --- |
-| Margelo `api-design` | `1e9e17be6f41c838db472d6a4b943fc26355a3be`, `skills/api-design/SKILL.md` | Ready factories, real Error failures, owned listeners, explicit absence |
-| Margelo `build-nitro-modules` | Same revision, `skills/build-nitro-modules/SKILL.md` | Stateful domain objects; block unsupported general codegen claims |
-| Margelo `cpp` | Same revision, `skills/cpp/SKILL.md` | RAII sessions, narrow adapter files, one owner and no callbacks under locks |
-| Callstack `react-native-best-practices` | `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`, `skills/react-native-best-practices/SKILL.md` | Measure subscription cost and owner-thread work before optimization |
+| Skill                                   | Source revision                                                                           | Decision applied                                                            |
+| --------------------------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Margelo `api-design`                    | `1e9e17be6f41c838db472d6a4b943fc26355a3be`, `skills/api-design/SKILL.md`                  | Ready factories, real Error failures, owned listeners, explicit absence     |
+| Margelo `build-nitro-modules`           | Same revision, `skills/build-nitro-modules/SKILL.md`                                      | Stateful domain objects; block unsupported general codegen claims           |
+| Margelo `cpp`                           | Same revision, `skills/cpp/SKILL.md`                                                      | RAII sessions, narrow adapter files, one owner and no callbacks under locks |
+| Callstack `react-native-best-practices` | `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`, `skills/react-native-best-practices/SKILL.md` | Measure subscription cost and owner-thread work before optimization         |
 
 Sources: [Margelo skills](https://github.com/margelo/react-native-skills/tree/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills), [Callstack skill](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md).
 
