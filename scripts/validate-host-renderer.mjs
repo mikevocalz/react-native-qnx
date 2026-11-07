@@ -52,6 +52,9 @@ if (/^RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=ON$/m.test(cache)) {
     'rnqnx_text_input_rejects_interception'
   );
 }
+if (/^RNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON$/m.test(cache)) {
+  expectedTests.push('rnqnx_accessibility_view_test');
+}
 run('cmake', ['--build', '--preset', preset]);
 const inventory = run('ctest', ['--test-dir', build, '--show-only=json-v1'], true);
 const registered = new Set(
