@@ -37,6 +37,8 @@ option(RNQNX_FETCH_REACT_NATIVE_DEPS
 option(RNQNX_BUILD_HERMES "Build Hermes from source for the host" OFF)
 option(RNQNX_BUILD_HERMES_QNX "Link the cross-built QNX Hermes/JSI probe" OFF)
 option(RNQNX_BUILD_NITRO_QNX "Build the QNX Nitro shared C++ runtime" OFF)
+option(RNQNX_ENABLE_NITRO_QT_DISPATCHER
+  "Enable the experimental owned Qt/JS Nitro dispatcher and its native probe" OFF)
 option(RNQNX_BUILD_EXPO_MODULES_QNX "Build the QNX Expo Modules JSI bootstrap" OFF)
 option(RNQNX_BUILD_REACT_QNX
   "Build the full React Native + Hermes + Fabric + Qt Quick QNX target graph" OFF)
@@ -178,6 +180,14 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     rnqnx_add_fabric_adapter_target()
     rnqnx_add_react_host_target()
 
+    if(RNQNX_ENABLE_NITRO_QT_DISPATCHER)
+      if(NOT RNQNX_BUILD_NITRO_QNX)
+        message(FATAL_ERROR "Qt Nitro dispatcher requires RNQNX_BUILD_NITRO_QNX")
+      endif()
+      include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxNitroQt.cmake)
+      rnqnx_add_nitro_qt_dispatcher()
+    endif()
+
     if(RNQNX_BUILD_PLAYGROUND_QNX)
       add_executable(rnqnx_playground_qnx vnext/probes/playground/main.cpp)
       target_link_libraries(rnqnx_playground_qnx PRIVATE rnqnx_react_host)
@@ -185,6 +195,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
         target_link_libraries(rnqnx_playground_qnx PRIVATE rnqnx_nitro_qnx)
         target_compile_definitions(rnqnx_playground_qnx PRIVATE
           RNQNX_PLAYGROUND_NITRO_QNX=1)
+      endif()
+      if(RNQNX_ENABLE_NITRO_QT_DISPATCHER)
+        target_link_libraries(rnqnx_playground_qnx PRIVATE rnqnx_nitro_qt)
+        target_compile_definitions(rnqnx_playground_qnx PRIVATE
+          RNQNX_PLAYGROUND_NITRO_QT=1)
       endif()
       rnqnx_enable_strict_warnings(rnqnx_playground_qnx)
       # Lean Hermes consumes precompiled bytecode, supplied with --bundle.
@@ -283,6 +298,11 @@ else()
 
         if(RNQNX_BUILD_REACT_HOST)
           rnqnx_add_react_host_target()
+          if(RNQNX_ENABLE_NITRO_QT_DISPATCHER)
+            add_subdirectory(packages/qnx-nitro-runtime)
+            include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxNitroQt.cmake)
+            rnqnx_add_nitro_qt_dispatcher()
+          endif()
           include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxReactProbe.cmake)
           rnqnx_add_react_render_probe(rnqnx_react_render_host_probe)
 
@@ -481,4 +501,8 @@ if(RNQNX_BUILD_MARATHON_HOST)
   endif()
   include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxMarathonHost.cmake)
   rnqnx_add_marathon_host()
+endif()
+
+if(RNQNX_ENABLE_NITRO_QT_DISPATCHER AND NOT TARGET rnqnx_nitro_qt)
+  message(FATAL_ERROR "Qt Nitro dispatcher requires the full Qt/Hermes React host")
 endif()

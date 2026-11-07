@@ -1,5 +1,17 @@
 # CURRENT_STATE.md
 
+## 2026-11-07 opt-in Qt/Nitro async runtime follow-up
+
+The pinned alpha 105 Qt dispatcher now passes physical Pi 400/QNX 8.0.5 callback,
+typed/void Promise, error, checkpoint, drain and teardown-race tests as qnxuser.
+Host suite and source-patch regression results are in the
+[receipt](../evidence/pi400-nitro-qt-2026-11-07.md). The optional dispatcher
+flag remains OFF by default. A separate candidate retained the exact title and
+1920×1080 fullscreen render; original live app PID 9433114 and recovery boot were
+left intact. Forge still needs matching typed bindings and worker-disposal
+integration; this does not make alpha 120 ABI-compatible or prove third-party
+modules, reload or suspend/resume. Hosted CI remains blocked by GitHub billing.
+
 ## 2026-11-07 physical Pi 400 Hello World
 
 The physical Pi 400 running the QNX 8.0.5 target now renders the production

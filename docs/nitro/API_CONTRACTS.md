@@ -105,6 +105,7 @@ See [device evidence](../evidence/pi400-hello-world-2026-11-07.txt).
 Official npm SHA-512 checks and complete installed-file comparisons passed
 for core (333 files), RN adapter (280), and Nitrogen (608), all locked to
 nightly 105. This supersedes the older no-physical-run statement only for
-this synchronous proof. Async dispatch, callbacks, general QNX codegen and
-third-party Nitro modules remain unverified. The normal upstream RN
+this synchronous proof. The later opt-in [Qt dispatcher](QT_DISPATCHER.md)
+also has physical callback/Promise/checkpoint/teardown evidence. General QNX
+codegen and third-party Nitro modules remain unverified. The normal upstream RN
 TurboModule startup plumbing remains; Nitro serves this app-native proof.

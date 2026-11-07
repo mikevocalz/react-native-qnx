@@ -18,6 +18,9 @@
 
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
 #include "QnxNitroRuntime.hpp"
+#ifdef RNQNX_PLAYGROUND_NITRO_QT
+#include "QtNitroDispatcher.hpp"
+#endif
 #endif
 
 #include <QByteArray>
@@ -406,7 +409,12 @@ int main(int argc, char** argv) {
 
   rnqnx::runtime::QtReactHost host(adapter);
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
+#ifdef RNQNX_PLAYGROUND_NITRO_QT
+  rnqnx::nitro::installQnxNitroRuntime(
+      host.runtime(), std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue()));
+#else
   rnqnx::nitro::installQnxNitroRuntime(host.runtime());
+#endif
 #endif
   host.installTurboModuleBinding();
   host.installComponentProvider();

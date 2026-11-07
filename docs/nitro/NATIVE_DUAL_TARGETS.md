@@ -66,3 +66,11 @@ Remove the Marathon CMake/native adapter, restore QNX's previous single
 library CMake source list and its direct Nitro core source/ThreadUtils
 ownership, then regenerate/compile with the exact alpha lockfile.
 No QNX Screen/Qt/Fabric renderer changes are made.
+
+## Physical QNX follow-up, November 7
+
+The QNX synchronous class and optional [owned Qt dispatcher](QT_DISPATCHER.md)
+now have physical Pi 400/SDP 8.0.5 evidence. The dispatcher probe covers callbacks,
+Promises, checkpoints and teardown races; it does not wire the Marathon installer
+or establish Linux/musl/Wayland runtime support. Existing Marathon and upstream
+codegen gates above remain separate.

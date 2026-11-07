@@ -67,6 +67,7 @@ function(rnqnx_add_react_host_target)
 
   add_library(rnqnx_react_host STATIC
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtReactHost.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtRuntimeTaskQueue.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxExceptionsManager.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxFileReaderModule.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxImageLoader.cpp"

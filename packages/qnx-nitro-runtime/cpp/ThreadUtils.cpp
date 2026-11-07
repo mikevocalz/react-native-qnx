@@ -14,7 +14,11 @@ std::string ThreadUtils::getThreadName() {
 }
 
 void ThreadUtils::setThreadName(const std::string& name) {
+#if defined(__APPLE__)
+  ::pthread_setname_np(name.c_str());
+#else
   ::pthread_setname_np(::pthread_self(), name.c_str());
+#endif
 }
 
 bool ThreadUtils::isUIThread() {

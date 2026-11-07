@@ -2,6 +2,7 @@
 
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QnxExceptionsManager.h"
+#include "react-native-qnx/runtime/QtRuntimeTaskQueue.h"
 
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/scheduler/Scheduler.h>
@@ -144,6 +145,8 @@ class QtReactHost {
   QtReactHost& operator=(QtReactHost&&) = delete;
 
   facebook::jsi::Runtime& runtime();
+  /// Shared native completion route; closes before the host's Hermes teardown.
+  std::shared_ptr<QtRuntimeTaskQueue> taskQueue() const;
   facebook::react::Scheduler& scheduler();
   QtSchedulerDelegate& delegate();
 

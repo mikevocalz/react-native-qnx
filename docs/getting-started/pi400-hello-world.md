@@ -230,9 +230,10 @@ Nitrogen version is `1.0.0-alpha.nightly.105.g69d365fc9b18`. Official npm archiv
 SHA-512 checks and comparisons of all 333 core, 280 adapter and 608 Nitrogen
 files matched the installed packages. A newer nightly was observed; no version
 upgrade was made. This uses the repository's constrained generated binding
-proof, not a claim of upstream Nitrogen QNX support. No Promise/callback
-dispatcher, third-party Nitro package, or general Nitro module compatibility
-was validated.
+proof, not a claim of upstream Nitrogen QNX support. A subsequent opt-in
+[Qt dispatcher experiment](../nitro/QT_DISPATCHER.md) passed callback/Promise
+and teardown tests on the Pi and retained this fullscreen Hello World result.
+Third-party Nitro packages and general module compatibility remain unverified.
 
 The physical run exposed two shared renderer bugs: QML-owned background items
 were counted as Fabric children, hiding text behind its background; and a

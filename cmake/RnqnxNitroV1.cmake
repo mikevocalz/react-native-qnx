@@ -91,6 +91,10 @@ function(rnqnx_add_nitro_v1_core)
   if(COMMAND rnqnx_enable_strict_warnings)
     rnqnx_enable_strict_warnings(rnqnx_nitro_core)
   endif()
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    # After -Wpedantic: Nitro intentionally uses Swift nullability annotations.
+    target_compile_options(rnqnx_nitro_core PUBLIC -Wno-nullability-extension)
+  endif()
 endfunction()
 
 # The QNX and Marathon adapters compile as distinct libraries and consume the
