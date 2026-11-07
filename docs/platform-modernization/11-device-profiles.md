@@ -27,7 +27,12 @@ Treat display identity, operating system and JavaScript platform identity as dif
 Preserve RN's existing `Dimensions` and `PixelRatio` contracts. Before changing them, inspect the exact RN 0.88.1 conversion path and prove logical-to-physical unit conversion end to end; avoid both missing and duplicate scaling. An optional native module supplies richer window segmentation and input facts. These types are proposed design sketches, not generated or installed bindings:
 
 ```ts
-interface Rect { x: number; y: number; width: number; height: number }
+interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 interface WindowMetrics {
   readonly bounds: Rect; // Window-local logical units.
   readonly scale: number; // Device pixels per logical unit.
@@ -89,28 +94,28 @@ Use proposed `RNQNX_ENABLE_DEVICE_PROFILES=OFF` until the device matrix passes. 
 
 Human DRIs and independent reviewers are **unassigned**; fill them in when implementing.
 
-| Role | Owned paths/deliverable | Independent reviewer |
-| --- | --- | --- |
-| Qt/Fabric engineer | `vnext/src/runtime/QnxExceptionsManager.cpp`, focused metrics files, surface constraints | RN runtime engineer |
-| QNX systems engineer | `native/platform/qnx`, board-profile sources | QNX regression owner |
-| Marathon/Wayland engineer | `native/platform/linux-host`, output/scale observations | Shell integration reviewer |
-| API designer | Proposed `packages/platform-window-metrics`, documented units and availability | Nitro/codegen engineer |
-| Device QA | `tests/cpp`, `tests/js`, Plan 12 fixture scenarios | Accessibility/performance reviewer |
+| Role                      | Owned paths/deliverable                                                                  | Independent reviewer               |
+| ------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------- |
+| Qt/Fabric engineer        | `vnext/src/runtime/QnxExceptionsManager.cpp`, focused metrics files, surface constraints | RN runtime engineer                |
+| QNX systems engineer      | `native/platform/qnx`, board-profile sources                                             | QNX regression owner               |
+| Marathon/Wayland engineer | `native/platform/linux-host`, output/scale observations                                  | Shell integration reviewer         |
+| API designer              | Proposed `packages/platform-window-metrics`, documented units and availability           | Nitro/codegen engineer             |
+| Device QA                 | `tests/cpp`, `tests/js`, Plan 12 fixture scenarios                                       | Accessibility/performance reviewer |
 
 The ordered Margelo sources `api-design`, `build-nitro-modules`, and `cpp` were read at [`1e9e17be6f41c838db472d6a4b943fc26355a3be`](https://github.com/margelo/react-native-skills/tree/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills). They led to cached immutable observations, explicit absence, additive subscriptions, focused files and owner-thread lifetime. [Callstack `react-native-best-practices`](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md), read at `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`, requires identical workloads before/after tuning. These are source-guided design decisions, not installed CLI or runtime test claims. Verify generation of arrays, optional observations and subscription shapes; the existing limited platform-info generator is not proof for this module.
 
 ## Acceptance and validation
 
-| Fixture or device case | Required result |
-| --- | --- |
-| Resize window inside unchanged screen | Window dimensions change; full-screen dimensions retain the correct display value |
-| Scale 1, 1.25 and 2 fixtures | Rendered geometry and hit testing agree; no double scaling |
-| Window moved between displays | Metrics follow the actual destination screen; focus and input targets remain correct |
-| Keyboard appears/disappears | Insets update without overwriting physical display facts or losing selection |
-| Two-region fold fixture | Controls avoid the occluded region; editor state survives transition; evidence marked simulated |
-| No topology/input provider | Unknown facts remain unknown; ordinary responsive UI works without fabricated capabilities |
-| Malformed profile or unplug during event | Bounded diagnostic/fallback behavior, no crash, and no stale display callback |
-| 100 topology/resize cycles | Final snapshot correct, subscription counts stable and no monotonic native-memory growth |
+| Fixture or device case                   | Required result                                                                                 |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Resize window inside unchanged screen    | Window dimensions change; full-screen dimensions retain the correct display value               |
+| Scale 1, 1.25 and 2 fixtures             | Rendered geometry and hit testing agree; no double scaling                                      |
+| Window moved between displays            | Metrics follow the actual destination screen; focus and input targets remain correct            |
+| Keyboard appears/disappears              | Insets update without overwriting physical display facts or losing selection                    |
+| Two-region fold fixture                  | Controls avoid the occluded region; editor state survives transition; evidence marked simulated |
+| No topology/input provider               | Unknown facts remain unknown; ordinary responsive UI works without fabricated capabilities      |
+| Malformed profile or unplug during event | Bounded diagnostic/fallback behavior, no crash, and no stale display callback                   |
+| 100 topology/resize cycles               | Final snapshot correct, subscription counts stable and no monotonic native-memory growth        |
 
 Run the existing `pnpm validate:dependencies`, `pnpm typecheck`, `pnpm test:js` and full `linux-host-renderer` CMake/CTest preset after implementation. Register new native cases in executed CTest inventory; fixture-only JavaScript tests cannot prove Qt signal wiring. These commands were inspected, not run for this documentation change. Exact schema validator and device scenario commands must be checked in with their implementation, not invented here.
 
