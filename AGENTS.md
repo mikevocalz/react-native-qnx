@@ -40,6 +40,8 @@ For the source-grounded improvement series, start with `docs/platform-modernizat
 
 The program distinguishes dated main-branch documentation, active prerequisite PR evidence, delivery plans, and implemented behavior. Read current source and PR receipts before repeating an older unsupported/pending statement. A plan merge does not implement its acceptance criteria or promote host evidence to physical-device proof.
 
+The owner additionally requires the actual Nitro v1 new APIs and API-first implementation. Read `docs/platform-modernization/NITRO_V1_API_POLICY.md`; use its pinned class/registration/constructor contracts and generation gates. The supplied Neutrino archive is tracked in `NEUTRINO_REFERENCE_MAP.md`; Plan 15 tracks current official QNX documentation and examples with explicit inspection coverage.
+
 ## Premium component boundary — owner decision, November 7, 2026
 
 Nitro Forge is a separately sold premium component product. React Native QNX provides generic native runtime, rendering, Nitro v1 module integration, package discovery/linking, lifecycle and platform services so licensed developers can install selected Forge packages in their own apps with minimal setup. Nitro Modules is infrastructure; Nitro Forge is a separate commercial product.

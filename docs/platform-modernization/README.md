@@ -1,8 +1,12 @@
 # QNX and Marathon delivery program
 
-This program turns the MarathonOS and QNX Neutrino review into independently reviewable delivery plans. It preserves React Native Fabric, Hermes, Yoga and the existing Qt Quick backend. This PR supplies the program, a proposed workstream catalog and two repository skills; it does not implement or certify the future features described in their acceptance criteria.
+This program turns the MarathonOS and QNX Neutrino review into independently reviewable delivery plans. It preserves React Native Fabric, Hermes, Yoga and the existing Qt Quick backend. This follow-up supplies the expanded program, API/source requirements and updated repository skills; it does not implement or certify the future features described in their acceptance criteria.
 
-Start with the [roster](ROSTER.md), [skills and native workflow](SKILLS.md), and [machine-readable catalog](catalog.json). The roster and catalog identify proposed ownership and dependencies. Each future delivery plan must specify architecture boundaries, exact paths, prerequisites, public contracts where relevant, implementation slices, failure tests, performance/security limits and rollback. Human implementation assignments are unassigned. Documentation PRs are independent; implementation dependencies still have to be satisfied.
+The owner requires [Nitro v1 API-first design](NITRO_V1_API_POLICY.md). The [Neutrino coverage map](NEUTRINO_REFERENCE_MAP.md) assigns all 19 archive categories. Published Plan15 covers the broader official QNX documentation/example audit; the source map below records the three official pages checked in this readiness review.
+
+**Publication baseline:** this expansion follows merged [program PR47](https://github.com/mikevocalz/react-native-qnx/pull/47) and is prepared against main `48e37f7550b4244f8a7936c01af75419e1fec416`. The current premium-product boundary and PR46 validation receipts are preserved.
+
+Start with the [roster](ROSTER.md), [skills and native workflow](SKILLS.md), and [machine-readable catalog](catalog.json). The roster and catalog identify proposed ownership and dependencies. Each published delivery plan proposes architecture boundaries, exact paths, prerequisites, public contracts where relevant, implementation slices, failure tests, performance/security limits and rollback. Human implementation assignments are unassigned. Documentation PRs are independent; implementation dependencies still have to be satisfied.
 
 ## What the source review changes
 
@@ -16,42 +20,46 @@ Start with the [roster](ROSTER.md), [skills and native workflow](SKILLS.md), and
 | Shared memory can reduce measured bulk-data copy cost                                        | Introduce bounded buffer ownership only after profiling identifies the need                                           | 09            |
 | Marathon profiles distinguish hardware capability from shell behavior                        | Derive viewport, scale, input and fold/hinge behavior from actual providers                                           | 11            |
 | A native Wayland window is only one part of an app platform                                  | Design app identity, navigation, lifecycle, permission and managed-runner packaging separately                        | 13            |
-| Existing QNX runtime and Forge experiments already provide useful foundations                | Reuse their code and exact evidence instead of creating competing hosts/queues                                        | 01, 10        |
+| Existing QNX runtime and optional Forge experiments already provide useful foundations       | Reuse their code and exact evidence instead of creating competing hosts/queues                                        | 01, 10        |
 | A shared substantial app exposes interactions that unit probes miss                          | Run the same non-premium conformance workload on both targets; test licensed Forge packages separately and optionally | 12            |
 
 ## Existing implementation PRs
 
 The main branch inspected for this program is `e84b51430c239bc89dbd48ac35afab89f7c77c01`. The package manifest, rather than historical README text, identifies the reviewed graph: RN `0.88.1`, React `19.3.0`, Expo `58.0.22`, Metro `0.87.1`, Nitro core/adapter/Nitrogen `1.0.0-alpha.nightly.105.g69d365fc9b18`.
 
-| Existing PR                                                                                 | Inspected head                             | Evidence to reuse                                                                                              | Scope still open                                                                              |
-| ------------------------------------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| [#44 — Pi 400 runtime and Nitro](https://github.com/mikevocalz/react-native-qnx/pull/44)    | `e9026fac8ce8deb5a8e6ba4c35d1dcc5592d478d` | Physical RN/Fabric/Hermes/Qt Quick, fullscreen Hello World, owned Qt/Nitro completion queue and teardown tests | Reliable graphics cold boot; measured performance; full module/lifecycle support              |
-| [#46 — Pointer lifecycle](https://github.com/mikevocalz/react-native-qnx/pull/46)           | `e783e2f000f20ef849b96021387860beaa7b4e34` | Merged input fixes, host14/14 ON and13/13 OFF, synthetic Qt input on physical Pi400                            | USB/touch hardware, target JS-handler delivery, clock origin, Wayland and gesture recognition |
-| [#45 — Animation integration audit](https://github.com/mikevocalz/react-native-qnx/pull/45) | `4cd69d69374ff6708528bde173f6b39ab5858017` | Source-backed Worklets/Reanimated/RNGH map and compatibility blockers                                          | QNX runtime hooks, gesture adapter and animated property behavior                             |
-| [#42 — Shared Rust QNX host](https://github.com/mikevocalz/react-native-qnx/pull/42)        | `5f6df2cf5ae49b3466d90eec8f5641a020bd3303` | Seven-engine cross-build and physical native proof, with functional Tally coverage                             | JS binding, Nitro alpha alignment, other-engine functionality and app interaction             |
+| Existing PR                                                                                 | Inspected head                             | Evidence to reuse                                                                                              | Scope still open                                                                               |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| [#44 — Pi 400 runtime and Nitro](https://github.com/mikevocalz/react-native-qnx/pull/44)    | `e9026fac8ce8deb5a8e6ba4c35d1dcc5592d478d` | Physical RN/Fabric/Hermes/Qt Quick, fullscreen Hello World, owned Qt/Nitro completion queue and teardown tests | Reliable graphics cold boot; measured performance; full module/lifecycle support               |
+| [#46 — Pointer lifecycle](https://github.com/mikevocalz/react-native-qnx/pull/46)           | `e783e2f000f20ef849b96021387860beaa7b4e34` | Merged input fixes, host14/14 ON and13/13 OFF, synthetic Qt input on physical Pi400                            | USB/touch hardware, React component interaction, clock origin, Wayland and gesture recognition |
+| [#45 — Animation integration audit](https://github.com/mikevocalz/react-native-qnx/pull/45) | `4cd69d69374ff6708528bde173f6b39ab5858017` | Source-backed Worklets/Reanimated/RNGH map and compatibility blockers                                          | QNX runtime hooks, gesture adapter and animated property behavior                              |
+| [#42 — Shared Rust QNX host](https://github.com/mikevocalz/react-native-qnx/pull/42)        | `5f6df2cf5ae49b3466d90eec8f5641a020bd3303` | Seven-engine cross-build and physical native proof, with functional Tally coverage                             | JS binding, Nitro alpha alignment, other-engine functionality and app interaction              |
 
-PRs42,44,45 and46 are now merged; main at readiness review is `cfcf2b4e7ec934171876773fd465271eac83de9f`. The original source snapshot above is retained as provenance. These heads are a dated review snapshot. Re-read the PR and lockfile before implementation. Historical logs do not automatically validate a new revision. #44's JS shares the Qt owner thread; its queue is an existing prerequisite. The platform-info codegen adapter in main is constrained and is not general upstream QNX Nitrogen support.
+[PR48](https://github.com/mikevocalz/react-native-qnx/pull/48) subsequently proved12 raw Fabric JavaScript callbacks under synthetic Qt injection on physical QNX, with the interception control failing at the intended JS assertion (host15/15 ON,13/13 OFF). This does not prove hardware input or React component interaction.
+
+PRs42,44,45 and46 are merged; the later program/publication base is `48e37f7550b4244f8a7936c01af75419e1fec416`. The original source snapshot above is retained as provenance. These heads are a dated review snapshot. Re-read the PR and lockfile before implementation. Historical logs do not automatically validate a new revision. #44's JS shares the Qt owner thread; its queue is an existing prerequisite. The platform-info codegen adapter in main is constrained and is not general upstream QNX Nitrogen support.
 
 ## Workstream catalog
 
-The PR URLs and dependency records are maintained in `catalog.json`. Only program00 is published. Workstreams01–13 are proposed and unpublished: their document paths are proposed locations, not existing delivery specifications. Fill their URL and commit only after publication; this program does not claim that those PRs or documents exist.
+The PR URLs and dependency records are maintained in `catalog.json`. The predecessor program was merged as PR47 and this follow-up is published as [PR49](https://github.com/mikevocalz/react-native-qnx/pull/49). Workstreams01–12 and14–15 are now published as PRs50–63, with returned URLs and inspected heads in the catalog. They propose future behavior; their implementation gates remain open. Workstream13 in the Marathon repository is still unpublished, with a proposed destination and null PR/commit.
 
-| Plan | Deliverable                                                          | Publication                                                   |
-| ---- | -------------------------------------------------------------------- | ------------------------------------------------------------- |
-| 00   | Program, native skills and ownership roster                          | [#47](https://github.com/mikevocalz/react-native-qnx/pull/47) |
-| 01   | Runtime baseline, startup recovery and thread ownership              | Proposed; unpublished                                         |
-| 02   | Input lifecycle, Worklets, Reanimated and Gesture Handler            | Proposed; unpublished                                         |
-| 03   | Frame pacing, input latency and performance traces                   | Proposed; unpublished                                         |
-| 04   | Text composition, keyboard, focus and accessibility                  | Proposed; unpublished                                         |
-| 05   | Visibility, background policy and state restoration                  | Proposed; unpublished                                         |
-| 06   | Typed platform services, capabilities and permissions                | Proposed; unpublished                                         |
-| 07   | Versioned QNX IPC, deadlines and event ownership                     | Proposed; unpublished                                         |
-| 08   | Service isolation, supervision and recovery                          | Proposed; unpublished                                         |
-| 09   | Measured shared-memory and media buffer ownership                    | Proposed; unpublished                                         |
-| 10   | Optional licensed Forge package compatibility and native lifetime    | Proposed; unpublished                                         |
-| 11   | Device metrics, adaptive layouts and foldable profiles               | Proposed; unpublished                                         |
-| 12   | Non-premium platform conformance app; licensed integrations optional | Proposed; unpublished                                         |
-| 13   | Marathon native client and managed runner contract                   | Proposed; unpublished                                         |
+| Plan | Deliverable                                                                      | Publication                                                   |
+| ---- | -------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| 00   | Nitro v1 API contract, complete QNX source map, skills and delivery roster       | [#49](https://github.com/mikevocalz/react-native-qnx/pull/49) |
+| 01   | Runtime baseline, startup recovery and thread ownership                          | [#50](https://github.com/mikevocalz/react-native-qnx/pull/50) |
+| 02   | Input lifecycle, Worklets, Reanimated and Gesture Handler                        | [#51](https://github.com/mikevocalz/react-native-qnx/pull/51) |
+| 03   | Frame pacing, input latency and performance traces                               | [#52](https://github.com/mikevocalz/react-native-qnx/pull/52) |
+| 04   | Text composition, keyboard, focus and accessibility                              | [#53](https://github.com/mikevocalz/react-native-qnx/pull/53) |
+| 05   | Visibility, background policy and state restoration                              | [#54](https://github.com/mikevocalz/react-native-qnx/pull/54) |
+| 06   | Typed platform services, capabilities and permissions                            | [#55](https://github.com/mikevocalz/react-native-qnx/pull/55) |
+| 07   | Versioned QNX IPC, deadlines and event ownership                                 | [#56](https://github.com/mikevocalz/react-native-qnx/pull/56) |
+| 08   | Service isolation, supervision and recovery                                      | [#57](https://github.com/mikevocalz/react-native-qnx/pull/57) |
+| 09   | Measured shared-memory and media buffer ownership                                | [#58](https://github.com/mikevocalz/react-native-qnx/pull/58) |
+| 10   | Generic package hooks and optional licensed Forge compatibility                  | [#59](https://github.com/mikevocalz/react-native-qnx/pull/59) |
+| 11   | Device metrics, adaptive layouts and foldable profiles                           | [#60](https://github.com/mikevocalz/react-native-qnx/pull/60) |
+| 12   | Non-premium platform conformance application with optional licensed integrations | [#61](https://github.com/mikevocalz/react-native-qnx/pull/61) |
+| 13   | Marathon native client and managed runner contract                               | Proposed; unpublished                                         |
+| 14   | QNX 8 systems probes and legacy sample modernization                             | [#62](https://github.com/mikevocalz/react-native-qnx/pull/62) |
+| 15   | Current QNX documentation, examples and release audit                            | [#63](https://github.com/mikevocalz/react-native-qnx/pull/63) |
 
 ## Premium product boundary
 
@@ -60,7 +68,7 @@ Nitro Forge is a separate premium product, not a platform component, default dep
 ## Execution order
 
 1. Review program boundaries and staff the roles; reconcile the runtime baseline from #44. Preserve the working recovery boot.
-2. Start input, measurement, text, lifecycle, typed services, Forge binding design and device metrics as separate slices. Implementation changes to shared runtime files must be sequenced by the integrator.
+2. Start input, measurement, text, lifecycle, typed services, generic package integration and device metrics as separate slices. Implementation changes to shared runtime files must be sequenced by the integrator.
 3. Build QNX IPC behind the typed service contract, then recovery. Evaluate shared buffers only when the measurement plan shows a material copy-path cost.
 4. Run the non-premium conformance app as capabilities become available; licensed package integration is a separate opt-in consumer check. Promote a target only after its own physical and failure-path evidence is attached.
 5. In the Marathon fork, review the ordinary native-client contract first and the managed runner/schema/security contract separately. Upstream acceptance is required before claiming official managed-app support.
@@ -86,4 +94,4 @@ Read [VALIDATION.md](VALIDATION.md) for checks actually performed on this docume
 
 Every implementation report must include source inspection, changed paths, skill/source/decision table, exact commands and artifacts, QNX regression, Marathon-specific result, security and module licensing impact, measured budget or explicit unmeasured status, independent reviewer, next slice and rollback. QNX's RTOS architecture does not establish hard-real-time behavior or safety certification for JavaScript/React Native.
 
-No new workflow, dependency upgrade, device deployment, boot edit or renderer change is made by this program PR. Reverting these planning and skill files removes the program guidance without changing runtime behavior.
+No new workflow, dependency upgrade, device deployment, boot edit or renderer change is made by this documentation/skill series. Reverting these planning and skill files removes the program guidance without changing runtime behavior.
