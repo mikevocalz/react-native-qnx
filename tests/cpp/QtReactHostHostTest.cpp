@@ -34,6 +34,8 @@
 #include <QKeyEvent>
 #include <QList>
 #include <QMouseEvent>
+#include <QTouchEvent>
+#include <QPointingDevice>
 #include <QPointF>
 #include <QQmlEngine>
 #include <QQuickItem>
@@ -333,11 +335,11 @@ ComponentBuilder makeComponentBuilder(
 
 class Fixture {
  public:
-  Fixture()
+  explicit Fixture(bool enableInputLifecycle = RNQNX_ENABLE_INPUT_LIFECYCLE)
       : factory_(engine_),
         layer_(factory_, *window_.contentItem(), kSurfaceId),
         adapter_(layer_),
-        dispatcher_(layer_, *window_.contentItem()),
+        dispatcher_(layer_, *window_.contentItem(), enableInputLifecycle),
         host_(adapter_),
         builder_(makeComponentBuilder(host_.contextContainer())) {
     factory_.registerType(QStringLiteral("View"), QByteArray(kViewSource));
@@ -388,6 +390,12 @@ class Fixture {
     window_.installEventFilter(&dispatcher_);
     return dispatcher_;
   }
+  // Deterministic injected input: bypass QQuickWindow's secondary mouse
+  // synthesis while retaining the real Qt filter and Fabric event queue.
+  QObject& touchInputSource() {
+    touchInputSource_.installEventFilter(&dispatcher_);
+    return touchInputSource_;
+  }
   ComponentBuilder& builder() { return builder_; }
   QtQuickMountingLayer& layer() { return layer_; }
   QQuickItem& root() { return *window_.contentItem(); }
@@ -403,6 +411,7 @@ class Fixture {
   rnqnx::fabric::QtTouchDispatcher dispatcher_;
   QtReactHost host_;
   ComponentBuilder builder_;
+  QObject touchInputSource_;
 };
 
 void runtimeEvaluatesJavaScript() {
@@ -699,6 +708,217 @@ void javaScriptBuildsTheTreeThroughFabricUIManager() {
   EXPECT_NEAR(filling->height(), 480.0);
   EXPECT_NEAR(fixed->width(), 120.0);
   EXPECT_NEAR(fixed->height(), 60.0);
+}
+
+// Drive the existing Fabric event binding without a Metro bundle. These tests
+// inspect real serialized TouchEvent payloads, not dispatcher implementation state.
+void mountTouchFixture(Fixture& fixture) {
+  fixture.host().installComponentProvider();
+  fixture.enableTouch();
+  fixture.window().resize(640, 480);
+  fixture.window().show();
+  fixture.host().startEmptySurface(kSurfaceId, 640.0F, 480.0F);
+  const std::string script = R"JS(
+    globalThis.touchEvents = [];
+    const fabric = globalThis.nativeFabricUIManager;
+    fabric.registerEventHandler((instance, type, payload) => {
+      if (type.startsWith('topTouch')) touchEvents.push({type, payload});
+    });
+    const surfaceId = )JS" + std::to_string(kSurfaceId) + R"JS(;
+    const node = fabric.createNode(501, 'View', surfaceId,
+      {width: 160, height: 80, collapsable: false}, {});
+    const childSet = fabric.createChildSet();
+    fabric.appendChildToSet(childSet, node);
+    fabric.completeRoot(surfaceId, childSet);
+  )JS";
+  EXPECT(fixture.host().evaluate(script, "touch-fixture.js"));
+  EXPECT(fixture.layer().itemForTag(501) != nullptr);
+}
+
+void flushTouchEvents(Fixture& fixture) {
+  for (int i = 0; i < 20; ++i) {
+    fixture.host().runtime().drainMicrotasks();
+    fixture.host().pumpEvents();
+  }
+}
+
+void sendTouch(
+    Fixture& fixture,
+    QEvent::Type type,
+    const QList<QEventPoint>& points,
+    ulong timestamp = 100) {
+  static const QPointingDevice touchscreen(
+      QStringLiteral("dispatcher-test-touchscreen"), 17,
+      QInputDevice::DeviceType::TouchScreen, QPointingDevice::PointerType::Finger,
+      QInputDevice::Capability::Position, 10, 0);
+  QTouchEvent event(type, &touchscreen, Qt::NoModifier, points);
+  event.setTimestamp(timestamp);
+  QCoreApplication::sendEvent(&fixture.touchInputSource(), &event);
+  flushTouchEvents(fixture);
+}
+
+void inputLifecycleOptOutPreservesExistingDispatch() {
+  Fixture fixture(false);
+  mountTouchFixture(fixture);
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {20, 10})});
+  sendTouch(fixture, QEvent::TouchCancel, {});
+  sendTouch(fixture, QEvent::TouchEnd, {
+      QEventPoint(7, QEventPoint::Released, {40, 20}, {40, 20})});
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (touchEvents.length !== 2 || touchEvents[0].type !== 'topTouchStart' ||
+        touchEvents[1].type !== 'topTouchEnd' ||
+        touchEvents[1].payload.changedTouches[0].pageX !== 20)
+      throw new Error('opt-out changed the existing input contract');
+  )JS", "touch-opt-out-check.js"));
+}
+
+void touchCancelEndsEveryContactAndAllowsIdReuse() {
+  Fixture fixture(true);
+  mountTouchFixture(fixture);
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {20, 10}),
+      QEventPoint(8, QEventPoint::Pressed, {30, 15}, {30, 15})});
+  // Qt can cancel a stream with no points. Use stored contacts, then clear all
+  // of them before sending any cancellation so touches is consistently empty.
+  sendTouch(fixture, QEvent::TouchCancel, {});
+  sendTouch(fixture, QEvent::TouchCancel, {});
+  sendTouch(fixture, QEvent::TouchEnd, {
+      QEventPoint(7, QEventPoint::Released, {40, 20}, {40, 20})});
+  EXPECT(fixture.host().evaluate(R"JS(
+    const cancels = touchEvents.filter(e => e.type === 'topTouchCancel');
+    if (cancels.length !== 2 || cancels.some(e =>
+        e.payload.touches.length || e.payload.targetTouches.length))
+      throw new Error('cancel must terminate each contact exactly once');
+    if (touchEvents.some(e => e.type === 'topTouchEnd'))
+      throw new Error('cancelled contact produced a duplicate end');
+  )JS", "touch-cancel-check.js"));
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {20, 10})});
+  sendTouch(fixture, QEvent::TouchEnd, {
+      QEventPoint(7, QEventPoint::Released, {25, 12}, {25, 12})});
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (touchEvents.filter(e => e.type === 'topTouchStart').length !== 3 ||
+        touchEvents.filter(e => e.type === 'topTouchEnd').length !== 1)
+      throw new Error('contact ID could not be reused after cancellation');
+  )JS", "touch-reuse-check.js"));
+}
+
+void touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact() {
+  Fixture fixture(true);
+  mountTouchFixture(fixture);
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {20, 10}),
+      QEventPoint(8, QEventPoint::Pressed, {30, 15}, {30, 15})});
+  sendTouch(fixture, QEvent::TouchUpdate, {
+      QEventPoint(7, QEventPoint::Released, {60, 35}, {60, 35}),
+      QEventPoint(8, QEventPoint::Stationary, {30, 15}, {30, 15})}, 250);
+  EXPECT(fixture.host().evaluate(R"JS(
+    const end = touchEvents.find(e => e.type === 'topTouchEnd').payload;
+    const touch = end.changedTouches[0];
+    if (touch.identifier !== 7 || touch.pageX !== 60 || touch.pageY !== 35 ||
+        touch.locationX !== 60 || touch.locationY !== 35 || touch.timestamp !== 250)
+      throw new Error('release retained stale position or timestamp');
+    if (end.touches.length !== 1 || end.touches[0].identifier !== 8 ||
+        end.targetTouches.length !== 1)
+      throw new Error('release removed the wrong active contacts');
+  )JS", "touch-release-check.js"));
+}
+
+void forgettingTouchTargetCancelsAndClearsResponder() {
+  Fixture fixture(true);
+  mountTouchFixture(fixture);
+  auto& dispatcher = fixture.enableTouch();
+  EXPECT(fixture.host().evaluate(R"JS(
+    const sibling = fabric.createNode(502, 'View', surfaceId,
+      {width: 160, height: 80, collapsable: false}, {});
+    const twoChildren = fabric.createChildSet();
+    fabric.appendChildToSet(twoChildren, node);
+    fabric.appendChildToSet(twoChildren, sibling);
+    fabric.completeRoot(surfaceId, twoChildren);
+  )JS", "touch-sibling.js"));
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {20, 10}),
+      QEventPoint(8, QEventPoint::Pressed, {20, 90}, {20, 90})});
+  dispatcher.setJsResponder(501, true);
+  dispatcher.forgetTag(501);
+  flushTouchEvents(fixture);
+  EXPECT(fixture.host().evaluate(R"JS(
+    const cancelled = touchEvents.filter(e => e.type === 'topTouchCancel');
+    if (cancelled.length !== 1 || cancelled[0].payload.changedTouches[0].identifier !== 7)
+      throw new Error('unmount must cancel only the removed target');
+    const remaining = cancelled[0].payload.touches;
+    if (remaining.length !== 1 || remaining[0].identifier !== 8 ||
+        remaining[0].target !== 502 || cancelled[0].payload.targetTouches.length)
+      throw new Error('unmount removed another target contact');
+    const f = globalThis.nativeFabricUIManager;
+    const replacementNode = f.createNode(503, 'View', )JS" + std::to_string(kSurfaceId) + R"JS(,
+      {width: 160, height: 80, collapsable: false}, {});
+    const children = f.createChildSet();
+    f.appendChildToSet(children, replacementNode);
+    f.completeRoot()JS" + std::to_string(kSurfaceId) + R"JS(, children);
+  )JS", "touch-unmount-check.js"));
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(9, QEventPoint::Pressed, {20, 10}, {20, 10})});
+  EXPECT(fixture.host().evaluate(R"JS(
+    const starts = touchEvents.filter(e => e.type === 'topTouchStart');
+    if (starts.length !== 3 || starts[2].payload.changedTouches[0].target !== 503)
+      throw new Error('removed responder captured the next gesture');
+  )JS", "touch-next-target-check.js"));
+}
+
+void windowDeactivationCancelsTouchStream() {
+  Fixture fixture(true);
+  mountTouchFixture(fixture);
+  auto& dispatcher = fixture.enableTouch();
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {20, 10})});
+  dispatcher.setJsResponder(501, true);
+  QEvent deactivate(QEvent::WindowDeactivate);
+  QCoreApplication::sendEvent(&fixture.touchInputSource(), &deactivate);
+  QCoreApplication::sendEvent(&fixture.touchInputSource(), &deactivate);
+  sendTouch(fixture, QEvent::TouchEnd, {
+      QEventPoint(7, QEventPoint::Released, {40, 20}, {40, 20})});
+  // This falls outside the view. A stale responder would capture it anyway.
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(9, QEventPoint::Pressed, {300, 300}, {300, 300})});
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (touchEvents.length !== 2 || touchEvents[1].type !== 'topTouchCancel' ||
+        touchEvents[1].payload.touches.length !== 0)
+      throw new Error('deactivation must cancel once and release the responder');
+  )JS", "touch-deactivate-check.js"));
+}
+
+void mouseCaptureCancellationDoesNotCreateHoverTouches() {
+  Fixture fixture(true);
+  mountTouchFixture(fixture);
+  auto& dispatcher = fixture.enableTouch();
+  dispatcher.setJsResponder(501, true);
+  const QPointF point(20, 10);
+  QMouseEvent hover(QEvent::MouseMove, point, point,
+                    Qt::NoButton, Qt::NoButton, Qt::NoModifier);
+  QCoreApplication::sendEvent(&fixture.touchInputSource(), &hover);
+  EXPECT(dispatcher.dispatchedCount() == 0);
+  QMouseEvent press(QEvent::MouseButtonPress, point, point,
+                    Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+  QCoreApplication::sendEvent(&fixture.touchInputSource(), &press);
+  QEvent ungrab(QEvent::UngrabMouse);
+  QCoreApplication::sendEvent(&fixture.touchInputSource(), &ungrab);
+  QMouseEvent release(QEvent::MouseButtonRelease, point, point,
+                      Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
+  QCoreApplication::sendEvent(&fixture.touchInputSource(), &release);
+  // A stale JS responder must not redirect a new press outside all views.
+  const QPointF outside(300, 300);
+  QMouseEvent nextPress(QEvent::MouseButtonPress, outside, outside,
+                        Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+  QCoreApplication::sendEvent(&fixture.touchInputSource(), &nextPress);
+  flushTouchEvents(fixture);
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (touchEvents.length !== 2 || touchEvents[0].type !== 'topTouchStart' ||
+        touchEvents[1].type !== 'topTouchCancel' ||
+        touchEvents[1].payload.touches.length !== 0)
+      throw new Error('lost mouse capture must cancel once without hover/end');
+  )JS", "mouse-cancel-check.js"));
 }
 
 #ifdef RNQNX_PLAYGROUND_BUNDLE_PATH
@@ -2385,6 +2605,12 @@ int main(int argc, char** argv) {
   QGuiApplication app(argc, argv);
 
   const std::vector<TestCase> tests{
+      {"inputLifecycleOptOutPreservesExistingDispatch", inputLifecycleOptOutPreservesExistingDispatch},
+      {"touchCancelEndsEveryContactAndAllowsIdReuse", touchCancelEndsEveryContactAndAllowsIdReuse},
+      {"touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact", touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact},
+      {"forgettingTouchTargetCancelsAndClearsResponder", forgettingTouchTargetCancelsAndClearsResponder},
+      {"windowDeactivationCancelsTouchStream", windowDeactivationCancelsTouchStream},
+      {"mouseCaptureCancellationDoesNotCreateHoverTouches", mouseCaptureCancellationDoesNotCreateHoverTouches},
       {"runtimeEvaluatesJavaScript", runtimeEvaluatesJavaScript},
       {"javaScriptErrorsAreReportedNotSwallowed",
        javaScriptErrorsAreReportedNotSwallowed},
