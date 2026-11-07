@@ -98,3 +98,6 @@ Rollback disables `RNQNX_ENABLE_ACCESSIBILITY_BRIDGE`, rebuilds with consistent
 PUBLIC definitions and redeploys the recorded known-good application. Source
 rollback reverts this bounded bridge/fixture series. Keep prior TextInput and
 focus artifacts intact.
+
+The [read-only blur follow-up](text-input-readonly-blur-qnx-2026-11-07.md) records
+deferred focus delivery, teardown regressions and exact PR72 revalidation.
