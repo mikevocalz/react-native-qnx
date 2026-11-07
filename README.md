@@ -180,6 +180,15 @@ The Pi helpers default to `qnxuser@qnxpi.local`; set `QNX_TARGET_IP`,
 scripts never assume root SSH. Detailed prerequisites and commands are in
 `docs/getting-started/build-and-deploy.md`.
 
+## Shared Forge Rust engines
+
+The opt-in Forge native slice reuses Nitro Forge's Rust engines and per-document
+C++ adapter. Host and physical Pi400/QNX8.0.5 probes verify real Tally editing,
+undo/redo, saved-document reopening, FIFO and owner teardown. The target build
+uses an explicit experimental Rust std/dependency compatibility patch; Nitro
+JavaScript bindings remain pending. See [the shared engine guide](docs/native-modules/forge-rust-qnx.md)
+for build commands, exact target evidence and remaining ABI/lifecycle boundaries.
+
 ## License
 
 MIT
