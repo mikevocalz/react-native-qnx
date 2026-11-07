@@ -19,16 +19,17 @@ and reported no blocking finding. Human release assignments remain unassigned.
 The review requires an external deadline because joining workers is not itself
 a deadline mechanism.
 
-| Gate                               | Result                  | Command and evidence                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ---------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| macOS host                         | Passed                  | `cmake -S tests/native/qnx-systems -B build/systems-host -DRNQNX_BUILD_QNX_SYSTEMS_PROBES=ON -DCMAKE_BUILD_TYPE=Debug`; `cmake --build build/systems-host --parallel 2`; `ctest --test-dir build/systems-host --output-on-failure --repeat until-fail:10`. AppleClang 21.0.0.21000334; ASan/UBSan; 3 tests, 10 executions each, all passed.                                                                                    |
-| Linux host                         | Passed                  | Same standalone configure/build with `/opt/qnx-python/bin/cmake`, build directory `/home/qnxbuild/systems-probes-linux`, followed by `/opt/qnx-python/bin/ctest --test-dir /home/qnxbuild/systems-probes-linux --output-on-failure`. Ubuntu 24.04 amd64 container under Rosetta, GNU 13.3.0; ASan/UBSan; 3/3 passed. This is not a native Marathon or Wayland result.                                                          |
-| Default OFF                        | Passed                  | Standalone configure/build without the option produced zero tests. Root configure with `-DRNQNX_FETCH_REACT_NATIVE_DEPS=OFF -DBUILD_TESTING=OFF` produced no systems target in build help.                                                                                                                                                                                                                                     |
-| Root ON                            | Passed                  | Root configure with `-DRNQNX_BUILD_QNX_SYSTEMS_PROBES=ON -DRNQNX_FETCH_REACT_NATIVE_DEPS=OFF -DBUILD_TESTING=OFF`, then `cmake --build build/systems-root --parallel 2 --target rnqnx_systems_probe`.                                                                                                                                                                                                                          |
-| Unsupported OS                     | Passed                  | Standalone configure with `-DCMAKE_SYSTEM_NAME=Generic -DRNQNX_BUILD_QNX_SYSTEMS_PROBES=ON` failed with the explicit Linux/Darwin/QNX diagnostic.                                                                                                                                                                                                                                                                              |
-| QNX cross-build                    | Passed                  | Activated `/work/qnx800/qnxsdp-env.sh`; `/opt/qnx-python/bin/cmake -S /work/systems-probes-implementation/tests/native/qnx-systems -B /home/qnxbuild/systems-probes-qnx -DCMAKE_TOOLCHAIN_FILE=/work/systems-probes-implementation/cmake/toolchains/qnx-8.0.cmake -DRNQNX_BUILD_QNX_SYSTEMS_PROBES=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF`, then build `--parallel 2`. Licensed SDP 8.0.5, QCC/GCC 12.2.0, AArch64. |
-| Physical QNX / QNX VM              | Not run in this receipt | Cross-compilation does not establish target execution, thread behavior or pipe-service availability.                                                                                                                                                                                                                                                                                                                           |
-| RN app regression / Marathon shell | Not run                 | Shared application source and dependency graph were unchanged. These standalone host runs do not establish application, graphics or shell behavior.                                                                                                                                                                                                                                                                            |
+| Gate                               | Result  | Command and evidence                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| macOS host                         | Passed  | `cmake -S tests/native/qnx-systems -B build/systems-host -DRNQNX_BUILD_QNX_SYSTEMS_PROBES=ON -DCMAKE_BUILD_TYPE=Debug`; `cmake --build build/systems-host --parallel 2`; `ctest --test-dir build/systems-host --output-on-failure --repeat until-fail:10`. AppleClang 21.0.0.21000334; ASan/UBSan; 3 tests, 10 executions each, all passed.                                                                                    |
+| Linux host                         | Passed  | Same standalone configure/build with `/opt/qnx-python/bin/cmake`, build directory `/home/qnxbuild/systems-probes-linux`, followed by `/opt/qnx-python/bin/ctest --test-dir /home/qnxbuild/systems-probes-linux --output-on-failure`. Ubuntu 24.04 amd64 container under Rosetta, GNU 13.3.0; ASan/UBSan; 3/3 passed. This is not a native Marathon or Wayland result.                                                          |
+| Default OFF                        | Passed  | Standalone configure/build without the option produced zero tests. Root configure with `-DRNQNX_FETCH_REACT_NATIVE_DEPS=OFF -DBUILD_TESTING=OFF` produced no systems target in build help.                                                                                                                                                                                                                                     |
+| Root ON                            | Passed  | Root configure with `-DRNQNX_BUILD_QNX_SYSTEMS_PROBES=ON -DRNQNX_FETCH_REACT_NATIVE_DEPS=OFF -DBUILD_TESTING=OFF`, then `cmake --build build/systems-root --parallel 2 --target rnqnx_systems_probe`.                                                                                                                                                                                                                          |
+| Unsupported OS                     | Passed  | Standalone configure with `-DCMAKE_SYSTEM_NAME=Generic -DRNQNX_BUILD_QNX_SYSTEMS_PROBES=ON` failed with the explicit Linux/Darwin/QNX diagnostic.                                                                                                                                                                                                                                                                              |
+| QNX cross-build                    | Passed  | Activated `/work/qnx800/qnxsdp-env.sh`; `/opt/qnx-python/bin/cmake -S /work/systems-probes-implementation/tests/native/qnx-systems -B /home/qnxbuild/systems-probes-qnx -DCMAKE_TOOLCHAIN_FILE=/work/systems-probes-implementation/cmake/toolchains/qnx-8.0.cmake -DRNQNX_BUILD_QNX_SYSTEMS_PROBES=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF`, then build `--parallel 2`. Licensed SDP 8.0.5, QCC/GCC 12.2.0, AArch64. |
+| Physical QNX                       | Passed  | Pi 400, QNX SDP 8.0.5, unprivileged `qnxuser`; positive, TLS fault, EOF fault and subsequent positive under a ten-second external supervisor. Exits 0, 1, 1, 0 with exact markers; no watchdog expired. See follow-up below.                                                                                                                                                                                                   |
+| QNX VM                             | Not run | Physical execution is not a VM result.                                                                                                                                                                                                                                                                                                                                                                                         |
+| RN app regression / Marathon shell | Not run | Shared application source and dependency graph were unchanged. These standalone host runs do not establish application, graphics or shell behavior.                                                                                                                                                                                                                                                                            |
 
 CTest logs remain in each build's `Testing/Temporary/LastTest.log`. Positive
 output was `RNQNX_SYSTEMS_OK threads=2 tls-destructors=2 short-read=14 eof=1 cleanup=1`.
@@ -44,10 +45,33 @@ The target sysroot and system C++ libraries are not sanitizer-instrumented.
 No TSan, broad leak, performance, SMP or real-time guarantee is claimed.
 
 The [run instructions](../../tests/native/qnx-systems/README.md) describe the
-three invocations and required external target watchdog. The next target gate
-is positive and both injected-negative executions with artifact readback,
-health checks and retained output. Kernel short-write, EINTR, cancellation,
+three invocations and required external target watchdog. The root operator subsequently ran the physical target gate described below.
+Artifact readback remains to be recorded separately. Kernel short-write, EINTR, cancellation,
 resource-manager, scheduler and loader fixtures remain later slices.
+
+## Physical Pi 400 follow-up
+
+The root operator ran this exact cross-built candidate on QNX SDP 8.0.5 as
+`qnxuser`, under the separate runtime-baseline native supervisor with a ten-second
+budget per invocation. The sanitized output was:
+
+```text
+RNQNX_BASELINE_CHILD_EXIT=0
+RNQNX_SYSTEMS_OK threads=2 tls-destructors=2 short-read=14 eof=1 cleanup=1
+RNQNX_BASELINE_CHILD_EXIT=1
+RNQNX_SYSTEMS_FAIL tls-worker-isolation
+RNQNX_BASELINE_CHILD_EXIT=1
+RNQNX_SYSTEMS_FAIL unexpected-eof
+RNQNX_BASELINE_CHILD_EXIT=0
+RNQNX_SYSTEMS_OK threads=2 tls-destructors=2 short-read=14 eof=1 cleanup=1
+```
+
+No watchdog expired. A successful launch after both deliberate failures checks
+application-level recovery for this fixture. The root operator retained the
+existing Hello World process and reported no boot or graphics change. The
+physical raw log remains outside version control as `systems-probe-physical.log`.
+The upload used the ELF hash recorded above; target artifact readback is pending
+this receipt. No visual or latency result follows from this native probe.
 
 ## Source and skill decisions
 
