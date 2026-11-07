@@ -1,5 +1,22 @@
 # CURRENT_STATE.md
 
+## 2026-11-07 bounded application runtime trials
+
+The screenshot runner now fails on real React startup or surface-cleanup errors
+before publishing an image. A direct-child native watchdog and repeated host
+harness preserve logs and distinguish error, crash, deadline and interruption.
+The physical Pi 400 candidate completed ten fullscreen capture/Nitro/exit trials;
+startup/cleanup failure controls, deadline, crash and a subsequent successful
+launch also ran. The original continuous display app and recovery boot were
+preserved. See the [scoped receipt](../evidence/pi400-runtime-baseline-2026-11-07.md)
+and [operator instructions](../validation/runtime-baseline.md).
+
+This is an implemented application-testing slice of Plan 01. The rest of the
+delivery plans remain work, including cold-boot graphics recovery, physical
+input/gestures, text/IME, services, packaging and measured performance. Captured
+images are not proof of new HDMI presentation or startup latency. Current host
+native validation is 16/16; older counts below remain dated evidence.
+
 ## 2026-11-07 opt-in Qt/Nitro async runtime follow-up
 
 The pinned alpha 105 Qt dispatcher now passes physical Pi 400/QNX 8.0.5 callback,
