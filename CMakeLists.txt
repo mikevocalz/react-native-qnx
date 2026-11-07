@@ -31,6 +31,16 @@ function(rnqnx_enable_strict_warnings target)
   endif()
 endfunction()
 
+function(rnqnx_add_runtime_baseline_supervisor)
+  if(CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin|QNX)$")
+    add_executable(rnqnx_runtime_baseline_supervisor
+      native/platform/qnx/tools/runtime-baseline-supervisor.cpp)
+    rnqnx_enable_strict_warnings(rnqnx_runtime_baseline_supervisor)
+    set_target_properties(rnqnx_runtime_baseline_supervisor PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+  endif()
+endfunction()
+
 include(CTest)
 
 option(RNQNX_BUILD_QNX_SYSTEMS_PROBES "Build finite native systems diagnostics" OFF)
@@ -211,6 +221,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     endif()
 
     if(RNQNX_BUILD_PLAYGROUND_QNX)
+      rnqnx_add_runtime_baseline_supervisor()
       add_executable(rnqnx_playground_qnx vnext/probes/playground/main.cpp)
       target_link_libraries(rnqnx_playground_qnx PRIVATE rnqnx_react_host)
       if(RNQNX_BUILD_NITRO_QNX)
@@ -366,6 +377,7 @@ else()
 
           # A runnable window, so the rendered app can be looked at rather than
           # only asserted. Also renders to a PNG for machines with no display.
+          rnqnx_add_runtime_baseline_supervisor()
           add_executable(rnqnx_playground_host vnext/probes/playground/main.cpp)
           target_link_libraries(rnqnx_playground_host PRIVATE rnqnx_react_host)
           rnqnx_enable_strict_warnings(rnqnx_playground_host)
@@ -375,6 +387,29 @@ else()
           set_target_properties(rnqnx_playground_host PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
           )
+          add_test(NAME rnqnx_playground_screenshot
+            COMMAND "${CMAKE_COMMAND}"
+              "-DPROBE=$<TARGET_FILE:rnqnx_playground_host>"
+              "-DBUNDLE=${RNQNX_PLAYGROUND_BUNDLE}"
+              "-DWORK_DIR=${CMAKE_BINARY_DIR}/playground-positive"
+              -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/cmake/PlaygroundScreenshot.cmake")
+          add_test(NAME rnqnx_playground_rejects_start_failure
+            COMMAND "${CMAKE_COMMAND}"
+              "-DPROBE=$<TARGET_FILE:rnqnx_playground_host>"
+              "-DBUNDLE=${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/runtime-baseline/start-failure.js"
+              "-DWORK_DIR=${CMAKE_BINARY_DIR}/playground-start-failure"
+              -DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_START_FAILURE
+              -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/cmake/PlaygroundScreenshot.cmake")
+          add_test(NAME rnqnx_playground_rejects_stop_failure
+            COMMAND "${CMAKE_COMMAND}"
+              "-DPROBE=$<TARGET_FILE:rnqnx_playground_host>"
+              "-DBUNDLE=${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures/runtime-baseline/stop-failure.js"
+              "-DWORK_DIR=${CMAKE_BINARY_DIR}/playground-stop-failure"
+              -DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_STOP_FAILURE
+              -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/cmake/PlaygroundScreenshot.cmake")
+          set_tests_properties(rnqnx_playground_screenshot
+            rnqnx_playground_rejects_start_failure
+            rnqnx_playground_rejects_stop_failure PROPERTIES TIMEOUT 30)
 
           # ASan's allocator is installed process-wide by interposition, so
           # heap use-after-free is caught in the React Native and Qt libraries

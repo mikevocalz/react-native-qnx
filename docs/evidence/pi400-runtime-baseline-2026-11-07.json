@@ -1,0 +1,210 @@
+{
+  "baseCommit": "24019f39a409cd0540c31f4e017b7003201bdca4",
+  "collectionDate": "2026-11-07",
+  "lane": "physical Pi400 QNX SDP8.0.5 unprivileged application user",
+  "sourceFiles": {
+    "vnext/probes/playground/main.cpp": "5a023938eadc1533bf61a20d61b1bf8a221d27fbe45fea6a3a5140cbc023b8a0",
+    "native/platform/qnx/tools/runtime-baseline-supervisor.cpp": "781b86e60dd8092844fedafb5a16506c148eb96fe3ca63408bfe0239db2d688f"
+  },
+  "lockSha256": "e9602379b5849218cef9718da6db4430e36b51382fd787dcfbecb8269c0aaa52",
+  "artifacts": {
+    "runtime-baseline-playground.qnx": "0d3ce7ab31535b1e408a03dc2aade9244065d3b76a9bef936b97369e9da54eb0",
+    "runtime-baseline-supervisor.qnx": "8fdc22da7b9ef6d9b73d3ec370482008adf973731a7eabdacc3e19b15174a5c5",
+    "runtime-baseline-start.hbc": "9b467339b1b3454fe27aace757293c3ffe87e50580ed58e3375b938c779396d9",
+    "runtime-baseline-stop.hbc": "40d73dd1a186aa22f9b667f245d8670553d904820266503ddd252831a123e3a9"
+  },
+  "trials": [
+    {
+      "trial": 1,
+      "frame": {
+        "status": "captured",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 24691,
+        "sha256": "4ef3883bdbca0dbb08b21bf4eb98b6ed7e9effbf27e5c53a8b0d1af40a604aad",
+        "contentVerification": "not performed",
+        "presentationVerification": "not performed"
+      },
+      "logSha256": "e384a564d10d248eb4fcc07e77c7eecb61da422d20e20170bea167020bb9cace",
+      "exitCode": 0
+    },
+    {
+      "trial": 2,
+      "frame": {
+        "status": "captured",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 24698,
+        "sha256": "5477ba80fb7f346a019b7e818c3c39b8fc2c74365d65233ac3000c84dde4ea0e",
+        "contentVerification": "not performed",
+        "presentationVerification": "not performed"
+      },
+      "logSha256": "4e86a60b6152ca7fa2342f4101c225883100fd294ed166045a8a2e4fb368f1f2",
+      "exitCode": 0
+    },
+    {
+      "trial": 3,
+      "frame": {
+        "status": "captured",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 24692,
+        "sha256": "6adb0635788a32caff8100458e255f57924c928fa0542fc2e48ee1cefb0c661c",
+        "contentVerification": "not performed",
+        "presentationVerification": "not performed"
+      },
+      "logSha256": "7a1678d0d8d0a63f52f2debd324ecc9b1e4f7d5a391c0f83750314e8db09e4ed",
+      "exitCode": 0
+    },
+    {
+      "trial": 4,
+      "frame": {
+        "status": "captured",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 24699,
+        "sha256": "d9fdd1721d48a0441d21b76a43a9f0b51f1640814be47c352810c33e5b271ee1",
+        "contentVerification": "not performed",
+        "presentationVerification": "not performed"
+      },
+      "logSha256": "fc5908398d98f71a2b9144040efac4b1f56dcbd1cd06c485cbc511e480ba6b54",
+      "exitCode": 0
+    },
+    {
+      "trial": 5,
+      "frame": {
+        "status": "captured",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 24696,
+        "sha256": "e2783976a89c42594a60a9b4657cff70844a5f8a1131e98b8ff1ad400ae14209",
+        "contentVerification": "not performed",
+        "presentationVerification": "not performed"
+      },
+      "logSha256": "ea16d72c198772a8ce025d8656bb405621a7ffce4c4d698e30f63166bb0a5c4d",
+      "exitCode": 0
+    },
+    {
+      "trial": 6,
+      "frame": {
+        "status": "captured",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 24698,
+        "sha256": "989bdf3afd59358ceaf4bfac2a6947d1c941b6aed003049c15b7c8aeb73c19b6",
+        "contentVerification": "not performed",
+        "presentationVerification": "not performed"
+      },
+      "logSha256": "3788d3ba3eb20e8a170cc233a446ad4f9b62d352e62744c5d39817b508bb1f05",
+      "exitCode": 0
+    },
+    {
+      "trial": 7,
+      "frame": {
+        "status": "captured",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 24691,
+        "sha256": "d03fe4fc9f90a772c5b8ca5a5526c21bfbe1ce4b665c1c01be76e91a2b618737",
+        "contentVerification": "not performed",
+        "presentationVerification": "not performed"
+      },
+      "logSha256": "d2498eeddf2ba1cebc3fa96966213e3840b597583cc9e12f338e6a6fd06496d9",
+      "exitCode": 0
+    },
+    {
+      "trial": 8,
+      "frame": {
+        "status": "captured",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 24697,
+        "sha256": "ed4bd710704dae23152382a2b5c53837b15492bf2528a3dcd8b7aba7f865d16a",
+        "contentVerification": "not performed",
+        "presentationVerification": "not performed"
+      },
+      "logSha256": "da962d5bc0565baf0afb6580b8d6dc6360c66816081e6c41f8a3fa11b9ab92af",
+      "exitCode": 0
+    },
+    {
+      "trial": 9,
+      "frame": {
+        "status": "captured",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 24691,
+        "sha256": "7b72b98c6ff733006a72fb7ed287f7f8f61f438799bcd06e99db811afac35824",
+        "contentVerification": "not performed",
+        "presentationVerification": "not performed"
+      },
+      "logSha256": "27de0f9e6360b6cb3e2adbd96898d1a21b90800f1589981714b7be16253b46de",
+      "exitCode": 0
+    },
+    {
+      "trial": 10,
+      "frame": {
+        "status": "captured",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 24697,
+        "sha256": "01870ae37e932c3252b8b0b72280e7825760e566b7cac43b5d68779f03ee0955",
+        "contentVerification": "not performed",
+        "presentationVerification": "not performed"
+      },
+      "logSha256": "8e501bbc077a2b099d8e9f4626e9250db19fdec25ddb946f7fbd322b327e316d",
+      "exitCode": 0
+    }
+  ],
+  "controls": {
+    "startFailure": 1,
+    "stopFailure": 1,
+    "deadline": 124,
+    "crash": 134,
+    "recovery": 0
+  },
+  "contentVerification": "Trial01 and trial10 inspected visually: exact Hello World title. Remaining captures validated as PNGs, not individually inspected for title. Physical presentation not reverified.",
+  "limitations": [
+    "Not coldboot reliability or measured startup latency.",
+    "Host Python harness and physical native-supervisor lane are separate.",
+    "Private source/build artifacts and raw transport logs retained outside repository."
+  ],
+  "targetReadbackArtifacts": {
+    "/data/home/qnxuser/rnqnx-hello-world/hello-world-nitro.hbc": {
+      "sha256": "ec405c033b07c0cfe216eb95d3242b58d84bbf17fd2ee3d153153a6c528b1f1e",
+      "bytes": 734597
+    },
+    "/data/qt612/plugins/platforms/libqqnx.so": {
+      "sha256": "c63138cd1f9c8c3c4dad5bbf2dcb49a666e70bfd1cc3e1d5662f406d6c22c8bc",
+      "bytes": 921208
+    },
+    "/data/home/qnxuser/rnqnx-async-test/runtime-baseline-playground.qnx": {
+      "sha256": "0d3ce7ab31535b1e408a03dc2aade9244065d3b76a9bef936b97369e9da54eb0",
+      "bytes": 6350512
+    },
+    "/data/home/qnxuser/rnqnx-async-test/runtime-baseline-supervisor.qnx": {
+      "sha256": "8fdc22da7b9ef6d9b73d3ec370482008adf973731a7eabdacc3e19b15174a5c5",
+      "bytes": 17736
+    },
+    "/data/qt612/lib/libQt6Core.so.6": {
+      "sha256": "a687838d0183fce20d26350763c6803cb6ccd5cf4ea17dfe5dcfb12b5dbb1235",
+      "bytes": 25238296
+    },
+    "/boot/config.txt": {
+      "sha256": "2a45978f1934d734f532cc59c5150ba30f8de4f9eacd8bff5cb1476a9f6117c1",
+      "bytes": 136
+    },
+    "/boot/qnx-recovery.ifs": {
+      "sha256": "76b934262e0063b17d327d182c453cd45521d12964591514829249a772ed4a39",
+      "bytes": 19784804
+    }
+  },
+  "targetEnvironment": {
+    "kernel": "QNX 8.0.0 2026/06/05-16:21:14EDT RaspberryPi400 aarch64le",
+    "distribution": "SDP/Everywhere 8.0.5",
+    "bootSelection": "qnx-recovery.ifs; graphics autostart disabled",
+    "QT_QPA_PLATFORM": "qnx:no-fullscreen",
+    "QT_QPA_PLATFORM_PLUGIN_PATH": "/data/qt612/plugins/platforms",
+    "QSG_RHI_BACKEND": "opengl",
+    "graphicsClosure": "isolated /data/pi400-graphics-compat legacy Pi4 Screen/DRM stack; unchanged from prerequisite receipt"
+  }
+}

@@ -455,7 +455,30 @@ int main(int argc, char** argv) {
       host.runtime().drainMicrotasks();
       host.pumpEvents();
     }
+    if (!host.lastError().isEmpty()) {
+      std::fprintf(
+          stderr,
+          "RNQNX_PLAYGROUND_RENDER_FAILED %s\n",
+          host.lastError().toUtf8().constData());
+      return 1;
+    }
     const QImage frame = window.grabWindow();
+    // Include React's surface cleanup in this one-shot trial while the runtime
+    // is still available to report errors. Keep the captured frame unchanged.
+    host.stopSurface(kSurfaceId);
+    for (int i = 0; i < 20; ++i) {
+      host.runtime().drainMicrotasks();
+      host.pumpEvents();
+    }
+    // grabWindow and surface cleanup can process events. A valid Qt image
+    // cannot turn a failed application or failed cleanup into a passing trial.
+    if (!host.lastError().isEmpty()) {
+      std::fprintf(
+          stderr,
+          "RNQNX_PLAYGROUND_RENDER_FAILED %s\n",
+          host.lastError().toUtf8().constData());
+      return 1;
+    }
     if (frame.isNull() || !frame.save(parser.value(screenshotOption))) {
       std::fprintf(stderr, "Could not write the screenshot\n");
       return 1;
