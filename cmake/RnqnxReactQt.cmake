@@ -83,6 +83,9 @@ function(rnqnx_add_react_host_target)
     rnqnx_hermes
     Qt6::Network
   )
+  if(RNQNX_ENABLE_FRAME_TRACE)
+    target_link_libraries(rnqnx_react_host PUBLIC rnqnx_runtime_trace)
+  endif()
   if(RNQNX_ENABLE_WEBSOCKETS)
     target_compile_definitions(rnqnx_react_host PRIVATE RNQNX_ENABLE_WEBSOCKETS)
     target_link_libraries(rnqnx_react_host PUBLIC rnqnx_websocket_transport)

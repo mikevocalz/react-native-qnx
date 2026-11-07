@@ -42,6 +42,8 @@ function(rnqnx_add_runtime_baseline_supervisor)
 endfunction()
 
 include(CTest)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxRuntimeTrace.cmake)
+rnqnx_add_runtime_trace()
 
 # Installed React Native, resolved through the workspace rather than assumed.
 set(RNQNX_REACT_NATIVE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/node_modules/react-native")
