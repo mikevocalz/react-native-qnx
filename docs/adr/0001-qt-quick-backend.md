@@ -45,17 +45,12 @@ then:
 
 No private Qt header is authorized by this ADR.
 
-## Licensing gate
+## Open-source Qt path
 
-The specification proposes an LGPLv3 source-build posture. Qt's general licensing page
-describes LGPLv3 use when its obligations are met, while the current Qt-for-QNX
-product page states that Qt for QNX is available under Qt for Device Creation
-Professional. This discrepancy is a stop-and-ask trigger.
-
-Before G0-B downloads, builds, deploys, or distributes Qt for QNX, the repository
-owner must obtain a documented licensing determination for this exact
-non-commercial QNX Everywhere use. This ADR does not interpret either license or
-claim that an open-source source build bypasses the Qt-for-QNX product terms.
+[ADR-0013](0013-open-source-qt.md) selects eligible open-source Qt sources and
+removes a paid-license prerequisite. Proceed with the public-source build and
+module/plugin packaging checks. The former blanket download/build/deploy stop
+is superseded; preserve the recorded evaluation provenance below as history.
 
 ## Pi 400 evaluation authorization (2026-11-06)
 
@@ -63,8 +58,8 @@ The owner requested the free ten-day Qt evaluation. The signed-in commercial
 Qt portal was inspected and showed **Qt for Device Creation Enterprise,
 Evaluation, Active**, expiring **17 November 2026**. This records a temporary
 evaluation basis for the private Pi 400 bring-up, not a production or
-redistribution authorization. The open-source QNX licensing question remains
-unresolved outside this evaluation.
+redistribution authorization for those artifacts.
+[ADR-0013](0013-open-source-qt.md) selects the separate open-source Qt path.
 
 The licensed account Downloads page supplied Qt **6.12.0 LTS**, full-framework
 UNIX source archive `qt-everywhere-src-6.12.0.tar.xz`, SHA-256
@@ -80,8 +75,8 @@ Only qtbase (Core, Gui, Network), qtdeclarative (Qml, Quick), and qtshadertools
 source notices, QNX support, built dependencies, and deployment files must be
 checked before the target runtime is accepted. Other optional modules remain
 excluded. The evaluation does not accept this ADR's broader module matrix or
-authorize release packaging. After expiry, further licensed use requires a
-valid license determination.
+authorize release packaging. The expiry applies to these evaluation artifacts; it does not expire
+independently obtained open-source Qt.
 
 Sources: [Qt account licenses](https://account.qt.io/s/),
 [Device Creation tiers](https://www.qt.io/development/qt-framework/target-devices),

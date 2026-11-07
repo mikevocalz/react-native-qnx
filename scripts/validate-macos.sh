@@ -44,6 +44,7 @@ pnpm validate:manifests
 echo ""
 echo "[7/8] Repository architecture validation"
 pnpm validate:architecture
+pnpm validate:docs
 
 echo ""
 echo "[8/8] Nitro code-generation applicability check"
@@ -52,6 +53,6 @@ pnpm codegen:check
 echo ""
 echo "========================================"
 echo "macOS host validation passed."
-echo "QNX cross-compilation has not been performed."
-echo "QNX runtime behavior remains unverified."
+echo "This host run does not perform QNX cross-compilation."
+echo "This host run does not establish QNX runtime behavior."
 echo "========================================"

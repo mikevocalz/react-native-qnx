@@ -1,0 +1,294 @@
+Selected actual command outputs, 2026-11-07. Host paths redacted; compile/download progress omitted.
+
+$ pnpm install --frozen-lockfile
+Scope: all 11 workspace projects
+✓ Lockfile passes supply-chain policies (verified 24m ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+Done in 539ms using pnpm v12.8.1
+
+$ pnpm validate:dependencies
+$ node scripts/validate-dependencies.mjs
+PIN: @react-native/metro-config@0.88.1
+PIN: @types/node@26.6.6
+PIN: @types/react@19.3.0
+PIN: babel-preset-expo@58.0.23
+PIN: expo@58.0.22
+PIN: metro@0.87.1
+PIN: nitrogen@1.0.0-alpha.nightly.105.g69d365fc9b18
+PIN: nitro-core@1.0.0-alpha.nightly.105.g69d365fc9b18
+PIN: prettier@3.9.9
+PIN: react@19.3.0
+PIN: react-native@0.88.1
+PIN: react-native-nitro-modules@1.0.0-alpha.nightly.105.g69d365fc9b18
+PIN: typescript@7.0.2
+RESOLVED: expo-modules-core@58.0.29
+RESOLVED: @expo/metro@58.0.0
+RESOLVED: @expo/metro-config@58.0.20
+CXX PIN: folly@2024.11.18.00
+CXX PIN: fmt@12.1.0
+CXX PIN: glog@0.3.5
+CXX PIN: doubleConversion@1.1.6
+CXX PIN: fastFloat@8.0.0
+CXX PIN: boost@1.84.0
+BUNDLED: Hermes source hermes-v260318099.0.5
+RESOLVED: hermes-compiler@260318099.0.5
+SOURCE: ReactCommon/react/renderer/scheduler/Scheduler.h -> class Scheduler final
+SOURCE: Libraries/Renderer/implementations/ReactFabric-dev.js -> reconcilerVersion: "19.3.0"
+SOURCE: ReactCommon/react/renderer/scheduler/SchedulerToolbox.h -> struct SchedulerToolbox final
+SOURCE: ReactCommon/react/renderer/scheduler/SchedulerDelegate.h -> schedulerDidFinishTransaction
+SOURCE: ReactCommon/react/renderer/mounting/MountingCoordinator.h -> pullTransaction(
+SOURCE: ReactCommon/react/renderer/mounting/MountingTransaction.h -> class MountingTransaction final
+SOURCE: ReactCommon/react/renderer/mounting/ShadowViewMutation.h -> struct ShadowViewMutation final
+SOURCE: ReactCommon/react/renderer/uimanager/UIManagerBinding.h -> createAndInstallIfNeeded
+SOURCE: ReactCommon/yoga/yoga/YGNode.h -> YGNodeCalculateLayout
+SOURCE: ReactCommon/react/runtime/hermes/HermesInstance.h -> createJSRuntime(
+SOURCE: native/cpp/include/NitroModules/HybridClassRegistry.hpp -> registerHybridClass
+SOURCE: native/cpp/include/NitroModules/HybridClass.hpp -> registerHybridConstructor
+SOURCE: native/cpp/include/NitroModules/InstallNitro.hpp -> void install(
+SOURCE: src/getPlatformSpecs.ts -> const platformSchema = z.enum(['apple', 'android'])
+SOURCE: android/src/main/cpp/ExpoModulesHostObject.h -> class ExpoModulesHostObject
+SOURCE: src/ensureNativeModulesAreInstalled.native.ts -> TurboModuleRegistry.get('ExpoModulesCore')
+SOURCE: src/requireNativeModule.ts -> export function requireNativeModule
+SOURCE: build/ExpoMetroConfig.js -> platforms:
+SOURCE: build/ExpoMetroConfig.js -> OUT_OF_TREE_PLATFORMS
+SOURCE: lib/pbxProject.js -> crypto.randomUUID()
+validate:dependencies passed.
+
+$ pnpm typecheck
+$ tsc --noEmit
+
+$ pnpm test:js
+$ node scripts/run-js-tests.mjs
+Running $CHECKOUT/tests/js/braces-security.test.mjs...
+braces security: patched-source, regression, tamper, and audit-policy checks passed.
+Running $CHECKOUT/tests/js/compression-security.test.mjs...
+Running $CHECKOUT/tests/js/docs-validation.test.mjs...
+docs-validation.test.mjs passed (stale pins, installed drift, evidence requirements, duplicate components, markers and release blockers)
+Running $CHECKOUT/tests/js/expo-modules2-compat.test.mjs...
+expo-modules2-compat.test.mjs passed (source only)
+Running $CHECKOUT/tests/js/expo-qnx-autolinking.test.mjs...
+expo-qnx-autolinking.test.mjs passed
+Running $CHECKOUT/tests/js/host-renderer-contract.test.mjs...
+Running $CHECKOUT/tests/js/js-runner.test.mjs...
+js-runner.test.mjs passed (missing suite, empty suite and missing test input fail)
+Running $CHECKOUT/tests/js/marathon-metro-platform.test.mjs...
+marathon-metro-platform.test.mjs passed
+Running $CHECKOUT/tests/js/marathon-native-host-contract.test.mjs...
+marathon-native-host-contract.test.mjs passed
+Running $CHECKOUT/tests/js/nitro-api-skill-contract.test.mjs...
+Nitro API/JS/native source contracts passed (NOT compiled or device-tested)
+Running $CHECKOUT/tests/js/nitro-dual-host-contract.test.mjs...
+nitro-dual-host-contract.test.mjs passed (source-check only)
+Running $CHECKOUT/tests/js/nitro-platform-codegen.test.mjs...
+Platform Nitro v1 binding check passed
+nitro-platform-codegen.test.mjs passed (generated bindings only)
+Running $CHECKOUT/tests/js/nitro-v1-native-migration.test.mjs...
+nitro-v1-native-migration.test.mjs passed (source only)
+Running $CHECKOUT/tests/js/pi-evidence.test.mjs...
+pi-evidence.test.mjs passed
+Running $CHECKOUT/tests/js/qnx-cli.test.mjs...
+qnx-cli.test.mjs passed (init safety, option rejection, dry-run, real shell failure propagation; no device connection)
+Running $CHECKOUT/tests/js/qnx-release-matrix.test.mjs...
+QNX 8.0.5 release source matrix validated; vendor-installed versions NOT inspected.
+Running $CHECKOUT/tests/js/runtime-baseline-qnx.test.mjs...
+QNX target watchdog: success, failure, crash, timeout, recovery, stale-state and interrupted-child cleanup checks passed
+Running $CHECKOUT/tests/js/runtime-baseline.test.mjs...
+Runtime baseline supervisor: repeated capture, missing marker, truncated PNG, crash, watchdog, TERM/HUP cleanup and stale artifact checks passed.
+Running $CHECKOUT/tests/js/sdk58-stable-manifest-pins.test.mjs...
+sdk58-stable-manifest-pins.test.mjs passed
+Running $CHECKOUT/tests/js/shell-quote-security.test.mjs...
+Running $CHECKOUT/tests/js/source-map-security.test.mjs...
+All JavaScript tests passed.
+
+$ pnpm format:check
+$ prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+
+$ pnpm validate:docs
+$ node scripts/validate-docs.mjs
+Documentation validated: 22 components, 7 release gates.
+
+$ pnpm validate:architecture
+$ node scripts/validate-architecture.mjs
+validate:architecture passed.
+
+$ pnpm validate:manifests
+$ node scripts/validate-manifests.mjs
+OK: @rn-qnx/expo-modules-core-qnx
+SCAFFOLD: packages/expo-qnx
+OK: @rn-qnx/expo-qnx-autolinking
+OK: @rn-qnx/expo-qnx-config-plugins
+OK: @rn-qnx/metro-config-marathon
+OK: @rn-qnx/metro-config-qnx
+SCAFFOLD: packages/qnx-devtools
+OK: @rn-qnx/qnx-nitro-runtime
+OK: @rn-qnx/react-native-marathon
+OK: @rn-qnx/react-native-qnx
+OK: @rn-qnx/react-native-qnx-cli
+SCAFFOLD: packages/react-native-qnx-codegen
+SCAFFOLD: apps/component-conformance
+SCAFFOLD: apps/expo-router-example
+SCAFFOLD: apps/native-service-demo
+SCAFFOLD: apps/performance-lab
+OK: @rn-qnx/rn-playground
+validate:manifests passed (10 manifests, 7 scaffold-only directories).
+
+$ pnpm build:packages
+$ node scripts/build-packages.mjs
+Building 9 workspace package(s) with declared build scripts...
+Scope: 10 of 11 workspace projects
+
+$ pnpm codegen:check && pnpm nitro:platform:check
+$ node scripts/codegen-check.mjs
+Platform Nitro v1 binding check passed
+No nitro.json files exist yet; Nitrogen generation is not applicable to this milestone.
+$ node scripts/nitro-platform-codegen.mjs --check
+Platform Nitro v1 binding check passed
+
+$ pnpm audit:dependencies
+$ node scripts/audit-dependencies.mjs
+Verified patched source and security regressions for 1 installed braces package(s).
+{
+  "advisories": {},
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    "dependencies": 439,
+    "devDependencies": 44,
+    "optionalDependencies": 57,
+    "totalDependencies": 520
+  }
+}
+
+$ pnpm validate:v1 (expected exit 1)
+$ node scripts/validate-docs.mjs --release
+v1 is not release-ready:
+  distribution blocked: Qt/QNX distribution posture
+  ci blocked: Candidate CI
+  cold-boot pending: Repeatable graphics cold boot
+  device-parity pending: Device component and input results
+  performance pending: QNX performance measurements
+  developer-path pending: Clean-host app workflow
+  documentation pending: Versioned v1 documentation
+[ELIFECYCLE] Command failed with exit code 1.
+
+$ ctest --test-dir build/v1-host-sanitizers --output-on-failure
+Test project $CHECKOUT/build/v1-host-sanitizers
+    Start 1: rnqnx_g0_cxx20_probe
+1/7 Test #1: rnqnx_g0_cxx20_probe .....................   Passed    0.06 sec
+    Start 2: qnx_screen_surface_host_test
+2/7 Test #2: qnx_screen_surface_host_test .............   Passed    0.36 sec
+    Start 3: rnqnx_rn_headers_probe
+3/7 Test #3: rnqnx_rn_headers_probe ...................   Passed    0.14 sec
+    Start 4: shadow_view_mutation_adapter_host_test
+4/7 Test #4: shadow_view_mutation_adapter_host_test ...   Passed    0.26 sec
+    Start 5: shadow_tree_mounting_host_test
+5/7 Test #5: shadow_tree_mounting_host_test ...........   Passed    0.17 sec
+    Start 6: qtquick_mounting_layer_host_test
+6/7 Test #6: qtquick_mounting_layer_host_test .........   Passed    0.20 sec
+    Start 7: rnqnx_qtquick_host_probe
+7/7 Test #7: rnqnx_qtquick_host_probe .................   Passed    0.11 sec
+
+100% tests passed out of 7
+
+Total Test time (real) =   1.31 sec
+
+$ pnpm test:cpp:host (failed default Debug attempt; selected diagnostics)
+write64() failed, returned -1 expected 360822688, errno=28
+ranlib: error writing file 'librnqnx_fabric_adapter.a'
+Error: cmake failed (exit 1)
+
+$ pnpm qnx bundle-qnx --app v1-smoke --out build/v1-smoke.bundle.js
+LOG:Writing bundle output to: $CHECKOUT/build/v1-smoke.bundle.js
+LOG:Done writing bundle output
+
+$ existing host runner --bundle build/v1-smoke.bundle.js --screenshot build/v1-smoke.png -platform offscreen
+Running "RNQnxPlayground"
+RNQNX_PLAYGROUND_SCREENSHOT $CHECKOUT/build/v1-smoke.png 640x480
+qt.qpa.fonts: Populating font family aliases took 440 ms. Replace uses of missing font family "Sans Serif" with one that exists to avoid this cost.
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1107 09:09:10.918382 4278386560 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x615000006718).
+W1107 09:09:10.918598 1845538816 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x611000015958).
+W1107 09:09:10.918694 1845538816 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x617000014d18).
+
+$ production playground bundle for qnx
+LOG:Writing bundle output to: ../../build/v1-playground-qnx.bundle.js
+LOG:Done writing bundle output
+
+$ production playground bundle for marathon
+LOG:Writing bundle output to: ../../build/v1-playground-marathon.bundle.js
+LOG:Done writing bundle output
+
+$ coderabbit review --agent --base-commit be71bc9 (completion record)
+{"type":"complete","status":"review_completed","findings":0,"reviewedFiles":[".github/CODEOWNERS",".project-state.json","CODE_OF_CONDUCT.md","LICENSE","README.md","SECURITY.md","THIRD_PARTY_NOTICES.md","docs/adr/0002-qt-quick-item-instantiation.md","docs/adr/index.md","docs/component-support.json","docs/component-support.md","docs/getting-started/compatibility-matrix.md","docs/getting-started/qnx-cli.md","docs/handoff/CURRENT_STATE.md","docs/handoff/HISTORY_THROUGH_2026_11_07.md","docs/policy/premium-components.md","docs/qnx/QNX_8_0_5_NOV_2026_UPDATES.md","docs/releases/v1-readiness.json","docs/releases/v1-readiness.md","package.json","packages/react-native-qnx-cli/.gitkeep","packages/react-native-qnx-cli/package.json","packages/react-native-qnx-cli/src/cli.mjs","scripts/lib/docs-model.mjs","scripts/log-qnx.sh","scripts/run-js-tests.mjs","scripts/validate-architecture.mjs","scripts/validate-docs.mjs","scripts/validate-macos.sh","template/qnx/.gitkeep","template/qnx/README.md","template/qnx/babel.config.js","template/qnx/index.js","template/qnx/metro.config.js","tests/js/docs-validation.test.mjs","tests/js/js-runner.test.mjs","tests/js/qnx-cli.test.mjs","tsconfig.json"]}
+
+Owner clarification follow-up: open-source Qt selected; no paid-subscription prerequisite.
+
+$ pnpm validate:docs
+$ node scripts/validate-docs.mjs
+Documentation validated: 22 components, 7 release gates.
+
+$ pnpm typecheck
+$ tsc --noEmit
+
+$ pnpm test:js (successful retry)
+$ node scripts/run-js-tests.mjs
+Running $CHECKOUT/tests/js/braces-security.test.mjs...
+braces security: patched-source, regression, tamper, and audit-policy checks passed.
+Running $CHECKOUT/tests/js/compression-security.test.mjs...
+Running $CHECKOUT/tests/js/docs-validation.test.mjs...
+docs-validation.test.mjs passed (stale pins, installed drift, evidence requirements, duplicate components, markers and release blockers)
+Running $CHECKOUT/tests/js/expo-modules2-compat.test.mjs...
+expo-modules2-compat.test.mjs passed (source only)
+Running $CHECKOUT/tests/js/expo-qnx-autolinking.test.mjs...
+expo-qnx-autolinking.test.mjs passed
+Running $CHECKOUT/tests/js/host-renderer-contract.test.mjs...
+Running $CHECKOUT/tests/js/js-runner.test.mjs...
+js-runner.test.mjs passed (missing suite, empty suite and missing test input fail)
+Running $CHECKOUT/tests/js/marathon-metro-platform.test.mjs...
+marathon-metro-platform.test.mjs passed
+Running $CHECKOUT/tests/js/marathon-native-host-contract.test.mjs...
+marathon-native-host-contract.test.mjs passed
+Running $CHECKOUT/tests/js/nitro-api-skill-contract.test.mjs...
+Nitro API/JS/native source contracts passed (NOT compiled or device-tested)
+Running $CHECKOUT/tests/js/nitro-dual-host-contract.test.mjs...
+nitro-dual-host-contract.test.mjs passed (source-check only)
+Running $CHECKOUT/tests/js/nitro-platform-codegen.test.mjs...
+Platform Nitro v1 binding check passed
+nitro-platform-codegen.test.mjs passed (generated bindings only)
+Running $CHECKOUT/tests/js/nitro-v1-native-migration.test.mjs...
+nitro-v1-native-migration.test.mjs passed (source only)
+Running $CHECKOUT/tests/js/pi-evidence.test.mjs...
+pi-evidence.test.mjs passed
+Running $CHECKOUT/tests/js/qnx-cli.test.mjs...
+qnx-cli.test.mjs passed (init safety, option rejection, dry-run, real shell failure propagation; no device connection)
+Running $CHECKOUT/tests/js/qnx-release-matrix.test.mjs...
+QNX 8.0.5 release source matrix validated; vendor-installed versions NOT inspected.
+Running $CHECKOUT/tests/js/runtime-baseline-qnx.test.mjs...
+QNX target watchdog: success, failure, crash, timeout, recovery, stale-state and interrupted-child cleanup checks passed
+Running $CHECKOUT/tests/js/runtime-baseline.test.mjs...
+Runtime baseline supervisor: repeated capture, missing marker, truncated PNG, crash, watchdog, TERM/HUP cleanup and stale artifact checks passed.
+Running $CHECKOUT/tests/js/sdk58-stable-manifest-pins.test.mjs...
+sdk58-stable-manifest-pins.test.mjs passed
+Running $CHECKOUT/tests/js/shell-quote-security.test.mjs...
+Running $CHECKOUT/tests/js/source-map-security.test.mjs...
+All JavaScript tests passed.
+
+$ pnpm validate:v1 (expected exit 1, pending artifact/runtime gates)
+$ node scripts/validate-docs.mjs --release
+v1 is not release-ready:
+  distribution pending: Open-source runtime packaging
+  ci pending: Candidate CI
+  cold-boot pending: Repeatable graphics cold boot
+  device-parity pending: Device component and input results
+  performance pending: QNX performance measurements
+  developer-path pending: Clean-host app workflow
+  documentation pending: Versioned v1 documentation
+[ELIFECYCLE] Command failed with exit code 1.

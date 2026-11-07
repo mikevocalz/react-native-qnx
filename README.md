@@ -1,206 +1,113 @@
 # react-native-qnx
 
-Foundation for a production-grade React Native out-of-tree platform for QNX.
-The current line is Expo 58.0.22 / SDK 58, React Native 0.88.1, React 19.3.0,
-Metro 0.87.1 and pinned Nitro v1 alpha 105 (core, RN adapter and Nitrogen).
-The physical Pi 400 runs fullscreen React Native Hello World on QNX SDP 8.0.5;
-optional Qt/Nitro callback and Promise tests also pass. This remains experimental
-evidence from a private evaluation; graphics autostart and production gates remain open.
+Run React Native on QNX with Fabric, Hermes, Yoga and a Qt Quick view backend.
+The experimental Pi 400 target renders Hello World at 1920×1080 on QNX SDP 8.0.5.
 
-## Goal
+![React Native QNX Hello World on the Pi 400](docs/evidence/pi400-hello-world-fullscreen-2026-11-07.png)
 
-Build an upstream-conscious React Native platform that runs on QNX Neutrino,
-using Qt Quick component views over Qt's QNX QPA/Screen integration, Fabric for
-mounting, Yoga for layout, and Hermes as the JavaScript engine. The direct-Screen
-executable is a window-system probe, not the component backend. Nitro Modules
-are the module architecture for application-facing APIs; Expo is a selected
-integration target. Neither upstream package provides QNX support today, so
-those seams are implemented and validated here.
+This is v1 preparation. Graphics cold boot, stock Pi 4 QSTI parity, performance
+measurements and release packaging remain open. Development follows the
+[open-source Qt path](docs/adr/0013-open-source-qt.md), with no paid Qt subscription
+prerequisite. The Pi 400 receipts retain their evaluation-artifact provenance. Read
+[the evidence boundaries](docs/handoff/CURRENT_STATE.md) and
+[v1 gates](docs/releases/v1-readiness.md) before selecting a target.
 
-## Current scope
+## Start from source
 
-**Current local validation:** dependency/source contracts, TypeScript, JS tests,
-platform codegen and formatting pass. The full RN 0.88/Hermes/Qt 6.12 host suite
-passes 23/23 CTests with tracing/input lifecycle ON and 16/16 with both OFF,
-including the owned Nitro dispatcher and source patch contract. See the
-[responder receipt](docs/evidence/pressable-qnx-2026-11-07.md) and
-[trace receipt](docs/evidence/pi400-runtime-trace-2026-11-07.md) for exact flags,
-revisions and limits. Hosted validation has resumed; individual PR checks remain
-separate from local and physical-device evidence.
-
-**Physical QNX proof:** Pi 400/QNX 8.0.5 as qnxuser renders the exact Hello World
-title at 1920×1080 through Fabric/Hermes/Qt Quick. The optional
-[Qt dispatcher](docs/nitro/QT_DISPATCHER.md) passes callbacks, typed/void Promises,
-errors, checkpoints and teardown races. See the
-[device receipt](docs/evidence/pi400-nitro-qt-2026-11-07.md).
-
-Historical SDP 8.0.2 Screen/C++20 compile/VM results remain separately labeled.
-Broader Pi 4/5 QSTI, generated/third-party Nitro modules, Forge bindings, graphics
-cold boot and production packaging are not established by this Hello World slice.
-Qt uses the private evaluation through 17 November 2026, without a distribution claim.
-
-See `docs/handoff/CURRENT_STATE.md`, `docs/handoff/QNX_VALIDATION_QUEUE.md`,
-and `.project-state.json` for the exact evidence boundaries.
-
-## Repository layout
-
-- `apps/` – example and conformance application scaffolds
-- `packages/` – out-of-tree platform, Expo, Metro, Nitro, CLI, codegen, and developer-tool package scaffolds
-- `native/` – shared native code and QNX/Linux/macOS platform directories
-- `cmake/` – CMake toolchain files and modules
-- `template/qnx/` – QNX native project template
-- `scripts/` – bootstrap, doctor, validation, configure, build, deploy, run, and log tooling
-- `tests/` – host C++ tests plus future integration, conformance, visual, performance, and stress suites
-- `docs/` – architecture, ADRs, getting-started material, validation queues, and handoff state
-
-## Dependency baseline
-
-Workspace dependencies are exact pins, not ranges:
-
-- Expo 58.0.22 / SDK 58
-- React Native 0.88.1 and React 19.3.0
-- Metro 0.87.1 and `@react-native/metro-config` 0.88.1
-- `babel-preset-expo` 58.0.23
-- Nitro core, RN adapter and Nitrogen `1.0.0-alpha.nightly.105.g69d365fc9b18`
-- TypeScript 7.0.2
-- Node.js 26+ with `@types/node` 26.6.6
-- pnpm 12.8.1
-
-The refreshed SDK-58 graph resolves `expo-modules-core` 58.0.29,
-`@expo/metro` 58.0.0, and `@expo/metro-config` 58.0.20. React Native
-0.88.1 resolves `hermes-compiler` 260318099.0.5 while its bundled Hermes
-source tag is `hermes-v260318099.0.5`. Yoga remains the source snapshot bundled
-by React Native and is not assigned an invented standalone version. Run
-`pnpm validate:dependencies` to verify installed versions and audited upstream
-source symbols.
-
-The complete provenance and compatibility record is in `docs/getting-started/compatibility-matrix.md`.
-
-The lockfile also scopes `xcode` to `uuid` 11.1.1 and validates the installed
-`uuid.v4()` call site. Security findings are re-audited against the refreshed
-SDK-58 lockfile rather than carrying forward the August 2026 audit result.
-
-## Validate on macOS
-
-macOS validation does not require QNX SDP:
+Use Node 26+ and pnpm 12.8.1. The CLI operates inside this checkout; no npm
+installation or standalone native-project support is claimed.
 
 ```bash
-./scripts/bootstrap-macos.sh
+git clone https://github.com/mikevocalz/react-native-qnx.git
+cd react-native-qnx
+pnpm install --frozen-lockfile
+pnpm validate:dependencies
+pnpm qnx --help
+pnpm qnx init dashboard
+pnpm install --no-frozen-lockfile
+pnpm qnx bundle-qnx --app dashboard --out build/dashboard.bundle.js
+```
+
+This creates a workspace app and a production QNX Metro bundle. To render it,
+build the existing [host playground](docs/getting-started/qnx-cli.md#render-your-bundle-on-the-host)
+and pass the bundle with `--bundle`. Native builds, QNX runtime deployment and
+Qt provisioning have separate prerequisites.
+
+For stock Pi 4/5 QSTI 0.5.0 build 50, use [the QSTI guide](docs/getting-started/raspberry-pi-today.md).
+For the custom Pi 400 image, use [the Pi 400 guide](docs/getting-started/raspberry-pi-400.md)
+and [runtime bring-up](docs/getting-started/pi400-hello-world.md).
+`rnqnx_playground` is the Screen probe; `rnqnx_playground_qnx` is the React
+Native runtime. See [CLI commands and limits](docs/getting-started/qnx-cli.md).
+
+## Check your checkout
+
+```bash
+pnpm typecheck
+pnpm test:js
+pnpm validate:docs
 pnpm validate:macos
 ```
 
-This validates formatting, TypeScript, installed dependency/source contracts, JavaScript checks, and the QNX Screen wrapper against the test-only host fake. It does not compile against QNX headers or run on a QNX target.
+The [React Pressable responder receipt](docs/evidence/pressable-qnx-2026-11-07.md)
+records 23/23 host CTests with input/tracing ON and 16/16 with both OFF. Physical
+Pi 400 synthetic Qt input exercises the production React Pressable responder
+path, including remount recovery and failure controls. This does not establish
+physical HID, RNGH or Worklets qualification; the input option remains OFF by
+default.
 
-Install Qt 6.11.1 or newer to build the Qt Quick host targets as well
-(`brew install qt`). They are optional: without Qt the suite configures, builds,
-and passes everything else, and CMake reports the skip. Set `CMAKE_PREFIX_PATH`
-if Qt is installed somewhere CMake does not search by default. Host Qt is a
-development dependency under `docs/adr/0010-macos-qt-development-host.md`; the
-QNX target still builds the pinned Qt LTS from source.
+The [bounded native tracing receipt](docs/evidence/pi400-runtime-trace-2026-11-07.md)
+retains earlier 20/20 ON, 18/18 OFF and 4/4 focused queue-correlation results.
+Physical Pi 400 export, protected-file failure, OFF-path capture and traced
+Nitro worker/shutdown assertions passed at the cited revisions. These native
+diagnostics do not establish input/Fabric/render-loop or presentation markers,
+tracing overhead, or performance budgets. Tracing remains OFF by default.
 
-## Run the playground
+`validate:macos` runs host checks. It does not cross-build or run QNX.
+The dated handoff records earlier billing refusals.
+[PR #68](https://github.com/mikevocalz/react-native-qnx/pull/68/checks) starts
+hosted CI again; local passes remain separate. `pnpm validate:v1` checks the release
+record and exits nonzero while required acceptance evidence is missing.
 
-The playground is a React Native app rendered by this platform. Building it
-requires Qt and Hermes:
+## Know what is supported
 
-```bash
-cmake -S . -B build/playground -G Ninja -DCMAKE_BUILD_TYPE=Debug -DRNQNX_BUILD_HERMES=ON
-cmake --build build/playground --target rnqnx_playground_host
-./build/playground/bin/rnqnx_playground_host
-```
+[Component support](docs/component-support.md) lists host, Pi 400 and Pi 4 QSTI
+results separately, including partial APIs and intentional no-ops. Nitro v1
+alpha is pinned exactly; sync HybridClass and optional async dispatcher device
+proof are narrower than generic third-party module support. IME, multi-touch
+and Reanimated integration remain gaps.
 
-Metro bundles `apps/rn-playground` for the `qnx` platform as part of the build.
-On a machine with no display, render one frame to a file instead:
+<!-- generated:dependencies:start -->
 
-```bash
-./build/playground/bin/rnqnx_playground_host -platform offscreen --screenshot frame.png
-```
+| Component              | Pinned / resolved version               |
+| ---------------------- | --------------------------------------- |
+| reactNative            | `0.88.1`                                |
+| react                  | `19.3.0`                                |
+| expo                   | `58.0.22`                               |
+| metro                  | `0.87.1`                                |
+| reactNativeMetroConfig | `0.88.1`                                |
+| babelPresetExpo        | `58.0.23`                               |
+| nitroCore              | `1.0.0-alpha.nightly.105.g69d365fc9b18` |
+| nitroModules           | `1.0.0-alpha.nightly.105.g69d365fc9b18` |
+| nitrogen               | `1.0.0-alpha.nightly.105.g69d365fc9b18` |
+| typescript             | `7.0.2`                                 |
+| codegenTypescript      | `6.0.2`                                 |
+| node                   | `>=26.0.0`                              |
+| packageManager         | `pnpm@12.8.1`                           |
+| expoModulesCore        | `58.0.29`                               |
+| expoMetro              | `58.0.0`                                |
+| expoMetroConfig        | `58.0.20`                               |
+| hermesCompiler         | `260318099.0.5`                         |
+| hermesSource           | `hermes-v260318099.0.5`                 |
 
-This runs on the development host, not on QNX. See
-`docs/adr/0010-macos-qt-development-host.md` for what that does and does not
-prove, and `docs/component-support.md` for what actually works.
+<!-- generated:dependencies:end -->
 
-## Raspberry Pi 4/5 + experimental Pi 400 quick install
-
-For the current QNX Everywhere QSTI lane, use QNX SDP 8.0.5 with QSTI 0.5.0
-build 50 on Raspberry Pi 4 or Raspberry Pi 5. The stock target defaults are
-`qnxuser@qnxpi.local`.
-
-Raspberry Pi 400 is an **experimental custom-image target**, not part of
-the stock Pi 4/5 QSTI baseline. QNX's Pi 400 recipe adapts the BCM2711 Pi 4
-custom image with the Pi 400 DTB and Wi-Fi firmware. Follow
-`docs/getting-started/raspberry-pi-400.md` before flashing, then use
-`RNQNX_PI_BOARD=pi400` to label evidence from the same deployment lane.
-Physical Pi 400 Hello World/Nitro evidence is recorded above; broader QSTI and component support remain separate gates.
-
-```bash
-export QNX_SDP_ENV=/path/to/qnxsdp-env.sh
-
-pnpm pi:preflight
-pnpm pi:install
-
-# after the Screen lane is green:
-pnpm qnx:runtime:validate
-```
-
-The install lane verifies AArch64le + Screen, builds the QNX AArch64 target,
-deploys atomically, runs three clean Screen launch/exit cycles by default, stores
-stdout/slog2/screenshot evidence, and automatically verifies + hashes the run
-into `manifest.json`.
-
-See `docs/getting-started/raspberry-pi-today.md` for stock Pi 4/5
-flashing, login, and evidence collection. Use
-`docs/getting-started/raspberry-pi-400.md` for the separate Pi 400 recipe.
-
-## Build and deploy on QNX
-
-For the current Pi/QSTI lane, run the QNX path from a supported x86-64
-development host with a licensed QNX SDP 8.0.5 installation:
-
-```bash
-# Install freely redistributable host prerequisites.
-./scripts/bootstrap-host.sh
-
-# Source the licensed SDP environment first, then verify it.
-./scripts/verify-qnx-license.sh
-./scripts/doctor.sh
-
-# First pass G0-A with the explicit Pi host/user environment configured.
-./scripts/validate-g0-a.sh
-
-# Configure and build the AArch64 Debug target.
-./scripts/configure-qnx.sh aarch64 Debug
-./scripts/build-qnx.sh aarch64 Debug
-
-# Deploy and run the actual CMake target name.
-./scripts/deploy-qnx.sh aarch64 rnqnx_playground Debug
-./scripts/run-qnx.sh aarch64 rnqnx_playground
-```
-
-The Pi helpers default to `qnxuser@qnxpi.local`; set `QNX_TARGET_IP`,
-`QNX_TARGET_USER`, or `QNX_SSH_KEY` only when your target differs. The
-scripts never assume root SSH. Detailed prerequisites and commands are in
-`docs/getting-started/build-and-deploy.md`.
-
-## Optional premium Forge app compatibility
-
-The opt-in Forge native slice reuses Nitro Forge's Rust engines and per-document
-C++ adapter. Host and physical Pi400/QNX8.0.5 probes verify real Tally editing,
-undo/redo, saved-document reopening, FIFO and owner teardown. The target build
-uses an explicit experimental Rust std/dependency compatibility patch; Nitro
-JavaScript bindings remain pending. See [the shared engine guide](docs/native-modules/forge-rust-qnx.md)
-for build commands, exact target evidence and remaining ABI/lifecycle boundaries.
+See [the compatibility matrix](docs/getting-started/compatibility-matrix.md),
+[architecture decisions](docs/adr/index.md), [delivery plans](docs/platform-modernization/README.md),
+[contributing](CONTRIBUTING.md) and [security policy](SECURITY.md).
+The separate Linux/Wayland target is documented under [Marathon](docs/marathon/ARCHITECTURE.md).
+Licensed app components follow [the optional premium-component policy](docs/policy/premium-components.md).
 
 ## License
 
-MIT
-
-## Premium component boundary — owner decision, November 7, 2026
-
-Nitro Forge is a separately sold premium component product. React Native QNX provides generic native runtime, rendering, Nitro v1 module integration, package discovery/linking, lifecycle and platform services so licensed developers can install selected Forge packages in their own apps with minimal setup. Nitro Modules is infrastructure; Nitro Forge is a separate commercial product.
-
-Do not make Forge a built-in platform/system component, default dependency, bundled sample requirement or prerequisite for platform build, boot, tests or release. Do not vendor premium components, engines, assets, binaries or entitlement code into platform distributions. Forge-specific production adapters and package configuration belong with Forge or the consuming app; generic reusable hooks belong here. Preserve existing product licensing and distribution terms.
-
-The current default-OFF external-checkout adapter is a compatibility experiment, not permission to redistribute Forge or proof of seamless installation. Keep historical evidence; do not duplicate engines or remove working probes merely to change ownership boundaries. New integration must support install selected licensed package → import → build/run through documented tooling, without patching platform sources or hand-wiring each component. Verify ABI alignment, linkage, input, lifecycle, update and uninstall in an authorized consuming app. Core CI uses non-premium fixtures; commercial integration tests are explicitly opt-in and separately authorized. Removing Forge must leave the platform usable. Packaging must exclude external premium source/build outputs unless producing an expressly licensed consuming-app artifact.
-
-These rules apply to QNX and the Marathon native target and override earlier roadmap language implying Forge is a platform component or required conformance workload. Compatibility remains a measured acceptance goal, not a shipped feature claim.
+Repository-authored code is [MIT](LICENSE). Dependencies retain their own terms;
+see [third-party notices](THIRD_PARTY_NOTICES.md) and [packaging](docs/packaging.md).

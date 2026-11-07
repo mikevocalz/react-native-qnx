@@ -1,141 +1,46 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "project": "react-native-qnx",
-  "activeMilestone": "Milestone 0: Physical Pi validation and SDK 58 QNX revalidation",
-  "activeBranch": "chore/pi-hardware-ready-2026-10-02",
-  "latestKnownGoodCommit": "1deab6939cb7d7b0452e3b75f031e4f01cacee71",
-  "repositoryBuildable": true,
-  "developmentMode": "host-first-with-pi-target-lane",
-  "currentAuthoringHost": {
-    "operatingSystem": "Windows",
-    "architecture": "x86_64",
-    "qnxToolchainAvailable": true
-  },
+  "generatedBy": "pnpm docs:sync",
   "dependencyBaseline": {
-    "reactNative": "0.88.0-rc.3",
+    "reactNative": "0.88.1",
     "react": "19.3.0",
-    "expo": "58.0.0",
+    "expo": "58.0.22",
     "metro": "0.87.1",
-    "reactNativeMetroConfig": "0.88.0-rc.3",
-    "babelPresetExpo": "58.0.4",
-    "nitroModules": "0.37.1",
-    "nitrogen": "0.37.1",
+    "reactNativeMetroConfig": "0.88.1",
+    "babelPresetExpo": "58.0.23",
+    "nitroCore": "1.0.0-alpha.nightly.105.g69d365fc9b18",
+    "nitroModules": "1.0.0-alpha.nightly.105.g69d365fc9b18",
+    "nitrogen": "1.0.0-alpha.nightly.105.g69d365fc9b18",
     "typescript": "7.0.2",
+    "codegenTypescript": "6.0.2",
     "node": ">=26.0.0",
     "packageManager": "pnpm@12.8.1",
-    "expoModulesCore": "58.0.9",
-    "expoMetro": "58.0.0-rc.0",
-    "expoMetroConfig": "58.0.6",
-    "hermesCompiler": "260318099.0.4",
-    "hermesSource": "hermes-v260318099.0.2",
-    "lastRegistryAudit": "2026-10-03"
+    "expoModulesCore": "58.0.29",
+    "expoMetro": "58.0.0",
+    "expoMetroConfig": "58.0.20",
+    "hermesCompiler": "260318099.0.5",
+    "hermesSource": "hermes-v260318099.0.5"
   },
-  "targetBaseline": {
+  "evidenceBaseline": {
+    "reviewedAt": "2026-11-07",
+    "sourceCommit": "be71bc9",
     "qnxSdp": "8.0.5",
-    "qsti": "0.5.0 build 50",
-    "boards": ["Raspberry Pi 4", "Raspberry Pi 5"],
-    "defaultTarget": "qnxuser@qnxpi.local",
-    "experimentalBoards": [
-      "Raspberry Pi 400 (QNX custom-image adaptation; physical validation pending)"
-    ]
+    "stockTarget": "Pi 4/5 QSTI 0.5.0 build 50; full-runtime device result pending",
+    "experimentalTarget": "Pi 400 custom BCM2711 image; scoped Hello World/Nitro/runtime/input receipts",
+    "qtTarget": "Historical Pi 400 receipts: 6.12.0 evaluation expires 2026-11-17. Selected route: eligible open-source Qt per ADR-0013; separate public-source build receipt pending.",
+    "hostedCi": "blocked before runner startup by billing/spending limits at the reviewed baseline",
+    "performance": "unmeasured on QNX"
   },
-  "validationHosts": {
-    "linux": {
-      "operatingSystem": "Ubuntu 24.04",
-      "status": "sdk58-validation-passed",
-      "node": "26.10.0",
-      "cmake": "3.31.10"
-    },
-    "macos": {
-      "status": "historical-host-renderer-validation-passed-pre-sdk58"
-    },
-    "qnxBuildHost": {
-      "operatingSystem": "Windows",
-      "architecture": "x86_64",
-      "qnxSdp": "8.0.2",
-      "status": "historical-qnx-cross-compilation-passed-pre-sdk58"
-    },
-    "qnxRuntimeTarget": {
-      "status": "historical-x86_64-vm-screen-pass-pre-sdk58; physical-pi-current-line-not-run"
-    }
-  },
-  "verification": {
-    "sdk58FrozenInstall": "passed",
-    "sdk58Formatting": "passed",
-    "sdk58DependencySourceContracts": "passed",
-    "sdk58PeerDependencies": "passed",
-    "sdk58QnxMetroProductionBundle": "passed",
-    "sdk58RepositoryArchitectureAndCodegen": "passed",
-    "sdk58LinuxCppHostTests": "passed",
-    "sdk58DependencySecurityAudit": "local-guarded-gate-passed; braces-registry-finding-locally-mitigated; remote-ci-pending",
-    "piToolingQuality": "passed",
-    "fullReactQtHermesHostOnSdk58": "not-proven-by-current-ci",
-    "qnxCrossCompilationOnSdk58": "not-run",
-    "qnxRuntimeOnSdk58": "not-run",
-    "physicalPiQstiRun": "not-run",
-    "hermesQnxCurrentSourceRebase": "implemented-source-check-passed-target-run-pending",
-    "nitroQnxRuntime": "implemented-source-check-passed-target-run-pending",
-    "expoModulesQnx": "implemented-source-check-passed-target-run-pending",
-    "expoQnxAutolinking": "implemented-source-check-passed",
-    "piRepeatedRunEvidence": "implemented-ci-pending-physical-target",
-    "qnxCombinedHermesNitroExpoProbe": "implemented-source-contract-ci-pending-target-run"
-  },
-  "historicalEvidence": {
-    "qnxSdp802Aarch64CrossBuild": "passed",
-    "qnxSdp802X8664VmCxx20Probe": "passed",
-    "qnxSdp802X8664VmScreenProbe": "passed",
-    "reactNative086QtHermesHostRenderer": "passed"
-  },
-  "lastSuccessfulCommand": "GitHub Actions main runs 36896516617 (SDK 58 validation) and 36896516638 (Pi tooling quality)",
-  "lastFailingCommand": null,
-  "lastTestedHost": "GitHub Actions Ubuntu 24.04 with Node 26.10.0 and CMake 3.31.10",
-  "lastTestedTarget": "QNX x86_64 VM on the historical pre-SDK58 line; current QSTI Pi 4/5 target not yet run",
-  "completedTasks": [
-    "QNX-RN-000",
-    "QNX-RN-001",
-    "QNX-RN-002",
-    "QNX-RN-003",
-    "QNX-RN-004",
-    "QNX-RN-005",
-    "QNX-RN-006",
-    "QNX-RN-007",
-    "SDK58-MIGRATION",
-    "SDK58-SECURITY-HARDENING",
-    "PI-QSTI-INSTALL-LANE",
-    "QNX-HERMES-CURRENT-SOURCE-REBASE",
-    "QNX-NITRO-SYNC-RUNTIME",
-    "QNX-EXPO-MODULES-JSI",
-    "QNX-EXPO-AUTOLINKING",
-    "PI-EVIDENCE-MANIFEST",
-    "QNX-COMBINED-RUNTIME-PROBE"
+  "activeMilestone": "v1 preparation; release gates remain open",
+  "releaseGates": [
+    { "id": "distribution", "status": "pending" },
+    { "id": "ci", "status": "pending" },
+    { "id": "cold-boot", "status": "pending" },
+    { "id": "device-parity", "status": "pending" },
+    { "id": "performance", "status": "pending" },
+    { "id": "developer-path", "status": "pending" },
+    { "id": "documentation", "status": "pending" }
   ],
-  "activeTasks": [
-    "QNX-RN-008",
-    "SDK58-QNX-REVALIDATION",
-    "QNX-HERMES-TARGET-RUN",
-    "QNX-FULL-RUNTIME-TARGET"
-  ],
-  "blockedTasks": [],
-  "nextRecommendedTask": "On a licensed QNX SDP 8.0.5 host with QSTI 0.5.0 build 50 on a Pi 4/5, run pnpm pi:preflight and pnpm pi:install. Preserve the verified manifest, then run pnpm qnx:runtime:validate to prove Hermes + Nitro + Expo through JSI before moving the full React/Fabric/Qt Quick runtime onto the target.",
-  "updatedAt": "2026-11-02T20:18:10Z",
-  "dependencySecurityMitigation": {
-    "advisory": "GHSA-vfj7-8cjw-p6xm",
-    "package": "braces@3.0.3",
-    "upstreamPatchCommit": "28d440b5dd449dbf1fe6f3506cf94ecca4d02660",
-    "status": "local-backport-verified; official-fixed-release-unavailable",
-    "documentation": "docs/security/braces.md"
-  },
-  "reactRenderProbeReadiness": {
-    "updated": "2026-10-04",
-    "fixture": "apps/rn-playground/react-probe.js",
-    "sourceAndMetroChecks": "passed",
-    "basicHostSmoke": "passed-2-of-2-Qt-skipped",
-    "fullHostRuntime": "passed-paired-with-PR28",
-    "qnxCrossBuild": "pending-licensed-SDP-8.0.5",
-    "qnxDevice": "not-run",
-    "evidenceScope": "geometry-properties-only-no-pixels",
-    "companionHostCommit": "24ba958d046066f54faae30847de1c52b972f4ba",
-    "combinedCtest": "11-of-11-passed-including-45-host-runtime-cases",
-    "probeCtest": "2-of-2-passed-including-four-bad-bundle-cases"
-  }
+  "historicalState": "docs/handoff/HISTORY_THROUGH_2026_11_07.md"
 }
