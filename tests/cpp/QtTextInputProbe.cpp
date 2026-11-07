@@ -96,6 +96,29 @@ void run() {
   require(number("changes") == 0, "initial JS value emitted native change");
   call("__rnqnxTextInputFocus");
   until([&] { return field->hasActiveFocus() && number("focus") >= 1; }, "React TextInput focus failed");
+  const auto secondSnapshot = [&] { return host.runtime().global().getPropertyAsObject(host.runtime(), "__rnqnxTextInputSecondSnapshot"); };
+  const auto secondCount = [&](const char* key) { return secondSnapshot().getProperty(host.runtime(), key).asNumber(); };
+  const auto keyName = [&](const facebook::jsi::Object& state) {
+    auto keys = state.getPropertyAsObject(host.runtime(), "keys").asArray(host.runtime());
+    require(keys.size(host.runtime()) == 1, "traversal key count mismatch");
+    return keys.getValueAtIndex(host.runtime(), 0).asString(host.runtime()).utf8(host.runtime());
+  };
+  QKeyEvent tab(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier, QStringLiteral("\t"));
+  QCoreApplication::sendEvent(&window, &tab);
+  until([&] { return secondCount("focus") == 1 && number("blur") == 1; }, "Tab focus/blur did not reach React");
+  auto* secondEditor = window.activeFocusItem();
+  require(secondEditor && secondEditor != field && secondEditor->objectName() == QStringLiteral("qnx-text-input"),
+          "Tab native focus target mismatch");
+  require(keyName(snapshot()) == "Tab" && number("blurEventCount") == 0 && secondCount("focusEventCount") == 0,
+          "Tab key or edit token mismatch");
+  QKeyEvent backtab(QEvent::KeyPress, Qt::Key_Backtab, Qt::ShiftModifier);
+  QCoreApplication::sendEvent(&window, &backtab);
+  until([&] { return number("focus") == 2 && secondCount("blur") == 1; }, "Backtab focus/blur did not reach React");
+  require(window.activeFocusItem() == field && keyName(secondSnapshot()) == "Tab" &&
+          number("focusEventCount") == 0 && secondCount("blurEventCount") == 0 &&
+          number("changes") == 0 && secondCount("changes") == 0 &&
+          text() == QStringLiteral("A😀e\u0301") && secondEditor->property("text").toString() == QStringLiteral("second"),
+          "Backtab changed native focus, text, or edit token");
   QKeyEvent key(QEvent::KeyPress, Qt::Key_X, Qt::NoModifier, QStringLiteral("X"));
   QCoreApplication::sendEvent(&window, &key);
   until([&] { return number("changes") == 1; }, "JavaScript TextInput change count mismatch");
@@ -111,8 +134,6 @@ void run() {
         "native selection did not reach React");
   assertSelection();
   call("__rnqnxTextInputFocusSecond");
-  const auto secondSnapshot = [&] { return host.runtime().global().getPropertyAsObject(host.runtime(), "__rnqnxTextInputSecondSnapshot"); };
-  const auto secondCount = [&](const char* key) { return secondSnapshot().getProperty(host.runtime(), key).asNumber(); };
   until([&] { return secondCount("focus") >= 1; }, "second React field focus failed");
   QKeyEvent other(QEvent::KeyPress, Qt::Key_Y, Qt::NoModifier, QStringLiteral("Y"));
   QCoreApplication::sendEvent(&window, &other);

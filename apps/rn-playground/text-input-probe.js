@@ -27,6 +27,7 @@ function TextInputProbe() {
       blur: 0,
       selection: { start: 0, end: 0 },
       selectionEvents: 0,
+      keys: [],
     };
     globalThis.__rnqnxTextInputSecondSnapshot = {
       text: 'second',
@@ -37,6 +38,7 @@ function TextInputProbe() {
       blur: 0,
       selection: { start: 0, end: 0 },
       selectionEvents: 0,
+      keys: [],
     };
   }
   const store = storeRef.current;
@@ -83,6 +85,7 @@ function TextInputProbe() {
             snapshot.textFromChangeText = text;
             snapshot.changeTexts += 1;
           },
+          onKeyPress: (event) => snapshot.keys.push(event.nativeEvent.key),
           onFocus: (event) => {
             snapshot.focus += 1;
             snapshot.focusEventCount = event.nativeEvent.eventCount;
@@ -112,6 +115,7 @@ function TextInputProbe() {
             secondSnapshot.textFromChangeText = text;
             secondSnapshot.changeTexts += 1;
           },
+          onKeyPress: (event) => secondSnapshot.keys.push(event.nativeEvent.key),
           onFocus: (event) => {
             secondSnapshot.focus += 1;
             secondSnapshot.focusEventCount = event.nativeEvent.eventCount;

@@ -6,6 +6,8 @@
 #include <QInputMethodEvent>
 #include <QInputMethodQueryEvent>
 #include <QQuickItem>
+#include <QQuickWindow>
+#include <QKeyEvent>
 #include <QPointer>
 #include <iostream>
 #include <memory>
@@ -14,6 +16,59 @@
 
 using namespace rnqnx::fabric;
 void require(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
+// A real window dispatches keys to two independently owned FocusScopes.
+void checkKeyboardTraversal(QQmlComponent& component) {
+  QQuickWindow window;
+  window.resize(320, 240);
+  std::unique_ptr<QObject> firstObject(component.create());
+  std::unique_ptr<QObject> secondObject(component.create());
+  auto* first = qobject_cast<QQuickItem*>(firstObject.get());
+  auto* second = qobject_cast<QQuickItem*>(secondObject.get());
+  require(first && second, "focus wrappers unavailable");
+  first->setParentItem(window.contentItem()); second->setParentItem(window.contentItem());
+  first->setSize(QSizeF(120, 40)); second->setSize(QSizeF(120, 40)); second->setY(50);
+  auto* firstBridge = new QtTextInputBridge(*first);
+  auto* secondBridge = new QtTextInputBridge(*second);
+  require(firstBridge->configure(false, false) && secondBridge->configure(false, false), "focus configuration failed");
+  auto* firstEditor = first->findChild<QQuickItem*>("qnx-text-input");
+  auto* secondEditor = second->findChild<QQuickItem*>("qnx-text-input");
+  require(first->activeFocusOnTab() && second->activeFocusOnTab() &&
+          !firstEditor->activeFocusOnTab() && !secondEditor->activeFocusOnTab() &&
+          !first->findChild<QQuickItem*>("qnx-text-edit")->activeFocusOnTab(), "editor has duplicate or missing tab stop");
+  std::vector<QString> keys;
+  firstBridge->setEmitter([&](TextInputEvent event, const TextInputObservation& value) {
+    if (event == TextInputEvent::Key) keys.push_back(value.key);
+  });
+  secondBridge->setEmitter([&](TextInputEvent event, const TextInputObservation& value) {
+    if (event == TextInputEvent::Key) keys.push_back(value.key);
+  });
+  window.show(); window.requestActivate(); first->forceActiveFocus();
+  const auto pump = [] { for (int i = 0; i < 10; ++i) QCoreApplication::processEvents(); };
+  pump();
+  require(window.activeFocusItem() == firstEditor, "initial native focus mismatch");
+  QKeyEvent tab(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier, QStringLiteral("\t"));
+  QCoreApplication::sendEvent(&window, &tab); pump();
+  require(window.activeFocusItem() == secondEditor, "Tab did not reach second editor");
+  QKeyEvent backtab(QEvent::KeyPress, Qt::Key_Backtab, Qt::ShiftModifier);
+  QCoreApplication::sendEvent(&window, &backtab); pump();
+  require(window.activeFocusItem() == firstEditor, "Backtab did not reach first editor");
+  require(keys.size() == 2 && keys[0] == QStringLiteral("\t") && keys[1] == QStringLiteral("\t"), "Tab/Backtab key mapping mismatch");
+  for (const auto state : {0, 1, 2}) {
+    if (state == 0) second->setProperty("readOnly", true);
+    if (state == 1) { second->setProperty("readOnly", false); second->setEnabled(false); }
+    if (state == 2) { second->setEnabled(true); second->setVisible(false); }
+    QKeyEvent skip(QEvent::KeyPress, Qt::Key_Tab, Qt::NoModifier, QStringLiteral("\t"));
+    QCoreApplication::sendEvent(&window, &skip); pump();
+    require(window.activeFocusItem() == firstEditor, "Tab reached noneditable/disabled/hidden field");
+  }
+  second->setVisible(true); second->forceActiveFocus(); pump();
+  second->setProperty("readOnly", true); pump();
+  require(!second->hasActiveFocus() && !second->activeFocusOnTab(), "readOnly transition retained focus/tab eligibility");
+  second->setProperty("readOnly", false); second->forceActiveFocus(); pump();
+  secondBridge->invalidate(); pump();
+  require(!second->hasActiveFocus() && !second->activeFocusOnTab(), "invalidated session retained focus/tab eligibility");
+  require(firstBridge->eventCount() == 0 && secondBridge->eventCount() == 0, "focus traversal edited text");
+}
 int main(int argc, char** argv) {
   QGuiApplication app(argc, argv);
   try {
@@ -21,6 +76,7 @@ int main(int argc, char** argv) {
     QQmlComponent component(&engine);
     component.setData(rnqnx::views::textInputQml(), QUrl());
     require(component.isReady(), "TextInput QML unavailable");
+    checkKeyboardTraversal(component);
     std::vector<TextInputObservation> changes;
     std::vector<TextInputObservation> selections;
     std::unique_ptr<QObject> object(component.create());
