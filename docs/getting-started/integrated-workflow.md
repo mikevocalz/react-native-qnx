@@ -43,16 +43,19 @@ pnpm validate:clean-app
 
 Commit tracked changes first. The script archives exactly HEAD into a new
 temporary directory that has no node_modules, installs the frozen dependency
-graph, creates an app, links its importer offline, validates the pins, bundles
-it, runs real Expo preparation and check mode, and exercises the device and
-evidence commands in dry-run mode only. It also verifies overwrite refusal and
-that the unqualified v1 release command still fails for the expected reason.
+graph, creates an app, links its importer using the documented second install,
+validates the pins, bundles it, runs real Expo preparation and check mode, and
+exercises the device and evidence commands in dry-run mode only. It also verifies
+overwrite refusal and that the unqualified v1 release command still fails for
+the expected reason.
 
 The source checkout and its lockfile are unchanged. Temporary source and
 node_modules are removed on handled exits. Logs, commit, generated manifest,
 bundle, hashes and exit status remain in a new build/clean-app-evidence.*
-directory. Package installation can access the registry; the offline second
-install reuses the populated store. No device, SSH or boot operation occurs.
+directory. Both installs may access the registry. A frozen install can cache
+package content without the registry metadata needed for a new importer, so
+this test does not claim offline bootstrap. No device, SSH or boot operation
+occurs.
 
 ## Also render the generated app
 
@@ -65,8 +68,8 @@ pnpm validate:clean-app --renderer "$PWD/build/linux-host-renderer/bin/rnqnx_pla
 This executes the generated bundle through the existing Fabric/Hermes/Qt Quick
 host, captures a PNG and preserves the renderer log and binary hash. Both
 input-ON and input-OFF CI configurations run this step, along with the existing
-conformance and performance workload captures. Every subprocess has a timeout;
-a failed install, bundle, preparation or capture fails the job.
+conformance and performance workload captures. Install, bundle and capture
+commands have timeouts; a failure stops the job.
 
 This is a fresh **source-directory** workflow on a provisioned Linux host. It
 reuses installed host tools, the package store and, when selected, a prebuilt

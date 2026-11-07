@@ -79,9 +79,10 @@ run() {
 }
 run 01-frozen-install pnpm install --frozen-lockfile
 run 02-create pnpm qnx init dx-smoke
-# The initial install populated the content store. Add only the new workspace
-# importer offline; retain every pre-existing dependency pin.
-run 03-link pnpm install --offline --no-frozen-lockfile
+# Follow the documented second install. A frozen install populates package
+# content, not necessarily registry metadata needed for a new importer.
+# Revalidate every direct pin below; do not claim an offline bootstrap.
+run 03-link pnpm install --no-frozen-lockfile
 run 04-dependencies pnpm validate:dependencies
 run 05-bundle pnpm qnx bundle-qnx --app dx-smoke --out build/dx-smoke.bundle.js
 run 06-expo-inspect pnpm expo:qnx inspect --project apps/dx-smoke
