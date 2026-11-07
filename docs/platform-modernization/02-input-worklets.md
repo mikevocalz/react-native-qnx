@@ -41,35 +41,35 @@ Plan 01 is the runtime prerequisite; #45, #46 and #48 are existing work, not dup
 
 Responsibilities are proposed; human DRIs and independent reviewers remain unassigned until an implementation PR names them.
 
-| Role | Owned paths / deliverable | Independent review |
-| --- | --- | --- |
-| Qt/Fabric input DRI | `vnext/src/fabric/QtTouchDispatcher.cpp`, matching header, `QtScrollBridge.cpp`, `tests/cpp/QtReactHostHostTest.cpp` | RN event-semantics reviewer |
-| Worklets runtime engineer | `vnext/src/runtime/`, proposed focused scheduler/runtime files, CMake platform target | Hermes/JSI lifetime reviewer |
-| Dependency/build engineer | `package.json`, `pnpm-lock.yaml`, Metro/Babel configuration, source receipts | QNX regression owner |
-| Gesture integration engineer | Proposed native recognizer adapter and shared interaction fixture | Qt input owner plus accessibility reviewer |
-| Device QA/performance owner | QNX and Marathon receipts, Plan 03 trace correlation | Reviewer who did not implement the port |
+| Role                         | Owned paths / deliverable                                                                                            | Independent review                         |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Qt/Fabric input DRI          | `vnext/src/fabric/QtTouchDispatcher.cpp`, matching header, `QtScrollBridge.cpp`, `tests/cpp/QtReactHostHostTest.cpp` | RN event-semantics reviewer                |
+| Worklets runtime engineer    | `vnext/src/runtime/`, proposed focused scheduler/runtime files, CMake platform target                                | Hermes/JSI lifetime reviewer               |
+| Dependency/build engineer    | `package.json`, `pnpm-lock.yaml`, Metro/Babel configuration, source receipts                                         | QNX regression owner                       |
+| Gesture integration engineer | Proposed native recognizer adapter and shared interaction fixture                                                    | Qt input owner plus accessibility reviewer |
+| Device QA/performance owner  | QNX and Marathon receipts, Plan 03 trace correlation                                                                 | Reviewer who did not implement the port    |
 
 All four source skills below were read for this plan; this records guidance applied to design, not CLI installation or executed native tests.
 
-| Skill and pinned source | Decision applied |
-| --- | --- |
-| [Margelo api-design](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md) | Preserve public library semantics and explicit unsupported behavior; introduce no workaround API. |
-| [Margelo build-nitro-modules](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md) | Reuse real runtime/binding ownership; do not describe an unrelated dispatcher or hand-written shim as generated library support. |
-| [Margelo cpp](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md) | Separate scheduler, recognizer and conversion files; retain runtime-affine captures until owned teardown. |
-| [Callstack react-native-best-practices](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) | Measure the actual gesture and JS/native work; do not infer smoothness from compilation or component counts. |
+| Skill and pinned source                                                                                                                                                               | Decision applied                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| [Margelo api-design](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/api-design/SKILL.md)                                         | Preserve public library semantics and explicit unsupported behavior; introduce no workaround API.                                |
+| [Margelo build-nitro-modules](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/build-nitro-modules/SKILL.md)                       | Reuse real runtime/binding ownership; do not describe an unrelated dispatcher or hand-written shim as generated library support. |
+| [Margelo cpp](https://github.com/margelo/react-native-skills/blob/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills/cpp/SKILL.md)                                                       | Separate scheduler, recognizer and conversion files; retain runtime-affine captures until owned teardown.                        |
+| [Callstack react-native-best-practices](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) | Measure the actual gesture and JS/native work; do not infer smoothness from compilation or component counts.                     |
 
 No new public Nitro API is specified here. If implementation needs one, require its exact v1 generated shape and two caller examples before native code. The generic skill examples do not override audited v1 interfaces. Software Mansion animation/gesture/multithreading guidance must be re-read at an exact available source before claiming it was applied to implementation.
 
 ## Acceptance and falsification
 
-| Gate | Required evidence |
-| --- | --- |
-| Input correctness | Exactly one terminal event per accepted contact; no stale responder after cancel, grab loss, deactivation or unmount; correct terminal coordinates/timestamps; mixed mouse/touch does not duplicate activation. |
-| Runtime isolation | All six bytecode unpackers execute on lean Hermes; closures transfer correctly; cross-runtime references never outlive their owner; source fallback causes a reproducible build failure. |
-| Library behavior | Real package imports bootstrap; pan updates the real Reanimated value; interrupted settling starts from current position; cancel does not commit document changes; nested scrolling has one documented winner. |
-| Destruction | Repeated surface mount/unmount and runtime reload with queued work produces neither callback-after-destruction nor an unsettled accepted Promise. Exercise admission races without sleeps. |
-| Device interaction | At least 20 recorded repetitions each of fling-stop, reverse-drag, nested scroll and multi-contact cancel on physical QNX and separately on Marathon; retain failed trials. |
-| Performance | Use Plan 03's panel-specific budgets and presentation measurements. Publish p50/p95/p99 and repeated frames; no 60/120-fps or real-time guarantee from host tests. |
+| Gate               | Required evidence                                                                                                                                                                                               |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Input correctness  | Exactly one terminal event per accepted contact; no stale responder after cancel, grab loss, deactivation or unmount; correct terminal coordinates/timestamps; mixed mouse/touch does not duplicate activation. |
+| Runtime isolation  | All six bytecode unpackers execute on lean Hermes; closures transfer correctly; cross-runtime references never outlive their owner; source fallback causes a reproducible build failure.                        |
+| Library behavior   | Real package imports bootstrap; pan updates the real Reanimated value; interrupted settling starts from current position; cancel does not commit document changes; nested scrolling has one documented winner.  |
+| Destruction        | Repeated surface mount/unmount and runtime reload with queued work produces neither callback-after-destruction nor an unsettled accepted Promise. Exercise admission races without sleeps.                      |
+| Device interaction | At least 20 recorded repetitions each of fling-stop, reverse-drag, nested scroll and multi-contact cancel on physical QNX and separately on Marathon; retain failed trials.                                     |
+| Performance        | Use Plan 03's panel-specific budgets and presentation measurements. Publish p50/p95/p99 and repeated frames; no 60/120-fps or real-time guarantee from host tests.                                              |
 
 Existing repository commands to run during implementation, **not executed by this planning PR**, include `pnpm install --frozen-lockfile`, `pnpm validate:dependencies`, `pnpm typecheck`, `pnpm test:js`, `pnpm validate:architecture`, `pnpm codegen:check`, and the `linux-host-renderer` CMake/CTest presets. Run full renderer ON/OFF matrices with the actual new options and real release Metro/HBC fixtures; record exact commands after configuration exists. A no-tests configuration is failure, not a pass.
 
