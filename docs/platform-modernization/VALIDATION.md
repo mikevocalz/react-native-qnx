@@ -125,3 +125,25 @@ formatting checks were repeated against the combined final tree. No cloud
 resources, credentials, package installation, hardware experiments or paid
 service changes were performed. Plan13 remains unpublished; the runtime
 acceptance gates in every merged plan remain future implementation work.
+
+## Final publication reconciliation — 2026-11-07
+
+This addendum supersedes the earlier Plan13-unpublished statement: [Marathon fork PR1](https://github.com/mikevocalz/Marathon-Shell/pull/1) was created and its complete RFC was fetched at `d16e6db81f5bafde099c5452995f8f46bd05a51c`. No upstream acceptance is claimed. All16 workstream PRs were created as drafts; subsequent repository work formatted/reviewed and merged RNQNX PRs49–63. At this check, the Marathon RFC remained an open draft. The catalog records inspected heads and merge commits.
+
+The publication pass fetched all 15 companion specifications at their recorded heads. Concurrent table/code formatting and Plan04's per-instance Zustand correction were preserved. The current-doc expansion in PR63 preserves formatting commit `b3003d0cb7c76bd3f6fde893fee00310e7a3a28a`; its inspected expanded head is `090e8982ccea97a842868ecbfd006cfedf7a3d04`. The audit contains 67 unique source URLs and explicit selected-body/index/unavailable scope, including the unresolved versioned CTI repository retrieval.
+
+Checks for this reconciliation cover JSON parsing, all 16 unique PR/dependency mappings, an acyclic implementation dependency graph, 19 archive categories and five source hashes. The two repository skills previously passed the actual skill-creator validator in this authoring environment. The [review-exercise receipt](SKILL_REVIEW_EXERCISE.md) records a separately run fresh-context review of a deliberately unsafe proposal; it is guidance evaluation, not native execution.
+
+No native compilation, sanitizer run, cross-build, target execution, SDK/package install, boot change or benchmark was performed by this publication work. Prettier was not run for this final reconciliation; preceding readiness/format checks remain attributed to their own revisions. Existing source/evidence records above are preserved, including their narrower inspection scope. Hosted-CI success is not inferred. Human implementation assignments remain unassigned.
+
+Rollback reverts this publication metadata and exercise receipt; it changes no runtime, device image, dependency, premium-product boundary or prior implementation receipt.
+
+A final primary-source reread narrowed the Plan15 measurement statement: the documented one-second averaging applies specifically to `SCREEN_DEBUG_STATISTICS`, not every Screen debug graph. The audit now uses that exact scope.
+
+## PR64 independent readiness follow-up — 2026-11-07
+
+Reviewed author head `9fdbb42907bb596be6c4b61773cc6274fddfcceb`. The eight changed paths contain only documentation and catalog metadata. A fresh GitHub API check confirmed that RNQNX PRs49–63 are merged at the heads recorded in the catalog. Marathon fork PR1 remains an open draft at `d16e6db81f5bafde099c5452995f8f46bd05a51c`; publication does not imply upstream acceptance.
+
+The adapted delivery validator passed for 24 Markdown files, 15 local prose links, 16 workstreams with an acyclic dependency graph, 15 published RNQNX plans and one external draft, 19 archive categories matching the pinned 530-file tree, five cached source hashes and byte lengths, and two skill frontmatter/configuration records. The external Plan13 document is checked by its immutable repository URL rather than as a local file. This follow-up did not rerun the skill-creator validator or independently repeat the historical fresh-context exercise.
+
+The pinned Prettier initially rejected six changed files. Formatting was corrected without changing catalog values or plan semantics; Prettier and `git diff --check` then passed for the final changed files. The official Screen debug-graph reference was reread and supports the narrower `SCREEN_DEBUG_STATISTICS` averaging statement. No runtime, cross-build, device, sanitizer or performance gate was run for this documentation-only follow-up.
