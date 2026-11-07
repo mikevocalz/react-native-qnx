@@ -1,5 +1,21 @@
 # CURRENT_STATE.md
 
+## 2026-11-07 real React Pressable remount recovery
+
+Synthetic Qt input now exercises the real production-bundled React Pressable
+and responder path on Pi 400/QNX 8.0.5. The probe caught a stale responder after
+unmount: RN's event path skipped cancellation when the native target was gone.
+An exact, opt-in RN patch preserves nullable cancellation and error forwarding.
+The same executable/HBC passes with the fix and reproduces the remount failure
+when only that fix is disabled. Delivery interception also fails as expected;
+a subsequent normal run succeeds. Readbacks matched both artifact hashes.
+
+Fresh host graphs passed 23/23 with input/tracing ON and 16/16 with both OFF.
+The existing input option stays OFF by default. The continuous Hello World app,
+recovery boot and window contract are preserved. This is synthetic input, not
+physical HID, RNGH or Worklets qualification. See the
+[responder receipt](../evidence/pressable-qnx-2026-11-07.md).
+
 ## 2026-11-07 bounded native tracing
 
 The default-OFF trace experiment now records actual host evaluation, surface
