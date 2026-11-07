@@ -1,0 +1,19 @@
+--- a/src/backends.rs
++++ b/src/backends.rs
+@@ -60,0 +61 @@
++        target_os = "qnx",
+--- a/src/util_libc.rs
++++ b/src/util_libc.rs
+@@ -15 +15 @@
+-    } else if #[cfg(target_os = "nto")] {
++    } else if #[cfg(any(target_os = "nto", target_os = "qnx"))] {
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -99 +99 @@
+-[target.'cfg(any(target_os = "haiku", target_os = "redox", target_os = "nto", target_os = "aix"))'.dependencies.libc]
++[target.'cfg(any(target_os = "haiku", target_os = "redox", target_os = "nto", target_os = "qnx", target_os = "aix"))'.dependencies.libc]
+--- a/Cargo.toml.orig
++++ b/Cargo.toml.orig
+@@ -58 +58 @@
+-[target.'cfg(any(target_os = "haiku", target_os = "redox", target_os = "nto", target_os = "aix"))'.dependencies]
++[target.'cfg(any(target_os = "haiku", target_os = "redox", target_os = "nto", target_os = "qnx", target_os = "aix"))'.dependencies]

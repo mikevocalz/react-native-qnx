@@ -52,6 +52,13 @@ option(RNQNX_BUILD_PLAYGROUND_QNX
   "Build the visual Qt Quick/Fabric playground for QNX" OFF)
 option(RNQNX_BUILD_MARATHON_HOST
   "Build the experimental Linux/Wayland MarathonOS React Native host" OFF)
+option(RNQNX_BUILD_FORGE_QNX
+  "Build the opt-in native Forge Rust engine owner for QNX" OFF)
+
+if(RNQNX_BUILD_FORGE_QNX)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxForge.cmake)
+  rnqnx_add_forge_runtime(QNX)
+endif()
 
 if(RNQNX_BUILD_PLAYGROUND_QNX)
   if(NOT CMAKE_SYSTEM_NAME STREQUAL "QNX" OR NOT RNQNX_BUILD_REACT_QNX)
