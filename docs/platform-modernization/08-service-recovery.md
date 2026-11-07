@@ -28,14 +28,14 @@ Keep three independent identities: the application runtime generation, the curre
 
 The transport/session state machine is proposed as:
 
-| State | Admission and transition rule |
-| --- | --- |
-| Connecting | Establish authenticated peer and compatible protocol; no normal operation admitted |
-| Ready | Fresh snapshot installed and observation stream reconciled; admit bounded work |
+| State      | Admission and transition rule                                                               |
+| ---------- | ------------------------------------------------------------------------------------------- |
+| Connecting | Establish authenticated peer and compatible protocol; no normal operation admitted          |
+| Ready      | Fresh snapshot installed and observation stream reconciled; admit bounded work              |
 | Recovering | Reject new mutations; expose availability, bound retained work, attempt approved reconnects |
-| Failed | Report terminal reason; no retry for denied permission or unsupported protocol |
-| Closing | Stop admission and producers; reclaim native ownership asynchronously |
-| Closed | No new native work; future method calls fail with a disposed-resource Error |
+| Failed     | Report terminal reason; no retry for denied permission or unsupported protocol              |
+| Closing    | Stop admission and producers; reclaim native ownership asynchronously                       |
+| Closed     | No new native work; future method calls fail with a disposed-resource Error                 |
 
 Subscribe and snapshot with a service-defined sequence/generation handshake. Either return snapshot plus stream boundary atomically, or buffer events and reconcile against a versioned snapshot before declaring Ready. A bare “subscribe, then get state” is not sufficient without ordering semantics. On reconnect, replace the old baseline; do not apply stale deltas from an earlier service instance.
 
@@ -102,12 +102,12 @@ These examples use injected UI callbacks and the proposed Plan 06 root. They dem
 
 ## Delivery slices and roster
 
-| Slice | Proposed owner and files | Independent reviewer |
-| --- | --- | --- |
-| Session recovery state machine | Native API DRI; focused files under `packages/qnx-nitro-runtime/cpp/` | Qt/JSI lifetime engineer |
-| QNX native supervision adapter | QNX systems engineer; proposed `native/platform/qnx/services/supervision/` | Security/platform integrator |
-| Marathon reconnect adapter | Marathon engineer; proposed `native/platform/linux-host/services/` | Shell integration reviewer |
-| Fault fixtures and evidence | QA/performance engineer; proposed service process fixtures and `docs/evidence/` receipts | Independent QNX regression owner |
+| Slice                          | Proposed owner and files                                                                 | Independent reviewer             |
+| ------------------------------ | ---------------------------------------------------------------------------------------- | -------------------------------- |
+| Session recovery state machine | Native API DRI; focused files under `packages/qnx-nitro-runtime/cpp/`                    | Qt/JSI lifetime engineer         |
+| QNX native supervision adapter | QNX systems engineer; proposed `native/platform/qnx/services/supervision/`               | Security/platform integrator     |
+| Marathon reconnect adapter     | Marathon engineer; proposed `native/platform/linux-host/services/`                       | Shell integration reviewer       |
+| Fault fixtures and evidence    | QA/performance engineer; proposed service process fixtures and `docs/evidence/` receipts | Independent QNX regression owner |
 
 First implement reconnecting read-only sessions with a deterministic fixture. Next add one explicitly owned QNX service supervisor; compare PLMS, HAM and the minimal child-owner option against actual target availability before selecting one. Then prove production-backend fault recovery and UI behavior. Use a proposed `RNQNX_ENABLE_SERVICE_RECOVERY` flag, default OFF, with target checks. Do not auto-enable restart merely because the IPC flag is enabled.
 
@@ -117,12 +117,12 @@ Dependencies: Plan 01/#44 for ownership; Plans 06–07 for typed errors, protoco
 
 Exact sources read: [Margelo skills](https://github.com/margelo/react-native-skills/tree/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills) at `1e9e17be6f41c838db472d6a4b943fc26355a3be`, in `api-design` → `build-nitro-modules` → `cpp` order; [Callstack `react-native-best-practices`](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) at `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`.
 
-| Skill | Applied decision | Proof status |
-| --- | --- | --- |
-| `api-design` | Availability observation plus Error failures; no implicit mutation retry | Source reviewed; proposed types |
-| `build-nitro-modules` | Session owns its lifecycle; callbacks reuse the existing dispatcher | Source reviewed; native integration pending |
-| `cpp` | Explicit state variants, resource ownership, no deadlocking owner joins | Source reviewed; runtime tests pending |
-| `react-native-best-practices` | Measure recovery, queue delay, memory, and UI responsiveness separately | Source reviewed; no benchmark claims |
+| Skill                         | Applied decision                                                         | Proof status                                |
+| ----------------------------- | ------------------------------------------------------------------------ | ------------------------------------------- |
+| `api-design`                  | Availability observation plus Error failures; no implicit mutation retry | Source reviewed; proposed types             |
+| `build-nitro-modules`         | Session owns its lifecycle; callbacks reuse the existing dispatcher      | Source reviewed; native integration pending |
+| `cpp`                         | Explicit state variants, resource ownership, no deadlocking owner joins  | Source reviewed; runtime tests pending      |
+| `react-native-best-practices` | Measure recovery, queue delay, memory, and UI responsiveness separately  | Source reviewed; no benchmark claims        |
 
 Add a test that enters recovery between registration and initial availability delivery, then reconnects before that queued delivery runs; the consumer must not regress to a stale state. The first fault matrix must cover clean stop, crash, blocked service work, lost reply after mutation, restart under a reused endpoint, protocol mismatch, revoked permission, repeated outage, disposal during reconnect, and suspend/resume while disconnected. Execute 100 restart/reconnect cycles in the controlled fixture, asserting one settlement per accepted request, no cross-generation callbacks, bounded retries, and return to baseline native handle/subscription counts. Track RSS separately because allocator retention is not itself proof of a resource leak.
 
