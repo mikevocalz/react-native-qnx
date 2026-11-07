@@ -1,6 +1,6 @@
 # QNX SDP 8.0.5 — November 2, 2026 upgrade / bring-up queue
 
-**Status:** documented public release evidence, not proof that these components have been installed or run on the user's machine. The main repository targets SDP 8.0.5 and QSTI 0.5.0 build 50 but has not captured a full Hermes + RN + Fabric + Qt Quick runtime running on physical QNX hardware.
+**Status:** documented public release evidence, not proof that these components have been installed or run on the user's machine. The release inventory is dated 2026-11-02. The later [Pi 400 receipt](../evidence/pi400-hello-world-2026-11-07.txt) proves the scoped Hermes/RN/Fabric/Qt Quick Hello World on a custom image. Stock QSTI 0.5.0 build 50 and hardware input remain separate gates.
 
 ## What is actually new and worth doing
 
@@ -32,7 +32,7 @@ Authoritative release URLs and package IDs/internal versions are machine-readabl
 
 - RPi5 BSP is explicitly labeled **experimental software** by QNX. Do not use as certified or production hardened.
 - The official QNX SDP 8.0.5 Screen release notes describe image codec and virtual display improvements. Update only tested compatible Screen, base/board support, graphics driver and Qt QPA versions together.
-- Qt 6.12 LTS is publicly available, but react-native-qnx requires 6.11.1+ and Marathon's published shell line uses Qt 6.11. Never silently uplift QNX Qt runtime to 6.12 without toolchain cross-build and device pixels/input proof.
+- Host Qt requires 6.11.1+. The Pi 400 evaluation now uses pinned Qt 6.12.0 with a cross-build and scoped Hello World pixel receipt; physical input and production distribution remain unverified. Preserve that target pin and revalidate changes. Marathon's Qt line is separate.
 - Pi400 is a separate non-QSTI validated hardware experiment (PR #32). No assumption that a Pi4 image supports the built-in keyboard/Screen hardware configuration.
 - OpenSSH 10.4p1 requires `sshd-auth` to be included in `mkqnximage` and older BSP images; follow QNX official instructions. Do not change SSH when the device cannot be recovered.
 

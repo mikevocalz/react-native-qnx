@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "components": [
+    {
+      "name": "View",
+      "host": "partial",
+      "pi400": "scoped",
+      "pi4Qsti": "unverified",
+      "notes": "Yoga layout, background, corner radius and opacity. Border, clipping and transform limits are listed below.",
+      "evidence": {
+        "pi400": ["docs/evidence/pi400-hello-world-2026-11-07.txt"],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "Text",
+      "host": "partial",
+      "pi400": "scoped",
+      "pi4Qsti": "unverified",
+      "notes": "Styled, wrapped text and numberOfLines ellipsis. Inline attachments have zero size.",
+      "evidence": {
+        "pi400": ["docs/evidence/pi400-hello-world-2026-11-07.txt"],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "Image",
+      "host": "supported",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Data URIs, Metro assets and HTTP(S) loading; load events and a header-aware bounded memory cache. See [image loading](image-loader.md).",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "ScrollView",
+      "host": "supported",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Qt Flickable scrolling, lifecycle events and scrollTo/scrollToEnd. zoomScale is reported in metrics; visible content scale stays 1.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "TextInput",
+      "host": "partial",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Controlled/default text, focus/blur, edit/selection/key/submit events and basic styling. No IME or software keyboard is wired.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "Pressable",
+      "host": "supported",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Renders and delivers onPress from a host pointer press.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "FlatList",
+      "host": "supported",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Scroll-following virtualization, off-window cell release, onLayout and onContentSizeChange are host-tested.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "VirtualizedList",
+      "host": "supported",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Covered transitively by the FlatList virtualization test.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "SectionList",
+      "host": "supported",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Renders through VirtualizedSectionList, ScrollView and VirtualizedList; host-tested.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "VirtualizedSectionList",
+      "host": "unverified",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Direct component coverage is unverified.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "Button",
+      "host": "supported",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Mounts and reports presses; opacity press animation reaches the connected NativeAnimated backend.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "TouchableOpacity",
+      "host": "supported",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Mounts through the responder system and uses NativeAnimated opacity. Responder coverage comes from Pressable.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "TouchableHighlight",
+      "host": "unverified",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Direct component coverage is unverified.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "TouchableWithoutFeedback",
+      "host": "unverified",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Direct component coverage is unverified.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "ImageBackground",
+      "host": "supported",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Composes View and Image; paints the image behind children and forwards resizeMode.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "KeyboardAvoidingView",
+      "host": "no-op",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Renders children as a View; behavior, keyboardVerticalOffset and enabled are ignored because no Keyboard module is wired.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "ActivityIndicator",
+      "host": "supported",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Qt Quick spinner with animating, color, hidesWhenStopped and size.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "RefreshControl",
+      "host": "no-op",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Renders nothing; refreshing and onRefresh are accepted and ignored. Pull-to-refresh is absent.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "Modal",
+      "host": "partial",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Full-screen overlay; onShow, onRequestClose and onDismiss are unwired.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "SafeAreaView",
+      "host": "partial",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Mounts as a View with zero insets. System safe-area integration is absent.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "Switch",
+      "host": "supported",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Renders and toggles; value, disabled, tint props and onValueChange are host-tested.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "StatusBar",
+      "host": "no-op",
+      "pi400": "unverified",
+      "pi4Qsti": "unverified",
+      "notes": "Static API calls have no effect. The target has no status-bar integration.",
+      "evidence": {
+        "pi400": [],
+        "pi4Qsti": []
+      }
+    }
+  ]
+}

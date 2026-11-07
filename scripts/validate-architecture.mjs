@@ -59,7 +59,8 @@ const expectedFiles = [
   'tests/cpp/QnxScreenSurfaceHostTest.cpp',
   'vnext/cmake/qnx-aarch64le.toolchain.cmake',
   'vnext/probes/cxx20/main.cpp',
-  'template/qnx/.gitkeep',
+  'template/qnx/index.js',
+  'packages/react-native-qnx-cli/src/cli.mjs',
   'cmake/dependencies/.gitkeep',
   'cmake/modules/.gitkeep',
 ];
@@ -82,9 +83,7 @@ const trackedScaffolds = [
   'packages/qnx-devtools',
   'packages/qnx-nitro-runtime',
   'packages/react-native-qnx',
-  'packages/react-native-qnx-cli',
   'packages/react-native-qnx-codegen',
-  'template/qnx',
   'cmake/dependencies',
   'cmake/modules',
 ];

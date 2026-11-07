@@ -2,8 +2,11 @@
 
 ## Status
 
-Provisionally accepted on host evidence (2026-08-14); confirmation still blocked
-by G0-B's pinned Qt source proof and G0-C's Pi benchmark.
+Provisionally accepted on host evidence (2026-08-14). The pinned Qt 6.12.0
+private evaluation now has scoped Pi 400 Hello World proof, recorded in
+[ADR-0001](0001-qt-quick-backend.md) and the
+[device receipt](../evidence/pi400-hello-world-2026-11-07.txt). G0-C's 1,000-item
+Pi benchmark and the remaining source/ownership acceptance items below stay open.
 
 ## Context
 
@@ -59,7 +62,7 @@ also asserts that destroying items leaves no residual children on the content
 item and that an unregistered type fails instead of returning a bare item.
 
 This settles the shape of the strategy. It does not settle it for the target:
-evidence items 1, 2, 4, and 5 remain open, and the Pi is slower than this host
+the exact Qt tag is now recorded by ADR-0001; evidence items 2, 4, and 5 remain open, and the Pi is slower than this host
 by an unmeasured factor.
 
 ## Related files
