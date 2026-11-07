@@ -37,7 +37,19 @@ function(rnqnx_add_input_lifecycle_probe)
   # Keep the raw payload fixture above; this separate production Metro fixture
   # exercises React's responder negotiation and actual Pressability callbacks.
   set(pressable_bundle "${CMAKE_BINARY_DIR}/rnqnx-pressable-probe.bundle.js")
-  add_custom_command(OUTPUT "${pressable_bundle}"
+  if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
+    set(RNQNX_PRESSABLE_TEST_BUNDLE "" CACHE FILEPATH
+      "Host-produced production Metro bundle for the QNX Pressable probe")
+    if(RNQNX_PRESSABLE_TEST_BUNDLE)
+      if(NOT EXISTS "${RNQNX_PRESSABLE_TEST_BUNDLE}" OR
+         IS_DIRECTORY "${RNQNX_PRESSABLE_TEST_BUNDLE}")
+        message(FATAL_ERROR "RNQNX_PRESSABLE_TEST_BUNDLE must name an existing bundle file")
+      endif()
+      set(pressable_bundle "${RNQNX_PRESSABLE_TEST_BUNDLE}")
+    endif()
+  endif()
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL "QNX" OR NOT RNQNX_PRESSABLE_TEST_BUNDLE)
+    add_custom_command(OUTPUT "${pressable_bundle}"
     COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/node_modules/.bin/metro" build
       pressable-probe.js --platform qnx --dev false --out "${pressable_bundle}"
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground"
@@ -48,7 +60,8 @@ function(rnqnx_add_input_lifecycle_probe)
       "${CMAKE_CURRENT_SOURCE_DIR}/packages/metro-config-qnx/src/index.js"
       "${CMAKE_CURRENT_SOURCE_DIR}/packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js"
       "${CMAKE_CURRENT_SOURCE_DIR}/pnpm-lock.yaml"
-    VERBATIM)
+      VERBATIM)
+  endif()
   set(pressable_fixture "${pressable_bundle}")
   if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     set(pressable_fixture "${CMAKE_BINARY_DIR}/pressable-probe.hbc")
