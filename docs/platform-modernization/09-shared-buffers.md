@@ -106,13 +106,13 @@ These are review examples using injected consumers. An optional future zero-copy
 
 ## Delivery slices, dependencies, and roster
 
-| Slice / proposed owner | Files and deliverable | Independent reviewer |
-| --- | --- | --- |
-| Measurement, performance DRI | Proposed benchmark fixture and `docs/evidence/` copy baseline | Qt performance reviewer |
-| Protocol/lease engineer | Proposed `native/platform/qnx/services/buffers/` and focused portable lease types | QNX/security engineer |
-| Nitro/C++ engineer | Proposed specs and resource bindings under `packages/qnx-nitro-runtime/` | JS/runtime lifetime engineer |
-| Marathon engineer | Separate `native/platform/linux-host/services/buffers/` transport | Shell confinement reviewer |
-| QA engineer | Proposed malformed-descriptor, crash, pressure, and disposal tests | Independent regression owner |
+| Slice / proposed owner       | Files and deliverable                                                             | Independent reviewer         |
+| ---------------------------- | --------------------------------------------------------------------------------- | ---------------------------- |
+| Measurement, performance DRI | Proposed benchmark fixture and `docs/evidence/` copy baseline                     | Qt performance reviewer      |
+| Protocol/lease engineer      | Proposed `native/platform/qnx/services/buffers/` and focused portable lease types | QNX/security engineer        |
+| Nitro/C++ engineer           | Proposed specs and resource bindings under `packages/qnx-nitro-runtime/`          | JS/runtime lifetime engineer |
+| Marathon engineer            | Separate `native/platform/linux-host/services/buffers/` transport                 | Shell confinement reviewer   |
+| QA engineer                  | Proposed malformed-descriptor, crash, pressure, and disposal tests                | Independent regression owner |
 
 All human assignments are open. First prove copied baseline; then one native producer/consumer with bounded leases; then a typed runtime resource; finally consider graphics imports or a JS view. A proposed `RNQNX_ENABLE_SHARED_BUFFERS` flag defaults OFF and rejects unsupported production targets. Do not enable it transitively with a generic service flag.
 
@@ -122,12 +122,12 @@ Dependencies: Plans 03 and 11 for measurement/device budgets, Plans 06–08 for 
 
 Read and applied in order: Margelo [`api-design`, `build-nitro-modules`, `cpp`](https://github.com/margelo/react-native-skills/tree/1e9e17be6f41c838db472d6a4b943fc26355a3be/skills) at `1e9e17be6f41c838db472d6a4b943fc26355a3be`, then Callstack [`react-native-best-practices`](https://github.com/callstackincubator/agent-skills/blob/59e9d17446a248b21d86f078fcd0bd2d36db1ca4/skills/react-native-best-practices/SKILL.md) at `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`.
 
-| Skill | Decision changed | Evidence status |
-| --- | --- | --- |
-| `api-design` | Resource ownership and explicit copying are visible in the contract | Source review; proposed API only |
-| `build-nitro-modules` | Native buffers remain resource objects; no eager giant structs | Source review; generator/runtime proof pending |
-| `cpp` | RAII mappings/leases, checked sizes, explicit release ownership | Source review; compile and runtime pending |
-| `react-native-best-practices` | Require a measured copy bottleneck before complexity | Source review; no benchmark executed |
+| Skill                         | Decision changed                                                    | Evidence status                                |
+| ----------------------------- | ------------------------------------------------------------------- | ---------------------------------------------- |
+| `api-design`                  | Resource ownership and explicit copying are visible in the contract | Source review; proposed API only               |
+| `build-nitro-modules`         | Native buffers remain resource objects; no eager giant structs      | Source review; generator/runtime proof pending |
+| `cpp`                         | RAII mappings/leases, checked sizes, explicit release ownership     | Source review; compile and runtime pending     |
+| `react-native-best-practices` | Require a measured copy bottleneck before complexity                | Source review; no benchmark executed           |
 
 Require copy-versus-release, copy-versus-stream-dispose, retained-handle-after-dispose, and presentation-versus-release tests against the stated admission/pinning semantics. Require tests for out-of-range descriptors, overflow, wrong session, stale generations, double release, consumer crash, producer restart, pool exhaustion, slow consumer, retained JS copy, and stream disposal with outstanding leases. A broker may reclaim a dead consumer's leases only after establishing that the owning process/context is gone. A retained live consumer is backpressure, not permission to reuse memory.
 
