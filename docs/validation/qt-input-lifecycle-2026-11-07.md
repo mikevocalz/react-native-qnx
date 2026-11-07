@@ -1,6 +1,94 @@
 # Qt input lifecycle validation — 2026-11-07
 
-Status: draft; native runtime validation interrupted by loss of the execution environment.
+## Completed follow-up: macOS and physical QNX
+
+DRI `/root`; independent read-only reviewer `/root/renderer_build_audit` reviewed
+terminal-state ordering, decorated hit testing, regressions and the target probe.
+Input code `843730f` plus fixture `a58196d`, integrated with main/PR42/PR44/PR45 at
+`634ef0ac0069a23aab0d75a7d7e5e4ed47c7331f`. No upstream/vendor approval is implied.
+
+The previously unrun host suite exposed a real fixture bug: lexical `const`
+bindings from a separate Hermes evaluation were unavailable to the sibling
+setup. Explicit fixture globals fix that setup without changing application state.
+Independent review also found mouse capture cleared after the terminal callback
+and an unregistered decorative QML child swallowing its parent View target.
+Capture now clears before dispatch; the opt-in hit test selects the nearest
+registered visual ancestor. Added tests cover synchronous native-listener target
+removal during release and nested unregistered decorations. OFF retains its
+legacy leaf-only hit lookup.
+
+### Actual results
+
+- macOS / AppleClang21 / Qt6.12.0 / MinSizeRel / pinned RN0.88.1 and Hermes:
+  full build and **14/14 CTests ON**, including the added target probe; full
+  build and **13/13 CTests OFF** (the new probe is omitted). Existing host
+  ASan/UBSan settings remain enabled; this is not full third-party instrumentation,
+  a Rust sanitizer run, leak check or TSan claim.
+- Dependency/source contracts, TypeScript, JavaScript tests, architecture,
+  manifests, codegen and production Metro bundle passed locally. The full build
+  includes the optional tested Qt/Nitro dispatcher from PR44.
+- Licensed SDP8.0.5 / GCC12.2.0 / Qt6.12.0 AArch64: input probe, playground and
+  Nitro test all cross-built. The new fixture uses pinned host hermesc260318099.0.5
+  bytecode for the lean target Hermes runtime.
+- Physical Pi400 as qnxuser: deterministic injected Qt input passes decorated
+  View targeting, terminal coordinates/timestamps, retained second contact,
+  repeat cancellation/ID reuse, deactivation, removed target/responder, hover
+  rejection, mouse ungrab and synchronous native-listener removal during release.
+  Marker: `RNQNX_INPUT_LIFECYCLE_OK decorated-hit terminal multi-contact cancel deactivate unmount mouse-reentrant`;
+  exit0, before the external35-second watchdog.
+- A separate input-enabled candidate rendered the exact Hello World title at
+  1920×1080 and printed `RNQNX_HELLO_NITRO_V1_OK platform=qnx architecture=aarch64 add=42`;
+  screenshot capture exited0. Probe, HBC fixture and candidate were copied back
+  from the Pi and SHA256 matched their local artifacts. Image inspected directly.
+  [Receipt](../evidence/pi400-input-lifecycle-2026-11-07.json) and
+  [capture](../evidence/pi400-input-lifecycle-2026-11-07.png).
+
+This is **synthetic QObject-filter input on physical QNX**, not hardware USB,
+touchscreen/stylus delivery or a gesture-recognizer proof. The target probe consumes
+real Fabric payloads in a native listener; target JavaScript handler delivery is
+not proved by it. The host regressions separately check Fabric-to-Hermes payloads.
+Global coordinates, real pressure, synthesized mouse deduplication, transformed
+clipping, target clock-origin equivalence and Marathon/Wayland remain unverified.
+No RNGH, Worklets or Reanimated implementation is added. No performance improvement
+or target frame-budget measurement is claimed.
+
+The target fixture uses Fabric directly; its bytecode stop hook retires that tree
+rather than depending on an absent React AppRegistry. The final run has no missing
+stop-surface error. Pi wall clock is unset (January1 in native logs); collection date
+above is from the Mac. The running fullscreen app and recovery boot remain intact.
+
+### Reproduce and rollback
+
+```sh
+cmake -S . -B build/macos-full-host-tests -DRNQNX_ENABLE_INPUT_LIFECYCLE=ON
+cmake --build build/macos-full-host-tests --parallel 4
+ctest --test-dir build/macos-full-host-tests --output-on-failure
+# Repeat with OFF; expect no input_lifecycle_probe in the OFF inventory.
+```
+
+These commands reuse the already configured full RN/Hermes/Qt host graph;
+a new checkout must first configure the documented full renderer prerequisites.
+The Linux preset below is the clean-host path and is not a macOS preset.
+
+For the existing licensed full QNX graph, additionally configure
+`-DRNQNX_ENABLE_INPUT_LIFECYCLE=ON`
+`-DRNQNX_INPUT_TEST_HERMESC=/path/to/pinned/260318099.0.5/hermesc`, then build
+`rnqnx_input_lifecycle_probe` and `rnqnx_playground_qnx`. Deploy the probe and
+`input-lifecycle-setup.hbc` as the unprivileged app user, with the same Qt QPA,
+plugin/import/library paths as the validated Hello World. Set
+`RNQNX_INPUT_FIXTURE` to the deployed HBC, then run the probe with an external
+watchdog. Do not feed JavaScript source to the lean QNX Hermes build.
+
+The feature remains default OFF; rollback is disabling that option or reverting
+this additive slice. It changes no dependency pins, native module API, renderer,
+window contract, boot files, permissions or licensing basis. Existing private
+Qt evaluation and QNX licenses apply; no vendor binaries/sources are committed.
+Hosted CI remains refused before runner startup by GitHub account billing/spending
+limits; local results are explicitly separate, and no branch-rule override is used.
+
+## Historical interrupted Linux attempt
+
+Historical first attempt: native runtime validation was interrupted. The completed follow-up below supersedes only those missing results.
 
 ## Built and checked
 
@@ -11,6 +99,7 @@ were retained. This is not evidence of complete sanitizer instrumentation of
 third-party libraries.
 
 Passed:
+
 - Frozen dependency installation and dependency validation.
 - Typecheck, architecture and manifest validation.
 - All JavaScript tests, rerun after playground wiring.

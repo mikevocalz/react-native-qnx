@@ -62,6 +62,10 @@ unsupported status until real package execution, animation/event semantics,
 reload/disposal and target builds are demonstrated. Keep host, QNX VM, QNX
 hardware and Marathon/Wayland evidence separate.
 
+The broader [exact-package audit](reanimated-gesture-handler-qnx-audit.md)
+records the separate RNGH3.5.0 candidate and Expo/version/bootstrap decisions.
+The older source snapshot below is historical context, not that selected version.
+
 ## Gesture Handler source contract
 
 RNGH was inspected at
@@ -139,5 +143,6 @@ retain a draft PR while required target evidence is absent.
 
 The opt-in also connects the playground window, mounting adapter and responder
 delegate to the dispatcher. See [the validation record](validation/qt-input-lifecycle-2026-11-07.md)
-for completed checks and the interrupted native runtime run. No device support
-or complete host-test pass is established by the current evidence.
+for the completed macOS ON/OFF suite and deterministic injected-input probe on
+physical QNX. USB/touch hardware, target JS-handler delivery and Marathon/Wayland
+remain unverified; no general device input support is claimed.
