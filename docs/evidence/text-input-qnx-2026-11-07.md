@@ -122,3 +122,6 @@ Rollback disables `RNQNX_ENABLE_TEXT_INPUT_CONTRACT` and restores the recorded
 known-good application. Source rollback reverts the bounded TextInput series
 and restores the matching frozen manifests/lockfile. The owner's continuous
 application remained intact during the target trials.
+
+The [read-only blur follow-up](text-input-readonly-blur-qnx-2026-11-07.md) records
+deferred focus delivery, teardown regressions and exact PR72 revalidation.
