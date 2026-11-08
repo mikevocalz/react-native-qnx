@@ -45,7 +45,7 @@ void QtApplicationLifecycle::close() {
   pending_.clear();
   disconnect(stateConnection_);
   disconnect(quitConnection_);
-  emit observationClosed();
+  Q_EMIT observationClosed();
 }
 
 void QtApplicationLifecycle::record(Qt::ApplicationState state) {
@@ -64,7 +64,7 @@ void QtApplicationLifecycle::record(Qt::ApplicationState state) {
     // Reentrant transitions are drained after the current signal so observers
     // receive increasing sequence numbers, rather than nested stale snapshots.
     const QPointer<QtApplicationLifecycle> alive(this);
-    emit stateChanged(snapshot_);
+    Q_EMIT stateChanged(snapshot_);
     if (!alive) return;
   }
   draining_ = false;

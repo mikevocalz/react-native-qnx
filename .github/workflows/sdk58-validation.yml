@@ -10,6 +10,7 @@ on:
       - main
       - feat/qnx-integrated-dx-candidate
       - feat/qnx-phases-1-7-integration
+      - feat/qnx-consumer-native-app-identity
 
 permissions:
   contents: read

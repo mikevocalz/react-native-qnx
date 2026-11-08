@@ -3,6 +3,7 @@ include_guard(GLOBAL)
 get_filename_component(RNQNX_REACT_QT_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxWebSockets.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/RnqnxAppState.cmake)
 
 # Add the opt-in consumer only after the existing runtime and optional native
 # adapters have been declared. The OFF path leaves all original targets alone.
@@ -118,6 +119,7 @@ function(rnqnx_add_react_host_target)
     target_compile_definitions(rnqnx_react_host PRIVATE RNQNX_ENABLE_WEBSOCKETS)
     target_link_libraries(rnqnx_react_host PUBLIC rnqnx_websocket_transport)
   endif()
+  rnqnx_configure_app_state()
   rnqnx_enable_strict_warnings(rnqnx_react_host)
   if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE)
     include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxAccessibilityActions.cmake)
