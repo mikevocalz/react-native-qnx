@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { createReadStream } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { lstat, readFile, realpath, mkdir } from 'node:fs/promises';
 import path from 'node:path';
