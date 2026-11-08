@@ -9,14 +9,17 @@ const file = new URL(
 const source = await readFile(file, 'utf8');
 const moduleName = 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
+/** @param {unknown} module */
 function load(module) {
   const exports = { exports: {} };
   let lookups = 0;
   vm.runInNewContext(source, {
     module: exports,
+    /** @param {string} name */
     require(name) {
       assert.equal(name, moduleName);
       return {
+        /** @param {string} name */
         get(name) {
           assert.equal(name, 'AppState');
           lookups++;
