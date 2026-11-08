@@ -1,0 +1,87 @@
+name: External native Expo consumer build
+on:
+  pull_request:
+    paths:
+      - 'packages/react-native-qnx-cli/src/**'
+      - 'tests/js/qnx-native-consumer-build.test.mjs'
+      - '.github/workflows/qnx-native-consumer-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-consumer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      QT_QPA_PLATFORM: offscreen
+      QT_QUICK_BACKEND: software
+      QSG_RHI_BACKEND: software
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Validate source and CLI contracts
+        run: |
+          pnpm format:check
+          pnpm typecheck
+          pnpm validate:dependencies
+          node tests/js/qnx-native-consumer-build.test.mjs
+      - name: Install native compiler prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libclang-dev libicu-dev
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          cache: true
+      - name: Create and bundle shared Expo source
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/rnqnx-native-dual"
+          echo "RNQNX_TEST_CONSUMER=$app" >> "$GITHUB_ENV"
+          node packages/react-native-qnx-cli/src/bin.mjs project create --project "$app" --app-id org.example.build --name Build --with-marathon
+          cd "$app"
+          pnpm install
+          pnpm run bundle:qnx
+          pnpm run bundle:marathon
+          node "$GITHUB_WORKSPACE/packages/react-native-qnx-cli/src/bin.mjs" project prepare-native --project "$app" --platform qnx
+          node "$GITHUB_WORKSPACE/packages/react-native-qnx-cli/src/bin.mjs" project prepare-native --project "$app" --platform marathon
+      - name: Build and execute distinct native consumers
+        run: |
+          set -euo pipefail
+          app="$RNQNX_TEST_CONSUMER"
+          cli="$PWD/packages/react-native-qnx-cli/src/bin.mjs"
+          node "$cli" project build-native --project "$app" --platform qnx --host-preview
+          node "$cli" project build-native --project "$app" --platform marathon
+          for kind in qnx marathon; do
+            if [ "$kind" = "qnx" ]; then output="$app/build/qnx/preview-native"; else output="$app/build/marathon/native"; fi
+            executable="$output/consumer/$kind/org.example.build/org.example.build"
+            test -x "$executable"
+            "$executable" --describe-app | tee "$app/build/$kind/native-identity.txt"
+            grep -F org.example.build "$app/build/$kind/native-identity.txt"
+            timeout 45s "$executable" --screenshot "$app/build/$kind/native-preview.png"
+            test -s "$app/build/$kind/native-preview.png"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: consumer-native-preview-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ env.RNQNX_TEST_CONSUMER }}/build/**/native-identity.txt
+            ${{ env.RNQNX_TEST_CONSUMER }}/build/**/native-preview.png
+            ${{ env.RNQNX_TEST_CONSUMER }}/build/**/CMakeCache.txt
+          if-no-files-found: warn
