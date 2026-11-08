@@ -10,6 +10,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: marathon-development-tooling-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   tooling:
     runs-on: ubuntu-24.04
@@ -25,21 +28,9 @@ jobs:
           package-manager-cache: false
       - run: npm install --global pnpm@12.8.1
       - run: pnpm install --frozen-lockfile
-      - name: Validate dependencies and actual process tests
+      - name: Validate formatting and actual process tests
         run: |
+          pnpm format:check
           pnpm typecheck
           pnpm validate:dependencies
           pnpm test:js
-      - name: Preserve pinned formatter for local verification (temporary)
-        if: always()
-        run: |
-          mkdir -p build/formatter
-          node -e "const fs=require('fs');const path=require('path');fs.cpSync(path.dirname(require.resolve('prettier/package.json')),'build/formatter/prettier',{recursive:true});fs.copyFileSync('.prettierrc','build/formatter/.prettierrc');"
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: phase5-pinned-formatter-${{ github.event.pull_request.head.sha || github.sha }}
-          path: build/formatter/
-          include-hidden-files: true
-          retention-days: 1
-      - run: pnpm format:check
