@@ -55,12 +55,21 @@ jobs:
           test -s /tmp/rnqnx-playground.bundle.js
           du -h /tmp/rnqnx-playground.bundle.js
 
+      - name: Bundle non-premium QNX conformance fixture
+        run: |
+          pnpm qnx bundle-qnx --app component-conformance --out build/component-conformance.bundle.js
+          test -s build/component-conformance.bundle.js
+          sha256sum build/component-conformance.bundle.js
+
       - name: Validate repository structure and codegen state
         run: |
           pnpm test:js
           pnpm build:packages
           pnpm validate:architecture
           pnpm codegen:check
+
+      - name: Exercise a fresh source checkout
+        run: pnpm validate:clean-app
 
       - name: Install repository CMake floor
         run: |
@@ -74,3 +83,11 @@ jobs:
 
       - name: Security audit
         run: pnpm audit:dependencies
+
+      - name: Preserve fresh-checkout evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clean-app-${{ github.event.pull_request.head.sha || github.sha }}
+          path: build/clean-app-evidence.*/
+          if-no-files-found: warn

@@ -77,6 +77,33 @@ A child process failure stays a nonzero CLI result. The CLI forwards SIGINT and
 SIGTERM to its direct child; the existing script owns any remote process.
 `log-qnx` also reports SSH failures instead of returning a false success.
 
+## Verify a captured Pi Screen probe
+
+After collecting evidence with the Pi installation workflow, verify its files and write a SHA-256 manifest:
+
+```bash
+pnpm qnx evidence verify
+```
+
+By default, this reads the lexicographically last directory under `artifacts/pi/`.
+Select a specific capture to avoid mixing results from multiple boards:
+
+```bash
+pnpm qnx evidence verify --dir artifacts/pi/2026-11-07-pi400
+```
+
+The command verifies the existing Screen-probe logs and preflight files, then writes
+`manifest.json` **inside the selected evidence directory**. It rejects missing
+files, invalid target/preflight markers and inconsistent run counts. Use
+`--dry-run` to inspect the exact command without reading or modifying the
+capture. Run it only on a directory you intend to update.
+
+**Scope:** this is the existing `rnqnx_playground` Screen-probe verifier, not
+a test of the React Native/Fabric runtime, physical keyboard/touch, twenty
+cold boots or release readiness. Keep Pi 400 and stock Pi 4 QSTI receipts
+separate, and review the [v1 gates](../releases/v1-readiness.md) before
+promoting a result.
+
 ## Recover from an error
 
 - `already exists`: choose a different app name; existing files are preserved.
