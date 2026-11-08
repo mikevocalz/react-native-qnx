@@ -1,0 +1,61 @@
+name: Native Qt lifecycle observation
+on:
+  pull_request:
+    paths:
+      - 'native/lifecycle/**'
+      - '.github/workflows/phase4-lifecycle.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lifecycle-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  observer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizers: ['OFF', 'ON']
+    env:
+      QT_QPA_PLATFORM: offscreen
+      ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
+      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install host prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          cache: true
+      - name: Compile and exercise native observer
+        run: |
+          set -euo pipefail
+          mkdir -p build/lifecycle-evidence
+          git rev-parse HEAD > build/lifecycle-evidence/commit.txt
+          cmake -S native/lifecycle -B build/lifecycle-off -G Ninja
+          cmake --build build/lifecycle-off
+          cmake -S native/lifecycle -B build/lifecycle -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DRNQNX_BUILD_LIFECYCLE_OBSERVER=ON -DRNQNX_LIFECYCLE_SANITIZERS=${{ matrix.sanitizers }} -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build/lifecycle -j 2
+          ctest --test-dir build/lifecycle --output-on-failure -V 2>&1 | tee build/lifecycle-evidence/tests.txt
+          sha256sum build/lifecycle/rnqnx_lifecycle_test > build/lifecycle-evidence/SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-lifecycle-${{ matrix.sanitizers }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            build/lifecycle-evidence/
+            build/lifecycle/Testing/Temporary/
+          if-no-files-found: warn
