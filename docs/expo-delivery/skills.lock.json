@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-07",
+  "status": "source-guidance-read-for-planning",
+  "externalInstallationClaimed": false,
+  "nativeExecutionClaimed": false,
+  "hashKind": "Git blob object identity, not SHA-256",
+  "nativeApiOrder": ["api-design", "build-nitro-modules", "cpp"],
+  "sources": [
+    {
+      "skill": "qnx-native-api",
+      "repository": "mikevocalz/react-native-qnx",
+      "commit": "cfc28165525e0d7c54192daf58b9b4318a26e83a",
+      "path": ".agents/skills/qnx-native-api/SKILL.md",
+      "blob": "10d3580c3554b3871deb35f1dd077f2ed8231767",
+      "decision": "Actual Nitro v1 contracts and owned Qt/JS lifetime; no invented platform codegen."
+    },
+    {
+      "skill": "qnx-platform-validation",
+      "repository": "mikevocalz/react-native-qnx",
+      "commit": "cfc28165525e0d7c54192daf58b9b4318a26e83a",
+      "path": ".agents/skills/qnx-platform-validation/SKILL.md",
+      "blob": "17f2204ef7559db79421daef61a5e110050d99b7",
+      "decision": "Separate source, host, cross-build, actual shell and physical evidence."
+    },
+    {
+      "skill": "api-design",
+      "repository": "margelo/react-native-skills",
+      "commit": "1e9e17be6f41c838db472d6a4b943fc26355a3be",
+      "path": "skills/api-design/SKILL.md",
+      "blob": "3768944d5e874ddc220695fb6c823defe68a6028",
+      "decision": "Specify caller behavior, failures, ready resources and cleanup before native implementation."
+    },
+    {
+      "skill": "build-nitro-modules",
+      "repository": "margelo/react-native-skills",
+      "commit": "1e9e17be6f41c838db472d6a4b943fc26355a3be",
+      "path": "skills/build-nitro-modules/SKILL.md",
+      "blob": "82dfbb732d16ce9e470b6bdde04342a43d8bae29",
+      "decision": "Reproducible generated/native contracts and runtime behavior; adapt older examples to actual v1 policy."
+    },
+    {
+      "skill": "cpp",
+      "repository": "margelo/react-native-skills",
+      "commit": "1e9e17be6f41c838db472d6a4b943fc26355a3be",
+      "path": "skills/cpp/SKILL.md",
+      "blob": "b0770da7ba90e5a6a7dbeb9fd59f3382e7116df4",
+      "decision": "RAII, explicit owner contexts, no callback under locks or hidden blocking UI work."
+    },
+    {
+      "skill": "react-native-best-practices",
+      "repository": "callstackincubator/agent-skills",
+      "commit": "59e9d17446a248b21d86f078fcd0bd2d36db1ca4",
+      "path": "skills/react-native-best-practices/SKILL.md",
+      "blob": "86ec5ab5a4cadf454db8013293679891098efce1",
+      "decision": "Measure the real interaction and target; mobile-specific tools do not prove QNX support."
+    },
+    {
+      "skill": "github-actions",
+      "repository": "callstackincubator/agent-skills",
+      "commit": "59e9d17446a248b21d86f078fcd0bd2d36db1ca4",
+      "path": "skills/github-actions/SKILL.md",
+      "blob": "8f420a3328f8cfd0e85c6ee89e5b5a0c45beb39d",
+      "decision": "Preserve exact-run artifact identity and failure output; do not reuse mobile builds as target proof."
+    },
+    {
+      "skill": "create-react-native-library",
+      "repository": "callstackincubator/agent-skills",
+      "commit": "59e9d17446a248b21d86f078fcd0bd2d36db1ca4",
+      "path": "skills/create-react-native-library/SKILL.md",
+      "blob": "3613cd0735ecb263cd100c2057d4cb4844e046f0",
+      "decision": "Verify standalone packed consumers and generated file contents; do not copy a mobile TurboModule scaffold into QNX."
+    },
+    {
+      "skill": "writing-user-docs",
+      "repository": "callstackincubator/agent-skills",
+      "commit": "59e9d17446a248b21d86f078fcd0bd2d36db1ca4",
+      "path": "skills/writing-user-docs/SKILL.md",
+      "blob": "a2241b43014d7295f1439b5c869e2b8182d1ccd4",
+      "decision": "Require literal prerequisite-aware consumer walkthroughs later; not applied as a style rule to internal phase RFCs."
+    },
+    {
+      "skill": "expo-module",
+      "repository": "expo/skills",
+      "commit": "a9e5bd3fa00b4e61f632e43f85da73aee1942582",
+      "path": "plugins/expo/skills/expo-module/SKILL.md",
+      "blob": "ade758421aee5fd5cf7d948cf6baae156d3a3c7b",
+      "decision": "Explicit module platform metadata and actual native implementation; discovery is not runtime registration or a native port."
+    }
+  ],
+  "conditionalSelections": [
+    "Expo Router/navigation: discover exact available skill source and pin before navigation implementation.",
+    "Expo/RN upgrade or API2 migration: verify exact skill/source and compatibility before changing versions.",
+    "Margelo networking/MMKV: verify exact path, version and target-native support before that service implementation.",
+    "Swift/Kotlin: only for actual Apple/Android code changes, not QNX/Linux C++ by default.",
+    "Trusted code review, no-ai-slop and everything-claude-code: verify installed source and relevant scope before claiming use.",
+    "Qt/Wayland/QNX/Marathon source audits: primary technical sources, not invented installed skills."
+  ],
+  "implementationProofFields": [
+    "skill",
+    "sourceCommitAndPath",
+    "sourceReadStatus",
+    "installationStatus",
+    "decisionChanged",
+    "implementationPaths",
+    "commandAndArtifact",
+    "remainingTargetGap",
+    "independentReviewer"
+  ]
+}
