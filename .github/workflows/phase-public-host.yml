@@ -1,0 +1,74 @@
+name: Public imports native host
+
+on:
+  pull_request:
+    branches: [main, feat/qnx-integrated-dx-candidate]
+    paths:
+      - 'packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js'
+      - 'packages/metro-config-qnx/public-entry*'
+      - 'apps/rn-playground/public-api-probe.js'
+      - 'apps/rn-playground/metro.public*'
+      - '.github/workflows/phase-public-host.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-host-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      QT_QPA_PLATFORM: offscreen
+      QT_QUICK_BACKEND: software
+      QSG_RHI_BACKEND: software
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libclang-dev libicu-dev
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          cache: true
+      - name: Build existing native host and regression tests
+        run: |
+          mkdir -p build/linux-host-renderer/evidence
+          git rev-parse HEAD > build/linux-host-renderer/evidence/commit.txt
+          cmake --preset linux-host-renderer -DRNQNX_ENABLE_INPUT_LIFECYCLE=ON -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=ON -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=ON
+          node scripts/validate-host-renderer.mjs
+      - name: Render public import bundles on shared Linux host
+        run: |
+          set -euo pipefail
+          evidence="$PWD/build/linux-host-renderer/evidence"
+          for platform in qnx marathon; do
+            config=metro.public.config.js
+            if [ "$platform" = marathon ]; then config=metro.public.marathon.config.js; fi
+            (cd apps/rn-playground && timeout 90s ../../node_modules/.bin/metro build public-api-probe.js --config "$config" --platform "$platform" --dev false --max-workers 2 --out "$evidence/public-$platform.bundle.js")
+            timeout 30s build/linux-host-renderer/bin/rnqnx_playground_host --bundle "$evidence/public-$platform.bundle.js" --screenshot "$evidence/public-$platform.png" 2>&1 | tee "$evidence/public-$platform.log"
+            grep -F "RNQNX_PUBLIC_API_READY platform=$platform" "$evidence/public-$platform.log"
+            test -s "$evidence/public-$platform.png"
+            sha256sum "$evidence/public-$platform.bundle.js" "$evidence/public-$platform.png" > "$evidence/public-$platform.sha256"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-host-${{ github.event.pull_request.head.sha }}
+          path: build/linux-host-renderer/evidence/

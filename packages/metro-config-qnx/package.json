@@ -6,7 +6,9 @@
   "main": "src/index.js",
   "types": "src/index.d.ts",
   "files": [
-    "src"
+    "src",
+    "public-entry.js",
+    "public-entry.d.ts"
   ],
   "dependencies": {
     "@rn-qnx/react-native-qnx": "workspace:*"
