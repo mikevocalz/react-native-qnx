@@ -21,10 +21,12 @@ await writeFile(
   })
 );
 let count = 0;
+/** @param {() => Promise<void>} fn @param {string} label */
 async function caseNamed(fn, label) {
   await fn();
   count++;
 }
+/** @param {'qnx'|'marathon'} platform @param {string} [filename] */
 async function createDescriptor(platform, filename = 'app.bundle.js') {
   const dir = path.join(project, 'build', platform);
   await mkdir(dir, { recursive: true });
