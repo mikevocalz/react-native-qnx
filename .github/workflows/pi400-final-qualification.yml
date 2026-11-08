@@ -1,0 +1,81 @@
+name: Pi 400 final physical qualification
+on:
+  pull_request:
+    paths:
+      - 'scripts/final-pi400-test.mjs'
+      - 'tests/js/pi400-final-physical.test.mjs'
+      - 'docs/validation/pi400-final-test.md'
+      - '.github/workflows/pi400-final-qualification.yml'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "plan or explicitly execute on the authorized Pi 400 runner"
+        type: choice
+        required: true
+        default: plan
+        options: [plan, execute]
+      consumer_project:
+        description: "Absolute directory on the Pi 400 runner, only for execute"
+        required: false
+        type: string
+permissions:
+  contents: read
+
+jobs:
+  host-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Enforce formatting, source contracts and no-device tests
+        run: |
+          pnpm format:check
+          pnpm typecheck
+          pnpm validate:dependencies
+          node tests/js/pi400-final-physical.test.mjs
+          node scripts/final-pi400-test.mjs plan
+      - name: Keep release gates pending
+        run: |
+          if pnpm validate:v1 > /tmp/rnqnx-v1-check.txt 2>&1; then
+            echo "Unexpected v1 release approval from a host-only test" >&2
+            exit 1
+          fi
+          grep -F "v1 is not release-ready" /tmp/rnqnx-v1-check.txt
+
+  physical-pi400:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'execute'
+    runs-on: [self-hosted, linux, qnx-pi400]
+    timeout-minutes: 90
+    needs: host-contract
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Explicit authorized QNX Pi 400 acceptance
+        env:
+          RNQNX_PI_BOARD: pi400
+          RNQNX_FINAL_TEST_CONFIRM: pi400
+          CONSUMER_PROJECT: ${{ inputs.consumer_project }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$CONSUMER_PROJECT" || "$CONSUMER_PROJECT" != /* ]]; then
+            echo "An absolute consumer project path must be supplied." >&2
+            exit 1
+          fi
+          if [[ -z "${QNX_SDP_ENV:-}" || ! -f "$QNX_SDP_ENV" ]]; then
+            echo "QNX_SDP_ENV must name the locally licensed SDK environment." >&2
+            exit 1
+          fi
+          source "$QNX_SDP_ENV"
+          node scripts/final-pi400-test.mjs execute --consumer-project "$CONSUMER_PROJECT"
+          echo "Review and sanitize artifacts/pi-final before attaching evidence to issue #43."
