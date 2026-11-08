@@ -35,7 +35,11 @@ try {
       const metadata = JSON.parse(await readFile(path.join(packageRoot, 'package.json'), 'utf8'));
       assert.equal(metadata.version, expected, `Consumer contract drift for ${name}`);
     } else {
-      assert.equal(workspace.devDependencies[name], expected, `Consumer contract drift for ${name}`);
+      assert.equal(
+        workspace.devDependencies[name],
+        expected,
+        `Consumer contract drift for ${name}`
+      );
       packageRoot = path.dirname(require.resolve(`${name}/package.json`));
     }
     const link = path.join(project, 'node_modules', name);
