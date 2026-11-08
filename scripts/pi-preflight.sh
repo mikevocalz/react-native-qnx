@@ -47,9 +47,11 @@ set -e
 target_dir="$1"
 echo RNQNX_PI_PREFLIGHT=1
 echo "uname=$(uname -a)"
-echo "machine=$(uname -m)"
+machine=$(uname -p)
+echo "machine=$machine"
+echo "board=$(uname -m)"
 echo "node=$(uname -n)"
-if [ "$(uname -m)" != "aarch64le" ]; then
+if [ "$machine" != "aarch64le" ]; then
   echo ERROR=expected-aarch64le
   exit 21
 fi

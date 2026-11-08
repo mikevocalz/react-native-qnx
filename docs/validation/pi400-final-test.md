@@ -12,13 +12,15 @@ From a clean checkout using Node 26 and pnpm 12.8.1:
 
     node scripts/final-pi400-test.mjs plan
 
-This prints five stages with status **not-run**, never invokes SSH, installs packages, builds, reboots or alters the device. Host CI runs this path and its argument/permission tests without hardware.
+This prints six stages with status **not-run**, never invokes SSH, installs packages, builds, reboots or alters the device. Host CI runs this path and its argument/permission tests without hardware. The execution regression tests use inert local commands and fixture artifacts, not a simulated device qualification pass.
 
 ## Supervised physical execution
 
 Use only an **authorized Pi 400** with a verified SSH host key, a non-privileged qnxuser account, visible QNX Screen and an eligible QNX/Qt runtime. Have a local recovery path ready. Source the licensed SDP 8.0.5 environment on the development machine first and install the exact locked dependencies.
 
-Before executing, create the shared Expo app, build its QNX bundle, compile that JavaScript to **matching Hermes .hbc**, and use project prepare-native with the exact HBC input. Confirm the native app identity matches the actual AppRegistry component and the generated descriptor hashes the HBC. The source tree must be the intended candidate.
+Execute from Linux or macOS. Every stage uses batch-mode SSH, strict host-key verification, a 10-second connection timeout and the configured `QNX_SSH_KEY`/`QNX_SSH_PORT`. Arbitrary `QNX_SSH_OPTS` are refused; configure your verified known-hosts file in SSH config instead. Root, numeric usernames and option-like usernames/hostnames are rejected before device access. The first remote command verifies a nonzero UID and the QNX/Pi 400/AArch64 identity before preflight or deployment.
+
+Before executing, create the shared Expo app, build its QNX bundle, compile that JavaScript to **matching Hermes .hbc**, and use project prepare-native with the exact HBC input. Any validated HBC filename below `build/qnx/` is accepted, including `release.hbc`; the runner uses the bundle selected and hashed by the native descriptor, not a fixed filename. Confirm the native app identity matches the actual AppRegistry component and the generated descriptor hashes the HBC. The source tree must be the intended candidate.
 
     export RNQNX_PI_BOARD=pi400
     export RNQNX_FINAL_TEST_CONFIRM=pi400
@@ -27,11 +29,17 @@ Before executing, create the shared Expo app, build its QNX bundle, compile that
     # QNX_HOST and QNX_TARGET must come from the licensed SDP environment
     node scripts/final-pi400-test.mjs execute --consumer-project /absolute/path/to/expo-app
 
-The runner executes the existing _real_ Pi preflight, Screen deployment, combined Hermes/Nitro/Expo runtime probe, and full Qt/Fabric/Hermes QNX consumer cross-build, in that order. It then creates a **new isolated** application subdirectory below the configured target directory, copies the executable and matched bytecode, attempts a bounded native screenshot render and copies the PNG back. Existing deployment tools may change the ordinary RNQNX deployment directory, but the runner never flashes, reboots, changes boot configuration, disables SSH host verification, uses root or overwrites an earlier isolated final-test directory.
+After the identity check, the runner executes the existing _real_ Pi preflight, Screen deployment, combined Hermes/Nitro/Expo runtime probe, and full Qt/Fabric/Hermes QNX consumer cross-build, in that order. QNX preflight reads processor architecture from `uname -p`; `uname -m` identifies the board. It then creates a **new isolated** application subdirectory below the configured target directory, copies the executable, matched bytecode and the built `libhermesvmlean.so`, attempts a bounded native screenshot render and copies the PNG back. The consumer's local library path therefore includes its staged Hermes runtime, rather than relying on a copy in the parent deployment directory. Existing deployment tools may change the ordinary RNQNX deployment directory, but the runner never flashes, reboots, changes boot configuration, disables SSH host verification, uses root or overwrites an earlier isolated final-test directory.
 
 It **fails closed** if any executable, library, Qt plugin, QNX screen, Hermes bytecode, app registration, runtime module or frame capture is absent. A Linux preview, source validator, screenshot from the Linux host or completed upload cannot satisfy physical execution.
 
-Device evidence is written locally under the timestamped **artifacts/pi-final/** directory. The result contains the candidate commit, HBC/executable hashes, each observed stage outcome, and a native PNG hash if it exists. A failed stage is retained as failed. Scrub device hostnames, paths and other sensitive system information before sharing artifacts; the workflow does not automatically upload private physical-run logs. The independent reviewer must inspect the raw records and actual screen output.
+Device evidence is written locally under a private, timestamped **artifacts/pi-final/** directory with a unique suffix. The result contains the candidate commit, HBC/executable/Hermes hashes, each observed stage outcome, and a native PNG hash if it exists. A render stage passes only after its marker is found; a capture stage passes only after regular-file, size, signature and hash checks. Missing markers or invalid captures are recorded as a failure of that exact stage, not only a top-level error. Scrub device hostnames, paths and other sensitive system information before sharing artifacts; the workflow does not automatically upload private physical-run logs. The independent reviewer must inspect the raw records and actual screen output.
+
+## Handle a failed stage
+
+Each command owns a local process group. A timeout, interruption or output above 8 MiB stops the group, escalating to SIGKILL after at most 250 ms and closing inherited pipes so descendants cannot hold the result open. The harness stops before subsequent stages.
+
+Local cancellation does **not** prove that a command already accepted by the target stopped, nor does it roll back an upload or deployment. Failure receipts set `remoteCleanupVerified=false` and require operator inspection before retry. Inspect the target's processes and deployment directories through a verified connection; do not blindly retry, reboot, delete evidence or replace boot files. Keep the working recovery path and existing app intact.
 
 ## Separate remaining acceptance
 

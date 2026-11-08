@@ -3,15 +3,15 @@
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
-import { lstat, mkdir, open, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, mkdtemp, open, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
-import { nativeConfiguration } from '../packages/react-native-qnx-cli/src/prepare-native.mjs';
 import { planNativeBuild } from '../packages/react-native-qnx-cli/src/build-native.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const stages = Object.freeze([
+  'non-root-target',
   'pi400-preflight',
   'qnx-screen-deploy',
   'hermes-nitro-expo-probe',
@@ -29,59 +29,105 @@ const help = [
 
 /** @param {string} name @param {unknown} value */
 function token(name, value) {
-  if (typeof value !== 'string' || !/^[A-Za-z0-9._-]+$/.test(value)) {
+  if (typeof value !== 'string' || !/^[A-Za-z0-9_][A-Za-z0-9._-]*$/.test(value)) {
     throw new Error(name + ' contains unsupported characters.');
   }
   return value;
 }
 
-/** @param {string[]} command @param {number} maxMs @returns {Promise<string>} */
-async function commandRun(command, maxMs) {
+/** @param {string[]} command @param {number} maxMs @param {NodeJS.ProcessEnv} [env] @returns {Promise<string>} */
+export async function commandRun(command, maxMs, env = process.env) {
+  if (!['linux', 'darwin'].includes(process.platform)) {
+    throw new Error('Physical stage supervision requires Linux or macOS.');
+  }
+  if (!command.length || !Number.isSafeInteger(maxMs) || maxMs < 1 || maxMs > 2147483647) {
+    throw new Error('A command and a bounded positive timeout are required.');
+  }
   const [bin, ...args] = command;
   return new Promise((resolve, reject) => {
     const child = spawn(bin, args, {
       cwd: root,
       shell: false,
-      env: process.env,
+      env,
+      detached: true,
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     let output = '';
     let errors = '';
     let bytes = 0;
-    let timedOut = false;
-    const timer = setTimeout(() => {
-      timedOut = true;
-      child.kill('SIGTERM');
-    }, maxMs);
+    let settled = false;
+    /** @type {Error | undefined} */
+    let failure;
+    /** @type {ReturnType<typeof setTimeout> | undefined} */
+    let killTimer;
+    /** @param {NodeJS.Signals} signal */
+    const signalGroup = (signal) => {
+      if (!child.pid) return;
+      try {
+        process.kill(-child.pid, signal);
+      } catch (error) {
+        if (!(error instanceof Error && 'code' in error && error.code === 'ESRCH')) {
+          failure ??= new Error('Could not terminate stage process group: ' + String(error));
+        }
+      }
+    };
+    /** @param {Error} [error] */
+    const finish = (error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      clearTimeout(killTimer);
+      process.off('SIGINT', interrupt);
+      process.off('SIGTERM', terminate);
+      signalGroup('SIGKILL');
+      child.stdout?.destroy();
+      child.stderr?.destroy();
+      child.unref();
+      if (failure || error) reject(failure ?? error);
+      else resolve(output);
+    };
+    /** @param {Error} error */
+    const stop = (error) => {
+      if (failure || settled) return;
+      failure = error;
+      signalGroup('SIGTERM');
+      killTimer = setTimeout(() => finish(failure), 250);
+    };
+    const interrupt = () => stop(new Error(bin + ' interrupted by SIGINT'));
+    const terminate = () => stop(new Error(bin + ' interrupted by SIGTERM'));
+    process.on('SIGINT', interrupt);
+    process.on('SIGTERM', terminate);
+    const timer = setTimeout(() => stop(new Error(bin + ' timed out')), maxMs);
     /** @param {Buffer} data @param {boolean} isError */
     const collect = (data, isError) => {
+      if (failure || settled) return;
       bytes += data.length;
-      if (bytes > 8 * 1024 * 1024) child.kill('SIGTERM');
+      if (bytes > 8 * 1024 * 1024) {
+        stop(new Error(bin + ' overflowed output'));
+        return;
+      }
       if (isError) errors += data.toString('utf8');
       else output += data.toString('utf8');
     };
     child.stdout?.on('data', (data) => collect(data, false));
     child.stderr?.on('data', (data) => collect(data, true));
-    child.once('error', (error) => {
-      clearTimeout(timer);
-      reject(error);
-    });
+    child.once('error', (error) => finish(error));
     child.once('close', (code, signal) => {
-      clearTimeout(timer);
-      if (timedOut || bytes > 8 * 1024 * 1024)
-        reject(new Error(bin + ' timed out or overflowed output'));
-      else if (code !== 0)
-        reject(new Error(bin + ' failed ' + (signal ?? code) + ': ' + errors.slice(-900)));
-      else resolve(output);
+      finish(
+        code === 0
+          ? undefined
+          : new Error(bin + ' failed ' + (signal ?? code) + ': ' + errors.slice(-900))
+      );
     });
   });
 }
 
-/** @param {string} name @param {string[]} argv @param {number} ms */
-async function runStage(name, argv, ms) {
+/** @param {string} name @param {string[]} argv @param {number} ms @param {NodeJS.ProcessEnv} env @param {(output: string) => Promise<void>} validate */
+export async function runStage(name, argv, ms, env, validate) {
   const started = new Date().toISOString();
   try {
-    const output = await commandRun(argv, ms);
+    const output = await commandRun(argv, ms, env);
+    await validate(output);
     return {
       name,
       status: 'passed',
@@ -98,6 +144,82 @@ async function runStage(name, argv, ms) {
       error: String(error).slice(0, 1500),
     };
   }
+}
+
+/** @param {NodeJS.ProcessEnv} [source] */
+export async function targetConnection(source = process.env) {
+  const user = token('QNX_TARGET_USER', source.QNX_TARGET_USER ?? 'qnxuser');
+  if (user === 'root' || !/^[A-Za-z_]/.test(user)) {
+    throw new Error('A non-root named QNX_TARGET_USER is required.');
+  }
+  const host = token('QNX_TARGET_IP', source.QNX_TARGET_IP ?? 'qnxpi.local');
+  if (!/^[A-Za-z0-9][A-Za-z0-9.-]*$/.test(host)) throw new Error('Invalid target hostname.');
+  if (source.QNX_SSH_OPTS?.trim()) {
+    throw new Error(
+      'QNX_SSH_OPTS is not allowed in physical qualification; use verified SSH config, QNX_SSH_KEY and QNX_SSH_PORT.'
+    );
+  }
+  const targetRoot = source.QNX_TARGET_DIR ?? '/data/home/' + user + '/rnqnx';
+  if (!/^\/[A-Za-z0-9._/-]+$/.test(targetRoot) || targetRoot.split('/').includes('..')) {
+    throw new Error('Target root must be a confined absolute path.');
+  }
+  const port = source.QNX_SSH_PORT ?? '22';
+  if (!/^[0-9]+$/.test(port) || Number(port) < 1 || Number(port) > 65535) {
+    throw new Error('Invalid QNX SSH port.');
+  }
+  const options = [
+    '-o',
+    'BatchMode=yes',
+    '-o',
+    'StrictHostKeyChecking=yes',
+    '-o',
+    'ConnectTimeout=10',
+    '-o',
+    'MACs=hmac-sha2-256',
+  ];
+  const sshOptions = [...options];
+  const scpOptions = [...options];
+  if (port !== '22') {
+    sshOptions.push('-p', port);
+    scpOptions.push('-P', port);
+  }
+  const key = source.QNX_SSH_KEY;
+  if (key) {
+    const keyStat = await lstat(key);
+    if (!keyStat.isFile() || keyStat.isSymbolicLink()) {
+      throw new Error('QNX_SSH_KEY must be a regular private key file.');
+    }
+    sshOptions.push('-i', key);
+    scpOptions.push('-i', key);
+  }
+  const env = {
+    ...source,
+    QNX_TARGET_USER: user,
+    QNX_TARGET_IP: host,
+    QNX_TARGET_DIR: targetRoot,
+    QNX_SSH_PORT: port,
+    QNX_SSH_OPTS: '-o StrictHostKeyChecking=yes',
+    QNX_SSH_BATCH_MODE: 'yes',
+    QNX_SSH_CONNECT_TIMEOUT: '10',
+    QNX_SSH_MACS: 'hmac-sha2-256',
+  };
+  return { target: user + '@' + host, targetRoot, sshOptions, scpOptions, env };
+}
+
+/** @param {string} capture */
+export async function captureFingerprint(capture) {
+  const result = await fingerprint(capture, 32 * 1024 * 1024);
+  const handle = await open(capture, 'r');
+  try {
+    const head = Buffer.alloc(8);
+    const { bytesRead } = await handle.read(head, 0, 8, 0);
+    if (bytesRead !== 8 || head.toString('hex') !== '89504e470d0a1a0a') {
+      throw new Error('Physical capture is not PNG.');
+    }
+  } finally {
+    await handle.close();
+  }
+  return result;
 }
 
 /** @param {string} file @param {number} limit */
@@ -156,54 +278,20 @@ export async function main(argv) {
   if (process.env.RNQNX_FINAL_TEST_CONFIRM !== 'pi400' || process.env.RNQNX_PI_BOARD !== 'pi400') {
     throw new Error('Explicit Pi 400 consent and board selection are required.');
   }
+  const { target, targetRoot, sshOptions, scpOptions, env } = await targetConnection();
   const app = values['consumer-project'];
   if (!app || !path.isAbsolute(app)) throw new Error('Use an absolute --consumer-project.');
   if (!process.env.QNX_HOST || !process.env.QNX_TARGET)
     throw new Error('QNX SDP environment not loaded.');
-  const { configuration } = await nativeConfiguration(app, 'qnx', 'build/qnx/app.hbc');
   const build = await planNativeBuild(app, 'qnx');
-  const user = token('QNX_TARGET_USER', process.env.QNX_TARGET_USER ?? 'qnxuser');
-  const host = token('QNX_TARGET_IP', process.env.QNX_TARGET_IP ?? 'qnxpi.local');
-  const targetRoot = process.env.QNX_TARGET_DIR ?? '/data/home/' + user + '/rnqnx';
-  if (!/^\/[A-Za-z0-9._/-]+$/.test(targetRoot) || targetRoot.split('/').includes('..')) {
-    throw new Error('Target root must be a confined absolute path.');
-  }
-  const target = user + '@' + host;
-  const options = [
-    '-o',
-    'BatchMode=yes',
-    '-o',
-    'StrictHostKeyChecking=yes',
-    '-o',
-    'ConnectTimeout=10',
-    '-o',
-    'MACs=hmac-sha2-256',
-  ];
-  const sshOptions = [...options];
-  const scpOptions = [...options];
-  const port = process.env.QNX_SSH_PORT ?? '22';
-  if (!/^[0-9]+$/.test(port) || Number(port) < 1 || Number(port) > 65535) {
-    throw new Error('Invalid QNX SSH port.');
-  }
-  if (port !== '22') {
-    sshOptions.push('-p', port);
-    scpOptions.push('-P', port);
-  }
-  const key = process.env.QNX_SSH_KEY;
-  if (key) {
-    const keyStat = await lstat(key);
-    if (!keyStat.isFile() || keyStat.isSymbolicLink()) {
-      throw new Error('QNX_SSH_KEY must be a regular private key file.');
-    }
-    sshOptions.push('-i', key);
-    scpOptions.push('-i', key);
-  }
+  const { configuration } = build;
   const stamp = new Date()
     .toISOString()
     .replaceAll(/[^0-9]/g, '')
     .slice(0, 14);
-  const evidence = path.join(root, 'artifacts', 'pi-final', stamp);
-  await mkdir(evidence, { recursive: true, mode: 0o700 });
+  const evidenceRoot = path.join(root, 'artifacts', 'pi-final');
+  await mkdir(evidenceRoot, { recursive: true, mode: 0o700 });
+  const evidence = await mkdtemp(path.join(evidenceRoot, stamp + '-'));
   /** @type {Array<Record<string, unknown>>} */
   const results = [];
   /** @type {Record<string, any>} */
@@ -212,7 +300,7 @@ export async function main(argv) {
     issue: 43,
     board: 'pi400',
     image: 'custom CTI 8.0.5 (operator label)',
-    sourceCommit: (await commandRun(['git', 'rev-parse', 'HEAD'], 10000)).trim(),
+    sourceCommit: (await commandRun(['git', 'rev-parse', 'HEAD'], 10000, env)).trim(),
     bundle: await fingerprint(configuration.bundle, 256 * 1024 * 1024),
     startedAt: new Date().toISOString(),
     results,
@@ -222,15 +310,26 @@ export async function main(argv) {
   };
   const save = async () =>
     writeFile(path.join(evidence, 'result.json'), JSON.stringify(record, null, 2) + '\n');
-  /** @param {string} name @param {string[]} cmd @param {number} ms @returns {Promise<string>} */
-  const required = async (name, cmd, ms) => {
-    const result = await runStage(name, cmd, ms);
+  /** @param {string} name @param {string[]} cmd @param {number} ms @param {(output: string) => Promise<void>} [validate] @returns {Promise<string>} */
+  const required = async (name, cmd, ms, validate = async () => {}) => {
+    const result = await runStage(name, cmd, ms, env, validate);
     results.push(result);
     await save();
     if (result.status !== 'passed') throw new Error('Pi 400 test failed: ' + name);
     return result.output ?? '';
   };
+  const hermes = path.join(root, 'build/hermes-qnx-aarch64/lib/libhermesvmlean.so');
   try {
+    await required(
+      'non-root-target',
+      [
+        'ssh',
+        ...sshOptions,
+        target,
+        'uid=$(id -u) && test "$uid" -gt 0 && test "$(uname -s)" = QNX && test "$(uname -m)" = RaspberryPi400 && test "$(uname -p)" = aarch64le && printf "RNQNX_TARGET_UID=%s\\n" "$uid"',
+      ],
+      30000
+    );
     await required('pi400-preflight', ['bash', 'scripts/pi-preflight.sh'], 120000);
     await required('qnx-screen-deploy', ['bash', 'scripts/install-pi.sh'], 1200000);
     await required('hermes-nitro-expo-probe', ['bash', 'scripts/validate-runtime-qnx.sh'], 2400000);
@@ -246,14 +345,22 @@ export async function main(argv) {
         '--platform',
         'qnx',
       ],
-      2400000
+      2400000,
+      async () => {
+        record.executable = await fingerprint(build.output, 1024 * 1024 * 1024);
+        record.hermesRuntime = await fingerprint(hermes, 256 * 1024 * 1024);
+      }
     );
-    record.executable = await fingerprint(build.output, 1024 * 1024 * 1024);
-    const remote = targetRoot + '/final-' + configuration.appId + '-' + stamp;
+    const remote = targetRoot + '/final-' + configuration.appId + '-' + path.basename(evidence);
     await required(
       'isolated-remote-dir',
       ['ssh', ...sshOptions, target, "mkdir '" + remote + "'"],
       30000
+    );
+    await required(
+      'hermes-runtime-upload',
+      ['scp', ...scpOptions, hermes, target + ':' + remote + '/libhermesvmlean.so'],
+      180000
     );
     await required(
       'native-executable-upload',
@@ -267,30 +374,25 @@ export async function main(argv) {
     );
     const remoteCommand =
       "cd '" + remote + "' && chmod 700 ./app && LD_LIBRARY_PATH=. ./app --screenshot final.png";
-    const output = await required(
+    await required(
       'physical-consumer-render',
       ['ssh', ...sshOptions, target, remoteCommand],
-      90000
+      90000,
+      async (output) => {
+        if (!output.includes('RNQNX_PLAYGROUND_SCREENSHOT')) {
+          throw new Error('Physical render marker missing.');
+        }
+      }
     );
-    if (!output.includes('RNQNX_PLAYGROUND_SCREENSHOT'))
-      throw new Error('Physical render marker missing.');
     const capture = path.join(evidence, 'physical-consumer.png');
     await required(
       'physical-capture-download',
       ['scp', ...scpOptions, target + ':' + remote + '/final.png', capture],
-      90000
+      90000,
+      async () => {
+        record.capture = await captureFingerprint(capture);
+      }
     );
-    const handle = await open(capture, 'r');
-    let signature;
-    try {
-      const head = Buffer.alloc(8);
-      const { bytesRead } = await handle.read(head, 0, 8, 0);
-      signature = bytesRead === 8 ? head.toString('hex') : '';
-    } finally {
-      await handle.close();
-    }
-    if (signature !== '89504e470d0a1a0a') throw new Error('Physical capture is not PNG.');
-    record.capture = await fingerprint(capture, 32 * 1024 * 1024);
     record.physicalRuntimeCapture = true;
     record.finishedAt = new Date().toISOString();
     await save();
@@ -310,6 +412,8 @@ export async function main(argv) {
     return 0;
   } catch (error) {
     record.error = String(error);
+    record.remoteCleanupVerified = false;
+    record.remoteSideEffects = 'unknown; operator inspection required before retry';
     record.finishedAt = new Date().toISOString();
     await save();
     throw error;

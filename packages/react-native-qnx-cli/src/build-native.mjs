@@ -91,6 +91,7 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
   );
   return {
     project,
+    configuration,
     platform,
     preview,
     appId: configuration.appId,
