@@ -33,6 +33,18 @@ jobs:
         run: |
           node tests/js/qnx-project-create.test.mjs
           pnpm test:js
+      - name: Build one externally generated Expo app for both JS targets
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/rnqnx-created-dual"
+          node packages/react-native-qnx-cli/src/bin.mjs project create --project "$app" --app-id org.example.created --name Created --with-marathon
+          cd "$app"
+          pnpm install
+          pnpm run bundle:qnx
+          pnpm run bundle:marathon
+          test -s build/qnx/app.bundle.js
+          test -s build/marathon/app.bundle.js
+          sha256sum build/qnx/app.bundle.js build/marathon/app.bundle.js
       - name: Validate architecture, codegen and dependency integrity
         run: |
           pnpm validate:architecture
