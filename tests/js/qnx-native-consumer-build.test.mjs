@@ -79,6 +79,29 @@ try {
     await assert.rejects(planNativeBuild(project, 'qnx'), /matching Hermes.*hbc/);
   }, 'target rejection');
   await caseNamed(async () => {
+    await createDescriptor('qnx', 'app.hbc');
+    const previousHost = process.env.QNX_HOST;
+    const previousTarget = process.env.QNX_TARGET;
+    try {
+      delete process.env.QNX_HOST;
+      delete process.env.QNX_TARGET;
+      await assert.rejects(planNativeBuild(project, 'qnx'), /QNX_HOST and QNX_TARGET/);
+      process.env.QNX_HOST = '/placeholder/qnx-host';
+      process.env.QNX_TARGET = '/placeholder/qnx-target';
+      const plan = await planNativeBuild(project, 'qnx');
+      assert.equal(plan.configure[2], 'qnx-aarch64-debug');
+      assert.ok(plan.configure.includes('-DRNQNX_BUILD_REACT_QNX=ON'));
+      assert.ok(plan.configure.includes('-DRNQNX_BUILD_HERMES_QNX=ON'));
+      assert.ok(!plan.configure.includes('-DRNQNX_CONSUMER_HOST_PREVIEW=ON'));
+    } finally {
+      if (previousHost === undefined) delete process.env.QNX_HOST;
+      else process.env.QNX_HOST = previousHost;
+      if (previousTarget === undefined) delete process.env.QNX_TARGET;
+      else process.env.QNX_TARGET = previousTarget;
+      await createDescriptor('qnx');
+    }
+  }, 'QNX requires SDK and full native React/Hermes graph');
+  await caseNamed(async () => {
     const file = path.join(project, 'build/qnx/app.bundle.js');
     await writeFile(file, 'changed');
     await assert.rejects(planNativeBuild(project, 'qnx', true), /stale/);
