@@ -23,6 +23,7 @@ assert.equal(loaded.length, 0, 'Public imports stay lazy until read');
 const api = module.exports;
 const expected = [
   'AppRegistry',
+  'AppState',
   'View',
   'Text',
   'Image',

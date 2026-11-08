@@ -36,6 +36,9 @@
 #include <react/renderer/animated/AnimatedModule.h>
 #include <react/renderer/animated/NativeAnimatedNodesManagerProvider.h>
 #include "react-native-qnx/runtime/QnxFileReaderModule.h"
+#if RNQNX_ENABLE_APP_STATE
+#include "react-native-qnx/runtime/QnxAppStateModule.h"
+#endif
 #include "react-native-qnx/runtime/QnxImageLoader.h"
 #include "react-native-qnx/runtime/QnxSegmentFetcher.h"
 #include "react-native-qnx/runtime/QnxWebSocketModule.h"
@@ -442,7 +445,7 @@ class QtReactHost::Impl {
         );
 
     auto container = std::make_shared<ContextContainer>();
-    // Scheduler.cpp:73-80 asserts on this key and dereferences it, so a missing
+    // Scheduler.cpp:73-80 asserts on this key, and dereferences it, so a missing
     // entry is a crash rather than a degraded mode.
     container->insert(
         facebook::react::RuntimeSchedulerKey,
@@ -566,6 +569,11 @@ class QtReactHost::Impl {
     surfaces.clear();
     // React unmount cleanup may still invoke native callbacks or stop producers.
     // Close admission only after those entries, while Hermes/scheduler live.
+#if RNQNX_ENABLE_APP_STATE
+    // Stop the producer and invalidate pending AppState deliveries while the
+    // runtime is still alive. RuntimeScheduler work can then drain safely.
+    if (appStateModule) appStateModule->invalidate();
+#endif
     taskQueue->close();
   }
 
@@ -578,6 +586,9 @@ class QtReactHost::Impl {
   std::unique_ptr<facebook::jsi::Runtime> runtime;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler;
   std::shared_ptr<QtRuntimeTaskQueue> taskQueue;
+#if RNQNX_ENABLE_APP_STATE
+  std::shared_ptr<QnxAppStateModule> appStateModule;
+#endif
   std::shared_ptr<const ContextContainer> contextContainer;
   QtSchedulerDelegate delegate;
   std::shared_ptr<Scheduler> scheduler;
@@ -674,7 +685,7 @@ bool QtReactHost::evaluate(
     impl_->lastError.clear();
     return true;
   } catch (const facebook::jsi::JSError& error) {
-    impl_->lastError = QString::fromStdString(error.getMessage());
+    impl_->lastError = QString::fromStdString(error.getMessage() + "\n" + error.getStack());
     return false;
   } catch (const std::exception& error) {
     impl_->lastError = QString::fromUtf8(error.what());
@@ -778,6 +789,7 @@ void QtReactHost::installTurboModuleBinding() {
               };
           auto stopOnRender =
               [impl](bool /*isAsync*/) {
+                impl->animationFrame = nullptr;
                 if (impl->animationTimer) {
                   impl->animationTimer->stop();
                 }
@@ -807,6 +819,15 @@ void QtReactHost::installTurboModuleBinding() {
         if (name == rnqnx::runtime::QnxSegmentFetcher::kModuleName) {
           return std::make_shared<rnqnx::runtime::QnxSegmentFetcher>(callInvoker);
         }
+
+#if RNQNX_ENABLE_APP_STATE
+        if (name == QnxAppStateModule::kModuleName) {
+          if (!impl->appStateModule) {
+            impl->appStateModule = std::make_shared<QnxAppStateModule>(callInvoker);
+          }
+          return impl->appStateModule;
+        }
+#endif
 
         // React Native's own generic C++ modules. Two of the modules this
         // platform needs come from here already implemented — microtasks and

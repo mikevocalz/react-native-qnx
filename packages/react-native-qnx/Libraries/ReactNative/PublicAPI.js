@@ -6,6 +6,9 @@ const api = Object.freeze({
   get AppRegistry() {
     return require('react-native/Libraries/ReactNative/AppRegistry').AppRegistry;
   },
+  get AppState() {
+    return require('react-native/Libraries/AppState/AppState').default;
+  },
   get View() {
     return require('react-native/Libraries/Components/View/View').default;
   },

@@ -30,7 +30,7 @@ class QtApplicationLifecycle final : public QObject {
   void close();
   static ApplicationVisibility visibilityFor(Qt::ApplicationState state) noexcept;
 
- signals:
+ Q_SIGNALS:
   void stateChanged(rnqnx::runtime::LifecycleSnapshot snapshot);
   void observationClosed();
 

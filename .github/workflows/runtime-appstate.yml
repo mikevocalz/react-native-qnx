@@ -1,0 +1,79 @@
+name: Shared runtime AppState integration
+
+on:
+  pull_request:
+    paths:
+      - 'native/lifecycle/**'
+      - 'vnext/src/runtime/**'
+      - 'vnext/include/react-native-qnx/runtime/**'
+      - 'packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js'
+      - 'apps/rn-playground/appstate-probe.js'
+      - 'tests/native/appstate/**'
+      - 'cmake/RnqnxAppState.cmake'
+      - 'cmake/RnqnxReactQt.cmake'
+      - '.github/workflows/runtime-appstate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-appstate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        app-state: ['OFF', 'ON']
+    env:
+      QT_QPA_PLATFORM: offscreen
+      QT_QUICK_BACKEND: software
+      QSG_RHI_BACKEND: software
+      ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
+      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libclang-dev libicu-dev
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          cache: true
+      - name: Compile and test actual Qt Hermes and React Native AppState
+        run: |
+          set -euo pipefail
+          mkdir -p build/linux-host-renderer/evidence
+          git rev-parse HEAD > build/linux-host-renderer/evidence/commit.txt
+          cmake --preset linux-host-renderer -DRNQNX_ENABLE_APP_STATE=${{ matrix.app-state }} -DRNQNX_BUILD_APPSTATE_TESTS=ON -DRNQNX_APPSTATE_SANITIZERS=ON
+          node scripts/validate-host-renderer.mjs
+          ctest --test-dir build/linux-host-renderer -R '^rnqnx_appstate_' --no-tests=error --output-on-failure -V | tee build/linux-host-renderer/evidence/appstate.txt
+          sha256sum build/linux-host-renderer/rnqnx-appstate-*.bundle.js build/linux-host-renderer/bin/rnqnx_appstate_runtime_test > build/linux-host-renderer/evidence/appstate-sha256.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: appstate-${{ matrix.app-state }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            build/linux-host-renderer/evidence/
+            build/linux-host-renderer/Testing/Temporary/
+            build/linux-host-renderer/CMakeCache.txt
+          if-no-files-found: warn
