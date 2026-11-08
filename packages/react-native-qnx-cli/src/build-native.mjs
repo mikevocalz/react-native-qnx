@@ -161,7 +161,12 @@ export async function buildNativeMain(args) {
   await execute(plan.configure);
   await execute(plan.build);
   const stat = await lstat(plan.output);
-  if (!stat.isFile() || stat.isSymbolicLink() || !stat.size || stat.size > 1024 * 1024 * 1024) {
+  if (
+    !stat.isFile() ||
+    stat.isSymbolicLink() ||
+    !stat.size ||
+    stat.size > 1024 * 1024 * 1024
+  ) {
     throw new Error('CMake completed without a bounded regular native executable.');
   }
   const executable = await realpath(plan.output);
