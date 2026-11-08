@@ -160,14 +160,17 @@ export async function buildNativeMain(args) {
   await mkdir(plan.buildDir, { recursive: true });
   await execute(plan.configure);
   await execute(plan.build);
-  const executable = await realpath(plan.output);
-  const stat = await lstat(executable);
-  if (!stat.isFile() || stat.isSymbolicLink() || !stat.size) {
-    throw new Error('CMake completed without a regular nonempty native executable.');
+  const stat = await lstat(plan.output);
+  if (!stat.isFile() || stat.isSymbolicLink() || !stat.size || stat.size > 1024 * 1024 * 1024) {
+    throw new Error('CMake completed without a bounded regular native executable.');
   }
-  const sha256 = createHash('sha256')
-    .update(await readFile(executable))
-    .digest('hex');
+  const executable = await realpath(plan.output);
+  if (!executable.startsWith(plan.buildDir + path.sep)) {
+    throw new Error('Native executable escaped the build directory.');
+  }
+  const hash = createHash('sha256');
+  for await (const chunk of createReadStream(executable)) hash.update(chunk);
+  const sha256 = hash.digest('hex');
   console.log(
     JSON.stringify(
       {
