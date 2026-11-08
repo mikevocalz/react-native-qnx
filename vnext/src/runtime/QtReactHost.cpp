@@ -685,7 +685,7 @@ bool QtReactHost::evaluate(
     impl_->lastError.clear();
     return true;
   } catch (const facebook::jsi::JSError& error) {
-    impl_->lastError = QString::fromStdString(error.getMessage());
+    impl_->lastError = QString::fromStdString(error.getMessage() + "\n" + error.getStack());
     return false;
   } catch (const std::exception& error) {
     impl_->lastError = QString::fromUtf8(error.what());
