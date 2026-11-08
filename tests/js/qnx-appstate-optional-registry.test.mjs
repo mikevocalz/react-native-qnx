@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 
-const file = new URL('../../packages/react-native-qnx/Libraries/AppState/NativeAppState.js', import.meta.url);
+const file = new URL(
+  '../../packages/react-native-qnx/Libraries/AppState/NativeAppState.js',
+  import.meta.url
+);
 const source = await readFile(file, 'utf8');
 const moduleName = 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
