@@ -5,7 +5,9 @@ import { main } from '../../scripts/final-pi400-test.mjs';
 
 const file = path.resolve('scripts/final-pi400-test.mjs');
 const plan = spawnSync(process.execPath, [file, 'plan'], {
-  encoding: 'utf8', timeout: 10000, maxBuffer: 1024 * 1024,
+  encoding: 'utf8',
+  timeout: 10000,
+  maxBuffer: 1024 * 1024,
 });
 assert.equal(plan.status, 0, plan.stderr);
 const report = JSON.parse(plan.stdout);
@@ -19,7 +21,8 @@ assert.equal(report.stockQstiQualified, false);
 assert.equal(report.releaseAuthorized, false);
 
 const help = spawnSync(process.execPath, [file, '--help'], {
-  encoding: 'utf8', timeout: 10000,
+  encoding: 'utf8',
+  timeout: 10000,
 });
 assert.equal(help.status, 0, help.stderr);
 assert.match(help.stdout, /RNQNX_FINAL_TEST_CONFIRM=pi400/);
@@ -31,7 +34,10 @@ const preserved = {
 try {
   delete process.env.RNQNX_FINAL_TEST_CONFIRM;
   delete process.env.RNQNX_PI_BOARD;
-  await assert.rejects(main(['execute', '--consumer-project', '/nonexistent']), /confirmation|board/);
+  await assert.rejects(
+    main(['execute', '--consumer-project', '/nonexistent']),
+    /confirmation|board/
+  );
 } finally {
   if (preserved.confirm === undefined) delete process.env.RNQNX_FINAL_TEST_CONFIRM;
   else process.env.RNQNX_FINAL_TEST_CONFIRM = preserved.confirm;
@@ -40,9 +46,17 @@ try {
 }
 
 await assert.rejects(main(['execute']), /confirmation|board/);
-await assert.rejects(main(['plan', '--consumer-project', '/tmp/something']), /Plan does not accept/);
-await assert.rejects(main(['plan', '--consumer-project', 'x', '--consumer-project', 'y']), /Duplicate option/);
+await assert.rejects(
+  main(['plan', '--consumer-project', '/tmp/something']),
+  /Plan does not accept/
+);
+await assert.rejects(
+  main(['plan', '--consumer-project', 'x', '--consumer-project', 'y']),
+  /Duplicate option/
+);
 await assert.rejects(main(['other']), /Choose plan or execute/);
 await assert.rejects(main(['plan', '--unexpected']), /Unknown option/);
 
-console.log('Pi400 final test: plan/report, bounded stages, permission gate and invalid-input cases pass; physical hardware NOT run.');
+console.log(
+  'Pi400 final test: plan/report, bounded stages, permission gate and invalid-input cases pass; physical hardware NOT run.'
+);
