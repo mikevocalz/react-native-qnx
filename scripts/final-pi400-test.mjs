@@ -179,6 +179,25 @@ export async function main(argv) {
     '-o',
     'MACs=hmac-sha2-256',
   ];
+  const sshOptions = [...options];
+  const scpOptions = [...options];
+  const port = process.env.QNX_SSH_PORT ?? '22';
+  if (!/^[0-9]+$/.test(port) || Number(port) < 1 || Number(port) > 65535) {
+    throw new Error('Invalid QNX SSH port.');
+  }
+  if (port !== '22') {
+    sshOptions.push('-p', port);
+    scpOptions.push('-P', port);
+  }
+  const key = process.env.QNX_SSH_KEY;
+  if (key) {
+    const keyStat = await lstat(key);
+    if (!keyStat.isFile() || keyStat.isSymbolicLink()) {
+      throw new Error('QNX_SSH_KEY must be a regular private key file.');
+    }
+    sshOptions.push('-i', key);
+    scpOptions.push('-i', key);
+  }
   const stamp = new Date()
     .toISOString()
     .replaceAll(/[^0-9]/g, '')
@@ -233,24 +252,24 @@ export async function main(argv) {
     const remote = targetRoot + '/final-' + configuration.appId + '-' + stamp;
     await required(
       'isolated-remote-dir',
-      ['ssh', ...options, target, "mkdir '" + remote + "'"],
+      ['ssh', ...sshOptions, target, "mkdir '" + remote + "'"],
       30000
     );
     await required(
       'native-executable-upload',
-      ['scp', ...options, build.output, target + ':' + remote + '/app'],
+      ['scp', ...scpOptions, build.output, target + ':' + remote + '/app'],
       180000
     );
     await required(
       'matched-bundle-upload',
-      ['scp', ...options, configuration.bundle, target + ':' + remote + '/app.bundle.js'],
+      ['scp', ...scpOptions, configuration.bundle, target + ':' + remote + '/app.bundle.js'],
       180000
     );
     const remoteCommand =
       "cd '" + remote + "' && chmod 700 ./app && LD_LIBRARY_PATH=. ./app --screenshot final.png";
     const output = await required(
       'physical-consumer-render',
-      ['ssh', ...options, target, remoteCommand],
+      ['ssh', ...sshOptions, target, remoteCommand],
       90000
     );
     if (!output.includes('RNQNX_PLAYGROUND_SCREENSHOT'))
@@ -258,7 +277,7 @@ export async function main(argv) {
     const capture = path.join(evidence, 'physical-consumer.png');
     await required(
       'physical-capture-download',
-      ['scp', ...options, target + ':' + remote + '/final.png', capture],
+      ['scp', ...scpOptions, target + ':' + remote + '/final.png', capture],
       90000
     );
     const handle = await open(capture, 'r');
