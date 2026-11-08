@@ -357,6 +357,9 @@ export async function createProjectMain(argv) {
     if (marathon) {
       await writeFile(path.join(destination, 'metro.marathon.config.js'), metroConfig('marathon'));
     }
+    for (const platform of platforms) {
+      await mkdir(path.join(destination, 'build', platform), { recursive: true });
+    }
     await writeFile(path.join(destination, '.gitignore'), 'node_modules/\nbuild/\n.pack-*/\n');
     await writeFile(
       path.join(destination, 'platform-packages.json'),
