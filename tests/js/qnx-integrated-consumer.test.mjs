@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import {
   copyFile,
+  cp,
   mkdir,
   mkdtemp,
   readFile,
@@ -21,9 +22,16 @@ const require = createRequire(path.join(root, 'package.json'));
 const { findExpoModulesForPlatform } = require(
   path.join(root, 'packages/expo-qnx-autolinking/src/index.js')
 );
-const project = await realpath(await mkdtemp(path.join(tmpdir(), 'rnqnx-integrated-consumer-')));
+const temporaryRoot = await realpath(
+  await mkdtemp(path.join(tmpdir(), 'rnqnx-integrated-consumer-'))
+);
+const project = path.join(temporaryRoot, 'external-app');
+await mkdir(project);
 const renderer = process.env.RNQNX_INTEGRATED_RENDERER;
 const evidence = process.env.RNQNX_INTEGRATED_EVIDENCE;
+const consumerBuild = process.env.RNQNX_CONSUMER_BUILD;
+if (consumerBuild && (!renderer || !evidence))
+  throw new Error('Consumer build needs the native renderer/evidence lane.');
 if (!!renderer !== !!evidence)
   throw new Error('Renderer and evidence directory must be specified together.');
 /** @param {string} executable @param {string[]} args @param {number} [timeout] */
@@ -70,9 +78,23 @@ function App() {
     React.createElement(Text, { style: { color: '#ffffff', fontSize: 28 } }, 'One external app'),
     React.createElement(Text, { style: { color: '#ffffff', fontSize: 18 } }, Platform.OS));
 }
-AppRegistry.registerComponent('RNQnxPlayground', () => App);
+AppRegistry.registerComponent('ExternalConsumer', () => App);
 `;
   await writeFile(path.join(project, 'index.js'), entry);
+  const appIdentity = {
+    appId: 'org.rnqnx.external',
+    displayName: 'External Notes',
+    componentName: 'ExternalConsumer',
+  };
+  await writeFile(
+    path.join(project, 'app.json'),
+    JSON.stringify({
+      expo: {
+        name: appIdentity.displayName,
+        extra: { rnqnx: { appId: appIdentity.appId, componentName: appIdentity.componentName } },
+      },
+    })
+  );
   await writeFile(
     path.join(project, 'babel.config.js'),
     "module.exports = { presets: ['babel-preset-expo'] };\n"
@@ -140,6 +162,22 @@ module.exports = withPublicEntry(${factory}(__dirname, {
     const bytes = await readFile(bundle);
     assert.ok(bytes.length > 10000);
     assert.equal(await readFile(path.join(project, 'index.js'), 'utf8'), entry);
+    const prepared = JSON.parse(
+      run(process.execPath, [
+        cli,
+        'project',
+        'prepare-native',
+        '--project',
+        project,
+        '--platform',
+        platform,
+      ])
+    );
+    assert.equal(prepared.configuration.componentName, appIdentity.componentName);
+    assert.equal(
+      prepared.configuration.bundleSha256,
+      createHash('sha256').update(bytes).digest('hex')
+    );
     const report = {
       platform,
       bundleBytes: bytes.length,
@@ -148,11 +186,28 @@ module.exports = withPublicEntry(${factory}(__dirname, {
       expoModuleCount: discovery.length,
       nativeRegistrationVerified: false,
       linuxHostRendered: false,
+      nativeConsumerBuilt: false,
+      relocatedConsumerRendered: false,
       targetDeviceVerified: false,
     };
     if (renderer && evidence) {
       const png = path.join(evidence, `external-${platform}.png`);
-      const log = run(renderer, ['--bundle', bundle, '--screenshot', png], 30000);
+      const log = run(
+        renderer,
+        [
+          '--bundle',
+          bundle,
+          '--app-id',
+          appIdentity.appId,
+          '--app-name',
+          appIdentity.displayName,
+          '--component-name',
+          appIdentity.componentName,
+          '--screenshot',
+          png,
+        ],
+        30000
+      );
       assert.ok(log.includes(`RNQNX_EXTERNAL_APP_READY platform=${platform}`));
       assert.ok(log.includes('RNQNX_PLAYGROUND_SCREENSHOT'));
       const image = await readFile(png);
@@ -168,6 +223,107 @@ module.exports = withPublicEntry(${factory}(__dirname, {
       );
       await copyFile(bundle, path.join(evidence, `external-${platform}.bundle.js`));
       report.linuxHostRendered = true;
+      const description = JSON.parse(
+        run(
+          renderer,
+          [
+            '--app-id',
+            appIdentity.appId,
+            '--app-name',
+            appIdentity.displayName,
+            '--component-name',
+            appIdentity.componentName,
+            '--describe-app',
+          ],
+          10000
+        )
+      );
+      assert.equal(description.applicationName, appIdentity.appId);
+      assert.equal(description.componentName, appIdentity.componentName);
+      const invalidPng = path.join(evidence, `unregistered-${platform}.png`);
+      const invalid = spawnSync(
+        renderer,
+        [
+          '--bundle',
+          bundle,
+          '--app-id',
+          appIdentity.appId,
+          '--app-name',
+          appIdentity.displayName,
+          '--component-name',
+          'NotRegistered',
+          '--screenshot',
+          invalidPng,
+        ],
+        { cwd: project, encoding: 'utf8', timeout: 30000, killSignal: 'SIGKILL' }
+      );
+      assert.equal(invalid.error, undefined);
+      assert.notEqual(invalid.status, 0);
+      await assert.rejects(readFile(invalidPng));
+      if (consumerBuild) {
+        const configured = run(
+          'cmake',
+          [
+            '-S',
+            root,
+            '-B',
+            consumerBuild,
+            '-DRNQNX_BUILD_CONSUMER_APP=ON',
+            '-DRNQNX_CONSUMER_HOST_PREVIEW=ON',
+            `-DRNQNX_CONSUMER_CONFIG=${prepared.output}`,
+          ],
+          120000
+        );
+        const built = run(
+          'cmake',
+          ['--build', consumerBuild, '--target', 'rnqnx_consumer_app', '-j', '2'],
+          180000
+        );
+        const output = path.join(consumerBuild, 'consumer', platform, appIdentity.appId);
+        const executable = path.join(output, appIdentity.appId);
+        const compiledIdentity = JSON.parse(run(executable, ['--describe-app'], 10000));
+        assert.equal(compiledIdentity.applicationName, appIdentity.appId);
+        assert.equal(compiledIdentity.desktopFileName, appIdentity.appId);
+        assert.equal(compiledIdentity.componentName, appIdentity.componentName);
+        const changed = spawnSync(
+          executable,
+          [
+            '--app-id',
+            'org.rnqnx.other',
+            '--app-name',
+            appIdentity.displayName,
+            '--component-name',
+            appIdentity.componentName,
+            '--describe-app',
+          ],
+          { encoding: 'utf8', timeout: 10000 }
+        );
+        assert.equal(changed.error, undefined);
+        assert.equal(changed.status, 2);
+        const moved = path.join(temporaryRoot, `relocated-${platform}`);
+        await mkdir(moved);
+        await cp(executable, path.join(moved, appIdentity.appId));
+        await cp(path.join(output, 'app.bundle.js'), path.join(moved, 'app.bundle.js'));
+        const movedPng = path.join(evidence, `consumer-${platform}.png`);
+        const movedLog = run(
+          path.join(moved, appIdentity.appId),
+          ['--screenshot', movedPng],
+          30000
+        );
+        assert.ok(movedLog.includes(`RNQNX_EXTERNAL_APP_READY platform=${platform}`));
+        assert.ok(movedLog.includes('RNQNX_PLAYGROUND_SCREENSHOT'));
+        assert.ok((await readFile(movedPng)).length > 8);
+        await writeFile(
+          path.join(evidence, `consumer-${platform}.log`),
+          configured + built + movedLog
+        );
+        await writeFile(
+          path.join(evidence, `consumer-${platform}-identity.json`),
+          JSON.stringify(compiledIdentity, null, 2)
+        );
+        report.nativeConsumerBuilt = true;
+        report.relocatedConsumerRendered = true;
+      }
     }
     reports.push(report);
     console.log(
@@ -183,5 +339,17 @@ module.exports = withPublicEntry(${factory}(__dirname, {
     );
   }
 } finally {
-  await rm(project, { recursive: true, force: true });
+  try {
+    if (consumerBuild) {
+      const restored = spawnSync(
+        'cmake',
+        ['-S', root, '-B', consumerBuild, '-DRNQNX_BUILD_CONSUMER_APP=OFF'],
+        { cwd: root, encoding: 'utf8', timeout: 120000, maxBuffer: 4 * 1024 * 1024 }
+      );
+      assert.equal(restored.error, undefined);
+      assert.equal(restored.status, 0, restored.stdout + restored.stderr);
+    }
+  } finally {
+    await rm(temporaryRoot, { recursive: true, force: true });
+  }
 }

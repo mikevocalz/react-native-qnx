@@ -2,7 +2,7 @@ name: SDK 58 full host renderer
 
 on:
   pull_request:
-    branches: [main, feat/qnx-integrated-dx-candidate]
+    branches: [main, feat/qnx-integrated-dx-candidate, feat/qnx-phases-1-7-integration]
   push:
     branches: [main]
   workflow_dispatch:
@@ -88,6 +88,7 @@ jobs:
         run: pnpm validate:clean-app --renderer "$PWD/build/linux-host-renderer/bin/rnqnx_playground_host"
       - name: Exercise one external public-import app through both target tools
         run: |
+          RNQNX_CONSUMER_BUILD="$PWD/build/linux-host-renderer" \
           RNQNX_INTEGRATED_RENDERER="$PWD/build/linux-host-renderer/bin/rnqnx_playground_host" \
           RNQNX_INTEGRATED_EVIDENCE="$PWD/build/linux-host-renderer/evidence/external-app" \
           node tests/js/qnx-integrated-consumer.test.mjs
