@@ -189,6 +189,7 @@ export async function createProjectMain(argv) {
   try {
     const artifacts = await packLocalPackages(destination, marathon);
     const versions = CONSUMER_CONTRACT.packages;
+    /** @type {Record<string, string>} */
     const scripts = {
       'bundle:qnx': 'metro build index.js --config metro.config.js --platform qnx --dev false --out build/qnx/app.bundle.js',
     };
