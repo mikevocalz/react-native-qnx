@@ -186,6 +186,7 @@ export async function createProjectMain(argv) {
     return 0;
   }
   await mkdir(destination, { mode: 0o700 });
+  const originalDestination = await lstat(destination);
   try {
     const artifacts = await packLocalPackages(destination, marathon);
     const versions = CONSUMER_CONTRACT.packages;
@@ -226,6 +227,32 @@ export async function createProjectMain(argv) {
         extra: { rnqnx: { appId: identity.appId, componentName: identity.componentName, platforms } },
       },
     }, null, 2) + '\n');
+    // Carry the reviewed pnpm overrides and patch inventory into the
+    // standalone consumer instead of silently dropping source/security fixes.
+    const workspace = await smallSource(path.join(sourceRoot, 'pnpm-workspace.yaml'));
+    const marker = '\noverrides:\n';
+    if (workspace.split(marker).length !== 2 || !workspace.includes('\npatchedDependencies:\n')) {
+      throw new Error('Platform workspace patch policy changed; review before creating apps.');
+    }
+    const policy = workspace.slice(workspace.indexOf(marker) + 1);
+    const locals = Object.entries(artifacts)
+      .map(([name, entry]) => "  '" + name + "': 'file:" + entry.file + "'")
+      .join('\n');
+    await writeFile(
+      path.join(destination, 'pnpm-workspace.yaml'),
+      "packages:\n  - '.'\n\n" + policy.replace('overrides:\n', 'overrides:\n' + locals + '\n')
+    );
+    await mkdir(path.join(destination, 'patches'));
+    const patches = [...policy.matchAll(/^  [^\n]+: (patches\/[A-Za-z0-9@._-]+\.patch)$/gm)];
+    if (patches.length !== 2) {
+      throw new Error('Platform patch inventory drifted; review required.');
+    }
+    for (const match of patches) {
+      await writeFile(
+        path.join(destination, match[1]),
+        await smallSource(path.join(sourceRoot, match[1]))
+      );
+    }
     await writeFile(path.join(destination, 'index.js'), [
       "import React from 'react';",
       "import { AppRegistry, View, Text, Pressable, StyleSheet } from 'react-native';",
@@ -244,19 +271,23 @@ export async function createProjectMain(argv) {
       '',
     ].join('\n'));
     await writeFile(path.join(destination, 'babel.config.js'), "module.exports = { presets: ['babel-preset-expo'] };\n");
-    await writeFile(path.join(destination, 'metro.config.js'), [
-      "const { getQnxMetroConfig } = require('@rn-qnx/metro-config-qnx');",
-      "const withPublicEntry = require('@rn-qnx/metro-config-qnx/public-entry');",
-      "module.exports = withPublicEntry(getQnxMetroConfig(__dirname), 'qnx');",
-      '',
-    ].join('\n'));
-    if (marathon) {
-      await writeFile(path.join(destination, 'metro.marathon.config.js'), [
-        "const { getMarathonMetroConfig } = require('@rn-qnx/metro-config-marathon');",
+    const metroConfig = (platform) => {
+      const factory = platform === 'qnx' ? 'getQnxMetroConfig' : 'getMarathonMetroConfig';
+      return [
+        "const path = require('node:path');",
+        "const { createRequire } = require('node:module');",
+        "const { " + factory + " } = require('@rn-qnx/metro-config-" + platform + "');",
         "const withPublicEntry = require('@rn-qnx/metro-config-qnx/public-entry');",
-        "module.exports = withPublicEntry(getMarathonMetroConfig(__dirname), 'marathon');",
+        "const rn = createRequire(require.resolve('react-native/package.json'));",
+        "module.exports = withPublicEntry(" + factory + "(__dirname, {",
+        "  resolver: { extraNodeModules: { '@babel/runtime': path.dirname(rn.resolve('@babel/runtime/package.json')) } },",
+        "}), '" + platform + "');",
         '',
-      ].join('\n'));
+      ].join('\n');
+    };
+    await writeFile(path.join(destination, 'metro.config.js'), metroConfig('qnx'));
+    if (marathon) {
+      await writeFile(path.join(destination, 'metro.marathon.config.js'), metroConfig('marathon'));
     }
     await writeFile(path.join(destination, '.gitignore'), 'node_modules/\nbuild/\n.pack-*/\n');
     await writeFile(path.join(destination, 'platform-packages.json'), JSON.stringify({
@@ -270,7 +301,10 @@ export async function createProjectMain(argv) {
   } catch (error) {
     // Only delete the uniquely created destination if nobody has replaced it.
     // Caller-created files are never adopted or overwritten.
-    await rm(destination, { recursive: true, force: true });
+    const current = await lstat(destination).catch(() => null);
+    if (current?.ino === originalDestination.ino && current.dev === originalDestination.dev && !current.isSymbolicLink()) {
+      await rm(destination, { recursive: true, force: true });
+    }
     throw error;
   }
 }
