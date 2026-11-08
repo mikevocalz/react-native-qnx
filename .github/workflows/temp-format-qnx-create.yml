@@ -1,0 +1,33 @@
+name: Temporary exact formatter for external Expo create branch
+on:
+  push:
+    branches: [feat/qnx-external-expo-create]
+permissions:
+  contents: write
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: feat/qnx-external-expo-create
+          persist-credentials: true
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Apply exact formatter only to this PR's source and test
+        run: |
+          pnpm exec prettier --write packages/react-native-qnx-cli/src/create-project.mjs tests/js/qnx-project-create.test.mjs
+          git diff --check
+          if ! git diff --quiet -- packages/react-native-qnx-cli/src/create-project.mjs tests/js/qnx-project-create.test.mjs; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add packages/react-native-qnx-cli/src/create-project.mjs tests/js/qnx-project-create.test.mjs
+            git commit -m "style(create): apply pinned Prettier 3.9.9"
+            git push origin HEAD:feat/qnx-external-expo-create
+          fi
