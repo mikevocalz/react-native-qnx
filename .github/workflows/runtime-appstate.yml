@@ -1,0 +1,51 @@
+name: Shared runtime AppState integration
+
+on:
+  pull_request:
+    paths:
+      - 'native/lifecycle/**'
+      - 'vnext/src/runtime/**'
+      - 'vnext/include/react-native-qnx/runtime/**'
+      - 'packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js'
+      - 'tests/native/appstate/**'
+      - 'cmake/RnqnxAppState.cmake'
+      - '.github/workflows/runtime-appstate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-appstate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Preserve exact committed and installed public API sources
+        run: |
+          set -euo pipefail
+          evidence="$PWD/build/appstate-source"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/commit.txt"
+          git archive --format=tar.gz --output="$evidence/source.tar.gz" HEAD
+          rn=$(node -p "require('path').dirname(require.resolve('react-native/package.json'))")
+          tar -czf "$evidence/react-native-contract.tar.gz" -C "$rn" package.json Libraries/AppState Libraries/EventEmitter Libraries/TurboModule ReactCommon/react/nativemodule/core ReactCommon/callinvoker
+          sha256sum "$evidence/source.tar.gz" "$evidence/react-native-contract.tar.gz" > "$evidence/SHA256SUMS"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: appstate-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: build/appstate-source/
+          retention-days: 3
