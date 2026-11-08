@@ -32,7 +32,7 @@ function token(name, value) {
   return value;
 }
 
-/** @param {string[]} command @param {number} maxMs */
+/** @param {string[]} command @param {number} maxMs @returns {Promise<string>} */
 async function commandRun(command, maxMs) {
   const [bin, ...args] = command;
   return new Promise((resolve, reject) => {
@@ -43,14 +43,15 @@ async function commandRun(command, maxMs) {
     let bytes = 0;
     let timedOut = false;
     const timer = setTimeout(() => { timedOut = true; child.kill('SIGTERM'); }, maxMs);
-    for (const [stream, isError] of [[child.stdout, false], [child.stderr, true]]) {
-      stream.on('data', (data) => {
-        bytes += data.length;
-        if (bytes > 8 * 1024 * 1024) child.kill('SIGTERM');
-        if (isError) errors += data.toString('utf8');
-        else output += data.toString('utf8');
-      });
-    }
+    /** @param {Buffer} data @param {boolean} isError */
+    const collect = (data, isError) => {
+      bytes += data.length;
+      if (bytes > 8 * 1024 * 1024) child.kill('SIGTERM');
+      if (isError) errors += data.toString('utf8');
+      else output += data.toString('utf8');
+    };
+    child.stdout?.on('data', (data) => collect(data, false));
+    child.stderr?.on('data', (data) => collect(data, true));
     child.once('error', (error) => { clearTimeout(timer); reject(error); });
     child.once('close', (code, signal) => {
       clearTimeout(timer);
@@ -129,6 +130,7 @@ export async function main(argv) {
   const evidence = path.join(root, 'artifacts', 'pi-final', stamp);
   await mkdir(evidence, { recursive: true, mode: 0o700 });
   const results = [];
+  /** @type {Record<string, any>} */
   const record = {
     schemaVersion: 1, issue: 43, board: 'pi400', image: 'custom CTI 8.0.5 (operator label)',
     sourceCommit: (await commandRun(['git', 'rev-parse', 'HEAD'], 10000)).trim(),
