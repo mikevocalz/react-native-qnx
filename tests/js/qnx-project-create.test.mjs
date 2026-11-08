@@ -8,6 +8,7 @@ import path from 'node:path';
 const root = await mkdtemp(path.join(tmpdir(), 'rnqnx-project-create-'));
 const cli = path.resolve('packages/react-native-qnx-cli/src/bin.mjs');
 const cache = path.join(root, 'npm-cache');
+/** @param {string[]} args */
 const run = (...args) =>
   spawnSync(process.execPath, [cli, 'project', 'create', ...args], {
     cwd: process.cwd(),
