@@ -1,0 +1,48 @@
+name: External consumer native application
+
+on:
+  pull_request:
+    paths:
+      - 'vnext/probes/playground/**'
+      - 'tests/cpp/ApplicationIdentityTest.cpp'
+      - 'packages/react-native-qnx-cli/**'
+      - 'tests/js/qnx-consumer-application*'
+      - 'cmake/RnqnxConsumerApplication.cmake'
+      - '.github/workflows/consumer-application.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: consumer-application-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Compile native identity validation with sanitizers
+        run: |
+          mkdir -p build/consumer-identity
+          c++ -std=c++20 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer tests/cpp/ApplicationIdentityTest.cpp -o build/consumer-identity/test
+          ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 build/consumer-identity/test | tee build/consumer-identity/test.log
+      - name: Preserve committed source and exact test provenance
+        run: |
+          git rev-parse HEAD > build/consumer-identity/commit.txt
+          git archive --format=tar.gz --output=build/consumer-identity/source.tar.gz HEAD
+          sha256sum build/consumer-identity/source.tar.gz build/consumer-identity/test > build/consumer-identity/SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: consumer-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            build/consumer-identity/commit.txt
+            build/consumer-identity/source.tar.gz
+            build/consumer-identity/test.log
+            build/consumer-identity/SHA256SUMS
+          retention-days: 3
