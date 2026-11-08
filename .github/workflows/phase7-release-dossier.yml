@@ -1,0 +1,65 @@
+name: Candidate release evidence integrity
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/qnx-release-dossier.mjs'
+      - 'tests/js/qnx-release-dossier.test.mjs'
+      - 'docs/getting-started/release-dossier.md'
+      - '.github/workflows/phase7-release-dossier.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase7-dossier-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dossier:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Verify source and existing application tooling
+        run: |
+          pnpm format:check
+          pnpm typecheck
+          pnpm validate:dependencies
+          pnpm validate:manifests
+          pnpm test:js
+          pnpm build:packages
+          pnpm validate:architecture
+          pnpm codegen:check
+          pnpm audit:dependencies
+      - name: Freeze actual candidate without granting release approval
+        run: |
+          set -euo pipefail
+          node scripts/qnx-release-dossier.mjs create --file build/release-candidate/dossier.json
+          node scripts/qnx-release-dossier.mjs verify --file build/release-candidate/dossier.json > build/release-candidate/verification.json
+          node -e "const r=require('./build/release-candidate/verification.json'); if(r.releaseAuthorized!==false || r.openGates.length!==7 || r.receiptCount!==0) process.exit(1)"
+          if pnpm validate:v1 > build/release-candidate/release-gate.txt 2>&1; then
+            echo 'Unexpected release approval: these experimental phases have no physical qualification.'
+            exit 1
+          fi
+          grep -F 'v1 is not release-ready' build/release-candidate/release-gate.txt
+          git diff --exit-code -- docs/releases/v1-readiness.json pnpm-lock.yaml
+          git rev-parse HEAD > build/release-candidate/tested-commit.txt
+          sha256sum build/release-candidate/dossier.json build/release-candidate/verification.json > build/release-candidate/SHA256SUMS
+      - name: Preserve candidate metadata, not physical-device proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate-dossier-${{ github.event.pull_request.head.sha || github.sha }}
+          path: build/release-candidate/
+          if-no-files-found: warn

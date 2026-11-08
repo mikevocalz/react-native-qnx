@@ -1,0 +1,42 @@
+name: Consumer project diagnostics
+on:
+  pull_request:
+    paths:
+      - 'packages/react-native-qnx-cli/src/doctor.mjs'
+      - 'packages/react-native-qnx-cli/src/consumer-contract.mjs'
+      - 'packages/react-native-qnx-cli/src/bin.mjs'
+      - 'tests/js/qnx-consumer-doctor*.test.mjs'
+      - 'docs/getting-started/consumer-project-doctor.md'
+      - '.github/workflows/phase6-doctor.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: consumer-doctor-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  diagnostics:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Verify full installed graph and real consumer CLI
+        run: |
+          pnpm format:check
+          pnpm typecheck
+          pnpm validate:dependencies
+          pnpm validate:manifests
+          pnpm test:js
+          pnpm build:packages
+          pnpm validate:architecture
+          pnpm codegen:check
+          pnpm audit:dependencies

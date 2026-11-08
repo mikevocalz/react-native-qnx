@@ -6,7 +6,7 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "rnqnx": "src/cli.mjs"
+    "rnqnx": "src/bin.mjs"
   },
   "engines": {
     "node": ">=26.0.0"
