@@ -44,6 +44,10 @@ jobs:
           pnpm run bundle:marathon
           test -s build/qnx/app.bundle.js
           test -s build/marathon/app.bundle.js
+          node "$GITHUB_WORKSPACE/packages/react-native-qnx-cli/src/bin.mjs" project prepare-native --project "$app" --platform qnx
+          node "$GITHUB_WORKSPACE/packages/react-native-qnx-cli/src/bin.mjs" project prepare-native --project "$app" --platform marathon
+          test -s build/qnx/native-app.json
+          test -s build/marathon/native-app.json
           sha256sum build/qnx/app.bundle.js build/marathon/app.bundle.js
       - name: Validate architecture, codegen and dependency integrity
         run: |
