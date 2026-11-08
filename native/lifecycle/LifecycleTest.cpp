@@ -44,7 +44,9 @@ class LifecycleTest final : public QObject {
       QCOMPARE(observer.snapshot().sequence, before);
       QCOMPARE(changes.count(), count);
     }
-    notify(static_cast<Qt::ApplicationState>(0x7fff));
+    // 3 is unnamed but inside this enum's representable range [0, 7].
+    // The former 0x7fff fixture itself invoked undefined enum behavior.
+    notify(static_cast<Qt::ApplicationState>(3));
     QCOMPARE(observer.snapshot().visibility, ApplicationVisibility::Unknown);
   }
   void independentObserversAndClose() {
@@ -95,6 +97,13 @@ class LifecycleTest final : public QObject {
     notify(Qt::ApplicationActive);
     QVERIFY(alive.isNull());
     notify(Qt::ApplicationHidden);
+  }
+  void quitClosesObservation() {
+    QtApplicationLifecycle observer(*qGuiApp);
+    QSignalSpy closed(&observer, &QtApplicationLifecycle::observationClosed);
+    QVERIFY(QMetaObject::invokeMethod(qGuiApp, "aboutToQuit", Qt::DirectConnection));
+    QVERIFY(observer.snapshot().closed);
+    QCOMPARE(closed.count(), 1);
   }
   void foreignThreadReadRejected() {
     QtApplicationLifecycle observer(*qGuiApp);
