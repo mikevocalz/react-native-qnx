@@ -71,6 +71,7 @@ async function packLocalPackages(output, marathon) {
   const staging = await mkdtemp(path.join(output, '.pack-'));
   const vendor = path.join(output, 'vendor');
   await mkdir(vendor);
+  /** @type {Record<string, string>} */
   const expected = { ...CONSUMER_CONTRACT.packages, ...CONSUMER_CONTRACT.marathonPackages };
   /** @type {Record<string, {version: string, file: string, sha256: string}>} */
   const artifacts = {};
@@ -337,6 +338,7 @@ export async function createProjectMain(argv) {
       path.join(destination, 'babel.config.js'),
       "module.exports = { presets: ['babel-preset-expo'] };\n"
     );
+    /** @param {'qnx'|'marathon'} platform */
     const metroConfig = (platform) => {
       const factory = platform === 'qnx' ? 'getQnxMetroConfig' : 'getMarathonMetroConfig';
       return [
