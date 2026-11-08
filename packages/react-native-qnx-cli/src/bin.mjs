@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 import { main } from './cli.mjs';
 import { projectMain } from './project.mjs';
+import { marathonMain } from '../../qnx-devtools/src/marathon.mjs';
 
 try {
   const args = process.argv.slice(2);
-  process.exitCode = args[0] === 'project' ? await projectMain(args.slice(1)) : await main(args);
+  if (args[0] === 'marathon') process.exitCode = await marathonMain(args.slice(1));
+  else if (args[0] === 'project') process.exitCode = await projectMain(args.slice(1));
+  else process.exitCode = await main(args);
   if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
     console.log('\nExternal apps: rnqnx project --help (bundling only; no native provisioning).');
+    console.log('Marathon development client: rnqnx marathon --help.');
   }
 } catch (error) {
   console.error(`rnqnx: ${error instanceof Error ? error.message : error}`);

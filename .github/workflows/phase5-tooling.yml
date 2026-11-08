@@ -1,0 +1,45 @@
+name: Marathon development tooling validation
+on:
+  pull_request:
+    paths:
+      - 'packages/qnx-devtools/src/marathon.mjs'
+      - 'packages/react-native-qnx-cli/src/bin.mjs'
+      - 'tests/js/marathon-development-launcher.test.mjs'
+      - '.github/workflows/phase5-tooling.yml'
+      - 'docs/getting-started/marathon-development-launcher.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tooling:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Validate dependencies and actual process tests
+        run: |
+          pnpm typecheck
+          pnpm validate:dependencies
+          pnpm test:js
+      - name: Preserve pinned formatter for local verification (temporary)
+        if: always()
+        run: |
+          mkdir -p build/formatter
+          node -e "const fs=require('fs');const path=require('path');fs.cpSync(path.dirname(require.resolve('prettier/package.json')),'build/formatter/prettier',{recursive:true});fs.copyFileSync('.prettierrc','build/formatter/.prettierrc');"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: phase5-pinned-formatter-${{ github.event.pull_request.head.sha || github.sha }}
+          path: build/formatter/
+          include-hidden-files: true
+          retention-days: 1
+      - run: pnpm format:check
