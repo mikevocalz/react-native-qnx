@@ -4,6 +4,16 @@ get_filename_component(RNQNX_REACT_QT_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLU
 
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxWebSockets.cmake)
 
+# Add the opt-in consumer only after the existing runtime and optional native
+# adapters have been declared. The OFF path leaves all original targets alone.
+option(RNQNX_BUILD_CONSUMER_APP "Build an external configured consumer application" OFF)
+option(RNQNX_CONSUMER_HOST_PREVIEW "Explicitly preview a QNX consumer on Linux (not QNX proof)" OFF)
+set(RNQNX_CONSUMER_CONFIG "" CACHE FILEPATH "Generated consumer native-app.json")
+if(RNQNX_BUILD_CONSUMER_APP)
+  include(${CMAKE_CURRENT_LIST_DIR}/RnqnxConsumerApp.cmake)
+  cmake_language(DEFER CALL rnqnx_add_consumer_app)
+endif()
+
 function(rnqnx_add_qt_views_target)
   if(TARGET rnqnx_views_qt)
     return()

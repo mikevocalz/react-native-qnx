@@ -1,0 +1,8 @@
+#pragma once
+#include "react-native-qnx/runtime/ApplicationIdentity.h"
+namespace rnqnx::runtime {
+inline ApplicationIdentity configuredApplicationIdentity() {
+  return {QString::fromUtf8("@appId_cpp@"), QString::fromUtf8("@displayName_cpp@"),
+      QString::fromUtf8("@componentName_cpp@"), true};
+}
+}

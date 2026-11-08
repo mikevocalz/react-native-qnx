@@ -1,0 +1,54 @@
+name: Native application identity
+on:
+  pull_request:
+    paths:
+      - 'vnext/include/react-native-qnx/runtime/ApplicationIdentity.h'
+      - 'native/app-identity/**'
+      - '.github/workflows/app-identity.yml'
+permissions:
+  contents: read
+jobs:
+  identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizers: ['OFF', 'ON']
+    env:
+      QT_QPA_PLATFORM: offscreen
+      ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
+      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          cache: true
+      - name: Compile and run real identity contract
+        run: |
+          set -euo pipefail
+          mkdir -p build/app-identity-evidence
+          git rev-parse HEAD > build/app-identity-evidence/commit.txt
+          cmake -S native/app-identity -B build/app-identity-off -G Ninja
+          cmake --build build/app-identity-off
+          cmake -S native/app-identity -B build/app-identity -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DRNQNX_BUILD_APP_IDENTITY_TESTS=ON -DRNQNX_APP_IDENTITY_SANITIZERS=${{ matrix.sanitizers }} -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build/app-identity -j 2
+          ctest --test-dir build/app-identity --output-on-failure -V 2>&1 | tee build/app-identity-evidence/tests.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: app-identity-${{ matrix.sanitizers }}-${{ github.event.pull_request.head.sha }}
+          path: build/app-identity-evidence/

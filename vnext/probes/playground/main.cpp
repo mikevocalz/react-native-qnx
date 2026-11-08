@@ -15,6 +15,10 @@
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
+#include "react-native-qnx/runtime/ApplicationIdentity.h"
+#ifdef RNQNX_CONSUMER_APP_HEADER
+#include RNQNX_CONSUMER_APP_HEADER
+#endif
 #include "react-native-qnx/fabric/QtTouchDispatcher.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
@@ -233,6 +237,7 @@ int main(int argc, char** argv) {
   parser.setApplicationDescription(
       QStringLiteral("Runs the React Native QNX playground in a window."));
   parser.addHelpOption();
+  rnqnx::runtime::addApplicationIdentityOptions(parser);
   const QCommandLineOption bundleOption(
       QStringLiteral("bundle"),
       QStringLiteral("Path to the Metro bundle."),
@@ -255,9 +260,29 @@ int main(int argc, char** argv) {
   parser.addOption(screenshotOption);
   parser.process(app);
 
+  rnqnx::runtime::ApplicationIdentity identity;
+  try {
+#ifdef RNQNX_CONSUMER_APP_HEADER
+    identity = rnqnx::runtime::configuredApplicationIdentity();
+#endif
+    identity = rnqnx::runtime::readApplicationIdentity(parser, identity);
+    rnqnx::runtime::applyApplicationIdentity(identity);
+  } catch (const std::exception& error) {
+    std::fprintf(stderr, "RNQNX_APP_IDENTITY_ERROR %s\n", error.what());
+    return 2;
+  }
+  if (parser.isSet(QStringLiteral("describe-app"))) {
+    std::printf("%s\n", rnqnx::runtime::describeApplicationIdentity(identity).constData());
+    return 0;
+  }
+
   const QString bundlePath = parser.isSet(bundleOption)
       ? parser.value(bundleOption)
+#ifdef RNQNX_CONSUMER_APP_HEADER
+      : QCoreApplication::applicationDirPath() + QStringLiteral("/app.bundle.js");
+#else
       : QStringLiteral(RNQNX_PLAYGROUND_BUNDLE_PATH);
+#endif
 
   QFile bundleFile(bundlePath);
   if (!bundleFile.open(QIODevice::ReadOnly)) {
@@ -275,6 +300,7 @@ int main(int argc, char** argv) {
 #else
   window.setTitle(QStringLiteral("react-native-qnx playground"));
 #endif
+  if (identity.custom) window.setTitle(identity.displayName);
   window.setWidth(kWindowWidth);
   window.setHeight(kWindowHeight);
   window.setColor(QColor(Qt::white));
@@ -368,7 +394,7 @@ int main(int argc, char** argv) {
   }
   host.startSurface(
       kSurfaceId,
-      "RNQnxPlayground",
+      identity.componentName.toStdString(),
       static_cast<float>(window.width()),
       static_cast<float>(window.height()));
 
