@@ -65,6 +65,13 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
   const flags = [
     '-DRNQNX_BUILD_CONSUMER_APP=ON',
     '-DRNQNX_CONSUMER_CONFIG=' + descriptorPath,
+    ...(platform === 'qnx' && !preview
+      ? [
+          '-DRNQNX_BUILD_REACT_QNX=ON',
+          '-DRNQNX_BUILD_HERMES_QNX=ON',
+          '-DRNQNX_FETCH_REACT_NATIVE_DEPS=ON',
+        ]
+      : []),
     ...(preview ? ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'] : []),
     ...(platform === 'marathon' ? ['-DRNQNX_BUILD_MARATHON_HOST=ON'] : []),
   ];
