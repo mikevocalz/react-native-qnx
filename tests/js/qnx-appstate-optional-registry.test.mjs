@@ -32,5 +32,5 @@ function load(module) {
 assert.equal(load(null), null, 'Disabled native capability must be unavailable');
 const actual = Object.freeze({ getConstants: () => ({ initialAppState: 'active' }) });
 assert.equal(load(actual), actual, 'Supported capability must be the actual registered module');
-assert.match(source, /module\\.exports\\s*=\\s*get\\('AppState'\\)/);
+assert.match(source, /module\.exports\s*=\s*get\('AppState'\)/);
 console.log('AppState optional registry: null when disabled, actual native module when enabled (host VM only).');
