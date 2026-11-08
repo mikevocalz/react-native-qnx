@@ -1,0 +1,56 @@
+name: External Expo project creation
+on:
+  pull_request:
+    paths:
+      - 'packages/react-native-qnx-cli/src/**'
+      - 'tests/js/qnx-project-create.test.mjs'
+      - 'docs/getting-started/expo-project-create.md'
+      - '.github/workflows/qnx-create-app.yml'
+permissions:
+  contents: read
+jobs:
+  create:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Validate source and dependencies
+        run: |
+          pnpm format:check
+          pnpm typecheck
+          pnpm validate:dependencies
+          pnpm validate:manifests
+      - name: Exercise source-distributed CLI and real local packages
+        run: |
+          node tests/js/qnx-project-create.test.mjs
+          pnpm test:js
+      - name: Build one externally generated Expo app for both JS targets
+        run: |
+          set -euo pipefail
+          app="$RUNNER_TEMP/rnqnx-created-dual"
+          node packages/react-native-qnx-cli/src/bin.mjs project create --project "$app" --app-id org.example.created --name Created --with-marathon
+          cd "$app"
+          pnpm install
+          pnpm run bundle:qnx
+          pnpm run bundle:marathon
+          test -s build/qnx/app.bundle.js
+          test -s build/marathon/app.bundle.js
+          node "$GITHUB_WORKSPACE/packages/react-native-qnx-cli/src/bin.mjs" project prepare-native --project "$app" --platform qnx
+          node "$GITHUB_WORKSPACE/packages/react-native-qnx-cli/src/bin.mjs" project prepare-native --project "$app" --platform marathon
+          test -s build/qnx/native-app.json
+          test -s build/marathon/native-app.json
+          sha256sum build/qnx/app.bundle.js build/marathon/app.bundle.js
+      - name: Validate architecture, codegen and dependency integrity
+        run: |
+          pnpm validate:architecture
+          pnpm codegen:check
+          pnpm audit:dependencies
