@@ -30,6 +30,7 @@ try {
   assert.equal(JSON.parse(created.stdout).action, 'created');
   const qnxManifest = JSON.parse(await readFile(path.join(qnx, 'package.json'), 'utf8'));
   assert.equal(qnxManifest.private, true);
+  assert.equal((await lstat(path.join(qnx, 'build', 'qnx'))).isDirectory(), true);
   assert.equal(qnxManifest.dependencies.expo, '58.0.22');
   assert.ok(qnxManifest.dependencies['@rn-qnx/react-native-qnx'].startsWith('file:vendor/'));
   assert.equal(qnxManifest.dependencies['@rn-qnx/react-native-marathon'], undefined);
@@ -63,6 +64,8 @@ try {
   );
   assert.equal(dual.status, 0, dual.stderr);
   const dualManifest = JSON.parse(await readFile(path.join(marathon, 'package.json'), 'utf8'));
+  assert.equal((await lstat(path.join(marathon, 'build', 'qnx'))).isDirectory(), true);
+  assert.equal((await lstat(path.join(marathon, 'build', 'marathon'))).isDirectory(), true);
   assert.ok(dualManifest.dependencies['@rn-qnx/react-native-marathon']);
   assert.ok(dualManifest.dependencies['@rn-qnx/metro-config-marathon']);
   assert.ok(dualManifest.scripts['bundle:marathon']);
