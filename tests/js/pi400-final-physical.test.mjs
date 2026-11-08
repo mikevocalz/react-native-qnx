@@ -15,7 +15,7 @@ assert.equal(report.issue, 43);
 assert.equal(report.mode, 'plan');
 assert.equal(report.board, 'pi400');
 assert.equal(report.stages.length, 5);
-assert.ok(report.stages.every((stage) => stage.status === 'not-run'));
+assert.ok(report.stages.every((/** @type {{status: string}} */ stage) => stage.status === 'not-run'));
 assert.equal(report.physicalVerified, false);
 assert.equal(report.stockQstiQualified, false);
 assert.equal(report.releaseAuthorized, false);
