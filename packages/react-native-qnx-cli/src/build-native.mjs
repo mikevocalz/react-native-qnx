@@ -40,9 +40,13 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
     throw new Error('The native Marathon client build currently requires Linux.');
   }
   if (!['qnx', 'marathon'].includes(platform)) throw new Error('Use qnx or marathon.');
-  const { root: project, configuration } = await nativeConfiguration(root, platform);
+  const project = await realpath(path.resolve(root));
   const descriptorPath = path.join(project, 'build', platform, 'native-app.json');
   const original = JSON.parse(await smallRegular(descriptorPath));
+  // Revalidate the exact selected bundle, including QNX .hbc inputs. A stale
+  // descriptor must never silently point to a different JS entry.
+  const relativeBundle = path.relative(project, original.bundle ?? '');
+  const { configuration } = await nativeConfiguration(project, platform, relativeBundle);
   if (JSON.stringify(original) !== JSON.stringify(configuration)) {
     throw new Error('Native descriptor is stale. Review the bundle and run project prepare-native.');
   }
