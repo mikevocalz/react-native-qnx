@@ -100,13 +100,16 @@ QnxAppStateModule::~QnxAppStateModule() {
 
 void QnxAppStateModule::invalidate() noexcept {
   if (!impl_) return;
+  // QtReactHost invalidates the observer on the application owner thread
+  // before the scheduler closes. TurboModule registry references may be
+  // released later on a different scheduler/GC thread. Once the owned Qt
+  // observer is gone there is nothing left to touch on that thread.
+  if (!impl_->observer) return;
   impl_->requireOwner();
   impl_->active = false;
   impl_->listeners = 0;
-  if (impl_->observer) {
-    impl_->observer->close();
-    impl_->observer.reset();
-  }
+  impl_->observer->close();
+  impl_->observer.reset();
 }
 
 jsi::Value QnxAppStateModule::getConstants(jsi::Runtime& runtime,
