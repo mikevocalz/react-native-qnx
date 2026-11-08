@@ -48,7 +48,9 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
   const relativeBundle = path.relative(project, original.bundle ?? '');
   const { configuration } = await nativeConfiguration(project, platform, relativeBundle);
   if (JSON.stringify(original) !== JSON.stringify(configuration)) {
-    throw new Error('Native descriptor is stale. Review the bundle and run project prepare-native.');
+    throw new Error(
+      'Native descriptor is stale. Review the bundle and run project prepare-native.'
+    );
   }
   const buildDir = path.join(project, 'build', platform, preview ? 'preview-native' : 'native');
   try {
@@ -72,12 +74,25 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
   if (platform === 'qnx' && !preview && (!process.env.QNX_HOST || !process.env.QNX_TARGET)) {
     throw new Error('QNX_HOST and QNX_TARGET must select an installed licensed QNX SDK.');
   }
-  const output = path.join(buildDir, 'consumer', platform, configuration.appId, configuration.appId);
+  const output = path.join(
+    buildDir,
+    'consumer',
+    platform,
+    configuration.appId,
+    configuration.appId
+  );
   return {
-    project, platform, preview, appId: configuration.appId, descriptorPath, buildDir, output,
+    project,
+    platform,
+    preview,
+    appId: configuration.appId,
+    descriptorPath,
+    buildDir,
+    output,
     configure: ['cmake', '--preset', preset, '-S', platformRoot, '-B', buildDir, ...flags],
     build: ['cmake', '--build', buildDir, '--target', 'rnqnx_consumer_app', '--parallel', '2'],
-    nativeBuildVerified: false, runtimeVerified: false,
+    nativeBuildVerified: false,
+    runtimeVerified: false,
   };
 }
 
@@ -125,7 +140,11 @@ export async function buildNativeMain(args) {
     return 0;
   }
   if (positionals.length) throw new Error('build-native accepts no positional arguments.');
-  const plan = await planNativeBuild(values.project ?? '.', values.platform ?? 'qnx', !!values['host-preview']);
+  const plan = await planNativeBuild(
+    values.project ?? '.',
+    values.platform ?? 'qnx',
+    !!values['host-preview']
+  );
   if (values['dry-run']) {
     console.log(JSON.stringify({ ...plan, action: 'dry-run' }, null, 2));
     return 0;
@@ -138,10 +157,23 @@ export async function buildNativeMain(args) {
   if (!stat.isFile() || stat.isSymbolicLink() || !stat.size) {
     throw new Error('CMake completed without a regular nonempty native executable.');
   }
-  const sha256 = createHash('sha256').update(await readFile(executable)).digest('hex');
-  console.log(JSON.stringify({
-    appId: plan.appId, platform: plan.platform, preview: plan.preview,
-    executable, sha256, nativeBuildVerified: true, runtimeVerified: false,
-  }, null, 2));
+  const sha256 = createHash('sha256')
+    .update(await readFile(executable))
+    .digest('hex');
+  console.log(
+    JSON.stringify(
+      {
+        appId: plan.appId,
+        platform: plan.platform,
+        preview: plan.preview,
+        executable,
+        sha256,
+        nativeBuildVerified: true,
+        runtimeVerified: false,
+      },
+      null,
+      2
+    )
+  );
   return 0;
 }
