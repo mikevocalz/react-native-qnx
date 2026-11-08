@@ -185,6 +185,7 @@ export async function main(argv) {
     .slice(0, 14);
   const evidence = path.join(root, 'artifacts', 'pi-final', stamp);
   await mkdir(evidence, { recursive: true, mode: 0o700 });
+  /** @type {Array<Record<string, unknown>>} */
   const results = [];
   /** @type {Record<string, any>} */
   const record = {
@@ -202,12 +203,13 @@ export async function main(argv) {
   };
   const save = async () =>
     writeFile(path.join(evidence, 'result.json'), JSON.stringify(record, null, 2) + '\n');
+  /** @param {string} name @param {string[]} cmd @param {number} ms @returns {Promise<string>} */
   const required = async (name, cmd, ms) => {
     const result = await runStage(name, cmd, ms);
     results.push(result);
     await save();
     if (result.status !== 'passed') throw new Error('Pi 400 test failed: ' + name);
-    return result.output;
+    return result.output ?? '';
   };
   try {
     await required('pi400-preflight', ['bash', 'scripts/pi-preflight.sh'], 120000);
