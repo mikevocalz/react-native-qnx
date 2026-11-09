@@ -166,7 +166,9 @@ assert.equal(switchElement.props.thumbTintColor, '#ffffff');
 // is controlled here; decoding/networking belong to the Qt/Hermes host tests.
 const imageCalls = /** @type {unknown[][]} */ ([]);
 const imageFailure = new Error('image decode failed');
-const imageLoader = /** @type {Record<string, (...args: any[]) => Promise<any>>} */ ({
+const cacheStatuses = Object.freeze({ 'https://example.test/cached.png': 'memory' });
+const nativeCachePromise = Promise.resolve(cacheStatuses);
+const imageLoader = /** @type {Record<string, (...args: any[]) => unknown>} */ ({
   getSize(uri) {
     imageCalls.push(['getSize', uri]);
     return uri === 'broken' ? Promise.reject(imageFailure) : Promise.resolve([23, 17]);
@@ -187,12 +189,13 @@ const imageLoader = /** @type {Record<string, (...args: any[]) => Promise<any>>}
   },
   queryCache(uris) {
     imageCalls.push(['queryCache', uris]);
-    return Promise.resolve({ 'https://example.test/cached.png': 'memory' });
+    return nativeCachePromise;
   },
 });
 const imageModule = { exports: /** @type {any} */ ({}) };
 const imageWarnings = /** @type {string[]} */ ([]);
 let imageNativeLoads = 0;
+let imageLoaderLookupFailure = /** @type {Error | undefined} */ (undefined);
 const resolveAssetSource = (/** @type {unknown} */ source) => source;
 vm.runInNewContext(
   await readFile(path.join(root, 'packages/react-native-qnx/Libraries/Image/Image.js'), 'utf8'),
@@ -207,6 +210,7 @@ vm.runInNewContext(
         return { default: resolveAssetSource };
       if (name === 'react-native/Libraries/Image/NativeImageLoaderIOS') {
         imageNativeLoads++;
+        if (imageLoaderLookupFailure) throw imageLoaderLookupFailure;
         return { default: imageLoader };
       }
       throw new Error(`Unexpected Image dependency ${name}`);
@@ -286,11 +290,52 @@ assert.deepEqual(imageCalls.pop(), ['prefetchImageWithMetadata', 'valid', 'galle
 delete imageLoader.prefetchImageWithMetadata;
 assert.equal(await Image.prefetchWithMetadata('valid', 'gallery'), true);
 assert.deepEqual(imageCalls.pop(), ['prefetchImage', 'valid']);
-const cacheUris = ['https://example.test/cached.png', 'https://example.test/missing.png'];
-assert.deepEqual(await Image.queryCache(cacheUris), {
-  'https://example.test/cached.png': 'memory',
-});
+const cacheUris = Object.freeze([
+  'https://example.test/cached.png',
+  'https://example.test/cached.png',
+  'https://example.test/missing.png',
+]);
+const queryCallsBefore = imageCalls.length;
+const cachePromise = Image.queryCache(cacheUris);
+assert.equal(imageCalls.length, queryCallsBefore + 1, 'Native cache lookup stays immediate');
+assert.equal(imageCalls.at(-1)?.[1], cacheUris, 'URI order and duplicates are forwarded intact');
+assert.notEqual(cachePromise, nativeCachePromise, 'RN queryCache returns a fresh Promise');
+assert.equal(await cachePromise, cacheStatuses, 'Native cache values are not reshaped');
 assert.deepEqual(imageCalls.pop(), ['queryCache', cacheUris]);
+
+// The wrapper preserves the upstream async function's settlement contract even
+// if module loading/native invocation throws, or a loader returns a thenable.
+for (const value of [
+  cacheStatuses,
+  {},
+  {
+    then: (/** @type {(value: unknown) => void} */ resolve) => resolve(cacheStatuses),
+  },
+]) {
+  imageLoader.queryCache = () => value;
+  const queried = Image.queryCache(cacheUris);
+  assert.equal(typeof queried.then, 'function');
+  assert.equal(await queried, 'then' in value ? cacheStatuses : value);
+}
+const queryFailure = new Error('queryCache failed');
+for (const query of [
+  () => {
+    throw queryFailure;
+  },
+  () => Promise.reject(queryFailure),
+  () => ({
+    get then() {
+      throw queryFailure;
+    },
+  }),
+]) {
+  imageLoader.queryCache = query;
+  const rejected = Image.queryCache(cacheUris); // A synchronous throw would fail here.
+  await assert.rejects(rejected, (error) => error === queryFailure);
+}
+imageLoaderLookupFailure = new Error('ImageLoader unavailable');
+const missingLoader = Image.queryCache(cacheUris);
+await assert.rejects(missingLoader, (error) => error === imageLoaderLookupFailure);
 console.log(
   'public-entry exports/resolver, Switch styles/events and Image loader contracts passed (host VM only)'
 );

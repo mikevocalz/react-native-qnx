@@ -58,8 +58,12 @@ function prefetchWithMetadata(uri, queryRootName, rootTag) {
   return loader.prefetchImage(uri);
 }
 
-async function queryCache(uris) {
-  return imageLoader().queryCache(uris);
+function queryCache(uris) {
+  // Preserve RN's fresh Promise and synchronous-error rejection without an
+  // async-to-generator transform requiring an undeclared Babel runtime helper.
+  return new Promise((resolve) => {
+    resolve(imageLoader().queryCache(uris));
+  });
 }
 
 function resolveImageSource(source) {
