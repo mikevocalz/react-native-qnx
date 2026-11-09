@@ -1,6 +1,6 @@
 # Final supervised Raspberry Pi 400 physical test
 
-Tracks [Issue #43](https://github.com/mikevocalz/react-native-qnx/issues/43) and the exact current [QNX-RN-008 / QNX-RN-009 queue](../handoff/QNX_VALIDATION_QUEUE.md). This is a **physical validation procedure**, not proof of a completed physical result.
+Tracks [Issue #43](https://github.com/mikevocalz/react-native-qnx/issues/43) and the exact current [QNX-RN-008 / QNX-RN-009 queue](../handoff/QNX_VALIDATION_QUEUE.md). This is a **physical validation procedure** plus one recorded supervised run on the custom CTI 8.0.5 consumer (exact head 1a29431, 11 stages). The evidence for that run lives in the PR #102 body and is not committed. It does not qualify stock QSTI, cold boot, interaction, performance or release.
 
 ## What the issue already proves
 
@@ -12,7 +12,7 @@ From a clean checkout using Node 26 and pnpm 12.8.1:
 
     node scripts/final-pi400-test.mjs plan
 
-This prints six stages with status **not-run**, never invokes SSH, installs packages, builds, reboots or alters the device. Host CI runs this path and its argument/permission tests without hardware. The execution regression tests use inert local commands and fixture artifacts, not a simulated device qualification pass.
+This prints six stages with status **not-run** (the plan lists 6 stages; execute records 11), never invokes SSH, installs packages, builds, reboots or alters the device. Host CI runs this path and its argument/permission tests without hardware. The execution regression tests use inert local commands and fixture artifacts, not a simulated device qualification pass.
 
 ## Supervised physical execution
 
@@ -37,7 +37,7 @@ The canonical AArch64 toolchain also selects `QNX_TARGET_ARCH=aarch64` for share
 
 If the verified target Qt uses FreeType without fontconfig and its default font directory is absent, explicitly select an **existing target** font directory with `RNQNX_PI_QT_FONTDIR=/absolute/target/font-directory`. The identity stage checks that directory and at least one readable regular `.ttf`, `.otf`, `.pfa` or `.pfb` file before any deployment. The selected path is recorded in the receipt and passed as `QT_QPA_FONTDIR` only to the final consumer process; no global Qt, SSH or boot configuration is changed. An unset selection preserves Qt's default lookup. This is a file-access preflight, not font-format, licensing or glyph correctness validation: record the chosen font fingerprints separately and inspect the actual rendered text. The directory is not searched recursively.
 
-Device evidence is written locally under a private, timestamped **artifacts/pi-final/** directory with a unique suffix. The result contains the candidate commit, HBC/executable/Hermes hashes, each observed stage outcome, and a native PNG hash if it exists. A render stage passes only after its marker is found; a capture stage passes only after regular-file, size, signature and hash checks. Missing markers or invalid captures are recorded as a failure of that exact stage, not only a top-level error. Scrub device hostnames, paths and other sensitive system information before sharing artifacts; the workflow does not automatically upload private physical-run logs. The independent reviewer must inspect the raw records and actual screen output.
+Device evidence is written locally under a private, timestamped **artifacts/pi-final/** directory with a unique suffix. The result contains the candidate commit, whether the source tree was clean (`sourceTreeClean`), HBC/executable/Hermes hashes, each observed stage outcome, and a native PNG hash if it exists. A render stage passes only after its marker is found; a capture stage passes only after regular-file, size, signature and hash checks. Missing markers or invalid captures are recorded as a failure of that exact stage, not only a top-level error. Scrub device hostnames, paths and other sensitive system information before sharing artifacts; the workflow does not automatically upload private physical-run logs. The independent reviewer must inspect the raw records and actual screen output.
 
 ## Optional process-local Qt runtime profile
 
@@ -81,7 +81,7 @@ Local cancellation does **not** prove that a command already accepted by the tar
 
 Even if the Pi 400 native screenshot passes, **all seven v1 release gates remain under independent review**, including a separate eligible open-source Qt distribution closure, candidate CI, 20 consecutive **supervised cold power cycles**, stock Pi 4/5 QSTI device parity, real presented-frame/RSS metrics for the three workloads, independent developer setup, and versioned release documentation. This runner never edits docs/releases/v1-readiness.json or announces release readiness. Its source code also does not assert Expo Router, arbitrary Nitro/Expo module compatibility, accessibility, Reanimated, RNGH or live MarathonOS shell parity.
 
-The QNX qualification reviewer owns the device execution and disposition; a separate maintainer reviews evidence. Until the actual run takes place, results are **not-run**, and the PR must remain draft.
+The QNX qualification reviewer owns the device execution and disposition; a separate maintainer reviews evidence. One supervised run is recorded on the custom CTI 8.0.5 consumer (evidence in the PR #102 body, not committed). Independent QNX and Qt review is still pending, and nothing here qualifies stock QSTI, cold boot, interaction, performance or release.
 
 ## Optional GitHub workflow
 

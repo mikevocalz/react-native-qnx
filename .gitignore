@@ -31,6 +31,8 @@ artifacts/logs/*
 !artifacts/logs/.gitkeep
 artifacts/g0/*
 !artifacts/g0/.gitkeep
+artifacts/pi-final/*
+!artifacts/pi-final/.gitkeep
 
 # Environment / secrets
 .env

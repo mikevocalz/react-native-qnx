@@ -351,6 +351,7 @@ export async function main(argv) {
     board: 'pi400',
     image: 'custom CTI 8.0.5 (operator label)',
     sourceCommit: (await commandRun(['git', 'rev-parse', 'HEAD'], 10000, env)).trim(),
+    sourceTreeClean: (await commandRun(['git', 'status', '--porcelain'], 10000, env)).trim() === '',
     qtFontDirectory: fontDirectory ?? null,
     runtimeLibraryPath: libraryPath,
     qtPluginDirectory: pluginDirectory ?? null,
