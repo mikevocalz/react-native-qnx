@@ -73,7 +73,7 @@ try {
     const check = path.join(root, 'architecture.cmake');
     await writeFile(
       check,
-      `include("${toolchain}")\nif(NOT QNX_TARGET_ARCH STREQUAL "aarch64" OR NOT CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")\n  message(FATAL_ERROR "Missing canonical AArch64 dependency-import identity")\nendif()\n`
+      `set(CMAKE_FIND_ROOT_PATH "${sdk}/target-dependencies")\ninclude("${toolchain}")\ninclude("${toolchain}")\nif(NOT QNX_TARGET_ARCH STREQUAL "aarch64" OR NOT CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")\n  message(FATAL_ERROR "Missing canonical AArch64 dependency-import identity")\nendif()\nlist(LENGTH CMAKE_FIND_ROOT_PATH root_count)\nif(NOT root_count EQUAL 2)\n  message(FATAL_ERROR "Target dependency roots must be preserved and deduplicated")\nendif()\nlist(GET CMAKE_FIND_ROOT_PATH 0 dependency_root)\nlist(GET CMAKE_FIND_ROOT_PATH 1 sysroot)\nif(NOT dependency_root STREQUAL "${sdk}/target-dependencies" OR NOT sysroot STREQUAL "${sdk}")\n  message(FATAL_ERROR "Target dependency root order or sysroot changed")\nendif()\nif(NOT CMAKE_FIND_ROOT_PATH_MODE_PACKAGE STREQUAL "ONLY" OR NOT CMAKE_FIND_ROOT_PATH_MODE_LIBRARY STREQUAL "ONLY" OR NOT CMAKE_FIND_ROOT_PATH_MODE_INCLUDE STREQUAL "ONLY" OR NOT CMAKE_FIND_ROOT_PATH_MODE_PROGRAM STREQUAL "NEVER")\n  message(FATAL_ERROR "Cross-compilation root filtering changed")\nendif()\n`
     );
     /** @param {string[]} [args] */
     const run = (args = []) =>
@@ -89,7 +89,7 @@ try {
       assert.notEqual(mismatch.status, 0);
       assert.match(mismatch.stderr, /QNX_TARGET_ARCH must be aarch64/);
     }
-  }, 'inert canonical toolchain architecture contract; no compiler execution');
+  }, 'inert canonical toolchain architecture/root contracts; no compiler execution');
   await createDescriptor('qnx');
   await createDescriptor('marathon');
   await caseNamed(async () => {
