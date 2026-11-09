@@ -31,7 +31,17 @@ frozen dependencies installed:
 ```bash
 pnpm install --frozen-lockfile
 pnpm qnx bundle-qnx --app component-conformance --out build/component-conformance.bundle.js
+mkdir -p build/assets/assets
+cp apps/component-conformance/assets/icon.png build/assets/assets/icon.png
 ```
+
+The current bundle command writes JavaScript only. Metro records this image's
+location as `/assets/assets/icon.png`; its deployed path must therefore be
+`assets/assets/icon.png` relative to the executable's staged bundle. Copy it
+alongside the native consumer output as well, not only to the source project.
+Automatic ordinary-image asset staging is not provided by this fixture or by
+launcher-icon registration. The explicit copy above is a packaging limitation,
+not evidence of a complete Expo asset pipeline.
 
 This creates JavaScript only. To render on a supported development host, follow
 the [Qt host prerequisites](../../docs/toolchain.md) and run:

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import vm from 'node:vm';
 
 const root = process.cwd();
 const app = path.join(root, 'apps/component-conformance');
@@ -62,11 +63,57 @@ assert.equal(png.readUInt32BE(16), 1024);
 assert.equal(png.readUInt32BE(20), 1024);
 assert.doesNotMatch(entry, /nitro-forge|NitroForge|premium\/assets/i);
 
+// Only JS registration/state is exercised here, not a renderer or native input.
+const registrations = new Map();
+const sandbox = vm.createContext({
+  /** @param {string} name */
+  require(name) {
+    if (name === 'react-native') {
+      return {
+        AppRegistry: {
+          /** @param {string} name @param {() => {name: string}} factory */
+          registerComponent: (name, factory) => registrations.set(name, factory),
+        },
+      };
+    }
+    if (name === './fixtures.js') return fixture;
+    return require(name);
+  },
+});
+vm.runInContext(entry, sandbox, { timeout: 1000 });
+assert.deepEqual([...registrations.keys()], ['RNQnxPlayground']);
+assert.equal(registrations.get('RNQnxPlayground')().name, 'ConformanceApp');
+const store = vm.runInContext('useConformance', sandbox);
+assert.equal(store.getState().page, 'gallery');
+assert.equal(store.getState().modal, false);
+store.getState().press();
+store.getState().press();
+store.getState().setModal(true);
+store.getState().setText('Synthetic edited text');
+store.getState().setToggle(true);
+store.getState().goTo('sections');
+store.getState().chooseRow('document-0021');
+store.getState().goTo('gallery');
+assert.equal(store.getState().presses, 2);
+assert.equal(store.getState().text, 'Synthetic edited text');
+assert.equal(store.getState().toggle, true);
+assert.equal(store.getState().row, 'document-0021');
+assert.equal(store.getState().modal, true);
+store.getState().setModal(false);
+assert.equal(store.getState().modal, false);
+assert.equal(store.getState().presses, 2);
+let widthUpdates = 0;
+const unsubscribe = store.subscribe(() => widthUpdates++);
+store.getState().setWidth(1920);
+store.getState().setWidth(1920);
+assert.equal(widthUpdates, 1);
+unsubscribe();
+
 const metro = await readFile(path.join(app, 'metro.config.js'), 'utf8');
 assert.match(metro, /getQnxMetroConfig/);
 assert.match(metro, /workspaceRoot/);
 assert.match(metro, /withPublicEntry/);
 
 console.log(
-  'qnx-component-conformance.test.mjs passed (deterministic fixtures, no false device passes, source-checkout entry contract; no QNX run)'
+  'qnx-component-conformance.test.mjs passed (deterministic fixtures, JS registration/state retention, public entry/assets; no renderer or QNX run)'
 );
