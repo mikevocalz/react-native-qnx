@@ -3,6 +3,22 @@
 // The fixture data never reads device properties, time, network, or user data.
 const SCENARIOS = Object.freeze([
   {
+    id: 'GALLERY-001',
+    title: 'Public React Native component gallery',
+    page: 'gallery',
+    status: 'not-run',
+    expectation:
+      'Observe the bundled image, press, edit, toggle, open and dismiss the modal; retain state between tabs.',
+  },
+  {
+    id: 'SECTIONS-001',
+    title: 'Grouped virtualized list',
+    page: 'sections',
+    status: 'not-run',
+    expectation:
+      'Scroll through grouped rows, select a row and retain selection after changing tabs.',
+  },
+  {
     id: 'LIST-001',
     title: '1,000-row document list',
     page: 'list',

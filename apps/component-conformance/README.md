@@ -5,6 +5,24 @@ path**. It is a source-checkout fixture, not a standalone npm package and not
 an installable QNX application. It uses synthetic data and no Nitro Forge
 components, binaries or entitlement code.
 
+The default **Components** page demonstrates public `react-native` imports:
+View/Text layout, a bundled Image, Pressable state, controlled TextInput,
+Switch, ActivityIndicator and a dismissible Modal. **Documents** and
+**Sections** exercise FlatList and SectionList separately (no nested
+virtualized list inside a plain ScrollView). Controls, Adaptive and Limits
+remain available; the existing blocked scenarios are not promoted.
+
+This fixture alone opts into the existing public entry using
+`withPublicEntry`; the platform default and other apps are unchanged.
+`app.json` gives this fixture the separate `org.rnqnx.showcase` identity and
+configured 1024px React Native icon. A native consumer must be built with
+that identity; the frozen Pi400Qualification executable cannot change its
+compiled app identity. Do not overwrite that qualified app or its bytecode.
+
+The gallery is not Qt Widgets or a hard-coded QML demo: React Native drives
+the existing Fabric/Yoga/Qt Quick renderer. It does not implement Fast
+Refresh, Reanimated, IME, screen-reader integration, or physical input proof.
+
 ## Build the QNX JavaScript bundle
 
 From the repository root, with Node 26+, pnpm 12.8.1 and the repository's

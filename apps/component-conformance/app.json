@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "QNX Components",
+    "slug": "qnx-components",
+    "icon": "./assets/icon.png",
+    "extra": {
+      "rnqnx": {
+        "appId": "org.rnqnx.showcase",
+        "componentName": "RNQnxPlayground",
+        "platforms": ["qnx"]
+      }
+    }
+  }
+}
