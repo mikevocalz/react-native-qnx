@@ -212,7 +212,38 @@ export async function targetConnection(source = process.env) {
     QNX_SSH_CONNECT_TIMEOUT: '10',
     QNX_SSH_MACS: 'hmac-sha2-256',
   };
-  return { target: user + '@' + host, targetRoot, fontDirectory, sshOptions, scpOptions, env };
+  const libraryDirectories = source.RNQNX_PI_LIBRARY_PATH?.split(':') ?? [];
+  if (
+    source.RNQNX_PI_LIBRARY_PATH !== undefined &&
+    (source.RNQNX_PI_LIBRARY_PATH.length > 4096 ||
+      libraryDirectories.length > 16 ||
+      libraryDirectories.some(
+        (directory) =>
+          !/^\/[A-Za-z0-9._/-]+$/.test(directory) || directory.split('/').includes('..')
+      ))
+  ) {
+    throw new Error('Runtime library path must contain confined absolute directories.');
+  }
+  const pluginDirectory = source.RNQNX_PI_QT_PLUGIN_PATH;
+  if (
+    pluginDirectory !== undefined &&
+    (!/^\/[A-Za-z0-9._/-]+$/.test(pluginDirectory) ||
+      pluginDirectory.length > 4096 ||
+      pluginDirectory.split('/').includes('..'))
+  ) {
+    throw new Error('Qt plugin directory must be a confined absolute path.');
+  }
+  return {
+    target: user + '@' + host,
+    targetRoot,
+    fontDirectory,
+    libraryDirectories,
+    libraryPath: ['.', ...libraryDirectories].join(':'),
+    pluginDirectory,
+    sshOptions,
+    scpOptions,
+    env,
+  };
 }
 
 /** @param {string} capture */
@@ -287,8 +318,17 @@ export async function main(argv) {
   if (process.env.RNQNX_FINAL_TEST_CONFIRM !== 'pi400' || process.env.RNQNX_PI_BOARD !== 'pi400') {
     throw new Error('Explicit Pi 400 consent and board selection are required.');
   }
-  const { target, targetRoot, fontDirectory, sshOptions, scpOptions, env } =
-    await targetConnection();
+  const {
+    target,
+    targetRoot,
+    fontDirectory,
+    libraryDirectories,
+    libraryPath,
+    pluginDirectory,
+    sshOptions,
+    scpOptions,
+    env,
+  } = await targetConnection();
   const app = values['consumer-project'];
   if (!app || !path.isAbsolute(app)) throw new Error('Use an absolute --consumer-project.');
   if (!process.env.QNX_HOST || !process.env.QNX_TARGET)
@@ -312,6 +352,8 @@ export async function main(argv) {
     image: 'custom CTI 8.0.5 (operator label)',
     sourceCommit: (await commandRun(['git', 'rev-parse', 'HEAD'], 10000, env)).trim(),
     qtFontDirectory: fontDirectory ?? null,
+    runtimeLibraryPath: libraryPath,
+    qtPluginDirectory: pluginDirectory ?? null,
     bundle: await fingerprint(configuration.bundle, 256 * 1024 * 1024),
     startedAt: new Date().toISOString(),
     results,
@@ -346,6 +388,29 @@ export async function main(argv) {
       '\'/*.pfb; do if test -f "$font" && test -r "$font"; then font_ok=yes; break; fi; done; ' +
       'test "$font_ok" = yes && printf "RNQNX_QT_FONTDIR_VERIFIED\\n"; }'
     : '';
+  const libraryCheck = libraryDirectories
+    .map(
+      (directory) =>
+        " && test -d '" +
+        directory +
+        "' && test -r '" +
+        directory +
+        "' && test -x '" +
+        directory +
+        "'"
+    )
+    .join('');
+  const pluginCheck = pluginDirectory
+    ? " && test -d '" +
+      pluginDirectory +
+      "' && test -x '" +
+      pluginDirectory +
+      "' && test -f '" +
+      pluginDirectory +
+      "/platforms/libqqnx.so' && test -r '" +
+      pluginDirectory +
+      "/platforms/libqqnx.so'"
+    : '';
   try {
     await required(
       'non-root-target',
@@ -354,7 +419,9 @@ export async function main(argv) {
         ...sshOptions,
         target,
         'uid=$(id -u) && test "$uid" -gt 0 && test "$(uname -s)" = QNX && test "$(uname -m)" = RaspberryPi400 && test "$(uname -p)" = aarch64le && printf "RNQNX_TARGET_UID=%s\\n" "$uid"' +
-          fontCheck,
+          fontCheck +
+          libraryCheck +
+          pluginCheck,
       ],
       30000
     );
@@ -403,8 +470,17 @@ export async function main(argv) {
     const remoteCommand =
       "cd '" +
       remote +
-      "' && chmod 700 ./app && LD_LIBRARY_PATH=. " +
+      "' && chmod 700 ./app && LD_LIBRARY_PATH=" +
+      libraryPath +
+      ' ' +
       (fontDirectory ? "QT_QPA_FONTDIR='" + fontDirectory + "' " : '') +
+      (pluginDirectory
+        ? "QT_PLUGIN_PATH='" +
+          pluginDirectory +
+          "' QT_QPA_PLATFORM_PLUGIN_PATH='" +
+          pluginDirectory +
+          "/platforms' "
+        : '') +
       './app --screenshot final.png';
     await required(
       'physical-consumer-render',

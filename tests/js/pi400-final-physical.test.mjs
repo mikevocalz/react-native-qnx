@@ -93,6 +93,35 @@ assert.equal(
   '/usr/share/fonts/dejavu'
 );
 assert.equal((await targetConnection({})).fontDirectory, undefined);
+assert.equal((await targetConnection({})).libraryPath, '.');
+assert.equal((await targetConnection({})).pluginDirectory, undefined);
+assert.equal(
+  (await targetConnection({ RNQNX_PI_LIBRARY_PATH: '/data/qt/lib:/usr/lib' })).libraryPath,
+  '.:/data/qt/lib:/usr/lib'
+);
+for (const RNQNX_PI_LIBRARY_PATH of [
+  '',
+  'relative',
+  '/data/../lib',
+  '/data/lib:',
+  ':/data/lib',
+  '/a::/b',
+  '/data/lib;false',
+  "/data/lib'",
+  '/data/my libs',
+  '/data/lib\nfalse',
+  Array(17).fill('/data/lib').join(':'),
+  '/' + 'a'.repeat(4096),
+]) {
+  await assert.rejects(targetConnection({ RNQNX_PI_LIBRARY_PATH }), /library path.*confined/);
+}
+for (const RNQNX_PI_QT_PLUGIN_PATH of ['', 'plugins', '/data/../plugins', '/data/plugins;false']) {
+  await assert.rejects(targetConnection({ RNQNX_PI_QT_PLUGIN_PATH }), /plugin directory.*confined/);
+}
+assert.equal(
+  (await targetConnection({ RNQNX_PI_QT_PLUGIN_PATH: '/data/qt/plugins' })).pluginDirectory,
+  '/data/qt/plugins'
+);
 
 const fixture = await mkdtemp(path.join(tmpdir(), 'rnqnx-pi400-safety-'));
 try {
@@ -195,6 +224,12 @@ try {
     'font-success',
     'font-directory-missing',
     'font-directory-empty',
+    'library-success',
+    'library-directory-missing',
+    'plugin-success',
+    'plugin-directory-missing',
+    'plugin-file-missing',
+    'runtime-profile-success',
     'root-alias',
     'wrong-board',
     'missing-marker',
@@ -221,12 +256,23 @@ try {
     }
     const app = path.join(sandbox, 'app');
     const fontDirectory = path.join(sandbox, 'fonts');
-    if (mode === 'font-success' || mode === 'font-directory-empty') {
+    if (['font-success', 'font-directory-empty', 'runtime-profile-success'].includes(mode)) {
       await mkdir(fontDirectory);
-      if (mode === 'font-success')
+      if (mode !== 'font-directory-empty')
         await writeFile(path.join(fontDirectory, 'fixture.ttf'), 'inert font-access fixture');
     }
     const bundle = path.join(app, 'build/qnx/release.hbc');
+    const libraryDirectories = [path.join(sandbox, 'lib-a'), path.join(sandbox, 'lib-b')];
+    if (mode.startsWith('library-') || mode === 'runtime-profile-success') {
+      await mkdir(libraryDirectories[0]);
+      if (mode !== 'library-directory-missing') await mkdir(libraryDirectories[1]);
+    }
+    const pluginDirectory = path.join(sandbox, 'plugins');
+    if (['plugin-success', 'plugin-file-missing', 'runtime-profile-success'].includes(mode)) {
+      await mkdir(path.join(pluginDirectory, 'platforms'), { recursive: true });
+      if (mode !== 'plugin-file-missing')
+        await writeFile(path.join(pluginDirectory, 'platforms/libqqnx.so'), 'inert plugin fixture');
+    }
     const bytes = Buffer.from('inert HBC fixture; not executable QNX bytecode');
     await writeFile(bundle, bytes);
     await writeFile(
@@ -326,7 +372,18 @@ try {
           QNX_SSH_BATCH_MODE: 'no',
           QNX_SSH_CONNECT_TIMEOUT: '9999',
           QNX_SSH_MACS: 'untrusted-macs',
-          RNQNX_PI_QT_FONTDIR: mode.startsWith('font-') ? fontDirectory : undefined,
+          RNQNX_PI_QT_FONTDIR:
+            mode.startsWith('font-') || mode === 'runtime-profile-success'
+              ? fontDirectory
+              : undefined,
+          RNQNX_PI_LIBRARY_PATH:
+            mode.startsWith('library-') || mode === 'runtime-profile-success'
+              ? libraryDirectories.join(':')
+              : undefined,
+          RNQNX_PI_QT_PLUGIN_PATH:
+            mode.startsWith('plugin-') || mode === 'runtime-profile-success'
+              ? pluginDirectory
+              : undefined,
         },
         encoding: 'utf8',
         timeout: 15000,
@@ -358,7 +415,15 @@ try {
       assert.ok(call.args.includes('2222'));
       assert.ok(!call.args.includes('BatchMode=no'));
     }
-    if (mode === 'success' || mode === 'font-success') {
+    if (
+      [
+        'success',
+        'font-success',
+        'library-success',
+        'plugin-success',
+        'runtime-profile-success',
+      ].includes(mode)
+    ) {
       assert.equal(executed.status, 0, executed.stderr);
       assert.equal(receipt.physicalRuntimeCapture, true, 'only an inert simulation receipt');
       assert.equal(receipt.releaseAuthorized, false);
@@ -366,13 +431,28 @@ try {
       assert.equal(receipt.coldBootQualified, false);
       assert.ok(receipt.hermesRuntime.sha256);
       assert.ok(receipt.capture.sha256);
-      assert.equal(receipt.qtFontDirectory, mode === 'font-success' ? fontDirectory : null);
+      const usesFont = mode === 'font-success' || mode === 'runtime-profile-success';
+      const usesLibraries = mode === 'library-success' || mode === 'runtime-profile-success';
+      const usesPlugins = mode === 'plugin-success' || mode === 'runtime-profile-success';
+      assert.equal(receipt.qtFontDirectory, usesFont ? fontDirectory : null);
       const render = calls
         .find((call) => call.tool === 'ssh' && call.args.at(-1).includes('--screenshot'))
         .args.at(-1);
-      assert.ok(render.includes('LD_LIBRARY_PATH=. '));
-      if (mode === 'font-success') {
-        assert.ok(render.includes("QT_QPA_FONTDIR='" + fontDirectory + "' ./app"));
+      const expectedLibraryPath = usesLibraries ? '.:' + libraryDirectories.join(':') : '.';
+      assert.ok(render.includes('LD_LIBRARY_PATH=' + expectedLibraryPath + ' '));
+      assert.equal(receipt.runtimeLibraryPath, expectedLibraryPath);
+      assert.equal(receipt.qtPluginDirectory, usesPlugins ? pluginDirectory : null);
+      if (usesPlugins) {
+        assert.ok(render.includes("QT_PLUGIN_PATH='" + pluginDirectory + "' "));
+        assert.ok(
+          render.includes("QT_QPA_PLATFORM_PLUGIN_PATH='" + pluginDirectory + "/platforms' ")
+        );
+      } else
+        assert.ok(
+          !render.includes('QT_PLUGIN_PATH=') && !render.includes('QT_QPA_PLATFORM_PLUGIN_PATH=')
+        );
+      if (usesFont) {
+        assert.ok(render.includes("QT_QPA_FONTDIR='" + fontDirectory + "' "));
         assert.match(receipt.results[0].output, /RNQNX_QT_FONTDIR_VERIFIED/);
       } else assert.ok(!render.includes('QT_QPA_FONTDIR='));
       assert.ok(
@@ -394,6 +474,9 @@ try {
         'root-alias': 'non-root-target',
         'font-directory-missing': 'non-root-target',
         'font-directory-empty': 'non-root-target',
+        'library-directory-missing': 'non-root-target',
+        'plugin-directory-missing': 'non-root-target',
+        'plugin-file-missing': 'non-root-target',
         'wrong-board': 'non-root-target',
         'missing-marker': 'physical-consumer-render',
         'invalid-png': 'physical-capture-download',
@@ -403,10 +486,10 @@ try {
       assert.equal(receipt.results.at(-1).status, 'failed');
       assert.notEqual(receipt.physicalRuntimeCapture, true);
       assert.equal(receipt.remoteCleanupVerified, false);
-      if (mode === 'root-alias' || mode === 'wrong-board' || mode.startsWith('font-'))
+      if (mode === 'root-alias' || mode === 'wrong-board' || /^(font|library|plugin)-/.test(mode))
         assert.ok(
           !calls.some((call) => call.tool === 'bash'),
-          'no preflight or deployment with invalid target identity or font profile'
+          'no preflight or deployment with invalid target identity or runtime profile'
         );
       if (mode === 'missing-hermes')
         assert.ok(

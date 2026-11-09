@@ -33,11 +33,33 @@ After the identity check, the runner executes the existing _real_ Pi preflight, 
 
 It **fails closed** if any executable, library, Qt plugin, QNX screen, Hermes bytecode, app registration, runtime module or frame capture is absent. A Linux preview, source validator, screenshot from the Linux host or completed upload cannot satisfy physical execution.
 
-The canonical AArch64 toolchain also selects `QNX_TARGET_ARCH=aarch64` for shared dependency imports and rejects a conflicting architecture, including on a fresh configure. An external target Qt SDK can be supplied through `CMAKE_FIND_ROOT_PATH`; the toolchain preserves those target roots, adds the QNX sysroot once, and retains target-only package/library/header filtering. For a custom Qt installation outside the system loader paths, configure the consumer's own CMake runtime search paths and verify the installed Qt plugins and fonts. The final `LD_LIBRARY_PATH=.` supplies the staged Hermes library, not arbitrary Qt installation paths. Record any Qt host paths, target dependency roots, RPATH and debug-symbol settings as part of the exact candidate's build profile; do not change system libraries or bypass a failed stage to manufacture a pass.
+The canonical AArch64 toolchain also selects `QNX_TARGET_ARCH=aarch64` for shared dependency imports and rejects a conflicting architecture, including on a fresh configure. An external target Qt SDK can be supplied through `CMAKE_FIND_ROOT_PATH`; the toolchain preserves those target roots, adds the QNX sysroot once, and retains target-only package/library/header filtering. For a custom Qt installation outside the system loader paths, configure the consumer's own CMake runtime search paths and verify the installed Qt plugins and fonts. By default, the final `LD_LIBRARY_PATH=.` supplies only the staged Hermes library; an explicit process-local profile below can supply the installed Qt dependency closure. Record any Qt host paths, target dependency roots, RPATH and debug-symbol settings as part of the exact candidate's build profile; do not change system libraries or bypass a failed stage to manufacture a pass.
 
 If the verified target Qt uses FreeType without fontconfig and its default font directory is absent, explicitly select an **existing target** font directory with `RNQNX_PI_QT_FONTDIR=/absolute/target/font-directory`. The identity stage checks that directory and at least one readable regular `.ttf`, `.otf`, `.pfa` or `.pfb` file before any deployment. The selected path is recorded in the receipt and passed as `QT_QPA_FONTDIR` only to the final consumer process; no global Qt, SSH or boot configuration is changed. An unset selection preserves Qt's default lookup. This is a file-access preflight, not font-format, licensing or glyph correctness validation: record the chosen font fingerprints separately and inspect the actual rendered text. The directory is not searched recursively.
 
 Device evidence is written locally under a private, timestamped **artifacts/pi-final/** directory with a unique suffix. The result contains the candidate commit, HBC/executable/Hermes hashes, each observed stage outcome, and a native PNG hash if it exists. A render stage passes only after its marker is found; a capture stage passes only after regular-file, size, signature and hash checks. Missing markers or invalid captures are recorded as a failure of that exact stage, not only a top-level error. Scrub device hostnames, paths and other sensitive system information before sharing artifacts; the workflow does not automatically upload private physical-run logs. The independent reviewer must inspect the raw records and actual screen output.
+
+## Optional process-local Qt runtime profile
+
+For Qt installed outside system loader paths, `RNQNX_PI_LIBRARY_PATH` accepts a
+colon-separated list of existing absolute target directories (at most 16 entries,
+4096 characters total). Empty entries, relative paths, parent traversal and shell
+metacharacters are rejected before SSH. The identity stage verifies directory
+read/search access before any deployment. Only the final consumer receives
+`LD_LIBRARY_PATH=.:<selected-directories>`; the isolated staged Hermes stays first.
+Unset preserves `LD_LIBRARY_PATH=.`. Verify the transitive dependency closure with
+this exact process-local profile; the executable's RPATH alone may not resolve
+dependencies of installed Qt libraries that retain their own SDK RPATH.
+
+For an explicitly selected Qt plugin installation, set
+`RNQNX_PI_QT_PLUGIN_PATH=/absolute/target/qt/plugins`. The identity stage requires
+a readable regular `platforms/libqqnx.so` before deployment. Only the consumer
+receives `QT_PLUGIN_PATH` and `QT_QPA_PLATFORM_PLUGIN_PATH` (the selected directory
+and its `platforms` subdirectory). Unset preserves default Qt plugin lookup.
+These selections and the effective library path are recorded in the receipt.
+Fingerprint the actual selected Qt libraries/plugin separately; directory/file
+access checks do not establish ABI compatibility, licensing or device execution.
+No global loader, Qt, SSH, system-library or boot setting is changed.
 
 ## Handle a failed stage
 
