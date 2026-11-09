@@ -130,7 +130,7 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
     bundle,
     bundleSha256: hash.digest('hex'),
   };
-  return { root, configuration };
+  return { root, configuration, app };
 }
 
 /** @param {string[]} argv */
@@ -159,7 +159,7 @@ export async function prepareNativeMain(argv) {
     return 0;
   }
   if (positionals.length) throw new Error('prepare-native does not accept positional arguments.');
-  const { root, configuration } = await nativeConfiguration(
+  const { root, configuration, app } = await nativeConfiguration(
     values.project ?? '.',
     values.platform ?? 'qnx',
     values.bundle
@@ -189,9 +189,20 @@ export async function prepareNativeMain(argv) {
       action = 'unchanged';
     }
   }
+  const launcher =
+    configuration.platform === 'qnx' && (app?.expo?.icon || app?.expo?.extra?.rnqnx?.qnx?.icon)
+      ? await (await import('./launcher.mjs')).prepareLauncher(root, !!values['dry-run'])
+      : null;
   console.log(
     JSON.stringify(
-      { action, output, configuration, nativeBuildVerified: false, runtimeVerified: false },
+      {
+        action,
+        output,
+        configuration,
+        launcher,
+        nativeBuildVerified: false,
+        runtimeVerified: false,
+      },
       null,
       2
     )

@@ -30,6 +30,12 @@ try {
   assert.equal(JSON.parse(created.stdout).action, 'created');
   const qnxManifest = JSON.parse(await readFile(path.join(qnx, 'package.json'), 'utf8'));
   assert.equal(qnxManifest.private, true);
+  const appConfig = JSON.parse(await readFile(path.join(qnx, 'app.json'), 'utf8'));
+  assert.equal(appConfig.expo.icon, './assets/icon.png');
+  assert.deepEqual(
+    await readFile(path.join(qnx, appConfig.expo.icon)),
+    await readFile('packages/react-native-qnx-cli/assets/icon.png')
+  );
   assert.equal((await lstat(path.join(qnx, 'build', 'qnx'))).isDirectory(), true);
   assert.equal(qnxManifest.dependencies.expo, '58.0.22');
   assert.ok(qnxManifest.dependencies['@rn-qnx/react-native-qnx'].startsWith('file:vendor/'));

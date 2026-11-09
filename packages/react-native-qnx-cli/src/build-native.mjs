@@ -5,6 +5,7 @@ import { lstat, readFile, realpath, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { nativeConfiguration } from './prepare-native.mjs';
+import { prepareLauncher } from './launcher.mjs';
 
 const platformRoot = path.resolve(import.meta.dirname, '../../..');
 const HELP = [
@@ -91,6 +92,7 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
   );
   return {
     project,
+    configuration,
     platform,
     preview,
     appId: configuration.appId,
@@ -171,6 +173,15 @@ export async function buildNativeMain(args) {
   const hash = createHash('sha256');
   for await (const chunk of createReadStream(executable)) hash.update(chunk);
   const sha256 = hash.digest('hex');
+  const { app } = await nativeConfiguration(
+    plan.project,
+    plan.platform,
+    path.relative(plan.project, plan.configuration.bundle)
+  );
+  const launcher =
+    plan.platform === 'qnx' && (app?.expo?.icon || app?.expo?.extra?.rnqnx?.qnx?.icon)
+      ? await prepareLauncher(plan.project)
+      : null;
   console.log(
     JSON.stringify(
       {
@@ -179,6 +190,7 @@ export async function buildNativeMain(args) {
         preview: plan.preview,
         executable,
         sha256,
+        launcher,
         nativeBuildVerified: true,
         runtimeVerified: false,
       },

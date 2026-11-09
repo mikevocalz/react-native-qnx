@@ -5,6 +5,7 @@ import { doctorMain } from './doctor.mjs';
 import { prepareNativeMain } from './prepare-native.mjs';
 import { createProjectMain } from './create-project.mjs';
 import { buildNativeMain } from './build-native.mjs';
+import { launcherMain } from './launcher-device.mjs';
 import { marathonMain } from '../../qnx-devtools/src/marathon.mjs';
 
 try {
@@ -13,6 +14,8 @@ try {
     process.exitCode = await doctorMain(args.slice(2));
   else if (args[0] === 'project' && args[1] === 'build-native')
     process.exitCode = await buildNativeMain(args.slice(2));
+  else if (args[0] === 'project' && args[1] === 'launcher')
+    process.exitCode = await launcherMain(args.slice(2));
   else if (args[0] === 'project' && args[1] === 'create')
     process.exitCode = await createProjectMain(args.slice(2));
   else if (args[0] === 'project' && args[1] === 'prepare-native')
@@ -25,6 +28,7 @@ try {
     console.log('Create a shared Expo app: rnqnx project create --help.');
     console.log('Native application configuration: rnqnx project prepare-native --help.');
     console.log('Build native consumer application: rnqnx project build-native --help.');
+    console.log('Configured QNX app icon/registration: rnqnx project launcher --help.');
     console.log('Consumer diagnostics: rnqnx project doctor --help.');
     console.log('Marathon development client: rnqnx marathon --help.');
   }

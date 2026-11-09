@@ -278,6 +278,7 @@ export async function createProjectMain(argv) {
         {
           expo: {
             name: identity.displayName,
+            icon: './assets/icon.png',
             slug: identity.appId.split('.').pop()?.toLowerCase(),
             extra: {
               rnqnx: { appId: identity.appId, componentName: identity.componentName, platforms },
@@ -287,6 +288,12 @@ export async function createProjectMain(argv) {
         null,
         2
       ) + '\n'
+    );
+    await mkdir(path.join(destination, 'assets'));
+    await cp(
+      path.join(sourceRoot, 'packages/react-native-qnx-cli/assets/icon.png'),
+      path.join(destination, 'assets/icon.png'),
+      { force: false, errorOnExist: true }
     );
     // Carry the reviewed pnpm overrides and patch inventory into the
     // standalone consumer instead of silently dropping source/security fixes.
