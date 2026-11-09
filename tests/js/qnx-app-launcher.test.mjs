@@ -399,7 +399,10 @@ try {
     await rm(planProject + '/build/qnx/native-app.json');
     // A good icon plans successfully.
     await writeApp({});
-    await copyFile('packages/react-native-qnx-cli/assets/icon.png', planProject + '/assets/icon.png');
+    await copyFile(
+      'packages/react-native-qnx-cli/assets/icon.png',
+      planProject + '/assets/icon.png'
+    );
     await prepare();
     check((await planNativeBuild(planProject, 'qnx')).appId === 'org.example.notes');
     // Each bad icon is rejected by planning with a launcher error, not a later build error.

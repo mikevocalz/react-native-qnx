@@ -193,10 +193,9 @@ export async function prepareNativeMain(argv) {
       action = 'unchanged';
     }
   }
-  const launcher =
-    launcherIcon
-      ? await (await import('./launcher.mjs')).prepareLauncher(root, !!values['dry-run'])
-      : null;
+  const launcher = launcherIcon
+    ? await (await import('./launcher.mjs')).prepareLauncher(root, !!values['dry-run'])
+    : null;
   console.log(
     JSON.stringify(
       {

@@ -187,9 +187,7 @@ export async function buildNativeMain(args) {
     path.relative(plan.project, plan.configuration.bundle)
   );
   const launcher =
-    plan.platform === 'qnx' && hasLauncherIcon(app)
-      ? await prepareLauncher(plan.project)
-      : null;
+    plan.platform === 'qnx' && hasLauncherIcon(app) ? await prepareLauncher(plan.project) : null;
   console.log(
     JSON.stringify(
       {
