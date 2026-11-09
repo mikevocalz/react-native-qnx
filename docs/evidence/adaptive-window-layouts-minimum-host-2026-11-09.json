@@ -1,0 +1,912 @@
+{
+  "clientHeight": 268,
+  "clientWidth": 464,
+  "labels": [
+    {
+      "fullyVisible": true,
+      "height": 27,
+      "text": "Component gallery",
+      "width": 169.59375,
+      "x": 24,
+      "y": 101
+    },
+    {
+      "fullyVisible": true,
+      "height": 20,
+      "text": "Browse sections",
+      "width": 117.515625,
+      "x": 323,
+      "y": 104
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Components",
+      "width": 120.09375,
+      "x": 20,
+      "y": 157
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Everyday controls, with room to work.",
+      "width": 231.609375,
+      "x": 20,
+      "y": 188
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Pressable",
+      "width": 93.546875,
+      "x": 39,
+      "y": 246
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "An action with immediate feedback.",
+      "width": 222.765625,
+      "x": 39,
+      "y": 277
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Press count: 3",
+      "width": 102.984375,
+      "x": 56,
+      "y": 327
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "TextInput",
+      "width": 89.171875,
+      "x": 39,
+      "y": 415
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Your text stays in place as the layout changes.",
+      "width": 286.234375,
+      "x": 39,
+      "y": 446
+    },
+    {
+      "fullyVisible": false,
+      "height": 48,
+      "text": "QNX input sample adaptive",
+      "width": 402,
+      "x": 39,
+      "y": 485
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "QNX input sample adaptive",
+      "width": 206.09375,
+      "x": 52,
+      "y": 496
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "React value: QNX input sample adaptive",
+      "width": 247.640625,
+      "x": 39,
+      "y": 545
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Switch + ActivityIndicator",
+      "width": 239.8125,
+      "x": 39,
+      "y": 620
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Native controls with visible state.",
+      "width": 205.078125,
+      "x": 39,
+      "y": 651
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Switch ON",
+      "width": 74.203125,
+      "x": 102,
+      "y": 694
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Modal",
+      "width": 58.78125,
+      "x": 39,
+      "y": 783
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "A focused dialog sized for the task.",
+      "width": 218.6875,
+      "x": 39,
+      "y": 814
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Open modal",
+      "width": 86.234375,
+      "x": 56,
+      "y": 864
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "View + Text",
+      "width": 108.28125,
+      "x": 39,
+      "y": 952
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Flexible native layout and readable text.",
+      "width": 244.1875,
+      "x": 39,
+      "y": 983
+    },
+    {
+      "fullyVisible": false,
+      "height": 31,
+      "text": "Hello, Qt Quick.",
+      "width": 162.734375,
+      "x": 39,
+      "y": 1022
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Image",
+      "width": 58.765625,
+      "x": 39,
+      "y": 1159
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "A bundled asset with its original proportions.",
+      "width": 277.25,
+      "x": 39,
+      "y": 1190
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "PNG decoded by the image backend",
+      "width": 224.9375,
+      "x": 39,
+      "y": 1327
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Documents",
+      "width": 107.296875,
+      "x": 20,
+      "y": 157
+    },
+    {
+      "fullyVisible": false,
+      "height": 42,
+      "text": "1,000 synthetic documents. Selection and scroll position stay with this page.",
+      "width": 435.53125,
+      "x": 20,
+      "y": 188
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Selected: document-0001",
+      "width": 158.8125,
+      "x": 20,
+      "y": 248
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0001",
+      "width": 113.296875,
+      "x": 36,
+      "y": 219
+    },
+    {
+      "fullyVisible": false,
+      "height": 20,
+      "text": "Synthetic conformance item 0001",
+      "width": 195.0625,
+      "x": 36,
+      "y": 242
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0002",
+      "width": 113.296875,
+      "x": 36,
+      "y": 283
+    },
+    {
+      "fullyVisible": false,
+      "height": 20,
+      "text": "Synthetic conformance item 0002",
+      "width": 195.0625,
+      "x": 36,
+      "y": 306
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0003",
+      "width": 113.296875,
+      "x": 36,
+      "y": 347
+    },
+    {
+      "fullyVisible": false,
+      "height": 20,
+      "text": "Synthetic conformance item 0003",
+      "width": 195.0625,
+      "x": 36,
+      "y": 370
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0004",
+      "width": 113.296875,
+      "x": 36,
+      "y": 411
+    },
+    {
+      "fullyVisible": false,
+      "height": 20,
+      "text": "Synthetic conformance item 0004",
+      "width": 196.0625,
+      "x": 36,
+      "y": 434
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0005",
+      "width": 113.296875,
+      "x": 36,
+      "y": 475
+    },
+    {
+      "fullyVisible": false,
+      "height": 20,
+      "text": "Synthetic conformance item 0005",
+      "width": 195.0625,
+      "x": 36,
+      "y": 498
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0006",
+      "width": 113.296875,
+      "x": 36,
+      "y": 539
+    },
+    {
+      "fullyVisible": false,
+      "height": 20,
+      "text": "Synthetic conformance item 0006",
+      "width": 195.0625,
+      "x": 36,
+      "y": 562
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0007",
+      "width": 113.296875,
+      "x": 36,
+      "y": 603
+    },
+    {
+      "fullyVisible": false,
+      "height": 20,
+      "text": "Synthetic conformance item 0007",
+      "width": 195.0625,
+      "x": 36,
+      "y": 626
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0008",
+      "width": 113.296875,
+      "x": 36,
+      "y": 667
+    },
+    {
+      "fullyVisible": false,
+      "height": 20,
+      "text": "Synthetic conformance item 0008",
+      "width": 195.0625,
+      "x": 36,
+      "y": 690
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0009",
+      "width": 113.296875,
+      "x": 36,
+      "y": 731
+    },
+    {
+      "fullyVisible": false,
+      "height": 20,
+      "text": "Synthetic conformance item 0009",
+      "width": 195.0625,
+      "x": 36,
+      "y": 754
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0010",
+      "width": 113.296875,
+      "x": 36,
+      "y": 795
+    },
+    {
+      "fullyVisible": false,
+      "height": 20,
+      "text": "Synthetic conformance item 0010",
+      "width": 195.0625,
+      "x": 36,
+      "y": 818
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0011",
+      "width": 113.296875,
+      "x": 36,
+      "y": 859
+    },
+    {
+      "fullyVisible": false,
+      "height": 20,
+      "text": "Synthetic conformance item 0011",
+      "width": 195.0625,
+      "x": 36,
+      "y": 882
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0012",
+      "width": 113.296875,
+      "x": 36,
+      "y": 923
+    },
+    {
+      "fullyVisible": false,
+      "height": 20,
+      "text": "Synthetic conformance item 0012",
+      "width": 195.0625,
+      "x": 36,
+      "y": 946
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Sections",
+      "width": 81.9375,
+      "x": 20,
+      "y": 157
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Grouped native list content, with the same selected document.",
+      "width": 386.453125,
+      "x": 20,
+      "y": 188
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Selected: document-0001",
+      "width": 158.8125,
+      "x": 20,
+      "y": 227
+    },
+    {
+      "fullyVisible": false,
+      "height": 25,
+      "text": "Layout and content",
+      "width": 153.40625,
+      "x": 34,
+      "y": 274
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0001",
+      "width": 113.296875,
+      "x": 36,
+      "y": 327
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0002",
+      "width": 113.296875,
+      "x": 36,
+      "y": 379
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0003",
+      "width": 113.296875,
+      "x": 36,
+      "y": 431
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0004",
+      "width": 113.296875,
+      "x": 36,
+      "y": 483
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0005",
+      "width": 113.296875,
+      "x": 36,
+      "y": 535
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0006",
+      "width": 113.296875,
+      "x": 36,
+      "y": 587
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0007",
+      "width": 113.296875,
+      "x": 36,
+      "y": 639
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0008",
+      "width": 113.296875,
+      "x": 36,
+      "y": 691
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0009",
+      "width": 113.296875,
+      "x": 36,
+      "y": 743
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0010",
+      "width": 113.296875,
+      "x": 36,
+      "y": 795
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0011",
+      "width": 113.296875,
+      "x": 36,
+      "y": 847
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0012",
+      "width": 113.296875,
+      "x": 36,
+      "y": 899
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0013",
+      "width": 113.296875,
+      "x": 36,
+      "y": 951
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0014",
+      "width": 113.296875,
+      "x": 36,
+      "y": 1003
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0015",
+      "width": 113.296875,
+      "x": 36,
+      "y": 1055
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Document 0016",
+      "width": 113.296875,
+      "x": 36,
+      "y": 1107
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Controls",
+      "width": 79.828125,
+      "x": 20,
+      "y": 157
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "The same state, in a focused form.",
+      "width": 215.609375,
+      "x": 20,
+      "y": 188
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Editable text",
+      "width": 88.015625,
+      "x": 20,
+      "y": 227
+    },
+    {
+      "fullyVisible": false,
+      "height": 48,
+      "text": "QNX input sample adaptive",
+      "width": 440,
+      "x": 20,
+      "y": 258
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "QNX input sample adaptive",
+      "width": 206.09375,
+      "x": 33,
+      "y": 269
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Observed text: QNX input sample adaptive",
+      "width": 261.78125,
+      "x": 20,
+      "y": 318
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Switch ON",
+      "width": 74.203125,
+      "x": 83,
+      "y": 363
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Press count: 3",
+      "width": 102.984375,
+      "x": 37,
+      "y": 421
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Open modal",
+      "width": 86.234375,
+      "x": 37,
+      "y": 486
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Adaptive",
+      "width": 83.078125,
+      "x": 20,
+      "y": -59
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "The same shell and grid used by this gallery.",
+      "width": 273.5625,
+      "x": 20,
+      "y": -28
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Window: 464 × 268 logical units · compact / compact",
+      "width": 330.03125,
+      "x": 20,
+      "y": 11
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Available main region: 464",
+      "width": 163.46875,
+      "x": 20,
+      "y": 48
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Document",
+      "width": 96.5,
+      "x": 39,
+      "y": 104
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "The selection survives layout changes.",
+      "width": 239.28125,
+      "x": 39,
+      "y": 135
+    },
+    {
+      "fullyVisible": true,
+      "height": 23,
+      "text": "Selected document-0001",
+      "width": 177.703125,
+      "x": 39,
+      "y": 174
+    },
+    {
+      "fullyVisible": true,
+      "height": 28,
+      "text": "Layout details",
+      "width": 131.703125,
+      "x": 39,
+      "y": 251
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "Actual window observations.",
+      "width": 178.890625,
+      "x": 39,
+      "y": 282
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Display scale: 1 · Font scale: 1",
+      "width": 212.65625,
+      "x": 39,
+      "y": 321
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "This view does not simulate a hinge or qualify multiple displays.",
+      "width": 394.53125,
+      "x": 39,
+      "y": 352
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Evidence and unsupported work",
+      "width": 301.71875,
+      "x": 20,
+      "y": 157
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Planned checks, not results from this binary or a connected Pi.",
+      "width": 386.796875,
+      "x": 20,
+      "y": 188
+    },
+    {
+      "fullyVisible": false,
+      "height": 46,
+      "text": "GALLERY-001 / Public React Native component gallery / not-run",
+      "width": 396.84375,
+      "x": 36,
+      "y": 243
+    },
+    {
+      "fullyVisible": false,
+      "height": 42,
+      "text": "Observe the bundled image, press, edit, toggle, open and dismiss the modal; retain state between tabs.",
+      "width": 400.796875,
+      "x": 36,
+      "y": 295
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "SECTIONS-001 / Grouped virtualized list / not-run",
+      "width": 348.765625,
+      "x": 36,
+      "y": 381
+    },
+    {
+      "fullyVisible": false,
+      "height": 42,
+      "text": "Scroll through grouped rows, select a row and retain selection after changing tabs.",
+      "width": 381.78125,
+      "x": 36,
+      "y": 410
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "LIST-001 / 1,000-row document list / not-run",
+      "width": 312.3125,
+      "x": 36,
+      "y": 496
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Scroll, select row 0500 and return without stale selection.",
+      "width": 354.1875,
+      "x": 36,
+      "y": 525
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "INPUT-001 / Controlled input and buttons / not-run",
+      "width": 356.84375,
+      "x": 36,
+      "y": 590
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Edit text, switch state, press twice and retain the visible values.",
+      "width": 388.5,
+      "x": 36,
+      "y": 619
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "LAYOUT-001 / Single/two-column layout / not-run",
+      "width": 349.1875,
+      "x": 36,
+      "y": 684
+    },
+    {
+      "fullyVisible": false,
+      "height": 42,
+      "text": "Resize between narrow and wide layouts without losing the selected row.",
+      "width": 365.78125,
+      "x": 36,
+      "y": 713
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "DRAWER-001 / Interruptible gesture drawer / blocked",
+      "width": 375.90625,
+      "x": 36,
+      "y": 799
+    },
+    {
+      "fullyVisible": false,
+      "height": 42,
+      "text": "Requires proven RNGH/Worklets interaction on the physical target.",
+      "width": 368.515625,
+      "x": 36,
+      "y": 828
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "IME-001 / Multilingual IME composition / blocked",
+      "width": 350.671875,
+      "x": 36,
+      "y": 914
+    },
+    {
+      "fullyVisible": false,
+      "height": 42,
+      "text": "Requires real software keyboard/IME provider and named font coverage.",
+      "width": 384.84375,
+      "x": 36,
+      "y": 943
+    },
+    {
+      "fullyVisible": false,
+      "height": 46,
+      "text": "NATIVE-001 / Non-premium Nitro document fixture / blocked",
+      "width": 371.265625,
+      "x": 36,
+      "y": 1029
+    },
+    {
+      "fullyVisible": false,
+      "height": 42,
+      "text": "Requires a generated, ABI-aligned QNX Nitro v1 document binding.",
+      "width": 358.703125,
+      "x": 36,
+      "y": 1081
+    },
+    {
+      "fullyVisible": false,
+      "height": 46,
+      "text": "SERVICE-001 / Permissioned system subscription / blocked",
+      "width": 364.28125,
+      "x": 36,
+      "y": 1167
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Requires native capability, permission-denied and disposal tests.",
+      "width": 399.484375,
+      "x": 36,
+      "y": 1219
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "LIFE-001 / Background and state restoration / blocked",
+      "width": 383.65625,
+      "x": 36,
+      "y": 1284
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Requires a tested QNX lifecycle adapter and restart observations.",
+      "width": 404.40625,
+      "x": 36,
+      "y": 1313
+    }
+  ],
+  "windowHeight": 360,
+  "windowWidth": 480
+}

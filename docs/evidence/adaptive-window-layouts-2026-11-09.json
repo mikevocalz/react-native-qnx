@@ -1,0 +1,838 @@
+{
+  "schemaVersion": 1,
+  "hostOnly": true,
+  "sourceCommit": "56093f7eaab414f206cd8f679abb36b0c2caea6c",
+  "sourceTree": "a0a01f4b406cdd023d3f6f78f7bb7eb3e8b128ad",
+  "prerequisiteCommit": "3b414f185ec9b6c23eb7fbfdbc0afc9bfed18b94",
+  "dependencyLockSha256": "b854ebe2e50a42b2e8e07124df065592d99d43b1d1a3a984b66d3835ad86c3e4",
+  "environment": {
+    "os": "Linux x86_64",
+    "displayBackend": "Qt offscreen/software",
+    "qt": "6.11.1",
+    "clang": "18.1.3",
+    "cmake": "3.31.10",
+    "node": "26.0.0",
+    "pnpm": "12.8.1",
+    "buildType": "Debug",
+    "reusedPinnedDependencySourceCache": true,
+    "sanitizers": "Selected host test executables; not every static renderer/Qt/Hermes object. ASan leak detection disabled."
+  },
+  "native": {
+    "off": {
+      "status": "passed",
+      "tests": 24,
+      "failed": 0,
+      "skipped": 0,
+      "elapsedSeconds": 88.76,
+      "ctestParallelism": 2,
+      "ctestReportedLocalTimestamp": "2026-11-09T13:02:44",
+      "configuration": {
+        "sourceCommit": "87793906dae1653f7ceca57097b51192f431c7aa",
+        "flags": {
+          "RNQNX_APPSTATE_SANITIZERS": "OFF",
+          "RNQNX_BUILD_APPSTATE_TESTS": "OFF",
+          "RNQNX_BUILD_CONSUMER_APP": "OFF",
+          "RNQNX_BUILD_EXPO_MODULES_QNX": "OFF",
+          "RNQNX_BUILD_FORGE_QNX": "OFF",
+          "RNQNX_BUILD_HERMES": "ON",
+          "RNQNX_BUILD_HERMES_QNX": "OFF",
+          "RNQNX_BUILD_MARATHON_HOST": "OFF",
+          "RNQNX_BUILD_NITRO_QNX": "OFF",
+          "RNQNX_BUILD_PLAYGROUND_QNX": "OFF",
+          "RNQNX_BUILD_QNX_SYSTEMS_PROBES": "OFF",
+          "RNQNX_BUILD_REACT_QNX": "OFF",
+          "RNQNX_BUILD_WEBSOCKET_JSI_TESTS": "OFF",
+          "RNQNX_CONSUMER_HOST_PREVIEW": "OFF",
+          "RNQNX_ENABLE_ACCESSIBILITY_BRIDGE": "OFF",
+          "RNQNX_ENABLE_APP_STATE": "OFF",
+          "RNQNX_ENABLE_DESKTOP_WINDOW": "OFF",
+          "RNQNX_ENABLE_FRAME_TRACE": "OFF",
+          "RNQNX_ENABLE_HOST_SANITIZERS": "ON",
+          "RNQNX_ENABLE_INPUT_LIFECYCLE": "OFF",
+          "RNQNX_ENABLE_NITRO_QT_DISPATCHER": "OFF",
+          "RNQNX_ENABLE_TEXT_INPUT_CONTRACT": "OFF",
+          "RNQNX_ENABLE_WEBSOCKETS": "OFF",
+          "RNQNX_FETCH_REACT_NATIVE_DEPS": "ON",
+          "RNQNX_G0_PROBE_ONLY": "OFF",
+          "RNQNX_REQUIRE_FULL_HOST_RENDERER": "ON",
+          "RNQNX_WARNINGS_AS_ERRORS": "ON"
+        },
+        "lockSha256": "b854ebe2e50a42b2e8e07124df065592d99d43b1d1a3a984b66d3835ad86c3e4",
+        "publishedSourceCommit": "56093f7eaab414f206cd8f679abb36b0c2caea6c",
+        "qualifiedSourceTree": "a0a01f4b406cdd023d3f6f78f7bb7eb3e8b128ad"
+      },
+      "cases": [
+        {
+          "name": "rnqnx_g0_cxx20_probe",
+          "status": "passed",
+          "seconds": 0.00339206
+        },
+        {
+          "name": "qnx_screen_surface_host_test",
+          "status": "passed",
+          "seconds": 0.0104506
+        },
+        {
+          "name": "rnqnx_wheel_direction",
+          "status": "passed",
+          "seconds": 0.321771
+        },
+        {
+          "name": "rnqnx_hermes_probe",
+          "status": "passed",
+          "seconds": 0.0663182
+        },
+        {
+          "name": "rnqnx_text_layout_host_test",
+          "status": "passed",
+          "seconds": 0.136844
+        },
+        {
+          "name": "rnqnx_view_focus_host_test",
+          "status": "passed",
+          "seconds": 2.89427
+        },
+        {
+          "name": "rnqnx_react_render_host_probe",
+          "status": "passed",
+          "seconds": 1.8249
+        },
+        {
+          "name": "rnqnx_react_render_host_probe_rejects_bad_bundles",
+          "status": "passed",
+          "seconds": 0.26005
+        },
+        {
+          "name": "rnqnx_consumer_window_input",
+          "status": "passed",
+          "seconds": 7.39494
+        },
+        {
+          "name": "rnqnx_consumer_window_rejects_interception",
+          "status": "passed",
+          "seconds": 10.1824
+        },
+        {
+          "name": "rnqnx_window_metrics_scale_1",
+          "status": "passed",
+          "seconds": 2.44606
+        },
+        {
+          "name": "rnqnx_window_metrics_scale_1_25",
+          "status": "passed",
+          "seconds": 2.57945
+        },
+        {
+          "name": "rnqnx_window_metrics_scale_2",
+          "status": "passed",
+          "seconds": 2.49153
+        },
+        {
+          "name": "rnqnx_component_gallery",
+          "status": "passed",
+          "seconds": 55.7445
+        },
+        {
+          "name": "rnqnx_font_license",
+          "status": "passed",
+          "seconds": 0.028841
+        },
+        {
+          "name": "rnqnx_playground_screenshot",
+          "status": "passed",
+          "seconds": 2.80002
+        },
+        {
+          "name": "rnqnx_playground_rejects_start_failure",
+          "status": "passed",
+          "seconds": 0.131307
+        },
+        {
+          "name": "rnqnx_playground_rejects_stop_failure",
+          "status": "passed",
+          "seconds": 0.0949212
+        },
+        {
+          "name": "qt_react_host_host_test",
+          "status": "passed",
+          "seconds": 85.6932
+        },
+        {
+          "name": "rnqnx_rn_headers_probe",
+          "status": "passed",
+          "seconds": 0.0151325
+        },
+        {
+          "name": "shadow_view_mutation_adapter_host_test",
+          "status": "passed",
+          "seconds": 0.0545834
+        },
+        {
+          "name": "shadow_tree_mounting_host_test",
+          "status": "passed",
+          "seconds": 0.059195
+        },
+        {
+          "name": "qtquick_mounting_layer_host_test",
+          "status": "passed",
+          "seconds": 0.152252
+        },
+        {
+          "name": "rnqnx_qtquick_host_probe",
+          "status": "passed",
+          "seconds": 0.0445201
+        }
+      ],
+      "junit": {
+        "path": "adaptive-window-layouts-native-off-2026-11-09.xml",
+        "bytes": 12428,
+        "sha256": "4998dd83d1e4028c176458f287bb39338e3310be82d0695dbfa271a16b899b8d"
+      },
+      "artifacts": {
+        "bin/rnqnx_component_gallery_test": {
+          "bytes": 105980976,
+          "sha256": "bb0136ba3cd41e26837a49df085d302496ece5757e3c40430257823e22d4fd83"
+        },
+        "bin/rnqnx_playground_host": {
+          "bytes": 102864416,
+          "sha256": "6de45c225416ba3d0c951b0e7f388b2c35d47034617c450a3d4f5eb930f82833"
+        },
+        "bin/rnqnx_window_metrics_test": {
+          "bytes": 104605144,
+          "sha256": "48c58cc179fb34112ebca083a8b73eb6f5f942b1683a7bc673f3c321119f9f13"
+        },
+        "bin/rnqnx_text_layout_host_test": {
+          "bytes": 97081168,
+          "sha256": "8c80772364f01aba58cf48e6d22d7e11498117ab49ee992ce371bf6623b267e2"
+        },
+        "bin/rnqnx_view_focus_host_test": {
+          "bytes": 104593640,
+          "sha256": "7c8eafc7c2e3024a97fbb9ca44e109d20330e58bf0370839971e7db4c43cda04"
+        },
+        "bin/shadow_view_mutation_adapter_host_test": {
+          "bytes": 95059928,
+          "sha256": "c32ca2f13a9da85a0126a095c1ee5c849ea020e89670858c17ec126aeb384054"
+        },
+        "component-gallery-fixture/app.bundle.js": {
+          "bytes": 703671,
+          "sha256": "f1377bfac90c73971d03ac211cf6e180dbac69ea4aaec2a812ec29504d51e44c"
+        },
+        "component-gallery-fixture/assets/assets/icon.png": {
+          "bytes": 68884,
+          "sha256": "cab067bf7b80610d922299070b649dc414b7939294b16f4f396adbeaf122ff02"
+        }
+      },
+      "galleryReceipt": {
+        "schemaVersion": 1,
+        "hostOnly": true,
+        "overallPassed": true,
+        "bundleSha256": "f1377bfac90c73971d03ac211cf6e180dbac69ea4aaec2a812ec29504d51e44c",
+        "imageSha256": "cab067bf7b80610d922299070b649dc414b7939294b16f4f396adbeaf122ff02",
+        "binarySha256": "bb0136ba3cd41e26837a49df085d302496ece5757e3c40430257823e22d4fd83"
+      }
+    },
+    "on": {
+      "status": "passed",
+      "tests": 40,
+      "failed": 0,
+      "skipped": 0,
+      "elapsedSeconds": 209.58,
+      "ctestParallelism": 2,
+      "ctestReportedLocalTimestamp": "2026-11-09T13:08:55",
+      "configuration": {
+        "sourceCommit": "87793906dae1653f7ceca57097b51192f431c7aa",
+        "flags": {
+          "RNQNX_APPSTATE_SANITIZERS": "OFF",
+          "RNQNX_BUILD_APPSTATE_TESTS": "OFF",
+          "RNQNX_BUILD_CONSUMER_APP": "OFF",
+          "RNQNX_BUILD_EXPO_MODULES_QNX": "OFF",
+          "RNQNX_BUILD_FORGE_QNX": "OFF",
+          "RNQNX_BUILD_HERMES": "ON",
+          "RNQNX_BUILD_HERMES_QNX": "OFF",
+          "RNQNX_BUILD_MARATHON_HOST": "OFF",
+          "RNQNX_BUILD_NITRO_QNX": "OFF",
+          "RNQNX_BUILD_PLAYGROUND_QNX": "OFF",
+          "RNQNX_BUILD_QNX_SYSTEMS_PROBES": "OFF",
+          "RNQNX_BUILD_REACT_QNX": "OFF",
+          "RNQNX_BUILD_WEBSOCKET_JSI_TESTS": "OFF",
+          "RNQNX_CONSUMER_HOST_PREVIEW": "OFF",
+          "RNQNX_ENABLE_ACCESSIBILITY_BRIDGE": "ON",
+          "RNQNX_ENABLE_APP_STATE": "OFF",
+          "RNQNX_ENABLE_DESKTOP_WINDOW": "ON",
+          "RNQNX_ENABLE_FRAME_TRACE": "OFF",
+          "RNQNX_ENABLE_HOST_SANITIZERS": "ON",
+          "RNQNX_ENABLE_INPUT_LIFECYCLE": "ON",
+          "RNQNX_ENABLE_NITRO_QT_DISPATCHER": "OFF",
+          "RNQNX_ENABLE_TEXT_INPUT_CONTRACT": "ON",
+          "RNQNX_ENABLE_WEBSOCKETS": "OFF",
+          "RNQNX_FETCH_REACT_NATIVE_DEPS": "ON",
+          "RNQNX_G0_PROBE_ONLY": "OFF",
+          "RNQNX_REQUIRE_FULL_HOST_RENDERER": "ON",
+          "RNQNX_WARNINGS_AS_ERRORS": "ON"
+        },
+        "lockSha256": "b854ebe2e50a42b2e8e07124df065592d99d43b1d1a3a984b66d3835ad86c3e4",
+        "publishedSourceCommit": "56093f7eaab414f206cd8f679abb36b0c2caea6c",
+        "qualifiedSourceTree": "a0a01f4b406cdd023d3f6f78f7bb7eb3e8b128ad"
+      },
+      "cases": [
+        {
+          "name": "rnqnx_g0_cxx20_probe",
+          "status": "passed",
+          "seconds": 0.00276487
+        },
+        {
+          "name": "qnx_screen_surface_host_test",
+          "status": "passed",
+          "seconds": 0.0119223
+        },
+        {
+          "name": "rnqnx_wheel_direction",
+          "status": "passed",
+          "seconds": 0.310195
+        },
+        {
+          "name": "rnqnx_hermes_probe",
+          "status": "passed",
+          "seconds": 0.0674651
+        },
+        {
+          "name": "rnqnx_text_layout_host_test",
+          "status": "passed",
+          "seconds": 0.157163
+        },
+        {
+          "name": "rnqnx_desktop_window",
+          "status": "passed",
+          "seconds": 1.20678
+        },
+        {
+          "name": "rnqnx_view_focus_host_test",
+          "status": "passed",
+          "seconds": 3.31221
+        },
+        {
+          "name": "rnqnx_accessibility_action_probe",
+          "status": "passed",
+          "seconds": 2.32615
+        },
+        {
+          "name": "rnqnx_accessibility_action_native_test",
+          "status": "passed",
+          "seconds": 0.0604584
+        },
+        {
+          "name": "rnqnx_accessibility_action_rejects_interception",
+          "status": "passed",
+          "seconds": 4.06497
+        },
+        {
+          "name": "rnqnx_accessibility_action_rejects_registration",
+          "status": "passed",
+          "seconds": 2.01062
+        },
+        {
+          "name": "rnqnx_accessibility_view_test",
+          "status": "passed",
+          "seconds": 0.03663
+        },
+        {
+          "name": "rnqnx_text_input_probe",
+          "status": "passed",
+          "seconds": 2.56598
+        },
+        {
+          "name": "rnqnx_text_input_bridge_test",
+          "status": "passed",
+          "seconds": 0.084862
+        },
+        {
+          "name": "rnqnx_text_input_rejects_interception",
+          "status": "passed",
+          "seconds": 4.33891
+        },
+        {
+          "name": "rnqnx_input_lifecycle_probe",
+          "status": "passed",
+          "seconds": 0.114167
+        },
+        {
+          "name": "rnqnx_input_lifecycle_rejects_interception",
+          "status": "passed",
+          "seconds": 0.109862
+        },
+        {
+          "name": "rnqnx_pressable_probe",
+          "status": "passed",
+          "seconds": 3.36918
+        },
+        {
+          "name": "rnqnx_pressable_rejects_interception",
+          "status": "passed",
+          "seconds": 3.8528
+        },
+        {
+          "name": "rnqnx_pressable_rejects_disabled_cancellation",
+          "status": "passed",
+          "seconds": 5.37289
+        },
+        {
+          "name": "rnqnx_react_render_host_probe",
+          "status": "passed",
+          "seconds": 1.77979
+        },
+        {
+          "name": "rnqnx_react_render_host_probe_rejects_bad_bundles",
+          "status": "passed",
+          "seconds": 0.248593
+        },
+        {
+          "name": "rnqnx_consumer_window_input",
+          "status": "passed",
+          "seconds": 7.25812
+        },
+        {
+          "name": "rnqnx_consumer_desktop_window_input",
+          "status": "passed",
+          "seconds": 6.85254
+        },
+        {
+          "name": "rnqnx_consumer_window_rejects_interception",
+          "status": "passed",
+          "seconds": 10.1439
+        },
+        {
+          "name": "rnqnx_window_metrics_scale_1",
+          "status": "passed",
+          "seconds": 2.21813
+        },
+        {
+          "name": "rnqnx_window_metrics_scale_1_25",
+          "status": "passed",
+          "seconds": 2.22481
+        },
+        {
+          "name": "rnqnx_window_metrics_scale_2",
+          "status": "passed",
+          "seconds": 2.34499
+        },
+        {
+          "name": "rnqnx_component_gallery",
+          "status": "passed",
+          "seconds": 54.1989
+        },
+        {
+          "name": "rnqnx_component_gallery_desktop",
+          "status": "passed",
+          "seconds": 107.612
+        },
+        {
+          "name": "rnqnx_font_license",
+          "status": "passed",
+          "seconds": 0.0292133
+        },
+        {
+          "name": "rnqnx_playground_screenshot",
+          "status": "passed",
+          "seconds": 2.57522
+        },
+        {
+          "name": "rnqnx_playground_rejects_start_failure",
+          "status": "passed",
+          "seconds": 0.112216
+        },
+        {
+          "name": "rnqnx_playground_rejects_stop_failure",
+          "status": "passed",
+          "seconds": 0.125725
+        },
+        {
+          "name": "qt_react_host_host_test",
+          "status": "passed",
+          "seconds": 83.1565
+        },
+        {
+          "name": "rnqnx_rn_headers_probe",
+          "status": "passed",
+          "seconds": 0.0142118
+        },
+        {
+          "name": "shadow_view_mutation_adapter_host_test",
+          "status": "passed",
+          "seconds": 0.0512264
+        },
+        {
+          "name": "shadow_tree_mounting_host_test",
+          "status": "passed",
+          "seconds": 0.0554445
+        },
+        {
+          "name": "qtquick_mounting_layer_host_test",
+          "status": "passed",
+          "seconds": 0.165219
+        },
+        {
+          "name": "rnqnx_qtquick_host_probe",
+          "status": "passed",
+          "seconds": 0.036126
+        }
+      ],
+      "junit": {
+        "path": "adaptive-window-layouts-native-on-2026-11-09.xml",
+        "bytes": 20188,
+        "sha256": "05ff7226d8e84f896fe8adffcabaed3e96d2a0f041f236f62c40244889f7d0e3"
+      },
+      "artifacts": {
+        "bin/rnqnx_component_gallery_test": {
+          "bytes": 107154736,
+          "sha256": "31c48a4633d9e7bf7e6f1ae3d30d1775ebe6be86409d23315b8327e32d16f43e"
+        },
+        "bin/rnqnx_playground_host": {
+          "bytes": 104052424,
+          "sha256": "953854ce5c1678b4772f541b249635c3e338d0dcc1865b68aa077ae80a6957e4"
+        },
+        "bin/rnqnx_window_metrics_test": {
+          "bytes": 105439760,
+          "sha256": "3f5051c1668a06d5b50eefebc73cc72564d6146ba2b84b776724d28e2293a90f"
+        },
+        "bin/rnqnx_text_layout_host_test": {
+          "bytes": 97902312,
+          "sha256": "682c99c191251e97e147bae67be08573978327a8323e1256af36d6b7d05e5db7"
+        },
+        "bin/rnqnx_view_focus_host_test": {
+          "bytes": 105424152,
+          "sha256": "0bd38d624d726e7c51dd6f8ac5a6b738af6762a6821b128b0773ef2a5d2c0bc7"
+        },
+        "bin/shadow_view_mutation_adapter_host_test": {
+          "bytes": 95889784,
+          "sha256": "c9ccddcc2f2d4031b9462355e8f47a05239d4b6cad74b378197b1b2c87b694de"
+        },
+        "component-gallery-fixture/app.bundle.js": {
+          "bytes": 703671,
+          "sha256": "f1377bfac90c73971d03ac211cf6e180dbac69ea4aaec2a812ec29504d51e44c"
+        },
+        "component-gallery-fixture/assets/assets/icon.png": {
+          "bytes": 68884,
+          "sha256": "cab067bf7b80610d922299070b649dc414b7939294b16f4f396adbeaf122ff02"
+        }
+      },
+      "galleryReceipt": {
+        "schemaVersion": 1,
+        "hostOnly": true,
+        "overallPassed": true,
+        "bundleSha256": "f1377bfac90c73971d03ac211cf6e180dbac69ea4aaec2a812ec29504d51e44c",
+        "imageSha256": "cab067bf7b80610d922299070b649dc414b7939294b16f4f396adbeaf122ff02",
+        "binarySha256": "31c48a4633d9e7bf7e6f1ae3d30d1775ebe6be86409d23315b8327e32d16f43e"
+      },
+      "desktopGalleryReceipt": {
+        "schemaVersion": 1,
+        "hostOnly": true,
+        "overallPassed": true,
+        "bundleSha256": "f1377bfac90c73971d03ac211cf6e180dbac69ea4aaec2a812ec29504d51e44c",
+        "imageSha256": "cab067bf7b80610d922299070b649dc414b7939294b16f4f396adbeaf122ff02",
+        "binarySha256": "31c48a4633d9e7bf7e6f1ae3d30d1775ebe6be86409d23315b8327e32d16f43e"
+      }
+    }
+  },
+  "javascript": {
+    "status": "environment-blocked",
+    "startedAt": "2026-11-09T17:59:48.914Z",
+    "finishedAt": "2026-11-09T18:00:48.655Z",
+    "sourceHead": "8597464d3f3d24d6bf505a5a968644ec82aadd81",
+    "node": "v26.0.0",
+    "executable": "<HOST_TOOLS>/toolchain/node_modules/node/bin/node",
+    "pnpm": "12.8.1",
+    "discovered": 52,
+    "passed": 51,
+    "blocked": [
+      {
+        "file": "marathon-development-launcher.test.mjs",
+        "reason": "Environment denies local Unix-socket listen with EPERM"
+      }
+    ],
+    "failed": [],
+    "fullGateExitCode": 1,
+    "continuationExitCode": 0,
+    "passedFiles": [
+      "accessibility-action-controls.test.mjs",
+      "accessibility-action-fixture-config.test.mjs",
+      "accessibility-view-config.test.mjs",
+      "braces-security.test.mjs",
+      "compression-security.test.mjs",
+      "docs-validation.test.mjs",
+      "expo-dual-discovery.test.mjs",
+      "expo-dual-platform.test.mjs",
+      "expo-modules2-compat.test.mjs",
+      "expo-qnx-autolinking.test.mjs",
+      "expo-qnx-discovery.test.mjs",
+      "expo-qnx-prepare.test.mjs",
+      "host-renderer-contract.test.mjs",
+      "js-runner.test.mjs",
+      "marathon-metro-platform.test.mjs",
+      "marathon-native-host-contract.test.mjs",
+      "nitro-api-skill-contract.test.mjs",
+      "nitro-dual-host-contract.test.mjs",
+      "nitro-platform-codegen.test.mjs",
+      "nitro-v1-native-migration.test.mjs",
+      "pi-evidence.test.mjs",
+      "pressable-cancellation.test.mjs",
+      "pressable-fixture-config.test.mjs",
+      "qnx-adaptive-layout.test.mjs",
+      "qnx-appstate-optional-registry.test.mjs",
+      "qnx-cli-evidence.test.mjs",
+      "qnx-cli.test.mjs",
+      "qnx-component-conformance.test.mjs",
+      "qnx-consumer-doctor-installed.test.mjs",
+      "qnx-consumer-doctor.test.mjs",
+      "qnx-consumer-native-config.test.mjs",
+      "qnx-device-tools.test.mjs",
+      "qnx-external-project-metro.test.mjs",
+      "qnx-external-project.test.mjs",
+      "qnx-integrated-consumer.test.mjs",
+      "qnx-native-consumer-build.test.mjs",
+      "qnx-performance-lab.test.mjs",
+      "qnx-project-create.test.mjs",
+      "qnx-public-entry-metro.test.mjs",
+      "qnx-public-entry.test.mjs",
+      "qnx-qualification.test.mjs",
+      "qnx-release-dossier.test.mjs",
+      "qnx-release-matrix.test.mjs",
+      "runtime-baseline-qnx.test.mjs",
+      "runtime-baseline.test.mjs",
+      "sdk58-stable-manifest-pins.test.mjs",
+      "shell-quote-security.test.mjs",
+      "source-map-security.test.mjs",
+      "text-input-fixture-config.test.mjs",
+      "text-input-qml-source.test.mjs",
+      "text-input-state.test.mjs"
+    ],
+    "logs": [
+      "build/adaptive-ui-validation/full-js.log",
+      "build/adaptive-ui-validation/remaining-js.log"
+    ],
+    "scope": "Official sorted dynamic-import runner up to the observed environmental failure; same sorted dynamic-import semantics for remaining files. No test edits or skips counted as passes; not QNX target qualification.",
+    "sourceIdentityNote": "8597464 plus the integration changes subsequently committed as 8779390; final source was frozen before native OFF/ON execution."
+  },
+  "commands": {
+    "off": {
+      "configure": [
+        "cmake",
+        "-S",
+        ".",
+        "-B",
+        "build/linux-adaptive",
+        "-DRNQNX_ENABLE_DESKTOP_WINDOW=OFF",
+        "-DRNQNX_ENABLE_INPUT_LIFECYCLE=OFF",
+        "-DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=OFF",
+        "-DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=OFF"
+      ],
+      "build": [
+        "cmake",
+        "--build",
+        "build/linux-adaptive",
+        "--target",
+        "rnqnx_g0_cxx20_probe",
+        "qnx_screen_surface_host_test",
+        "rnqnx_wheel_direction_test",
+        "rnqnx_hermes_probe",
+        "rnqnx_text_layout_host_test",
+        "rnqnx_view_focus_host_test",
+        "rnqnx_react_render_host_probe",
+        "qt_react_host_host_test",
+        "rnqnx_playground_host",
+        "rnqnx_consumer_input_test",
+        "rnqnx_window_metrics_test",
+        "rnqnx_component_gallery_test",
+        "rnqnx_rn_headers_probe",
+        "shadow_view_mutation_adapter_host_test",
+        "shadow_tree_mounting_host_test",
+        "qtquick_mounting_layer_host_test",
+        "rnqnx_qtquick_host_probe",
+        "--parallel",
+        "3"
+      ],
+      "test": [
+        "ctest",
+        "--test-dir",
+        "build/linux-adaptive",
+        "--parallel",
+        "2",
+        "--output-on-failure",
+        "--output-junit",
+        "<REPO>/build/adaptive-final-off.xml"
+      ]
+    },
+    "on": {
+      "configure": [
+        "cmake",
+        "-S",
+        ".",
+        "-B",
+        "build/linux-adaptive",
+        "-DRNQNX_ENABLE_DESKTOP_WINDOW=ON",
+        "-DRNQNX_ENABLE_INPUT_LIFECYCLE=ON",
+        "-DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=ON",
+        "-DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=ON"
+      ],
+      "build": [
+        "cmake",
+        "--build",
+        "build/linux-adaptive",
+        "--target",
+        "rnqnx_g0_cxx20_probe",
+        "qnx_screen_surface_host_test",
+        "rnqnx_wheel_direction_test",
+        "rnqnx_hermes_probe",
+        "rnqnx_text_layout_host_test",
+        "rnqnx_view_focus_host_test",
+        "rnqnx_desktop_window_test",
+        "rnqnx_accessibility_view_test",
+        "rnqnx_accessibility_action_probe",
+        "rnqnx_accessibility_action_native_test",
+        "rnqnx_text_input_probe",
+        "rnqnx_text_input_bridge_test",
+        "rnqnx_input_lifecycle_probe",
+        "rnqnx_pressable_probe",
+        "rnqnx_react_render_host_probe",
+        "qt_react_host_host_test",
+        "rnqnx_playground_host",
+        "rnqnx_consumer_input_test",
+        "rnqnx_window_metrics_test",
+        "rnqnx_component_gallery_test",
+        "rnqnx_rn_headers_probe",
+        "shadow_view_mutation_adapter_host_test",
+        "shadow_tree_mounting_host_test",
+        "qtquick_mounting_layer_host_test",
+        "rnqnx_qtquick_host_probe",
+        "--parallel",
+        "3"
+      ],
+      "test": [
+        "ctest",
+        "--test-dir",
+        "build/linux-adaptive",
+        "--parallel",
+        "2",
+        "--output-on-failure",
+        "--output-junit",
+        "<REPO>/build/adaptive-final-on.xml"
+      ]
+    }
+  },
+  "screenshots": {
+    "wide": {
+      "path": "adaptive-window-layouts-wide-host-2026-11-09.png",
+      "bytes": 80239,
+      "sha256": "eea002e8807880f954e7333bbc2ca5cb43992412fea7cbe863657ef685bf8f22",
+      "geometryPath": "adaptive-window-layouts-wide-host-2026-11-09.json",
+      "window": [1280, 900],
+      "client": [1280, 900],
+      "hostOnly": true
+    },
+    "compact": {
+      "path": "adaptive-window-layouts-compact-host-2026-11-09.png",
+      "bytes": 49811,
+      "sha256": "09e4f760933a0726576c2a1814f044039dbe79ca1b25219e84d4ad5c3e5415eb",
+      "geometryPath": "adaptive-window-layouts-compact-host-2026-11-09.json",
+      "window": [480, 700],
+      "client": [480, 700],
+      "hostOnly": true
+    },
+    "desktop": {
+      "path": "adaptive-window-layouts-desktop-host-2026-11-09.png",
+      "bytes": 78577,
+      "sha256": "71d7c866b03f6e863e5b1e61de41fd047e8d718abf60c04a0eb8d63e07923cda",
+      "geometryPath": "adaptive-window-layouts-desktop-host-2026-11-09.json",
+      "window": [1100, 760],
+      "client": [1084, 668],
+      "hostOnly": true
+    },
+    "minimum": {
+      "path": "adaptive-window-layouts-minimum-host-2026-11-09.png",
+      "bytes": 24275,
+      "sha256": "8b3f811c3319f8184cf74846cf5b26f7b7d6aeb4d0933196bf7d2f1932f84753",
+      "geometryPath": "adaptive-window-layouts-minimum-host-2026-11-09.json",
+      "window": [480, 360],
+      "client": [464, 268],
+      "hostOnly": true
+    }
+  },
+  "combinedLog": {
+    "path": "adaptive-window-layouts-2026-11-09.log",
+    "bytes": 108903,
+    "sha256": "a9fed21c3c9bbb8488bac3577936fc6e63b691bdefd3cdf7614d3c445cad8cb9"
+  },
+  "sourceReview": {
+    "skill": "Qt C++ review 3.0",
+    "source": "062f7c9f0e16b7d2f66cd55e449a3ed85fba699e",
+    "cppFiles": 26,
+    "changedLines": 2751,
+    "shards": 2,
+    "finalLintFindings": 0,
+    "deepFindings": 2,
+    "resolvedFindings": ["D-001", "D-201"]
+  },
+  "unqualified": [
+    "QNX cross-build: local licensed SDK/toolchain unavailable",
+    "QNX VM and physical target execution",
+    "Marathon/Wayland session",
+    "physical cross-display DPR transitions",
+    "system font-preference provider",
+    "physical IME/HID/assistive technology",
+    "hardware performance budgets"
+  ],
+  "cmakeBuildInputs": {
+    "CMAKE_BUILD_TYPE:STRING": "Debug",
+    "CMAKE_CXX_COMPILER:STRING": "<HOST_TOOLS>/clang-host/usr/bin/clang++",
+    "CMAKE_CXX_COMPILER_AR:FILEPATH": "CMAKE_CXX_COMPILER_AR-NOTFOUND",
+    "CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS:FILEPATH": "CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS-NOTFOUND",
+    "CMAKE_CXX_COMPILER_RANLIB:FILEPATH": "CMAKE_CXX_COMPILER_RANLIB-NOTFOUND",
+    "CMAKE_C_COMPILER:STRING": "<HOST_TOOLS>/clang-host/usr/bin/clang",
+    "CMAKE_C_COMPILER_AR:FILEPATH": "CMAKE_C_COMPILER_AR-NOTFOUND",
+    "CMAKE_C_COMPILER_CLANG_SCAN_DEPS:FILEPATH": "CMAKE_C_COMPILER_CLANG_SCAN_DEPS-NOTFOUND",
+    "CMAKE_C_COMPILER_RANLIB:FILEPATH": "CMAKE_C_COMPILER_RANLIB-NOTFOUND",
+    "CMAKE_INCLUDE_PATH:UNINITIALIZED": "<HOST_TOOLS>/host-deps/usr/include",
+    "CMAKE_LIBRARY_PATH:UNINITIALIZED": "<HOST_TOOLS>/host-deps/usr/lib/x86_64-linux-gnu",
+    "CMAKE_PREFIX_PATH:UNINITIALIZED": "<HOST_TOOLS>/host-deps/usr;<HOST_TOOLS>/qt-host/6.11.1/gcc_64",
+    "FETCHCONTENT_SOURCE_DIR_RNQNX_BOOST:PATH": "<HOST_TOOLS>/react-native-qnx-gallery/build/linux-gallery-input-off/_deps/rnqnx_boost-src",
+    "FETCHCONTENT_SOURCE_DIR_RNQNX_BOOST_CONFIG:PATH": "<HOST_TOOLS>/react-native-qnx-gallery/build/linux-gallery-input-off/_deps/rnqnx_boost_config-src",
+    "FETCHCONTENT_SOURCE_DIR_RNQNX_DOUBLE_CONVERSION:PATH": "<HOST_TOOLS>/react-native-qnx-gallery/build/linux-gallery-input-off/_deps/rnqnx_double_conversion-src",
+    "FETCHCONTENT_SOURCE_DIR_RNQNX_FAST_FLOAT:PATH": "<HOST_TOOLS>/react-native-qnx-gallery/build/linux-gallery-input-off/_deps/rnqnx_fast_float-src",
+    "FETCHCONTENT_SOURCE_DIR_RNQNX_FMT:PATH": "<HOST_TOOLS>/react-native-qnx-gallery/build/linux-gallery-input-off/_deps/rnqnx_fmt-src",
+    "FETCHCONTENT_SOURCE_DIR_RNQNX_FOLLY:PATH": "<HOST_TOOLS>/react-native-qnx-gallery/build/linux-gallery-input-off/_deps/rnqnx_folly-src",
+    "FETCHCONTENT_SOURCE_DIR_RNQNX_GLOG:PATH": "<HOST_TOOLS>/react-native-qnx-gallery/build/linux-gallery-input-off/_deps/rnqnx_glog-src",
+    "FETCHCONTENT_SOURCE_DIR_RNQNX_HERMES:PATH": "<HOST_TOOLS>/react-native-qnx-gallery/build/linux-gallery-input-off/_deps/rnqnx_hermes-src",
+    "Qt6_DIR:UNINITIALIZED": "<HOST_TOOLS>/qt-host/6.11.1/gcc_64/lib/cmake/Qt6",
+    "CMAKE_CXX_COMPILER-ADVANCED:INTERNAL": "1",
+    "CMAKE_CXX_COMPILER_AR-ADVANCED:INTERNAL": "1",
+    "CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS-ADVANCED:INTERNAL": "1",
+    "CMAKE_CXX_COMPILER_RANLIB-ADVANCED:INTERNAL": "1",
+    "CMAKE_C_COMPILER-ADVANCED:INTERNAL": "1",
+    "CMAKE_C_COMPILER_AR-ADVANCED:INTERNAL": "1",
+    "CMAKE_C_COMPILER_CLANG_SCAN_DEPS-ADVANCED:INTERNAL": "1",
+    "CMAKE_C_COMPILER_RANLIB-ADVANCED:INTERNAL": "1"
+  },
+  "finalRepositoryChecks": [
+    {
+      "command": "pnpm format:check",
+      "status": "passed",
+      "scope": "All matched repository files"
+    },
+    {
+      "command": "pnpm validate:docs",
+      "status": "passed",
+      "scope": "22 components, seven release gates; no release gate promoted"
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    }
+  ],
+  "qualifiedLocalSourceCommit": "87793906dae1653f7ceca57097b51192f431c7aa",
+  "publication": {
+    "method": "Connected GitHub Git-data API",
+    "publishedSourceCommit": "56093f7eaab414f206cd8f679abb36b0c2caea6c",
+    "qualifiedLocalSourceCommit": "87793906dae1653f7ceca57097b51192f431c7aa",
+    "verifiedIdenticalSourceTree": "a0a01f4b406cdd023d3f6f78f7bb7eb3e8b128ad",
+    "sourceBytesChanged": false
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "clientHeight": 700,
+  "clientWidth": 480,
+  "labels": [
+    {
+      "fullyVisible": true,
+      "height": 32,
+      "text": "Component gallery",
+      "width": 212.984375,
+      "x": 24,
+      "y": 16
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "React Native QNX",
+      "width": 110.65625,
+      "x": 24,
+      "y": 51
+    },
+    {
+      "fullyVisible": true,
+      "height": 20,
+      "text": "Browse sections",
+      "width": 117.515625,
+      "x": 323,
+      "y": 34
+    },
+    {
+      "fullyVisible": true,
+      "height": 28,
+      "text": "Components",
+      "width": 120.09375,
+      "x": 20,
+      "y": 109
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "Everyday controls, with room to work.",
+      "width": 231.609375,
+      "x": 20,
+      "y": 140
+    },
+    {
+      "fullyVisible": true,
+      "height": 28,
+      "text": "Pressable",
+      "width": 93.546875,
+      "x": 39,
+      "y": 198
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "An action with immediate feedback.",
+      "width": 222.765625,
+      "x": 39,
+      "y": 229
+    },
+    {
+      "fullyVisible": true,
+      "height": 23,
+      "text": "Press count: 1",
+      "width": 102.984375,
+      "x": 56,
+      "y": 279
+    },
+    {
+      "fullyVisible": true,
+      "height": 28,
+      "text": "TextInput",
+      "width": 89.171875,
+      "x": 39,
+      "y": 367
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "Your text stays in place as the layout changes.",
+      "width": 286.234375,
+      "x": 39,
+      "y": 398
+    },
+    {
+      "fullyVisible": true,
+      "height": 48,
+      "text": "QNX input sample adaptive",
+      "width": 402,
+      "x": 39,
+      "y": 437
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "QNX input sample adaptive",
+      "width": 206.09375,
+      "x": 52,
+      "y": 448
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "React value: QNX input sample adaptive",
+      "width": 247.640625,
+      "x": 39,
+      "y": 497
+    },
+    {
+      "fullyVisible": true,
+      "height": 28,
+      "text": "Switch + ActivityIndicator",
+      "width": 239.8125,
+      "x": 39,
+      "y": 572
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "Native controls with visible state.",
+      "width": 205.078125,
+      "x": 39,
+      "y": 603
+    },
+    {
+      "fullyVisible": true,
+      "height": 23,
+      "text": "Switch ON",
+      "width": 74.203125,
+      "x": 102,
+      "y": 646
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Modal",
+      "width": 58.78125,
+      "x": 39,
+      "y": 735
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "A focused dialog sized for the task.",
+      "width": 218.6875,
+      "x": 39,
+      "y": 766
+    },
+    {
+      "fullyVisible": false,
+      "height": 23,
+      "text": "Open modal",
+      "width": 86.234375,
+      "x": 56,
+      "y": 816
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "View + Text",
+      "width": 108.28125,
+      "x": 39,
+      "y": 904
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "Flexible native layout and readable text.",
+      "width": 244.1875,
+      "x": 39,
+      "y": 935
+    },
+    {
+      "fullyVisible": false,
+      "height": 31,
+      "text": "Hello, Qt Quick.",
+      "width": 162.734375,
+      "x": 39,
+      "y": 974
+    },
+    {
+      "fullyVisible": false,
+      "height": 28,
+      "text": "Image",
+      "width": 58.765625,
+      "x": 39,
+      "y": 1111
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "A bundled asset with its original proportions.",
+      "width": 277.25,
+      "x": 39,
+      "y": 1142
+    },
+    {
+      "fullyVisible": false,
+      "height": 21,
+      "text": "PNG decoded by the image backend",
+      "width": 224.9375,
+      "x": 39,
+      "y": 1279
+    }
+  ],
+  "windowHeight": 700,
+  "windowWidth": 480
+}

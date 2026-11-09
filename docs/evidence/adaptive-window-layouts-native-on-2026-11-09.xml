@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-clang++"
+	tests="40"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="managed-linux-host"
+	time="209"
+	timestamp="2026-11-09T13:08:55"
+	>
+	<testcase name="rnqnx_g0_cxx20_probe" classname="rnqnx_g0_cxx20_probe" time="0.00276487" status="run">
+		<properties/>
+		<system-out>RNQNX_G0_CXX20_OK ranges=12 designated=21 jthread=34
+</system-out>
+	</testcase>
+	<testcase name="qnx_screen_surface_host_test" classname="qnx_screen_surface_host_test" time="0.0119223" status="run">
+		<properties/>
+		<system-out>[PASS] successful initialization uses exact window and buffer setup
+[PASS] invalid initialization sizes are rejected before calling Screen
+[PASS] fill uses documented ARGB token-value list
+[PASS] present uses the buffer acquired for each frame
+[PASS] destroy is ordered, complete, and idempotent
+[PASS] move construction and assignment transfer sole ownership
+[PASS] partial initialization failures release fake resources
+[PASS] runtime failures are explicit and failed fills are not posted
+All QnxScreenSurface host tests passed.
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_wheel_direction" classname="rnqnx_wheel_direction" time="0.310195" status="run">
+		<properties/>
+		<system-out>RNQNX_WHEEL_DIRECTION_OK default metadata acceptance lifetime mouse touch flickable
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_hermes_probe" classname="rnqnx_hermes_probe" time="0.0674651" status="run">
+		<properties/>
+		<system-out>RNQNX_HERMES_OK arithmetic es6 async-arrow host-function
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_text_layout_host_test" classname="rnqnx_text_layout_host_test" time="0.157163" status="run">
+		<properties/>
+		<system-out>RNQNX_QT_TEXT_LAYOUT_OK scaling=1 caps=1 mixed=1 fallback=1 resize=1 reset=1 input=1 surface=1
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_desktop_window" classname="rnqnx_desktop_window" time="1.20678" status="run">
+		<properties/>
+		<system-out>RNQNX_DESKTOP_WINDOW_OK mouse keyboard popup-blocking resize capability system-frame
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_view_focus_host_test" classname="rnqnx_view_focus_host_test" time="3.31221" status="run">
+		<properties/>
+		<system-out>Running "RNQnxViewFocus"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:10:19.853608 3451335168 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003bd0).
+W1109 13:10:19.854403 3331282624 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000121d0).
+W1109 13:10:19.854450 3331282624 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003a50).
+RNQNX_VIEW_FOCUS_OK public focus blur keyboard press repeat disable cancellation modal nested-modal teardown
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_accessibility_action_probe" classname="rnqnx_accessibility_action_probe" time="2.32615" status="run">
+		<properties/>
+		<system-out>Running "RNQnxAccessibilityActionProbe"
+Running "RNQnxAccessibilityActionProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1109 13:10:27.209929 58749440 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 3 components out of 6
+W1109 13:10:27.210641 58749440 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1109 13:10:27.211596 4237252288 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011750).
+W1109 13:10:27.211634 4237252288 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).
+RNQNX_ACCESSIBILITY_ACTION_OK react activate guards label teardown remount
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_accessibility_action_native_test" classname="rnqnx_accessibility_action_native_test" time="0.0604584" status="run">
+		<properties/>
+		<system-out>RNQNX_ACCESSIBILITY_ACTION_NATIVE_OK press guards generation invalidate delete
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_accessibility_action_rejects_interception" classname="rnqnx_accessibility_action_rejects_interception" time="4.06497" status="run">
+		<properties/>
+		<system-out>-- Accessibility action interception rejected at the JavaScript boundary
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_accessibility_action_rejects_registration" classname="rnqnx_accessibility_action_rejects_registration" time="2.01062" status="run">
+		<properties/>
+		<system-out>-- Unsupported accessibility action registration rejected explicitly
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_accessibility_view_test" classname="rnqnx_accessibility_view_test" time="0.03663" status="run">
+		<properties/>
+		<system-out>RNQNX_ACCESSIBILITY_VIEW_OK tree identity state update clear reject delete
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_text_input_probe" classname="rnqnx_text_input_probe" time="2.56598" status="run">
+		<properties/>
+		<system-out>Running "RNQnxTextInputProbe"
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:102:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+Running "RNQnxTextInputProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1109 13:10:31.588320 1422373376 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 4 components out of 8
+I1109 13:10:31.589391 1422373376 UIManagerBinding.cpp:150] instanceHandle is null, event of type topSelectionChange will be dropped
+W1109 13:10:31.590504 1422373376 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1109 13:10:31.591490 1303615168 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011750).
+W1109 13:10:31.591576 1303615168 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).
+RNQNX_TEXT_INPUT_OK react key preedit commit utf16 stale selection no-echo f...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_text_input_bridge_test" classname="rnqnx_text_input_bridge_test" time="0.084862" status="run">
+		<properties/>
+		<system-out>qt.qml.context: :102:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+RNQNX_TEXT_INPUT_BRIDGE_OK count stale utf16 no-echo secure-query denial lifecycle
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_text_input_rejects_interception" classname="rnqnx_text_input_rejects_interception" time="4.33891" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="rnqnx_input_lifecycle_probe" classname="rnqnx_input_lifecycle_probe" time="0.114167" status="run">
+		<properties/>
+		<system-out>WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:10:31.740669 861225344 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x556a1c4b5d70).
+W1109 13:10:31.741019 805299904 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x556a1c3fcd00).
+W1109 13:10:31.741081 805299904 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x556a1c409e60).
+RNQNX_INPUT_JS_OK events=12 terminal cancel ordering native-payload-parity
+RNQNX_INPUT_LIFECYCLE_OK decorated-hit terminal multi-contact cancel deactivate unmount mouse-reentrant
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_input_lifecycle_rejects_interception" classname="rnqnx_input_lifecycle_rejects_interception" time="0.109862" status="run">
+		<properties/>
+		<system-out>-- RNQNX_INPUT_JS_INTERCEPTION_REJECTED expected missing JS delivery
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_pressable_probe" classname="rnqnx_pressable_probe" time="3.36918" status="run">
+		<properties/>
+		<system-out>Running "RNQnxPressableProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1109 13:10:34.644805 2803466624 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+Running "RNQnxPressableProbe"
+E1109 13:10:35.194512 2803466624 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 4 components out of 8
+W1109 13:10:35.195305 2803466624 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x55968fadfd30).
+W1109 13:10:35.195658 2747262656 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x55968fa26ce0).
+W1109 13:10:35.195684 2747262656 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x55968fa33e40).
+RNQNX_PRESSABLE_OK tap cancel deactivate disabled unmount remount callbacks=11
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_pressable_rejects_interception" classname="rnqnx_pressable_rejects_interception" time="3.8528" status="run">
+		<properties/>
+		<system-out>-- RNQNX_PRESSABLE_INTERCEPTION_REJECTED
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_pressable_rejects_disabled_cancellation" classname="rnqnx_pressable_rejects_disabled_cancellation" time="5.37289" status="run">
+		<properties/>
+		<system-out>-- RNQNX_PRESSABLE_REMOVED_TARGET_CONTROL_REJECTED
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_react_render_host_probe" classname="rnqnx_react_render_host_probe" time="1.77979" status="run">
+		<properties/>
+		<system-out>Running "RNQnxReactRenderProbe"
+RNQNX_REACT_RENDER_OK platform=host bundled-react initial=160x100/48x24 update=72x24 unmount=empty geometry-only transactions=3
+
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_react_render_host_probe_rejects_bad_bundles" classname="rnqnx_react_render_host_probe_rejects_bad_bundles" time="0.248593" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="rnqnx_consumer_window_input" classname="rnqnx_consumer_window_input" time="7.25812" status="run">
+		<properties/>
+		<system-out>RNQNX_INPUT_READY lifecycle=1
+Running "RNQnxPlayground"
+RNQNX_SURFACE_READY width=640 height=480
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:09:56.998126 1326137856 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000015ad0).
+W1109 13:09:56.998672 1203840704 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014450).
+W1109 13:09:56.998706 1203840704 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000005050).
+RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close scrolled-portal resized native-barrier escape lifecycle=1
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_consumer_desktop_window_input" classname="rnqnx_consumer_desktop_window_input" time="6.85254" status="run">
+		<properties/>
+		<system-out>RNQNX_INPUT_READY lifecycle=1
+Running "RNQnxPlayground"
+RNQNX_SURFACE_READY width=784 height=668
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:10:03.843909 885322240 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000052450).
+W1109 13:10:03.844810 758171328 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000073fd0).
+W1109 13:10:03.844882 758171328 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000026450).
+RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close scrolled-portal resized native-barrier escape lifecycle=1
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_consumer_window_rejects_interception" classname="rnqnx_consumer_window_rejects_interception" time="10.1439" status="run">
+		<properties/>
+		<system-out>-- RNQNX_CONSUMER_WINDOW_INTERCEPTION_REJECTED
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_window_metrics_scale_1" classname="rnqnx_window_metrics_scale_1" time="2.21813" status="run">
+		<properties/>
+		<system-out>Running "RNQnxWindowMetrics"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:10:24.438352 2283618816 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003850).
+W1109 13:10:24.440174 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011ed0).
+W1109 13:10:24.440227 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003e50).
+RNQNX_WINDOW_METRICS_OK scale=1 initial client screen fractional resize two-consumers state cleanup font-scale native-text empty-input teardown
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_window_metrics_scale_1_25" classname="rnqnx_window_metrics_scale_1_25" time="2.22481" status="run">
+		<properties/>
+		<system-out>Running "RNQnxWindowMetrics"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:10:22.699445 683807232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003850).
+W1109 13:10:22.700274 560387776 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011ed0).
+W1109 13:10:22.700345 560387776 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003e50).
+RNQNX_WINDOW_METRICS_OK scale=1.25 initial client screen fractional resize two-consumers state cleanup font-scale native-text empty-input teardown
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_window_metrics_scale_2" classname="rnqnx_window_metrics_scale_2" time="2.34499" status="run">
+		<properties/>
+		<system-out>Running "RNQnxWindowMetrics"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:10:22.231393 651174400 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003850).
+W1109 13:10:22.231981 523065024 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011ed0).
+W1109 13:10:22.232043 523065024 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003e50).
+RNQNX_WINDOW_METRICS_OK scale=2 initial client screen fractional resize two-consumers state cleanup font-scale native-text empty-input teardown
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_component_gallery" classname="rnqnx_component_gallery" time="54.1989" status="run">
+		<properties/>
+		<system-out>-- RNQNX_COMPONENT_GALLERY_OK <REPO>/build/linux-adaptive/evidence/rnqnx_component_gallery
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_component_gallery_desktop" classname="rnqnx_component_gallery_desktop" time="107.612" status="run">
+		<properties/>
+		<system-out>-- RNQNX_COMPONENT_GALLERY_OK <REPO>/build/linux-adaptive/evidence/rnqnx_component_gallery_desktop
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_font_license" classname="rnqnx_font_license" time="0.0292133" status="run">
+		<properties/>
+		<system-out>Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://openfontlicense.org
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+n...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_playground_screenshot" classname="rnqnx_playground_screenshot" time="2.57522" status="run">
+		<properties/>
+		<system-out>-- RNQNX_PLAYGROUND_SCREENSHOT_ARTIFACT_OK
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_playground_rejects_start_failure" classname="rnqnx_playground_rejects_start_failure" time="0.112216" status="run">
+		<properties/>
+		<system-out>-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_START_FAILURE
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_playground_rejects_stop_failure" classname="rnqnx_playground_rejects_stop_failure" time="0.125725" status="run">
+		<properties/>
+		<system-out>-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_STOP_FAILURE
+</system-out>
+	</testcase>
+	<testcase name="qt_react_host_host_test" classname="qt_react_host_host_test" time="83.1565" status="run">
+		<properties/>
+		<system-out>WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:08:55.730261 2651120128 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1109 13:08:55.730831 2525976256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011750).
+W1109 13:08:55.730881 2525976256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).
+[PASS] inputLifecycleOptOutPreservesExistingDispatch
+W1109 13:08:55.822559 2651120128 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000007750).
+W1109 13:08:55.822970 2595030720 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000262d0).
+W1109 13:08:55.823024 2595030720 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000009050).
+W1109 13:08:55.915505 2651120128 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000c990).
+W1109 13:08:55.915918 2545940160 UIManagerBinding.cpp:66] UIManagerBin...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_rn_headers_probe" classname="rnqnx_rn_headers_probe" time="0.0142118" status="run">
+		<properties/>
+		<system-out>RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0
+</system-out>
+	</testcase>
+	<testcase name="shadow_view_mutation_adapter_host_test" classname="shadow_view_mutation_adapter_host_test" time="0.0512264" status="run">
+		<properties/>
+		<system-out>[PASS] createInsertMountsAndPositions
+[PASS] insertOrderFollowsMutationIndex
+[PASS] updateAppliesNewFrame
+[PASS] sparseAnimatedUpdatesPreserveIdentifiers
+[PASS] removeThenDeleteUnmountsAndFrees
+[PASS] nestedTransactionBuildsATree
+[PASS] unmappedComponentIsReportedNotSkipped
+[PASS] insertIntoMissingParentIsReported
+All 8 ShadowViewMutationAdapter host tests passed.
+</system-out>
+	</testcase>
+	<testcase name="shadow_tree_mounting_host_test" classname="shadow_tree_mounting_host_test" time="0.0554445" status="run">
+		<properties/>
+		<system-out>[PASS] fixedSizeViewGetsYogaGeometry
+[PASS] flexChildrenSplitTheRootWidth
+[PASS] paddingOffsetsChildOrigin
+[PASS] secondCommitUpdatesGeometryInPlace
+[PASS] removingAChildUnmountsIt
+All 5 ShadowTree mounting host tests passed.
+</system-out>
+	</testcase>
+	<testcase name="qtquick_mounting_layer_host_test" classname="qtquick_mounting_layer_host_test" time="0.165219" status="run">
+		<properties/>
+		<system-out>[PASS] rootIsMountedButNotOwned
+[PASS] createLeavesItemUnparented
+[PASS] insertParentsAndOrdersChildren
+[PASS] insertRejectsBadArguments
+[PASS] fabricIndicesExcludeQmlDecorations
+[PASS] modalKeepsLogicalOrderAboveScrolledContent
+[PASS] removeDetachesWithoutDestroying
+[PASS] removeRejectsIndexDisagreement
+[PASS] destroyReleasesTagAndItem
+[PASS] destroyDetachesStillMountedItem
+[PASS] nestedTreeIsTornDownWithTheLayer
+[PASS] updateLayoutAppliesAbsoluteGeometry
+[PASS] unregisteredComponentTypeFails
+[PASS] brokenQmlSourceFails
+[PASS] nonItemTypeFails
+[PASS] duplicateTagFails
+[PASS] reregisteringATypeReplacesIt
+All 17 QtQuickMountingLayer host tests passed.
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qtquick_host_probe" classname="rnqnx_qtquick_host_probe" time="0.036126" status="run">
+		<properties/>
+		<system-out>RNQNX_QTQUICK_HOST_OK items=1000 create_ms=8.606 update10_ms=0.693 destroy_ms=0.266 platform=offscreen
+</system-out>
+	</testcase>
+</testsuite>

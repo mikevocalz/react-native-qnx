@@ -1,0 +1,248 @@
+{
+  "clientHeight": 900,
+  "clientWidth": 1280,
+  "labels": [
+    {
+      "fullyVisible": true,
+      "height": 32,
+      "text": "Component gallery",
+      "width": 212.984375,
+      "x": 24,
+      "y": 16
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "React Native QNX",
+      "width": 110.65625,
+      "x": 24,
+      "y": 51
+    },
+    {
+      "fullyVisible": true,
+      "height": 23,
+      "text": "Components",
+      "width": 91.515625,
+      "x": 26,
+      "y": 113
+    },
+    {
+      "fullyVisible": true,
+      "height": 23,
+      "text": "Documents",
+      "width": 81.640625,
+      "x": 26,
+      "y": 166
+    },
+    {
+      "fullyVisible": true,
+      "height": 23,
+      "text": "Sections",
+      "width": 61.6875,
+      "x": 26,
+      "y": 219
+    },
+    {
+      "fullyVisible": true,
+      "height": 23,
+      "text": "Controls",
+      "width": 60.125,
+      "x": 26,
+      "y": 272
+    },
+    {
+      "fullyVisible": true,
+      "height": 23,
+      "text": "Adaptive",
+      "width": 62.40625,
+      "x": 26,
+      "y": 325
+    },
+    {
+      "fullyVisible": true,
+      "height": 23,
+      "text": "Limits",
+      "width": 43.90625,
+      "x": 26,
+      "y": 378
+    },
+    {
+      "fullyVisible": true,
+      "height": 28,
+      "text": "Components",
+      "width": 120.09375,
+      "x": 228,
+      "y": 109
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "Everyday controls, with room to work.",
+      "width": 231.609375,
+      "x": 228,
+      "y": 140
+    },
+    {
+      "fullyVisible": true,
+      "height": 28,
+      "text": "Pressable",
+      "width": 93.546875,
+      "x": 247,
+      "y": 198
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "An action with immediate feedback.",
+      "width": 222.765625,
+      "x": 247,
+      "y": 229
+    },
+    {
+      "fullyVisible": true,
+      "height": 23,
+      "text": "Press count: 0",
+      "width": 102.984375,
+      "x": 264,
+      "y": 279
+    },
+    {
+      "fullyVisible": true,
+      "height": 28,
+      "text": "TextInput",
+      "width": 89.171875,
+      "x": 596,
+      "y": 198
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "Your text stays in place as the layout changes.",
+      "width": 286.234375,
+      "x": 596,
+      "y": 229
+    },
+    {
+      "fullyVisible": true,
+      "height": 48,
+      "text": "QNX input sample",
+      "width": 296,
+      "x": 596,
+      "y": 268
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "QNX input sample",
+      "width": 137.515625,
+      "x": 609,
+      "y": 279
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "React value: QNX input sample",
+      "width": 191.125,
+      "x": 596,
+      "y": 328
+    },
+    {
+      "fullyVisible": true,
+      "height": 28,
+      "text": "Switch + ActivityIndicator",
+      "width": 239.8125,
+      "x": 946,
+      "y": 198
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "Native controls with visible state.",
+      "width": 205.078125,
+      "x": 946,
+      "y": 229
+    },
+    {
+      "fullyVisible": true,
+      "height": 23,
+      "text": "Switch OFF",
+      "width": 80.484375,
+      "x": 1009,
+      "y": 272
+    },
+    {
+      "fullyVisible": true,
+      "height": 28,
+      "text": "Modal",
+      "width": 58.78125,
+      "x": 247,
+      "y": 403
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "A focused dialog sized for the task.",
+      "width": 218.6875,
+      "x": 247,
+      "y": 434
+    },
+    {
+      "fullyVisible": true,
+      "height": 23,
+      "text": "Open modal",
+      "width": 86.234375,
+      "x": 264,
+      "y": 484
+    },
+    {
+      "fullyVisible": true,
+      "height": 28,
+      "text": "View + Text",
+      "width": 108.28125,
+      "x": 596,
+      "y": 403
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "Flexible native layout and readable text.",
+      "width": 244.1875,
+      "x": 596,
+      "y": 434
+    },
+    {
+      "fullyVisible": true,
+      "height": 31,
+      "text": "Hello, Qt Quick.",
+      "width": 162.734375,
+      "x": 596,
+      "y": 473
+    },
+    {
+      "fullyVisible": true,
+      "height": 28,
+      "text": "Image",
+      "width": 58.765625,
+      "x": 946,
+      "y": 403
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "A bundled asset with its original proportions.",
+      "width": 277.25,
+      "x": 946,
+      "y": 434
+    },
+    {
+      "fullyVisible": true,
+      "height": 21,
+      "text": "PNG decoded by the image backend",
+      "width": 224.9375,
+      "x": 946,
+      "y": 571
+    }
+  ],
+  "windowHeight": 900,
+  "windowWidth": 1280
+}

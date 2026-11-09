@@ -1,0 +1,1888 @@
+FINAL NATIVE OFF — source 87793906dae1653f7ceca57097b51192f431c7aa
+Internal ctest changing into directory: <REPO>/build/linux-adaptive
+Test project <REPO>/build/linux-adaptive
+      Start 19: qt_react_host_host_test
+      Start 14: rnqnx_component_gallery
+ 1/24 Test #14: rnqnx_component_gallery .............................   Passed   55.74 sec
+      Start  9: rnqnx_consumer_window_input
+ 2/24 Test  #9: rnqnx_consumer_window_input .........................   Passed    7.39 sec
+      Start 10: rnqnx_consumer_window_rejects_interception
+ 3/24 Test #10: rnqnx_consumer_window_rejects_interception ..........   Passed   10.18 sec
+      Start  6: rnqnx_view_focus_host_test
+ 4/24 Test  #6: rnqnx_view_focus_host_test ..........................   Passed    2.89 sec
+      Start 13: rnqnx_window_metrics_scale_2
+ 5/24 Test #13: rnqnx_window_metrics_scale_2 ........................   Passed    2.49 sec
+      Start 11: rnqnx_window_metrics_scale_1
+ 6/24 Test #11: rnqnx_window_metrics_scale_1 ........................   Passed    2.45 sec
+      Start 12: rnqnx_window_metrics_scale_1_25
+ 7/24 Test #12: rnqnx_window_metrics_scale_1_25 .....................   Passed    2.58 sec
+      Start  5: rnqnx_text_layout_host_test
+ 8/24 Test  #5: rnqnx_text_layout_host_test .........................   Passed    0.14 sec
+      Start 15: rnqnx_font_license
+ 9/24 Test #15: rnqnx_font_license ..................................   Passed    0.03 sec
+      Start  1: rnqnx_g0_cxx20_probe
+10/24 Test  #1: rnqnx_g0_cxx20_probe ................................   Passed    0.00 sec
+      Start  2: qnx_screen_surface_host_test
+11/24 Test  #2: qnx_screen_surface_host_test ........................   Passed    0.01 sec
+      Start  3: rnqnx_wheel_direction
+12/24 Test  #3: rnqnx_wheel_direction ...............................   Passed    0.32 sec
+      Start  4: rnqnx_hermes_probe
+13/24 Test  #4: rnqnx_hermes_probe ..................................   Passed    0.07 sec
+      Start  7: rnqnx_react_render_host_probe
+14/24 Test #19: qt_react_host_host_test .............................   Passed   85.69 sec
+      Start  8: rnqnx_react_render_host_probe_rejects_bad_bundles
+15/24 Test  #8: rnqnx_react_render_host_probe_rejects_bad_bundles ...   Passed    0.26 sec
+      Start 16: rnqnx_playground_screenshot
+16/24 Test  #7: rnqnx_react_render_host_probe .......................   Passed    1.82 sec
+      Start 17: rnqnx_playground_rejects_start_failure
+17/24 Test #17: rnqnx_playground_rejects_start_failure ..............   Passed    0.13 sec
+      Start 18: rnqnx_playground_rejects_stop_failure
+18/24 Test #18: rnqnx_playground_rejects_stop_failure ...............   Passed    0.09 sec
+      Start 20: rnqnx_rn_headers_probe
+19/24 Test #20: rnqnx_rn_headers_probe ..............................   Passed    0.02 sec
+      Start 21: shadow_view_mutation_adapter_host_test
+20/24 Test #21: shadow_view_mutation_adapter_host_test ..............   Passed    0.05 sec
+      Start 22: shadow_tree_mounting_host_test
+21/24 Test #22: shadow_tree_mounting_host_test ......................   Passed    0.06 sec
+      Start 23: qtquick_mounting_layer_host_test
+22/24 Test #23: qtquick_mounting_layer_host_test ....................   Passed    0.15 sec
+      Start 24: rnqnx_qtquick_host_probe
+23/24 Test #24: rnqnx_qtquick_host_probe ............................   Passed    0.04 sec
+24/24 Test #16: rnqnx_playground_screenshot .........................   Passed    2.80 sec
+
+100% tests passed, 0 tests failed out of 24
+
+Total Test time (real) =  88.76 sec
+
+
+NATIVE OFF / rnqnx_g0_cxx20_probe
+RNQNX_G0_CXX20_OK ranges=12 designated=21 jthread=34
+
+
+NATIVE OFF / qnx_screen_surface_host_test
+[PASS] successful initialization uses exact window and buffer setup
+[PASS] invalid initialization sizes are rejected before calling Screen
+[PASS] fill uses documented ARGB token-value list
+[PASS] present uses the buffer acquired for each frame
+[PASS] destroy is ordered, complete, and idempotent
+[PASS] move construction and assignment transfer sole ownership
+[PASS] partial initialization failures release fake resources
+[PASS] runtime failures are explicit and failed fills are not posted
+All QnxScreenSurface host tests passed.
+
+
+NATIVE OFF / rnqnx_wheel_direction
+RNQNX_WHEEL_DIRECTION_OK default metadata acceptance lifetime mouse touch flickable
+
+
+NATIVE OFF / rnqnx_hermes_probe
+RNQNX_HERMES_OK arithmetic es6 async-arrow host-function
+
+
+NATIVE OFF / rnqnx_text_layout_host_test
+RNQNX_QT_TEXT_LAYOUT_OK scaling=1 caps=1 mixed=1 fallback=1 resize=1 reset=1 input=1 surface=1
+
+
+NATIVE OFF / rnqnx_view_focus_host_test
+Running "RNQnxViewFocus"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:04:00.164005 1883955712 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003bd0).
+W1109 13:04:00.164875 1764710080 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000121d0).
+W1109 13:04:00.164914 1764710080 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003a50).
+RNQNX_VIEW_FOCUS_OK public focus blur keyboard press repeat disable cancellation modal nested-modal teardown
+
+
+NATIVE OFF / rnqnx_react_render_host_probe
+Running "RNQnxReactRenderProbe"
+RNQNX_REACT_RENDER_OK platform=host bundled-react initial=160x100/48x24 update=72x24 unmount=empty geometry-only transactions=3
+
+
+
+NATIVE OFF / rnqnx_react_render_host_probe_rejects_bad_bundles
+
+
+NATIVE OFF / rnqnx_consumer_window_input
+RNQNX_INPUT_READY lifecycle=0
+Running "RNQnxPlayground"
+RNQNX_SURFACE_READY width=640 height=480
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:03:47.094570 1901068800 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000015ad0).
+W1109 13:03:47.095379 1778652864 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014450).
+W1109 13:03:47.095419 1778652864 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000005050).
+RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close scrolled-portal resized native-barrier escape lifecycle=0
+
+
+NATIVE OFF / rnqnx_consumer_window_rejects_interception
+-- RNQNX_CONSUMER_WINDOW_INTERCEPTION_REJECTED
+
+
+NATIVE OFF / rnqnx_window_metrics_scale_1
+Running "RNQnxWindowMetrics"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:04:05.129153 700166656 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003850).
+W1109 13:04:05.129680 575624896 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011ed0).
+W1109 13:04:05.129879 575624896 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003e50).
+RNQNX_WINDOW_METRICS_OK scale=1 initial client screen fractional resize two-consumers state cleanup font-scale native-text empty-input teardown
+
+
+NATIVE OFF / rnqnx_window_metrics_scale_1_25
+Running "RNQnxWindowMetrics"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:04:07.706646 600302080 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003850).
+W1109 13:04:07.707219 476919488 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011ed0).
+W1109 13:04:07.707459 476919488 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003e50).
+RNQNX_WINDOW_METRICS_OK scale=1.25 initial client screen fractional resize two-consumers state cleanup font-scale native-text empty-input teardown
+
+
+NATIVE OFF / rnqnx_window_metrics_scale_2
+Running "RNQnxWindowMetrics"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:04:02.681366 544932352 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003850).
+W1109 13:04:02.682116 416753344 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011ed0).
+W1109 13:04:02.682160 416753344 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003e50).
+RNQNX_WINDOW_METRICS_OK scale=2 initial client screen fractional resize two-consumers state cleanup font-scale native-text empty-input teardown
+
+
+NATIVE OFF / rnqnx_component_gallery
+-- RNQNX_COMPONENT_GALLERY_OK <REPO>/build/linux-adaptive/evidence/rnqnx_component_gallery
+
+
+NATIVE OFF / rnqnx_font_license
+Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://openfontlicense.org
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+n...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+
+
+NATIVE OFF / rnqnx_playground_screenshot
+-- RNQNX_PLAYGROUND_SCREENSHOT_ARTIFACT_OK
+
+
+NATIVE OFF / rnqnx_playground_rejects_start_failure
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_START_FAILURE
+
+
+NATIVE OFF / rnqnx_playground_rejects_stop_failure
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_STOP_FAILURE
+
+
+NATIVE OFF / qt_react_host_host_test
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:02:44.151422 4140999168 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1109 13:02:44.151950 4019148480 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011750).
+W1109 13:02:44.151996 4019148480 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).
+[PASS] inputLifecycleOptOutPreservesExistingDispatch
+W1109 13:02:44.236141 4140999168 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000007750).
+W1109 13:02:44.236502 4084008640 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000025fd0).
+W1109 13:02:44.236538 4084008640 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000009050).
+W1109 13:02:44.326917 4140999168 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000c990).
+W1109 13:02:44.327404 4039112384 UIManagerBinding.cpp:66] UIManagerBin...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+
+
+NATIVE OFF / rnqnx_rn_headers_probe
+RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0
+
+
+NATIVE OFF / shadow_view_mutation_adapter_host_test
+[PASS] createInsertMountsAndPositions
+[PASS] insertOrderFollowsMutationIndex
+[PASS] updateAppliesNewFrame
+[PASS] sparseAnimatedUpdatesPreserveIdentifiers
+[PASS] removeThenDeleteUnmountsAndFrees
+[PASS] nestedTransactionBuildsATree
+[PASS] unmappedComponentIsReportedNotSkipped
+[PASS] insertIntoMissingParentIsReported
+All 8 ShadowViewMutationAdapter host tests passed.
+
+
+NATIVE OFF / shadow_tree_mounting_host_test
+[PASS] fixedSizeViewGetsYogaGeometry
+[PASS] flexChildrenSplitTheRootWidth
+[PASS] paddingOffsetsChildOrigin
+[PASS] secondCommitUpdatesGeometryInPlace
+[PASS] removingAChildUnmountsIt
+All 5 ShadowTree mounting host tests passed.
+
+
+NATIVE OFF / qtquick_mounting_layer_host_test
+[PASS] rootIsMountedButNotOwned
+[PASS] createLeavesItemUnparented
+[PASS] insertParentsAndOrdersChildren
+[PASS] insertRejectsBadArguments
+[PASS] fabricIndicesExcludeQmlDecorations
+[PASS] modalKeepsLogicalOrderAboveScrolledContent
+[PASS] removeDetachesWithoutDestroying
+[PASS] removeRejectsIndexDisagreement
+[PASS] destroyReleasesTagAndItem
+[PASS] destroyDetachesStillMountedItem
+[PASS] nestedTreeIsTornDownWithTheLayer
+[PASS] updateLayoutAppliesAbsoluteGeometry
+[PASS] unregisteredComponentTypeFails
+[PASS] brokenQmlSourceFails
+[PASS] nonItemTypeFails
+[PASS] duplicateTagFails
+[PASS] reregisteringATypeReplacesIt
+All 17 QtQuickMountingLayer host tests passed.
+
+
+NATIVE OFF / rnqnx_qtquick_host_probe
+RNQNX_QTQUICK_HOST_OK items=1000 create_ms=7.689 update10_ms=2.505 destroy_ms=2.423 platform=offscreen
+
+
+FINAL NATIVE ON — source 87793906dae1653f7ceca57097b51192f431c7aa
+Internal ctest changing into directory: <REPO>/build/linux-adaptive
+Test project <REPO>/build/linux-adaptive
+      Start 35: qt_react_host_host_test
+      Start 29: rnqnx_component_gallery
+ 1/40 Test #29: rnqnx_component_gallery .............................   Passed   54.20 sec
+      Start 23: rnqnx_consumer_window_input
+ 2/40 Test #23: rnqnx_consumer_window_input .........................   Passed    7.26 sec
+      Start 24: rnqnx_consumer_desktop_window_input
+ 3/40 Test #24: rnqnx_consumer_desktop_window_input .................   Passed    6.85 sec
+      Start 25: rnqnx_consumer_window_rejects_interception
+ 4/40 Test #25: rnqnx_consumer_window_rejects_interception ..........   Passed   10.14 sec
+      Start 32: rnqnx_playground_screenshot
+ 5/40 Test #32: rnqnx_playground_screenshot .........................   Passed    2.58 sec
+      Start  7: rnqnx_view_focus_host_test
+ 6/40 Test #35: qt_react_host_host_test .............................   Passed   83.16 sec
+      Start 21: rnqnx_react_render_host_probe
+ 7/40 Test  #7: rnqnx_view_focus_host_test ..........................   Passed    3.31 sec
+      Start 28: rnqnx_window_metrics_scale_2
+ 8/40 Test #21: rnqnx_react_render_host_probe .......................   Passed    1.78 sec
+      Start 27: rnqnx_window_metrics_scale_1_25
+ 9/40 Test #28: rnqnx_window_metrics_scale_2 ........................   Passed    2.34 sec
+      Start 26: rnqnx_window_metrics_scale_1
+10/40 Test #27: rnqnx_window_metrics_scale_1_25 .....................   Passed    2.22 sec
+      Start  6: rnqnx_desktop_window
+11/40 Test  #6: rnqnx_desktop_window ................................   Passed    1.21 sec
+      Start  3: rnqnx_wheel_direction
+12/40 Test  #3: rnqnx_wheel_direction ...............................   Passed    0.31 sec
+      Start 22: rnqnx_react_render_host_probe_rejects_bad_bundles
+13/40 Test #26: rnqnx_window_metrics_scale_1 ........................   Passed    2.22 sec
+      Start 39: qtquick_mounting_layer_host_test
+14/40 Test #22: rnqnx_react_render_host_probe_rejects_bad_bundles ...   Passed    0.25 sec
+      Start 33: rnqnx_playground_rejects_start_failure
+15/40 Test #33: rnqnx_playground_rejects_start_failure ..............   Passed    0.11 sec
+      Start 34: rnqnx_playground_rejects_stop_failure
+16/40 Test #39: qtquick_mounting_layer_host_test ....................   Passed    0.17 sec
+      Start  5: rnqnx_text_layout_host_test
+17/40 Test #34: rnqnx_playground_rejects_stop_failure ...............   Passed    0.13 sec
+      Start  4: rnqnx_hermes_probe
+18/40 Test  #5: rnqnx_text_layout_host_test .........................   Passed    0.16 sec
+      Start 38: shadow_tree_mounting_host_test
+19/40 Test  #4: rnqnx_hermes_probe ..................................   Passed    0.07 sec
+      Start 37: shadow_view_mutation_adapter_host_test
+20/40 Test #38: shadow_tree_mounting_host_test ......................   Passed    0.06 sec
+      Start 40: rnqnx_qtquick_host_probe
+21/40 Test #37: shadow_view_mutation_adapter_host_test ..............   Passed    0.05 sec
+      Start 12: rnqnx_accessibility_view_test
+22/40 Test #40: rnqnx_qtquick_host_probe ............................   Passed    0.04 sec
+      Start 31: rnqnx_font_license
+23/40 Test #12: rnqnx_accessibility_view_test .......................   Passed    0.04 sec
+      Start 36: rnqnx_rn_headers_probe
+24/40 Test #36: rnqnx_rn_headers_probe ..............................   Passed    0.01 sec
+      Start  2: qnx_screen_surface_host_test
+25/40 Test  #2: qnx_screen_surface_host_test ........................   Passed    0.01 sec
+      Start  1: rnqnx_g0_cxx20_probe
+26/40 Test #31: rnqnx_font_license ..................................   Passed    0.03 sec
+      Start  8: rnqnx_accessibility_action_probe
+27/40 Test  #1: rnqnx_g0_cxx20_probe ................................   Passed    0.00 sec
+      Start  9: rnqnx_accessibility_action_native_test
+28/40 Test  #9: rnqnx_accessibility_action_native_test ..............   Passed    0.06 sec
+      Start 10: rnqnx_accessibility_action_rejects_interception
+29/40 Test  #8: rnqnx_accessibility_action_probe ....................   Passed    2.33 sec
+      Start 11: rnqnx_accessibility_action_rejects_registration
+30/40 Test #10: rnqnx_accessibility_action_rejects_interception .....   Passed    4.06 sec
+      Start 13: rnqnx_text_input_probe
+31/40 Test #11: rnqnx_accessibility_action_rejects_registration .....   Passed    2.01 sec
+      Start 14: rnqnx_text_input_bridge_test
+32/40 Test #14: rnqnx_text_input_bridge_test ........................   Passed    0.08 sec
+      Start 15: rnqnx_text_input_rejects_interception
+33/40 Test #13: rnqnx_text_input_probe ..............................   Passed    2.57 sec
+      Start 16: rnqnx_input_lifecycle_probe
+34/40 Test #16: rnqnx_input_lifecycle_probe .........................   Passed    0.11 sec
+      Start 17: rnqnx_input_lifecycle_rejects_interception
+35/40 Test #17: rnqnx_input_lifecycle_rejects_interception ..........   Passed    0.11 sec
+      Start 18: rnqnx_pressable_probe
+36/40 Test #15: rnqnx_text_input_rejects_interception ...............   Passed    4.34 sec
+      Start 19: rnqnx_pressable_rejects_interception
+37/40 Test #18: rnqnx_pressable_probe ...............................   Passed    3.37 sec
+      Start 20: rnqnx_pressable_rejects_disabled_cancellation
+38/40 Test #19: rnqnx_pressable_rejects_interception ................   Passed    3.85 sec
+      Start 30: rnqnx_component_gallery_desktop
+39/40 Test #20: rnqnx_pressable_rejects_disabled_cancellation .......   Passed    5.37 sec
+40/40 Test #30: rnqnx_component_gallery_desktop .....................   Passed  107.61 sec
+
+100% tests passed, 0 tests failed out of 40
+
+Total Test time (real) = 209.58 sec
+
+
+NATIVE ON / rnqnx_g0_cxx20_probe
+RNQNX_G0_CXX20_OK ranges=12 designated=21 jthread=34
+
+
+NATIVE ON / qnx_screen_surface_host_test
+[PASS] successful initialization uses exact window and buffer setup
+[PASS] invalid initialization sizes are rejected before calling Screen
+[PASS] fill uses documented ARGB token-value list
+[PASS] present uses the buffer acquired for each frame
+[PASS] destroy is ordered, complete, and idempotent
+[PASS] move construction and assignment transfer sole ownership
+[PASS] partial initialization failures release fake resources
+[PASS] runtime failures are explicit and failed fills are not posted
+All QnxScreenSurface host tests passed.
+
+
+NATIVE ON / rnqnx_wheel_direction
+RNQNX_WHEEL_DIRECTION_OK default metadata acceptance lifetime mouse touch flickable
+
+
+NATIVE ON / rnqnx_hermes_probe
+RNQNX_HERMES_OK arithmetic es6 async-arrow host-function
+
+
+NATIVE ON / rnqnx_text_layout_host_test
+RNQNX_QT_TEXT_LAYOUT_OK scaling=1 caps=1 mixed=1 fallback=1 resize=1 reset=1 input=1 surface=1
+
+
+NATIVE ON / rnqnx_desktop_window
+RNQNX_DESKTOP_WINDOW_OK mouse keyboard popup-blocking resize capability system-frame
+
+
+NATIVE ON / rnqnx_view_focus_host_test
+Running "RNQnxViewFocus"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:10:19.853608 3451335168 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003bd0).
+W1109 13:10:19.854403 3331282624 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000121d0).
+W1109 13:10:19.854450 3331282624 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003a50).
+RNQNX_VIEW_FOCUS_OK public focus blur keyboard press repeat disable cancellation modal nested-modal teardown
+
+
+NATIVE ON / rnqnx_accessibility_action_probe
+Running "RNQnxAccessibilityActionProbe"
+Running "RNQnxAccessibilityActionProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1109 13:10:27.209929 58749440 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 3 components out of 6
+W1109 13:10:27.210641 58749440 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1109 13:10:27.211596 4237252288 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011750).
+W1109 13:10:27.211634 4237252288 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).
+RNQNX_ACCESSIBILITY_ACTION_OK react activate guards label teardown remount
+
+
+NATIVE ON / rnqnx_accessibility_action_native_test
+RNQNX_ACCESSIBILITY_ACTION_NATIVE_OK press guards generation invalidate delete
+
+
+NATIVE ON / rnqnx_accessibility_action_rejects_interception
+-- Accessibility action interception rejected at the JavaScript boundary
+
+
+NATIVE ON / rnqnx_accessibility_action_rejects_registration
+-- Unsupported accessibility action registration rejected explicitly
+
+
+NATIVE ON / rnqnx_accessibility_view_test
+RNQNX_ACCESSIBILITY_VIEW_OK tree identity state update clear reject delete
+
+
+NATIVE ON / rnqnx_text_input_probe
+Running "RNQnxTextInputProbe"
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:102:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+Running "RNQnxTextInputProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1109 13:10:31.588320 1422373376 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 4 components out of 8
+I1109 13:10:31.589391 1422373376 UIManagerBinding.cpp:150] instanceHandle is null, event of type topSelectionChange will be dropped
+W1109 13:10:31.590504 1422373376 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1109 13:10:31.591490 1303615168 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011750).
+W1109 13:10:31.591576 1303615168 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).
+RNQNX_TEXT_INPUT_OK react key preedit commit utf16 stale selection no-echo f...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+
+
+NATIVE ON / rnqnx_text_input_bridge_test
+qt.qml.context: :102:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+RNQNX_TEXT_INPUT_BRIDGE_OK count stale utf16 no-echo secure-query denial lifecycle
+
+
+NATIVE ON / rnqnx_text_input_rejects_interception
+
+
+NATIVE ON / rnqnx_input_lifecycle_probe
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:10:31.740669 861225344 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x556a1c4b5d70).
+W1109 13:10:31.741019 805299904 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x556a1c3fcd00).
+W1109 13:10:31.741081 805299904 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x556a1c409e60).
+RNQNX_INPUT_JS_OK events=12 terminal cancel ordering native-payload-parity
+RNQNX_INPUT_LIFECYCLE_OK decorated-hit terminal multi-contact cancel deactivate unmount mouse-reentrant
+
+
+NATIVE ON / rnqnx_input_lifecycle_rejects_interception
+-- RNQNX_INPUT_JS_INTERCEPTION_REJECTED expected missing JS delivery
+
+
+NATIVE ON / rnqnx_pressable_probe
+Running "RNQnxPressableProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1109 13:10:34.644805 2803466624 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+Running "RNQnxPressableProbe"
+E1109 13:10:35.194512 2803466624 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 4 components out of 8
+W1109 13:10:35.195305 2803466624 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x55968fadfd30).
+W1109 13:10:35.195658 2747262656 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x55968fa26ce0).
+W1109 13:10:35.195684 2747262656 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x55968fa33e40).
+RNQNX_PRESSABLE_OK tap cancel deactivate disabled unmount remount callbacks=11
+
+
+NATIVE ON / rnqnx_pressable_rejects_interception
+-- RNQNX_PRESSABLE_INTERCEPTION_REJECTED
+
+
+NATIVE ON / rnqnx_pressable_rejects_disabled_cancellation
+-- RNQNX_PRESSABLE_REMOVED_TARGET_CONTROL_REJECTED
+
+
+NATIVE ON / rnqnx_react_render_host_probe
+Running "RNQnxReactRenderProbe"
+RNQNX_REACT_RENDER_OK platform=host bundled-react initial=160x100/48x24 update=72x24 unmount=empty geometry-only transactions=3
+
+
+
+NATIVE ON / rnqnx_react_render_host_probe_rejects_bad_bundles
+
+
+NATIVE ON / rnqnx_consumer_window_input
+RNQNX_INPUT_READY lifecycle=1
+Running "RNQnxPlayground"
+RNQNX_SURFACE_READY width=640 height=480
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:09:56.998126 1326137856 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000015ad0).
+W1109 13:09:56.998672 1203840704 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014450).
+W1109 13:09:56.998706 1203840704 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000005050).
+RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close scrolled-portal resized native-barrier escape lifecycle=1
+
+
+NATIVE ON / rnqnx_consumer_desktop_window_input
+RNQNX_INPUT_READY lifecycle=1
+Running "RNQnxPlayground"
+RNQNX_SURFACE_READY width=784 height=668
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:10:03.843909 885322240 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000052450).
+W1109 13:10:03.844810 758171328 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000073fd0).
+W1109 13:10:03.844882 758171328 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000026450).
+RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close scrolled-portal resized native-barrier escape lifecycle=1
+
+
+NATIVE ON / rnqnx_consumer_window_rejects_interception
+-- RNQNX_CONSUMER_WINDOW_INTERCEPTION_REJECTED
+
+
+NATIVE ON / rnqnx_window_metrics_scale_1
+Running "RNQnxWindowMetrics"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:10:24.438352 2283618816 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003850).
+W1109 13:10:24.440174 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011ed0).
+W1109 13:10:24.440227 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003e50).
+RNQNX_WINDOW_METRICS_OK scale=1 initial client screen fractional resize two-consumers state cleanup font-scale native-text empty-input teardown
+
+
+NATIVE ON / rnqnx_window_metrics_scale_1_25
+Running "RNQnxWindowMetrics"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:10:22.699445 683807232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003850).
+W1109 13:10:22.700274 560387776 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011ed0).
+W1109 13:10:22.700345 560387776 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003e50).
+RNQNX_WINDOW_METRICS_OK scale=1.25 initial client screen fractional resize two-consumers state cleanup font-scale native-text empty-input teardown
+
+
+NATIVE ON / rnqnx_window_metrics_scale_2
+Running "RNQnxWindowMetrics"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:10:22.231393 651174400 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003850).
+W1109 13:10:22.231981 523065024 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011ed0).
+W1109 13:10:22.232043 523065024 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003e50).
+RNQNX_WINDOW_METRICS_OK scale=2 initial client screen fractional resize two-consumers state cleanup font-scale native-text empty-input teardown
+
+
+NATIVE ON / rnqnx_component_gallery
+-- RNQNX_COMPONENT_GALLERY_OK <REPO>/build/linux-adaptive/evidence/rnqnx_component_gallery
+
+
+NATIVE ON / rnqnx_component_gallery_desktop
+-- RNQNX_COMPONENT_GALLERY_OK <REPO>/build/linux-adaptive/evidence/rnqnx_component_gallery_desktop
+
+
+NATIVE ON / rnqnx_font_license
+Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://openfontlicense.org
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+n...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+
+
+NATIVE ON / rnqnx_playground_screenshot
+-- RNQNX_PLAYGROUND_SCREENSHOT_ARTIFACT_OK
+
+
+NATIVE ON / rnqnx_playground_rejects_start_failure
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_START_FAILURE
+
+
+NATIVE ON / rnqnx_playground_rejects_stop_failure
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_STOP_FAILURE
+
+
+NATIVE ON / qt_react_host_host_test
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 13:08:55.730261 2651120128 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1109 13:08:55.730831 2525976256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011750).
+W1109 13:08:55.730881 2525976256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).
+[PASS] inputLifecycleOptOutPreservesExistingDispatch
+W1109 13:08:55.822559 2651120128 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000007750).
+W1109 13:08:55.822970 2595030720 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000262d0).
+W1109 13:08:55.823024 2595030720 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000009050).
+W1109 13:08:55.915505 2651120128 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000c990).
+W1109 13:08:55.915918 2545940160 UIManagerBinding.cpp:66] UIManagerBin...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+
+
+NATIVE ON / rnqnx_rn_headers_probe
+RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0
+
+
+NATIVE ON / shadow_view_mutation_adapter_host_test
+[PASS] createInsertMountsAndPositions
+[PASS] insertOrderFollowsMutationIndex
+[PASS] updateAppliesNewFrame
+[PASS] sparseAnimatedUpdatesPreserveIdentifiers
+[PASS] removeThenDeleteUnmountsAndFrees
+[PASS] nestedTransactionBuildsATree
+[PASS] unmappedComponentIsReportedNotSkipped
+[PASS] insertIntoMissingParentIsReported
+All 8 ShadowViewMutationAdapter host tests passed.
+
+
+NATIVE ON / shadow_tree_mounting_host_test
+[PASS] fixedSizeViewGetsYogaGeometry
+[PASS] flexChildrenSplitTheRootWidth
+[PASS] paddingOffsetsChildOrigin
+[PASS] secondCommitUpdatesGeometryInPlace
+[PASS] removingAChildUnmountsIt
+All 5 ShadowTree mounting host tests passed.
+
+
+NATIVE ON / qtquick_mounting_layer_host_test
+[PASS] rootIsMountedButNotOwned
+[PASS] createLeavesItemUnparented
+[PASS] insertParentsAndOrdersChildren
+[PASS] insertRejectsBadArguments
+[PASS] fabricIndicesExcludeQmlDecorations
+[PASS] modalKeepsLogicalOrderAboveScrolledContent
+[PASS] removeDetachesWithoutDestroying
+[PASS] removeRejectsIndexDisagreement
+[PASS] destroyReleasesTagAndItem
+[PASS] destroyDetachesStillMountedItem
+[PASS] nestedTreeIsTornDownWithTheLayer
+[PASS] updateLayoutAppliesAbsoluteGeometry
+[PASS] unregisteredComponentTypeFails
+[PASS] brokenQmlSourceFails
+[PASS] nonItemTypeFails
+[PASS] duplicateTagFails
+[PASS] reregisteringATypeReplacesIt
+All 17 QtQuickMountingLayer host tests passed.
+
+
+NATIVE ON / rnqnx_qtquick_host_probe
+RNQNX_QTQUICK_HOST_OK items=1000 create_ms=8.606 update10_ms=0.693 destroy_ms=0.266 platform=offscreen
+
+
+DEVELOPMENT RUN — predates final frozen candidate / adaptive-native-core-tests.log
+Internal ctest changing into directory: <REPO>/build/linux-adaptive
+Test project <REPO>/build/linux-adaptive
+    Start  5: rnqnx_text_layout_host_test
+1/6 Test  #5: rnqnx_text_layout_host_test .......   Passed    0.28 sec
+    Start  7: rnqnx_view_focus_host_test
+2/6 Test  #7: rnqnx_view_focus_host_test ........***Failed  Required regular expression not found. Regex=[RNQNX_VIEW_FOCUS_OK
+]  5.35 sec
+QQuickItem: Cannot set activeFocusOnTab to false once item is the active focus item.
+QQuickItem: Cannot set activeFocusOnTab to false once item is the active focus item.
+Running "RNQnxViewFocus"
+QQuickItem: Cannot set activeFocusOnTab to false once item is the active focus item.
+QQuickItem: Cannot set activeFocusOnTab to false once item is the active focus item.
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 12:26:49.832612 2398233088 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003bd0).
+W1109 12:26:49.833118 2278512320 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000127d0).
+W1109 12:26:49.833156 2278512320 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003a50).
+Focus fixture did not settle
+
+    Start 26: rnqnx_window_metrics_scale_1
+3/6 Test #26: rnqnx_window_metrics_scale_1 ......   Passed    2.48 sec
+    Start 27: rnqnx_window_metrics_scale_1_25
+4/6 Test #27: rnqnx_window_metrics_scale_1_25 ...   Passed    2.02 sec
+    Start 28: rnqnx_window_metrics_scale_2
+5/6 Test #28: rnqnx_window_metrics_scale_2 ......   Passed    2.48 sec
+    Start 31: rnqnx_font_license
+6/6 Test #31: rnqnx_font_license ................   Passed    0.03 sec
+
+83% tests passed, 1 tests failed out of 6
+
+Total Test time (real) =  12.65 sec
+
+The following tests FAILED:
+	  7 - rnqnx_view_focus_host_test (Failed)
+Errors while running CTest
+
+
+DEVELOPMENT RUN — predates final frozen candidate / adaptive-native-regressions.log
+Internal ctest changing into directory: <REPO>/build/linux-adaptive
+Test project <REPO>/build/linux-adaptive
+    Start  7: rnqnx_view_focus_host_test
+1/5 Test  #7: rnqnx_view_focus_host_test ...................   Passed    3.15 sec
+    Start 23: rnqnx_consumer_window_input
+2/5 Test #23: rnqnx_consumer_window_input ..................***Failed  Required regular expression not found. Regex=[RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close
+] 10.18 sec
+RNQNX_INPUT_READY lifecycle=1
+Running "RNQnxPlayground"
+RNQNX_SURFACE_READY width=640 height=480
+RNQNX_CONSUMER_INPUT_FAIL waiting for modal close
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 12:38:00.867120 408908288 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000015ad0).
+W1109 12:38:00.869941 286590656 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014450).
+W1109 12:38:00.869989 286590656 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000005050).
+
+    Start 24: rnqnx_consumer_desktop_window_input
+3/5 Test #24: rnqnx_consumer_desktop_window_input ..........***Failed  Required regular expression not found. Regex=[RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close scrolled-portal
+] 10.22 sec
+RNQNX_INPUT_READY lifecycle=1
+Running "RNQnxPlayground"
+RNQNX_SURFACE_READY width=784 height=668
+RNQNX_CONSUMER_INPUT_FAIL waiting for modal close
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 12:38:11.086391 130052608 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000056510).
+W1109 12:38:11.087188 3122880 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000766d0).
+W1109 12:38:11.087224 3122880 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400003d250).
+
+    Start 25: rnqnx_consumer_window_rejects_interception
+4/5 Test #25: rnqnx_consumer_window_rejects_interception ...   Passed   10.18 sec
+    Start 35: qt_react_host_host_test
+5/5 Test #35: qt_react_host_host_test ......................***Failed   77.25 sec
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 12:38:21.440253 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1109 12:38:21.440783 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000011750).
+W1109 12:38:21.440819 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).
+[PASS] inputLifecycleOptOutPreservesExistingDispatch
+W1109 12:38:21.514863 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000073d0).
+W1109 12:38:21.516356 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000025cd0).
+W1109 12:38:21.516407 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000009050).
+W1109 12:38:21.595219 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000bf10).
+W1109 12:38:21.595963 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200003a250).
+W1109 12:38:21.596028 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400000fe50).
+[PASS] clientViewportCoordinatesAndContactGuards
+W1109 12:38:21.670979 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000029090).
+W1109 12:38:21.671459 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000052850).
+W1109 12:38:21.671497 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000018450).
+[PASS] touchCancelEndsEveryContactAndAllowsIdReuse
+W1109 12:38:21.741475 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002d850).
+W1109 12:38:21.741911 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000667d0).
+W1109 12:38:21.741945 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400001fa50).
+[PASS] touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact
+I1109 12:38:21.811946 1017713152 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+W1109 12:38:21.815569 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000031910).
+W1109 12:38:21.816145 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000079cd0).
+W1109 12:38:21.816213 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000027250).
+[PASS] forgettingTouchTargetCancelsAndClearsResponder
+W1109 12:38:21.878676 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000042a10).
+W1109 12:38:21.879207 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200008dad0).
+W1109 12:38:21.879274 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000030c50).
+[PASS] windowDeactivationCancelsTouchStream
+W1109 12:38:21.938992 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000046ad0).
+W1109 12:38:21.939702 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000a0cd0).
+W1109 12:38:21.939738 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000044c50).
+[PASS] mouseCaptureCancellationDoesNotCreateHoverTouches
+W1109 12:38:22.017661 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004ab90).
+W1109 12:38:22.018110 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000ba7d0).
+W1109 12:38:22.018147 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400004a650).
+[PASS] mouseReleaseClearsCaptureBeforeNativeListeners
+W1109 12:38:22.097862 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000256d0).
+W1109 12:38:22.098271 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000c6350).
+W1109 12:38:22.098306 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000050050).
+[PASS] decoratedViewTargetsNearestRegisteredAncestor
+W1109 12:38:22.152004 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000037790).
+W1109 12:38:22.152487 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000d96d0).
+W1109 12:38:22.152522 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000058450).
+[PASS] runtimeEvaluatesJavaScript
+W1109 12:38:22.218144 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004e550).
+W1109 12:38:22.218603 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000e50d0).
+W1109 12:38:22.218641 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005aa50).
+[PASS] sourceCodeIdentifiesTheBundleDuringEvaluation
+W1109 12:38:22.280855 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000051110).
+W1109 12:38:22.281365 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000f0f50).
+W1109 12:38:22.281509 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005dc50).
+[PASS] javaScriptErrorsAreReportedNotSwallowed
+W1109 12:38:22.334481 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000053950).
+W1109 12:38:22.334824 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001012d0).
+W1109 12:38:22.334857 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000060250).
+[PASS] evaluateRejectsReentrantJavaScript
+W1109 12:38:22.386543 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000057d90).
+W1109 12:38:22.386911 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200010ce50).
+W1109 12:38:22.386945 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000062850).
+[PASS] timerCallbacksRunMicrotaskCheckpoints
+[js task error] checkpoint-boom
+W1109 12:38:22.456579 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005a790).
+W1109 12:38:22.458614 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000118b50).
+W1109 12:38:22.458654 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000066250).
+[PASS] throwingMicrotasksAreReportedAndRecover
+[js task error] timer-boom
+W1109 12:38:22.521024 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005d510).
+W1109 12:38:22.521391 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000124cd0).
+W1109 12:38:22.521425 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000069450).
+[PASS] throwingTimerCallbacksAreReportedAndRecover
+[js task error] hook-boom
+ErrorUtils reporting failed; retaining the host error
+[js task error] original-boom
+W1109 12:38:22.581905 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000600d0).
+W1109 12:38:22.582304 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000130cd0).
+W1109 12:38:22.582343 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006c650).
+[PASS] schedulerErrorsPreserveAndContainJavaScriptHandlers
+W1109 12:38:22.636868 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000063710).
+W1109 12:38:22.637269 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001417d0).
+W1109 12:38:22.637310 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000070c50).
+[PASS] schedulerInstallsTheFabricUIManager
+W1109 12:38:22.709030 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000065bd0).
+W1109 12:38:22.709873 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200014ced0).
+W1109 12:38:22.709913 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000072a50).
+[PASS] surfaceCommitMountsThroughTheDelegate
+W1109 12:38:22.774853 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000068e90).
+W1109 12:38:22.775358 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200015ebd0).
+W1109 12:38:22.775395 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000076e50).
+[PASS] secondCommitUpdatesTheSameItem
+W1109 12:38:22.839622 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006c310).
+W1109 12:38:22.839958 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000170a50).
+W1109 12:38:22.840020 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007ae50).
+[PASS] stoppingASurfaceUnmountsItsItems
+W1109 12:38:22.891258 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006f5d0).
+W1109 12:38:22.891583 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000181550).
+W1109 12:38:22.891623 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007e650).
+[PASS] commitToAnUnknownSurfaceIsReported
+W1109 12:38:22.939105 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000071a90).
+W1109 12:38:22.939492 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200018cc50).
+W1109 12:38:22.939585 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000033450).
+[PASS] componentPredicateAnswersForRegisteredNames
+W1109 12:38:23.010011 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000079a50).
+W1109 12:38:23.010406 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000198350).
+W1109 12:38:23.010439 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000035250).
+[PASS] javaScriptBuildsTheTreeThroughFabricUIManager
+W1109 12:38:23.067291 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300007f010).
+W1109 12:38:23.067690 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001abe50).
+W1109 12:38:23.067731 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000096a50).
+[PASS] hostInstallsBridgelessGlobals
+W1109 12:38:23.122372 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300003b310).
+W1109 12:38:23.122814 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001b79d0).
+W1109 12:38:23.122851 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000099450).
+[PASS] platformConstantsReportCurrentReactNativeVersion
+[PASS] metroProducesABundleForQnx
+W1109 12:38:24.268739 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300003d7d0).
+W1109 12:38:24.269191 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001c15d0).
+W1109 12:38:24.269232 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400009b650).
+[PASS] metroBundleEvaluatesInHermes
+Running "RNQnxPlayground"
+W1109 12:38:27.073470 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000095350).
+W1109 12:38:27.073869 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000202e50).
+W1109 12:38:27.073904 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400013ae50).
+[PASS] metroBundleRendersThroughReact
+[js fatal] deliberate failure
+   at renderThing (App.js:42)
+
+W1109 12:38:27.176213 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000001fd0).
+W1109 12:38:27.176525 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002bfb50).
+W1109 12:38:27.176550 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000028650).
+[PASS] javaScriptErrorsReachTheHost
+Running "RNQnxPlayground"
+W1109 12:38:29.916774 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000ffd0).
+W1109 12:38:29.917181 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000105dd0).
+W1109 12:38:29.917212 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000029c50).
+[PASS] aSuccessfulRenderReportsNoErrors
+Running "RNQnxPlayground"
+W1109 12:38:32.451095 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000af590).
+W1109 12:38:32.451579 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000147350).
+W1109 12:38:32.451630 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000265e50).
+[PASS] renderedTreeIsPainted
+Running "RNQnxPlayground"
+W1109 12:38:35.267474 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000067d10).
+W1109 12:38:35.268042 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002416d0).
+W1109 12:38:35.268219 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000cf450).
+[PASS] pointerEventsReachJavaScript
+Running "RNQnxPlayground"
+W1109 12:38:38.404563 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006b890).
+W1109 12:38:38.405339 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200026f750).
+W1109 12:38:38.405377 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140004fda50).
+[PASS] scrollEventsReachJavaScript
+Running "RNQnxPlayground"
+W1109 12:38:42.940212 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300007e590).
+W1109 12:38:42.940893 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001db550).
+W1109 12:38:42.940986 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400047a450).
+[PASS] wheelEventsFollowQtDirection
+Running "RNQnxFlatList"
+W1109 12:38:48.261554 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000ba2d0).
+W1109 12:38:48.262156 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002f8850).
+W1109 12:38:48.262199 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140001e1850).
+[PASS] flatListRendersAndVirtualises
+Running "RNQnxSectionList"
+W1109 12:38:51.971006 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300010e810).
+W1109 12:38:51.971418 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000230a50).
+W1109 12:38:51.971442 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000452c50).
+[PASS] sectionListRenders
+Running "RNQnxTextInput"
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:69:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+W1109 12:38:54.415339 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000b2f50).
+W1109 12:38:54.415778 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002662d0).
+W1109 12:38:54.415807 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400020ea50).
+[PASS] textInputMounts
+Running "RNQnxTextInput"
+W1109 12:38:56.691113 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000034690).
+W1109 12:38:56.691781 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000245ed0).
+W1109 12:38:56.691824 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000466850).
+[PASS] textInputPlaceholder
+Running "RNQnxTextInputMultiline"
+W1109 12:38:58.932744 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000f84d0).
+W1109 12:38:58.933147 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002a64d0).
+W1109 12:38:58.933305 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000d0850).
+[PASS] textInputMultiline
+Running "RNQnxTextEllipsis"
+W1109 12:39:01.240893 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300008aed0).
+W1109 12:39:01.241292 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000239d50).
+W1109 12:39:01.241338 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000a3450).
+[PASS] textEllipsis
+Running "RNQnxActivityIndicator"
+W1109 12:39:03.493788 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300009e2d0).
+W1109 12:39:03.494169 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200027dcd0).
+W1109 12:39:03.494266 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000277250).
+[PASS] activityIndicatorMounts
+[PASS] switchDefaultsArePainted
+Running "RNQnxSwitch"
+W1109 12:39:06.020203 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000037e90).
+W1109 12:39:06.020663 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002c7050).
+W1109 12:39:06.020697 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140001f5a50).
+[PASS] switchToggles
+Running "RNQnxButton"
+W1109 12:39:08.924784 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000014cd0).
+W1109 12:39:08.925789 901543616 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002e2c50).
+W1109 12:39:08.925835 901543616 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000062c50).
+[PASS] buttonMounts
+Running "RNQnxSafeAreaView"
+W1109 12:39:11.184996 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000703d0).
+W1109 12:39:11.185976 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001c75d0).
+W1109 12:39:11.186038 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000245050).
+[PASS] safeAreaViewMounts
+Running "RNQnxViewLayout"
+W1109 12:39:13.106633 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000059290).
+W1109 12:39:13.106997 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001d0bd0).
+W1109 12:39:13.107033 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400017fc50).
+[PASS] viewLayoutFires
+Running "RNQnxTransform"
+W1109 12:39:15.186159 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000010f90).
+W1109 12:39:15.186614 768407232 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000205550).
+W1109 12:39:15.186664 768407232 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000cee50).
+[PASS] viewTransformApplies
+Running "RNQnxImage"
+W1109 12:39:17.554533 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000073310).
+W1109 12:39:17.554906 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200015e8d0).
+W1109 12:39:17.554932 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140003fe250).
+[PASS] imageLoadEvents
+Running "RNQnxImageDefault"
+W1109 12:39:19.495384 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300012e710).
+W1109 12:39:19.495805 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000244550).
+W1109 12:39:19.495836 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000080c50).
+[PASS] imageDefaultSourceFires
+Running "RNQnxImageLoading"
+W1109 12:39:21.803759 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300003ba10).
+W1109 12:39:21.804364 768407232 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200023af50).
+W1109 12:39:21.804435 768407232 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000053c50).
+[PASS] imageLoadingIndicator
+Running "RNQnxHostStateUpdate"
+W1109 12:39:24.076396 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000039390).
+W1109 12:39:24.076884 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000151fd0).
+W1109 12:39:24.076951 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000403450).
+[PASS] metroStateUpdateCommitsThroughScheduler
+Running "RNQnxImageGetSize"
+W1109 12:39:26.328786 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300009b550).
+W1109 12:39:26.329236 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000149a50).
+W1109 12:39:26.329314 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400038a050).
+[PASS] imageGetSize
+W1109 12:39:27.435614 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000a83d0).
+W1109 12:39:27.436206 768407232 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002c50d0).
+W1109 12:39:27.436271 768407232 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400008d650).
+[PASS] imageLoaderPromiseContract
+Running "RNQnxImageBackground"
+W1109 12:39:29.806085 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300008b410).
+W1109 12:39:29.806468 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000154fd0).
+W1109 12:39:29.806492 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400036aa50).
+[PASS] imageBackgroundMounts
+Running "RNQnxImageResolveAsset"
+W1109 12:39:32.258500 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005ce10).
+W1109 12:39:32.258872 768407232 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001bafd0).
+W1109 12:39:32.258898 768407232 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140003ed850).
+[PASS] imageResolveAssetSource
+Running "RNQnxNativeAnimated"
+W1109 12:39:35.243902 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000047550).
+W1109 12:39:35.244336 922744512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000158750).
+W1109 12:39:35.244364 922744512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400035e850).
+[PASS] nativeAnimatedOpacity
+Running "RNQnxModal"
+W1109 12:39:38.481205 1017713152 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000ef1d0).
+W1109 12:39:38.481623 961349312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002b9250).
+W1109 12:39:38.481650 961349312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000171850).
+[FAIL] modalMounts: <REPO>/tests/cpp/QtReactHostHostTest.cpp:2591: check failed: modal->childItems().size() == 1
+1 QtReactHost host test(s) failed.
+
+
+40% tests passed, 3 tests failed out of 5
+
+Total Test time (real) = 110.99 sec
+
+The following tests FAILED:
+	 23 - rnqnx_consumer_window_input (Failed)
+	 24 - rnqnx_consumer_desktop_window_input (Failed)
+	 35 - qt_react_host_host_test (Failed)
+Errors while running CTest
+
+
+DEVELOPMENT RUN — predates final frozen candidate / adaptive-gallery-test.log
+RNQNX_INPUT_READY lifecycle=1
+Running "RNQnxPlayground"
+qrc:/react-native-qnx/Image.qml:2:1: QML Image: Cannot open: file://assets/assets/icon.png
+qrc:/react-native-qnx/Image.qml:2:1: QML Image: Cannot open: file://assets/assets/icon.png
+RNQNX_SURFACE_READY width=640 height=480
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:69:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+QQuickItem: Cannot set activeFocusOnTab to false once item is the active focus item.
+QQuickItem: Cannot set activeFocusOnTab to false once item is the active focus item.
+QQuickItem: Cannot set activeFocusOnTab to false once item is the active focus item.
+RNQNX_ADAPTIVE_SIZE 800x800 columns=2 scale=1
+RNQNX_ADAPTIVE_SIZE 1024x768 columns=2 scale=1
+RNQNX_ADAPTIVE_SIZE 1920x1080 columns=3 scale=1
+RNQNX_ADAPTIVE_SIZE 480x700 columns=1 scale=1
+RNQNX_ADAPTIVE_SIZE 360x700 columns=1 scale=1
+RNQNX_ADAPTIVE_GALLERY_FAIL step=native wheel scroll Document list did not scroll from window wheel events
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 12:27:40.942411 4274332160 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000015ad0).
+W1109 12:27:40.945757 4150961856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014750).
+W1109 12:27:40.945798 4150961856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000005050).
+
+
+DEVELOPMENT RUN — predates final frozen candidate / adaptive-gallery-final-on.log
+Internal ctest changing into directory: <REPO>/build/linux-adaptive
+Test project <REPO>/build/linux-adaptive
+    Start  6: rnqnx_desktop_window
+1/5 Test  #6: rnqnx_desktop_window ..............   Passed    1.23 sec
+    Start 12: rnqnx_accessibility_view_test
+2/5 Test #12: rnqnx_accessibility_view_test .....   Passed    0.03 sec
+    Start 29: rnqnx_component_gallery
+3/5 Test #29: rnqnx_component_gallery ...........   Passed   48.84 sec
+    Start 30: rnqnx_component_gallery_desktop
+4/5 Test #30: rnqnx_component_gallery_desktop ...***Failed   75.42 sec
+CMake Error at <REPO>/tests/cmake/ComponentGallery.cmake:48 (message):
+  Actual component gallery failed: Process terminated due to timeout
+
+  RNQNX_INPUT_READY lifecycle=1
+
+  Running "RNQnxPlayground"
+
+  RNQNX_SURFACE_READY width=784 height=668
+
+  RNQNX_GALLERY_STEP 0 mount production gallery elapsed_ms=694
+
+  RNQNX_GALLERY_STEP 1 wide content layout elapsed_ms=1369
+
+  RNQNX_GALLERY_STEP 2 press native gallery action elapsed_ms=1369
+
+  RNQNX_GALLERY_STEP 3 release pointer elapsed_ms=1559
+
+  RNQNX_GALLERY_STEP 4 React press state elapsed_ms=1797
+
+  RNQNX_GALLERY_STEP 5 toggle the native switch elapsed_ms=1812
+
+  RNQNX_GALLERY_STEP 6 release pointer elapsed_ms=2004
+
+  RNQNX_GALLERY_STEP 7 React switch state elapsed_ms=2160
+
+  RNQNX_GALLERY_STEP 8 focus native editor elapsed_ms=2176
+
+  RNQNX_GALLERY_STEP 9 release pointer elapsed_ms=2368
+
+  RNQNX_GALLERY_STEP 10 edit through window key events elapsed_ms=2384
+
+  RNQNX_GALLERY_STEP 11 controlled text acknowledgement elapsed_ms=2682
+
+  RNQNX_GALLERY_STEP 12 resize client without remount elapsed_ms=2698
+
+  RNQNX_ADAPTIVE_SIZE 800x800 columns=2 scale=1
+
+  RNQNX_GALLERY_STEP 13 state and geometry after resize elapsed_ms=3226
+
+  RNQNX_GALLERY_STEP 14 resize client without remount elapsed_ms=3237
+
+  RNQNX_ADAPTIVE_SIZE 1024x768 columns=2 scale=1
+
+  RNQNX_GALLERY_STEP 15 state and geometry after resize elapsed_ms=4023
+
+  RNQNX_GALLERY_STEP 16 resize client without remount elapsed_ms=4033
+
+  RNQNX_ADAPTIVE_SIZE 1920x1080 columns=3 scale=1
+
+  RNQNX_GALLERY_STEP 17 state and geometry after resize elapsed_ms=4537
+
+  RNQNX_GALLERY_STEP 18 resize client without remount elapsed_ms=4537
+
+  RNQNX_ADAPTIVE_SIZE 480x700 columns=1 scale=1
+
+  RNQNX_GALLERY_STEP 19 state and geometry after resize elapsed_ms=5243
+
+  RNQNX_GALLERY_STEP 20 open compact navigation elapsed_ms=5243
+
+  RNQNX_GALLERY_STEP 21 release pointer elapsed_ms=5428
+
+  RNQNX_GALLERY_STEP 22 all six destinations in compact navigation
+  elapsed_ms=5804
+
+  RNQNX_GALLERY_STEP 23 navigation dismissal restores focus elapsed_ms=5921
+
+  RNQNX_GALLERY_STEP 24 short wide window remains usable elapsed_ms=6669
+
+  RNQNX_GALLERY_STEP 25 return to wide client elapsed_ms=7379
+
+  RNQNX_GALLERY_STEP 26 open native overlay elapsed_ms=7390
+
+  RNQNX_GALLERY_STEP 27 release pointer elapsed_ms=7576
+
+  RNQNX_GALLERY_STEP 28 visible bounded dialog elapsed_ms=7901
+
+  RNQNX_GALLERY_STEP 29 short dialog geometry settles elapsed_ms=8062
+
+  RNQNX_GALLERY_STEP 30 attempt background navigation under modal
+  elapsed_ms=8682
+
+  RNQNX_GALLERY_STEP 31 release pointer elapsed_ms=8874
+
+  RNQNX_GALLERY_STEP 32 dialog adapts to short viewport elapsed_ms=8955
+
+  RNQNX_GALLERY_STEP 33 dialog dismissal and state elapsed_ms=8990
+
+  RNQNX_GALLERY_STEP 34 wide dialog button dismissal ready elapsed_ms=9134
+
+  RNQNX_GALLERY_STEP 35 open overlay for close button elapsed_ms=9828
+
+  RNQNX_GALLERY_STEP 36 release pointer elapsed_ms=10017
+
+  RNQNX_GALLERY_STEP 37 close button is mounted elapsed_ms=10149
+
+  RNQNX_GALLERY_STEP 38 close overlay through native button elapsed_ms=10162
+
+  RNQNX_GALLERY_STEP 39 release pointer elapsed_ms=10353
+
+  RNQNX_GALLERY_STEP 40 button dismissal retains state elapsed_ms=10544
+
+  RNQNX_GALLERY_STEP 41 wide navigation ready elapsed_ms=10557
+
+  RNQNX_GALLERY_STEP 42 visit document list elapsed_ms=10574
+
+  RNQNX_GALLERY_STEP 43 release pointer elapsed_ms=10768
+
+  RNQNX_GALLERY_STEP 44 document list is mounted elapsed_ms=11891
+
+  RNQNX_GALLERY_STEP 45 select the first document elapsed_ms=12609
+
+  RNQNX_GALLERY_STEP 46 release pointer elapsed_ms=13094
+
+  RNQNX_GALLERY_STEP 47 document selection updates React elapsed_ms=14319
+
+  RNQNX_GALLERY_STEP 48 scroll selected document list elapsed_ms=14320
+
+  RNQNX_GALLERY_STEP 49 native wheel scroll elapsed_ms=14767
+
+  RNQNX_GALLERY_STEP 50 visit sections elapsed_ms=14784
+
+  RNQNX_GALLERY_STEP 51 release pointer elapsed_ms=14976
+
+  RNQNX_GALLERY_STEP 52 section list shares selection elapsed_ms=17854
+
+  RNQNX_GALLERY_STEP 53 visit controlled inputs elapsed_ms=18670
+
+  RNQNX_GALLERY_STEP 54 release pointer elapsed_ms=19284
+
+  RNQNX_GALLERY_STEP 55 controls share edited state elapsed_ms=23150
+
+  RNQNX_GALLERY_STEP 56 press from the controls route elapsed_ms=23182
+
+  RNQNX_GALLERY_STEP 57 release pointer elapsed_ms=23374
+
+  RNQNX_GALLERY_STEP 58 controls update shared counter elapsed_ms=23954
+
+  RNQNX_GALLERY_STEP 59 visit adaptive layout elapsed_ms=23955
+
+  RNQNX_GALLERY_STEP 60 release pointer elapsed_ms=24147
+
+  RNQNX_GALLERY_STEP 61 adaptive route observ
+
+  qt.qml.context: qrc:/react-native-qnx/TextInput.qml:102:5 Parameter "event"
+  is not declared.  Injection of parameters into signal handlers is
+  deprecated.  Use JavaScript functions with formal parameters instead.
+
+
+
+
+    Start 31: rnqnx_font_license
+5/5 Test #31: rnqnx_font_license ................   Passed    0.03 sec
+
+80% tests passed, 1 tests failed out of 5
+
+Total Test time (real) = 125.56 sec
+
+The following tests FAILED:
+	 30 - rnqnx_component_gallery_desktop (Failed)
+Errors while running CTest
+
+
+FINAL BUILD / REVIEW — adaptive-configure-off.log
+-- Configuring react-native-qnx for host development
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Qt 6.11.1 found; building Qt Quick host targets (minimum 6.11.1)
+icu dir: <HOST_TOOLS>/host-deps/usr/lib/x86_64-linux-gnu
+-- Threads enabled.
+-- Doxygen disabled.
+-- Go bindings disabled.
+-- Could NOT find Python module pygments
+-- Could NOT find Python module pygments.lexers.c_cpp
+-- Could NOT find Python module yaml
+-- Boost.Context: architecture x86_64, binary format elf, ABI sysv, assembler gas, suffix .S, implementation fcontext
+-- Configuring done (1.1s)
+-- Generating done (1.2s)
+-- Build files have been written to: <REPO>/build/linux-adaptive
+
+
+FINAL BUILD / REVIEW — adaptive-build-off.log
+[0/2] Re-checking globbed directories...
+[1/56] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtSwitchQml.cpp.o
+[2/56] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QnxImageProvider.cpp.o
+[3/56] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtWheelDirectionFilter.cpp.o
+[4/56] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtTextInputQml.cpp.o
+[5/56] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtQuickItemFactory.cpp.o
+[6/56] Generating rnqnx-view-focus.bundle.js
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ../../tests/fixtures/view-focus-probe.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:59) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:61) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ../../tests/fixtures/view-focus-probe.js
+LOG:Writing bundle output to: <REPO>/build/linux-adaptive/rnqnx-view-focus.bundle.js
+LOG:Done writing bundle output
+[7/56] Generating rnqnx-window-metrics.bundle.js
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ../../tests/fixtures/window-metrics-probe.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:60) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:62) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ../../tests/fixtures/window-metrics-probe.js
+LOG:Writing bundle output to: <REPO>/build/linux-adaptive/rnqnx-window-metrics.bundle.js
+LOG:Done writing bundle output
+[8/56] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/fabric/QtQuickMountingLayer.cpp.o
+[9/56] Linking CXX static library librnqnx_views_qt.a
+[10/56] Automatic MOC for target rnqnx_fabric_adapter
+[11/56] Building CXX object CMakeFiles/rnqnx_rn_headers_probe.dir/vnext/probes/rn-headers/main.cpp.o
+[12/56] Building CXX object CMakeFiles/qtquick_mounting_layer_host_test.dir/tests/cpp/QtQuickMountingLayerHostTest.cpp.o
+[13/56] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/rnqnx_fabric_adapter_autogen/mocs_compilation.cpp.o
+[14/56] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtTouchDispatcher.cpp.o
+[15/56] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtScrollBridge.cpp.o
+[16/56] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/ShadowViewMutationAdapter.cpp.o
+[17/56] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtSwitchBridge.cpp.o
+[18/56] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtViewFocusBridge.cpp.o
+[19/56] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtImageBridge.cpp.o
+[20/56] Linking CXX static library librnqnx_fabric_adapter.a
+[21/56] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtRuntimeTaskQueue.cpp.o
+[22/56] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxExceptionsManager.cpp.o
+[23/56] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxDeviceInfo.cpp.o
+[24/56] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxFileReaderModule.cpp.o
+[25/56] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtWindowMetricsObserver.cpp.o
+[26/56] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtReactHost.cpp.o
+[27/56] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtImageCache.cpp.o
+[28/56] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxImageLoader.cpp.o
+[29/56] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxSegmentFetcher.cpp.o
+[30/56] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxWebSocketModule.cpp.o
+[31/56] Linking CXX static library librnqnx_react_host.a
+[32/56] Building CXX object CMakeFiles/rnqnx_react_render_host_probe.dir/vnext/probes/react-qnx/main.cpp.o
+[33/56] Building CXX object CMakeFiles/rnqnx_text_layout_host_test.dir/tests/cpp/QtTextLayoutHostTest.cpp.o
+[34/56] Building CXX object CMakeFiles/qt_react_host_host_test.dir/tests/cpp/QtReactHostHostTest.cpp.o
+[35/56] Building CXX object CMakeFiles/rnqnx_playground_host.dir/vnext/probes/playground/main.cpp.o
+[36/56] Building CXX object CMakeFiles/rnqnx_consumer_input_test.dir/tests/cpp/QtConsumerWindowInputTest.cpp.o
+[37/56] Building CXX object CMakeFiles/shadow_view_mutation_adapter_host_test.dir/tests/cpp/ShadowViewMutationAdapterHostTest.cpp.o
+[38/56] Building CXX object CMakeFiles/rnqnx_component_gallery_test.dir/tests/cpp/QtComponentGalleryTest.cpp.o
+[39/56] Building CXX object CMakeFiles/shadow_tree_mounting_host_test.dir/tests/cpp/ShadowTreeMountingHostTest.cpp.o
+[40/56] Building CXX object CMakeFiles/rnqnx_qtquick_host_probe.dir/vnext/probes/qtquick/main.cpp.o
+[41/56] Linking CXX executable bin/rnqnx_text_layout_host_test
+[42/56] Building CXX object CMakeFiles/rnqnx_view_focus_host_test.dir/tests/cpp/QtViewFocusHostTest.cpp.o
+[43/56] Building CXX object CMakeFiles/rnqnx_window_metrics_test.dir/tests/cpp/QtWindowMetricsTest.cpp.o
+[44/56] Linking CXX executable bin/rnqnx_react_render_host_probe
+[45/56] Linking CXX executable bin/rnqnx_view_focus_host_test
+[46/56] Linking CXX executable bin/rnqnx_playground_host
+[47/56] Linking CXX executable bin/qt_react_host_host_test
+[48/56] Linking CXX executable bin/rnqnx_consumer_input_test
+[49/56] Linking CXX executable bin/rnqnx_rn_headers_probe
+[50/56] Linking CXX executable bin/rnqnx_window_metrics_test
+[51/56] Linking CXX executable bin/rnqnx_component_gallery_test
+[52/56] Linking CXX executable bin/qtquick_mounting_layer_host_test
+[53/56] Linking CXX executable bin/rnqnx_qtquick_host_probe
+[54/56] Linking CXX executable bin/shadow_view_mutation_adapter_host_test
+[55/56] Linking CXX executable bin/shadow_tree_mounting_host_test
+
+
+FINAL BUILD / REVIEW — adaptive-build-off-frozen.log
+[0/2] Re-checking globbed directories...
+ninja: no work to do.
+
+
+FINAL BUILD / REVIEW — adaptive-configure-final-on.log
+-- Configuring react-native-qnx for host development
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Qt 6.11.1 found; building Qt Quick host targets (minimum 6.11.1)
+icu dir: <HOST_TOOLS>/host-deps/usr/lib/x86_64-linux-gnu
+-- Threads enabled.
+-- Doxygen disabled.
+-- Go bindings disabled.
+-- Could NOT find Python module pygments
+-- Could NOT find Python module pygments.lexers.c_cpp
+-- Could NOT find Python module yaml
+-- Boost.Context: architecture x86_64, binary format elf, ABI sysv, assembler gas, suffix .S, implementation fcontext
+-- Configuring done (0.8s)
+-- Generating done (1.1s)
+-- Build files have been written to: <REPO>/build/linux-adaptive
+
+
+FINAL BUILD / REVIEW — adaptive-build-final-on.log
+[0/2] Re-checking globbed directories...
+[1/70] Automatic MOC for target rnqnx_views_qt
+[2/69] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtSwitchQml.cpp.o
+[3/69] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtQuickItemFactory.cpp.o
+[4/69] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QnxImageProvider.cpp.o
+[5/69] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtTextInputQml.cpp.o
+[6/69] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtWheelDirectionFilter.cpp.o
+[7/69] Building CXX object CMakeFiles/rnqnx_accessibility_action_native_test.dir/tests/native/accessibility/ActionTest.cpp.o
+[8/69] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/fabric/QtQuickMountingLayer.cpp.o
+[9/69] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/fabric/QtViewAccessibility.cpp.o
+[10/69] Linking CXX static library librnqnx_views_qt.a
+[11/69] Building CXX object CMakeFiles/rnqnx_accessibility_view_test.dir/tests/native/accessibility/ViewTest.cpp.o
+[12/69] Building CXX object CMakeFiles/rnqnx_text_input_bridge_test.dir/tests/native/text-input/BridgeTest.cpp.o
+[13/69] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/rnqnx_fabric_adapter_autogen/mocs_compilation.cpp.o
+[14/69] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtScrollBridge.cpp.o
+[15/69] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtTouchDispatcher.cpp.o
+[16/69] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtSwitchBridge.cpp.o
+[17/69] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/ShadowViewMutationAdapter.cpp.o
+[18/69] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtViewFocusBridge.cpp.o
+[19/69] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtImageBridge.cpp.o
+[20/69] Linking CXX static library librnqnx_fabric_adapter.a
+[21/69] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtRuntimeTaskQueue.cpp.o
+[22/69] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxExceptionsManager.cpp.o
+[23/69] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxDeviceInfo.cpp.o
+[24/69] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtWindowMetricsObserver.cpp.o
+[25/69] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxFileReaderModule.cpp.o
+[26/69] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtReactHost.cpp.o
+[27/69] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtImageCache.cpp.o
+[28/69] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxSegmentFetcher.cpp.o
+[29/69] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxWebSocketModule.cpp.o
+[30/69] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxImageLoader.cpp.o
+[31/69] Linking CXX static library librnqnx_react_host.a
+[32/69] Building CXX object CMakeFiles/rnqnx_view_focus_host_test.dir/tests/cpp/QtViewFocusHostTest.cpp.o
+[33/69] Building CXX object CMakeFiles/rnqnx_text_layout_host_test.dir/tests/cpp/QtTextLayoutHostTest.cpp.o
+[34/69] Building CXX object CMakeFiles/rnqnx_accessibility_action_probe.dir/tests/cpp/QtAccessibilityActionProbe.cpp.o
+[35/69] Building CXX object CMakeFiles/rnqnx_input_lifecycle_probe.dir/tests/cpp/QtInputLifecycleProbe.cpp.o
+[36/69] Building CXX object CMakeFiles/rnqnx_text_input_probe.dir/tests/cpp/QtTextInputProbe.cpp.o
+[37/69] Building CXX object CMakeFiles/rnqnx_pressable_probe.dir/tests/cpp/QtPressableProbe.cpp.o
+[38/69] Building CXX object CMakeFiles/rnqnx_react_render_host_probe.dir/vnext/probes/react-qnx/main.cpp.o
+[39/69] Building CXX object CMakeFiles/rnqnx_playground_host.dir/vnext/probes/playground/main.cpp.o
+[40/69] Building CXX object CMakeFiles/qt_react_host_host_test.dir/tests/cpp/QtReactHostHostTest.cpp.o
+[41/69] Building CXX object CMakeFiles/rnqnx_consumer_input_test.dir/tests/cpp/QtConsumerWindowInputTest.cpp.o
+[42/69] Building CXX object CMakeFiles/rnqnx_window_metrics_test.dir/tests/cpp/QtWindowMetricsTest.cpp.o
+[43/69] Building CXX object CMakeFiles/rnqnx_rn_headers_probe.dir/vnext/probes/rn-headers/main.cpp.o
+[44/69] Building CXX object CMakeFiles/rnqnx_component_gallery_test.dir/tests/cpp/QtComponentGalleryTest.cpp.o
+[45/69] Building CXX object CMakeFiles/shadow_view_mutation_adapter_host_test.dir/tests/cpp/ShadowViewMutationAdapterHostTest.cpp.o
+[46/69] Building CXX object CMakeFiles/qtquick_mounting_layer_host_test.dir/tests/cpp/QtQuickMountingLayerHostTest.cpp.o
+[47/69] Building CXX object CMakeFiles/rnqnx_qtquick_host_probe.dir/vnext/probes/qtquick/main.cpp.o
+[48/69] Building CXX object CMakeFiles/shadow_tree_mounting_host_test.dir/tests/cpp/ShadowTreeMountingHostTest.cpp.o
+[49/69] Linking CXX executable bin/rnqnx_text_layout_host_test
+[50/69] Linking CXX executable bin/rnqnx_accessibility_action_native_test
+[51/69] Linking CXX executable bin/rnqnx_view_focus_host_test
+[52/69] Linking CXX executable rnqnx_accessibility_view_test
+[53/69] Linking CXX executable bin/rnqnx_accessibility_action_probe
+[54/69] Linking CXX executable bin/rnqnx_text_input_bridge_test
+[55/69] Linking CXX executable bin/rnqnx_input_lifecycle_probe
+[56/69] Linking CXX executable bin/rnqnx_text_input_probe
+[57/69] Linking CXX executable bin/rnqnx_pressable_probe
+[58/69] Linking CXX executable bin/rnqnx_react_render_host_probe
+[59/69] Linking CXX executable bin/rnqnx_playground_host
+[60/69] Linking CXX executable bin/qt_react_host_host_test
+[61/69] Linking CXX executable bin/rnqnx_consumer_input_test
+[62/69] Linking CXX executable bin/rnqnx_rn_headers_probe
+[63/69] Linking CXX executable bin/rnqnx_window_metrics_test
+[64/69] Linking CXX executable bin/rnqnx_component_gallery_test
+[65/69] Linking CXX executable bin/qtquick_mounting_layer_host_test
+[66/69] Linking CXX executable bin/rnqnx_qtquick_host_probe
+[67/69] Linking CXX executable bin/shadow_view_mutation_adapter_host_test
+[68/69] Linking CXX executable bin/shadow_tree_mounting_host_test
+
+
+FINAL BUILD / REVIEW — adaptive-qt-lint-final.log
+Paths relative to <REPO>/
+Diff `git diff 3b414f185ec9b6c23eb7fbfdbc0afc9bfed18b94`: 26 C++ file(s), 2751 added or modified line(s)
+  tests/cpp/QtComponentGalleryTest.cpp +571  tests/cpp/QtReactHostHostTest.cpp +17  tests/cpp/QtTextLayoutHostTest.cpp +375  tests/cpp/QtViewFocusHostTest.cpp +259  tests/cpp/QtWindowMetricsTest.cpp +225  tests/cpp/ShadowViewMutationAdapterHostTest.cpp +51  vnext/include/react-native-qnx/fabric/QtQuickMountingLayer.h +24  vnext/include/react-native-qnx/fabric/QtViewFocusBridge.h +37  vnext/include/react-native-qnx/fabric/ShadowViewMutationAdapter.h +4  vnext/include/react-native-qnx/runtime/QnxDeviceInfo.h +31  vnext/include/react-native-qnx/runtime/QnxExceptionsManager.h +0  vnext/include/react-native-qnx/runtime/QtReactHost.h +20  vnext/include/react-native-qnx/runtime/QtWindowMetricsObserver.h +51  vnext/include/react-native-qnx/runtime/WindowMetrics.h +21  vnext/include/react-native-qnx/text/QtTextAttributes.h +24  vnext/probes/playground/main.cpp +85  vnext/src/fabric/QtQuickMountingLayer.cpp +23  vnext/src/fabric/QtViewFocusBridge.cpp +88  vnext/src/fabric/ShadowViewMutationAdapter.cpp +240  vnext/src/runtime/QnxDeviceInfo.cpp +92  vnext/src/runtime/QnxExceptionsManager.cpp +0  vnext/src/runtime/QtReactHost.cpp +108  vnext/src/runtime/QtWindowMetricsObserver.cpp +131  vnext/src/text/QtTextAttributes.cpp +171  vnext/src/text/QtTextLayoutManager.cpp +13  vnext/src/views/qt/QtTextInputQml.cpp +90
+0 finding(s), 0 distinct rule/message pair(s)
+
+
+FINAL BUILD / REVIEW — adaptive-final-inventory-test.log
+
+
+JAVASCRIPT / DOCS — full-js.log
+Running <REPO>/tests/js/accessibility-action-controls.test.mjs...
+Accessibility action controls enforce exact exit status and reject sanitizer output.
+Running <REPO>/tests/js/accessibility-action-fixture-config.test.mjs...
+AccessibilityAction fixture configuration: normal host/QNX generation, cached HBC dependency and invalid-path rejection passed (host graph only)
+Running <REPO>/tests/js/accessibility-view-config.test.mjs...
+BaseViewConfig admits standard accessibility props and direct action events.
+Running <REPO>/tests/js/braces-security.test.mjs...
+braces security: patched-source, regression, tamper, and audit-policy checks passed.
+Running <REPO>/tests/js/compression-security.test.mjs...
+Running <REPO>/tests/js/docs-validation.test.mjs...
+docs-validation.test.mjs passed (stale pins, installed drift, evidence requirements, duplicate components, markers and release blockers)
+Running <REPO>/tests/js/expo-dual-discovery.test.mjs...
+real Expo qnx discovery and CMake INTERFACE linkage passed; no native runtime claim
+real Expo marathon discovery and CMake INTERFACE linkage passed; no native runtime claim
+Running <REPO>/tests/js/expo-dual-platform.test.mjs...
+expo-dual-platform: 31 checks passed (descriptor/generator host fixtures).
+Running <REPO>/tests/js/expo-modules2-compat.test.mjs...
+expo-modules2-compat.test.mjs passed (source only)
+Running <REPO>/tests/js/expo-qnx-autolinking.test.mjs...
+expo-qnx-autolinking.test.mjs passed
+Running <REPO>/tests/js/expo-qnx-discovery.test.mjs...
+Expo QNX: real Expo discovery, deterministic preparation and CMake target wiring passed.
+Running <REPO>/tests/js/expo-qnx-prepare.test.mjs...
+expo-qnx-prepare: 58 checks passed (host files/generation only).
+Running <REPO>/tests/js/host-renderer-contract.test.mjs...
+Running <REPO>/tests/js/js-runner.test.mjs...
+js-runner.test.mjs passed (missing suite, empty suite and missing test input fail)
+Running <REPO>/tests/js/marathon-development-launcher.test.mjs...
+Error: listen EPERM: operation not permitted /tmp/rnqnx-marathon-launch-f5C9Tp/runtime/wayland-fixture
+    at Server.setupListenHandle [as _listen2] (node:net:1986:21)
+    at listenInCluster (node:net:2065:12)
+    at Server.listen (node:net:2187:5)
+    at file://<REPO>/tests/js/marathon-development-launcher.test.mjs:89:14
+    at new Promise (<anonymous>)
+    at file://<REPO>/tests/js/marathon-development-launcher.test.mjs:87:11 {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '/tmp/rnqnx-marathon-launch-f5C9Tp/runtime/wayland-fixture',
+  port: -1
+}
+
+
+JAVASCRIPT / DOCS — remaining-js.log
+Running <REPO>/tests/js/marathon-metro-platform.test.mjs...
+marathon-metro-platform.test.mjs passed
+Running <REPO>/tests/js/marathon-native-host-contract.test.mjs...
+marathon-native-host-contract.test.mjs passed
+Running <REPO>/tests/js/nitro-api-skill-contract.test.mjs...
+Nitro API/JS/native source contracts passed (NOT compiled or device-tested)
+Running <REPO>/tests/js/nitro-dual-host-contract.test.mjs...
+nitro-dual-host-contract.test.mjs passed (source-check only)
+Running <REPO>/tests/js/nitro-platform-codegen.test.mjs...
+Platform Nitro v1 binding check passed
+nitro-platform-codegen.test.mjs passed (generated bindings only)
+Running <REPO>/tests/js/nitro-v1-native-migration.test.mjs...
+nitro-v1-native-migration.test.mjs passed (source only)
+Running <REPO>/tests/js/pi-evidence.test.mjs...
+pi-evidence.test.mjs passed
+Running <REPO>/tests/js/pressable-cancellation.test.mjs...
+Pressable cancellation: exact installed dev/prod guards, OFF parity and null-target error propagation passed
+Running <REPO>/tests/js/pressable-fixture-config.test.mjs...
+Pressable fixture configuration: normal host/QNX generation, cached HBC dependency and invalid-path rejection passed (host graph only)
+Running <REPO>/tests/js/qnx-adaptive-layout.test.mjs...
+Adaptive layout: logical breakpoints, bounded grid sizing, stable element ancestry, and menu focus transitions passed (JS host fixture; no native input claim).
+Running <REPO>/tests/js/qnx-appstate-optional-registry.test.mjs...
+AppState optional registry: null when disabled, actual native module when enabled (host VM only).
+Running <REPO>/tests/js/qnx-cli-evidence.test.mjs...
+qnx-cli-evidence.test.mjs passed (dry-run, real verifier, SHA-256 manifest, newest run, errors; synthetic host fixture only)
+Running <REPO>/tests/js/qnx-cli.test.mjs...
+qnx-cli.test.mjs passed (init safety, output symlink confinement, option rejection, dry-run, real shell failure propagation; no device connection)
+Running <REPO>/tests/js/qnx-component-conformance.test.mjs...
+qnx-component-conformance.test.mjs passed (deterministic fixtures, JS state/retained route layers, public entry/assets; no renderer or QNX run)
+Running <REPO>/tests/js/qnx-consumer-doctor-installed.test.mjs...
+Consumer doctor: both target CLI reports matched the actual installed workspace graph; native/runtime not verified.
+Running <REPO>/tests/js/qnx-consumer-doctor.test.mjs...
+Consumer doctor: 55 checks passed (metadata fixtures; actual Node minimum enforced, no config execution or device proof).
+Running <REPO>/tests/js/qnx-consumer-native-config.test.mjs...
+{
+  "action": "dry-run",
+  "output": "/tmp/rnqnx-native-config-7SZbzs/one external app/build/qnx/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes — 学習",
+    "componentName": "FieldNotes",
+    "platform": "qnx",
+    "bundle": "/tmp/rnqnx-native-config-7SZbzs/one external app/build/qnx/app.bundle.js",
+    "bundleSha256": "aa2624baf6cd6a0c2b0e7717de077989cc0ceb69acdcf9025a494749d91592cf"
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/tmp/rnqnx-native-config-7SZbzs/one external app/build/qnx/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes — 学習",
+    "componentName": "FieldNotes",
+    "platform": "qnx",
+    "bundle": "/tmp/rnqnx-native-config-7SZbzs/one external app/build/qnx/app.bundle.js",
+    "bundleSha256": "aa2624baf6cd6a0c2b0e7717de077989cc0ceb69acdcf9025a494749d91592cf"
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "unchanged",
+  "output": "/tmp/rnqnx-native-config-7SZbzs/one external app/build/qnx/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes — 学習",
+    "componentName": "FieldNotes",
+    "platform": "qnx",
+    "bundle": "/tmp/rnqnx-native-config-7SZbzs/one external app/build/qnx/app.bundle.js",
+    "bundleSha256": "aa2624baf6cd6a0c2b0e7717de077989cc0ceb69acdcf9025a494749d91592cf"
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "dry-run",
+  "output": "/tmp/rnqnx-native-config-7SZbzs/one external app/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes — 学習",
+    "componentName": "FieldNotes",
+    "platform": "marathon",
+    "bundle": "/tmp/rnqnx-native-config-7SZbzs/one external app/build/marathon/app.bundle.js",
+    "bundleSha256": "aa2624baf6cd6a0c2b0e7717de077989cc0ceb69acdcf9025a494749d91592cf"
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "created",
+  "output": "/tmp/rnqnx-native-config-7SZbzs/one external app/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes — 学習",
+    "componentName": "FieldNotes",
+    "platform": "marathon",
+    "bundle": "/tmp/rnqnx-native-config-7SZbzs/one external app/build/marathon/app.bundle.js",
+    "bundleSha256": "aa2624baf6cd6a0c2b0e7717de077989cc0ceb69acdcf9025a494749d91592cf"
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "action": "unchanged",
+  "output": "/tmp/rnqnx-native-config-7SZbzs/one external app/build/marathon/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.rnqnx.notes",
+    "displayName": "Field Notes — 学習",
+    "componentName": "FieldNotes",
+    "platform": "marathon",
+    "bundle": "/tmp/rnqnx-native-config-7SZbzs/one external app/build/marathon/app.bundle.js",
+    "bundleSha256": "aa2624baf6cd6a0c2b0e7717de077989cc0ceb69acdcf9025a494749d91592cf"
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+Consumer native configuration: 52 checks passed (real file/hash/CMake generation; native compilation separate).
+Running <REPO>/tests/js/qnx-device-tools.test.mjs...
+qnx-device-tools: 57 checks passed (synthetic SSH/remote shell, no device).
+Running <REPO>/tests/js/qnx-external-project-metro.test.mjs...
+external qnx Metro: 482658 bytes; bundle only, no native run
+external marathon Metro: 482684 bytes; bundle only, no native run
+Running <REPO>/tests/js/qnx-external-project.test.mjs...
+{
+  "command": "bundle",
+  "platform": "qnx",
+  "project": "/tmp/rnqnx-external-PfUHJ0/an app",
+  "projectName": "external-app",
+  "entry": "/tmp/rnqnx-external-PfUHJ0/an app/index.js",
+  "config": "/tmp/rnqnx-external-PfUHJ0/an app/metro.config.js",
+  "output": "/tmp/rnqnx-external-PfUHJ0/an app/build/qnx/app.bundle.js",
+  "executable": "<HOST_TOOLS>/toolchain/node_modules/node/bin/node",
+  "metroCli": "/tmp/rnqnx-external-PfUHJ0/an app/node_modules/metro/cli.cjs",
+  "metroVersion": "fixture-only",
+  "dryRun": true,
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "command": "bundle",
+  "platform": "qnx",
+  "project": "/tmp/rnqnx-external-PfUHJ0/an app",
+  "projectName": "external-app",
+  "entry": "/tmp/rnqnx-external-PfUHJ0/an app/index.js",
+  "config": "/tmp/rnqnx-external-PfUHJ0/an app/metro.config.js",
+  "output": "/tmp/rnqnx-external-PfUHJ0/an app/build/qnx/app.bundle.js",
+  "executable": "<HOST_TOOLS>/toolchain/node_modules/node/bin/node",
+  "metroCli": "/tmp/rnqnx-external-PfUHJ0/an app/node_modules/metro/cli.cjs",
+  "metroVersion": "fixture-only",
+  "dryRun": false,
+  "nativeBuildVerified": false,
+  "runtimeVerified": false,
+  "action": "bundled",
+  "bytes": 257
+}
+{
+  "command": "inspect",
+  "platform": "qnx",
+  "project": "/tmp/rnqnx-external-PfUHJ0/an app",
+  "projectName": "external-app",
+  "entry": "/tmp/rnqnx-external-PfUHJ0/an app/index.js",
+  "config": "/tmp/rnqnx-external-PfUHJ0/an app/metro.config.js",
+  "output": "/tmp/rnqnx-external-PfUHJ0/an app/build/qnx/app.bundle.js",
+  "executable": "<HOST_TOOLS>/toolchain/node_modules/node/bin/node",
+  "metroCli": "/tmp/rnqnx-external-PfUHJ0/an app/node_modules/metro/cli.cjs",
+  "metroVersion": "fixture-only",
+  "dryRun": false,
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+{
+  "command": "bundle",
+  "platform": "marathon",
+  "project": "/tmp/rnqnx-external-PfUHJ0/an app",
+  "projectName": "external-app",
+  "entry": "/tmp/rnqnx-external-PfUHJ0/an app/index.js",
+  "config": "/tmp/rnqnx-external-PfUHJ0/an app/metro.marathon.config.js",
+  "output": "/tmp/rnqnx-external-PfUHJ0/an app/build/marathon/app.bundle.js",
+  "executable": "<HOST_TOOLS>/toolchain/node_modules/node/bin/node",
+  "metroCli": "/tmp/rnqnx-external-PfUHJ0/an app/node_modules/metro/cli.cjs",
+  "metroVersion": "fixture-only",
+  "dryRun": false,
+  "nativeBuildVerified": false,
+  "runtimeVerified": false,
+  "action": "bundled",
+  "bytes": 276
+}
+qnx-external-project: 39 checks passed (synthetic Metro process, no native run).
+Running <REPO>/tests/js/qnx-integrated-consumer.test.mjs...
+integrated external app qnx: doctor/discovery/public Metro passed; host render=false
+integrated external app marathon: doctor/discovery/public Metro passed; host render=false
+Running <REPO>/tests/js/qnx-native-consumer-build.test.mjs...
+{
+  "project": "/tmp/rnqnx-native-build-hIQYMo/my app",
+  "platform": "qnx",
+  "preview": true,
+  "appId": "org.example.myapp",
+  "descriptorPath": "/tmp/rnqnx-native-build-hIQYMo/my app/build/qnx/native-app.json",
+  "buildDir": "/tmp/rnqnx-native-build-hIQYMo/my app/build/qnx/preview-native",
+  "output": "/tmp/rnqnx-native-build-hIQYMo/my app/build/qnx/preview-native/consumer/qnx/org.example.myapp/org.example.myapp",
+  "configure": [
+    "cmake",
+    "--preset",
+    "linux-host-renderer",
+    "-S",
+    "<REPO>",
+    "-B",
+    "/tmp/rnqnx-native-build-hIQYMo/my app/build/qnx/preview-native",
+    "-DRNQNX_BUILD_CONSUMER_APP=ON",
+    "-DRNQNX_CONSUMER_CONFIG=/tmp/rnqnx-native-build-hIQYMo/my app/build/qnx/native-app.json",
+    "-DRNQNX_CONSUMER_HOST_PREVIEW=ON"
+  ],
+  "build": [
+    "cmake",
+    "--build",
+    "/tmp/rnqnx-native-build-hIQYMo/my app/build/qnx/preview-native",
+    "--target",
+    "rnqnx_consumer_app",
+    "--parallel",
+    "2"
+  ],
+  "nativeBuildVerified": false,
+  "runtimeVerified": false,
+  "action": "dry-run"
+}
+Native consumer build planning: 8 checks passed (no native build or device claim).
+Running <REPO>/tests/js/qnx-performance-lab.test.mjs...
+performance-lab bundle hello-world: 482892 bytes 4841733ddbc8762e4df3d250a4ad51d5483b40291c130769f37434410e7f2669
+performance-lab bundle list-1000: 775521 bytes a85bc5bf03eb0c328b41aa392432ee8ad86192cb9702bb572cedcd1250b3c1cb
+Performance workload bundles passed; no device, FPS, RSS or startup claim.
+Running <REPO>/tests/js/qnx-project-create.test.mjs...
+QNX project create: real local archives, independent QNX and dual-target source, identity, hash, refusal and no-overwrite checks passed; native runtime not tested.
+Running <REPO>/tests/js/qnx-public-entry-metro.test.mjs...
+public-entry qnx: 683726 bytes (real Metro, runtime separate)
+public-entry marathon: 683767 bytes (real Metro, runtime separate)
+Running <REPO>/tests/js/qnx-public-entry.test.mjs...
+public-entry lazy exports, explicit unsupported errors, resolver opt-in and other-platform preservation passed (host VM only)
+Running <REPO>/tests/js/qnx-qualification.test.mjs...
+qualification: nearest-rank percentiles and input preserved
+qualification: physical-labelled complete report never promotes release
+qualification: reject host promotion
+qualification: reject qnx-vm promotion
+qualification: reject marathon-physical promotion
+qualification: label queued as incomplete presentation evidence
+qualification: label js-callback as incomplete presentation evidence
+qualification: reject invalid timing 0
+qualification: reject invalid timing -1
+qualification: reject invalid timing NaN
+qualification: reject invalid timing Infinity
+qualification: empty sample array rejected
+qualification: exhausted warmup rejected
+qualification: fractional RSS rejected
+qualification: missing workload rejected
+qualification: unrecognized schema and abbreviated source rejected
+qualification: 20 power cycles complete; 19 do not
+qualification: reboot is not a cold power cycle
+qualification: app-relaunch is not a cold power cycle
+qualification: failure resets consecutive sequence
+qualification: duplicate boot identity rejected
+qualification: overlapping timestamps rejected
+qualification: sequence gaps and contradictory passing boot rejected
+qualification: raw capture hash actually verified
+qualification: tampered raw capture rejected
+qualification: unsafe artifact path ../raw.log
+qualification: unsafe artifact path /raw.log
+qualification: unsafe artifact path a/../raw.log
+qualification: unsafe artifact path C:\raw.log
+qualification: symlink file and directory rejected
+qualification: empty, absent and duplicate artifacts rejected
+qualification: every boot needs a hashed log
+qualification: CLI preserves input and fails closed for incomplete evidence
+qnx-qualification: 33 cases passed; synthetic host fixtures only.
+Running <REPO>/tests/js/qnx-release-dossier.test.mjs...
+qnx-release-dossier: 59 checks passed (synthetic Git and artifacts only; no release qualification).
+Running <REPO>/tests/js/qnx-release-matrix.test.mjs...
+QNX 8.0.5 release source matrix validated; vendor-installed versions NOT inspected.
+Running <REPO>/tests/js/runtime-baseline-qnx.test.mjs...
+QNX target watchdog: success, failure, crash, timeout, recovery, stale-state and interrupted-child cleanup checks passed
+Running <REPO>/tests/js/runtime-baseline.test.mjs...
+Runtime baseline supervisor: repeated capture, missing marker, truncated PNG, crash, watchdog, TERM/HUP cleanup and stale artifact checks passed.
+Running <REPO>/tests/js/sdk58-stable-manifest-pins.test.mjs...
+sdk58-stable-manifest-pins.test.mjs passed
+Running <REPO>/tests/js/shell-quote-security.test.mjs...
+Running <REPO>/tests/js/source-map-security.test.mjs...
+Running <REPO>/tests/js/text-input-fixture-config.test.mjs...
+TextInput fixture configuration: normal host/QNX generation, cached HBC dependency and invalid-path rejection passed (host graph only)
+Running <REPO>/tests/js/text-input-qml-source.test.mjs...
+Shared TextInput QML: styled OFF snapshot, both-mode content insets, and ON-only endpoint observers passed (compiled source; native layout separate).
+Running <REPO>/tests/js/text-input-state.test.mjs...
+TextInput per-instance state, controlled acknowledgment, ref/event forwarding and secure gate passed.
+{
+  "status": "environment-blocked",
+  "startedAt": "2026-11-09T17:59:48.914Z",
+  "finishedAt": "2026-11-09T18:00:48.655Z",
+  "sourceHead": "8597464d3f3d24d6bf505a5a968644ec82aadd81",
+  "node": "v26.0.0",
+  "executable": "<HOST_TOOLS>/toolchain/node_modules/node/bin/node",
+  "pnpm": "12.8.1",
+  "discovered": 52,
+  "passed": 51,
+  "blocked": [
+    {
+      "file": "marathon-development-launcher.test.mjs",
+      "reason": "Environment denies local Unix-socket listen with EPERM"
+    }
+  ],
+  "failed": [],
+  "fullGateExitCode": 1,
+  "continuationExitCode": 0,
+  "passedFiles": [
+    "accessibility-action-controls.test.mjs",
+    "accessibility-action-fixture-config.test.mjs",
+    "accessibility-view-config.test.mjs",
+    "braces-security.test.mjs",
+    "compression-security.test.mjs",
+    "docs-validation.test.mjs",
+    "expo-dual-discovery.test.mjs",
+    "expo-dual-platform.test.mjs",
+    "expo-modules2-compat.test.mjs",
+    "expo-qnx-autolinking.test.mjs",
+    "expo-qnx-discovery.test.mjs",
+    "expo-qnx-prepare.test.mjs",
+    "host-renderer-contract.test.mjs",
+    "js-runner.test.mjs",
+    "marathon-metro-platform.test.mjs",
+    "marathon-native-host-contract.test.mjs",
+    "nitro-api-skill-contract.test.mjs",
+    "nitro-dual-host-contract.test.mjs",
+    "nitro-platform-codegen.test.mjs",
+    "nitro-v1-native-migration.test.mjs",
+    "pi-evidence.test.mjs",
+    "pressable-cancellation.test.mjs",
+    "pressable-fixture-config.test.mjs",
+    "qnx-adaptive-layout.test.mjs",
+    "qnx-appstate-optional-registry.test.mjs",
+    "qnx-cli-evidence.test.mjs",
+    "qnx-cli.test.mjs",
+    "qnx-component-conformance.test.mjs",
+    "qnx-consumer-doctor-installed.test.mjs",
+    "qnx-consumer-doctor.test.mjs",
+    "qnx-consumer-native-config.test.mjs",
+    "qnx-device-tools.test.mjs",
+    "qnx-external-project-metro.test.mjs",
+    "qnx-external-project.test.mjs",
+    "qnx-integrated-consumer.test.mjs",
+    "qnx-native-consumer-build.test.mjs",
+    "qnx-performance-lab.test.mjs",
+    "qnx-project-create.test.mjs",
+    "qnx-public-entry-metro.test.mjs",
+    "qnx-public-entry.test.mjs",
+    "qnx-qualification.test.mjs",
+    "qnx-release-dossier.test.mjs",
+    "qnx-release-matrix.test.mjs",
+    "runtime-baseline-qnx.test.mjs",
+    "runtime-baseline.test.mjs",
+    "sdk58-stable-manifest-pins.test.mjs",
+    "shell-quote-security.test.mjs",
+    "source-map-security.test.mjs",
+    "text-input-fixture-config.test.mjs",
+    "text-input-qml-source.test.mjs",
+    "text-input-state.test.mjs"
+  ],
+  "logs": [
+    "build/adaptive-ui-validation/full-js.log",
+    "build/adaptive-ui-validation/remaining-js.log"
+  ],
+  "scope": "Official sorted dynamic-import runner up to the observed environmental failure; same sorted dynamic-import semantics for remaining files. No test edits or skips counted as passes; not QNX target qualification."
+}
+
+
+JAVASCRIPT / DOCS — typecheck.log
+$ tsc --noEmit && tsc --noEmit -p tests/types/adaptive.tsconfig.json
+
+
+JAVASCRIPT / DOCS — docs.log
+Documentation validated: 22 components, 7 release gates.
+
+
+JAVASCRIPT / DOCS — full-js-before-format.log
+Running <REPO>/tests/js/accessibility-action-controls.test.mjs...
+Accessibility action controls enforce exact exit status and reject sanitizer output.
+Running <REPO>/tests/js/accessibility-action-fixture-config.test.mjs...
+AccessibilityAction fixture configuration: normal host/QNX generation, cached HBC dependency and invalid-path rejection passed (host graph only)
+Running <REPO>/tests/js/accessibility-view-config.test.mjs...
+BaseViewConfig admits standard accessibility props and direct action events.
+Running <REPO>/tests/js/braces-security.test.mjs...
+braces security: patched-source, regression, tamper, and audit-policy checks passed.
+Running <REPO>/tests/js/compression-security.test.mjs...
+Running <REPO>/tests/js/docs-validation.test.mjs...
+Error: docs/component-support.md is stale. Run pnpm docs:sync and review the generated diff.
+    at syncDocs (file://<REPO>/scripts/lib/docs-model.mjs:217:13)
+    at async file://<REPO>/tests/js/docs-validation.test.mjs:25:20
+
+FINAL REPOSITORY GATE — adaptive-final-docs.log
+$ node scripts/validate-docs.mjs
+Documentation validated: 22 components, 7 release gates.
+
+FINAL REPOSITORY GATE — adaptive-final-format.log
+$ prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+
+PUBLICATION IDENTITY
+{
+  "method": "Connected GitHub Git-data API",
+  "publishedSourceCommit": "56093f7eaab414f206cd8f679abb36b0c2caea6c",
+  "qualifiedLocalSourceCommit": "87793906dae1653f7ceca57097b51192f431c7aa",
+  "verifiedIdenticalSourceTree": "a0a01f4b406cdd023d3f6f78f7bb7eb3e8b128ad",
+  "sourceBytesChanged": false
+}
