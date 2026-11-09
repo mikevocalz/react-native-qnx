@@ -85,3 +85,135 @@ diff --git a/ReactCommon/react/renderer/components/view/accessibilityPropsConver
  }
 
  inline std::string toString(const AccessibilityAction &accessibilityAction)
+diff --git a/ReactCommon/react/renderer/components/view/conversions.h b/ReactCommon/react/renderer/components/view/conversions.h
+--- a/ReactCommon/react/renderer/components/view/conversions.h
++++ b/ReactCommon/react/renderer/components/view/conversions.h
+@@ -7,6 +7,7 @@
+
+ #pragma once
+
++#include <cstdlib>
+ #include <react/cxxstableapi/UmbrellaGuard.h>
+
+ #include <glog/logging.h>
+@@ -1114,6 +1115,7 @@
+     case PointerEventsMode::BoxOnly:
+       return "box-only";
+   }
++  std::abort();
+ }
+
+ inline void fromRawValue(const PropsParserContext &context, const RawValue &value, BackfaceVisibility &result)
+@@ -1696,6 +1698,7 @@
+     case LayoutConformance::Compatibility:
+       return "compatibility";
+   }
++  std::abort();
+ }
+
+ inline std::string toString(const std::array<Float, 16> &m)
+diff --git a/ReactCommon/react/renderer/core/conversions.h b/ReactCommon/react/renderer/core/conversions.h
+--- a/ReactCommon/react/renderer/core/conversions.h
++++ b/ReactCommon/react/renderer/core/conversions.h
+@@ -7,6 +7,7 @@
+
+ #pragma once
+
++#include <cstdlib>
+ #include <react/renderer/core/LayoutPrimitives.h>
+
+ namespace facebook::react {
+@@ -21,6 +22,7 @@
+     case LayoutDirection::RightToLeft:
+       return "rtl";
+   }
++  std::abort();
+ }
+
+ inline int toInt(const LayoutDirection &layoutDirection)
+@@ -33,6 +35,7 @@
+     case LayoutDirection::RightToLeft:
+       return 2;
+   }
++  std::abort();
+ }
+
+ inline int toInt(const DisplayType &displayType)
+@@ -47,6 +50,7 @@
+     case DisplayType::Grid:
+       return 3;
+   }
++  std::abort();
+ }
+
+ inline std::string toString(const DisplayType &displayType)
+@@ -61,6 +65,7 @@
+     case DisplayType::Grid:
+       return "grid";
+   }
++  std::abort();
+ }
+
+ inline Size yogaMeassureToSize(int64_t value)
+diff --git a/ReactCommon/react/renderer/components/scrollview/conversions.h b/ReactCommon/react/renderer/components/scrollview/conversions.h
+--- a/ReactCommon/react/renderer/components/scrollview/conversions.h
++++ b/ReactCommon/react/renderer/components/scrollview/conversions.h
+@@ -7,6 +7,7 @@
+
+ #pragma once
+
++#include <cstdlib>
+ #include <react/cxxstableapi/FrameworksGuard.h>
+
+ #include <react/renderer/components/scrollview/primitives.h>
+@@ -119,6 +120,7 @@
+     case ScrollViewSnapToAlignment::End:
+       return "end";
+   }
++  std::abort();
+ }
+
+ #if RN_DEBUG_STRING_CONVERTIBLE
+@@ -133,6 +135,7 @@
+     case ScrollViewIndicatorStyle::White:
+       return "white";
+   }
++  std::abort();
+ }
+
+ inline std::string toString(const ScrollViewKeyboardDismissMode &value)
+@@ -145,6 +148,7 @@
+     case ScrollViewKeyboardDismissMode::Interactive:
+       return "interactive";
+   }
++  std::abort();
+ }
+
+ inline std::string toString(const ContentInsetAdjustmentBehavior &value)
+@@ -159,6 +163,7 @@
+     case ContentInsetAdjustmentBehavior::Always:
+       return "always";
+   }
++  std::abort();
+ }
+
+ inline std::string toString(const std::optional<ScrollViewMaintainVisibleContentPosition> &value)
+diff --git a/ReactCommon/react/renderer/components/image/ImageProps.cpp b/ReactCommon/react/renderer/components/image/ImageProps.cpp
+--- a/ReactCommon/react/renderer/components/image/ImageProps.cpp
++++ b/ReactCommon/react/renderer/components/image/ImageProps.cpp
+@@ -5,6 +5,7 @@
+  * LICENSE file in the root directory of this source tree.
+  */
+
++#include <cstdlib>
+ #include <react/featureflags/ReactNativeFeatureFlags.h>
+ #include <react/renderer/components/image/ImageProps.h>
+ #include <react/renderer/components/image/conversions.h>
+@@ -303,6 +304,7 @@
+     case ImageResizeMode::None:
+       return "none";
+   }
++  std::abort();
+ }
+
+ #endif
