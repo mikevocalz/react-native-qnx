@@ -163,6 +163,13 @@ export async function targetConnection(source = process.env) {
   if (!/^\/[A-Za-z0-9._/-]+$/.test(targetRoot) || targetRoot.split('/').includes('..')) {
     throw new Error('Target root must be a confined absolute path.');
   }
+  const fontDirectory = source.RNQNX_PI_QT_FONTDIR;
+  if (
+    fontDirectory !== undefined &&
+    (!/^\/[A-Za-z0-9._/-]+$/.test(fontDirectory) || fontDirectory.split('/').includes('..'))
+  ) {
+    throw new Error('Qt font directory must be a confined absolute path.');
+  }
   const port = source.QNX_SSH_PORT ?? '22';
   if (!/^[0-9]+$/.test(port) || Number(port) < 1 || Number(port) > 65535) {
     throw new Error('Invalid QNX SSH port.');
@@ -203,7 +210,7 @@ export async function targetConnection(source = process.env) {
     QNX_SSH_CONNECT_TIMEOUT: '10',
     QNX_SSH_MACS: 'hmac-sha2-256',
   };
-  return { target: user + '@' + host, targetRoot, sshOptions, scpOptions, env };
+  return { target: user + '@' + host, targetRoot, fontDirectory, sshOptions, scpOptions, env };
 }
 
 /** @param {string} capture */
@@ -278,7 +285,8 @@ export async function main(argv) {
   if (process.env.RNQNX_FINAL_TEST_CONFIRM !== 'pi400' || process.env.RNQNX_PI_BOARD !== 'pi400') {
     throw new Error('Explicit Pi 400 consent and board selection are required.');
   }
-  const { target, targetRoot, sshOptions, scpOptions, env } = await targetConnection();
+  const { target, targetRoot, fontDirectory, sshOptions, scpOptions, env } =
+    await targetConnection();
   const app = values['consumer-project'];
   if (!app || !path.isAbsolute(app)) throw new Error('Use an absolute --consumer-project.');
   if (!process.env.QNX_HOST || !process.env.QNX_TARGET)
@@ -301,6 +309,7 @@ export async function main(argv) {
     board: 'pi400',
     image: 'custom CTI 8.0.5 (operator label)',
     sourceCommit: (await commandRun(['git', 'rev-parse', 'HEAD'], 10000, env)).trim(),
+    qtFontDirectory: fontDirectory ?? null,
     bundle: await fingerprint(configuration.bundle, 256 * 1024 * 1024),
     startedAt: new Date().toISOString(),
     results,
@@ -319,6 +328,22 @@ export async function main(argv) {
     return result.output ?? '';
   };
   const hermes = path.join(root, 'build/hermes-qnx-aarch64/lib/libhermesvmlean.so');
+  const fontCheck = fontDirectory
+    ? " && test -d '" +
+      fontDirectory +
+      "' && test -x '" +
+      fontDirectory +
+      "' && { font_ok=; for font in '" +
+      fontDirectory +
+      "'/*.ttf '" +
+      fontDirectory +
+      "'/*.otf '" +
+      fontDirectory +
+      "'/*.pfa '" +
+      fontDirectory +
+      '\'/*.pfb; do if test -f "$font" && test -r "$font"; then font_ok=yes; break; fi; done; ' +
+      'test "$font_ok" = yes && printf "RNQNX_QT_FONTDIR_VERIFIED\\n"; }'
+    : '';
   try {
     await required(
       'non-root-target',
@@ -326,7 +351,8 @@ export async function main(argv) {
         'ssh',
         ...sshOptions,
         target,
-        'uid=$(id -u) && test "$uid" -gt 0 && test "$(uname -s)" = QNX && test "$(uname -m)" = RaspberryPi400 && test "$(uname -p)" = aarch64le && printf "RNQNX_TARGET_UID=%s\\n" "$uid"',
+        'uid=$(id -u) && test "$uid" -gt 0 && test "$(uname -s)" = QNX && test "$(uname -m)" = RaspberryPi400 && test "$(uname -p)" = aarch64le && printf "RNQNX_TARGET_UID=%s\\n" "$uid"' +
+          fontCheck,
       ],
       30000
     );
@@ -373,7 +399,11 @@ export async function main(argv) {
       180000
     );
     const remoteCommand =
-      "cd '" + remote + "' && chmod 700 ./app && LD_LIBRARY_PATH=. ./app --screenshot final.png";
+      "cd '" +
+      remote +
+      "' && chmod 700 ./app && LD_LIBRARY_PATH=. " +
+      (fontDirectory ? "QT_QPA_FONTDIR='" + fontDirectory + "' " : '') +
+      './app --screenshot final.png';
     await required(
       'physical-consumer-render',
       ['ssh', ...sshOptions, target, remoteCommand],

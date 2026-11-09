@@ -85,6 +85,14 @@ await assert.rejects(
 );
 await assert.rejects(targetConnection({ QNX_SSH_PORT: '65536' }), /port/);
 await assert.rejects(targetConnection({ QNX_TARGET_DIR: '/data/../root' }), /confined/);
+for (const RNQNX_PI_QT_FONTDIR of ['', 'fonts', '/data/../fonts', "/data/fonts';false"]) {
+  await assert.rejects(targetConnection({ RNQNX_PI_QT_FONTDIR }), /font directory.*confined/);
+}
+assert.equal(
+  (await targetConnection({ RNQNX_PI_QT_FONTDIR: '/usr/share/fonts/dejavu' })).fontDirectory,
+  '/usr/share/fonts/dejavu'
+);
+assert.equal((await targetConnection({})).fontDirectory, undefined);
 
 const fixture = await mkdtemp(path.join(tmpdir(), 'rnqnx-pi400-safety-'));
 try {
@@ -184,6 +192,9 @@ try {
 
   for (const mode of [
     'success',
+    'font-success',
+    'font-directory-missing',
+    'font-directory-empty',
     'root-alias',
     'wrong-board',
     'missing-marker',
@@ -209,6 +220,12 @@ try {
       await copyFile(path.resolve(relative), path.join(sandbox, relative));
     }
     const app = path.join(sandbox, 'app');
+    const fontDirectory = path.join(sandbox, 'fonts');
+    if (mode === 'font-success' || mode === 'font-directory-empty') {
+      await mkdir(fontDirectory);
+      if (mode === 'font-success')
+        await writeFile(path.join(fontDirectory, 'fixture.ttf'), 'inert font-access fixture');
+    }
     const bundle = path.join(app, 'build/qnx/release.hbc');
     const bytes = Buffer.from('inert HBC fixture; not executable QNX bytecode');
     await writeFile(bundle, bytes);
@@ -309,6 +326,7 @@ try {
           QNX_SSH_BATCH_MODE: 'no',
           QNX_SSH_CONNECT_TIMEOUT: '9999',
           QNX_SSH_MACS: 'untrusted-macs',
+          RNQNX_PI_QT_FONTDIR: mode.startsWith('font-') ? fontDirectory : undefined,
         },
         encoding: 'utf8',
         timeout: 15000,
@@ -339,7 +357,7 @@ try {
       assert.ok(call.args.includes('2222'));
       assert.ok(!call.args.includes('BatchMode=no'));
     }
-    if (mode === 'success') {
+    if (mode === 'success' || mode === 'font-success') {
       assert.equal(executed.status, 0, executed.stderr);
       assert.equal(receipt.physicalRuntimeCapture, true, 'only an inert simulation receipt');
       assert.equal(receipt.releaseAuthorized, false);
@@ -347,6 +365,15 @@ try {
       assert.equal(receipt.coldBootQualified, false);
       assert.ok(receipt.hermesRuntime.sha256);
       assert.ok(receipt.capture.sha256);
+      assert.equal(receipt.qtFontDirectory, mode === 'font-success' ? fontDirectory : null);
+      const render = calls
+        .find((call) => call.tool === 'ssh' && call.args.at(-1).includes('--screenshot'))
+        .args.at(-1);
+      assert.ok(render.includes('LD_LIBRARY_PATH=. '));
+      if (mode === 'font-success') {
+        assert.ok(render.includes("QT_QPA_FONTDIR='" + fontDirectory + "' ./app"));
+        assert.match(receipt.results[0].output, /RNQNX_QT_FONTDIR_VERIFIED/);
+      } else assert.ok(!render.includes('QT_QPA_FONTDIR='));
       assert.ok(
         receipt.results.every(
           (/** @type {{status: string}} */ result) => result.status === 'passed'
@@ -364,6 +391,8 @@ try {
       assert.notEqual(executed.status, 0, mode);
       const failedStage = {
         'root-alias': 'non-root-target',
+        'font-directory-missing': 'non-root-target',
+        'font-directory-empty': 'non-root-target',
         'wrong-board': 'non-root-target',
         'missing-marker': 'physical-consumer-render',
         'invalid-png': 'physical-capture-download',
@@ -373,10 +402,10 @@ try {
       assert.equal(receipt.results.at(-1).status, 'failed');
       assert.notEqual(receipt.physicalRuntimeCapture, true);
       assert.equal(receipt.remoteCleanupVerified, false);
-      if (mode === 'root-alias' || mode === 'wrong-board')
+      if (mode === 'root-alias' || mode === 'wrong-board' || mode.startsWith('font-'))
         assert.ok(
           !calls.some((call) => call.tool === 'bash'),
-          'no preflight or deployment as UID 0'
+          'no preflight or deployment with invalid target identity or font profile'
         );
       if (mode === 'missing-hermes')
         assert.ok(
