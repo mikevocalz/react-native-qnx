@@ -7,6 +7,7 @@ import {
   mkdir,
   mkdtemp,
   readFile,
+  readdir,
   rm,
   symlink,
   writeFile,
@@ -122,6 +123,19 @@ try {
   );
   await prepareNativeMain(['--project', project]);
   check((await readFile(dry.output + '/icon.png')).equals(icon));
+  await prepareLauncher(project);
+  check((await readFile(dry.output + '/icon.png')).equals(icon));
+  await writeFile(dry.output + '/launcher.json.new', 'preserve old metadata staging');
+  await writeFile(dry.output + '/icon.png.new', 'preserve old icon staging');
+  await prepareLauncher(project);
+  check((await readFile(dry.output + '/icon.png')).equals(icon));
+  check((await readFile(dry.output + '/icon.png.new', 'utf8')) === 'preserve old icon staging');
+  await rm(dry.output + '/icon.png');
+  await mkdir(dry.output + '/icon.png');
+  await rejects(() => prepareLauncher(project));
+  check(!(await readdir(dry.output)).some((name) => name.startsWith('.rnqnx-stage-')));
+  check((await lstat(dry.output + '/icon.png')).isDirectory());
+  await rm(dry.output + '/icon.png', { recursive: true });
   await prepareLauncher(project);
   check((await readFile(dry.output + '/icon.png')).equals(icon));
   await prepareLauncher(project);

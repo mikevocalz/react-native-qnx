@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { lstat, mkdir, readFile, realpath, rename, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, mkdtemp, readFile, realpath, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { crc32 } from 'node:zlib';
 import { validateAppIdentity } from './prepare-native.mjs';
@@ -190,20 +190,25 @@ export async function prepareLauncher(project, dryRun = false) {
         if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error;
       }
     }
-    for (const [name, bytes] of [
-      ['launcher.json', JSON.stringify(configuration, null, 2) + '\n'],
-      ['icon.png', icon],
-    ]) {
-      const file = await confined(root, `build/qnx/launcher/${name}`, true);
-      try {
-        await lstat(file);
-        await bounded(path.join(output, 'launcher.json'), 65536);
-      } catch (error) {
-        if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error;
+    const staging = await mkdtemp(path.join(output, '.rnqnx-stage-'));
+    try {
+      for (const [name, bytes] of Object.entries({
+        'launcher.json': JSON.stringify(configuration, null, 2) + '\n',
+        'icon.png': icon,
+      })) {
+        const file = await confined(root, `build/qnx/launcher/${name}`, true);
+        try {
+          await lstat(file);
+          await bounded(path.join(output, 'launcher.json'), 65536);
+        } catch (error) {
+          if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error;
+        }
+        const temporary = path.join(staging, name);
+        await writeFile(temporary, bytes, { flag: 'wx', mode: 0o600 });
+        await rename(temporary, file);
       }
-      const temporary = file + '.new';
-      await writeFile(temporary, bytes, { flag: 'wx', mode: 0o600 });
-      await rename(temporary, file);
+    } finally {
+      await rm(staging, { recursive: true, force: true });
     }
   }
   return { output, configuration };
