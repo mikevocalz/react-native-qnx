@@ -176,6 +176,8 @@ export async function targetConnection(source = process.env) {
   }
   const options = [
     '-o',
+    'IdentitiesOnly=yes',
+    '-o',
     'BatchMode=yes',
     '-o',
     'StrictHostKeyChecking=yes',
@@ -205,7 +207,7 @@ export async function targetConnection(source = process.env) {
     QNX_TARGET_IP: host,
     QNX_TARGET_DIR: targetRoot,
     QNX_SSH_PORT: port,
-    QNX_SSH_OPTS: '-o StrictHostKeyChecking=yes',
+    QNX_SSH_OPTS: '-o IdentitiesOnly=yes -o StrictHostKeyChecking=yes',
     QNX_SSH_BATCH_MODE: 'yes',
     QNX_SSH_CONNECT_TIMEOUT: '10',
     QNX_SSH_MACS: 'hmac-sha2-256',

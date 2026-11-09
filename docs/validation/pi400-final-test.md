@@ -41,6 +41,16 @@ Device evidence is written locally under a private, timestamped **artifacts/pi-f
 
 ## Handle a failed stage
 
+The combined runtime probe consumes two bytecode fixtures, not JavaScript source:
+the lean Hermes VM cannot compile source at runtime. The runtime validation script
+uses the executable host compiler selected in the Hermes build cache to compile
+the Nitro and Expo checks, records their source/compiler/HBC hashes, stages both
+files, and invokes `rnqnx_runtime_qnx_probe <nitro.hbc> <expo.hbc>`. The probe rejects
+missing, empty, oversized or invalid bytecode and reports exceptions as failures.
+These fixtures are distinct from the generated consumer's descriptor-selected HBC.
+Every qualification SSH/SCP stage explicitly enforces `IdentitiesOnly=yes`,
+including the prerequisite scripts; a configured key does not rely on agent order.
+
 Each command owns a local process group. A timeout, interruption or output above 8 MiB stops the group, escalating to SIGKILL after at most 250 ms and closing inherited pipes so descendants cannot hold the result open. The harness stops before subsequent stages.
 
 Local cancellation does **not** prove that a command already accepted by the target stopped, nor does it roll back an upload or deployment. Failure receipts set `remoteCleanupVerified=false` and require operator inspection before retry. Inspect the target's processes and deployment directories through a verified connection; do not blindly retry, reboot, delete evidence or replace boot files. Keep the working recovery path and existing app intact.

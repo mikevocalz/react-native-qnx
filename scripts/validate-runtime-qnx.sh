@@ -88,6 +88,22 @@ HERMES_SO="${PROJECT_ROOT}/build/hermes-qnx-aarch64/lib/libhermesvmlean.so"
   exit 1
 }
 
+HOST_HERMESC="$(sed -n 's/^RNQNX_HOST_HERMESC:[^=]*=//p' "${PROJECT_ROOT}/build/hermes-qnx-aarch64/CMakeCache.txt")"
+[[ -f "${HOST_HERMESC}" && -x "${HOST_HERMESC}" ]] || {
+  echo "ERROR: The runtime build must identify its matching executable host hermesc." >&2
+  exit 1
+}
+for fixture in nitro expo; do
+  "${HOST_HERMESC}" -O -emit-binary \
+    -out "${EVIDENCE_DIR}/${fixture}.hbc" \
+    "${PROJECT_ROOT}/vnext/probes/runtime-qnx/${fixture}.js"
+done
+sha256sum "${HOST_HERMESC}" \
+  "${PROJECT_ROOT}/vnext/probes/runtime-qnx/nitro.js" \
+  "${PROJECT_ROOT}/vnext/probes/runtime-qnx/expo.js" \
+  "${EVIDENCE_DIR}/nitro.hbc" "${EVIDENCE_DIR}/expo.hbc" \
+  >"${EVIDENCE_DIR}/probe-bytecode-sha256.txt"
+
 echo
 echo "[4/6] Building the combined QNX runtime probe"
 cd "${PROJECT_ROOT}"
@@ -98,12 +114,14 @@ echo
 echo "[5/6] Deploying probe and Hermes runtime"
 bash "${SCRIPT_DIR}/deploy-qnx.sh" aarch64 "${APP}" Debug
 rnqnx_scp_to "${HERMES_SO}" "${QNX_TARGET_DIR}/libhermesvmlean.so"
+rnqnx_scp_to "${EVIDENCE_DIR}/nitro.hbc" "${QNX_TARGET_DIR}/runtime-nitro.hbc"
+rnqnx_scp_to "${EVIDENCE_DIR}/expo.hbc" "${QNX_TARGET_DIR}/runtime-expo.hbc"
 
 echo
 echo "[6/6] Executing Hermes + Nitro + Expo through JSI"
 set +e
 RUN_OUTPUT="$(
-  rnqnx_ssh "cd '${QNX_TARGET_DIR}' && LD_LIBRARY_PATH='${QNX_TARGET_DIR}':\${LD_LIBRARY_PATH:-} './${APP}'"
+  rnqnx_ssh "cd '${QNX_TARGET_DIR}' && LD_LIBRARY_PATH='${QNX_TARGET_DIR}':\${LD_LIBRARY_PATH:-} './${APP}' ./runtime-nitro.hbc ./runtime-expo.hbc"
 )"
 RUN_RC=$?
 set -e

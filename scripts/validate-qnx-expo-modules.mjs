@@ -53,9 +53,10 @@ const integrationProbe = await readFile(
   path.join(root, 'vnext/probes/runtime-qnx/main.cpp'),
   'utf8'
 );
+const probeFixture = await readFile(path.join(root, 'vnext/probes/runtime-qnx/expo.js'), 'utf8');
 if (
   !integrationProbe.includes('rnqnx::expo::installExpoModulesQnx(*runtime)') ||
-  !integrationProbe.includes('expo.modules.ExpoQnxPlatform')
+  !probeFixture.includes('expo.modules.ExpoQnxPlatform')
 ) {
   throw new Error('Combined QNX runtime probe no longer exercises Expo Modules through JSI.');
 }

@@ -346,6 +346,7 @@ try {
       .map((line) => JSON.parse(line));
     for (const call of calls.filter((call) => ['ssh', 'scp'].includes(call.tool))) {
       for (const option of [
+        'IdentitiesOnly=yes',
         'BatchMode=yes',
         'StrictHostKeyChecking=yes',
         'ConnectTimeout=10',
