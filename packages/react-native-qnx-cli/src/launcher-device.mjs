@@ -222,7 +222,9 @@ sleep 1
 kill -0 "$pid"
 pidin ar | awk -v pid="$pid" '$1 == pid && $2 == "/system/bin/demolauncher" && $3 == "-a" && $4 == "${registry}" && NF == 4 {found=1} END {exit !found}' || { echo 'Launcher startup failed; previous launcher retained' >&2; exit 1; }
 for previous in $(pidin ar | awk '$2 == "/system/bin/demolauncher" && $3 == "-a" && NF == 4 && ($4 == "${registry}" || $4 == "/system/etc/desktop_files") {print $1}'); do
-  test "$previous" = "$pid" || kill -TERM "$previous"
+  test "$previous" = "$pid" && continue
+  kill -0 "$previous" 2>/dev/null || continue
+  kill -TERM "$previous"
 done
 mv ${registry}/new.pid ${registry}/launcher.pid
 `
