@@ -12,6 +12,11 @@ set(CMAKE_SYSTEM_NAME QNX)
 set(CMAKE_SYSTEM_VERSION 8.0)
 set(CMAKE_SYSTEM_PROCESSOR aarch64)
 
+set(QNX_TARGET_ARCH "aarch64" CACHE STRING "QNX dependency-import architecture")
+if(NOT QNX_TARGET_ARCH STREQUAL "aarch64")
+  message(FATAL_ERROR "QNX_TARGET_ARCH must be aarch64 for the canonical Pi toolchain")
+endif()
+
 if("$ENV{QNX_HOST}" STREQUAL "")
   message(FATAL_ERROR
     "QNX_HOST is empty. Source qnxsdp-env.sh from the installed QNX SDP 8.0 environment.")

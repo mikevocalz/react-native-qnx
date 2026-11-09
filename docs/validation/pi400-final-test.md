@@ -33,6 +33,8 @@ After the identity check, the runner executes the existing _real_ Pi preflight, 
 
 It **fails closed** if any executable, library, Qt plugin, QNX screen, Hermes bytecode, app registration, runtime module or frame capture is absent. A Linux preview, source validator, screenshot from the Linux host or completed upload cannot satisfy physical execution.
 
+The canonical AArch64 toolchain also selects `QNX_TARGET_ARCH=aarch64` for shared dependency imports and rejects a conflicting architecture, including on a fresh configure. For a custom Qt installation outside the system loader paths, configure the consumer's own CMake runtime search paths and verify the installed Qt plugins and fonts. The final `LD_LIBRARY_PATH=.` supplies the staged Hermes library, not arbitrary Qt installation paths. Record any Qt host paths, RPATH and debug-symbol settings as part of the exact candidate's build profile; do not change system libraries or bypass a failed stage to manufacture a pass.
+
 Device evidence is written locally under a private, timestamped **artifacts/pi-final/** directory with a unique suffix. The result contains the candidate commit, HBC/executable/Hermes hashes, each observed stage outcome, and a native PNG hash if it exists. A render stage passes only after its marker is found; a capture stage passes only after regular-file, size, signature and hash checks. Missing markers or invalid captures are recorded as a failure of that exact stage, not only a top-level error. Scrub device hostnames, paths and other sensitive system information before sharing artifacts; the workflow does not automatically upload private physical-run logs. The independent reviewer must inspect the raw records and actual screen output.
 
 ## Handle a failed stage

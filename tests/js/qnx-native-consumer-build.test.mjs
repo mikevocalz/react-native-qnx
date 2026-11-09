@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { lstat, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   planNativeBuild,
   buildNativeMain,
@@ -53,6 +55,41 @@ async function createDescriptor(platform, filename = 'app.bundle.js') {
   return { dir, bundle };
 }
 try {
+  await caseNamed(async () => {
+    const sdk = path.join(root, 'inert-sdk');
+    const bin = path.join(sdk, 'usr', 'bin');
+    await mkdir(bin, { recursive: true });
+    for (const tool of [
+      'qcc',
+      'q++',
+      'aarch64-unknown-nto-qnx8.0.0-ar',
+      'aarch64-unknown-nto-qnx8.0.0-ranlib',
+    ]) {
+      await writeFile(path.join(bin, tool), '#!/bin/sh\nexit 99\n', { mode: 0o755 });
+    }
+    const toolchain = fileURLToPath(
+      new URL('../../vnext/cmake/qnx-aarch64le.toolchain.cmake', import.meta.url)
+    );
+    const check = path.join(root, 'architecture.cmake');
+    await writeFile(
+      check,
+      `include("${toolchain}")\nif(NOT QNX_TARGET_ARCH STREQUAL "aarch64" OR NOT CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")\n  message(FATAL_ERROR "Missing canonical AArch64 dependency-import identity")\nendif()\n`
+    );
+    /** @param {string[]} [args] */
+    const run = (args = []) =>
+      spawnSync('cmake', [...args, '-P', check], {
+        env: { ...process.env, QNX_HOST: sdk, QNX_TARGET: sdk },
+        encoding: 'utf8',
+        timeout: 15000,
+      });
+    const defaultArch = run();
+    assert.equal(defaultArch.status, 0, defaultArch.stderr + String(defaultArch.error ?? ''));
+    for (const value of ['x86_64', '']) {
+      const mismatch = run(['-DQNX_TARGET_ARCH=' + value]);
+      assert.notEqual(mismatch.status, 0);
+      assert.match(mismatch.stderr, /QNX_TARGET_ARCH must be aarch64/);
+    }
+  }, 'inert canonical toolchain architecture contract; no compiler execution');
   await createDescriptor('qnx');
   await createDescriptor('marathon');
   await caseNamed(async () => {
