@@ -11,6 +11,8 @@
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
+#include <folly/dynamic.h>
+#include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
@@ -26,6 +28,7 @@
 #include <exception>
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -188,6 +191,53 @@ void updateAppliesNewFrame() {
   EXPECT(item->height() == 400.0);
 }
 
+void sparseAnimatedUpdatesPreserveIdentifiers() {
+  Fixture fixture;
+  auto props = std::make_shared<facebook::react::ViewProps>();
+  props->testId = "original-test-id";
+  props->nativeId = "original-native-id";
+  auto before = makeShadowView(2, "View", 5.0F, 6.0F, 70.0F, 80.0F);
+  before.props = props;
+  EXPECT_NO_FAILURES(fixture.adapter().apply({
+      ShadowViewMutation::CreateMutation(before),
+      ShadowViewMutation::InsertMutation(kRootTag, before, 0),
+  }));
+  auto* item = fixture.layer().itemForTag(2);
+  EXPECT(item != nullptr);
+  const auto expectIdentifiers = [item] {
+    EXPECT(item->property("testID").toString() == QStringLiteral("original-test-id"));
+    EXPECT(item->property("nativeID").toString() == QStringLiteral("original-native-id"));
+  };
+  expectIdentifiers();
+
+  // Exercise the actual sparse NativeAnimated entry point, not a manually
+  // populated ViewStyle that could miss a presence bug in the adapter.
+  fixture.adapter().synchronouslyUpdateViewOnUIThread(
+      2, folly::dynamic::object("opacity", 0.25));
+  EXPECT(item->opacity() == 0.25);
+  expectIdentifiers();
+  fixture.adapter().synchronouslyUpdateViewOnUIThread(
+      2, folly::dynamic::object("transform", folly::dynamic::array(
+          folly::dynamic::object("translateX", 7.5),
+          folly::dynamic::object("translateY", -2.25),
+          folly::dynamic::object("scale", 1.5))));
+  EXPECT(item->x() == 12.5);
+  EXPECT(item->y() == 3.75);
+  EXPECT(item->scale() == 1.5);
+  expectIdentifiers();
+
+  // Full Fabric props remain authoritative: removing the JS props must clear
+  // both identifiers on the same mounted native item.
+  auto after = before;
+  after.props = std::make_shared<facebook::react::ViewProps>();
+  EXPECT_NO_FAILURES(fixture.adapter().apply({
+      ShadowViewMutation::UpdateMutation(before, after, kRootTag),
+  }));
+  EXPECT(fixture.layer().itemForTag(2) == item);
+  EXPECT(item->property("testID").toString().isEmpty());
+  EXPECT(item->property("nativeID").toString().isEmpty());
+}
+
 void removeThenDeleteUnmountsAndFrees() {
   Fixture fixture;
   const ShadowView view = makeShadowView(2, "View");
@@ -280,6 +330,7 @@ int main(int argc, char** argv) {
       {"createInsertMountsAndPositions", createInsertMountsAndPositions},
       {"insertOrderFollowsMutationIndex", insertOrderFollowsMutationIndex},
       {"updateAppliesNewFrame", updateAppliesNewFrame},
+      {"sparseAnimatedUpdatesPreserveIdentifiers", sparseAnimatedUpdatesPreserveIdentifiers},
       {"removeThenDeleteUnmountsAndFrees", removeThenDeleteUnmountsAndFrees},
       {"nestedTransactionBuildsATree", nestedTransactionBuildsATree},
       {"unmappedComponentIsReportedNotSkipped", unmappedComponentIsReportedNotSkipped},

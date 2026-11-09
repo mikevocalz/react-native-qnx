@@ -6,6 +6,23 @@ This branch is based on main `1baad40a98362ce151ea73bd6f0a6e1d3020926e`. PRs #42
 
 Application-facing native work must follow the owner's [Nitro v1 API-first contract](https://github.com/mikevocalz/react-native-qnx/blob/f06bc134d71fe410207525e0348b2fa2481c369b/docs/platform-modernization/NITRO_V1_API_POLICY.md): actual v1 class/registration/constructor APIs, aligned core/runtime/generator versions, typed operations, explicit errors and cleanup, and owned asynchronous work. API sketches below describe semantics; they are not older-version binding implementations or proof of supported code generation.
 
+## Implementation update — November 9, 2026
+
+The [adaptive-window implementation receipt](../evidence/adaptive-window-layouts-2026-11-09.md)
+records the first distinct-window-metrics slice, shared adaptive gallery/starter,
+native typography and state-retention checks. This slice repairs the existing RN
+`DeviceInfo` compatibility path and preserves the standard public `Dimensions`
+and `PixelRatio` contracts. It does not introduce the proposed application-facing
+profile module or a replacement for the pinned Nitro v1 policy.
+
+The broader profile schema, input/keyboard-inset provider, segmentation,
+physical cross-display moves and device matrix below remain future work.
+`fontScale` has a validated host integration seam with baseline 1.0; it is not yet
+connected to an operating-system accessibility preference. The proposed
+`RNQNX_ENABLE_DEVICE_PROFILES` flag below applies to that future provider work;
+this shared compatibility repair adds no new CMake flag. Target qualification is
+separate from the Linux host evidence in the receipt.
+
 ## Status and concrete gap
 
 This PR contains a plan, not a new device backend or hardware-support claim. Implement a portable description of the current window, display and input capabilities so the same React Native application can behave correctly on QNX, Marathon phones, keyboard handhelds, multiple displays and future foldable hardware.

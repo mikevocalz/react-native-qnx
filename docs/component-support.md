@@ -81,17 +81,37 @@ ON/OFF tests and synthetic Qt input on physical QNX. The later
 JavaScript callbacks. USB/touch hardware, React component interaction and
 Marathon/Wayland remain unverified.
 
+## Adaptive windows and layouts
+
+The public `Dimensions`, `useWindowDimensions` and `PixelRatio` implementations
+consume the observed Qt client viewport and its screen as distinct logical
+metrics. The production host observes the usable client before bundle startup,
+updates the existing Fabric surface when geometry or density changes, and keeps
+font scale separate from display density. `setFontScale()` is a host integration
+seam; a system text-preference provider is not implemented.
+
+[`@rn-qnx/react-native-qnx/adaptive`](../packages/react-native-qnx/adaptive/README.md)
+provides the shared window classes, measured content grid and navigation shell
+used by the gallery and generated starter. Layout remains in Yoga. Visited pages
+retain their native editor/list identities across navigation and window changes.
+
+See the [dated validation receipt](evidence/adaptive-window-layouts-2026-11-09.md)
+for exact host results, feature-flag configurations and remaining physical QNX,
+Wayland, IME and cross-display qualification. Host screenshots do not establish
+those target results.
+
 ## `Text`
 
-| Aspect                     | Status | Notes                                                                                                                                                  |
-| -------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| String content             | ✅     | Fragments flattened onto a Qt Quick `Text` item.                                                                                                       |
-| `fontSize`, `color`        | ✅     | Applied per fragment.                                                                                                                                  |
-| Mixed styling in one block | ✅     | Carried as Qt rich text, because Qt Quick's `Text` applies one font and colour to the whole item.                                                      |
-| Wrapping                   | ✅     | Measured with `QTextLayout` against the available width; the item is set to wrap so paint matches layout.                                              |
-| `numberOfLines`            | ✅     | Limits measured lines and sets Qt Quick `maximumLineCount`; `elide` is applied when the line limit is active.                                          |
-| Attachments (inline views) | ❌     | Not supported by Qt Quick `Text`; React Native's generic manager reports them as zero-sized, so no text/attachment layout is available.                |
-| Font family                | ✅     | Passed to Qt, with bundled font files (`*.ttf`, `*.otf`, `*.ttc`) auto-registered from `assets/fonts` and system font directories before falling back. |
+| Aspect                      | Status | Notes                                                                                                                                                                                                                                            |
+| --------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| String content              | ✅     | Fragments flattened onto a Qt Quick `Text` item.                                                                                                                                                                                                 |
+| `fontSize`, `color`         | ✅     | Applied per fragment.                                                                                                                                                                                                                            |
+| Mixed styling in one block  | ✅     | Carried as Qt rich text, because Qt Quick's `Text` applies one font and colour to the whole item.                                                                                                                                                |
+| Wrapping                    | ✅     | Measured with `QTextLayout` against the available width; the item is set to wrap so paint matches layout.                                                                                                                                        |
+| `numberOfLines`             | ✅     | Limits measured lines and sets Qt Quick `maximumLineCount`; `elide` is applied when the line limit is active.                                                                                                                                    |
+| Attachments (inline views)  | ❌     | Not supported by Qt Quick `Text`; React Native's generic manager reports them as zero-sized, so no text/attachment layout is available.                                                                                                          |
+| Font family                 | ✅     | Shared measurement/mounting resolver embeds licensed Roboto regular/italic faces, uses a native sans default, and resolves explicit app/system families. Missing glyph fallback remains dependent on the target font engine and installed fonts. |
+| Font scale and `lineHeight` | scoped | Shared scaling, `allowFontScaling`, multiplier caps and paragraph line height are host tested. Display density is not applied twice. Editable multiline line height and mixed rich-text ellipsis retain Qt limitations.                          |
 
 ## `Image`
 
@@ -108,12 +128,12 @@ Marathon/Wayland remain unverified.
 
 ## Platform modules
 
-| Module                                          | Status | Notes                                                                                                                                                                                                                     |
-| ----------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Platform`                                      | ⚠      | `OS`, `select`, `Version`, and constants from the running system.                                                                                                                                                         |
-| `NativeMicrotasksCxx`, `NativeIdleCallbacksCxx` | ✅     | React Native's own C++ modules, via `DefaultTurboModules`.                                                                                                                                                                |
-| `ExceptionsManager`                             | ✅     | Reports to the host and logs; `dismissRedbox` is an honest no-op.                                                                                                                                                         |
-| `DeviceInfo`, `SourceCode`                      | ✅     | Real values: screen metrics from Qt, and the bundle the host evaluated.                                                                                                                                                   |
-| `FileReaderModule`, `SegmentFetcher`            | ❌     | Registered compatibility modules reject requests with an explanatory unsupported error.                                                                                                                                   |
-| `WebSocketModule`                               | ⚠      | Socket operations throw when disabled. `RNQNX_ENABLE_WEBSOCKETS=ON` enables the experimental host backend; QNX builds reject that flag until target gates pass. See [host WebSocket limits](websocket-host-readiness.md). |
-| `UIManager`                                     | n/a    | Not a TurboModule; bridgeless React Native serves it from JS.                                                                                                                                                             |
+| Module                                          | Status | Notes                                                                                                                                                                                                                                                         |
+| ----------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Platform`                                      | ⚠      | `OS`, `select`, `Version`, and constants from the running system.                                                                                                                                                                                             |
+| `NativeMicrotasksCxx`, `NativeIdleCallbacksCxx` | ✅     | React Native's own C++ modules, via `DefaultTurboModules`.                                                                                                                                                                                                    |
+| `ExceptionsManager`                             | ✅     | Reports to the host and logs; `dismissRedbox` is an honest no-op.                                                                                                                                                                                             |
+| `DeviceInfo`, `SourceCode`                      | ✅     | Distinct observed client/screen logical metrics, live Dimensions updates and actual window DPR; bundle URL is available during evaluation. See the adaptive-window receipt for host-only qualification and the unimplemented system font-preference provider. |
+| `FileReaderModule`, `SegmentFetcher`            | ❌     | Registered compatibility modules reject requests with an explanatory unsupported error.                                                                                                                                                                       |
+| `WebSocketModule`                               | ⚠      | Socket operations throw when disabled. `RNQNX_ENABLE_WEBSOCKETS=ON` enables the experimental host backend; QNX builds reject that flag until target gates pass. See [host WebSocket limits](websocket-host-readiness.md).                                     |
+| `UIManager`                                     | n/a    | Not a TurboModule; bridgeless React Native serves it from JS.                                                                                                                                                                                                 |

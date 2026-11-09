@@ -11,6 +11,7 @@ function(rnqnx_add_component_gallery_tests)
   # Public-entry and override changes must invalidate the actual app bundle.
   file(GLOB_RECURSE gallery_js CONFIGURE_DEPENDS
     "${root}/apps/component-conformance/*.js"
+    "${root}/packages/react-native-qnx/adaptive/*.js"
     "${root}/packages/react-native-qnx/Libraries/*.js"
     "${root}/packages/metro-config-qnx/src/*.js")
   add_custom_command(OUTPUT "${bundle}" "${image}"
@@ -61,7 +62,12 @@ function(rnqnx_add_component_gallery_tests)
       "-DCOMPONENT_NAME=${component_name}" "-DDESKTOP=${desktop}"
       "-DARTIFACTS=${CMAKE_BINARY_DIR}/evidence/${lane}"
       -P "${root}/tests/cmake/ComponentGallery.cmake")
-    set_tests_properties("${lane}" PROPERTIES TIMEOUT 90
+    set_tests_properties("${lane}" PROPERTIES TIMEOUT 180
       ENVIRONMENT "QT_QUICK_BACKEND=software;ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1")
   endforeach()
+  add_test(NAME rnqnx_font_license
+    COMMAND rnqnx_playground_host -platform offscreen --font-license)
+  set_tests_properties(rnqnx_font_license PROPERTIES TIMEOUT 10
+    PASS_REGULAR_EXPRESSION "SIL OPEN FONT LICENSE Version 1.1"
+    ENVIRONMENT "QT_QUICK_BACKEND=software")
 endfunction()

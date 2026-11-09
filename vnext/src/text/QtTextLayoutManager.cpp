@@ -12,6 +12,7 @@
 // are replaced, the same substitution Android and Apple perform.
 
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
+#include "react-native-qnx/text/QtTextAttributes.h"
 
 #include <QFont>
 #include <QFontMetricsF>
@@ -27,34 +28,6 @@
 #include <string>
 
 namespace facebook::react {
-namespace {
-
-/// Builds a QFont from a text fragment's attributes. Only the properties Qt can
-/// honour without a font database of its own are read; anything else is left at
-/// Qt's default rather than approximated.
-QFont fontForFragment(const TextAttributes& attributes) {
-  QFont font;
-  if (!attributes.fontFamily.empty()) {
-    font.setFamily(QString::fromStdString(attributes.fontFamily));
-  }
-  if (!std::isnan(attributes.fontSize) && attributes.fontSize > 0) {
-    font.setPixelSize(static_cast<int>(attributes.fontSize));
-  }
-  if (attributes.fontWeight.has_value()) {
-    // React Native's weights are the CSS 100..900 scale; Qt's QFont::Weight is
-    // the same scale in Qt 6, so this is a direct mapping rather than a guess.
-    font.setWeight(static_cast<QFont::Weight>(
-        static_cast<int>(*attributes.fontWeight)));
-  }
-  if (attributes.fontStyle.has_value() &&
-      *attributes.fontStyle == FontStyle::Italic) {
-    font.setItalic(true);
-  }
-  return font;
-}
-
-}  // namespace
-
 TextLayoutManager::TextLayoutManager(
     const std::shared_ptr<const ContextContainer>& contextContainer)
     : contextContainer_(contextContainer),
@@ -72,6 +45,8 @@ TextMeasurement TextLayoutManager::measure(
   QString text;
   QList<QTextLayout::FormatRange> formats;
   TextMeasurement::Attachments attachments;
+  QFont baseFont = rnqnx::text::fontFromTextAttributes(attributedString.getBaseTextAttributes());
+  const qreal requestedLineHeight = rnqnx::text::paragraphLineHeight(attributedString);
 
   for (const auto& fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {
@@ -85,11 +60,17 @@ TextMeasurement TextLayoutManager::measure(
       continue;
     }
 
-    const QString piece = QString::fromStdString(fragment.string);
+    QString piece = QString::fromStdString(fragment.string);
+    // Qt Quick converts explicit newlines to line separators before shaping.
+    // Use the same input so newline and wrapped paragraphs measure alike.
+    piece.replace(QStringLiteral("\r\n"), QStringLiteral("\n"));
+    piece.replace(QLatin1Char('\n'), QChar::LineSeparator);
     QTextLayout::FormatRange range;
     range.start = static_cast<int>(text.length());
     range.length = static_cast<int>(piece.length());
-    range.format.setFont(fontForFragment(fragment.textAttributes));
+    const QFont font = rnqnx::text::fontFromTextAttributes(fragment.textAttributes);
+    if (formats.isEmpty()) baseFont = font;
+    range.format.setFont(font);
     formats.append(range);
     text += piece;
   }
@@ -102,7 +83,7 @@ TextMeasurement TextLayoutManager::measure(
         .attachments = attachments};
   }
 
-  QTextLayout layout(text);
+  QTextLayout layout(text, baseFont);
   layout.setFormats(formats);
 
   QTextOption option;
@@ -132,7 +113,7 @@ TextMeasurement TextLayoutManager::measure(
     }
     line.setLineWidth(availableWidth);
     line.setPosition(QPointF(0, height));
-    height += line.height();
+    height += requestedLineHeight > 0 ? requestedLineHeight : line.height();
     width = std::max(width, line.naturalTextWidth());
     ++lines;
   }

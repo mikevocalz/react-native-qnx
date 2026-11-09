@@ -9,6 +9,20 @@ FocusScope {
   visible: true
   clip: false
 
+  property color backgroundColor: "transparent"
+  property color borderColor: "transparent"
+  property real borderWidth: 0
+  property real radius: 0
+  property real topLeftRadius: 0
+  property real topRightRadius: 0
+  property real bottomRightRadius: 0
+  property real bottomLeftRadius: 0
+  property bool usePerCornerRadius: false
+  property real contentInsetLeft: 0
+  property real contentInsetTop: 0
+  property real contentInsetRight: 0
+  property real contentInsetBottom: 0
+
   property bool contractEnabled: false
   property string text: ""
   property string placeholderText: ""
@@ -35,10 +49,29 @@ FocusScope {
     return event.text;
   }
 
+  Rectangle {
+    objectName: "qnx-text-input-background"
+    anchors.fill: parent
+    color: root.backgroundColor
+    border.width: root.borderWidth
+    border.color: root.borderColor
+    radius: root.radius
+    topLeftRadius: root.usePerCornerRadius ? root.topLeftRadius : root.radius
+    topRightRadius: root.usePerCornerRadius ? root.topRightRadius : root.radius
+    bottomRightRadius: root.usePerCornerRadius ? root.bottomRightRadius : root.radius
+    bottomLeftRadius: root.usePerCornerRadius ? root.bottomLeftRadius : root.radius
+    z: -2
+  }
+
   TextInput {
     id: input
     objectName: "qnx-text-input"
     anchors.fill: parent
+    anchors.leftMargin: root.contentInsetLeft
+    anchors.topMargin: root.contentInsetTop
+    anchors.rightMargin: root.contentInsetRight
+    anchors.bottomMargin: root.contentInsetBottom
+    clip: true
     visible: !root.multiline
     focus: !root.multiline
     readOnly: root.readOnly
@@ -81,6 +114,11 @@ FocusScope {
     id: edit
     objectName: "qnx-text-edit"
     anchors.fill: parent
+    anchors.leftMargin: root.contentInsetLeft
+    anchors.topMargin: root.contentInsetTop
+    anchors.rightMargin: root.contentInsetRight
+    anchors.bottomMargin: root.contentInsetBottom
+    clip: true
     visible: root.multiline
     focus: root.multiline
     readOnly: root.readOnly
@@ -119,7 +157,13 @@ FocusScope {
 
   Text {
     id: placeholder
+    objectName: "qnx-text-input-placeholder"
     anchors.fill: parent
+    anchors.leftMargin: root.contentInsetLeft
+    anchors.topMargin: root.contentInsetTop
+    anchors.rightMargin: root.contentInsetRight
+    anchors.bottomMargin: root.contentInsetBottom
+    clip: true
     text: root.placeholderText
     color: root.placeholderTextColor
     font: root.font
@@ -129,12 +173,27 @@ FocusScope {
 }
 )TEXTINPUT_ON";
 #else
-  // Preserve the pre-experiment component byte-for-byte on the OFF path.
+  // Keep the legacy input event contract while sharing the same field surface
+  // and Yoga content bounds as the opt-in event/selection path.
   return R"TEXTINPUT_OFF(import QtQuick
 FocusScope {
   id: root
   visible: true
   clip: false
+
+  property color backgroundColor: "transparent"
+  property color borderColor: "transparent"
+  property real borderWidth: 0
+  property real radius: 0
+  property real topLeftRadius: 0
+  property real topRightRadius: 0
+  property real bottomRightRadius: 0
+  property real bottomLeftRadius: 0
+  property bool usePerCornerRadius: false
+  property real contentInsetLeft: 0
+  property real contentInsetTop: 0
+  property real contentInsetRight: 0
+  property real contentInsetBottom: 0
 
   property string text: ""
   property string placeholderText: ""
@@ -161,10 +220,29 @@ FocusScope {
     return event.text;
   }
 
+  Rectangle {
+    objectName: "qnx-text-input-background"
+    anchors.fill: parent
+    color: root.backgroundColor
+    border.width: root.borderWidth
+    border.color: root.borderColor
+    radius: root.radius
+    topLeftRadius: root.usePerCornerRadius ? root.topLeftRadius : root.radius
+    topRightRadius: root.usePerCornerRadius ? root.topRightRadius : root.radius
+    bottomRightRadius: root.usePerCornerRadius ? root.bottomRightRadius : root.radius
+    bottomLeftRadius: root.usePerCornerRadius ? root.bottomLeftRadius : root.radius
+    z: -2
+  }
+
   TextInput {
     id: input
     objectName: "qnx-text-input"
     anchors.fill: parent
+    anchors.leftMargin: root.contentInsetLeft
+    anchors.topMargin: root.contentInsetTop
+    anchors.rightMargin: root.contentInsetRight
+    anchors.bottomMargin: root.contentInsetBottom
+    clip: true
     visible: !root.multiline
     focus: !root.multiline
     readOnly: root.readOnly
@@ -193,6 +271,11 @@ FocusScope {
     id: edit
     objectName: "qnx-text-edit"
     anchors.fill: parent
+    anchors.leftMargin: root.contentInsetLeft
+    anchors.topMargin: root.contentInsetTop
+    anchors.rightMargin: root.contentInsetRight
+    anchors.bottomMargin: root.contentInsetBottom
+    clip: true
     visible: root.multiline
     focus: root.multiline
     readOnly: root.readOnly
@@ -217,7 +300,13 @@ FocusScope {
 
   Text {
     id: placeholder
+    objectName: "qnx-text-input-placeholder"
     anchors.fill: parent
+    anchors.leftMargin: root.contentInsetLeft
+    anchors.topMargin: root.contentInsetTop
+    anchors.rightMargin: root.contentInsetRight
+    anchors.bottomMargin: root.contentInsetBottom
+    clip: true
     text: root.placeholderText
     color: root.placeholderTextColor
     font: root.font

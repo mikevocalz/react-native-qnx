@@ -12,6 +12,7 @@ try {
     '.project-state.json',
     'README.md',
     'docs',
+    'packages/react-native-qnx/adaptive/README.md',
     'LICENSE',
     'THIRD_PARTY_NOTICES.md',
     'SECURITY.md',

@@ -84,6 +84,8 @@ async function init(root, name) {
     dependencies: {
       react: workspace.devDependencies.react,
       'react-native': workspace.devDependencies['react-native'],
+      zustand: workspace.devDependencies.zustand,
+      '@rn-qnx/react-native-qnx': 'workspace:*',
     },
     devDependencies: { '@rn-qnx/metro-config-qnx': 'workspace:*' },
   };

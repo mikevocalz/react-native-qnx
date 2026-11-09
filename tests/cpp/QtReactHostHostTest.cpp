@@ -356,6 +356,21 @@ void runtimeEvaluatesJavaScript() {
   EXPECT_NEAR(value.getNumber(), 42.0);
 }
 
+void sourceCodeIdentifiesTheBundleDuringEvaluation() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  EXPECT(fixture.host().evaluate("globalThis.bootstrapReady = true", "bootstrap.js"));
+  const std::string sourceUrl = "file:///runtime/loaded%20application/app.bundle.js";
+  EXPECT(fixture.host().evaluate(
+      "globalThis.sourceUrlDuringEvaluation = "
+      "nativeModuleProxy.SourceCode.getConstants().scriptURL;",
+      sourceUrl));
+  auto& runtime = fixture.host().runtime();
+  const auto value = runtime.global().getProperty(runtime, "sourceUrlDuringEvaluation");
+  EXPECT(value.isString());
+  EXPECT(value.getString(runtime).utf8(runtime) == sourceUrl);
+}
+
 void javaScriptErrorsAreReportedNotSwallowed() {
   Fixture fixture;
   EXPECT(!fixture.host().evaluate("throw new Error('deliberate');", "test.js"));
@@ -2935,6 +2950,8 @@ int main(int argc, char** argv) {
       {"runtimeTraceFollowsOwnedHostBoundaries", runtimeTraceFollowsOwnedHostBoundaries},
 #endif
       {"runtimeEvaluatesJavaScript", runtimeEvaluatesJavaScript},
+      {"sourceCodeIdentifiesTheBundleDuringEvaluation",
+       sourceCodeIdentifiesTheBundleDuringEvaluation},
       {"javaScriptErrorsAreReportedNotSwallowed",
        javaScriptErrorsAreReportedNotSwallowed},
       {"evaluateRejectsReentrantJavaScript", evaluateRejectsReentrantJavaScript},

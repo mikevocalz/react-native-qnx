@@ -23,9 +23,12 @@ It refuses an existing destination and does not run install scripts or change
 the lockfile. The second install adds the new workspace importer and links.
 Review and commit the app and lockfile together.
 
-The template has no component state. Use Zustand when adding state. Leave
-native handles in refs. Bundle output must be under the checkout's `build/`
-directory; a successful bundle does not establish device compatibility.
+The template uses the shared [adaptive shell and grid](../../packages/react-native-qnx/adaptive/README.md)
+with a working counter and controlled text input. Zustand retains application
+state, and cached pages retain their native content layers while navigation
+and columns adapt to the available space. Keep native handles in refs. Bundle
+output must be under the checkout's `build/` directory; a successful bundle
+does not establish device compatibility.
 
 ## Render your bundle on the host
 

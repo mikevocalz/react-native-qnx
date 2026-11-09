@@ -17,6 +17,7 @@
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
 #include "react-native-qnx/runtime/ApplicationIdentity.h"
+#include "react-native-qnx/text/QtTextAttributes.h"
 #ifdef RNQNX_CONSUMER_APP_HEADER
 #include RNQNX_CONSUMER_APP_HEADER
 #endif
@@ -39,7 +40,9 @@
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #include <QCoreApplication>
+#include <QEventLoop>
 #include <QFile>
+#include <QFileInfo>
 #include <QGuiApplication>
 #include <QImage>
 #include <QQmlEngine>
@@ -48,6 +51,7 @@
 #include <QScreen>
 #include <QString>
 #include <QTimer>
+#include <QUrl>
 
 #include <cstdio>
 #include <algorithm>
@@ -128,6 +132,17 @@ constexpr const char* kViewSource =
     "      }\n"
     "    }\n"
     "  }\n"
+    "  Rectangle {\n"
+    "    anchors.fill: parent\n"
+    "    visible: root.activeFocus\n"
+    "    enabled: false\n"
+    "    color: 'transparent'\n"
+    "    radius: root.radius\n"
+    "    border.width: 2\n"
+    "    border.color: '#2563eb'\n"
+    "    z: 1000\n"
+    "    Accessible.ignored: true\n"
+    "  }\n"
     "}\n";
 constexpr const char* kTextSource = "import QtQuick\nText { visible: true }\n";
 constexpr const char* kImageSource =
@@ -198,6 +213,10 @@ constexpr int kWindowHeight = 480;
 
 int main(int argc, char** argv) {
   QGuiApplication app(argc, argv);
+  // Use the same embedded, openly licensed sans family in native chrome and
+  // RN text. Its resource does not depend on fonts installed in the OS image.
+  QGuiApplication::setFont(rnqnx::text::fontFromTextAttributes(
+      facebook::react::TextAttributes::defaultTextAttributes()));
 #ifdef RNQNX_MARATHON_HOST
   // Qt Wayland uses desktopFileName for xdg_toplevel app_id. Marathon's app
   // identity/manifest must ultimately match the upstream-approved runner.
@@ -233,6 +252,8 @@ int main(int argc, char** argv) {
   const QCommandLineOption invertWheelOption(
       QStringLiteral("invert-wheel"),
       QStringLiteral("Reverse wheel input for an affected device; dragging and touch are unchanged."));
+  const QCommandLineOption fontLicenseOption(QStringLiteral("font-license"),
+      QStringLiteral("Print the embedded Roboto font copyright and SIL Open Font License."));
 #if RNQNX_ENABLE_FRAME_TRACE
   const QCommandLineOption traceOption(QStringLiteral("trace-json"),
       QStringLiteral("Export bounded native diagnostics after host shutdown (new file only)."),
@@ -243,9 +264,20 @@ int main(int argc, char** argv) {
   parser.addOption(desktopOption);
   parser.addOption(systemFrameOption);
   parser.addOption(invertWheelOption);
+  parser.addOption(fontLicenseOption);
   parser.addOption(bundleOption);
   parser.addOption(screenshotOption);
   parser.process(app);
+  if (parser.isSet(fontLicenseOption)) {
+    QFile license(QStringLiteral(":/rnqnx/fonts/OFL.txt"));
+    if (!license.open(QIODevice::ReadOnly)) {
+      std::fprintf(stderr, "RNQNX_FONT_LICENSE_UNAVAILABLE\n");
+      return 1;
+    }
+    const auto contents = license.readAll();
+    return std::fwrite(contents.constData(), 1, static_cast<std::size_t>(contents.size()), stdout) ==
+        static_cast<std::size_t>(contents.size()) ? 0 : 1;
+  }
   if (parser.isSet(systemFrameOption) && !parser.isSet(desktopOption)) {
     std::fprintf(stderr, "RNQNX_DESKTOP_ERROR --system-window-frame requires --desktop\n");
     return 2;
@@ -330,6 +362,39 @@ int main(int argc, char** argv) {
     }
   }
 #endif
+  // DeviceInfo must describe the actual client viewport before React imports
+  // Dimensions. Qt can defer the initial chrome/anchor geometry until show().
+  // Resolve that geometry before evaluating JS, without starting a zero-size
+  // surface or substituting the physical monitor's dimensions.
+  if (parser.isSet(fullscreenOption)) {
+    window.showFullScreen();
+  } else if (parser.isSet(desktopOption)) {
+    window.showNormal();
+  } else {
+    window.show();
+  }
+  const auto hasClientViewport = [surfaceRoot]() {
+    return std::isfinite(surfaceRoot->width()) && std::isfinite(surfaceRoot->height()) &&
+        surfaceRoot->width() > 0 && surfaceRoot->height() > 0;
+  };
+  if (!hasClientViewport()) {
+    QEventLoop initialGeometry;
+    QTimer deadline;
+    deadline.setSingleShot(true);
+    const auto checkGeometry = [&initialGeometry, &hasClientViewport]() {
+      if (hasClientViewport()) initialGeometry.quit();
+    };
+    QObject::connect(surfaceRoot, &QQuickItem::widthChanged, &initialGeometry, checkGeometry);
+    QObject::connect(surfaceRoot, &QQuickItem::heightChanged, &initialGeometry, checkGeometry);
+    QObject::connect(&deadline, &QTimer::timeout, &initialGeometry, &QEventLoop::quit);
+    QTimer::singleShot(0, &initialGeometry, checkGeometry);
+    deadline.start(3000);
+    initialGeometry.exec(QEventLoop::ExcludeUserInputEvents);
+    if (!hasClientViewport()) {
+      std::fprintf(stderr, "RNQNX_PLAYGROUND_RENDER_FAILED no usable client viewport\n");
+      return 1;
+    }
+  }
   rnqnx::views::QtQuickItemFactory factory(engine);
   factory.registerType(QStringLiteral("View"), QByteArray(kViewSource));
   factory.registerType(QStringLiteral("Text"), QByteArray(kTextSource));
@@ -381,6 +446,10 @@ int main(int argc, char** argv) {
   rnqnx::runtime::QtReactHost host(adapter);
 #endif
   host.delegate().setTouchDispatcher(&touchDispatcher);
+  if (!host.observeWindowMetrics(kSurfaceId, window, *surfaceRoot)) {
+    std::fprintf(stderr, "RNQNX_WINDOW_METRICS_ERROR %s\n", host.lastError().toUtf8().constData());
+    return 1;
+  }
   std::printf("RNQNX_INPUT_READY lifecycle=%d\n", RNQNX_ENABLE_INPUT_LIFECYCLE);
   std::fflush(stdout);
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
@@ -396,7 +465,11 @@ int main(int argc, char** argv) {
   host.installPlatformConstants();
   host.installTimers();
 
-  if (!host.evaluate(bundle.toStdString(), bundlePath.toStdString())) {
+  // AssetSourceResolver uses SourceCode.scriptURL as the bundle-relative asset
+  // base. Resolve the actual file, including relative CLI paths and URL escapes.
+  const auto bundleUrl = QUrl::fromLocalFile(QFileInfo(bundleFile).absoluteFilePath())
+                             .toString(QUrl::FullyEncoded);
+  if (!host.evaluate(bundle.toStdString(), bundleUrl.toStdString())) {
     std::fprintf(
         stderr,
         "Bundle failed to evaluate: %s\n",
@@ -404,53 +477,22 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  // Window chrome is outside the Yoga viewport. Coalesce a width/height pair
-  // into one surface update. Qt may deliver initial item geometry after show;
-  // never pass a transient zero/negative viewport to the first Yoga layout.
-  // All callbacks and their state remain inside the host's lifetime.
-  bool surfaceStarted = false;
-  QTimer surfaceResizeTimer;
-  surfaceResizeTimer.setSingleShot(true);
-  QObject::connect(surfaceRoot, &QQuickItem::widthChanged,
-      &surfaceResizeTimer, [&surfaceResizeTimer]() { surfaceResizeTimer.start(0); });
-  QObject::connect(surfaceRoot, &QQuickItem::heightChanged,
-      &surfaceResizeTimer, [&surfaceResizeTimer]() { surfaceResizeTimer.start(0); });
-  const auto updateSurface = [&host, surfaceRoot, &surfaceStarted,
-      componentName = identity.componentName.toStdString()]() {
-    const float width = static_cast<float>(surfaceRoot->width());
-    const float height = static_cast<float>(surfaceRoot->height());
-    if (!std::isfinite(width) || !std::isfinite(height) || width <= 0 || height <= 0) {
-      return;
-    }
-    if (!surfaceStarted) {
-      surfaceStarted = true;
-      host.startSurface(kSurfaceId, componentName, width, height);
-      std::printf("RNQNX_SURFACE_READY width=%.0f height=%.0f\n",
-          static_cast<double>(width), static_cast<double>(height));
-      std::fflush(stdout);
-    } else if (!host.resizeSurface(kSurfaceId, width, height)) {
-      std::fprintf(stderr, "RNQNX_SURFACE_RESIZE_ERROR %s\n", host.lastError().toUtf8().constData());
-    }
-  };
-  QObject::connect(&surfaceResizeTimer, &QTimer::timeout, updateSurface);
-  if (parser.isSet(fullscreenOption)) {
-    window.showFullScreen();
-  } else if (parser.isSet(desktopOption)) {
-    window.showNormal();
-  } else {
-    window.show();
-  }
-  updateSurface();
-  if (!surfaceStarted) surfaceResizeTimer.start(0);
+  host.startSurface(
+      kSurfaceId,
+      identity.componentName.toStdString(),
+      static_cast<float>(surfaceRoot->width()),
+      static_cast<float>(surfaceRoot->height()));
+
+  // The host-owned metrics observer now updates both this same Fabric surface
+  // and RN Dimensions from each coalesced client/screen/DPR change.
+  std::printf("RNQNX_SURFACE_READY width=%.0f height=%.0f\n",
+      static_cast<double>(surfaceRoot->width()), static_cast<double>(surfaceRoot->height()));
+  std::fflush(stdout);
 
   if (parser.isSet(screenshotOption)) {
     for (int i = 0; i < 20; ++i) {
       host.runtime().drainMicrotasks();
       host.pumpEvents();
-    }
-    if (!surfaceStarted) {
-      std::fprintf(stderr, "RNQNX_PLAYGROUND_RENDER_FAILED no usable client viewport\n");
-      return 1;
     }
     if (!host.lastError().isEmpty()) {
       std::fprintf(
@@ -462,8 +504,6 @@ int main(int argc, char** argv) {
     const QImage frame = window.grabWindow();
     // Include React's surface cleanup in this one-shot trial while the runtime
     // is still available to report errors. Keep the captured frame unchanged.
-    QObject::disconnect(surfaceRoot, nullptr, &surfaceResizeTimer, nullptr);
-    surfaceResizeTimer.stop();
     host.stopSurface(kSurfaceId);
     for (int i = 0; i < 20; ++i) {
       host.runtime().drainMicrotasks();

@@ -9,7 +9,11 @@ pnpm qnx bundle-qnx --app __APP_NAME__
 
 The bundle is `build/__APP_NAME__.bundle.js`. The existing native playground
 runner starts the `RNQnxPlayground` surface, so keep that registration name in
-`index.js`. The app uses no component state; use Zustand when adding state.
+`index.js`. The starter uses Zustand for its page, counter and text. Its
+`AdaptiveShell` and `AdaptiveGrid` come from `@rn-qnx/react-native-qnx/adaptive`.
+The public-entry Metro adapter enables the existing native component backend.
+Resize the window while editing: the same input remains mounted as columns
+change. The sidebar becomes a navigation dialog in a narrow window.
 
 This is a source-workspace template. Native compilation, Qt provisioning,
 runtime dependencies and QNX deployment are separate steps in

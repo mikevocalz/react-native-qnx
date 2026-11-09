@@ -78,6 +78,7 @@ function(rnqnx_add_fabric_adapter_target)
     "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtSwitchBridge.h"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtImageBridge.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtImageBridge.h"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtViewFocusBridge.cpp"
   )
   target_link_libraries(rnqnx_fabric_adapter PUBLIC
     rnqnx_react_native_renderer
@@ -87,6 +88,8 @@ function(rnqnx_add_fabric_adapter_target)
   target_compile_definitions(rnqnx_fabric_adapter PUBLIC
     RNQNX_ENABLE_INPUT_LIFECYCLE=$<BOOL:${RNQNX_ENABLE_INPUT_LIFECYCLE}>)
   rnqnx_enable_strict_warnings(rnqnx_fabric_adapter)
+  include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxTextLayout.cmake)
+  rnqnx_add_text_layout_test()
 endfunction()
 
 function(rnqnx_add_react_host_target)
@@ -105,6 +108,8 @@ function(rnqnx_add_react_host_target)
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtReactHost.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtRuntimeTaskQueue.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxExceptionsManager.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxDeviceInfo.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtWindowMetricsObserver.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxFileReaderModule.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxImageLoader.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtImageCache.cpp"
@@ -130,6 +135,8 @@ function(rnqnx_add_react_host_target)
   endif()
   rnqnx_configure_app_state()
   rnqnx_enable_strict_warnings(rnqnx_react_host)
+  include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxViewFocus.cmake)
+  rnqnx_add_view_focus_test()
   if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE)
     include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxAccessibilityActions.cmake)
     rnqnx_add_accessibility_action_probe()

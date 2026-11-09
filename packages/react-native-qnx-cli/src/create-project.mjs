@@ -92,6 +92,7 @@ async function packLocalPackages(output, marathon) {
       const packageDir = path.join(staging, name);
       await mkdir(packageDir);
       const files = name.startsWith('react-native-') ? ['index.js', 'Libraries'] : ['src'];
+      if (name === 'react-native-qnx') files.push('adaptive');
       if (name === 'metro-config-qnx') files.push('public-entry.js', 'public-entry.d.ts');
       const budget = { files: 0, bytes: 0 };
       for (const file of files) {
@@ -314,25 +315,12 @@ export async function createProjectMain(argv) {
         await smallSource(path.join(sourceRoot, match[1]))
       );
     }
+    const starter = await smallSource(path.join(sourceRoot, 'template/qnx/index.js'));
     await writeFile(
       path.join(destination, 'index.js'),
-      [
-        "import React from 'react';",
-        "import { AppRegistry, View, Text, Pressable, StyleSheet } from 'react-native';",
-        "import { create } from 'zustand';",
-        'const useStore = create(set => ({ count: 0, increment: () => set(s => ({ count: s.count + 1 })) }));',
-        'function App() {',
-        '  const count = useStore(s => s.count);',
-        '  const increment = useStore(s => s.increment);',
-        '  return React.createElement(View, { style: styles.root },',
-        "    React.createElement(Text, { style: styles.heading }, 'React Native QNX'),",
-        '    React.createElement(Pressable, { onPress: increment },',
-        "      React.createElement(Text, null, 'Tap: ' + count)));",
-        '}',
-        'const styles = StyleSheet.create({ root: { flex: 1, padding: 28 }, heading: { fontSize: 28 } });',
-        'AppRegistry.registerComponent(' + JSON.stringify(identity.componentName) + ', () => App);',
-        '',
-      ].join('\n')
+      starter
+        .replace("'__APP_NAME__ on React Native QNX'", () => JSON.stringify(identity.displayName))
+        .replace("'RNQnxPlayground'", () => JSON.stringify(identity.componentName))
     );
     await writeFile(
       path.join(destination, 'babel.config.js'),

@@ -245,8 +245,36 @@ file(GLOB RNQNX_TEXTLAYOUT_SRC CONFIGURE_DEPENDS "${RNQNX_TEXTLAYOUT_DIR}/*.cpp"
 add_library(react_renderer_textlayoutmanager OBJECT
   ${RNQNX_TEXTLAYOUT_SRC}
   "${RNQNX_REPO_ROOT}/vnext/src/text/QtTextLayoutManager.cpp"
+  "${RNQNX_REPO_ROOT}/vnext/src/text/QtTextAttributes.cpp"
 )
+# Public, unmodified font resources and their notice are pinned together. See
+# vnext/assets/fonts/README.md for exact upstream revision and license.
+foreach(rnqnx_font_asset IN ITEMS
+    "Roboto-Regular.ttf|d7598e12c5dbef095ff8272cfc55da0250bd07fbdecbac8a530b9b277872a134"
+    "Roboto-Italic.ttf|9725a847af6b460ffca162ae66d20dad48b01876137947180b42d7dcd7887182"
+    "OFL.txt|061402327a96aadb0bfb694a960ed289ecd38d383e396243831ab81feb109c41")
+  string(REPLACE "|" ";" rnqnx_font_parts "${rnqnx_font_asset}")
+  list(GET rnqnx_font_parts 0 rnqnx_font_name)
+  list(GET rnqnx_font_parts 1 rnqnx_font_expected)
+  file(SHA256 "${RNQNX_REPO_ROOT}/vnext/assets/fonts/${rnqnx_font_name}" rnqnx_font_actual)
+  if(NOT rnqnx_font_actual STREQUAL rnqnx_font_expected)
+    message(FATAL_ERROR "Bundled font resource differs from its pinned source: ${rnqnx_font_name}")
+  endif()
+endforeach()
+qt_add_resources(react_renderer_textlayoutmanager rnqnx_text_fonts
+  PREFIX "/rnqnx/fonts"
+  BASE "${RNQNX_REPO_ROOT}/vnext/assets/fonts"
+  FILES
+    "${RNQNX_REPO_ROOT}/vnext/assets/fonts/Roboto-Regular.ttf"
+    "${RNQNX_REPO_ROOT}/vnext/assets/fonts/Roboto-Italic.ttf"
+    "${RNQNX_REPO_ROOT}/vnext/assets/fonts/OFL.txt"
+)
+install(FILES "${RNQNX_REPO_ROOT}/vnext/assets/fonts/OFL.txt"
+  DESTINATION "share/licenses/react-native-qnx/Roboto")
+install(FILES "${RNQNX_REPO_ROOT}/vnext/assets/fonts/OFL.txt"
+  DESTINATION "licenses/Roboto" COMPONENT ConsumerApp)
 target_include_directories(react_renderer_textlayoutmanager PUBLIC
+  "${RNQNX_REPO_ROOT}/vnext/include"
   "${RNQNX_TEXTLAYOUT_DIR}"
   "${REACT_COMMON_DIR}"
   "${RNQNX_TEXTLAYOUT_DIR}/platform/cxx"

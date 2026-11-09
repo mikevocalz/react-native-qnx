@@ -1,8 +1,5 @@
 #include "react-native-qnx/runtime/QnxExceptionsManager.h"
 
-#include <QGuiApplication>
-#include <QScreen>
-
 #include <utility>
 
 namespace rnqnx::runtime {
@@ -125,64 +122,6 @@ facebook::jsi::Object QnxSourceCode::getConstants(
       runtime,
       "scriptURL",
       facebook::jsi::String::createFromUtf8(runtime, scriptUrl_));
-  return constants;
-}
-
-namespace {
-
-/// One display-metrics object in the shape `Dimensions` expects.
-facebook::jsi::Object displayMetrics(
-    facebook::jsi::Runtime& runtime,
-    double width,
-    double height,
-    double scale,
-    double fontScale) {
-  auto metrics = facebook::jsi::Object(runtime);
-  metrics.setProperty(runtime, "width", width);
-  metrics.setProperty(runtime, "height", height);
-  metrics.setProperty(runtime, "scale", scale);
-  metrics.setProperty(runtime, "fontScale", fontScale);
-  metrics.setProperty(runtime, "densityDpi", scale * 160.0);
-  return metrics;
-}
-
-}  // namespace
-
-QnxDeviceInfo::QnxDeviceInfo(
-    std::shared_ptr<facebook::react::CallInvoker> jsInvoker)
-    : NativeDeviceInfoCxxSpec(std::move(jsInvoker)) {}
-
-facebook::jsi::Object QnxDeviceInfo::getConstants(
-    facebook::jsi::Runtime& runtime) {
-  // Real values from the running system. With no screen at all — which should
-  // not happen under a Qt application — the metrics stay zero rather than
-  // inventing a device size.
-  double width = 0;
-  double height = 0;
-  double scale = 1;
-
-  if (const auto* screen = QGuiApplication::primaryScreen()) {
-    width = screen->geometry().width();
-    height = screen->geometry().height();
-    scale = screen->devicePixelRatio();
-  }
-
-  // Dimensions.js:126 reads `getConstants().Dimensions`, so the metrics are
-  // nested under that key rather than sitting at the top level.
-  auto dimensions = facebook::jsi::Object(runtime);
-  // React Native distinguishes the window from the screen; this platform has no
-  // separate window metrics yet, so both report the screen.
-  dimensions.setProperty(
-      runtime,
-      "windowPhysicalPixels",
-      displayMetrics(runtime, width, height, scale, 1.0));
-  dimensions.setProperty(
-      runtime,
-      "screenPhysicalPixels",
-      displayMetrics(runtime, width, height, scale, 1.0));
-
-  auto constants = facebook::jsi::Object(runtime);
-  constants.setProperty(runtime, "Dimensions", dimensions);
   return constants;
 }
 

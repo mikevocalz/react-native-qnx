@@ -20,6 +20,9 @@
 #include <string>
 #include <vector>
 
+class QQuickItem;
+class QWindow;
+
 namespace rnqnx::runtime {
 
 /// Drives React Native's event beat from the Qt event loop.
@@ -202,6 +205,21 @@ class QtReactHost {
   /// the Qt event loop — which means they only fire when that loop is running.
   void installTimers();
 
+  /// Binds this runtime's standard RN window metrics to a real client area.
+  /// Call once, on the Qt owner, with positive client geometry before evaluating
+  /// the application bundle. Native geometry/DPR changes update this surface's
+  /// existing Yoga constraints and RN Dimensions; no additional resize timer is
+  /// needed. The window/client may outlive the host; all observation stops first
+  /// during host teardown. A runtime has one RN window, even if it has other
+  /// non-window test surfaces. Returns false with lastError on invalid setup.
+  bool observeWindowMetrics(facebook::react::SurfaceId surfaceId,
+                            QWindow& window, QQuickItem& client);
+
+  /// Supplies an observed text-scale value from the host's actual provider.
+  /// The baseline is 1.0; this does not invent or write a system preference.
+  /// Updates both LayoutContext and RN metrics. Requires an observed window.
+  bool setFontScale(double scale);
+
   /// Runs pending Qt events, so timers scheduled by JavaScript can fire in a
   /// context with no running event loop, such as a test.
   void pumpEvents();
@@ -238,6 +256,8 @@ class QtReactHost {
       float width,
       float height);
   /// Re-constrains an existing surface after its client viewport is resized.
+  /// Surfaces bound by observeWindowMetrics instead follow their native client;
+  /// manually resizing them is rejected so Yoga and Dimensions cannot diverge.
   /// Returns false and sets lastError for unknown surfaces or invalid bounds.
   bool resizeSurface(facebook::react::SurfaceId surfaceId, float width, float height);
   void stopSurface(facebook::react::SurfaceId surfaceId);

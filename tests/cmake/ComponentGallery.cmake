@@ -20,13 +20,20 @@ foreach(snapshot IN ITEMS
     07-modal
     08-components-retained-state
     09-adaptive-minimum
-    10-desktop-gallery)
+    10-desktop-gallery
+    gallery-expanded
+    gallery-compact
+    gallery-narrow
+    gallery-short
+    gallery-dialog-short)
   file(REMOVE "${ARTIFACTS}/${snapshot}.png" "${ARTIFACTS}/${snapshot}.json")
 endforeach()
 execute_process(
   COMMAND "${CMAKE_COMMAND}" -E env "RNQNX_GALLERY_SMOKE_ARTIFACTS=${ARTIFACTS}"
     "${PROBE}" ${arguments}
-  RESULT_VARIABLE result OUTPUT_VARIABLE output ERROR_VARIABLE errors TIMEOUT 75)
+  # The adaptive driver adds resize/caret checks and visits every destination
+  # again through the minimum-window menu. Individual steps retain an 8s bound.
+  RESULT_VARIABLE result OUTPUT_VARIABLE output ERROR_VARIABLE errors TIMEOUT 150)
 set(log "${output}\n${errors}")
 file(WRITE "${ARTIFACTS}/run.log" "${log}")
 file(SHA256 "${BUNDLE}" bundle_sha)

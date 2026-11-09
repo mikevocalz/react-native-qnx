@@ -8,8 +8,10 @@
 #define RNQNX_ENABLE_TEXT_INPUT_CONTRACT 0
 #endif
 
+#include <QFont>
 #include <QHash>
 #include <QList>
+#include <QMarginsF>
 #include <QString>
 
 #include <cstdint>
@@ -74,6 +76,13 @@ struct ViewStyle {
   float translateY{0.0F};
   float scale{1.0F};
   float rotation{0.0F};
+  /// Full Fabric props engage both values, including empty strings for removal.
+  /// Sparse animated updates leave identifier metadata untouched.
+  std::optional<QString> testId = std::nullopt;
+  std::optional<QString> nativeId = std::nullopt;
+  /// A complete Fabric props update supplies this. Sparse animated style
+  /// updates leave pointer admission unchanged.
+  std::optional<bool> pointerEventsEnabled = std::nullopt;
   bool accessible{false};
   QString accessibilityLabel;
   QString accessibilityRole;
@@ -88,16 +97,18 @@ struct ViewStyle {
 #endif
 };
 
-/// The text attributes this platform carries onto a text item. Mirrored from
-/// facebook::react::TextAttributes; only the first fragment's values are used,
-/// because Qt Quick's `Text` styles the whole item.
+/// Resolved React Native text styling for a Qt item. The first fragment sets
+/// the item's base font/colour; richText retains per-fragment differences.
 struct TextStyle {
   QString text;
   /// The same content with per-fragment styling as Qt rich text. Used when a
   /// paragraph mixes styles, which Qt Quick's `Text` cannot express through its
   /// own font and colour properties.
   QString richText;
-  float fontSize{0.0F};
+  /// Resolved by the same converter used for native text measurement.
+  QFont font;
+  /// Logical pixels; zero restores natural font metrics.
+  qreal lineHeight = 0.0;
   bool hasColor{false};
   std::uint32_t color{0};
   /// True when the paragraph has more than one styled fragment.
@@ -106,14 +117,12 @@ struct TextStyle {
   int maximumNumberOfLines{0};
   /// Qt Quick `elide` value to use when `maximumNumberOfLines > 0`.
   int elideMode{1};
-  QString fontFamily;
 };
 
 /// The properties of an editable text field this platform can apply.
 ///
-/// Qt Quick's `TextInput` has no placeholder of its own — that belongs to
-/// QtQuick.Controls' `TextField` — so `placeholder` is deliberately absent
-/// rather than faked. See `docs/component-support.md`.
+/// The existing Qt Quick wrapper supplies a placeholder Text item using the
+/// same font as its TextInput/TextEdit editor. See `docs/component-support.md`.
 struct TextInputStyle {
   QString text;
 #if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
@@ -121,7 +130,10 @@ struct TextInputStyle {
   int selectionStart{-1};
   int selectionEnd{-1};
 #endif
-  float fontSize{0.0F};
+  QFont font;
+  /// Yoga's resolved border + padding in logical pixels, applied once to the
+  /// inner editor and placeholder. The outer Fabric frame stays unchanged.
+  QMarginsF contentInsets;
   bool hasColor{false};
   std::uint32_t color{0};
   bool hasPlaceholderTextColor{false};
@@ -131,7 +143,6 @@ struct TextInputStyle {
   bool multiline{false};
   int maxLength{0};
   QString placeholder;
-  QString fontFamily;
 };
 
 /// The properties of an activity indicator this platform can apply.
@@ -231,10 +242,11 @@ class QtQuickMountingLayer {
                                  int start, int end);
 #endif
 
-  /// Gives a mounted text field active focus.
+  /// Gives any mounted host item active focus. The historical method name is
+  /// retained; standard View commands use this route as well as TextInput.
   MountError focusTextInput(Tag tag);
 
-  /// Removes active focus from a mounted text field.
+  /// Removes active focus from a mounted host item.
   MountError blurTextInput(Tag tag);
 
   /// Applies activity-indicator properties. The QML item exposes `color`,
@@ -292,9 +304,7 @@ class QtQuickMountingLayer {
     bool viewportModal{false};
     std::optional<Tag> parentTag{};
     QList<Tag> children{};
-#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
     bool genericView{false};
-#endif
   };
 
   void raiseModals();

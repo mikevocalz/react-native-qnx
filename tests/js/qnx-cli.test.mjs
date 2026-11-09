@@ -35,6 +35,8 @@ try {
   const workspace = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
   assert.equal(manifest.dependencies.react, workspace.devDependencies.react);
   assert.equal(manifest.dependencies['react-native'], workspace.devDependencies['react-native']);
+  assert.equal(manifest.dependencies['@rn-qnx/react-native-qnx'], 'workspace:*');
+  assert.equal(manifest.dependencies.zustand, workspace.devDependencies.zustand);
   const entry = await readFile(path.join(temporary, 'apps/dashboard/index.js'), 'utf8');
   assert.match(entry, /dashboard on React Native QNX/);
   assert.match(entry, /registerComponent\('RNQnxPlayground'/);

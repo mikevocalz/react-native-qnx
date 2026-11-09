@@ -45,6 +45,15 @@ try {
     assert.equal(createHash('sha256').update(data).digest('hex'), artifact.sha256);
   }
   const before = await readFile(path.join(qnx, 'index.js'));
+  assert.match(before.toString('utf8'), /@rn-qnx\/react-native-qnx\/adaptive/);
+  assert.match(before.toString('utf8'), /AdaptiveShell/);
+  assert.match(before.toString('utf8'), /AdaptiveGrid/);
+  assert.doesNotMatch(before.toString('utf8'), /__APP_NAME__/);
+  const nativeArchive = path.join(qnx, qnxArtifacts.artifacts['@rn-qnx/react-native-qnx'].file);
+  const archiveContents = spawnSync('tar', ['-tzf', nativeArchive], { encoding: 'utf8' });
+  assert.equal(archiveContents.status, 0, archiveContents.stderr);
+  assert.match(archiveContents.stdout, /package\/adaptive\/index\.js/);
+  assert.match(archiveContents.stdout, /package\/adaptive\/index\.d\.ts/);
   const duplicate = run(...params);
   assert.notEqual(duplicate.status, 0);
   assert.deepEqual(await readFile(path.join(qnx, 'index.js')), before);

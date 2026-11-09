@@ -37,6 +37,9 @@ const expected = [
   'Modal',
   'StyleSheet',
   'Platform',
+  'Dimensions',
+  'useWindowDimensions',
+  'PixelRatio',
   'I18nManager',
   'Animated',
 ];

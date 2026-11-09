@@ -48,6 +48,15 @@ const api = Object.freeze({
   get Platform() {
     return require('react-native/Libraries/Utilities/Platform').default;
   },
+  get Dimensions() {
+    return require('react-native/Libraries/Utilities/Dimensions').default;
+  },
+  get useWindowDimensions() {
+    return require('react-native/Libraries/Utilities/useWindowDimensions').default;
+  },
+  get PixelRatio() {
+    return require('react-native/Libraries/Utilities/PixelRatio').default;
+  },
   get I18nManager() {
     // VirtualizedList reads this through the public entry when a list mounts.
     // Reuse RN's actual optional-native-module fallback; do not invent RTL state.

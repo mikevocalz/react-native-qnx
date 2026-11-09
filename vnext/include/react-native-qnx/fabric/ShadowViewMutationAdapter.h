@@ -26,6 +26,7 @@ class QtAccessibilityActivation;
 class QtImageBridge;
 class QtModalBridge;
 class QtSwitchBridge;
+class QtViewFocusBridge;
 
 /// Translates a React Native mount transaction into QtQuickMountingLayer calls.
 ///
@@ -91,6 +92,7 @@ class ShadowViewMutationAdapter {
   void applySwitch(const facebook::react::ShadowView& view);
   void applyModal(const facebook::react::ShadowView& view);
   void registerEventEmitter(const facebook::react::ShadowView& view);
+  void connectViewFocusEvents(const facebook::react::ShadowView& view);
 
   /// Connects an editable item's text changes to its shadow view's
   /// TextInputEventEmitter, so `onChange` reaches JavaScript.
@@ -126,6 +128,8 @@ class ShadowViewMutationAdapter {
   QHash<Tag, QtImageBridge*> imageBridges_;
   /// Native viewport observers, owned by their mounted Modal items.
   QHash<Tag, QPointer<QtModalBridge>> modalBridges_;
+  /// Generic View focus observers; TextInput retains its own event contract.
+  QHash<Tag, QPointer<QtViewFocusBridge>> viewFocusBridges_;
 };
 
 /// Converts React Native's view props to the visual style the mounting layer

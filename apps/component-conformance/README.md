@@ -12,8 +12,9 @@ Switch, ActivityIndicator and a dismissible Modal. **Documents** and
 virtualized list inside a plain ScrollView). Controls, Adaptive and Limits
 remain available; the existing blocked scenarios are not promoted.
 
-This fixture alone opts into the existing public entry using
-`withPublicEntry`; the platform default and other apps are unchanged.
+This fixture opts into the existing public entry using `withPublicEntry`, as
+do the adaptive source and generated Expo starters. The platform resolver's
+default is unchanged.
 `app.json` gives this fixture the separate `org.rnqnx.showcase` identity and
 configured 1024px React Native icon. A native consumer must be built with
 that identity; the frozen Pi400Qualification executable cannot change its
@@ -26,6 +27,27 @@ Refresh, Reanimated, IME, screen-reader integration, or physical input proof.
 For title bars, File/Window/Help menus, resize behavior, the optional wheel
 direction workaround, and the rebuilt-native input acceptance procedure, see
 the [desktop window guide](../../docs/getting-started/desktop-window.md).
+
+## Adaptive composition
+
+The shared [`adaptive` subpath](../../packages/react-native-qnx/adaptive/README.md)
+provides the shell, content grid and window-size classifier. A persistent
+sidebar appears from 840 logical client units; narrower windows expose all six
+destinations through **Browse sections**. Short windows reserve more height for
+content. Cards measure their actual content space and fit one, two or three
+columns without a shared fixed minimum height. Cards, controls and dialogs use
+4–6-unit corner radii; forms and dialogs have bounded widths.
+
+Resize does not change child keys or move an input into a different parent.
+Routes mount on first visit and remain mounted afterward so the same native
+input and scrolling nodes can be retained. Inactive routes occupy the same
+content geometry in transparent, non-interactive layers; they do not use
+`display: none`, which removes native subtrees in Fabric. Standard accessibility
+visibility props are supplied, without claiming target screen-reader support.
+The **Adaptive** page displays live
+`useWindowDimensions()` values rather than assuming the monitor's dimensions.
+These are implementation behaviors to validate; the existing scenario statuses
+remain unchanged until a named target run establishes the result.
 
 ## Build the QNX JavaScript bundle
 

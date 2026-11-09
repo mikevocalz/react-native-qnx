@@ -1,4 +1,6 @@
 #include "react-native-qnx/runtime/QtReactHost.h"
+#include "react-native-qnx/runtime/QnxDeviceInfo.h"
+#include "react-native-qnx/runtime/QtWindowMetricsObserver.h"
 
 #include <hermes/hermes.h>
 #include <hermes/Public/RuntimeConfig.h>
@@ -56,6 +58,7 @@
 #include <algorithm>
 #include <cmath>
 #include <exception>
+#include <optional>
 #include <utility>
 
 namespace rnqnx::runtime {
@@ -72,6 +75,17 @@ using facebook::react::SurfaceHandler;
 using facebook::react::SurfaceId;
 using facebook::react::UnimplementedNativeViewComponentDescriptor;
 using facebook::react::ViewComponentDescriptor;
+
+facebook::react::LayoutConstraints makeLayoutConstraints(float width, float height);
+
+facebook::react::LayoutContext makeLayoutContext(
+    const WindowMetrics& metrics, float width, float height) {
+  facebook::react::LayoutContext context;
+  context.pointScaleFactor = static_cast<float>(metrics.windowScale);
+  context.fontSizeMultiplier = static_cast<float>(metrics.fontScale);
+  context.viewportSize = {.width = width, .height = height};
+  return context;
+}
 
 }  // namespace
 
@@ -341,6 +355,9 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
 namespace {
 class QnxFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
  public:
+  // The native focus/blur commands already target any mounted Qt item. Let
+  // standard RN HostInstance refs reach them for non-TextInput controls.
+  bool enableImperativeFocus() override { return true; }
   bool cxxNativeAnimatedEnabled() override {
     return true;
   }
@@ -558,6 +575,10 @@ class QtReactHost::Impl {
     if (runtimeExecutionDepth != 0) {
       std::terminate();
     }
+    // Stop native geometry producers and invalidate queued JS notifications
+    // before unmount or RuntimeScheduler/GC releases module references.
+    windowObserver.reset();
+    if (deviceInfoModule) deviceInfoModule->invalidate();
     for (auto& [surfaceId, handler] : surfaces) {
 #if RNQNX_ENABLE_FRAME_TRACE
       const auto generation = surfaceGenerations.find(surfaceId);
@@ -580,6 +601,20 @@ class QtReactHost::Impl {
     taskQueue->close();
   }
 
+  void applyWindowMetrics(const WindowMetrics& metrics) {
+    windowMetrics = metrics;
+    if (observedSurface) {
+      const auto surface = surfaces.find(*observedSurface);
+      if (surface != surfaces.end()) {
+        const float width = static_cast<float>(metrics.windowSize.width());
+        const float height = static_cast<float>(metrics.windowSize.height());
+        surface->second->constraintLayout(makeLayoutConstraints(width, height),
+            makeLayoutContext(metrics, width, height));
+      }
+    }
+    if (deviceInfoModule) deviceInfoModule->updateMetrics(metrics);
+  }
+
 #if RNQNX_ENABLE_FRAME_TRACE
   std::shared_ptr<RuntimeTrace> trace;
   std::unordered_map<SurfaceId, std::uint64_t> surfaceGenerations;
@@ -589,6 +624,10 @@ class QtReactHost::Impl {
   std::unique_ptr<facebook::jsi::Runtime> runtime;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler;
   std::shared_ptr<QtRuntimeTaskQueue> taskQueue;
+  WindowMetrics windowMetrics;
+  std::optional<SurfaceId> observedSurface{std::nullopt};
+  std::unique_ptr<QtWindowMetricsObserver> windowObserver;
+  std::shared_ptr<QnxDeviceInfo> deviceInfoModule;
 #if RNQNX_ENABLE_APP_STATE
   std::shared_ptr<QnxAppStateModule> appStateModule;
 #endif
@@ -638,6 +677,40 @@ Scheduler& QtReactHost::scheduler() {
 
 QtSchedulerDelegate& QtReactHost::delegate() {
   return impl_->delegate;
+}
+
+bool QtReactHost::observeWindowMetrics(
+    SurfaceId surfaceId, QWindow& window, QQuickItem& client) {
+  if (impl_->windowObserver || surfaceId <= 0) {
+    impl_->lastError = QStringLiteral("Window metrics require one positive surface id per runtime");
+    return false;
+  }
+  try {
+    auto* impl = impl_.get();
+    auto observer = std::make_unique<QtWindowMetricsObserver>(window, client,
+        [impl](const WindowMetrics& metrics) { impl->applyWindowMetrics(metrics); });
+    impl_->observedSurface = surfaceId;
+    impl_->applyWindowMetrics(observer->current());
+    impl_->windowObserver = std::move(observer);
+    return true;
+  } catch (const std::exception& error) {
+    impl_->lastError = QString::fromUtf8(error.what());
+    return false;
+  }
+}
+
+bool QtReactHost::setFontScale(double scale) {
+  if (!impl_->windowObserver) {
+    impl_->lastError = QStringLiteral("Font scale requires an observed window");
+    return false;
+  }
+  try {
+    impl_->windowObserver->setFontScale(scale);
+    return true;
+  } catch (const std::exception& error) {
+    impl_->lastError = QString::fromUtf8(error.what());
+    return false;
+  }
 }
 
 QString QtReactHost::lastError() const {
@@ -758,7 +831,11 @@ void QtReactHost::installTurboModuleBinding() {
         // and the throw escapes.
         if (name == QnxDeviceInfo::kModuleName) {
           // Dimensions reads this, and ScrollView reads Dimensions.
-          return std::make_shared<QnxDeviceInfo>(callInvoker);
+          if (!impl->deviceInfoModule) {
+            impl->deviceInfoModule = std::make_shared<QnxDeviceInfo>(
+                callInvoker, impl->windowMetrics);
+          }
+          return impl->deviceInfoModule;
         }
 
         if (name == QnxSourceCode::kModuleName) {
@@ -1010,6 +1087,14 @@ void QtReactHost::startSurface(
     const std::string& moduleName,
     float width,
     float height) {
+  if (impl_->observedSurface == surfaceId) {
+    width = static_cast<float>(impl_->windowMetrics.windowSize.width());
+    height = static_cast<float>(impl_->windowMetrics.windowSize.height());
+  } else if (!impl_->observedSurface) {
+    auto metrics = impl_->windowMetrics;
+    metrics.windowSize = QSizeF(width, height);
+    impl_->applyWindowMetrics(metrics);
+  }
 #if RNQNX_ENABLE_FRAME_TRACE
   const auto generation = impl_->trace ? impl_->trace->nextId() : 0;
   TraceSpan trace(impl_->trace, TraceStage::SurfaceStart, surfaceId, generation);
@@ -1018,7 +1103,7 @@ void QtReactHost::startSurface(
   impl_->scheduler->registerSurface(*handler);
   handler->setProps(folly::dynamic::object());
   handler->constraintLayout(
-      makeLayoutConstraints(width, height), facebook::react::LayoutContext{});
+      makeLayoutConstraints(width, height), makeLayoutContext(impl_->windowMetrics, width, height));
   handler->start();
   impl_->surfaces.emplace(surfaceId, std::move(handler));
 #if RNQNX_ENABLE_FRAME_TRACE
@@ -1030,6 +1115,14 @@ void QtReactHost::startEmptySurface(
     SurfaceId surfaceId,
     float width,
     float height) {
+  if (impl_->observedSurface == surfaceId) {
+    width = static_cast<float>(impl_->windowMetrics.windowSize.width());
+    height = static_cast<float>(impl_->windowMetrics.windowSize.height());
+  } else if (!impl_->observedSurface) {
+    auto metrics = impl_->windowMetrics;
+    metrics.windowSize = QSizeF(width, height);
+    impl_->applyWindowMetrics(metrics);
+  }
   // See the header: stopping the surface calls RN$stopSurface even when no
   // React app was ever started. Defining it only if absent means a real bundle's
   // implementation always wins.
@@ -1047,7 +1140,7 @@ void QtReactHost::startEmptySurface(
   impl_->scheduler->registerSurface(*handler);
 
   handler->constraintLayout(
-      makeLayoutConstraints(width, height), facebook::react::LayoutContext{});
+      makeLayoutConstraints(width, height), makeLayoutContext(impl_->windowMetrics, width, height));
   handler->start();
 
   impl_->surfaces.emplace(surfaceId, std::move(handler));
@@ -1062,12 +1155,23 @@ bool QtReactHost::resizeSurface(SurfaceId surfaceId, float width, float height) 
     impl_->lastError = QStringLiteral("No surface is registered for surface %1").arg(surfaceId);
     return false;
   }
+  if (impl_->observedSurface == surfaceId) {
+    impl_->lastError = QStringLiteral(
+        "Surface %1 observes native client geometry; resize the client item or window instead")
+        .arg(surfaceId);
+    return false;
+  }
   if (!std::isfinite(width) || !std::isfinite(height) || width <= 0 || height <= 0) {
     impl_->lastError = QStringLiteral("Surface dimensions must be finite and positive");
     return false;
   }
   found->second->constraintLayout(
-      makeLayoutConstraints(width, height), facebook::react::LayoutContext{});
+      makeLayoutConstraints(width, height), makeLayoutContext(impl_->windowMetrics, width, height));
+  if (!impl_->observedSurface) {
+    auto metrics = impl_->windowMetrics;
+    metrics.windowSize = QSizeF(width, height);
+    impl_->applyWindowMetrics(metrics);
+  }
   return true;
 }
 

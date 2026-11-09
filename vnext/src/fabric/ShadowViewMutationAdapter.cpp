@@ -9,21 +9,26 @@
 #include "react-native-qnx/fabric/QtImageBridge.h"
 #include "react-native-qnx/fabric/QtScrollBridge.h"
 #include "react-native-qnx/fabric/QtSwitchBridge.h"
+#include "react-native-qnx/fabric/QtViewFocusBridge.h"
+#include "react-native-qnx/text/QtTextAttributes.h"
 
 #include <react/renderer/components/iostextinput/TextInputProps.h>
 #include <react/renderer/components/textinput/TextInputEventEmitter.h>
 
 #include <QColor>
 #include <QKeyEvent>
+#include <QList>
 #include <QMetaMethod>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QStringList>
+#include <QTimer>
 #include <QtMath>
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include <react/renderer/core/LayoutMetrics.h>
@@ -50,14 +55,16 @@ namespace rnqnx::fabric {
 class QtModalBridge final : public QObject {
  public:
   using State = facebook::react::ConcreteState<facebook::react::ModalHostViewState>;
+  enum class FocusRestoration { Restore, Skip };
 
   QtModalBridge(QQuickItem& item, QQuickItem& viewport)
       : QObject(&item), item_(item), viewport_(viewport) {
     QObject::connect(&viewport_, &QQuickItem::widthChanged, this, [this] { updateViewport(); });
     QObject::connect(&viewport_, &QQuickItem::heightChanged, this, [this] { updateViewport(); });
     QObject::connect(&item_, &QQuickItem::windowChanged, this,
-        [this](QQuickWindow* window) { observeWindow(window); });
-    observeWindow(item_.window());
+        [this](QQuickWindow* window) { if (mounted_) observeWindow(window); });
+    QObject::connect(&viewport_, &QQuickItem::enabledChanged, this,
+        [this] { if (viewport_.isEnabled()) queueInitialFocus(); });
   }
 
   void update(State::Shared state,
@@ -65,18 +72,78 @@ class QtModalBridge final : public QObject {
     state_ = std::move(state);
     emitter_ = std::move(emitter);
     updateViewport();
+    if (!initialFocusChosen_) queueInitialFocus();
+  }
+
+  void setMounted(bool mounted, FocusRestoration restoration = FocusRestoration::Restore) {
+    if (mounted_ == mounted) return;
+    const bool wasTopmost = isTopmost();
+    const auto previousWindow = window_;
+    const auto previous = previousFocus_;
+    mounted_ = mounted;
+    item_.setProperty(kModalMarker, mounted);
+    initialFocusChosen_ = false;
+    if (mounted_) {
+      observeWindow(item_.window());
+      return;
+    }
+    observeWindow(nullptr);
+    previousFocus_.clear();
+    if (restoration == FocusRestoration::Skip || !wasTopmost || !previousWindow) return;
+    const QPointer<QQuickItem> viewport(&viewport_);
+    const QPointer<QQuickItem> closing(&item_);
+    // The closing receiver is about to be destroyed. Bind the return to the
+    // still-live window and hold only guarded item references across the turn.
+    QTimer::singleShot(0, previousWindow, [previousWindow, previous, viewport, closing] {
+      if (!previousWindow || !viewport || !viewport->isEnabled() || !viewport->isVisible()) return;
+      auto* modal = topmost(*viewport);
+      if (modal && modal == closing) return; // A remove/insert move reopened it.
+      auto* current = previousWindow->activeFocusItem();
+      if (modal) {
+        if (contains(*modal, current)) return;
+        if (previous && contains(*modal, previous) && previous->isVisible() && previous->isEnabled()) {
+          previous->forceActiveFocus(Qt::OtherFocusReason);
+        } else {
+          focusFirst(*modal);
+        }
+        return;
+      }
+      // A React postcommit callback may already have selected the appropriate
+      // opener after a breakpoint change. Respect that explicit current focus.
+      if (current && current != previousWindow->contentItem() && current != viewport &&
+          (!closing || !contains(*closing, current)) && current->isVisible() && current->isEnabled()) return;
+      if (previous && previous->window() == previousWindow && previous->isVisible() && previous->isEnabled()) {
+        previous->forceActiveFocus(Qt::OtherFocusReason);
+      }
+    });
   }
 
  protected:
   bool eventFilter(QObject* watched, QEvent* event) override {
-    if (watched == window_ && event->type() == QEvent::KeyPress &&
-        item_.isVisible() && item_.isEnabled() && emitter_) {
+    if (watched == window_ && isTopmost() &&
+        (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)) {
       const auto* key = static_cast<QKeyEvent*>(event);
-      if (key->key() == Qt::Key_Escape && key->modifiers() == Qt::NoModifier) {
+      if (event->type() == QEvent::KeyPress && key->key() == Qt::Key_Escape &&
+          key->modifiers() == Qt::NoModifier && emitter_) {
         // Native dismissal is a request; the app's existing callback decides
         // whether to change visible. The latest inserted Modal filters first.
         const auto emitter = emitter_;
         if (!key->isAutoRepeat()) emitter->onRequestClose({});
+        event->accept();
+        return true;
+      }
+      if ((key->key() == Qt::Key_Tab || key->key() == Qt::Key_Backtab) &&
+          (key->modifiers() == Qt::NoModifier || key->modifiers() == Qt::ShiftModifier)) {
+        if (event->type() == QEvent::KeyPress) {
+          focusNext(key->key() == Qt::Key_Backtab || key->modifiers() == Qt::ShiftModifier);
+        }
+        event->accept();
+        return true;
+      }
+      // Native focus can be changed imperatively by the app. An open modal
+      // must still prevent typing or activation reaching a control behind it.
+      if (!contains(item_, window_->activeFocusItem())) {
+        focusFirst(item_);
         event->accept();
         return true;
       }
@@ -85,10 +152,85 @@ class QtModalBridge final : public QObject {
   }
 
  private:
+  static constexpr const char* kModalMarker = "rnqnxViewportModal";
+
+  static bool contains(const QQuickItem& root, QQuickItem* item) {
+    return item && (item == &root || root.isAncestorOf(item));
+  }
+
+  static QQuickItem* topmost(QQuickItem& viewport) {
+    // The mounting layer portals modals into this viewport and raises them in
+    // insertion order. Nested RN modals are siblings in this visual ordering.
+    const auto children = viewport.childItems();
+    for (auto it = children.crbegin(); it != children.crend(); ++it) {
+      auto* item = *it;
+      if (item->property(kModalMarker).toBool() && item->isVisible() && item->isEnabled()) return item;
+    }
+    return nullptr;
+  }
+
+  static void collectFocusable(QQuickItem& root, QList<QQuickItem*>& result) {
+    for (auto* child : root.childItems()) {
+      if (!child->isVisible() || !child->isEnabled()) continue;
+      if (child->activeFocusOnTab()) result.append(child);
+      collectFocusable(*child, result);
+    }
+  }
+
+  static void focusFirst(QQuickItem& modal) {
+    QList<QQuickItem*> candidates;
+    collectFocusable(modal, candidates);
+    (candidates.isEmpty() ? &modal : candidates.front())->forceActiveFocus(Qt::OtherFocusReason);
+  }
+
+  bool isTopmost() const {
+    return mounted_ && window_ && viewport_.isVisible() && viewport_.isEnabled() &&
+        item_.isVisible() && item_.isEnabled() && topmost(viewport_) == &item_;
+  }
+
+  void focusNext(bool backwards) {
+    QList<QQuickItem*> candidates;
+    collectFocusable(item_, candidates);
+    if (candidates.isEmpty()) {
+      item_.forceActiveFocus(Qt::OtherFocusReason);
+      return;
+    }
+    qsizetype currentIndex = -1;
+    auto* current = window_->activeFocusItem();
+    for (qsizetype index = 0; index < candidates.size(); ++index) {
+      if (contains(*candidates[index], current)) currentIndex = index;
+    }
+    const auto next = currentIndex < 0
+        ? (backwards ? candidates.size() - 1 : 0)
+        : (currentIndex + (backwards ? -1 : 1) + candidates.size()) % candidates.size();
+    candidates[next]->forceActiveFocus(backwards ? Qt::BacktabFocusReason : Qt::TabFocusReason);
+  }
+
+  void queueInitialFocus() {
+    if (!mounted_ || focusPending_) return;
+    focusPending_ = true;
+    QTimer::singleShot(0, this, [this] {
+      focusPending_ = false;
+      if (!isTopmost()) return;
+      auto* current = window_->activeFocusItem();
+      // JS can deliberately select a navigation row before this queued turn.
+      if (current != &item_ && contains(item_, current)) {
+        initialFocusChosen_ = true;
+        return;
+      }
+      focusFirst(item_);
+      initialFocusChosen_ = window_->activeFocusItem() != &item_;
+    });
+  }
+
   void observeWindow(QQuickWindow* window) {
     if (window_) window_->removeEventFilter(this);
     window_ = window;
-    if (window_) window_->installEventFilter(this);
+    if (window_) {
+      previousFocus_ = window_->activeFocusItem();
+      window_->installEventFilter(this);
+      queueInitialFocus();
+    }
   }
 
   void updateViewport() {
@@ -108,9 +250,13 @@ class QtModalBridge final : public QObject {
   QQuickItem& item_;
   QQuickItem& viewport_;
   QPointer<QQuickWindow> window_;
+  QPointer<QQuickItem> previousFocus_;
+  bool mounted_ = false;
+  bool focusPending_ = false;
+  bool initialFocusChosen_ = false;
   State::Shared state_;
   std::shared_ptr<const facebook::react::ModalHostViewEventEmitter> emitter_;
-  std::optional<facebook::react::Size> requestedSize_;
+  std::optional<facebook::react::Size> requestedSize_{std::nullopt};
 };
 
 namespace {
@@ -137,36 +283,6 @@ std::uint32_t packColor(const facebook::react::SharedColor& color) {
       static_cast<std::uint32_t>(facebook::react::blueFromColor(color));
 }
 
-/// Flattens a paragraph's attributed string into plain text.
-///
-/// Per-fragment attributes — font, colour, weight — are measured by the text
-/// layout manager but not yet carried onto the Qt item, so a paragraph renders
-/// with one style. Recorded in docs/component-support.md.
-/// CSS for one fragment, in the subset Qt's rich text understands.
-QString fragmentStyleAttribute(const facebook::react::TextAttributes& attributes) {
-  QStringList parts;
-  if (!std::isnan(attributes.fontSize) && attributes.fontSize > 0) {
-    parts << QStringLiteral("font-size:%1px").arg(static_cast<int>(attributes.fontSize));
-  }
-  if (facebook::react::isColorMeaningful(attributes.foregroundColor)) {
-    parts << QStringLiteral("color:%1").arg(
-        QColor::fromRgba(packColor(attributes.foregroundColor)).name(QColor::HexRgb));
-  }
-  if (attributes.fontWeight.has_value()) {
-    parts << QStringLiteral("font-weight:%1")
-                 .arg(static_cast<int>(*attributes.fontWeight));
-  }
-  if (attributes.fontStyle.has_value() &&
-      *attributes.fontStyle == facebook::react::FontStyle::Italic) {
-    parts << QStringLiteral("font-style:italic");
-  }
-  if (!attributes.fontFamily.empty()) {
-    parts << QStringLiteral("font-family:'%1'").arg(
-        QString::fromStdString(attributes.fontFamily));
-  }
-  return parts.join(QLatin1Char(';'));
-}
-
 TextStyle paragraphTextStyle(const ShadowView& view) {
   using ParagraphState = facebook::react::ParagraphState;
   const auto* state =
@@ -176,10 +292,13 @@ TextStyle paragraphTextStyle(const ShadowView& view) {
   if (state == nullptr) {
     return style;
   }
+  const auto& attributedString = state->getData().attributedString;
+  style.font = rnqnx::text::fontFromTextAttributes(attributedString.getBaseTextAttributes());
+  style.lineHeight = rnqnx::text::paragraphLineHeight(attributedString);
 
   bool first = true;
   int fragmentCount = 0;
-  for (const auto& fragment : state->getData().attributedString.getFragments()) {
+  for (const auto& fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {
       continue;
     }
@@ -189,23 +308,15 @@ TextStyle paragraphTextStyle(const ShadowView& view) {
     // Per-fragment styling is carried as rich text, because Qt Quick's Text
     // applies its own font and colour to the whole item. The plain string is
     // kept alongside it for anything that reads text without markup.
-    style.richText += QStringLiteral("<span style=\"%1\">%2</span>")
-                          .arg(fragmentStyleAttribute(fragment.textAttributes))
-                          .arg(QString::fromStdString(fragment.string).toHtmlEscaped());
+    style.richText += rnqnx::text::fragmentMarkup(fragment);
 
     if (first) {
       first = false;
-      if (!std::isnan(fragment.textAttributes.fontSize)) {
-        style.fontSize = static_cast<float>(fragment.textAttributes.fontSize);
-      }
+      style.font = rnqnx::text::fontFromTextAttributes(fragment.textAttributes);
       if (facebook::react::isColorMeaningful(
               fragment.textAttributes.foregroundColor)) {
         style.hasColor = true;
         style.color = packColor(fragment.textAttributes.foregroundColor);
-      }
-      if (!fragment.textAttributes.fontFamily.empty()) {
-        style.fontFamily =
-            QString::fromStdString(fragment.textAttributes.fontFamily);
       }
     }
   }
@@ -257,6 +368,11 @@ ViewStyle toViewStyle(const ShadowView& view) {
   if (facebook::react::isColorMeaningful(viewProps->backgroundColor)) {
     style.hasBackgroundColor = true;
     style.backgroundColor = packColor(viewProps->backgroundColor);
+  } else if (dynamic_cast<const facebook::react::TextInputProps*>(view.props.get()) != nullptr) {
+    // This is a complete Fabric props snapshot. Removing an input's fill
+    // restores its transparent default; sparse animated updates stay separate.
+    style.hasBackgroundColor = true;
+    style.backgroundColor = 0;
   }
 
   // React Native resolves the border cascade itself, including percentage radii
@@ -342,6 +458,11 @@ ViewStyle toViewStyle(const ShadowView& view) {
   // Preserve legacy dynamic metadata. The opt-in generic View bridge maps a
   // bounded subset onto real Qt Accessible attached properties; an OS
   // transport/consumer and RN accessibility actions are separate capabilities.
+  // This is a complete Fabric props snapshot. Empty identifiers deliberately
+  // remove old values, unlike an omitted field in a sparse animated update.
+  style.testId = QString::fromStdString(viewProps->testId);
+  style.nativeId = QString::fromStdString(viewProps->nativeId);
+  style.pointerEventsEnabled = viewProps->pointerEvents != facebook::react::PointerEventsMode::None;
   style.accessible = viewProps->accessible;
   style.accessibilityLabel =
       QString::fromStdString(viewProps->accessibilityLabel);
@@ -523,10 +644,10 @@ void ShadowViewMutationAdapter::applyImage(const ShadowView& view) {
 }
 
 void ShadowViewMutationAdapter::applyText(const ShadowView& view) {
+  if (dynamic_cast<const facebook::react::ConcreteState<
+          facebook::react::ParagraphState>*>(view.state.get()) == nullptr) return;
   const TextStyle style = paragraphTextStyle(view);
-  if (!style.text.isEmpty()) {
-    layer_.updateText(view.tag, style);
-  }
+  layer_.updateText(view.tag, style);
 }
 
 MountError ShadowViewMutationAdapter::applyTextInput(const ShadowView& view) {
@@ -555,16 +676,18 @@ MountError ShadowViewMutationAdapter::applyTextInput(const ShadowView& view) {
 
   // The field's own text attributes, not a paragraph's: a TextInput has one
   // style for its whole content.
-  const auto attributes = props->getEffectiveTextAttributes(1.0F);
-  if (!std::isnan(attributes.fontSize) && attributes.fontSize > 0) {
-    style.fontSize = static_cast<float>(attributes.fontSize);
-  }
+  // RN 0.88 records the surface scale in LayoutMetrics even when an empty
+  // input has no attributed fragments/state update. Do not infer it from text.
+  const auto multiplier = view.layoutMetrics.fontSizeMultiplier;
+  const float fontSizeMultiplier = std::isfinite(multiplier) && multiplier > 0
+      ? multiplier : 1.0F;
+  const auto attributes = props->getEffectiveTextAttributes(fontSizeMultiplier);
+  style.font = rnqnx::text::fontFromTextAttributes(attributes);
+  const auto& insets = view.layoutMetrics.contentInsets;
+  style.contentInsets = QMarginsF(insets.left, insets.top, insets.right, insets.bottom);
   if (attributes.foregroundColor) {
     style.hasColor = true;
     style.color = static_cast<std::uint32_t>(*attributes.foregroundColor);
-  }
-  if (!attributes.fontFamily.empty()) {
-    style.fontFamily = QString::fromStdString(attributes.fontFamily);
   }
 
   style.placeholder = QString::fromStdString(props->placeholder);
@@ -942,8 +1065,17 @@ void ShadowViewMutationAdapter::connectScrollEvents(const ShadowView& view) {
 }
 
 ShadowViewMutationAdapter::~ShadowViewMutationAdapter() {
+  for (const auto& bridge : std::as_const(viewFocusBridges_)) {
+    if (bridge) {
+      bridge->setMounted(false);
+      delete bridge.data();
+    }
+  }
   for (const auto& bridge : std::as_const(modalBridges_)) {
-    delete bridge.data();
+    if (bridge) {
+      bridge->setMounted(false, QtModalBridge::FocusRestoration::Skip);
+      delete bridge.data();
+    }
   }
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
   for (const auto& receiver : std::as_const(accessibilityActivations_)) {
@@ -998,6 +1130,33 @@ void ShadowViewMutationAdapter::registerEventEmitter(const ShadowView& view) {
           view.eventEmitter));
 }
 
+void ShadowViewMutationAdapter::connectViewFocusEvents(const ShadowView& view) {
+  // TextInput has richer focus payloads and its own bridge. Connecting every
+  // BaseViewEventEmitter here would duplicate those native focus events.
+  if (componentNameOf(view) != QStringLiteral("View")) return;
+  auto* item = layer_.itemForTag(view.tag);
+  if (item == nullptr) return;
+  auto& bridge = viewFocusBridges_[view.tag];
+  if (!bridge) bridge = new QtViewFocusBridge(*item);
+  const auto emitter =
+      std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(view.eventEmitter);
+  const auto props = std::dynamic_pointer_cast<const facebook::react::ViewProps>(view.props);
+  const bool button = props &&
+      (props->role == facebook::react::Role::Button ||
+       (props->role == facebook::react::Role::None && props->accessibilityRole == "button"));
+  const bool disabled = props && props->accessibilityState && props->accessibilityState->disabled;
+  bridge->update([emitter](bool focused) {
+    if (!emitter) return;
+    if (focused) emitter->onFocus();
+    else emitter->onBlur();
+  }, [emitter] {
+    // Pressability accepts non-pointer clicks as keyboard activation. Its
+    // PointerEvent onClick path contains pointerType and is deliberately
+    // ignored by Pressability to avoid a duplicate touch-generated press.
+    if (emitter) emitter->dispatchEvent("click", folly::dynamic::object());
+  }, button && !disabled);
+}
+
 MountError ShadowViewMutationAdapter::applyOne(
     const ShadowViewMutation& mutation,
     QString& detail) {
@@ -1033,6 +1192,7 @@ MountError ShadowViewMutationAdapter::applyOne(
         viewEmitter->onLayout(view.layoutMetrics);
       }
       registerEventEmitter(view);
+      connectViewFocusEvents(view);
       connectScrollEvents(view);
       connectTextInputEvents(view);
       connectSwitchEvents(view);
@@ -1054,6 +1214,10 @@ MountError ShadowViewMutationAdapter::applyOne(
     }
 
     case ShadowViewMutation::Type::Delete:
+      if (auto previous = viewFocusBridges_.take(mutation.oldChildShadowView.tag)) {
+        previous->setMounted(false);
+        delete previous.data();
+      }
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
       if (auto previous = accessibilityActivations_.take(mutation.oldChildShadowView.tag)) {
         previous->invalidate(); delete previous.data();
@@ -1067,7 +1231,10 @@ MountError ShadowViewMutationAdapter::applyOne(
 #endif
       switchBridges_.remove(mutation.oldChildShadowView.tag);
       imageBridges_.remove(mutation.oldChildShadowView.tag);
-      modalBridges_.remove(mutation.oldChildShadowView.tag);
+      if (auto previous = modalBridges_.take(mutation.oldChildShadowView.tag)) {
+        previous->setMounted(false);
+        delete previous.data();
+      }
       return layer_.destroy(mutation.oldChildShadowView.tag);
 
     case ShadowViewMutation::Type::Insert: {
@@ -1076,15 +1243,27 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (error != MountError::None) {
         return error;
       }
+      if (auto bridge = viewFocusBridges_.value(mutation.newChildShadowView.tag)) {
+        bridge->setMounted(true);
+      }
+      if (auto bridge = modalBridges_.value(mutation.newChildShadowView.tag)) {
+        bridge->setMounted(true);
+      }
       // Qt's Flickable does not derive its content size from its children, so
       // it is recomputed whenever they change.
       return layer_.updateScrollContentSize(mutation.parentTag);
     }
 
     case ShadowViewMutation::Type::Remove: {
+      const auto bridge = viewFocusBridges_.value(mutation.oldChildShadowView.tag);
+      const auto modal = modalBridges_.value(mutation.oldChildShadowView.tag);
+      if (bridge) bridge->setMounted(false);
+      if (modal) modal->setMounted(false);
       const MountError error = layer_.remove(
           mutation.parentTag, mutation.oldChildShadowView.tag, mutation.index);
       if (error != MountError::None) {
+        if (bridge) bridge->setMounted(true);
+        if (modal) modal->setMounted(true);
         return error;
       }
       return layer_.updateScrollContentSize(mutation.parentTag);
@@ -1100,6 +1279,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       }
 #endif
       registerEventEmitter(view);
+      connectViewFocusEvents(view);
       const MountError layoutError =
           layer_.updateLayout(view.tag, toLayoutFrame(view.layoutMetrics));
       if (layoutError != MountError::None) {

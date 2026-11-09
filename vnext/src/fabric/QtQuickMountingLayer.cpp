@@ -9,14 +9,9 @@
 #include "react-native-qnx/fabric/QtViewAccessibility.h"
 #endif
 #include <QColor>
-#include <QCoreApplication>
-#include <QDir>
-#include <QFile>
 #include <QFont>
-#include <QFontDatabase>
 #include <QHash>
 #include <QMouseEvent>
-#include <QStandardPaths>
 #include <QStringList>
 #include <QUrl>
 #include <QTouchEvent>
@@ -53,67 +48,6 @@ class ModalPointerBarrier final : public QQuickItem {
   void touchEvent(QTouchEvent* event) override { event->accept(); }
   void wheelEvent(QWheelEvent* event) override { event->accept(); }
 };
-
-// Directories searched for bundled/native font files, in addition to system
-// font locations. Qt QNX deployments usually ship assets under the executable.
-QStringList defaultFontSearchPaths() {
-  QStringList paths;
-  paths << QCoreApplication::applicationDirPath() + QStringLiteral("/assets/fonts");
-  paths << QCoreApplication::applicationDirPath() + QStringLiteral("/fonts");
-  for (const auto& path : QStandardPaths::standardLocations(
-           QStandardPaths::FontsLocation)) {
-    paths << path;
-  }
-  return paths;
-}
-
-// Try to load a font file whose name matches the requested family. Returns the
-// actual font-family name reported by Qt, or the requested family if no file
-// could be loaded. Loading is attempted once per family per process and the
-// result is cached.
-QString resolveFontFamily(const QString& requested) {
-  if (requested.isEmpty()) {
-    return requested;
-  }
-
-  static QHash<QString, QString> resolved;
-  if (resolved.contains(requested)) {
-    return resolved.value(requested);
-  }
-
-  const QStringList exts = {
-      QStringLiteral(".ttf"),
-      QStringLiteral(".otf"),
-      QStringLiteral(".ttc"),
-  };
-
-  for (const auto& dir : defaultFontSearchPaths()) {
-    if (!QDir(dir).exists()) {
-      continue;
-    }
-    for (const auto& ext : exts) {
-      const QString fileName = requested + ext;
-      const QString lowerFileName = requested.toLower() + ext;
-      for (const auto& name : {fileName, lowerFileName}) {
-        const QString path = dir + QLatin1Char('/') + name;
-        if (QFile::exists(path)) {
-          const int id = QFontDatabase::addApplicationFont(path);
-          if (id >= 0) {
-            const QStringList families =
-                QFontDatabase::applicationFontFamilies(id);
-            if (!families.isEmpty()) {
-              resolved.insert(requested, families.first());
-              return families.first();
-            }
-          }
-        }
-      }
-    }
-  }
-
-  resolved.insert(requested, requested);
-  return requested;
-}
 
 } // namespace
 
@@ -233,9 +167,7 @@ MountError QtQuickMountingLayer::create(
     item->setZ(std::numeric_limits<qreal>::max());
     new ModalPointerBarrier(*item);
   }
-#if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
   mounted.genericView = componentName == QStringLiteral("View");
-#endif
   items_.insert(tag, mounted);
   lastError_.clear();
   return MountError::None;
@@ -451,6 +383,14 @@ MountError QtQuickMountingLayer::updateStyle(Tag tag, const ViewStyle& style) {
   // Forward accessibility information as dynamic QML properties. These do not
   // enable a screen reader by themselves, but they make the values observable
   // from C++ and QML for future accessibility integration or testing.
+  if (style.testId.has_value()) item->setProperty("testID", *style.testId);
+  if (style.nativeId.has_value()) item->setProperty("nativeID", *style.nativeId);
+  // A retained, inactive React route must block both React pointer hit tests
+  // and native Qt controls below it. Keep QML controls' own enabled bindings
+  // intact by applying the subtree gate only to the generic View host.
+  if (mounted->genericView && style.pointerEventsEnabled.has_value()) {
+    item->setEnabled(*style.pointerEventsEnabled);
+  }
   item->setProperty("accessible", style.accessible);
   if (style.accessible) {
     item->setProperty(
@@ -539,16 +479,11 @@ MountError QtQuickMountingLayer::updateTextInput(
   }
 #endif
 
-  if (style.fontSize > 0.0F || !style.fontFamily.isEmpty()) {
-    QFont font = item->property("font").value<QFont>();
-    if (style.fontSize > 0.0F) {
-      font.setPixelSize(static_cast<int>(style.fontSize));
-    }
-    if (!style.fontFamily.isEmpty()) {
-      font.setFamily(resolveFontFamily(style.fontFamily));
-    }
-    item->setProperty("font", font);
-  }
+  item->setProperty("font", style.font);
+  item->setProperty("contentInsetLeft", style.contentInsets.left());
+  item->setProperty("contentInsetTop", style.contentInsets.top());
+  item->setProperty("contentInsetRight", style.contentInsets.right());
+  item->setProperty("contentInsetBottom", style.contentInsets.bottom());
   if (style.hasColor) {
     item->setProperty("color", QColor::fromRgba(style.color));
   }
@@ -694,6 +629,11 @@ MountError QtQuickMountingLayer::updateText(
 
   QQuickItem* item = mounted->item;
 
+  // Always reset limits when props are removed; otherwise a reused paragraph
+  // can remain elided after numberOfLines returns to its default.
+  item->setProperty("maximumLineCount", style.maximumNumberOfLines > 0
+      ? style.maximumNumberOfLines : (std::numeric_limits<int>::max)());
+  item->setProperty("elide", style.maximumNumberOfLines > 0 ? style.elideMode : -1);
   // The text layout manager measures with wrapping, so the item has to wrap
   // too. Without this the measured height says two lines while the paint says
   // one, and the text runs outside its own frame.
@@ -718,18 +658,11 @@ MountError QtQuickMountingLayer::updateText(
     item->setProperty("text", style.text);
   }
 
-  if (style.fontSize > 0.0F || !style.fontFamily.isEmpty()) {
-    // `font` is a grouped property holding a QFont value, so it is read,
-    // modified, and written back rather than set through a dotted name.
-    QFont font = item->property("font").value<QFont>();
-    if (style.fontSize > 0.0F) {
-      font.setPixelSize(static_cast<int>(style.fontSize));
-    }
-    if (!style.fontFamily.isEmpty()) {
-      font.setFamily(resolveFontFamily(style.fontFamily));
-    }
-    item->setProperty("font", font);
-  }
+  // Apply the resolved QFont used by measurement, including weight, italic,
+  // scaling and the actual loaded family. Do not merge with stale item props.
+  item->setProperty("font", style.font);
+  item->setProperty("lineHeightMode", style.lineHeight > 0 ? 1 : 0);
+  item->setProperty("lineHeight", style.lineHeight > 0 ? style.lineHeight : 1.0);
   if (style.hasColor) {
     item->setProperty("color", QColor::fromRgba(style.color));
   }

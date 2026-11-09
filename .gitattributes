@@ -1,3 +1,7 @@
 # Shell scripts must use LF line endings so they run consistently on POSIX
 # shells (Git Bash, WSL, Linux/macOS CI) regardless of host autocrlf settings.
 *.sh text eol=lf
+
+# Preserve the exact upstream OFL notice, including its original trailing space.
+# CMake checks the licensed file's pinned SHA-256 before embedding it.
+vnext/assets/fonts/OFL.txt whitespace=-blank-at-eol
