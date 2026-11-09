@@ -217,3 +217,75 @@ diff --git a/ReactCommon/react/renderer/components/image/ImageProps.cpp b/ReactC
  }
 
  #endif
+diff --git a/ReactCommon/react/renderer/mounting/ShadowViewMutation.cpp b/ReactCommon/react/renderer/mounting/ShadowViewMutation.cpp
+--- a/ReactCommon/react/renderer/mounting/ShadowViewMutation.cpp
++++ b/ReactCommon/react/renderer/mounting/ShadowViewMutation.cpp
+@@ -7,5 +7,6 @@
+ #include "ShadowViewMutation.h"
+
++#include <cstdlib>
+ #include <utility>
+
+ namespace facebook::react {
+@@ -112,6 +113,7 @@
+     case ShadowViewMutation::Update:
+       return "Update";
+   }
++  std::abort();
+ }
+
+ std::vector<DebugStringConvertibleObject> getDebugProps(
+diff --git a/ReactCommon/react/renderer/mounting/ShadowTree.cpp b/ReactCommon/react/renderer/mounting/ShadowTree.cpp
+--- a/ReactCommon/react/renderer/mounting/ShadowTree.cpp
++++ b/ReactCommon/react/renderer/mounting/ShadowTree.cpp
+@@ -7,5 +7,6 @@
+ #include "ShadowTree.h"
+
++#include <cstdlib>
+ #include <cxxreact/TraceSection.h>
+ #include <jsinspector-modern/tracing/PerformanceTracerSection.h>
+ #include <react/debug/react_native_assert.h>
+@@ -35,6 +36,7 @@
+     case ShadowTreeCommitSource::ReactRevisionMerge:
+       return "ReactRevisionMerge";
+   }
++  std::abort();
+ }
+
+ inline bool isPropsUpdatesAccumulationGuaranteed() {
+diff --git a/ReactCommon/react/renderer/attributedstring/AttributedStringBox.cpp b/ReactCommon/react/renderer/attributedstring/AttributedStringBox.cpp
+--- a/ReactCommon/react/renderer/attributedstring/AttributedStringBox.cpp
++++ b/ReactCommon/react/renderer/attributedstring/AttributedStringBox.cpp
+@@ -7,5 +7,6 @@
+ #include "AttributedStringBox.h"
+
++#include <cstdlib>
+ #include <react/debug/react_native_assert.h>
+
+ #include <utility>
+@@ -77,6 +78,7 @@
+     case AttributedStringBox::Mode::OpaquePointer:
+       return lhs.getOpaquePointer() == rhs.getOpaquePointer();
+   }
++  std::abort();
+ }
+
+ } // namespace facebook::react
+diff --git a/ReactCommon/react/renderer/core/RawProps.cpp b/ReactCommon/react/renderer/core/RawProps.cpp
+--- a/ReactCommon/react/renderer/core/RawProps.cpp
++++ b/ReactCommon/react/renderer/core/RawProps.cpp
+@@ -7,5 +7,6 @@
+ #include "RawProps.h"
+
++#include <cstdlib>
+ #include <cxxreact/TraceSection.h>
+ #include <react/debug/react_native_assert.h>
+ #include <react/renderer/core/RawPropsParser.h>
+@@ -96,6 +97,7 @@
+     case Mode::Dynamic:
+       return dynamic_;
+   }
++  std::abort();
+ }
+
+ /*

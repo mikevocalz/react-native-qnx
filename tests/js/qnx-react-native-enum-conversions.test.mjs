@@ -8,7 +8,7 @@ const renderer = new URL(
   '../../node_modules/react-native/ReactCommon/react/renderer/',
   import.meta.url
 );
-/** @typedef {{file: string, primitives: string, type: string, signature: string, cases: [string, string | number][]}} Conversion */
+/** @typedef {{file: string, primitives: string, type: string, signature: string, mutation?: boolean, cases: [string, string | number][]}} Conversion */
 /** @type {Conversion[]} */
 const conversions = [
   {
@@ -174,6 +174,32 @@ const conversions = [
       ['None', 'none'],
     ],
   },
+  {
+    file: 'mounting/ShadowViewMutation.cpp',
+    primitives: 'mounting/ShadowViewMutation.h',
+    type: 'ShadowViewMutation::Type',
+    signature: 'std::string getDebugName(const ShadowViewMutation& mutation)',
+    mutation: true,
+    cases: [
+      ['Create', 'Create'],
+      ['Delete', 'Delete'],
+      ['Insert', 'Insert'],
+      ['Remove', 'Remove'],
+      ['Update', 'Update'],
+    ],
+  },
+  {
+    file: 'mounting/ShadowTree.cpp',
+    primitives: 'mounting/ShadowTree.h',
+    type: 'ShadowTreeCommitSource',
+    signature: 'std::string getShadowTreeCommitSourceName(ShadowTreeCommitSource source)',
+    cases: [
+      ['Unknown', 'Unknown'],
+      ['React', 'React'],
+      ['AnimationEndSync', 'AnimationEndSync'],
+      ['ReactRevisionMerge', 'ReactRevisionMerge'],
+    ],
+  },
 ];
 
 /** @param {string} source @param {string} marker */
@@ -203,27 +229,35 @@ for (const [index, spec] of conversions.entries()) {
   const checked = spec.type === 'AccessibilityState::CheckedState';
   declarations.set(
     spec.type,
-    checked
-      ? 'struct AccessibilityState { ' + block(primitive, 'enum CheckedState') + '; };'
-      : block(primitive, 'enum class ' + spec.type) + ';'
+    spec.mutation
+      ? 'struct ShadowViewMutation { ' +
+          block(primitive, 'enum Type : std::uint8_t') +
+          '; Type type; };'
+      : checked
+        ? 'struct AccessibilityState { ' + block(primitive, 'enum CheckedState') + '; };'
+        : block(primitive, 'enum class ' + spec.type) + ';'
   );
-  const method = spec.signature.includes('toInt(') ? 'toInt' : 'toString';
+  const method = spec.signature.match(/(\w+)\(/)?.[1];
+  assert.ok(method, 'Missing pinned conversion function name: ' + spec.signature);
+  /** @param {string} value */
+  const call = (value) =>
+    method + '(' + (spec.mutation ? 'ShadowViewMutation{' + value + '}' : value) + ')';
   for (const [tag, value] of spec.cases) {
     checks.push(
-      'if (' +
-        method +
-        '(' +
-        spec.type +
-        '::' +
-        tag +
-        ') != ' +
-        JSON.stringify(value) +
-        ') return 1;'
+      'if (' + call(spec.type + '::' + tag) + ' != ' + JSON.stringify(value) + ') return 1;'
     );
   }
   // Only fixed-underlying enums admit arbitrary underlying values without UB.
   if (!checked)
-    invalid.push({ name: String(index), call: method + '(static_cast<' + spec.type + '>(42));' });
+    invalid.push({ name: String(index), call: call('static_cast<' + spec.type + '>(42)') + ';' });
+}
+for (const [file, signature] of [
+  ['attributedstring/AttributedStringBox.cpp', 'bool operator==('],
+  ['core/RawProps.cpp', 'folly::dynamic RawProps::toDynamic('],
+]) {
+  const source = await readFile(new URL(file, renderer), 'utf8');
+  assert.ok(source.includes('\n#include <cstdlib>\n'), 'Missing abort declaration: ' + file);
+  assert.match(block(source, signature), /\n  std::abort\(\);\n\}$/);
 }
 const compiler = spawnSync('c++', ['--version'], { encoding: 'utf8', timeout: 15000 });
 const missingCompiler =
