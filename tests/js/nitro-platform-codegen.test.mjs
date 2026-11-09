@@ -9,14 +9,65 @@ assert.deepEqual(parsed, {
   methods: ['add'],
 });
 
-for (const invalid of [
-  source.replace('left: number', 'left: string'),
-  source.replace('readonly architecture', 'architecture'),
-  source.replace('add(left: number, right: number): number', 'add(): void'),
-  source.replace('readonly platform: string;', 'readonly platform?: string;'),
-]) {
-  assert.throws(() => parseSpec(invalid));
+/** @type {Array<[string, string]>} */
+const invalidSpecs = [
+  ['non-numeric parameter', source.replace('left: number', 'left: string')],
+  ['writable property', source.replace('readonly architecture', 'architecture')],
+  [
+    'unsupported method signature',
+    source.replace('add(left: number, right: number): number', 'add(): void'),
+  ],
+  [
+    'optional property',
+    source.replace('readonly platform: string;', 'readonly platform?: string;'),
+  ],
+  ['static property', source.replace('readonly platform:', 'static readonly platform:')],
+  ['private property', source.replace('readonly platform:', 'private readonly platform:')],
+  ['protected property', source.replace('readonly platform:', 'protected readonly platform:')],
+  [
+    'property initializer',
+    source.replace('readonly platform: string;', 'readonly platform: string = "qnx";'),
+  ],
+  [
+    'definite-assignment property',
+    source.replace('readonly platform: string;', 'readonly platform!: string;'),
+  ],
+  ['static method', source.replace('add(', 'static add(')],
+  ['private method', source.replace('add(', 'private add(')],
+  ['protected method', source.replace('add(', 'protected add(')],
+  ['optional method', source.replace('add(', 'add?(')],
+  ['generic method', source.replace('add(', 'add<T>(')],
+  ['generator method', source.replace('add(', '*add(')],
+  [
+    'method body',
+    source.replace(
+      'add(left: number, right: number): number;',
+      'add(left: number, right: number): number { return left + right; }'
+    ),
+  ],
+  ['rest parameter', source.replace('right: number', '...right: number')],
+  ['this parameter', source.replace('left: number', 'this: number')],
+  ['destructured parameter', source.replace('left: number', '{ left }: number')],
+  ['generic class', source.replace('class PlatformInfo ', 'class PlatformInfo<T> ')],
+  ['abstract class', source.replace('declare class', 'declare abstract class')],
+  ['implements-only heritage', source.replace('extends HybridObject', 'implements HybridObject')],
+  [
+    'additional heritage',
+    source.replace('extends HybridObject', 'extends HybridObject implements Extra'),
+  ],
+  ['generic heritage', source.replace('extends HybridObject', 'extends HybridObject<string>')],
+];
+for (const [name, invalid] of invalidSpecs) {
+  assert.notEqual(invalid, source, `${name} fixture must change the spec`);
+  assert.throws(() => parseSpec(invalid), `${name} must not generate instance bindings`);
 }
+// Explicit public visibility preserves the same instance API.
+assert.deepEqual(
+  parseSpec(
+    source.replace('readonly platform:', 'public readonly platform:').replace('add(', 'public add(')
+  ),
+  parsed
+);
 const qnx = renderBinding(parsed, {
   className: 'QnxPlatformInfo',
   output: 'ignored',
