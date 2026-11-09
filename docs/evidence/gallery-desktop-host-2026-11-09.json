@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-09",
+  "hostOnly": true,
+  "source": {
+    "commit": "b194bef439879dcf7f6911e8adef1f9ae5cc38b2",
+    "tree": "905e42d1fa41e417ec78917845734f28b52a1bdb",
+    "localEquivalent": "a3e282fbabc7fa40a0162f50028435ba4ba74884",
+    "sourceManifestSha256": "48025a67bceab501aca692c8c2b2975350e62d17ffd448454c85c47f34987f0f"
+  },
+  "environment": {
+    "host": "Linux x86_64, Qt offscreen/software",
+    "qt": "6.11.1",
+    "compiler": "Ubuntu Clang 18.1.3",
+    "cmake": "3.31.10",
+    "node": "26.0.0",
+    "pnpm": "12.8.1"
+  },
+  "sanitizerScope": "ASan: consumer, gallery, full React host and desktop test executables. ASan+UBSan: wheel and mounting test executables. Static renderer libraries use strict warnings without sanitizer instrumentation; Qt singleton leak detection is disabled.",
+  "lanes": {
+    "off-final": {
+      "captured_utc": "2026-11-09T17:05:28.874553+00:00",
+      "hostOnly": true,
+      "result": "18/18 CTests passed",
+      "seconds": 145.52,
+      "source_commit_local": "a3e282fbabc7fa40a0162f50028435ba4ba74884",
+      "source_tree": "905e42d1fa41e417ec78917845734f28b52a1bdb",
+      "source_manifest_sha256": "48025a67bceab501aca692c8c2b2975350e62d17ffd448454c85c47f34987f0f",
+      "flags": {
+        "RNQNX_ENABLE_INPUT_LIFECYCLE": "OFF",
+        "RNQNX_ENABLE_TEXT_INPUT_CONTRACT": "OFF",
+        "RNQNX_ENABLE_ACCESSIBILITY_BRIDGE": "OFF",
+        "RNQNX_ENABLE_DESKTOP_WINDOW": "OFF",
+        "RNQNX_ENABLE_HOST_SANITIZERS": "ON"
+      },
+      "sanitizer_scope": "Host sanitizer option ON; consumer/gallery/full React host test executables use ASan. The wheel and mounting test executables use ASan+UBSan. Static renderer libraries compile with strict warnings but not sanitizer instrumentation.",
+      "artifacts": {
+        "consumer_binary": {
+          "sha256": "73441ab12ee9dd4a021d73617e181829f062fa9ad7b7af6cbb69b9cf452b786f",
+          "filename": "rnqnx_consumer_input_test"
+        },
+        "host_test_binary": {
+          "sha256": "90f773be49eaba19ebd5ee8f1aec6fae4674b13d5440cf6fa6e82607c74c5c93",
+          "filename": "qt_react_host_host_test"
+        },
+        "playground_binary": {
+          "sha256": "4d78a7b4926920d31d2100b439f9c9a04c767eb84946db9a04411786112ace5c",
+          "filename": "rnqnx_playground_host"
+        },
+        "gallery_binary": {
+          "sha256": "1ff31699dc8ae688c829aacc8615b68cfd4387d7664b127e10c4ec3832518d0e",
+          "filename": "rnqnx_component_gallery_test"
+        },
+        "gallery_bundle": {
+          "sha256": "323838b09d1ce652d47c3e7a325077a1222608e30fdecf7a6c545c2fa5aabbe1",
+          "filename": "app.bundle.js"
+        },
+        "gallery_image": {
+          "sha256": "cab067bf7b80610d922299070b649dc414b7939294b16f4f396adbeaf122ff02",
+          "filename": "icon.png"
+        },
+        "consumer_bundle": {
+          "sha256": "0e8460b101352358c3028d660b1db4d1800c5c360052fdc9a30ececcb75b46f8",
+          "filename": "rnqnx-consumer-input.bundle.js"
+        },
+        "playground_bundle": {
+          "sha256": "8c49e60203d05b39b730e27cf07fc19a4e4994abd8af4ac185f05bf8250704b6",
+          "filename": "rnqnx-playground.bundle.js"
+        }
+      }
+    },
+    "on-compact": {
+      "captured_utc": "2026-11-09T17:00:22.447530+00:00",
+      "hostOnly": true,
+      "result": "Final compact actual gallery ordinary and desktop CTests:2/2 pass. Remaining32 non-gallery cases passed in preserved full34-case ON run; this is a focused rerun, not a new full34-case invocation.",
+      "seconds": 53.33,
+      "prior_full_run": "gallery-desktop-host-2026-11-09.log: Historical ON full run section",
+      "source_base_local": "a3e282fbabc7fa40a0162f50028435ba4ba74884",
+      "source_manifest_sha256": "48025a67bceab501aca692c8c2b2975350e62d17ffd448454c85c47f34987f0f",
+      "flags": {
+        "RNQNX_ENABLE_INPUT_LIFECYCLE": "ON",
+        "RNQNX_ENABLE_TEXT_INPUT_CONTRACT": "ON",
+        "RNQNX_ENABLE_ACCESSIBILITY_BRIDGE": "ON",
+        "RNQNX_ENABLE_DESKTOP_WINDOW": "ON",
+        "RNQNX_ENABLE_HOST_SANITIZERS": "ON"
+      },
+      "sanitizer_scope": "Host sanitizer option ON; consumer/gallery/full React host/desktop test executables use ASan. The wheel and mounting test executables use ASan+UBSan. Static renderer libraries compile with strict warnings but not sanitizer instrumentation.",
+      "artifacts": {
+        "gallery_binary": {
+          "sha256": "92a2a6ce40b6b276233bca287347c66ce2a0f7901a22cb583a09ba83c309289a",
+          "filename": "rnqnx_component_gallery_test"
+        },
+        "gallery_bundle": {
+          "sha256": "323838b09d1ce652d47c3e7a325077a1222608e30fdecf7a6c545c2fa5aabbe1",
+          "filename": "app.bundle.js"
+        },
+        "gallery_image": {
+          "sha256": "cab067bf7b80610d922299070b649dc414b7939294b16f4f396adbeaf122ff02",
+          "filename": "icon.png"
+        }
+      }
+    },
+    "desktop-baseline": {
+      "captured_utc": "2026-11-09T17:08:17.467288+00:00",
+      "hostOnly": true,
+      "result": "3/3 requested desktop-only configuration CTests passed;21 tests registered, only these3 rebuilt/run after final18-case OFF gate.",
+      "seconds": 39.05,
+      "tests": {
+        "rnqnx_desktop_window": 1.31,
+        "rnqnx_consumer_desktop_window_input": 7.87,
+        "rnqnx_component_gallery_desktop": 29.87
+      },
+      "source_commit_local": "a3e282fbabc7fa40a0162f50028435ba4ba74884",
+      "source_tree": "905e42d1fa41e417ec78917845734f28b52a1bdb",
+      "source_manifest_sha256": "48025a67bceab501aca692c8c2b2975350e62d17ffd448454c85c47f34987f0f",
+      "flags": {
+        "RNQNX_ENABLE_INPUT_LIFECYCLE": "OFF",
+        "RNQNX_ENABLE_TEXT_INPUT_CONTRACT": "OFF",
+        "RNQNX_ENABLE_ACCESSIBILITY_BRIDGE": "OFF",
+        "RNQNX_ENABLE_DESKTOP_WINDOW": "ON",
+        "RNQNX_ENABLE_HOST_SANITIZERS": "ON"
+      },
+      "sanitizer_scope": "Host sanitizer option ON; the three selected desktop/consumer/gallery test executables use ASan. Static renderer libraries compile with strict warnings but not sanitizer instrumentation. Wheel and mounting tests in other configurations use ASan+UBSan; they were not rerun in this 3-case gate.",
+      "artifacts": {
+        "consumer_binary": {
+          "sha256": "043d75515a8db1a73e6e7be5d734f70b13db0e51e88740c0b8f59acf52a6c2ec",
+          "filename": "rnqnx_consumer_input_test"
+        },
+        "desktop_test_binary": {
+          "sha256": "306009e395ddfbefacb423b80045558318a857b77144587be87504d394cb18c1",
+          "filename": "rnqnx_desktop_window_test"
+        },
+        "gallery_binary": {
+          "sha256": "70575636849230f9d9a6d644727ef5ef55b49b7c936934e4748d090f0493e9be",
+          "filename": "rnqnx_component_gallery_test"
+        },
+        "gallery_bundle": {
+          "sha256": "323838b09d1ce652d47c3e7a325077a1222608e30fdecf7a6c545c2fa5aabbe1",
+          "filename": "app.bundle.js"
+        },
+        "gallery_image": {
+          "sha256": "cab067bf7b80610d922299070b649dc414b7939294b16f4f396adbeaf122ff02",
+          "filename": "icon.png"
+        },
+        "consumer_bundle": {
+          "sha256": "0e8460b101352358c3028d660b1db4d1800c5c360052fdc9a30ececcb75b46f8",
+          "filename": "rnqnx-consumer-input.bundle.js"
+        }
+      }
+    }
+  },
+  "screenshots": {
+    "gallery-desktop-host-2026-11-09.png": {
+      "sha256": "7e76a43243a84438c8141cd1000df09bf81635e42015f85a6f94da1eee32f530",
+      "bytes": 95696,
+      "configuration": "desktop-baseline"
+    },
+    "gallery-desktop-minimum-host-2026-11-09.png": {
+      "sha256": "f00b56275f88f1a7b6cf3aa40aa52c1c735edcc62adea42b9a9faa34a79e6451",
+      "bytes": 21247,
+      "configuration": "desktop-baseline"
+    }
+  },
+  "physicalQnx": {
+    "executed": false,
+    "remaining": [
+      "native QNX build/deployment",
+      "physical HID and wheel policy",
+      "Screen/QPA and window-manager integration"
+    ]
+  },
+  "limits": [
+    "ON evidence combines 32 unchanged non-gallery passes from a full run and the final 2/2 gallery rerun; it is not a new single 34/34 invocation.",
+    "The desktop-only configuration registered 21 tests but ran exactly 3.",
+    "Host event injection is not physical QNX mouse/touch evidence."
+  ]
+}

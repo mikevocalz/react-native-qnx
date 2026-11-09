@@ -1,0 +1,1809 @@
+
+===== Final OFF full run:18/18 =====
+Start testing: Nov 09 12:02 EST
+----------------------------------------------------------
+1/18 Testing: rnqnx_g0_cxx20_probe
+1/18 Test: rnqnx_g0_cxx20_probe
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_g0_cxx20_probe"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_g0_cxx20_probe" start time: Nov 09 12:02 EST
+Output:
+----------------------------------------------------------
+RNQNX_G0_CXX20_OK ranges=12 designated=21 jthread=34
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_G0_CXX20_OK ranges=12 designated=21 (jthread=34|thread=34 jthread=unsupported)]
+"rnqnx_g0_cxx20_probe" end time: Nov 09 12:02 EST
+"rnqnx_g0_cxx20_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/18 Testing: qnx_screen_surface_host_test
+2/18 Test: qnx_screen_surface_host_test
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/qnx_screen_surface_host_test"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"qnx_screen_surface_host_test" start time: Nov 09 12:02 EST
+Output:
+----------------------------------------------------------
+[PASS] successful initialization uses exact window and buffer setup
+[PASS] invalid initialization sizes are rejected before calling Screen
+[PASS] fill uses documented ARGB token-value list
+[PASS] present uses the buffer acquired for each frame
+[PASS] destroy is ordered, complete, and idempotent
+[PASS] move construction and assignment transfer sole ownership
+[PASS] partial initialization failures release fake resources
+[PASS] runtime failures are explicit and failed fills are not posted
+All QnxScreenSurface host tests passed.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"qnx_screen_surface_host_test" end time: Nov 09 12:02 EST
+"qnx_screen_surface_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/18 Testing: rnqnx_wheel_direction
+3/18 Test: rnqnx_wheel_direction
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_wheel_direction_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_wheel_direction" start time: Nov 09 12:02 EST
+Output:
+----------------------------------------------------------
+RNQNX_WHEEL_DIRECTION_OK default metadata acceptance lifetime mouse touch flickable
+<end of output>
+Test time =   0.34 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_WHEEL_DIRECTION_OK default metadata acceptance lifetime mouse touch flickable]
+"rnqnx_wheel_direction" end time: Nov 09 12:02 EST
+"rnqnx_wheel_direction" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/18 Testing: rnqnx_hermes_probe
+4/18 Test: rnqnx_hermes_probe
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_hermes_probe"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_hermes_probe" start time: Nov 09 12:02 EST
+Output:
+----------------------------------------------------------
+RNQNX_HERMES_OK arithmetic es6 async-arrow host-function
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_HERMES_OK arithmetic es6 async-arrow host-function]
+"rnqnx_hermes_probe" end time: Nov 09 12:02 EST
+"rnqnx_hermes_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/18 Testing: rnqnx_react_render_host_probe
+5/18 Test: rnqnx_react_render_host_probe
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_react_render_host_probe" "-P" "$CHECKOUT/tests/cmake/ReactRenderProbePositive.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_react_render_host_probe" start time: Nov 09 12:02 EST
+Output:
+----------------------------------------------------------
+Running "RNQnxReactRenderProbe"
+RNQNX_REACT_RENDER_OK platform=host bundled-react initial=160x100/48x24 update=72x24 unmount=empty geometry-only transactions=3
+
+<end of output>
+Test time =   1.89 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_react_render_host_probe" end time: Nov 09 12:02 EST
+"rnqnx_react_render_host_probe" time elapsed: 00:00:01
+----------------------------------------------------------
+
+6/18 Testing: rnqnx_react_render_host_probe_rejects_bad_bundles
+6/18 Test: rnqnx_react_render_host_probe_rejects_bad_bundles
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_react_render_host_probe" "-DWORK_DIR=$CHECKOUT/build/linux-gallery-clang/react-probe-negative" "-P" "$CHECKOUT/tests/cmake/ReactRenderProbeNegative.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_react_render_host_probe_rejects_bad_bundles" start time: Nov 09 12:02 EST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.24 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_react_render_host_probe_rejects_bad_bundles" end time: Nov 09 12:02 EST
+"rnqnx_react_render_host_probe_rejects_bad_bundles" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/18 Testing: rnqnx_consumer_window_input
+7/18 Test: rnqnx_consumer_window_input
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_consumer_input_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_consumer_window_input" start time: Nov 09 12:02 EST
+Output:
+----------------------------------------------------------
+RNQNX_INPUT_READY lifecycle=0
+Running "RNQnxPlayground"
+RNQNX_SURFACE_READY width=640 height=480
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 12:02:41.520335 1386910144 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003a10).
+W1109 12:02:41.521008 1264948928 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000112d0).
+W1109 12:02:41.521064 1264948928 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003a50).
+RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close scrolled-portal resized native-barrier escape lifecycle=0
+<end of output>
+Test time =   7.32 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close]
+"rnqnx_consumer_window_input" end time: Nov 09 12:02 EST
+"rnqnx_consumer_window_input" time elapsed: 00:00:07
+----------------------------------------------------------
+
+8/18 Testing: rnqnx_consumer_window_rejects_interception
+8/18 Test: rnqnx_consumer_window_rejects_interception
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_consumer_input_test" "-P" "$CHECKOUT/cmake/../tests/cmake/ConsumerWindowInputNegative.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_consumer_window_rejects_interception" start time: Nov 09 12:02 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_CONSUMER_WINDOW_INTERCEPTION_REJECTED
+<end of output>
+Test time =  11.01 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_consumer_window_rejects_interception" end time: Nov 09 12:02 EST
+"rnqnx_consumer_window_rejects_interception" time elapsed: 00:00:11
+----------------------------------------------------------
+
+9/18 Testing: rnqnx_component_gallery
+9/18 Test: rnqnx_component_gallery
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_component_gallery_test" "-DBUNDLE=$CHECKOUT/build/linux-gallery-clang/component-gallery-fixture/app.bundle.js" "-DIMAGE=$CHECKOUT/build/linux-gallery-clang/component-gallery-fixture/assets/assets/icon.png" "-DAPP_ID=org.rnqnx.showcase" "-DAPP_NAME=QNX Components" "-DCOMPONENT_NAME=RNQnxPlayground" "-DDESKTOP=OFF" "-DARTIFACTS=$CHECKOUT/build/linux-gallery-clang/evidence/rnqnx_component_gallery" "-P" "$CHECKOUT/cmake/../tests/cmake/ComponentGallery.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_component_gallery" start time: Nov 09 12:02 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_COMPONENT_GALLERY_OK $CHECKOUT/build/linux-gallery-clang/evidence/rnqnx_component_gallery
+<end of output>
+Test time =  28.31 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_component_gallery" end time: Nov 09 12:03 EST
+"rnqnx_component_gallery" time elapsed: 00:00:28
+----------------------------------------------------------
+
+10/18 Testing: rnqnx_playground_screenshot
+10/18 Test: rnqnx_playground_screenshot
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_playground_host" "-DBUNDLE=$CHECKOUT/build/linux-gallery-clang/rnqnx-playground.bundle.js" "-DWORK_DIR=$CHECKOUT/build/linux-gallery-clang/playground-positive" "-P" "$CHECKOUT/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_playground_screenshot" start time: Nov 09 12:03 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_SCREENSHOT_ARTIFACT_OK
+<end of output>
+Test time =   2.89 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_screenshot" end time: Nov 09 12:03 EST
+"rnqnx_playground_screenshot" time elapsed: 00:00:02
+----------------------------------------------------------
+
+11/18 Testing: rnqnx_playground_rejects_start_failure
+11/18 Test: rnqnx_playground_rejects_start_failure
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_playground_host" "-DBUNDLE=$CHECKOUT/tests/fixtures/runtime-baseline/start-failure.js" "-DWORK_DIR=$CHECKOUT/build/linux-gallery-clang/playground-start-failure" "-DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_START_FAILURE" "-P" "$CHECKOUT/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_playground_rejects_start_failure" start time: Nov 09 12:03 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_START_FAILURE
+<end of output>
+Test time =   0.13 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_rejects_start_failure" end time: Nov 09 12:03 EST
+"rnqnx_playground_rejects_start_failure" time elapsed: 00:00:00
+----------------------------------------------------------
+
+12/18 Testing: rnqnx_playground_rejects_stop_failure
+12/18 Test: rnqnx_playground_rejects_stop_failure
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_playground_host" "-DBUNDLE=$CHECKOUT/tests/fixtures/runtime-baseline/stop-failure.js" "-DWORK_DIR=$CHECKOUT/build/linux-gallery-clang/playground-stop-failure" "-DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_STOP_FAILURE" "-P" "$CHECKOUT/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_playground_rejects_stop_failure" start time: Nov 09 12:03 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_STOP_FAILURE
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_rejects_stop_failure" end time: Nov 09 12:03 EST
+"rnqnx_playground_rejects_stop_failure" time elapsed: 00:00:00
+----------------------------------------------------------
+
+13/18 Testing: qt_react_host_host_test
+13/18 Test: qt_react_host_host_test
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/qt_react_host_host_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"qt_react_host_host_test" start time: Nov 09 12:03 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 12:03:24.110575 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1109 12:03:24.112102 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000112d0).
+W1109 12:03:24.112138 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+[PASS] inputLifecycleOptOutPreservesExistingDispatch
+W1109 12:03:24.183017 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000007e50).
+W1109 12:03:24.183434 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000259d0).
+W1109 12:03:24.183498 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000009450).
+W1109 12:03:24.253459 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000d090).
+W1109 12:03:24.253995 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200003a6d0).
+W1109 12:03:24.254127 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000011c50).
+[PASS] clientViewportCoordinatesAndContactGuards
+W1109 12:03:24.322657 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300001d710).
+W1109 12:03:24.323005 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000046550).
+W1109 12:03:24.323040 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000018c50).
+[PASS] touchCancelEndsEveryContactAndAllowsIdReuse
+W1109 12:03:24.388396 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000022410).
+W1109 12:03:24.388701 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000066c50).
+W1109 12:03:24.388729 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000020450).
+[PASS] touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact
+I1109 12:03:24.474946 2088792512 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+W1109 12:03:24.480243 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000026850).
+W1109 12:03:24.480610 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200007a8d0).
+W1109 12:03:24.480654 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000027e50).
+[PASS] forgettingTouchTargetCancelsAndClearsResponder
+W1109 12:03:24.561992 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000032e10).
+W1109 12:03:24.562440 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200008d950).
+W1109 12:03:24.562474 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000031a50).
+[PASS] windowDeactivationCancelsTouchStream
+W1109 12:03:24.637705 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000037250).
+W1109 12:03:24.638268 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000a12d0).
+W1109 12:03:24.638303 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000045c50).
+[PASS] mouseCaptureCancellationDoesNotCreateHoverTouches
+W1109 12:03:24.712591 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300003b690).
+W1109 12:03:24.712996 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000b50d0).
+W1109 12:03:24.713030 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400004b850).
+[PASS] mouseReleaseClearsCaptureBeforeNativeListeners
+W1109 12:03:24.794420 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004a650).
+W1109 12:03:24.794785 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000cbed0).
+W1109 12:03:24.794926 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000051450).
+[PASS] decoratedViewTargetsNearestRegisteredAncestor
+W1109 12:03:24.855363 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004ea90).
+W1109 12:03:24.855861 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000e5cd0).
+W1109 12:03:24.855938 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000059a50).
+[PASS] runtimeEvaluatesJavaScript
+W1109 12:03:24.919502 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000512d0).
+W1109 12:03:24.919866 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000f16d0).
+W1109 12:03:24.919895 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005c250).
+[PASS] javaScriptErrorsAreReportedNotSwallowed
+W1109 12:03:24.984581 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000053b10).
+W1109 12:03:24.985160 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000fd250).
+W1109 12:03:24.985232 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005ea50).
+[PASS] evaluateRejectsReentrantJavaScript
+W1109 12:03:25.049808 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005a950).
+W1109 12:03:25.051985 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001006d0).
+W1109 12:03:25.052078 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000061250).
+[PASS] timerCallbacksRunMicrotaskCheckpoints
+[js task error] checkpoint-boom
+W1109 12:03:25.120774 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005d350).
+W1109 12:03:25.121156 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200010c3d0).
+W1109 12:03:25.121192 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000064e50).
+[PASS] throwingMicrotasksAreReportedAndRecover
+[js task error] timer-boom
+W1109 12:03:25.192625 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000060290).
+W1109 12:03:25.193274 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000118550).
+W1109 12:03:25.193351 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000068250).
+[PASS] throwingTimerCallbacksAreReportedAndRecover
+[js task error] hook-boom
+ErrorUtils reporting failed; retaining the host error
+[js task error] original-boom
+W1109 12:03:25.264882 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000063010).
+W1109 12:03:25.265439 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000124550).
+W1109 12:03:25.265547 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006b650).
+[PASS] schedulerErrorsPreserveAndContainJavaScriptHandlers
+W1109 12:03:25.332466 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000066810).
+W1109 12:03:25.333406 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000131150).
+W1109 12:03:25.333475 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006fe50).
+[PASS] schedulerInstallsTheFabricUIManager
+W1109 12:03:25.403775 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000068cd0).
+W1109 12:03:25.404177 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000140750).
+W1109 12:03:25.404212 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000071e50).
+[PASS] surfaceCommitMountsThroughTheDelegate
+W1109 12:03:25.467814 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006c150).
+W1109 12:03:25.468245 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000152a50).
+W1109 12:03:25.468295 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000076450).
+[PASS] secondCommitUpdatesTheSameItem
+W1109 12:03:25.535658 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006f790).
+W1109 12:03:25.536034 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000164ed0).
+W1109 12:03:25.536163 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007a650).
+[PASS] stoppingASurfaceUnmountsItsItems
+W1109 12:03:25.601814 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000072c10).
+W1109 12:03:25.602300 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001771d0).
+W1109 12:03:25.602345 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007e050).
+[PASS] commitToAnUnknownSurfaceIsReported
+W1109 12:03:25.667968 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000084790).
+W1109 12:03:25.670083 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200013e650).
+W1109 12:03:25.670112 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000033050).
+[PASS] componentPredicateAnswersForRegisteredNames
+W1109 12:03:25.750522 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000087350).
+W1109 12:03:25.750948 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200018b450).
+W1109 12:03:25.751219 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000035050).
+[PASS] javaScriptBuildsTheTreeThroughFabricUIManager
+W1109 12:03:25.820004 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300008cc90).
+W1109 12:03:25.820436 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200019f850).
+W1109 12:03:25.820468 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000096850).
+[PASS] hostInstallsBridgelessGlobals
+W1109 12:03:25.886291 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300008f4d0).
+W1109 12:03:25.887248 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001ab3d0).
+W1109 12:03:25.887290 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000099450).
+[PASS] platformConstantsReportCurrentReactNativeVersion
+[PASS] metroProducesABundleForQnx
+W1109 12:03:27.182246 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000091990).
+W1109 12:03:27.182669 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001b6ad0).
+W1109 12:03:27.182721 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400009b850).
+[PASS] metroBundleEvaluatesInHermes
+Running "RNQnxPlayground"
+W1109 12:03:30.434414 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000a98d0).
+W1109 12:03:30.434909 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001f1d50).
+W1109 12:03:30.434959 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400013b250).
+[PASS] metroBundleRendersThroughReact
+[js fatal] deliberate failure
+   at renderThing (App.js:42)
+
+W1109 12:03:30.543720 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000030410).
+W1109 12:03:30.544035 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000000650).
+W1109 12:03:30.544077 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400000b450).
+[PASS] javaScriptErrorsReachTheHost
+Running "RNQnxPlayground"
+W1109 12:03:33.766674 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000006250).
+W1109 12:03:33.767206 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002f53d0).
+W1109 12:03:33.767226 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000065e50).
+[PASS] aSuccessfulRenderReportsNoErrors
+Running "RNQnxPlayground"
+W1109 12:03:36.974540 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000db510).
+W1109 12:03:36.975178 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000226b50).
+W1109 12:03:36.975193 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000148250).
+[PASS] renderedTreeIsPainted
+Running "RNQnxPlayground"
+W1109 12:03:40.320549 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000a3f90).
+W1109 12:03:40.321693 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001a7ad0).
+W1109 12:03:40.321720 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000d4e50).
+[PASS] pointerEventsReachJavaScript
+Running "RNQnxPlayground"
+W1109 12:03:43.784756 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000ed5d0).
+W1109 12:03:43.785843 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200026e9d0).
+W1109 12:03:43.785892 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000365c50).
+[PASS] scrollEventsReachJavaScript
+Running "RNQnxPlayground"
+W1109 12:03:48.407085 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000aa350).
+W1109 12:03:48.407467 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001810d0).
+W1109 12:03:48.407482 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000152250).
+[PASS] wheelEventsFollowQtDirection
+Running "RNQnxFlatList"
+W1109 12:03:53.276476 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000102790).
+W1109 12:03:53.277393 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002d25d0).
+W1109 12:03:53.277410 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140001e3850).
+[PASS] flatListRendersAndVirtualises
+Running "RNQnxSectionList"
+W1109 12:03:57.041414 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300009cc10).
+W1109 12:03:57.042040 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001fbf50).
+W1109 12:03:57.042138 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000259050).
+[PASS] sectionListRenders
+Running "RNQnxTextInput"
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:54:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+W1109 12:03:59.651661 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000566d0).
+W1109 12:03:59.652338 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200014e0d0).
+W1109 12:03:59.652375 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000208250).
+[PASS] textInputMounts
+Running "RNQnxTextInput"
+W1109 12:04:02.336771 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000093750).
+W1109 12:04:02.337378 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000134d50).
+W1109 12:04:02.337421 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000a5850).
+[PASS] textInputPlaceholder
+Running "RNQnxTextInputMultiline"
+W1109 12:04:05.017199 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000a4310).
+W1109 12:04:05.017624 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000133cd0).
+W1109 12:04:05.017668 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000259250).
+[PASS] textInputMultiline
+Running "RNQnxTextEllipsis"
+W1109 12:04:07.602236 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000051490).
+W1109 12:04:07.602780 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200021db50).
+W1109 12:04:07.602852 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000119e50).
+[PASS] textEllipsis
+Running "RNQnxActivityIndicator"
+W1109 12:04:10.087661 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000f8f50).
+W1109 12:04:10.088279 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001420d0).
+W1109 12:04:10.088328 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000306650).
+[PASS] activityIndicatorMounts
+[PASS] switchDefaultsArePainted
+Running "RNQnxSwitch"
+W1109 12:04:12.849556 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300003e090).
+W1109 12:04:12.849925 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200019ad50).
+W1109 12:04:12.849952 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000463a50).
+[PASS] switchToggles
+Running "RNQnxButton"
+W1109 12:04:16.071952 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000d54d0).
+W1109 12:04:16.072476 1992292032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000f76d0).
+W1109 12:04:16.072496 1992292032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140002d6c50).
+[PASS] buttonMounts
+Running "RNQnxSafeAreaView"
+W1109 12:04:18.559793 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000ba650).
+W1109 12:04:18.560385 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002f71d0).
+W1109 12:04:18.560405 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000339050).
+[PASS] safeAreaViewMounts
+Running "RNQnxViewLayout"
+W1109 12:04:21.049116 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000b47d0).
+W1109 12:04:21.049530 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000192ad0).
+W1109 12:04:21.049546 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000476450).
+[PASS] viewLayoutFires
+Running "RNQnxTransform"
+W1109 12:04:23.584976 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000aa510).
+W1109 12:04:23.585464 1855805120 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001afd50).
+W1109 12:04:23.585505 1855805120 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400024e850).
+[PASS] viewTransformApplies
+Running "RNQnxImage"
+W1109 12:04:26.203346 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000b8350).
+W1109 12:04:26.206295 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000119450).
+W1109 12:04:26.206316 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400048b450).
+[PASS] imageLoadEvents
+Running "RNQnxImageDefault"
+W1109 12:04:28.688858 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005ae90).
+W1109 12:04:28.689425 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000214e50).
+W1109 12:04:28.689471 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000429a50).
+[PASS] imageDefaultSourceFires
+Running "RNQnxImageLoading"
+W1109 12:04:31.335328 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000f84d0).
+W1109 12:04:31.335712 1855805120 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200025a450).
+W1109 12:04:31.335731 1855805120 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400044a250).
+[PASS] imageLoadingIndicator
+Running "RNQnxHostStateUpdate"
+W1109 12:04:33.976907 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000d1790).
+W1109 12:04:33.977402 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200018ae50).
+W1109 12:04:33.977458 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000122450).
+[PASS] metroStateUpdateCommitsThroughScheduler
+Running "RNQnxImageGetSize"
+W1109 12:04:36.530536 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000baf10).
+W1109 12:04:36.530952 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200018fdd0).
+W1109 12:04:36.531008 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400039d650).
+[PASS] imageGetSize
+W1109 12:04:37.893049 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000043b90).
+W1109 12:04:37.893612 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000ef2d0).
+W1109 12:04:37.893635 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000548a50).
+[PASS] imageLoaderPromiseContract
+Running "RNQnxImageBackground"
+W1109 12:04:40.662201 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000a91d0).
+W1109 12:04:40.662665 1855805120 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000118cd0).
+W1109 12:04:40.662691 1855805120 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400055e450).
+[PASS] imageBackgroundMounts
+Running "RNQnxImageResolveAsset"
+W1109 12:04:43.344250 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000086010).
+W1109 12:04:43.344625 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001d2b50).
+W1109 12:04:43.344650 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000f4050).
+Running "RNQnxImageResolveAsset"
+W1109 12:04:45.816820 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000bee10).
+W1109 12:04:45.817317 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000e7c50).
+W1109 12:04:45.817364 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140004a9450).
+Running "RNQnxImageResolveAsset"
+W1109 12:04:48.236579 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300009c6d0).
+W1109 12:04:48.236917 2030896832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002de2d0).
+W1109 12:04:48.236931 2030896832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400054e650).
+Running "RNQnxImageResolveAsset"
+W1109 12:04:50.629724 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006aa90).
+W1109 12:04:50.630266 1971091136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000ee6d0).
+W1109 12:04:50.630309 1971091136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000cb450).
+[PASS] imageResolveAssetSource
+Running "RNQnxNativeAnimated"
+W1109 12:04:53.569084 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000b08d0).
+W1109 12:04:53.569638 1918875328 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000216f50).
+W1109 12:04:53.569698 1918875328 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400000c650).
+[PASS] nativeAnimatedOpacity
+Running "RNQnxModal"
+W1109 12:04:56.807260 2088792512 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000f9110).
+W1109 12:04:56.807663 1855805120 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002b0fd0).
+W1109 12:04:56.807698 1855805120 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140002dd250).
+[PASS] modalMounts
+All 57 QtReactHost host tests passed.
+<end of output>
+Test time =  92.92 sec
+----------------------------------------------------------
+Test Passed.
+"qt_react_host_host_test" end time: Nov 09 12:04 EST
+"qt_react_host_host_test" time elapsed: 00:01:32
+----------------------------------------------------------
+
+14/18 Testing: rnqnx_rn_headers_probe
+14/18 Test: rnqnx_rn_headers_probe
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_rn_headers_probe"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_rn_headers_probe" start time: Nov 09 12:04 EST
+Output:
+----------------------------------------------------------
+RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0]
+"rnqnx_rn_headers_probe" end time: Nov 09 12:04 EST
+"rnqnx_rn_headers_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+15/18 Testing: shadow_view_mutation_adapter_host_test
+15/18 Test: shadow_view_mutation_adapter_host_test
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/shadow_view_mutation_adapter_host_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"shadow_view_mutation_adapter_host_test" start time: Nov 09 12:04 EST
+Output:
+----------------------------------------------------------
+[PASS] createInsertMountsAndPositions
+[PASS] insertOrderFollowsMutationIndex
+[PASS] updateAppliesNewFrame
+[PASS] removeThenDeleteUnmountsAndFrees
+[PASS] nestedTransactionBuildsATree
+[PASS] unmappedComponentIsReportedNotSkipped
+[PASS] insertIntoMissingParentIsReported
+All 7 ShadowViewMutationAdapter host tests passed.
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"shadow_view_mutation_adapter_host_test" end time: Nov 09 12:04 EST
+"shadow_view_mutation_adapter_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+16/18 Testing: shadow_tree_mounting_host_test
+16/18 Test: shadow_tree_mounting_host_test
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/shadow_tree_mounting_host_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"shadow_tree_mounting_host_test" start time: Nov 09 12:04 EST
+Output:
+----------------------------------------------------------
+[PASS] fixedSizeViewGetsYogaGeometry
+[PASS] flexChildrenSplitTheRootWidth
+[PASS] paddingOffsetsChildOrigin
+[PASS] secondCommitUpdatesGeometryInPlace
+[PASS] removingAChildUnmountsIt
+All 5 ShadowTree mounting host tests passed.
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Passed.
+"shadow_tree_mounting_host_test" end time: Nov 09 12:04 EST
+"shadow_tree_mounting_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+17/18 Testing: qtquick_mounting_layer_host_test
+17/18 Test: qtquick_mounting_layer_host_test
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/qtquick_mounting_layer_host_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"qtquick_mounting_layer_host_test" start time: Nov 09 12:04 EST
+Output:
+----------------------------------------------------------
+[PASS] rootIsMountedButNotOwned
+[PASS] createLeavesItemUnparented
+[PASS] insertParentsAndOrdersChildren
+[PASS] insertRejectsBadArguments
+[PASS] fabricIndicesExcludeQmlDecorations
+[PASS] modalKeepsLogicalOrderAboveScrolledContent
+[PASS] removeDetachesWithoutDestroying
+[PASS] removeRejectsIndexDisagreement
+[PASS] destroyReleasesTagAndItem
+[PASS] destroyDetachesStillMountedItem
+[PASS] nestedTreeIsTornDownWithTheLayer
+[PASS] updateLayoutAppliesAbsoluteGeometry
+[PASS] unregisteredComponentTypeFails
+[PASS] brokenQmlSourceFails
+[PASS] nonItemTypeFails
+[PASS] duplicateTagFails
+[PASS] reregisteringATypeReplacesIt
+All 17 QtQuickMountingLayer host tests passed.
+<end of output>
+Test time =   0.13 sec
+----------------------------------------------------------
+Test Passed.
+"qtquick_mounting_layer_host_test" end time: Nov 09 12:04 EST
+"qtquick_mounting_layer_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+18/18 Testing: rnqnx_qtquick_host_probe
+18/18 Test: rnqnx_qtquick_host_probe
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_qtquick_host_probe" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_qtquick_host_probe" start time: Nov 09 12:04 EST
+Output:
+----------------------------------------------------------
+RNQNX_QTQUICK_HOST_OK items=1000 create_ms=8.028 update10_ms=0.965 destroy_ms=0.300 platform=offscreen
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_QTQUICK_HOST_OK items=1000]
+"rnqnx_qtquick_host_probe" end time: Nov 09 12:04 EST
+"rnqnx_qtquick_host_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 09 12:04 EST
+
+===== Historical ON full run:33/34; pre-compact minimum-layout failure =====
+Start testing: Nov 09 11:48 EST
+----------------------------------------------------------
+1/34 Testing: rnqnx_g0_cxx20_probe
+1/34 Test: rnqnx_g0_cxx20_probe
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_g0_cxx20_probe"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_g0_cxx20_probe" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+RNQNX_G0_CXX20_OK ranges=12 designated=21 jthread=34
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_G0_CXX20_OK ranges=12 designated=21 (jthread=34|thread=34 jthread=unsupported)]
+"rnqnx_g0_cxx20_probe" end time: Nov 09 11:48 EST
+"rnqnx_g0_cxx20_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/34 Testing: qnx_screen_surface_host_test
+2/34 Test: qnx_screen_surface_host_test
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/qnx_screen_surface_host_test"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"qnx_screen_surface_host_test" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+[PASS] successful initialization uses exact window and buffer setup
+[PASS] invalid initialization sizes are rejected before calling Screen
+[PASS] fill uses documented ARGB token-value list
+[PASS] present uses the buffer acquired for each frame
+[PASS] destroy is ordered, complete, and idempotent
+[PASS] move construction and assignment transfer sole ownership
+[PASS] partial initialization failures release fake resources
+[PASS] runtime failures are explicit and failed fills are not posted
+All QnxScreenSurface host tests passed.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"qnx_screen_surface_host_test" end time: Nov 09 11:48 EST
+"qnx_screen_surface_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/34 Testing: rnqnx_wheel_direction
+3/34 Test: rnqnx_wheel_direction
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_wheel_direction_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_wheel_direction" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+RNQNX_WHEEL_DIRECTION_OK default metadata acceptance lifetime mouse touch flickable
+<end of output>
+Test time =   0.32 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_WHEEL_DIRECTION_OK default metadata acceptance lifetime mouse touch flickable]
+"rnqnx_wheel_direction" end time: Nov 09 11:48 EST
+"rnqnx_wheel_direction" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/34 Testing: rnqnx_hermes_probe
+4/34 Test: rnqnx_hermes_probe
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_hermes_probe"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_hermes_probe" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+RNQNX_HERMES_OK arithmetic es6 async-arrow host-function
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_HERMES_OK arithmetic es6 async-arrow host-function]
+"rnqnx_hermes_probe" end time: Nov 09 11:48 EST
+"rnqnx_hermes_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/34 Testing: rnqnx_desktop_window
+5/34 Test: rnqnx_desktop_window
+Command: "$CHECKOUT/build/linux-gallery-clang/rnqnx_desktop_window_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_desktop_window" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+RNQNX_DESKTOP_WINDOW_OK mouse keyboard popup-blocking resize capability system-frame
+<end of output>
+Test time =   1.26 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_desktop_window" end time: Nov 09 11:48 EST
+"rnqnx_desktop_window" time elapsed: 00:00:01
+----------------------------------------------------------
+
+6/34 Testing: rnqnx_accessibility_action_probe
+6/34 Test: rnqnx_accessibility_action_probe
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_accessibility_action_probe" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_accessibility_action_probe" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+Running "RNQnxAccessibilityActionProbe"
+Running "RNQnxAccessibilityActionProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1109 11:48:43.734018 1458635200 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 3 components out of 6
+W1109 11:48:43.734589 1458635200 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1109 11:48:43.735489 1343182528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000118d0).
+W1109 11:48:43.735523 1343182528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_ACCESSIBILITY_ACTION_OK react activate guards label teardown remount
+<end of output>
+Test time =   2.09 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_accessibility_action_probe" end time: Nov 09 11:48 EST
+"rnqnx_accessibility_action_probe" time elapsed: 00:00:02
+----------------------------------------------------------
+
+7/34 Testing: rnqnx_accessibility_action_native_test
+7/34 Test: rnqnx_accessibility_action_native_test
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_accessibility_action_native_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_accessibility_action_native_test" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+RNQNX_ACCESSIBILITY_ACTION_NATIVE_OK press guards generation invalidate delete
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_accessibility_action_native_test" end time: Nov 09 11:48 EST
+"rnqnx_accessibility_action_native_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+8/34 Testing: rnqnx_accessibility_action_rejects_interception
+8/34 Test: rnqnx_accessibility_action_rejects_interception
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_accessibility_action_probe" "-P" "$CHECKOUT/cmake/../tests/cmake/AccessibilityActionNegative.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_accessibility_action_rejects_interception" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+-- Accessibility action interception rejected at the JavaScript boundary
+<end of output>
+Test time =   3.86 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_accessibility_action_rejects_interception" end time: Nov 09 11:48 EST
+"rnqnx_accessibility_action_rejects_interception" time elapsed: 00:00:03
+----------------------------------------------------------
+
+9/34 Testing: rnqnx_accessibility_action_rejects_registration
+9/34 Test: rnqnx_accessibility_action_rejects_registration
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_accessibility_action_probe" "-P" "$CHECKOUT/cmake/../tests/cmake/AccessibilityActionRegistration.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_accessibility_action_rejects_registration" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+-- Unsupported accessibility action registration rejected explicitly
+<end of output>
+Test time =   1.92 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_accessibility_action_rejects_registration" end time: Nov 09 11:48 EST
+"rnqnx_accessibility_action_rejects_registration" time elapsed: 00:00:01
+----------------------------------------------------------
+
+10/34 Testing: rnqnx_accessibility_view_test
+10/34 Test: rnqnx_accessibility_view_test
+Command: "$CHECKOUT/build/linux-gallery-clang/rnqnx_accessibility_view_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_accessibility_view_test" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+RNQNX_ACCESSIBILITY_VIEW_OK tree identity state update clear reject delete
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_accessibility_view_test" end time: Nov 09 11:48 EST
+"rnqnx_accessibility_view_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+11/34 Testing: rnqnx_text_input_probe
+11/34 Test: rnqnx_text_input_probe
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_text_input_probe" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_text_input_probe" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+Running "RNQnxTextInputProbe"
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:69:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+Running "RNQnxTextInputProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1109 11:48:51.833655 1609359808 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 4 components out of 8
+I1109 11:48:51.834622 1609359808 UIManagerBinding.cpp:150] instanceHandle is null, event of type topSelectionChange will be dropped
+W1109 11:48:51.835511 1609359808 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1109 11:48:51.836311 1493862080 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000112d0).
+W1109 11:48:51.836351 1493862080 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_TEXT_INPUT_OK react key preedit commit utf16 stale selection no-echo focus teardown remount
+<end of output>
+Test time =   2.22 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_text_input_probe" end time: Nov 09 11:48 EST
+"rnqnx_text_input_probe" time elapsed: 00:00:02
+----------------------------------------------------------
+
+12/34 Testing: rnqnx_text_input_bridge_test
+12/34 Test: rnqnx_text_input_bridge_test
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_text_input_bridge_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_text_input_bridge_test" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+qt.qml.context: :69:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+RNQNX_TEXT_INPUT_BRIDGE_OK count stale utf16 no-echo secure-query denial lifecycle
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_text_input_bridge_test" end time: Nov 09 11:48 EST
+"rnqnx_text_input_bridge_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+13/34 Testing: rnqnx_text_input_rejects_interception
+13/34 Test: rnqnx_text_input_rejects_interception
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_text_input_probe" "-P" "$CHECKOUT/cmake/../tests/cmake/TextInputNegative.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_text_input_rejects_interception" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   3.95 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_text_input_rejects_interception" end time: Nov 09 11:48 EST
+"rnqnx_text_input_rejects_interception" time elapsed: 00:00:03
+----------------------------------------------------------
+
+14/34 Testing: rnqnx_input_lifecycle_probe
+14/34 Test: rnqnx_input_lifecycle_probe
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_input_lifecycle_probe" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_input_lifecycle_probe" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 11:48:55.986421 2657505664 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x564096cd5590).
+W1109 11:48:55.987033 2604656320 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x564096c1cb70).
+W1109 11:48:55.987073 2604656320 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x564096cf0b80).
+RNQNX_INPUT_JS_OK events=12 terminal cancel ordering native-payload-parity
+RNQNX_INPUT_LIFECYCLE_OK decorated-hit terminal multi-contact cancel deactivate unmount mouse-reentrant
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_input_lifecycle_probe" end time: Nov 09 11:48 EST
+"rnqnx_input_lifecycle_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+15/34 Testing: rnqnx_input_lifecycle_rejects_interception
+15/34 Test: rnqnx_input_lifecycle_rejects_interception
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE_PATH=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_input_lifecycle_probe" "-P" "$CHECKOUT/cmake/../tests/cmake/InputLifecycleNegative.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_input_lifecycle_rejects_interception" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_INPUT_JS_INTERCEPTION_REJECTED expected missing JS delivery
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_input_lifecycle_rejects_interception" end time: Nov 09 11:48 EST
+"rnqnx_input_lifecycle_rejects_interception" time elapsed: 00:00:00
+----------------------------------------------------------
+
+16/34 Testing: rnqnx_pressable_probe
+16/34 Test: rnqnx_pressable_probe
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_pressable_probe" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_pressable_probe" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+Running "RNQnxPressableProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1109 11:48:58.739638 2839593344 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+Running "RNQnxPressableProbe"
+E1109 11:48:59.251645 2839593344 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 4 components out of 8
+W1109 11:48:59.252297 2839593344 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x560947d14550).
+W1109 11:48:59.252571 2785011392 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x560947c5bb60).
+W1109 11:48:59.252591 2785011392 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x560947d2fb40).
+RNQNX_PRESSABLE_OK tap cancel deactivate disabled unmount remount callbacks=11
+<end of output>
+Test time =   3.18 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_pressable_probe" end time: Nov 09 11:48 EST
+"rnqnx_pressable_probe" time elapsed: 00:00:03
+----------------------------------------------------------
+
+17/34 Testing: rnqnx_pressable_rejects_interception
+17/34 Test: rnqnx_pressable_rejects_interception
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE_PATH=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_pressable_probe" "-P" "$CHECKOUT/cmake/../tests/cmake/PressableNegative.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_pressable_rejects_interception" start time: Nov 09 11:48 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PRESSABLE_INTERCEPTION_REJECTED
+<end of output>
+Test time =   3.61 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_pressable_rejects_interception" end time: Nov 09 11:49 EST
+"rnqnx_pressable_rejects_interception" time elapsed: 00:00:03
+----------------------------------------------------------
+
+18/34 Testing: rnqnx_pressable_rejects_disabled_cancellation
+18/34 Test: rnqnx_pressable_rejects_disabled_cancellation
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE_PATH=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_pressable_probe" "-DCONTROL=removed-target" "-P" "$CHECKOUT/cmake/../tests/cmake/PressableNegative.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_pressable_rejects_disabled_cancellation" start time: Nov 09 11:49 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PRESSABLE_REMOVED_TARGET_CONTROL_REJECTED
+<end of output>
+Test time =   5.02 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_pressable_rejects_disabled_cancellation" end time: Nov 09 11:49 EST
+"rnqnx_pressable_rejects_disabled_cancellation" time elapsed: 00:00:05
+----------------------------------------------------------
+
+19/34 Testing: rnqnx_react_render_host_probe
+19/34 Test: rnqnx_react_render_host_probe
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_react_render_host_probe" "-P" "$CHECKOUT/tests/cmake/ReactRenderProbePositive.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_react_render_host_probe" start time: Nov 09 11:49 EST
+Output:
+----------------------------------------------------------
+Running "RNQnxReactRenderProbe"
+RNQNX_REACT_RENDER_OK platform=host bundled-react initial=160x100/48x24 update=72x24 unmount=empty geometry-only transactions=3
+
+<end of output>
+Test time =   1.63 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_react_render_host_probe" end time: Nov 09 11:49 EST
+"rnqnx_react_render_host_probe" time elapsed: 00:00:01
+----------------------------------------------------------
+
+20/34 Testing: rnqnx_react_render_host_probe_rejects_bad_bundles
+20/34 Test: rnqnx_react_render_host_probe_rejects_bad_bundles
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_react_render_host_probe" "-DWORK_DIR=$CHECKOUT/build/linux-gallery-clang/react-probe-negative" "-P" "$CHECKOUT/tests/cmake/ReactRenderProbeNegative.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_react_render_host_probe_rejects_bad_bundles" start time: Nov 09 11:49 EST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.23 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_react_render_host_probe_rejects_bad_bundles" end time: Nov 09 11:49 EST
+"rnqnx_react_render_host_probe_rejects_bad_bundles" time elapsed: 00:00:00
+----------------------------------------------------------
+
+21/34 Testing: rnqnx_consumer_window_input
+21/34 Test: rnqnx_consumer_window_input
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_consumer_input_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_consumer_window_input" start time: Nov 09 11:49 EST
+Output:
+----------------------------------------------------------
+RNQNX_INPUT_READY lifecycle=1
+Running "RNQnxPlayground"
+RNQNX_SURFACE_READY width=640 height=480
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 11:49:16.556322 1034256832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003a10).
+W1109 11:49:16.557013 912230080 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000112d0).
+W1109 11:49:16.557089 912230080 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003a50).
+RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close scrolled-portal resized native-barrier escape lifecycle=1
+<end of output>
+Test time =   6.85 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close]
+"rnqnx_consumer_window_input" end time: Nov 09 11:49 EST
+"rnqnx_consumer_window_input" time elapsed: 00:00:06
+----------------------------------------------------------
+
+22/34 Testing: rnqnx_consumer_desktop_window_input
+22/34 Test: rnqnx_consumer_desktop_window_input
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_consumer_input_test" "-platform" "offscreen" "--desktop"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_consumer_desktop_window_input" start time: Nov 09 11:49 EST
+Output:
+----------------------------------------------------------
+RNQNX_INPUT_READY lifecycle=1
+Running "RNQnxPlayground"
+RNQNX_SURFACE_READY width=784 height=668
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 11:49:23.306804 1534616000 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004c790).
+W1109 11:49:23.307482 1408616128 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200006ea50).
+W1109 11:49:23.307518 1408616128 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400000fe50).
+RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close scrolled-portal resized native-barrier escape lifecycle=1
+<end of output>
+Test time =   6.75 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close scrolled-portal]
+"rnqnx_consumer_desktop_window_input" end time: Nov 09 11:49 EST
+"rnqnx_consumer_desktop_window_input" time elapsed: 00:00:06
+----------------------------------------------------------
+
+23/34 Testing: rnqnx_consumer_window_rejects_interception
+23/34 Test: rnqnx_consumer_window_rejects_interception
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_consumer_input_test" "-P" "$CHECKOUT/cmake/../tests/cmake/ConsumerWindowInputNegative.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_consumer_window_rejects_interception" start time: Nov 09 11:49 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_CONSUMER_WINDOW_INTERCEPTION_REJECTED
+<end of output>
+Test time =  10.96 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_consumer_window_rejects_interception" end time: Nov 09 11:49 EST
+"rnqnx_consumer_window_rejects_interception" time elapsed: 00:00:10
+----------------------------------------------------------
+
+24/34 Testing: rnqnx_component_gallery
+24/34 Test: rnqnx_component_gallery
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_component_gallery_test" "-DBUNDLE=$CHECKOUT/build/linux-gallery-clang/component-gallery-fixture/app.bundle.js" "-DAPP_ID=org.rnqnx.showcase" "-DAPP_NAME=QNX Components" "-DCOMPONENT_NAME=RNQnxPlayground" "-DDESKTOP=OFF" "-DARTIFACTS=$CHECKOUT/build/linux-gallery-clang/evidence/rnqnx_component_gallery" "-P" "$CHECKOUT/cmake/../tests/cmake/ComponentGallery.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_component_gallery" start time: Nov 09 11:49 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_COMPONENT_GALLERY_OK $CHECKOUT/build/linux-gallery-clang/evidence/rnqnx_component_gallery
+<end of output>
+Test time =  26.15 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_component_gallery" end time: Nov 09 11:50 EST
+"rnqnx_component_gallery" time elapsed: 00:00:26
+----------------------------------------------------------
+
+25/34 Testing: rnqnx_component_gallery_desktop
+25/34 Test: rnqnx_component_gallery_desktop
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_component_gallery_test" "-DBUNDLE=$CHECKOUT/build/linux-gallery-clang/component-gallery-fixture/app.bundle.js" "-DAPP_ID=org.rnqnx.showcase" "-DAPP_NAME=QNX Components" "-DCOMPONENT_NAME=RNQnxPlayground" "-DDESKTOP=ON" "-DARTIFACTS=$CHECKOUT/build/linux-gallery-clang/evidence/rnqnx_component_gallery_desktop" "-P" "$CHECKOUT/cmake/../tests/cmake/ComponentGallery.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_component_gallery_desktop" start time: Nov 09 11:50 EST
+Output:
+----------------------------------------------------------
+CMake Error at $CHECKOUT/tests/cmake/ComponentGallery.cmake:25 (message):
+  Actual component gallery failed: 1
+
+  RNQNX_INPUT_READY lifecycle=1
+
+  Running "RNQnxPlayground"
+
+  RNQNX_SURFACE_READY width=784 height=668
+
+  RNQNX_GALLERY_STEP 0 Component gallery elapsed_ms=530
+
+  RNQNX_GALLERY_STEP 1 React Native components, native Qt Quick pixels
+  elapsed_ms=542
+
+  RNQNX_GALLERY_STEP 2 01-components-initial elapsed_ms=581
+
+  RNQNX_GALLERY_STEP 3 PNG decoded by the image backend elapsed_ms=581
+
+  RNQNX_GALLERY_CLICK Press count: 0 scene=111.367,693.5
+
+  RNQNX_GALLERY_STEP 4 Press count: 0 elapsed_ms=1380
+
+  RNQNX_GALLERY_STEP 5 Press count: 1 elapsed_ms=1608
+
+  RNQNX_GALLERY_STEP 6 Switch OFF elapsed_ms=3741
+
+  RNQNX_GALLERY_CLICK gallery switch on scene=71.5,670.5
+
+  RNQNX_GALLERY_STEP 7 gallery switch on elapsed_ms=3928
+
+  RNQNX_GALLERY_STEP 8 Switch ON elapsed_ms=4078
+
+  RNQNX_GALLERY_CLICK Documents scene=209.867,187.5
+
+  RNQNX_GALLERY_STEP 9 Documents elapsed_ms=4269
+
+  RNQNX_GALLERY_STEP 10 LIST-001 / 1,000 synthetic documents elapsed_ms=5042
+
+  RNQNX_GALLERY_CLICK Document 0001 scene=100.273,322
+
+  RNQNX_GALLERY_STEP 11 Document 0001 elapsed_ms=5655
+
+  RNQNX_GALLERY_STEP 12 Selected: document-0001 elapsed_ms=6331
+
+  RNQNX_GALLERY_STEP 13 02-documents elapsed_ms=6366
+
+  RNQNX_GALLERY_CLICK Sections scene=319.617,187.5
+
+  RNQNX_GALLERY_STEP 14 Sections elapsed_ms=6547
+
+  RNQNX_GALLERY_STEP 15 SectionList elapsed_ms=7301
+
+  RNQNX_GALLERY_STEP 16 Selected: document-0001 elapsed_ms=7840
+
+  RNQNX_GALLERY_STEP 17 Layout and content elapsed_ms=8246
+
+  RNQNX_GALLERY_STEP 18 03-sections elapsed_ms=8940
+
+  RNQNX_GALLERY_CLICK Controls scene=417.914,187.5
+
+  RNQNX_GALLERY_STEP 19 Controls elapsed_ms=9368
+
+  RNQNX_GALLERY_STEP 20 INPUT-001 / controlled inputs elapsed_ms=9756
+
+  RNQNX_GALLERY_STEP 21 Switch ON elapsed_ms=9766
+
+  RNQNX_GALLERY_CLICK Press count: 1 scene=93.3672,466.5
+
+  RNQNX_GALLERY_STEP 22 Press count: 1 elapsed_ms=9957
+
+  RNQNX_GALLERY_STEP 23 Press count: 2 elapsed_ms=10029
+
+  RNQNX_GALLERY_STEP 24 04-controls elapsed_ms=10060
+
+  RNQNX_GALLERY_CLICK Adaptive scene=517.945,187.5
+
+  RNQNX_GALLERY_STEP 25 Adaptive elapsed_ms=10241
+
+  RNQNX_GALLERY_STEP 26 LAYOUT-001 / live window layout elapsed_ms=10533
+
+  RNQNX_GALLERY_STEP 27 Selected document-0001 elapsed_ms=10543
+
+  RNQNX_GALLERY_STEP 28 Inspector elapsed_ms=10552
+
+  RNQNX_GALLERY_STEP 29 05-adaptive elapsed_ms=10583
+
+  RNQNX_GALLERY_CLICK Limits scene=609.969,187.5
+
+  RNQNX_GALLERY_STEP 30 Limits elapsed_ms=10763
+
+  RNQNX_GALLERY_STEP 31 Evidence and unsupported work elapsed_ms=11154
+
+  RNQNX_GALLERY_STEP 32 06-limits elapsed_ms=11190
+
+  RNQNX_GALLERY_CLICK Components scene=86.2422,187.5
+
+  RNQNX_GALLERY_STEP 33 Components elapsed_ms=11371
+
+  RNQNX_GALLERY_STEP 34 React Native components, native Qt Quick pixels
+  elapsed_ms=12164
+
+  RNQNX_GALLERY_STEP 35 Press count: 2 elapsed_ms=12947
+
+  RNQNX_GALLERY_STEP 36 Switch ON elapsed_ms=15239
+
+  RNQNX_GALLERY_CLICK Open modal scene=104.656,681.5
+
+  RNQNX_GALLERY_STEP 37 Open modal elapsed_ms=16342
+
+  RNQNX_GALLERY_STEP 38 React Native Modal elapsed_ms=16542
+
+  RNQNX_GALLERY_STEP 39 Press count remains 2 elapsed_ms=16550
+
+  RNQNX_GALLERY_STEP 40 07-modal elapsed_ms=16580
+
+  RNQNX_GALLERY_CLICK Documents scene=209.867,187.5
+
+  RNQNX_GALLERY_STEP 41 Documents elapsed_ms=16783
+
+  RNQNX_GALLERY_STEP 42 React Native Modal elapsed_ms=16793
+
+  RNQNX_GALLERY_STEP 43 LIST-001 / 1,000 synthetic documents elapsed_ms=17043
+
+  RNQNX_GALLERY_CLICK Close modal scene=207.023,457.5
+
+  RNQNX_GALLERY_STEP 44 Close modal elapsed_ms=17243
+
+  RNQNX_GALLERY_STEP 45 React Native Modal elapsed_ms=17542
+
+  RNQNX_GALLERY_CLICK Open modal scene=104.656,681.5
+
+  RNQNX_GALLERY_STEP 46 Open modal elapsed_ms=17742
+
+  RNQNX_GALLERY_STEP 47 React Native Modal elapsed_ms=18150
+
+  RNQNX_GALLERY_STEP 48 gallery Modal Escape elapsed_ms=18161
+
+  RNQNX_GALLERY_STEP 49 React Native Modal elapsed_ms=18421
+
+  RNQNX_GALLERY_STEP 50 Switch ON elapsed_ms=18431
+
+  RNQNX_GALLERY_CLICK Press count: 2 scene=111.367,261.5
+
+  RNQNX_GALLERY_STEP 51 Press count: 2 elapsed_ms=19904
+
+  RNQNX_GALLERY_STEP 52 Press count: 3 elapsed_ms=20042
+
+  RNQNX_GALLERY_STEP 53 08-components-retained-state elapsed_ms=20078
+
+  RNQNX_GALLERY_CLICK Adaptive scene=517.945,187.5
+
+  RNQNX_GALLERY_STEP 54 Adaptive elapsed_ms=20260
+
+  RNQNX_GALLERY_STEP 55 LAYOUT-001 / live window layout elapsed_ms=20614
+
+  RNQNX_GALLERY_MINIMUM window=480x360 client=784x668
+
+  RNQNX_GALLERY_STEP 56 native minimum window size elapsed_ms=20623
+
+  RNQNX_GALLERY_STEP 57 LAYOUT-001 / live window layout elapsed_ms=20725
+
+
+
+  WARNING: Logging before InitGoogleLogging() is written to STDERR
+
+  I1109 11:50:08.539852 3811107264 UIManagerBinding.cpp:150] instanceHandle
+  is null, event of type topScroll will be dropped
+
+  RNQNX_GALLERY_SMOKE_FAIL step=58 reason=could not reach/complete: Inspector
+
+  W1109 11:50:34.321941 3811107264 Scheduler.cpp:181] Scheduler::~Scheduler()
+  was called (address: 0x51300004c950).
+
+  W1109 11:50:34.325995 3678414528 UIManagerBinding.cpp:66]
+  UIManagerBinding::~UIManagerBinding() was called (address: 0x51200006eed0).
+
+  W1109 11:50:34.326035 3678414528 UIManager.cpp:57] UIManager::~UIManager()
+  was called (address: 0x514000020250).
+
+
+
+<end of output>
+Test time =  34.32 sec
+----------------------------------------------------------
+Test Failed.
+"rnqnx_component_gallery_desktop" end time: Nov 09 11:50 EST
+"rnqnx_component_gallery_desktop" time elapsed: 00:00:34
+----------------------------------------------------------
+
+26/34 Testing: rnqnx_playground_screenshot
+26/34 Test: rnqnx_playground_screenshot
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_playground_host" "-DBUNDLE=$CHECKOUT/build/linux-gallery-clang/rnqnx-playground.bundle.js" "-DWORK_DIR=$CHECKOUT/build/linux-gallery-clang/playground-positive" "-P" "$CHECKOUT/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_playground_screenshot" start time: Nov 09 11:50 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_SCREENSHOT_ARTIFACT_OK
+<end of output>
+Test time =   2.46 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_screenshot" end time: Nov 09 11:50 EST
+"rnqnx_playground_screenshot" time elapsed: 00:00:02
+----------------------------------------------------------
+
+27/34 Testing: rnqnx_playground_rejects_start_failure
+27/34 Test: rnqnx_playground_rejects_start_failure
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_playground_host" "-DBUNDLE=$CHECKOUT/tests/fixtures/runtime-baseline/start-failure.js" "-DWORK_DIR=$CHECKOUT/build/linux-gallery-clang/playground-start-failure" "-DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_START_FAILURE" "-P" "$CHECKOUT/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_playground_rejects_start_failure" start time: Nov 09 11:50 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_START_FAILURE
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_rejects_start_failure" end time: Nov 09 11:50 EST
+"rnqnx_playground_rejects_start_failure" time elapsed: 00:00:00
+----------------------------------------------------------
+
+28/34 Testing: rnqnx_playground_rejects_stop_failure
+28/34 Test: rnqnx_playground_rejects_stop_failure
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_playground_host" "-DBUNDLE=$CHECKOUT/tests/fixtures/runtime-baseline/stop-failure.js" "-DWORK_DIR=$CHECKOUT/build/linux-gallery-clang/playground-stop-failure" "-DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_STOP_FAILURE" "-P" "$CHECKOUT/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_playground_rejects_stop_failure" start time: Nov 09 11:50 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_STOP_FAILURE
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_rejects_stop_failure" end time: Nov 09 11:50 EST
+"rnqnx_playground_rejects_stop_failure" time elapsed: 00:00:00
+----------------------------------------------------------
+
+29/34 Testing: qt_react_host_host_test
+29/34 Test: qt_react_host_host_test
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/qt_react_host_host_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"qt_react_host_host_test" start time: Nov 09 11:50 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 11:50:37.634372 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1109 11:50:37.634809 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000112d0).
+W1109 11:50:37.634857 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+[PASS] inputLifecycleOptOutPreservesExistingDispatch
+W1109 11:50:37.712904 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000007e50).
+W1109 11:50:37.713387 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000025b50).
+W1109 11:50:37.713425 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000009450).
+W1109 11:50:37.789964 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000d090).
+W1109 11:50:37.790350 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200003a6d0).
+W1109 11:50:37.790378 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000011c50).
+[PASS] clientViewportCoordinatesAndContactGuards
+W1109 11:50:37.867911 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300001d710).
+W1109 11:50:37.868287 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000466d0).
+W1109 11:50:37.868323 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000018c50).
+[PASS] touchCancelEndsEveryContactAndAllowsIdReuse
+W1109 11:50:37.944519 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000022410).
+W1109 11:50:37.944864 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000066c50).
+W1109 11:50:37.944898 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000020450).
+[PASS] touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact
+I1109 11:50:38.016343 1750544832 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+W1109 11:50:38.019814 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000026850).
+W1109 11:50:38.020202 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200007a750).
+W1109 11:50:38.020236 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000027e50).
+[PASS] forgettingTouchTargetCancelsAndClearsResponder
+W1109 11:50:38.077819 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000032e10).
+W1109 11:50:38.078240 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200008dad0).
+W1109 11:50:38.078274 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000031a50).
+[PASS] windowDeactivationCancelsTouchStream
+W1109 11:50:38.135915 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000037250).
+W1109 11:50:38.136270 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000a12d0).
+W1109 11:50:38.136310 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000045c50).
+[PASS] mouseCaptureCancellationDoesNotCreateHoverTouches
+W1109 11:50:38.195156 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300003b690).
+W1109 11:50:38.195444 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000badd0).
+W1109 11:50:38.195477 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400004b850).
+[PASS] mouseReleaseClearsCaptureBeforeNativeListeners
+W1109 11:50:38.269619 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004a650).
+W1109 11:50:38.270030 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000d2350).
+W1109 11:50:38.270128 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000051450).
+[PASS] decoratedViewTargetsNearestRegisteredAncestor
+W1109 11:50:38.333388 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004ea90).
+W1109 11:50:38.334012 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000e5cd0).
+W1109 11:50:38.334112 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000059a50).
+[PASS] runtimeEvaluatesJavaScript
+W1109 11:50:38.395944 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000512d0).
+W1109 11:50:38.396443 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000f16d0).
+W1109 11:50:38.396497 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005c250).
+[PASS] javaScriptErrorsAreReportedNotSwallowed
+W1109 11:50:38.450141 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000053b10).
+W1109 11:50:38.450484 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000fd250).
+W1109 11:50:38.450523 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005ea50).
+[PASS] evaluateRejectsReentrantJavaScript
+W1109 11:50:38.508232 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005a950).
+W1109 11:50:38.508579 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001009d0).
+W1109 11:50:38.508618 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000061250).
+[PASS] timerCallbacksRunMicrotaskCheckpoints
+[js task error] checkpoint-boom
+W1109 11:50:38.564002 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005d350).
+W1109 11:50:38.564333 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200010c6d0).
+W1109 11:50:38.564366 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000064e50).
+[PASS] throwingMicrotasksAreReportedAndRecover
+[js task error] timer-boom
+W1109 11:50:38.616348 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000060290).
+W1109 11:50:38.616609 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000118850).
+W1109 11:50:38.616737 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000068250).
+[PASS] throwingTimerCallbacksAreReportedAndRecover
+[js task error] hook-boom
+ErrorUtils reporting failed; retaining the host error
+[js task error] original-boom
+W1109 11:50:38.673161 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000063010).
+W1109 11:50:38.673599 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000124850).
+W1109 11:50:38.673640 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006b650).
+[PASS] schedulerErrorsPreserveAndContainJavaScriptHandlers
+W1109 11:50:38.721580 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000066810).
+W1109 11:50:38.721988 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000131450).
+W1109 11:50:38.722023 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006fe50).
+[PASS] schedulerInstallsTheFabricUIManager
+W1109 11:50:38.779915 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000068cd0).
+W1109 11:50:38.780268 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000140a50).
+W1109 11:50:38.780306 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000071e50).
+[PASS] surfaceCommitMountsThroughTheDelegate
+W1109 11:50:38.833205 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006c150).
+W1109 11:50:38.833557 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000152bd0).
+W1109 11:50:38.833595 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000076450).
+[PASS] secondCommitUpdatesTheSameItem
+W1109 11:50:38.884461 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006f790).
+W1109 11:50:38.884835 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000164ed0).
+W1109 11:50:38.884868 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007a650).
+[PASS] stoppingASurfaceUnmountsItsItems
+W1109 11:50:38.932471 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000072c10).
+W1109 11:50:38.932796 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000177050).
+W1109 11:50:38.932832 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007e050).
+[PASS] commitToAnUnknownSurfaceIsReported
+W1109 11:50:38.979483 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000084790).
+W1109 11:50:38.979832 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001801d0).
+W1109 11:50:38.979863 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000033050).
+[PASS] componentPredicateAnswersForRegisteredNames
+W1109 11:50:39.039515 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000087350).
+W1109 11:50:39.039790 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200018b750).
+W1109 11:50:39.039825 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000035050).
+[PASS] javaScriptBuildsTheTreeThroughFabricUIManager
+W1109 11:50:39.099722 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300008cc90).
+W1109 11:50:39.100122 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200019f9d0).
+W1109 11:50:39.100147 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000096a50).
+[PASS] hostInstallsBridgelessGlobals
+W1109 11:50:39.160516 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300008f4d0).
+W1109 11:50:39.160818 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001ab550).
+W1109 11:50:39.160856 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000099650).
+[PASS] platformConstantsReportCurrentReactNativeVersion
+[PASS] metroProducesABundleForQnx
+W1109 11:50:40.261221 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000091990).
+W1109 11:50:40.261678 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001b6c50).
+W1109 11:50:40.261711 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400009ba50).
+[PASS] metroBundleEvaluatesInHermes
+Running "RNQnxPlayground"
+W1109 11:50:43.026715 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000a98d0).
+W1109 11:50:43.027138 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001f2050).
+W1109 11:50:43.027181 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400013b450).
+[PASS] metroBundleRendersThroughReact
+[js fatal] deliberate failure
+   at renderThing (App.js:42)
+
+W1109 11:50:43.114614 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000030410).
+W1109 11:50:43.114943 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000004d0).
+W1109 11:50:43.114964 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400000b450).
+[PASS] javaScriptErrorsReachTheHost
+Running "RNQnxPlayground"
+W1109 11:50:45.986495 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000006250).
+W1109 11:50:45.986848 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002f62d0).
+W1109 11:50:45.986871 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000065e50).
+[PASS] aSuccessfulRenderReportsNoErrors
+Running "RNQnxPlayground"
+W1109 11:50:48.981949 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000da550).
+W1109 11:50:48.982477 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000224d50).
+W1109 11:50:48.982491 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400020a850).
+[PASS] renderedTreeIsPainted
+Running "RNQnxPlayground"
+W1109 11:50:51.695969 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000058d50).
+W1109 11:50:51.696375 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002446d0).
+W1109 11:50:51.696391 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000d9450).
+[PASS] pointerEventsReachJavaScript
+Running "RNQnxPlayground"
+W1109 11:50:54.608127 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000ef710).
+W1109 11:50:54.608484 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200026f8d0).
+W1109 11:50:54.608511 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000364e50).
+[PASS] scrollEventsReachJavaScript
+Running "RNQnxPlayground"
+W1109 11:50:58.597837 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000463d0).
+W1109 11:50:58.598273 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001b7cd0).
+W1109 11:50:58.598287 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400050b450).
+[PASS] wheelEventsFollowQtDirection
+Running "RNQnxFlatList"
+W1109 11:51:02.649255 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300010df50).
+W1109 11:51:02.650759 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002dd550).
+W1109 11:51:02.650785 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000059850).
+[PASS] flatListRendersAndVirtualises
+Running "RNQnxSectionList"
+W1109 11:51:05.776414 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000051f10).
+W1109 11:51:05.776880 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000227750).
+W1109 11:51:05.776928 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140003d3a50).
+[PASS] sectionListRenders
+Running "RNQnxTextInput"
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:69:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+W1109 11:51:08.203089 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000007050).
+W1109 11:51:08.203589 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001786d0).
+W1109 11:51:08.203631 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000235a50).
+[PASS] textInputMounts
+Running "RNQnxTextInput"
+W1109 11:51:10.545780 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300008b090).
+W1109 11:51:10.546191 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200025a8d0).
+W1109 11:51:10.546226 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400015d050).
+[PASS] textInputPlaceholder
+Running "RNQnxTextInputMultiline"
+W1109 11:51:12.682996 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300012c5d0).
+W1109 11:51:12.683537 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002a07d0).
+W1109 11:51:12.683598 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000b1650).
+[PASS] textInputMultiline
+Running "RNQnxTextEllipsis"
+W1109 11:51:15.057214 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000f30d0).
+W1109 11:51:15.057855 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200024d250).
+W1109 11:51:15.057870 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000062250).
+[PASS] textEllipsis
+Running "RNQnxActivityIndicator"
+W1109 11:51:17.483556 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000122a10).
+W1109 11:51:17.483963 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002746d0).
+W1109 11:51:17.483986 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400037be50).
+[PASS] activityIndicatorMounts
+[PASS] switchDefaultsArePainted
+Running "RNQnxSwitch"
+W1109 11:51:20.147575 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006ba50).
+W1109 11:51:20.147964 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002b72d0).
+W1109 11:51:20.148011 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000126250).
+[PASS] switchToggles
+Running "RNQnxButton"
+W1109 11:51:22.986266 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000077210).
+W1109 11:51:22.986655 1652553408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000176ed0).
+W1109 11:51:22.986677 1652553408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000df650).
+[PASS] buttonMounts
+Running "RNQnxSafeAreaView"
+W1109 11:51:25.238791 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000108610).
+W1109 11:51:25.239321 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001375d0).
+W1109 11:51:25.239344 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000158250).
+[PASS] safeAreaViewMounts
+Running "RNQnxViewLayout"
+W1109 11:51:27.407580 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000054910).
+W1109 11:51:27.407904 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002e9550).
+W1109 11:51:27.407920 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140001e8c50).
+[PASS] viewLayoutFires
+Running "RNQnxTransform"
+W1109 11:51:29.719244 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000a0790).
+W1109 11:51:29.719730 1508701888 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001d2850).
+W1109 11:51:29.719767 1508701888 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140004dcc50).
+[PASS] viewTransformApplies
+Running "RNQnxImage"
+W1109 11:51:32.160040 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002e9d0).
+W1109 11:51:32.160384 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000134d50).
+W1109 11:51:32.160399 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000408850).
+[PASS] imageLoadEvents
+Running "RNQnxImageDefault"
+W1109 11:51:34.503683 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000127e10).
+W1109 11:51:34.504308 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002599d0).
+W1109 11:51:34.504356 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000ed050).
+[PASS] imageDefaultSourceFires
+Running "RNQnxImageLoading"
+W1109 11:51:37.507314 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000e5290).
+W1109 11:51:37.507722 1508701888 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200026ecd0).
+W1109 11:51:37.507752 1508701888 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004250).
+[PASS] imageLoadingIndicator
+Running "RNQnxHostStateUpdate"
+W1109 11:51:40.392620 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000ee3d0).
+W1109 11:51:40.393107 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200029cd50).
+W1109 11:51:40.393147 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000269250).
+[PASS] metroStateUpdateCommitsThroughScheduler
+Running "RNQnxImageGetSize"
+W1109 11:51:42.613142 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000bc410).
+W1109 11:51:42.613626 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200017e6d0).
+W1109 11:51:42.613667 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140003ab050).
+[PASS] imageGetSize
+W1109 11:51:43.873155 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000085590).
+W1109 11:51:43.873607 1508701888 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000f01d0).
+W1109 11:51:43.873636 1508701888 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000150650).
+[PASS] imageLoaderPromiseContract
+Running "RNQnxImageBackground"
+W1109 11:51:46.416347 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000121510).
+W1109 11:51:46.416712 1691158208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200027c1d0).
+W1109 11:51:46.416733 1691158208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140002baa50).
+[PASS] imageBackgroundMounts
+Running "RNQnxImageResolveAsset"
+W1109 11:51:48.682446 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000100b90).
+W1109 11:51:48.682915 1508701888 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002839d0).
+W1109 11:51:48.682960 1508701888 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140002da650).
+Running "RNQnxImageResolveAsset"
+W1109 11:51:50.616384 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000077c90).
+W1109 11:51:50.617097 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200028d2d0).
+W1109 11:51:50.617151 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140004c8050).
+Running "RNQnxImageResolveAsset"
+W1109 11:51:52.886386 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000122bd0).
+W1109 11:51:52.886765 1508701888 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002953d0).
+W1109 11:51:52.886787 1508701888 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140004fbe50).
+Running "RNQnxImageResolveAsset"
+W1109 11:51:55.120399 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000bde50).
+W1109 11:51:55.120931 1631352512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000829d0).
+W1109 11:51:55.120954 1631352512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400052a050).
+[PASS] imageResolveAssetSource
+Running "RNQnxNativeAnimated"
+W1109 11:51:57.706794 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000059450).
+W1109 11:51:57.708305 1508701888 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000198f50).
+W1109 11:51:57.708374 1508701888 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400031b850).
+[PASS] nativeAnimatedOpacity
+Running "RNQnxModal"
+W1109 11:52:00.388651 1750544832 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000c6190).
+W1109 11:52:00.389170 1580164800 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002200d0).
+W1109 11:52:00.389273 1580164800 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140002d2850).
+[PASS] modalMounts
+All 57 QtReactHost host tests passed.
+<end of output>
+Test time =  83.05 sec
+----------------------------------------------------------
+Test Passed.
+"qt_react_host_host_test" end time: Nov 09 11:52 EST
+"qt_react_host_host_test" time elapsed: 00:01:23
+----------------------------------------------------------
+
+30/34 Testing: rnqnx_rn_headers_probe
+30/34 Test: rnqnx_rn_headers_probe
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_rn_headers_probe"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_rn_headers_probe" start time: Nov 09 11:52 EST
+Output:
+----------------------------------------------------------
+RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0]
+"rnqnx_rn_headers_probe" end time: Nov 09 11:52 EST
+"rnqnx_rn_headers_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+31/34 Testing: shadow_view_mutation_adapter_host_test
+31/34 Test: shadow_view_mutation_adapter_host_test
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/shadow_view_mutation_adapter_host_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"shadow_view_mutation_adapter_host_test" start time: Nov 09 11:52 EST
+Output:
+----------------------------------------------------------
+[PASS] createInsertMountsAndPositions
+[PASS] insertOrderFollowsMutationIndex
+[PASS] updateAppliesNewFrame
+[PASS] removeThenDeleteUnmountsAndFrees
+[PASS] nestedTransactionBuildsATree
+[PASS] unmappedComponentIsReportedNotSkipped
+[PASS] insertIntoMissingParentIsReported
+All 7 ShadowViewMutationAdapter host tests passed.
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"shadow_view_mutation_adapter_host_test" end time: Nov 09 11:52 EST
+"shadow_view_mutation_adapter_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+32/34 Testing: shadow_tree_mounting_host_test
+32/34 Test: shadow_tree_mounting_host_test
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/shadow_tree_mounting_host_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"shadow_tree_mounting_host_test" start time: Nov 09 11:52 EST
+Output:
+----------------------------------------------------------
+[PASS] fixedSizeViewGetsYogaGeometry
+[PASS] flexChildrenSplitTheRootWidth
+[PASS] paddingOffsetsChildOrigin
+[PASS] secondCommitUpdatesGeometryInPlace
+[PASS] removingAChildUnmountsIt
+All 5 ShadowTree mounting host tests passed.
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"shadow_tree_mounting_host_test" end time: Nov 09 11:52 EST
+"shadow_tree_mounting_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+33/34 Testing: qtquick_mounting_layer_host_test
+33/34 Test: qtquick_mounting_layer_host_test
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/qtquick_mounting_layer_host_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"qtquick_mounting_layer_host_test" start time: Nov 09 11:52 EST
+Output:
+----------------------------------------------------------
+[PASS] rootIsMountedButNotOwned
+[PASS] createLeavesItemUnparented
+[PASS] insertParentsAndOrdersChildren
+[PASS] insertRejectsBadArguments
+[PASS] fabricIndicesExcludeQmlDecorations
+[PASS] modalKeepsLogicalOrderAboveScrolledContent
+[PASS] removeDetachesWithoutDestroying
+[PASS] removeRejectsIndexDisagreement
+[PASS] destroyReleasesTagAndItem
+[PASS] destroyDetachesStillMountedItem
+[PASS] nestedTreeIsTornDownWithTheLayer
+[PASS] updateLayoutAppliesAbsoluteGeometry
+[PASS] unregisteredComponentTypeFails
+[PASS] brokenQmlSourceFails
+[PASS] nonItemTypeFails
+[PASS] duplicateTagFails
+[PASS] reregisteringATypeReplacesIt
+All 17 QtQuickMountingLayer host tests passed.
+<end of output>
+Test time =   0.13 sec
+----------------------------------------------------------
+Test Passed.
+"qtquick_mounting_layer_host_test" end time: Nov 09 11:52 EST
+"qtquick_mounting_layer_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+34/34 Testing: rnqnx_qtquick_host_probe
+34/34 Test: rnqnx_qtquick_host_probe
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_qtquick_host_probe" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_qtquick_host_probe" start time: Nov 09 11:52 EST
+Output:
+----------------------------------------------------------
+RNQNX_QTQUICK_HOST_OK items=1000 create_ms=7.686 update10_ms=0.577 destroy_ms=0.482 platform=offscreen
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_QTQUICK_HOST_OK items=1000]
+"rnqnx_qtquick_host_probe" end time: Nov 09 11:52 EST
+"rnqnx_qtquick_host_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 09 11:52 EST
+
+===== Final ON gallery rerun:2/2, after compact layout repair =====
+Start testing: Nov 09 11:58 EST
+----------------------------------------------------------
+24/34 Testing: rnqnx_component_gallery
+24/34 Test: rnqnx_component_gallery
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_component_gallery_test" "-DBUNDLE=$CHECKOUT/build/linux-gallery-clang/component-gallery-fixture/app.bundle.js" "-DIMAGE=$CHECKOUT/build/linux-gallery-clang/component-gallery-fixture/assets/assets/icon.png" "-DAPP_ID=org.rnqnx.showcase" "-DAPP_NAME=QNX Components" "-DCOMPONENT_NAME=RNQnxPlayground" "-DDESKTOP=OFF" "-DARTIFACTS=$CHECKOUT/build/linux-gallery-clang/evidence/rnqnx_component_gallery" "-P" "$CHECKOUT/cmake/../tests/cmake/ComponentGallery.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_component_gallery" start time: Nov 09 11:58 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_COMPONENT_GALLERY_OK $CHECKOUT/build/linux-gallery-clang/evidence/rnqnx_component_gallery
+<end of output>
+Test time =  26.61 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_component_gallery" end time: Nov 09 11:59 EST
+"rnqnx_component_gallery" time elapsed: 00:00:26
+----------------------------------------------------------
+
+25/34 Testing: rnqnx_component_gallery_desktop
+25/34 Test: rnqnx_component_gallery_desktop
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_component_gallery_test" "-DBUNDLE=$CHECKOUT/build/linux-gallery-clang/component-gallery-fixture/app.bundle.js" "-DIMAGE=$CHECKOUT/build/linux-gallery-clang/component-gallery-fixture/assets/assets/icon.png" "-DAPP_ID=org.rnqnx.showcase" "-DAPP_NAME=QNX Components" "-DCOMPONENT_NAME=RNQnxPlayground" "-DDESKTOP=ON" "-DARTIFACTS=$CHECKOUT/build/linux-gallery-clang/evidence/rnqnx_component_gallery_desktop" "-P" "$CHECKOUT/cmake/../tests/cmake/ComponentGallery.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_component_gallery_desktop" start time: Nov 09 11:59 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_COMPONENT_GALLERY_OK $CHECKOUT/build/linux-gallery-clang/evidence/rnqnx_component_gallery_desktop
+<end of output>
+Test time =  26.71 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_component_gallery_desktop" end time: Nov 09 11:59 EST
+"rnqnx_component_gallery_desktop" time elapsed: 00:00:26
+----------------------------------------------------------
+
+End testing: Nov 09 11:59 EST
+
+===== Final desktop-only configuration:3/3 selected cases =====
+Start testing: Nov 09 12:06 EST
+----------------------------------------------------------
+5/21 Testing: rnqnx_desktop_window
+5/21 Test: rnqnx_desktop_window
+Command: "$CHECKOUT/build/linux-gallery-clang/rnqnx_desktop_window_test" "-platform" "offscreen"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_desktop_window" start time: Nov 09 12:06 EST
+Output:
+----------------------------------------------------------
+RNQNX_DESKTOP_WINDOW_OK mouse keyboard popup-blocking resize capability system-frame
+<end of output>
+Test time =   1.31 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_desktop_window" end time: Nov 09 12:06 EST
+"rnqnx_desktop_window" time elapsed: 00:00:01
+----------------------------------------------------------
+
+9/21 Testing: rnqnx_consumer_desktop_window_input
+9/21 Test: rnqnx_consumer_desktop_window_input
+Command: "$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_consumer_input_test" "-platform" "offscreen" "--desktop"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_consumer_desktop_window_input" start time: Nov 09 12:06 EST
+Output:
+----------------------------------------------------------
+RNQNX_INPUT_READY lifecycle=0
+Running "RNQnxPlayground"
+RNQNX_SURFACE_READY width=784 height=668
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1109 12:06:37.199878 1988555200 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004c790).
+W1109 12:06:37.200881 1862268608 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200006ea50).
+W1109 12:06:37.200927 1862268608 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400000fe50).
+RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close scrolled-portal resized native-barrier escape lifecycle=0
+<end of output>
+Test time =   7.87 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_CONSUMER_INPUT_OK window padding text repeat disabled tab modal after-close scrolled-portal]
+"rnqnx_consumer_desktop_window_input" end time: Nov 09 12:06 EST
+"rnqnx_consumer_desktop_window_input" time elapsed: 00:00:07
+----------------------------------------------------------
+
+12/21 Testing: rnqnx_component_gallery_desktop
+12/21 Test: rnqnx_component_gallery_desktop
+Command: "$SESSION/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=$CHECKOUT/build/linux-gallery-clang/bin/rnqnx_component_gallery_test" "-DBUNDLE=$CHECKOUT/build/linux-gallery-clang/component-gallery-fixture/app.bundle.js" "-DIMAGE=$CHECKOUT/build/linux-gallery-clang/component-gallery-fixture/assets/assets/icon.png" "-DAPP_ID=org.rnqnx.showcase" "-DAPP_NAME=QNX Components" "-DCOMPONENT_NAME=RNQnxPlayground" "-DDESKTOP=ON" "-DARTIFACTS=$CHECKOUT/build/linux-gallery-clang/evidence/rnqnx_component_gallery_desktop" "-P" "$CHECKOUT/cmake/../tests/cmake/ComponentGallery.cmake"
+Directory: $CHECKOUT/build/linux-gallery-clang
+"rnqnx_component_gallery_desktop" start time: Nov 09 12:06 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_COMPONENT_GALLERY_OK $CHECKOUT/build/linux-gallery-clang/evidence/rnqnx_component_gallery_desktop
+<end of output>
+Test time =  29.87 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_component_gallery_desktop" end time: Nov 09 12:07 EST
+"rnqnx_component_gallery_desktop" time elapsed: 00:00:29
+----------------------------------------------------------
+
+End testing: Nov 09 12:07 EST

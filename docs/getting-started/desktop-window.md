@@ -12,6 +12,12 @@ executable and the matching Qt Quick Controls Basic runtime plugins. Replacing
 only the JavaScript or Hermes bytecode cannot add this frame or repair the
 native input dispatcher.
 
+Baseline React pointer delivery works with the input lifecycle experiment OFF.
+Enabling the desktop frame does not require enabling that experiment or the
+text/accessibility experiments. The ordinary window, all-feature configuration,
+and desktop frame with baseline input have separate
+[host test receipts and screenshots](../evidence/gallery-desktop-host-2026-11-09.md).
+
 ## Build and preview
 
 With the repository's frozen dependencies and documented host Qt prerequisites:
