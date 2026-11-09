@@ -8,6 +8,7 @@
 #include <QQuickItem>
 #include <QTouchEvent>
 
+#include <algorithm>
 #include <utility>
 
 namespace rnqnx::fabric {
@@ -112,19 +113,28 @@ int QtTouchDispatcher::dispatchedCount() const {
   return dispatchedCount_;
 }
 
+bool QtTouchDispatcher::acceptsNewContact(const QPointF& windowPoint) const {
+  return rootItem_.isVisible() && rootItem_.isEnabled() &&
+      rootItem_.contains(rootItem_.mapFromScene(windowPoint));
+}
+
 Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
-  // Walk down from the root taking the last (topmost) child that contains the
-  // point, which matches Qt's own stacking order.
+  if (!acceptsNewContact(windowPoint)) return -1;
+  // Stable z ordering preserves child stacking order for equal z values.
+  // This also excludes desktop chrome outside the surface client viewport.
   const QQuickItem* target = nullptr;
   const QQuickItem* current = &rootItem_;
 
   while (true) {
     const QQuickItem* next = nullptr;
-    const QList<QQuickItem*> children = current->childItems();
+    QList<QQuickItem*> children = current->childItems();
+    std::stable_sort(children.begin(), children.end(), [](const auto* left, const auto* right) {
+      return left->z() < right->z();
+    });
     for (auto iterator = children.crbegin(); iterator != children.crend();
          ++iterator) {
       QQuickItem* child = *iterator;
-      if (!child->isVisible()) {
+      if (!child->isVisible() || !child->isEnabled()) {
         continue;
       }
       const QPointF local = child->mapFromScene(windowPoint);
@@ -145,8 +155,9 @@ Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
     return -1;
   }
 
-  // Reverse-map the item to its tag. The registry is small — one entry per
-  // mounted view — and this runs once per pointer event.
+  // QML-owned background/border children have no Fabric tag. Walk to the
+  // nearest mounted ancestor for baseline input as well as lifecycle mode.
+  // The registry is small — one entry per mounted view.
   for (const QQuickItem* candidate = target; candidate != &rootItem_;
        candidate = candidate->parentItem()) {
     if (candidate == nullptr) {
@@ -157,9 +168,6 @@ Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
       if (layer_.itemForTag(iterator.key()) == candidate) {
         return iterator.key();
       }
-    }
-    if (!inputLifecycleEnabled_) {
-      break;
     }
   }
   return -1;
@@ -226,6 +234,11 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
         static_cast<double>(mouseEvent->timestamp()) / 1000.0;
 
     if (type == QEvent::MouseButtonPress) {
+      // A responder may retain an existing gesture outside the viewport, but
+      // it must never claim a new desktop-chrome or blocked-popup contact.
+      if (!acceptsNewContact(windowPoint)) {
+        return QObject::eventFilter(watched, event);
+      }
       if (inputLifecycleEnabled_ &&
           (mouseEvent->button() != Qt::LeftButton || mouseTouch_)) {
         return QObject::eventFilter(watched, event);
@@ -260,10 +273,13 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
     Touch touch;
     touch.identifier = 0;
     touch.target = activeTag_;
+    const QPointF pagePoint = rootItem_.mapFromScene(windowPoint);
     touch.pagePoint = {
-        .x = static_cast<facebook::react::Float>(windowPoint.x()),
-        .y = static_cast<facebook::react::Float>(windowPoint.y())};
-    touch.screenPoint = touch.pagePoint;
+        .x = static_cast<facebook::react::Float>(pagePoint.x()),
+        .y = static_cast<facebook::react::Float>(pagePoint.y())};
+    touch.screenPoint = {
+        .x = static_cast<facebook::react::Float>(mouseEvent->globalPosition().x()),
+        .y = static_cast<facebook::react::Float>(mouseEvent->globalPosition().y())};
     touch.offsetPoint = {
         .x = static_cast<facebook::react::Float>(
             item->mapFromScene(windowPoint).x()),
@@ -318,10 +334,12 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
 
   for (const QEventPoint& point : touchEvent->points()) {
     const QPointF scenePos = point.scenePosition();
+    const QPointF pagePoint = rootItem_.mapFromScene(scenePos);
     const int id = point.id();
 
     switch (point.state()) {
       case QEventPoint::Pressed: {
+        if (!acceptsNewContact(scenePos)) continue;
         Tag target = hitTest(scenePos);
         if (responderTag_ >= 0) {
           target = responderTag_;
@@ -337,9 +355,11 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
         touch.identifier = id;
         touch.target = target;
         touch.pagePoint = {
-            .x = static_cast<facebook::react::Float>(scenePos.x()),
-            .y = static_cast<facebook::react::Float>(scenePos.y())};
-        touch.screenPoint = touch.pagePoint;
+            .x = static_cast<facebook::react::Float>(pagePoint.x()),
+            .y = static_cast<facebook::react::Float>(pagePoint.y())};
+        touch.screenPoint = {
+            .x = static_cast<facebook::react::Float>(point.globalPosition().x()),
+            .y = static_cast<facebook::react::Float>(point.globalPosition().y())};
         touch.offsetPoint = {
             .x = static_cast<facebook::react::Float>(
                 item->mapFromScene(scenePos).x()),
@@ -367,9 +387,11 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
         }
         Touch& touch = it.value();
         touch.pagePoint = {
-            .x = static_cast<facebook::react::Float>(scenePos.x()),
-            .y = static_cast<facebook::react::Float>(scenePos.y())};
-        touch.screenPoint = touch.pagePoint;
+            .x = static_cast<facebook::react::Float>(pagePoint.x()),
+            .y = static_cast<facebook::react::Float>(pagePoint.y())};
+        touch.screenPoint = {
+            .x = static_cast<facebook::react::Float>(point.globalPosition().x()),
+            .y = static_cast<facebook::react::Float>(point.globalPosition().y())};
         touch.offsetPoint = {
             .x = static_cast<facebook::react::Float>(
                 item->mapFromScene(scenePos).x()),
@@ -392,9 +414,11 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
         Touch touch = it.value();
         if (inputLifecycleEnabled_) {
           touch.pagePoint = {
-              .x = static_cast<facebook::react::Float>(scenePos.x()),
-              .y = static_cast<facebook::react::Float>(scenePos.y())};
-          touch.screenPoint = touch.pagePoint;
+              .x = static_cast<facebook::react::Float>(pagePoint.x()),
+              .y = static_cast<facebook::react::Float>(pagePoint.y())};
+          touch.screenPoint = {
+              .x = static_cast<facebook::react::Float>(point.globalPosition().x()),
+              .y = static_cast<facebook::react::Float>(point.globalPosition().y())};
           if (QQuickItem* item = layer_.itemForTag(touch.target)) {
             const QPointF local = item->mapFromScene(scenePos);
             touch.offsetPoint = {

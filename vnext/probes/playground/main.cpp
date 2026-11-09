@@ -1,4 +1,5 @@
 #include "react-native-qnx/views/QtTextInputQml.h"
+#include "react-native-qnx/views/QtSwitchQml.h"
 // Runs apps/rn-playground in a real window.
 //
 // The host tests prove the same path under the offscreen platform plugin; this
@@ -21,6 +22,10 @@
 #endif
 #include "react-native-qnx/fabric/QtTouchDispatcher.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
+#include "react-native-qnx/views/QtWheelDirectionFilter.h"
+#if RNQNX_ENABLE_DESKTOP_WINDOW
+#include "react-native-qnx/views/QtDesktopWindow.h"
+#endif
 
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
 #include "QnxNitroRuntime.hpp"
@@ -45,6 +50,8 @@
 #include <QTimer>
 
 #include <cstdio>
+#include <algorithm>
+#include <memory>
 #include <sstream>
 
 namespace {
@@ -183,39 +190,6 @@ constexpr const char* kActivityIndicatorSource =
     "    }\n"
     "  }\n"
     "}\n";
-constexpr const char* kSwitchSource =
-    "import QtQuick\n"
-    "Rectangle {\n"
-    "  id: root\n"
-    "  property bool value: false\n"
-    "  property bool disabled: false\n"
-    "  property color trackOnColor: '#4cd964'\n"
-    "  property color trackOffColor: '#ffffff'\n"
-    "  property color thumbColor: '#ffffff'\n"
-    "  visible: true\n"
-    "  Rectangle {\n"
-    "    id: track\n"
-    "    anchors.fill: parent\n"
-    "    radius: parent.height / 2\n"
-    "    color: root.value ? root.trackOnColor : root.trackOffColor\n"
-    "  }\n"
-    "  Rectangle {\n"
-    "    id: thumb\n"
-    "    width: parent.height - 4\n"
-    "    height: width\n"
-    "    radius: width / 2\n"
-    "    color: root.thumbColor\n"
-    "    anchors.verticalCenter: parent.verticalCenter\n"
-    "    x: root.value ? parent.width - width - 2 : 2\n"
-    "  }\n"
-    "  MouseArea {\n"
-    "    anchors.fill: parent\n"
-    "    enabled: !root.disabled\n"
-    "    onClicked: {\n"
-    "      root.value = !root.value;\n"
-    "    }\n"
-    "  }\n"
-    "}\n";
 constexpr int kWindowWidth = 640;
 constexpr int kWindowHeight = 480;
 
@@ -249,6 +223,15 @@ int main(int argc, char** argv) {
   const QCommandLineOption fullscreenOption(
       QStringLiteral("fullscreen"),
       QStringLiteral("Fill the current monitor and use its size for the React surface."));
+  const QCommandLineOption desktopOption(
+      QStringLiteral("desktop"),
+      QStringLiteral("Show native desktop title bar, menus and window controls (requires desktop build option)."));
+  const QCommandLineOption systemFrameOption(
+      QStringLiteral("system-window-frame"),
+      QStringLiteral("Use the desktop window manager's frame with --desktop, retaining the app menu bar."));
+  const QCommandLineOption invertWheelOption(
+      QStringLiteral("invert-wheel"),
+      QStringLiteral("Reverse wheel input for an affected device; dragging and touch are unchanged."));
 #if RNQNX_ENABLE_FRAME_TRACE
   const QCommandLineOption traceOption(QStringLiteral("trace-json"),
       QStringLiteral("Export bounded native diagnostics after host shutdown (new file only)."),
@@ -256,9 +239,22 @@ int main(int argc, char** argv) {
   parser.addOption(traceOption);
 #endif
   parser.addOption(fullscreenOption);
+  parser.addOption(desktopOption);
+  parser.addOption(systemFrameOption);
+  parser.addOption(invertWheelOption);
   parser.addOption(bundleOption);
   parser.addOption(screenshotOption);
   parser.process(app);
+  if (parser.isSet(systemFrameOption) && !parser.isSet(desktopOption)) {
+    std::fprintf(stderr, "RNQNX_DESKTOP_ERROR --system-window-frame requires --desktop\n");
+    return 2;
+  }
+#if !RNQNX_ENABLE_DESKTOP_WINDOW
+  if (parser.isSet(desktopOption)) {
+    std::fprintf(stderr, "RNQNX_DESKTOP_UNAVAILABLE rebuild with RNQNX_ENABLE_DESKTOP_WINDOW=ON\n");
+    return 2;
+  }
+#endif
 
   rnqnx::runtime::ApplicationIdentity identity;
   try {
@@ -295,6 +291,7 @@ int main(int argc, char** argv) {
   const QByteArray bundle = bundleFile.readAll();
 
   QQuickWindow window;
+  rnqnx::views::QtWheelDirectionFilter wheelDirection(window, parser.isSet(invertWheelOption));
 #ifdef RNQNX_MARATHON_HOST
   window.setTitle(QStringLiteral("React Native MarathonOS playground"));
 #else
@@ -313,6 +310,25 @@ int main(int argc, char** argv) {
   }
 
   QQmlEngine engine;
+  QQuickItem* surfaceRoot = window.contentItem();
+#if RNQNX_ENABLE_DESKTOP_WINDOW
+  std::unique_ptr<rnqnx::views::QtDesktopWindow> desktopWindow;
+  if (parser.isSet(desktopOption)) {
+    try {
+      desktopWindow = std::make_unique<rnqnx::views::QtDesktopWindow>(engine, window,
+          parser.isSet(systemFrameOption) ? rnqnx::views::WindowFrame::System
+                                         : rnqnx::views::WindowFrame::Client);
+      surfaceRoot = &desktopWindow->contentItem();
+      if (!parser.isSet(fullscreenOption) && window.screen() != nullptr) {
+        const QRect available = window.screen()->availableGeometry();
+        window.resize(std::min(1100, available.width()), std::min(760, available.height()));
+      }
+    } catch (const std::exception& error) {
+      std::fprintf(stderr, "RNQNX_DESKTOP_ERROR %s\n", error.what());
+      return 2;
+    }
+  }
+#endif
   rnqnx::views::QtQuickItemFactory factory(engine);
   factory.registerType(QStringLiteral("View"), QByteArray(kViewSource));
   factory.registerType(QStringLiteral("Text"), QByteArray(kTextSource));
@@ -325,10 +341,10 @@ int main(int argc, char** argv) {
       QStringLiteral("ActivityIndicatorView"),
       QByteArray(kActivityIndicatorSource));
   factory.registerType(
-      QStringLiteral("Switch"), QByteArray(kSwitchSource));
+      QStringLiteral("Switch"), QByteArray(rnqnx::views::switchQml()));
 
   rnqnx::fabric::QtQuickMountingLayer layer(
-      factory, *window.contentItem(), kSurfaceId);
+      factory, *surfaceRoot, kSurfaceId);
   rnqnx::fabric::ShadowViewMutationAdapter adapter(layer);
   adapter.mapComponent(QStringLiteral("View"), QStringLiteral("View"));
   adapter.mapComponent(QStringLiteral("Paragraph"), QStringLiteral("Text"));
@@ -347,12 +363,12 @@ int main(int argc, char** argv) {
   adapter.mapComponent(
       QStringLiteral("ModalHostView"), QStringLiteral("View"));
 
-#if RNQNX_ENABLE_INPUT_LIFECYCLE
+  // Baseline input is required for ordinary React controls in every consumer.
+  // The lifecycle flag selects cancellation behavior inside the dispatcher.
   // Outlive the host: stopping its surface can still remove captured targets.
-  rnqnx::fabric::QtTouchDispatcher touchDispatcher(layer, *window.contentItem());
+  rnqnx::fabric::QtTouchDispatcher touchDispatcher(layer, *surfaceRoot);
   adapter.setTouchDispatcher(&touchDispatcher);
   window.installEventFilter(&touchDispatcher);
-#endif
 #if RNQNX_ENABLE_FRAME_TRACE
   std::shared_ptr<rnqnx::runtime::RuntimeTrace> trace;
   if (parser.isSet(traceOption)) trace = std::make_shared<rnqnx::runtime::RuntimeTrace>(16384);
@@ -363,9 +379,9 @@ int main(int argc, char** argv) {
 #else
   rnqnx::runtime::QtReactHost host(adapter);
 #endif
-#if RNQNX_ENABLE_INPUT_LIFECYCLE
   host.delegate().setTouchDispatcher(&touchDispatcher);
-#endif
+  std::printf("RNQNX_INPUT_READY lifecycle=%d\n", RNQNX_ENABLE_INPUT_LIFECYCLE);
+  std::fflush(stdout);
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
 #ifdef RNQNX_PLAYGROUND_NITRO_QT
   rnqnx::nitro::installQnxNitroRuntime(
@@ -389,14 +405,33 @@ int main(int argc, char** argv) {
 
   if (parser.isSet(fullscreenOption)) {
     window.showFullScreen();
+  } else if (parser.isSet(desktopOption)) {
+    window.showNormal();
   } else {
     window.show();
   }
   host.startSurface(
       kSurfaceId,
       identity.componentName.toStdString(),
-      static_cast<float>(window.width()),
-      static_cast<float>(window.height()));
+      static_cast<float>(surfaceRoot->width()),
+      static_cast<float>(surfaceRoot->height()));
+
+  // Window chrome is outside the Yoga viewport. Coalesce a width/height pair
+  // into one surface constraint update, keeping every connection inside the
+  // host's lifetime. This also handles ordinary window-manager resizes.
+  QTimer surfaceResizeTimer;
+  surfaceResizeTimer.setSingleShot(true);
+  QObject::connect(surfaceRoot, &QQuickItem::widthChanged,
+      &surfaceResizeTimer, [&surfaceResizeTimer]() { surfaceResizeTimer.start(0); });
+  QObject::connect(surfaceRoot, &QQuickItem::heightChanged,
+      &surfaceResizeTimer, [&surfaceResizeTimer]() { surfaceResizeTimer.start(0); });
+  QObject::connect(&surfaceResizeTimer, &QTimer::timeout, [&host, surfaceRoot]() {
+    if (surfaceRoot->width() > 0 && surfaceRoot->height() > 0 &&
+        !host.resizeSurface(kSurfaceId, static_cast<float>(surfaceRoot->width()),
+            static_cast<float>(surfaceRoot->height()))) {
+      std::fprintf(stderr, "RNQNX_SURFACE_RESIZE_ERROR %s\n", host.lastError().toUtf8().constData());
+    }
+  });
 
   if (parser.isSet(screenshotOption)) {
     for (int i = 0; i < 20; ++i) {

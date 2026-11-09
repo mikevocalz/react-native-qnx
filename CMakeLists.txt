@@ -397,6 +397,8 @@ else()
           set_target_properties(rnqnx_playground_host PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
           )
+          include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxConsumerInputTests.cmake)
+          rnqnx_add_consumer_input_tests()
           add_test(NAME rnqnx_playground_screenshot
             COMMAND "${CMAKE_COMMAND}"
               "-DPROBE=$<TARGET_FILE:rnqnx_playground_host>"

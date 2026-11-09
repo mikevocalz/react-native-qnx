@@ -55,7 +55,7 @@ jobs:
         run: |
           mkdir -p build/linux-host-renderer/evidence
           git rev-parse HEAD > build/linux-host-renderer/evidence/commit.txt
-          cmake --preset linux-host-renderer -DRNQNX_ENABLE_INPUT_LIFECYCLE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=${{ matrix.input-lifecycle }}
+          cmake --preset linux-host-renderer -DRNQNX_ENABLE_INPUT_LIFECYCLE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_DESKTOP_WINDOW=${{ matrix.input-lifecycle }}
           node scripts/validate-host-renderer.mjs
       - name: Render the conformance app (Linux host only)
         run: |
@@ -69,6 +69,18 @@ jobs:
           grep -F 'RNQNX_PLAYGROUND_SCREENSHOT' "$evidence/conformance-render.log"
           test -s "$evidence/conformance.png"
           sha256sum build/component-conformance.bundle.js "$evidence/conformance.png" > "$evidence/conformance-sha256.txt"
+      - name: Render the desktop frame (Linux host only)
+        if: matrix.input-lifecycle == 'ON'
+        run: |
+          set -euo pipefail
+          evidence=build/linux-host-renderer/evidence
+          timeout 30s build/linux-host-renderer/bin/rnqnx_playground_host \
+            --desktop --bundle "$PWD/build/component-conformance.bundle.js" \
+            --screenshot "$PWD/$evidence/conformance-desktop.png" \
+            2>&1 | tee "$evidence/conformance-desktop-render.log"
+          grep -F 'RNQNX_PLAYGROUND_SCREENSHOT' "$evidence/conformance-desktop-render.log"
+          test -s "$evidence/conformance-desktop.png"
+          sha256sum build/component-conformance.bundle.js "$evidence/conformance-desktop.png" > "$evidence/conformance-desktop-sha256.txt"
       - name: Render performance workloads (Linux host only)
         run: |
           set -euo pipefail

@@ -237,6 +237,9 @@ class QtReactHost {
       const std::string& moduleName,
       float width,
       float height);
+  /// Re-constrains an existing surface after its client viewport is resized.
+  /// Returns false and sets lastError for unknown surfaces or invalid bounds.
+  bool resizeSurface(facebook::react::SurfaceId surfaceId, float width, float height);
   void stopSurface(facebook::react::SurfaceId surfaceId);
 
   /// Commits `children` as the surface root's children through the UIManager's

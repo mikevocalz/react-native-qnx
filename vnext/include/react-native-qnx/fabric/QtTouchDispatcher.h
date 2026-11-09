@@ -23,7 +23,8 @@ namespace rnqnx::fabric {
 /// React Native has no generic implementation of this: Android reads Choreographer
 /// -driven motion events and Apple reads UIKit touches. Qt delivers pointer
 /// events to the window, so this filters them there, hit-tests down to the
-/// deepest mounted item, and calls the shadow view's `TouchEventEmitter`
+/// deepest mounted item (skipping unregistered QML decoration), and calls the
+/// shadow view's `TouchEventEmitter`
 /// (`components/view/TouchEventEmitter.h:28-31`).
 ///
 /// Mouse and multi-touch contacts are captured until release. The opt-in input
@@ -66,6 +67,7 @@ class QtTouchDispatcher final : public QObject {
  private:
   /// Deepest mounted item containing \a windowPoint, or -1.
   Tag hitTest(const QPointF& windowPoint) const;
+  bool acceptsNewContact(const QPointF& windowPoint) const;
 
   enum class TouchKind { Start, Move, End, Cancel };
   void cancelMouseTouch();

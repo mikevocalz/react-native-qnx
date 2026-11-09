@@ -23,6 +23,10 @@ The gallery is not Qt Widgets or a hard-coded QML demo: React Native drives
 the existing Fabric/Yoga/Qt Quick renderer. It does not implement Fast
 Refresh, Reanimated, IME, screen-reader integration, or physical input proof.
 
+For title bars, File/Window/Help menus, resize behavior, the optional wheel
+direction workaround, and the rebuilt-native input acceptance procedure, see
+the [desktop window guide](../../docs/getting-started/desktop-window.md).
+
 ## Build the QNX JavaScript bundle
 
 From the repository root, with Node 26+, pnpm 12.8.1 and the repository's

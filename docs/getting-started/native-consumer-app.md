@@ -76,6 +76,10 @@ Generated descriptors and native build inputs are trusted local project files, n
 
 ## Verification scope
 
+The optional [desktop window mode](desktop-window.md) adds native window chrome
+and app menus while keeping the same consumer identity and React renderer.
+It requires a native rebuild and its documented Qt plugin closure.
+
 The JavaScript tests cover file ownership, hash checks, no-overwrite behavior and actual CMake configuration. Separate native Qt tests cover identity validation and metadata under plain and sanitizer configurations. The full-host workflow builds and relocates configured executables for both platform bundles, tests wrong registrations and preserves screenshots/logs. Each result belongs to its exact source revision; Linux offscreen success is not physical QNX or Marathon shell qualification.
 
 General native package registration, Router, full lifecycle integration, debugger/Fast Refresh, dynamic Expo configuration and deployment/distribution automation are not completed by this identity slice. Core builds still require no Nitro Forge package.

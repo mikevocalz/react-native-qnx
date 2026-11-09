@@ -190,6 +190,57 @@ void insertRejectsBadArguments() {
   CHECK(fixture.rootChildCount() == 0);
 }
 
+void modalKeepsLogicalOrderAboveScrolledContent() {
+  Fixture fixture;
+  fixture.root().setSize(QSizeF(640, 480));
+  fixture.factory().registerType(QStringLiteral("ScrollView"), QByteArray(
+      "import QtQuick\nFlickable { clip: true }\n"));
+  CHECK_OK(fixture.layer().create(2, QStringLiteral("ScrollView")));
+  CHECK_OK(fixture.layer().insert(kRootTag, 2, 0));
+  CHECK_OK(fixture.layer().updateLayout(2, {40, 70, 180, 200}));
+  CHECK_OK(fixture.createView(3));
+  CHECK_OK(fixture.layer().updateLayout(3, {0, 0, 160, 600}));
+  CHECK_OK(fixture.layer().insert(2, 3, 0));
+  CHECK_OK(fixture.layer().create(4, QStringLiteral("View"), true));
+  CHECK_OK(fixture.layer().updateLayout(4, {90, 400, 640, 480}));
+  CHECK_OK(fixture.layer().insert(2, 4, 1));
+  CHECK_OK(fixture.createView(5));
+  CHECK_OK(fixture.layer().updateLayout(5, {0, 10, 100, 20}));
+  CHECK_OK(fixture.layer().insert(2, 5, 2));
+  CHECK_OK(fixture.layer().updateScrollContentSize(2));
+
+  auto* scroll = fixture.layer().itemForTag(2);
+  auto* modal = fixture.layer().itemForTag(4);
+  CHECK(scroll->property("contentHeight").toDouble() == 600);
+  CHECK(modal->parentItem() == &fixture.root());
+  CHECK_OK(fixture.layer().scrollTo(2, 0, 150, false));
+  CHECK_OK(fixture.layer().updateStyle(4, {}));
+  CHECK(modal->x() == 0 && modal->y() == 0);
+  CHECK(modal->size() == QSizeF(640, 480));
+  CHECK(modal->mapToItem(&fixture.root(), QPointF{}) == QPointF(0, 0));
+  CHECK(modal->childItems().first()->z() < -100);
+
+  // A subsequent surface sibling cannot cover an already presented Modal.
+  CHECK_OK(fixture.createView(6));
+  fixture.layer().itemForTag(6)->setZ(100);
+  CHECK_OK(fixture.layer().insert(kRootTag, 6, 1));
+  CHECK(fixture.root().childItems().last() == modal);
+  CHECK(modal->z() > fixture.layer().itemForTag(6)->z());
+  CHECK_ERROR(fixture.layer().remove(kRootTag, 4, 1), MountError::NotAChildOfParent);
+  CHECK_ERROR(fixture.layer().remove(2, 4, 0), MountError::IndexOutOfRange);
+  CHECK_OK(fixture.layer().remove(2, 5, 2));
+  CHECK_OK(fixture.layer().remove(2, 4, 1));
+  CHECK(modal->parentItem() == nullptr);
+  CHECK_OK(fixture.layer().remove(2, 3, 0));
+  CHECK_OK(fixture.layer().remove(kRootTag, 6, 1));
+
+  // Reuse and defensive deletion keep the logical registry synchronized.
+  CHECK_OK(fixture.layer().insert(2, 4, 0));
+  CHECK_OK(fixture.layer().destroy(4));
+  CHECK_OK(fixture.layer().insert(2, 5, 0));
+  CHECK_OK(fixture.layer().remove(2, 5, 0));
+}
+
 void removeDetachesWithoutDestroying() {
   Fixture fixture;
   CHECK_OK(fixture.createView(2));
@@ -340,6 +391,7 @@ int main(int argc, char** argv) {
       {"insertParentsAndOrdersChildren", insertParentsAndOrdersChildren},
       {"insertRejectsBadArguments", insertRejectsBadArguments},
       {"fabricIndicesExcludeQmlDecorations", fabricIndicesExcludeQmlDecorations},
+      {"modalKeepsLogicalOrderAboveScrolledContent", modalKeepsLogicalOrderAboveScrolledContent},
       {"removeDetachesWithoutDestroying", removeDetachesWithoutDestroying},
       {"removeRejectsIndexDisagreement", removeRejectsIndexDisagreement},
       {"destroyReleasesTagAndItem", destroyReleasesTagAndItem},

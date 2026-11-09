@@ -1,4 +1,5 @@
 #include "react-native-qnx/views/QtTextInputQml.h"
+#include "react-native-qnx/views/QtSwitchQml.h"
 /*
  * Host tests for the runtime/renderer wiring: a Hermes runtime, a
  * RuntimeScheduler, React Native's Scheduler with our EventBeat, component
@@ -43,6 +44,7 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QString>
+#include <QWheelEvent>
 
 #include <algorithm>
 #include <cmath>
@@ -51,6 +53,7 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -137,39 +140,6 @@ constexpr const char* kActivityIndicatorSource =
     "        loops: Animation.Infinite\n"
     "        running: root.animating\n"
     "      }\n"
-    "    }\n"
-    "  }\n"
-    "}\n";
-constexpr const char* kSwitchSource =
-    "import QtQuick\n"
-    "Rectangle {\n"
-    "  id: root\n"
-    "  property bool value: false\n"
-    "  property bool disabled: false\n"
-    "  property color trackOnColor: '#4cd964'\n"
-    "  property color trackOffColor: '#ffffff'\n"
-    "  property color thumbColor: '#ffffff'\n"
-    "  visible: true\n"
-    "  Rectangle {\n"
-    "    id: track\n"
-    "    anchors.fill: parent\n"
-    "    radius: parent.height / 2\n"
-    "    color: root.value ? root.trackOnColor : root.trackOffColor\n"
-    "  }\n"
-    "  Rectangle {\n"
-    "    id: thumb\n"
-    "    width: parent.height - 4\n"
-    "    height: width\n"
-    "    radius: width / 2\n"
-    "    color: root.thumbColor\n"
-    "    anchors.verticalCenter: parent.verticalCenter\n"
-    "    x: root.value ? parent.width - width - 2 : 2\n"
-    "  }\n"
-    "  MouseArea {\n"
-    "    anchors.fill: parent\n"
-    "    enabled: !root.disabled\n"
-    "    onClicked: {\n"
-    "      root.value = !root.value;\n"
     "    }\n"
     "  }\n"
     "}\n";
@@ -272,7 +242,7 @@ class Fixture {
         QStringLiteral("ActivityIndicatorView"),
         QByteArray(kActivityIndicatorSource));
     factory_.registerType(
-        QStringLiteral("Switch"), QByteArray(kSwitchSource));
+        QStringLiteral("Switch"), QByteArray(rnqnx::views::switchQml()));
     adapter_.mapComponent(
         QStringLiteral("ScrollView"), QStringLiteral("ScrollView"));
     adapter_.mapComponent(
@@ -665,6 +635,38 @@ void javaScriptBuildsTheTreeThroughFabricUIManager() {
   EXPECT_NEAR(filling->height(), 480.0);
   EXPECT_NEAR(fixed->width(), 120.0);
   EXPECT_NEAR(fixed->height(), 60.0);
+
+  // Resizing changes the existing surface's Yoga constraints. Invalid input
+  // cannot silently destroy that surface or replace its mounted children.
+  EXPECT(!fixture.host().resizeSurface(kSurfaceId + 1, 800.0F, 600.0F));
+  EXPECT(!fixture.host().lastError().isEmpty());
+  EXPECT(!fixture.host().resizeSurface(kSurfaceId, 0.0F, 600.0F));
+  EXPECT(!fixture.host().resizeSurface(kSurfaceId, 800.0F, 0.0F));
+  EXPECT(!fixture.host().resizeSurface(
+      kSurfaceId, std::numeric_limits<float>::quiet_NaN(), 600.0F));
+  EXPECT(!fixture.host().resizeSurface(
+      kSurfaceId, 800.0F, std::numeric_limits<float>::infinity()));
+  EXPECT_NEAR(filling->width(), 640.0);
+  EXPECT_NEAR(filling->height(), 480.0);
+  EXPECT(!fixture.host().evaluate(
+      "throw new Error('resize preserves prior JavaScript failure')", "resize-error.js"));
+  const QString previousError = fixture.host().lastError();
+  EXPECT(previousError.contains(QStringLiteral("resize preserves prior JavaScript failure")));
+  EXPECT(fixture.host().resizeSurface(kSurfaceId, 800.0F, 600.0F));
+  EXPECT(fixture.host().lastError() == previousError);
+  QElapsedTimer resizeDeadline;
+  resizeDeadline.start();
+  while ((filling->width() != 800.0 || filling->height() != 600.0) &&
+         resizeDeadline.elapsed() < 1000) {
+    fixture.host().pumpEvents();
+  }
+  EXPECT(fixture.layer().itemForTag(502) == filling);
+  EXPECT(fixture.layer().itemForTag(503) == fixed);
+  EXPECT_NEAR(filling->width(), 800.0);
+  EXPECT_NEAR(filling->height(), 600.0);
+  EXPECT_NEAR(fixed->width(), 120.0);
+  EXPECT_NEAR(fixed->height(), 60.0);
+  EXPECT(fixture.host().delegate().lastFailures().empty());
 }
 
 // Drive the existing Fabric event binding without a Metro bundle. These tests
@@ -728,6 +730,69 @@ void inputLifecycleOptOutPreservesExistingDispatch() {
         touchEvents[1].payload.changedTouches[0].pageX !== 20)
       throw new Error('opt-out changed the existing input contract');
   )JS", "touch-opt-out-check.js"));
+}
+
+void clientViewportCoordinatesAndContactGuards() {
+  for (const bool lifecycle : {false, true}) {
+    Fixture fixture(lifecycle);
+    mountTouchFixture(fixture);
+    // A desktop client begins below native chrome. The Fabric page is this
+    // root's coordinate system, while screen coordinates come from Qt input.
+    fixture.root().setPosition(QPointF(8, 72));
+    fixture.root().setSize(QSizeF(624, 400));
+    auto& dispatcher = fixture.enableTouch();
+    const auto sendMouse = [&](QEvent::Type type, QPointF scene, QPointF global) {
+      QMouseEvent event(type, scene, global, Qt::LeftButton,
+          type == QEvent::MouseButtonPress ? Qt::LeftButton : Qt::NoButton,
+          Qt::NoModifier);
+      QCoreApplication::sendEvent(&fixture.touchInputSource(), &event);
+      flushTouchEvents(fixture);
+    };
+    sendMouse(QEvent::MouseButtonPress, {28, 82}, {328, 482});
+    sendMouse(QEvent::MouseButtonRelease, {28, 82}, {328, 482});
+    sendTouch(fixture, QEvent::TouchBegin, {
+        QEventPoint(7, QEventPoint::Pressed, {38, 92}, {338, 492})});
+    sendTouch(fixture, QEvent::TouchEnd, {
+        QEventPoint(7, QEventPoint::Released, {38, 92}, {338, 492})});
+    EXPECT(fixture.host().evaluate(R"JS({
+      const starts = touchEvents.filter(e => e.type === 'topTouchStart');
+      if (starts.length !== 2 || touchEvents.length !== 4)
+        throw new Error('mouse and touch must each produce one complete stream');
+      const mouse = starts[0].payload.changedTouches[0];
+      const finger = starts[1].payload.changedTouches[0];
+      if (mouse.pageX !== 20 || mouse.pageY !== 10 ||
+          mouse.locationX !== 20 || mouse.locationY !== 10 ||
+          mouse.screenX !== 328 || mouse.screenY !== 482)
+        throw new Error('mouse mixed client, window, or screen coordinates');
+      if (finger.pageX !== 30 || finger.pageY !== 20 ||
+          finger.locationX !== 30 || finger.locationY !== 20 ||
+          finger.screenX !== 338 || finger.screenY !== 492)
+        throw new Error('touch mixed client, window, or screen coordinates');
+    })JS", "client-viewport-coordinates.js"));
+
+    // A retained JS responder must not bypass a disabled client (native menu
+    // or dialog) or begin a contact in the title/menu chrome above the client.
+    dispatcher.setJsResponder(501, true);
+    fixture.root().setEnabled(false);
+    sendMouse(QEvent::MouseButtonPress, {28, 82}, {328, 482});
+    sendTouch(fixture, QEvent::TouchBegin, {
+        QEventPoint(8, QEventPoint::Pressed, {38, 92}, {338, 492})});
+    fixture.root().setEnabled(true);
+    sendMouse(QEvent::MouseButtonPress, {28, 22}, {328, 422});
+    sendTouch(fixture, QEvent::TouchBegin, {
+        QEventPoint(9, QEventPoint::Pressed, {38, 22}, {338, 422})});
+    EXPECT(fixture.host().evaluate(R"JS(
+      if (touchEvents.length !== 4)
+        throw new Error('a responder captured a blocked or non-client contact');
+    )JS", "client-contact-guard.js"));
+    dispatcher.setJsResponder(501, false);
+    sendMouse(QEvent::MouseButtonPress, {28, 82}, {328, 482});
+    sendMouse(QEvent::MouseButtonRelease, {28, 82}, {328, 482});
+    EXPECT(fixture.host().evaluate(R"JS(
+      if (touchEvents.length !== 6 || touchEvents[5].type !== 'topTouchEnd')
+        throw new Error('client input did not resume after the popup closed');
+    )JS", "client-contact-resume.js"));
+  }
 }
 
 void touchCancelEndsEveryContactAndAllowsIdReuse() {
@@ -1267,6 +1332,84 @@ void scrollEventsReachJavaScript() {
   EXPECT(momentumEnd.getNumber() >= 1.0);
 }
 
+/// Exercise Qt's standard wheel sign through a real mounted ScrollView and
+/// window delivery. QNX Screen/QPA normalization and physical HID are separate.
+void wheelEventsFollowQtDirection() {
+  Fixture fixture;
+  fixture.enableTouch();
+  fixture.host().installTurboModuleBinding();
+  fixture.host().installComponentProvider();
+  fixture.host().installPlatformConstants();
+  fixture.host().installTimers();
+  std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
+  const std::string bundle(
+      (std::istreambuf_iterator<char>(bundleFile)),
+      std::istreambuf_iterator<char>());
+  EXPECT(fixture.host().evaluate(bundle, "rnqnx-playground.bundle.js"));
+
+  fixture.window().resize(640, 480);
+  fixture.window().show();
+  fixture.host().startSurface(kSurfaceId, "RNQnxPlayground", 640.0F, 480.0F);
+  auto& runtime = fixture.host().runtime();
+  const auto pump = [&]() {
+    runtime.drainMicrotasks();
+    fixture.host().pumpEvents();
+    EXPECT(fixture.host().lastError().isEmpty());
+    EXPECT(fixture.host().delegate().lastFailures().empty());
+  };
+  for (int i = 0; i < 20; ++i) pump();
+  EXPECT(fixture.rootChildCount() == 1);
+  QQuickItem* scroll = fixture.root().childItems().at(0)->childItems().at(5);
+  const double maximum = scroll->property("contentHeight").toDouble() - scroll->height();
+  EXPECT(maximum > 200.0);
+  // Position away from both edges before injecting any wheel input.
+  scroll->setProperty("contentY", maximum / 2);
+  for (int i = 0; i < 20; ++i) pump();
+  const auto offset = [&]() { return scroll->property("contentY").toDouble(); };
+  const QPointF point = scroll->mapToScene(QPointF(scroll->width() / 2, scroll->height() / 2));
+  const QPointF globalPoint(fixture.window().mapToGlobal(point.toPoint()));
+  QElapsedTimer clock;
+  clock.start();
+  quint64 timestamp = 0;
+  const auto wheel = [&](int delta) {
+    QWheelEvent event(point, globalPoint, QPoint(), QPoint(0, delta),
+                      Qt::NoButton, Qt::NoModifier, Qt::NoScrollPhase, false);
+    timestamp = std::max(timestamp + 1, static_cast<quint64>(clock.elapsed() + 1));
+    event.setTimestamp(timestamp);
+    QCoreApplication::sendEvent(&fixture.window(), &event);
+  };
+  const auto expectMovement = [&](double previous, int direction) {
+    QElapsedTimer deadline;
+    deadline.start();
+    bool settled = false;
+    do {
+      pump();
+      const auto jsOffset = runtime.global().getProperty(runtime, "__lastScrollY");
+      settled = direction * (offset() - previous) > 0.01 &&
+          !scroll->property("moving").toBool() && jsOffset.isNumber() &&
+          std::abs(jsOffset.getNumber() - offset()) < 0.01;
+    } while (!settled && deadline.elapsed() < 3000);
+    EXPECT(settled);
+    EXPECT(offset() >= -0.01 && offset() <= maximum + 0.01);
+  };
+
+  // Qt angleDelta -120 is one normal downward notch; contentY must increase.
+  double previous = offset();
+  wheel(-120);
+  expectMovement(previous, 1);
+  previous = offset();
+  wheel(120);
+  expectMovement(previous, -1);
+
+  // Repeated notches may animate/rebound, but their settled offsets are bounded.
+  previous = offset();
+  for (int i = 0; i < 6; ++i) wheel(-120);
+  expectMovement(previous, 1);
+  previous = offset();
+  for (int i = 0; i < 6; ++i) wheel(120);
+  expectMovement(previous, -1);
+}
+
 /// FlatList renders and virtualises on this platform.
 ///
 /// FlatList is upstream JavaScript over ScrollView rather than anything
@@ -1756,10 +1899,49 @@ void activityIndicatorMounts() {
   EXPECT(indicator->property("color").value<QColor>() == QColor(QStringLiteral("#00aa66")));
 }
 
-/// The iOS switch descriptor is rendered as a QML switch, responds to a press,
-/// and delivers the new value to JavaScript as `onValueChange`.
+/// The production QML paints a rounded track with a visible off-state thumb.
+/// This checks pixels, including the formerly opaque white root corners.
+void switchDefaultsArePainted() {
+  QQmlEngine engine;
+  QQuickWindow window;
+  window.resize(96, 72);
+  const QColor background(QStringLiteral("#102033"));
+  window.setColor(background);
+  QtQuickItemFactory factory(engine);
+  factory.registerType(
+      QStringLiteral("Switch"), QByteArray(rnqnx::views::switchQml()));
+  // The factory returns a C++-owned item; destroy it before its engine/window.
+  std::unique_ptr<QQuickItem> item(
+      factory.create(QStringLiteral("Switch"), window.contentItem()));
+  EXPECT(item != nullptr);
+  item->setPosition(QPointF(20, 20));
+  item->setSize(QSizeF(51, 31));
+  window.show();
+  for (int i = 0; i < 20; ++i) {
+    QCoreApplication::processEvents();
+  }
+
+  const QImage frame = window.grabWindow();
+  EXPECT(!frame.isNull());
+  const qreal scale = static_cast<qreal>(frame.width()) / window.width();
+  const auto pixelAt = [&frame, scale](int x, int y) {
+    return frame.pixelColor(
+        static_cast<int>((20 + x) * scale),
+        static_cast<int>((20 + y) * scale));
+  };
+  EXPECT(pixelAt(1, 1) == background);
+  EXPECT(pixelAt(49, 1) == background);
+  EXPECT(pixelAt(43, 15) == QColor(QStringLiteral("#767577")));
+  EXPECT(pixelAt(15, 15) == QColor(Qt::white));
+  EXPECT(pixelAt(43, 15) != pixelAt(15, 15));
+}
+
+/// Real window clicks reach the production MouseArea, then the Fabric bridge,
+/// the public Switch callback and React state. No value mutation substitutes
+/// for input; this remains injected host input rather than physical HID proof.
 void switchToggles() {
   Fixture fixture;
+  fixture.enableTouch();
   fixture.host().installTurboModuleBinding();
   fixture.host().installComponentProvider();
   fixture.host().installPlatformConstants();
@@ -1787,34 +1969,78 @@ void switchToggles() {
   QQuickItem* outer = fixture.root().childItems().at(0);
   EXPECT(outer->childItems().size() == 1);
   QQuickItem* switchItem = outer->childItems().at(0);
+  EXPECT_NEAR(switchItem->width(), 51.0);
+  EXPECT_NEAR(switchItem->height(), 31.0);
   EXPECT(switchItem->property("value").toBool() == false);
-
-  // Toggle the QML property directly. The valueChanged signal reaches the
-  // bridge, which emits the native onChange event, and the JS wrapper turns
-  // that into onValueChange.
-  switchItem->setProperty("value", true);
-
-  for (int i = 0; i < 20; ++i) {
-    fixture.host().runtime().drainMicrotasks();
-    fixture.host().pumpEvents();
-  }
-
-  EXPECT(switchItem->property("value").toBool() == true);
-
+  auto* thumb = switchItem->findChild<QQuickItem*>(
+      QStringLiteral("qnx-switch-thumb"), Qt::FindDirectChildrenOnly);
+  auto* track = switchItem->findChild<QQuickItem*>(
+      QStringLiteral("qnx-switch-track"), Qt::FindDirectChildrenOnly);
+  EXPECT(thumb != nullptr);
+  EXPECT(track != nullptr);
+  EXPECT_NEAR(thumb->x(), 2.0);
+  EXPECT(track->property("color").value<QColor>() == QColor(QStringLiteral("#767577")));
+  EXPECT(thumb->property("color").value<QColor>() == QColor(QStringLiteral("#f4f3f4")));
   auto& rt = fixture.host().runtime();
-  const auto valueChange = rt.global().getProperty(rt, "__switchValueChange");
-  if (!valueChange.isNumber()) {
-    fail(
-        "onValueChange ran in JavaScript",
-        __FILE__,
-        __LINE__,
-        "globalThis.__switchValueChange was never set");
-  }
-  EXPECT(valueChange.getNumber() >= 1.0);
+  const auto changeCount = [&]() {
+    const auto count = rt.global().getProperty(rt, "__switchValueChange");
+    return count.isNumber() ? count.getNumber() : 0.0;
+  };
+  const auto pump = [&]() {
+    rt.drainMicrotasks();
+    fixture.host().pumpEvents();
+    EXPECT(fixture.host().lastError().isEmpty());
+    EXPECT(fixture.host().delegate().lastFailures().empty());
+  };
+  const auto click = [&]() {
+    const QPointF point = switchItem->mapToScene(
+        QPointF(switchItem->width() / 2, switchItem->height() / 2));
+    const QPointF globalPoint(fixture.window().mapToGlobal(point.toPoint()));
+    QMouseEvent press(QEvent::MouseButtonPress, point, globalPoint,
+                      Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    QMouseEvent release(QEvent::MouseButtonRelease, point, globalPoint,
+                        Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
+    QCoreApplication::sendEvent(&fixture.window(), &press);
+    QCoreApplication::sendEvent(&fixture.window(), &release);
+  };
+  const auto expectChange = [&](double count, bool value, int previousMounts) {
+    QElapsedTimer deadline;
+    deadline.start();
+    do {
+      pump();
+    } while ((changeCount() < count ||
+              fixture.host().delegate().mountedTransactionCount() <= previousMounts) &&
+             deadline.elapsed() < 2000);
+    EXPECT_NEAR(changeCount(), count);
+    const auto lastValue = rt.global().getProperty(rt, "__switchLastValue");
+    EXPECT(lastValue.isBool());
+    EXPECT(lastValue.getBool() == value);
+    EXPECT(switchItem->property("value").toBool() == value);
+    EXPECT(fixture.host().delegate().mountedTransactionCount() > previousMounts);
+  };
 
-  const auto lastValue = rt.global().getProperty(rt, "__switchLastValue");
-  EXPECT(lastValue.isBool());
-  EXPECT(lastValue.getBool() == true);
+  int previousMounts = fixture.host().delegate().mountedTransactionCount();
+  click();
+  expectChange(1.0, true, previousMounts);
+  EXPECT_NEAR(thumb->x(), 22.0);
+  EXPECT(track->property("color").value<QColor>() == QColor(QStringLiteral("#81b0ff")));
+  previousMounts = fixture.host().delegate().mountedTransactionCount();
+  click();
+  expectChange(2.0, false, previousMounts);
+  EXPECT_NEAR(thumb->x(), 2.0);
+
+  // Configure the native disabled prop, then exercise the actual MouseArea.
+  // This verifies input rejection, not only the stored property value.
+  switchItem->setProperty("disabled", true);
+  click();
+  for (int i = 0; i < 20; ++i) pump();
+  EXPECT_NEAR(changeCount(), 2.0);
+  EXPECT(switchItem->property("value").toBool() == false);
+  EXPECT_NEAR(thumb->x(), 2.0);
+  switchItem->setProperty("disabled", false);
+  previousMounts = fixture.host().delegate().mountedTransactionCount();
+  click();
+  expectChange(3.0, true, previousMounts);
 }
 
 /// Button is pure upstream JavaScript over View, Text and the touch system.
@@ -2108,6 +2334,17 @@ void metroStateUpdateCommitsThroughScheduler() {
   }
   EXPECT_NEAR(view->width(), 96.0);
   EXPECT(fixture.host().delegate().mountedTransactionCount() > initialTransactions);
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+
+  EXPECT(fixture.host().resizeSurface(kSurfaceId, 800.0F, 600.0F));
+  for (int i = 0; i < 20; ++i) fixture.host().pumpEvents();
+  EXPECT(fixture.rootChildCount() == 1);
+  EXPECT(fixture.root().childItems().at(0) == view);
+  EXPECT_NEAR(view->width(), 96.0);
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (globalThis.__hostStateRenderWidth !== 96)
+      throw new Error('surface resize reset the existing React state');
+  )JS", "state-after-surface-resize.js"));
   EXPECT(fixture.host().delegate().lastFailures().empty());
 }
 
@@ -2615,6 +2852,7 @@ int main(int argc, char** argv) {
 
   const std::vector<TestCase> tests{
       {"inputLifecycleOptOutPreservesExistingDispatch", inputLifecycleOptOutPreservesExistingDispatch},
+      {"clientViewportCoordinatesAndContactGuards", clientViewportCoordinatesAndContactGuards},
       {"touchCancelEndsEveryContactAndAllowsIdReuse", touchCancelEndsEveryContactAndAllowsIdReuse},
       {"touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact", touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact},
       {"forgettingTouchTargetCancelsAndClearsResponder", forgettingTouchTargetCancelsAndClearsResponder},
@@ -2659,6 +2897,7 @@ int main(int argc, char** argv) {
       {"renderedTreeIsPainted", renderedTreeIsPainted},
       {"pointerEventsReachJavaScript", pointerEventsReachJavaScript},
       {"scrollEventsReachJavaScript", scrollEventsReachJavaScript},
+      {"wheelEventsFollowQtDirection", wheelEventsFollowQtDirection},
       {"flatListRendersAndVirtualises", flatListRendersAndVirtualises},
       {"sectionListRenders", sectionListRenders},
       {"textInputMounts", textInputMounts},
@@ -2666,6 +2905,7 @@ int main(int argc, char** argv) {
       {"textInputMultiline", textInputMultiline},
       {"textEllipsis", textEllipsis},
       {"activityIndicatorMounts", activityIndicatorMounts},
+      {"switchDefaultsArePainted", switchDefaultsArePainted},
       {"switchToggles", switchToggles},
       {"buttonMounts", buttonMounts},
       {"safeAreaViewMounts", safeAreaViewMounts},

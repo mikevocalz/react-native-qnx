@@ -14,8 +14,10 @@
 #include <react/renderer/components/textinput/TextInputEventEmitter.h>
 
 #include <QColor>
+#include <QKeyEvent>
 #include <QMetaMethod>
 #include <QQuickItem>
+#include <QQuickWindow>
 #include <QStringList>
 #include <QtMath>
 
@@ -30,6 +32,7 @@
 #include <react/renderer/components/image/ImageEventEmitter.h>
 #include <react/renderer/components/scrollview/BaseScrollViewProps.h>
 #include <react/renderer/components/image/ImageProps.h>
+#include <react/renderer/components/modal/ModalHostViewState.h>
 #include <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
 #include <react/renderer/components/view/ViewEventEmitter.h>
 #include <react/renderer/components/text/BaseParagraphProps.h>
@@ -40,6 +43,76 @@
 #include <react/renderer/mounting/ShadowView.h>
 
 namespace rnqnx::fabric {
+
+// Match Fabric's native Modal state seam: viewport changes update state, then
+// ModalHostViewComponentDescriptor gives those dimensions to Yoga. The async
+// state callback owns only copied data and cannot outlive a Qt pointer.
+class QtModalBridge final : public QObject {
+ public:
+  using State = facebook::react::ConcreteState<facebook::react::ModalHostViewState>;
+
+  QtModalBridge(QQuickItem& item, QQuickItem& viewport)
+      : QObject(&item), item_(item), viewport_(viewport) {
+    QObject::connect(&viewport_, &QQuickItem::widthChanged, this, [this] { updateViewport(); });
+    QObject::connect(&viewport_, &QQuickItem::heightChanged, this, [this] { updateViewport(); });
+    QObject::connect(&item_, &QQuickItem::windowChanged, this,
+        [this](QQuickWindow* window) { observeWindow(window); });
+    observeWindow(item_.window());
+  }
+
+  void update(State::Shared state,
+      std::shared_ptr<const facebook::react::ModalHostViewEventEmitter> emitter) {
+    state_ = std::move(state);
+    emitter_ = std::move(emitter);
+    updateViewport();
+  }
+
+ protected:
+  bool eventFilter(QObject* watched, QEvent* event) override {
+    if (watched == window_ && event->type() == QEvent::KeyPress &&
+        item_.isVisible() && item_.isEnabled() && emitter_) {
+      const auto* key = static_cast<QKeyEvent*>(event);
+      if (key->key() == Qt::Key_Escape && key->modifiers() == Qt::NoModifier) {
+        // Native dismissal is a request; the app's existing callback decides
+        // whether to change visible. The latest inserted Modal filters first.
+        const auto emitter = emitter_;
+        if (!key->isAutoRepeat()) emitter->onRequestClose({});
+        event->accept();
+        return true;
+      }
+    }
+    return QObject::eventFilter(watched, event);
+  }
+
+ private:
+  void observeWindow(QQuickWindow* window) {
+    if (window_) window_->removeEventFilter(this);
+    window_ = window;
+    if (window_) window_->installEventFilter(this);
+  }
+
+  void updateViewport() {
+    if (!state_) return;
+    const facebook::react::Size size{
+        .width = static_cast<facebook::react::Float>(viewport_.width()),
+        .height = static_cast<facebook::react::Float>(viewport_.height())};
+    if (requestedSize_ == size) return;
+    requestedSize_ = size;
+    state_->updateState([size](const facebook::react::ModalHostViewState& previous)
+        -> State::SharedData {
+      if (previous.screenSize == size) return nullptr;
+      return std::make_shared<const facebook::react::ModalHostViewState>(size);
+    });
+  }
+
+  QQuickItem& item_;
+  QQuickItem& viewport_;
+  QPointer<QQuickWindow> window_;
+  State::Shared state_;
+  std::shared_ptr<const facebook::react::ModalHostViewEventEmitter> emitter_;
+  std::optional<facebook::react::Size> requestedSize_;
+};
+
 namespace {
 
 using facebook::react::ShadowView;
@@ -396,6 +469,16 @@ void ShadowViewMutationAdapter::mapComponent(
     const QString& componentName,
     const QString& qmlTypeName) {
   componentTypes_.insert(componentName, qmlTypeName);
+}
+
+void ShadowViewMutationAdapter::applyModal(const ShadowView& view) {
+  if (componentNameOf(view) != QStringLiteral("ModalHostView")) return;
+  auto* item = layer_.itemForTag(view.tag);
+  if (item == nullptr) return;
+  auto& bridge = modalBridges_[view.tag];
+  if (!bridge) bridge = new QtModalBridge(*item, layer_.rootItem());
+  bridge->update(std::dynamic_pointer_cast<const QtModalBridge::State>(view.state),
+      std::dynamic_pointer_cast<const facebook::react::ModalHostViewEventEmitter>(view.eventEmitter));
 }
 
 void ShadowViewMutationAdapter::applyImage(const ShadowView& view) {
@@ -859,6 +942,9 @@ void ShadowViewMutationAdapter::connectScrollEvents(const ShadowView& view) {
 }
 
 ShadowViewMutationAdapter::~ShadowViewMutationAdapter() {
+  for (const auto& bridge : std::as_const(modalBridges_)) {
+    delete bridge.data();
+  }
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
   for (const auto& receiver : std::as_const(accessibilityActivations_)) {
     if (receiver) { receiver->invalidate(); delete receiver.data(); }
@@ -926,7 +1012,8 @@ MountError ShadowViewMutationAdapter::applyOne(
         return MountError::UnknownComponentType;
       }
 
-      const MountError error = layer_.create(view.tag, *qmlType);
+      const MountError error = layer_.create(
+          view.tag, *qmlType, componentName == QStringLiteral("ModalHostView"));
       if (error != MountError::None) {
         detail = layer_.lastError();
         return error;
@@ -956,6 +1043,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (textInputError != MountError::None) { detail = layer_.lastError(); return textInputError; }
       applyActivityIndicator(view);
       applySwitch(view);
+      applyModal(view);
       const auto styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) return styleError;
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
@@ -979,6 +1067,7 @@ MountError ShadowViewMutationAdapter::applyOne(
 #endif
       switchBridges_.remove(mutation.oldChildShadowView.tag);
       imageBridges_.remove(mutation.oldChildShadowView.tag);
+      modalBridges_.remove(mutation.oldChildShadowView.tag);
       return layer_.destroy(mutation.oldChildShadowView.tag);
 
     case ShadowViewMutation::Type::Insert: {
@@ -1030,6 +1119,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (textInputError != MountError::None) { detail = layer_.lastError(); return textInputError; }
       applyActivityIndicator(view);
       applySwitch(view);
+      applyModal(view);
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) {
         return styleError;

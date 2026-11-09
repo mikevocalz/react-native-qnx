@@ -4,6 +4,8 @@ get_filename_component(RNQNX_REACT_QT_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLU
 
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxWebSockets.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxAppState.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/RnqnxDesktopWindow.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/RnqnxWheelDirection.cmake)
 
 # Add the opt-in consumer only after the existing runtime and optional native
 # adapters have been declared. The OFF path leaves all original targets alone.
@@ -22,6 +24,8 @@ function(rnqnx_add_qt_views_target)
 
   add_library(rnqnx_views_qt STATIC
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtQuickItemFactory.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtSwitchQml.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtWheelDirectionFilter.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QnxImageProvider.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtQuickMountingLayer.cpp"
   )
@@ -51,6 +55,7 @@ function(rnqnx_add_qt_views_target)
   # Qt's keyword macros collide with React Native's EventEmitter::emit.
   target_compile_definitions(rnqnx_views_qt PUBLIC QT_NO_KEYWORDS)
   rnqnx_enable_strict_warnings(rnqnx_views_qt)
+  rnqnx_add_wheel_direction_test()
 endfunction()
 
 function(rnqnx_add_fabric_adapter_target)
@@ -112,6 +117,10 @@ function(rnqnx_add_react_host_target)
     rnqnx_hermes
     Qt6::Network
   )
+  if(RNQNX_ENABLE_DESKTOP_WINDOW)
+    rnqnx_add_desktop_window()
+    target_link_libraries(rnqnx_react_host PUBLIC rnqnx_desktop_window)
+  endif()
   if(RNQNX_ENABLE_FRAME_TRACE)
     target_link_libraries(rnqnx_react_host PUBLIC rnqnx_runtime_trace)
   endif()

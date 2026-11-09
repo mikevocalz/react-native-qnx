@@ -15,15 +15,44 @@
 #include <QFont>
 #include <QFontDatabase>
 #include <QHash>
+#include <QMouseEvent>
 #include <QStandardPaths>
 #include <QStringList>
 #include <QUrl>
+#include <QTouchEvent>
+#include <QWheelEvent>
 
 #include <algorithm>
+#include <limits>
 #include <QList>
 #include <QQuickItem>
 
 namespace {
+
+// React's responder tree and Qt's native item delivery are separate paths.
+// A nonpainting Modal would otherwise let Qt wheel/MouseArea events fall
+// through to the application behind it. This lowest child is a fallback;
+// native controls mounted above it inside the Modal still receive input first.
+class ModalPointerBarrier final : public QQuickItem {
+ public:
+  explicit ModalPointerBarrier(QQuickItem& modal) : QQuickItem(&modal) {
+    setZ(std::numeric_limits<qreal>::lowest());
+    setAcceptedMouseButtons(Qt::AllButtons);
+    setAcceptTouchEvents(true);
+    const auto resize = [this, &modal] { setSize(modal.size()); };
+    QObject::connect(&modal, &QQuickItem::widthChanged, this, resize);
+    QObject::connect(&modal, &QQuickItem::heightChanged, this, resize);
+    resize();
+  }
+
+ protected:
+  void mousePressEvent(QMouseEvent* event) override { event->accept(); }
+  void mouseMoveEvent(QMouseEvent* event) override { event->accept(); }
+  void mouseReleaseEvent(QMouseEvent* event) override { event->accept(); }
+  void mouseDoubleClickEvent(QMouseEvent* event) override { event->accept(); }
+  void touchEvent(QTouchEvent* event) override { event->accept(); }
+  void wheelEvent(QWheelEvent* event) override { event->accept(); }
+};
 
 // Directories searched for bundled/native font files, in addition to system
 // font locations. Qt QNX deployments usually ship assets under the executable.
@@ -122,7 +151,6 @@ QtQuickMountingLayer::QtQuickMountingLayer(
     Tag rootTag)
     : factory_(factory), rootItem_(rootItem), rootTag_(rootTag) {
   items_.insert(rootTag_, MountedItem{&rootItem_, false});
-  mountedPointers_.insert(&rootItem_);
 }
 
 QtQuickMountingLayer::~QtQuickMountingLayer() {
@@ -162,6 +190,10 @@ QQuickItem* QtQuickMountingLayer::itemForTag(Tag tag) const {
   return items_.value(tag, MountedItem{}).item;
 }
 
+QQuickItem& QtQuickMountingLayer::rootItem() const {
+  return rootItem_;
+}
+
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
 bool QtQuickMountingLayer::isGenericView(Tag tag) const {
   const auto mounted = items_.constFind(tag);
@@ -178,7 +210,8 @@ MountError QtQuickMountingLayer::failWith(
 
 MountError QtQuickMountingLayer::create(
     Tag tag,
-    const QString& componentName) {
+    const QString& componentName,
+    bool viewportModal) {
   if (items_.contains(tag)) {
     return failWith(
         MountError::DuplicateTag,
@@ -195,66 +228,87 @@ MountError QtQuickMountingLayer::create(
   }
 
   MountedItem mounted{item, true};
+  mounted.viewportModal = viewportModal;
+  if (viewportModal) {
+    item->setZ(std::numeric_limits<qreal>::max());
+    new ModalPointerBarrier(*item);
+  }
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
   mounted.genericView = componentName == QStringLiteral("View");
 #endif
   items_.insert(tag, mounted);
-  mountedPointers_.insert(item);
   lastError_.clear();
   return MountError::None;
 }
 
-QList<QQuickItem*> QtQuickMountingLayer::mountedChildren(QQuickItem* parent) const {
-  QList<QQuickItem*> children;
-  for (auto* child : parent->childItems()) {
-    if (mountedPointers_.contains(child)) {
-      children.append(child);
+void QtQuickMountingLayer::raiseModals() {
+  // Keep the visual order and the dispatcher's hit order above ordinary
+  // surface children, including siblings inserted after a Modal was opened.
+  for (const auto tag : modalOrder_) {
+    auto* item = itemForTag(tag);
+    const auto children = rootItem_.childItems();
+    if (item != nullptr && !children.isEmpty() && children.last() != item) {
+      item->stackAfter(children.last());
     }
   }
-  return children;
 }
 
 MountError QtQuickMountingLayer::insert(
     Tag parentTag,
     Tag childTag,
     int index) {
-  const auto parent = items_.constFind(parentTag);
-  if (parent == items_.constEnd()) {
+  const auto parent = items_.find(parentTag);
+  if (parent == items_.end()) {
     return failWith(
         MountError::UnknownParent,
         QStringLiteral("Parent tag %1 is not mounted").arg(parentTag));
   }
 
-  const auto child = items_.constFind(childTag);
-  if (child == items_.constEnd()) {
+  const auto child = items_.find(childTag);
+  if (child == items_.end()) {
     return failWith(
         MountError::UnknownTag,
         QStringLiteral("Child tag %1 is not mounted").arg(childTag));
   }
 
-  // A Flickable scrolls its `contentItem`, not itself, so children mounted
-  // directly on it would never move. Any item exposing a `contentItem` gets its
-  // children there; a plain Item has no such property and is unaffected.
-  QQuickItem* parentItem = parent->item;
-  if (auto* content = parentItem->property("contentItem").value<QQuickItem*>()) {
-    parentItem = content;
-  }
-
-  // Fabric indices exclude QML-owned backgrounds and other decorations.
-  const QList<QQuickItem*> children = mountedChildren(parentItem);
-  const int childCount = static_cast<int>(children.size());
+  // Fabric indices include logical Modal children and exclude QML decoration.
+  // They cannot be inferred from visual parentage once a Modal is presented.
+  const int childCount = static_cast<int>(parent->children.size());
   if (index < 0 || index > childCount) {
     return failWith(
         MountError::IndexOutOfRange,
         QStringLiteral("Index %1 is outside 0..%2").arg(index).arg(childCount));
   }
 
-  child->item->setParentItem(parentItem);
-
-  // Append above the QML decorations, then order only against Fabric siblings.
-  if (index < childCount) {
-    child->item->stackBefore(children.at(index));
+  if (parentTag == childTag || !child->owned || child->parentTag.has_value()) {
+    return failWith(MountError::NotAChildOfParent,
+        QStringLiteral("Tag %1 must be an unattached child distinct from its parent").arg(childTag));
   }
+
+  QQuickItem* parentItem = child->viewportModal ? &rootItem_ : parent->item;
+  if (!child->viewportModal) {
+    // A Flickable scrolls its contentItem, not the viewport itself.
+    if (auto* content = parentItem->property("contentItem").value<QQuickItem*>()) {
+      parentItem = content;
+    }
+  }
+
+  child->item->setParentItem(parentItem);
+  if (child->viewportModal) {
+    modalOrder_.append(childTag);
+  } else {
+    // Skip logical Modal siblings, which are presented at the viewport.
+    for (int siblingIndex = index; siblingIndex < childCount; ++siblingIndex) {
+      const auto& sibling = items_[parent->children.at(siblingIndex)];
+      if (!sibling.viewportModal) {
+        child->item->stackBefore(sibling.item);
+        break;
+      }
+    }
+  }
+  child->parentTag = parentTag;
+  parent->children.insert(index, childTag);
+  raiseModals();
 
   lastError_.clear();
   return MountError::None;
@@ -264,26 +318,21 @@ MountError QtQuickMountingLayer::remove(
     Tag parentTag,
     Tag childTag,
     int index) {
-  const auto parent = items_.constFind(parentTag);
-  if (parent == items_.constEnd()) {
+  const auto parent = items_.find(parentTag);
+  if (parent == items_.end()) {
     return failWith(
         MountError::UnknownParent,
         QStringLiteral("Parent tag %1 is not mounted").arg(parentTag));
   }
 
-  const auto child = items_.constFind(childTag);
-  if (child == items_.constEnd()) {
+  const auto child = items_.find(childTag);
+  if (child == items_.end()) {
     return failWith(
         MountError::UnknownTag,
         QStringLiteral("Child tag %1 is not mounted").arg(childTag));
   }
 
-  QQuickItem* parentItem = parent->item;
-  if (auto* content = parentItem->property("contentItem").value<QQuickItem*>()) {
-    parentItem = content;
-  }
-
-  if (child->item->parentItem() != parentItem) {
+  if (child->parentTag != parentTag) {
     return failWith(
         MountError::NotAChildOfParent,
         QStringLiteral("Tag %1 is not a child of tag %2")
@@ -294,8 +343,7 @@ MountError QtQuickMountingLayer::remove(
   // React Native's Remove carries the index the child occupies. Disagreement
   // means our tree has diverged from the shadow tree, which is a defect worth
   // surfacing rather than papering over.
-  const int actualIndex =
-      static_cast<int>(mountedChildren(parentItem).indexOf(child->item));
+  const int actualIndex = static_cast<int>(parent->children.indexOf(childTag));
   if (actualIndex != index) {
     return failWith(
         MountError::IndexOutOfRange,
@@ -306,13 +354,16 @@ MountError QtQuickMountingLayer::remove(
   }
 
   child->item->setParentItem(nullptr);
+  child->parentTag.reset();
+  parent->children.removeAt(index);
+  modalOrder_.removeOne(childTag);
   lastError_.clear();
   return MountError::None;
 }
 
 MountError QtQuickMountingLayer::destroy(Tag tag) {
-  const auto mounted = items_.constFind(tag);
-  if (mounted == items_.constEnd()) {
+  const auto mounted = items_.find(tag);
+  if (mounted == items_.end()) {
     return failWith(
         MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
   }
@@ -325,11 +376,20 @@ MountError QtQuickMountingLayer::destroy(Tag tag) {
   }
 
   QQuickItem* item = mounted->item;
+  if (mounted->parentTag) {
+    items_[*mounted->parentTag].children.removeOne(tag);
+  }
+  for (const auto childTag : mounted->children) {
+    auto& child = items_[childTag];
+    child.parentTag.reset();
+    child.item->setParentItem(nullptr);
+    modalOrder_.removeOne(childTag);
+  }
+  modalOrder_.removeOne(tag);
 #if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
   if (auto* bridge = item->findChild<QtTextInputBridge*>(QString(), Qt::FindDirectChildrenOnly)) bridge->invalidate();
 #endif
   items_.erase(mounted);
-  mountedPointers_.remove(item);
 
   // Defensive: a well-formed transaction removes before it deletes.
   if (item->parentItem() != nullptr) {
@@ -796,10 +856,14 @@ MountError QtQuickMountingLayer::updateLayout(
   }
 
   QQuickItem* item = mounted->item;
-  item->setProperty("layoutX", static_cast<qreal>(frame.x));
-  item->setProperty("layoutY", static_cast<qreal>(frame.y));
-  item->setX(static_cast<qreal>(frame.x));
-  item->setY(static_cast<qreal>(frame.y));
+  // Modal size still comes from Yoga after the native viewport state update.
+  // Its logical ancestor's offset and scroll position do not move the portal.
+  const qreal x = mounted->viewportModal ? 0 : static_cast<qreal>(frame.x);
+  const qreal y = mounted->viewportModal ? 0 : static_cast<qreal>(frame.y);
+  item->setProperty("layoutX", x);
+  item->setProperty("layoutY", y);
+  item->setX(x);
+  item->setY(y);
   item->setWidth(static_cast<qreal>(frame.width));
   item->setHeight(static_cast<qreal>(frame.height));
 

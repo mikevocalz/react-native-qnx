@@ -10,7 +10,6 @@
 
 #include <QHash>
 #include <QList>
-#include <QSet>
 #include <QString>
 
 #include <cstdint>
@@ -204,7 +203,8 @@ class QtQuickMountingLayer {
   QtQuickMountingLayer(QtQuickMountingLayer&&) = delete;
   QtQuickMountingLayer& operator=(QtQuickMountingLayer&&) = delete;
 
-  MountError create(Tag tag, const QString& componentName);
+  /// A Modal keeps its Fabric parent/index but is presented at the viewport.
+  MountError create(Tag tag, const QString& componentName, bool viewportModal = false);
   MountError insert(Tag parentTag, Tag childTag, int index);
   MountError remove(Tag parentTag, Tag childTag, int index);
   MountError destroy(Tag tag);
@@ -273,6 +273,8 @@ class QtQuickMountingLayer {
 
   /// Borrowed; nullptr when the tag is not mounted.
   QQuickItem* itemForTag(Tag tag) const;
+  /// This surface's client viewport, which can be smaller than its window.
+  QQuickItem& rootItem() const;
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
   bool isGenericView(Tag tag) const;
 #endif
@@ -287,20 +289,23 @@ class QtQuickMountingLayer {
   struct MountedItem {
     QQuickItem* item{nullptr};
     bool owned{false};
+    bool viewportModal{false};
+    std::optional<Tag> parentTag{};
+    QList<Tag> children{};
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
     bool genericView{false};
 #endif
   };
 
-  QList<QQuickItem*> mountedChildren(QQuickItem* parent) const;
+  void raiseModals();
   MountError failWith(MountError error, const QString& detail);
 
   views::QtQuickItemFactory& factory_;
   QQuickItem& rootItem_;
   Tag rootTag_;
   QHash<Tag, MountedItem> items_;
-  // Non-owning membership index, kept in step with the tag registry.
-  QSet<QQuickItem*> mountedPointers_;
+  // Presentation order is independent of logical Fabric sibling indices.
+  QList<Tag> modalOrder_;
   QString lastError_;
 };
 

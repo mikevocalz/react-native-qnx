@@ -52,6 +52,7 @@
 #include <QMetaObject>
 
 #include <algorithm>
+#include <cmath>
 #include <exception>
 #include <utility>
 
@@ -1044,6 +1045,21 @@ void QtReactHost::startEmptySurface(
 #if RNQNX_ENABLE_FRAME_TRACE
   if (impl_->trace) impl_->surfaceGenerations[surfaceId] = generation;
 #endif
+}
+
+bool QtReactHost::resizeSurface(SurfaceId surfaceId, float width, float height) {
+  const auto found = impl_->surfaces.find(surfaceId);
+  if (found == impl_->surfaces.end()) {
+    impl_->lastError = QStringLiteral("No surface is registered for surface %1").arg(surfaceId);
+    return false;
+  }
+  if (!std::isfinite(width) || !std::isfinite(height) || width <= 0 || height <= 0) {
+    impl_->lastError = QStringLiteral("Surface dimensions must be finite and positive");
+    return false;
+  }
+  found->second->constraintLayout(
+      makeLayoutConstraints(width, height), facebook::react::LayoutContext{});
+  return true;
 }
 
 void QtReactHost::stopSurface(SurfaceId surfaceId) {
