@@ -9,9 +9,10 @@
  * Deliberately minimal. It renders React Native's own native image component
  * and resolves `source`, `defaultSource`, and `loadingIndicatorSource` through
  * React Native's `resolveAssetSource` before normalising the list the native
- * side expects. What the iOS and Android versions add and this does not:
- * `Image.getSize`, `prefetch`, and the load lifecycle events. Those are
- * recorded in `docs/component-support.md` rather than stubbed here.
+ * side expects. Static loader methods preserve React Native 0.88.1's
+ * Promise/callback contract and call the existing QNX ImageLoader module.
+ * QNX prefetch uses the backend's bounded memory cache, not a disk cache.
+ * Remaining component limits are recorded in `docs/component-support.md`.
  */
 
 'use strict';
@@ -20,6 +21,46 @@ const React = require('react');
 const ImageViewNativeComponent =
   require('react-native/Libraries/Image/ImageViewNativeComponent').default;
 const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource').default;
+
+function imageLoader() {
+  // The existing QNX core adapter implements this portable ImageLoader spec.
+  // Keep loading lazy so displaying an Image does not require loader methods.
+  return require('react-native/Libraries/Image/NativeImageLoaderIOS').default;
+}
+
+function sizeResult(uri, promise, success, failure) {
+  if (typeof success !== 'function') return promise;
+  promise
+    .then((size) => success(size.width, size.height))
+    .catch(failure || (() => console.warn('Failed to get size for image: ' + uri)));
+}
+
+function getSize(uri, success, failure) {
+  const promise = imageLoader()
+    .getSize(uri)
+    .then((size) => ({ width: size[0], height: size[1] }));
+  return sizeResult(uri, promise, success, failure);
+}
+
+function getSizeWithHeaders(uri, headers, success, failure) {
+  return sizeResult(uri, imageLoader().getSizeWithHeaders(uri, headers), success, failure);
+}
+
+function prefetch(uri) {
+  return imageLoader().prefetchImage(uri);
+}
+
+function prefetchWithMetadata(uri, queryRootName, rootTag) {
+  const loader = imageLoader();
+  if (loader.prefetchImageWithMetadata) {
+    return loader.prefetchImageWithMetadata(uri, queryRootName, rootTag == null ? 0 : rootTag);
+  }
+  return loader.prefetchImage(uri);
+}
+
+async function queryCache(uris) {
+  return imageLoader().queryCache(uris);
+}
 
 function resolveImageSource(source) {
   if (source == null) {
@@ -56,6 +97,11 @@ function Image(props) {
 }
 
 Image.displayName = 'Image';
+Image.getSize = getSize;
+Image.getSizeWithHeaders = getSizeWithHeaders;
+Image.prefetch = prefetch;
+Image.prefetchWithMetadata = prefetchWithMetadata;
+Image.queryCache = queryCache;
 Image.resolveAssetSource = resolveAssetSource;
 
 module.exports = Image;

@@ -4,6 +4,47 @@ The core React Native `ImageLoader` adapter now performs real asynchronous
 HTTP(S) work through Qt Network. It is an upstream core-module adapter, not a
 new application TurboModule architecture.
 
+## Use the public Image API
+
+In an app configured with the [public React Native entry](getting-started/qnx-cli.md),
+import `Image` from `react-native`. Size lookups return an object with pixel
+dimensions. A failed lookup rejects with an `Error`:
+
+```js
+import { Image } from 'react-native';
+
+const uri =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
+
+try {
+  const { width, height } = await Image.getSize(uri);
+  console.log(width, height); // 1 1
+
+  await Image.prefetch(uri);
+  const cached = await Image.queryCache([uri]);
+  console.log(cached[uri]); // "memory" while the decoded image is retained
+} catch (error) {
+  console.error('Could not load the image', error);
+}
+```
+
+For an HTTP(S) endpoint that needs headers, use
+`Image.getSizeWithHeaders(uri, { 'X-Image-Variant': 'thumbnail' })`. Header values
+must be strings. These requests do not reuse or populate the URI-only cache.
+
+The React Native 0.88.1 callback overloads are also supported:
+`Image.getSize(uri, (width, height) => { /* use dimensions */ }, onError)` and
+`Image.getSizeWithHeaders(uri, headers, onSize, onError)`. Passing a success
+callback selects callback mode and returns `undefined`; omit it to receive the
+Promise. Supply the failure callback to handle errors in callback mode.
+
+`Image.prefetchWithMetadata(uri, queryRootName, rootTag)` forwards tracing
+metadata; an omitted root tag is `0`. Prefetch uses the bounded process-memory
+cache described below. Cached entries can be evicted, and no disk persistence
+or cancellation-by-request-ID API is provided.
+
+## Internal loader contract
+
 - `getSize(uri)` resolves `[width, height]`; `getSizeWithHeaders(uri, headers)`
   resolves `{width, height}` and sends the supplied string-valued headers.
 - `prefetchImage` and `prefetchImageWithMetadata` resolve `true` only after a
@@ -42,6 +83,22 @@ on the Qt event-loop thread; the loader shares that thread-affinity contract.
 
 ## Deterministic host validation
 
+Check the public adapter and build both QNX and Marathon public-entry bundles:
+
+```sh
+node tests/js/qnx-public-entry.test.mjs
+node tests/js/qnx-public-entry-metro.test.mjs
+```
+
+The JavaScript test calls the real public `Image` getter with a controlled
+native loader. It covers Promise and callback modes, errors, header forwarding,
+metadata defaults and cache results. It does not decode images or run a native
+renderer. The Metro probe calls public `Image.getSize` on a local PNG and only
+emits its existing ready marker after the dimensions check succeeds; rendering
+that probe remains a separate host or target gate.
+
+Run the native loader fixture with the selected Qt installation:
+
 ```sh
 cmake -S tests/image-loader -B build/image-loader -G Ninja \
   -DCMAKE_PREFIX_PATH=/path/to/Qt/6.11.1/gcc_64
@@ -64,6 +121,11 @@ truthful cache entries, actual Error rejections and invalid arguments. This case
 and existing `imageGetSize` passed locally under ASan using the full-host graph
 build repairs from draft PR #28. The target adapter and its allocation site were
 rebuilt together; no QNX execution or whole-renderer-suite pass is implied.
+
+The `imageGetSize` playground fixture uses the QNX `Image` override, so the
+full-host test also checks its public result shape instead of bypassing it
+through `Image.ios`. The earlier ASan result above belongs to its cited baseline;
+the public-adapter change requires a fresh full-host run.
 
 These checks are host evidence. QNX SDP 8.0.5 cross-compilation, Qt Network
 module size/build-time measurements, physical Pi networking/TLS/plugin behavior
