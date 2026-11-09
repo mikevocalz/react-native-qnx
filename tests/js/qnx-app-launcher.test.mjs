@@ -174,6 +174,21 @@ try {
   );
   check((await readFile(deployed + '/keep-user-data', 'utf8')) === 'not owned by launcher');
   shell(removeLauncherScript(configuration.appId, home, false, [], stock));
+  const failureBin = temporary + '/interrupted-remove';
+  await mkdir(failureBin);
+  const realMove = spawnSync('which', ['mv'], { encoding: 'utf8' }).stdout.trim();
+  await writeFile(
+    failureBin + '/mv',
+    `#!/bin/sh\ncase "$1" in */desktop.conf.new) exit 73;; esac\nexec '${realMove}' "$@"\n`
+  );
+  await chmod(failureBin + '/mv', 0o700);
+  shell(removeLauncherScript(second.appId, home, false, [], stock), false, {
+    PATH: failureBin + ':' + process.env.PATH,
+  });
+  await rejects(() => lstat(registry + '/apps/' + second.appId));
+  check((await readFile(registry + '/desktop.conf', 'utf8')).includes(second.appId + '.desktop'));
+  shell(removeLauncherScript(second.appId, home, false, [], stock));
+  check(!(await readFile(registry + '/desktop.conf', 'utf8')).includes(second.appId + '.desktop'));
   const bin = temporary + '/bin';
   await mkdir(bin);
   await writeFile(bin + '/id', '#!/bin/sh\necho 0\n');

@@ -300,7 +300,7 @@ if test -e ${q(entry)}; then
   test -f ${q(entry + '/owner')} && test ! -L ${q(entry + '/owner')} && test "$(cat ${q(entry + '/owner')})" = ${q(LAUNCHER_GENERATOR + ':' + appId)} || exit 1
   rm -f ${q(registry + '/' + appId + '.desktop')}
   rm -rf ${q(entry)}
-else exit 0; fi
+fi
 ` +
     rebuildRegistry(registry, libraryPaths, refresh)
   );
