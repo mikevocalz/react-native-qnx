@@ -40,7 +40,7 @@ diff --git a/src/private/renderer/events/dispatchNativeEvent.js b/src/private/re
  ): void {
 @@ -45,6 +45,11 @@
    processResponderEvent(type, target, payload);
- 
+
    try {
 +    // A removed QNX input target still needs responder cancellation.
 +    // Keep this inside try so pending responder errors reach the finally block.
@@ -50,3 +50,38 @@ diff --git a/src/private/renderer/events/dispatchNativeEvent.js b/src/private/re
      // Normal EventTarget dispatch
      const bubbleConfig = customBubblingEventTypes[type];
      const directConfig = customDirectEventTypes[type];
+diff --git a/ReactCommon/react/renderer/components/view/accessibilityPropsConversions.h b/ReactCommon/react/renderer/components/view/accessibilityPropsConversions.h
+--- a/ReactCommon/react/renderer/components/view/accessibilityPropsConversions.h
++++ b/ReactCommon/react/renderer/components/view/accessibilityPropsConversions.h
+@@ -17,6 +17,7 @@
+ #include <react/renderer/core/propsConversions.h>
+ #include <react/renderer/debug/DebugStringConvertible.h>
+
++#include <cstdlib>
+ #include <unordered_map>
+
+ namespace facebook::react {
+@@ -183,6 +184,7 @@
+     case ImportantForAccessibility::NoHideDescendants:
+       return "no-hide-descendants";
+   }
++  std::abort();
+ }
+
+ inline void fromRawValue(const PropsParserContext &context, const RawValue &value, ImportantForAccessibility &result)
+@@ -781,6 +783,7 @@
+     case AccessibilityLiveRegion::Assertive:
+       return "assertive";
+   }
++  std::abort();
+ }
+
+ #if RN_DEBUG_STRING_CONVERTIBLE
+@@ -796,6 +799,7 @@
+     case AccessibilityState::None:
+       return "None";
+   }
++  std::abort();
+ }
+
+ inline std::string toString(const AccessibilityAction &accessibilityAction)
