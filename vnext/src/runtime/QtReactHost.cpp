@@ -47,9 +47,11 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QFileInfo>
 #include <QSysInfo>
 #include <QTimer>
 #include <QMetaObject>
+#include <QUrl>
 
 #include <algorithm>
 #include <cmath>
@@ -604,8 +606,8 @@ class QtReactHost::Impl {
   /// The latest frame callback provided by NativeAnimated.
   std::function<void()> animationFrame;
   std::vector<JavaScriptError> javaScriptErrors;
-  /// The source URL of the most recently evaluated script, reported by the
-  /// SourceCode module.
+  /// Published before evaluating a script: SourceCode can be requested and its
+  /// constants cached while the bundle is still initializing.
   std::string scriptUrl;
   int nextTimerHandle{0};
   QString lastError;
@@ -663,6 +665,14 @@ bool QtReactHost::evaluate(
     return false;
   }
   try {
+    // RN reads and caches SourceCode.scriptURL during bundle initialization.
+    // Local paths need an absolute, encoded file URL before that first read;
+    // explicit URLs retain their network/resource scheme and identity.
+    const auto sourceLocation = QString::fromStdString(sourceUrl);
+    impl_->scriptUrl = sourceLocation.isEmpty() || !QUrl(sourceLocation).scheme().isEmpty()
+        ? sourceUrl
+        : QUrl::fromLocalFile(QFileInfo(sourceLocation).absoluteFilePath())
+              .toString(QUrl::FullyEncoded).toStdString();
     std::exception_ptr evaluationError;
     const auto previousTaskError = impl_->taskErrorSequence;
     impl_->runtimeScheduler->scheduleWork(
@@ -682,7 +692,6 @@ bool QtReactHost::evaluate(
       // Keep the host error from that checkpoint rather than clearing it.
       return false;
     }
-    impl_->scriptUrl = sourceUrl;
     impl_->lastError.clear();
     return true;
   } catch (const facebook::jsi::JSError& error) {

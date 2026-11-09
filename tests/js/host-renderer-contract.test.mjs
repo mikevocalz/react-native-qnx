@@ -17,6 +17,10 @@ if (process.platform === 'linux') {
     'qnx_screen_surface_host_test',
     'rnqnx_hermes_probe',
     'qt_react_host_host_test',
+    'rnqnx_consumer_window_input',
+    'rnqnx_consumer_window_rejects_interception',
+    'rnqnx_wheel_direction',
+    'rnqnx_component_gallery',
     'rnqnx_rn_headers_probe',
     'shadow_view_mutation_adapter_host_test',
     'shadow_tree_mounting_host_test',
@@ -51,9 +55,10 @@ if (process.platform === 'linux') {
     mkdirSync(build, { recursive: true });
     const cache = path.join(build, 'CMakeCache.txt');
     const bothOff =
-      'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=OFF\nRNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=OFF\n';
+      'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=OFF\nRNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=OFF\nRNQNX_ENABLE_DESKTOP_WINDOW:BOOL=OFF\n';
     writeFileSync(cache, bothOff);
-    assert.equal(invoke().status, 0);
+    const baseline = invoke();
+    assert.equal(baseline.status, 0, baseline.stderr);
     assert.equal(
       JSON.parse(
         readFileSync(
@@ -131,6 +136,42 @@ if (process.platform === 'linux') {
       }),
     });
     assert.equal(bothPresent.status, 0, bothPresent.stderr);
+    const desktopTests = [
+      'rnqnx_consumer_desktop_window_input',
+      'rnqnx_desktop_window',
+      'rnqnx_component_gallery_desktop',
+    ];
+    writeFileSync(
+      cache,
+      'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=OFF\nRNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=OFF\nRNQNX_ENABLE_DESKTOP_WINDOW:BOOL=ON\n'
+    );
+    const desktopPresent = invoke({
+      FAKE_INVENTORY: JSON.stringify({
+        tests: [...names, ...desktopTests].map((name) => ({ name })),
+      }),
+    });
+    assert.equal(desktopPresent.status, 0, desktopPresent.stderr);
+    for (const missing of desktopTests) {
+      const result = invoke({
+        FAKE_INVENTORY: JSON.stringify({
+          tests: [...names, ...desktopTests]
+            .filter((name) => name !== missing)
+            .map((name) => ({ name })),
+        }),
+      });
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, new RegExp(`Required host-renderer test missing: ${missing}`));
+    }
+    writeFileSync(
+      cache,
+      'RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=ON\nRNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON\nRNQNX_ENABLE_DESKTOP_WINDOW:BOOL=ON\n'
+    );
+    const allPresent = invoke({
+      FAKE_INVENTORY: JSON.stringify({
+        tests: [...allNames, ...accessibilityTests, ...desktopTests].map((name) => ({ name })),
+      }),
+    });
+    assert.equal(allPresent.status, 0, allPresent.stderr);
     writeFileSync(cache, bothOff);
     assert.notEqual(invoke({ FAKE_BUILD_STATUS: '7' }).status, 0);
     const testFailure = invoke({ FAKE_TEST_STATUS: '8' });

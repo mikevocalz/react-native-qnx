@@ -37,11 +37,13 @@ const expected = [
   'Modal',
   'StyleSheet',
   'Platform',
+  'I18nManager',
   'Animated',
 ];
 assert.deepEqual(Object.keys(api), expected);
 for (const name of expected) assert.equal(api[name], values);
 assert.equal(loaded.length, expected.length);
+assert.ok(loaded.includes('react-native/Libraries/ReactNative/I18nManager'));
 for (const name of ['Alert', 'BackHandler', 'NonexistentExport']) {
   assert.throws(() => api[name], /not implemented/);
 }

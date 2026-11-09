@@ -10,7 +10,10 @@ FocusScope {
     property string dialogKind: ""
     readonly property bool popupVisible: fileMenu.visible || windowMenu.visible
         || helpMenu.visible || dialogKind !== ""
-    anchors.fill: parent
+    // The native contentItem can still be zero-sized before its first resize
+    // event. The supplied window already owns the intended client geometry.
+    width: appWindow.width
+    height: appWindow.height
 
     Rectangle {
         anchors.fill: parent

@@ -102,11 +102,21 @@ assert.equal(store.getState().modal, true);
 store.getState().setModal(false);
 assert.equal(store.getState().modal, false);
 assert.equal(store.getState().presses, 2);
-let widthUpdates = 0;
-const unsubscribe = store.subscribe(() => widthUpdates++);
-store.getState().setWidth(1920);
-store.getState().setWidth(1920);
-assert.equal(widthUpdates, 1);
+let viewportUpdates = 0;
+const unsubscribe = store.subscribe(() => viewportUpdates++);
+store.getState().setViewport(1920, 1080);
+store.getState().setViewport(1920, 1080);
+assert.equal(viewportUpdates, 1);
+// Height-only native resizes must update the compact layout without changing
+// the selected page or retained control state; repeated geometry is a no-op.
+store.getState().setViewport(1920, 268);
+store.getState().setViewport(1920, 268);
+assert.equal(viewportUpdates, 2);
+assert.equal(store.getState().width, 1920);
+assert.equal(store.getState().height, 268);
+assert.equal(store.getState().page, 'gallery');
+assert.equal(store.getState().presses, 2);
+assert.equal(store.getState().toggle, true);
 unsubscribe();
 
 const metro = await readFile(path.join(app, 'metro.config.js'), 'utf8');

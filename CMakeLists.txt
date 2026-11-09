@@ -399,6 +399,8 @@ else()
           )
           include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxConsumerInputTests.cmake)
           rnqnx_add_consumer_input_tests()
+          include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxComponentGalleryTests.cmake)
+          rnqnx_add_component_gallery_tests()
           add_test(NAME rnqnx_playground_screenshot
             COMMAND "${CMAKE_COMMAND}"
               "-DPROBE=$<TARGET_FILE:rnqnx_playground_host>"

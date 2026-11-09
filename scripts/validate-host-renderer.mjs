@@ -16,6 +16,7 @@ const expectedTests = [
   'rnqnx_consumer_window_input',
   'rnqnx_consumer_window_rejects_interception',
   'rnqnx_wheel_direction',
+  'rnqnx_component_gallery',
   'rnqnx_rn_headers_probe',
   'shadow_view_mutation_adapter_host_test',
   'shadow_tree_mounting_host_test',
@@ -49,7 +50,11 @@ if (process.platform !== 'linux') {
 run('cmake', ['--preset', preset]);
 const cache = readFileSync(path.join(build, 'CMakeCache.txt'), 'utf8');
 if (/^RNQNX_ENABLE_DESKTOP_WINDOW:BOOL=ON$/m.test(cache)) {
-  expectedTests.push('rnqnx_consumer_desktop_window_input', 'rnqnx_desktop_window');
+  expectedTests.push(
+    'rnqnx_consumer_desktop_window_input',
+    'rnqnx_desktop_window',
+    'rnqnx_component_gallery_desktop'
+  );
 }
 if (/^RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=ON$/m.test(cache)) {
   expectedTests.push(

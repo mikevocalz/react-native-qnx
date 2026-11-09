@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppRegistry, View, Text, StyleSheet, Platform } from 'react-native';
+import { I18nManager } from 'react-native';
 
 const styles = StyleSheet.create({
   root: {
@@ -23,5 +24,7 @@ function PublicApp() {
 }
 if (!['qnx', 'marathon'].includes(Platform.OS))
   throw new Error('Wrong public-entry platform identity');
+if (typeof I18nManager.isRTL !== 'boolean')
+  throw new Error('Public I18nManager must expose React Native layout direction');
 AppRegistry.registerComponent('RNQnxPlayground', () => PublicApp);
 console.log(`RNQNX_PUBLIC_API_READY platform=${Platform.OS}`);

@@ -48,6 +48,11 @@ const api = Object.freeze({
   get Platform() {
     return require('react-native/Libraries/Utilities/Platform').default;
   },
+  get I18nManager() {
+    // VirtualizedList reads this through the public entry when a list mounts.
+    // Reuse RN's actual optional-native-module fallback; do not invent RTL state.
+    return require('react-native/Libraries/ReactNative/I18nManager').default;
+  },
   get Animated() {
     return require('react-native/Libraries/Animated/Animated').default;
   },

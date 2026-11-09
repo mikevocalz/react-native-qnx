@@ -51,6 +51,7 @@
 
 #include <cstdio>
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <sstream>
 
@@ -403,6 +404,35 @@ int main(int argc, char** argv) {
     return 1;
   }
 
+  // Window chrome is outside the Yoga viewport. Coalesce a width/height pair
+  // into one surface update. Qt may deliver initial item geometry after show;
+  // never pass a transient zero/negative viewport to the first Yoga layout.
+  // All callbacks and their state remain inside the host's lifetime.
+  bool surfaceStarted = false;
+  QTimer surfaceResizeTimer;
+  surfaceResizeTimer.setSingleShot(true);
+  QObject::connect(surfaceRoot, &QQuickItem::widthChanged,
+      &surfaceResizeTimer, [&surfaceResizeTimer]() { surfaceResizeTimer.start(0); });
+  QObject::connect(surfaceRoot, &QQuickItem::heightChanged,
+      &surfaceResizeTimer, [&surfaceResizeTimer]() { surfaceResizeTimer.start(0); });
+  const auto updateSurface = [&host, surfaceRoot, &surfaceStarted,
+      componentName = identity.componentName.toStdString()]() {
+    const float width = static_cast<float>(surfaceRoot->width());
+    const float height = static_cast<float>(surfaceRoot->height());
+    if (!std::isfinite(width) || !std::isfinite(height) || width <= 0 || height <= 0) {
+      return;
+    }
+    if (!surfaceStarted) {
+      surfaceStarted = true;
+      host.startSurface(kSurfaceId, componentName, width, height);
+      std::printf("RNQNX_SURFACE_READY width=%.0f height=%.0f\n",
+          static_cast<double>(width), static_cast<double>(height));
+      std::fflush(stdout);
+    } else if (!host.resizeSurface(kSurfaceId, width, height)) {
+      std::fprintf(stderr, "RNQNX_SURFACE_RESIZE_ERROR %s\n", host.lastError().toUtf8().constData());
+    }
+  };
+  QObject::connect(&surfaceResizeTimer, &QTimer::timeout, updateSurface);
   if (parser.isSet(fullscreenOption)) {
     window.showFullScreen();
   } else if (parser.isSet(desktopOption)) {
@@ -410,33 +440,17 @@ int main(int argc, char** argv) {
   } else {
     window.show();
   }
-  host.startSurface(
-      kSurfaceId,
-      identity.componentName.toStdString(),
-      static_cast<float>(surfaceRoot->width()),
-      static_cast<float>(surfaceRoot->height()));
-
-  // Window chrome is outside the Yoga viewport. Coalesce a width/height pair
-  // into one surface constraint update, keeping every connection inside the
-  // host's lifetime. This also handles ordinary window-manager resizes.
-  QTimer surfaceResizeTimer;
-  surfaceResizeTimer.setSingleShot(true);
-  QObject::connect(surfaceRoot, &QQuickItem::widthChanged,
-      &surfaceResizeTimer, [&surfaceResizeTimer]() { surfaceResizeTimer.start(0); });
-  QObject::connect(surfaceRoot, &QQuickItem::heightChanged,
-      &surfaceResizeTimer, [&surfaceResizeTimer]() { surfaceResizeTimer.start(0); });
-  QObject::connect(&surfaceResizeTimer, &QTimer::timeout, [&host, surfaceRoot]() {
-    if (surfaceRoot->width() > 0 && surfaceRoot->height() > 0 &&
-        !host.resizeSurface(kSurfaceId, static_cast<float>(surfaceRoot->width()),
-            static_cast<float>(surfaceRoot->height()))) {
-      std::fprintf(stderr, "RNQNX_SURFACE_RESIZE_ERROR %s\n", host.lastError().toUtf8().constData());
-    }
-  });
+  updateSurface();
+  if (!surfaceStarted) surfaceResizeTimer.start(0);
 
   if (parser.isSet(screenshotOption)) {
     for (int i = 0; i < 20; ++i) {
       host.runtime().drainMicrotasks();
       host.pumpEvents();
+    }
+    if (!surfaceStarted) {
+      std::fprintf(stderr, "RNQNX_PLAYGROUND_RENDER_FAILED no usable client viewport\n");
+      return 1;
     }
     if (!host.lastError().isEmpty()) {
       std::fprintf(
@@ -448,6 +462,8 @@ int main(int argc, char** argv) {
     const QImage frame = window.grabWindow();
     // Include React's surface cleanup in this one-shot trial while the runtime
     // is still available to report errors. Keep the captured frame unchanged.
+    QObject::disconnect(surfaceRoot, nullptr, &surfaceResizeTimer, nullptr);
+    surfaceResizeTimer.stop();
     host.stopSurface(kSurfaceId);
     for (int i = 0; i < 20; ++i) {
       host.runtime().drainMicrotasks();

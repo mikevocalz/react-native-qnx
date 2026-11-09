@@ -62,8 +62,11 @@ jobs:
           set -euo pipefail
           evidence=build/linux-host-renderer/evidence
           pnpm qnx bundle-qnx --app component-conformance --out build/component-conformance.bundle.js
+          mkdir -p build/assets/assets
+          cp apps/component-conformance/assets/icon.png build/assets/assets/icon.png
           timeout 30s build/linux-host-renderer/bin/rnqnx_playground_host \
             --bundle "$PWD/build/component-conformance.bundle.js" \
+            --app-id org.rnqnx.showcase --app-name "QNX Components" --component-name RNQnxPlayground \
             --screenshot "$PWD/$evidence/conformance.png" \
             2>&1 | tee "$evidence/conformance-render.log"
           grep -F 'RNQNX_PLAYGROUND_SCREENSHOT' "$evidence/conformance-render.log"
@@ -76,6 +79,7 @@ jobs:
           evidence=build/linux-host-renderer/evidence
           timeout 30s build/linux-host-renderer/bin/rnqnx_playground_host \
             --desktop --bundle "$PWD/build/component-conformance.bundle.js" \
+            --app-id org.rnqnx.showcase --app-name "QNX Components" --component-name RNQnxPlayground \
             --screenshot "$PWD/$evidence/conformance-desktop.png" \
             2>&1 | tee "$evidence/conformance-desktop-render.log"
           grep -F 'RNQNX_PLAYGROUND_SCREENSHOT' "$evidence/conformance-desktop-render.log"

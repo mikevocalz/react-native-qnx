@@ -32,13 +32,15 @@ const useConformance = create((set) => ({
   toggle: false,
   presses: 0,
   width: 0,
+  height: 0,
   goTo: (page) => set({ page }),
   chooseRow: (row) => set({ row }),
   setText: (text) => set({ text }),
   setToggle: (toggle) => set({ toggle }),
   setModal: (modal) => set({ modal }),
   press: () => set((state) => ({ presses: state.presses + 1 })),
-  setWidth: (width) => set((state) => (state.width === width ? state : { width })),
+  setViewport: (width, height) =>
+    set((state) => (state.width === width && state.height === height ? state : { width, height })),
 }));
 
 function Label({ children, color = MUTED, size = 14, style }) {
@@ -54,7 +56,7 @@ function Heading({ title, detail }) {
   );
 }
 
-function NavButton({ id, title, selected, onChoose }) {
+function NavButton({ id, title, selected, onChoose, compact = false }) {
   return h(
     Pressable,
     {
@@ -63,13 +65,13 @@ function NavButton({ id, title, selected, onChoose }) {
       accessibilityRole: 'button',
       accessibilityLabel: title,
       style: {
-        minHeight: 42,
-        paddingHorizontal: 16,
-        paddingVertical: 10,
+        minHeight: compact ? 34 : 42,
+        paddingHorizontal: compact ? 12 : 16,
+        paddingVertical: compact ? 6 : 10,
         backgroundColor: selected ? '#1b5b61' : PANEL,
         borderRadius: 10,
-        marginRight: 8,
-        marginBottom: 8,
+        marginRight: compact ? 6 : 8,
+        marginBottom: compact ? 6 : 8,
       },
     },
     h(Label, { color: selected ? '#f2ffff' : INK, size: 14 }, title)
@@ -440,8 +442,8 @@ function AdaptivePage() {
     minHeight: 132,
   };
   return h(
-    View,
-    { style: { flex: 1 } },
+    ScrollView,
+    { style: { flex: 1 }, contentContainerStyle: { flexGrow: 1, paddingBottom: 24 } },
     h(Heading, {
       title: 'LAYOUT-001 / live window layout',
       detail: 'Resize the host. A two-region simulation is not a hinge or multi-display proof.',
@@ -496,7 +498,9 @@ function LimitationsPage() {
 function ConformanceApp() {
   const page = useConformance((state) => state.page);
   const goTo = useConformance((state) => state.goTo);
-  const setWidth = useConformance((state) => state.setWidth);
+  const height = useConformance((state) => state.height);
+  const setViewport = useConformance((state) => state.setViewport);
+  const compact = height > 0 && height < 440;
   const pages = [
     ['gallery', 'Components'],
     ['list', 'Documents'],
@@ -526,28 +530,36 @@ function ConformanceApp() {
         width: '100%',
         height: '100%',
         backgroundColor: '#0c1929',
-        padding: 18,
+        padding: compact ? 10 : 18,
       },
       onLayout: (event) => {
-        const width = event.nativeEvent.layout.width;
-        if (Number.isFinite(width) && width > 0) setWidth(Math.round(width));
+        const { width, height } = event.nativeEvent.layout;
+        if (Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0) {
+          setViewport(Math.round(width), Math.round(height));
+        }
       },
     },
-    h(Label, { color: ACCENT, size: 13 }, 'REACT NATIVE QNX / FABRIC + YOGA + QT QUICK'),
-    h(Label, { color: INK, size: 28, style: { marginTop: 4 } }, 'Component gallery'),
+    !compact &&
+      h(Label, { color: ACCENT, size: 13 }, 'REACT NATIVE QNX / FABRIC + YOGA + QT QUICK'),
+    h(
+      Label,
+      { color: INK, size: compact ? 22 : 28, style: { marginTop: compact ? 0 : 4 } },
+      'Component gallery'
+    ),
     h(
       View,
-      { style: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 14 } },
+      { style: { flexDirection: 'row', flexWrap: 'wrap', marginTop: compact ? 8 : 14 } },
       ...pages.map(([id, title]) =>
-        h(NavButton, { key: id, id, title, selected: page === id, onChoose: goTo })
+        h(NavButton, { key: id, id, title, selected: page === id, onChoose: goTo, compact })
       )
     ),
     h(View, { style: { flex: 1, minHeight: 0 } }, content),
-    h(
-      Label,
-      { size: 12, style: { marginTop: 10 } },
-      'Experimental component fixture · Fast Refresh is not enabled · Physical interaction requires observation.'
-    )
+    !compact &&
+      h(
+        Label,
+        { size: 12, style: { marginTop: 10 } },
+        'Experimental component fixture · Fast Refresh is not enabled · Physical interaction requires observation.'
+      )
   );
 }
 

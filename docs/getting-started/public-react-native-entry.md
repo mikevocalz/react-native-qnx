@@ -12,7 +12,9 @@ module.exports = withPublicEntry(getQnxMetroConfig(__dirname), 'qnx');
 
 For Marathon, wrap the existing getMarathonMetroConfig result and select marathon. Other platform requests and non-root requests retain the original resolver. This subpath is included in the package file list, but no new package publication is claimed.
 
-The initial exports are AppRegistry, View, Text, Image, ScrollView, FlatList, SectionList, TextInput, Pressable, ActivityIndicator, Switch, Modal, StyleSheet, Platform and Animated. They retain the actual component-support limits; an export existing is not full native parity. Unimplemented exports such as BackHandler or Alert throw an explicit error rather than yielding a fake implementation. CommonJS interop metadata and promise introspection are exempt from those errors.
+The current exports are AppRegistry, AppState, View, Text, Image, ScrollView, FlatList, SectionList, TextInput, Pressable, ActivityIndicator, Switch, Modal, StyleSheet, Platform, I18nManager and Animated. They retain the actual component-support limits; an export existing is not full native parity. Unimplemented exports such as BackHandler or Alert throw an explicit error rather than yielding a fake implementation. CommonJS interop metadata and promise introspection are exempt from those errors.
+
+VirtualizedList reads the public `I18nManager.isRTL` while mounting FlatList and SectionList. This export uses the pinned React Native implementation, including its left-to-right fallback when the optional native I18nManager is absent. It does not add native locale preferences or persistent RTL controls. The public native-host probe reads layout direction so successful bundling alone cannot conceal a missing runtime export.
 
 This is not Expo Router, native screen-stack, Worklets, Reanimated or Gesture Handler support. Those Phase3 interfaces remain unimplemented. The included public-api-probe exercises public View/Text/StyleSheet/AppRegistry/Platform imports and validates selected platform identity; it still uses the existing runner surface name. No new renderer, native bridge or C++ API is introduced.
 

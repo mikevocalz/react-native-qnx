@@ -15,6 +15,7 @@
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
 #include "react-native-qnx/fabric/QtTouchDispatcher.h"
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
+#include "react-native-qnx/runtime/QtImageCache.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
@@ -30,7 +31,9 @@
 
 #include <QByteArray>
 #include <QColor>
+#include <QDir>
 #include <QElapsedTimer>
+#include <QFile>
 #include <QFont>
 #include <QGuiApplication>
 #include <QImage>
@@ -44,6 +47,8 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QString>
+#include <QTemporaryDir>
+#include <QUrl>
 #include <QWheelEvent>
 
 #include <algorithm>
@@ -2476,39 +2481,88 @@ void imageBackgroundMounts() {
 
 /// `Image.resolveAssetSource` turns a bundler asset id into a URI.
 void imageResolveAssetSource() {
-  Fixture fixture;
-  fixture.host().installTurboModuleBinding();
-  fixture.host().installComponentProvider();
-  fixture.host().installPlatformConstants();
-  fixture.host().installTimers();
-
   std::ifstream bundleFile(RNQNX_PLAYGROUND_BUNDLE_PATH);
   const std::string bundle(
       (std::istreambuf_iterator<char>(bundleFile)),
       std::istreambuf_iterator<char>());
-  const std::string sourceUrl =
-      std::string("file://") + RNQNX_PLAYGROUND_BUNDLE_PATH;
-  EXPECT(fixture.host().evaluate(bundle, sourceUrl));
+  EXPECT(!bundle.empty());
+  QTemporaryDir directory;
+  EXPECT(directory.isValid());
+  const QString bundleDirectory = directory.path() + QStringLiteral("/bundle #1");
+  EXPECT(QDir().mkpath(bundleDirectory + QStringLiteral("/assets")));
+  const QString bundlePath = bundleDirectory + QStringLiteral("/app.bundle.js");
+  const QString assetPath = bundleDirectory + QStringLiteral("/assets/qnx-asset.png");
+  QFile stagedBundle(bundlePath);
+  EXPECT(stagedBundle.open(QIODevice::WriteOnly));
+  EXPECT(stagedBundle.write(QByteArray::fromStdString(bundle)) == static_cast<qint64>(bundle.size()));
+  stagedBundle.close();
+  QImage asset(7, 5, QImage::Format_ARGB32);
+  asset.fill(Qt::red);
+  EXPECT(asset.save(assetPath, "PNG"));
+  const std::string fileUrl = QUrl::fromLocalFile(bundlePath).toString(QUrl::FullyEncoded).toStdString();
+  const QString assetUrl = QUrl::fromLocalFile(assetPath).toString(QUrl::FullyEncoded);
+  const std::vector<std::string> sourceUrls{
+      bundlePath.toStdString(),
+      QDir::current().relativeFilePath(bundlePath).toStdString(),
+      fileUrl,
+      "https://example.test/gallery/app.bundle.js?platform=qnx"};
 
-  fixture.window().setWidth(640);
-  fixture.window().setHeight(480);
-  fixture.window().show();
-  fixture.host().startSurface(
-      kSurfaceId, "RNQnxImageResolveAsset", 640.0F, 480.0F);
-  for (int i = 0; i < 20; ++i) {
-    fixture.host().runtime().drainMicrotasks();
-    fixture.host().pumpEvents();
+  for (const auto& sourceUrl : sourceUrls) {
+    Fixture fixture;
+    fixture.host().installTurboModuleBinding();
+    fixture.host().installComponentProvider();
+    fixture.host().installPlatformConstants();
+    fixture.host().installTimers();
+    // Capture the same native module RN reads, during the first evaluation.
+    // Publishing its URL only after evaluate() returns makes this empty.
+    EXPECT(fixture.host().evaluate(
+        "globalThis.__bundleSourceUrl = globalThis.nativeModuleProxy.SourceCode.getConstants().scriptURL;\n" + bundle,
+        sourceUrl));
+    const bool remote = sourceUrl.starts_with("https://");
+    auto& rt = fixture.host().runtime();
+    const auto scriptUrl = rt.global().getProperty(rt, "__bundleSourceUrl");
+    EXPECT(scriptUrl.isString());
+    EXPECT(scriptUrl.getString(rt).utf8(rt) == (remote ? sourceUrl : fileUrl));
+
+    fixture.window().setWidth(640);
+    fixture.window().setHeight(480);
+    fixture.window().show();
+    fixture.host().startSurface(
+        kSurfaceId, "RNQnxImageResolveAsset", 640.0F, 480.0F);
+    for (int i = 0; i < 20; ++i) {
+      fixture.host().runtime().drainMicrotasks();
+      fixture.host().pumpEvents();
+    }
+    EXPECT(fixture.host().delegate().lastFailures().empty());
+    const auto resolved = rt.global().getProperty(rt, "__imageAssetResolved");
+    EXPECT(resolved.isObject());
+    const auto uri = resolved.getObject(rt).getProperty(rt, "uri");
+    EXPECT(uri.isString());
+    const QString actualUrl = QString::fromStdString(uri.getString(rt).utf8(rt));
+    if (remote) {
+      EXPECT(actualUrl.startsWith(QStringLiteral(
+          "https://example.test/assets/qnx-asset.png?platform=qnx&hash=")));
+      continue;  // Verify URL identity without making a network request.
+    }
+    EXPECT(actualUrl == assetUrl);
+    EXPECT(QUrl(actualUrl).toLocalFile() == assetPath);
+
+    // Exercise the actual ImageLoader backend against the staged asset, not
+    // just a filename substring that also accepts file://assets/....
+    rnqnx::runtime::QtImageCache cache(1024, 1000);
+    bool decoded = false;
+    QSize decodedSize;
+    QString decodeError;
+    cache.load(actualUrl, {}, [&](QSize size, QString error) {
+      decoded = true;
+      decodedSize = size;
+      decodeError = std::move(error);
+    });
+    EXPECT(decoded);
+    EXPECT(decodeError.isEmpty());
+    EXPECT(decodedSize == QSize(7, 5));
+    EXPECT(cache.contains(actualUrl));
   }
-
-  EXPECT(fixture.host().delegate().lastFailures().empty());
-
-  auto& rt = fixture.host().runtime();
-  const auto resolved = rt.global().getProperty(rt, "__imageAssetResolved");
-  EXPECT(resolved.isObject());
-  const auto obj = resolved.getObject(rt);
-  const auto uri = obj.getProperty(rt, "uri");
-  EXPECT(uri.isString());
-  EXPECT(uri.getString(rt).utf8(rt).find("qnx-asset.png") != std::string::npos);
 }
 
 /// `NativeAnimated` updates a view prop on the mounted Qt Quick item.
@@ -2571,10 +2625,27 @@ void modalMounts() {
   EXPECT(fixture.rootChildCount() == 1);
 
   QQuickItem* modal = fixture.root().childItems().at(0);
-  EXPECT(modal->childItems().size() == 1);
-  QQuickItem* content = modal->childItems().at(0);
-  EXPECT(content->property("color").value<QColor>() ==
-         QColor(QStringLiteral("#336699")));
+  EXPECT_NEAR(modal->x(), 0.0);
+  EXPECT_NEAR(modal->y(), 0.0);
+  EXPECT_NEAR(modal->width(), fixture.root().width());
+  EXPECT_NEAR(modal->height(), fixture.root().height());
+  // The native pointer barrier is a Qt-owned decoration. Identify and check
+  // the actual React content instead of assuming every visual child is Fabric.
+  QQuickItem* content = nullptr;
+  for (auto* child : modal->childItems()) {
+    if (child->property("color").value<QColor>() == QColor(QStringLiteral("#336699"))) {
+      EXPECT(content == nullptr);
+      content = child;
+    }
+  }
+  EXPECT(content != nullptr);
+  EXPECT_NEAR(content->width(), modal->width());
+  EXPECT_NEAR(content->height(), modal->height());
+  const auto children = content->childItems();
+  EXPECT(std::any_of(children.cbegin(), children.cend(), [](const auto* child) {
+    return child->property("text").toString() == QStringLiteral("Modal") &&
+        child->width() > 0 && child->height() > 0;
+  }));
 }
 
 /// A JavaScript error reaches the host instead of aborting the process.

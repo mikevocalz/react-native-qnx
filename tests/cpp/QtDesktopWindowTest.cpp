@@ -152,6 +152,19 @@ double clientFrameInteractions() {
   require(frame != nullptr, "Desktop client has no frame");
   require(frame->property("appWindow").value<QObject*>() == &window,
       "QML desktop did not retain the actual native window");
+  auto& initialMenuBar = itemNamed(*frame, "rnqnxMenuBar");
+  require(viewport.width() > 0 && viewport.height() > 0 && initialMenuBar.height() > 0 &&
+      std::abs(viewport.x() - 8) < 0.01 && std::abs(viewport.width() - 624) < 0.01 &&
+      std::abs(viewport.y() - (initialMenuBar.y() + initialMenuBar.height())) < 0.01 &&
+      std::abs(viewport.height() - (480 - viewport.y() - 8)) < 0.01,
+      "Client geometry is not ready before the first event-loop turn");
+  window.resize(680, 520);
+  require(std::abs(viewport.width() - 664) < 0.01 &&
+      std::abs(viewport.height() - (520 - viewport.y() - 8)) < 0.01,
+      "Client geometry did not follow resize before the first show");
+  window.resize(640, 480);
+  require(std::abs(viewport.width() - 624) < 0.01,
+      "Pre-show geometry did not return to the configured window size");
   auto client = createClient(engine, viewport);
   auto& target = itemNamed(*client, "desktopTestTarget");
   auto& minimize = itemNamed(*frame, "rnqnxMinimizeButton");
@@ -284,6 +297,11 @@ void systemFramePreservesNativeDecorations(double clientInset) {
   auto& viewport = desktop.contentItem();
   auto* frame = viewport.parentItem();
   require(frame != nullptr, "System-frame client has no frame item");
+  require(viewport.width() > 0 && viewport.height() > 0 &&
+      std::abs(viewport.width() - 640) < 0.01 &&
+      std::abs(viewport.y() - itemNamed(*frame, "rnqnxMenuBar").height()) < 0.01 &&
+      std::abs(viewport.height() - (480 - viewport.y())) < 0.01,
+      "System-frame client geometry is not ready before the first event-loop turn");
   window.show();
   window.requestActivate();
   waitFor([&] { return window.isActive() && viewport.width() > 0; },
