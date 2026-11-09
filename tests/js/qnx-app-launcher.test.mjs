@@ -83,6 +83,34 @@ try {
     '[Desktop Entry]\nName=Stock\nExec=/system/bin/stock\n'
   );
   const { configuration, icon } = await launcherConfiguration(project);
+  const recoveryHome = temporary + '/home/recovery';
+  const recoveryApp = recoveryHome + '/application';
+  const recoveryRegistry = recoveryHome + '/.local/share/rnqnx/launcher';
+  const incompleteStock = temporary + '/incomplete-stock';
+  await mkdir(recoveryApp, { recursive: true });
+  await copyFile(deployed + '/app', recoveryApp + '/app');
+  await chmod(recoveryApp + '/app', 0o700);
+  await mkdir(incompleteStock);
+  await copyFile(stock + '/stock.desktop', incompleteStock + '/stock.desktop');
+  shell(
+    installLauncherScript(configuration, recoveryHome, recoveryApp, 'app', false, incompleteStock),
+    false,
+    { HOME: recoveryHome }
+  );
+  check(
+    (await readFile(recoveryRegistry + '/owner', 'utf8')).includes('react-native-qnx/launcher-v1')
+  );
+  await copyFile(stock + '/desktop.conf', incompleteStock + '/desktop.conf');
+  await writeFile(recoveryRegistry + '/incoming-' + configuration.appId + '.png', icon);
+  shell(
+    installLauncherScript(configuration, recoveryHome, recoveryApp, 'app', false, incompleteStock),
+    true,
+    { HOME: recoveryHome }
+  );
+  check(
+    (await readFile(recoveryRegistry + '/base.conf', 'utf8')) ===
+      (await readFile(stock + '/desktop.conf', 'utf8'))
+  );
   check(configuration.appId === app.expo.extra.rnqnx.appId && configuration.icon.width === 1024);
   const dry = await prepareLauncher(project, true);
   check(dry.configuration.icon.sha256 === configuration.icon.sha256);

@@ -183,8 +183,6 @@ if test -f ${q(registry + '/owner')}; then
 else
   test -z "$(ls -A ${q(registry)})" || { echo 'Refusing to adopt unowned launcher directory' >&2; exit 1; }
   printf '%s\\n' ${q(LAUNCHER_GENERATOR)} >${q(registry + '/owner')}
-  cp ${q(stockDirectory)}/*.desktop ${q(registry + '/')}
-  cp ${q(stockDirectory + '/desktop.conf')} ${q(registry + '/base.conf')}
 fi
 mkdir ${q(registry + '/lock')} || { echo 'Another launcher operation is active' >&2; exit 1; }
 trap 'rmdir ${registry}/lock' EXIT
@@ -192,6 +190,24 @@ trap 'exit 130' HUP INT TERM
 safe_directory ${q(registry + '/apps')}
 safe_file ${q(registry + '/base.conf')}
 safe_file ${q(registry + '/desktop.conf.new')}
+if test ! -s ${q(registry + '/base.conf')}; then
+  for desktop in ${q(stockDirectory)}/*.desktop; do
+    name="\${desktop##*/}"
+    safe_file "${registry}/$name"
+    if test -f "${registry}/$name"; then
+      if grep -Fx ${q('X-RNQNX-Generated-By=' + LAUNCHER_GENERATOR)} "${registry}/$name" >/dev/null; then
+        echo 'Stock snapshot collides with a registered application' >&2; exit 1
+      fi
+    fi
+    safe_file "${registry}/$name.new"
+    cp "$desktop" "${registry}/$name.new"
+    mv "${registry}/$name.new" "${registry}/$name"
+  done
+  safe_file ${q(registry + '/base.conf.new')}
+  cp ${q(stockDirectory + '/desktop.conf')} ${q(registry + '/base.conf.new')}
+  test -s ${q(registry + '/base.conf.new')} || exit 1
+  mv ${q(registry + '/base.conf.new')} ${q(registry + '/base.conf')}
+fi
 `;
 }
 
