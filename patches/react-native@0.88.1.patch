@@ -289,3 +289,15 @@ diff --git a/ReactCommon/react/renderer/core/RawProps.cpp b/ReactCommon/react/re
  }
 
  /*
+diff --git a/ReactCommon/react/renderer/animationbackend/AnimationBackend.cpp b/ReactCommon/react/renderer/animationbackend/AnimationBackend.cpp
+--- a/ReactCommon/react/renderer/animationbackend/AnimationBackend.cpp
++++ b/ReactCommon/react/renderer/animationbackend/AnimationBackend.cpp
+@@ -227,7 +227,7 @@
+     const std::set<SurfaceId>& surfaces) {
+   react_native_assert(
+       jsInvoker_ != nullptr ||
+-      surfaces.empty() && "jsInvoker_ was not provided");
++      (surfaces.empty() && "jsInvoker_ was not provided"));
+   std::weak_ptr<AnimatedPropsRegistry> weakAnimatedPropsRegistry =
+       animatedPropsRegistry_;
+   for (const auto& surfaceId : surfaces) {

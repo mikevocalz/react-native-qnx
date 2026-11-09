@@ -259,6 +259,31 @@ for (const [file, signature] of [
   assert.ok(source.includes('\n#include <cstdlib>\n'), 'Missing abort declaration: ' + file);
   assert.match(block(source, signature), /\n  std::abort\(\);\n\}$/);
 }
+const animation = await readFile(
+  new URL('animationbackend/AnimationBackend.cpp', renderer),
+  'utf8'
+);
+const flushAssertion = block(
+  animation,
+  'void AnimationBackend::requestAsyncFlushForSurfaces('
+).match(/react_native_assert\([\s\S]*?\);/)?.[0];
+assert.ok(flushAssertion, 'Missing pinned async-flush invoker assertion.');
+functions.push(
+  'void checkAsyncFlushAssertion(bool hasInvoker, bool empty) {\n' +
+    'int invoker{};\nauto* jsInvoker_ = hasInvoker ? &invoker : nullptr;\n' +
+    'const std::set<int> surfaces = empty ? std::set<int>{} : std::set<int>{1};\n' +
+    flushAssertion +
+    '\n}'
+);
+const assertionChecks = [
+  'checkAsyncFlushAssertion(true, true);',
+  'checkAsyncFlushAssertion(true, false);',
+  'checkAsyncFlushAssertion(false, true);',
+];
+const abortCases = [
+  ...invalid,
+  { name: 'async-flush-missing-invoker', call: 'checkAsyncFlushAssertion(false, false);' },
+];
 const compiler = spawnSync('c++', ['--version'], { encoding: 'utf8', timeout: 15000 });
 const missingCompiler =
   compiler.error && 'code' in compiler.error && compiler.error.code === 'ENOENT';
@@ -272,14 +297,18 @@ if (process.platform !== 'linux' || missingCompiler) {
     const executable = path.join(root, 'conversions');
     await writeFile(
       source,
-      '#include <cstdint>\n#include <cstdlib>\n#include <string>\nnamespace facebook::react {\n' +
+      '#include <cstdint>\n#include <cstdlib>\n#include <set>\n#include <string>\n' +
+        '#define react_native_assert(cond) do { if (!(cond)) std::abort(); } while (false)\n' +
+        'namespace facebook::react {\n' +
         [...declarations.values(), ...functions].join('\n') +
         '\n}\nint main(int argc, char** argv) {\nusing namespace facebook::react;\nif (argc == 2) {\n' +
-        invalid
+        abortCases
           .map((item) => 'if (std::string(argv[1]) == "' + item.name + '") ' + item.call)
           .join('\n') +
         '\nreturn 99;\n}\n' +
         checks.join('\n') +
+        '\n' +
+        assertionChecks.join('\n') +
         '\nreturn 0;\n}\n'
     );
     const build = spawnSync(
@@ -295,18 +324,19 @@ if (process.platform !== 'linux' || missingCompiler) {
         timeout: 15000,
       });
     assert.equal(run([]).status, 0, 'Valid enum conversions must retain their results.');
-    for (const item of invalid)
+    for (const item of abortCases)
       assert.equal(
         run([item.name]).signal,
         'SIGABRT',
-        'Invalid fixed-underlying enum must abort: ' + item.name
+        'Invalid conversion/assertion must abort: ' + item.name
       );
     console.log(
       'React Native enum conversions: ' +
         checks.length +
         ' valid values and ' +
         invalid.length +
-        ' invalid-value abort paths passed (host snippets only; no device claim).'
+        ' invalid-value abort paths; async-flush assertion: 3 valid cases and 1 abort passed ' +
+        '(host snippets only; no device claim).'
     );
   } finally {
     await rm(root, { recursive: true, force: true });
