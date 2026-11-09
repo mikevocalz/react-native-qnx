@@ -36,6 +36,7 @@
 #include <QFile>
 #include <QFont>
 #include <QGuiApplication>
+#include <QScreen>
 #include <QImage>
 #include <QKeyEvent>
 #include <QList>
@@ -369,6 +370,32 @@ void sourceCodeIdentifiesTheBundleDuringEvaluation() {
   const auto value = runtime.global().getProperty(runtime, "sourceUrlDuringEvaluation");
   EXPECT(value.isString());
   EXPECT(value.getString(runtime).utf8(runtime) == sourceUrl);
+}
+
+void unobservedHostSeedsScreenMetricsFromPrimaryScreen() {
+  const auto* screen = QGuiApplication::primaryScreen();
+  EXPECT(screen != nullptr);
+  const auto screenSize = screen->geometry().size();
+  const double ratio = screen->devicePixelRatio();
+  EXPECT(screenSize.width() > 0 && screenSize.height() > 0);
+
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  fixture.host().startEmptySurface(kSurfaceId, 640.0F, 480.0F);
+  EXPECT(fixture.host().evaluate(
+      "const d = nativeModuleProxy.DeviceInfo.getConstants().Dimensions;"
+      "globalThis.dimensionsProbe = [d.window.width, d.window.height, d.window.scale,"
+      " d.screen.width, d.screen.height, d.screen.scale];",
+      "dimensions-probe.js"));
+  auto& runtime = fixture.host().runtime();
+  const auto probe = runtime.global().getPropertyAsObject(runtime, "dimensionsProbe")
+                         .asArray(runtime);
+  EXPECT_NEAR(probe.getValueAtIndex(runtime, 0).getNumber(), 640.0);
+  EXPECT_NEAR(probe.getValueAtIndex(runtime, 1).getNumber(), 480.0);
+  EXPECT_NEAR(probe.getValueAtIndex(runtime, 2).getNumber(), ratio);
+  EXPECT_NEAR(probe.getValueAtIndex(runtime, 3).getNumber(), screenSize.width());
+  EXPECT_NEAR(probe.getValueAtIndex(runtime, 4).getNumber(), screenSize.height());
+  EXPECT_NEAR(probe.getValueAtIndex(runtime, 5).getNumber(), ratio);
 }
 
 void javaScriptErrorsAreReportedNotSwallowed() {
@@ -2952,6 +2979,8 @@ int main(int argc, char** argv) {
       {"runtimeEvaluatesJavaScript", runtimeEvaluatesJavaScript},
       {"sourceCodeIdentifiesTheBundleDuringEvaluation",
        sourceCodeIdentifiesTheBundleDuringEvaluation},
+      {"unobservedHostSeedsScreenMetricsFromPrimaryScreen",
+       unobservedHostSeedsScreenMetricsFromPrimaryScreen},
       {"javaScriptErrorsAreReportedNotSwallowed",
        javaScriptErrorsAreReportedNotSwallowed},
       {"evaluateRejectsReentrantJavaScript", evaluateRejectsReentrantJavaScript},

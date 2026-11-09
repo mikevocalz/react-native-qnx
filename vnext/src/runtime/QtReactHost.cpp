@@ -50,6 +50,8 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QFileInfo>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QSysInfo>
 #include <QTimer>
 #include <QMetaObject>
@@ -75,6 +77,25 @@ using facebook::react::SurfaceHandler;
 using facebook::react::SurfaceId;
 using facebook::react::UnimplementedNativeViewComponentDescriptor;
 using facebook::react::ViewComponentDescriptor;
+
+/// Metrics for a host that never calls observeWindowMetrics. The surface size
+/// comes from the caller; screen size and pixel ratio come from the primary
+/// screen, as DeviceInfo reported before window observation existed. Runs on
+/// the owner thread, like every QtReactHost entry point. Without a
+/// QGuiApplication or primary screen the previous values are kept.
+WindowMetrics unobservedMetrics(const WindowMetrics& previous, float width, float height) {
+  auto metrics = previous;
+  metrics.windowSize = QSizeF(width, height);
+  if (const auto* screen = QGuiApplication::primaryScreen()) {
+    const auto ratio = screen->devicePixelRatio();
+    if (std::isfinite(ratio) && ratio > 0) {
+      metrics.screenSize = screen->geometry().size();
+      metrics.windowScale = ratio;
+      metrics.screenScale = ratio;
+    }
+  }
+  return metrics;
+}
 
 facebook::react::LayoutConstraints makeLayoutConstraints(float width, float height);
 
@@ -1091,9 +1112,7 @@ void QtReactHost::startSurface(
     width = static_cast<float>(impl_->windowMetrics.windowSize.width());
     height = static_cast<float>(impl_->windowMetrics.windowSize.height());
   } else if (!impl_->observedSurface) {
-    auto metrics = impl_->windowMetrics;
-    metrics.windowSize = QSizeF(width, height);
-    impl_->applyWindowMetrics(metrics);
+    impl_->applyWindowMetrics(unobservedMetrics(impl_->windowMetrics, width, height));
   }
 #if RNQNX_ENABLE_FRAME_TRACE
   const auto generation = impl_->trace ? impl_->trace->nextId() : 0;
@@ -1119,9 +1138,7 @@ void QtReactHost::startEmptySurface(
     width = static_cast<float>(impl_->windowMetrics.windowSize.width());
     height = static_cast<float>(impl_->windowMetrics.windowSize.height());
   } else if (!impl_->observedSurface) {
-    auto metrics = impl_->windowMetrics;
-    metrics.windowSize = QSizeF(width, height);
-    impl_->applyWindowMetrics(metrics);
+    impl_->applyWindowMetrics(unobservedMetrics(impl_->windowMetrics, width, height));
   }
   // See the header: stopping the surface calls RN$stopSurface even when no
   // React app was ever started. Defining it only if absent means a real bundle's
@@ -1168,9 +1185,7 @@ bool QtReactHost::resizeSurface(SurfaceId surfaceId, float width, float height) 
   found->second->constraintLayout(
       makeLayoutConstraints(width, height), makeLayoutContext(impl_->windowMetrics, width, height));
   if (!impl_->observedSurface) {
-    auto metrics = impl_->windowMetrics;
-    metrics.windowSize = QSizeF(width, height);
-    impl_->applyWindowMetrics(metrics);
+    impl_->applyWindowMetrics(unobservedMetrics(impl_->windowMetrics, width, height));
   }
   return true;
 }
