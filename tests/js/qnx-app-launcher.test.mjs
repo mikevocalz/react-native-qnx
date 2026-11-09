@@ -29,6 +29,7 @@ import {
   runLauncherTool,
 } from '../../packages/react-native-qnx-cli/src/launcher-device.mjs';
 import { prepareNativeMain } from '../../packages/react-native-qnx-cli/src/prepare-native.mjs';
+import { planNativeBuild } from '../../packages/react-native-qnx-cli/src/build-native.mjs';
 
 const temporary = await mkdtemp(path.join(tmpdir(), 'rnqnx-launcher-'));
 const project = path.join(temporary, 'consumer');
@@ -377,6 +378,77 @@ try {
     )
   );
   check(Date.now() - started < 2000);
+  // Planning must validate the launcher icon before any cross-build starts.
+  const planProject = temporary + '/plan-consumer';
+  const planEnv = { QNX_HOST: process.env.QNX_HOST, QNX_TARGET: process.env.QNX_TARGET };
+  process.env.QNX_HOST = '/fake/qnx/host';
+  process.env.QNX_TARGET = '/fake/qnx/target';
+  try {
+    await mkdir(planProject + '/assets', { recursive: true });
+    await mkdir(planProject + '/build/qnx', { recursive: true });
+    await writeFile(planProject + '/build/qnx/app.hbc', 'hbc fixture, not executed');
+    /** @param {Record<string, unknown>} extra */
+    const writeApp = (extra) =>
+      writeFile(planProject + '/app.json', JSON.stringify({ expo: { ...app.expo, ...extra } }));
+    const prepare = () =>
+      prepareNativeMain(['--project', planProject, '--bundle', 'build/qnx/app.hbc']);
+    // Iconless consumers still plan successfully.
+    await writeApp({ icon: undefined });
+    await prepare();
+    check((await planNativeBuild(planProject, 'qnx')).appId === 'org.example.notes');
+    await rm(planProject + '/build/qnx/native-app.json');
+    // A good icon plans successfully.
+    await writeApp({});
+    await copyFile('packages/react-native-qnx-cli/assets/icon.png', planProject + '/assets/icon.png');
+    await prepare();
+    check((await planNativeBuild(planProject, 'qnx')).appId === 'org.example.notes');
+    // Each bad icon is rejected by planning with a launcher error, not a later build error.
+    const good = await readFile(planProject + '/assets/icon.png');
+    const withSize = (/** @type {number} */ width, /** @type {number} */ height) => {
+      const altered = Buffer.from(good);
+      altered.writeUInt32BE(width, 16);
+      altered.writeUInt32BE(height, 20);
+      altered.writeUInt32BE(crc32(altered.subarray(12, 29)), 29);
+      return altered;
+    };
+    const crcBroken = Buffer.from(good);
+    crcBroken[30] ^= 1;
+    const iconCases = {
+      'non-square': withSize(512, 1024),
+      oversize: withSize(2049, 2049),
+      'trailing bytes': Buffer.concat([good, Buffer.from('trailing')]),
+      'bad crc': crcBroken,
+    };
+    for (const [label, bytes] of Object.entries(iconCases)) {
+      await writeFile(planProject + '/assets/icon.png', bytes);
+      await assert.rejects(
+        () => planNativeBuild(planProject, 'qnx'),
+        (/** @type {Error} */ error) => !/QNX_HOST|\.hbc/.test(error.message),
+        label
+      );
+      checks++;
+    }
+    await rm(planProject + '/assets/icon.png');
+    await assert.rejects(
+      () => planNativeBuild(planProject, 'qnx'),
+      (/** @type {NodeJS.ErrnoException} */ error) => error.code === 'ENOENT',
+      'missing icon'
+    );
+    checks++;
+    await symlink(temporary + '/secret.png', planProject + '/assets/icon.png');
+    await assert.rejects(() => planNativeBuild(planProject, 'qnx'), /symlink/i, 'symlinked icon');
+    checks++;
+    // prepare-native must reject a bad icon before writing the descriptor.
+    await rm(planProject + '/assets/icon.png');
+    await rm(planProject + '/build/qnx/native-app.json');
+    await writeFile(planProject + '/assets/icon.png', iconCases['bad crc']);
+    await rejects(() => prepare());
+    await rejects(() => lstat(planProject + '/build/qnx/native-app.json'));
+  } finally {
+    for (const [name, value] of Object.entries(planEnv))
+      if (value === undefined) delete process.env[name];
+      else process.env[name] = value;
+  }
   console.log(
     `QNX launcher: ${checks} checks passed (host configuration/filesystem/SSH planning only; physical UI separate).`
   );

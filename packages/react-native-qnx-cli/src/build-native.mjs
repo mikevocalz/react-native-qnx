@@ -5,7 +5,7 @@ import { lstat, readFile, realpath, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { nativeConfiguration } from './prepare-native.mjs';
-import { prepareLauncher } from './launcher.mjs';
+import { launcherConfiguration, prepareLauncher } from './launcher.mjs';
 
 const platformRoot = path.resolve(import.meta.dirname, '../../..');
 const HELP = [
@@ -32,6 +32,11 @@ async function smallRegular(file) {
   return readFile(file, 'utf8');
 }
 
+/** @param {any} app */
+function hasLauncherIcon(app) {
+  return !!(app?.expo?.icon || app?.expo?.extra?.rnqnx?.qnx?.icon);
+}
+
 /** @param {string} root @param {string} platform @param {boolean} preview */
 export async function planNativeBuild(root, platform = 'qnx', preview = false) {
   if (preview && platform !== 'qnx') throw new Error('--host-preview applies only to QNX.');
@@ -48,7 +53,10 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
   // Revalidate the exact selected bundle, including QNX .hbc inputs. A stale
   // descriptor must never silently point to a different JS entry.
   const relativeBundle = path.relative(project, original.bundle ?? '');
-  const { configuration } = await nativeConfiguration(project, platform, relativeBundle);
+  const { configuration, app } = await nativeConfiguration(project, platform, relativeBundle);
+  // Validate the launcher icon and runtime profile now so a bad icon fails
+  // before the cross-build, not after it. Iconless projects skip this.
+  if (platform === 'qnx' && hasLauncherIcon(app)) await launcherConfiguration(project);
   if (JSON.stringify(original) !== JSON.stringify(configuration)) {
     throw new Error(
       'Native descriptor is stale. Review the bundle and run project prepare-native.'
@@ -179,7 +187,7 @@ export async function buildNativeMain(args) {
     path.relative(plan.project, plan.configuration.bundle)
   );
   const launcher =
-    plan.platform === 'qnx' && (app?.expo?.icon || app?.expo?.extra?.rnqnx?.qnx?.icon)
+    plan.platform === 'qnx' && hasLauncherIcon(app)
       ? await prepareLauncher(plan.project)
       : null;
   console.log(

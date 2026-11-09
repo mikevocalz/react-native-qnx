@@ -164,6 +164,10 @@ export async function prepareNativeMain(argv) {
     values.platform ?? 'qnx',
     values.bundle
   );
+  const launcherIcon =
+    configuration.platform === 'qnx' && (app?.expo?.icon || app?.expo?.extra?.rnqnx?.qnx?.icon);
+  // Validate the launcher icon before writing any descriptor.
+  if (launcherIcon) await (await import('./launcher.mjs')).launcherConfiguration(root);
   const relative = `build/${configuration.platform}/native-app.json`;
   const output = await projectPath(root, relative, !values['dry-run']);
   const encoded = JSON.stringify(configuration, null, 2) + '\n';
@@ -190,7 +194,7 @@ export async function prepareNativeMain(argv) {
     }
   }
   const launcher =
-    configuration.platform === 'qnx' && (app?.expo?.icon || app?.expo?.extra?.rnqnx?.qnx?.icon)
+    launcherIcon
       ? await (await import('./launcher.mjs')).prepareLauncher(root, !!values['dry-run'])
       : null;
   console.log(
