@@ -1,5 +1,9 @@
 # Gallery input and desktop window repair: host evidence, 2026-11-09
 
+The [2026-11-10 owner report](gallery-owner-report-2026-11-10.md) records subsequent
+positive QNX feedback for the dependent PR #110. This dated receipt retains its
+original host-only artifact and test scope.
+
 The repaired gallery completes native Linux host interaction checks through the existing Qt Quick, Hermes, React and Fabric runtime. The final OFF configuration passed **18/18 CTests**. ON evidence combines **32 non-gallery passes from the preserved pre-compact full run** with a **final 2/2 gallery rerun**. A separate desktop configuration with the other experimental flags OFF passed **3/3 selected tests**. No physical QNX, QNX VM or Marathon/Wayland execution is claimed.
 
 ## Source identity and retained evidence

@@ -1,5 +1,13 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — PR #104 readiness follow-up
+
+Linux x86-64, Node 26.13.0, pnpm 12.8.1: frozen offline install, `node tests/js/qnx-component-conformance.test.mjs` and `node tests/js/host-renderer-contract.test.mjs` exit 0. These are fixture/source/inventory tests, not native renderer execution. No new QNX cross-build, physical interaction, VM, or Marathon/Wayland result is claimed for this documentation follow-up.
+
+`pnpm validate:docs`, `pnpm validate:dependencies`, `pnpm validate:architecture`, `pnpm validate:manifests`, and `pnpm exec tsc --noEmit` also exit 0. Generated documentation is synchronized; the lockfile is unchanged. These source/host checks do not qualify a target.
+
+Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
 ## 2026-10-03 braces security backport
 
 Host: Linux cloud workspace, Node 26.10.0, pnpm 12.8.1. No QNX SDK or target.

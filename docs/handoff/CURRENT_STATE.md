@@ -1,5 +1,11 @@
 # Current state
 
+## 2026-11-10 — PR #104 readiness follow-up
+
+The owner reports smooth QNX operation for PR #110. That inspected branch contains PR #104 at 3b414f1; the report does not specify the installed hashes, board/image, flags or actions. Retain it as owner-reported feedback alongside the existing host receipt. Corrected the stale Modal host note to reflect Escape/onRequestClose and viewport/background-input behavior without promoting device rows.
+
+Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
 Reconciled against `main` at `5f17504` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the
 [compatibility matrix](../getting-started/compatibility-matrix.md) are generated

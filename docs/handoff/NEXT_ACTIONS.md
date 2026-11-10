@@ -1,5 +1,11 @@
 # NEXT_ACTIONS.md
 
+## 2026-11-10 — PR #104 readiness follow-up
+
+Attach the tested artifact identities and actions to the positive owner feedback. Preserve existing #104 history; review #104 before the dependent #110 and verify the latter’s base/diff after retargeting. Keep ordinary gallery interaction, optional desktop behavior, and release qualification separate.
+
+Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
 ## Dependency-security follow-through (2026-10-03)
 
 Review the braces depth backport and guarded audit in `docs/security/braces.md`.

@@ -1,5 +1,11 @@
 # BLOCKERS.md
 
+## 2026-11-10 — PR #104 readiness follow-up
+
+The owner report does not identify exact executable/bundle/assets hashes or per-scenario actions. It supports continued acceptance review without establishing all optional desktop controls, modal focus, IME/accessibility, physical metrics or release readiness. The prior measured Linux host receipt remains dated evidence.
+
+Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
 ## GHSA-vfj7-8cjw-p6xm — No official braces fixed release
 
 As of 2026-10-03, npm latest is 3.0.3 and upstream PR #72 is still open.
