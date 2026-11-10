@@ -1,5 +1,14 @@
 # BLOCKERS.md
 
+## PR 106 review state — 2026-11-10
+
+The old async-helper Metro regression is repaired in `6b528c1`, and both
+reset-cache public bundles pass. This follow-up supplies the missing required
+handoff records. Its publication/CI review and the combined PR 110 Switch
+test-harness adaptation remain next; physical QNX/Marathon evidence is not
+inferred from another branch's smoke test.
+[Exact evidence and integration boundary](../validation/pr106-merge-readiness-2026-11-10.md).
+
 ## GHSA-vfj7-8cjw-p6xm — No official braces fixed release
 
 As of 2026-10-03, npm latest is 3.0.3 and upstream PR #72 is still open.

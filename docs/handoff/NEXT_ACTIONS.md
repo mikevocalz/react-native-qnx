@@ -1,5 +1,14 @@
 # NEXT_ACTIONS.md
 
+## PR 106 continuation — 2026-11-10
+
+Review/publish this follow-up and inspect its CI before resolving the handoff
+thread. When integrating PR 110, retain the style-array repair and move Switch
+style/prop checks into its retained-hook test harness; preserve all Image tests.
+Run `node tests/js/qnx-public-entry.test.mjs`,
+`node tests/js/qnx-public-entry-metro.test.mjs` and the combined controlled-Switch
+test/native-host checks. [Receipt and rollback](../validation/pr106-merge-readiness-2026-11-10.md).
+
 ## Dependency-security follow-through (2026-10-03)
 
 Review the braces depth backport and guarded audit in `docs/security/braces.md`.

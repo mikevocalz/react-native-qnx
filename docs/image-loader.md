@@ -125,7 +125,12 @@ rebuilt together; no QNX execution or whole-renderer-suite pass is implied.
 The `imageGetSize` playground fixture uses the QNX `Image` override, so the
 full-host test also checks its public result shape instead of bypassing it
 through `Image.ios`. The earlier ASan result above belongs to its cited baseline;
-the public-adapter change requires a fresh full-host run.
+the repaired public-adapter candidate `6b528c17967177f92b5894565fb0b93eac226dd2`
+subsequently passed the [full host renderer](https://github.com/mikevocalz/react-native-qnx/actions/runs/42652105343)
+and [public-import native host](https://github.com/mikevocalz/react-native-qnx/actions/runs/42652106074)
+workflows. The [candidate receipt](validation/pr106-merge-readiness-2026-11-10.md)
+records those runs separately from fresh local wrapper/Metro checks. Later
+integrated revisions still require their own validation.
 
 These checks are host evidence. QNX SDP 8.0.5 cross-compilation, Qt Network
 module size/build-time measurements, physical Pi networking/TLS/plugin behavior

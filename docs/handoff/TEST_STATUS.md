@@ -1,5 +1,14 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — PR 106 repaired public wrapper validation
+
+At `6b528c1`, public-entry VM contracts pass and reset-cache Metro produces
+684,415-byte QNX and 684,456-byte Marathon bundles. TypeScript, dependency
+source checks, documentation and formatting pass. Hosted native public-import,
+full-renderer, SDK, Marathon Metro and image-loader runs also passed at that
+implementation head. No fresh physical-target result is claimed.
+[Commands, workflow links and limits](../validation/pr106-merge-readiness-2026-11-10.md).
+
 ## 2026-10-03 braces security backport
 
 Host: Linux cloud workspace, Node 26.10.0, pnpm 12.8.1. No QNX SDK or target.

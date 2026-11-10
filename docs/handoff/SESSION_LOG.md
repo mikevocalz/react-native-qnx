@@ -1,5 +1,14 @@
 # SESSION_LOG.md
 
+## 2026-11-10 — PR 106 committed handoff and integration review
+
+Re-ran the public Image/Switch contract test, both isolated-cache Metro bundles,
+types and installed-source validation on `6b528c1`. Recorded later successful
+hosted native runs and updated the stale image guide statement. Inspected
+PR 110's controlled-Switch hooks and identified the combined-fixture work
+without changing this branch's runtime or tests.
+[Full receipt](../validation/pr106-merge-readiness-2026-11-10.md).
+
 ## 2026-10-04 — Replace arithmetic-only React QNX probe
 
 - Replaced UIManager-plus-arithmetic success with a real bundled React surface,

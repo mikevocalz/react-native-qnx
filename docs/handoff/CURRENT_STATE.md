@@ -1,5 +1,13 @@
 # Current state
 
+## PR 106 public-API review — 2026-11-10
+
+The repaired Image methods and Switch style composition at `6b528c1` have
+green hosted native/public-import checks. Public-wrapper tests and both real,
+reset-cache Metro bundles pass again locally. This follow-up updates records
+only. [Candidate receipt and PR 110 integration notes](../validation/pr106-merge-readiness-2026-11-10.md).
+Physical QNX/Marathon qualification and all seven v1 gates remain separate.
+
 Reconciled against `main` at `5f17504` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the
 [compatibility matrix](../getting-started/compatibility-matrix.md) are generated
