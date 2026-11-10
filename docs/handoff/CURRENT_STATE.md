@@ -1,5 +1,14 @@
 # Current state
 
+## PR 107 review follow-up — 2026-11-10
+
+SegmentFetcher argument validation at `507d06c` has subsequent green hosted
+Qt/Hermes execution, including the real regression test; the earlier missing
+local Clang run is historical. This documentation-only follow-up records
+installed RN 0.88.1/JSI source provenance and all six handoff artifacts.
+[Candidate receipt](../validation/pr107-merge-readiness-2026-11-10.md).
+The historical platform baseline and seven release gates remain unchanged.
+
 Reconciled against `main` at `5f17504` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the
 [compatibility matrix](../getting-started/compatibility-matrix.md) are generated

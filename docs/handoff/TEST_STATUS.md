@@ -1,5 +1,15 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — PR 107 hosted native evidence and provenance
+
+The `507d06c` full-host workflow passed input-lifecycle OFF and ON. The
+inspected OFF log built the actual host test and passed 14/14 CTests; its
+registered SegmentFetcher case covers invalid and valid callback boundaries.
+The follow-up rechecked installed header hashes, frozen dependencies,
+TypeScript, documentation and formatting. No fresh local native/ASan or
+physical target run is claimed.
+[Exact workflow links, commands and limits](../validation/pr107-merge-readiness-2026-11-10.md).
+
 ## 2026-10-03 braces security backport
 
 Host: Linux cloud workspace, Node 26.10.0, pnpm 12.8.1. No QNX SDK or target.

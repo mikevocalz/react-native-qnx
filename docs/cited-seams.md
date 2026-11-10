@@ -591,3 +591,33 @@ React Native 0.88.0-rc.3 package, before implementing these calls:
   existing contract; it does not introduce application TurboModules.
 
 Network module target measurements are pending in `docs/build-qt-modules.md`.
+
+## SegmentFetcher callback boundary (2026-11-10)
+
+PR #107 preserves React Native's internal compatibility module and its explicit
+unsupported-segment callback. It does not add segment loading or an application
+TurboModule. The guard in `vnext/src/runtime/QnxSegmentFetcher.cpp` was audited
+against the frozen installed React Native **0.88.1** package:
+
+| Native seam                                                                      | Installed source and governing contract                                                                                                                                                                            |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `TurboModule::MethodMetadata`, `TurboModule::create`                             | `ReactCommon/react/nativemodule/core/ReactCommon/TurboModule.h`: `meta.argCount` sets the host function's declared length; the lambda forwards the caller's actual `args` and `count` unchanged to `meta.invoker`. |
+| `HostFunctionType`, `Function::createFromHostFunction`                           | `ReactCommon/jsi/jsi/jsi.h`: `count` is the number of supplied arguments. `paramCount` is the function's `length` property, not a bounds check or padding guarantee.                                               |
+| `Value::isObject`, `Value::asObject`, `Object::isFunction`, `Object::asFunction` | `ReactCommon/jsi/jsi/jsi.h`: test object kind and callability before conversion. Check `count >= 3` before reading `args[2]`; short-circuit evaluation preserves that order.                                       |
+| `JSError(IRuntime&, const char*)`                                                | `ReactCommon/jsi/jsi/jsi.h`: delegates to the string-message constructor, creating a real JavaScript Error with the current stack.                                                                                 |
+
+Installed-header SHA-256 values, read after a frozen install using lock hash
+`b854ebe2e50a42b2e8e07124df065592d99d43b1d1a3a984b66d3835ad86c3e4`:
+
+- `TurboModule.h`: `81fdfa9d859eccad2a233a88ad6eefd6ea180e3b3538fe03f00e5760bfe33709`.
+- `jsi.h`: `db2f1ee9291340f3d05b11abdcdc3d12ac84c239e58599d4ef2ac06dbaa14d92`.
+
+Pinned upstream references: [TurboModule.h](https://github.com/facebook/react-native/blob/v0.88.1/packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModule.h)
+and [jsi.h](https://github.com/facebook/react-native/blob/v0.88.1/packages/react-native/ReactCommon/jsi/jsi/jsi.h).
+The actual installed headers above govern this candidate, including the
+repository's existing React Native patch. The real-Hermes
+`segmentFetcherValidatesCallbackBoundary` regression in
+`tests/cpp/QtReactHostHostTest.cpp` covers both method names, short arrays,
+non-callable values, exactly one supported-shape callback and propagation of its
+original exception. [The review receipt](validation/pr107-merge-readiness-2026-11-10.md)
+records subsequent hosted execution separately from local and device evidence.

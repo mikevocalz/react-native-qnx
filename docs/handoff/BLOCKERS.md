@@ -1,5 +1,13 @@
 # BLOCKERS.md
 
+## PR 107 review state — 2026-11-10
+
+Missing native provenance and handoff records are supplied by this follow-up.
+The initial local Clang blocker does not erase the later hosted Qt/Hermes
+test pass at `507d06c`. Published follow-up CI and independent review remain
+next; no candidate-specific QNX/Marathon run is recorded.
+[Evidence and remaining gates](../validation/pr107-merge-readiness-2026-11-10.md).
+
 ## GHSA-vfj7-8cjw-p6xm — No official braces fixed release
 
 As of 2026-10-03, npm latest is 3.0.3 and upstream PR #72 is still open.

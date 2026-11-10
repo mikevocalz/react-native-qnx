@@ -1,5 +1,14 @@
 # NEXT_ACTIONS.md
 
+## PR 107 continuation — 2026-11-10
+
+Review the [native seam](../cited-seams.md#segmentfetcher-callback-boundary-2026-11-10),
+publish this follow-up to `507d06c` and inspect its current-head CI before
+resolving the provenance and handoff threads. On the final combined native
+branch, rerun the existing full-host renderer workflow and
+`qt_react_host_host_test`; then retain QNX and Marathon target gates separately.
+[Commands, source hashes and rollback](../validation/pr107-merge-readiness-2026-11-10.md).
+
 ## Dependency-security follow-through (2026-10-03)
 
 Review the braces depth backport and guarded audit in `docs/security/braces.md`.

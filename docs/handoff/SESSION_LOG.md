@@ -1,5 +1,14 @@
 # SESSION_LOG.md
 
+## 2026-11-10 — PR 107 source provenance and handoff repair
+
+Read the frozen RN 0.88.1 TurboModule/JSI headers and the repository/pinned
+native skills, then recorded exact dispatch, callability and Error contracts.
+Inspected the successful `507d06c` hosted build/test log instead of repeating
+the older authoring-time native-test gap. Updated all required handoff records
+and generated structured state without changing native code or release gates.
+[Full receipt](../validation/pr107-merge-readiness-2026-11-10.md).
+
 ## 2026-10-04 — Replace arithmetic-only React QNX probe
 
 - Replaced UIManager-plus-arithmetic success with a real bundled React surface,
