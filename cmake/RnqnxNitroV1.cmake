@@ -28,6 +28,11 @@ function(rnqnx_add_nitro_v1_core)
   if(NOT DEFINED RNQNX_NITRO_CORE_ROOT)
     set(RNQNX_NITRO_CORE_ROOT "${RNQNX_NITRO_V1_REPO_ROOT}/node_modules/nitro-core")
   endif()
+  file(READ "${RNQNX_NITRO_CORE_ROOT}/package.json" core_package)
+  string(JSON core_version GET "${core_package}" version)
+  if(NOT core_version STREQUAL "1.0.0-alpha.nightly.105.g69d365fc9b18")
+    message(FATAL_ERROR "This host requires its reviewed Nitro alpha105 core; do not mix native runtime versions")
+  endif()
 
   if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
     include(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/dependencies/QnxNitroPatches.cmake)
@@ -73,6 +78,7 @@ function(rnqnx_add_nitro_v1_core)
     "${RNQNX_NITRO_V1_REPO_ROOT}/packages/qnx-nitro-runtime/cpp/NitroLogger.cpp"
     "${RNQNX_NITRO_V1_REPO_ROOT}/packages/qnx-nitro-runtime/cpp/ThreadUtils.cpp"
   )
+  set_target_properties(rnqnx_nitro_core PROPERTIES NITRO_CORE_VERSION "${core_version}")
   target_include_directories(rnqnx_nitro_core PUBLIC
     "${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi"
     "${_core_inc}"

@@ -23,6 +23,8 @@ function(rnqnx_add_nitro_qt_dispatcher)
     endif()
   endif()
   include(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/dependencies/NitroDispatcherPatches.cmake)
+  set_target_properties(rnqnx_nitro_core PROPERTIES
+    NITRO_SOURCE_COMPATIBILITY_PROFILE "rnqnx-qt-alpha105")
   add_library(rnqnx_nitro_qt STATIC
     "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../packages/qnx-nitro-runtime/cpp/QtNitroDispatcher.cpp")
   target_include_directories(rnqnx_nitro_qt PUBLIC

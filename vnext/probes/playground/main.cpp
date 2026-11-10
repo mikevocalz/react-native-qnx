@@ -16,6 +16,9 @@
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
 #include "react-native-qnx/runtime/ApplicationIdentity.h"
+#ifdef RNQNX_NATIVE_PACKAGES_HEADER
+#include RNQNX_NATIVE_PACKAGES_HEADER
+#endif
 #ifdef RNQNX_CONSUMER_APP_HEADER
 #include RNQNX_CONSUMER_APP_HEADER
 #endif
@@ -24,9 +27,11 @@
 
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
 #include "QnxNitroRuntime.hpp"
+#elif defined(RNQNX_PLAYGROUND_NITRO_MARATHON)
+#include "MarathonNitroRuntime.hpp"
+#endif
 #ifdef RNQNX_PLAYGROUND_NITRO_QT
 #include "QtNitroDispatcher.hpp"
-#endif
 #endif
 
 #include <QByteArray>
@@ -366,7 +371,14 @@ int main(int argc, char** argv) {
 #if RNQNX_ENABLE_INPUT_LIFECYCLE
   host.delegate().setTouchDispatcher(&touchDispatcher);
 #endif
-#ifdef RNQNX_PLAYGROUND_NITRO_QNX
+#ifdef RNQNX_PLAYGROUND_NITRO_MARATHON
+#ifdef RNQNX_PLAYGROUND_NITRO_QT
+  rnqnx::nitro::installMarathonNitroRuntime(
+      host.runtime(), std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue()));
+#else
+  rnqnx::nitro::installMarathonNitroRuntime(host.runtime());
+#endif
+#elif defined(RNQNX_PLAYGROUND_NITRO_QNX)
 #ifdef RNQNX_PLAYGROUND_NITRO_QT
   rnqnx::nitro::installQnxNitroRuntime(
       host.runtime(), std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue()));
@@ -378,6 +390,9 @@ int main(int argc, char** argv) {
   host.installComponentProvider();
   host.installPlatformConstants();
   host.installTimers();
+#ifdef RNQNX_NATIVE_PACKAGES_HEADER
+  rnqnx::nativepackages::registerPackages();
+#endif
 
   if (!host.evaluate(bundle.toStdString(), bundlePath.toStdString())) {
     std::fprintf(

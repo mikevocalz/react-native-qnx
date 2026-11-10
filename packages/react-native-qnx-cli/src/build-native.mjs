@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { spawn } from 'node:child_process';
-import { lstat, readFile, realpath, mkdir } from 'node:fs/promises';
+import { cp, lstat, readFile, readdir, realpath, mkdir, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { nativeConfiguration } from './prepare-native.mjs';
@@ -76,6 +77,35 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
     ...(preview ? ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'] : []),
     ...(platform === 'marathon' ? ['-DRNQNX_BUILD_MARATHON_HOST=ON'] : []),
   ];
+  let nativeRuntime;
+  if (configuration.nativePackages?.length) {
+    const require = createRequire(path.join(project, 'package.json'));
+    const manifest = await realpath(require.resolve('nitro-core/package.json'));
+    const bytes = await readFile(manifest);
+    const { version } = JSON.parse(bytes.toString('utf8'));
+    if (version !== '1.0.0-alpha.nightly.105.g69d365fc9b18') {
+      throw new Error(
+        "Native Qt packages require this host's pinned Nitro alpha105 core; select a matching app dependency."
+      );
+    }
+    for (const dependency of configuration.nativePackages) {
+      if (!dependency.nitroCoreVersions.includes(version))
+        throw new Error(
+          `${dependency.packageName} does not support the installed Nitro core ${version}.`
+        );
+    }
+    nativeRuntime = {
+      source: path.dirname(manifest),
+      version,
+      manifestSha256: createHash('sha256').update(bytes).digest('hex'),
+      destination: path.join(buildDir, 'native-dependencies/nitro-core'),
+    };
+    flags.push(
+      ...(platform === 'qnx' ? ['-DRNQNX_BUILD_NITRO_QNX=ON'] : []),
+      '-DRNQNX_ENABLE_NITRO_QT_DISPATCHER=ON',
+      `-DRNQNX_NITRO_CORE_ROOT=${nativeRuntime.destination}`
+    );
+  }
   if (platform === 'qnx' && !preview && !configuration.bundle.endsWith('.hbc')) {
     throw new Error('Real QNX builds require a prepared matching Hermes .hbc bundle.');
   }
@@ -101,7 +131,77 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
     build: ['cmake', '--build', buildDir, '--target', 'rnqnx_consumer_app', '--parallel', '2'],
     nativeBuildVerified: false,
     runtimeVerified: false,
+    ...(nativeRuntime ? { nativeRuntime } : {}),
   };
+}
+
+/** Preserve installed dependencies: the reviewed dispatcher patches apply only
+ * to a build-local copy. Existing copies must retain their input identity.
+ * @param {{source: string, version: string, manifestSha256: string, destination: string} | undefined} runtime
+ */
+export async function prepareNativeRuntime(runtime) {
+  if (!runtime) return;
+  const parent = path.dirname(runtime.destination);
+  const buildRoot = await realpath(path.dirname(parent));
+  try {
+    await mkdir(parent);
+  } catch (error) {
+    if (!(error instanceof Error && 'code' in error && error.code === 'EEXIST')) throw error;
+  }
+  const parentInfo = await lstat(parent);
+  if (
+    !parentInfo.isDirectory() ||
+    parentInfo.isSymbolicLink() ||
+    (await realpath(parent)) !== path.join(buildRoot, 'native-dependencies')
+  )
+    throw new Error('Native runtime dependencies must stay in the real build-local directory.');
+  const marker = runtime.destination + '-input.json';
+  const expected =
+    JSON.stringify({
+      source: runtime.source,
+      version: runtime.version,
+      manifestSha256: runtime.manifestSha256,
+    }) + '\n';
+  let destination;
+  try {
+    destination = await lstat(runtime.destination);
+  } catch (error) {
+    if (!isMissing(error)) throw error;
+  }
+  if (destination) {
+    if (
+      !destination.isDirectory() ||
+      destination.isSymbolicLink() ||
+      (await realpath(runtime.destination)) === (await realpath(runtime.source)) ||
+      (await readFile(marker, 'utf8')) !== expected
+    )
+      throw new Error(
+        'Native runtime copy changed; review and remove its native-dependencies directory before rebuilding.'
+      );
+  } else {
+    await cp(runtime.source, runtime.destination, {
+      recursive: true,
+      dereference: true,
+      errorOnExist: true,
+      force: false,
+    });
+    await writeFile(marker, expected, { flag: 'wx', mode: 0o600 });
+  }
+  // Reused builds may have been edited since their first configure. QNX and
+  // dispatcher patches both write within native/cpp; reject links throughout
+  // that tree, including future upstream patch targets.
+  const copyRoot = await realpath(runtime.destination);
+  const nativeTree = path.join(copyRoot, 'native/cpp');
+  const nativeInfo = await lstat(nativeTree);
+  if (
+    !nativeInfo.isDirectory() ||
+    nativeInfo.isSymbolicLink() ||
+    !(await realpath(nativeTree)).startsWith(copyRoot + path.sep)
+  )
+    throw new Error('Native patch sources escaped the build-local runtime copy.');
+  const entries = await readdir(nativeTree, { recursive: true, withFileTypes: true });
+  if (entries.some((entry) => entry.isSymbolicLink()))
+    throw new Error('Native patch sources contain a symlink outside the owned copy contract.');
 }
 
 /** @param {string[]} command */
@@ -158,6 +258,7 @@ export async function buildNativeMain(args) {
     return 0;
   }
   await mkdir(plan.buildDir, { recursive: true });
+  await prepareNativeRuntime(plan.nativeRuntime);
   await execute(plan.configure);
   await execute(plan.build);
   const stat = await lstat(plan.output);

@@ -52,6 +52,11 @@ function(rnqnx_add_marathon_host)
   add_executable(rnqnx_marathon_host
     "${CMAKE_CURRENT_SOURCE_DIR}/vnext/probes/playground/main.cpp")
   target_link_libraries(rnqnx_marathon_host PRIVATE rnqnx_react_host)
+  if(TARGET rnqnx_nitro_marathon AND TARGET rnqnx_nitro_qt)
+    target_link_libraries(rnqnx_marathon_host PRIVATE rnqnx_nitro_marathon rnqnx_nitro_qt)
+    target_compile_definitions(rnqnx_marathon_host PRIVATE
+      RNQNX_PLAYGROUND_NITRO_MARATHON=1 RNQNX_PLAYGROUND_NITRO_QT=1)
+  endif()
   rnqnx_enable_strict_warnings(rnqnx_marathon_host)
   add_dependencies(rnqnx_marathon_host rnqnx_marathon_playground_bundle)
   target_compile_definitions(rnqnx_marathon_host PRIVATE

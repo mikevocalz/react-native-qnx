@@ -3,8 +3,9 @@ import { createReadStream } from 'node:fs';
 import { lstat, mkdir, open, readFile, realpath, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
+import { discoverNativePackages } from './native-packages.mjs';
 
-/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string}} NativeConfiguration */
+/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string, nativePackages?: Awaited<ReturnType<typeof discoverNativePackages>>}} NativeConfiguration */
 const help = `React Native QNX native consumer configuration
   project prepare-native --project <directory> [--platform qnx|marathon]
                          [--bundle build/<platform>/app.bundle.js] [--dry-run]
@@ -130,6 +131,8 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
     bundle,
     bundleSha256: hash.digest('hex'),
   };
+  const nativePackages = await discoverNativePackages(root, platform);
+  if (nativePackages.length) configuration.nativePackages = nativePackages;
   return { root, configuration };
 }
 

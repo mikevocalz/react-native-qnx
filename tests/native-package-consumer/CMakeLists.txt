@@ -1,0 +1,56 @@
+cmake_minimum_required(VERSION 3.22)
+project(NativePackageConsumer LANGUAGES CXX)
+enable_testing()
+get_filename_component(RNQNX_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
+
+foreach(input RNQNX_NITRO_CORE_ROOT RNQNX_REACT_NATIVE_DIR RNQNX_NITRO_ROOT HERMES_SOURCE_DIR HERMES_BUILD_DIR NATIVE_PACKAGE_CONFIG)
+  if(NOT IS_ABSOLUTE "${${input}}" OR NOT EXISTS "${${input}}")
+    message(FATAL_ERROR "Supply ${input} as an existing absolute path")
+  endif()
+endforeach()
+file(REAL_PATH "${RNQNX_NITRO_CORE_ROOT}" core_copy)
+file(REAL_PATH "${RNQNX_REACT_NATIVE_DIR}/../nitro-core" installed_core)
+if(core_copy STREQUAL installed_core)
+  message(FATAL_ERROR "Use an isolated Nitro core copy; never patch installed dependencies")
+endif()
+find_package(Qt6 6.2 REQUIRED COMPONENTS Core)
+include("${RNQNX_ROOT}/cmake/RnqnxNitroV1.cmake")
+include("${RNQNX_ROOT}/cmake/dependencies/NitroDispatcherPatches.cmake")
+rnqnx_add_nitro_v1_core()
+set_target_properties(rnqnx_nitro_core PROPERTIES
+  NITRO_SOURCE_COMPATIBILITY_PROFILE "rnqnx-qt-alpha105")
+
+add_library(rnqnx_nitro_qt STATIC
+  "${RNQNX_ROOT}/vnext/src/runtime/QtRuntimeTaskQueue.cpp"
+  "${RNQNX_ROOT}/packages/qnx-nitro-runtime/cpp/QtNitroDispatcher.cpp")
+target_include_directories(rnqnx_nitro_qt PUBLIC
+  "${RNQNX_ROOT}/vnext/include" "${RNQNX_ROOT}/packages/qnx-nitro-runtime/cpp")
+target_compile_definitions(rnqnx_nitro_qt PUBLIC RNQNX_ENABLE_FRAME_TRACE=0)
+target_link_libraries(rnqnx_nitro_qt PUBLIC Qt6::Core rnqnx_nitro_core)
+
+add_library(probe_hermes SHARED IMPORTED)
+set_target_properties(probe_hermes PROPERTIES
+  IMPORTED_LOCATION "${HERMES_BUILD_DIR}/lib/libhermesvm.so"
+  INTERFACE_INCLUDE_DIRECTORIES "${HERMES_SOURCE_DIR}/API;${HERMES_SOURCE_DIR}/public")
+add_library(probe_jsi SHARED IMPORTED)
+set_target_properties(probe_jsi PROPERTIES IMPORTED_LOCATION "${HERMES_BUILD_DIR}/jsi/libjsi.so")
+
+add_executable(native_package_consumer main.cpp)
+target_link_libraries(native_package_consumer PRIVATE rnqnx_nitro_qt probe_hermes probe_jsi)
+file(READ "${NATIVE_PACKAGE_CONFIG}" native_config)
+string(JSON platform GET "${native_config}" platform)
+if(platform STREQUAL "marathon")
+  add_subdirectory("${RNQNX_ROOT}/native/platform/linux-host/nitro" marathon)
+  target_link_libraries(native_package_consumer PRIVATE rnqnx_nitro_marathon)
+  target_compile_definitions(native_package_consumer PRIVATE NATIVE_PACKAGE_MARATHON=1)
+elseif(platform STREQUAL "qnx")
+  add_subdirectory("${RNQNX_ROOT}/packages/qnx-nitro-runtime" qnx)
+  target_link_libraries(native_package_consumer PRIVATE rnqnx_nitro_qnx)
+else()
+  message(FATAL_ERROR "Native consumer platform must be qnx or marathon")
+endif()
+include("${RNQNX_ROOT}/cmake/RnqnxNativePackages.cmake")
+rnqnx_link_native_packages(native_package_consumer "${native_config}")
+string(JSON bundle GET "${native_config}" bundle)
+add_test(NAME native_package_qt_hermes COMMAND native_package_consumer "${bundle}")
+set_tests_properties(native_package_qt_hermes PROPERTIES TIMEOUT 30)

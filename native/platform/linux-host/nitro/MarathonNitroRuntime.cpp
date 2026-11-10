@@ -3,6 +3,8 @@
 
 #include <NitroModules/HybridClassRegistry.hpp>
 #include <NitroModules/InstallNitro.hpp>
+#include <stdexcept>
+#include <utility>
 
 namespace rnqnx::nitro {
 
@@ -15,9 +17,16 @@ void installMarathonNitroRuntime(facebook::jsi::Runtime& runtime) {
         "MarathonPlatformInfo", MarathonPlatformInfo::Class::get());
   }
 
-  // Deliberately no async dispatcher. The actual Qt JS loop must supply an
-  // owned dispatcher with cancellation/teardown before callbacks work.
+  // Synchronous hosts can omit a dispatcher; async hosts use the overload.
   margelo::nitro::install(runtime);
+}
+
+void installMarathonNitroRuntime(
+    facebook::jsi::Runtime& runtime,
+    std::shared_ptr<margelo::nitro::Dispatcher> dispatcher) {
+  if (!dispatcher) throw std::invalid_argument("Marathon async Nitro requires an owned JS dispatcher");
+  installMarathonNitroRuntime(runtime);
+  margelo::nitro::Dispatcher::installRuntimeGlobalDispatcher(runtime, std::move(dispatcher));
 }
 
 } // namespace rnqnx::nitro

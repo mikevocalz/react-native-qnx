@@ -1,5 +1,10 @@
 # Use the shared Forge Rust engines from the QNX native host
 
+For current installed Ignition packages and JavaScript class registration, use
+[the generic installed-package integration](installed-packages.md). The older
+checkout-based C++ owner below remains pinned to its original dependency and
+device receipt; it is a separate native fixture.
+
 This opt-in native slice links the same `nf-sys` Rust archive and per-document
 C++ adapter used by Nitro Forge. The host fixture exercises real Tally editing,
 formulas, undo/redo, snapshot restore, and reopening a saved document in a new

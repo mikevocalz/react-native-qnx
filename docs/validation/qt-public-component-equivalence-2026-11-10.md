@@ -136,6 +136,35 @@ implementations. All retain unverified target acceptance. The broader direct
 source import audit still reports APIs outside the frozen roster that are not
 implemented here, as described below.
 
+### Combined installed-native package integration
+
+The public slice is combined with the independently reviewed generic native
+discovery/registration change from local commit
+`eb2b9dbfc0a5366684387ebfa66c2f9e42078b1d`. It keeps product libraries as selected
+application dependencies, rechecks installed metadata and exact Nitro runtime
+requirements, and uses the distinct QNX or Marathon native installer. Runtime
+copies reject symlink paths that could redirect patching outside the build.
+
+The final packed Ignition archive
+`27d1d99c29d313fe78a8b24f13185ba5fde96904127b04050c2e3db9a81a1351` passed strict
+installation, unchanged Nitrogen regeneration, and actual Metro selection for
+both targets. Its public host factory and direct Nitro entry ran all eleven
+engine lifecycle scenarios through real Hermes, JSI and the Qt dispatcher.
+Separate adapter binaries reported the correct actual native platform and
+excluded the opposite platform class. This is Linux host native-engine
+evidence; the renderer/device rows above remain unverified.
+
+The five discovery/CMake/containment regressions, public export/I18nManager
+checks and eight-case Metro condition matrix pass on the combined branch.
+The first root rerun lacked CMake on PATH; rerunning with the existing CMake
+toolchain passed without weakening the configuration tests. The native review
+also passed 52 existing consumer-configuration checks and eight build-plan
+checks. The pinned target Rust archive and SDK remain explicit build inputs.
+
+The complete package, bundle and executable hashes are recorded in
+[Forge's installed-package receipt](https://github.com/mikevocalz/nitro-forge/blob/codex/qt-native-integration/docs/native/evidence/ignition-qt-2026-11-10.json)
+and its [scope and reproduction guide](https://github.com/mikevocalz/nitro-forge/blob/codex/qt-native-integration/docs/native/IGNITION_QT.md).
+
 ## Remaining compatibility work and rollback
 
 The public export list and [component inventory](../component-support.md) are
