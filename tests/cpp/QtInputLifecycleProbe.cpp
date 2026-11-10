@@ -31,6 +31,9 @@ struct Observed {
   double target;
   double x;
   double timestamp;
+  double screenX;
+  double screenY;
+  double force;
   std::size_t active;
 };
 void run() {
@@ -76,6 +79,9 @@ void run() {
             touch.getProperty(runtime, "target").asNumber(),
             touch.getProperty(runtime, "pageX").asNumber(),
             touch.getProperty(runtime, "timestamp").asNumber(),
+            touch.getProperty(runtime, "screenX").asNumber(),
+            touch.getProperty(runtime, "screenY").asNumber(),
+            touch.getProperty(runtime, "force").asNumber(),
             payload.getPropertyAsObject(runtime, "touches").asArray(runtime).size(runtime)});
         if (forgetOnEnd && event.type == "topTouchEnd") dispatcher.forgetTag(501);
         return interceptOnly;  // Normally continue through Fabric to the real JS handler.
@@ -95,17 +101,30 @@ void run() {
     event.setTimestamp(timestamp);
     QCoreApplication::sendEvent(&input, &event);
   };
+  const auto synthesizedMouse = [&](QEvent::Type type, Qt::MouseButton button, Qt::MouseButtons buttons) {
+    QMouseEvent event(type, QPointF(20, 10), QPointF(20, 10), QPointF(220, 310),
+        button, buttons, Qt::NoModifier, Qt::MouseEventSynthesizedByQt);
+    QCoreApplication::sendEvent(&input, &event);
+  };
   touch(QEvent::TouchBegin, {
-      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {20, 10}),
+      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {220, 310}),
       QEventPoint(8, QEventPoint::Pressed, {20, 90}, {20, 90})}, 100);
   require(events.size() == 2 && events[0].target == 501 && events[1].target == 502,
       "decorated View hit testing failed");
+  require(events[0].x == 20 && events[0].screenX == 220 && events[0].screenY == 310,
+      "touch global coordinates were replaced with page coordinates");
+  synthesizedMouse(QEvent::MouseButtonPress, Qt::LeftButton, Qt::LeftButton);
+  synthesizedMouse(QEvent::MouseMove, Qt::NoButton, Qt::LeftButton);
+  require(events.size() == 2, "Qt synthesized mouse duplicated active touch");
   touch(QEvent::TouchEnd, {
-      QEventPoint(7, QEventPoint::Released, {60, 35}, {60, 35}),
+      QEventPoint(7, QEventPoint::Released, {60, 35}, {260, 335}),
       QEventPoint(8, QEventPoint::Stationary, {20, 90}, {20, 90})}, 250);
   require(events.size() == 3 && events.back().type == "topTouchEnd" &&
-      events.back().x == 60 && events.back().timestamp == 250 && events.back().active == 1,
+      events.back().x == 60 && events.back().timestamp == 250 && events.back().active == 1 &&
+      events.back().screenX == 260 && events.back().screenY == 335 && events.back().force == 0,
       "terminal payload or surviving contact failed");
+  synthesizedMouse(QEvent::MouseButtonRelease, Qt::LeftButton, Qt::NoButton);
+  require(events.size() == 3, "Qt synthesized mouse release duplicated touch end");
   QEvent deactivate(QEvent::WindowDeactivate);
   QCoreApplication::sendEvent(&input, &deactivate);
   QCoreApplication::sendEvent(&input, &deactivate);
@@ -122,12 +141,14 @@ void run() {
   touch(QEvent::TouchBegin, {QEventPoint(9, QEventPoint::Pressed, {300, 200}, {300, 200})}, 450);
   require(events.size() == 8, "removed responder captured outside touch");
   const auto mouse = [&](QEvent::Type type, Qt::MouseButton button, Qt::MouseButtons buttons) {
-    QMouseEvent event(type, QPointF(20, 10), QPointF(20, 10), button, buttons, Qt::NoModifier);
+    QMouseEvent event(type, QPointF(20, 10), QPointF(220, 310), button, buttons, Qt::NoModifier);
     QCoreApplication::sendEvent(&input, &event);
   };
   mouse(QEvent::MouseMove, Qt::NoButton, Qt::NoButton);
   require(events.size() == 8, "hover created a touch");
   mouse(QEvent::MouseButtonPress, Qt::LeftButton, Qt::LeftButton);
+  require(events.back().x == 20 && events.back().screenX == 220 && events.back().screenY == 310,
+      "mouse global coordinates were replaced with page coordinates");
   QEvent ungrab(QEvent::UngrabMouse);
   QCoreApplication::sendEvent(&input, &ungrab);
   mouse(QEvent::MouseButtonRelease, Qt::LeftButton, Qt::NoButton);
@@ -158,6 +179,9 @@ void run() {
         contact.getProperty(runtime, "target").asNumber() == expected.target &&
         contact.getProperty(runtime, "pageX").asNumber() == expected.x &&
         contact.getProperty(runtime, "timestamp").asNumber() == expected.timestamp &&
+        contact.getProperty(runtime, "screenX").asNumber() == expected.screenX &&
+        contact.getProperty(runtime, "screenY").asNumber() == expected.screenY &&
+        contact.getProperty(runtime, "force").asNumber() == expected.force &&
         payload.getPropertyAsObject(runtime, "touches").asArray(runtime).size(runtime) == expected.active,
         "JavaScript input payload mismatch");
   }

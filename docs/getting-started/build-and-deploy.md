@@ -19,10 +19,10 @@ From the repository root:
 pnpm validate:macos
 ```
 
-The dependency audit verifies the current workspace pins (Expo 58.0.0, React
-Native 0.88.0-rc.3, React 19.3.0, Metro 0.87.1, Nitro/Nitrogen 0.37.1,
-TypeScript 7.0.2, Node 26+, and pnpm 12.8.1), resolved Expo packages, Hermes
-source identity, and installed source symbols.
+The dependency audit verifies the exact workspace pins in `package.json` and
+`pnpm-lock.yaml`, resolved Expo packages, Hermes source identity, and installed
+source symbols. Use the matched repository baseline rather than independently
+upgrading runtime dependencies.
 
 Do not record this result as a QNX compile or runtime pass. QNX-specific follow-up belongs in `docs/handoff/QNX_VALIDATION_QUEUE.md`.
 
@@ -228,3 +228,33 @@ probe on the licensed SDP 8.0.5 toolchain, then cross-build the Qt Quick/Fabric
 runtime for QNX and move the host-proven JSX → Metro → Hermes → React/Fabric →
 Qt Quick pipeline onto the Pi. Nitro and Expo target validation follow on that
 same runtime.
+
+## Verify a binary deployment and restore the previous version
+
+With the target configured and a matching local build available:
+
+```bash
+./scripts/deploy-qnx.sh aarch64 rnqnx_playground Debug
+```
+
+The command stages the executable, downloads the staged bytes for an exact
+comparison, saves the existing executable under `.rnqnx-deploy/<app>/previous`, then replaces the
+active path by rename. A failed upload or comparison leaves the active binary
+and previous backup unchanged. A per-application lock refuses concurrent
+deployment or rollback. Target and backup symlinks are rejected.
+
+To restore the saved binary without a local build:
+
+```bash
+./scripts/deploy-qnx.sh aarch64 rnqnx_playground Debug --rollback
+```
+
+Rollback fails if no previous version exists. Neither command starts or stops a
+process: stop and relaunch your application separately when safe. This is a
+binary-only workflow, not a complete release bundle: JS/HBC, assets, Qt plugins,
+shared libraries and their licenses must be qualified and versioned together
+for production. No physical target validation is implied by host fixture tests.
+
+If a disconnected deployment leaves `.rnqnx-deploy/<app>/lock`, confirm that no
+deployment is still running before removing that staging directory manually.
+Do not delete an active lock to force a concurrent deployment.

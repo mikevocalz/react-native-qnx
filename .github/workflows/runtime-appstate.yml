@@ -10,6 +10,10 @@ on:
       - 'apps/rn-playground/appstate-probe.js'
       - 'tests/native/appstate/**'
       - 'cmake/RnqnxAppState.cmake'
+      - 'cmake/RnqnxBackHandler.cmake'
+      - 'tests/native/backhandler/**'
+      - 'apps/rn-playground/backhandler-probe.js'
+      - 'packages/react-native-qnx/Libraries/Utilities/BackHandler.js'
       - 'cmake/RnqnxReactQt.cmake'
       - '.github/workflows/runtime-appstate.yml'
   workflow_dispatch:
@@ -64,10 +68,10 @@ jobs:
           set -euo pipefail
           mkdir -p build/linux-host-renderer/evidence
           git rev-parse HEAD > build/linux-host-renderer/evidence/commit.txt
-          cmake --preset linux-host-renderer -DRNQNX_ENABLE_APP_STATE=${{ matrix.app-state }} -DRNQNX_BUILD_APPSTATE_TESTS=ON -DRNQNX_APPSTATE_SANITIZERS=ON
+          cmake --preset linux-host-renderer -DRNQNX_ENABLE_APP_STATE=${{ matrix.app-state }} -DRNQNX_BUILD_APPSTATE_TESTS=ON -DRNQNX_APPSTATE_SANITIZERS=ON -DRNQNX_ENABLE_BACK_HANDLER=${{ matrix.app-state }} -DRNQNX_BUILD_BACK_HANDLER_TESTS=ON -DRNQNX_BACK_HANDLER_SANITIZERS=ON
           node scripts/validate-host-renderer.mjs
-          ctest --test-dir build/linux-host-renderer -R '^rnqnx_appstate_' --no-tests=error --output-on-failure -V | tee build/linux-host-renderer/evidence/appstate.txt
-          sha256sum build/linux-host-renderer/rnqnx-appstate-*.bundle.js build/linux-host-renderer/bin/rnqnx_appstate_runtime_test > build/linux-host-renderer/evidence/appstate-sha256.txt
+          ctest --test-dir build/linux-host-renderer -R '^rnqnx_(appstate|back_handler)_' --no-tests=error --output-on-failure -V | tee build/linux-host-renderer/evidence/appstate.txt
+          sha256sum build/linux-host-renderer/rnqnx-appstate-*.bundle.js build/linux-host-renderer/bin/rnqnx_appstate_runtime_test build/linux-host-renderer/rnqnx-back-handler-*.bundle.js build/linux-host-renderer/bin/rnqnx_back_handler_runtime_test > build/linux-host-renderer/evidence/appstate-sha256.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:

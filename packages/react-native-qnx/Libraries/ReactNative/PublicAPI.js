@@ -48,6 +48,33 @@ const api = Object.freeze({
   get Platform() {
     return require('react-native/Libraries/Utilities/Platform').default;
   },
+  get TurboModuleRegistry() {
+    return require('react-native/Libraries/TurboModule/TurboModuleRegistry');
+  },
+  get NativeModules() {
+    return require('react-native/Libraries/BatchedBridge/NativeModules').default;
+  },
+  get NativeEventEmitter() {
+    return require('react-native/Libraries/EventEmitter/NativeEventEmitter').default;
+  },
+  get NativeComponentRegistry() {
+    return require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+  },
+  get findNodeHandle() {
+    return require('react-native/Libraries/ReactNative/RendererProxy').findNodeHandle;
+  },
+  get BackHandler() {
+    return require('react-native/Libraries/Utilities/BackHandler').default;
+  },
+  get Dimensions() {
+    return require('react-native/Libraries/Utilities/Dimensions').default;
+  },
+  get PixelRatio() {
+    return require('react-native/Libraries/Utilities/PixelRatio').default;
+  },
+  get useWindowDimensions() {
+    return require('react-native/Libraries/Utilities/useWindowDimensions').default;
+  },
   get Animated() {
     return require('react-native/Libraries/Animated/Animated').default;
   },

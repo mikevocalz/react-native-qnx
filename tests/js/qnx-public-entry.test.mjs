@@ -16,7 +16,9 @@ vm.runInNewContext(exportsSource, {
   module,
   require: (/** @type {string} */ name) => {
     loaded.push(name);
-    return { default: values, AppRegistry: values };
+    if (name.endsWith('/TurboModuleRegistry') || name.endsWith('/NativeComponentRegistry'))
+      return values;
+    return { default: values, AppRegistry: values, findNodeHandle: values };
   },
 });
 assert.equal(loaded.length, 0, 'Public imports stay lazy until read');
@@ -37,12 +39,24 @@ const expected = [
   'Modal',
   'StyleSheet',
   'Platform',
+  'TurboModuleRegistry',
+  'NativeModules',
+  'NativeEventEmitter',
+  'NativeComponentRegistry',
+  'findNodeHandle',
+  'BackHandler',
+  'Dimensions',
+  'PixelRatio',
+  'useWindowDimensions',
   'Animated',
 ];
 assert.deepEqual(Object.keys(api), expected);
 for (const name of expected) assert.equal(api[name], values);
 assert.equal(loaded.length, expected.length);
-for (const name of ['Alert', 'BackHandler', 'NonexistentExport']) {
+for (const name of ['Dimensions', 'PixelRatio', 'useWindowDimensions']) {
+  assert.ok(loaded.includes(`react-native/Libraries/Utilities/${name}`));
+}
+for (const name of ['Alert', 'Linking', 'NonexistentExport']) {
   assert.throws(() => api[name], /not implemented/);
 }
 assert.equal(api.__esModule, undefined);

@@ -20,6 +20,8 @@
 #include <string>
 #include <vector>
 
+class QWindow;
+
 namespace rnqnx::runtime {
 
 /// Drives React Native's event beat from the Qt event loop.
@@ -186,6 +188,11 @@ class QtReactHost {
   /// returns nullptr so `getEnforcing` fails with the module's name, which
   /// ADR-0004 requires over empty TurboModules that silence the error.
   void installTurboModuleBinding();
+#if RNQNX_ENABLE_BACK_HANDLER
+  /// Attach exactly one host window after installing the RN binding. nullptr
+  /// detaches and cancels queued old-window Back events. Borrowed via QPointer.
+  void setBackHandlerWindow(QWindow* window);
+#endif
 
   /// Errors JavaScript has reported through ExceptionsManager, oldest first.
   const std::vector<JavaScriptError>& javaScriptErrors() const;

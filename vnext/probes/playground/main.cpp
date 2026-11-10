@@ -375,6 +375,9 @@ int main(int argc, char** argv) {
 #endif
 #endif
   host.installTurboModuleBinding();
+#if RNQNX_ENABLE_BACK_HANDLER
+  host.setBackHandlerWindow(&window);
+#endif
   host.installComponentProvider();
   host.installPlatformConstants();
   host.installTimers();

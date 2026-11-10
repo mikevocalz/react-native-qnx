@@ -718,14 +718,16 @@ void inputLifecycleOptOutPreservesExistingDispatch() {
   Fixture fixture(false);
   mountTouchFixture(fixture);
   sendTouch(fixture, QEvent::TouchBegin, {
-      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {20, 10})});
+      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {220, 310})});
   sendTouch(fixture, QEvent::TouchCancel, {});
   sendTouch(fixture, QEvent::TouchEnd, {
-      QEventPoint(7, QEventPoint::Released, {40, 20}, {40, 20})});
+      QEventPoint(7, QEventPoint::Released, {40, 20}, {240, 320})});
   EXPECT(fixture.host().evaluate(R"JS(
     if (touchEvents.length !== 2 || touchEvents[0].type !== 'topTouchStart' ||
         touchEvents[1].type !== 'topTouchEnd' ||
-        touchEvents[1].payload.changedTouches[0].pageX !== 20)
+        touchEvents[1].payload.changedTouches[0].pageX !== 20 ||
+        touchEvents[0].payload.changedTouches[0].screenX !== 20 ||
+        touchEvents[1].payload.changedTouches[0].force !== 1)
       throw new Error('opt-out changed the existing input contract');
   )JS", "touch-opt-out-check.js"));
 }

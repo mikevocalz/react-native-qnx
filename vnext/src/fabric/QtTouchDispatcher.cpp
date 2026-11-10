@@ -16,6 +16,12 @@ namespace {
 using facebook::react::Touch;
 using facebook::react::TouchEvent;
 
+facebook::react::Point reactPoint(const QPointF& point) {
+  return {
+      .x = static_cast<facebook::react::Float>(point.x()),
+      .y = static_cast<facebook::react::Float>(point.y())};
+}
+
 /// Builds the React Native touch payload from the current active set.
 /// `changed` is the touch this event is about. `targetTouches` is every active
 /// touch that started on the same view as `changed`.
@@ -221,6 +227,14 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
   if (type == QEvent::MouseButtonPress || type == QEvent::MouseMove ||
       type == QEvent::MouseButtonRelease) {
     auto* mouseEvent = static_cast<QMouseEvent*>(event);
+    // Qt may synthesize a mouse stream after an unaccepted touch event.
+    // The touch path below already delivers those contacts to Fabric; allowing
+    // the synthesized stream would produce a second press for one finger.
+    // Preserve real/system/application mouse streams and the opt-out behavior.
+    if (inputLifecycleEnabled_ &&
+        mouseEvent->source() == Qt::MouseEventSynthesizedByQt) {
+      return QObject::eventFilter(watched, event);
+    }
     const QPointF windowPoint = mouseEvent->position();
     const double timestampSeconds =
         static_cast<double>(mouseEvent->timestamp()) / 1000.0;
@@ -263,7 +277,8 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
     touch.pagePoint = {
         .x = static_cast<facebook::react::Float>(windowPoint.x()),
         .y = static_cast<facebook::react::Float>(windowPoint.y())};
-    touch.screenPoint = touch.pagePoint;
+    touch.screenPoint = inputLifecycleEnabled_
+        ? reactPoint(mouseEvent->globalPosition()) : touch.pagePoint;
     touch.offsetPoint = {
         .x = static_cast<facebook::react::Float>(
             item->mapFromScene(windowPoint).x()),
@@ -339,7 +354,8 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
         touch.pagePoint = {
             .x = static_cast<facebook::react::Float>(scenePos.x()),
             .y = static_cast<facebook::react::Float>(scenePos.y())};
-        touch.screenPoint = touch.pagePoint;
+        touch.screenPoint = inputLifecycleEnabled_
+            ? reactPoint(point.globalPosition()) : touch.pagePoint;
         touch.offsetPoint = {
             .x = static_cast<facebook::react::Float>(
                 item->mapFromScene(scenePos).x()),
@@ -351,7 +367,8 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
           touch.timeStamp = facebook::react::HighResTimeStamp::fromDOMHighResTimeStamp(
               static_cast<double>(touchEvent->timestamp()));
         }
-        touch.force = 1.0F;
+        touch.force = inputLifecycleEnabled_
+            ? static_cast<facebook::react::Float>(point.pressure()) : 1.0F;
         activeTouches_.insert(id, touch);
         emitTouchEvent(touch, TouchKind::Start);
         break;
@@ -366,10 +383,14 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
           continue;
         }
         Touch& touch = it.value();
+        if (inputLifecycleEnabled_) {
+          touch.force = static_cast<facebook::react::Float>(point.pressure());
+        }
         touch.pagePoint = {
             .x = static_cast<facebook::react::Float>(scenePos.x()),
             .y = static_cast<facebook::react::Float>(scenePos.y())};
-        touch.screenPoint = touch.pagePoint;
+        touch.screenPoint = inputLifecycleEnabled_
+            ? reactPoint(point.globalPosition()) : touch.pagePoint;
         touch.offsetPoint = {
             .x = static_cast<facebook::react::Float>(
                 item->mapFromScene(scenePos).x()),
@@ -391,10 +412,11 @@ bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
         }
         Touch touch = it.value();
         if (inputLifecycleEnabled_) {
+          touch.force = static_cast<facebook::react::Float>(point.pressure());
           touch.pagePoint = {
               .x = static_cast<facebook::react::Float>(scenePos.x()),
               .y = static_cast<facebook::react::Float>(scenePos.y())};
-          touch.screenPoint = touch.pagePoint;
+          touch.screenPoint = reactPoint(point.globalPosition());
           if (QQuickItem* item = layer_.itemForTag(touch.target)) {
             const QPointF local = item->mapFromScene(scenePos);
             touch.offsetPoint = {

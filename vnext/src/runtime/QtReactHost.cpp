@@ -1,5 +1,9 @@
 #include "react-native-qnx/runtime/QtReactHost.h"
+#if RNQNX_ENABLE_BACK_HANDLER
+#include "react-native-qnx/runtime/QnxBackHandlerModule.h"
+#endif
 
+#include <stdexcept>
 #include <hermes/hermes.h>
 #include <hermes/Public/RuntimeConfig.h>
 
@@ -574,6 +578,9 @@ class QtReactHost::Impl {
     // runtime is still alive. RuntimeScheduler work can then drain safely.
     if (appStateModule) appStateModule->invalidate();
 #endif
+#if RNQNX_ENABLE_BACK_HANDLER
+    if (backHandlerModule) backHandlerModule->invalidate();
+#endif
     taskQueue->close();
   }
 
@@ -588,6 +595,9 @@ class QtReactHost::Impl {
   std::shared_ptr<QtRuntimeTaskQueue> taskQueue;
 #if RNQNX_ENABLE_APP_STATE
   std::shared_ptr<QnxAppStateModule> appStateModule;
+#endif
+#if RNQNX_ENABLE_BACK_HANDLER
+  std::shared_ptr<QnxBackHandlerModule> backHandlerModule;
 #endif
   std::shared_ptr<const ContextContainer> contextContainer;
   QtSchedulerDelegate delegate;
@@ -736,6 +746,11 @@ void QtReactHost::installTurboModuleBinding() {
 #pragma GCC diagnostic pop
 #endif
   auto* impl = impl_.get();
+#if RNQNX_ENABLE_BACK_HANDLER
+  if (!impl->backHandlerModule) {
+    impl->backHandlerModule = std::make_shared<QnxBackHandlerModule>(callInvoker);
+  }
+#endif
 
   facebook::react::TurboModuleBinding::install(
       *impl_->runtime,
@@ -829,6 +844,10 @@ void QtReactHost::installTurboModuleBinding() {
         }
 #endif
 
+#if RNQNX_ENABLE_BACK_HANDLER
+        if (name == QnxBackHandlerModule::kModuleName) return impl->backHandlerModule;
+#endif
+
         // React Native's own generic C++ modules. Two of the modules this
         // platform needs come from here already implemented — microtasks and
         // idle callbacks, both backed by the RuntimeScheduler.
@@ -836,6 +855,15 @@ void QtReactHost::installTurboModuleBinding() {
             name, callInvoker);
       });
 }
+
+#if RNQNX_ENABLE_BACK_HANDLER
+void QtReactHost::setBackHandlerWindow(QWindow* window) {
+  if (!impl_->backHandlerModule) {
+    throw std::logic_error("Install TurboModule binding before attaching BackHandler window");
+  }
+  impl_->backHandlerModule->setWindow(window);
+}
+#endif
 
 void QtReactHost::installPlatformConstants() {
   auto& runtime = *impl_->runtime;
