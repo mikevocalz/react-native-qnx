@@ -90,6 +90,9 @@ function generateExpoPlatformCMake(descriptors, requestedPlatform = 'qnx') {
   const targets = new Set();
   const binaries = new Set();
   const registrations = new Set();
+  const runtimeRequested = descriptors.some(
+    (descriptor) => descriptor.registrationFunction !== undefined
+  );
   const moduleNames = new Set(['ExpoQnxPlatform', 'ExpoApplication']);
   const declarations = [];
   const calls = [];
@@ -123,7 +126,7 @@ function generateExpoPlatformCMake(descriptors, requestedPlatform = 'qnx') {
     } else if (descriptor.modules.length > 0) {
       runtimeReady = false;
     }
-    for (const name of descriptor.modules) {
+    for (const name of runtimeRequested ? descriptor.modules : []) {
       if (moduleNames.has(name)) throw new Error('Duplicate or reserved Expo module name.');
       moduleNames.add(name);
     }

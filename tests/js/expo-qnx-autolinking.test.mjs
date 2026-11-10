@@ -98,3 +98,14 @@ assert.throws(
     ]),
   /registration function/
 );
+
+// Discovery-only CMake has never installed runtime modules: overlapping names
+// (including builtins) are metadata, not collisions until runtime is requested.
+const legacyDuplicate = { ...descriptors[0], target: 'legacy_second', binaryName: 'legacy_second' };
+assert.doesNotThrow(() => autolinking.generateQnxCMake([descriptors[0], legacyDuplicate]));
+assert.doesNotThrow(() =>
+  autolinking.generateQnxCMake([{ ...descriptors[0], modules: ['ExpoApplication'] }])
+);
+// A mixed batch still receives full runtime name checks, even if the collision
+// belongs to a discovery-only entry encountered before the registered provider.
+assert.throws(() => autolinking.generateQnxCMake([legacyDuplicate, registered]), /reserved/);

@@ -17,6 +17,7 @@ import {
   createPackage,
   verifyPackage,
   neededLibraries,
+  elfDependencies,
   publishDirectory,
 } from '../../scripts/offline-package.mjs';
 
@@ -235,4 +236,63 @@ test('verifier rejects a self-consistent but non-executable manifest mode', asyn
   } finally {
     await rm(f.root, { recursive: true, force: true });
   }
+});
+
+test('PT_INTERP requires an executable loader, distinct from application and shared libraries', async () => {
+  const f = await fixture();
+  try {
+    const executable = Buffer.alloc(256);
+    elf().copy(executable);
+    executable.writeUInt16LE(2, 56);
+    executable.writeBigUInt64LE(256n, 96);
+    executable.writeUInt32LE(3, 120); // PT_INTERP
+    executable.writeBigUInt64LE(176n, 128);
+    const interpreter = Buffer.from('/usr/lib/ld-qnx.so\0');
+    executable.writeBigUInt64LE(BigInt(interpreter.length), 152);
+    interpreter.copy(executable, 176);
+    assert.deepEqual(elfDependencies(executable, 'x86_64'), {
+      interpreters: ['ld-qnx.so'],
+      libraries: [],
+    });
+    await writeFile(path.join(f.source, 'app'), executable);
+    await writeFile(path.join(f.source, 'loader'), elf());
+    f.manifest.files.push({
+      source: 'loader',
+      path: 'lib/ld-qnx.so',
+      role: 'library',
+      component: 'fixture',
+      requires: [],
+    });
+    await writeFile(f.spec, JSON.stringify(f.manifest));
+    await assert.rejects(createPackage(f.spec, f.source, f.output), /must have loader role/);
+    f.manifest.files[3].role = 'loader';
+    await writeFile(f.spec, JSON.stringify(f.manifest));
+    const result = await createPackage(f.spec, f.source, f.output);
+    assert.equal(
+      result.files.filter((/** @type {{role:string}} */ e) => e.role === 'executable').length,
+      1
+    );
+    assert.equal((await stat(path.join(f.output, 'lib/ld-qnx.so'))).mode & 511, 493);
+    await verifyPackage(f.output);
+    const manifestPath = path.join(f.output, 'manifest.json');
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+    const loader = manifest.files.find((/** @type {{role:string}} */ e) => e.role === 'loader');
+    loader.mode = 420;
+    await chmod(path.join(f.output, 'lib/ld-qnx.so'), 420);
+    await writeFile(manifestPath, JSON.stringify(manifest));
+    await assert.rejects(verifyPackage(f.output), /Integrity mismatch/);
+    loader.role = 'library'; // Changing metadata cannot hide PT_INTERP requirements.
+    await writeFile(manifestPath, JSON.stringify(manifest));
+    await assert.rejects(verifyPackage(f.output), /must have loader role/);
+  } finally {
+    await rm(f.root, { recursive: true, force: true });
+  }
+});
+
+test('real host ELF keeps PT_INTERP distinct from DT_NEEDED', async () => {
+  if (process.platform !== 'linux' || process.arch !== 'x64') return;
+  const actual = elfDependencies(await readFile(process.execPath), 'x86_64');
+  assert.equal(actual.interpreters.length, 1);
+  assert.match(actual.interpreters[0], /^ld-linux/);
+  assert.ok(actual.libraries.includes('libc.so.6'));
 });

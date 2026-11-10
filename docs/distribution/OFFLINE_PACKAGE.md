@@ -60,7 +60,13 @@ license material before a dynamically linked program will pass):
 }
 ```
 
-Roles are `executable`, `bundle`, `asset`, `library`, `plugin`, and `license`.
+Roles are `executable`, `bundle`, `asset`, `library`, `plugin`, `loader`, and `license`.
+The main `executable` and each ELF `loader` receive mode `0755`; ordinary
+libraries, plugins and data remain `0644`. A `PT_INTERP` provider must explicitly
+use `loader`, not `library` or `plugin`. Verification rejects a non-executable
+loader even when its manifest was edited to match its file permissions. Loader
+files are also parsed for their own transitive ELF dependencies.
+
 Exactly one executable and one `.js` or `.hbc` bundle are required. `requires`
 contains paths inside the package, not source paths. Use it to declare runtime
 resources that are not ELF link dependencies, including Qt plugin discovery
@@ -77,7 +83,7 @@ permission to redistribute proprietary QNX/Qt/vendor files.
   for every file. Verify payload hashes/modes and reject unlisted files.
 - Parse actual ELF64 little-endian headers for the selected aarch64/x86_64
   machine. Resolve `DT_NEEDED` and `PT_INTERP` loader names against uniquely named
-  packaged libraries/plugins; check each library/plugin transitively. Missing
+  packaged libraries/plugins/loaders; check each library/plugin transitively. Missing
   or ambiguous libraries fail. There are no silently assumed system libraries.
 - Verify every explicitly declared resource reference and component license
   inventory before publishing.

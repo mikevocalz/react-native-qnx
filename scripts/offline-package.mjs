@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /** @typedef {{path:string, role:string, component:string, requires:string[], size:number, sha256:string, mode:number}} Entry */
-const roles = new Set(['executable', 'bundle', 'asset', 'library', 'plugin', 'license']);
+const roles = new Set(['executable', 'bundle', 'asset', 'library', 'plugin', 'loader', 'license']);
 /** @param {string} value */
 function safePath(value) {
   if (
@@ -42,7 +42,7 @@ function hash(bytes) {
   return createHash('sha256').update(bytes).digest('hex');
 }
 /** Parse actual ELF64 little-endian program/dynamic headers, never execute ldd. @param {Buffer} b @param {string} arch */
-export function neededLibraries(b, arch) {
+export function elfDependencies(b, arch) {
   const fail = () => {
     throw new Error('Unsupported or malformed ELF64 payload');
   };
@@ -96,7 +96,7 @@ export function neededLibraries(b, arch) {
     if (b.readUInt32LE(p) === 1) loads.push({ offset: start, address: u64(p + 16), size: length });
     if (b.readUInt32LE(p) === 2) dynamics.push({ offset: start, size: length });
   }
-  if (dynamics.length > 1) fail();
+  if (dynamics.length > 1 || interpreters.length > 1) fail();
   /** @type {number[]} */ const needed = [];
   let strtab = -1,
     strsize = -1;
@@ -116,15 +116,15 @@ export function neededLibraries(b, arch) {
     }
     if (!ended) fail();
   }
-  if (!needed.length) return interpreters;
+  if (!needed.length) return { interpreters, libraries: [] };
   const segment = loads.find(
     (load) => strtab >= load.address && strsize >= 0 && strtab - load.address + strsize <= load.size
   );
   if (!segment) return fail();
   const start = segment.offset + strtab - segment.address;
-  return [
-    ...interpreters,
-    ...needed.map((index) => {
+  return {
+    interpreters,
+    libraries: needed.map((index) => {
       if (index >= strsize) fail();
       const end = b.indexOf(0, start + index);
       if (end < 0 || end >= start + strsize) fail();
@@ -132,7 +132,17 @@ export function neededLibraries(b, arch) {
       if (!/^[A-Za-z0-9_.+-]+$/.test(name) || name === '.' || name === '..') fail();
       return name;
     }),
-  ];
+  };
+}
+/** Backward-compatible flattened inspection helper. Closure checks keep the roles distinct.
+ * @param {Buffer} bytes @param {string} arch */
+export function neededLibraries(bytes, arch) {
+  const { interpreters, libraries } = elfDependencies(bytes, arch);
+  return [...interpreters, ...libraries];
+}
+/** @param {string} role */
+function payloadMode(role) {
+  return role === 'executable' || role === 'loader' ? 493 : 420;
 }
 /** @param {Entry[]} entries @param {Map<string,Buffer>} bytes @param {string} arch */
 function closure(entries, bytes, arch) {
@@ -159,10 +169,10 @@ function closure(entries, bytes, arch) {
       throw new Error('Invalid entry metadata');
     for (const reference of entry.requires)
       if (!paths.has(reference)) throw new Error(`Missing declared closure: ${reference}`);
-    if (['library', 'plugin'].includes(entry.role)) {
+    if (['library', 'plugin', 'loader'].includes(entry.role)) {
       const name = path.posix.basename(entry.path);
       if (libraries.has(name)) throw new Error(`Ambiguous library name: ${name}`);
-      libraries.set(name, entry.path);
+      libraries.set(name, entry);
     }
     if (
       entry.role !== 'license' &&
@@ -171,10 +181,23 @@ function closure(entries, bytes, arch) {
       throw new Error(`Missing license material inventory for ${entry.component}`);
     }
   }
-  for (const entry of entries.filter((e) => ['executable', 'library', 'plugin'].includes(e.role))) {
-    for (const library of neededLibraries(/** @type {Buffer} */ (bytes.get(entry.path)), arch)) {
+  for (const entry of entries.filter((e) =>
+    ['executable', 'library', 'plugin', 'loader'].includes(e.role)
+  )) {
+    const dependencies = elfDependencies(/** @type {Buffer} */ (bytes.get(entry.path)), arch);
+    for (const library of dependencies.libraries) {
       if (!libraries.has(library))
         throw new Error(`Missing ELF dependency ${library} for ${entry.path}`);
+    }
+    for (const interpreter of dependencies.interpreters) {
+      const provider = libraries.get(interpreter);
+      if (!provider)
+        throw new Error(`Missing ELF dependency (interpreter) ${interpreter} for ${entry.path}`);
+      if (provider.role !== 'loader' || provider.mode !== 493) {
+        throw new Error(
+          `ELF interpreter ${interpreter} must have loader role and executable mode 0755`
+        );
+      }
     }
   }
 }
@@ -202,7 +225,7 @@ export async function verifyPackage(directory) {
     if (
       entry.size !== content.length ||
       entry.sha256 !== hash(content) ||
-      entry.mode !== (entry.role === 'executable' ? 493 : 420) ||
+      entry.mode !== payloadMode(entry.role) ||
       (stat.mode & 511) !== entry.mode
     )
       throw new Error(`Integrity mismatch: ${entry.path}`);
@@ -263,7 +286,7 @@ export async function createPackage(specFile, sourceRoot, destination) {
       const name = safePath(input.path),
         source = await regular(root, input.source);
       const content = await readFile(source),
-        mode = input.role === 'executable' ? 493 : 420;
+        mode = payloadMode(input.role);
       const file = path.join(stage, name);
       await mkdir(path.dirname(file), { recursive: true });
       await writeFile(file, content, { flag: 'wx', mode });
