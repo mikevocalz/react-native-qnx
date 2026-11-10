@@ -4,17 +4,22 @@ import { lstat, readFile, realpath, mkdir, mkdtemp, link, chmod, rm } from 'node
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
+import { fileURLToPath } from 'node:url';
 
-const help = `React Native QNX external-project bundling
+const help = `React Native QNX external-project tooling
 
   project inspect --project <directory> [--platform qnx|marathon] [--entry index.js]
   project bundle  --project <directory> [--platform qnx|marathon] [--entry index.js]
                   [--out build/<platform>/app.bundle.js] [--dry-run]
+  project start   --project <directory> [--platform qnx|marathon] [--entry index.js]
+                  [--port 8081] [--reset-cache] [--dry-run]
 
 QNX is the default. The project supplies installed Metro and its target config:
 metro.config.js for qnx; metro.marathon.config.js for marathon.
 Output must be a NEW file below the project's build/ directory.
-This produces JavaScript only, not a native project, module registration or deployment.
+start serves development bundles and source maps on 127.0.0.1 only. It stays in
+the foreground until interrupted; it does not attach or reload a native runtime.
+These commands do not establish native registration, Fast Refresh or deployment.
 `;
 
 /** @param {unknown} error */
@@ -79,6 +84,8 @@ export async function planProject(argv, cwd = process.cwd()) {
       platform: { type: 'string' },
       entry: { type: 'string' },
       out: { type: 'string' },
+      port: { type: 'string' },
+      'reset-cache': { type: 'boolean' },
       'dry-run': { type: 'boolean' },
     },
   });
@@ -90,11 +97,21 @@ export async function planProject(argv, cwd = process.cwd()) {
   }
   if (values.help || argv.length === 0) return null;
   const command = positionals[0];
-  if (positionals.length !== 1 || !['inspect', 'bundle'].includes(command)) {
-    throw new Error('Use project inspect or project bundle.');
+  if (positionals.length !== 1 || !['inspect', 'bundle', 'start'].includes(command)) {
+    throw new Error('Use project inspect, project bundle or project start.');
   }
   if (command === 'inspect' && (values.out !== undefined || values['dry-run'])) {
     throw new Error('inspect does not accept --out or --dry-run.');
+  }
+  if (command !== 'start' && (values.port !== undefined || values['reset-cache'] !== undefined)) {
+    throw new Error('--port and --reset-cache are only supported by project start.');
+  }
+  if (command === 'start' && values.out !== undefined) {
+    throw new Error('start does not accept --out; it serves bundles without publishing a file.');
+  }
+  const port = values.port ?? '8081';
+  if (!/^[0-9]+$/.test(port) || Number(port) < 1024 || Number(port) > 65535) {
+    throw new Error('--port must be an unprivileged TCP port from 1024 to 65535.');
   }
   const platform = values.platform ?? 'qnx';
   if (!['qnx', 'marathon'].includes(platform)) throw new Error('Use --platform qnx or marathon.');
@@ -115,11 +132,11 @@ export async function planProject(argv, cwd = process.cwd()) {
     true
   );
   const relativeOutput = values.out ?? `build/${platform}/app.bundle.js`;
-  const output = await confined(root, relativeOutput);
-  if (!inside(path.join(root, 'build'), output) || !output.endsWith('.js')) {
+  const output = command === 'start' ? undefined : await confined(root, relativeOutput);
+  if (output && (!inside(path.join(root, 'build'), output) || !output.endsWith('.js'))) {
     throw new Error('--out must name a new .js file below project build/.');
   }
-  if (command === 'bundle') {
+  if (command === 'bundle' && output) {
     try {
       await lstat(output);
       throw new Error('Bundle output already exists; choose another --out.');
@@ -138,6 +155,9 @@ export async function planProject(argv, cwd = process.cwd()) {
   if (!inside(metroRoot, metroCli) || !(await lstat(metroCli)).isFile()) {
     throw new Error('Installed Metro CLI must be a regular file inside its package.');
   }
+  const entryUrl = path.relative(root, entry).split(path.sep).map(encodeURIComponent).join('/');
+  const urlRoot = `http://127.0.0.1:${Number(port)}/${entryUrl}`;
+  const query = `?platform=${platform}&dev=true&minify=false`;
   return {
     command,
     platform,
@@ -150,15 +170,26 @@ export async function planProject(argv, cwd = process.cwd()) {
     metroCli,
     metroVersion: String(metro.version),
     dryRun: !!values['dry-run'],
+    ...(command === 'start'
+      ? {
+          host: '127.0.0.1',
+          port: Number(port),
+          resetCache: !!values['reset-cache'],
+          bundleUrl: urlRoot + '.bundle' + query,
+          sourceMapUrl: urlRoot + '.map' + query,
+          fastRefreshVerified: false,
+        }
+      : {}),
     nativeBuildVerified: false,
     runtimeVerified: false,
   };
 }
 
-/** @param {string} executable @param {string[]} args @param {string} cwd */
-async function runMetro(executable, args, cwd) {
+/** @param {string} executable @param {string[]} args @param {string} cwd
+ * @param {number | null} [timeoutMs] null keeps the development server in the foreground. */
+async function runMetro(executable, args, cwd, timeoutMs = 120000) {
   if (!['linux', 'darwin'].includes(process.platform)) {
-    throw new Error('This experimental bundle supervisor supports Linux and macOS hosts only.');
+    throw new Error('This experimental Metro supervisor supports Linux and macOS hosts only.');
   }
   return new Promise((/** @type {(code: number) => void} */ resolve, reject) => {
     const child = spawn(executable, args, { cwd, shell: false, stdio: 'inherit', detached: true });
@@ -183,7 +214,8 @@ async function runMetro(executable, args, cwd) {
     };
     const interrupt = () => stop(130, 'SIGINT');
     const terminate = () => stop(143, 'SIGTERM');
-    const timeout = setTimeout(() => stop(124, 'SIGTERM'), 120000);
+    const timeout =
+      timeoutMs === null ? undefined : setTimeout(() => stop(124, 'SIGTERM'), timeoutMs);
     const cleanup = () => {
       clearTimeout(timeout);
       clearTimeout(killTimer);
@@ -197,6 +229,11 @@ async function runMetro(executable, args, cwd) {
     child.once('error', (error) => {
       cleanup();
       reject(error);
+    });
+    child.once('exit', () => {
+      // Workers can inherit stdout and delay close after the server exits.
+      // Terminate our process group at exit, before waiting for pipe closure.
+      signalGroup('SIGKILL');
     });
     child.once('close', (code) => {
       cleanup();
@@ -216,6 +253,27 @@ export async function projectMain(argv, cwd = process.cwd()) {
     console.log(JSON.stringify(plan, null, 2));
     return 0;
   }
+  if (plan.command === 'start') {
+    console.log(JSON.stringify({ ...plan, action: 'starting', ready: false }, null, 2));
+    return runMetro(
+      plan.executable,
+      [
+        fileURLToPath(new URL('./start-metro.mjs', import.meta.url)),
+        '--project',
+        plan.project,
+        '--platform',
+        plan.platform,
+        '--entry',
+        path.relative(plan.project, plan.entry).split(path.sep).join('/'),
+        '--port',
+        String(plan.port),
+        ...(plan.resetCache ? ['--reset-cache'] : []),
+      ],
+      plan.project,
+      null
+    );
+  }
+  if (!plan.output) throw new Error('Bundle output is missing.');
   // All project/dependency/config paths are trusted developer inputs. These
   // checks reject existing escapes; they are not a concurrent-filesystem sandbox.
   await confined(plan.project, path.relative(plan.project, plan.output).split(path.sep).join('/'));

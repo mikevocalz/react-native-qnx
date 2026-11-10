@@ -40,6 +40,7 @@ fs.writeFileSync(args[args.indexOf('--out') + 1], JSON.stringify(args));
   const args = ['bundle', '--project', project];
   const plan = await planProject(args, temporary);
   assert.ok(plan);
+  assert.ok(plan.output);
   equal(plan.platform, 'qnx');
   equal(plan.projectName, 'external-app');
   equal(plan.nativeBuildVerified, false);

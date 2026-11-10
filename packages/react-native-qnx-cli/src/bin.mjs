@@ -21,7 +21,9 @@ try {
   else if (args[0] === 'project') process.exitCode = await projectMain(args.slice(1));
   else process.exitCode = await main(args);
   if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
-    console.log('\nExternal apps: rnqnx project --help (bundling only; no native provisioning).');
+    console.log(
+      '\nExternal apps: rnqnx project --help (bundle/Metro server; no native provisioning).'
+    );
     console.log('Create a shared Expo app: rnqnx project create --help.');
     console.log('Native application configuration: rnqnx project prepare-native --help.');
     console.log('Build native consumer application: rnqnx project build-native --help.');

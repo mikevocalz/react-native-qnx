@@ -21,3 +21,16 @@ The source package inventory deliberately excludes SDKs, QNX evaluation runtimes
 This command refuses existing directories, unsupported identifiers, duplicate/unknown arguments, and invalid package source contents; an implementation failure removes only the newly created application directory. Like other source-checkout development tools it assumes a trusted local filesystem and trusted packages. The --dry-run option validates the path and identity without creating the destination.
 
 Device and release evidence remain governed by the seven existing QNX v1 gates, and Marathon requires its own shell/package/lifecycle qualification.
+
+## Start development Metro
+
+After installing the generated app's dependencies, use the source-checkout
+[project start command](external-project-bundles.md#serve-development-bundles-and-source-maps):
+
+```bash
+pnpm qnx project start --project ../notes-qnx
+```
+
+It serves development bundles with the app's installed Metro and matching
+platform config on `127.0.0.1`. Serving JavaScript is not native runtime
+attachment or proven Fast Refresh.
