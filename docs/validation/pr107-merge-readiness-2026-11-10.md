@@ -3,9 +3,42 @@
 Reviewed 2026-11-10 against implementation commit
 `507d06c11ae19418e3342c5763491370230e6baf`, based on
 `0c91be9bbb4e7cd6dabccf8cdfe441c7fa57c629`.
-This follow-up adds the missing [native source citation](../cited-seams.md#segmentfetcher-callback-boundary-2026-11-10)
-and required handoff records. It changes no native implementation, test,
-dependency, renderer or release gate.
+The initial follow-up added the missing [native source citation](../cited-seams.md#segmentfetcher-callback-boundary-2026-11-10)
+and required handoff records. The later CI repair below changes only the host
+supervisor test fixture; native implementation, dependencies, renderer and
+release gates remain unchanged.
+
+## Published follow-up CI repair
+
+The [SDK 58 validation job](https://github.com/mikevocalz/react-native-qnx/actions/runs/42843403021/job/129924318791)
+at published head `3883efbd657d623972be5fc687f4bf2ffcf9085a` passed install,
+formatting, dependency/type checks and both QNX bundle steps, then failed in
+`runtime-baseline.test.mjs` at `assert.ok(childPid > 0)`. The fixture created its
+PID file before writing its contents. The parent observed the newly created
+empty file and interpreted it as PID zero. The hosted log later records runner
+cleanup of the remaining Python child. This is a readiness race in an existing
+test fixture, separate from SegmentFetcher.
+
+The Python fixture now writes and closes a sibling `.pid.pending` file before
+atomically replacing the readiness path. The existing assertions still require
+a live child, expected TERM/HUP supervisor exit, interrupted receipt and complete
+child cleanup. No timeout or assertion is weakened.
+
+Focused validation on Linux x86-64, Node 26.13.0 and Python 3.12.14:
+
+- `node tests/js/runtime-baseline.test.mjs`: passed, including TERM/HUP cleanup.
+- `node tests/js/runtime-baseline-qnx.test.mjs`: passed; synthetic remote-shell
+  fixtures, no QNX execution.
+- A separate in-memory execution of the first test inserted `time.sleep(0.1)`
+  immediately before the pending PID write: passed both interrupt scenarios.
+  The deliberate delay was not added to repository code.
+- `pnpm typecheck`, `pnpm docs:sync`, `pnpm validate:docs`, changed-file
+  Prettier and `git diff --check`: passed.
+
+The failed hosted run remains recorded as a failure. The final published head
+must pass its own CI. This repair adds no native build or target evidence;
+reverting it restores the fixture's readiness race. The parent integrator is
+the independent reviewer and publication owner.
 
 ## Native contract
 
@@ -84,6 +117,6 @@ does not contain this independent fix. The final integrated native candidate
 still needs its own checks; all seven v1 release gates remain unchanged.
 
 No new privilege, licensing, premium dependency or persistent-data change is
-introduced. No runtime performance measurement is claimed. Reverting this
-follow-up removes its documentation only; reverting the complete PR restores
-the older unchecked argument access.
+introduced. No runtime performance measurement is claimed. Reverting the
+initial documentation follow-up removes its provenance/handoff records;
+reverting the complete PR restores the older unchecked argument access.

@@ -1,5 +1,12 @@
 # NEXT_ACTIONS.md
 
+## PR 107 CI repair continuation — 2026-11-10
+
+Review and publish the atomic PID readiness fixture fix, then inspect SDK 58
+validation at the resulting head. Retain the failed `3883efb` job as historical
+evidence and keep final integrated native/target checks separate.
+[Repair scope and rollback](../validation/pr107-merge-readiness-2026-11-10.md#published-follow-up-ci-repair).
+
 ## PR 107 continuation — 2026-11-10
 
 Review the [native seam](../cited-seams.md#segmentfetcher-callback-boundary-2026-11-10),

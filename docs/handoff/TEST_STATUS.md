@@ -1,5 +1,12 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — PR 107 PID readiness regression
+
+The published `3883efb` SDK 58 validation run failed when the supervisor fixture
+read an empty PID file. After atomic publication, both runtime-baseline JS files
+pass locally; a separate 100 ms delayed-write run also passes TERM/HUP cleanup.
+No native or device test was added. [Exact failed job and scope](../validation/pr107-merge-readiness-2026-11-10.md#published-follow-up-ci-repair).
+
 ## 2026-11-10 — PR 107 hosted native evidence and provenance
 
 The `507d06c` full-host workflow passed input-lifecycle OFF and ON. The

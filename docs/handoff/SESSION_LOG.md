@@ -1,5 +1,13 @@
 # SESSION_LOG.md
 
+## 2026-11-10 — Repair PR 107 hosted fixture race
+
+Inspected SDK 58 job `129924318791`, traced PID zero to publication before the
+fixture's write, and changed only the readiness marker to an atomic replacement.
+Both focused supervisor suites and an injected delayed-write run passed.
+Updated the existing receipt and required handoffs; publication and independent
+review remain with the parent integrator. [Evidence](../validation/pr107-merge-readiness-2026-11-10.md#published-follow-up-ci-repair).
+
 ## 2026-11-10 — PR 107 source provenance and handoff repair
 
 Read the frozen RN 0.88.1 TurboModule/JSI headers and the repository/pinned

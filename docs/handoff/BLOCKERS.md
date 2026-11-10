@@ -1,5 +1,12 @@
 # BLOCKERS.md
 
+## PR 107 hosted CI failure — 2026-11-10
+
+The `3883efb` SDK 58 validation failure is traced to the existing host test's
+PID readiness race and repaired locally. The replacement head still needs its
+own hosted result; the historical native pass does not supersede that gate.
+[Failure and focused validation](../validation/pr107-merge-readiness-2026-11-10.md#published-follow-up-ci-repair).
+
 ## PR 107 review state — 2026-11-10
 
 Missing native provenance and handoff records are supplied by this follow-up.

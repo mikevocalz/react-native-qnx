@@ -1,5 +1,12 @@
 # Current state
 
+## PR 107 CI fixture repair — 2026-11-10
+
+Published follow-up `3883efb` exposed a PID-file readiness race in the host
+runtime supervisor test. The fixture now publishes the completed PID atomically;
+normal and deliberately delayed publication checks pass locally. Current-head
+hosted CI remains the next gate. [Failure and repair evidence](../validation/pr107-merge-readiness-2026-11-10.md#published-follow-up-ci-repair).
+
 ## PR 107 review follow-up — 2026-11-10
 
 SegmentFetcher argument validation at `507d06c` has subsequent green hosted

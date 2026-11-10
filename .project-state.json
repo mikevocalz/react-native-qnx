@@ -36,6 +36,7 @@
       "implementationCommit": "507d06c11ae19418e3342c5763491370230e6baf",
       "receipt": "docs/validation/pr107-merge-readiness-2026-11-10.md",
       "hostedCi": "full-host renderer passed ON/OFF at implementation head; inspected OFF job passed 14/14 CTests",
+      "ciFollowup": "3883efb SDK 58 validation failed on an existing PID readiness fixture race; atomic marker publication passes local normal and delayed-write supervisor checks; replacement-head CI pending",
       "targetExecution": "QNX and Marathon not run for this candidate; no release-gate promotion"
     }
   },
