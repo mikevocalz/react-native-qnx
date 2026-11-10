@@ -1,0 +1,47 @@
+Running "RNQnxQtControlsProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1110 11:02:17.059252 934789696 UIManagerBinding.cpp:150] instanceHandle is null, event of type topBlur will be dropped
+I1110 11:02:18.966845 934789696 UIManagerBinding.cpp:150] instanceHandle is null, event of type topBlur will be dropped
+W1110 11:02:19.646366 934789696 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000034d0).
+W1110 11:02:19.649997 794375872 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000145d0).
+W1110 11:02:19.650110 794375872 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).
+QT_CONTROL_STEP 0 Fixture mounted
+QT_CONTROL_STEP 1 Tooltip opens from native hover
+QT_CONTROL_STEP 2 Escape dismisses hover tooltip
+QT_CONTROL_STEP 3 Pointer leaves tooltip
+QT_CONTROL_STEP 4 Focus leaves tooltip
+QT_CONTROL_STEP 5 Tooltip opens from native focus
+QT_CONTROL_STEP 6 Escape dismisses focused tooltip
+QT_CONTROL_STEP 7 Mount select
+QT_CONTROL_STEP 8 Select opens from arrow key
+QT_CONTROL_STEP 9 Select skips disabled option
+QT_CONTROL_STEP 10 Select commits enabled choice
+QT_CONTROL_STEP 11 Select reopens
+QT_CONTROL_STEP 12 Select cancels with Escape
+QT_CONTROL_STEP 13 Mount dropdown
+QT_CONTROL_STEP 14 Dropdown opens by pointer
+QT_CONTROL_STEP 15 Dropdown moves to final choice
+QT_CONTROL_STEP 16 Dropdown commits final choice
+QT_CONTROL_STEP 17 Mount actions
+QT_CONTROL_STEP 18 Action menu opens
+QT_CONTROL_STEP 19 Action menu selects once
+QT_CONTROL_STEP 20 Mount slider
+QT_CONTROL_STEP 21 Slider Home commits lower bound
+QT_CONTROL_STEP 22 Slider arrow commits one step
+QT_CONTROL_STEP 23 Slider End commits upper bound
+QT_CONTROL_STEP 24 Mount split
+QT_CONTROL_STEP 25 Split primary action remains separate
+QT_CONTROL_STEP 26 Split menu opens by keyboard
+QT_CONTROL_STEP 27 Split menu selects once
+QT_CONTROL_STEP 28 Mount context
+QT_CONTROL_STEP 29 Context menu opens by Menu key
+QT_CONTROL_STEP 30 Context action commits once
+QT_CONTROL_STEP 31 Mount popover
+QT_CONTROL_STEP 32 Popover Escape requests close
+QT_CONTROL_STEP 33 Reopen controlled popover
+QT_CONTROL_STEP 34 Popover close control works
+QT_CONTROL_STEP 35 Mount find
+QT_CONTROL_STEP 36 Find uses the actual literal document provider
+QT_CONTROL_STEP 37 Find and replace closes
+QT_CONTROL_STEP 38 All controlled outcomes retained
+QT_CONTROLS_FABRIC_OK steps=39 platform=qnx renderer=Fabric input=synthetic-Qt

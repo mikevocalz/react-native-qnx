@@ -28,6 +28,7 @@ struct MutationFailure {
 class QtAccessibilityActivation;
 class QtImageBridge;
 class QtSwitchBridge;
+class QtModalStateBridge;
 
 /// Translates a React Native mount transaction into QtQuickMountingLayer calls.
 ///
@@ -100,6 +101,10 @@ class ShadowViewMutationAdapter {
   void applyActivityIndicator(const facebook::react::ShadowView& view);
   void applySwitch(const facebook::react::ShadowView& view);
   void registerEventEmitter(const facebook::react::ShadowView& view);
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  void applyModalState(const facebook::react::ShadowView& view);
+  QHash<Tag, QPointer<QtModalStateBridge>> modalStateBridges_;
+#endif
 
   /// Connects an editable item's text changes to its shadow view's
   /// TextInputEventEmitter, so `onChange` reaches JavaScript.
@@ -135,7 +140,11 @@ class ShadowViewMutationAdapter {
   QHash<Tag, QtImageBridge*> imageBridges_;
 #if RNQNX_ENABLE_PLATFORM_SERVICES
   QHash<Tag, std::function<void()>> modalCloseCallbacks_;
+#endif
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
   QHash<Tag, std::function<void()>> modalShowCallbacks_;
+  QSet<Tag> shownModals_;
+  void showModalIfReady(Tag tag);
 #endif
 };
 

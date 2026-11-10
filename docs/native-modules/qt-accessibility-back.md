@@ -9,7 +9,9 @@ Enable `RNQNX_ENABLE_PLATFORM_SERVICES=ON` with
 `RNQNX_ENABLE_ACCESSIBILITY_BRIDGE=ON` in a Linux or QNX Qt host. Both options
 default OFF. The public imports are available with the option OFF; invoking a
 native operation reports the missing provider. QNX and Marathon share source
-but retain their separate JavaScript identity and separately compiled targets.
+but retain their separate JavaScript identity and separately bundled public
+entries. These Linux host fixtures execute both entries with one native host
+test executable.
 
 ## Public contract
 
@@ -98,14 +100,25 @@ native factories. Names, descriptions, roles and check/selection state use
 the public QML `Accessible` properties. The `role` prop takes precedence over
 `accessibilityRole`; the public view configuration admits both, value text,
 expanded/busy/modal state and explicit hidden-subtree props.
+Changes to expanded, busy and modal state submit public Qt state-change
+events; value text changes submit a public Qt value-change event after the
+new metadata is queryable. Event delivery remains guarded if a synchronous
+accessibility observer destroys the target.
 
 The expanded role mappings include combobox, menu/menuitem/menubar,
-dialog, list/listbox/option, slider/adjustable, progressbar, tab/tablist,
+dialog, list/option, slider/adjustable, progressbar, tab/tablist,
 toolbar, tooltip, grouping, tree/treeitem and table/row/cell/header roles.
 A role mapping supplies semantic identity. It does not add a numeric value
 setter, table model, selection model or editable text implementation to a
 generic View. `accessibilityValue.text` is exposed as text; this slice does
 not claim a Qt value interface for arbitrary numeric slider setters.
+
+The public `role` must also be accepted by the pinned RN parser. RN 0.88.1
+accepts `list` and `option`, but does not accept `listbox`. Shared controls
+keep `listbox` for the web and use `list` for the native container, which
+maps to Qt's List role. A generic View needs `accessible={true}` to expose
+its own semantic node; ordinary ignored wrappers retain their accessible
+descendants.
 
 | Registered RN action | Public Qt action |
 | -------------------- | ---------------- |
@@ -158,7 +171,55 @@ checks roles, actions, identity, hidden roots, native binding preservation,
 clipping, focus and teardown. The host CI matrix enables these tests in both
 the ON and OFF configurations and fails if their inventory is absent.
 
-Full native runtime execution for this continuation remains pending until
-the accompanying host-build receipt records its result. No QNX/Marathon
-device, screen-reader speech or physical-keyboard acceptance is implied by
-the source, synthetic Qt events, or Linux host execution.
+The Linux host run at source
+`92e88b9111b29c9090f9bac63b906dad4cf10f74` used Qt 6.11.1, the pinned
+RN 0.88.1, production Metro bundles, Hermes and the real Fabric mounting
+path. The [host receipt](../evidence/qt-platform-services-host-2026-11-10.json)
+records source and artifact hashes, configuration, toolchain, test output
+and the local GCC warning exceptions used for unchanged upstream code.
+
+| Configuration                           | Executed checks                                                                | Result                                                                                          |
+| --------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| Platform services ON, desktop input ON  | Native semantic tree, QNX and Marathon public API fixtures, mounting host test | 4/4 CTests passed; the mounting executable contains 21 cases                                    |
+| Platform services OFF, desktop input ON | Both public API fixtures and the mounting host test                            | 3/3 CTests passed; unavailable providers reject explicitly and all 21 mounting cases still pass |
+| Enabled configuration restored          | The same semantic-tree, public API and mounting checks after rebuilding        | 4/4 CTests passed; restored artifacts match the first enabled run                               |
+
+The existing mutation-adapter and ShadowTree mounting tests also passed
+2/2 CTests on the restored enabled graph: seven adapter cases and five
+ShadowTree cases. They cover ordinary insertion order, updates, removal,
+nested trees, error reporting and actual Yoga geometry through RN commits.
+
+The public API fixtures compare snapshots with actual Qt state, exercise
+independent subscription removal, deliver synthetic Qt activation/contrast
+signals and Back events, and observe actual Qt focus, announcement, state
+and value-change events. They test registered accessibility actions through
+the RN event emitter, modal Back priority, owning-window default closure,
+invalid arguments and queued-callback invalidation. These checks do not
+change an operating-system accessibility preference or observe spoken
+output.
+
+The Modal regression uses a public RN Modal declared inside a clipped,
+offset 180-by-120 View. Its native content escapes that ancestor at the
+window origin; the full-flex child reports actual Yoga and `onLayout`
+dimensions of 320-by-240, then 480-by-360 after a window resize. `onShow`
+remains once per presentation. A second presentation is removed after a
+resize is queued but before the Qt sizing callback runs, with no revived
+portal or late `onShow`. Five of the 21 mounting cases separately verify
+portal clipping, logical child indices, invalid removal, tag reuse and
+teardown.
+
+ASan/UBSan instrument the platform-services runtime and
+QtQuickMountingLayer test executables, with leak detection disabled. The
+framework's static libraries are not globally instrumented. The separate
+pure Qt semantic-tree and the two Fabric integration executables are not
+sanitizer-instrumented. An
+earlier five-test accessibility regression run is retained as separate,
+historical evidence in the receipt. Its passing same-surface remount probe
+logged an RN LeakChecker diagnostic for three components; that earlier run
+is not described as warning-free or as a final-source rerun.
+
+The OFF check above deliberately retains desktop input to exercise the mixed
+feature configuration; it is separate from the hosted all-options-OFF matrix.
+No QNX/Marathon device, screen-reader speech or physical-keyboard acceptance
+is implied by these synthetic Qt events and Linux host results. The feature
+flags retain their default OFF values.

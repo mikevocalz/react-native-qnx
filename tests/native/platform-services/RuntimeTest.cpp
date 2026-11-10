@@ -1,4 +1,5 @@
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
+#include "react-native-qnx/fabric/QtTouchDispatcher.h"
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
@@ -14,6 +15,7 @@
 #include <QFile>
 #include <QGuiApplication>
 #include <QKeyEvent>
+#include <QPointer>
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -34,6 +36,7 @@ struct Fixture {
   rnqnx::views::QtQuickItemFactory factory{engine};
   rnqnx::fabric::QtQuickMountingLayer layer{factory, *window.contentItem(), 11};
   rnqnx::fabric::ShadowViewMutationAdapter adapter{layer};
+  rnqnx::fabric::QtTouchDispatcher dispatcher{layer, *window.contentItem()};
   std::unique_ptr<rnqnx::runtime::QtReactHost> host{std::make_unique<rnqnx::runtime::QtReactHost>(adapter)};
 
   explicit Fixture(bool installBinding = true) {
@@ -41,6 +44,9 @@ struct Fixture {
     factory.registerType(QStringLiteral("View"), QByteArray("import QtQuick\nItem { property color backgroundColor: 'transparent' }"));
     adapter.mapComponent(QStringLiteral("View"), QStringLiteral("View"));
     adapter.mapComponent(QStringLiteral("ModalHostView"), QStringLiteral("View"));
+    adapter.setTouchDispatcher(&dispatcher);
+    window.installEventFilter(&dispatcher);
+    host->delegate().setTouchDispatcher(&dispatcher);
     if (installBinding) host->installTurboModuleBinding();
     host->installComponentProvider();
     host->installPlatformConstants();
@@ -81,6 +87,11 @@ struct ObservedEvents {
   int announcements{0};
   int focus{0};
   QString message;
+  QObject* target{nullptr};
+  bool expandedChanged{false};
+  bool collapsedChanged{false};
+  int valueChanges{0};
+  QString value;
   QAccessible::AnnouncementPoliteness politeness{QAccessible::AnnouncementPoliteness::Polite};
 };
 ObservedEvents* observations{nullptr};
@@ -93,6 +104,15 @@ void observe(QAccessibleEvent* event) {
     observations->politeness = announcement->politeness();
   }
   if (event->type() == QAccessible::Focus) ++observations->focus;
+  if (event->object() == observations->target && event->type() == QAccessible::StateChanged) {
+    const auto changed = static_cast<QAccessibleStateChangeEvent*>(event)->changedStates();
+    observations->expandedChanged |= changed.expanded;
+    observations->collapsedChanged |= changed.collapsed;
+  }
+  if (event->object() == observations->target && event->type() == QAccessible::ValueChanged) {
+    ++observations->valueChanges;
+    observations->value = static_cast<QAccessibleValueChangeEvent*>(event)->value().toString();
+  }
 }
 
 class DeferredInvoker final : public facebook::react::CallInvoker {
@@ -137,11 +157,24 @@ void contract(const std::string& bundle, const std::string& platform) {
   fixture.pump();
   fixture.check("p.motionError === \"ERR_QT_ACCESSIBILITY_UNSUPPORTED\"");
 #if RNQNX_ENABLE_PLATFORM_SERVICES
+  const auto number = [&](const char* name) {
+    auto& runtime = fixture.host->runtime();
+    return runtime.global().getPropertyAsObject(runtime, "p").getProperty(runtime, name).asNumber();
+  };
+  const auto itemForRef = [&](const char* name) {
+    fixture.eval(std::string("p.lookupTag = p.tag(\"") + name + "\");");
+    auto* item = fixture.layer.itemForTag(static_cast<facebook::react::Tag>(number("lookupTag")));
+    require(item != nullptr, std::string("Public ref has no mounted native item: ") + name);
+    return item;
+  };
   fixture.eval("p.installBack(); p.installAccessibility();");
   fixture.pump();
   fixture.check(std::string("p.reader === ") + (QAccessible::isActive() ? "true" : "false"));
   const bool highContrast = QGuiApplication::styleHints()->accessibility()->contrastPreference() == Qt::ContrastPreference::HighContrast;
   fixture.check(std::string("p.highContrast === ") + (highContrast ? "true" : "false"));
+  // Exercise two real transitions regardless of the backend's initial state.
+  QAccessible::setActive(true);
+  fixture.pump();
   fixture.eval("p.firstReader.length = 0; p.secondReader.length = 0;");
   QAccessible::setActive(false); QAccessible::setActive(true);
   fixture.pump();
@@ -202,6 +235,7 @@ void contract(const std::string& bundle, const std::string& platform) {
   fixture.check("p.actionEvents.length === 4");
   QAccessible::setActive(true);
   ObservedEvents events;
+  events.target = target;
   observations = &events;
   const auto previous = QAccessible::installUpdateHandler(observe);
   struct Restore {
@@ -214,13 +248,63 @@ void contract(const std::string& bundle, const std::string& platform) {
   require(events.announcements == 1 && events.message == QStringLiteral("Qt announcement") &&
       events.politeness == QAccessible::AnnouncementPoliteness::Assertive, "Qt announcement payload was not delivered");
   require(events.focus >= 1, "Qt accessibility focus event was not delivered");
+  fixture.eval("p.updateAccessibleValue();");
+  fixture.until([&] { return targetInterface->state().expanded && targetInterface->text(QAccessible::Value) == QStringLiteral("Chosen"); },
+      "Updated React accessibility state/value did not reach Qt");
+  require(events.expandedChanged && events.collapsedChanged && events.valueChanges >= 1 && events.value == QStringLiteral("Chosen"),
+      "Updated React state/value did not notify the Qt accessibility client boundary");
+  auto* declaration = itemForRef("declaration");
+  require(declaration->mapToScene(QPointF()) == QPointF(40, 30), "Modal declaration did not retain its React layout offset");
+#if RNQNX_ENABLE_DESKTOP_INPUT
+  require(declaration->clip(), "React overflow hidden did not reach the native declaring View");
+#else
+  // Services-only graphs exercise the portal under a native clipping boundary;
+  // RN desktop overflow prop delivery is separately asserted when enabled.
+  declaration->setClip(true);
+#endif
+  const auto mountedWithoutModal = fixture.layer.mountedCount();
+  const auto rootChildrenWithoutModal = fixture.window.contentItem()->childItems().size();
   fixture.eval("p.backEvents.length = 0; p.setModal(true);");
-  fixture.until([&] { return fixture.layer.mountedCount() >= 5; }, "React modal did not mount");
-  fixture.pump();
+  fixture.until([&] { return number("modalShows") == 1; }, "Ready React modal did not deliver onShow");
+  QPointer<QQuickItem> modal(itemForRef("modalHost"));
+  QPointer<QQuickItem> modalContent(itemForRef("modalContent"));
+  fixture.until([&] { return modalContent && modalContent->width() == 320 && modalContent->height() == 240 &&
+      number("modalWidth") == 320 && number("modalHeight") == 240; },
+      "Modal window state did not reach Yoga and the actual React onLayout payload");
+  require(modal->mapToScene(QPointF()) == QPointF() && modalContent->mapToScene(QPointF()) == QPointF(),
+      "Modal content inherited the declaring View's scene offset");
+  require(!declaration->isAncestorOf(modalContent), "Modal content remained below its clipped declaring View");
+  const auto point = modalContent->mapToScene(QPointF(300, 220));
+  require(!declaration->contains(declaration->mapFromScene(point)), "Clipped modal regression point did not escape the declaration");
+  for (auto* ancestor = modalContent->parentItem(); ancestor; ancestor = ancestor->parentItem())
+    require(!ancestor->clip() || ancestor->contains(ancestor->mapFromScene(point)), "Modal remained clipped outside the declaration");
+  fixture.window.resize(480, 360);
+  fixture.until([&] { return modal && modalContent && modal->width() == 480 && modal->height() == 360 &&
+      modalContent->width() == 480 && modalContent->height() == 360 &&
+      number("modalWidth") == 480 && number("modalHeight") == 360; },
+      "Window resize did not update the real modal Fabric state and descendant layout");
   fixture.check("p.modalShows === 1");
   key(fixture.window, Qt::Key_Back);
-  fixture.until([&] { return fixture.layer.mountedCount() == 3; }, "Modal onRequestClose did not unmount");
+  fixture.until([&] { return modal.isNull() && modalContent.isNull() && fixture.layer.mountedCount() == mountedWithoutModal; },
+      "Modal onRequestClose did not unmount its portal");
+  require(fixture.window.contentItem()->childItems().size() == rootChildrenWithoutModal, "Dismissed modal retained its native overlay");
   fixture.check("p.modalCloses === 1 && p.backEvents.length === 0");
+  fixture.eval("p.setModal(true);");
+  fixture.until([&] { return number("modalShows") == 2; }, "Reopened modal did not present exactly once");
+  modal = itemForRef("modalHost");
+  modalContent = itemForRef("modalContent");
+  // Queue the real root resize signal, then remove through React before the
+  // Qt event loop can deliver the bridge's posted sizing callback.
+  fixture.window.resize(560, 420);
+  fixture.window.contentItem()->setWidth(560);
+  fixture.window.contentItem()->setHeight(420);
+  fixture.eval("p.setModal(false);");
+  require(modal.isNull() && modalContent.isNull(), "Controlled modal removal did not precede queued resize delivery");
+  fixture.pump();
+  require(fixture.layer.mountedCount() == mountedWithoutModal &&
+      fixture.window.contentItem()->childItems().size() == rootChildrenWithoutModal,
+      "Queued modal resize retained or recreated a removed native portal");
+  fixture.check("p.modalShows === 2 && p.modalCloses === 1 && p.backEvents.length === 0");
   fixture.eval("p.setTarget(false);");
   fixture.until([&] { return fixture.layer.mountedCount() == 2; }, "Focus target did not unmount");
   fixture.eval(R"JS(

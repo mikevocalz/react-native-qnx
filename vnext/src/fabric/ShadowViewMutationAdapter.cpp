@@ -44,10 +44,48 @@
 #include <react/renderer/components/view/accessibilityPropsConversions.h>
 #endif
 #include <react/renderer/core/ConcreteState.h>
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+#include <react/renderer/components/modal/ModalHostViewState.h>
+#endif
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/mounting/ShadowView.h>
 
 namespace rnqnx::fabric {
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+// QObject lifetime cancels queued sizing work on removal/destruction. The
+// functional Fabric callback captures only value data: it can run on any thread.
+class QtModalStateBridge final : public QObject {
+ public:
+  using State = facebook::react::ConcreteState<facebook::react::ModalHostViewState>;
+  QtModalStateBridge(QQuickItem& item, QQuickItem& root) : QObject(&item), root_(&root) {
+    QObject::connect(&root, &QQuickItem::widthChanged, this, [this] { schedule(); });
+    QObject::connect(&root, &QQuickItem::heightChanged, this, [this] { schedule(); });
+  }
+  void setState(std::shared_ptr<const State> state) { state_ = std::move(state); schedule(); }
+  void setAttached(bool attached) { attached_ = attached; if (attached) schedule(); }
+ private:
+  void schedule() {
+    if (!attached_ || queued_) return;
+    queued_ = true;
+    QMetaObject::invokeMethod(this, [this] {
+      queued_ = false;
+      if (!attached_ || !root_ || !state_ || root_->width() <= 0 || root_->height() <= 0) return;
+      const facebook::react::Size size{static_cast<facebook::react::Float>(root_->width()),
+                                      static_cast<facebook::react::Float>(root_->height())};
+      if (state_->getData().screenSize == size) return;
+      state_->updateState([size](const facebook::react::ModalHostViewState& oldData)
+          -> facebook::react::ModalHostViewState::Shared {
+        if (oldData.screenSize == size) return nullptr;
+        return std::make_shared<const facebook::react::ModalHostViewState>(size);
+      });
+    }, Qt::QueuedConnection);
+  }
+  QPointer<QQuickItem> root_;
+  std::shared_ptr<const State> state_;
+  bool attached_{false};
+  bool queued_{false};
+};
+#endif
 namespace {
 
 using facebook::react::ShadowView;
@@ -883,12 +921,41 @@ void ShadowViewMutationAdapter::connectScrollEvents(const ShadowView& view) {
 }
 
 ShadowViewMutationAdapter::~ShadowViewMutationAdapter() {
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  for (const auto& bridge : std::as_const(modalStateBridges_)) delete bridge.data();
+#endif
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
   for (const auto& receiver : std::as_const(accessibilityActivations_)) {
     if (receiver) { receiver->invalidate(); delete receiver.data(); }
   }
 #endif
 }
+
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+void ShadowViewMutationAdapter::applyModalState(const ShadowView& view) {
+  if (componentNameOf(view) != QStringLiteral("ModalHostView")) return;
+  auto* item = layer_.itemForTag(view.tag);
+  if (!item) return;
+  layer_.setModalHost(view.tag);
+  auto& bridge = modalStateBridges_[view.tag];
+  if (!bridge) bridge = new QtModalStateBridge(*item, layer_.rootItem());
+  bridge->setState(std::dynamic_pointer_cast<const QtModalStateBridge::State>(view.state));
+}
+#endif
+
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+void ShadowViewMutationAdapter::showModalIfReady(Tag tag) {
+  const auto callback = modalShowCallbacks_.value(tag);
+  auto* item = layer_.itemForTag(tag);
+  if (!callback || shownModals_.contains(tag) || !item || !item->parentItem() ||
+      !item->window() || item->width() <= 0 || item->height() <= 0) return;
+  const auto& root = layer_.rootItem();
+  if (!qFuzzyCompare(item->width(), static_cast<qreal>(static_cast<float>(root.width()))) ||
+      !qFuzzyCompare(item->height(), static_cast<qreal>(static_cast<float>(root.height())))) return;
+  shownModals_.insert(tag);
+  callback();
+}
+#endif
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
 MountError ShadowViewMutationAdapter::applyAccessibilityActions(const ShadowView& view, QString& detail) {
   // Replace the receiver on every props/emitter update. QObject destruction also
@@ -947,9 +1014,11 @@ MountError ShadowViewMutationAdapter::applyAccessibilityActions(const ShadowView
 #endif
 
 void ShadowViewMutationAdapter::registerEventEmitter(const ShadowView& view) {
-#if RNQNX_ENABLE_PLATFORM_SERVICES
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
   if (auto emitter = std::dynamic_pointer_cast<const facebook::react::ModalHostViewEventEmitter>(view.eventEmitter)) {
+#if RNQNX_ENABLE_PLATFORM_SERVICES
     modalCloseCallbacks_.insert(view.tag, [emitter] { emitter->onRequestClose({}); });
+#endif
     modalShowCallbacks_.insert(view.tag, [emitter] { emitter->onShow({}); });
   }
 #endif
@@ -990,6 +1059,9 @@ MountError ShadowViewMutationAdapter::applyOne(
       // Create carries the first layout and props, so applying both here avoids
       // a frame at the origin with zero size and no colour before the first
       // Update arrives.
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+      applyModalState(view);
+#endif
       const MountError layoutError =
           layer_.updateLayout(view.tag, toLayoutFrame(view.layoutMetrics));
       if (layoutError != MountError::None) {
@@ -1021,9 +1093,15 @@ MountError ShadowViewMutationAdapter::applyOne(
     }
 
     case ShadowViewMutation::Type::Delete:
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+      if (auto bridge = modalStateBridges_.take(mutation.oldChildShadowView.tag)) delete bridge.data();
+#endif
 #if RNQNX_ENABLE_PLATFORM_SERVICES
       modalCloseCallbacks_.remove(mutation.oldChildShadowView.tag);
+#endif
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
       modalShowCallbacks_.remove(mutation.oldChildShadowView.tag);
+      shownModals_.remove(mutation.oldChildShadowView.tag);
 #endif
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
       if (auto previous = accessibilityActivations_.take(mutation.oldChildShadowView.tag)) {
@@ -1048,8 +1126,11 @@ MountError ShadowViewMutationAdapter::applyOne(
       }
       // Qt's Flickable does not derive its content size from its children, so
       // it is recomputed whenever they change.
-#if RNQNX_ENABLE_PLATFORM_SERVICES
-      if (const auto callback = modalShowCallbacks_.value(mutation.newChildShadowView.tag)) callback();
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+      if (auto bridge = modalStateBridges_.value(mutation.newChildShadowView.tag)) bridge->setAttached(true);
+#endif
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+      showModalIfReady(mutation.newChildShadowView.tag);
 #endif
       return layer_.updateScrollContentSize(mutation.parentTag);
     }
@@ -1060,6 +1141,12 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (error != MountError::None) {
         return error;
       }
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+      if (auto bridge = modalStateBridges_.value(mutation.oldChildShadowView.tag)) bridge->setAttached(false);
+#endif
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+      shownModals_.remove(mutation.oldChildShadowView.tag);
+#endif
       return layer_.updateScrollContentSize(mutation.parentTag);
     }
 
@@ -1073,6 +1160,9 @@ MountError ShadowViewMutationAdapter::applyOne(
       }
 #endif
       registerEventEmitter(view);
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+      applyModalState(view);
+#endif
       const MountError layoutError =
           layer_.updateLayout(view.tag, toLayoutFrame(view.layoutMetrics));
       if (layoutError != MountError::None) {
@@ -1101,6 +1191,9 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (actionError != MountError::None) return actionError;
 #endif
       // A child resizing changes what its scrollable parent has to cover.
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+      showModalIfReady(view.tag);
+#endif
       if (mutation.parentTag >= 0) {
         layer_.updateScrollContentSize(mutation.parentTag);
       }

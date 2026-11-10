@@ -211,7 +211,7 @@
       "host": "partial",
       "pi400": "unverified",
       "pi4Qsti": "unverified",
-      "notes": "Full-screen overlay; onShow, onRequestClose and onDismiss are unwired.",
+      "notes": "Opt-in desktop input or platform services: Linux Qt/Fabric proof covers a surface-level overlay, clipping escape, Yoga viewport sizing, resize and once-only onShow. Platform services adds BackHandler onRequestClose. onDismiss remains unwired; physical targets remain unverified.",
       "evidence": {
         "pi400": [],
         "pi4Qsti": []

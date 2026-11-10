@@ -11,6 +11,7 @@
 #include <QByteArray>
 #include <QGuiApplication>
 #include <QList>
+#include <QPointer>
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -274,6 +275,142 @@ void updateLayoutAppliesAbsoluteGeometry() {
   CHECK_ERROR(fixture.layer().updateLayout(99, frame), MountError::UnknownTag);
 }
 
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+void modalPortalEscapesClippedLogicalAncestor() {
+  Fixture fixture;
+  auto* window = fixture.root().window();
+  CHECK(window != nullptr);
+  window->resize(640, 480);
+  window->show();
+  QCoreApplication::processEvents();
+  for (Tag tag = 2; tag <= 5; ++tag) CHECK_OK(fixture.createView(tag));
+  CHECK_OK(fixture.layer().setModalHost(3));
+  CHECK_OK(fixture.layer().updateLayout(2, {80, 70, 100, 60}));
+  CHECK_OK(fixture.layer().updateLayout(3, {35, 45, 640, 480}));
+  CHECK_OK(fixture.layer().updateLayout(4, {240, 180, 40, 30}));
+  CHECK_OK(fixture.layer().insert(kRootTag, 2, 0));
+  auto* declaringView = fixture.layer().itemForTag(2);
+  declaringView->setClip(true);
+  declaringView->setScale(1.5);
+  CHECK_OK(fixture.layer().insert(2, 3, 0));
+  CHECK_OK(fixture.layer().insert(3, 4, 0));
+
+  auto* modal = fixture.layer().itemForTag(3);
+  auto* content = fixture.layer().itemForTag(4);
+  auto* overlay = modal->parentItem();
+  CHECK(overlay != nullptr && overlay != declaringView);
+  CHECK(overlay->parentItem() == &fixture.root());
+  CHECK(modal->mapToScene(QPointF()) == QPointF());
+  const auto point = content->mapToScene(QPointF(20, 15));
+  CHECK(point == QPointF(260, 195));
+  CHECK(!declaringView->contains(declaringView->mapFromScene(point)));
+  for (auto* ancestor = content->parentItem(); ancestor; ancestor = ancestor->parentItem()) {
+    CHECK(ancestor != declaringView);
+    CHECK(!ancestor->clip() || ancestor->contains(ancestor->mapFromScene(point)));
+  }
+  declaringView->setVisible(false);
+  CHECK(modal->isVisible() && content->isVisible());
+
+  // Later layout/style commits must not restore the declaring View's origin.
+  CHECK_OK(fixture.layer().updateLayout(3, {120, 90, 640, 480}));
+  CHECK_OK(fixture.layer().updateStyle(3, rnqnx::fabric::ViewStyle{}));
+  CHECK(modal->mapToScene(QPointF()) == QPointF());
+  CHECK_OK(fixture.layer().insert(kRootTag, 5, 1));
+  CHECK(overlay->z() > fixture.layer().itemForTag(5)->z());
+}
+
+void modalLogicalIndicesStayIndependentOfVisualSiblings() {
+  Fixture fixture;
+  for (Tag tag = 2; tag <= 6; ++tag) CHECK_OK(fixture.createView(tag));
+  CHECK_OK(fixture.layer().setModalHost(3));
+  CHECK_OK(fixture.layer().setModalHost(5));
+  CHECK_OK(fixture.layer().insert(kRootTag, 2, 0));
+  CHECK_OK(fixture.layer().insert(kRootTag, 3, 1));
+  CHECK_OK(fixture.layer().insert(kRootTag, 4, 2));
+  CHECK_OK(fixture.layer().insert(kRootTag, 5, 3));
+  CHECK_OK(fixture.layer().insert(kRootTag, 6, 1));
+  // Logical order is [2, 6, 3, 4, 5]; two modal hosts share a visual overlay.
+  const auto children = fixture.root().childItems();
+  CHECK(children.indexOf(fixture.layer().itemForTag(2)) < children.indexOf(fixture.layer().itemForTag(6)));
+  CHECK(children.indexOf(fixture.layer().itemForTag(6)) < children.indexOf(fixture.layer().itemForTag(4)));
+  QPointer<QQuickItem> overlay(fixture.layer().itemForTag(3)->parentItem());
+  CHECK(overlay && fixture.layer().itemForTag(5)->parentItem() == overlay);
+  CHECK(overlay->childItems().size() == 2 && fixture.rootChildCount() == 4);
+  CHECK_ERROR(fixture.layer().remove(kRootTag, 3, 1), MountError::IndexOutOfRange);
+  CHECK_ERROR(fixture.layer().remove(2, 3, 0), MountError::NotAChildOfParent);
+  CHECK_OK(fixture.layer().remove(kRootTag, 3, 2));
+  CHECK(overlay && overlay->childItems().size() == 1);
+  CHECK_OK(fixture.layer().remove(kRootTag, 4, 2));
+  CHECK_OK(fixture.layer().remove(kRootTag, 5, 2));
+  CHECK(overlay.isNull());
+  CHECK_OK(fixture.layer().remove(kRootTag, 2, 0));
+  CHECK_OK(fixture.layer().remove(kRootTag, 6, 0));
+  for (Tag tag = 2; tag <= 6; ++tag) CHECK_OK(fixture.layer().destroy(tag));
+  CHECK(fixture.layer().mountedCount() == 1 && fixture.rootChildCount() == 0);
+}
+
+void modalRemoveRejectsUnexpectedVisualParent() {
+  Fixture fixture;
+  CHECK_OK(fixture.createView(2));
+  CHECK_OK(fixture.createView(3));
+  CHECK_ERROR(fixture.layer().setModalHost(kRootTag), MountError::UnknownTag);
+  CHECK_ERROR(fixture.layer().setModalHost(99), MountError::UnknownTag);
+  CHECK_OK(fixture.layer().setModalHost(3));
+  CHECK_OK(fixture.layer().insert(kRootTag, 2, 0));
+  CHECK_OK(fixture.layer().insert(2, 3, 0));
+  auto* modal = fixture.layer().itemForTag(3);
+  QPointer<QQuickItem> overlay(modal->parentItem());
+  modal->setParentItem(&fixture.root()); // Deliberately corrupt only the visual tree.
+  CHECK_ERROR(fixture.layer().remove(2, 3, 0), MountError::NotAChildOfParent);
+  CHECK(overlay && modal->parentItem() == &fixture.root());
+  modal->setParentItem(overlay);
+  CHECK_ERROR(fixture.layer().remove(2, 3, 1), MountError::IndexOutOfRange);
+  CHECK_OK(fixture.layer().remove(2, 3, 0));
+  CHECK(modal->parentItem() == nullptr && overlay.isNull());
+  CHECK_OK(fixture.layer().destroy(3));
+  CHECK_OK(fixture.layer().remove(kRootTag, 2, 0));
+  CHECK_OK(fixture.layer().destroy(2));
+  CHECK(fixture.rootChildCount() == 0);
+}
+
+void modalDeleteWithoutRemoveClearsPortalAndAllowsTagReuse() {
+  Fixture fixture;
+  CHECK_OK(fixture.createView(2));
+  CHECK_OK(fixture.layer().setModalHost(2));
+  CHECK_OK(fixture.layer().insert(kRootTag, 2, 0));
+  QPointer<QQuickItem> modal(fixture.layer().itemForTag(2));
+  QPointer<QQuickItem> overlay(modal->parentItem());
+  CHECK_OK(fixture.layer().destroy(2));
+  CHECK(modal.isNull() && overlay.isNull());
+  CHECK(fixture.layer().mountedCount() == 1 && fixture.rootChildCount() == 0);
+  // A reused tag is an ordinary View until explicitly marked as a modal again.
+  CHECK_OK(fixture.createView(2));
+  CHECK_OK(fixture.layer().insert(kRootTag, 2, 0));
+  CHECK(fixture.layer().itemForTag(2)->parentItem() == &fixture.root());
+  CHECK_OK(fixture.layer().remove(kRootTag, 2, 0));
+  CHECK_OK(fixture.layer().destroy(2));
+  CHECK(fixture.layer().mountedCount() == 1 && fixture.rootChildCount() == 0);
+}
+
+void modalPortalIsTornDownWithTheLayer() {
+  QPointer<QQuickItem> modal;
+  QPointer<QQuickItem> content;
+  QPointer<QQuickItem> overlay;
+  {
+    Fixture fixture;
+    for (Tag tag = 2; tag <= 4; ++tag) CHECK_OK(fixture.createView(tag));
+    CHECK_OK(fixture.layer().setModalHost(3));
+    CHECK_OK(fixture.layer().insert(kRootTag, 2, 0));
+    CHECK_OK(fixture.layer().insert(2, 3, 0));
+    CHECK_OK(fixture.layer().insert(3, 4, 0));
+    modal = fixture.layer().itemForTag(3);
+    content = fixture.layer().itemForTag(4);
+    overlay = modal->parentItem();
+  }
+  CHECK(modal.isNull() && content.isNull() && overlay.isNull());
+}
+#endif
+
 void unregisteredComponentTypeFails() {
   Fixture fixture;
   CHECK_ERROR(
@@ -346,6 +483,13 @@ int main(int argc, char** argv) {
       {"destroyDetachesStillMountedItem", destroyDetachesStillMountedItem},
       {"nestedTreeIsTornDownWithTheLayer", nestedTreeIsTornDownWithTheLayer},
       {"updateLayoutAppliesAbsoluteGeometry", updateLayoutAppliesAbsoluteGeometry},
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+      {"modalPortalEscapesClippedLogicalAncestor", modalPortalEscapesClippedLogicalAncestor},
+      {"modalLogicalIndicesStayIndependentOfVisualSiblings", modalLogicalIndicesStayIndependentOfVisualSiblings},
+      {"modalRemoveRejectsUnexpectedVisualParent", modalRemoveRejectsUnexpectedVisualParent},
+      {"modalDeleteWithoutRemoveClearsPortalAndAllowsTagReuse", modalDeleteWithoutRemoveClearsPortalAndAllowsTagReuse},
+      {"modalPortalIsTornDownWithTheLayer", modalPortalIsTornDownWithTheLayer},
+#endif
       {"unregisteredComponentTypeFails", unregisteredComponentTypeFails},
       {"brokenQmlSourceFails", brokenQmlSourceFails},
       {"nonItemTypeFails", nonItemTypeFails},

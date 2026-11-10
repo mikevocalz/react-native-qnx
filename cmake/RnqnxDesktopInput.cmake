@@ -7,7 +7,8 @@ if(RNQNX_ENABLE_DESKTOP_INPUT AND NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin|
 endif()
 
 function(rnqnx_configure_desktop_input)
-  target_compile_definitions(rnqnx_fabric_adapter PUBLIC
+  # Mounting-layer layout and consumers must see the same portal/input gate.
+  target_compile_definitions(rnqnx_views_qt PUBLIC
     RNQNX_ENABLE_DESKTOP_INPUT=$<BOOL:${RNQNX_ENABLE_DESKTOP_INPUT}>)
   if(RNQNX_ENABLE_DESKTOP_INPUT)
     target_sources(rnqnx_fabric_adapter PRIVATE

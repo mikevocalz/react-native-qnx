@@ -1,0 +1,27 @@
+Running "RNQnxDesktopInputProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1110 11:00:47.022027 120058432 UIManagerBinding.cpp:150] instanceHandle is null, event of type topBlur will be dropped
+W1110 11:00:47.022557 120058432 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000034d0).
+W1110 11:00:47.022939 4291774144 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000145d0).
+W1110 11:00:47.022985 4291774144 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).
+QT_CONTROL_STEP 0 public React component mounted
+QT_CONTROL_STEP 1 hover reaches containing View and Pressable onHoverIn
+QT_CONTROL_STEP 2 hover does not duplicate enter
+QT_CONTROL_STEP 3 window exit sends leave and onHoverOut
+QT_CONTROL_STEP 4 public ref.focus reaches native View
+QT_CONTROL_STEP 5 ancestor Escape listener preserves ordinary Enter activation
+QT_CONTROL_STEP 6 Space activates ordinary Pressable once
+QT_CONTROL_STEP 7 Tab skips disabled View
+QT_CONTROL_STEP 8 native arrow key reaches JS
+QT_CONTROL_STEP 9 custom activation avoids duplicate Pressable press
+QT_CONTROL_STEP 10 Shift Tab restores previous focus
+QT_CONTROL_STEP 11 pointerEvents none overlay does not steal tap
+QT_CONTROL_STEP 12 disabled control does not activate
+QT_CONTROL_STEP 13 public ref.blur clears focus
+QT_CONTROL_STEP 14 refocus before disabling
+QT_CONTROL_STEP 15 disabling focused control delivers blur
+QT_CONTROL_STEP 16 disabled focused control cannot activate
+QT_CONTROL_STEP 17 reenable control
+QT_CONTROL_STEP 18 reenabled control regains focus
+QT_CONTROL_STEP 19 reenabled control activates once
+QT_CONTROLS_FABRIC_OK steps=20 platform=qnx renderer=Fabric input=synthetic-Qt

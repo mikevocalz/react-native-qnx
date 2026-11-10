@@ -212,6 +212,11 @@ class QtQuickMountingLayer {
   QtQuickMountingLayer& operator=(QtQuickMountingLayer&&) = delete;
 
   MountError create(Tag tag, const QString& componentName);
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  /// Modal children keep their Fabric parent/index while painting at the
+  /// owning surface root, outside the declaring view's clipping and transform.
+  MountError setModalHost(Tag tag);
+#endif
   MountError insert(Tag parentTag, Tag childTag, int index);
   MountError remove(Tag parentTag, Tag childTag, int index);
   MountError destroy(Tag tag);
@@ -310,6 +315,13 @@ class QtQuickMountingLayer {
   QHash<Tag, MountedItem> items_;
   // Non-owning membership index, kept in step with the tag registry.
   QSet<QQuickItem*> mountedPointers_;
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  QHash<Tag, QList<Tag>> logicalChildren_;
+  QHash<Tag, Tag> logicalParents_;
+  QSet<Tag> modalHosts_;
+  QQuickItem* modalLayer_{nullptr};
+  void removeEmptyModalLayer();
+#endif
   QString lastError_;
 };
 

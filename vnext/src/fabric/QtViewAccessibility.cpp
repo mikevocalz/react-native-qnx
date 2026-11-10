@@ -74,6 +74,10 @@ bool applyViewAccessibility(QQuickItem& item, const ViewStyle& style, QString& e
   const auto role = mappedRole(style.accessibilityRole);
 #if RNQNX_ENABLE_PLATFORM_SERVICES
   const bool previousHidden = item.property("rnqnxAccessibilityHideDescendants").toBool();
+  const bool previousBusy = item.property("rnqnxAccessibilityBusy").toBool();
+  const QVariant previousExpanded = item.property("rnqnxAccessibilityExpanded");
+  const bool previousModal = item.property("rnqnxAccessibilityModal").toBool();
+  const QString previousValue = item.property("rnqnxAccessibilityValueText").toString();
   item.setProperty("rnqnxAccessibilityHideDescendants", style.accessibilityHideDescendants);
   if (!target) {
     error = QStringLiteral("Accessibility View was destroyed during exposure update");
@@ -108,6 +112,7 @@ bool applyViewAccessibility(QQuickItem& item, const ViewStyle& style, QString& e
   if (target) target->setProperty("rnqnxAccessibilityBusy", expose && style.accessibilityStateBusy);
   if (target) target->setProperty("rnqnxAccessibilityExpanded", expose ? style.accessibilityStateExpanded : QVariant());
   if (target) target->setProperty("rnqnxAccessibilityModal", expose && style.accessibilityViewIsModal);
+  if (target) target->setProperty("rnqnxAccessibilityValueText", expose ? style.accessibilityValue : QString());
 #endif
   if (!ok || !target || !context) {
     error = QStringLiteral("Qt Accessible View metadata update failed");
@@ -122,6 +127,22 @@ bool applyViewAccessibility(QQuickItem& item, const ViewStyle& style, QString& e
     return false;
   }
 #if RNQNX_ENABLE_PLATFORM_SERVICES
+  const QVariant expanded = expose ? style.accessibilityStateExpanded : QVariant();
+  QAccessible::State changed;
+  changed.busy = previousBusy != (expose && style.accessibilityStateBusy);
+  changed.expandable = previousExpanded.isValid() != expanded.isValid();
+  changed.expanded = (previousExpanded.isValid() && previousExpanded.toBool()) != (expanded.isValid() && expanded.toBool());
+  changed.collapsed = (previousExpanded.isValid() && !previousExpanded.toBool()) != (expanded.isValid() && !expanded.toBool());
+  changed.modal = previousModal != (expose && style.accessibilityViewIsModal);
+  if (target && (changed.busy || changed.expandable || changed.expanded || changed.collapsed || changed.modal)) {
+    QAccessibleStateChangeEvent event(target, changed);
+    QAccessible::updateAccessibility(&event);
+  }
+  const QString value = expose ? style.accessibilityValue : QString();
+  if (target && previousValue != value) {
+    QAccessibleValueChangeEvent event(target, value);
+    QAccessible::updateAccessibility(&event);
+  }
   if (target && previousHidden != style.accessibilityHideDescendants)
     notifyPlatformAccessibilityTreeChanged(*target);
   if (!target || !context) {

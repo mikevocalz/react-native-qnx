@@ -112,7 +112,7 @@ class ViewInterface final : public QAccessibleObject, public QAccessibleActionIn
     if (!item() || ignored(item()) || hiddenSubtree(item())) return {};
     if (type == QAccessible::Name) return attached(item(), "Accessible.name").toString();
     if (type == QAccessible::Description) return attached(item(), "Accessible.description").toString();
-    if (type == QAccessible::Value) return item()->property("accessibilityValue").toString();
+    if (type == QAccessible::Value) return item()->property("rnqnxAccessibilityValueText").toString();
     if (type == QAccessible::Identifier) return attached(item(), "Accessible.id").toString();
     return {};
   }
