@@ -3,7 +3,7 @@
   "base_commit": "0c91be9bbb4e7cd6dabccf8cdfe441c7fa57c629",
   "branch": "feat/v2-native-qt-apis",
   "head_identity": "The commit containing this record; the draft PR body records its full published SHA.",
-  "source_manifest_sha256": "b294cdfa0bc58486577e4215851e5ae3d964025af66187c8f589d50600f0324b",
+  "source_manifest_sha256": "520db8d26554e1d0670b3df234d03f391cfdee9b665650f3d15546f5d91e0d06",
   "implementation_file_count": 60,
   "lockfile_sha256": "4e1b7d9fb20de7a839e475184be1ade08730afea927e0dddfa515550e81db681",
   "versions": {
@@ -175,6 +175,7 @@
     }
   },
   "evidence_sha256": {
+    "codegen-typing-fix.txt": "5aa8a89051ddec709bbbd35a6f1edc7f100f376a85cfa06649c82cd8f6352d55",
     "cpp-baseline.txt": "e4f6ba63e647a86c1ac6fa0f22d36af9b164562d89a81aedce4b46b169740de9",
     "default-off.txt": "2ea05165081a6b0b36b6e226fce63bdb7f7fab709a8cc6ade22bbb4dfc1a58d0",
     "graphics-sanitized.txt": "9be21acd0ebd4bd8aa4b7b2df41ab0461796d96fed438d6fd2e16a33ac5820d1",
@@ -185,7 +186,7 @@
     "native-tests.txt": "ef7cd0ef513300da50ff4748e46604a2c17ff96776ec34ca5c9455b834335046",
     "renderer-disabled.txt": "0fc78b7c53531edaf0f3170f22b448473627811f8ced33088a2a83a0f8e201ac",
     "renderer-enabled.txt": "9807ab9f3ab28d8005a01d97a3cc3211bc9014f6d5efc34495b3a19d984aa1bd",
-    "source-files.sha256": "b294cdfa0bc58486577e4215851e5ae3d964025af66187c8f589d50600f0324b",
+    "source-files.sha256": "520db8d26554e1d0670b3df234d03f391cfdee9b665650f3d15546f5d91e0d06",
     "svg-sanitized.txt": "d32db3ece88faf558bd20fbdab8793ac2bf8b193138c6b81ac91f8c0d6ad69cf",
     "unsupported-hosts.txt": "1bf35a705886ca1837200f57f4a817c62e45bfd61d0f038fda36f0f07c43561e",
     "wayland-test-blocked.txt": "eee2594ebf66c9e77102e50dd2c11ba487b60e699cac4430964e762a8649a10e"
@@ -197,5 +198,11 @@
     "hardware_gpu_validation": false,
     "frame_performance_measured": false,
     "forge_modified": false
+  },
+  "follow_up_validation": {
+    "prior_commit": "021224f3204b93ad2e44b59513c38fd992ba5bb8",
+    "change": "JSDoc type annotation for the SVG codegen helper after CI TS7006",
+    "generated_cpp_changed": false,
+    "evidence": "codegen-typing-fix.txt"
   }
 }

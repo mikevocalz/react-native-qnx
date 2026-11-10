@@ -90,6 +90,13 @@ suppression or modification of `ReactNativeRenderer.cmake` is included.
 Generated SVG translation units have narrow warning exceptions for upstream
 generated code; the hand-written native code retains strict warnings.
 
+The first published CI validation caught a missing parameter annotation in the
+codegen script's whitespace-normalization helper (`TS7006`). A follow-up adds
+the JSDoc type and passes `pnpm typecheck` and `pnpm qt:svg:check`; see the
+[follow-up output](evidence/codegen-typing-fix.txt). This annotation changes no
+generated C++ bytes or native runtime behavior. Hosted CI status remains
+separate from the local gate results above.
+
 ## Reproduce the focused full-host gate
 
 Use the repository's host setup with Qt 6.11.1 and a complete native dependency

@@ -40,6 +40,7 @@ try {
     .sort();
   // Keep upstream output deterministic while removing trailing horizontal
   // whitespace that would otherwise fail the repository's diff checks.
+  /** @param {string} name */
   const generatedContent = (name) =>
     fs.readFileSync(path.join(temporary, name), 'utf8').replace(/[\t ]+$/gm, '');
   if (mode === '--write') {
