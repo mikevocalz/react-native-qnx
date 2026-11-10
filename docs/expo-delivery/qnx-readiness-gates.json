@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "target": "qnx",
+  "referenceApplication": "external Expo SDK 58 app using public APIs and no premium components",
+  "requirements": [
+    {
+      "id": "external-app",
+      "area": "Project generation and configuration",
+      "implementation": "PR #100 and #101; review candidate on its exact merged head",
+      "acceptance": "From a clean external directory: create, install, inspect, bundle, build, deploy and launch without changing platform sources",
+      "evidence": null,
+      "status": "pending"
+    },
+    {
+      "id": "autolinking",
+      "area": "Expo Modules Core, JSI registration and autolinking",
+      "implementation": "PR #11, #39, #79, #90",
+      "acceptance": "A real Expo native module is discovered, generated, compiled, linked, invoked and disposed on the named QNX target; unsupported modules fail clearly",
+      "evidence": null,
+      "status": "pending"
+    },
+    {
+      "id": "router",
+      "area": "Expo Router navigation",
+      "implementation": "Phase 3 (#84); do not count documentation as native parity",
+      "acceptance": "Same external app exercises stack, tabs, modal, deep link and hardware Back with correct focus and restoration on QNX",
+      "evidence": null,
+      "status": "pending"
+    },
+    {
+      "id": "dev-loop",
+      "area": "Metro development loop and Fast Refresh",
+      "implementation": "PR #110 development runtime; Phase 6 (#87)",
+      "acceptance": "On actual QNX device, connect to Metro, edit JS, observe Fast Refresh preserving appropriate state, recover after invalid bundle and reconnect after restart",
+      "evidence": null,
+      "status": "pending"
+    },
+    {
+      "id": "input-gestures",
+      "area": "Physical input, RNGH 3, accessibility and IME",
+      "implementation": "PR #104, #108 and Phase 3 (#84)",
+      "acceptance": "Physical keyboard/mouse/touch, gesture cancellation, editable text/IME, focus, accessible actions and modal containment pass on target",
+      "evidence": null,
+      "status": "pending"
+    },
+    {
+      "id": "worklets",
+      "area": "Reanimated 4 and Worklets",
+      "implementation": "Phase 3 (#84); not established by basic NativeAnimated tests",
+      "acceptance": "Actual worklet scheduling, UI-thread update, interruptible animated gesture, teardown/reload and errors verified on physical QNX",
+      "evidence": null,
+      "status": "pending"
+    },
+    {
+      "id": "native-services",
+      "area": "Expo Camera, Sensors, Notifications, permissions and lifecycle",
+      "implementation": "Phase 4 (#85)",
+      "acceptance": "Per-module availability matrix with true QNX implementations or explicit unsupported errors; permissions, denial, background/foreground and cleanup verified",
+      "evidence": null,
+      "status": "pending"
+    },
+    {
+      "id": "nitro-forge",
+      "area": "Optional Nitro Forge consumer compatibility",
+      "implementation": "Optional premium consumer; no dependency in open core",
+      "acceptance": "Individually test installed modules with pinned Nitro v1 ABI and QNX backend; do not count generated bindings alone as execution",
+      "evidence": null,
+      "status": "pending"
+    },
+    {
+      "id": "distribution",
+      "area": "QNX release packaging and repeatability",
+      "implementation": "Phase 7 (#88) and docs/releases/v1-readiness.json",
+      "acceptance": "Licensed clean-host build, Qt plugin/library closure, verified bundle/assets, deploy, launch, rollback and versioned support documentation",
+      "evidence": null,
+      "status": "pending"
+    },
+    {
+      "id": "performance",
+      "area": "Cold boot, stability and performance",
+      "implementation": "Existing seven v1 release gates",
+      "acceptance": "Twenty supervised graphics cold boots; first frame, frame intervals and RSS on named QNX target, plus list and drawer interaction budgets",
+      "evidence": null,
+      "status": "pending"
+    }
+  ]
+}
