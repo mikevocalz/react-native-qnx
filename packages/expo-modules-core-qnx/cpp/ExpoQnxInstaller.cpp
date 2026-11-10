@@ -1,6 +1,9 @@
 #include "ExpoQnxInstaller.hpp"
 
 #include "ExpoQnxModuleRegistry.hpp"
+#if RNQNX_ENABLE_EXPO_APPLICATION
+#include "ExpoQnxApplication.hpp"
+#endif
 #include "ExpoQnxModulesHostObject.hpp"
 
 #include <memory>
@@ -34,6 +37,9 @@ void registerBuiltins() {
 
 void installExpoModulesQnx(facebook::jsi::Runtime& runtime) {
   registerBuiltins();
+#if RNQNX_ENABLE_EXPO_APPLICATION
+  registerApplicationModule();
+#endif
 
   facebook::jsi::Object expo(runtime);
   auto modules = facebook::jsi::Object::createFromHostObject(

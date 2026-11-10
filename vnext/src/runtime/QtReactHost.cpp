@@ -1,3 +1,6 @@
+#if RNQNX_ENABLE_EXPO_APPLICATION
+#include "ExpoQnxInstaller.hpp"
+#endif
 #include "react-native-qnx/runtime/QtReactHost.h"
 #if RNQNX_ENABLE_BACK_HANDLER
 #include "react-native-qnx/runtime/QnxBackHandlerModule.h"
@@ -380,6 +383,10 @@ class QtReactHost::Impl {
         ::hermes::vm::RuntimeConfig::Builder()
             .withMicrotaskQueue(true)
             .build());
+
+#if RNQNX_ENABLE_EXPO_APPLICATION
+    rnqnx::expo::installExpoModulesQnx(*runtime);
+#endif
 
     // JavaScript runs on this thread. The executor therefore calls straight
     // through; a real JS thread replaces this without changing anything above.

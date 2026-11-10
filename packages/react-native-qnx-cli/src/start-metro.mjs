@@ -26,6 +26,9 @@ try {
   }
   await runServer(config, {
     host: '127.0.0.1',
+    // This command is an interactive development server, including under CI.
+    // Metro otherwise disables file watching when CI=true.
+    watch: true,
     onReady: () =>
       console.log(JSON.stringify({ action: 'listening', host: plan.host, port: plan.port })),
     onError: (/** @type {Error} */ error) => {

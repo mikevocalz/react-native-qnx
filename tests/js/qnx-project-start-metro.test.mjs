@@ -101,7 +101,10 @@ module.exports = withPublicEntry(${factory}(__dirname, {
       '--port',
       String(port),
     ];
-    const child = spawn(process.execPath, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, args, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env, CI: 'true' },
+    });
     const closed = once(child, 'close');
     let logs = '';
     const log = (/** @type {Buffer} */ chunk) => {
