@@ -3,8 +3,10 @@
 #include <QPointer>
 #include <QQuickItem>
 #include <QString>
+#include <QStringList>
 #include <cstdint>
 #include <functional>
+#include <string>
 namespace rnqnx::fabric {
 struct AccessibilityActivationPolicy {
   bool accessible{false};
@@ -19,6 +21,13 @@ class QtAccessibilityActivation final : public QObject {
  public:
   using Emit = std::function<void()>;
   QtAccessibilityActivation(QQuickItem& item, AccessibilityActivationPolicy policy, Emit callback);
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  using NamedEmit = std::function<void(const std::string&)>;
+  QtAccessibilityActivation(QQuickItem& item, AccessibilityActivationPolicy policy,
+      QStringList actions, NamedEmit callback);
+  QStringList actionNames() const;
+  void performAction(const QString& action);
+#endif
   bool connectPress(QString& error);
   void invalidate() noexcept;
   std::uint64_t generation() const { return generation_; }
@@ -28,6 +37,10 @@ class QtAccessibilityActivation final : public QObject {
   QPointer<QQuickItem> item_;
   AccessibilityActivationPolicy policy_;
   Emit emit_;
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  QStringList actions_;
+  NamedEmit namedEmit_;
+#endif
   QMetaObject::Connection connection_;
   const std::uint64_t generation_;
   bool live_{true};

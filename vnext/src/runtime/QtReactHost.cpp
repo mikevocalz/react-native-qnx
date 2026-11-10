@@ -36,6 +36,10 @@
 #include <react/renderer/animated/AnimatedModule.h>
 #include <react/renderer/animated/NativeAnimatedNodesManagerProvider.h>
 #include "react-native-qnx/runtime/QnxFileReaderModule.h"
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+#include "react-native-qnx/runtime/QtAccessibilityInfoModule.h"
+#include "react-native-qnx/runtime/QtDeviceEventManagerModule.h"
+#endif
 #if RNQNX_ENABLE_APP_STATE
 #include "react-native-qnx/runtime/QnxAppStateModule.h"
 #endif
@@ -160,10 +164,17 @@ void QtSchedulerDelegate::schedulerDidDispatchCommand(
 }
 
 void QtSchedulerDelegate::schedulerDidSendAccessibilityEvent(
-    const facebook::react::ShadowView& /*shadowView*/,
-    const std::string& /*eventType*/) {
+    const facebook::react::ShadowView& shadowView,
+    const std::string& eventType) {
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  const auto failure = adapter_.sendAccessibilityEvent(shadowView.tag, eventType);
+  if (failure.error != rnqnx::fabric::MountError::None) lastFailures_.push_back(failure);
+#else
+  (void)shadowView;
+  (void)eventType;
   // Accessibility is an honest gap; Qt Quick's accessibility bridge is not
   // wired up. Recorded in docs/component-support.md rather than faked.
+#endif
 }
 
 void QtSchedulerDelegate::setTouchDispatcher(
@@ -338,6 +349,14 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
 namespace {
 class QnxFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {
  public:
+#if RNQNX_ENABLE_DESKTOP_INPUT
+  bool enableImperativeFocus() override {
+    return true;
+  }
+  bool shouldPressibilityUseW3CPointerEventsForHover() override {
+    return true;
+  }
+#endif
   bool cxxNativeAnimatedEnabled() override {
     return true;
   }
@@ -356,7 +375,7 @@ class QtReactHost::Impl {
                 , std::shared_ptr<RuntimeTrace> traceSession = nullptr
 #endif
                 )
-      : delegate(adapter) {
+      : adapter(adapter), delegate(adapter) {
 #if RNQNX_ENABLE_FRAME_TRACE
     trace = std::move(traceSession);
 #endif
@@ -574,6 +593,10 @@ class QtReactHost::Impl {
     // runtime is still alive. RuntimeScheduler work can then drain safely.
     if (appStateModule) appStateModule->invalidate();
 #endif
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+    if (accessibilityInfoModule) accessibilityInfoModule->invalidate();
+    if (deviceEventManagerModule) deviceEventManagerModule->invalidate();
+#endif
     taskQueue->close();
   }
 
@@ -590,6 +613,7 @@ class QtReactHost::Impl {
   std::shared_ptr<QnxAppStateModule> appStateModule;
 #endif
   std::shared_ptr<const ContextContainer> contextContainer;
+  fabric::ShadowViewMutationAdapter& adapter;
   QtSchedulerDelegate delegate;
   std::shared_ptr<Scheduler> scheduler;
   std::unordered_map<SurfaceId, std::unique_ptr<SurfaceHandler>> surfaces;
@@ -597,6 +621,10 @@ class QtReactHost::Impl {
   /// them yet; keeping them is what makes that possible later.
   std::unordered_map<std::string, facebook::jsi::Value> callableModules;
   std::unordered_map<int, std::unique_ptr<QTimer>> timers;
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  std::shared_ptr<QtAccessibilityInfoModule> accessibilityInfoModule;
+  std::shared_ptr<QtDeviceEventManagerModule> deviceEventManagerModule;
+#endif
   /// Drives the NativeAnimated `onRender` callback while at least one animation
   /// is active. Created on first use and reused for later animations.
   std::unique_ptr<QTimer> animationTimer;
@@ -737,6 +765,13 @@ void QtReactHost::installTurboModuleBinding() {
 #endif
   auto* impl = impl_.get();
 
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  // A window has a default back policy even before JS imports BackHandler.
+  if (!impl->deviceEventManagerModule) {
+    impl->deviceEventManagerModule = std::make_shared<QtDeviceEventManagerModule>(callInvoker, impl->adapter);
+  }
+#endif
+
   facebook::react::TurboModuleBinding::install(
       *impl_->runtime,
       [callInvoker, impl](
@@ -828,6 +863,20 @@ void QtReactHost::installTurboModuleBinding() {
           return impl->appStateModule;
         }
 #endif
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+        if (name == QtAccessibilityInfoModule::kModuleName) {
+          if (!impl->accessibilityInfoModule) {
+            impl->accessibilityInfoModule = std::make_shared<QtAccessibilityInfoModule>(callInvoker, impl->adapter);
+          }
+          return impl->accessibilityInfoModule;
+        }
+        if (name == QtDeviceEventManagerModule::kModuleName) {
+          if (!impl->deviceEventManagerModule) {
+            impl->deviceEventManagerModule = std::make_shared<QtDeviceEventManagerModule>(callInvoker, impl->adapter);
+          }
+          return impl->deviceEventManagerModule;
+        }
+#endif
 
         // React Native's own generic C++ modules. Two of the modules this
         // platform needs come from here already implemented — microtasks and
@@ -861,11 +910,8 @@ void QtReactHost::installPlatformConstants() {
   auto version = facebook::jsi::Object(runtime);
   version.setProperty(runtime, "major", 0);
   version.setProperty(runtime, "minor", 88);
-  version.setProperty(runtime, "patch", 0);
-  version.setProperty(
-      runtime,
-      "prerelease",
-      facebook::jsi::String::createFromUtf8(runtime, "rc.3"));
+  version.setProperty(runtime, "patch", 1);
+  version.setProperty(runtime, "prerelease", facebook::jsi::Value::null());
   constants.setProperty(runtime, "reactNativeVersion", version);
 
   runtime.global().setProperty(

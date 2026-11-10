@@ -23,6 +23,11 @@
 #include <cmath>
 #include <limits>
 #include <utility>
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+#include <QAccessible>
+#include <QQuickWindow>
+#include <QThread>
+#endif
 
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
@@ -35,6 +40,9 @@
 #include <react/renderer/components/text/BaseParagraphProps.h>
 #include <react/renderer/components/text/ParagraphState.h>
 #include <react/renderer/components/view/ViewProps.h>
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+#include <react/renderer/components/view/accessibilityPropsConversions.h>
+#endif
 #include <react/renderer/core/ConcreteState.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/mounting/ShadowView.h>
@@ -274,6 +282,17 @@ ViewStyle toViewStyle(const ShadowView& view) {
       QString::fromStdString(viewProps->accessibilityLabel);
   style.accessibilityRole =
       QString::fromStdString(viewProps->accessibilityRole);
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  // The public ARIA role prop takes precedence when supplied by a shared RN
+  // control, exactly as it does in the core platforms.
+  if (viewProps->role != facebook::react::Role::None)
+    style.accessibilityRole = QString::fromStdString(facebook::react::toString(viewProps->role));
+  style.accessibilityViewIsModal = viewProps->accessibilityViewIsModal;
+  style.accessibilityHideDescendants = viewProps->accessibilityElementsHidden ||
+      viewProps->importantForAccessibility == facebook::react::ImportantForAccessibility::NoHideDescendants;
+  if (style.accessibilityHideDescendants || viewProps->importantForAccessibility == facebook::react::ImportantForAccessibility::No)
+    style.accessible = false;
+#endif
   style.accessibilityHint =
       QString::fromStdString(viewProps->accessibilityHint);
   if (viewProps->accessibilityValue.text.has_value()) {
@@ -285,6 +304,11 @@ ViewStyle toViewStyle(const ShadowView& view) {
         viewProps->accessibilityState->disabled;
     style.accessibilityStateSelected =
         viewProps->accessibilityState->selected;
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+    style.accessibilityStateBusy = viewProps->accessibilityState->busy;
+    if (viewProps->accessibilityState->expanded.has_value())
+      style.accessibilityStateExpanded = *viewProps->accessibilityState->expanded;
+#endif
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
     style.accessibilityStateCheckable = viewProps->accessibilityState->checked != facebook::react::AccessibilityState::None;
     style.accessibilityStateMixed = viewProps->accessibilityState->checked == facebook::react::AccessibilityState::Mixed;
@@ -876,6 +900,27 @@ MountError ShadowViewMutationAdapter::applyAccessibilityActions(const ShadowView
   auto* item = layer_.itemForTag(view.tag);
   const auto props = std::dynamic_pointer_cast<const facebook::react::ViewProps>(view.props);
   if (!item || !props) return MountError::None;
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  QStringList actions;
+  for (const auto& action : props->accessibilityActions) {
+    const auto name = QString::fromStdString(action.name);
+    if ((name != QStringLiteral("activate") && name != QStringLiteral("longpress") &&
+         name != QStringLiteral("increment") && name != QStringLiteral("decrement")) || actions.contains(name)) {
+      detail = QStringLiteral("Unsupported or duplicate accessibility action: %1").arg(name);
+      return MountError::UnsupportedAccessibility;
+    }
+    actions.push_back(name);
+  }
+  if (actions.isEmpty()) return MountError::None;
+  const auto emitter = std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(view.eventEmitter);
+  AccessibilityActivationPolicy policy{props->accessible, true, props->onAccessibilityAction && bool(emitter),
+    props->accessibilityState.has_value() && props->accessibilityState->disabled};
+  auto* receiver = new QtAccessibilityActivation(*item, policy, std::move(actions), [emitter](const std::string& name) {
+    if (emitter) emitter->onAccessibilityAction(name);
+  });
+  accessibilityActivations_.insert(view.tag, receiver);
+  return MountError::None;
+#else
   bool registered = false;
   for (const auto& action : props->accessibilityActions) {
     if (action.name != "activate" || registered) {
@@ -897,10 +942,17 @@ MountError ShadowViewMutationAdapter::applyAccessibilityActions(const ShadowView
   }
   accessibilityActivations_.insert(view.tag, receiver);
   return MountError::None;
+#endif
 }
 #endif
 
 void ShadowViewMutationAdapter::registerEventEmitter(const ShadowView& view) {
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  if (auto emitter = std::dynamic_pointer_cast<const facebook::react::ModalHostViewEventEmitter>(view.eventEmitter)) {
+    modalCloseCallbacks_.insert(view.tag, [emitter] { emitter->onRequestClose({}); });
+    modalShowCallbacks_.insert(view.tag, [emitter] { emitter->onShow({}); });
+  }
+#endif
   if (touchDispatcher_ == nullptr) {
     return;
   }
@@ -910,6 +962,9 @@ void ShadowViewMutationAdapter::registerEventEmitter(const ShadowView& view) {
       view.tag,
       std::dynamic_pointer_cast<const facebook::react::TouchEventEmitter>(
           view.eventEmitter));
+#if RNQNX_ENABLE_DESKTOP_INPUT
+  touchDispatcher_->setView(view);
+#endif
 }
 
 MountError ShadowViewMutationAdapter::applyOne(
@@ -966,6 +1021,10 @@ MountError ShadowViewMutationAdapter::applyOne(
     }
 
     case ShadowViewMutation::Type::Delete:
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+      modalCloseCallbacks_.remove(mutation.oldChildShadowView.tag);
+      modalShowCallbacks_.remove(mutation.oldChildShadowView.tag);
+#endif
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
       if (auto previous = accessibilityActivations_.take(mutation.oldChildShadowView.tag)) {
         previous->invalidate(); delete previous.data();
@@ -989,6 +1048,9 @@ MountError ShadowViewMutationAdapter::applyOne(
       }
       // Qt's Flickable does not derive its content size from its children, so
       // it is recomputed whenever they change.
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+      if (const auto callback = modalShowCallbacks_.value(mutation.newChildShadowView.tag)) callback();
+#endif
       return layer_.updateScrollContentSize(mutation.parentTag);
     }
 

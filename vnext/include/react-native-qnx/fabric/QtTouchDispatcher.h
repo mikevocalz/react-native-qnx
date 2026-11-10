@@ -12,11 +12,15 @@
 #include <memory>
 #include <optional>
 
+namespace facebook::react { struct ShadowView; }
+
 QT_BEGIN_NAMESPACE
 class QQuickItem;
 QT_END_NAMESPACE
 
 namespace rnqnx::fabric {
+
+class QtDesktopInput;
 
 /// Turns Qt pointer events into React Native touch events.
 ///
@@ -41,6 +45,10 @@ class QtTouchDispatcher final : public QObject {
           false
 #endif
   );
+  ~QtTouchDispatcher() override;
+#if RNQNX_ENABLE_DESKTOP_INPUT
+  void setView(const facebook::react::ShadowView& view);
+#endif
 
   /// Associates a tag with the shadow view's emitter. The adapter calls this as
   /// mutations arrive; a null emitter unregisters.
@@ -83,6 +91,9 @@ class QtTouchDispatcher final : public QObject {
   std::optional<facebook::react::Touch> mouseTouch_;
   Tag responderTag_{-1};
   int dispatchedCount_{0};
+#if RNQNX_ENABLE_DESKTOP_INPUT
+  std::unique_ptr<QtDesktopInput> desktopInput_;
+#endif
 };
 
 }  // namespace rnqnx::fabric

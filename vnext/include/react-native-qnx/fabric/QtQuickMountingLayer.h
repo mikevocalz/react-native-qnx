@@ -12,6 +12,7 @@
 #include <QList>
 #include <QSet>
 #include <QString>
+#include <QVariant>
 
 #include <cstdint>
 #include <optional>
@@ -86,6 +87,12 @@ struct ViewStyle {
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
   bool accessibilityStateCheckable{false};
   bool accessibilityStateMixed{false};
+#endif
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  bool accessibilityStateBusy{false};
+  QVariant accessibilityStateExpanded;
+  bool accessibilityViewIsModal{false};
+  bool accessibilityHideDescendants{false};
 #endif
 };
 
@@ -273,6 +280,8 @@ class QtQuickMountingLayer {
 
   /// Borrowed; nullptr when the tag is not mounted.
   QQuickItem* itemForTag(Tag tag) const;
+  /// Borrowed root used by window-scoped platform services.
+  QQuickItem& rootItem() const { return rootItem_; }
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
   bool isGenericView(Tag tag) const;
 #endif

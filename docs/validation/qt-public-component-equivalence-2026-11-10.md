@@ -1,5 +1,12 @@
 # Public React Native components and Qt package entries — 2026-11-10
 
+This receipt preserves the original 28-export source/bundle checks. The next
+implementation adds `AccessibilityInfo` and `BackHandler`, bringing the current
+public entry to 30 imports. Its native contracts and execution evidence are in
+[Qt accessibility/back](../native-modules/qt-accessibility-back.md) and
+[Qt desktop input](../native-modules/qt-desktop-input.md). Counts and limitations
+below describe the original recorded slice unless explicitly updated.
+
 ## Scope and source boundary
 
 Base: `0c91be9bbb4e7cd6dabccf8cdfe441c7fa57c629`. DRI: `/root/rn_qt_equivalence`;
@@ -173,8 +180,9 @@ behavior. This change retains the existing limitations of window metrics,
 multitouch, accessibility, text input, modal lifecycle and animation drivers.
 
 Shared UI package source still needs the right peers and native services.
-`AccessibilityInfo`, `BackHandler`, `Keyboard`, `Linking`, `Appearance` and
-`useColorScheme` remain unavailable from the public entry. Worklets, Reanimated,
+`Keyboard`, `Linking`, `Appearance` and `useColorScheme` remain unavailable from
+the public entry. AccessibilityInfo and BackHandler are now exposed through the
+separately opt-in Qt provider linked above. Worklets, Reanimated,
 Gesture Handler, SVG and mobile-only Expo view providers need separately tested
 integration. Native RTL configuration remains unsupported. A package's catalog
 row or successful import cannot be counted as a working Qt component without

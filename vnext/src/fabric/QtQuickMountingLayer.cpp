@@ -197,6 +197,9 @@ MountError QtQuickMountingLayer::create(
   MountedItem mounted{item, true};
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
   mounted.genericView = componentName == QStringLiteral("View");
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  if (mounted.genericView) preparePlatformViewAccessibility(*item);
+#endif
 #endif
   items_.insert(tag, mounted);
   mountedPointers_.insert(item);

@@ -24,6 +24,8 @@ const api = module.exports;
 const expected = [
   'AppRegistry',
   'AppState',
+  'AccessibilityInfo',
+  'BackHandler',
   'View',
   'Text',
   'Image',
@@ -54,7 +56,7 @@ const expected = [
 assert.deepEqual(Object.keys(api), expected);
 for (const name of expected) assert.equal(api[name], values);
 assert.equal(loaded.length, expected.length);
-for (const name of ['Alert', 'BackHandler', 'NonexistentExport']) {
+for (const name of ['Alert', 'NonexistentExport']) {
   assert.throws(() => api[name], /not implemented/);
 }
 assert.equal(api.__esModule, undefined);

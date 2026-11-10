@@ -9,6 +9,12 @@ const api = Object.freeze({
   get AppState() {
     return require('react-native/Libraries/AppState/AppState').default;
   },
+  get AccessibilityInfo() {
+    return require('react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo').default;
+  },
+  get BackHandler() {
+    return require('react-native/Libraries/Utilities/BackHandler').default;
+  },
   get View() {
     return require('react-native/Libraries/Components/View/View').default;
   },

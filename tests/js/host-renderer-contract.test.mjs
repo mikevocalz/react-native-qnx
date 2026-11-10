@@ -131,6 +131,34 @@ if (process.platform === 'linux') {
       }),
     });
     assert.equal(bothPresent.status, 0, bothPresent.stderr);
+    for (const services of ['OFF', 'ON']) {
+      const newTests = [
+        'rnqnx_desktop_input_fabric',
+        'rnqnx_platform_services_qnx',
+        'rnqnx_platform_services_marathon',
+        ...(services === 'ON' ? ['rnqnx_platform_accessible_view'] : []),
+      ];
+      writeFileSync(
+        cache,
+        `${bothOff}RNQNX_ENABLE_DESKTOP_INPUT:BOOL=ON\n` +
+          `RNQNX_BUILD_PLATFORM_SERVICES_TESTS:BOOL=ON\n` +
+          `RNQNX_ENABLE_PLATFORM_SERVICES:BOOL=${services}\n`
+      );
+      const required = [...names, ...newTests];
+      const present = invoke({
+        FAKE_INVENTORY: JSON.stringify({ tests: required.map((name) => ({ name })) }),
+      });
+      assert.equal(present.status, 0, present.stderr);
+      for (const missing of newTests) {
+        const result = invoke({
+          FAKE_INVENTORY: JSON.stringify({
+            tests: required.filter((name) => name !== missing).map((name) => ({ name })),
+          }),
+        });
+        assert.notEqual(result.status, 0);
+        assert.match(result.stderr, new RegExp(`Required host-renderer test missing: ${missing}`));
+      }
+    }
     writeFileSync(cache, bothOff);
     assert.notEqual(invoke({ FAKE_BUILD_STATUS: '7' }).status, 0);
     const testFailure = invoke({ FAKE_TEST_STATUS: '8' });

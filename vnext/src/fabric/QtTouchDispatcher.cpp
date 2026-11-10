@@ -1,4 +1,7 @@
 #include "react-native-qnx/fabric/QtTouchDispatcher.h"
+#if RNQNX_ENABLE_DESKTOP_INPUT
+#include "react-native-qnx/fabric/QtDesktopInput.h"
+#endif
 
 #include <react/renderer/components/view/TouchEvent.h>
 
@@ -41,7 +44,18 @@ QtTouchDispatcher::QtTouchDispatcher(
     bool enableInputLifecycle)
     : layer_(layer),
       rootItem_(rootItem),
-      inputLifecycleEnabled_(enableInputLifecycle) {}
+      inputLifecycleEnabled_(enableInputLifecycle) {
+#if RNQNX_ENABLE_DESKTOP_INPUT
+  desktopInput_ = std::make_unique<QtDesktopInput>(layer_, rootItem_);
+#endif
+}
+
+QtTouchDispatcher::~QtTouchDispatcher() = default;
+#if RNQNX_ENABLE_DESKTOP_INPUT
+void QtTouchDispatcher::setView(const facebook::react::ShadowView& view) {
+  desktopInput_->setView(view);
+}
+#endif
 
 void QtTouchDispatcher::setEventEmitter(
     Tag tag,
@@ -77,6 +91,9 @@ void QtTouchDispatcher::cancelMouseTouch() {
 }
 
 void QtTouchDispatcher::forgetTag(Tag tag) {
+#if RNQNX_ENABLE_DESKTOP_INPUT
+  desktopInput_->forgetTag(tag);
+#endif
   // Clear capture before dispatch, while the old emitter still exists.
   if (inputLifecycleEnabled_ && responderTag_ == tag) {
     responderTag_ = -1;
@@ -113,6 +130,9 @@ int QtTouchDispatcher::dispatchedCount() const {
 }
 
 Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
+#if RNQNX_ENABLE_DESKTOP_INPUT
+  return desktopInput_->hitTest(windowPoint);
+#endif
   // Walk down from the root taking the last (topmost) child that contains the
   // point, which matches Qt's own stacking order.
   const QQuickItem* target = nullptr;
@@ -190,6 +210,9 @@ void QtTouchDispatcher::emitTouchEvent(const Touch& changed, TouchKind kind) {
 }
 
 bool QtTouchDispatcher::eventFilter(QObject* watched, QEvent* event) {
+#if RNQNX_ENABLE_DESKTOP_INPUT
+  if (desktopInput_->handleEvent(watched, event)) return true;
+#endif
   const auto type = event->type();
 
   if (inputLifecycleEnabled_ && type == QEvent::TouchCancel) {

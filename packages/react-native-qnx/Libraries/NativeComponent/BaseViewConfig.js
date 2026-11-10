@@ -17,6 +17,38 @@ const ReactNativeStyleAttributes =
   require('react-native/Libraries/Components/View/ReactNativeStyleAttributes').default;
 
 const bubblingEventTypes = {
+  topKeyDown: {
+    phasedRegistrationNames: { bubbled: 'onKeyDown', captured: 'onKeyDownCapture' },
+  },
+  topKeyUp: {
+    phasedRegistrationNames: { bubbled: 'onKeyUp', captured: 'onKeyUpCapture' },
+  },
+  topClick: {
+    phasedRegistrationNames: { bubbled: 'onClick', captured: 'onClickCapture' },
+  },
+  topPointerEnter: {
+    phasedRegistrationNames: {
+      bubbled: 'onPointerEnter',
+      captured: 'onPointerEnterCapture',
+      skipBubbling: true,
+    },
+  },
+  topPointerLeave: {
+    phasedRegistrationNames: {
+      bubbled: 'onPointerLeave',
+      captured: 'onPointerLeaveCapture',
+      skipBubbling: true,
+    },
+  },
+  topPointerOver: {
+    phasedRegistrationNames: { bubbled: 'onPointerOver', captured: 'onPointerOverCapture' },
+  },
+  topPointerOut: {
+    phasedRegistrationNames: { bubbled: 'onPointerOut', captured: 'onPointerOutCapture' },
+  },
+  topPointerMove: {
+    phasedRegistrationNames: { bubbled: 'onPointerMove', captured: 'onPointerMoveCapture' },
+  },
   topPress: {
     phasedRegistrationNames: { bubbled: 'onPress', captured: 'onPressCapture' },
   },
@@ -92,6 +124,11 @@ module.exports = {
     ...ReactNativeStyleAttributes,
     style: ReactNativeStyleAttributes,
     collapsable: true,
+    focusable: true,
+    onKeyDown: true,
+    onKeyDownCapture: true,
+    onKeyUp: true,
+    onKeyUpCapture: true,
     nativeID: true,
     testID: true,
     pointerEvents: true,
@@ -100,7 +137,12 @@ module.exports = {
     accessibilityLabel: true,
     accessibilityHint: true,
     accessibilityRole: true,
+    role: true,
     accessibilityState: true,
+    accessibilityValue: true,
+    accessibilityViewIsModal: true,
+    accessibilityElementsHidden: true,
+    importantForAccessibility: true,
     accessibilityActions: true,
     onAccessibilityAction: true,
   },

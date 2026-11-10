@@ -23,6 +23,11 @@ endif()
 
 # This repository root, for sources outside node_modules.
 get_filename_component(RNQNX_REPO_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+if(RNQNX_ENABLE_DESKTOP_INPUT)
+  # Every RN object must agree on HostPlatformViewProps' layout. This precedes
+  # the generic cxx include roots for all modules, not only the Qt adapter.
+  include_directories(BEFORE "${RNQNX_REPO_ROOT}/vnext/platform/cxx")
+endif()
 # Some modules include React Native's Android-side CMake helpers. The helper
 # they need, target_merge_so, is a no-op off Android (SoMerging-utils.cmake:17),
 # so pointing at the real directory is enough; nothing Android-specific runs.

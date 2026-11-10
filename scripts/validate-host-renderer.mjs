@@ -61,6 +61,15 @@ if (/^RNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON$/m.test(cache)) {
     'rnqnx_accessibility_action_rejects_registration'
   );
 }
+if (/^RNQNX_ENABLE_DESKTOP_INPUT:BOOL=ON$/m.test(cache)) {
+  expectedTests.push('rnqnx_desktop_input_fabric');
+}
+if (/^RNQNX_BUILD_PLATFORM_SERVICES_TESTS:BOOL=ON$/m.test(cache)) {
+  expectedTests.push('rnqnx_platform_services_qnx', 'rnqnx_platform_services_marathon');
+  if (/^RNQNX_ENABLE_PLATFORM_SERVICES:BOOL=ON$/m.test(cache)) {
+    expectedTests.push('rnqnx_platform_accessible_view');
+  }
+}
 run('cmake', ['--build', '--preset', preset]);
 const inventory = run('ctest', ['--test-dir', build, '--show-only=json-v1'], true);
 const registered = new Set(

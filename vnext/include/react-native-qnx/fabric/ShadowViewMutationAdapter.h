@@ -11,6 +11,9 @@
 #include <QString>
 
 #include <vector>
+#include <functional>
+
+class QQuickWindow;
 
 namespace rnqnx::fabric {
 
@@ -78,6 +81,14 @@ class ShadowViewMutationAdapter {
   void synchronouslyUpdateViewOnUIThread(
       facebook::react::Tag tag, const folly::dynamic& props);
 
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  /// Borrowed owning window. Null when the root is not attached to a window.
+  QQuickWindow* hostWindow() const;
+  MutationFailure sendAccessibilityEvent(facebook::react::Tag tag, const std::string& eventType);
+  /// Delivers to the topmost currently mounted modal, if any.
+  bool requestModalClose();
+#endif
+
  private:
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
   MountError applyAccessibilityActions(const facebook::react::ShadowView& view, QString& detail);
@@ -122,6 +133,10 @@ class ShadowViewMutationAdapter {
   QHash<Tag, QtSwitchBridge*> switchBridges_;
   /// Image bridges, indexed by tag, so load/error events reach JavaScript.
   QHash<Tag, QtImageBridge*> imageBridges_;
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  QHash<Tag, std::function<void()>> modalCloseCallbacks_;
+  QHash<Tag, std::function<void()>> modalShowCallbacks_;
+#endif
 };
 
 /// Converts React Native's view props to the visual style the mounting layer

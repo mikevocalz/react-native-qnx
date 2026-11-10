@@ -6,11 +6,44 @@
 #include <QThread>
 #include <atomic>
 #include <utility>
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+#include <QAccessible>
+#include "react-native-qnx/fabric/QtViewAccessibility.h"
+#endif
 namespace rnqnx::fabric {
 namespace { std::atomic<std::uint64_t> nextGeneration{1}; }
 QtAccessibilityActivation::QtAccessibilityActivation(QQuickItem& item, AccessibilityActivationPolicy policy, Emit callback)
     : QObject(&item), item_(&item), policy_(policy), emit_(std::move(callback)),
       generation_(nextGeneration.fetch_add(1, std::memory_order_relaxed)) {}
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+QtAccessibilityActivation::QtAccessibilityActivation(QQuickItem& item, AccessibilityActivationPolicy policy,
+    QStringList actions, NamedEmit callback)
+    : QObject(&item), item_(&item), policy_(policy), actions_(std::move(actions)), namedEmit_(std::move(callback)),
+      generation_(nextGeneration.fetch_add(1, std::memory_order_relaxed)) {}
+QStringList QtAccessibilityActivation::actionNames() const {
+  if (!live_ || !item_ || !policy_.accessible || !policy_.registered || !policy_.hasHandler ||
+      policy_.disabled || !item_->isEnabled() || platformViewAccessibilityHidden(*item_) || !namedEmit_) return {};
+  QStringList result;
+  for (const auto& action : actions_) {
+    if (action == QStringLiteral("activate")) result.push_back(QAccessibleActionInterface::pressAction());
+    else if (action == QStringLiteral("longpress")) result.push_back(QAccessibleActionInterface::showMenuAction());
+    else if (action == QStringLiteral("increment")) result.push_back(QAccessibleActionInterface::increaseAction());
+    else if (action == QStringLiteral("decrement")) result.push_back(QAccessibleActionInterface::decreaseAction());
+  }
+  return result;
+}
+void QtAccessibilityActivation::performAction(const QString& action) {
+  if (QThread::currentThread() != thread() || !actionNames().contains(action)) return;
+  std::string name;
+  if (action == QAccessibleActionInterface::pressAction()) name = "activate";
+  else if (action == QAccessibleActionInterface::showMenuAction()) name = "longpress";
+  else if (action == QAccessibleActionInterface::increaseAction()) name = "increment";
+  else if (action == QAccessibleActionInterface::decreaseAction()) name = "decrement";
+  else return;
+  const auto callback = namedEmit_;
+  callback(name); // The emitter may synchronously remove this receiver.
+}
+#endif
 bool QtAccessibilityActivation::connectPress(QString& error) {
   error.clear();
   if (!live_ || !item_ || QThread::currentThread() != thread()) {
@@ -40,10 +73,20 @@ bool QtAccessibilityActivation::connectPress(QString& error) {
 void QtAccessibilityActivation::invalidate() noexcept {
   live_ = false;
   emit_ = {};
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  namedEmit_ = {};
+  actions_.clear();
+#endif
   QObject::disconnect(connection_);
   connection_ = {};
 }
 void QtAccessibilityActivation::activate() {
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+  if (namedEmit_) {
+    performAction(QAccessibleActionInterface::pressAction());
+    return;
+  }
+#endif
   if (QThread::currentThread() != thread() || !live_ || !item_ ||
       !policy_.accessible || !policy_.registered || !policy_.hasHandler || policy_.disabled ||
       !item_->isEnabled() || !emit_) return;

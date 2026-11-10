@@ -14,7 +14,7 @@ For Marathon, wrap the existing getMarathonMetroConfig result and select maratho
 
 ## Available imports and their limits
 
-The entry exposes 28 lazy imports. Each resolves to the existing React Native implementation or the platform's existing Qt/Fabric override. Composite controls reuse the same Qt primitives. See the [component support inventory](../component-support.md) for each component's rendering and interaction limits.
+The entry exposes 30 lazy imports. Each resolves to the existing React Native implementation or the platform's Qt/Fabric override. Composite controls reuse the same Qt primitives. See the [component support inventory](../component-support.md) for each component's rendering and interaction limits.
 
 | Group                 | Public exports                                                                                          | Boundary                                                                                                                                                                                                                             |
 | --------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -26,7 +26,11 @@ The entry exposes 28 lazy imports. Each resolves to the existing React Native im
 | Renderer reference    | `findNodeHandle`                                                                                        | The upstream renderer function; native reference lifetime and component support remain unchanged.                                                                                                                                    |
 | Layout direction      | `I18nManager`                                                                                           | The unmodified upstream implementation uses its fixed-LTR fallback when no native I18nManager is registered. `isRTL` is false; native RTL configuration methods cannot change direction. Native RTL is unsupported on this baseline. |
 
-Unsupported public imports, including `AccessibilityInfo`, `Alert`, `Appearance`, `BackHandler`, `Keyboard`, `Linking` and `useColorScheme`, still throw an explicit error. Code that imports them needs an implementation before its feature can run. CommonJS interop metadata and promise introspection are exempt from those errors. `RefreshControl`, `KeyboardAvoidingView` and `StatusBar` are not added to this public entry merely because no-op internal overrides exist.
+`AccessibilityInfo` and `BackHandler` are also public imports. Their native operations require the opt-in Qt platform-services provider; unsupported preferences fail explicitly. See the [native contract](../native-modules/qt-accessibility-back.md).
+
+Unsupported public imports, including `Alert`, `Appearance`, `Keyboard`, `Linking` and `useColorScheme`, still throw an explicit error. Code that imports them needs an implementation before its feature can run. CommonJS interop metadata and promise introspection are exempt from those errors. `RefreshControl`, `KeyboardAvoidingView` and `StatusBar` are not added to this public entry merely because no-op internal overrides exist.
+
+Keyboard, pointer hover and imperative focus for generic Views are separately enabled with `RNQNX_ENABLE_DESKTOP_INPUT=ON` and `RNQNX_ENABLE_INPUT_LIFECYCLE=ON`. Both default OFF. The [desktop input contract](../native-modules/qt-desktop-input.md) explains event delivery, native focus traversal and the selected shared-control validation boundary.
 
 This entry does not add Expo Router, native screen stacks, Worklets, Reanimated, Gesture Handler or SVG interoperability. Their native registrations and runtime contracts need separate validation. No support rows or release gates are promoted by adding imports.
 

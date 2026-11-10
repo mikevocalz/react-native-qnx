@@ -1003,11 +1003,9 @@ void platformConstantsReportCurrentReactNativeVersion() {
 
   EXPECT_NEAR(version.getProperty(runtime, "major").getNumber(), 0.0);
   EXPECT_NEAR(version.getProperty(runtime, "minor").getNumber(), 88.0);
-  EXPECT_NEAR(version.getProperty(runtime, "patch").getNumber(), 0.0);
+  EXPECT_NEAR(version.getProperty(runtime, "patch").getNumber(), 1.0);
   const auto prerelease = version.getProperty(runtime, "prerelease");
-  EXPECT(prerelease.isString());
-  EXPECT(
-      prerelease.getString(runtime).utf8(runtime) == std::string("rc.3"));
+  EXPECT(prerelease.isNull());
 }
 
 /// The Metro bundle evaluates in Hermes and installs React Native's globals.

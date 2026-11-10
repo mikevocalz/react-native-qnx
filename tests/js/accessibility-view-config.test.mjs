@@ -43,7 +43,12 @@ for (const prop of [
   'accessibilityLabel',
   'accessibilityHint',
   'accessibilityRole',
+  'role',
   'accessibilityState',
+  'accessibilityValue',
+  'accessibilityViewIsModal',
+  'accessibilityElementsHidden',
+  'importantForAccessibility',
   'accessibilityActions',
   'onAccessibilityAction',
 ]) {
@@ -57,7 +62,6 @@ assert.equal(config.validAttributes.style, styles);
 assert.equal(config.validAttributes.onResponderGrant, true);
 assert.equal(config.directEventTypes.topLayout.registrationName, 'onLayout');
 assert.equal(config.directEventTypes.topAccessibilityTap, undefined);
-assert.equal(config.validAttributes.accessibilityValue, undefined);
 // Core RN expects the structured values unchanged, rather than a bespoke diff
 // or serializer. Native adapters still gate interpretation/delivery separately.
 const props = {
@@ -65,7 +69,12 @@ const props = {
   accessibilityLabel: 'Synthetic label',
   accessibilityHint: 'Synthetic hint',
   accessibilityRole: 'button',
+  role: 'combobox',
   accessibilityState: { disabled: true, selected: true, checked: 'mixed' },
+  accessibilityValue: { text: 'Selected value' },
+  accessibilityViewIsModal: false,
+  accessibilityElementsHidden: false,
+  importantForAccessibility: 'auto',
   accessibilityActions: [{ name: 'activate', label: 'Synthetic activation' }],
 };
 const admitted = Object.fromEntries(

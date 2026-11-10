@@ -6,9 +6,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(RNQNX_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxDesktopInput.cmake)
 option(RNQNX_ENABLE_HOST_SANITIZERS "Enable ASan and UBSan for host tests" ON)
 option(RNQNX_ENABLE_INPUT_LIFECYCLE
   "Enable experimental Qt pointer cancellation and terminal payload fixes" OFF)
+if(RNQNX_ENABLE_DESKTOP_INPUT AND NOT RNQNX_ENABLE_INPUT_LIFECYCLE)
+  message(FATAL_ERROR "RNQNX_ENABLE_DESKTOP_INPUT requires RNQNX_ENABLE_INPUT_LIFECYCLE=ON")
+endif()
 if(RNQNX_ENABLE_INPUT_LIFECYCLE AND NOT
    CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin|QNX)$")
   message(FATAL_ERROR "RNQNX_ENABLE_INPUT_LIFECYCLE requires a Linux, macOS or QNX Qt host")
@@ -585,4 +589,12 @@ endif()
 
 if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE AND NOT TARGET rnqnx_react_host)
   message(FATAL_ERROR "Accessibility bridge requires the full Qt/React host graph")
+endif()
+
+if(RNQNX_ENABLE_DESKTOP_INPUT AND NOT TARGET rnqnx_react_host)
+  message(FATAL_ERROR "Desktop input requires the full Qt/React host graph")
+endif()
+
+if(RNQNX_ENABLE_PLATFORM_SERVICES AND NOT TARGET rnqnx_react_host)
+  message(FATAL_ERROR "Platform services require the full Qt/React host graph")
 endif()

@@ -95,8 +95,14 @@ void run() {
       host.runtime().drainMicrotasks(); host.pumpEvents(); QThread::msleep(1);
     }
     const auto& failures = host.delegate().lastFailures();
+    const QString expectedDetail =
+#if RNQNX_ENABLE_PLATFORM_SERVICES
+      QStringLiteral("Unsupported or duplicate accessibility action: unsupported-fixture-action");
+#else
+      QStringLiteral("Only one registered accessibility activate action is supported");
+#endif
     require(failures.size() == 1 && failures.front().error == rnqnx::fabric::MountError::UnsupportedAccessibility &&
-      failures.front().detail == QStringLiteral("Only one registered accessibility activate action is supported"),
+      failures.front().detail == expectedDetail,
       "unsupported registration did not fail explicitly");
     press();
     for (int i = 0; i < 20; ++i) { host.runtime().drainMicrotasks(); host.pumpEvents(); }
