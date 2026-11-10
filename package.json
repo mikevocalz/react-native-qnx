@@ -48,7 +48,9 @@
     "validate:clean-app": "bash scripts/validate-clean-app.sh",
     "docs:sync": "node scripts/validate-docs.mjs --write",
     "validate:docs": "node scripts/validate-docs.mjs",
-    "validate:v1": "node scripts/validate-docs.mjs --release"
+    "validate:v1": "node scripts/validate-docs.mjs --release",
+    "validate:expo:qnx": "node scripts/validate-expo-qnx-readiness.mjs",
+    "validate:expo:qnx:strict": "node scripts/validate-expo-qnx-readiness.mjs --strict"
   },
   "devDependencies": {
     "@react-native/metro-config": "0.88.1",

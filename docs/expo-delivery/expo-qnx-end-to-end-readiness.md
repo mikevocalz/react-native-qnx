@@ -16,13 +16,17 @@ This is the umbrella **implementation and acceptance** track for React Native QN
 From the source checkout:
 
 ```sh
-node scripts/validate-expo-qnx-readiness.mjs
-node scripts/validate-expo-qnx-readiness.mjs --strict
+pnpm validate:expo:qnx
+pnpm validate:expo:qnx:strict
+# Only when qualifying the separately installed premium consumer:
+node scripts/validate-expo-qnx-readiness.mjs --strict --include-optional
 ```
 
-The default command validates the manifest, prints pending/passed gates, and exits successfully when its **structure** is valid. The strict mode fails until all ten Expo-focused gates have evidence. The existing seven release gates remain separately authoritative via `pnpm validate:v1`. Never promote status merely because a file exists: a reviewer must inspect its actual QNX results, hashes, flags, board/image and test scope.
+The default command validates the manifest, prints pending/passed gates, and exits successfully when its **structure** is valid. Strict mode fails until all nine core gates have evidence. The tenth gate, Nitro Forge consumer compatibility, is optional and never blocks open-core readiness. Add `--include-optional` with `--strict` only when you also want to require that consumer proof. The inventory must retain all ten gate IDs; their required/optional classification cannot be changed in the manifest. The existing seven release gates remain separately authoritative via `pnpm validate:v1`. Never promote status merely because a file exists: a reviewer must inspect its actual QNX results, hashes, flags, board/image and test scope.
 
-For each gate in [qnx-readiness-gates.json](qnx-readiness-gates.json), implement and test the named native capability, commit a revision-bound evidence record, independently review the underlying claim, then set `status: "passed"` and `evidence` to a non-symlink relative repository file. Pending gates must retain `null` evidence.
+For each gate in [qnx-readiness-gates.json](qnx-readiness-gates.json), implement and test the named native capability, commit a revision-bound evidence record, independently review the underlying claim, then set `status: "passed"` and `evidence` to a non-symlink relative repository file. Evidence files must be nonempty and repository-relative, with no symlink in the path. Pending gates must retain `null` evidence. The checker does not establish Git tracking, receipt authenticity or hardware execution; reviewers must confirm the record is committed at the reviewed revision. Invalid manifests, missing evidence and pending strict gates exit 1; invalid CLI arguments exit 2. You can run the command from any working directory.
+
+Run `node tests/js/expo-qnx-readiness.test.mjs` for isolated inventory, optional-gate, path-safety and CLI regression tests. The same test runs in `pnpm test:js` and the existing SDK 58 validation workflow. All gates in this PR remain pending; passing the structural tests is not QNX runtime acceptance.
 
 ## Required reference app and testing sequence
 
