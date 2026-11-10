@@ -1,5 +1,15 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — PR 105 generator validation
+
+At `c09a5b19800c2d7d79268c3466b618aa20430ba2`, the hosted SDK, full renderer,
+Nitro source/compile, image and Pi tooling workflows passed. The follow-up
+reran the 24 invalid-contract cases plus supported-public/deterministic checks,
+TypeScript and dependency validation on Linux/Node 26.13.0/pnpm 12.8.1.
+Documentation synchronization, validation, formatting and diff checks passed.
+[Commands, workflow links and limits](../validation/pr105-merge-readiness-2026-11-10.md)
+separate these results from not-run physical QNX and Marathon execution.
+
 ## 2026-10-03 braces security backport
 
 Host: Linux cloud workspace, Node 26.10.0, pnpm 12.8.1. No QNX SDK or target.

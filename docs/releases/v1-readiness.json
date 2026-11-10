@@ -8,7 +8,14 @@
     "experimentalTarget": "Pi 400 custom BCM2711 image; scoped Hello World/Nitro/runtime/input receipts",
     "qtTarget": "Historical Pi 400 receipts: 6.12.0 evaluation expires 2026-11-17. Selected route: eligible open-source Qt per ADR-0013; separate public-source build receipt pending.",
     "hostedCi": "blocked before runner startup by billing/spending limits at the reviewed baseline",
-    "performance": "unmeasured on QNX"
+    "performance": "unmeasured on QNX",
+    "pr105": {
+      "reviewedAt": "2026-11-10",
+      "implementationCommit": "c09a5b19800c2d7d79268c3466b618aa20430ba2",
+      "receipt": "docs/validation/pr105-merge-readiness-2026-11-10.md",
+      "hostedCi": "passed at the implementation commit; follow-up CI must be checked after publication",
+      "targetExecution": "not run for this candidate; generated C++ unchanged"
+    }
   },
   "gates": [
     {

@@ -1,5 +1,13 @@
 # BLOCKERS.md
 
+## PR 105 review state — 2026-11-10
+
+The mandatory handoff omission is addressed by this follow-up. Hosted checks
+passed at implementation `c09a5b1`; publication and review of the follow-up's
+own checks remain the next step. No physical QNX/Marathon or general Nitrogen
+support is asserted. These documentation changes do not close any v1 release
+gate. See [the exact evidence](../validation/pr105-merge-readiness-2026-11-10.md).
+
 ## GHSA-vfj7-8cjw-p6xm — No official braces fixed release
 
 As of 2026-10-03, npm latest is 3.0.3 and upstream PR #72 is still open.
