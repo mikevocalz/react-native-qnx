@@ -912,3 +912,22 @@ detection it claimed was replaced with a measured one under ASan.
   checks pass. CMake 3.31.10 was installed after the initial missing-tool failure.
   Remote CI remains pending. No publish, merge, QNX build, or target run.
 - Continue with exact-head CI and eventual removal after an official fixed release.
+
+## 2026-11-10 — PR #112 prepared native-package integrity
+
+Compared CLI re-discovery with direct CMake consumers and reproduced a prepared
+descriptor accepting a fabricated Nitro core version while the installed
+manifest and its hash were unchanged. Bound every prepared package identity and
+selected-platform declaration back to that manifest before evaluating native
+package CMake. Added tampered-metadata rejection cases and a valid control.
+
+Published candidate: `95e5d5c35735c797f9e6e7a86a139b36e8ca0a18`, the same tree
+as local review `3ff118414407edf02b1966d8c4a191ce2ed626b9`. Five discovery suites,
+52 configuration checks, eight consumer command checks, typecheck and the
+dependency/architecture/manifest/docs checks pass. The full JS runner completed
+14 files before an environment `listen EPERM` in the Marathon socket fixture;
+later files were not counted as passed. No new native-engine or target execution
+is claimed. Pinned native API-design, Nitro and C++ skills informed the metadata
+and ABI boundary; the repository platform-validation skill governed evidence.
+Implementation/review owner: agent `audit_followups`; human merge review and
+target qualification remain unassigned. All seven release gates stay pending.

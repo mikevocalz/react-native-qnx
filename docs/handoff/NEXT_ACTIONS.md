@@ -167,3 +167,18 @@ treat these source implementations as proof that arbitrary Android/iOS Expo or
 Nitro modules work on QNX: each native package still needs an explicit QNX
 implementation/target, and Nitro async work still needs the actual QNX JS
 dispatcher.
+
+## PR #112 — next executable checks (2026-11-10)
+
+1. Inspect the Actions results for `95e5d5c35735c797f9e6e7a86a139b36e8ca0a18`
+   and the later handoff-only head. Confirm the actual native tests execute;
+   earlier-head or inventory-only checks do not close this boundary.
+2. Run `pnpm test:js` on a host that permits the Marathon launcher's local Unix
+   socket. The local attempt stopped after 14 completed files with `EPERM`.
+3. Run the documented installed-package and public-component consumers against
+   the integrated candidate, retaining exact app/core revisions and artifacts.
+   A CMake INTERFACE fixture establishes metadata validation only.
+4. Assign the remaining QNX/device and Marathon compositor checks described in
+   [the public-component receipt](../validation/qt-public-component-equivalence-2026-11-10.md).
+   Keep the PR draft and release gates pending until their required evidence and
+   independent review are complete.

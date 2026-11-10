@@ -89,3 +89,23 @@ it is not a core platform dependency or a release gate.
 Older statements, toolchains and commands remain in
 [the dated handoff history](HISTORY_THROUGH_2026_11_07.md). They are historical
 context, not the active support contract.
+
+## PR #112 — installed native declaration binding (2026-11-10)
+
+The implementation candidate is `95e5d5c35735c797f9e6e7a86a139b36e8ca0a18`
+on `feat/qt-public-component-equivalence`. Direct CMake consumers now bind
+prepared package declarations to the installed manifest after checking its hash.
+Package identity, schema, selected platform, CMake target/registration fields,
+exact Nitro core versions and dispatcher requirements must agree before a
+package's CMake code is included. This closes a path that could weaken the
+installed package's declared Nitro requirements without changing its manifest.
+See [the package contract](../native-modules/installed-packages.md).
+
+The previous implementation accepts the new tampered-version fixture; the fix
+rejects it and accepts the unchanged fixture. Targeted discovery/consumer checks,
+typecheck, dependency/architecture/manifest validation, formatting and docs pass.
+The full JS runner completed 14 files before the Marathon launcher fixture was
+blocked by `listen EPERM` on its local Unix socket. It is not a full-suite pass.
+Hosted native results for this candidate and QNX/Marathon target execution remain
+pending. This handoff changes only records; the implementation is committed at
+the candidate above. No release gate is promoted.

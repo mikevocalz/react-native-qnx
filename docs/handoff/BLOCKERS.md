@@ -94,3 +94,18 @@ execution remain required afterward. See [probe instructions](../react-render-pr
 3. Full RN + Hermes + Fabric + Qt Quick target runtime proof.
 
 There is no current npm dependency-audit blocker.
+
+## PR #112 — remaining validation boundaries (2026-11-10)
+
+The direct-CMake prepared-metadata bypass is fixed in candidate
+`95e5d5c35735c797f9e6e7a86a139b36e8ca0a18`. Its focused configure-time tests
+pass. The full local JS runner remains incomplete: run `pnpm test:js` in this
+workspace to reproduce the Marathon launcher Unix-socket `listen EPERM` after
+14 completed test files. Run that suite on an authorized host supporting the
+fixture's local socket; do not count this environment restriction as a pass.
+
+Hosted native workflows must finish for the candidate. Actual QNX and Marathon
+target qualification, physical input, compositor delivery, accessibility speech
+and performance remain outside this host/configuration receipt. The companion
+consumer's separately scoped engine proof does not close those platform gates.
+Human merge review and named target validation ownership remain required.

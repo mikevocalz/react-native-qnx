@@ -793,3 +793,28 @@ override to uuid 11.1.1 removed that moderate advisory, and its installed call
 shape is part of `validate:dependencies`. The two remaining high findings are
 `UPSTREAM-DEP-001`; they are recorded rather than ignored. Consequently, “full
 host validation passed” does not mean “registry security audit is clean.”
+
+## PR #112 — native package metadata binding (2026-11-10)
+
+Linux host checks apply to candidate `95e5d5c35735c797f9e6e7a86a139b36e8ca0a18`,
+whose tree matches local review commit `3ff118414407edf02b1966d8c4a191ce2ed626b9`.
+The environment used Node 26, pnpm 12.8.1 and the available host CMake/Ninja.
+No QNX compiler was used.
+
+| Check                                                                             | Result             | Evidence and limit                                                                                                                                                                                                               |
+| --------------------------------------------------------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frozen offline install                                                            | Passed, exit 0     | Installed the committed lockfile using the existing package store.                                                                                                                                                               |
+| `node tests/js/native-package-discovery.test.mjs`                                 | Passed, exit 0     | Five discovery/configuration suites; rejects modified versions, dispatcher requirements, package identity, registration metadata and platform. CMake configures an INTERFACE fixture, not a runtime engine.                      |
+| Original-CMake regression control                                                 | Reproduced, exit 1 | The new changed-core assertion fails with the prior CMake helper because it accepts the altered descriptor. The corrected helper passes.                                                                                         |
+| `node tests/js/qnx-consumer-native-config.test.mjs`                               | Passed, exit 0     | 52 configuration checks.                                                                                                                                                                                                         |
+| `node tests/js/qnx-native-consumer-build.test.mjs`                                | Passed, exit 0     | Eight consumer command checks; not a QNX binary build.                                                                                                                                                                           |
+| `pnpm typecheck`, dependency, architecture and manifest validators                | Passed, exit 0     | Source and installed graph only.                                                                                                                                                                                                 |
+| Changed-file Prettier, `pnpm docs:sync`, `pnpm validate:docs`, `git diff --check` | Passed, exit 0     | Handoff/state generation preserves all seven pending release gates.                                                                                                                                                              |
+| `pnpm test:js`                                                                    | Blocked, exit 1    | First 14 files completed, then `marathon-development-launcher.test.mjs` failed to listen on its local Unix socket with `EPERM`. Later suites did not run through this runner; the focused suites above were executed separately. |
+| Candidate hosted native tests                                                     | Pending            | Must be checked on the published candidate; earlier-head results do not prove this fix.                                                                                                                                          |
+| QNX and Marathon target execution                                                 | Not run            | No cross-build, physical input, device/compositor, speech or performance evidence added.                                                                                                                                         |
+
+The ignored local `build/handoff-js.log` records the interrupted runner and
+`build/manifest-binding-regression/before.log` records the original behavior.
+The committed discovery test reproduces the metadata boundary without relying
+on those temporary logs.
