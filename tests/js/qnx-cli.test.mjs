@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { realpath, mkdtemp, cp, mkdir, readFile, writeFile, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 
 const root = process.cwd();
 const cli = path.join(root, 'packages/react-native-qnx-cli/src/cli.mjs');
@@ -37,6 +38,22 @@ try {
   assert.equal(manifest.dependencies['react-native'], workspace.devDependencies['react-native']);
   assert.equal(manifest.dependencies['@rn-qnx/react-native-qnx'], 'workspace:*');
   assert.equal(manifest.dependencies.zustand, workspace.devDependencies.zustand);
+  // Exercise the generated config, not just its text. pnpm does not expose
+  // transitive Babel helpers at the app or workspace root in a clean install.
+  await mkdir(path.join(temporary, 'apps/dashboard/node_modules/@rn-qnx'), { recursive: true });
+  await symlink(
+    path.join(root, 'packages/metro-config-qnx'),
+    path.join(temporary, 'apps/dashboard/node_modules/@rn-qnx/metro-config-qnx'),
+    'dir'
+  );
+  const appRequire = createRequire(manifestPath);
+  const config = appRequire('./metro.config.js');
+  const rnRequire = createRequire(appRequire.resolve('react-native/package.json'));
+  const runtimeRoot = path.dirname(rnRequire.resolve('@babel/runtime/package.json'));
+  assert.equal(config.resolver.extraNodeModules['@babel/runtime'], runtimeRoot);
+  assert.ok(
+    createRequire(path.join(runtimeRoot, 'package.json')).resolve('./helpers/interopRequireDefault')
+  );
   const entry = await readFile(path.join(temporary, 'apps/dashboard/index.js'), 'utf8');
   assert.match(entry, /dashboard on React Native QNX/);
   assert.match(entry, /registerComponent\('RNQnxPlayground'/);
