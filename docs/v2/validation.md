@@ -97,6 +97,34 @@ the JSDoc type and passes `pnpm typecheck` and `pnpm qt:svg:check`; see the
 generated C++ bytes or native runtime behavior. Hosted CI status remains
 separate from the local gate results above.
 
+### Hosted feature coverage follow-up
+
+The initial hosted renderer matrix left all three Qt v2 switches OFF. Its
+green results therefore covered the existing default renderer, not the new
+native feature tests. The enabled-input lane now explicitly enables SVG,
+motion and graphics and checks deterministic SVG binding generation. The
+other lane explicitly keeps these switches OFF; the product defaults are
+unchanged.
+
+The full-renderer validator requires all five feature tests when their
+corresponding switch is enabled: native SVG, real React/Fabric SVG, motion,
+software graphics and null-RHI graphics. It also rejects those registrations
+when the feature is OFF. A missing feature test can no longer be hidden by
+successful baseline CTests. The existing evidence upload retains the actual
+CTest inventory, JUnit results and CMake selections for each lane.
+
+The orchestration regression reproduces the omission with the original
+validator and passes with the corrected validator. It exercises each missing
+feature test, independently enabled switches and accidental registration in
+an OFF lane using fake executables; these are validator behavior checks, not
+native runtime results. Repository typechecking passes. Actual new hosted
+matrix execution must be evaluated on the follow-up commit after publication;
+no QNX or Marathon device evidence is added by this change.
+
+The follow-up applies the repository validation skill and Callstack's
+`github-actions` skill at `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`: keep
+run-specific artifacts and test results attached to the exact candidate.
+
 ## Reproduce the focused full-host gate
 
 Use the repository's host setup with Qt 6.11.1 and a complete native dependency
