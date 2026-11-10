@@ -59,6 +59,13 @@
         "metroBundles": "Real reset-cache bundles passed: QNX 684840 bytes; Marathon 684881 bytes",
         "nativeAndDeviceEvidence": "Fresh full native CI pending; no new QNX or Marathon runtime evidence",
         "releaseGatesPromoted": false
+      },
+      "stackedSdkValidation": {
+        "sourceHeadBeforeFollowup": "73f7da04739fd790fb67565b68ff2fac6c3992e3",
+        "scope": "Remove SDK pull_request base allowlist only; preserve push branches, permissions, concurrency and jobs",
+        "nativeEvidence": "Native sources, fixtures, dependency pins and recorded hashes unchanged; no native or broad suite rerun",
+        "hostedCi": "Pending on the new published PR110 head; child PR108 checks do not substitute",
+        "releaseGatesPromoted": false
       }
     },
     "pr106": {
@@ -86,6 +93,15 @@
         "nativeEvidence": "Native sources and recorded hashes unchanged; retain 47/47 ON and 25/25 OFF with existing leak-detection limitation",
         "hostedCi": "Pending SDK validation for the published follow-up on the stacked PR",
         "releaseGatesPromoted": false
+      },
+      "stackedSdkRestack": {
+        "firstParentPr108": "66ac3b9e245b3a02604bb87fba58002f15cbd2c9",
+        "secondParentPr110": "d5d81908a83d4f2fbc022c5915d6f6ae23193192",
+        "scope": "Preserve the published PR110 SDK follow-up ancestry; only documentation/generated state differs from PR108 first parent",
+        "nativeEvidence": "Native sources, tests, dependencies, workflow and all evidence artifacts byte-identical to first parent; retain 47/47 ON and 25/25 OFF with existing leak-detection limitation",
+        "hostedCi": "Pending on the published merge head; earlier parent results do not substitute",
+        "releaseGatesPromoted": false,
+        "validation": "Exact file/evidence/gate preservation checks, host-renderer contract, docs sync/validation, changed-file formatting and whitespace checks passed"
       }
     }
   },

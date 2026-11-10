@@ -1,5 +1,17 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — PR #108 SDK ancestry restack
+
+This merge of #108 `66ac3b9` and #110 `d5d8190` changes only documentation and
+generated evidence state. Native sources, tests, dependencies, workflow and
+recorded evidence artifacts remain byte-identical to #108. The prior 47/47 ON
+and 25/25 OFF results retain their scope; no native or broad suite was rerun.
+The published merge requires its own hosted CI result.
+Exact parent/file comparison, preservation of both evidence entries and all
+seven gates, the existing host-renderer contract, docs sync/validation,
+changed-file Prettier and whitespace checks passed.
+[Integration receipt](../validation/pr108-integration-2026-11-10.md).
+
 ## 2026-11-10 — PR #108 SDK trigger validation
 
 The SDK follow-up changes only its PR base filter and documentation. PyYAML
@@ -34,6 +46,14 @@ the atomic PID readiness fixture pass. Real reset-cache Metro bundles are
 685,628 bytes for QNX and 685,669 bytes for Marathon. Final docs sync/validation,
 changed-file formatting and diff checks pass. Published-head CI remains pending;
 no new QNX cross-build/device, Marathon compositor or performance result exists.
+
+## 2026-11-10 — PR #110 SDK trigger follow-up
+
+Parsed YAML equivalence apart from the PR filter, the existing host-renderer
+contract, docs sync/validation, changed-file Prettier and whitespace checks pass.
+Native sources/hashes are unchanged; no native or broad suite rerun is claimed.
+The published follow-up needs its own SDK result.
+[Receipt](../validation/pr110-merge-readiness-2026-11-10.md).
 
 ## 2026-11-10 — Combined PR #106/#110 validation
 

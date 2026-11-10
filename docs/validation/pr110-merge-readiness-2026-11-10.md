@@ -1,5 +1,26 @@
 # PR 110: integration validation handoff
 
+## Stacked SDK validation follow-up — 2026-11-10
+
+This CI/documentation follow-up starts from published
+`73f7da04739fd790fb67565b68ff2fac6c3992e3`. The SDK workflow's PR base
+allowlist excluded #110's #104 base. Removing only that filter enables #110's
+own full SDK validation; the child #108's run cannot substitute for it.
+Push branches, permissions, concurrency and every job remain unchanged.
+
+Native sources, fixtures, dependency pins and recorded artifact/source hashes
+are unchanged. Prior native evidence keeps its recorded scope; no native or
+broad suite is rerun for this filter edit. CI for the new published head is
+pending, and all seven v1 gates retain their existing status.
+
+Validation passed: PyYAML 6.0.3 comparison of the complete workflow against
+the parent, `node tests/js/host-renderer-contract.test.mjs`, `pnpm docs:sync`,
+`pnpm validate:docs`, changed-file Prettier and `git diff --check`.
+DRI: the assigned PR review agent; independent reviewer and
+publisher: the parent integrator. Propagate the published follow-up into #108
+to preserve stack ancestry. Reverting it restores the old filter without
+changing runtime behavior.
+
 The initial 2026-11-10 review covered implementation commit
 `083c4bdb887a844e533313fed9b967ff94f4c4d3`, originally based on PR #104 at
 `3b414f185ec9b6c23eb7fbfdbc0afc9bfed18b94`. The published follow-up

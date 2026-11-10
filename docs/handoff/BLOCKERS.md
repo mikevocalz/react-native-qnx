@@ -1,5 +1,13 @@
 # BLOCKERS.md
 
+## 2026-11-10 — PR #108 SDK restack review
+
+The identical SDK trigger changes from #108 `66ac3b9` and #110 `d5d8190` are
+combined without a runtime change. Publication and exact merge-head CI remain
+pending. Existing target acceptance, leak-detection limitations and all seven
+release gates are unchanged; no new target evidence is inferred.
+[Integration receipt](../validation/pr108-integration-2026-11-10.md).
+
 ## 2026-11-10 — PR #108 stacked SDK gap
 
 The SDK workflow's old PR base filter excluded the #110 branch. The follow-up
@@ -23,6 +31,13 @@ QNX/device and Marathon compositor acceptance, physical input/IME, accessibility
 speech and performance remain open. Host-only development still needs a real
 Metro edit/Refresh/recovery session. All seven release gates remain pending.
 [Integration receipt](../validation/pr108-integration-2026-11-10.md).
+
+## 2026-11-10 — PR #110 SDK trigger gap
+
+At `73f7da0`, the SDK PR base filter excluded #110. The filter is removed;
+the published follow-up's SDK job must still pass. The child #108's checks
+do not qualify this parent head. Native evidence and release gates are unchanged.
+[Receipt](../validation/pr110-merge-readiness-2026-11-10.md).
 
 ## 2026-11-10 — Combined PR #106/#110 review state
 

@@ -1,5 +1,33 @@
 # PR #108 / #110 integration — November 10, 2026
 
+## Restack after PR #110's SDK follow-up
+
+This merge preserves published #108
+`66ac3b9e245b3a02604bb87fba58002f15cbd2c9` as its first parent and incorporates
+published #110 `d5d81908a83d4f2fbc022c5915d6f6ae23193192` as its second parent.
+Both parents already contain the identical SDK PR-filter removal. The merge
+only reconciles documentation and generated evidence state, retaining both
+PR-specific SDK follow-up records and the earlier integration history.
+
+All files outside documentation/generated state, including the SDK workflow,
+are byte-identical to #108 `66ac3b9`. Native sources, tests, dependencies and
+every retained evidence artifact are unchanged. The source-bound 47/47 ON and
+25/25 OFF results below retain their original scope and leak-detection
+limitation. No native or broad runtime suite was rerun for this restack.
+
+Validation passed: exact file comparison against first parent `66ac3b9`,
+comparison of all seven release-gate records against both parents,
+`node tests/js/host-renderer-contract.test.mjs`, `pnpm docs:sync`,
+`pnpm validate:docs`, changed-file Prettier and `git diff --check`. The complete
+#110 evidence entry matches its published parent; the earlier #108 entry is
+preserved with this additive restack record.
+
+The seven release-gate records remain unchanged. The new merge must receive
+its own hosted CI results; #110's checks and the earlier #108 checks do not
+substitute for them. All earlier entries below remain revision-specific
+history. Restack DRI: `audit_base_stack`; independent reviewer and publisher:
+the parent integrator.
+
 ## Stacked SDK validation follow-up
 
 Published integration `3fa112e217d0f01e8f075ad2d95994297c158c87` is the

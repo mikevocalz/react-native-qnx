@@ -1,5 +1,14 @@
 # NEXT_ACTIONS.md
 
+## 2026-11-10 — Publish the PR #108 SDK restack
+
+Publish the reviewed merge with parents #108 `66ac3b9` and #110 `d5d8190`, then
+inspect that exact head's SDK and native CI. Retain the unchanged source-bound
+native results and artifacts; no local native rerun is needed for this
+documentation-only reconciliation. Earlier continuation entries below are
+historical; existing target acceptance and all seven release gates stay open.
+[Integration receipt](../validation/pr108-integration-2026-11-10.md).
+
 ## 2026-11-10 — PR #108 stacked SDK continuation
 
 Publish the trigger-only follow-up on `3fa112e`, then require SDK 58 validation
@@ -22,6 +31,13 @@ evidence remains intact; do not rerun unrelated native work for this filter edit
    before merging. Human review remains separate from source automation.
 4. Run the integrated candidate's named QNX and Marathon target scenarios and
    a real host Metro edit/reload workflow. Keep missing gates pending.
+
+## 2026-11-10 — PR #110 SDK follow-through
+
+Publish the filter-only follow-up to `73f7da0` and inspect its own SDK run.
+Merge that published follow-up into dependent #108 to keep ancestry intact;
+native sources and recorded evidence remain unchanged.
+[Receipt](../validation/pr110-merge-readiness-2026-11-10.md).
 
 ## 2026-11-10 — Combined PR #106/#110 continuation
 

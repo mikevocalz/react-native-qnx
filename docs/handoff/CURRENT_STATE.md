@@ -1,5 +1,14 @@
 # Current state
 
+## 2026-11-10 — PR #108 preserves the new #110 SDK follow-up
+
+Restacked published #108 `66ac3b9` on published #110 `d5d8190`, preserving both
+parents and all earlier evidence. Their SDK workflow changes are identical;
+only documentation/generated state differs from #108. Native sources, tests,
+dependencies and evidence artifacts are unchanged. New merge-head CI remains
+pending, and all seven release gates retain their existing status.
+[Integration receipt](../validation/pr108-integration-2026-11-10.md).
+
 ## 2026-11-10 — PR #108 stacked SDK validation
 
 The published integration at `3fa112e` now receives a CI follow-up removing
@@ -30,6 +39,13 @@ Independent source review found no blocking issue. The
 input identities, source/artifact hashes and raw results. The completed merge
 and these records await publication as one integration commit; published-head
 CI remains pending. No fresh target execution or release-gate promotion is claimed.
+
+## 2026-11-10 — PR #110 receives its own SDK validation
+
+The follow-up to `73f7da0` removes only the SDK workflow's PR base filter so
+#110's stacked base receives full SDK checks. Native sources and evidence are
+unchanged; the new published head's CI remains pending.
+[Receipt](../validation/pr110-merge-readiness-2026-11-10.md).
 
 ## 2026-11-10 — PR #110 integrates the PR #106 public API
 

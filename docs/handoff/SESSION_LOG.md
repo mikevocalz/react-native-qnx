@@ -1,5 +1,18 @@
 # SESSION_LOG.md
 
+## 2026-11-10 — Preserve PR #110's SDK follow-up in PR #108
+
+`audit_base_stack` created a clean branch from published #108 `66ac3b9`,
+preserving prior local history, and merged published #110 `d5d8190`. Resolved
+only additive handoff-section conflicts, retaining both PRs' evidence entries
+and updating the integration receipt. The identical SDK workflow change needed
+no resolution. Native code, tests, dependencies and evidence artifacts remain
+unchanged; no native or broad runtime suite was rerun. Root owns independent
+review and publication of the merge with both parents.
+Exact source/artifact and gate preservation, host-renderer contract, docs,
+formatting and whitespace checks passed.
+[Integration receipt](../validation/pr108-integration-2026-11-10.md).
+
 ## 2026-11-10 — Enable SDK validation for stacked PRs
 
 `audit_small_prs` branched from published #108 `3fa112e`, preserving the local
@@ -39,6 +52,13 @@ Marathon 685,669 bytes). Applied the shared atomic PID-readiness fixture fix and
 its focused test passed; the PR #107 native process guard was not incorporated.
 Final docs checks pass. Source publication and exact-head CI remain pending.
 No target or v1 gate is promoted; all prior PR-specific histories are preserved.
+
+## 2026-11-10 — Enable SDK checks on PR #110's stacked base
+
+Branched from published `73f7da0`, preserving earlier local history. Removed
+only the SDK PR base allowlist and updated handoff/generated evidence records.
+No native source, fixture, dependency or release-gate change is included.
+[Receipt](../validation/pr110-merge-readiness-2026-11-10.md).
 
 ## 2026-11-10 — Integrate PR #106 into PR #110
 
