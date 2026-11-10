@@ -10,14 +10,14 @@ class registration function. Product libraries remain application dependencies.
 A package can declare `rnqnxNative` in `package.json` with `schemaVersion: 1` and
 a `platforms` object containing a `qnx` and/or `marathon` descriptor.
 
-| Descriptor field | Meaning |
-| --- | --- |
-| `cmakeListsPath` | Package-relative path ending in `CMakeLists.txt` |
-| `target` | CMake target the package entry creates |
-| `registrationHeader` | Header exposed by that target's public include directories |
+| Descriptor field       | Meaning                                                                            |
+| ---------------------- | ---------------------------------------------------------------------------------- |
+| `cmakeListsPath`       | Package-relative path ending in `CMakeLists.txt`                                   |
+| `target`               | CMake target the package entry creates                                             |
+| `registrationHeader`   | Header exposed by that target's public include directories                         |
 | `registrationFunction` | C++ function called after native runtime installation and before bundle evaluation |
-| `nitroCoreVersions` | Exact supported core versions, checked against the host target |
-| `requiresDispatcher` | Whether asynchronous methods require the real Qt JavaScript dispatcher |
+| `nitroCoreVersions`    | Exact supported core versions, checked against the host target                     |
+| `requiresDispatcher`   | Whether asynchronous methods require the real Qt JavaScript dispatcher             |
 
 Discovery reads JSON without evaluating package entry points or configuration
 JavaScript. It follows installed production and optional dependencies, including
