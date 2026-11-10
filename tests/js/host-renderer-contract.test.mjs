@@ -27,6 +27,7 @@ if (process.platform === 'linux') {
     'rnqnx_window_metrics_scale_1_25',
     'rnqnx_window_metrics_scale_2',
     'rnqnx_font_license',
+    'rnqnx_ControlledSwitch_test',
     'rnqnx_rn_headers_probe',
     'shadow_view_mutation_adapter_host_test',
     'shadow_tree_mounting_host_test',
@@ -178,6 +179,33 @@ if (process.platform === 'linux') {
       }),
     });
     assert.equal(allPresent.status, 0, allPresent.stderr);
+    for (const [feature, featureNames] of [
+      ['MODAL_FOCUS', ['rnqnx_ModalFocus_test']],
+      ['DEV_RUNTIME', ['rnqnx_dev_session_host_test']],
+      ['FRAME_TRACE', ['rnqnx_qt_frame_trace_test']],
+    ]) {
+      const inventory = [...names, ...featureNames];
+      writeFileSync(cache, bothOff + `RNQNX_ENABLE_${feature}:BOOL=ON\n`);
+      const enabled = invoke({
+        FAKE_INVENTORY: JSON.stringify({ tests: inventory.map((name) => ({ name })) }),
+      });
+      assert.equal(enabled.status, 0, enabled.stderr);
+      for (const missing of featureNames) {
+        const absent = invoke({
+          FAKE_INVENTORY: JSON.stringify({
+            tests: inventory.filter((name) => name !== missing).map((name) => ({ name })),
+          }),
+        });
+        assert.notEqual(absent.status, 0);
+        assert.match(absent.stderr, new RegExp(`Required host-renderer test missing: ${missing}`));
+      }
+      writeFileSync(cache, bothOff + `RNQNX_ENABLE_${feature}:BOOL=OFF\n`);
+      const leaked = invoke({
+        FAKE_INVENTORY: JSON.stringify({ tests: inventory.map((name) => ({ name })) }),
+      });
+      assert.notEqual(leaked.status, 0);
+      assert.match(leaked.stderr, /Disabled v1 feature registered a test:/);
+    }
     writeFileSync(cache, bothOff);
     assert.notEqual(invoke({ FAKE_BUILD_STATUS: '7' }).status, 0);
     const testFailure = invoke({ FAKE_TEST_STATUS: '8' });

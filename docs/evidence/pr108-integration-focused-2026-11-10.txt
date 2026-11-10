@@ -1,0 +1,23 @@
+Test project /workspace/scratch/2b8db1005468/native-108
+    Start 11: rnqnx_view_focus_host_test
+1/9 Test #11: rnqnx_view_focus_host_test ........   Passed    0.39 sec
+    Start 30: rnqnx_window_metrics_scale_1
+2/9 Test #30: rnqnx_window_metrics_scale_1 ......   Passed    0.26 sec
+    Start 31: rnqnx_window_metrics_scale_1_25
+3/9 Test #31: rnqnx_window_metrics_scale_1_25 ...   Passed    0.30 sec
+    Start 32: rnqnx_window_metrics_scale_2
+4/9 Test #32: rnqnx_window_metrics_scale_2 ......   Passed    0.30 sec
+    Start 33: rnqnx_component_gallery
+5/9 Test #33: rnqnx_component_gallery ...........   Passed    6.44 sec
+    Start 34: rnqnx_component_gallery_desktop
+6/9 Test #34: rnqnx_component_gallery_desktop ...   Passed   15.01 sec
+    Start 39: qt_react_host_host_test
+7/9 Test #39: qt_react_host_host_test ...........   Passed   11.04 sec
+    Start 41: rnqnx_ModalFocus_test
+8/9 Test #41: rnqnx_ModalFocus_test .............   Passed    0.13 sec
+    Start 42: rnqnx_ControlledSwitch_test
+9/9 Test #42: rnqnx_ControlledSwitch_test .......   Passed    0.05 sec
+
+100% tests passed out of 9
+
+Total Test time (real) =  33.95 sec

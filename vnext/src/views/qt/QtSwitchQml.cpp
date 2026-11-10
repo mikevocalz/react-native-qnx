@@ -13,6 +13,12 @@ Item {
   property color trackOnColor: '#4cd964'
   property color trackOffColor: '#767577'
   property color thumbColor: '#ffffff'
+  signal toggled()
+  function toggle() {
+    if (disabled) return;
+    value = !value;
+    toggled();
+  }
   visible: true
 
   Rectangle {
@@ -35,7 +41,7 @@ Item {
   MouseArea {
     anchors.fill: parent
     enabled: !root.disabled
-    onClicked: { root.value = !root.value; }
+    onClicked: root.toggle()
   }
 }
 )SWITCH";

@@ -1,0 +1,80 @@
+{
+  "recordedAt": "2026-11-10",
+  "configuration": "ON; recorded before reconfiguring the same isolated build tree OFF",
+  "adaptiveInput": "47cd9d8220e17b4d6909b9b5480548a3be5cf4cf",
+  "integratedPr110": "73f7da04739fd790fb67565b68ff2fac6c3992e3",
+  "sourceStatus": "Validated integrated source from the two published inputs plus the integration fixes; the publishing merge includes this record.",
+  "sanitizers": "Partial instrumentation; leak detection disabled for the final run because this host uses ptrace.",
+  "artifacts": {
+    "rnqnx_dev_session_host_test": {
+      "bytes": 29024448,
+      "sha256": "2064328db6ae358646eee13f27eaeee582bf0ae9b1d7e0bbaff0502249b9420a"
+    },
+    "rnqnx_ModalFocus_test": {
+      "bytes": 24673984,
+      "sha256": "26bc7c1fda770f06610e49c5b8d6b1e980dd654ab5c3ed1f91fd96fd123b494f"
+    },
+    "rnqnx_ControlledSwitch_test": {
+      "bytes": 26259152,
+      "sha256": "210bf7e5699961baf2e40dabd54b00498b0b2b4e23ebabf04d44901934380971"
+    },
+    "bin/rnqnx_view_focus_host_test": {
+      "bytes": 28688888,
+      "sha256": "b0614f83ef53bc7834046b78d7ae176a140b6d7dee1a47bbd6e09f3fb3ef392f"
+    },
+    "bin/rnqnx_playground_host": {
+      "bytes": 28952976,
+      "sha256": "5ae67bea55cf55009bf25d42b8bea6d5f23ef9dda8c28def295aea70f0db55f0"
+    },
+    "rnqnx-accessibility-action-probe.bundle.js": {
+      "bytes": 464933,
+      "sha256": "9b4adb604c0638e12f8fe7e290ab966eef7368129246c1e019980c262e7c4f7d"
+    },
+    "rnqnx-consumer-input.bundle.js": {
+      "bytes": 779961,
+      "sha256": "aac726d40f82b6ceddce1d395c21e4a78b435b1d13919125e097bd5c22e9d361"
+    },
+    "rnqnx-playground.bundle.js": {
+      "bytes": 786681,
+      "sha256": "9ebd83d8439a32ab1ea80978242d57eeb1430499abe0642dacc4f2a0a5fbe894"
+    },
+    "rnqnx-pressable-probe.bundle.js": {
+      "bytes": 480736,
+      "sha256": "5cfd105524ac00188abce57c7b54fb1ebc6ed9472cedd131762bfb09dbffa9ad"
+    },
+    "rnqnx-react-probe.bundle.js": {
+      "bytes": 462573,
+      "sha256": "da5708d2dc62301164ef789e79eae7b857354c496a0ceca8421253315931b070"
+    },
+    "rnqnx-text-input-probe.bundle.js": {
+      "bytes": 470890,
+      "sha256": "d0a49fa7199bf7cb6ffd4b4dfd1e59471f54f0ceaaaeb6b210caec57ba02d224"
+    },
+    "rnqnx-view-focus.bundle.js": {
+      "bytes": 686227,
+      "sha256": "7f79b9f3adbe718abc1c2c02d4b242c801cb79773ee5f784def800855000591b"
+    },
+    "rnqnx-window-metrics.bundle.js": {
+      "bytes": 685987,
+      "sha256": "47bd198fe786f0a809010725f96746965b26a0f08b3cc5970c2cf1935dcffdb5"
+    },
+    "component-gallery-fixture/app.bundle.js": {
+      "bytes": 705126,
+      "sha256": "1cb5ecbd7d450fe8c92c266e5ed2d233e77e9b1eec488fb3b77d6bc189593d97"
+    }
+  },
+  "sourceSha256": {
+    "vnext/src/fabric/QtQuickMountingLayer.cpp": "848bd8d2bf0610f17badb541d20619a57f228d7511eab85046b89e8d973a5c58",
+    "vnext/src/fabric/ShadowViewMutationAdapter.cpp": "04b397f54a8dfc2877ed4f121cf0f6a48ace323736b2baae771d03fbd95b6ab0",
+    "vnext/src/runtime/QtReactHost.cpp": "cf73559543132bff740c09ed07fa5a9cb09a8c03cc17ea001253de8340ba7f7c",
+    "vnext/src/runtime/DevSession.cpp": "66f34c2dac853cd43e5642428939718e7b4127e8dc4ee299ff4536cad55947b6",
+    "vnext/include/react-native-qnx/runtime/DevSession.h": "bf608c4046e5fe53a846be84bc0c77fde32ce17084288a911bc535378e7d7233",
+    "vnext/probes/playground/main.cpp": "707e79b1d379de08733e0996c4c9e50c9e7a4afc2e8bbfb42ca593976f99a09b",
+    "vnext/src/fabric/QtViewFocusBridge.cpp": "ca351f3e37e238f87fe0b3c66cd631ed6c133f359cbc0581f90a976258fd7902",
+    "tests/cpp/DevSessionHostTest.cpp": "4756617e2f42100c65b4f498b58b3ea1f867729d155d620dfba843d52b818450",
+    "tests/cpp/QtModalFocusTest.cpp": "db762cc2b8f1a6c6987e028cc4d8d1c314cad2e3e71f2925ddd4b5f1a5aad70b",
+    "packages/react-native-qnx/Libraries/Image/Image.js": "3ff346600ed7ee483c99ced607cee1f464ef276c3798188c66b172a29aa7feb6",
+    "packages/react-native-qnx/Libraries/Components/Switch/Switch.js": "aa5a44e09d2e005511514ce088a5f54fe30412cd38801640278111fbcd7cb183",
+    "tests/js/runtime-baseline.test.mjs": "2d2a309b796afd9074a2a8e9b48ae478b7a89cae898b083ec65d1e2d5deb16ad"
+  }
+}

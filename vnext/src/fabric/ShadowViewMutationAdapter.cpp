@@ -76,6 +76,13 @@ class QtModalBridge final : public QObject {
   }
 
   void setMounted(bool mounted, FocusRestoration restoration = FocusRestoration::Restore) {
+#if RNQNX_ENABLE_MODAL_FOCUS
+    // The window-wide owner coordinates focus across Fabric surfaces. Keep
+    // this bridge responsible only for modal state and sizing in that mode.
+    Q_UNUSED(restoration);
+    mounted_ = mounted;
+    return;
+#else
     if (mounted_ == mounted) return;
     const bool wasTopmost = isTopmost();
     const auto previousWindow = window_;
@@ -116,10 +123,12 @@ class QtModalBridge final : public QObject {
         previous->forceActiveFocus(Qt::OtherFocusReason);
       }
     });
+#endif
   }
 
  protected:
   bool eventFilter(QObject* watched, QEvent* event) override {
+#if !RNQNX_ENABLE_MODAL_FOCUS
     if (watched == window_ && isTopmost() &&
         (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)) {
       const auto* key = static_cast<QKeyEvent*>(event);
@@ -148,6 +157,10 @@ class QtModalBridge final : public QObject {
         return true;
       }
     }
+#else
+    Q_UNUSED(watched);
+    Q_UNUSED(event);
+#endif
     return QObject::eventFilter(watched, event);
   }
 
@@ -207,6 +220,7 @@ class QtModalBridge final : public QObject {
   }
 
   void queueInitialFocus() {
+#if !RNQNX_ENABLE_MODAL_FOCUS
     if (!mounted_ || focusPending_) return;
     focusPending_ = true;
     QTimer::singleShot(0, this, [this] {
@@ -221,9 +235,11 @@ class QtModalBridge final : public QObject {
       focusFirst(item_);
       initialFocusChosen_ = window_->activeFocusItem() != &item_;
     });
+#endif
   }
 
   void observeWindow(QQuickWindow* window) {
+#if !RNQNX_ENABLE_MODAL_FOCUS
     if (window_) window_->removeEventFilter(this);
     window_ = window;
     if (window_) {
@@ -231,6 +247,9 @@ class QtModalBridge final : public QObject {
       window_->installEventFilter(this);
       queueInitialFocus();
     }
+#else
+    Q_UNUSED(window);
+#endif
   }
 
   void updateViewport() {
@@ -600,6 +619,10 @@ void ShadowViewMutationAdapter::applyModal(const ShadowView& view) {
   if (!bridge) bridge = new QtModalBridge(*item, layer_.rootItem());
   bridge->update(std::dynamic_pointer_cast<const QtModalBridge::State>(view.state),
       std::dynamic_pointer_cast<const facebook::react::ModalHostViewEventEmitter>(view.eventEmitter));
+#if RNQNX_ENABLE_MODAL_FOCUS
+  const auto emitter = std::dynamic_pointer_cast<const facebook::react::ModalHostViewEventEmitter>(view.eventEmitter);
+  layer_.setModalRequestClose(view.tag, [emitter] { if (emitter) emitter->onRequestClose({}); });
+#endif
 }
 
 void ShadowViewMutationAdapter::applyImage(const ShadowView& view) {
@@ -753,7 +776,7 @@ void ShadowViewMutationAdapter::applySwitch(const ShadowView& view) {
     style.thumbColor = packColor(props->thumbTintColor);
   }
 
-  if (auto* bridge = switchBridges_.value(view.tag, nullptr)) {
+  if (auto bridge = switchBridges_.value(view.tag)) {
     bridge->setExpectedValue(style.value);
   }
 
@@ -761,17 +784,10 @@ void ShadowViewMutationAdapter::applySwitch(const ShadowView& view) {
 }
 
 void ShadowViewMutationAdapter::connectSwitchEvents(const ShadowView& view) {
-  if (switchBridges_.contains(view.tag)) {
-    return;
-  }
-
+  if (componentNameOf(view) != QStringLiteral("Switch")) return;
   const auto emitter =
       std::dynamic_pointer_cast<const facebook::react::SwitchEventEmitter>(
           view.eventEmitter);
-  if (emitter == nullptr) {
-    return;
-  }
-
   QQuickItem* item = layer_.itemForTag(view.tag);
   if (item == nullptr) {
     return;
@@ -782,16 +798,22 @@ void ShadowViewMutationAdapter::connectSwitchEvents(const ShadowView& view) {
   const bool initialValue = props != nullptr ? props->value : false;
 
   const auto emitChange = [emitter, viewTag = view.tag](bool value) {
+    if (!emitter) return;
     facebook::react::SwitchEventEmitter::OnChange event;
     event.value = value;
     event.target = static_cast<int>(viewTag);
     emitter->onChange(event);
   };
 
+  if (auto bridge = switchBridges_.value(view.tag)) {
+    bridge->setOnChange(emitChange);
+    return;
+  }
+
   auto* bridge =
       new QtSwitchBridge(emitChange, item, initialValue, item);
   QObject::connect(
-      item, SIGNAL(valueChanged()), bridge, SLOT(notify()));
+      item, SIGNAL(toggled()), bridge, SLOT(notify()));
 
   switchBridges_.insert(view.tag, bridge);
 }
@@ -1071,6 +1093,9 @@ ShadowViewMutationAdapter::~ShadowViewMutationAdapter() {
       delete bridge.data();
     }
   }
+#if RNQNX_ENABLE_MODAL_FOCUS
+  for (auto it = modalBridges_.cbegin(); it != modalBridges_.cend(); ++it) layer_.setModalRequestClose(it.key(), {});
+#endif
   for (const auto& bridge : std::as_const(modalBridges_)) {
     if (bridge) {
       bridge->setMounted(false, QtModalBridge::FocusRestoration::Skip);
@@ -1353,6 +1378,21 @@ MutationFailure ShadowViewMutationAdapter::dispatchCommand(
     const std::string& commandName,
     const folly::dynamic& args,
     const ShadowView* shadowView) {
+  if (commandName == "setValue") {
+    if (!args.isArray() || args.size() != 1 || !args[0].isBool()) {
+      return MutationFailure{.type = ShadowViewMutation::Type::Update, .tag = tag,
+          .error = MountError::IndexOutOfRange,
+          .detail = QStringLiteral("Switch setValue expects [boolean]")};
+    }
+    const auto bridge = switchBridges_.value(tag);
+    if (!bridge || !layer_.itemForTag(tag)) {
+      return MutationFailure{.type = ShadowViewMutation::Type::Update, .tag = tag,
+          .error = MountError::UnknownTag,
+          .detail = QStringLiteral("Switch setValue requires a mounted Switch event bridge")};
+    }
+    bridge->setValue(args[0].asBool());
+    return MutationFailure{};
+  }
   if (commandName == "scrollTo") {
     if (!args.isArray() || args.size() < 2) {
       return MutationFailure{

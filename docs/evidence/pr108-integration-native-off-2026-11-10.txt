@@ -1,0 +1,55 @@
+Test project /workspace/scratch/2b8db1005468/native-108
+      Start  1: rnqnx_g0_cxx20_probe
+ 1/25 Test  #1: rnqnx_g0_cxx20_probe ................................   Passed    0.00 sec
+      Start  2: qnx_screen_surface_host_test
+ 2/25 Test  #2: qnx_screen_surface_host_test ........................   Passed    0.01 sec
+      Start  3: rnqnx_wheel_direction
+ 3/25 Test  #3: rnqnx_wheel_direction ...............................   Passed    0.28 sec
+      Start  4: rnqnx_hermes_probe
+ 4/25 Test  #4: rnqnx_hermes_probe ..................................   Passed    0.01 sec
+      Start  5: rnqnx_text_layout_host_test
+ 5/25 Test  #5: rnqnx_text_layout_host_test .........................   Passed    0.09 sec
+      Start  6: rnqnx_view_focus_host_test
+ 6/25 Test  #6: rnqnx_view_focus_host_test ..........................   Passed    0.34 sec
+      Start  7: rnqnx_react_render_host_probe
+ 7/25 Test  #7: rnqnx_react_render_host_probe .......................   Passed    0.12 sec
+      Start  8: rnqnx_react_render_host_probe_rejects_bad_bundles
+ 8/25 Test  #8: rnqnx_react_render_host_probe_rejects_bad_bundles ...   Passed    0.08 sec
+      Start  9: rnqnx_consumer_window_input
+ 9/25 Test  #9: rnqnx_consumer_window_input .........................   Passed    3.48 sec
+      Start 10: rnqnx_consumer_window_rejects_interception
+10/25 Test #10: rnqnx_consumer_window_rejects_interception ..........   Passed   10.10 sec
+      Start 11: rnqnx_window_metrics_scale_1
+11/25 Test #11: rnqnx_window_metrics_scale_1 ........................   Passed    0.33 sec
+      Start 12: rnqnx_window_metrics_scale_1_25
+12/25 Test #12: rnqnx_window_metrics_scale_1_25 .....................   Passed    0.32 sec
+      Start 13: rnqnx_window_metrics_scale_2
+13/25 Test #13: rnqnx_window_metrics_scale_2 ........................   Passed    0.31 sec
+      Start 14: rnqnx_component_gallery
+14/25 Test #14: rnqnx_component_gallery .............................   Passed    5.91 sec
+      Start 15: rnqnx_font_license
+15/25 Test #15: rnqnx_font_license ..................................   Passed    0.02 sec
+      Start 16: rnqnx_playground_screenshot
+16/25 Test #16: rnqnx_playground_screenshot .........................   Passed    0.19 sec
+      Start 17: rnqnx_playground_rejects_start_failure
+17/25 Test #17: rnqnx_playground_rejects_start_failure ..............   Passed    0.04 sec
+      Start 18: rnqnx_playground_rejects_stop_failure
+18/25 Test #18: rnqnx_playground_rejects_stop_failure ...............   Passed    0.03 sec
+      Start 19: qt_react_host_host_test
+19/25 Test #19: qt_react_host_host_test .............................   Passed   10.59 sec
+      Start 20: rnqnx_rn_headers_probe
+20/25 Test #20: rnqnx_rn_headers_probe ..............................   Passed    0.01 sec
+      Start 21: rnqnx_ControlledSwitch_test
+21/25 Test #21: rnqnx_ControlledSwitch_test .........................   Passed    0.05 sec
+      Start 22: shadow_view_mutation_adapter_host_test
+22/25 Test #22: shadow_view_mutation_adapter_host_test ..............   Passed    0.03 sec
+      Start 23: shadow_tree_mounting_host_test
+23/25 Test #23: shadow_tree_mounting_host_test ......................   Passed    0.03 sec
+      Start 24: qtquick_mounting_layer_host_test
+24/25 Test #24: qtquick_mounting_layer_host_test ....................   Passed    0.07 sec
+      Start 25: rnqnx_qtquick_host_probe
+25/25 Test #25: rnqnx_qtquick_host_probe ............................   Passed    0.02 sec
+
+100% tests passed out of 25
+
+Total Test time (real) =  32.48 sec

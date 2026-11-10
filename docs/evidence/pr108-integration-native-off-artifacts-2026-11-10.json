@@ -1,0 +1,37 @@
+{
+  "recordedAt": "2026-11-10",
+  "configuration": "OFF for desktop, modal, development runtime, websockets, trace, input lifecycle, text input contract and accessibility; host sanitizers remain ON",
+  "adaptiveInput": "47cd9d8220e17b4d6909b9b5480548a3be5cf4cf",
+  "integratedPr110": "73f7da04739fd790fb67565b68ff2fac6c3992e3",
+  "sourceStatus": "Validated integrated source from the two published inputs plus the integration fixes; the publishing merge includes this record.",
+  "sanitizers": "Partial instrumentation; leak detection disabled for the final run because this host uses ptrace.",
+  "sourceSha256": {
+    "vnext/src/fabric/QtQuickMountingLayer.cpp": "848bd8d2bf0610f17badb541d20619a57f228d7511eab85046b89e8d973a5c58",
+    "vnext/src/fabric/ShadowViewMutationAdapter.cpp": "04b397f54a8dfc2877ed4f121cf0f6a48ace323736b2baae771d03fbd95b6ab0",
+    "vnext/src/runtime/QtReactHost.cpp": "cf73559543132bff740c09ed07fa5a9cb09a8c03cc17ea001253de8340ba7f7c",
+    "vnext/src/runtime/DevSession.cpp": "66f34c2dac853cd43e5642428939718e7b4127e8dc4ee299ff4536cad55947b6",
+    "vnext/include/react-native-qnx/runtime/DevSession.h": "bf608c4046e5fe53a846be84bc0c77fde32ce17084288a911bc535378e7d7233",
+    "vnext/probes/playground/main.cpp": "707e79b1d379de08733e0996c4c9e50c9e7a4afc2e8bbfb42ca593976f99a09b",
+    "vnext/src/fabric/QtViewFocusBridge.cpp": "ca351f3e37e238f87fe0b3c66cd631ed6c133f359cbc0581f90a976258fd7902",
+    "tests/cpp/DevSessionHostTest.cpp": "4756617e2f42100c65b4f498b58b3ea1f867729d155d620dfba843d52b818450",
+    "tests/cpp/QtModalFocusTest.cpp": "db762cc2b8f1a6c6987e028cc4d8d1c314cad2e3e71f2925ddd4b5f1a5aad70b",
+    "packages/react-native-qnx/Libraries/Image/Image.js": "3ff346600ed7ee483c99ced607cee1f464ef276c3798188c66b172a29aa7feb6",
+    "packages/react-native-qnx/Libraries/Components/Switch/Switch.js": "aa5a44e09d2e005511514ce088a5f54fe30412cd38801640278111fbcd7cb183",
+    "tests/js/runtime-baseline.test.mjs": "2d2a309b796afd9074a2a8e9b48ae478b7a89cae898b083ec65d1e2d5deb16ad"
+  },
+  "artifacts": {
+    "rnqnx_ControlledSwitch_test": {
+      "bytes": 25929432,
+      "sha256": "361b456697efec0156a6d40c6592dbfe537630bc815b4a3152bd412274880233"
+    },
+    "bin/rnqnx_view_focus_host_test": {
+      "bytes": 27868576,
+      "sha256": "10cd8fb1861f0dacd573ef0418653aae9f6528dc4c7680962a9a86953b7921f4"
+    },
+    "bin/rnqnx_playground_host": {
+      "bytes": 26216040,
+      "sha256": "d583e576b463111479f648449a6d062d9f60ac7e4ac43b03fd2e01f1f8c4c0ce"
+    }
+  },
+  "metroFixtures": "Unchanged from the ON artifact record; all nine were regenerated before validation."
+}

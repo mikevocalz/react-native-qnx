@@ -1,5 +1,14 @@
 #pragma once
 
+#ifndef RNQNX_ENABLE_MODAL_FOCUS
+#define RNQNX_ENABLE_MODAL_FOCUS 0
+#endif
+
+#if RNQNX_ENABLE_MODAL_FOCUS
+#include <QPointer>
+#include <functional>
+#endif
+
 #ifndef RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
 #define RNQNX_ENABLE_ACCESSIBILITY_BRIDGE 0
 #endif
@@ -287,6 +296,9 @@ class QtQuickMountingLayer {
   QQuickItem* itemForTag(Tag tag) const;
   /// This surface's client viewport, which can be smaller than its window.
   QQuickItem& rootItem() const;
+#if RNQNX_ENABLE_MODAL_FOCUS
+  void setModalRequestClose(Tag tag, std::function<void()> requestClose);
+#endif
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
   bool isGenericView(Tag tag) const;
 #endif
@@ -308,6 +320,12 @@ class QtQuickMountingLayer {
   };
 
   void raiseModals();
+#if RNQNX_ENABLE_MODAL_FOCUS
+  void syncModalFocus();
+  QHash<Tag, QPointer<QObject>> modalFocusOwners_;
+  QHash<Tag, std::function<void()>> modalCloseRequests_;
+  bool tearingDown_{false};
+#endif
   MountError failWith(MountError error, const QString& detail);
 
   views::QtQuickItemFactory& factory_;

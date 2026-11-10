@@ -1,5 +1,80 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — PR #108 / #110 native integration
+
+Linux x86-64, Clang 19 and Qt 6.11.1: the separate Debug build with the input,
+text-input, accessibility, desktop, Modal, dev-runtime, WebSockets and trace
+options ON completed all 934 steps. Host sanitizer options were enabled, with
+partial instrumentation. The first focused run passed 9/9: View focus, window
+metrics at 1/1.25/2, fullscreen/desktop gallery, React host, Modal focus and
+controlled Switch. See [the receipt and raw logs](../validation/pr108-integration-2026-11-10.md).
+
+The final #110 `73f7da0` integration and DevSession guard rebuilt in 18 steps;
+nine generated Metro fixtures were explicitly refreshed. The full ON run passed
+47/47 in 67.38 seconds. Reconfiguring all eight feature flags OFF and rebuilding
+55 steps passed 25/25 in 32.48 seconds. The first full 44/47 run is retained:
+three tests hit LeakSanitizer's ptrace-host fatal error. The successful runs
+used process-local `ASAN_OPTIONS=detect_leaks=0:halt_on_error=1` and
+`UBSAN_OPTIONS=halt_on_error=1`; no source/kernel change or leak proof is implied.
+
+The DevSession unobserved-metrics control exited 1 with the intended initial
+client-dimensions assertion; the positive native fixture passed. `pnpm typecheck`
+(host/adaptive), host-renderer/public-entry/controlled-Switch JS contracts and
+the atomic PID readiness fixture pass. Real reset-cache Metro bundles are
+685,628 bytes for QNX and 685,669 bytes for Marathon. Final docs sync/validation,
+changed-file formatting and diff checks pass. Published-head CI remains pending;
+no new QNX cross-build/device, Marathon compositor or performance result exists.
+
+## 2026-11-10 — Combined PR #106/#110 validation
+
+Merge inputs: #110 `2657620` and #106 `5e3bb88`; Linux x86-64, Node 26.13.0,
+pnpm 12.8.1. `node tests/js/qnx-public-entry.test.mjs`,
+`node tests/js/qnx-controlled-switch.test.mjs` and `pnpm typecheck` pass.
+`node tests/js/qnx-public-entry-metro.test.mjs` passes using real Metro and
+separate reset caches: QNX 684,840 bytes, Marathon 684,881 bytes. The old mock's
+`useMergeRefs` import failure was reproduced before moving the assertions.
+
+`pnpm docs:sync`, `pnpm validate:docs`, changed-file Prettier and
+`git diff --check` pass. Local links resolve; both prior handoff histories,
+distinct evidence entries and all seven gate records are preserved. See the
+[combined receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+Fresh native ON/OFF and public-import CI remain pending on the final published
+merge; no physical-target or native-runtime result is implied by these tests.
+
+## 2026-11-10 — PR #110 integration follow-up
+
+Linux x86-64, Node 26.13.0, pnpm 12.8.1: the integrator ran
+`node tests/js/host-renderer-contract.test.mjs`,
+`node tests/js/qnx-controlled-switch.test.mjs` and `pnpm typecheck`; all passed.
+These are inventory, JavaScript simulation and type checks. Fresh full native
+ON/OFF CI for the updated candidate is pending. The original author's 23/23
+ON and 17/17 OFF results belong to `083c4bd` and retain their two excluded
+targets and ASan host-setting limitation.
+
+`pnpm docs:sync`, `pnpm validate:docs`, changed-document Prettier and
+`git diff --check` passed. Local Markdown links, the seven unchanged pending
+gates and preserved #104 handoff content were checked. No fresh QNX build,
+VM, physical QNX, Marathon shell or state-preserving Fast Refresh session ran
+for this documentation follow-up. Receipt:
+[pr110-merge-readiness-2026-11-10.md](../validation/pr110-merge-readiness-2026-11-10.md).
+
+## 2026-11-10 — PR #104 readiness follow-up
+
+Linux x86-64, Node 26.13.0, pnpm 12.8.1: frozen offline install, `node tests/js/qnx-component-conformance.test.mjs` and `node tests/js/host-renderer-contract.test.mjs` exit 0. These are fixture/source/inventory tests, not native renderer execution. No new QNX cross-build, physical interaction, VM, or Marathon/Wayland result is claimed for this documentation follow-up.
+
+`pnpm validate:docs`, `pnpm validate:dependencies`, `pnpm validate:architecture`, `pnpm validate:manifests`, and `pnpm exec tsc --noEmit` also exit 0. Generated documentation is synchronized; the lockfile is unchanged. These source/host checks do not qualify a target.
+
+Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
+## 2026-11-10 — PR 106 repaired public wrapper validation
+
+At `6b528c1`, public-entry VM contracts pass and reset-cache Metro produces
+684,415-byte QNX and 684,456-byte Marathon bundles. TypeScript, dependency
+source checks, documentation and formatting pass. Hosted native public-import,
+full-renderer, SDK, Marathon Metro and image-loader runs also passed at that
+implementation head. No fresh physical-target result is claimed.
+[Commands, workflow links and limits](../validation/pr106-merge-readiness-2026-11-10.md).
+
 ## 2026-10-03 braces security backport
 
 Host: Linux cloud workspace, Node 26.10.0, pnpm 12.8.1. No QNX SDK or target.

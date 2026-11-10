@@ -417,7 +417,6 @@ function ImageLoadingApp() {
 }
 
 function ImageGetSizeApp() {
-  const Image = require('react-native/Libraries/Image/Image.ios').default;
   const source =
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
   Image.getSize(source)

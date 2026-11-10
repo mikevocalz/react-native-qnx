@@ -1,5 +1,58 @@
 # NEXT_ACTIONS.md
 
+## 2026-11-10 — PR #108 integrated continuation
+
+1. Publish the validated integration as a merge preserving #108 `47cd9d8` and
+   #110 `73f7da0`. Native results are complete: 47/47 ON, 25/25 OFF and the
+   intended DevSession negative-control assertion.
+2. Verify the final published head's actual Actions jobs. Keep the
+   [integration receipt](../validation/pr108-integration-2026-11-10.md), raw logs,
+   source/artifact hashes and leak-detection limitation attached. Regenerate
+   Metro fixtures explicitly after indirect platform-JS changes until CMake's
+   dependency coverage is expanded.
+3. Preserve the #104/#106/#110 dependency history and review the final PR base
+   before merging. Human review remains separate from source automation.
+4. Run the integrated candidate's named QNX and Marathon target scenarios and
+   a real host Metro edit/reload workflow. Keep missing gates pending.
+
+## 2026-11-10 — Combined PR #106/#110 continuation
+
+Review and publish the merge of #110 `2657620` and #106 `5e3bb88`, preserving
+both parent histories. Inspect full native ON/OFF and public-import CI at the
+published merge head. Keep #104 and #106 before their dependent #110 and
+inspect the final target/diff. The Switch fixture integration described in
+the older #106 entry is now completed and locally checked; target evidence
+and actual Fast Refresh remain separate work.
+[Combined receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+
+## 2026-11-10 — PR #110 integration follow-up
+
+Publish the integrated #104/#110 candidate and inspect both full host-renderer
+matrix jobs at that exact head, including required registrations for Modal
+focus, controlled Switch, development runtime and frame tracing. Keep #104
+before #110 and inspect the resulting base/diff. Run an actual host Fast
+Refresh edit/reload/reconnect session separately; obtain exact artifacts,
+flags and named interactions for future QNX acceptance. Preserve the positive
+owner report and all seven pending release gates.
+
+Receipt:
+[pr110-merge-readiness-2026-11-10.md](../validation/pr110-merge-readiness-2026-11-10.md).
+
+## 2026-11-10 — PR #104 readiness follow-up
+
+Attach the tested artifact identities and actions to the positive owner feedback. Preserve existing #104 history; review #104 before the dependent #110 and verify the latter’s base/diff after retargeting. Keep ordinary gallery interaction, optional desktop behavior, and release qualification separate.
+
+Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
+## PR 106 continuation — 2026-11-10
+
+Review/publish this follow-up and inspect its CI before resolving the handoff
+thread. When integrating PR 110, retain the style-array repair and move Switch
+style/prop checks into its retained-hook test harness; preserve all Image tests.
+Run `node tests/js/qnx-public-entry.test.mjs`,
+`node tests/js/qnx-public-entry-metro.test.mjs` and the combined controlled-Switch
+test/native-host checks. [Receipt and rollback](../validation/pr106-merge-readiness-2026-11-10.md).
+
 ## Dependency-security follow-through (2026-10-03)
 
 Review the braces depth backport and guarded audit in `docs/security/braces.md`.

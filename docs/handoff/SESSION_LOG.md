@@ -1,5 +1,76 @@
 # SESSION_LOG.md
 
+## 2026-11-10 — Integrate PR #108 with the #110 stack
+
+Root combined adaptive source `47cd9d8` with #110 and resolved four native
+source conflicts, retaining shared font/measurement behavior and producer
+shutdown. Review found that disabling the adaptive focus bridge under the new
+window-wide owner left initial focus on an empty modal; added a coalesced owner
+refresh and native late-tab/explicit-focus/removal regressions.
+
+Review also found that development bundles evaluated before binding native
+metrics. Reused the host observer for each generation, removed the duplicate
+resize timer, deferred source evaluation until positive bounds, and guarded
+stop/reload/prepareHost cancellation. The native fixture includes request-tagged
+blocked generations, actual DeviceInfo metrics and an unobserved negative control.
+Independent agent `dev_integration_review` found no blocking source issue.
+
+The first full native build completed 934 steps and focused CTest passed 9/9.
+Root then integrated published #110 `73f7da0`, including #104/#106 follow-ups.
+The final source rebuilt in 18 steps and nine Metro fixtures were refreshed to
+include the indirect Image/Switch changes. The first full run passed 44/47;
+three failures were LeakSanitizer's fatal ptrace-host diagnostic. A process-local
+leak-disabled rerun passed 47/47. The OFF reconfigure/rebuild passed 25/25, with
+all eight flags verified OFF and the optional tests absent. The DevSession
+negative control exited 1 at the intended initial-dimensions assertion.
+
+Combined source/type tests and real Metro bundles passed (QNX 685,628 bytes;
+Marathon 685,669 bytes). Applied the shared atomic PID-readiness fixture fix and
+its focused test passed; the PR #107 native process guard was not incorporated.
+Final docs checks pass. Source publication and exact-head CI remain pending.
+No target or v1 gate is promoted; all prior PR-specific histories are preserved.
+
+## 2026-11-10 — Integrate PR #106 into PR #110
+
+Created a separate integration branch from published #110 `2657620` and
+merged published #106 `5e3bb88`, retaining the earlier local history branch.
+Resolved the public probe to keep Image and I18nManager. Preserved the Image
+contracts and controlled Switch runtime; migrated the overlapping style,
+props, event and ref assertions into the retained-hook harness after observing
+the old mock fail. Both focused tests, both reset-cache Metro bundles and
+typecheck pass. Preserved the distinct #104/#106/#110 evidence entries and
+all earlier handoff sections; no new native or physical-target run is claimed.
+[Combined receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+
+## 2026-11-10 — PR #110 integration follow-up
+
+The PR review agent reconciled the Modal/Switch and host-development guides
+with the original author report at `083c4bd`, retained the #104 owner receipt,
+and added this candidate's six handoff records and generated evidence entry.
+The integrator separately expanded stacked-PR full-host CI and passed the
+host-renderer inventory, controlled-Switch JavaScript and type checks. No
+fresh native/device run is claimed by the documentation work. The original
+native counts and exclusions remain attached to their original revision;
+updated full native CI is pending.
+
+Receipt:
+[pr110-merge-readiness-2026-11-10.md](../validation/pr110-merge-readiness-2026-11-10.md).
+
+## 2026-11-10 — PR #104 readiness follow-up
+
+`audit_base_stack` retained the owner’s PR #110 report and verified #104 ancestry, corrected the implemented Modal host contract, and reran focused fixture/inventory checks. This follow-up modifies documentation/support metadata only; no native implementation, dependency or device state changes.
+
+Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
+## 2026-11-10 — PR 106 committed handoff and integration review
+
+Re-ran the public Image/Switch contract test, both isolated-cache Metro bundles,
+types and installed-source validation on `6b528c1`. Recorded later successful
+hosted native runs and updated the stale image guide statement. Inspected
+PR 110's controlled-Switch hooks and identified the combined-fixture work
+without changing this branch's runtime or tests.
+[Full receipt](../validation/pr106-merge-readiness-2026-11-10.md).
+
 ## 2026-10-04 — Replace arithmetic-only React QNX probe
 
 - Replaced UIManager-plus-arithmetic success with a real bundled React surface,

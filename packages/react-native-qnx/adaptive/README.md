@@ -116,6 +116,13 @@ commands require the host's standard React Native imperative focus support.
 Physical keyboard, input-method and assistive-technology qualification remains
 a target-specific validation task.
 
+The integrated native host chooses initial dialog focus after its controls have
+mounted and preserves focus explicitly selected by the application. Development
+sessions bind actual window dimensions before evaluating the bundle and rebind
+them after a full reload; startup waits if the native client has no usable size
+yet. See the [integration validation](../../../docs/validation/pr108-integration-2026-11-10.md)
+for the native test scope and remaining target checks.
+
 `defaultAdaptiveColors` supplies the gallery's navy/teal palette. Pass `colors`
 to apply a consuming app's theme. These helpers do not infer touch capability,
 hinges, system safe areas, or window-manager controls from a size class. The

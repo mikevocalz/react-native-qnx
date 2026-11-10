@@ -1,0 +1,1 @@
+FAIL: dev bundle sees native client dimensions before surface startup

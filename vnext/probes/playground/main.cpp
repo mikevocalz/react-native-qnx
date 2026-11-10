@@ -18,6 +18,12 @@
 #include "react-native-qnx/runtime/QtReactHost.h"
 #include "react-native-qnx/runtime/ApplicationIdentity.h"
 #include "react-native-qnx/text/QtTextAttributes.h"
+#include "react-native-qnx/runtime/QtFrameTrace.h"
+#if RNQNX_ENABLE_DEV_RUNTIME
+#include "react-native-qnx/runtime/DevSession.h"
+#include <QQmlComponent>
+#include <QShortcut>
+#endif
 #ifdef RNQNX_CONSUMER_APP_HEADER
 #include RNQNX_CONSUMER_APP_HEADER
 #endif
@@ -266,6 +272,10 @@ int main(int argc, char** argv) {
   parser.addOption(invertWheelOption);
   parser.addOption(fontLicenseOption);
   parser.addOption(bundleOption);
+  const QCommandLineOption devBundleOption(QStringLiteral("dev-bundle-url"),
+      QStringLiteral("Execute a trusted Metro dev=true/hot=true bundle (host-only, fullscreen)."),
+      QStringLiteral("url"));
+  parser.addOption(devBundleOption);
   parser.addOption(screenshotOption);
   parser.process(app);
   if (parser.isSet(fontLicenseOption)) {
@@ -277,6 +287,18 @@ int main(int argc, char** argv) {
     const auto contents = license.readAll();
     return std::fwrite(contents.constData(), 1, static_cast<std::size_t>(contents.size()), stdout) ==
         static_cast<std::size_t>(contents.size()) ? 0 : 1;
+  }
+  const bool development = parser.isSet(devBundleOption);
+#if !RNQNX_ENABLE_DEV_RUNTIME
+  if (development) {
+    std::fprintf(stderr, "RNQNX_DEV_UNAVAILABLE rebuild host with RNQNX_ENABLE_DEV_RUNTIME=ON\n");
+    return 2;
+  }
+#endif
+  if (development && (parser.isSet(bundleOption) || parser.isSet(screenshotOption) ||
+                      parser.isSet(desktopOption))) {
+    std::fprintf(stderr, "RNQNX_DEV_ERROR development requires fullscreen and excludes --bundle, --desktop and --screenshot\n");
+    return 2;
   }
   if (parser.isSet(systemFrameOption) && !parser.isSet(desktopOption)) {
     std::fprintf(stderr, "RNQNX_DESKTOP_ERROR --system-window-frame requires --desktop\n");
@@ -314,14 +336,14 @@ int main(int argc, char** argv) {
 #endif
 
   QFile bundleFile(bundlePath);
-  if (!bundleFile.open(QIODevice::ReadOnly)) {
+  if (!development && !bundleFile.open(QIODevice::ReadOnly)) {
     std::fprintf(
         stderr,
         "Could not read the bundle at %s\n",
         bundlePath.toUtf8().constData());
     return 1;
   }
-  const QByteArray bundle = bundleFile.readAll();
+  const QByteArray bundle = development ? QByteArray{} : bundleFile.readAll();
 
   QQuickWindow window;
   rnqnx::views::QtWheelDirectionFilter wheelDirection(window, parser.isSet(invertWheelOption));
@@ -334,7 +356,7 @@ int main(int argc, char** argv) {
   window.setWidth(kWindowWidth);
   window.setHeight(kWindowHeight);
   window.setColor(QColor(Qt::white));
-  if (parser.isSet(fullscreenOption)) {
+  if (development || parser.isSet(fullscreenOption)) {
     if (window.screen() == nullptr) {
       std::fprintf(stderr, "No screen is available for fullscreen mode\n");
       return 1;
@@ -439,6 +461,65 @@ int main(int argc, char** argv) {
   std::shared_ptr<rnqnx::runtime::RuntimeTrace> trace;
   if (parser.isSet(traceOption)) trace = std::make_shared<rnqnx::runtime::RuntimeTrace>(16384);
 #endif
+#if RNQNX_ENABLE_DEV_RUNTIME
+  if (development) {
+    try {
+      rnqnx::runtime::DevSession::Configuration config;
+      config.bundleUrl = QUrl(parser.value(devBundleOption), QUrl::StrictMode);
+      config.componentName = identity.componentName.toStdString();
+      config.surfaceId = kSurfaceId;
+      config.window = &window;
+      config.client = surfaceRoot;
+      rnqnx::runtime::DevSession session(adapter, config, [&](rnqnx::runtime::QtReactHost& host) {
+        host.delegate().setTouchDispatcher(&touchDispatcher);
+#ifdef RNQNX_PLAYGROUND_NITRO_QNX
+#ifdef RNQNX_PLAYGROUND_NITRO_QT
+        rnqnx::nitro::installQnxNitroRuntime(host.runtime(),
+            std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue()));
+#else
+        rnqnx::nitro::installQnxNitroRuntime(host.runtime());
+#endif
+#endif
+      });
+      QQmlComponent errorComponent(&engine);
+      errorComponent.setData(QByteArray(
+          "import QtQuick\nRectangle { property string message: ''; "
+          "anchors.top: parent.top; width: parent.width; height: detail.implicitHeight + 32; "
+          "color: '#401919'; z: 1000000; visible: message.length > 0; "
+          "Text { id: detail; x: 16; y: 16; width: parent.width - 32; "
+          "color: 'white'; font.pixelSize: 18; wrapMode: Text.Wrap; "
+          "text: parent.message + '\\nF5 or Ctrl+R: reload runtime (resets state)' } }"),
+          QUrl(QStringLiteral("rnqnx:dev-error-overlay")));
+      std::unique_ptr<QObject> overlay(errorComponent.create());
+      auto* errorItem = qobject_cast<QQuickItem*>(overlay.get());
+      if (!errorItem) throw std::runtime_error(errorComponent.errorString().toStdString());
+      errorItem->setParentItem(window.contentItem());
+      const auto statusSubscription = session.addStatusListener([&](const rnqnx::runtime::DevSession::Status& status) {
+        using Phase = rnqnx::runtime::DevSession::Phase;
+        errorItem->setProperty("message", status.phase == Phase::Ready || status.phase == Phase::Stopped
+            ? QString{} : status.message.left(8192));
+        std::fprintf(stderr, "RNQNX_DEV_STATUS generation=%llu phase=%d %s\n",
+            static_cast<unsigned long long>(status.generation), static_cast<int>(status.phase),
+            status.message.toUtf8().constData());
+      });
+      QShortcut reloadShortcut(QKeySequence(Qt::Key_F5), &window);
+      QShortcut reloadAlternative(QKeySequence(QStringLiteral("Ctrl+R")), &window);
+      QObject::connect(&reloadShortcut, &QShortcut::activated, &session,
+          [&] { session.requestReload(QStringLiteral("F5")); });
+      QObject::connect(&reloadAlternative, &QShortcut::activated, &session,
+          [&] { session.requestReload(QStringLiteral("Ctrl+R")); });
+      window.showFullScreen();
+      session.start();
+      const int result = QGuiApplication::exec();
+      statusSubscription.remove();
+      session.stop();
+      return result;
+    } catch (const std::exception& error) {
+      std::fprintf(stderr, "RNQNX_DEV_ERROR %s\n", error.what());
+      return 2;
+    }
+  }
+#endif
   const int result = [&]() {
 #if RNQNX_ENABLE_FRAME_TRACE
   rnqnx::runtime::QtReactHost host(adapter, trace);
@@ -450,6 +531,10 @@ int main(int argc, char** argv) {
     std::fprintf(stderr, "RNQNX_WINDOW_METRICS_ERROR %s\n", host.lastError().toUtf8().constData());
     return 1;
   }
+#if RNQNX_ENABLE_FRAME_TRACE
+  // Records qt.frame.queued (Qt frameSwapped): submission, not presentation.
+  const rnqnx::runtime::QtFrameTrace frameTrace(window, trace, kSurfaceId);
+#endif
   std::printf("RNQNX_INPUT_READY lifecycle=%d\n", RNQNX_ENABLE_INPUT_LIFECYCLE);
   std::fflush(stdout);
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX

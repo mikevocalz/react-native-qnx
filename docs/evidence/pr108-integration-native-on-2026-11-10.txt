@@ -1,0 +1,99 @@
+Test project /workspace/scratch/2b8db1005468/native-108
+      Start  1: rnqnx_runtime_trace_test
+ 1/47 Test  #1: rnqnx_runtime_trace_test ............................   Passed    0.03 sec
+      Start  2: rnqnx_runtime_trace_json
+ 2/47 Test  #2: rnqnx_runtime_trace_json ............................   Passed    0.03 sec
+      Start  3: qt_websocket_transport_host_test
+ 3/47 Test  #3: qt_websocket_transport_host_test ....................   Passed    0.64 sec
+      Start  4: rnqnx_g0_cxx20_probe
+ 4/47 Test  #4: rnqnx_g0_cxx20_probe ................................   Passed    0.00 sec
+      Start  5: qnx_screen_surface_host_test
+ 5/47 Test  #5: qnx_screen_surface_host_test ........................   Passed    0.01 sec
+      Start  6: rnqnx_wheel_direction
+ 6/47 Test  #6: rnqnx_wheel_direction ...............................   Passed    0.29 sec
+      Start  7: rnqnx_hermes_probe
+ 7/47 Test  #7: rnqnx_hermes_probe ..................................   Passed    0.01 sec
+      Start  8: rnqnx_text_layout_host_test
+ 8/47 Test  #8: rnqnx_text_layout_host_test .........................   Passed    0.09 sec
+      Start  9: rnqnx_desktop_window
+ 9/47 Test  #9: rnqnx_desktop_window ................................   Passed    1.17 sec
+      Start 10: rnqnx_dev_session_host_test
+10/47 Test #10: rnqnx_dev_session_host_test .........................   Passed    1.32 sec
+      Start 11: rnqnx_view_focus_host_test
+11/47 Test #11: rnqnx_view_focus_host_test ..........................   Passed    0.33 sec
+      Start 12: rnqnx_accessibility_action_probe
+12/47 Test #12: rnqnx_accessibility_action_probe ....................   Passed    0.26 sec
+      Start 13: rnqnx_accessibility_action_native_test
+13/47 Test #13: rnqnx_accessibility_action_native_test ..............   Passed    0.04 sec
+      Start 14: rnqnx_accessibility_action_rejects_interception
+14/47 Test #14: rnqnx_accessibility_action_rejects_interception .....   Passed    2.23 sec
+      Start 15: rnqnx_accessibility_action_rejects_registration
+15/47 Test #15: rnqnx_accessibility_action_rejects_registration .....   Passed    0.26 sec
+      Start 16: rnqnx_accessibility_view_test
+16/47 Test #16: rnqnx_accessibility_view_test .......................   Passed    0.05 sec
+      Start 17: rnqnx_text_input_probe
+17/47 Test #17: rnqnx_text_input_probe ..............................   Passed    0.33 sec
+      Start 18: rnqnx_text_input_bridge_test
+18/47 Test #18: rnqnx_text_input_bridge_test ........................   Passed    0.08 sec
+      Start 19: rnqnx_text_input_rejects_interception
+19/47 Test #19: rnqnx_text_input_rejects_interception ...............   Passed    2.34 sec
+      Start 20: rnqnx_input_lifecycle_probe
+20/47 Test #20: rnqnx_input_lifecycle_probe .........................   Passed    0.05 sec
+      Start 21: rnqnx_input_lifecycle_rejects_interception
+21/47 Test #21: rnqnx_input_lifecycle_rejects_interception ..........   Passed    0.07 sec
+      Start 22: rnqnx_pressable_probe
+22/47 Test #22: rnqnx_pressable_probe ...............................   Passed    1.59 sec
+      Start 23: rnqnx_pressable_rejects_interception
+23/47 Test #23: rnqnx_pressable_rejects_interception ................   Passed    2.24 sec
+      Start 24: rnqnx_pressable_rejects_disabled_cancellation
+24/47 Test #24: rnqnx_pressable_rejects_disabled_cancellation .......   Passed    3.45 sec
+      Start 25: rnqnx_react_render_host_probe
+25/47 Test #25: rnqnx_react_render_host_probe .......................   Passed    0.26 sec
+      Start 26: rnqnx_react_render_host_probe_rejects_bad_bundles
+26/47 Test #26: rnqnx_react_render_host_probe_rejects_bad_bundles ...   Passed    0.15 sec
+      Start 27: rnqnx_consumer_window_input
+27/47 Test #27: rnqnx_consumer_window_input .........................   Passed    3.51 sec
+      Start 28: rnqnx_consumer_desktop_window_input
+28/47 Test #28: rnqnx_consumer_desktop_window_input .................   Passed    3.55 sec
+      Start 29: rnqnx_consumer_window_rejects_interception
+29/47 Test #29: rnqnx_consumer_window_rejects_interception ..........   Passed   10.08 sec
+      Start 30: rnqnx_window_metrics_scale_1
+30/47 Test #30: rnqnx_window_metrics_scale_1 ........................   Passed    0.26 sec
+      Start 31: rnqnx_window_metrics_scale_1_25
+31/47 Test #31: rnqnx_window_metrics_scale_1_25 .....................   Passed    0.30 sec
+      Start 32: rnqnx_window_metrics_scale_2
+32/47 Test #32: rnqnx_window_metrics_scale_2 ........................   Passed    0.27 sec
+      Start 33: rnqnx_component_gallery
+33/47 Test #33: rnqnx_component_gallery .............................   Passed    6.07 sec
+      Start 34: rnqnx_component_gallery_desktop
+34/47 Test #34: rnqnx_component_gallery_desktop .....................   Passed   13.51 sec
+      Start 35: rnqnx_font_license
+35/47 Test #35: rnqnx_font_license ..................................   Passed    0.03 sec
+      Start 36: rnqnx_playground_screenshot
+36/47 Test #36: rnqnx_playground_screenshot .........................   Passed    0.32 sec
+      Start 37: rnqnx_playground_rejects_start_failure
+37/47 Test #37: rnqnx_playground_rejects_start_failure ..............   Passed    0.05 sec
+      Start 38: rnqnx_playground_rejects_stop_failure
+38/47 Test #38: rnqnx_playground_rejects_stop_failure ...............   Passed    0.05 sec
+      Start 39: qt_react_host_host_test
+39/47 Test #39: qt_react_host_host_test .............................   Passed   11.66 sec
+      Start 40: rnqnx_rn_headers_probe
+40/47 Test #40: rnqnx_rn_headers_probe ..............................   Passed    0.01 sec
+      Start 41: rnqnx_ModalFocus_test
+41/47 Test #41: rnqnx_ModalFocus_test ...............................   Passed    0.10 sec
+      Start 42: rnqnx_ControlledSwitch_test
+42/47 Test #42: rnqnx_ControlledSwitch_test .........................   Passed    0.05 sec
+      Start 43: shadow_view_mutation_adapter_host_test
+43/47 Test #43: shadow_view_mutation_adapter_host_test ..............   Passed    0.04 sec
+      Start 44: shadow_tree_mounting_host_test
+44/47 Test #44: shadow_tree_mounting_host_test ......................   Passed    0.03 sec
+      Start 45: qtquick_mounting_layer_host_test
+45/47 Test #45: qtquick_mounting_layer_host_test ....................   Passed    0.08 sec
+      Start 46: rnqnx_qtquick_host_probe
+46/47 Test #46: rnqnx_qtquick_host_probe ............................   Passed    0.02 sec
+      Start 47: rnqnx_qt_frame_trace_test
+47/47 Test #47: rnqnx_qt_frame_trace_test ...........................   Passed    0.02 sec
+
+100% tests passed out of 47
+
+Total Test time (real) =  67.38 sec

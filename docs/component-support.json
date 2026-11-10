@@ -211,7 +211,7 @@
       "host": "partial",
       "pi400": "unverified",
       "pi4Qsti": "unverified",
-      "notes": "Full-screen overlay; onShow, onRequestClose and onDismiss are unwired.",
+      "notes": "Viewport-sized overlay above scrolled content with background pointer/wheel blocking. Escape dispatches onRequestClose to the application; onShow and onDismiss remain unwired. Keyboard-focus containment requires separate qualification.",
       "evidence": {
         "pi400": [],
         "pi4Qsti": []

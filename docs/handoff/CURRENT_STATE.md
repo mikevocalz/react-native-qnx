@@ -1,5 +1,69 @@
 # Current state
 
+## 2026-11-10 — PR #108 integrates the #110 stack
+
+Combined adaptive PR #108 `47cd9d8` with published #110 `73f7da0`, preserving
+the #104 and #106 work and handoff histories. Resolved competing modal focus
+owners and fixed the ON path's initial-focus gap with a bounded queued refresh.
+Development runtimes now bind actual window/client metrics before evaluation,
+wait for usable initial bounds and cancel pending source on stop/reload.
+
+The final native inventories passed 47/47 ON and 25/25 OFF. The development
+metrics negative control failed at the intended initial-dimensions assertion;
+the positive native test passed. Initial 44/47 results are retained with the
+LeakSanitizer/ptrace limitation; the successful rerun disabled leak detection
+locally and does not establish leak freedom. Nine Metro fixtures were refreshed
+before native validation. Source/type checks and real QNX/Marathon Metro bundles
+pass; the shared runtime fixture publishes its PID readiness atomically.
+
+Independent source review found no blocking issue. The
+[integration receipt](../validation/pr108-integration-2026-11-10.md) records
+input identities, source/artifact hashes and raw results. The completed merge
+and these records await publication as one integration commit; published-head
+CI remains pending. No fresh target execution or release-gate promotion is claimed.
+
+## 2026-11-10 — PR #110 integrates the PR #106 public API
+
+Combined published #110 `2657620` with #106 `5e3bb88` in a merge preserving
+both histories. Public imports retain Image and I18nManager; Switch retains
+the style array and controlled reconciliation. Moved style/prop/event/ref
+assertions into the existing retained-hook harness after reproducing the old
+mock's `useMergeRefs` failure. Both focused tests, both reset-cache Metro
+bundles and typecheck pass. Native CI for this combined candidate is pending.
+
+Earlier entries remain revision-specific history. The owner QNX report does
+not cover this newly combined tree, and all seven release gates stay pending.
+[Combined validation receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+
+## 2026-11-10 — PR #110 integration follow-up
+
+Implementation `083c4bd` is being combined with the published #104 follow-up
+`c5c54a0` and expanded host-renderer CI coverage. The original PR author reports
+23/23 native CTests with the v1 options ON and 17/17 OFF, with the exclusions
+and host limitation recorded in the receipt. Current focused host-renderer
+inventory, controlled-Switch JavaScript and type checks passed; full native
+CI on the updated candidate is pending. The two feature guides now retain
+this evidence instead of saying nothing has been tested.
+
+The owner-reported smooth QNX operation remains in the inherited #104 receipt;
+it does not supply exact artifacts or enabled-feature acceptance. All seven
+v1 gates remain pending. Receipt:
+[pr110-merge-readiness-2026-11-10.md](../validation/pr110-merge-readiness-2026-11-10.md).
+
+## 2026-11-10 — PR #104 readiness follow-up
+
+The owner reports smooth QNX operation for PR #110. That inspected branch contains PR #104 at 3b414f1; the report does not specify the installed hashes, board/image, flags or actions. Retain it as owner-reported feedback alongside the existing host receipt. Corrected the stale Modal host note to reflect Escape/onRequestClose and viewport/background-input behavior without promoting device rows.
+
+Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
+## PR 106 public-API review — 2026-11-10
+
+The repaired Image methods and Switch style composition at `6b528c1` have
+green hosted native/public-import checks. Public-wrapper tests and both real,
+reset-cache Metro bundles pass again locally. This follow-up updates records
+only. [Candidate receipt and PR 110 integration notes](../validation/pr106-merge-readiness-2026-11-10.md).
+Physical QNX/Marathon qualification and all seven v1 gates remain separate.
+
 Reconciled against `main` at `5f17504` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the
 [compatibility matrix](../getting-started/compatibility-matrix.md) are generated

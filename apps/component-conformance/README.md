@@ -99,6 +99,10 @@ scenario into a green result because the page renders.
 
 ## Evidence to attach for each run
 
+The [owner's 2026-11-10 report](../../docs/evidence/gallery-owner-report-2026-11-10.md)
+records smooth operation on their QNX build for PR #110. It does not identify
+the tested artifacts or individual scenarios; keep those details with your run.
+
 Record the target OS, board and image, host versus physical device, revision,
 bundle SHA-256, command and exit code, actions actually performed, screenshots,
 logs, observed result and known gaps. Use `passed`, `failed`, `not-run` or

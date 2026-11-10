@@ -1,0 +1,37 @@
+include_guard(GLOBAL)
+
+option(RNQNX_ENABLE_MODAL_FOCUS "Experimental per-window Modal keyboard/focus isolation" OFF)
+
+if(RNQNX_ENABLE_MODAL_FOCUS AND NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin|QNX)$")
+  message(FATAL_ERROR "RNQNX_ENABLE_MODAL_FOCUS requires a Linux, Darwin or QNX Qt Quick host")
+endif()
+
+function(rnqnx_configure_modal_focus target)
+  if(NOT TARGET "${target}")
+    message(FATAL_ERROR "Modal focus requires an existing Qt views target")
+  endif()
+  target_compile_definitions("${target}" PUBLIC
+    RNQNX_ENABLE_MODAL_FOCUS=$<BOOL:${RNQNX_ENABLE_MODAL_FOCUS}>)
+endfunction()
+
+function(rnqnx_add_modal_switch_tests)
+  if(CMAKE_CROSSCOMPILING OR NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin)$")
+    message(FATAL_ERROR "Modal/Switch tests are native Linux/Darwin host tests, not target evidence")
+  endif()
+  foreach(case IN ITEMS ModalFocus ControlledSwitch)
+    if(case STREQUAL "ModalFocus" AND NOT RNQNX_ENABLE_MODAL_FOCUS)
+      continue()
+    endif()
+    set(target "rnqnx_${case}_test")
+    add_executable("${target}" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tests/cpp/Qt${case}Test.cpp")
+    target_link_libraries("${target}" PRIVATE rnqnx_fabric_adapter)
+    rnqnx_enable_strict_warnings("${target}")
+    if(RNQNX_ENABLE_HOST_SANITIZERS AND CMAKE_CXX_COMPILER_ID MATCHES "AppleClang|Clang|GNU")
+      target_compile_options("${target}" PRIVATE -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer)
+      target_link_options("${target}" PRIVATE -fsanitize=address,undefined)
+    endif()
+    add_test(NAME "${target}" COMMAND "${target}" -platform offscreen)
+    set_tests_properties("${target}" PROPERTIES TIMEOUT 20
+      ENVIRONMENT "QT_QUICK_BACKEND=software;QSG_RHI_BACKEND=software;ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1")
+  endforeach()
+endfunction()

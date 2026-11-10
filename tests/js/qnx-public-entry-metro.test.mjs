@@ -30,11 +30,13 @@ try {
         'false',
         '--max-workers',
         '2',
+        '--reset-cache',
         '--out',
         output,
       ],
       {
         cwd: path.join(root, 'apps/rn-playground'),
+        env: { ...process.env, TMPDIR: directory, TMP: directory, TEMP: directory },
         encoding: 'utf8',
         timeout: 90000,
         maxBuffer: 4 * 1024 * 1024,

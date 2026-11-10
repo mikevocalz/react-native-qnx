@@ -1,20 +1,36 @@
 #!/usr/bin/env node
 import { spawn } from 'node:child_process';
-import { lstat, readFile, realpath, mkdir, mkdtemp, link, chmod, rm } from 'node:fs/promises';
+import {
+  lstat,
+  readFile,
+  realpath,
+  mkdir,
+  mkdtemp,
+  link,
+  chmod,
+  rm,
+  rename,
+  writeFile,
+} from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
+import { sha256File, stageMetroAssets, verifyAssetInventory } from './asset-staging.mjs';
 
 const help = `React Native QNX external-project bundling
 
   project inspect --project <directory> [--platform qnx|marathon] [--entry index.js]
   project bundle  --project <directory> [--platform qnx|marathon] [--entry index.js]
-                  [--out build/<platform>/app.bundle.js] [--dry-run]
+                  [--out build/<platform>/app.bundle.js] [--assets] [--dry-run]
 
 QNX is the default. The project supplies installed Metro and its target config:
 metro.config.js for qnx; metro.marathon.config.js for marathon.
 Output must be a NEW file below the project's build/ directory.
-This produces JavaScript only, not a native project, module registration or deployment.
+Without --assets this produces JavaScript only, not a native project, module
+registration or deployment. --assets runs installed Metro's runBuild({assets: true})
+and publishes assets/ plus <bundle>.assets.json (hashes bound to the bundle) beside
+the bundle; both must be new.
 `;
 
 /** @param {unknown} error */
@@ -79,6 +95,7 @@ export async function planProject(argv, cwd = process.cwd()) {
       platform: { type: 'string' },
       entry: { type: 'string' },
       out: { type: 'string' },
+      assets: { type: 'boolean' },
       'dry-run': { type: 'boolean' },
     },
   });
@@ -93,8 +110,8 @@ export async function planProject(argv, cwd = process.cwd()) {
   if (positionals.length !== 1 || !['inspect', 'bundle'].includes(command)) {
     throw new Error('Use project inspect or project bundle.');
   }
-  if (command === 'inspect' && (values.out !== undefined || values['dry-run'])) {
-    throw new Error('inspect does not accept --out or --dry-run.');
+  if (command === 'inspect' && (values.out !== undefined || values['dry-run'] || values.assets)) {
+    throw new Error('inspect does not accept --out, --assets or --dry-run.');
   }
   const platform = values.platform ?? 'qnx';
   if (!['qnx', 'marathon'].includes(platform)) throw new Error('Use --platform qnx or marathon.');
@@ -119,12 +136,30 @@ export async function planProject(argv, cwd = process.cwd()) {
   if (!inside(path.join(root, 'build'), output) || !output.endsWith('.js')) {
     throw new Error('--out must name a new .js file below project build/.');
   }
+  const withAssets = !!values.assets;
+  const assetsDirectory = path.join(path.dirname(output), 'assets');
+  const assetInventory = output.replace(/\.js$/, '.assets.json');
+  if (withAssets) {
+    const relativeDirectory = path.relative(root, path.dirname(output)).split(path.sep).join('/');
+    await confined(root, `${relativeDirectory}/assets`);
+    await confined(root, path.relative(root, assetInventory).split(path.sep).join('/'));
+  }
   if (command === 'bundle') {
-    try {
-      await lstat(output);
-      throw new Error('Bundle output already exists; choose another --out.');
-    } catch (error) {
-      if (!missing(error)) throw error;
+    for (const [existing, label] of [
+      [output, 'Bundle output'],
+      ...(withAssets
+        ? [
+            [assetsDirectory, 'Asset directory'],
+            [assetInventory, 'Asset inventory'],
+          ]
+        : []),
+    ]) {
+      try {
+        await lstat(existing);
+        throw new Error(`${label} already exists; choose another --out.`);
+      } catch (error) {
+        if (!missing(error)) throw error;
+      }
     }
   }
   const require = createRequire(manifestPath);
@@ -146,6 +181,9 @@ export async function planProject(argv, cwd = process.cwd()) {
     entry,
     config,
     output,
+    ...(withAssets
+      ? { assets: true, assetsDirectory, assetInventory, manifest: manifestPath }
+      : {}),
     executable: process.execPath,
     metroCli,
     metroVersion: String(metro.version),
@@ -223,6 +261,7 @@ export async function projectMain(argv, cwd = process.cwd()) {
   const staging = await mkdtemp(path.join(path.dirname(plan.output), '.rnqnx-bundle-'));
   const stagedOutput = path.join(staging, 'bundle.js');
   try {
+    if (plan.assets) return await bundleWithAssets(plan, staging, stagedOutput);
     const code = await runMetro(
       plan.executable,
       [
@@ -256,4 +295,85 @@ export async function projectMain(argv, cwd = process.cwd()) {
   } finally {
     await rm(staging, { recursive: true, force: true });
   }
+}
+
+const assetWorker = fileURLToPath(new URL('./metro-assets-worker.mjs', import.meta.url));
+
+/**
+ * @param {NonNullable<Awaited<ReturnType<typeof planProject>>>} plan
+ * @param {string} staging @param {string} stagedOutput
+ */
+async function bundleWithAssets(plan, staging, stagedOutput) {
+  const assetList = path.join(staging, 'metro-assets.json');
+  const code = await runMetro(
+    plan.executable,
+    [
+      assetWorker,
+      JSON.stringify({
+        manifest: /** @type {string} */ (plan.manifest),
+        entry: plan.entry,
+        config: plan.config,
+        platform: plan.platform,
+        out: stagedOutput,
+        assetsOut: assetList,
+      }),
+    ],
+    plan.project
+  );
+  if (code !== 0) return code;
+  const stat = await lstat(stagedOutput);
+  if (stat.isSymbolicLink() || !stat.isFile() || stat.size === 0) {
+    throw new Error('Metro did not produce a nonempty regular bundle.');
+  }
+  await chmod(stagedOutput, 0o600);
+  const assets = JSON.parse(await readFile(assetList, 'utf8'));
+  const publish = path.join(staging, 'publish');
+  await mkdir(publish);
+  const inventory = await stageMetroAssets({
+    project: plan.project,
+    staging: publish,
+    assets,
+    platform: plan.platform,
+    bundleSha256: await sha256File(stagedOutput),
+    metroVersion: plan.metroVersion,
+  });
+  const stagedInventory = path.join(publish, 'inventory.json');
+  await writeFile(stagedInventory, JSON.stringify(inventory, null, 2) + '\n', {
+    flag: 'wx',
+    mode: 0o600,
+  });
+  await verifyAssetInventory(stagedInventory);
+  const assetsDirectory = /** @type {string} */ (plan.assetsDirectory);
+  const assetInventory = /** @type {string} */ (plan.assetInventory);
+  /** @type {string[]} */
+  const published = [];
+  try {
+    await link(stagedOutput, plan.output);
+    published.push(plan.output);
+    if (inventory.assets.length) {
+      try {
+        await lstat(assetsDirectory);
+        throw new Error('Asset directory appeared while Metro was running.');
+      } catch (error) {
+        if (!missing(error)) throw error;
+      }
+      await rename(path.join(publish, 'assets'), assetsDirectory);
+      published.push(assetsDirectory);
+    }
+    // The inventory is published last; its presence marks a complete set.
+    await link(stagedInventory, assetInventory);
+    published.push(assetInventory);
+    await verifyAssetInventory(assetInventory);
+  } catch (error) {
+    for (const item of published.reverse()) await rm(item, { recursive: true, force: true });
+    throw error;
+  }
+  console.log(
+    JSON.stringify(
+      { ...plan, action: 'bundled', bytes: stat.size, assetCount: inventory.assets.length },
+      null,
+      2
+    )
+  );
+  return 0;
 }

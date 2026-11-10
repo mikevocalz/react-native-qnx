@@ -23,6 +23,7 @@ const expectedTests = [
   'rnqnx_window_metrics_scale_1_25',
   'rnqnx_window_metrics_scale_2',
   'rnqnx_font_license',
+  'rnqnx_ControlledSwitch_test',
   'rnqnx_rn_headers_probe',
   'shadow_view_mutation_adapter_host_test',
   'shadow_tree_mounting_host_test',
@@ -78,6 +79,18 @@ if (/^RNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON$/m.test(cache)) {
     'rnqnx_accessibility_action_rejects_registration'
   );
 }
+const disabledV1Tests = [];
+for (const [feature, tests] of [
+  ['MODAL_FOCUS', ['rnqnx_ModalFocus_test']],
+  ['DEV_RUNTIME', ['rnqnx_dev_session_host_test']],
+  ['FRAME_TRACE', ['rnqnx_qt_frame_trace_test']],
+]) {
+  if (new RegExp(`^RNQNX_ENABLE_${feature}:BOOL=ON$`, 'm').test(cache)) {
+    expectedTests.push(...tests);
+  } else {
+    disabledV1Tests.push(...tests);
+  }
+}
 run('cmake', ['--build', '--preset', preset]);
 const inventory = run('ctest', ['--test-dir', build, '--show-only=json-v1'], true);
 const registered = new Set(
@@ -85,6 +98,9 @@ const registered = new Set(
 );
 for (const name of expectedTests) {
   if (!registered.has(name)) throw new Error(`Required host-renderer test missing: ${name}`);
+}
+for (const name of disabledV1Tests) {
+  if (registered.has(name)) throw new Error(`Disabled v1 feature registered a test: ${name}`);
 }
 mkdirSync(path.join(build, 'evidence'), { recursive: true });
 writeFileSync(path.join(build, 'evidence', 'ctest-inventory.json'), inventory);

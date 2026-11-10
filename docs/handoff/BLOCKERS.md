@@ -1,5 +1,59 @@
 # BLOCKERS.md
 
+## 2026-11-10 — PR #108 integrated candidate
+
+The source-level dual-modal-owner and development initial-metrics gaps are
+corrected, with independent source review. Final native validation passed 47/47
+ON and 25/25 OFF, and the DevSession positive/negative control behaved as expected.
+The local environment cannot provide LeakSanitizer proof under ptrace; the
+initial three failures and process-local leak-disabled rerun remain recorded.
+Published-head CI still needs verification. The older adaptive and #110 results
+remain revision-specific; the owner's QNX report does not identify the newly
+combined artifacts or feature scenarios.
+
+QNX/device and Marathon compositor acceptance, physical input/IME, accessibility
+speech and performance remain open. Host-only development still needs a real
+Metro edit/Refresh/recovery session. All seven release gates remain pending.
+[Integration receipt](../validation/pr108-integration-2026-11-10.md).
+
+## 2026-11-10 — Combined PR #106/#110 review state
+
+The known Switch mock incompatibility is repaired in the combined tree:
+style/event/ref assertions now run through the controlled-hook harness, and
+both focused tests, real QNX/Marathon Metro bundles and typecheck pass.
+The combined candidate still needs its own full native ON/OFF and public-import
+CI. Earlier branch-native results and the owner smoke report do not qualify
+the new merge. All seven release gates remain pending.
+[Combined receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+
+## 2026-11-10 — PR #110 integration follow-up
+
+The combined candidate still needs fresh full native ON/OFF CI. The updated
+workflow enables the v1 feature tests and WebSockets on stacked PRs; the
+original author's 23/23 and 17/17 results do not qualify these later changes.
+Actual state-preserving Fast Refresh, optional QNX feature scenarios, physical
+HID/IME/accessibility, cold boot, stock Pi qualification and performance remain
+without new acceptance evidence. The owner smoke report lacks exact artifact
+identities and selected flags. All seven v1 gates remain pending.
+
+Receipt:
+[pr110-merge-readiness-2026-11-10.md](../validation/pr110-merge-readiness-2026-11-10.md).
+
+## 2026-11-10 — PR #104 readiness follow-up
+
+The owner report does not identify exact executable/bundle/assets hashes or per-scenario actions. It supports continued acceptance review without establishing all optional desktop controls, modal focus, IME/accessibility, physical metrics or release readiness. The prior measured Linux host receipt remains dated evidence.
+
+Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
+## PR 106 review state — 2026-11-10
+
+The old async-helper Metro regression is repaired in `6b528c1`, and both
+reset-cache public bundles pass. This follow-up supplies the missing required
+handoff records. Its publication/CI review and the combined PR 110 Switch
+test-harness adaptation remain next; physical QNX/Marathon evidence is not
+inferred from another branch's smoke test.
+[Exact evidence and integration boundary](../validation/pr106-merge-readiness-2026-11-10.md).
+
 ## GHSA-vfj7-8cjw-p6xm — No official braces fixed release
 
 As of 2026-10-03, npm latest is 3.0.3 and upstream PR #72 is still open.

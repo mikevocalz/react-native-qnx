@@ -6,6 +6,13 @@ import { lstat, mkdir, open, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { isDeepStrictEqual, parseArgs } from 'node:util';
+import { qualify, verifyArtifacts } from './lib/qualification.mjs';
+
+/** @typedef {{id: string, lane: string, board: string, image: string, runtime: string,
+ * binarySha256: string, bundleSha256: string}} TargetIdentity
+ * @typedef {{kind: 'cold-boot' | 'performance', target: TargetIdentity | null,
+ * capture: string | null}} CaptureEvidence
+ */
 
 const SOURCE_FILES = [
   'package.json',
@@ -37,6 +44,8 @@ const LANES = [
 const MAX_JSON = 1024 * 1024;
 const MAX_ARTIFACT = 128 * 1024 * 1024;
 const MAX_TOTAL = 512 * 1024 * 1024;
+/** @type {(keyof TargetIdentity)[]} */
+const TARGET_FIELDS = ['id', 'lane', 'board', 'image', 'runtime', 'binarySha256', 'bundleSha256'];
 const help = `React Native QNX candidate evidence dossier
 
   create --file build/release-candidate/dossier.json
@@ -46,6 +55,7 @@ Run from the repository root with clean TRACKED files. create writes one NEW
 JSON file using committed HEAD; no evidence is invented or copied automatically.
 Add receipts and their relative artifact paths explicitly. verify is read-only.
 Exit 0: created / integrity verified; exit 1: invalid data or failed integrity.
+Typed capture completeness is reported separately; incomplete captures can exit 0.
 Neither exit status authorizes release. The existing pnpm validate:v1 gate
 remains authoritative. No device, network, build, flash or publication occurs.
 `;
@@ -208,6 +218,152 @@ async function inspectFile(file, limit, asJson = false) {
   }
 }
 
+/** @param {unknown} input @param {string} label @returns {TargetIdentity} */
+function targetIdentity(input, label) {
+  const value = record(input, label);
+  for (const key of TARGET_FIELDS) text(value[key], `${label}.${key}`);
+  if (!LANES.includes(value.lane)) throw new Error(`Invalid ${label}.lane.`);
+  for (const key of ['binarySha256', 'bundleSha256']) {
+    if (!/^[a-f0-9]{64}$/.test(value[key])) throw new Error(`Invalid ${label}.${key} SHA-256.`);
+  }
+  return /** @type {TargetIdentity} */ (
+    Object.fromEntries(TARGET_FIELDS.map((key) => [key, value[key]]))
+  );
+}
+
+/** @param {Record<string, any>} item @param {TargetIdentity | null} releaseTarget
+ * @param {string} base @param {Map<string, Record<string, any>>} artifacts
+ * @param {(bytes: number) => void} account */
+async function verifyCapture(item, releaseTarget, base, artifacts, account) {
+  if (item.evidence === undefined) {
+    return {
+      verification: 'integrity-only',
+      captureComplete: null,
+      blockers: ['cold-boot', 'performance'].includes(item.gate)
+        ? ['No typed capture; add evidence for cold-boot/performance completeness checks.']
+        : [],
+    };
+  }
+  const input = record(item.evidence, 'Receipt evidence');
+  if (!['cold-boot', 'performance'].includes(input.kind) || input.kind !== item.gate) {
+    throw new Error(
+      'Typed evidence kind must be cold-boot/performance and match its receipt gate.'
+    );
+  }
+  /** @type {CaptureEvidence} */
+  const evidence = {
+    kind: input.kind,
+    target: input.target === null ? null : targetIdentity(input.target, 'Evidence target'),
+    capture: input.capture === null ? null : text(input.capture, 'capture path'),
+  };
+  const target = evidence.target;
+  if (
+    target &&
+    (target.lane !== item.lane ||
+      ((item.lane === 'qnx-physical' || item.lane === 'marathon-physical') &&
+        (target.board !== item.board || target.image !== item.image)))
+  ) {
+    throw new Error('Evidence target differs from receipt lane/board/image.');
+  }
+  const blockers = [];
+  if (!target)
+    blockers.push('Missing receipt target identity; set evidence.target from the actual run.');
+  if (!releaseTarget)
+    blockers.push('Missing releaseTarget; the integrator must name the candidate target.');
+  if (target && releaseTarget) {
+    for (const key of TARGET_FIELDS) {
+      if (target[key] !== releaseTarget[key])
+        blockers.push(`Receipt target ${key} differs from releaseTarget.`);
+    }
+  }
+  /** @type {ReturnType<typeof qualify> | null} */
+  let qualification = null;
+  /** @type {Awaited<ReturnType<typeof verifyArtifacts>> | null} */
+  let artifactVerification = null;
+  if (evidence.capture === null) {
+    blockers.push(
+      'No capture recorded; retain failed/blocked/not-run outcomes and collect evidence separately.'
+    );
+  } else {
+    const name = text(evidence.capture, 'capture path');
+    const descriptor = artifacts.get(name);
+    if (!descriptor) throw new Error('Capture must reference a hashed receipt artifact.');
+    const captureFile = await confinedFile(base, name);
+    const observed = await inspectFile(captureFile, MAX_JSON, true);
+    if (observed.bytes !== descriptor.bytes || observed.sha256 !== descriptor.sha256) {
+      throw new Error('Capture integrity mismatch during inspection.');
+    }
+    const capture = record(observed.json, 'Capture');
+    if (capture.kind !== evidence.kind)
+      throw new Error('Capture kind differs from typed evidence.');
+    qualification = qualify(capture);
+    const p = qualification.provenance;
+    if (p.sourceCommit !== item.commit || p.lockfileSha256 !== item.lockSha256) {
+      throw new Error('Capture candidate/lockfile differs from receipt.');
+    }
+    // The qualifier uses "host" for all host-only dossier lanes.
+    const lane = [
+      'hosted-ci',
+      'source-review',
+      'clean-host',
+      'linux-offscreen',
+      'linux-wayland',
+    ].includes(item.lane)
+      ? 'host'
+      : item.lane;
+    if (
+      p.lane !== lane ||
+      ((item.lane === 'qnx-physical' || item.lane === 'marathon-physical') &&
+        (p.board !== item.board || p.image !== item.image))
+    ) {
+      throw new Error('Capture lane/board/image differs from receipt.');
+    }
+    if (target) {
+      /** @type {Record<string, string>} */
+      const identities = { ...target, targetId: target.id, lane };
+      for (const key of [
+        'targetId',
+        'lane',
+        'board',
+        'image',
+        'runtime',
+        'binarySha256',
+        'bundleSha256',
+      ]) {
+        if (p[key] !== identities[key])
+          throw new Error(`Capture ${key} differs from receipt target.`);
+      }
+    }
+    const raw = capture.artifacts;
+    if (!Array.isArray(raw) || raw.length === 0 || raw.length > 256) {
+      throw new Error('Capture artifacts must contain 1-256 hashed raw files.');
+    }
+    const directory = path.dirname(captureFile);
+    for (const input of raw) {
+      const artifact = record(input, 'Capture artifact');
+      const rawFile = await confinedFile(directory, artifact.path);
+      const checked = await inspectFile(rawFile, 64 * 1024 * 1024);
+      account(checked.bytes);
+      if (checked.bytes === 0 || checked.sha256 !== artifact.sha256) {
+        throw new Error(`Capture artifact integrity mismatch: ${artifact.path}`);
+      }
+    }
+    artifactVerification = await verifyArtifacts(capture, directory);
+    blockers.push(...qualification.blockers);
+  }
+  if (item.outcome !== 'passed') blockers.push(`Receipt outcome is ${item.outcome}, not passed.`);
+  return {
+    verification: 'candidate-capture-v1',
+    kind: evidence.kind,
+    target,
+    capture: evidence.capture,
+    captureComplete: blockers.length === 0,
+    blockers,
+    qualification,
+    artifactVerification,
+  };
+}
+
 /** @param {string} root @param {string} file */
 export async function createDossier(root, file) {
   const candidate = candidateSnapshot(root);
@@ -244,8 +400,15 @@ export async function verifyDossier(root, file) {
   }
   if (!Array.isArray(document.receipts) || document.receipts.length > 128)
     throw new Error('At most 128 receipts are allowed.');
+  const releaseTarget =
+    document.releaseTarget == null ? null : targetIdentity(document.releaseTarget, 'releaseTarget');
   const ids = new Set();
   let total = 0;
+  /** @param {number} bytes */
+  const account = (bytes) => {
+    total += bytes;
+    if (total > MAX_TOTAL) throw new Error('Evidence budget exceeds 512 MiB.');
+  };
   const receipts = [];
   const base = path.dirname(input);
   const lock = expected.sources.find((source) => source.path === 'pnpm-lock.yaml');
@@ -284,6 +447,7 @@ export async function verifyDossier(root, file) {
       throw new Error('Passed receipt needs artifacts; at most 16 per receipt.');
     }
     const paths = new Set();
+    const artifacts = new Map();
     for (const rawArtifact of item.artifacts) {
       const artifact = record(rawArtifact, 'Artifact');
       if (paths.has(artifact.path)) throw new Error('Duplicate artifact within a receipt.');
@@ -297,13 +461,13 @@ export async function verifyDossier(root, file) {
       ) {
         throw new Error('Invalid artifact byte count or SHA-256.');
       }
-      total += artifact.bytes;
-      if (total > MAX_TOTAL) throw new Error('Evidence budget exceeds 512 MiB.');
+      account(artifact.bytes);
       if (typeof artifact.path !== 'string' || !artifact.path.startsWith('artifacts/'))
         throw new Error('Artifacts must stay below dossier artifacts/.');
       const observed = await inspectFile(await confinedFile(base, artifact.path), MAX_ARTIFACT);
       if (observed.bytes !== artifact.bytes || observed.sha256 !== artifact.sha256)
         throw new Error(`Artifact integrity mismatch: ${artifact.path}`);
+      artifacts.set(artifact.path, artifact);
     }
     receipts.push({
       id,
@@ -312,12 +476,14 @@ export async function verifyDossier(root, file) {
       outcome: item.outcome,
       reviewerDeclared: item.reviewer !== null,
       artifactCount: item.artifacts.length,
+      ...(await verifyCapture(item, releaseTarget, base, artifacts, account)),
     });
   }
   return {
     action: 'verified',
     candidate: expected.commit,
     integrityVerified: true,
+    releaseTarget,
     receiptCount: receipts.length,
     receipts,
     gateSnapshot: expected.gates.map(({ id, status }) => ({ id, status })),

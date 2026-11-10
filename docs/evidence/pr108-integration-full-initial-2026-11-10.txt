@@ -1,0 +1,150 @@
+Test project /workspace/scratch/2b8db1005468/native-108
+      Start  1: rnqnx_runtime_trace_test
+ 1/47 Test  #1: rnqnx_runtime_trace_test ............................***Failed    0.03 sec
+==8==LeakSanitizer has encountered a fatal error.
+==8==HINT: For debugging, try setting environment variable LSAN_OPTIONS=verbosity=1:log_threads=1
+==8==HINT: LeakSanitizer does not work under ptrace (strace, gdb, etc)
+
+      Start  2: rnqnx_runtime_trace_json
+ 2/47 Test  #2: rnqnx_runtime_trace_json ............................***Failed    0.03 sec
+CMake Error at /workspace/scratch/2b8db1005468/pr-108/tests/native/runtime-trace/TraceJson.cmake:4 (message):
+  Trace export failed: 1
+
+  ==84==LeakSanitizer has encountered a fatal error.
+
+  ==84==HINT: For debugging, try setting environment variable
+  LSAN_OPTIONS=verbosity=1:log_threads=1
+
+  ==84==HINT: LeakSanitizer does not work under ptrace (strace, gdb, etc)
+
+
+
+
+      Start  3: qt_websocket_transport_host_test
+ 3/47 Test  #3: qt_websocket_transport_host_test ....................   Passed    0.75 sec
+      Start  4: rnqnx_g0_cxx20_probe
+ 4/47 Test  #4: rnqnx_g0_cxx20_probe ................................   Passed    0.00 sec
+      Start  5: qnx_screen_surface_host_test
+ 5/47 Test  #5: qnx_screen_surface_host_test ........................   Passed    0.01 sec
+      Start  6: rnqnx_wheel_direction
+ 6/47 Test  #6: rnqnx_wheel_direction ...............................   Passed    0.27 sec
+      Start  7: rnqnx_hermes_probe
+ 7/47 Test  #7: rnqnx_hermes_probe ..................................   Passed    0.01 sec
+      Start  8: rnqnx_text_layout_host_test
+ 8/47 Test  #8: rnqnx_text_layout_host_test .........................   Passed    0.10 sec
+      Start  9: rnqnx_desktop_window
+ 9/47 Test  #9: rnqnx_desktop_window ................................   Passed    1.19 sec
+      Start 10: rnqnx_dev_session_host_test
+10/47 Test #10: rnqnx_dev_session_host_test .........................   Passed    1.31 sec
+      Start 11: rnqnx_view_focus_host_test
+11/47 Test #11: rnqnx_view_focus_host_test ..........................   Passed    0.32 sec
+      Start 12: rnqnx_accessibility_action_probe
+12/47 Test #12: rnqnx_accessibility_action_probe ....................   Passed    0.23 sec
+      Start 13: rnqnx_accessibility_action_native_test
+13/47 Test #13: rnqnx_accessibility_action_native_test ..............   Passed    0.03 sec
+      Start 14: rnqnx_accessibility_action_rejects_interception
+14/47 Test #14: rnqnx_accessibility_action_rejects_interception .....   Passed    2.22 sec
+      Start 15: rnqnx_accessibility_action_rejects_registration
+15/47 Test #15: rnqnx_accessibility_action_rejects_registration .....   Passed    0.22 sec
+      Start 16: rnqnx_accessibility_view_test
+16/47 Test #16: rnqnx_accessibility_view_test .......................   Passed    0.03 sec
+      Start 17: rnqnx_text_input_probe
+17/47 Test #17: rnqnx_text_input_probe ..............................   Passed    0.33 sec
+      Start 18: rnqnx_text_input_bridge_test
+18/47 Test #18: rnqnx_text_input_bridge_test ........................   Passed    0.07 sec
+      Start 19: rnqnx_text_input_rejects_interception
+19/47 Test #19: rnqnx_text_input_rejects_interception ...............   Passed    2.28 sec
+      Start 20: rnqnx_input_lifecycle_probe
+20/47 Test #20: rnqnx_input_lifecycle_probe .........................   Passed    0.06 sec
+      Start 21: rnqnx_input_lifecycle_rejects_interception
+21/47 Test #21: rnqnx_input_lifecycle_rejects_interception ..........   Passed    0.08 sec
+      Start 22: rnqnx_pressable_probe
+22/47 Test #22: rnqnx_pressable_probe ...............................   Passed    1.59 sec
+      Start 23: rnqnx_pressable_rejects_interception
+23/47 Test #23: rnqnx_pressable_rejects_interception ................   Passed    2.26 sec
+      Start 24: rnqnx_pressable_rejects_disabled_cancellation
+24/47 Test #24: rnqnx_pressable_rejects_disabled_cancellation .......   Passed    3.41 sec
+      Start 25: rnqnx_react_render_host_probe
+25/47 Test #25: rnqnx_react_render_host_probe .......................***Failed    0.23 sec
+CMake Error at /workspace/scratch/2b8db1005468/pr-108/tests/cmake/ReactRenderProbePositive.cmake:10 (message):
+  React render probe failed: 1
+
+  Running "RNQnxReactRenderProbe"
+
+
+
+  WARNING: Logging before InitGoogleLogging() is written to STDERR
+
+  W1110 10:47:35.478469 2190942720 Scheduler.cpp:181] Scheduler::~Scheduler()
+  was called (address: 0x513000002f90).
+
+  W1110 10:47:35.478806 2064602816 UIManagerBinding.cpp:66]
+  UIManagerBinding::~UIManagerBinding() was called (address: 0x512000010550).
+
+  W1110 10:47:35.478835 2064602816 UIManager.cpp:57] UIManager::~UIManager()
+  was called (address: 0x514000003450).
+
+  ==282==LeakSanitizer has encountered a fatal error.
+
+  ==282==HINT: For debugging, try setting environment variable
+  LSAN_OPTIONS=verbosity=1:log_threads=1
+
+  ==282==HINT: LeakSanitizer does not work under ptrace (strace, gdb, etc)
+
+
+
+
+      Start 26: rnqnx_react_render_host_probe_rejects_bad_bundles
+26/47 Test #26: rnqnx_react_render_host_probe_rejects_bad_bundles ...   Passed    0.15 sec
+      Start 27: rnqnx_consumer_window_input
+27/47 Test #27: rnqnx_consumer_window_input .........................   Passed    3.53 sec
+      Start 28: rnqnx_consumer_desktop_window_input
+28/47 Test #28: rnqnx_consumer_desktop_window_input .................   Passed    3.61 sec
+      Start 29: rnqnx_consumer_window_rejects_interception
+29/47 Test #29: rnqnx_consumer_window_rejects_interception ..........   Passed   10.08 sec
+      Start 30: rnqnx_window_metrics_scale_1
+30/47 Test #30: rnqnx_window_metrics_scale_1 ........................   Passed    0.27 sec
+      Start 31: rnqnx_window_metrics_scale_1_25
+31/47 Test #31: rnqnx_window_metrics_scale_1_25 .....................   Passed    0.27 sec
+      Start 32: rnqnx_window_metrics_scale_2
+32/47 Test #32: rnqnx_window_metrics_scale_2 ........................   Passed    0.25 sec
+      Start 33: rnqnx_component_gallery
+33/47 Test #33: rnqnx_component_gallery .............................   Passed    6.03 sec
+      Start 34: rnqnx_component_gallery_desktop
+34/47 Test #34: rnqnx_component_gallery_desktop .....................   Passed   13.32 sec
+      Start 35: rnqnx_font_license
+35/47 Test #35: rnqnx_font_license ..................................   Passed    0.03 sec
+      Start 36: rnqnx_playground_screenshot
+36/47 Test #36: rnqnx_playground_screenshot .........................   Passed    0.36 sec
+      Start 37: rnqnx_playground_rejects_start_failure
+37/47 Test #37: rnqnx_playground_rejects_start_failure ..............   Passed    0.06 sec
+      Start 38: rnqnx_playground_rejects_stop_failure
+38/47 Test #38: rnqnx_playground_rejects_stop_failure ...............   Passed    0.05 sec
+      Start 39: qt_react_host_host_test
+39/47 Test #39: qt_react_host_host_test .............................   Passed   11.64 sec
+      Start 40: rnqnx_rn_headers_probe
+40/47 Test #40: rnqnx_rn_headers_probe ..............................   Passed    0.01 sec
+      Start 41: rnqnx_ModalFocus_test
+41/47 Test #41: rnqnx_ModalFocus_test ...............................   Passed    0.09 sec
+      Start 42: rnqnx_ControlledSwitch_test
+42/47 Test #42: rnqnx_ControlledSwitch_test .........................   Passed    0.05 sec
+      Start 43: shadow_view_mutation_adapter_host_test
+43/47 Test #43: shadow_view_mutation_adapter_host_test ..............   Passed    0.03 sec
+      Start 44: shadow_tree_mounting_host_test
+44/47 Test #44: shadow_tree_mounting_host_test ......................   Passed    0.03 sec
+      Start 45: qtquick_mounting_layer_host_test
+45/47 Test #45: qtquick_mounting_layer_host_test ....................   Passed    0.07 sec
+      Start 46: rnqnx_qtquick_host_probe
+46/47 Test #46: rnqnx_qtquick_host_probe ............................   Passed    0.02 sec
+      Start 47: rnqnx_qt_frame_trace_test
+47/47 Test #47: rnqnx_qt_frame_trace_test ...........................   Passed    0.02 sec
+
+94% tests passed, 3 tests failed out of 47
+
+Total Test time (real) =  67.07 sec
+
+The following tests FAILED:
+	  1 - rnqnx_runtime_trace_test (Failed)
+	  2 - rnqnx_runtime_trace_json (Failed)
+	 25 - rnqnx_react_render_host_probe (Failed)
+Errors while running CTest
