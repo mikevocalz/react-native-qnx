@@ -16,7 +16,7 @@ vm.runInNewContext(exportsSource, {
   module,
   require: (/** @type {string} */ name) => {
     loaded.push(name);
-    return { default: values, AppRegistry: values };
+    return { default: values, AppRegistry: values, findNodeHandle: values };
   },
 });
 assert.equal(loaded.length, 0, 'Public imports stay lazy until read');
@@ -27,17 +27,29 @@ const expected = [
   'View',
   'Text',
   'Image',
+  'ImageBackground',
   'ScrollView',
   'FlatList',
+  'VirtualizedList',
   'SectionList',
   'TextInput',
   'Pressable',
+  'Button',
+  'TouchableOpacity',
   'ActivityIndicator',
   'Switch',
   'Modal',
   'StyleSheet',
   'Platform',
+  'Dimensions',
+  'useWindowDimensions',
+  'PixelRatio',
+  'I18nManager',
   'Animated',
+  'Easing',
+  'PanResponder',
+  'processColor',
+  'findNodeHandle',
 ];
 assert.deepEqual(Object.keys(api), expected);
 for (const name of expected) assert.equal(api[name], values);

@@ -18,11 +18,17 @@ const api = Object.freeze({
   get Image() {
     return require('react-native/Libraries/Image/Image').default;
   },
+  get ImageBackground() {
+    return require('react-native/Libraries/Image/ImageBackground').default;
+  },
   get ScrollView() {
     return require('react-native/Libraries/Components/ScrollView/ScrollView').default;
   },
   get FlatList() {
     return require('react-native/Libraries/Lists/FlatList').default;
+  },
+  get VirtualizedList() {
+    return require('react-native/Libraries/Lists/VirtualizedList').default;
   },
   get SectionList() {
     return require('react-native/Libraries/Lists/SectionList').default;
@@ -32,6 +38,12 @@ const api = Object.freeze({
   },
   get Pressable() {
     return require('react-native/Libraries/Components/Pressable/Pressable').default;
+  },
+  get Button() {
+    return require('react-native/Libraries/Components/Button').default;
+  },
+  get TouchableOpacity() {
+    return require('react-native/Libraries/Components/Touchable/TouchableOpacity').default;
   },
   get ActivityIndicator() {
     return require('react-native/Libraries/Components/ActivityIndicator/ActivityIndicator').default;
@@ -48,8 +60,34 @@ const api = Object.freeze({
   get Platform() {
     return require('react-native/Libraries/Utilities/Platform').default;
   },
+  get Dimensions() {
+    return require('react-native/Libraries/Utilities/Dimensions').default;
+  },
+  get useWindowDimensions() {
+    return require('react-native/Libraries/Utilities/useWindowDimensions').default;
+  },
+  get PixelRatio() {
+    return require('react-native/Libraries/Utilities/PixelRatio').default;
+  },
+  get I18nManager() {
+    // Keep RN's defined LTR fallback when no native I18nManager is registered.
+    // Exposing it does not add native RTL configuration support.
+    return require('react-native/Libraries/ReactNative/I18nManager').default;
+  },
   get Animated() {
     return require('react-native/Libraries/Animated/Animated').default;
+  },
+  get Easing() {
+    return require('react-native/Libraries/Animated/Easing').default;
+  },
+  get PanResponder() {
+    return require('react-native/Libraries/Interaction/PanResponder').default;
+  },
+  get processColor() {
+    return require('react-native/Libraries/StyleSheet/processColor').default;
+  },
+  get findNodeHandle() {
+    return require('react-native/Libraries/ReactNative/RendererProxy').findNodeHandle;
   },
 });
 

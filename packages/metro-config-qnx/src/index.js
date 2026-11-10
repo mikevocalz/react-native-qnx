@@ -68,9 +68,9 @@ function createQnxResolveRequest(overridesRoot) {
  * Returns a Metro config for `projectRoot` with the QNX platform registered.
  *
  * @param {string} projectRoot Absolute path to the app.
- * @param {import('metro-config').InputConfigT} [overrides] Merged last, so a
- *   project can still change anything this sets.
- * @returns {import('metro-config').InputConfigT}
+ * @param {import('metro-config').InputConfigT} [overrides] Project settings are
+ *   merged before adding the required QNX package export condition.
+ * @returns {import('metro-config').ConfigT}
  */
 function getQnxMetroConfig(projectRoot, overrides) {
   const defaultConfig = getDefaultConfig(projectRoot);
@@ -91,7 +91,22 @@ function getQnxMetroConfig(projectRoot, overrides) {
   };
 
   const merged = mergeConfig(defaultConfig, qnxConfig);
-  return overrides ? mergeConfig(merged, overrides) : merged;
+  const config = overrides ? mergeConfig(merged, overrides) : merged;
+  const conditions = config.resolver.unstable_conditionsByPlatform ?? {};
+  // Explicit package exports take precedence over platform file extensions.
+  // Assert only this target's condition, preserving React Native's conditions
+  // and every other platform. Packages must list qnx before react-native in
+  // their exports objects when they provide both implementations.
+  return {
+    ...config,
+    resolver: {
+      ...config.resolver,
+      unstable_conditionsByPlatform: {
+        ...conditions,
+        [QNX_PLATFORM]: [...new Set([...(conditions[QNX_PLATFORM] ?? []), QNX_PLATFORM])],
+      },
+    },
+  };
 }
 
 module.exports = { getQnxMetroConfig, createQnxResolveRequest, QNX_PLATFORM };
