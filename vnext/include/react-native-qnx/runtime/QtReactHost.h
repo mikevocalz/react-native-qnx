@@ -17,6 +17,8 @@
 #include <QString>
 
 #include <memory>
+#include <functional>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -160,6 +162,16 @@ class QtReactHost {
   /// `lastError()` when the script throws. Must be called on the owning
   /// thread at an idle JS boundary; reentrant evaluation returns false.
   bool evaluate(const std::string& source, const std::string& sourceUrl);
+
+#if RNQNX_ENABLE_DEV_RUNTIME
+  void installDevelopmentRuntime(const std::string& bundleUrl,
+      std::uint64_t generation, std::function<void(std::string)> reload,
+      std::function<void(std::string, std::string)> report);
+  /// Queue a native lifecycle action after JS and its scheduler checkpoint.
+  /// The action may destroy this host; pending actions are cancelled at teardown.
+  void whenIdle(std::function<void()> action);
+  void clearDevelopmentError();
+#endif
 
   /// True when `global.nativeFabricUIManager` is installed, which is what
   /// proves the UIManagerBinding reached the runtime.

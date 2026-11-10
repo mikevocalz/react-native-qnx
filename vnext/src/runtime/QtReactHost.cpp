@@ -42,6 +42,9 @@
 #include "react-native-qnx/runtime/QnxImageLoader.h"
 #include "react-native-qnx/runtime/QnxSegmentFetcher.h"
 #include "react-native-qnx/runtime/QnxWebSocketModule.h"
+#if RNQNX_ENABLE_DEV_RUNTIME
+#include "react-native-qnx/runtime/QnxDevSettings.h"
+#endif
 
 #include <folly/dynamic.h>
 
@@ -389,9 +392,15 @@ class QtReactHost::Impl {
             callback(*runtime);
           } catch (...) {
             --runtimeExecutionDepth;
+#if RNQNX_ENABLE_DEV_RUNTIME
+            postIdleActions();
+#endif
             throw;
           }
           --runtimeExecutionDepth;
+#if RNQNX_ENABLE_DEV_RUNTIME
+          postIdleActions();
+#endif
         };
 
     // RN's default error handler calls JS ErrorUtils and may throw if a
@@ -422,6 +431,9 @@ class QtReactHost::Impl {
                 {error.getMessage(), error.getStack(), true});
           }
           lastError = QString::fromStdString(error.getMessage());
+#if RNQNX_ENABLE_DEV_RUNTIME
+          if (devReport) devReport("error", error.getMessage() + "\n" + error.getStack());
+#endif
           qWarning().noquote() << "[js task error]" << lastError;
         });
     facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(
@@ -441,6 +453,9 @@ class QtReactHost::Impl {
           if (runtimeExecutionDepth == 0) {
             runtimeScheduler->scheduleWork([](facebook::jsi::Runtime&) {});
           }
+#if RNQNX_ENABLE_DEV_RUNTIME
+          postIdleActions();
+#endif
         }
 #if RNQNX_ENABLE_FRAME_TRACE
         , trace
@@ -558,6 +573,10 @@ class QtReactHost::Impl {
     if (runtimeExecutionDepth != 0) {
       std::terminate();
     }
+#if RNQNX_ENABLE_DEV_RUNTIME
+    idleContext.reset();
+    idleActions.clear();
+#endif
     for (auto& [surfaceId, handler] : surfaces) {
 #if RNQNX_ENABLE_FRAME_TRACE
       const auto generation = surfaceGenerations.find(surfaceId);
@@ -611,6 +630,26 @@ class QtReactHost::Impl {
   std::string scriptUrl;
   int nextTimerHandle{0};
   QString lastError;
+#if RNQNX_ENABLE_DEV_RUNTIME
+  QnxDevSettings::Reload devReload;
+  QnxDevSettings::Report devReport;
+  std::shared_ptr<QnxDevSettings> devSettings;
+  std::unique_ptr<QObject> idleContext{std::make_unique<QObject>()};
+  std::vector<std::function<void()>> idleActions;
+
+  void postIdleActions() {
+    if (runtimeExecutionDepth != 0 || !idleContext) return;
+    auto actions = std::move(idleActions);
+    idleActions.clear();
+    for (auto& action : actions) {
+      QMetaObject::invokeMethod(idleContext.get(),
+          [this, action = std::move(action)]() mutable {
+            if (runtimeExecutionDepth != 0) idleActions.push_back(std::move(action));
+            else action();
+          }, Qt::QueuedConnection);
+    }
+  }
+#endif
 };
 
 QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter)
@@ -623,6 +662,30 @@ QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter,
 #endif
 
 QtReactHost::~QtReactHost() = default;
+
+#if RNQNX_ENABLE_DEV_RUNTIME
+void QtReactHost::installDevelopmentRuntime(const std::string& bundleUrl,
+    std::uint64_t generation, std::function<void(std::string)> reload,
+    std::function<void(std::string, std::string)> report) {
+  if (impl_->runtimeExecutionDepth != 0 || !impl_->scriptUrl.empty() || impl_->devReport) {
+    throw std::logic_error("Install development settings once, before evaluating JavaScript");
+  }
+  impl_->scriptUrl = bundleUrl;
+  impl_->devReload = std::move(reload);
+  impl_->devReport = std::move(report);
+  installDevGlobals(*impl_->runtime, bundleUrl, generation, impl_->devReport);
+}
+
+void QtReactHost::whenIdle(std::function<void()> action) {
+  if (!impl_->taskQueue->isOnOwnerThread()) {
+    throw std::logic_error("Host lifecycle requires the Qt owner thread");
+  }
+  impl_->idleActions.push_back(std::move(action));
+  impl_->postIdleActions();
+}
+
+void QtReactHost::clearDevelopmentError() { impl_->lastError.clear(); }
+#endif
 
 facebook::jsi::Runtime& QtReactHost::runtime() {
   return *impl_->runtime;
@@ -669,6 +732,9 @@ bool QtReactHost::evaluate(
     // Local paths need an absolute, encoded file URL before that first read;
     // explicit URLs retain their network/resource scheme and identity.
     const auto sourceLocation = QString::fromStdString(sourceUrl);
+#if RNQNX_ENABLE_DEV_RUNTIME
+    if (!impl_->devReport)
+#endif
     impl_->scriptUrl = sourceLocation.isEmpty() || !QUrl(sourceLocation).scheme().isEmpty()
         ? sourceUrl
         : QUrl::fromLocalFile(QFileInfo(sourceLocation).absoluteFilePath())
@@ -753,6 +819,13 @@ void QtReactHost::installTurboModuleBinding() {
           facebook::jsi::Runtime& /*jsRuntime*/,
           const std::string& name)
           -> std::shared_ptr<facebook::react::TurboModule> {
+#if RNQNX_ENABLE_DEV_RUNTIME
+        if (name == QnxDevSettings::kModuleName && impl->devReport) {
+          if (!impl->devSettings) impl->devSettings = std::make_shared<QnxDevSettings>(
+              callInvoker, impl->devReload, impl->devReport);
+          return impl->devSettings;
+        }
+#endif
         // Without this, every JavaScript error aborts the process: React
         // reaches for ExceptionsManager while reporting, getEnforcing throws,
         // and the throw escapes.
@@ -776,6 +849,9 @@ void QtReactHost::installTurboModuleBinding() {
                     << QString::fromStdString(error.message) << '\n'
                     << QString::fromStdString(error.stack);
                 impl->javaScriptErrors.push_back(error);
+#if RNQNX_ENABLE_DEV_RUNTIME
+                if (impl->devReport) impl->devReport("error", error.message + "\n" + error.stack);
+#endif
               });
         }
 

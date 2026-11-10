@@ -17,7 +17,7 @@
 
 namespace rnqnx::runtime {
 
-enum class TraceStage { Evaluate, SurfaceStart, SurfaceStop, QueueAdmission, QueueExecute, QueueClose };
+enum class TraceStage { Evaluate, SurfaceStart, SurfaceStop, QueueAdmission, QueueExecute, QueueClose, FrameQueued };
 enum class TracePhase { Begin, End, Instant };
 
 struct TraceEvent {

@@ -3,14 +3,19 @@ import { createReadStream } from 'node:fs';
 import { lstat, mkdir, open, readFile, realpath, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
+import { sha256File, verifyAssetInventory } from './asset-staging.mjs';
 
-/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string}} NativeConfiguration */
+/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string, assets?: string, assetsSha256?: string, assetsBundleBinding?: string}} NativeConfiguration */
 const help = `React Native QNX native consumer configuration
   project prepare-native --project <directory> [--platform qnx|marathon]
-                         [--bundle build/<platform>/app.bundle.js] [--dry-run]
+                         [--bundle build/<platform>/app.bundle.js]
+                         [--assets build/<platform>/app.bundle.assets.json] [--dry-run]
 
 Reads static app.json: expo.name and expo.extra.rnqnx.{appId,componentName}.
 Writes build/<platform>/native-app.json for the existing native CMake backend.
+--assets selects a verified "project bundle --assets" inventory; the native build
+then stages those files beside the app bundle. For a .hbc bundle the inventory
+is bound to the JavaScript bundle it came from; the JS-to-HBC step is not proven.
 An identical rerun does not write. Changed generated output is not overwritten:
 remove only that generated file after reviewing your app/bundle change, then rerun.
 This does not install packages, compile native code or deploy to a device.
@@ -100,8 +105,13 @@ async function boundedFile(file, maximum) {
   return stat;
 }
 
-/** @param {string} project @param {string} platform @param {string} [relativeBundle] */
-export async function nativeConfiguration(project, platform = 'qnx', relativeBundle) {
+/** @param {string} project @param {string} [platform] @param {string} [relativeBundle] @param {string} [relativeAssets] */
+export async function nativeConfiguration(
+  project,
+  platform = 'qnx',
+  relativeBundle,
+  relativeAssets
+) {
   if (!['qnx', 'marathon'].includes(platform)) throw new Error('Use platform qnx or marathon.');
   if (!project.trim()) throw new Error('Project directory must not be empty.');
   const root = await realpath(path.resolve(project));
@@ -130,6 +140,23 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
     bundle,
     bundleSha256: hash.digest('hex'),
   };
+  if (relativeAssets !== undefined) {
+    if (
+      !relativeAssets.startsWith(`build/${platform}/`) ||
+      !relativeAssets.endsWith('.assets.json')
+    )
+      throw new Error('Asset inventory must be a .assets.json file below build/<platform>/.');
+    const inventoryFile = await projectPath(root, relativeAssets);
+    const inventory = await verifyAssetInventory(inventoryFile);
+    if (inventory.platform !== platform)
+      throw new Error('Asset inventory was produced for a different platform.');
+    const hbc = bundle.endsWith('.hbc');
+    if (!hbc && inventory.bundleSha256 !== configuration.bundleSha256)
+      throw new Error('Asset inventory belongs to a different bundle; bundle the project again.');
+    configuration.assets = inventoryFile;
+    configuration.assetsSha256 = await sha256File(inventoryFile);
+    configuration.assetsBundleBinding = hbc ? 'source-js-unverified-hbc' : 'bundle-sha256';
+  }
   return { root, configuration };
 }
 
@@ -145,6 +172,7 @@ export async function prepareNativeMain(argv) {
       project: { type: 'string' },
       platform: { type: 'string' },
       bundle: { type: 'string' },
+      assets: { type: 'string' },
       'dry-run': { type: 'boolean' },
     },
   });
@@ -162,7 +190,8 @@ export async function prepareNativeMain(argv) {
   const { root, configuration } = await nativeConfiguration(
     values.project ?? '.',
     values.platform ?? 'qnx',
-    values.bundle
+    values.bundle,
+    values.assets
   );
   const relative = `build/${configuration.platform}/native-app.json`;
   const output = await projectPath(root, relative, !values['dry-run']);

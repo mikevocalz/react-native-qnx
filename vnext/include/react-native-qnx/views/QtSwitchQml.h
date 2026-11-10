@@ -2,7 +2,7 @@
 
 namespace rnqnx::views {
 
-/// Shared Qt Quick backing item for the existing Fabric Switch component.
+/// Shared Fabric backing item; `toggled` reports user proposals, not JS writes.
 const char* switchQml();
 
 }  // namespace rnqnx::views

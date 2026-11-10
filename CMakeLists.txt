@@ -470,6 +470,7 @@ else()
         )
 
         rnqnx_add_fabric_adapter_target()
+        rnqnx_add_modal_switch_tests()
 
         add_executable(shadow_view_mutation_adapter_host_test
           tests/cpp/ShadowViewMutationAdapterHostTest.cpp
@@ -587,3 +588,6 @@ endif()
 if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE AND NOT TARGET rnqnx_react_host)
   message(FATAL_ERROR "Accessibility bridge requires the full Qt/React host graph")
 endif()
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxQtFrameTrace.cmake)
+rnqnx_add_qt_frame_trace()

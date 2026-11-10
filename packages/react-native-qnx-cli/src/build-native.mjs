@@ -47,7 +47,16 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
   // Revalidate the exact selected bundle, including QNX .hbc inputs. A stale
   // descriptor must never silently point to a different JS entry.
   const relativeBundle = path.relative(project, original.bundle ?? '');
-  const { configuration } = await nativeConfiguration(project, platform, relativeBundle);
+  const relativeAssets =
+    typeof original.assets === 'string'
+      ? path.relative(project, original.assets).split(path.sep).join('/')
+      : undefined;
+  const { configuration } = await nativeConfiguration(
+    project,
+    platform,
+    relativeBundle,
+    relativeAssets
+  );
   if (JSON.stringify(original) !== JSON.stringify(configuration)) {
     throw new Error(
       'Native descriptor is stale. Review the bundle and run project prepare-native.'

@@ -121,7 +121,7 @@ class ShadowViewMutationAdapter {
   /// Tags whose text-change signal is already connected, for the same reason.
   QSet<Tag> textInputConnected_;
   /// Switch bridges, indexed by tag, so `applySwitch` can pre-arm the guard.
-  QHash<Tag, QtSwitchBridge*> switchBridges_;
+  QHash<Tag, QPointer<QtSwitchBridge>> switchBridges_;
   /// Image bridges, indexed by tag, so load/error events reach JavaScript.
   QHash<Tag, QtImageBridge*> imageBridges_;
   /// Native viewport observers, owned by their mounted Modal items.

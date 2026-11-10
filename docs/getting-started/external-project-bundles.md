@@ -20,3 +20,18 @@ inspect and --dry-run read metadata but do not execute Metro or its config, crea
 The integration test provisions the existing CI dependency graph into a separate temporary application source directory and builds real QNX and Marathon bundles. It is not a clean-machine/package-publication proof. Unit tests use an explicit synthetic Metro executable to exercise safety/failure behavior. No new QNX or Marathon device result is implied.
 
 QNX-first naming, the original workspace commands, runtime pins, lockfile, recovery boot and optional premium-product boundary stay unchanged. Path checks reject existing unsafe entries but are not a sandbox against concurrent hostile filesystem changes. No code is uploaded by the CLI.
+
+## Images and other Metro assets
+
+`project bundle --assets` runs the installed Metro's `runBuild({ assets: true })` in a supervised child process instead of the Metro CLI. Metro returns the assets the bundle actually requires. The CLI copies them into React Native's bundle-relative layout, `assets/<dir>/<name>[@<scale>x].<type>`, and writes `<bundle>.assets.json`, a `react-native-qnx/metro-assets-v1` inventory with each file's relative path, scale, size and SHA-256, plus the bundle's SHA-256 and the Metro version.
+
+```bash
+pnpm qnx project bundle --project /path/to/app --assets
+pnpm qnx project prepare-native --project /path/to/app --assets build/qnx/app.bundle.assets.json
+```
+
+Without `--assets`, the command and its output stay JavaScript-only. With it, the bundle, `assets/` and the inventory must all be new; they are published from private staging, inventory last, and a failed publish removes what it published. Asset sources must be regular, symlink-free files inside the project; unsafe names, traversal, case-folded collisions and size limits are errors.
+
+`prepare-native --assets` re-hashes every staged file and records the inventory path and hash in `native-app.json`. A JavaScript bundle must match the inventory's bundle hash. For a `.hbc` bundle the inventory is bound to the JavaScript it was compiled from, and the descriptor records `assetsBundleBinding: "source-js-unverified-hbc"`: this command does not prove the HBC came from that JavaScript. The consumer CMake build verifies the inventory again, copies the files beside `app.bundle.js` in the build tree and installs `assets/` beside the executable, so the installed tree can be relocated as a unit.
+
+The test runs real Metro on a temporary project with a nested 1x/2x image, then the CMake staging script, including tamper cases. It does not render the image on any device.

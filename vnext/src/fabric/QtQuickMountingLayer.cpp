@@ -21,6 +21,13 @@
 #include <QUrl>
 #include <QTouchEvent>
 #include <QWheelEvent>
+#if RNQNX_ENABLE_MODAL_FOCUS
+#include <QGuiApplication>
+#include <QKeyEvent>
+#include <QQuickWindow>
+#include <QScopedValueRollback>
+#include <QSet>
+#endif
 
 #include <algorithm>
 #include <limits>
@@ -53,6 +60,215 @@ class ModalPointerBarrier final : public QQuickItem {
   void touchEvent(QTouchEvent* event) override { event->accept(); }
   void wheelEvent(QWheelEvent* event) override { event->accept(); }
 };
+
+#if RNQNX_ENABLE_MODAL_FOCUS
+// One owner per native window, including surfaces with different Fabric roots.
+class ModalFocusOwner final : public QObject {
+ public:
+  explicit ModalFocusOwner(QQuickWindow& window) : QObject(&window), window_(window) {
+    QCoreApplication::instance()->installEventFilter(this);
+    QObject::connect(&window_, &QQuickWindow::activeFocusItemChanged, this, [this] { refresh(); });
+    QObject::connect(&window_, &QObject::destroyed, this, [this] { suspended_ = true; });
+  }
+
+  static ModalFocusOwner* forWindow(QQuickWindow& window) {
+    for (auto* child : window.children()) {
+      if (auto* owner = dynamic_cast<ModalFocusOwner*>(child)) return owner;
+    }
+    return new ModalFocusOwner(window);
+  }
+
+  void add(QQuickItem& item, std::function<void()> requestClose,
+           QList<QPointer<QQuickItem>> ancestors) {
+    if (entries_.contains(&item)) {
+      entries_[&item].requestClose = std::move(requestClose);
+      refresh();
+      return;
+    }
+    entries_.insert(&item, Entry{&item, {}, std::move(requestClose), ancestors});
+    order_.append(&item);
+    auto& connections = connections_[&item];
+    connections.append(QObject::connect(&item, &QQuickItem::visibleChanged, this, [this] { refresh(); }));
+    connections.append(QObject::connect(&item, &QQuickItem::enabledChanged, this, [this] { refresh(); }));
+    connections.append(QObject::connect(&item, &QObject::destroyed, this, [this, key = &item] { remove(key); }));
+    for (const auto& ancestor : ancestors) {
+      if (!ancestor) continue;
+      connections.append(QObject::connect(ancestor, &QQuickItem::visibleChanged, this, [this] { refresh(); }));
+      connections.append(QObject::connect(ancestor, &QQuickItem::enabledChanged, this, [this] { refresh(); }));
+      connections.append(QObject::connect(ancestor, &QQuickItem::windowChanged, this, [this] { refresh(); }));
+      connections.append(QObject::connect(ancestor, &QObject::destroyed, this, [this] { refresh(); }));
+    }
+    refresh();
+  }
+
+  void remove(QQuickItem* key, bool refreshNow = true) {
+    for (const auto& connection : connections_.take(key)) QObject::disconnect(connection);
+    entries_.remove(key);
+    order_.removeOne(key);
+    if (refreshNow) refresh();
+  }
+
+  void settle() { refresh(); }
+
+ private:
+  struct Entry {
+    QPointer<QQuickItem> item;
+    QPointer<QQuickItem> lastFocus;
+    std::function<void()> requestClose;
+    QList<QPointer<QQuickItem>> ancestors;
+  };
+
+  static bool inside(const QQuickItem* item, const QQuickItem* modal) {
+    for (; item; item = item->parentItem()) if (item == modal) return true;
+    return false;
+  }
+
+  bool usable(const QQuickItem* item) const {
+    return item && item->window() == &window_ && item->isVisible() && item->isEnabled();
+  }
+
+  QQuickItem* top() const {
+    QQuickItem* result = nullptr;
+    for (auto it = order_.crbegin(); it != order_.crend(); ++it) {
+      const auto& entry = entries_[*it];
+      const auto item = entry.item;
+      const bool ancestorsUsable = std::all_of(entry.ancestors.cbegin(), entry.ancestors.cend(),
+          [this](const auto& ancestor) { return usable(ancestor); });
+      if (usable(item) && ancestorsUsable && (!result || above(item, result))) result = item;
+    }
+    return result;
+  }
+
+  static bool above(QQuickItem* item, QQuickItem* other) {
+    QList<QQuickItem*> path;
+    QList<QQuickItem*> otherPath;
+    for (auto* current = item; current; current = current->parentItem()) path.prepend(current);
+    for (auto* current = other; current; current = current->parentItem()) otherPath.prepend(current);
+    while (!path.isEmpty() && !otherPath.isEmpty() && path.first() == otherPath.first()) {
+      path.removeFirst();
+      otherPath.removeFirst();
+    }
+    if (path.isEmpty()) return false;
+    if (otherPath.isEmpty()) return true;
+    auto* branch = path.first();
+    auto* otherBranch = otherPath.first();
+    if (branch->z() != otherBranch->z()) return branch->z() > otherBranch->z();
+    auto* parent = branch->parentItem();
+    if (!parent || parent != otherBranch->parentItem()) return false;
+    const auto siblings = parent->childItems();
+    return siblings.indexOf(branch) > siblings.indexOf(otherBranch);
+  }
+
+  QQuickItem* tabTarget(QQuickItem* modal, QQuickItem* start, bool forward) const {
+    QSet<QQuickItem*> visited;
+    auto* candidate = start ? start : modal;
+    while (candidate && !visited.contains(candidate)) {
+      visited.insert(candidate);
+      candidate = candidate->nextItemInFocusChain(forward);
+      if (candidate && inside(candidate, modal) && usable(candidate) && candidate->activeFocusOnTab()) return candidate;
+    }
+    return modal;
+  }
+
+  void refresh() {
+    if (changing_ || suspended_ || !window_.contentItem()) return;
+    QScopedValueRollback<bool> changing(changing_, true);
+    auto* modal = top();
+    auto* active = window_.activeFocusItem();
+    if (modal == topKey_ && (!modal || inside(active, modal))) {
+      if (modal && usable(active)) entries_[modal].lastFocus = active;
+      return;
+    }
+    if (!topKey_ && modal) backgroundFocus_ = active;
+    if (entries_.contains(topKey_) && usable(active) && inside(active, topKey_)) {
+      entries_[topKey_].lastFocus = active;
+    }
+    auto* previousTop = topKey_;
+    topKey_ = modal;
+    if (modal) {
+      auto* candidate = entries_[modal].lastFocus.data();
+      if (!usable(candidate) || !inside(candidate, modal)) candidate = tabTarget(modal, modal, true);
+      candidate->forceActiveFocus(Qt::OtherFocusReason);
+    } else {
+      const auto previous = backgroundFocus_;
+      backgroundFocus_.clear();
+      // Forcing focus onto a scope hands it back to the scope's focused child,
+      // so drop the closed Modal's focus first.
+      if (active && previousTop && inside(active, previousTop)) active->setFocus(false, Qt::OtherFocusReason);
+      // Detached, hidden, disabled or destroyed background items are never restored.
+      (usable(previous) ? previous.data() : window_.contentItem())->forceActiveFocus(Qt::OtherFocusReason);
+    }
+  }
+
+  bool eventFilter(QObject* watched, QEvent* event) override {
+    auto* item = qobject_cast<QQuickItem*>(watched);
+    if (watched != &window_ && (!item || item->window() != &window_)) return false;
+    if (watched == &window_ && event->type() == QEvent::WindowDeactivate) {
+      suspended_ = true;
+      escapeDown_ = false;
+      return false;
+    }
+    if (watched == &window_ && event->type() == QEvent::WindowActivate) {
+      suspended_ = false;
+      refresh();
+      return false;
+    }
+    const bool keyEvent = event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease ||
+        event->type() == QEvent::ShortcutOverride;
+    if (!keyEvent && event->type() != QEvent::InputMethod && event->type() != QEvent::InputMethodQuery) return false;
+    auto* modal = top();
+    if (modal && suspended_) {
+      event->accept();
+      return true;
+    }
+    if (keyEvent) {
+      auto* key = static_cast<QKeyEvent*>(event);
+      if (key->key() == Qt::Key_Escape && key->modifiers() == Qt::NoModifier && (modal || escapeDown_)) {
+        std::function<void()> requestClose;
+        if (event->type() == QEvent::KeyPress && !key->isAutoRepeat() && !escapeDown_) {
+          escapeDown_ = true;
+          if (modal) requestClose = entries_[modal].requestClose;
+        } else if (event->type() == QEvent::KeyRelease && !key->isAutoRepeat()) {
+          escapeDown_ = false;
+        }
+        event->accept();
+        if (requestClose) requestClose();
+        return true;
+      }
+      if (modal && (key->key() == Qt::Key_Tab || key->key() == Qt::Key_Backtab) &&
+          (key->modifiers() == Qt::NoModifier || key->modifiers() == Qt::ShiftModifier)) {
+        if (event->type() == QEvent::KeyPress) {
+          const bool forward = key->key() == Qt::Key_Tab && !(key->modifiers() & Qt::ShiftModifier);
+          tabTarget(modal, window_.activeFocusItem(), forward)->forceActiveFocus(
+              forward ? Qt::TabFocusReason : Qt::BacktabFocusReason);
+        }
+        event->accept();
+        return true;
+      }
+      if (modal && event->type() == QEvent::ShortcutOverride) {
+        event->accept();
+        return true;
+      }
+    }
+    if (modal && (suspended_ || (item && !inside(item, modal)) || !inside(window_.activeFocusItem(), modal))) {
+      refresh();
+      event->accept();
+      return true;
+    }
+    return false;
+  }
+
+  QQuickWindow& window_;
+  QHash<QQuickItem*, Entry> entries_;
+  QHash<QQuickItem*, QList<QMetaObject::Connection>> connections_;
+  QList<QQuickItem*> order_;
+  QQuickItem* topKey_{nullptr}; // Identity only; never dereferenced after removal.
+  QPointer<QQuickItem> backgroundFocus_;
+  bool changing_{false};
+  bool suspended_{false};
+  bool escapeDown_{false};
+};
+#endif
 
 // Directories searched for bundled/native font files, in addition to system
 // font locations. Qt QNX deployments usually ship assets under the executable.
@@ -154,6 +370,12 @@ QtQuickMountingLayer::QtQuickMountingLayer(
 }
 
 QtQuickMountingLayer::~QtQuickMountingLayer() {
+#if RNQNX_ENABLE_MODAL_FOCUS
+  tearingDown_ = true;
+  for (auto it = modalFocusOwners_.cbegin(); it != modalFocusOwners_.cend(); ++it) {
+    if (auto* owner = dynamic_cast<ModalFocusOwner*>(it.value().data())) owner->remove(itemForTag(it.key()), false);
+  }
+#endif
 #if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
   // Close every callback before changing any item's focus or deleting a tree.
   // A destructor must not admit reentrant user mutation of the owned registry.
@@ -167,6 +389,12 @@ QtQuickMountingLayer::~QtQuickMountingLayer() {
       if (auto* bridge = mounted.item->findChild<QtTextInputBridge*>(QString(), Qt::FindDirectChildrenOnly)) bridge->invalidate();
     }
   }
+#endif
+#if RNQNX_ENABLE_MODAL_FOCUS
+  for (const auto& guarded : std::as_const(modalFocusOwners_)) {
+    if (auto* owner = dynamic_cast<ModalFocusOwner*>(guarded.data())) owner->settle();
+  }
+  modalFocusOwners_.clear();
 #endif
   // Items are owned individually rather than through QObject parentage, so a
   // surviving tree is torn down one item at a time. QQuickItem's destructor
@@ -193,6 +421,55 @@ QQuickItem* QtQuickMountingLayer::itemForTag(Tag tag) const {
 QQuickItem& QtQuickMountingLayer::rootItem() const {
   return rootItem_;
 }
+
+#if RNQNX_ENABLE_MODAL_FOCUS
+void QtQuickMountingLayer::setModalRequestClose(Tag tag, std::function<void()> requestClose) {
+  modalCloseRequests_.insert(tag, std::move(requestClose));
+  syncModalFocus();
+}
+
+void QtQuickMountingLayer::syncModalFocus() {
+  if (tearingDown_) return;
+  // Remove first, so a detached nested portal cannot become the next owner.
+  const auto rooted = [this](Tag tag) {
+    QSet<Tag> visited;
+    while (tag != rootTag_) {
+      if (visited.contains(tag)) return false;
+      visited.insert(tag);
+      const auto mounted = items_.constFind(tag);
+      if (mounted == items_.cend() || !mounted->parentTag) return false;
+      tag = *mounted->parentTag;
+    }
+    return true;
+  };
+  QSet<ModalFocusOwner*> changed;
+  for (const auto tag : modalFocusOwners_.keys()) {
+    auto* item = itemForTag(tag);
+    auto* owner = dynamic_cast<ModalFocusOwner*>(modalFocusOwners_.value(tag).data());
+    if (!owner || !item || !rooted(tag) || owner->parent() != item->window()) {
+      if (owner) {
+        owner->remove(item, false);
+        changed.insert(owner);
+      }
+      modalFocusOwners_.remove(tag);
+    }
+  }
+  for (auto* owner : changed) owner->settle();
+  for (const auto tag : modalOrder_) {
+    auto* item = itemForTag(tag);
+    if (!item || !rooted(tag) || !item->window()) continue;
+    auto* owner = ModalFocusOwner::forWindow(*item->window());
+    modalFocusOwners_.insert(tag, owner);
+    QList<QPointer<QQuickItem>> ancestors;
+    auto parent = items_[tag].parentTag;
+    while (parent) {
+      ancestors.append(itemForTag(*parent));
+      parent = items_[*parent].parentTag;
+    }
+    owner->add(*item, modalCloseRequests_.value(tag), std::move(ancestors));
+  }
+}
+#endif
 
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
 bool QtQuickMountingLayer::isGenericView(Tag tag) const {
@@ -232,6 +509,9 @@ MountError QtQuickMountingLayer::create(
   if (viewportModal) {
     item->setZ(std::numeric_limits<qreal>::max());
     new ModalPointerBarrier(*item);
+#if RNQNX_ENABLE_MODAL_FOCUS
+    QObject::connect(item, &QQuickItem::windowChanged, item, [this] { syncModalFocus(); });
+#endif
   }
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
   mounted.genericView = componentName == QStringLiteral("View");
@@ -309,6 +589,9 @@ MountError QtQuickMountingLayer::insert(
   child->parentTag = parentTag;
   parent->children.insert(index, childTag);
   raiseModals();
+#if RNQNX_ENABLE_MODAL_FOCUS
+  syncModalFocus();
+#endif
 
   lastError_.clear();
   return MountError::None;
@@ -353,10 +636,13 @@ MountError QtQuickMountingLayer::remove(
             .arg(index));
   }
 
-  child->item->setParentItem(nullptr);
   child->parentTag.reset();
   parent->children.removeAt(index);
   modalOrder_.removeOne(childTag);
+#if RNQNX_ENABLE_MODAL_FOCUS
+  syncModalFocus();
+#endif
+  child->item->setParentItem(nullptr);
   lastError_.clear();
   return MountError::None;
 }
@@ -386,6 +672,11 @@ MountError QtQuickMountingLayer::destroy(Tag tag) {
     modalOrder_.removeOne(childTag);
   }
   modalOrder_.removeOne(tag);
+#if RNQNX_ENABLE_MODAL_FOCUS
+  mounted->parentTag.reset();
+  syncModalFocus();
+  modalCloseRequests_.remove(tag);
+#endif
 #if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
   if (auto* bridge = item->findChild<QtTextInputBridge*>(QString(), Qt::FindDirectChildrenOnly)) bridge->invalidate();
 #endif

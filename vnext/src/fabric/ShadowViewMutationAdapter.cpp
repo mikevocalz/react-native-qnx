@@ -69,6 +69,7 @@ class QtModalBridge final : public QObject {
 
  protected:
   bool eventFilter(QObject* watched, QEvent* event) override {
+#if !RNQNX_ENABLE_MODAL_FOCUS
     if (watched == window_ && event->type() == QEvent::KeyPress &&
         item_.isVisible() && item_.isEnabled() && emitter_) {
       const auto* key = static_cast<QKeyEvent*>(event);
@@ -81,6 +82,10 @@ class QtModalBridge final : public QObject {
         return true;
       }
     }
+#else
+    Q_UNUSED(watched);
+    Q_UNUSED(event);
+#endif
     return QObject::eventFilter(watched, event);
   }
 
@@ -479,6 +484,10 @@ void ShadowViewMutationAdapter::applyModal(const ShadowView& view) {
   if (!bridge) bridge = new QtModalBridge(*item, layer_.rootItem());
   bridge->update(std::dynamic_pointer_cast<const QtModalBridge::State>(view.state),
       std::dynamic_pointer_cast<const facebook::react::ModalHostViewEventEmitter>(view.eventEmitter));
+#if RNQNX_ENABLE_MODAL_FOCUS
+  const auto emitter = std::dynamic_pointer_cast<const facebook::react::ModalHostViewEventEmitter>(view.eventEmitter);
+  layer_.setModalRequestClose(view.tag, [emitter] { if (emitter) emitter->onRequestClose({}); });
+#endif
 }
 
 void ShadowViewMutationAdapter::applyImage(const ShadowView& view) {
@@ -630,7 +639,7 @@ void ShadowViewMutationAdapter::applySwitch(const ShadowView& view) {
     style.thumbColor = packColor(props->thumbTintColor);
   }
 
-  if (auto* bridge = switchBridges_.value(view.tag, nullptr)) {
+  if (auto bridge = switchBridges_.value(view.tag)) {
     bridge->setExpectedValue(style.value);
   }
 
@@ -638,17 +647,10 @@ void ShadowViewMutationAdapter::applySwitch(const ShadowView& view) {
 }
 
 void ShadowViewMutationAdapter::connectSwitchEvents(const ShadowView& view) {
-  if (switchBridges_.contains(view.tag)) {
-    return;
-  }
-
+  if (componentNameOf(view) != QStringLiteral("Switch")) return;
   const auto emitter =
       std::dynamic_pointer_cast<const facebook::react::SwitchEventEmitter>(
           view.eventEmitter);
-  if (emitter == nullptr) {
-    return;
-  }
-
   QQuickItem* item = layer_.itemForTag(view.tag);
   if (item == nullptr) {
     return;
@@ -659,16 +661,22 @@ void ShadowViewMutationAdapter::connectSwitchEvents(const ShadowView& view) {
   const bool initialValue = props != nullptr ? props->value : false;
 
   const auto emitChange = [emitter, viewTag = view.tag](bool value) {
+    if (!emitter) return;
     facebook::react::SwitchEventEmitter::OnChange event;
     event.value = value;
     event.target = static_cast<int>(viewTag);
     emitter->onChange(event);
   };
 
+  if (auto bridge = switchBridges_.value(view.tag)) {
+    bridge->setOnChange(emitChange);
+    return;
+  }
+
   auto* bridge =
       new QtSwitchBridge(emitChange, item, initialValue, item);
   QObject::connect(
-      item, SIGNAL(valueChanged()), bridge, SLOT(notify()));
+      item, SIGNAL(toggled()), bridge, SLOT(notify()));
 
   switchBridges_.insert(view.tag, bridge);
 }
@@ -942,6 +950,9 @@ void ShadowViewMutationAdapter::connectScrollEvents(const ShadowView& view) {
 }
 
 ShadowViewMutationAdapter::~ShadowViewMutationAdapter() {
+#if RNQNX_ENABLE_MODAL_FOCUS
+  for (auto it = modalBridges_.cbegin(); it != modalBridges_.cend(); ++it) layer_.setModalRequestClose(it.key(), {});
+#endif
   for (const auto& bridge : std::as_const(modalBridges_)) {
     delete bridge.data();
   }
@@ -1173,6 +1184,21 @@ MutationFailure ShadowViewMutationAdapter::dispatchCommand(
     const std::string& commandName,
     const folly::dynamic& args,
     const ShadowView* shadowView) {
+  if (commandName == "setValue") {
+    if (!args.isArray() || args.size() != 1 || !args[0].isBool()) {
+      return MutationFailure{.type = ShadowViewMutation::Type::Update, .tag = tag,
+          .error = MountError::IndexOutOfRange,
+          .detail = QStringLiteral("Switch setValue expects [boolean]")};
+    }
+    const auto bridge = switchBridges_.value(tag);
+    if (!bridge || !layer_.itemForTag(tag)) {
+      return MutationFailure{.type = ShadowViewMutation::Type::Update, .tag = tag,
+          .error = MountError::UnknownTag,
+          .detail = QStringLiteral("Switch setValue requires a mounted Switch event bridge")};
+    }
+    bridge->setValue(args[0].asBool());
+    return MutationFailure{};
+  }
   if (commandName == "scrollTo") {
     if (!args.isArray() || args.size() < 2) {
       return MutationFailure{

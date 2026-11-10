@@ -19,6 +19,7 @@ const char* stageName(TraceStage stage) {
     case TraceStage::QueueAdmission: return "queue.admit";
     case TraceStage::QueueExecute: return "queue.execute";
     case TraceStage::QueueClose: return "queue.close";
+    case TraceStage::FrameQueued: return "qt.frame.queued";
   }
   return "unknown";
 }
@@ -87,6 +88,7 @@ void RuntimeTrace::writeJson(const TraceSnapshot& snapshot, std::ostream& output
   encoded.imbue(std::locale::classic());
   encoded << "{\"schemaVersion\":1,\"clock\":\"std::chrono::steady_clock\","
          << "\"clockScope\":\"session-relative; not aligned to Qt/QNX/display clocks\","
+         << "\"frameBoundaryMeaning\":\"qt.frame.queued is submission notification, not display presentation\","
          << "\"unit\":\"nanoseconds\",\"timestampMeaning\":\"record-copy after recorder lock\","
          << "\"threadIdentity\":\"session-local ordinal of std::thread::id; IDs may be reused\","
          << "\"session\":" << snapshot.session << ",\"dropped\":" << snapshot.dropped << ",\"events\":[";
