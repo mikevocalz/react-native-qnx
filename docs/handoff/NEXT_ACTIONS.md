@@ -1,5 +1,13 @@
 # NEXT_ACTIONS.md
 
+## 2026-11-10 — PR #108 stacked SDK continuation
+
+Publish the trigger-only follow-up on `3fa112e`, then require SDK 58 validation
+to run and pass on #108's #110 base at the new exact head. Inspect that result
+alongside the native jobs. Existing 47/47 ON / 25/25 OFF source-bound native
+evidence remains intact; do not rerun unrelated native work for this filter edit.
+[Integration receipt](../validation/pr108-integration-2026-11-10.md).
+
 ## 2026-11-10 — PR #108 integrated continuation
 
 1. Publish the validated integration as a merge preserving #108 `47cd9d8` and

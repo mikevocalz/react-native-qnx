@@ -1,5 +1,15 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — PR #108 SDK trigger validation
+
+The SDK follow-up changes only its PR base filter and documentation. PyYAML
+comparison against parent `3fa112e`, the existing host-renderer contract,
+docs sync/validation, changed-file Prettier and `git diff --check` passed.
+The retained native source/artifact hashes and 47/47 ON / 25/25 OFF results
+are unchanged; no native or broad runtime suite rerun is claimed. Hosted SDK
+validation is pending on the published follow-up.
+[Integration receipt](../validation/pr108-integration-2026-11-10.md).
+
 ## 2026-11-10 — PR #108 / #110 native integration
 
 Linux x86-64, Clang 19 and Qt 6.11.1: the separate Debug build with the input,

@@ -1,5 +1,36 @@
 # PR #108 / #110 integration — November 10, 2026
 
+## Stacked SDK validation follow-up
+
+Published integration `3fa112e217d0f01e8f075ad2d95994297c158c87` is the
+parent of this CI/documentation follow-up. Retargeting #108 onto the #110
+branch exposed an SDK workflow gap: its PR base allowlist covered `main`
+and three older feature branches, so the full SDK validation job did not run
+for this stack. Removing only that `pull_request.branches` restriction gives
+stacked PRs the same JS, type, dependency, security and remaining SDK checks.
+Push branches, permissions, concurrency and every job/step remain unchanged.
+The full host-renderer workflow already uses this all-PR scope.
+
+Native implementation, fixtures, dependency graph and recorded artifact/source
+hashes are unchanged. The existing 47/47 ON and 25/25 OFF results below still
+describe those identical native sources, with their leak-detection limitation.
+They are retained results, not new runs for this workflow-only change. The new
+published candidate still needs its own hosted SDK result.
+
+Validation passed: PyYAML 6.0.3 comparison of the complete workflow structures,
+`node tests/js/host-renderer-contract.test.mjs`, `pnpm docs:sync`,
+`pnpm validate:docs`, changed-file Prettier and `git diff --check`.
+The comparison confirms that only the PR base restriction changed. No new test
+duplicates the event-filter edit. No native or broad runtime suite was rerun.
+
+CI/documentation DRI: `audit_small_prs`; independent reviewer and publisher:
+the parent integrator. Repository QNX Platform Validation keeps the existing
+native evidence scoped to unchanged sources. The pinned Callstack
+`github-actions` skill at `59e9d17446a248b21d86f078fcd0bd2d36db1ca4` was read;
+its mobile artifact examples do not apply to this trigger-only change, so no
+mobile build pattern or skill installation is claimed. Reverting this
+follow-up restores the former PR filter without changing runtime behavior.
+
 ## Candidate and ownership
 
 This receipt covers the local combination of adaptive-layout PR #108 at

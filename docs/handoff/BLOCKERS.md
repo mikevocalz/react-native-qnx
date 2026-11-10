@@ -1,5 +1,13 @@
 # BLOCKERS.md
 
+## 2026-11-10 — PR #108 stacked SDK gap
+
+The SDK workflow's old PR base filter excluded the #110 branch. The follow-up
+removes that restriction while retaining every validation step; publication
+and the resulting SDK job remain pending. Native results and all seven release
+gates are unchanged. No new device acceptance is inferred.
+[Integration receipt](../validation/pr108-integration-2026-11-10.md).
+
 ## 2026-11-10 — PR #108 integrated candidate
 
 The source-level dual-modal-owner and development initial-metrics gaps are

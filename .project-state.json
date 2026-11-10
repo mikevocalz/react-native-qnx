@@ -79,7 +79,14 @@
       "localSource": "Host/adaptive typecheck, JS contracts, atomic PID readiness fixture, docs and real Metro bundles passed; QNX 685628 bytes and Marathon 685669 bytes.",
       "hostedCi": "Pending on final published integration candidate.",
       "targetExecution": "No new QNX/device or Marathon compositor execution.",
-      "releaseGatesPromoted": false
+      "releaseGatesPromoted": false,
+      "stackedSdkValidation": {
+        "sourceHeadBeforeFollowup": "3fa112e217d0f01e8f075ad2d95994297c158c87",
+        "scope": "Remove SDK pull_request base allowlist only; preserve push branches, permissions, concurrency and jobs",
+        "nativeEvidence": "Native sources and recorded hashes unchanged; retain 47/47 ON and 25/25 OFF with existing leak-detection limitation",
+        "hostedCi": "Pending SDK validation for the published follow-up on the stacked PR",
+        "releaseGatesPromoted": false
+      }
     }
   },
   "activeMilestone": "v1 preparation; release gates remain open",

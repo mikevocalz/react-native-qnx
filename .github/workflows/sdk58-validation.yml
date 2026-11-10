@@ -6,11 +6,6 @@ on:
       - main
       - ci/sdk58-validation
   pull_request:
-    branches:
-      - main
-      - feat/qnx-integrated-dx-candidate
-      - feat/qnx-phases-1-7-integration
-      - feat/qnx-consumer-native-app-identity
 
 permissions:
   contents: read

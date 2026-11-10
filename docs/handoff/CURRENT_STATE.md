@@ -1,5 +1,14 @@
 # Current state
 
+## 2026-11-10 — PR #108 stacked SDK validation
+
+The published integration at `3fa112e` now receives a CI follow-up removing
+only the SDK workflow's PR base allowlist. Stacked PRs gain the complete SDK
+job; push scope, permissions, concurrency and jobs are unchanged. Native
+sources and the recorded 47/47 ON / 25/25 OFF evidence are unchanged; the new
+published workflow result remains pending. All seven v1 gates stay pending.
+[Integration receipt](../validation/pr108-integration-2026-11-10.md).
+
 ## 2026-11-10 — PR #108 integrates the #110 stack
 
 Combined adaptive PR #108 `47cd9d8` with published #110 `73f7da0`, preserving

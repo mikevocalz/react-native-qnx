@@ -1,5 +1,15 @@
 # SESSION_LOG.md
 
+## 2026-11-10 — Enable SDK validation for stacked PRs
+
+`audit_small_prs` branched from published #108 `3fa112e`, preserving the local
+integration-history branch. Removed only `pull_request.branches` from the SDK
+workflow, keeping push branches, permissions, concurrency and jobs intact.
+Updated the six handoff/state records and existing receipt; native sources,
+test artifacts and all seven release gates are unchanged. The integrator owns
+independent review, publication and inspection of the new hosted SDK result.
+[Integration receipt](../validation/pr108-integration-2026-11-10.md).
+
 ## 2026-11-10 — Integrate PR #108 with the #110 stack
 
 Root combined adaptive source `47cd9d8` with #110 and resolved four native
