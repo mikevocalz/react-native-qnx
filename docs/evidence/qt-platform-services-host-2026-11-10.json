@@ -1,0 +1,666 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-10",
+  "scope": "Linux Qt host execution of public AccessibilityInfo and BackHandler through actual RN/Hermes/Fabric; synthetic Qt events and no target-device or spoken-output claim.",
+  "sourceCommit": "92e88b9111b29c9090f9bac63b906dad4cf10f74",
+  "sourceTree": "b4f17941d911f1e57f12667681c73345e3906fc8",
+  "equivalentLocalSourceCommit": "d7171f7ea379d3c12c1990d795ad754149133512",
+  "sourceSha256": {
+    "apps/rn-playground/platform-services-probe.js": "c8345c087563a0e6fc897594625997e3800ab22c17beec415fafc49967dcf571",
+    "tests/native/platform-services/RuntimeTest.cpp": "711c00ea7b3ab1d4176455a57c439cd334799817f57049da7dd69b1f0209eeac",
+    "vnext/src/fabric/QtPlatformViewAccessibility.cpp": "6ef7821e0a0ec5389e07296f588e0696ca12cae56659c99e8c35926f368e7483",
+    "vnext/src/fabric/QtViewAccessibility.cpp": "03240b8f9b1ffa67802cd359cfef88d5e3d9468f73bfe1a00367ff3479dbe2c0",
+    "vnext/src/runtime/QtAccessibilityInfoModule.cpp": "0a21f5f630aed55882a7d17ffa1c4e7b6fbcc32a5fd66e422199d169c5dcadbd",
+    "vnext/src/runtime/QtDeviceEventManagerModule.cpp": "91513ed5970db305999f44842de63e44bd068d0c49b62ed6439145142685eba3",
+    "vnext/src/fabric/QtPlatformViewServices.cpp": "c84ff5db8ba97296c7ed49719f51970cc104ab38977f8aca2c75277360e337fe",
+    "tests/native/platform-services/AccessibleViewTest.cpp": "e599eae744414d2a712ca6ba660a9c6b4b03f569a98b62ecce95c45318169df9",
+    "packages/react-native-qnx/Libraries/Components/AccessibilityInfo/AccessibilityInfo.js": "5f0ae28951c3cbb7d300f0f906433483902311933d689c6bbaa468f86dc56e15",
+    "packages/react-native-qnx/Libraries/Utilities/BackHandler.js": "025a5dface845229563a95abe384ad92f67a3880ec317af39421ba6f9dcacf1c",
+    "cmake/RnqnxPlatformServices.cmake": "1256e02a31a95d70dcaea264d49e3d0d75607dacbb97cfc1bd8b557329a576e4",
+    "pnpm-lock.yaml": "b854ebe2e50a42b2e8e07124df065592d99d43b1d1a3a984b66d3835ad86c3e4",
+    "tests/cpp/QtQuickMountingLayerHostTest.cpp": "51036cae2e8d9877bc387ec48130e415ee25a8ceb47f96486c696f533c55ec4d",
+    "vnext/include/react-native-qnx/fabric/QtQuickMountingLayer.h": "64149d0c61730a317583f97879b22e6ab747fe413a7e9da72c423f51d0b6d725",
+    "vnext/src/fabric/QtQuickMountingLayer.cpp": "4a64a5a7021f53807b13b9a725e75c64f4beb59f65f1e8853cf931356286e27a",
+    "vnext/include/react-native-qnx/fabric/ShadowViewMutationAdapter.h": "0edede2772b86e609caeabe25915e4f638021511d5e210ba006aa7649612bb93",
+    "vnext/src/fabric/ShadowViewMutationAdapter.cpp": "0f0fc5b582663e4fdc9ec5ae9e3a490b1562a4189174841e0ba71031235873ee",
+    "vnext/src/fabric/QtDesktopInput.cpp": "8b0059126db126356aeb4d4ba9028d3c73babe63025ee717033ddd496118aee0",
+    "vnext/src/fabric/QtDesktopInputEvents.cpp": "9f70c549ca5487777d7a8c02a08c154bc605e55d1318d2648214abae6e3c3855",
+    "vnext/src/runtime/QtReactHost.cpp": "6fee385fdcfcdeb373490ae02e96cdcd5f8facbd34e403f4a9372ea8e1b7884f",
+    "packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js": "6384506b7c8976251ea15dc7f6e96398af1e9aac990c323ae73677f31678fcdd",
+    "cmake/RnqnxDesktopInput.cmake": "b289caace995a02730eb39a1893318e8de4e616d9448f7e7a98d6b76434d7ac7",
+    "cmake/RnqnxReactQt.cmake": "ae3cdfb418a83544b7d8de38a688c88cd0468b93eee46d3cbb56640e787669cc",
+    "tests/cpp/ShadowViewMutationAdapterHostTest.cpp": "0033e18dd8722be7bd989dff55fbb7d3bfebf646fdb189bd2b0fffd1b7a9dcd2",
+    "tests/cpp/ShadowTreeMountingHostTest.cpp": "da957c67ecd05a6bb453b3dd34d99d853c9ddee53eb811c2dfcc8571f55cc603",
+    "CMakeLists.txt": "2d6db1928a4c5f82093cf1e4dcd9e87e6b966a9ff653f59e6e7ba4cf5a20a83c"
+  },
+  "toolchain": {
+    "os": "Linux x86_64",
+    "compiler": "GCC 14.2.0 Debian 14.2.0-19",
+    "qt": "6.11.1",
+    "cmake": "4.4.4",
+    "ninja": "1.13.2.git.kitware.jobserver-pipe-1",
+    "node": "26.13.0",
+    "reactNative": "0.88.1"
+  },
+  "configureArgv": [
+    "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+    "-S",
+    "/workspace/scratch/b6860f2a710f/react-native-qnx-parity",
+    "-B",
+    "/workspace/scratch/b6860f2a710f/qt-controls-host-build",
+    "-G",
+    "Ninja",
+    "-DCMAKE_MAKE_PROGRAM=/workspace/scratch/47ba65e0ccf9/qt-sdk-tools/bin/ninja",
+    "-DCMAKE_BUILD_TYPE=Debug",
+    "-DCMAKE_CXX_FLAGS_DEBUG=-O0 -g0",
+    "-DCMAKE_C_FLAGS_DEBUG=-O0 -g0",
+    "-DCMAKE_PREFIX_PATH=/workspace/scratch/47ba65e0ccf9/qt-native-sdk/6.11.1/gcc_64",
+    "-DRNQNX_BUILD_HERMES=ON",
+    "-DRNQNX_FETCH_REACT_NATIVE_DEPS=ON",
+    "-DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON",
+    "-DRNQNX_ENABLE_INPUT_LIFECYCLE=ON",
+    "-DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=ON",
+    "-DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=ON",
+    "-DRNQNX_ENABLE_PLATFORM_SERVICES=ON",
+    "-DRNQNX_BUILD_PLATFORM_SERVICES_TESTS=ON",
+    "-DRNQNX_ENABLE_DESKTOP_INPUT=ON",
+    "-DRNQNX_ENABLE_HOST_SANITIZERS=ON",
+    "-DFETCHCONTENT_FULLY_DISCONNECTED=ON",
+    "-DOPENGL_INCLUDE_DIR=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+    "-DOPENGL_GLX_INCLUDE_DIR=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+    "-DOPENGL_EGL_INCLUDE_DIR=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+    "-DOPENGL_opengl_LIBRARY=/usr/lib/x86_64-linux-gnu/libOpenGL.so.0",
+    "-DOPENGL_glx_LIBRARY=/usr/lib/x86_64-linux-gnu/libGLX.so.0",
+    "-DOPENGL_egl_LIBRARY=/usr/lib/x86_64-linux-gnu/libEGL.so.1",
+    "-DICU_INCLUDE_DIR=/workspace/scratch/5f29a2651a01/icu-dev/root/usr/include",
+    "-DICU_DATA_LIBRARY_RELEASE=/usr/lib/x86_64-linux-gnu/libicudata.so.76",
+    "-DICU_I18N_LIBRARY_RELEASE=/usr/lib/x86_64-linux-gnu/libicui18n.so.76",
+    "-DICU_UC_LIBRARY_RELEASE=/usr/lib/x86_64-linux-gnu/libicuuc.so.76",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FOLLY=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_folly-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_BOOST_CONFIG=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_boost_config-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_GLOG=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_glog-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FAST_FLOAT=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_fast_float-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_HERMES=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_hermes-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FMT=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_fmt-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_DOUBLE_CONVERSION=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_double_conversion-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_BOOST=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_boost-src",
+    "-DCMAKE_CXX_FLAGS=-Wno-error=pragmas -Wno-error=unknown-pragmas -Wno-error=subobject-linkage",
+    "-DCMAKE_PROJECT_INCLUDE=/workspace/scratch/b6860f2a710f/qt-host-gcc-local.cmake"
+  ],
+  "buildParallelism": 2,
+  "gccWarningExceptions": {
+    "global_CMAKE_CXX_FLAGS": [
+      "-Wno-error=pragmas",
+      "-Wno-error=unknown-pragmas",
+      "-Wno-error=subobject-linkage"
+    ],
+    "upstream_RN_targets_only": ["-Wno-error=return-type", "-Wno-error=changes-meaning"],
+    "jsinspector": ["-Wno-error=sign-compare", "-Wno-error=pessimizing-move"],
+    "react_renderer_mapbuffer": ["-Wno-error=sign-compare"],
+    "react_cxxreact": [
+      "-Wno-error=deprecated-declarations",
+      "-Wno-error=class-memaccess",
+      "-Wno-error=sign-compare"
+    ],
+    "react_renderer_uimanager": ["-Wno-error=deprecated-declarations", "-Wno-error=sign-compare"],
+    "react_renderer_animationbackend": ["-Wno-error=parentheses"],
+    "react_renderer_animated": ["-Wno-error=sign-compare"],
+    "react_renderer_observers_intersection": ["-Wno-error=deprecated-declarations"],
+    "react_nativemodule_core": ["-Wno-error=deprecated-declarations"],
+    "rrc_native": ["-Wno-error=pessimizing-move"]
+  },
+  "localCmakeInclude": {
+    "path": "/workspace/scratch/b6860f2a710f/qt-host-gcc-local.cmake",
+    "sha256": "b8824bfaecdb37778a5681cab125e89e9445c0be77b3a58175b9cc601853afc6",
+    "contents": "# Local host GCC14 workaround for unchanged pinned RN Utf8.h:37.\n# Repository native targets keep -Werror=sign-compare.\nif(PROJECT_NAME STREQUAL \"react-native-qnx\")\n  function(rnqnx_local_upstream_return_warning directory)\n    get_property(children DIRECTORY \"${directory}\" PROPERTY SUBDIRECTORIES)\n    foreach(child IN LISTS children)\n      rnqnx_local_upstream_return_warning(\"${child}\")\n    endforeach()\n    if(directory MATCHES \"/node_modules/react-native/\")\n      get_property(targets DIRECTORY \"${directory}\" PROPERTY BUILDSYSTEM_TARGETS)\n      foreach(target IN LISTS targets)\n        get_target_property(kind \"${target}\" TYPE)\n        if(NOT kind STREQUAL \"INTERFACE_LIBRARY\" AND NOT kind STREQUAL \"UTILITY\")\n          target_compile_options(\"${target}\" PRIVATE -Wno-error=return-type -Wno-error=changes-meaning)\n        endif()\n      endforeach()\n    endif()\n  endfunction()\n  function(rnqnx_local_gcc_workaround)\n    rnqnx_local_upstream_return_warning(\"${CMAKE_SOURCE_DIR}\")\n    if(TARGET jsinspector)\n      target_compile_options(jsinspector PRIVATE -Wno-error=sign-compare -Wno-error=pessimizing-move)\n    endif()\n    if(TARGET react_renderer_mapbuffer)\n      target_compile_options(react_renderer_mapbuffer PRIVATE -Wno-error=sign-compare)\n    endif()\n    if(TARGET react_renderer_core)\n      target_compile_options(react_renderer_core PRIVATE -Wno-error=return-type -Wno-error=changes-meaning)\n    endif()\n    if(TARGET react_cxxreact)\n      target_compile_options(react_cxxreact PRIVATE -Wno-error=deprecated-declarations -Wno-error=class-memaccess -Wno-error=sign-compare)\n    endif()\n    if(TARGET react_renderer_uimanager)\n      target_compile_options(react_renderer_uimanager PRIVATE -Wno-error=deprecated-declarations -Wno-error=sign-compare)\n    endif()\n    if(TARGET react_renderer_animationbackend)\n      target_compile_options(react_renderer_animationbackend PRIVATE -Wno-error=parentheses)\n    endif()\n    if(TARGET react_renderer_animated)\n      target_compile_options(react_renderer_animated PRIVATE -Wno-error=sign-compare)\n    endif()\n    if(TARGET react_renderer_observers_intersection)\n      target_compile_options(react_renderer_observers_intersection PRIVATE -Wno-error=deprecated-declarations)\n    endif()\n    if(TARGET react_nativemodule_core)\n      target_compile_options(react_nativemodule_core PRIVATE -Wno-error=deprecated-declarations)\n    endif()\n    if(TARGET rrc_native)\n      target_compile_options(rrc_native PRIVATE -Wno-error=pessimizing-move)\n    endif()\n  endfunction()\n  cmake_language(DEFER CALL rnqnx_local_gcc_workaround)\nendif()\n"
+  },
+  "noDependencySourceOrGeneratedGraphEdits": true,
+  "sanitizers": "The platform-services RuntimeTest and QtQuickMountingLayerHostTest executables are instrumented according to RNQNX_ENABLE_HOST_SANITIZERS. Framework/native static libraries are not globally instrumented. The pure Qt semantic-tree, ShadowViewMutationAdapterHostTest and ShadowTreeMountingHostTest executables are not sanitizer-instrumented. ASan leak detection is disabled; address/undefined checks halt on error in instrumented tests.",
+  "enabledRun": {
+    "configuration": {
+      "platformServices": "ON",
+      "desktopInput": "ON",
+      "inputLifecycle": "ON",
+      "accessibilityBridge": "ON",
+      "textInputContract": "ON",
+      "hostSanitizers": "ON"
+    },
+    "buildTargets": [
+      "rnqnx_platform_services_test",
+      "rnqnx_platform_accessible_view_test",
+      "qtquick_mounting_layer_host_test"
+    ],
+    "artifactSha256": {
+      "bin/rnqnx_platform_services_test": "75d572f266812136756075c67f456ed748f643a77af3fd2de6b250621f5216a8",
+      "rnqnx_platform_accessible_view_test": "8148abf6c3ed7380745469c0869c2cf9ed61d3ed7794058e0bfd198f500800b3",
+      "bin/qtquick_mounting_layer_host_test": "f585b0619037d264706f8419d34b0f2323f9e64caade996872e3f9bea21e9cc5",
+      "rnqnx-platform-services-qnx.bundle.js": "b98d57f3cc5b11efcdb76a005b540d241b822532a1db0dcc6a59bbfd5add4593",
+      "rnqnx-platform-services-marathon.bundle.js": "826e048d0f90aec7ee329bc6faffb295f331b7958ed22726a354519083c17684",
+      "hermes/lib/libhermesvm.so": "fa2e851cfb98056635c8f86a19f2b3cad10506d49536c47e9814f18320fe36fb"
+    },
+    "suite": {
+      "receipt": "qt-platform-services-final-on.xml",
+      "sha256": "836db6ac4d3407e6789fbd6c555c387b43f18f3637e0a0c3d523f02387bb38e4",
+      "timestamp": "2026-11-10T10:51:07",
+      "testCount": 4,
+      "passed": 4,
+      "tests": [
+        {
+          "name": "rnqnx_platform_accessible_view",
+          "result": "passed",
+          "seconds": 0.0338488,
+          "output": "QT_PLATFORM_ACCESSIBLE_VIEW_OK tree roles actions focus disabled generation delete device=0\n"
+        },
+        {
+          "name": "rnqnx_platform_services_qnx",
+          "result": "passed",
+          "seconds": 1.59108,
+          "output": "Running \"RNQnxPlatformServicesProbe\"\nWARNING: Logging before InitGoogleLogging() is written to STDERR\nI1110 10:51:08.996587 3105964608 UIManagerBinding.cpp:150] instanceHandle is null, event of type topBlur will be dropped\nW1110 10:51:09.001133 3105964608 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000034d0).\nW1110 10:51:09.001914 2989176512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000148d0).\nW1110 10:51:09.002107 2989176512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).\nW1110 10:51:09.056847 3105964608 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000bd3d0).\nW1110 10:51:09.057173 2989176512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200011c450).\nW1110 10:51:09.057206 2989176512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000289e50).\nQT_PLATFORM_SERVICES_OK platform=qnx enabled=1 real-rn=1 synthetic-qt=1 device=...\n[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]\n"
+        },
+        {
+          "name": "rnqnx_platform_services_marathon",
+          "result": "passed",
+          "seconds": 1.57886,
+          "output": "Running \"RNQnxPlatformServicesProbe\"\nWARNING: Logging before InitGoogleLogging() is written to STDERR\nI1110 10:51:10.576591 970867264 UIManagerBinding.cpp:150] instanceHandle is null, event of type topBlur will be dropped\nW1110 10:51:10.580907 970867264 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000034d0).\nW1110 10:51:10.581486 854275776 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000148d0).\nW1110 10:51:10.581571 854275776 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).\nW1110 10:51:10.636045 970867264 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000bd3d0).\nW1110 10:51:10.636605 854275776 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200011c5d0).\nW1110 10:51:10.636674 854275776 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400028a050).\nQT_PLATFORM_SERVICES_OK platform=marathon enabled=1 real-rn=1 synthetic-qt=1 device=0\n"
+        },
+        {
+          "name": "qtquick_mounting_layer_host_test",
+          "result": "passed",
+          "seconds": 0.0930962,
+          "output": "[PASS] rootIsMountedButNotOwned\n[PASS] createLeavesItemUnparented\n[PASS] insertParentsAndOrdersChildren\n[PASS] insertRejectsBadArguments\n[PASS] fabricIndicesExcludeQmlDecorations\n[PASS] removeDetachesWithoutDestroying\n[PASS] removeRejectsIndexDisagreement\n[PASS] destroyReleasesTagAndItem\n[PASS] destroyDetachesStillMountedItem\n[PASS] nestedTreeIsTornDownWithTheLayer\n[PASS] updateLayoutAppliesAbsoluteGeometry\n[PASS] modalPortalEscapesClippedLogicalAncestor\n[PASS] modalLogicalIndicesStayIndependentOfVisualSiblings\n[PASS] modalRemoveRejectsUnexpectedVisualParent\n[PASS] modalDeleteWithoutRemoveClearsPortalAndAllowsTagReuse\n[PASS] modalPortalIsTornDownWithTheLayer\n[PASS] unregisteredComponentTypeFails\n[PASS] brokenQmlSourceFails\n[PASS] nonItemTypeFails\n[PASS] duplicateTagFails\n[PASS] reregisteringATypeReplacesIt\nAll 21 QtQuickMountingLayer host tests passed.\n"
+        }
+      ],
+      "junitReportedSeconds": 3.0,
+      "sumTestSeconds": 3.296885,
+      "ctestReportedWallSeconds": 3.32
+    },
+    "mountingCaseCount": 21,
+    "newPortalMountingCases": 5,
+    "newModalRuntimeChecks": [
+      "Actual public RN Modal declared within an offset, clipped 180x120 View escapes that ancestor at the window origin.",
+      "Full-flex child reports real Yoga/onLayout size 320x240, then 480x360 after window resize.",
+      "onShow fires once while resizing the same presentation.",
+      "System Back reaches Modal onRequestClose and teardown instead of global BackHandler.",
+      "A second presentation produces exactly one further onShow.",
+      "React removes the Modal after root resize is queued but before the Qt sizing callback; no late callback revives the portal or dispatches onShow."
+    ],
+    "buildArgv": [
+      "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+      "--build",
+      "/workspace/scratch/b6860f2a710f/qt-controls-host-build",
+      "--parallel",
+      "2",
+      "--target",
+      "rnqnx_platform_services_test",
+      "rnqnx_platform_accessible_view_test",
+      "qtquick_mounting_layer_host_test"
+    ],
+    "buildLog": {
+      "file": "qt-platform-services-final-on-build.log",
+      "bytes": 4755,
+      "sha256": "3949ec029a5f1a57aa9cb462f24165c9753928dd8032cf34af0b01a708639d6b",
+      "exitCode": 0
+    },
+    "ctestArgv": [
+      "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/ctest",
+      "--test-dir",
+      "/workspace/scratch/b6860f2a710f/qt-controls-host-build",
+      "-R",
+      "^(rnqnx_platform_(services_qnx|services_marathon|accessible_view)|qtquick_mounting_layer_host_test)$",
+      "--output-on-failure",
+      "--output-junit",
+      "/workspace/scratch/b6860f2a710f/qt-platform-services-final-on.xml"
+    ]
+  },
+  "priorAccessibilityRegressionRun": {
+    "scope": "Historical run before the final desktop-pointer and Modal changes; retained separately and not represented as the final source binary.",
+    "baseCommit": "ccd92b58cdc1753d6182b46c69c1da43217d18a6",
+    "appliedSourceChanges": [
+      "apps/rn-playground/platform-services-probe.js",
+      "tests/native/platform-services/RuntimeTest.cpp",
+      "vnext/src/fabric/QtPlatformViewAccessibility.cpp",
+      "vnext/src/fabric/QtViewAccessibility.cpp"
+    ],
+    "appliedSourceDiffSha256": "99178fe9facbf57c0e158063c6bcfed877777c5a8690d379b24617cc31a50e87",
+    "sourceSha256": {
+      "apps/rn-playground/platform-services-probe.js": "fed38f09cac5b1d0ed9d349c8fbd7cceea126a884fccc01cf26aa1ce99c86757",
+      "tests/native/platform-services/RuntimeTest.cpp": "36e0621974118b1d251337660d3be4a993c59350c2dc4c3b5d00b352eb29456a",
+      "vnext/src/fabric/QtPlatformViewAccessibility.cpp": "6ef7821e0a0ec5389e07296f588e0696ca12cae56659c99e8c35926f368e7483",
+      "vnext/src/fabric/QtViewAccessibility.cpp": "03240b8f9b1ffa67802cd359cfef88d5e3d9468f73bfe1a00367ff3479dbe2c0",
+      "vnext/src/runtime/QtAccessibilityInfoModule.cpp": "0a21f5f630aed55882a7d17ffa1c4e7b6fbcc32a5fd66e422199d169c5dcadbd",
+      "vnext/src/runtime/QtDeviceEventManagerModule.cpp": "91513ed5970db305999f44842de63e44bd068d0c49b62ed6439145142685eba3",
+      "vnext/src/fabric/QtPlatformViewServices.cpp": "c84ff5db8ba97296c7ed49719f51970cc104ab38977f8aca2c75277360e337fe",
+      "tests/native/platform-services/AccessibleViewTest.cpp": "e599eae744414d2a712ca6ba660a9c6b4b03f569a98b62ecce95c45318169df9",
+      "packages/react-native-qnx/Libraries/Components/AccessibilityInfo/AccessibilityInfo.js": "5f0ae28951c3cbb7d300f0f906433483902311933d689c6bbaa468f86dc56e15",
+      "packages/react-native-qnx/Libraries/Utilities/BackHandler.js": "025a5dface845229563a95abe384ad92f67a3880ec317af39421ba6f9dcacf1c",
+      "cmake/RnqnxPlatformServices.cmake": "1256e02a31a95d70dcaea264d49e3d0d75607dacbb97cfc1bd8b557329a576e4",
+      "pnpm-lock.yaml": "b854ebe2e50a42b2e8e07124df065592d99d43b1d1a3a984b66d3835ad86c3e4"
+    },
+    "artifactSha256": {
+      "bin/rnqnx_accessibility_action_probe": "773b49835338373739b918d5c982aeafdf4f7e4a716efd64d0d2429beb524a0f",
+      "bin/rnqnx_accessibility_action_native_test": "da2e1f7124b082b76e9dc9ae1661af7d2d07dacb862f994b24f5320a34549d2c",
+      "rnqnx_accessibility_view_test": "07c4197264865d17303be6336c1feeaa28f8b0542ed302314994fb9d01cbe64b",
+      "rnqnx-accessibility-action-probe.bundle.js": "0f06a3b68ae127bb9efd7228386cb53562451115e18299828085dca257a28f1c",
+      "hermes/lib/libhermesvm.so": "fa2e851cfb98056635c8f86a19f2b3cad10506d49536c47e9814f18320fe36fb"
+    },
+    "suite": {
+      "receipt": "qt-accessibility-regression-on.xml",
+      "sha256": "7d8b8081bb0aa919d1c23d3cec12585d54d895003bb33a00c26955eec84e6136",
+      "timestamp": "2026-11-10T10:08:35",
+      "testCount": 5,
+      "passed": 5,
+      "tests": [
+        {
+          "name": "rnqnx_accessibility_action_probe",
+          "result": "passed",
+          "seconds": 1.36429,
+          "output": "Running \"RNQnxAccessibilityActionProbe\"\nRunning \"RNQnxAccessibilityActionProbe\"\nWARNING: Logging before InitGoogleLogging() is written to STDERR\nE1110 10:08:36.851871 413545024 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 3 components out of 6\nW1110 10:08:36.852826 413545024 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000034d0).\nW1110 10:08:36.853128 298800832 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000145d0).\nW1110 10:08:36.853173 298800832 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003250).\nRNQNX_ACCESSIBILITY_ACTION_OK react activate guards label teardown remount\n"
+        },
+        {
+          "name": "rnqnx_accessibility_action_native_test",
+          "result": "passed",
+          "seconds": 0.0403287,
+          "output": "RNQNX_ACCESSIBILITY_ACTION_NATIVE_OK press guards generation invalidate delete\n"
+        },
+        {
+          "name": "rnqnx_accessibility_action_rejects_interception",
+          "result": "passed",
+          "seconds": 3.10007,
+          "output": "-- Accessibility action interception rejected at the JavaScript boundary\n"
+        },
+        {
+          "name": "rnqnx_accessibility_action_rejects_registration",
+          "result": "passed",
+          "seconds": 1.2108,
+          "output": "-- Unsupported accessibility action registration rejected explicitly\n"
+        },
+        {
+          "name": "rnqnx_accessibility_view_test",
+          "result": "passed",
+          "seconds": 0.0332172,
+          "output": "RNQNX_ACCESSIBILITY_VIEW_OK tree identity state update clear reject delete\n"
+        }
+      ],
+      "junitReportedSeconds": 5.0,
+      "sumTestSeconds": 5.7487059,
+      "ctestReportedWallSeconds": 5.75
+    },
+    "diagnostic": "The passing same-surface stop/remount action probe logged the RN LeakChecker diagnostic: Surface with id: 11 has leaked 3 components out of 6. This is retained as a diagnostic; the run is not claimed warning-free.",
+    "initialReceiptSha256": "4b99783befaf97246b12a97f79f6db6fdf7b7929bb01514665f4649775643632"
+  },
+  "providerDisabledRun": {
+    "scope": "Platform services OFF with desktop input retained ON; this is the mixed-feature ABI/provider-negative configuration, not the all-options-OFF matrix.",
+    "configuration": {
+      "platformServices": "OFF",
+      "desktopInput": "ON",
+      "inputLifecycle": "ON",
+      "accessibilityBridge": "ON",
+      "textInputContract": "ON",
+      "hostSanitizers": "ON"
+    },
+    "configureArgv": [
+      "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+      "-S",
+      "/workspace/scratch/b6860f2a710f/react-native-qnx-parity",
+      "-B",
+      "/workspace/scratch/b6860f2a710f/qt-controls-host-build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/workspace/scratch/47ba65e0ccf9/qt-sdk-tools/bin/ninja",
+      "-DCMAKE_BUILD_TYPE=Debug",
+      "-DCMAKE_CXX_FLAGS_DEBUG=-O0 -g0",
+      "-DCMAKE_C_FLAGS_DEBUG=-O0 -g0",
+      "-DCMAKE_PREFIX_PATH=/workspace/scratch/47ba65e0ccf9/qt-native-sdk/6.11.1/gcc_64",
+      "-DRNQNX_BUILD_HERMES=ON",
+      "-DRNQNX_FETCH_REACT_NATIVE_DEPS=ON",
+      "-DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON",
+      "-DRNQNX_ENABLE_INPUT_LIFECYCLE=ON",
+      "-DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=ON",
+      "-DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=ON",
+      "-DRNQNX_ENABLE_PLATFORM_SERVICES=OFF",
+      "-DRNQNX_BUILD_PLATFORM_SERVICES_TESTS=ON",
+      "-DRNQNX_ENABLE_DESKTOP_INPUT=ON",
+      "-DRNQNX_ENABLE_HOST_SANITIZERS=ON",
+      "-DFETCHCONTENT_FULLY_DISCONNECTED=ON",
+      "-DOPENGL_INCLUDE_DIR=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+      "-DOPENGL_GLX_INCLUDE_DIR=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+      "-DOPENGL_EGL_INCLUDE_DIR=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+      "-DOPENGL_opengl_LIBRARY=/usr/lib/x86_64-linux-gnu/libOpenGL.so.0",
+      "-DOPENGL_glx_LIBRARY=/usr/lib/x86_64-linux-gnu/libGLX.so.0",
+      "-DOPENGL_egl_LIBRARY=/usr/lib/x86_64-linux-gnu/libEGL.so.1",
+      "-DICU_INCLUDE_DIR=/workspace/scratch/5f29a2651a01/icu-dev/root/usr/include",
+      "-DICU_DATA_LIBRARY_RELEASE=/usr/lib/x86_64-linux-gnu/libicudata.so.76",
+      "-DICU_I18N_LIBRARY_RELEASE=/usr/lib/x86_64-linux-gnu/libicui18n.so.76",
+      "-DICU_UC_LIBRARY_RELEASE=/usr/lib/x86_64-linux-gnu/libicuuc.so.76",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FOLLY=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_folly-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_BOOST_CONFIG=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_boost_config-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_GLOG=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_glog-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FAST_FLOAT=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_fast_float-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_HERMES=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_hermes-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FMT=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_fmt-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_DOUBLE_CONVERSION=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_double_conversion-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_BOOST=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_boost-src",
+      "-DCMAKE_CXX_FLAGS=-Wno-error=pragmas -Wno-error=unknown-pragmas -Wno-error=subobject-linkage",
+      "-DCMAKE_PROJECT_INCLUDE=/workspace/scratch/b6860f2a710f/qt-host-gcc-local.cmake"
+    ],
+    "buildTargets": ["rnqnx_platform_services_test", "qtquick_mounting_layer_host_test"],
+    "artifactSha256": {
+      "bin/rnqnx_platform_services_test": "0870592560f9d3032d7402e314d31bfb2fec3aa718f6c789d43dfafc9c1099b2",
+      "bin/qtquick_mounting_layer_host_test": "0e9470699a128ca4c7dcb7527e337ad903575b909bc60bce4281ac3fe0f9f68f",
+      "rnqnx-platform-services-qnx.bundle.js": "b98d57f3cc5b11efcdb76a005b540d241b822532a1db0dcc6a59bbfd5add4593",
+      "rnqnx-platform-services-marathon.bundle.js": "826e048d0f90aec7ee329bc6faffb295f331b7958ed22726a354519083c17684",
+      "hermes/lib/libhermesvm.so": "fa2e851cfb98056635c8f86a19f2b3cad10506d49536c47e9814f18320fe36fb"
+    },
+    "suite": {
+      "receipt": "qt-platform-services-mixed-off.xml",
+      "sha256": "2f5b56b0c954c880dea7fc2021356c7b12aedd78c502be2608447e294a890b04",
+      "timestamp": "2026-11-10T10:57:56",
+      "testCount": 3,
+      "passed": 3,
+      "tests": [
+        {
+          "name": "rnqnx_platform_services_qnx",
+          "result": "passed",
+          "seconds": 0.767601,
+          "output": "WARNING: Logging before InitGoogleLogging() is written to STDERR\nW1110 10:57:57.633841 954602048 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000034d0).\nW1110 10:57:57.634287 859829952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000148d0).\nW1110 10:57:57.634321 859829952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).\nQT_PLATFORM_SERVICES_OK platform=qnx enabled=0 real-rn=1 synthetic-qt=1 device=0\n"
+        },
+        {
+          "name": "rnqnx_platform_services_marathon",
+          "result": "passed",
+          "seconds": 0.757065,
+          "output": "WARNING: Logging before InitGoogleLogging() is written to STDERR\nW1110 10:57:58.391451 1500906048 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000034d0).\nW1110 10:57:58.391939 1405089472 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000148d0).\nW1110 10:57:58.391974 1405089472 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).\nQT_PLATFORM_SERVICES_OK platform=marathon enabled=0 real-rn=1 synthetic-qt=1 device=0\n"
+        },
+        {
+          "name": "qtquick_mounting_layer_host_test",
+          "result": "passed",
+          "seconds": 0.0959725,
+          "output": "[PASS] rootIsMountedButNotOwned\n[PASS] createLeavesItemUnparented\n[PASS] insertParentsAndOrdersChildren\n[PASS] insertRejectsBadArguments\n[PASS] fabricIndicesExcludeQmlDecorations\n[PASS] removeDetachesWithoutDestroying\n[PASS] removeRejectsIndexDisagreement\n[PASS] destroyReleasesTagAndItem\n[PASS] destroyDetachesStillMountedItem\n[PASS] nestedTreeIsTornDownWithTheLayer\n[PASS] updateLayoutAppliesAbsoluteGeometry\n[PASS] modalPortalEscapesClippedLogicalAncestor\n[PASS] modalLogicalIndicesStayIndependentOfVisualSiblings\n[PASS] modalRemoveRejectsUnexpectedVisualParent\n[PASS] modalDeleteWithoutRemoveClearsPortalAndAllowsTagReuse\n[PASS] modalPortalIsTornDownWithTheLayer\n[PASS] unregisteredComponentTypeFails\n[PASS] brokenQmlSourceFails\n[PASS] nonItemTypeFails\n[PASS] duplicateTagFails\n[PASS] reregisteringATypeReplacesIt\nAll 21 QtQuickMountingLayer host tests passed.\n"
+        }
+      ],
+      "junitReportedSeconds": 1.0,
+      "sumTestSeconds": 1.6206385,
+      "ctestReportedWallSeconds": 1.64
+    },
+    "mountingCaseCount": 21,
+    "checks": [
+      "Public imports initialize in both actual QNX and Marathon Metro/Hermes graphs with services absent.",
+      "isScreenReaderEnabled rejects with ERR_QT_ACCESSIBILITY_UNAVAILABLE.",
+      "An unavailable BackHandler subscription throws an Error naming RNQNX_ENABLE_PLATFORM_SERVICES.",
+      "Unsupported reduced-motion query retains ERR_QT_ACCESSIBILITY_UNSUPPORTED.",
+      "All 21 mounting cases, including the five portal cases, still pass through the desktop-enabled shared class layout."
+    ],
+    "buildArgv": [
+      "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+      "--build",
+      "/workspace/scratch/b6860f2a710f/qt-controls-host-build",
+      "--parallel",
+      "2",
+      "--target",
+      "rnqnx_platform_services_test",
+      "qtquick_mounting_layer_host_test"
+    ],
+    "buildLog": {
+      "file": "qt-platform-services-mixed-off-build.log",
+      "bytes": 7495,
+      "sha256": "11e18c4e91a8d8f5b9b068eab921c7bcd8be1d275efbaacda52e4ff936778c3f",
+      "exitCode": 0
+    },
+    "ctestArgv": [
+      "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/ctest",
+      "--test-dir",
+      "/workspace/scratch/b6860f2a710f/qt-controls-host-build",
+      "-R",
+      "^(rnqnx_platform_services_(qnx|marathon)|qtquick_mounting_layer_host_test)$",
+      "--output-on-failure",
+      "--output-junit",
+      "/workspace/scratch/b6860f2a710f/qt-platform-services-mixed-off.xml"
+    ]
+  },
+  "restoredEnabledRun": {
+    "status": "passed",
+    "configuration": {
+      "platformServices": "ON",
+      "desktopInput": "ON",
+      "inputLifecycle": "ON",
+      "accessibilityBridge": "ON",
+      "textInputContract": "ON",
+      "hostSanitizers": "ON"
+    },
+    "buildTargets": [
+      "rnqnx_platform_services_test",
+      "rnqnx_platform_accessible_view_test",
+      "qtquick_mounting_layer_host_test",
+      "rnqnx_qt_controls_consumer"
+    ],
+    "artifactSha256": {
+      "bin/rnqnx_platform_services_test": "75d572f266812136756075c67f456ed748f643a77af3fd2de6b250621f5216a8",
+      "rnqnx_platform_accessible_view_test": "8148abf6c3ed7380745469c0869c2cf9ed61d3ed7794058e0bfd198f500800b3",
+      "bin/qtquick_mounting_layer_host_test": "f585b0619037d264706f8419d34b0f2323f9e64caade996872e3f9bea21e9cc5",
+      "rnqnx-platform-services-qnx.bundle.js": "b98d57f3cc5b11efcdb76a005b540d241b822532a1db0dcc6a59bbfd5add4593",
+      "rnqnx-platform-services-marathon.bundle.js": "826e048d0f90aec7ee329bc6faffb295f331b7958ed22726a354519083c17684",
+      "hermes/lib/libhermesvm.so": "fa2e851cfb98056635c8f86a19f2b3cad10506d49536c47e9814f18320fe36fb"
+    },
+    "artifactsEqualToInitialEnabledRun": true,
+    "suite": {
+      "receipt": "qt-platform-services-restored-on.xml",
+      "sha256": "20905000caa719c1fafb4a37ed1a40f182893aa86e25db965cb31f3ace9b8ac7",
+      "timestamp": "2026-11-10T11:00:16",
+      "testCount": 4,
+      "passed": 4,
+      "tests": [
+        {
+          "name": "rnqnx_platform_accessible_view",
+          "result": "passed",
+          "seconds": 0.0486159,
+          "output": "QT_PLATFORM_ACCESSIBLE_VIEW_OK tree roles actions focus disabled generation delete device=0\n"
+        },
+        {
+          "name": "rnqnx_platform_services_qnx",
+          "result": "passed",
+          "seconds": 1.60823,
+          "output": "Running \"RNQnxPlatformServicesProbe\"\nWARNING: Logging before InitGoogleLogging() is written to STDERR\nI1110 11:00:17.868351 1396228672 UIManagerBinding.cpp:150] instanceHandle is null, event of type topBlur will be dropped\nW1110 11:00:17.873099 1396228672 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000034d0).\nW1110 11:00:17.873576 1279317696 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000148d0).\nW1110 11:00:17.873623 1279317696 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).\nW1110 11:00:17.927340 1396228672 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000bd3d0).\nW1110 11:00:17.927690 1279317696 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200011c450).\nW1110 11:00:17.927723 1279317696 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000289e50).\nQT_PLATFORM_SERVICES_OK platform=qnx enabled=1 real-rn=1 synthetic-qt=1 device=...\n[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]\n"
+        },
+        {
+          "name": "rnqnx_platform_services_marathon",
+          "result": "passed",
+          "seconds": 1.6309,
+          "output": "Running \"RNQnxPlatformServicesProbe\"\nWARNING: Logging before InitGoogleLogging() is written to STDERR\nI1110 11:00:19.497088 1809531456 UIManagerBinding.cpp:150] instanceHandle is null, event of type topBlur will be dropped\nW1110 11:00:19.501672 1809531456 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000034d0).\nW1110 11:00:19.502303 1693136576 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000148d0).\nW1110 11:00:19.502374 1693136576 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).\nW1110 11:00:19.558183 1809531456 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000bd3d0).\nW1110 11:00:19.558665 1693136576 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200011c5d0).\nW1110 11:00:19.558729 1693136576 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400028a050).\nQT_PLATFORM_SERVICES_OK platform=marathon enabled=1 real-rn=1 synthetic-qt=1 de...\n[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]\n"
+        },
+        {
+          "name": "qtquick_mounting_layer_host_test",
+          "result": "passed",
+          "seconds": 0.0905852,
+          "output": "[PASS] rootIsMountedButNotOwned\n[PASS] createLeavesItemUnparented\n[PASS] insertParentsAndOrdersChildren\n[PASS] insertRejectsBadArguments\n[PASS] fabricIndicesExcludeQmlDecorations\n[PASS] removeDetachesWithoutDestroying\n[PASS] removeRejectsIndexDisagreement\n[PASS] destroyReleasesTagAndItem\n[PASS] destroyDetachesStillMountedItem\n[PASS] nestedTreeIsTornDownWithTheLayer\n[PASS] updateLayoutAppliesAbsoluteGeometry\n[PASS] modalPortalEscapesClippedLogicalAncestor\n[PASS] modalLogicalIndicesStayIndependentOfVisualSiblings\n[PASS] modalRemoveRejectsUnexpectedVisualParent\n[PASS] modalDeleteWithoutRemoveClearsPortalAndAllowsTagReuse\n[PASS] modalPortalIsTornDownWithTheLayer\n[PASS] unregisteredComponentTypeFails\n[PASS] brokenQmlSourceFails\n[PASS] nonItemTypeFails\n[PASS] duplicateTagFails\n[PASS] reregisteringATypeReplacesIt\nAll 21 QtQuickMountingLayer host tests passed.\n"
+        }
+      ],
+      "junitReportedSeconds": 3.0,
+      "sumTestSeconds": 3.3783311,
+      "ctestReportedWallSeconds": 3.4
+    },
+    "mountingCaseCount": 21,
+    "consumerRestoredSha256": "5e2402d0b40e30d77db85c24f14138ca150ab556fb59ab2be7de8540003a9706",
+    "buildArgv": [
+      "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+      "--build",
+      "/workspace/scratch/b6860f2a710f/qt-controls-host-build",
+      "--parallel",
+      "2",
+      "--target",
+      "rnqnx_platform_services_test",
+      "rnqnx_platform_accessible_view_test",
+      "qtquick_mounting_layer_host_test",
+      "rnqnx_qt_controls_consumer"
+    ],
+    "buildLog": {
+      "file": "qt-platform-services-restored-on-build.log",
+      "bytes": 7811,
+      "sha256": "6f21320e1ab96e67e4d0ddaec97191f81d6a84a4bf78bb3116c842c5d1508ee9",
+      "exitCode": 0
+    },
+    "ctestArgv": [
+      "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/ctest",
+      "--test-dir",
+      "/workspace/scratch/b6860f2a710f/qt-controls-host-build",
+      "-R",
+      "^(rnqnx_platform_(services_qnx|services_marathon|accessible_view)|qtquick_mounting_layer_host_test)$",
+      "--output-on-failure",
+      "--output-junit",
+      "/workspace/scratch/b6860f2a710f/qt-platform-services-restored-on.xml"
+    ]
+  },
+  "deviceEvidence": false,
+  "spokenOutputEvidence": false,
+  "physicalKeyboardEvidence": false,
+  "ctestSelection": {
+    "enabled": "^(rnqnx_platform_(services_qnx|services_marathon|accessible_view)|qtquick_mounting_layer_host_test)$",
+    "providerDisabled": "^(rnqnx_platform_services_(qnx|marathon)|qtquick_mounting_layer_host_test)$"
+  },
+  "sourceRepository": "mikevocalz/react-native-qnx",
+  "limits": [
+    "QNX and Marathon refer to the real public JavaScript identities bundled for each target. Both native executions use the Linux Qt offscreen host, not a QNX Screen or Marathon Wayland device.",
+    "Activation changes, contrast signals and key events are injected through real public Qt APIs for deterministic tests; no operating-system setting or physical keyboard is exercised.",
+    "Announcements are observed at Qt delivery; no screen-reader speech or announcement completion is established.",
+    "Registered accessibility actions and mapped roles are proven only within the tested contract. A role does not add an arbitrary numeric value setter, editable text implementation, table model or selection model.",
+    "ASan leak detection is disabled. Instrumentation covers only the explicitly instrumented platform-services runtime and QtQuickMountingLayer test executables; it is not complete library instrumentation.",
+    "The historical accessibility regression suite predates the final source and contains the retained RN LeakChecker remount diagnostic.",
+    "The provider-disabled local configuration retains desktop input ON. It does not replace the independent hosted all-options-OFF matrix.",
+    "All native feature flags retain their default OFF values."
+  ],
+  "testInvocation": {
+    "serviceEnvironment": {
+      "QT_QPA_PLATFORM": "offscreen",
+      "QT_QUICK_BACKEND": "software",
+      "QT_LINUX_ACCESSIBILITY_ALWAYS_ON": "1",
+      "ASAN_OPTIONS": "detect_leaks=0:halt_on_error=1",
+      "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+    },
+    "pureQtSemanticTreeEnvironment": {
+      "QT_QPA_PLATFORM": "offscreen",
+      "QT_QUICK_BACKEND": "software"
+    },
+    "mountingArguments": ["-platform", "offscreen"],
+    "mountingEnvironment": {
+      "ASAN_OPTIONS": "detect_leaks=0:halt_on_error=1",
+      "UBSAN_OPTIONS": "halt_on_error=1"
+    },
+    "buildPathPrefix": "/workspace/scratch/5f29a2651a01/task-tools/node_modules/.bin:/workspace/scratch/47ba65e0ccf9/qt-sdk-tools/bin",
+    "remainingEnvironment": "Inherited process environment; the CTest per-test settings above control Qt backend and sanitizer options."
+  },
+  "currentRunDiagnostics": "The three final configuration runs contain the normal RN scheduler/UIManager teardown warnings shown in their embedded output, and no unsupported-role, RN LeakChecker, ASan or UBSan error diagnostic. This does not convert the runs into physical-device or fully instrumented-library acceptance.",
+  "restoreConfigureArgv": [
+    "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+    "-S",
+    "/workspace/scratch/b6860f2a710f/react-native-qnx-parity",
+    "-B",
+    "/workspace/scratch/b6860f2a710f/qt-controls-host-build",
+    "-G",
+    "Ninja",
+    "-DCMAKE_MAKE_PROGRAM=/workspace/scratch/47ba65e0ccf9/qt-sdk-tools/bin/ninja",
+    "-DCMAKE_BUILD_TYPE=Debug",
+    "-DCMAKE_CXX_FLAGS_DEBUG=-O0 -g0",
+    "-DCMAKE_C_FLAGS_DEBUG=-O0 -g0",
+    "-DCMAKE_PREFIX_PATH=/workspace/scratch/47ba65e0ccf9/qt-native-sdk/6.11.1/gcc_64",
+    "-DRNQNX_BUILD_HERMES=ON",
+    "-DRNQNX_FETCH_REACT_NATIVE_DEPS=ON",
+    "-DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON",
+    "-DRNQNX_ENABLE_INPUT_LIFECYCLE=ON",
+    "-DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=ON",
+    "-DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=ON",
+    "-DRNQNX_ENABLE_PLATFORM_SERVICES=ON",
+    "-DRNQNX_BUILD_PLATFORM_SERVICES_TESTS=ON",
+    "-DRNQNX_ENABLE_DESKTOP_INPUT=ON",
+    "-DRNQNX_ENABLE_HOST_SANITIZERS=ON",
+    "-DFETCHCONTENT_FULLY_DISCONNECTED=ON",
+    "-DOPENGL_INCLUDE_DIR=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+    "-DOPENGL_GLX_INCLUDE_DIR=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+    "-DOPENGL_EGL_INCLUDE_DIR=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+    "-DOPENGL_opengl_LIBRARY=/usr/lib/x86_64-linux-gnu/libOpenGL.so.0",
+    "-DOPENGL_glx_LIBRARY=/usr/lib/x86_64-linux-gnu/libGLX.so.0",
+    "-DOPENGL_egl_LIBRARY=/usr/lib/x86_64-linux-gnu/libEGL.so.1",
+    "-DICU_INCLUDE_DIR=/workspace/scratch/5f29a2651a01/icu-dev/root/usr/include",
+    "-DICU_DATA_LIBRARY_RELEASE=/usr/lib/x86_64-linux-gnu/libicudata.so.76",
+    "-DICU_I18N_LIBRARY_RELEASE=/usr/lib/x86_64-linux-gnu/libicui18n.so.76",
+    "-DICU_UC_LIBRARY_RELEASE=/usr/lib/x86_64-linux-gnu/libicuuc.so.76",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FOLLY=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_folly-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_BOOST_CONFIG=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_boost_config-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_GLOG=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_glog-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FAST_FLOAT=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_fast_float-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_HERMES=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_hermes-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FMT=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_fmt-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_DOUBLE_CONVERSION=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_double_conversion-src",
+    "-DFETCHCONTENT_SOURCE_DIR_RNQNX_BOOST=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_boost-src",
+    "-DCMAKE_CXX_FLAGS=-Wno-error=pragmas -Wno-error=unknown-pragmas -Wno-error=subobject-linkage",
+    "-DCMAKE_PROJECT_INCLUDE=/workspace/scratch/b6860f2a710f/qt-host-gcc-local.cmake"
+  ],
+  "ordinaryFabricMountingRun": {
+    "scope": "Additional existing regressions for ordinary Create/Insert/Update/Remove/Delete mutations and real ShadowTree commits after logical child-order tracking changed. Same final source and restored ON configuration.",
+    "configuration": {
+      "platformServices": "ON",
+      "desktopInput": "ON",
+      "inputLifecycle": "ON",
+      "accessibilityBridge": "ON",
+      "textInputContract": "ON",
+      "hostSanitizers": "ON"
+    },
+    "buildTargets": ["shadow_view_mutation_adapter_host_test", "shadow_tree_mounting_host_test"],
+    "buildArgv": [
+      "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+      "--build",
+      "/workspace/scratch/b6860f2a710f/qt-controls-host-build",
+      "--parallel",
+      "2",
+      "--target",
+      "shadow_view_mutation_adapter_host_test",
+      "shadow_tree_mounting_host_test"
+    ],
+    "buildLog": {
+      "file": "qt-platform-services-fabric-mounting-build.log",
+      "bytes": 875,
+      "sha256": "f74b3a44930afe1a090945b2a3f36bfae9058ed617b195cb835a7d9029cb0326",
+      "exitCode": 0
+    },
+    "artifactSha256": {
+      "bin/shadow_view_mutation_adapter_host_test": "b782fb277aff6c3767c5f8515a55a6084c9eedcdfc3e23b95c877fbee9b31175",
+      "bin/shadow_tree_mounting_host_test": "79fd1523c6737e1ce8e6c6d3da7638e0c8818526319ecba8f08c8fd8b36e5883"
+    },
+    "ctestArgv": [
+      "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/ctest",
+      "--test-dir",
+      "/workspace/scratch/b6860f2a710f/qt-controls-host-build",
+      "-R",
+      "^(shadow_view_mutation_adapter_host_test|shadow_tree_mounting_host_test)$",
+      "--output-on-failure",
+      "--output-junit",
+      "/workspace/scratch/b6860f2a710f/qt-platform-services-fabric-mounting-on.xml"
+    ],
+    "testArguments": ["-platform", "offscreen"],
+    "ctestEnvironmentOverrides": {},
+    "sanitizerInstrumentation": false,
+    "suite": {
+      "receipt": "qt-platform-services-fabric-mounting-on.xml",
+      "sha256": "9d528c9a854eef0b7019001386626af923e123944ea3f7701cdcfd6714194393",
+      "timestamp": "2026-11-10T11:03:20",
+      "junitReportedSeconds": 0.0,
+      "sumTestSeconds": 0.0889521,
+      "ctestReportedWallSeconds": 0.11,
+      "testCount": 2,
+      "passed": 2,
+      "tests": [
+        {
+          "name": "shadow_view_mutation_adapter_host_test",
+          "result": "passed",
+          "seconds": 0.0516733,
+          "caseCount": 7,
+          "output": "[PASS] createInsertMountsAndPositions\n[PASS] insertOrderFollowsMutationIndex\n[PASS] updateAppliesNewFrame\n[PASS] removeThenDeleteUnmountsAndFrees\n[PASS] nestedTransactionBuildsATree\n[PASS] unmappedComponentIsReportedNotSkipped\n[PASS] insertIntoMissingParentIsReported\nAll 7 ShadowViewMutationAdapter host tests passed.\n"
+        },
+        {
+          "name": "shadow_tree_mounting_host_test",
+          "result": "passed",
+          "seconds": 0.0372788,
+          "caseCount": 5,
+          "output": "[PASS] fixedSizeViewGetsYogaGeometry\n[PASS] flexChildrenSplitTheRootWidth\n[PASS] paddingOffsetsChildOrigin\n[PASS] secondCommitUpdatesGeometryInPlace\n[PASS] removingAChildUnmountsIt\nAll 5 ShadowTree mounting host tests passed.\n"
+        }
+      ]
+    }
+  }
+}
