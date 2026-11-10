@@ -103,7 +103,10 @@ React/Hermes/playground graph.
 Callstack `react-native-best-practices` at
 `59e9d17446a248b21d86f078fcd0bd2d36db1ca4` was read: this implements bounded
 measurement plumbing, not a claimed optimization without baseline/re-measurement.
+
 - With `BUILD_TESTING=OFF`, the Qt observer library builds and the
   `rnqnx_qt_frame_swap_trace_test` target is absent. The existing core-recorder
   target policy is unchanged. Both normal and instrumented 3-test graphs were
   rerun successfully after this target guard was added.
+
+The existing full-host CI matrix enables frame tracing in its ON lane and disables it in the OFF lane. The host validator requires the dedicated Qt signal test when tracing is enabled. This is build/test integration, not a claim of target presentation timing.
