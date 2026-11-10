@@ -1,0 +1,643 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-10",
+  "scope": "Actual Linux Qt/Hermes/Fabric re-execution after preserving the concurrent services-only modal hit-test fix and correcting the old direct-parent modal test. These are separately resolved QNX/Marathon bundles on a Linux offscreen native backend.",
+  "source": {
+    "repository": "mikevocalz/react-native-qnx",
+    "commit": "bfdae1875cdd7561ba256c131770d47c21ff20e9",
+    "tree": "ec9e5ef90dc1479dedcb74f97bc927000e33277d",
+    "equivalentLocalMergeCommit": "68b26d82f6ab66b093ab437e28701930b0bd7ae2",
+    "preservedConcurrentCommit": "d51656fa24a20e76d60838057a41b0cac7a534ef",
+    "runtimeFilesChangedSincePriorControlReceipt": [
+      {
+        "path": "vnext/src/fabric/QtQuickMountingLayer.cpp",
+        "oldSha256": "4a64a5a7021f53807b13b9a725e75c64f4beb59f65f1e8853cf931356286e27a",
+        "bytes": 32151,
+        "sha256": "a4ee07d2f87126890d72eacf8c5d4f6674b2c12859f771e9da08635ea5b75067"
+      },
+      {
+        "path": "vnext/src/fabric/QtTouchDispatcher.cpp",
+        "oldSha256": "c4d167af87c188e62c8b27aead816cc1181f915eca4a022bae94b7e88dae3ec8",
+        "bytes": 14111,
+        "sha256": "0f0f7d21cb7cd49eebefe46989f07a6453cd9da661bd648f51b0e7bba031157f"
+      }
+    ],
+    "priorManifestFilesUnchanged": 32,
+    "testFile": {
+      "path": "tests/cpp/QtReactHostHostTest.cpp",
+      "bytes": 108872,
+      "sha256": "95b070762bb1ab4c91d4dadc40e17773497f29ddb14bd937057026333a3a7009"
+    }
+  },
+  "priorControlReceipt": {
+    "commit": "7bcf597047ddc493d1299a862ee7ab116293638f",
+    "path": "docs/evidence/qt-controls-host-2026-11-10.json",
+    "sourceCommit": "92e88b9111b29c9090f9bac63b906dad4cf10f74",
+    "bytes": 24973,
+    "sha256": "e6fb20f7231b4fbbe62bc50261bdbc7f040d53e72f6d590e0b2546fd1f1705af"
+  },
+  "packageSource": {
+    "repository": "mikevocalz/NYC-Tron-UI",
+    "commit": "eb1f473d910b0b13854778e60c6e7c41b41ff228",
+    "tree": "e70358de4d140ac78ee3a75ca1567af39442548e"
+  },
+  "packageArchives": [
+    {
+      "name": "@nyc-tron/core",
+      "version": "1.0.0",
+      "archive": "nyc-tron-core-1.0.0.tgz",
+      "sha256": "dc280637a48a055478cb39ff6ca7df3d5d53424339a7bb6f1b05c96d30a0c355"
+    },
+    {
+      "name": "@nyc-tron/ui",
+      "version": "1.0.0",
+      "archive": "nyc-tron-ui-1.0.0.tgz",
+      "sha256": "2920da3bc1b0786b2e6a3ed5ec029cf5b83c7ad9b237d8a488193fe326453c65"
+    },
+    {
+      "name": "@nyc-tron/expo-controls",
+      "version": "1.0.0",
+      "archive": "nyc-tron-expo-controls-1.0.0.tgz",
+      "sha256": "ba87e60796dcf3ba2824f33eaf95ba49c6614e2ca6e7ff614fda2f78126d57c2"
+    }
+  ],
+  "packageBundlesUnchanged": true,
+  "environment": {
+    "qt": "6.11.1",
+    "reactNative": "0.88.1",
+    "compiler": "GCC 14.2.0",
+    "configuration": "Debug -O0 -g0",
+    "flags": {
+      "RNQNX_ENABLE_INPUT_LIFECYCLE": "ON",
+      "RNQNX_ENABLE_TEXT_INPUT_CONTRACT": "ON",
+      "RNQNX_ENABLE_ACCESSIBILITY_BRIDGE": "ON",
+      "RNQNX_ENABLE_DESKTOP_INPUT": "ON",
+      "RNQNX_ENABLE_PLATFORM_SERVICES": "ON"
+    },
+    "variables": {
+      "QT_QPA_PLATFORM": "offscreen",
+      "QT_QUICK_BACKEND": "software",
+      "QT_LINUX_ACCESSIBILITY_ALWAYS_ON": "1",
+      "ASAN_OPTIONS": "detect_leaks=0:halt_on_error=1",
+      "UBSAN_OPTIONS": "halt_on_error=1"
+    },
+    "linkFlags": {
+      "qt_react_host_host_test": "LINK_FLAGS = -fsanitize=address -Wl,--dependency-file=CMakeFiles/qt_react_host_host_test.dir/link.d",
+      "rnqnx_qt_controls_consumer": "LINK_FLAGS = -fsanitize=address,undefined -Wl,--dependency-file=CMakeFiles/rnqnx_qt_controls_consumer.dir/link.d"
+    },
+    "instrumentationScope": "Only selected test executables are instrumented; framework libraries are not globally sanitizer-instrumented. The host-test executable links ASan; the control consumer links ASan/UBSan. Leak detection is disabled.",
+    "compilerExceptionFile": {
+      "bytes": 2584,
+      "sha256": "b8824bfaecdb37778a5681cab125e89e9445c0be77b3a58175b9cc601853afc6"
+    }
+  },
+  "build": {
+    "targets": [
+      "qt_react_host_host_test",
+      "rnqnx_qt_controls_consumer"
+    ],
+    "initialParallelism": 2,
+    "initialResult": "Both modified objects compiled; the simultaneous host-test link was terminated by signal 9. No source change was made for the retry.",
+    "serialRetryParallelism": 1,
+    "serialRetryResult": "passed"
+  },
+  "binaries": [
+    {
+      "file": "qt_react_host_host_test",
+      "bytes": 33403624,
+      "sha256": "e246aa2bc32c05cb47e0d9c9955cf0c5f106b28bddd01176747c7c830a77fd98"
+    },
+    {
+      "file": "rnqnx_qt_controls_consumer",
+      "bytes": 33598520,
+      "sha256": "02df1415bddfd2e18bf828bf1b2129258557a2a18296567521afea41f0b5ebed"
+    }
+  ],
+  "runs": [
+    {
+      "fixture": "host",
+      "command": [
+        "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/ctest",
+        "--test-dir",
+        "/workspace/scratch/b6860f2a710f/qt-controls-host-build",
+        "-R",
+        "^qt_react_host_host_test$",
+        "--no-tests=error",
+        "--output-on-failure",
+        "--output-junit",
+        "/workspace/scratch/b6860f2a710f/qt-controls-modal-integration/host.xml"
+      ],
+      "exitCode": 0,
+      "seconds": 40.271,
+      "log": "qt-modal-integration-2026-11-10/host.log",
+      "passingCases": 54
+    },
+    {
+      "fixture": "core",
+      "command": [
+        "/workspace/scratch/b6860f2a710f/qt-controls-host-build/bin/rnqnx_qt_controls_consumer"
+      ],
+      "exitCode": 0,
+      "seconds": 1.468,
+      "log": "qt-modal-integration-2026-11-10/core.log",
+      "publicPlatform": "qnx",
+      "hostPlatform": "Linux x86_64",
+      "steps": [
+        {
+          "index": 0,
+          "label": "public React component mounted"
+        },
+        {
+          "index": 1,
+          "label": "hover reaches containing View and Pressable onHoverIn"
+        },
+        {
+          "index": 2,
+          "label": "hover does not duplicate enter"
+        },
+        {
+          "index": 3,
+          "label": "window exit sends leave and onHoverOut"
+        },
+        {
+          "index": 4,
+          "label": "public ref.focus reaches native View"
+        },
+        {
+          "index": 5,
+          "label": "ancestor Escape listener preserves ordinary Enter activation"
+        },
+        {
+          "index": 6,
+          "label": "Space activates ordinary Pressable once"
+        },
+        {
+          "index": 7,
+          "label": "Tab skips disabled View"
+        },
+        {
+          "index": 8,
+          "label": "native arrow key reaches JS"
+        },
+        {
+          "index": 9,
+          "label": "custom activation avoids duplicate Pressable press"
+        },
+        {
+          "index": 10,
+          "label": "Shift Tab restores previous focus"
+        },
+        {
+          "index": 11,
+          "label": "pointerEvents none overlay does not steal tap"
+        },
+        {
+          "index": 12,
+          "label": "disabled control does not activate"
+        },
+        {
+          "index": 13,
+          "label": "public ref.blur clears focus"
+        },
+        {
+          "index": 14,
+          "label": "refocus before disabling"
+        },
+        {
+          "index": 15,
+          "label": "disabling focused control delivers blur"
+        },
+        {
+          "index": 16,
+          "label": "disabled focused control cannot activate"
+        },
+        {
+          "index": 17,
+          "label": "reenable control"
+        },
+        {
+          "index": 18,
+          "label": "reenabled control regains focus"
+        },
+        {
+          "index": 19,
+          "label": "reenabled control activates once"
+        }
+      ],
+      "bundle": {
+        "file": "rnqnx-desktop-input.bundle.js",
+        "bytes": 777408,
+        "sha256": "b8b45a098976afb0311e53bcdab975c26acaa9dd95ca6cf6dbdf3e300e38e71b"
+      }
+    },
+    {
+      "fixture": "tron-qnx",
+      "command": [
+        "/workspace/scratch/b6860f2a710f/qt-controls-host-build/bin/rnqnx_qt_controls_consumer",
+        "--bundle",
+        "/workspace/scratch/b6860f2a710f/tron-qt-final-render-consumer/qnx.bundle.js",
+        "--app",
+        "RNQnxQtControlsProbe",
+        "--expected-platform",
+        "qnx"
+      ],
+      "exitCode": 0,
+      "seconds": 4.174,
+      "log": "qt-modal-integration-2026-11-10/tron-qnx.log",
+      "publicPlatform": "qnx",
+      "hostPlatform": "Linux x86_64",
+      "steps": [
+        {
+          "index": 0,
+          "label": "Fixture mounted"
+        },
+        {
+          "index": 1,
+          "label": "Tooltip opens from native hover"
+        },
+        {
+          "index": 2,
+          "label": "Escape dismisses hover tooltip"
+        },
+        {
+          "index": 3,
+          "label": "Pointer leaves tooltip"
+        },
+        {
+          "index": 4,
+          "label": "Focus leaves tooltip"
+        },
+        {
+          "index": 5,
+          "label": "Tooltip opens from native focus"
+        },
+        {
+          "index": 6,
+          "label": "Escape dismisses focused tooltip"
+        },
+        {
+          "index": 7,
+          "label": "Mount select"
+        },
+        {
+          "index": 8,
+          "label": "Select opens from arrow key"
+        },
+        {
+          "index": 9,
+          "label": "Select skips disabled option"
+        },
+        {
+          "index": 10,
+          "label": "Select commits enabled choice"
+        },
+        {
+          "index": 11,
+          "label": "Select reopens"
+        },
+        {
+          "index": 12,
+          "label": "Select cancels with Escape"
+        },
+        {
+          "index": 13,
+          "label": "Mount dropdown"
+        },
+        {
+          "index": 14,
+          "label": "Dropdown opens by pointer"
+        },
+        {
+          "index": 15,
+          "label": "Dropdown moves to final choice"
+        },
+        {
+          "index": 16,
+          "label": "Dropdown commits final choice"
+        },
+        {
+          "index": 17,
+          "label": "Mount actions"
+        },
+        {
+          "index": 18,
+          "label": "Action menu opens"
+        },
+        {
+          "index": 19,
+          "label": "Action menu selects once"
+        },
+        {
+          "index": 20,
+          "label": "Mount slider"
+        },
+        {
+          "index": 21,
+          "label": "Slider Home commits lower bound"
+        },
+        {
+          "index": 22,
+          "label": "Slider arrow commits one step"
+        },
+        {
+          "index": 23,
+          "label": "Slider End commits upper bound"
+        },
+        {
+          "index": 24,
+          "label": "Mount split"
+        },
+        {
+          "index": 25,
+          "label": "Split primary action remains separate"
+        },
+        {
+          "index": 26,
+          "label": "Split menu opens by keyboard"
+        },
+        {
+          "index": 27,
+          "label": "Split menu selects once"
+        },
+        {
+          "index": 28,
+          "label": "Mount context"
+        },
+        {
+          "index": 29,
+          "label": "Context menu opens by Menu key"
+        },
+        {
+          "index": 30,
+          "label": "Context action commits once"
+        },
+        {
+          "index": 31,
+          "label": "Mount popover"
+        },
+        {
+          "index": 32,
+          "label": "Popover Escape requests close"
+        },
+        {
+          "index": 33,
+          "label": "Reopen controlled popover"
+        },
+        {
+          "index": 34,
+          "label": "Popover close control works"
+        },
+        {
+          "index": 35,
+          "label": "Mount find"
+        },
+        {
+          "index": 36,
+          "label": "Find uses the actual literal document provider"
+        },
+        {
+          "index": 37,
+          "label": "Find and replace closes"
+        },
+        {
+          "index": 38,
+          "label": "All controlled outcomes retained"
+        }
+      ],
+      "bundle": {
+        "file": "qnx.bundle.js",
+        "bytes": 1913740,
+        "sha256": "c2c352e33bd2c6756be2f3fd757271466dfe1e8d5f2d2cb312a12225ef08a93a"
+      }
+    },
+    {
+      "fixture": "tron-marathon",
+      "command": [
+        "/workspace/scratch/b6860f2a710f/qt-controls-host-build/bin/rnqnx_qt_controls_consumer",
+        "--bundle",
+        "/workspace/scratch/b6860f2a710f/tron-qt-final-render-consumer/marathon.bundle.js",
+        "--app",
+        "RNQnxQtControlsProbe",
+        "--expected-platform",
+        "marathon"
+      ],
+      "exitCode": 0,
+      "seconds": 4.124,
+      "log": "qt-modal-integration-2026-11-10/tron-marathon.log",
+      "publicPlatform": "marathon",
+      "hostPlatform": "Linux x86_64",
+      "steps": [
+        {
+          "index": 0,
+          "label": "Fixture mounted"
+        },
+        {
+          "index": 1,
+          "label": "Tooltip opens from native hover"
+        },
+        {
+          "index": 2,
+          "label": "Escape dismisses hover tooltip"
+        },
+        {
+          "index": 3,
+          "label": "Pointer leaves tooltip"
+        },
+        {
+          "index": 4,
+          "label": "Focus leaves tooltip"
+        },
+        {
+          "index": 5,
+          "label": "Tooltip opens from native focus"
+        },
+        {
+          "index": 6,
+          "label": "Escape dismisses focused tooltip"
+        },
+        {
+          "index": 7,
+          "label": "Mount select"
+        },
+        {
+          "index": 8,
+          "label": "Select opens from arrow key"
+        },
+        {
+          "index": 9,
+          "label": "Select skips disabled option"
+        },
+        {
+          "index": 10,
+          "label": "Select commits enabled choice"
+        },
+        {
+          "index": 11,
+          "label": "Select reopens"
+        },
+        {
+          "index": 12,
+          "label": "Select cancels with Escape"
+        },
+        {
+          "index": 13,
+          "label": "Mount dropdown"
+        },
+        {
+          "index": 14,
+          "label": "Dropdown opens by pointer"
+        },
+        {
+          "index": 15,
+          "label": "Dropdown moves to final choice"
+        },
+        {
+          "index": 16,
+          "label": "Dropdown commits final choice"
+        },
+        {
+          "index": 17,
+          "label": "Mount actions"
+        },
+        {
+          "index": 18,
+          "label": "Action menu opens"
+        },
+        {
+          "index": 19,
+          "label": "Action menu selects once"
+        },
+        {
+          "index": 20,
+          "label": "Mount slider"
+        },
+        {
+          "index": 21,
+          "label": "Slider Home commits lower bound"
+        },
+        {
+          "index": 22,
+          "label": "Slider arrow commits one step"
+        },
+        {
+          "index": 23,
+          "label": "Slider End commits upper bound"
+        },
+        {
+          "index": 24,
+          "label": "Mount split"
+        },
+        {
+          "index": 25,
+          "label": "Split primary action remains separate"
+        },
+        {
+          "index": 26,
+          "label": "Split menu opens by keyboard"
+        },
+        {
+          "index": 27,
+          "label": "Split menu selects once"
+        },
+        {
+          "index": 28,
+          "label": "Mount context"
+        },
+        {
+          "index": 29,
+          "label": "Context menu opens by Menu key"
+        },
+        {
+          "index": 30,
+          "label": "Context action commits once"
+        },
+        {
+          "index": 31,
+          "label": "Mount popover"
+        },
+        {
+          "index": 32,
+          "label": "Popover Escape requests close"
+        },
+        {
+          "index": 33,
+          "label": "Reopen controlled popover"
+        },
+        {
+          "index": 34,
+          "label": "Popover close control works"
+        },
+        {
+          "index": 35,
+          "label": "Mount find"
+        },
+        {
+          "index": 36,
+          "label": "Find uses the actual literal document provider"
+        },
+        {
+          "index": 37,
+          "label": "Find and replace closes"
+        },
+        {
+          "index": 38,
+          "label": "All controlled outcomes retained"
+        }
+      ],
+      "bundle": {
+        "file": "marathon.bundle.js",
+        "bytes": 1913792,
+        "sha256": "2af1fd7c121596983492760065e988beaecc410c98564194b45bb09c67458d3d"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "qt-modal-integration-2026-11-10/build.log",
+      "bytes": 32360,
+      "sha256": "307128e89bd17d6cb5380bab10e9defa0d505a4d6f616e9b199bfb82b8e3563f"
+    },
+    {
+      "path": "qt-modal-integration-2026-11-10/build-serial.log",
+      "bytes": 181,
+      "sha256": "75f883bc0aaf4823b56947fe586bcd9e5b784eeb256ffe1ede83e8b215164f5e"
+    },
+    {
+      "path": "qt-modal-integration-2026-11-10/host.log",
+      "bytes": 241,
+      "sha256": "85c039c313c85180d3afd2fbe3cd6e1884dd098e96967f2b920e022ea76e3d90"
+    },
+    {
+      "path": "qt-modal-integration-2026-11-10/host.xml",
+      "bytes": 1485,
+      "sha256": "73d31717264700adee95d8d4a4823a3d807b81fa02c79fa60261ec1fe9fd3d32"
+    },
+    {
+      "path": "qt-modal-integration-2026-11-10/host-full.log",
+      "bytes": 23155,
+      "sha256": "52406b9b604715bfe34ba506e2b787e15181d0bc422751b36b4b630f2e01520d"
+    },
+    {
+      "path": "qt-modal-integration-2026-11-10/core.log",
+      "bytes": 1757,
+      "sha256": "e5f8d78ba23a1d0e12d3651539eff02c698be6939039db2debdc79c2a1cf947d"
+    },
+    {
+      "path": "qt-modal-integration-2026-11-10/tron-qnx.log",
+      "bytes": 2493,
+      "sha256": "f08b80347bdcf70cad60b1c858c22f4fd63e3fdd3197ab4fb1fe288f0a2b1f39"
+    },
+    {
+      "path": "qt-modal-integration-2026-11-10/tron-marathon.log",
+      "bytes": 2498,
+      "sha256": "1f20acfed21f6d92bd59cc2cd0d1b1556705fc1221d21daf3b3c3e6b7edad3f2"
+    }
+  ],
+  "limits": [
+    "Physical QNX Screen and Marathon Wayland devices, physical HID, IME, multitouch and spoken screen-reader acceptance remain unverified.",
+    "The existing finite application-owned theme map and document provider are unchanged; this is not complete styling/Forge-engine acceptance.",
+    "The original 341-row target-device acceptance statuses and default-OFF native flags remain unchanged.",
+    "The preserved concurrent receipt separately covers native services-only routing with desktop input disabled; this integrated re-execution uses both enabled.",
+    "No new screenshot comparison or performance measurement was performed. Previous inspected images remain bound to their original source."
+  ]
+}

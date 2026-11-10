@@ -44,7 +44,9 @@
     "configuration": "Existing Qt 6.11.1 / RN 0.88.1 / Hermes / Fabric ON graph; exact toolchain, flags and compiler exceptions remain recorded in qt-platform-services-host-2026-11-10.json.",
     "configurationReceipt": {
       "file": "qt-platform-services-host-2026-11-10.json",
-      "sha256": "aea494e8188d5103ddcb9c6d65d22397a0e466c8d0f3233ae591680a3cc16944"
+      "sha256": "aea494e8188d5103ddcb9c6d65d22397a0e466c8d0f3233ae591680a3cc16944",
+      "commit": "7bcf597047ddc493d1299a862ee7ab116293638f",
+      "url": "https://github.com/mikevocalz/react-native-qnx/blob/7bcf597047ddc493d1299a862ee7ab116293638f/docs/evidence/qt-platform-services-host-2026-11-10.json"
     },
     "buildTarget": "qt_react_host_host_test",
     "ctestSelection": "^qt_react_host_host_test$",
@@ -59,12 +61,12 @@
         "1 QtReactHost host test(s) failed."
       ],
       "junit": {
-        "file": "qt-modal-host-before.xml",
+        "file": "qt-modal-host-test-followup-2026-11-10/qt-modal-host-before.xml",
         "sha256": "9cabf95909bb84572b212fce0b424923283a9627d47e6866651e1c8c4640a170",
         "outputTruncated": false
       },
       "consoleLog": {
-        "file": "qt-modal-host-before.log",
+        "file": "qt-modal-host-test-followup-2026-11-10/qt-modal-host-before.log",
         "sha256": "f347bd9b4742aa67be3392dee7834cdd142fa2db154c36b3c52676c30388371b"
       }
     },
@@ -74,18 +76,20 @@
       "seconds": 39.5574,
       "passingCases": 54,
       "failingCases": 0,
-      "summary": ["All 54 QtReactHost host tests passed."],
+      "summary": [
+        "All 54 QtReactHost host tests passed."
+      ],
       "junit": {
-        "file": "qt-modal-host-after.xml",
+        "file": "qt-modal-host-test-followup-2026-11-10/qt-modal-host-after.xml",
         "sha256": "0617223a7281df1fe676abbdc160cd4e35eb12bd2fe8e16e487b06f3d9088223",
         "outputTruncated": true
       },
       "consoleLog": {
-        "file": "qt-modal-host-after.log",
+        "file": "qt-modal-host-test-followup-2026-11-10/qt-modal-host-after.log",
         "sha256": "8c1a48cd6023b018610bab6aae863d2e32f40f45804c6f25a5a625f7e27e3e5e"
       },
       "fullTestLog": {
-        "file": "qt-modal-host-after-full.log",
+        "file": "qt-modal-host-test-followup-2026-11-10/qt-modal-host-after-full.log",
         "sha256": "2105f6c00212184b6aa00e4579d1412a0ac43c1e1927c11aec2a3d4928e847f5",
         "origin": "CTest Testing/Temporary/LastTest.log, preserved because successful JUnit output is truncated to 1024 bytes."
       }
@@ -95,7 +99,8 @@
     "unchangedMetroBundleSha256": "8914e9a95a227db5a1c6d87953039e412952fcce7e8bf0c306c5be660429e314",
     "unchangedQtConsumerBinarySha256": "5e2402d0b40e30d77db85c24f14138ca150ab556fb59ab2be7de8540003a9706",
     "verifiedUnchangedNativeSourceCount": 12,
-    "unrelatedSuitesRepeated": false
+    "unrelatedSuitesRepeated": false,
+    "artifactDirectory": "qt-modal-host-test-followup-2026-11-10"
   },
   "limits": [
     "This local result binds the tests-only patch to base 7bcf597; it does not claim acceptance of later incoming runtime changes.",

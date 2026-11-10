@@ -186,3 +186,11 @@ each pass the two selected native CTests. See `baselineModalInputFollowup` in th
 These tests check native down/up target selection with no attached JS dispatcher;
 they do not rerun or extend the earlier full control-runtime, physical-input or
 target-platform claims.
+
+The combined source, including this baseline-routing fix and the corrected
+modal hierarchy assertion, also passes the full 54-case QtReactHost test,
+20 core-input steps, and 39 installed-control steps for each QNX and Marathon
+bundle with desktop input and platform services enabled. The package and Metro
+bundle bytes are unchanged. The [integration receipt](../evidence/qt-modal-integration-2026-11-10.json)
+records the new native binaries, source tree, commands and full logs separately
+from the earlier evidence. This remains Linux offscreen host validation.

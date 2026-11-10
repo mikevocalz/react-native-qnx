@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-c++"
+	tests="1"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="f34f8ee315fb"
+	time="40"
+	timestamp="2026-11-10T11:58:16"
+	>
+	<testcase name="qt_react_host_host_test" classname="qt_react_host_host_test" time="40.2367" status="run">
+		<properties/>
+		<system-out>WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1110 11:58:16.156257 305230336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000034d0).
+W1110 11:58:16.156714 189748928 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000145d0).
+W1110 11:58:16.156751 189748928 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003450).
+[PASS] inputLifecycleOptOutPreservesExistingDispatch
+W1110 11:58:16.199004 305230336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000007910).
+W1110 11:58:16.199270 249280192 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200002cd50).
+W1110 11:58:16.199301 249280192 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000008e50).
+[PASS] touchCancelEndsEveryContactAndAllowsIdReuse
+W1110 11:58:16.239208 305230336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000c450).
+W1110 11:58:16.239467 2097...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+</testsuite>
