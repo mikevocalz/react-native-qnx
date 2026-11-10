@@ -91,6 +91,7 @@ void contract() {
     preparePlatformViewAccessibility(*overlap);
     overlap->setParentItem(parent.get()); overlap->setPosition(QPointF(20, 30)); overlap->setSize(QSizeF(200, 50));
     overlap->setZ(5); wrapper->setZ(10); apply(*overlap, group);
+    require(tree->child(0) == interface && tree->child(2)->object() == overlap.get(), "Visual z order changed semantic reading order");
     const auto center = interface->rect().center();
     require(tree->childAt(center.x(), center.y()) == interface, "Accessibility hit testing ignored visual z order");
     wrapper->setClip(true); wrapper->setSize(QSizeF(30, 30));

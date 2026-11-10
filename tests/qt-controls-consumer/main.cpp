@@ -14,6 +14,7 @@
 #include <QImage>
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include <QPointer>
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -136,7 +137,7 @@ void run(const QString& path, const QString& appName, const QString& screenshot,
     const auto action = string("action");
     const auto label = string("label");
     const auto targetId = QString::fromStdString(string("target"));
-    QQuickItem* target = nullptr;
+    QPointer<QQuickItem> target;
     if (!targetId.isEmpty()) {
       until([&]() { target = findItem(window.contentItem(), targetId); return visibleItem(target, window); }, label + " target");
     }
@@ -161,7 +162,7 @@ void run(const QString& path, const QString& appName, const QString& screenshot,
     } else if (action == "key" || action == "keyDown" || action == "keyUp") {
       if (target) {
         target->forceActiveFocus(Qt::OtherFocusReason);
-        until([&]() { return target->hasActiveFocus() || target->isAncestorOf(window.activeFocusItem()); }, label + " keyboard focus");
+        until([&]() { return target && (target->hasActiveFocus() || target->isAncestorOf(window.activeFocusItem())); }, label + " keyboard focus");
       }
       const auto name = string("key");
       const int code = keyCode(name);

@@ -15,6 +15,7 @@
 #include <QGuiApplication>
 #include <QKeyEvent>
 #include <QQmlEngine>
+#include <QQuickItem>
 #include <QQuickWindow>
 #include <QStyleHints>
 #include <cstdio>

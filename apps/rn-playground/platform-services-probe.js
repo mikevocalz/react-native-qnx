@@ -20,7 +20,7 @@ const store = createStore(() => ({
   actions: true,
 }));
 const probe = {
-  platform: Platform.OS,
+  platform: Reflect.get(Platform, 'OS'),
   reactNativeVersion: Platform.constants.reactNativeVersion,
   accessibility: AccessibilityInfo,
   back: BackHandler,

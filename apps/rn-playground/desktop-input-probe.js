@@ -93,7 +93,7 @@ const steps = [
     () => state.first === 4,
   ],
 ];
-globalThis.__qtProbeSteps = steps.map(([step]) => step);
+globalThis.__qtProbeSteps = steps.map((entry) => entry[0]);
 globalThis.__qtProbeCheck = (index) => steps[index][1]();
 globalThis.__qtProbeSnapshot = () => JSON.stringify({ ...state, firstDisabled });
 globalThis.__qtProbeAction = (index) => {

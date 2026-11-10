@@ -43,14 +43,15 @@ QAccessibleInterface* exposed(QQuickItem* item) {
   auto* interface = QAccessible::queryAccessibleInterface(item);
   return interface && !ignored(item) ? interface : nullptr;
 }
-QList<QAccessibleInterface*> children(QQuickItem* item) {
+QList<QAccessibleInterface*> children(QQuickItem* item, bool paintOrder = false) {
   QList<QAccessibleInterface*> result;
   if (!item || hiddenSubtree(item)) return result;
   auto items = item->childItems();
-  std::stable_sort(items.begin(), items.end(), [](auto* left, auto* right) { return left->z() < right->z(); });
+  if (paintOrder)
+    std::stable_sort(items.begin(), items.end(), [](auto* left, auto* right) { return left->z() < right->z(); });
   for (auto* child : items) {
     if (auto* interface = exposed(child)) result.push_back(interface);
-    else result.append(children(child)); // Keep semantic children of ignored layout wrappers.
+    else result.append(children(child, paintOrder)); // Keep semantic children of ignored layout wrappers.
   }
   return result;
 }
@@ -82,7 +83,7 @@ class ViewInterface final : public QAccessibleObject, public QAccessibleActionIn
   QAccessibleInterface* childAt(int x, int y) const override {
     auto* currentItem = item();
     if (!currentItem || clippedAt(currentItem, x, y)) return nullptr;
-    const auto list = children(item());
+    const auto list = children(item(), true);
     for (auto current = list.crbegin(); current != list.crend(); ++current) {
       if ((*current)->state().invisible) continue;
       if (auto* childItem = qobject_cast<QQuickItem*>((*current)->object()); childItem && clippedAt(childItem->parentItem(), x, y)) continue;
