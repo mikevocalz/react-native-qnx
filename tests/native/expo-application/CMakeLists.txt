@@ -25,6 +25,11 @@ if(RNQNX_ENABLE_EXPO_APPLICATION)
   add_custom_command(OUTPUT "${public_fixture}"
     COMMAND "${NODE_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/build-public-fixture.mjs" "${public_fixture}"
     DEPENDS "${CMAKE_CURRENT_LIST_DIR}/build-public-fixture.mjs"
+      "${root}/pnpm-lock.yaml"
+      "${root}/node_modules/expo-application/package.json"
+      "${root}/node_modules/expo-application/src/Application.ts"
+      "${root}/node_modules/expo-application/src/ExpoApplication.ts"
+      "${root}/node_modules/expo-application/src/Application.types.ts"
     VERBATIM)
   add_custom_target(expo_application_public_fixture DEPENDS "${public_fixture}")
   add_dependencies(expo_application_runtime_test expo_application_public_fixture)

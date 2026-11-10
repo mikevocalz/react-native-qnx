@@ -5,8 +5,11 @@ get_filename_component(RNQNX_REACT_QT_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLU
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxWebSockets.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxAppState.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxBackHandler.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/RnqnxLinking.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/RnqnxMetroReload.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxFrameSwapTrace.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxExpoApplication.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/RnqnxWorklets.cmake)
 
 # Add the opt-in consumer only after the existing runtime and optional native
 # adapters have been declared. The OFF path leaves all original targets alone.
@@ -126,6 +129,9 @@ function(rnqnx_add_react_host_target)
   rnqnx_configure_app_state()
   rnqnx_configure_back_handler()
   rnqnx_configure_expo_application()
+  rnqnx_configure_linking()
+  rnqnx_configure_worklets()
+  rnqnx_configure_metro_reload()
   rnqnx_enable_strict_warnings(rnqnx_react_host)
   if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE)
     include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxAccessibilityActions.cmake)

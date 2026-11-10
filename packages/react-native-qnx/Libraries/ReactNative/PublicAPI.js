@@ -63,6 +63,9 @@ const api = Object.freeze({
   get findNodeHandle() {
     return require('react-native/Libraries/ReactNative/RendererProxy').findNodeHandle;
   },
+  get Linking() {
+    return require('../Linking/QnxLinking').default;
+  },
   get BackHandler() {
     return require('react-native/Libraries/Utilities/BackHandler').default;
   },

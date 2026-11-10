@@ -24,7 +24,8 @@ subscription.remove(); // Safe to repeat during cleanup.
 BackHandler.exitApp();
 ```
 
-Accessing `BackHandler` when the native experiment is disabled throws an error
+Importing `BackHandler` when the native experiment is disabled is safe so
+ordinary RN rendering is unaffected. Calling `addEventListener` or `exitApp` throws an error
 naming the build option instead of installing a no-op implementation. This
 uses RN 0.88.1's own reverse-order subscription dispatcher and generated
 `NativeDeviceEventManagerCxxSpec`; it is a React Native framework adapter, not

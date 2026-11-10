@@ -3,7 +3,13 @@ import { Platform } from 'react-native';
 const probe = { platform: Platform.OS, available: false, error: '', calls: [] };
 try {
   const { BackHandler } = require('react-native');
+  const availability = BackHandler.addEventListener('hardwareBackPress', () => false);
+  availability.remove();
   probe.available = true;
+  probe.addThrowingListener = () =>
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      throw new Error('back listener failure');
+    });
   let subscriptions = [];
   probe.configure = (consumeLast) => {
     subscriptions.forEach((subscription) => subscription.remove());

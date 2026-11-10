@@ -1,0 +1,3 @@
+add_library(rnqnx_expo_test_provider STATIC Provider.cpp)
+target_link_libraries(rnqnx_expo_test_provider PRIVATE rnqnx_expo_modules_qnx Qt6::Core)
+target_compile_features(rnqnx_expo_test_provider PRIVATE cxx_std_20)

@@ -1,13 +1,20 @@
-#if RNQNX_ENABLE_EXPO_APPLICATION
+#if RNQNX_ENABLE_EXPO_APPLICATION || RNQNX_ENABLE_EXPO_MODULES
 #include "ExpoQnxInstaller.hpp"
 #endif
 #include "react-native-qnx/runtime/QtReactHost.h"
 #if RNQNX_ENABLE_BACK_HANDLER
 #include "react-native-qnx/runtime/QnxBackHandlerModule.h"
 #endif
+#if RNQNX_ENABLE_WORKLETS
+#include "QnxWorkletsModule.h"
+#endif
 
+#if RNQNX_ENABLE_LINKING
+#include "react-native-qnx/runtime/QnxLinkingModule.h"
+#endif
 #include <stdexcept>
 #include <hermes/hermes.h>
+#include <cxxreact/ReactNativeVersion.h>
 #include <hermes/Public/RuntimeConfig.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
@@ -356,6 +363,38 @@ class QnxFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults 
 };
 } // namespace
 
+// Native event filters must not execute application JS inline. The RN host
+// executor is synchronous; CallInvoker::invokeAsync alone is not a Qt hop.
+#if RNQNX_ENABLE_BACK_HANDLER || RNQNX_ENABLE_LINKING
+namespace {
+class QtEventCallInvoker final : public facebook::react::CallInvoker {
+ public:
+  QtEventCallInvoker(std::shared_ptr<QtRuntimeTaskQueue> queue,
+                    std::shared_ptr<facebook::react::CallInvoker> invoker)
+      : queue_(std::move(queue)), invoker_(std::move(invoker)) {}
+  void invokeAsync(facebook::react::CallFunc&& task) noexcept override {
+    if (auto queue = queue_.lock()) {
+      try {
+        queue->post([invoker = invoker_, task = std::move(task)]() mutable {
+          invoker->invokeAsync(std::move(task));
+        });
+      } catch (const std::runtime_error&) {
+        // Shutdown has closed admission. No JS values or runtime references
+        // are retained by event payloads; cancellation is safe here.
+        qWarning() << "Native event delivery refused by closed Qt runtime queue";
+      }
+    }
+  }
+  void invokeSync(facebook::react::CallFunc&&) override {
+    throw std::logic_error("Native event delivery requires queued owner dispatch");
+  }
+ private:
+  std::weak_ptr<QtRuntimeTaskQueue> queue_;
+  std::shared_ptr<facebook::react::CallInvoker> invoker_;
+};
+}  // namespace
+#endif
+
 class QtReactHost::Impl {
  public:
   explicit Impl(fabric::ShadowViewMutationAdapter& adapter
@@ -384,7 +423,7 @@ class QtReactHost::Impl {
             .withMicrotaskQueue(true)
             .build());
 
-#if RNQNX_ENABLE_EXPO_APPLICATION
+#if RNQNX_ENABLE_EXPO_APPLICATION || RNQNX_ENABLE_EXPO_MODULES
     rnqnx::expo::installExpoModulesQnx(*runtime);
 #endif
 
@@ -397,9 +436,15 @@ class QtReactHost::Impl {
             callback(*runtime);
           } catch (...) {
             --runtimeExecutionDepth;
+#if RNQNX_ENABLE_METRO_RELOAD
+            postIdleActions();
+#endif
             throw;
           }
           --runtimeExecutionDepth;
+#if RNQNX_ENABLE_METRO_RELOAD
+            postIdleActions();
+#endif
         };
 
     // RN's default error handler calls JS ErrorUtils and may throw if a
@@ -446,6 +491,9 @@ class QtReactHost::Impl {
         [this]() { ++runtimeExecutionDepth; },
         [this]() {
           --runtimeExecutionDepth;
+#if RNQNX_ENABLE_METRO_RELOAD
+            postIdleActions();
+#endif
           if (runtimeExecutionDepth == 0) {
             runtimeScheduler->scheduleWork([](facebook::jsi::Runtime&) {});
           }
@@ -563,6 +611,10 @@ class QtReactHost::Impl {
   }
 
   ~Impl() {
+#if RNQNX_ENABLE_METRO_RELOAD
+    idleContext.reset();
+    idleActions.clear();
+#endif
     if (runtimeExecutionDepth != 0) {
       std::terminate();
     }
@@ -588,6 +640,12 @@ class QtReactHost::Impl {
 #if RNQNX_ENABLE_BACK_HANDLER
     if (backHandlerModule) backHandlerModule->invalidate();
 #endif
+#if RNQNX_ENABLE_LINKING
+    if (linkingModule) linkingModule->invalidate();
+#endif
+#if RNQNX_ENABLE_WORKLETS
+    if (workletsModule) workletsModule->invalidate();
+#endif
     taskQueue->close();
   }
 
@@ -600,11 +658,17 @@ class QtReactHost::Impl {
   std::unique_ptr<facebook::jsi::Runtime> runtime;
   std::shared_ptr<RuntimeScheduler> runtimeScheduler;
   std::shared_ptr<QtRuntimeTaskQueue> taskQueue;
+#if RNQNX_ENABLE_WORKLETS
+  std::shared_ptr<QnxWorkletsModule> workletsModule;
+#endif
 #if RNQNX_ENABLE_APP_STATE
   std::shared_ptr<QnxAppStateModule> appStateModule;
 #endif
 #if RNQNX_ENABLE_BACK_HANDLER
   std::shared_ptr<QnxBackHandlerModule> backHandlerModule;
+#endif
+#if RNQNX_ENABLE_LINKING
+  std::shared_ptr<QnxLinkingModule> linkingModule;
 #endif
   std::shared_ptr<const ContextContainer> contextContainer;
   QtSchedulerDelegate delegate;
@@ -625,6 +689,22 @@ class QtReactHost::Impl {
   std::string scriptUrl;
   int nextTimerHandle{0};
   QString lastError;
+#if RNQNX_ENABLE_METRO_RELOAD
+  std::unique_ptr<QObject> idleContext{std::make_unique<QObject>()};
+  std::vector<std::function<void()>> idleActions;
+  void postIdleActions() {
+    if (runtimeExecutionDepth != 0 || !idleContext) return;
+    auto actions = std::move(idleActions);
+    idleActions.clear();
+    for (auto& action : actions) {
+      QMetaObject::invokeMethod(idleContext.get(),
+          [this, action = std::move(action)]() mutable {
+            if (runtimeExecutionDepth != 0) idleActions.push_back(std::move(action));
+            else action();
+          }, Qt::QueuedConnection);
+    }
+  }
+#endif
 };
 
 QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter)
@@ -637,6 +717,15 @@ QtReactHost::QtReactHost(fabric::ShadowViewMutationAdapter& adapter,
 #endif
 
 QtReactHost::~QtReactHost() = default;
+
+#if RNQNX_ENABLE_METRO_RELOAD
+void QtReactHost::whenIdle(std::function<void()> action) {
+  if (!impl_->taskQueue->isOnOwnerThread())
+    throw std::logic_error("Host lifecycle requires the Qt owner thread");
+  impl_->idleActions.push_back(std::move(action));
+  impl_->postIdleActions();
+}
+#endif
 
 facebook::jsi::Runtime& QtReactHost::runtime() {
   return *impl_->runtime;
@@ -753,10 +842,23 @@ void QtReactHost::installTurboModuleBinding() {
 #pragma GCC diagnostic pop
 #endif
   auto* impl = impl_.get();
+#if RNQNX_ENABLE_BACK_HANDLER || RNQNX_ENABLE_LINKING
+  auto eventInvoker = std::make_shared<QtEventCallInvoker>(impl->taskQueue, callInvoker);
+#endif
 #if RNQNX_ENABLE_BACK_HANDLER
   if (!impl->backHandlerModule) {
-    impl->backHandlerModule = std::make_shared<QnxBackHandlerModule>(callInvoker);
+    impl->backHandlerModule = std::make_shared<QnxBackHandlerModule>(eventInvoker);
   }
+#endif
+
+#if RNQNX_ENABLE_LINKING
+  if (!impl->linkingModule) impl->linkingModule = std::make_shared<QnxLinkingModule>(eventInvoker);
+#endif
+#if RNQNX_ENABLE_WORKLETS
+  if (!impl->workletsModule) impl->workletsModule = std::make_shared<QnxWorkletsModule>(*impl->runtime, callInvoker,
+      [queue = std::weak_ptr<QtRuntimeTaskQueue>(impl->taskQueue)](std::function<void()> task) {
+        if (const auto owner = queue.lock()) owner->post(std::move(task));
+      });
 #endif
 
   facebook::react::TurboModuleBinding::install(
@@ -855,6 +957,13 @@ void QtReactHost::installTurboModuleBinding() {
         if (name == QnxBackHandlerModule::kModuleName) return impl->backHandlerModule;
 #endif
 
+#if RNQNX_ENABLE_LINKING
+        if (name == QnxLinkingModule::kModuleName) return impl->linkingModule;
+#endif
+#if RNQNX_ENABLE_WORKLETS
+        if (name == QnxWorkletsModule::kModuleName) return impl->workletsModule;
+#endif
+
         // React Native's own generic C++ modules. Two of the modules this
         // platform needs come from here already implemented — microtasks and
         // idle callbacks, both backed by the RuntimeScheduler.
@@ -869,6 +978,21 @@ void QtReactHost::setBackHandlerWindow(QWindow* window) {
     throw std::logic_error("Install TurboModule binding before attaching BackHandler window");
   }
   impl_->backHandlerModule->setWindow(window);
+}
+#endif
+
+#if RNQNX_ENABLE_LINKING
+void QtReactHost::configureLinking(const std::vector<std::string>& schemes,
+    const std::optional<std::string>& initialURL) {
+  if (!impl_->linkingModule) throw std::logic_error("Install RN binding before configuring Linking");
+  impl_->linkingModule->configure(schemes, initialURL);
+}
+#endif
+
+#if RNQNX_ENABLE_WORKLETS
+void QtReactHost::setWorkletsWindow(QQuickWindow* window) {
+  if (!impl_->workletsModule) throw std::logic_error("Install TurboModule binding before attaching Worklets window");
+  impl_->workletsModule->setWindow(window);
 }
 #endif
 
@@ -894,13 +1018,16 @@ void QtReactHost::installPlatformConstants() {
   // The React Native line this platform is built against, pinned in
   // package.json and asserted by validate:dependencies.
   auto version = facebook::jsi::Object(runtime);
-  version.setProperty(runtime, "major", 0);
-  version.setProperty(runtime, "minor", 88);
-  version.setProperty(runtime, "patch", 0);
-  version.setProperty(
-      runtime,
-      "prerelease",
-      facebook::jsi::String::createFromUtf8(runtime, "rc.3"));
+  const auto& nativeVersion = facebook::react::ReactNativeVersion;
+  version.setProperty(runtime, "major", nativeVersion.Major);
+  version.setProperty(runtime, "minor", nativeVersion.Minor);
+  version.setProperty(runtime, "patch", nativeVersion.Patch);
+  if (nativeVersion.Prerelease.empty()) {
+    version.setProperty(runtime, "prerelease", facebook::jsi::Value::null());
+  } else {
+    version.setProperty(runtime, "prerelease",
+        facebook::jsi::String::createFromUtf8(runtime, std::string(nativeVersion.Prerelease)));
+  }
   constants.setProperty(runtime, "reactNativeVersion", version);
 
   runtime.global().setProperty(
@@ -1080,6 +1207,24 @@ void QtReactHost::startEmptySurface(
   if (impl_->trace) impl_->surfaceGenerations[surfaceId] = generation;
 #endif
 }
+
+#if RNQNX_ENABLE_METRO_RELOAD
+bool QtReactHost::resizeSurface(SurfaceId surfaceId, float width, float height) {
+  const auto found = impl_->surfaces.find(surfaceId);
+  if (found == impl_->surfaces.end()) {
+    impl_->lastError = QStringLiteral("No surface is registered for surface %1").arg(surfaceId);
+    return false;
+  }
+  if (!std::isfinite(width) || !std::isfinite(height) || width <= 0 || height <= 0) {
+    impl_->lastError = QStringLiteral("Surface dimensions must be finite and positive");
+    return false;
+  }
+  found->second->constraintLayout(
+      makeLayoutConstraints(width, height), facebook::react::LayoutContext{});
+  return true;
+}
+
+#endif
 
 void QtReactHost::stopSurface(SurfaceId surfaceId) {
 #if RNQNX_ENABLE_FRAME_TRACE

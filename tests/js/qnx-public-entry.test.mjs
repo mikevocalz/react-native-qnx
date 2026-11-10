@@ -44,6 +44,7 @@ const expected = [
   'NativeEventEmitter',
   'NativeComponentRegistry',
   'findNodeHandle',
+  'Linking',
   'BackHandler',
   'Dimensions',
   'PixelRatio',
@@ -56,7 +57,7 @@ assert.equal(loaded.length, expected.length);
 for (const name of ['Dimensions', 'PixelRatio', 'useWindowDimensions']) {
   assert.ok(loaded.includes(`react-native/Libraries/Utilities/${name}`));
 }
-for (const name of ['Alert', 'Linking', 'NonexistentExport']) {
+for (const name of ['Alert', 'NonexistentExport']) {
   assert.throws(() => api[name], /not implemented/);
 }
 assert.equal(api.__esModule, undefined);

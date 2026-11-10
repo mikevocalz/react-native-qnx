@@ -43,8 +43,9 @@ The directory contains `modules.json`, `modules.cmake`, `config.json`, and
 helper; the command does not evaluate or rewrite `app.config.js`, `app.json`,
 or any other application file. Review and apply that snippet separately.
 The generated CMake file defines `RNQNX_EXPO_QNX_MODULE_TARGETS`; your reviewed
-native build must include it and link those targets. It does not generate a
-runtime registration table or prove the modules can run.
+native build may include it and link those targets. Explicitly ported providers can
+also declare `registrationFunction` for the opt-in [native runtime wiring](../../docs/validation/expo-autolinking-runtime-2026-11-10.md). Legacy discovery-only
+metadata remains preparation-only and does not prove modules can run.
 
 Repeated preparation of identical inputs verifies the existing bytes without
 rewriting them. Changed, missing, extra or unsafe files cause an error instead
@@ -78,6 +79,7 @@ repeatability, hashes, invalid options and unsafe metadata.
 Manifests retain `nativeBuildVerified: false` and `runtimeVerified: false`.
 Hashes cover generated files, not all module source, authenticity or licensing.
 Absolute module paths make output specific to the checkout; regenerate it when
-moving the project. QNX compile/runtime, native registration, standalone app
-creation and physical device results remain separate acceptance work. See the
+moving the project. QNX compile/runtime and physical device results remain separate acceptance
+work. The opt-in registration lane has a separate Linux native host contract
+test, not evidence that arbitrary unported Expo modules work. See the
 [release gates](../../docs/releases/v1-readiness.md).

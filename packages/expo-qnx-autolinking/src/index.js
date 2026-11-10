@@ -57,6 +57,7 @@ function resolveExpoSearchResults(searchResults, requestedPlatform = 'qnx') {
       cmakeListsPath,
       target: native.target,
       modules,
+      registrationFunction: native.registrationFunction,
       binaryName: sanitizeBinaryName(packageName),
     });
   }
@@ -88,6 +89,11 @@ function generateExpoPlatformCMake(descriptors, requestedPlatform = 'qnx') {
   ];
   const targets = new Set();
   const binaries = new Set();
+  const registrations = new Set();
+  const moduleNames = new Set(['ExpoQnxPlatform', 'ExpoApplication']);
+  const declarations = [];
+  const calls = [];
+  let runtimeReady = true;
   for (const descriptor of descriptors) {
     if (
       !/^[A-Za-z_][A-Za-z0-9_.+-]*$/.test(descriptor.target) ||
@@ -99,6 +105,27 @@ function generateExpoPlatformCMake(descriptors, requestedPlatform = 'qnx') {
     }
     if (targets.has(descriptor.target) || binaries.has(descriptor.binaryName)) {
       throw new Error('Duplicate Expo native target or binary directory.');
+    }
+    if (descriptor.registrationFunction !== undefined) {
+      const symbol = descriptor.registrationFunction;
+      if (
+        typeof symbol !== 'string' ||
+        !/^[A-Za-z][A-Za-z0-9_]*$/.test(symbol) ||
+        symbol.includes('__') ||
+        symbol === 'rnqnxRegisterExpoAutolinkedModules' ||
+        registrations.has(symbol)
+      ) {
+        throw new Error('Invalid or duplicate Expo provider registration function.');
+      }
+      registrations.add(symbol);
+      declarations.push(`extern "C" void ${symbol}(rnqnx::expo::ExpoQnxModuleRegistry&);`);
+      calls.push(`  ${symbol}(registry);`);
+    } else if (descriptor.modules.length > 0) {
+      runtimeReady = false;
+    }
+    for (const name of descriptor.modules) {
+      if (moduleNames.has(name)) throw new Error('Duplicate or reserved Expo module name.');
+      moduleNames.add(name);
     }
     targets.add(descriptor.target);
     binaries.add(descriptor.binaryName);
@@ -122,6 +149,22 @@ function generateExpoPlatformCMake(descriptors, requestedPlatform = 'qnx') {
     );
     lines.push(`list(APPEND ${variable} ${descriptor.target})`, '');
   }
+  if (registrations.size === 0) return `${lines.join('\n')}\n`;
+  const source = [
+    '#include "ExpoQnxModuleRegistry.hpp"',
+    ...declarations,
+    'void rnqnxRegisterExpoAutolinkedModules(rnqnx::expo::ExpoQnxModuleRegistry& registry) {',
+    '  (void)registry;',
+    ...calls,
+    '}',
+    '',
+  ].join('\n');
+  lines.push(`set(RNQNX_EXPO_AUTOLINK_RUNTIME_READY ${runtimeReady ? 'TRUE' : 'FALSE'})`);
+  lines.push(`set(RNQNX_EXPO_AUTOLINK_TARGETS \${${variable}})`);
+  lines.push(
+    'set(RNQNX_EXPO_AUTOLINK_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/ExpoAutolinking.generated.cpp")'
+  );
+  lines.push(`file(WRITE "\${RNQNX_EXPO_AUTOLINK_SOURCE}" [==[${source}]==])`);
   return `${lines.join('\n')}\n`;
 }
 function generateQnxCMake(descriptors) {

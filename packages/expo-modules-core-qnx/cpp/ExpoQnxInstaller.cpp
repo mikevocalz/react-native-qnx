@@ -9,6 +9,10 @@
 #include <memory>
 #include <string>
 
+#if RNQNX_HAS_EXPO_AUTOLINKING
+void rnqnxRegisterExpoAutolinkedModules(rnqnx::expo::ExpoQnxModuleRegistry& registry);
+#endif
+
 namespace rnqnx::expo {
 namespace {
 
@@ -37,6 +41,9 @@ void registerBuiltins() {
 
 void installExpoModulesQnx(facebook::jsi::Runtime& runtime) {
   registerBuiltins();
+#if RNQNX_HAS_EXPO_AUTOLINKING
+  rnqnxRegisterExpoAutolinkedModules(ExpoQnxModuleRegistry::instance());
+#endif
 #if RNQNX_ENABLE_EXPO_APPLICATION
   registerApplicationModule();
 #endif

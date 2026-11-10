@@ -60,3 +60,41 @@ assert.equal(config.extra.rnQnx.autolinkingJson, 'custom/qnx.json');
 assert.equal(config.extra.rnQnx.autolinkingCMake, 'build/generated/expo-qnx-modules.cmake');
 
 console.log('expo-qnx-autolinking.test.mjs passed');
+
+const registered = { ...descriptors[0], registrationFunction: 'registerContract' };
+const wired = autolinking.generateQnxCMake([registered]);
+assert.match(wired, /registerContract\(registry\)/);
+assert.match(wired, /RUNTIME_READY TRUE/);
+assert.doesNotMatch(cmake, /RUNTIME_READY/);
+assert.throws(
+  () => autolinking.generateQnxCMake([{ ...registered, registrationFunction: 'bad();' }]),
+  /registration function/
+);
+assert.throws(
+  () => autolinking.generateQnxCMake([{ ...registered, modules: ['ExpoApplication'] }]),
+  /reserved/
+);
+assert.throws(
+  () =>
+    autolinking.generateQnxCMake([
+      registered,
+      { ...registered, target: 'second', binaryName: 'second', modules: ['Second'] },
+    ]),
+  /registration function/
+);
+assert.throws(
+  () =>
+    autolinking.generateQnxCMake([
+      registered,
+      { ...registered, target: 'second', binaryName: 'second', registrationFunction: 'second' },
+    ]),
+  /reserved/
+);
+
+assert.throws(
+  () =>
+    autolinking.generateQnxCMake([
+      { ...registered, registrationFunction: 'rnqnxRegisterExpoAutolinkedModules' },
+    ]),
+  /registration function/
+);

@@ -1,0 +1,74 @@
+name: Experimental Worklets and Metro host runtime
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: worklets-host-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  worklets-host:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      QT_QPA_PLATFORM: offscreen
+      QT_QUICK_BACKEND: software
+      QSG_RHI_BACKEND: software
+      ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
+      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libclang-dev libicu-dev
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          cache: true
+      - name: Compile and execute real public Worklets runtime
+        run: |
+          set -euo pipefail
+          mkdir -p build/linux-host-renderer/evidence
+          git rev-parse HEAD > build/linux-host-renderer/evidence/worklets-commit.txt
+          cmake --preset linux-host-renderer -DRNQNX_ENABLE_WORKLETS=ON -DRNQNX_BUILD_WORKLETS_TESTS=ON
+          cmake --build build/linux-host-renderer --target rnqnx_worklets_runtime_test rnqnx_worklets_scheduler_test rnqnx_worklets_frames_test -j2
+          ctest --test-dir build/linux-host-renderer -R '^rnqnx_worklets_' --no-tests=error --output-on-failure -V | tee build/linux-host-renderer/evidence/worklets.txt
+          sha256sum build/linux-host-renderer/rnqnx-worklets-*.bundle.js build/linux-host-renderer/bin/rnqnx_worklets_runtime_test > build/linux-host-renderer/evidence/worklets-sha256.txt
+      - name: Reuse host dependencies for real Metro full reload
+        run: |
+          set -euo pipefail
+          cmake --preset linux-host-renderer -DRNQNX_ENABLE_WORKLETS=OFF -DRNQNX_BUILD_WORKLETS_TESTS=OFF -DRNQNX_ENABLE_METRO_RELOAD=ON -DRNQNX_METRO_RELOAD_SANITIZERS=ON
+          cmake --build build/linux-host-renderer --target rnqnx_metro_reload_test -j2
+          ctest --test-dir build/linux-host-renderer -R '^rnqnx_metro_reload_test$' --no-tests=error --output-on-failure -V | tee build/linux-host-renderer/evidence/metro-reload-native.txt
+          node tests/native/metro-reload/run-metro.cjs "$PWD/build/linux-host-renderer/rnqnx_metro_reload_test" | tee build/linux-host-renderer/evidence/metro-reload-real.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: worklets-host-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            build/linux-host-renderer/evidence/
+            build/linux-host-renderer/Testing/Temporary/
+            build/linux-host-renderer/CMakeCache.txt
+          if-no-files-found: warn

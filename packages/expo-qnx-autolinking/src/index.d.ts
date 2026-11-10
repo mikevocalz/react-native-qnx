@@ -5,6 +5,7 @@ export interface QnxExpoModuleDescriptor {
   cmakeListsPath: string;
   target: string;
   modules: string[];
+  registrationFunction?: string;
   binaryName: string;
 }
 

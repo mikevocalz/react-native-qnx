@@ -16,11 +16,14 @@
 #include <QObject>
 #include <QString>
 
+#include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 class QWindow;
+class QQuickWindow;
 
 namespace rnqnx::runtime {
 
@@ -152,6 +155,11 @@ class QtReactHost {
   QtReactHost(QtReactHost&&) = delete;
   QtReactHost& operator=(QtReactHost&&) = delete;
 
+#if RNQNX_ENABLE_METRO_RELOAD
+  /// Defers lifecycle work until an idle owner-thread boundary.
+  void whenIdle(std::function<void()> action);
+  bool resizeSurface(facebook::react::SurfaceId surfaceId, float width, float height);
+#endif
   facebook::jsi::Runtime& runtime();
   /// Shared native completion route; closes before the host's Hermes teardown.
   std::shared_ptr<QtRuntimeTaskQueue> taskQueue() const;
@@ -188,10 +196,21 @@ class QtReactHost {
   /// returns nullptr so `getEnforcing` fails with the module's name, which
   /// ADR-0004 requires over empty TurboModules that silence the error.
   void installTurboModuleBinding();
+#if RNQNX_ENABLE_LINKING
+  /// Bind this runtime as the sole application URL receiver, once before JS
+  /// evaluation. Only named custom schemes are accepted. No outbound dispatch.
+  void configureLinking(const std::vector<std::string>& schemes,
+      const std::optional<std::string>& initialURL = std::nullopt);
+#endif
 #if RNQNX_ENABLE_BACK_HANDLER
   /// Attach exactly one host window after installing the RN binding. nullptr
   /// detaches and cancels queued old-window Back events. Borrowed via QPointer.
   void setBackHandlerWindow(QWindow* window);
+#endif
+#if RNQNX_ENABLE_WORKLETS
+  /// Borrow one QQuickWindow after installing binding, before bundle load.
+  /// Replacing the window requires a new host. No timer-based frame fallback.
+  void setWorkletsWindow(QQuickWindow* window);
 #endif
 
   /// Errors JavaScript has reported through ExceptionsManager, oldest first.

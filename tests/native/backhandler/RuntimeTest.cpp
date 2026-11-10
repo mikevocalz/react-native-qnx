@@ -134,6 +134,7 @@ void contract(const std::string& bundle, const std::string& platform) {
   fixture.assertJS("p.available && !p.error");
   fixture.evaluate("p.configure(true);");
   back(fixture.window);
+  fixture.assertJS("p.calls.length === 0"); // No inline JS in Qt event filter.
   fixture.host->pumpEvents();
   fixture.assertJS("JSON.stringify(p.calls) === '[\"last\"]'");
   require(fixture.window.closeRequests == 0, "Consumed Back closed the window");
@@ -165,6 +166,14 @@ void contract(const std::string& bundle, const std::string& platform) {
   fixture.host->setBackHandlerWindow(nullptr);
   fixture.evaluate("let rejected = false; try { p.exit(); } catch (e) { rejected = /attached live/.test(e.message); } if (!rejected) throw new Error('Detached exit must fail');");
   fixture.host->setBackHandlerWindow(&fixture.window);
+  fixture.evaluate("globalThis.badBack = p.addThrowingListener();");
+  const auto errorsBefore = fixture.host->javaScriptErrors().size();
+  back(fixture.window);
+  require(fixture.host->javaScriptErrors().size() == errorsBefore, "Back handler ran inline");
+  fixture.host->pumpEvents();
+  require(fixture.host->javaScriptErrors().size() > errorsBefore, "Throwing Back handler not reported");
+  require(fixture.window.closeRequests == 4, "Throwing Back handler invoked fallback");
+  fixture.evaluate("badBack.remove();");
   fixture.evaluate("globalThis.__rctDeviceEventEmitter.removeAllListeners('hardwareBackPress');");
   back(fixture.window);
   fixture.host->pumpEvents();

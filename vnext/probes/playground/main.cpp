@@ -1,3 +1,6 @@
+#if RNQNX_ENABLE_METRO_RELOAD
+#include "react-native-qnx/runtime/MetroReloadSession.h"
+#endif
 #include "react-native-qnx/runtime/QtFrameSwapTrace.h"
 #include "react-native-qnx/views/QtTextInputQml.h"
 // Runs apps/rn-playground in a real window.
@@ -238,6 +241,11 @@ int main(int argc, char** argv) {
   parser.setApplicationDescription(
       QStringLiteral("Runs the React Native QNX playground in a window."));
   parser.addHelpOption();
+#if RNQNX_ENABLE_METRO_RELOAD
+  const QCommandLineOption devUrlOption(QStringLiteral("dev-bundle-url"),
+      QStringLiteral("Loopback Metro URL; F5 full reload resets application state."), QStringLiteral("url"));
+  parser.addOption(devUrlOption);
+#endif
   rnqnx::runtime::addApplicationIdentityOptions(parser);
   const QCommandLineOption bundleOption(
       QStringLiteral("bundle"),
@@ -255,6 +263,14 @@ int main(int argc, char** argv) {
       QStringLiteral("Export bounded native diagnostics after host shutdown (new file only)."),
       QStringLiteral("path"));
   parser.addOption(traceOption);
+#endif
+#if RNQNX_ENABLE_LINKING
+  const QCommandLineOption schemeOption(QStringLiteral("url-scheme"),
+      QStringLiteral("Custom app URL scheme to receive (repeatable)."), QStringLiteral("scheme"));
+  const QCommandLineOption initialURLOption(QStringLiteral("initial-url"),
+      QStringLiteral("Initial custom-scheme application URL."), QStringLiteral("url"));
+  parser.addOption(schemeOption);
+  parser.addOption(initialURLOption);
 #endif
   parser.addOption(fullscreenOption);
   parser.addOption(bundleOption);
@@ -285,15 +301,27 @@ int main(int argc, char** argv) {
       : QStringLiteral(RNQNX_PLAYGROUND_BUNDLE_PATH);
 #endif
 
+  bool development = false;
+#if RNQNX_ENABLE_METRO_RELOAD
+  development = parser.isSet(devUrlOption);
+  if (development && (parser.isSet(bundleOption) || parser.isSet(screenshotOption)
+#if RNQNX_ENABLE_FRAME_TRACE
+      || parser.isSet(traceOption)
+#endif
+      )) {
+    std::fprintf(stderr, "Metro reload cannot be combined with bundle/screenshot/trace modes\n");
+    return 2;
+  }
+#endif
   QFile bundleFile(bundlePath);
-  if (!bundleFile.open(QIODevice::ReadOnly)) {
+  if (!development && !bundleFile.open(QIODevice::ReadOnly)) {
     std::fprintf(
         stderr,
         "Could not read the bundle at %s\n",
         bundlePath.toUtf8().constData());
     return 1;
   }
-  const QByteArray bundle = bundleFile.readAll();
+  const QByteArray bundle = development ? QByteArray{} : bundleFile.readAll();
 
   QQuickWindow window;
 #ifdef RNQNX_MARATHON_HOST
@@ -358,6 +386,65 @@ int main(int argc, char** argv) {
   std::shared_ptr<rnqnx::runtime::RuntimeTrace> trace;
   if (parser.isSet(traceOption)) trace = std::make_shared<rnqnx::runtime::RuntimeTrace>(16384);
 #endif
+#if RNQNX_ENABLE_METRO_RELOAD
+  if (development) {
+    try {
+      rnqnx::runtime::MetroReloadSession::Configuration config;
+      config.bundleUrl = QUrl(parser.value(devUrlOption));
+      config.componentName = identity.componentName.toStdString();
+      config.surfaceId = kSurfaceId;
+      rnqnx::runtime::MetroReloadSession session(adapter, config,
+          [&](rnqnx::runtime::QtReactHost& host) {
+            (void)host;
+#if RNQNX_ENABLE_WORKLETS
+            host.setWorkletsWindow(&window);
+#endif
+#ifdef RNQNX_PLAYGROUND_NITRO_QNX
+#ifdef RNQNX_PLAYGROUND_NITRO_QT
+            rnqnx::nitro::installQnxNitroRuntime(host.runtime(),
+                std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue()));
+#else
+            rnqnx::nitro::installQnxNitroRuntime(host.runtime());
+#endif
+#endif
+#if RNQNX_ENABLE_INPUT_LIFECYCLE
+            host.delegate().setTouchDispatcher(&touchDispatcher);
+#endif
+#if RNQNX_ENABLE_BACK_HANDLER
+            host.setBackHandlerWindow(&window);
+#endif
+#if RNQNX_ENABLE_LINKING
+            if (parser.isSet(schemeOption) || parser.isSet(initialURLOption)) {
+              std::vector<std::string> schemes;
+              for (const auto& scheme : parser.values(schemeOption)) schemes.push_back(scheme.toStdString());
+              std::optional<std::string> initialURL;
+              if (parser.isSet(initialURLOption)) initialURL = parser.value(initialURLOption).toStdString();
+              host.configureLinking(schemes, initialURL);
+            }
+#endif
+          });
+      session.addStatusListener([](const auto& status) {
+        std::fprintf(stderr, "RNQNX_METRO_RELOAD generation=%llu phase=%d %s\n",
+            static_cast<unsigned long long>(status.generation), static_cast<int>(status.phase),
+            status.message.toUtf8().constData());
+      });
+      window.installEventFilter(&session);
+      const auto resize = [&] { session.resize(window.width(), window.height()); };
+      QObject::connect(&window, &QWindow::widthChanged, &session, resize);
+      QObject::connect(&window, &QWindow::heightChanged, &session, resize);
+      resize();
+      if (parser.isSet(fullscreenOption)) window.showFullScreen(); else window.show();
+      session.start();
+      const int exitCode = QGuiApplication::exec();
+      session.stop();
+      return exitCode;
+    } catch (const std::exception& error) {
+      std::fprintf(stderr, "RNQNX_METRO_RELOAD_ERROR %s\n", error.what());
+      return 2;
+    }
+  }
+#endif
+
   const int result = [&]() {
 #if RNQNX_ENABLE_FRAME_TRACE
   rnqnx::runtime::QtFrameSwapTrace frameSwapTrace(window, trace);
@@ -379,6 +466,23 @@ int main(int argc, char** argv) {
   host.installTurboModuleBinding();
 #if RNQNX_ENABLE_BACK_HANDLER
   host.setBackHandlerWindow(&window);
+#endif
+#if RNQNX_ENABLE_LINKING
+  if (parser.isSet(schemeOption) || parser.isSet(initialURLOption)) {
+    std::vector<std::string> schemes;
+    for (const auto& scheme : parser.values(schemeOption)) schemes.push_back(scheme.toStdString());
+    std::optional<std::string> initialURL;
+    if (parser.isSet(initialURLOption)) initialURL = parser.value(initialURLOption).toStdString();
+    try {
+      host.configureLinking(schemes, initialURL);
+    } catch (const std::exception& error) {
+      std::fprintf(stderr, "RNQNX_LINKING_CONFIGURATION_ERROR %s\n", error.what());
+      return 2;
+    }
+  }
+#endif
+#if RNQNX_ENABLE_WORKLETS
+  host.setWorkletsWindow(&window);
 #endif
   host.installComponentProvider();
   host.installPlatformConstants();

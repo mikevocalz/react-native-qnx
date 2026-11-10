@@ -19,14 +19,15 @@ vm.runInNewContext(source, {
 assert.equal(module.exports.default, dispatcher);
 assert.equal(module.exports, dispatcher);
 assert.equal(loaded.length, 2);
-assert.throws(
-  () =>
-    vm.runInNewContext(source, {
-      module: { exports: {} },
-      require: () => ({ default: null }),
-    }),
-  /RNQNX_ENABLE_BACK_HANDLER/
+const disabled = { exports: /** @type {any} */ ({}) };
+assert.doesNotThrow(() =>
+  vm.runInNewContext(source, {
+    module: disabled,
+    require: () => ({ default: null }),
+  })
 );
+assert.throws(() => disabled.exports.addEventListener(), /RNQNX_ENABLE_BACK_HANDLER/);
+assert.throws(() => disabled.exports.exitApp(), /RNQNX_ENABLE_BACK_HANDLER/);
 
 // The platform package must not depend on a hoisted Babel runtime helper merely
 // to forward RN's dispatcher. Transform with the actual repository Babel preset.
