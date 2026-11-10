@@ -1,5 +1,14 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — PR 109 Docker-context regression
+
+The unchanged running-host fixture reproduced failure before the fix; the
+updated helper passes all 12 inert host-command scenarios, Bash syntax,
+TypeScript, dependency validation and documentation/format checks. Full JS
+advances with CMake 4.4.4, then fails at the existing Marathon fixture's
+`listen EPERM`; local ShellCheck is unavailable. No real macOS host or
+physical target was operated. [Exact commands and historical CI](../validation/pr109-merge-readiness-2026-11-10.md).
+
 ## 2026-10-03 braces security backport
 
 Host: Linux cloud workspace, Node 26.10.0, pnpm 12.8.1. No QNX SDK or target.

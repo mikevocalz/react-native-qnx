@@ -1,5 +1,14 @@
 # Current state
 
+## PR 109 SDK-host review — 2026-11-10
+
+The helper now clears its inherited Docker context before selecting the
+Colima socket, preventing inspection/start on another daemon. The actual
+Bash entry point passes 12 inert command scenarios; no real VM/container was
+started. [Candidate, source hashes and limits](../validation/pr109-merge-readiness-2026-11-10.md).
+The full local JS suite is blocked by the existing Marathon socket fixture.
+The historical platform baseline and all seven release gates are unchanged.
+
 Reconciled against `main` at `5f17504` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the
 [compatibility matrix](../getting-started/compatibility-matrix.md) are generated

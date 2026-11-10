@@ -1,5 +1,15 @@
 # SESSION_LOG.md
 
+## 2026-11-10 — PR 109 host-context fix and regression
+
+Independent source review found that Docker's documented `DOCKER_CONTEXT`
+precedence defeated the helper's intended socket selection. Reproduced the
+failure, cleared that variable inside the helper process, updated both manual
+runbook examples and added 12 inert behavioral scenarios. Ran focused/static
+checks; the full JS suite reached the existing socket restriction after
+supplying CMake. No real VM/container or QNX target was changed.
+[Full receipt](../validation/pr109-merge-readiness-2026-11-10.md).
+
 ## 2026-10-04 — Replace arithmetic-only React QNX probe
 
 - Replaced UIManager-plus-arithmetic success with a real bundled React surface,

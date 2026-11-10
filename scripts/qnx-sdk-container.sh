@@ -36,6 +36,9 @@ colima_state() {
 
 use_profile_socket() {
   local socket="${HOME}/.colima/${profile}/docker.sock"
+  # Docker gives DOCKER_CONTEXT precedence over DOCKER_HOST. Keep every
+  # inspect/start/exec on this profile; this does not change the parent shell.
+  unset DOCKER_CONTEXT
   export DOCKER_HOST="unix://${socket}"
 }
 

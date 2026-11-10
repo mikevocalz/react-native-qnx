@@ -1,5 +1,14 @@
 # NEXT_ACTIONS.md
 
+## PR 109 continuation — 2026-11-10
+
+Review/publish the host-selection fix and inspect its current-head Pi tooling
+and SDK checks. Reproduce the focused check with
+`node tests/js/qnx-sdk-container.test.mjs`. At the next supervised Mac
+session run `scripts/qnx-sdk-container.sh status` while the caller has another
+Docker context selected; verify only the configured Colima socket is used.
+[Receipt, target limits and rollback](../validation/pr109-merge-readiness-2026-11-10.md).
+
 ## Dependency-security follow-through (2026-10-03)
 
 Review the braces depth backport and guarded audit in `docs/security/braces.md`.

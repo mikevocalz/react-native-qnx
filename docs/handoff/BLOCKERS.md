@@ -1,5 +1,13 @@
 # BLOCKERS.md
 
+## PR 109 review state — 2026-11-10
+
+The inherited-Docker-context selection defect is fixed and regression-tested
+with inert host CLIs. The existing cloud Unix-socket restriction prevents a
+full local JS pass; ShellCheck is not installed locally. Published-candidate
+CI and independent review must cover these checks. The original `cb59d61`
+hosted passes remain historical. [Evidence and next gate](../validation/pr109-merge-readiness-2026-11-10.md).
+
 ## GHSA-vfj7-8cjw-p6xm — No official braces fixed release
 
 As of 2026-10-03, npm latest is 3.0.3 and upstream PR #72 is still open.

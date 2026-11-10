@@ -42,6 +42,7 @@ The flags above are the profile values read from `~/.colima/default/colima.yaml`
 
 Point the Docker CLI at the profile:
 
+    unset DOCKER_CONTEXT
     export DOCKER_HOST=unix://$HOME/.colima/default/docker.sock
 
 ## Recreate the container
@@ -139,9 +140,12 @@ When the VM stops, every container exits, and `qnx805-build` has restart policy 
 
 `start` runs `colima start --profile default` if the profile is stopped, exports `DOCKER_HOST` for the profile, runs `docker start qnx805-build`, and then checks that `/work/qnx800/qnxsdp-env.sh` exists in the container. It prints one `PASS` or `FAIL` line per check and exits non-zero on any failure. It does not create or remove a profile or container: if either is missing it reports `FAIL` and you follow the recreate sections above. `COLIMA_PROFILE`, `QNX_SDK_CONTAINER` and `QNX_SDK_ENV_FILE` override the defaults.
 
+Both commands clear `DOCKER_CONTEXT` inside the script before selecting the profile socket. Docker otherwise gives that variable precedence over `DOCKER_HOST`, which could select a different daemon. Your parent shell and saved Docker context stay unchanged. See [Docker CLI environment variables](https://docs.docker.com/reference/cli/docker/#environment-variables).
+
 Manual equivalent:
 
     colima start --profile default
+    unset DOCKER_CONTEXT
     export DOCKER_HOST=unix://$HOME/.colima/default/docker.sock
     docker start qnx805-build
 
