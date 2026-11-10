@@ -102,6 +102,14 @@ class GroupedNumbers final : public std::numpunct<char> {
   char do_thousands_sep() const override { return ','; }
   std::string do_grouping() const override { return "\3"; }
 };
+void frameSwapExport() {
+  RuntimeTrace trace(1);
+  trace.record(TraceStage::FrameSwapped, TracePhase::Instant, trace.nextId());
+  std::ostringstream output;
+  RuntimeTrace::writeJson(trace.freeze(), output);
+  require(output.str().find("\"stage\":\"qt.frame-swapped\"") != std::string::npos,
+      "frame-swap stage export");
+}
 void spansAndExport() {
   auto trace = std::make_shared<RuntimeTrace>(20);
   {
@@ -142,6 +150,7 @@ int main(int argc, char** argv) {
     boundedAndFrozen();
     concurrentOrder();
     spansAndExport();
+    frameSwapExport();
     if (argc == 2 && std::string_view(argv[1]) == "--json") {
       RuntimeTrace trace(2);
       trace.record(TraceStage::QueueAdmission, TracePhase::Instant, 17);

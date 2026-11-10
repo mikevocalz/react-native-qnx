@@ -45,6 +45,13 @@ if (process.platform !== 'linux') {
 }
 run('cmake', ['--preset', preset]);
 const cache = readFileSync(path.join(build, 'CMakeCache.txt'), 'utf8');
+if (/^RNQNX_ENABLE_FRAME_TRACE:BOOL=ON$/m.test(cache)) {
+  expectedTests.push(
+    'rnqnx_runtime_trace_test',
+    'rnqnx_runtime_trace_json',
+    'rnqnx_qt_frame_swap_trace_test'
+  );
+}
 if (/^RNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=ON$/m.test(cache)) {
   expectedTests.push(
     'rnqnx_text_input_probe',

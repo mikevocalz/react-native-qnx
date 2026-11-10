@@ -1,3 +1,4 @@
+#include "react-native-qnx/runtime/QtFrameSwapTrace.h"
 #include "react-native-qnx/views/QtTextInputQml.h"
 // Runs apps/rn-playground in a real window.
 //
@@ -359,6 +360,7 @@ int main(int argc, char** argv) {
 #endif
   const int result = [&]() {
 #if RNQNX_ENABLE_FRAME_TRACE
+  rnqnx::runtime::QtFrameSwapTrace frameSwapTrace(window, trace);
   rnqnx::runtime::QtReactHost host(adapter, trace);
 #else
   rnqnx::runtime::QtReactHost host(adapter);

@@ -5,6 +5,7 @@ get_filename_component(RNQNX_REACT_QT_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLU
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxWebSockets.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxAppState.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxBackHandler.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/RnqnxFrameSwapTrace.cmake)
 
 # Add the opt-in consumer only after the existing runtime and optional native
 # adapters have been declared. The OFF path leaves all original targets alone.
@@ -114,7 +115,8 @@ function(rnqnx_add_react_host_target)
     Qt6::Network
   )
   if(RNQNX_ENABLE_FRAME_TRACE)
-    target_link_libraries(rnqnx_react_host PUBLIC rnqnx_runtime_trace)
+    rnqnx_add_qt_frame_swap_trace()
+    target_link_libraries(rnqnx_react_host PUBLIC rnqnx_runtime_trace rnqnx_qt_frame_swap_trace)
   endif()
   if(RNQNX_ENABLE_WEBSOCKETS)
     target_compile_definitions(rnqnx_react_host PRIVATE RNQNX_ENABLE_WEBSOCKETS)
