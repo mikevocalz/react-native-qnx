@@ -87,6 +87,7 @@ export async function runLauncherTool(program, args, input = '', timeoutMs = 450
     let output = '';
     let errorOutput = '';
     let settled = false;
+    /** @type {Error | undefined} */ let failure;
     /** @type {NodeJS.Timeout | undefined} */ let force;
     /** @param {NodeJS.Signals} signal */
     const kill = (signal) => {
@@ -94,21 +95,30 @@ export async function runLauncherTool(program, args, input = '', timeoutMs = 450
         if (child.pid) process.kill(-child.pid, signal);
       } catch {}
     };
-    /** @param {Error} error */
-    const fail = (error) => {
+    /** @param {Error} [error] */
+    const finish = (error) => {
       if (settled) return;
       settled = true;
-      kill('SIGTERM');
-      force = setTimeout(() => {
-        kill('SIGKILL');
-        child.stdout.destroy();
-        child.stderr.destroy();
-      }, 1000);
-      force.unref();
+      kill('SIGKILL');
       clearTimeout(timer);
+      clearTimeout(force);
       process.off('SIGINT', interrupt);
       process.off('SIGTERM', terminate);
-      reject(error);
+      child.stdin.destroy();
+      child.stdout.destroy();
+      child.stderr.destroy();
+      child.unref();
+      if (failure || error) reject(failure ?? error);
+      else resolve(output);
+    };
+    /** @param {Error} error */
+    const fail = (error) => {
+      if (failure || settled) return;
+      failure = error;
+      kill('SIGTERM');
+      // Keep this timer referenced until the entire owned process group is
+      // killed, even if the immediate child exits and closes its pipes first.
+      force = setTimeout(() => finish(failure), 1000);
     };
     const interrupt = () => fail(new Error('Launcher command interrupted.'));
     const terminate = () => fail(new Error('Launcher command terminated.'));
@@ -120,23 +130,20 @@ export async function runLauncherTool(program, args, input = '', timeoutMs = 450
     process.on('SIGTERM', terminate);
     child.stdin.on('error', () => {});
     child.stdout.on('data', (chunk) => {
+      if (failure || settled) return;
       output += chunk.toString();
       if (output.length > 1024 * 1024) fail(new Error('Device output exceeded its bound.'));
     });
     child.stderr.on('data', (chunk) => {
+      if (failure || settled) return;
       errorOutput += chunk.toString();
       if (errorOutput.length > 1024 * 1024) fail(new Error('Device errors exceeded their bound.'));
     });
-    child.once('error', fail);
+    child.once('error', (error) => finish(error));
     child.once('close', (code) => {
-      clearTimeout(timer);
-      clearTimeout(force);
-      process.off('SIGINT', interrupt);
-      process.off('SIGTERM', terminate);
-      if (settled) return;
-      settled = true;
-      if (code === 0) resolve(output);
-      else reject(new Error(`${program} failed (${code}): ${errorOutput.trim()}`));
+      finish(
+        code === 0 ? undefined : new Error(`${program} failed (${code}): ${errorOutput.trim()}`)
+      );
     });
     child.stdin.end(input);
   });
@@ -189,6 +196,7 @@ trap 'rmdir ${registry}/lock' EXIT
 trap 'exit 130' HUP INT TERM
 safe_directory ${q(registry + '/apps')}
 safe_file ${q(registry + '/base.conf')}
+safe_file ${q(registry + '/desktop.conf')}
 safe_file ${q(registry + '/desktop.conf.new')}
 if test ! -s ${q(registry + '/base.conf')}; then
   for desktop in ${q(stockDirectory)}/*.desktop; do
@@ -287,6 +295,8 @@ else
   printf '%s\\n' ${q(files.owner.trim())} >${q(entry + '/owner')}
 fi
 `;
+  script += `safe_file ${q(entry + '/icon.png')}\n`;
+  for (const name of Object.keys(files)) script += `safe_file ${q(entry + '/' + name)}\n`;
   for (const [name, text] of Object.entries(files))
     script += writeText(entry + '/' + name + '.new', text);
   script += `safe_file ${q(registry + '/' + upload)}

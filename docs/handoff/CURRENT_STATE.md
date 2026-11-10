@@ -1,5 +1,11 @@
 # Current state
 
+## 2026-11-10 — PR #103 readiness follow-up
+
+Fixed two reproduced launcher failure paths: timeout cleanup no longer leaves TERM-ignoring descendants after the immediate child closes, and managed destination symlinks/directories are rejected before replacement. Application registration remains non-root and explicit; executable/user data and the OS launcher configuration remain outside removal scope.
+
+Receipt: [launcher-review-2026-11-10.md](../evidence/launcher-review-2026-11-10.md).
+
 Reconciled against `main` at `5f17504` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the
 [compatibility matrix](../getting-started/compatibility-matrix.md) are generated

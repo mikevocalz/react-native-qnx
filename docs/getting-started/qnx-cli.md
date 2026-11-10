@@ -191,8 +191,15 @@ the physical monitor displays the icon; Screen context metadata may be inaccessi
 to a separate unprivileged client. On device failure, the existing
 launcher is left running if the replacement was not ready; registration may
 already be written, so correct the cause and rerun. Device commands are bounded
-locally, but losing SSH is not proof that remote file operations were cancelled.
+locally; a failed command kills its owned local process group before returning.
+Losing SSH is not proof that remote file operations were cancelled.
 A stale operation lock must be reviewed, not blindly removed during another install.
+
+`Unsafe launcher file` means a managed file was replaced with a symlink or
+directory. Inspect your application registration directory and restore the owned
+file before retrying; the installer refuses to follow that destination.
+The [failure recovery review](../evidence/launcher-review-2026-11-10.md) records
+the host tests and the remaining target checks.
 
 This integration never starts privileged services or changes boot configuration.
 For persistence across boots the image owner must configure the OS launcher to

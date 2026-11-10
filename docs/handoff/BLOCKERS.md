@@ -1,5 +1,11 @@
 # BLOCKERS.md
 
+## 2026-11-10 — PR #103 readiness follow-up
+
+This cloud environment rejects the Marathon launcher Unix socket fixture with `listen EPERM`. Physical QNX icon click/foreground, extra launch arguments, refresh/update/removal UI, and user-data retention still need a named target receipt. Historical backend registration is not visual acceptance; local process cleanup is not remote cancellation.
+
+Receipt: [launcher-review-2026-11-10.md](../evidence/launcher-review-2026-11-10.md).
+
 ## GHSA-vfj7-8cjw-p6xm — No official braces fixed release
 
 As of 2026-10-03, npm latest is 3.0.3 and upstream PR #72 is still open.

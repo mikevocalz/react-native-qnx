@@ -14,6 +14,7 @@ import {
 } from 'node:fs/promises';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
+import { setTimeout as delay } from 'node:timers/promises';
 import { crc32 } from 'node:zlib';
 import {
   launcherConfiguration,
@@ -206,6 +207,27 @@ try {
       (await readFile(stock + '/stock.desktop', 'utf8'))
   );
   const unchanged = await readFile(desktop);
+  for (const managed of [
+    registry + '/apps/' + configuration.appId + '/icon.png',
+    registry + '/apps/' + configuration.appId + '/launch.sh',
+    registry + '/apps/' + configuration.appId + '/app.desktop',
+    registry + '/apps/' + configuration.appId + '/entry.conf',
+    registry + '/desktop.conf',
+  ]) {
+    const saved = await readFile(managed);
+    const external = temporary + '/external-' + path.basename(managed);
+    await mkdir(external);
+    await writeFile(external + '/keep', 'unrelated directory');
+    await rm(managed);
+    await symlink(external, managed);
+    await writeFile(registry + '/incoming-' + configuration.appId + '.png', icon);
+    shell(installLauncherScript(configuration, home, deployed, 'app', false, stock), false);
+    check((await lstat(managed)).isSymbolicLink());
+    assert.deepEqual(await readdir(external), ['keep'], 'update followed a managed symlink');
+    checks++;
+    await rm(managed);
+    await writeFile(managed, saved);
+  }
   await writeFile(registry + '/incoming-' + configuration.appId + '.png', 'corrupt icon');
   shell(installLauncherScript(configuration, home, deployed, 'app', false, stock), false);
   check((await readFile(desktop)).equals(unchanged));
@@ -436,6 +458,45 @@ try {
     )
   );
   check(Date.now() - started < 2000);
+  // A descendant can ignore TERM and close its inherited pipes before its
+  // parent exits. The parent's close event must not cancel group cleanup.
+  const heartbeat = temporary + '/command-heartbeat';
+  const descendantPid = temporary + '/command-descendant.pid';
+  const worker = `
+    const fs = require('node:fs');
+    process.on('SIGTERM', () => {});
+    fs.writeFileSync(${JSON.stringify(descendantPid)}, String(process.pid));
+    setInterval(() => fs.writeFileSync(${JSON.stringify(heartbeat)}, String(Date.now())), 20);
+    setTimeout(() => process.exit(0), 8000);
+  `;
+  try {
+    await assert.rejects(
+      runLauncherTool(
+        process.execPath,
+        [
+          '-e',
+          `require('node:child_process').spawn(process.execPath, ['-e', ${JSON.stringify(worker)}], { stdio: 'ignore' }); setInterval(() => {}, 1000);`,
+        ],
+        '',
+        1000
+      ),
+      /deadline/
+    );
+    await delay(1200);
+    const stopped = await readFile(heartbeat, 'utf8');
+    await delay(100);
+    assert.equal(await readFile(heartbeat, 'utf8'), stopped, 'timed-out descendant kept running');
+    checks++;
+  } finally {
+    const pid = Number(await readFile(descendantPid, 'utf8').catch(() => '0'));
+    if (pid > 0) {
+      try {
+        process.kill(pid, 'SIGKILL');
+      } catch (error) {
+        if (!(error instanceof Error && 'code' in error && error.code === 'ESRCH')) throw error;
+      }
+    }
+  }
   // Planning must validate the launcher icon before any cross-build starts.
   const planProject = temporary + '/plan-consumer';
   const planEnv = { QNX_HOST: process.env.QNX_HOST, QNX_TARGET: process.env.QNX_TARGET };

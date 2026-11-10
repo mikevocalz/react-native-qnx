@@ -1,5 +1,11 @@
 # SESSION_LOG.md
 
+## 2026-11-10 — PR #103 readiness follow-up
+
+`audit_base_stack` reproduced the orphan-process heartbeat failure and symlinked icon false success, fixed both boundaries, and passed 136 launcher checks. Production changes are confined to launcher-device.mjs; pins, native APIs, renderer and boot behavior remain unchanged. Independent review belongs to the integrator.
+
+Receipt: [launcher-review-2026-11-10.md](../evidence/launcher-review-2026-11-10.md).
+
 ## 2026-10-04 — Replace arithmetic-only React QNX probe
 
 - Replaced UIManager-plus-arithmetic success with a real bundled React surface,

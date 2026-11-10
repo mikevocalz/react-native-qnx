@@ -1,5 +1,13 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — PR #103 readiness follow-up
+
+Linux x86-64, Node 26.13.0, pnpm 12.8.1: offline frozen install, `node tests/js/qnx-app-launcher.test.mjs` (136 host checks) and `pnpm exec tsc --noEmit` exit 0. Both added regressions failed against the prior behavior. The full `pnpm test:js` attempt exits nonzero at `marathon-development-launcher.test.mjs` because this environment rejects the Unix socket fixture with `listen EPERM`; no full-suite pass is claimed. An earlier attempt lacked CMake; the rerun used CMake 4.4.4 and reached that socket boundary.
+
+`pnpm validate:docs`, `pnpm validate:dependencies`, `pnpm validate:architecture`, `pnpm validate:manifests`, and `pnpm exec tsc --noEmit` also exit 0. Generated documentation is synchronized; the lockfile is unchanged. These source/host checks do not qualify a target.
+
+Receipt: [launcher-review-2026-11-10.md](../evidence/launcher-review-2026-11-10.md).
+
 ## 2026-10-03 braces security backport
 
 Host: Linux cloud workspace, Node 26.10.0, pnpm 12.8.1. No QNX SDK or target.

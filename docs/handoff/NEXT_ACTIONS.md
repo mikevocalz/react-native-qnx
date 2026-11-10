@@ -1,5 +1,11 @@
 # NEXT_ACTIONS.md
 
+## 2026-11-10 — PR #103 readiness follow-up
+
+Review the focused process and destination-path diff and run hosted checks on the published head. On the authorized target, verify the configured icon and literal arguments, launch/foreground, update/removal and retained user data. Inspect remote state before retrying after SSH loss; never remove an active operation lock blindly.
+
+Receipt: [launcher-review-2026-11-10.md](../evidence/launcher-review-2026-11-10.md).
+
 ## Dependency-security follow-through (2026-10-03)
 
 Review the braces depth backport and guarded audit in `docs/security/braces.md`.
