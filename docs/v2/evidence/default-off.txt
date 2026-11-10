@@ -1,0 +1,13 @@
+Test project /workspace/scratch/5f29a2651a01/v2-default-off-review
+    Start 1: rnqnx_g0_cxx20_probe
+1/4 Test #1: rnqnx_g0_cxx20_probe ...............   Passed    0.00 sec
+    Start 2: qnx_screen_surface_host_test
+2/4 Test #2: qnx_screen_surface_host_test .......   Passed    0.01 sec
+    Start 3: qtquick_mounting_layer_host_test
+3/4 Test #3: qtquick_mounting_layer_host_test ...   Passed    0.08 sec
+    Start 4: rnqnx_qtquick_host_probe
+4/4 Test #4: rnqnx_qtquick_host_probe ...........   Passed    0.03 sec
+
+100% tests passed out of 4
+
+Total Test time (real) =   0.13 sec

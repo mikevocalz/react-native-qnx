@@ -76,6 +76,11 @@ alpha is pinned exactly; sync HybridClass and optional async dispatcher device
 proof are narrower than generic third-party module support. IME, multi-touch
 and Reanimated integration remain gaps.
 
+The [experimental v2 native Qt APIs](docs/v2/README.md) add an opt-in React SVG
+document component and native C++ motion/graphics primitives. Their Linux host
+validation and separate Worklets, GPU-library and QNX target gates are recorded
+in the v2 plan; they are not part of the default platform support claim.
+
 <!-- generated:dependencies:start -->
 
 | Component              | Pinned / resolved version               |

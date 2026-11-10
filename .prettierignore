@@ -5,6 +5,7 @@ pnpm-lock.yaml
 build/
 node_modules/
 artifacts/logs/
+vnext/generated/
 
 # Editor and local tool state.
 .*/

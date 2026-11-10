@@ -10,6 +10,13 @@
 #include "react-native-qnx/fabric/QtScrollBridge.h"
 #include "react-native-qnx/fabric/QtSwitchBridge.h"
 
+#if RNQNX_ENABLE_QT_SVG
+#include "react-native-qnx/fabric/QtSvgBridge.h"
+#include <QtSvgItem.h>
+#include <react/renderer/components/RnqnxQtSvg/EventEmitters.h>
+#include <react/renderer/components/RnqnxQtSvg/Props.h>
+#endif
+
 #include <react/renderer/components/iostextinput/TextInputProps.h>
 #include <react/renderer/components/textinput/TextInputEventEmitter.h>
 
@@ -379,7 +386,26 @@ LayoutFrame toLayoutFrame(const facebook::react::LayoutMetrics& metrics) {
 }
 
 ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer)
-    : layer_(layer) {}
+    : layer_(layer) {
+#if RNQNX_ENABLE_QT_SVG
+  mapComponent(QStringLiteral("QnxSvgDocument"), QStringLiteral("QnxSvgDocument"));
+#endif
+}
+
+#if RNQNX_ENABLE_QT_SVG
+void ShadowViewMutationAdapter::applySvgDocument(const ShadowView& view) {
+  const auto* props = dynamic_cast<const facebook::react::QnxSvgDocumentProps*>(view.props.get());
+  if (!props) return;
+  auto* item = qobject_cast<views::QtSvgItem*>(layer_.itemForTag(view.tag));
+  if (!item) return;
+  auto bridge = svgBridges_.value(view.tag);
+  if (!bridge) {
+    bridge = new QtSvgBridge(*item);
+    svgBridges_.insert(view.tag, bridge);
+  }
+  bridge->apply(*props, std::dynamic_pointer_cast<const facebook::react::QnxSvgDocumentEventEmitter>(view.eventEmitter));
+}
+#endif
 
 void ShadowViewMutationAdapter::synchronouslyUpdateViewOnUIThread(
     facebook::react::Tag tag,
@@ -956,6 +982,9 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (textInputError != MountError::None) { detail = layer_.lastError(); return textInputError; }
       applyActivityIndicator(view);
       applySwitch(view);
+#if RNQNX_ENABLE_QT_SVG
+      applySvgDocument(view);
+#endif
       const auto styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) return styleError;
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
@@ -966,6 +995,9 @@ MountError ShadowViewMutationAdapter::applyOne(
     }
 
     case ShadowViewMutation::Type::Delete:
+#if RNQNX_ENABLE_QT_SVG
+      svgBridges_.remove(mutation.oldChildShadowView.tag);
+#endif
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
       if (auto previous = accessibilityActivations_.take(mutation.oldChildShadowView.tag)) {
         previous->invalidate(); delete previous.data();
@@ -1030,6 +1062,9 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (textInputError != MountError::None) { detail = layer_.lastError(); return textInputError; }
       applyActivityIndicator(view);
       applySwitch(view);
+#if RNQNX_ENABLE_QT_SVG
+      applySvgDocument(view);
+#endif
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) {
         return styleError;

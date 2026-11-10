@@ -596,6 +596,11 @@ void componentPredicateAnswersForRegisteredNames() {
   EXPECT(fixture.host().hasComponent("RCTView"));
   EXPECT(fixture.host().hasComponent("RootView"));
   EXPECT(!fixture.host().hasComponent("Slider"));
+#if RNQNX_ENABLE_QT_SVG
+  EXPECT(fixture.host().hasComponent("QnxSvgDocument"));
+#else
+  EXPECT(!fixture.host().hasComponent("QnxSvgDocument"));
+#endif
 }
 
 void javaScriptBuildsTheTreeThroughFabricUIManager() {

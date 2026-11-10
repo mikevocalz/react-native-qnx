@@ -42,6 +42,8 @@
     "validate:qnx-react": "node scripts/validate-react-qnx-source.mjs",
     "nitro:platform:generate": "node scripts/nitro-platform-codegen.mjs --write",
     "nitro:platform:check": "node scripts/nitro-platform-codegen.mjs --check",
+    "qt:svg:generate": "node scripts/qt-svg-codegen.mjs --write",
+    "qt:svg:check": "node scripts/qt-svg-codegen.mjs --check",
     "qnx": "node packages/react-native-qnx-cli/src/bin.mjs",
     "qnx:device": "node packages/qnx-devtools/src/cli.mjs",
     "expo:qnx": "node packages/expo-qnx/src/cli.mjs",

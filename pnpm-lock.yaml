@@ -233,6 +233,9 @@ importers:
 
   apps/rn-playground:
     dependencies:
+      '@babel/runtime':
+        specifier: 7.29.7
+        version: 7.29.7
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -315,12 +318,20 @@ importers:
 
   packages/react-native-qnx:
     dependencies:
+      '@babel/runtime':
+        specifier: 7.29.7
+        version: 7.29.7
+      react:
+        specifier: 19.3.0
+        version: 19.3.0
       react-native:
         specifier: 0.88.1
         version: 0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1)
       zustand:
         specifier: 5.1.0
         version: 5.1.0(@types/react@19.3.0)(react@19.3.0)
+
+  packages/react-native-qnx-cli: {}
 
 packages:
 

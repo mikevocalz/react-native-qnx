@@ -9,6 +9,12 @@ column because the custom Pi 400 image does not establish QSTI support.
 implementing the platform behavior. `Scoped` means only the linked device
 scenario ran. `Unverified` carries no device-support claim.
 
+The opt-in [v2 Qt APIs](v2/README.md) have their own
+[validation receipt](v2/validation.md). `QtSvgDocument` has Linux host
+React/Fabric rendering coverage; native motion and graphics expose C++ APIs.
+QNX/Marathon device coverage and full `react-native-svg`, Reanimated, Worklets
+and GPU-library compatibility remain separate gates.
+
 ## Components
 
 <!-- generated:components:start -->
