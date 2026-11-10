@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-10",
+  "scope": "Tests-only correction for the old Modal direct-parent assumption; no runtime source, feature flags, bundle source or accepted control expectations changed.",
+  "baseCommit": "7bcf597047ddc493d1299a862ee7ab116293638f",
+  "hostedFailure": {
+    "workflowRun": 42851936755,
+    "job": 129954845064,
+    "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/42851936755/job/129954845064",
+    "configuration": "input lifecycle, accessibility, platform services and desktop input ON",
+    "nativeBuild": "passed",
+    "passedCTestCount": 30,
+    "totalCTestCount": 31,
+    "failedCTest": "qt_react_host_host_test",
+    "failedCase": "modalMounts",
+    "failedAssertion": "content color equals #336699",
+    "cause": "The enabled renderer has root -> rnqnxModalLayer -> ModalHostView -> content. The old test used root -> ModalHostView -> content and therefore inspected the modal item as its content.",
+    "otherMatrixJob": {
+      "job": 129954845174,
+      "configuration": "OFF",
+      "workflowResult": "success"
+    }
+  },
+  "correction": {
+    "file": "tests/cpp/QtReactHostHostTest.cpp",
+    "beforeSha256": "9ad8190ebf04cdea718f9b5fb9e919f449dadd1e2a5e63857c8ba569d3fd101c",
+    "afterSha256": "95b070762bb1ab4c91d4dadc40e17773497f29ddb14bd937057026333a3a7009",
+    "patchSha256": "a0af14a49ad4d0b3335c924fe815a4ba9801c94dd180c765ca57a343bb51e4f8",
+    "retainedAssertions": [
+      "No native mounting failures",
+      "Exactly one surface-root child",
+      "Exactly one actual modal content child",
+      "Actual RN content color #336699"
+    ],
+    "addedAssertionsWhenEnabled": [
+      "The root child is the named rnqnxModalLayer parented to the surface root",
+      "The portal contains exactly one ModalHostView",
+      "Modal origin is 0,0",
+      "Modal and actual content dimensions both match the 640x480 viewport"
+    ],
+    "disabledConfiguration": "Existing direct-parent content assertions remain unchanged."
+  },
+  "localVerification": {
+    "configuration": "Existing Qt 6.11.1 / RN 0.88.1 / Hermes / Fabric ON graph; exact toolchain, flags and compiler exceptions remain recorded in qt-platform-services-host-2026-11-10.json.",
+    "configurationReceipt": {
+      "file": "qt-platform-services-host-2026-11-10.json",
+      "sha256": "aea494e8188d5103ddcb9c6d65d22397a0e466c8d0f3233ae591680a3cc16944"
+    },
+    "buildTarget": "qt_react_host_host_test",
+    "ctestSelection": "^qt_react_host_host_test$",
+    "before": {
+      "test": "qt_react_host_host_test",
+      "status": "failed",
+      "seconds": 41.3496,
+      "passingCases": 53,
+      "failingCases": 1,
+      "summary": [
+        "[FAIL] modalMounts: /workspace/scratch/b6860f2a710f/react-native-qnx-parity/tests/cpp/QtReactHostHostTest.cpp:2337: check failed: content->property(\"color\").value<QColor>() == QColor(QStringLiteral(\"#336699\"))",
+        "1 QtReactHost host test(s) failed."
+      ],
+      "junit": {
+        "file": "qt-modal-host-before.xml",
+        "sha256": "9cabf95909bb84572b212fce0b424923283a9627d47e6866651e1c8c4640a170",
+        "outputTruncated": false
+      },
+      "consoleLog": {
+        "file": "qt-modal-host-before.log",
+        "sha256": "f347bd9b4742aa67be3392dee7834cdd142fa2db154c36b3c52676c30388371b"
+      }
+    },
+    "after": {
+      "test": "qt_react_host_host_test",
+      "status": "passed",
+      "seconds": 39.5574,
+      "passingCases": 54,
+      "failingCases": 0,
+      "summary": ["All 54 QtReactHost host tests passed."],
+      "junit": {
+        "file": "qt-modal-host-after.xml",
+        "sha256": "0617223a7281df1fe676abbdc160cd4e35eb12bd2fe8e16e487b06f3d9088223",
+        "outputTruncated": true
+      },
+      "consoleLog": {
+        "file": "qt-modal-host-after.log",
+        "sha256": "8c1a48cd6023b018610bab6aae863d2e32f40f45804c6f25a5a625f7e27e3e5e"
+      },
+      "fullTestLog": {
+        "file": "qt-modal-host-after-full.log",
+        "sha256": "2105f6c00212184b6aa00e4579d1412a0ac43c1e1927c11aec2a3d4928e847f5",
+        "origin": "CTest Testing/Temporary/LastTest.log, preserved because successful JUnit output is truncated to 1024 bytes."
+      }
+    },
+    "beforeBinarySha256": "6a700f90793eab48f318df5dbea79057f90344113723d67a33605fbd466d3f54",
+    "afterBinarySha256": "278d2659c61225d7ea7d9f963065ac893ff974fdea37babbe7b780bec4c3ef84",
+    "unchangedMetroBundleSha256": "8914e9a95a227db5a1c6d87953039e412952fcce7e8bf0c306c5be660429e314",
+    "unchangedQtConsumerBinarySha256": "5e2402d0b40e30d77db85c24f14138ca150ab556fb59ab2be7de8540003a9706",
+    "verifiedUnchangedNativeSourceCount": 12,
+    "unrelatedSuitesRepeated": false
+  },
+  "limits": [
+    "This local result binds the tests-only patch to base 7bcf597; it does not claim acceptance of later incoming runtime changes.",
+    "The existing host CTest contains the listed individual cases and is executed through Qt offscreen. It is not device or screen-reader evidence.",
+    "The original control/API receipts remain unchanged; their exact source identities retain their original scope."
+  ]
+}

@@ -2332,10 +2332,27 @@ void modalMounts() {
   EXPECT(fixture.rootChildCount() == 1);
 
   QQuickItem* modal = fixture.root().childItems().at(0);
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  // Enabled hosts place ModalHostView beneath a non-Fabric surface overlay.
+  // Keep validating the actual RN content, rather than mistaking that extra
+  // native parent for the ModalHostView itself.
+  EXPECT(modal->objectName() == QStringLiteral("rnqnxModalLayer"));
+  EXPECT(modal->parentItem() == &fixture.root());
+  EXPECT(modal->childItems().size() == 1);
+  modal = modal->childItems().at(0);
+  EXPECT_NEAR(modal->x(), 0.0);
+  EXPECT_NEAR(modal->y(), 0.0);
+  EXPECT_NEAR(modal->width(), 640.0);
+  EXPECT_NEAR(modal->height(), 480.0);
+#endif
   EXPECT(modal->childItems().size() == 1);
   QQuickItem* content = modal->childItems().at(0);
   EXPECT(content->property("color").value<QColor>() ==
          QColor(QStringLiteral("#336699")));
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  EXPECT_NEAR(content->width(), 640.0);
+  EXPECT_NEAR(content->height(), 480.0);
+#endif
 }
 
 /// A JavaScript error reaches the host instead of aborting the process.
