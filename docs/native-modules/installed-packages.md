@@ -32,6 +32,13 @@ the descriptor, manifest identity, path containment, duplicate targets and exact
 native core version before linking. Changed package manifests require preparing
 the app again. Metadata is a build declaration, not a device acceptance claim.
 
+The manifest hash also binds the package's actual platform declaration. Direct
+CMake consumers must retain the prepared platform, package name/version,
+registration, supported core versions and dispatcher requirement exactly as
+declared in the installed manifest. Editing only `native-app.json` cannot waive
+those requirements; regenerate it with `project prepare-native` after changing
+the installed package. This check runs before the package's CMake entry.
+
 ## Consumer flow
 
 1. Install the selected package and its declared peer versions in the application.
@@ -63,6 +70,14 @@ The resulting native target advertises `NITRO_CORE_VERSION` and the explicit
 transitive and pnpm installs, metadata validation, CMake version/dispatcher gates,
 changed manifests and build-copy containment. Existing external consumer
 configuration/build-plan checks still apply.
+
+The manifest-binding follow-up reproduces an invalid direct CMake configure
+that accepted a modified supported-core declaration against the unchanged
+installed manifest. It now rejects altered core/dispatcher declarations,
+package identity, registration and platform while accepting the original
+configuration. All five discovery/containment tests pass, including these
+configure-level checks. They use inert fixture targets; they do not establish
+an installed package's native runtime or device behavior.
 
 `tests/native-package-consumer` is an opt-in native integration harness for a
 prepared external app. It compiles the selected package's actual C++ target,

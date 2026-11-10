@@ -142,7 +142,7 @@ test('native CMake requires matching version, dispatcher and unchanged installed
   const { directory } = await fixture();
   try {
     const entries = await discoverNativePackages(directory, 'qnx');
-    const configuration = { nativePackages: entries };
+    const configuration = { platform: 'qnx', nativePackages: entries };
     const source = path.join(directory, 'consumer');
     await mkdir(source);
     await writeFile(
@@ -191,6 +191,37 @@ rnqnx_link_native_packages(consumer "\${config}")
     assert.match(header, /example::registerClasses\(\)/);
     assert.match(configure('wrong-version', false, 'different').stderr, /does not support/);
     assert.match(configure('no-dispatcher', false, version, false).stderr, /requires the real/);
+    // Direct CMake consumers cannot bypass an installed package's ABI and
+    // dispatcher requirements by editing only the prepared descriptor. The
+    // unchanged manifest hash must bind the actual declarations as well.
+    /** @type {Array<[string, Record<string, unknown>, string, boolean]>} */
+    const changedDeclarations = [
+      ['changed-core', { nitroCoreVersions: ['different'] }, 'different', true],
+      ['changed-dispatcher', { requiresDispatcher: false }, version, false],
+      ['changed-name', { packageName: 'renamed-native' }, version, true],
+      ['changed-version', { version: '2' }, version, true],
+      ['changed-header', { registrationHeader: 'Other/Registration.hpp' }, version, true],
+      ['changed-function', { registrationFunction: 'other::registerClasses' }, version, true],
+    ];
+    for (const [name, change, suppliedVersion, dispatcher] of changedDeclarations) {
+      await writeFile(
+        path.join(source, 'native-app.json'),
+        JSON.stringify({ ...configuration, nativePackages: [{ ...entries[0], ...change }] })
+      );
+      assert.match(
+        configure(name, false, suppliedVersion, dispatcher).stderr,
+        /does not match its installed manifest/
+      );
+    }
+    await writeFile(
+      path.join(source, 'native-app.json'),
+      JSON.stringify({ ...configuration, platform: 'marathon' })
+    );
+    assert.match(
+      configure('different-platform', false).stderr,
+      /does not match its installed manifest/
+    );
+    await writeFile(path.join(source, 'native-app.json'), JSON.stringify(configuration));
     await writeFile(path.join(entries[0].packageRoot, 'package.json'), '{}');
     assert.match(configure('changed-package', false).stderr, /changed/);
   } finally {
