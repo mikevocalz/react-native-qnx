@@ -1,5 +1,15 @@
 # BLOCKERS.md
 
+## 2026-11-10 — Combined PR #106/#110 review state
+
+The known Switch mock incompatibility is repaired in the combined tree:
+style/event/ref assertions now run through the controlled-hook harness, and
+both focused tests, real QNX/Marathon Metro bundles and typecheck pass.
+The combined candidate still needs its own full native ON/OFF and public-import
+CI. Earlier branch-native results and the owner smoke report do not qualify
+the new merge. All seven release gates remain pending.
+[Combined receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+
 ## 2026-11-10 — PR #110 integration follow-up
 
 The combined candidate still needs fresh full native ON/OFF CI. The updated
@@ -18,6 +28,15 @@ Receipt:
 The owner report does not identify exact executable/bundle/assets hashes or per-scenario actions. It supports continued acceptance review without establishing all optional desktop controls, modal focus, IME/accessibility, physical metrics or release readiness. The prior measured Linux host receipt remains dated evidence.
 
 Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
+## PR 106 review state — 2026-11-10
+
+The old async-helper Metro regression is repaired in `6b528c1`, and both
+reset-cache public bundles pass. This follow-up supplies the missing required
+handoff records. Its publication/CI review and the combined PR 110 Switch
+test-harness adaptation remain next; physical QNX/Marathon evidence is not
+inferred from another branch's smoke test.
+[Exact evidence and integration boundary](../validation/pr106-merge-readiness-2026-11-10.md).
 
 ## GHSA-vfj7-8cjw-p6xm — No official braces fixed release
 

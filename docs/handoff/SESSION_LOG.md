@@ -1,5 +1,17 @@
 # SESSION_LOG.md
 
+## 2026-11-10 — Integrate PR #106 into PR #110
+
+Created a separate integration branch from published #110 `2657620` and
+merged published #106 `5e3bb88`, retaining the earlier local history branch.
+Resolved the public probe to keep Image and I18nManager. Preserved the Image
+contracts and controlled Switch runtime; migrated the overlapping style,
+props, event and ref assertions into the retained-hook harness after observing
+the old mock fail. Both focused tests, both reset-cache Metro bundles and
+typecheck pass. Preserved the distinct #104/#106/#110 evidence entries and
+all earlier handoff sections; no new native or physical-target run is claimed.
+[Combined receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+
 ## 2026-11-10 — PR #110 integration follow-up
 
 The PR review agent reconciled the Modal/Switch and host-development guides
@@ -19,6 +31,15 @@ Receipt:
 `audit_base_stack` retained the owner’s PR #110 report and verified #104 ancestry, corrected the implemented Modal host contract, and reran focused fixture/inventory checks. This follow-up modifies documentation/support metadata only; no native implementation, dependency or device state changes.
 
 Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
+## 2026-11-10 — PR 106 committed handoff and integration review
+
+Re-ran the public Image/Switch contract test, both isolated-cache Metro bundles,
+types and installed-source validation on `6b528c1`. Recorded later successful
+hosted native runs and updated the stale image guide statement. Inspected
+PR 110's controlled-Switch hooks and identified the combined-fixture work
+without changing this branch's runtime or tests.
+[Full receipt](../validation/pr106-merge-readiness-2026-11-10.md).
 
 ## 2026-10-04 — Replace arithmetic-only React QNX probe
 

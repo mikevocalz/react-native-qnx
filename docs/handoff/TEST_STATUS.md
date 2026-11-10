@@ -1,5 +1,21 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — Combined PR #106/#110 validation
+
+Merge inputs: #110 `2657620` and #106 `5e3bb88`; Linux x86-64, Node 26.13.0,
+pnpm 12.8.1. `node tests/js/qnx-public-entry.test.mjs`,
+`node tests/js/qnx-controlled-switch.test.mjs` and `pnpm typecheck` pass.
+`node tests/js/qnx-public-entry-metro.test.mjs` passes using real Metro and
+separate reset caches: QNX 684,840 bytes, Marathon 684,881 bytes. The old mock's
+`useMergeRefs` import failure was reproduced before moving the assertions.
+
+`pnpm docs:sync`, `pnpm validate:docs`, changed-file Prettier and
+`git diff --check` pass. Local links resolve; both prior handoff histories,
+distinct evidence entries and all seven gate records are preserved. See the
+[combined receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+Fresh native ON/OFF and public-import CI remain pending on the final published
+merge; no physical-target or native-runtime result is implied by these tests.
+
 ## 2026-11-10 — PR #110 integration follow-up
 
 Linux x86-64, Node 26.13.0, pnpm 12.8.1: the integrator ran
@@ -24,6 +40,15 @@ Linux x86-64, Node 26.13.0, pnpm 12.8.1: frozen offline install, `node tests/js/
 `pnpm validate:docs`, `pnpm validate:dependencies`, `pnpm validate:architecture`, `pnpm validate:manifests`, and `pnpm exec tsc --noEmit` also exit 0. Generated documentation is synchronized; the lockfile is unchanged. These source/host checks do not qualify a target.
 
 Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
+## 2026-11-10 — PR 106 repaired public wrapper validation
+
+At `6b528c1`, public-entry VM contracts pass and reset-cache Metro produces
+684,415-byte QNX and 684,456-byte Marathon bundles. TypeScript, dependency
+source checks, documentation and formatting pass. Hosted native public-import,
+full-renderer, SDK, Marathon Metro and image-loader runs also passed at that
+implementation head. No fresh physical-target result is claimed.
+[Commands, workflow links and limits](../validation/pr106-merge-readiness-2026-11-10.md).
 
 ## 2026-10-03 braces security backport
 

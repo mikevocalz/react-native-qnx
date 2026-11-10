@@ -27,7 +27,25 @@
       "originalAuthorNativeCounts": "23/23 ON and 17/17 OFF at 083c4bd; two excluded targets and ASan host limitation retained in receipt",
       "currentFocusedChecks": "Host-renderer inventory, controlled-Switch JavaScript and typecheck passed; no fresh full native run claimed",
       "fullNativeCi": "pending for the updated combined candidate",
-      "releaseGatesPromoted": false
+      "releaseGatesPromoted": false,
+      "publicApiIntegration": {
+        "reviewedAt": "2026-11-10",
+        "firstParent": "2657620b0e0184bb72e3fc7d3fc42bac5fe3fb95",
+        "secondParentPr106": "5e3bb88655d311a7be5f905b71af06abca9145b6",
+        "scope": "Preserve public Image/I18nManager and controlled Switch with nested styles; combine Switch assertions in retained-hook harness",
+        "focusedTests": "Public-entry and controlled-Switch tests passed; typecheck passed",
+        "metroBundles": "Real reset-cache bundles passed: QNX 684840 bytes; Marathon 684881 bytes",
+        "nativeAndDeviceEvidence": "Fresh full native CI pending; no new QNX or Marathon runtime evidence",
+        "releaseGatesPromoted": false
+      }
+    },
+    "pr106": {
+      "reviewedAt": "2026-11-10",
+      "implementationCommit": "6b528c17967177f92b5894565fb0b93eac226dd2",
+      "receipt": "docs/validation/pr106-merge-readiness-2026-11-10.md",
+      "hostedCi": "public-import native host, full renderer, SDK, Marathon Metro and image workflows passed at implementation head",
+      "localValidation": "public-wrapper contracts and reset-cache QNX/Marathon Metro bundles passed",
+      "targetExecution": "QNX and Marathon not run for this candidate; independent from PR 110 smoke test"
     }
   },
   "gates": [

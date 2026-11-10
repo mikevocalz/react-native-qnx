@@ -1,6 +1,5 @@
 import React from 'react';
-import { AppRegistry, View, Text, StyleSheet, Platform } from 'react-native';
-import { I18nManager } from 'react-native';
+import { AppRegistry, View, Text, Image, StyleSheet, Platform, I18nManager } from 'react-native';
 
 const styles = StyleSheet.create({
   root: {
@@ -27,4 +26,21 @@ if (!['qnx', 'marathon'].includes(Platform.OS))
 if (typeof I18nManager.isRTL !== 'boolean')
   throw new Error('Public I18nManager must expose React Native layout direction');
 AppRegistry.registerComponent('RNQnxPlayground', () => PublicApp);
-console.log(`RNQNX_PUBLIC_API_READY platform=${Platform.OS}`);
+
+// Validate the public Image loader rather than importing an iOS-only component.
+// The local PNG keeps this a decode/API probe with no networking dependency.
+const imageUri =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
+Image.getSize(imageUri)
+  .then((size) => {
+    if (size.width !== 1 || size.height !== 1) {
+      throw new Error('Unexpected public Image.getSize result');
+    }
+    globalThis.__publicImageGetSize = size;
+    console.log('RNQNX_PUBLIC_IMAGE_API_READY width=1 height=1');
+    console.log(`RNQNX_PUBLIC_API_READY platform=${Platform.OS}`);
+  })
+  .catch((error) => {
+    globalThis.__publicImageGetSizeError = String(error);
+    console.error('RNQNX_PUBLIC_IMAGE_API_FAILED', String(error));
+  });

@@ -94,7 +94,9 @@ function mount(getProps) {
       dirty = false;
       cursor = 0;
       effects = [];
-      rendered = module.exports(getProps(), forwarded).props;
+      const element = module.exports(getProps(), forwarded);
+      assert.equal(element.type, 'SwitchNativeComponent');
+      rendered = element.props;
       rendered.ref(native);
       // Fabric skips identical props; only Commands can repair rejection.
       if (committedValue !== rendered.value) native.value = rendered.value;
@@ -107,6 +109,9 @@ function mount(getProps) {
     native,
     commands,
     forwarded,
+    get props() {
+      return rendered;
+    },
     update() {
       dirty = true;
       flush();
@@ -114,14 +119,76 @@ function mount(getProps) {
     toggle() {
       if (rendered.disabled) return;
       native.value = !native.value;
-      rendered.onChange({ nativeEvent: { value: native.value } });
+      const event = { nativeEvent: { value: native.value } };
+      rendered.onChange(event);
       flush();
+      return event;
     },
     detach() {
       rendered.ref(null);
     },
   };
 }
+
+// Interpret nested styles using React Native's caller-visible precedence.
+// Frozen inputs catch accidental mutation during controlled reconciliation.
+/** @param {unknown} style @returns {Record<string, unknown>} */
+function flattenStyle(style) {
+  if (Array.isArray(style)) return Object.assign({}, ...style.map(flattenStyle));
+  return style && typeof style === 'object'
+    ? Object.assign({}, /** @type {Record<string, unknown>} */ (style))
+    : {};
+}
+const customStyle = Object.freeze({ alignSelf: 'center', marginLeft: 12 });
+const layeredStyle = Object.freeze([
+  Object.freeze({ marginLeft: 4, opacity: 0.5 }),
+  false,
+  Object.freeze([null, customStyle]),
+]);
+for (const [style, expectedStyle] of [
+  [undefined, { alignSelf: 'flex-start' }],
+  [customStyle, { alignSelf: 'center', marginLeft: 12 }],
+  [layeredStyle, { alignSelf: 'center', marginLeft: 12, opacity: 0.5 }],
+]) {
+  const styled = mount(() => ({ style }));
+  assert.deepEqual(flattenStyle(styled.props.style), expectedStyle);
+  assert.equal(styled.forwarded.current, styled.native);
+  styled.detach();
+  assert.equal(styled.forwarded.current, null);
+}
+
+const styledEvents = /** @type {unknown[]} */ ([]);
+let styledDisabled = true;
+const styled = mount(() => ({
+  value: false,
+  disabled: styledDisabled,
+  style: layeredStyle,
+  trackColor: { false: '#112233', true: '#445566' },
+  thumbColor: '#ffffff',
+  onChange: (/** @type {unknown} */ event) => styledEvents.push(event),
+  onValueChange: (/** @type {boolean} */ value) => styledEvents.push(value),
+}));
+assert.equal(styled.props.disabled, true);
+assert.equal(styled.props.value, false);
+assert.equal(styled.props.tintColor, '#112233');
+assert.equal(styled.props.onTintColor, '#445566');
+assert.equal(styled.props.thumbTintColor, '#ffffff');
+styled.toggle();
+assert.deepEqual(styledEvents, [], 'disabled styled Switch does not emit callbacks');
+styledDisabled = false;
+styled.update();
+const styledEvent = styled.toggle();
+assert.deepEqual(styledEvents, [styledEvent, true], 'event identity and callback order survive');
+assert.equal(styled.native.value, false, 'styled Switch restores the controlled value');
+assert.deepEqual(styled.commands, [false]);
+assert.deepEqual(flattenStyle(styled.props.style), {
+  alignSelf: 'center',
+  marginLeft: 12,
+  opacity: 0.5,
+});
+assert.equal(styled.forwarded.current, styled.native);
+styled.detach();
+assert.equal(styled.forwarded.current, null);
 
 let rejectedChanges = 0;
 let rejectedValues = 0;
@@ -196,5 +263,5 @@ assert.equal(deferred.forwarded.current, null, 'unmount clears forwarded ref');
 assert.equal(rejected.native.value, false, 'instances remain independent');
 
 console.log(
-  'QNX Switch override controlled rejection/acceptance/defer/rapid/disabled/ref behavior passed (hook/native doubles).'
+  'QNX Switch styles/props/events and controlled rejection/acceptance/defer/rapid/disabled/ref behavior passed (hook/native doubles).'
 );

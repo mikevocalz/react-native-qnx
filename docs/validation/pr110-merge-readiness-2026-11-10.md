@@ -1,14 +1,63 @@
 # PR 110: integration validation handoff
 
-Reviewed 2026-11-10 against implementation commit
+The initial 2026-11-10 review covered implementation commit
 `083c4bdb887a844e533313fed9b967ff94f4c4d3`, originally based on PR #104 at
-`3b414f185ec9b6c23eb7fbfdbc0afc9bfed18b94`. This handoff was prepared while
-incorporating the published #104 documentation follow-up
-`c5c54a09817c54b24d9c2132267d6fe93905da2d` and the integrator's host-renderer
-CI follow-up. The final combined commit must receive its own hosted checks;
+`3b414f185ec9b6c23eb7fbfdbc0afc9bfed18b94`. The published follow-up
+`2657620b0e0184bb72e3fc7d3fc42bac5fe3fb95` incorporates #104 documentation
+commit `c5c54a09817c54b24d9c2132267d6fe93905da2d` and the integrator's
+host-renderer CI changes. The subsequent merge below adds PR #106 and tests
+the combined public API. Each published candidate needs its own hosted checks;
 no future commit identity or full native result is inferred here.
 
-## Scope and retained behavior
+## Combined public API: PR #106 into PR #110
+
+The integration is a merge with first parent
+`2657620b0e0184bb72e3fc7d3fc42bac5fe3fb95` and second parent
+`5e3bb88655d311a7be5f905b71af06abca9145b6`, the published PR #106 head.
+It preserves both histories and does not incorporate PRs #105, #107 or #109.
+PR #106 remains independently reviewable; PR #110 now carries that dependency.
+
+The public probe retains both `I18nManager` layout-direction validation and
+the Image API decode probe. The Image wrapper and its Promise/callback/error
+assertions are retained from #106. The Switch combines #106's nested style
+array composition with #110's controlled `Commands.setValue` reconciliation.
+
+The initially merged public-entry test failed with
+`Unexpected Switch dependency react-native/Libraries/Utilities/useMergeRefs`.
+Its old React double did not model the hooks or merged ref used by #110.
+The style, tint, event and ref assertions now run in the existing
+`qnx-controlled-switch.test.mjs` retained-hook harness, alongside accepted,
+rejected, deferred, rapid, disabled and cleanup scenarios. The styled case
+checks exact event identity/order, controlled rejection and ref cleanup;
+frozen nested styles retain caller precedence across reconciliation. Image,
+public-export/resolver and `I18nManager` assertions stay in the public-entry
+test. No failing assertion was waived.
+
+Executed on Linux x86-64 with Node 26.13.0 and pnpm 12.8.1, against the merged
+working tree and the unchanged frozen dependency graph:
+
+| Command                                                                 | Result on the combined candidate                                                                                                                                                                                  |
+| ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node tests/js/qnx-public-entry.test.mjs`                               | Passed: public exports/resolver, `I18nManager` export and Image loader Promise/callback/error contracts. Host VM/native-loader doubles.                                                                           |
+| `node tests/js/qnx-controlled-switch.test.mjs`                          | Passed: style precedence, props/tints, event identity/order, disabled handling, controlled reconciliation and ref cleanup through retained hook/native doubles.                                                   |
+| `node tests/js/qnx-public-entry-metro.test.mjs`                         | Passed: real Metro with separate temporary reset caches; QNX 684,840 bytes and Marathon 684,881 bytes. The test removes its temporary bundles; these are bundle checks, not executed device artifacts.            |
+| `pnpm typecheck`                                                        | Passed.                                                                                                                                                                                                           |
+| Documentation sync/validation, changed-file formatting and merge checks | Passed: `pnpm docs:sync`, `pnpm validate:docs`, changed-file Prettier, local links and `git diff --check`. Prior handoff lines and distinct evidence records are preserved; all seven gate records are unchanged. |
+| Full native ON/OFF and public-import host CI                            | Pending for the published merge commit; no fresh native test count is assigned to this merge.                                                                                                                     |
+
+The owner smoke report predates this combined tree and does not identify its
+artifacts, flags or scenarios. It cannot qualify the added #106 APIs or their
+integration with the controlled Switch. No new QNX cross-build, QNX VM,
+physical QNX, actual Marathon/Wayland or Fast Refresh session ran here.
+All seven v1 gates remain pending. The original-author native counts and
+earlier individual-branch host results below keep their original scope.
+
+Merge #104 and #106 before their dependent #110, inspect the final base/diff,
+and require the final candidate's own hosted results. The documentation DRI
+also owns this bounded JS/test conflict resolution; the parent integrator
+provides independent review and publication.
+
+## Scope and retained behavior of the first follow-up
 
 PR #110 adds opt-in Metro asset staging, Modal keyboard focus, host development
 runtime, frame tracing, Qt runtime staging and candidate-bound release
@@ -57,7 +106,7 @@ cold boot, stock Pi 4 qualification or performance measurement. Its QNX
 build had the optional native features OFF and cannot qualify their ON paths.
 Manual deployment repair is separate from automated stager acceptance.
 
-## Current follow-up checks
+## Checks recorded in the first follow-up
 
 The integration workspace is Linux x86-64 with Node 26.13.0 and pnpm 12.8.1.
 The frozen lock SHA-256 remains
