@@ -93,7 +93,7 @@ function generateExpoPlatformCMake(descriptors, requestedPlatform = 'qnx') {
   const runtimeRequested = descriptors.some(
     (descriptor) => descriptor.registrationFunction !== undefined
   );
-  const moduleNames = new Set(['ExpoQnxPlatform', 'ExpoApplication']);
+  const moduleNames = new Set(['ExpoQnxPlatform', 'ExpoApplication', 'ExponentConstants']);
   const declarations = [];
   const calls = [];
   let runtimeReady = true;

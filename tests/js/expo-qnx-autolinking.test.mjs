@@ -109,3 +109,8 @@ assert.doesNotThrow(() =>
 // A mixed batch still receives full runtime name checks, even if the collision
 // belongs to a discovery-only entry encountered before the registered provider.
 assert.throws(() => autolinking.generateQnxCMake([legacyDuplicate, registered]), /reserved/);
+
+assert.throws(
+  () => autolinking.generateQnxCMake([{ ...registered, modules: ['ExponentConstants'] }]),
+  /reserved/
+);

@@ -1,4 +1,4 @@
-#if RNQNX_ENABLE_EXPO_APPLICATION || RNQNX_ENABLE_EXPO_MODULES
+#if RNQNX_ENABLE_EXPO_APPLICATION || RNQNX_ENABLE_EXPO_MODULES || RNQNX_ENABLE_EXPO_CONSTANTS
 #include "ExpoQnxInstaller.hpp"
 #endif
 #include "react-native-qnx/runtime/QtReactHost.h"
@@ -423,7 +423,7 @@ class QtReactHost::Impl {
             .withMicrotaskQueue(true)
             .build());
 
-#if RNQNX_ENABLE_EXPO_APPLICATION || RNQNX_ENABLE_EXPO_MODULES
+#if RNQNX_ENABLE_EXPO_APPLICATION || RNQNX_ENABLE_EXPO_MODULES || RNQNX_ENABLE_EXPO_CONSTANTS
     rnqnx::expo::installExpoModulesQnx(*runtime);
 #endif
 

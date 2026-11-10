@@ -31,3 +31,6 @@ if(RNQNX_ENABLE_EXPO_APPLICATION)
   target_sources(rnqnx_expo_modules_qnx PRIVATE cpp/ExpoQnxApplication.cpp cpp/ExpoQnxApplicationMetadata.cpp)
   target_link_libraries(rnqnx_expo_modules_qnx PUBLIC Qt6::Core Qt6::Gui)
 endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/../../cmake/RnqnxExpoConstants.cmake")
+rnqnx_configure_expo_constants(rnqnx_expo_modules_qnx)

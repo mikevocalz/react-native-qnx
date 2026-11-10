@@ -4,6 +4,9 @@
 #if RNQNX_ENABLE_EXPO_APPLICATION
 #include "ExpoQnxApplication.hpp"
 #endif
+#if RNQNX_ENABLE_EXPO_CONSTANTS
+#include "ExpoQnxConstants.hpp"
+#endif
 #include "ExpoQnxModulesHostObject.hpp"
 
 #include <memory>
@@ -41,6 +44,9 @@ void registerBuiltins() {
 
 void installExpoModulesQnx(facebook::jsi::Runtime& runtime) {
   registerBuiltins();
+#if RNQNX_ENABLE_EXPO_CONSTANTS
+  registerConstantsModule();
+#endif
 #if RNQNX_HAS_EXPO_AUTOLINKING
   rnqnxRegisterExpoAutolinkedModules(ExpoQnxModuleRegistry::instance());
 #endif

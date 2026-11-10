@@ -1,0 +1,7 @@
+{
+  "name": "Café Consumer",
+  "slug": "consumer",
+  "scheme": "consumer",
+  "version": "2.4.1",
+  "extra": { "router": { "origin": false } }
+}

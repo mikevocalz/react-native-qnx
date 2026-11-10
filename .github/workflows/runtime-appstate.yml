@@ -16,6 +16,8 @@ on:
       - 'apps/rn-playground/linking-probe.js'
       - 'packages/react-native-qnx/Libraries/Linking/**'
       - 'cmake/RnqnxExpoApplication.cmake'
+      - 'cmake/RnqnxExpoConstants.cmake'
+      - 'tests/native/expo-constants/**'
       - 'tests/native/expo-application/**'
       - 'packages/expo-modules-core-qnx/**'
       - 'packages/expo-qnx-autolinking/**'
@@ -77,10 +79,10 @@ jobs:
           set -euo pipefail
           mkdir -p build/linux-host-renderer/evidence
           git rev-parse HEAD > build/linux-host-renderer/evidence/commit.txt
-          cmake --preset linux-host-renderer -DRNQNX_ENABLE_APP_STATE=${{ matrix.app-state }} -DRNQNX_BUILD_APPSTATE_TESTS=ON -DRNQNX_APPSTATE_SANITIZERS=ON -DRNQNX_ENABLE_BACK_HANDLER=${{ matrix.app-state }} -DRNQNX_BUILD_BACK_HANDLER_TESTS=ON -DRNQNX_BACK_HANDLER_SANITIZERS=ON -DRNQNX_ENABLE_EXPO_APPLICATION=${{ matrix.app-state }} -DRNQNX_BUILD_EXPO_APPLICATION_TESTS=ON -DRNQNX_ENABLE_LINKING=${{ matrix.app-state }} -DRNQNX_BUILD_LINKING_TESTS=ON -DRNQNX_LINKING_SANITIZERS=ON
+          cmake --preset linux-host-renderer -DRNQNX_ENABLE_APP_STATE=${{ matrix.app-state }} -DRNQNX_BUILD_APPSTATE_TESTS=ON -DRNQNX_APPSTATE_SANITIZERS=ON -DRNQNX_ENABLE_BACK_HANDLER=${{ matrix.app-state }} -DRNQNX_BUILD_BACK_HANDLER_TESTS=ON -DRNQNX_BACK_HANDLER_SANITIZERS=ON -DRNQNX_ENABLE_EXPO_APPLICATION=${{ matrix.app-state }} -DRNQNX_BUILD_EXPO_APPLICATION_TESTS=ON -DRNQNX_ENABLE_EXPO_CONSTANTS=${{ matrix.app-state }} -DRNQNX_BUILD_EXPO_CONSTANTS_TESTS=ON -DRNQNX_EXPO_PUBLIC_CONFIG="$PWD/tests/native/expo-constants/public-config.json" -DRNQNX_ENABLE_LINKING=${{ matrix.app-state }} -DRNQNX_BUILD_LINKING_TESTS=ON -DRNQNX_LINKING_SANITIZERS=ON
           node scripts/validate-host-renderer.mjs
-          cmake --build build/linux-host-renderer --target expo_application_runtime_test rnqnx_linking_runtime_test --parallel 2
-          ctest --test-dir build/linux-host-renderer -R '^(rnqnx_(appstate|back_handler|linking)_|expo_application_)' --no-tests=error --output-on-failure -V | tee build/linux-host-renderer/evidence/appstate.txt
+          cmake --build build/linux-host-renderer --target expo_application_runtime_test expo_constants_runtime_test rnqnx_linking_runtime_test --parallel 2
+          ctest --test-dir build/linux-host-renderer -R '^(rnqnx_(appstate|back_handler|linking)_|expo_application_|expo_constants_)' --no-tests=error --output-on-failure -V | tee build/linux-host-renderer/evidence/appstate.txt
           sha256sum build/linux-host-renderer/rnqnx-appstate-*.bundle.js build/linux-host-renderer/bin/rnqnx_appstate_runtime_test build/linux-host-renderer/rnqnx-back-handler-*.bundle.js build/linux-host-renderer/bin/rnqnx_back_handler_runtime_test build/linux-host-renderer/rnqnx-linking-*.bundle.js build/linux-host-renderer/bin/rnqnx_linking_runtime_test > build/linux-host-renderer/evidence/appstate-sha256.txt
       - name: Exercise generated Expo provider startup independently of Application
         if: matrix.app-state == 'OFF'
