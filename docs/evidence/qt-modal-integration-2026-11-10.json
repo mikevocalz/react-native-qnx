@@ -92,10 +92,7 @@
     }
   },
   "build": {
-    "targets": [
-      "qt_react_host_host_test",
-      "rnqnx_qt_controls_consumer"
-    ],
+    "targets": ["qt_react_host_host_test", "rnqnx_qt_controls_consumer"],
     "initialParallelism": 2,
     "initialResult": "Both modified objects compiled; the simultaneous host-test link was terminated by signal 9. No source change was made for the retry.",
     "serialRetryParallelism": 1,

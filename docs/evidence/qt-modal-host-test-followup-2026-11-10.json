@@ -76,9 +76,7 @@
       "seconds": 39.5574,
       "passingCases": 54,
       "failingCases": 0,
-      "summary": [
-        "All 54 QtReactHost host tests passed."
-      ],
+      "summary": ["All 54 QtReactHost host tests passed."],
       "junit": {
         "file": "qt-modal-host-test-followup-2026-11-10/qt-modal-host-after.xml",
         "sha256": "0617223a7281df1fe676abbdc160cd4e35eb12bd2fe8e16e487b06f3d9088223",
