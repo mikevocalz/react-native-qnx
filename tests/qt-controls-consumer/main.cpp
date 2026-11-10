@@ -7,6 +7,7 @@
 #include "react-native-qnx/runtime/QnxExceptionsManager.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 #include "../../vnext/probes/playground/QmlSources.h"
+#include <QAccessible>
 #include <QCommandLineParser>
 #include <QElapsedTimer>
 #include <QFile>
@@ -40,6 +41,20 @@ bool visibleItem(QQuickItem* item, const QQuickWindow& window) {
     if (parent->clip()) visible = visible.intersected(parent->mapRectToScene(QRectF(0, 0, parent->width(), parent->height())));
   }
   return !visible.isEmpty();
+}
+void describeItems(QQuickItem* item, int depth = 0) {
+  const auto rect = item->mapRectToScene(QRectF(0, 0, item->width(), item->height()));
+  std::cerr << std::string(static_cast<std::size_t>(depth) * 2, ' ')
+      << item->metaObject()->className() << " id=" << item->property("rnqnxTestId").toString().toStdString()
+      << " scene=" << rect.x() << ',' << rect.y() << ',' << rect.width() << ',' << rect.height()
+      << " visible=" << item->isVisible() << " opacity=" << item->opacity()
+      << " clip=" << item->clip() << " enabled=" << item->isEnabled() << '\n';
+  for (auto* child : item->childItems()) describeItems(child, depth + 1);
+}
+QAccessible::Role accessibleRole(const std::string& name) {
+  if (name == "list") return QAccessible::List;
+  if (name == "menuitem") return QAccessible::MenuItem;
+  throw std::runtime_error("Unsupported probe accessibility role: " + name);
 }
 int keyCode(const std::string& name) {
   if (name == "Enter") return Qt::Key_Return;
@@ -86,6 +101,7 @@ void run(const QString& path, const QString& appName, const QString& screenshot,
   window.installEventFilter(&dispatcher);
   rnqnx::runtime::QtReactHost host(adapter);
   host.delegate().setTouchDispatcher(&dispatcher);
+  try {
   host.installTurboModuleBinding();
   host.installComponentProvider();
   host.installPlatformConstants();
@@ -123,7 +139,12 @@ void run(const QString& path, const QString& appName, const QString& screenshot,
     const auto snapshotValue = rt.global().getProperty(rt, "__qtProbeSnapshot");
     if (snapshotValue.isObject() && snapshotValue.asObject(rt).isFunction(rt))
       snapshot = snapshotValue.asObject(rt).asFunction(rt).call(rt).asString(rt).utf8(rt);
-    throw std::runtime_error("Probe timed out: " + label + " state=" + snapshot);
+    const auto* focused = window.activeFocusItem();
+    describeItems(window.contentItem());
+    if (!screenshot.isEmpty()) window.grabWindow().save(screenshot + ".failure.png");
+    throw std::runtime_error("Probe timed out: " + label +
+        " nativeFocus=" + (focused ? focused->property("rnqnxTestId").toString().toStdString() : "none") +
+        " windowActive=" + std::to_string(window.isActive()) + " state=" + snapshot);
   };
   until([&]() { return layer.mountedCount() > 1; }, "initial React mount");
   const auto steps = rt.global().getPropertyAsObject(rt, "__qtProbeSteps").asArray(rt);
@@ -177,15 +198,35 @@ void run(const QString& path, const QString& appName, const QString& screenshot,
         QCoreApplication::sendEvent(&window, &up);
       }
     } else if (action == "call") {
-      rt.global().getPropertyAsFunction(rt, "__qtProbeAction").call(rt, static_cast<double>(index));
+      // Controlled prop changes and public ref commands must run as an RN
+      // task, whose completion flushes scheduled rendering updates. Calling
+      // JSI directly here leaves legitimate View commands/commits queued.
+      const bool completed = host.evaluate(
+          "globalThis.__qtProbeAction(" + std::to_string(index) + ");",
+          "qt-probe-controlled-action.js");
+      require(completed, "Controlled probe action failed: " + host.lastError().toStdString());
     } else {
       require(action == "assert", "Unknown probe action: " + action);
     }
     const auto visible = QString::fromStdString(string("visible"));
     const auto hidden = QString::fromStdString(string("hidden"));
+    const auto focused = QString::fromStdString(string("focused"));
+    const auto accessibleTarget = QString::fromStdString(string("accessibleTarget"));
+    const auto expectedRole = accessibleTarget.isEmpty() ? QAccessible::NoRole : accessibleRole(string("accessibleRole"));
+    const auto expectedChecked = step.getProperty(rt, "accessibleChecked");
     until([&]() {
       if (!visible.isEmpty() && !visibleItem(findItem(window.contentItem(), visible), window)) return false;
       if (!hidden.isEmpty()) { auto* item = findItem(window.contentItem(), hidden); if (item && item->isVisible()) return false; }
+      if (!focused.isEmpty()) {
+        auto* item = findItem(window.contentItem(), focused);
+        if (!item || !item->hasActiveFocus()) return false;
+      }
+      if (!accessibleTarget.isEmpty()) {
+        auto* item = findItem(window.contentItem(), accessibleTarget);
+        auto* interface = item ? QAccessible::queryAccessibleInterface(item) : nullptr;
+        if (!interface || !interface->isValid() || interface->state().invisible || interface->role() != expectedRole) return false;
+        if (expectedChecked.isBool() && (!interface->state().checkable || interface->state().checked != expectedChecked.getBool())) return false;
+      }
       return check.call(rt, static_cast<double>(index)).getBool();
     }, label);
     std::cout << "QT_CONTROL_STEP " << index << ' ' << label << '\n';
@@ -203,6 +244,10 @@ void run(const QString& path, const QString& appName, const QString& screenshot,
   std::cout << "QT_CONTROLS_FABRIC_OK steps=" << steps.size(rt)
       << " platform=" << expectedPlatform.toStdString()
       << " renderer=Fabric input=synthetic-Qt\n";
+  } catch (const facebook::jsi::JSError& error) {
+    // Convert while Hermes is still alive; JSError can own runtime handles.
+    throw std::runtime_error(error.getMessage() + "\n" + error.getStack());
+  }
 }
 }  // namespace
 

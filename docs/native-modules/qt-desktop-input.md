@@ -39,11 +39,38 @@ trait hooks preserve Views with keyboard/focus behavior through flattening.
 | Editable text                 | The existing TextInput bridge retains native editing and focus-event ownership. The generic dispatcher does not synthesize text or duplicate its focus events.                         |
 | Back navigation               | `Qt::Key_Back` is left to the separate platform-services contract. Escape is available to controls.                                                                                    |
 
+The native layer sends pointer movement and window exit through Fabric. The
+pinned RN `PointerEventsProcessor` owns hover ancestry and produces enter,
+leave, over and out transitions. Listener flags are present in the platform
+view configuration so RN can admit those events.
+
 Key handling is an explicit native contract: synchronous browser
 `preventDefault()` semantics are not inferred from a later JavaScript
 callback. Controls with a native key handler must implement the activation keys
 they own. Native Tab traversal is used instead of DOM queries or browser focus
 nodes.
+
+## Modal placement and layout
+
+With desktop input or platform services enabled, `ModalHostView` renders in a
+dedicated overlay at the owning surface root. Its visual origin is independent
+of the declaring control's padding, transform and clipping. The overlay stays
+above ordinary content; simultaneously mounted modals stack in presentation
+order. It is removed when its last modal detaches.
+
+Fabric's logical parent and child indices remain authoritative. The mounting
+layer keeps their order separately from visual parentage, rejects an incorrect
+remove index or parent, and excludes the overlay from ordinary Fabric sibling
+counts. Descendant geometry still comes from Yoga. A modal-owned QObject sends
+the surface viewport size through RN's existing `ModalHostViewState`, including
+on resize. The asynchronous state callback captures only size values, never Qt
+objects. Removal closes update admission and destruction cancels queued work.
+
+`onShow` fires once per presentation after the modal has the current viewport
+size. Controls can then use public ref commands to focus their initial item.
+The optional BackHandler adapter routes back requests to the topmost modal.
+This provides the shared RN modal surface; native presentation animations and
+`onDismiss` remain outside this contract.
 
 ## Actual Fabric interaction probe
 
@@ -51,8 +78,9 @@ nodes.
 sources as the playground, the normal mutation adapter, QtTouchDispatcher and
 QtReactHost. It evaluates a production Metro bundle in Hermes, starts a real
 Fabric surface, and sends native Qt mouse/key events to the window. App state
-and rendered-item assertions verify the outcome. Calls from the driver only
-change controlled props or switch a fixture stage.
+and rendered-item assertions verify the outcome. Controlled prop changes,
+fixture stage changes and public ref calls run through the host's normal RN
+task boundary, which flushes scheduled rendering commands.
 
 The default fixture imports public React Native primitives and tests 20 steps:
 hover entry/exit, public imperative focus/blur, disabled traversal, ordinary
@@ -87,12 +115,31 @@ requires nonzero geometry, visible ancestors, positive opacity and intersection
 with the viewport and clipping ancestors. Each condition has a bounded wait;
 JavaScript errors and mount failures fail the probe immediately.
 
+An optional `focused` test ID waits for automatic native focus without forcing
+it. `accessibleTarget`, `accessibleRole` and `accessibleChecked` inspect the
+real QAccessible interface rather than JS props. Failure diagnostics include
+the native focus owner, rendered geometry, app-state snapshot and screenshot.
+
 ## Validation boundary
 
-Execution results will be attached after the new native graph runs. A compiled
-bundle, public export, source mapping or synthetic callback unit test does not
-establish control runtime acceptance. The new feature flags remain OFF by
-default while required target validation is outstanding.
+The Linux Qt/Hermes/Fabric run passes all 20 core input steps and all 39
+installed NYC-Tron control steps for each of the separately resolved QNX and
+Marathon bundles. The latter exercises Tooltip, Select, Dropdown, ActionMenu,
+Slider, SplitButton, ContextMenu, Popover and FindReplacePopover, including
+automatic modal focus and real QAccessible list/menu-item/checked semantics.
+The [execution receipt](../evidence/qt-controls-host-2026-11-10.json) binds the
+source, binaries, bundles, logs and inspected images.
+
+The platform-services fixtures also pass modal layout at 320×240 and after
+resize to 480×360, a declaration inside a clipped/offset View, once-only
+`onShow`, BackHandler dismissal, reopen and queued-resize teardown. The native
+mounting suite passes 21 cases, including five portal regressions for logical
+index validation, clipping, visual parent validation, tag reuse and ownership.
+
+A compiled bundle, public export, source mapping or synthetic callback unit
+test alone does not establish control runtime acceptance. The new feature
+flags remain OFF by default while required physical-target validation is
+outstanding.
 
 The local native environment uses Qt 6.11.1, RN 0.88.1, Hermes, Linux x86_64,
 GCC 14 and the pinned offline source graph. Upstream RN sources use several

@@ -20,6 +20,7 @@
 #include <QUrl>
 
 #include <algorithm>
+#include <limits>
 #include <QList>
 #include <QQuickItem>
 
@@ -148,6 +149,9 @@ QtQuickMountingLayer::~QtQuickMountingLayer() {
       delete mounted.item;
     }
   }
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  delete modalLayer_;
+#endif
 }
 
 QString QtQuickMountingLayer::lastError() const {
@@ -217,6 +221,23 @@ QList<QQuickItem*> QtQuickMountingLayer::mountedChildren(QQuickItem* parent) con
   return children;
 }
 
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+MountError QtQuickMountingLayer::setModalHost(Tag tag) {
+  if (!items_.contains(tag) || tag == rootTag_) {
+    return failWith(MountError::UnknownTag, QStringLiteral("Unknown modal tag %1").arg(tag));
+  }
+  modalHosts_.insert(tag);
+  return MountError::None;
+}
+
+void QtQuickMountingLayer::removeEmptyModalLayer() {
+  if (modalLayer_ && modalLayer_->childItems().isEmpty()) {
+    delete modalLayer_;
+    modalLayer_ = nullptr;
+  }
+}
+#endif
+
 MountError QtQuickMountingLayer::insert(
     Tag parentTag,
     Tag childTag,
@@ -244,7 +265,15 @@ MountError QtQuickMountingLayer::insert(
   }
 
   // Fabric indices exclude QML-owned backgrounds and other decorations.
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  if (logicalParents_.contains(childTag) || child->item->parentItem()) {
+    return failWith(MountError::NotAChildOfParent,
+        QStringLiteral("Tag %1 already has a parent").arg(childTag));
+  }
+  const auto children = logicalChildren_.value(parentTag);
+#else
   const QList<QQuickItem*> children = mountedChildren(parentItem);
+#endif
   const int childCount = static_cast<int>(children.size());
   if (index < 0 || index > childCount) {
     return failWith(
@@ -252,12 +281,38 @@ MountError QtQuickMountingLayer::insert(
         QStringLiteral("Index %1 is outside 0..%2").arg(index).arg(childCount));
   }
 
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  if (modalHosts_.contains(childTag)) {
+    if (!modalLayer_) {
+      modalLayer_ = new QQuickItem(&rootItem_);
+      modalLayer_->setObjectName(QStringLiteral("rnqnxModalLayer"));
+      modalLayer_->setZ(std::numeric_limits<qreal>::max());
+    }
+    parentItem = modalLayer_;
+  }
+  logicalChildren_[parentTag].insert(index, childTag);
+  logicalParents_.insert(childTag, parentTag);
+#endif
   child->item->setParentItem(parentItem);
 
   // Append above the QML decorations, then order only against Fabric siblings.
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  // A portal has no visual sibling in its logical parent's child list. New
+  // modals stack in presentation order; regular children retain Fabric order.
+  if (!modalHosts_.contains(childTag)) {
+    for (int next = index; next < childCount; ++next) {
+      auto* sibling = itemForTag(children.at(next));
+      if (sibling && sibling->parentItem() == parentItem) {
+        child->item->stackBefore(sibling);
+        break;
+      }
+    }
+  }
+#else
   if (index < childCount) {
     child->item->stackBefore(children.at(index));
   }
+#endif
 
   lastError_.clear();
   return MountError::None;
@@ -286,7 +341,13 @@ MountError QtQuickMountingLayer::remove(
     parentItem = content;
   }
 
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  if (modalHosts_.contains(childTag)) parentItem = modalLayer_;
+  if (!logicalParents_.contains(childTag) || logicalParents_.value(childTag) != parentTag ||
+      child->item->parentItem() != parentItem) {
+#else
   if (child->item->parentItem() != parentItem) {
+#endif
     return failWith(
         MountError::NotAChildOfParent,
         QStringLiteral("Tag %1 is not a child of tag %2")
@@ -297,8 +358,12 @@ MountError QtQuickMountingLayer::remove(
   // React Native's Remove carries the index the child occupies. Disagreement
   // means our tree has diverged from the shadow tree, which is a defect worth
   // surfacing rather than papering over.
-  const int actualIndex =
-      static_cast<int>(mountedChildren(parentItem).indexOf(child->item));
+  const int actualIndex = static_cast<int>(
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+      logicalChildren_.value(parentTag).indexOf(childTag));
+#else
+      mountedChildren(parentItem).indexOf(child->item));
+#endif
   if (actualIndex != index) {
     return failWith(
         MountError::IndexOutOfRange,
@@ -309,6 +374,11 @@ MountError QtQuickMountingLayer::remove(
   }
 
   child->item->setParentItem(nullptr);
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  logicalChildren_[parentTag].removeAt(index);
+  logicalParents_.remove(childTag);
+  removeEmptyModalLayer();
+#endif
   lastError_.clear();
   return MountError::None;
 }
@@ -334,11 +404,26 @@ MountError QtQuickMountingLayer::destroy(Tag tag) {
   items_.erase(mounted);
   mountedPointers_.remove(item);
 
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  if (logicalParents_.contains(tag)) {
+    logicalChildren_[logicalParents_.take(tag)].removeAll(tag);
+  }
+  // Defensive deletion detaches direct logical children, including portals.
+  for (const Tag childTag : logicalChildren_.take(tag)) {
+    logicalParents_.remove(childTag);
+    if (auto* child = itemForTag(childTag)) child->setParentItem(nullptr);
+  }
+  modalHosts_.remove(tag);
+#endif
+
   // Defensive: a well-formed transaction removes before it deletes.
   if (item->parentItem() != nullptr) {
     item->setParentItem(nullptr);
   }
   delete item;
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  removeEmptyModalLayer();
+#endif
 
   lastError_.clear();
   return MountError::None;
@@ -799,10 +884,19 @@ MountError QtQuickMountingLayer::updateLayout(
   }
 
   QQuickItem* item = mounted->item;
-  item->setProperty("layoutX", static_cast<qreal>(frame.x));
-  item->setProperty("layoutY", static_cast<qreal>(frame.y));
-  item->setX(static_cast<qreal>(frame.x));
-  item->setY(static_cast<qreal>(frame.y));
+  // Fabric's modal frame belongs to the logical parent, but its native origin
+  // is the owning surface. Descendant layout remains entirely Yoga's output.
+#if RNQNX_ENABLE_DESKTOP_INPUT || RNQNX_ENABLE_PLATFORM_SERVICES
+  const qreal x = modalHosts_.contains(tag) ? 0 : static_cast<qreal>(frame.x);
+  const qreal y = modalHosts_.contains(tag) ? 0 : static_cast<qreal>(frame.y);
+#else
+  const qreal x = static_cast<qreal>(frame.x);
+  const qreal y = static_cast<qreal>(frame.y);
+#endif
+  item->setProperty("layoutX", x);
+  item->setProperty("layoutY", y);
+  item->setX(x);
+  item->setY(y);
   item->setWidth(static_cast<qreal>(frame.width));
   item->setHeight(static_cast<qreal>(frame.height));
 

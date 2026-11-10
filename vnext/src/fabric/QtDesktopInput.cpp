@@ -53,8 +53,12 @@ void QtDesktopInput::setView(const facebook::react::ShadowView& view) {
   if (name == QStringLiteral("View") || name == QStringLiteral("SafeAreaView") || found->modal)
     item->setClip(props->getClipsContentToBounds());
   if (!editable) {
-    item->setActiveFocusOnTab(found->focusable);
     item->setEnabled(!found->disabled);
+    if (item->activeFocusOnTab() != found->focusable) {
+      // Qt refuses to remove a tab stop while it still owns active focus.
+      if (!found->focusable && item->hasActiveFocus()) item->setFocus(false);
+      item->setActiveFocusOnTab(found->focusable);
+    }
   }
   if (found->disabled && item->hasActiveFocus()) item->setFocus(false);
 }
@@ -133,22 +137,26 @@ Tag QtDesktopInput::focusTarget() const {
 
 void QtDesktopInput::hover(const QMouseEvent* event) {
   if (event) lastPoint_ = event->position();
-  const auto next = event ? ancestry(hitTest(lastPoint_)) : std::vector<Tag>{};
-  const auto deliver = [&](Tag tag, auto method) {
-    const auto entry = entries_.value(tag);
-    if (entry.item && entry.emitter)
-      (entry.emitter.get()->*method)(desktop::pointerEvent(event, *entry.item, lastPoint_));
-  };
-  using Emitter = facebook::react::TouchEventEmitter;
-  if (next != hovered_) {
-    if (!hovered_.empty()) deliver(hovered_.front(), &Emitter::onPointerOut);
-    for (auto tag : hovered_) if (std::find(next.begin(), next.end(), tag) == next.end()) deliver(tag, &Emitter::onPointerLeave);
-    for (auto it = next.crbegin(); it != next.crend(); ++it)
-      if (std::find(hovered_.begin(), hovered_.end(), *it) == hovered_.end()) deliver(*it, &Emitter::onPointerEnter);
-    if (!next.empty()) deliver(next.front(), &Emitter::onPointerOver);
-    hovered_ = next;
+  const Tag target = event ? hitTest(lastPoint_) : -1;
+  if (target != -1) {
+    const auto entry = entries_.value(target);
+    if (entry.item && entry.emitter) {
+      // RN's PointerEventsProcessor owns hover ancestry and emits enter,
+      // leave, over and out. Sending those per ancestor here would duplicate
+      // transitions and interpret each leave as an exit from the whole root.
+      entry.emitter->onPointerMove(desktop::pointerEvent(event, *entry.item, lastPoint_));
+      hovered_ = ancestry(target);
+    }
+    return;
   }
-  if (event && !next.empty()) deliver(next.front(), &Emitter::onPointerMove);
+  for (const Tag tag : hovered_) {
+    const auto entry = entries_.value(tag);
+    if (entry.item && entry.emitter) {
+      entry.emitter->onPointerLeave(desktop::pointerEvent(event, *entry.item, lastPoint_));
+      break;
+    }
+  }
+  hovered_.clear();
 }
 
 void QtDesktopInput::moveFocus(bool forward) {

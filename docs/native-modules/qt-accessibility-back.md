@@ -98,14 +98,25 @@ native factories. Names, descriptions, roles and check/selection state use
 the public QML `Accessible` properties. The `role` prop takes precedence over
 `accessibilityRole`; the public view configuration admits both, value text,
 expanded/busy/modal state and explicit hidden-subtree props.
+Changes to expanded, busy and modal state submit public Qt state-change
+events; value text changes submit a public Qt value-change event after the
+new metadata is queryable. Event delivery remains guarded if a synchronous
+accessibility observer destroys the target.
 
 The expanded role mappings include combobox, menu/menuitem/menubar,
-dialog, list/listbox/option, slider/adjustable, progressbar, tab/tablist,
+dialog, list/option, slider/adjustable, progressbar, tab/tablist,
 toolbar, tooltip, grouping, tree/treeitem and table/row/cell/header roles.
 A role mapping supplies semantic identity. It does not add a numeric value
 setter, table model, selection model or editable text implementation to a
 generic View. `accessibilityValue.text` is exposed as text; this slice does
 not claim a Qt value interface for arbitrary numeric slider setters.
+
+The public `role` must also be accepted by the pinned RN parser. RN 0.88.1
+accepts `list` and `option`, but does not accept `listbox`. Shared controls
+keep `listbox` for the web and use `list` for the native container, which
+maps to Qt's List role. A generic View needs `accessible={true}` to expose
+its own semantic node; ordinary ignored wrappers retain their accessible
+descendants.
 
 | Registered RN action | Public Qt action |
 | -------------------- | ---------------- |

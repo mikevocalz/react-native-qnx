@@ -18,6 +18,8 @@ const store = createStore(() => ({
   disabled: false,
   hidden: false,
   actions: true,
+  expanded: false,
+  value: 'Ready',
 }));
 const probe = {
   platform: Reflect.get(Platform, 'OS'),
@@ -31,12 +33,15 @@ const probe = {
   actionEvents: [],
   modalCloses: 0,
   modalShows: 0,
+  modalWidth: 0,
+  modalHeight: 0,
   handled: true,
   setModal: (modal) => store.setState({ modal }),
   setTarget: (target) => store.setState({ target }),
   setDisabled: (disabled) => store.setState({ disabled }),
   setHidden: (hidden) => store.setState({ hidden }),
   setActions: (actions) => store.setState({ actions }),
+  updateAccessibleValue: () => store.setState({ expanded: true, value: 'Chosen' }),
   installBack() {
     this.firstBack = BackHandler.addEventListener('hardwareBackPress', () => {
       this.backEvents.push('first');
@@ -71,8 +76,8 @@ const probe = {
   focus() {
     AccessibilityInfo.sendAccessibilityEvent(this.target, 'focus');
   },
-  tag() {
-    return findNodeHandle(this.target);
+  tag(name = 'target') {
+    return findNodeHandle(this[name]);
   },
 };
 globalThis.__rnqnxPlatformServicesProbe = probe;
@@ -83,14 +88,26 @@ function Probe() {
   const disabled = useStore(store, (state) => state.disabled);
   const hidden = useStore(store, (state) => state.hidden);
   const actions = useStore(store, (state) => state.actions);
+  const expanded = useStore(store, (state) => state.expanded);
+  const value = useStore(store, (state) => state.value);
   return React.createElement(
     View,
     {
+      ref: (value) => {
+        probe.declaration = value;
+      },
       collapsable: false,
       accessible: true,
       role: 'dialog',
       accessibilityViewIsModal: true,
-      style: { width: 320, height: 240 },
+      style: {
+        position: 'absolute',
+        left: 40,
+        top: 30,
+        width: 180,
+        height: 120,
+        overflow: 'hidden',
+      },
     },
     target
       ? React.createElement(View, {
@@ -101,8 +118,8 @@ function Probe() {
           accessibilityLabel: 'Qt focus target',
           accessibilityRole: 'button',
           role: 'combobox',
-          accessibilityState: { disabled, expanded: false },
-          accessibilityValue: { text: 'Ready' },
+          accessibilityState: { disabled, expanded },
+          accessibilityValue: { text: value },
           accessibilityElementsHidden: hidden,
           importantForAccessibility: hidden ? 'no-hide-descendants' : 'auto',
           accessibilityActions: actions
@@ -117,6 +134,9 @@ function Probe() {
       ? React.createElement(
           Modal,
           {
+            ref: (value) => {
+              probe.modalHost = value;
+            },
             visible: true,
             onShow: () => {
               probe.modalShows += 1;
@@ -126,7 +146,17 @@ function Probe() {
               store.setState({ modal: false });
             },
           },
-          React.createElement(View, { collapsable: false, style: { width: 80, height: 40 } })
+          React.createElement(View, {
+            ref: (value) => {
+              probe.modalContent = value;
+            },
+            collapsable: false,
+            style: { flex: 1 },
+            onLayout: (event) => {
+              probe.modalWidth = event.nativeEvent.layout.width;
+              probe.modalHeight = event.nativeEvent.layout.height;
+            },
+          })
         )
       : null
   );
