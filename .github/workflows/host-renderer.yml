@@ -2,7 +2,6 @@ name: SDK 58 full host renderer
 
 on:
   pull_request:
-    branches: [main, feat/qnx-integrated-dx-candidate, feat/qnx-phases-1-7-integration]
   push:
     branches: [main]
   workflow_dispatch:
@@ -50,12 +49,21 @@ jobs:
           host: linux
           target: desktop
           arch: linux_gcc_64
+          modules: 'qtwebsockets'
           cache: true
       - name: Build and run the required full renderer graph
         run: |
           mkdir -p build/linux-host-renderer/evidence
           git rev-parse HEAD > build/linux-host-renderer/evidence/commit.txt
-          cmake --preset linux-host-renderer -DRNQNX_ENABLE_INPUT_LIFECYCLE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_DESKTOP_WINDOW=${{ matrix.input-lifecycle }}
+          cmake --preset linux-host-renderer \
+            -DRNQNX_ENABLE_INPUT_LIFECYCLE=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_DESKTOP_WINDOW=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_MODAL_FOCUS=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_DEV_RUNTIME=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_WEBSOCKETS=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_FRAME_TRACE=${{ matrix.input-lifecycle }}
           node scripts/validate-host-renderer.mjs
       - name: Render the conformance app (Linux host only)
         run: |

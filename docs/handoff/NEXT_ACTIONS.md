@@ -1,5 +1,24 @@
 # NEXT_ACTIONS.md
 
+## 2026-11-10 — PR #110 integration follow-up
+
+Publish the integrated #104/#110 candidate and inspect both full host-renderer
+matrix jobs at that exact head, including required registrations for Modal
+focus, controlled Switch, development runtime and frame tracing. Keep #104
+before #110 and inspect the resulting base/diff. Run an actual host Fast
+Refresh edit/reload/reconnect session separately; obtain exact artifacts,
+flags and named interactions for future QNX acceptance. Preserve the positive
+owner report and all seven pending release gates.
+
+Receipt:
+[pr110-merge-readiness-2026-11-10.md](../validation/pr110-merge-readiness-2026-11-10.md).
+
+## 2026-11-10 — PR #104 readiness follow-up
+
+Attach the tested artifact identities and actions to the positive owner feedback. Preserve existing #104 history; review #104 before the dependent #110 and verify the latter’s base/diff after retargeting. Keep ordinary gallery interaction, optional desktop behavior, and release qualification separate.
+
+Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
 ## Dependency-security follow-through (2026-10-03)
 
 Review the braces depth backport and guarded audit in `docs/security/braces.md`.

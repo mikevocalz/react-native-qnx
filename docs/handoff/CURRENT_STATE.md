@@ -1,5 +1,26 @@
 # Current state
 
+## 2026-11-10 — PR #110 integration follow-up
+
+Implementation `083c4bd` is being combined with the published #104 follow-up
+`c5c54a0` and expanded host-renderer CI coverage. The original PR author reports
+23/23 native CTests with the v1 options ON and 17/17 OFF, with the exclusions
+and host limitation recorded in the receipt. Current focused host-renderer
+inventory, controlled-Switch JavaScript and type checks passed; full native
+CI on the updated candidate is pending. The two feature guides now retain
+this evidence instead of saying nothing has been tested.
+
+The owner-reported smooth QNX operation remains in the inherited #104 receipt;
+it does not supply exact artifacts or enabled-feature acceptance. All seven
+v1 gates remain pending. Receipt:
+[pr110-merge-readiness-2026-11-10.md](../validation/pr110-merge-readiness-2026-11-10.md).
+
+## 2026-11-10 — PR #104 readiness follow-up
+
+The owner reports smooth QNX operation for PR #110. That inspected branch contains PR #104 at 3b414f1; the report does not specify the installed hashes, board/image, flags or actions. Retain it as owner-reported feedback alongside the existing host receipt. Corrected the stale Modal host note to reflect Escape/onRequestClose and viewport/background-input behavior without promoting device rows.
+
+Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
 Reconciled against `main` at `5f17504` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the
 [compatibility matrix](../getting-started/compatibility-matrix.md) are generated

@@ -8,7 +8,27 @@
     "experimentalTarget": "Pi 400 custom BCM2711 image; scoped Hello World/Nitro/runtime/input receipts",
     "qtTarget": "Historical Pi 400 receipts: 6.12.0 evaluation expires 2026-11-17. Selected route: eligible open-source Qt per ADR-0013; separate public-source build receipt pending.",
     "hostedCi": "blocked before runner startup by billing/spending limits at the reviewed baseline",
-    "performance": "unmeasured on QNX"
+    "performance": "unmeasured on QNX",
+    "pr104": {
+      "reviewedAt": "2026-11-10",
+      "sourceHeadBeforeFollowup": "3b414f185ec9b6c23eb7fbfdbc0afc9bfed18b94",
+      "scope": "Owner-reported QNX feedback; source ancestry and host-support documentation only",
+      "receipt": "docs/evidence/gallery-owner-report-2026-11-10.md",
+      "releaseGatesPromoted": false
+    },
+    "pr110": {
+      "reviewedAt": "2026-11-10",
+      "sourceHeadBeforeFollowup": "083c4bdb887a844e533313fed9b967ff94f4c4d3",
+      "originalBase": "3b414f185ec9b6c23eb7fbfdbc0afc9bfed18b94",
+      "incorporatedPr104Followup": "c5c54a09817c54b24d9c2132267d6fe93905da2d",
+      "scope": "Original-author host and launch evidence; current focused integration checks; refreshed full native CI pending",
+      "receipt": "docs/validation/pr110-merge-readiness-2026-11-10.md",
+      "ownerReport": "docs/evidence/gallery-owner-report-2026-11-10.md",
+      "originalAuthorNativeCounts": "23/23 ON and 17/17 OFF at 083c4bd; two excluded targets and ASan host limitation retained in receipt",
+      "currentFocusedChecks": "Host-renderer inventory, controlled-Switch JavaScript and typecheck passed; no fresh full native run claimed",
+      "fullNativeCi": "pending for the updated combined candidate",
+      "releaseGatesPromoted": false
+    }
   },
   "gates": [
     {

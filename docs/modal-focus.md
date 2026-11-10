@@ -1,7 +1,12 @@
 # Modal keyboard focus and controlled Switch
 
-Status: source implementation, default OFF. No host, cross-build, QNX VM or
-physical Pi result exists for this change.
+Status: implemented in PR #110. Modal focus defaults OFF; controlled Switch
+reconciliation is always enabled and requires the matching native rebuild.
+The original author reported passing Linux native tests at `083c4bd`; the
+current integration follow-up has passed focused JavaScript/source checks.
+Fresh full native CI for the updated candidate is pending. See the
+[validation handoff](validation/pr110-merge-readiness-2026-11-10.md) for the
+revision, flags and remaining target checks.
 
 ## Modal focus (`RNQNX_ENABLE_MODAL_FOCUS`)
 
@@ -50,7 +55,7 @@ event. Malformed arguments and unmounted tags return a `MutationFailure`.
 QML emits `toggled()` only for user toggles, so prop and command writes cannot
 echo back to JavaScript. Disabled Switches do not toggle.
 
-## Tests (added, not run)
+## Tests and evidence
 
 - `tests/cpp/QtModalFocusTest.cpp`: requires `RNQNX_ENABLE_MODAL_FOCUS=ON`.
 - `tests/cpp/QtControlledSwitchTest.cpp`
@@ -60,8 +65,25 @@ echo back to JavaScript. Disabled Switches do not toggle.
   TextInputs, rejected and deferred Switches, and close-request counters for
   a production-window driver.
 
-Host results do not qualify QNX. Physical keyboard, IME and touch behavior
-need a separate run on the rebuilt QNX consumer.
+At implementation revision `083c4bd`, the [PR author reported](https://github.com/mikevocalz/react-native-qnx/pull/110)
+23/23 Linux CTests with Modal focus, development runtime, frame trace and
+WebSockets ON, and 17/17 with those options OFF. That run used clang 14,
+Qt 6.11.1 and ASan/UBSan; two unrelated targets were excluded for an existing
+clang 14/libstdc++ 11 compile incompatibility. The author also recorded an
+ASan kernel-setting requirement. These are original-author results, with
+their limitations retained in the validation handoff.
+
+During the 2026-11-10 integration follow-up,
+`node tests/js/qnx-controlled-switch.test.mjs`, the host-renderer inventory
+test and `pnpm typecheck` passed. The Switch test uses React/native doubles;
+it does not establish Fabric command delivery or Qt execution. The updated
+candidate still needs its own full ON/OFF native CI result.
+
+The [owner's smooth QNX report](evidence/gallery-owner-report-2026-11-10.md)
+is retained without assuming the installed artifact hashes, feature flags or
+tested actions. Physical keyboard, IME and touch behavior need a named
+scenario receipt on the matching rebuilt QNX consumer. Host results do not
+qualify those device behaviors.
 
 ## Rollback
 

@@ -1,5 +1,24 @@
 # BLOCKERS.md
 
+## 2026-11-10 — PR #110 integration follow-up
+
+The combined candidate still needs fresh full native ON/OFF CI. The updated
+workflow enables the v1 feature tests and WebSockets on stacked PRs; the
+original author's 23/23 and 17/17 results do not qualify these later changes.
+Actual state-preserving Fast Refresh, optional QNX feature scenarios, physical
+HID/IME/accessibility, cold boot, stock Pi qualification and performance remain
+without new acceptance evidence. The owner smoke report lacks exact artifact
+identities and selected flags. All seven v1 gates remain pending.
+
+Receipt:
+[pr110-merge-readiness-2026-11-10.md](../validation/pr110-merge-readiness-2026-11-10.md).
+
+## 2026-11-10 — PR #104 readiness follow-up
+
+The owner report does not identify exact executable/bundle/assets hashes or per-scenario actions. It supports continued acceptance review without establishing all optional desktop controls, modal focus, IME/accessibility, physical metrics or release readiness. The prior measured Linux host receipt remains dated evidence.
+
+Receipt: [gallery-owner-report-2026-11-10.md](../evidence/gallery-owner-report-2026-11-10.md).
+
 ## GHSA-vfj7-8cjw-p6xm — No official braces fixed release
 
 As of 2026-10-03, npm latest is 3.0.3 and upstream PR #72 is still open.
