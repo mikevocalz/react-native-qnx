@@ -118,12 +118,13 @@ function runtimeProfile(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new Error('Invalid QNX runtime profile.');
   const profile =
-    /** @type {{libraryPaths?: unknown, qtPluginDirectory?: unknown, qtFontDirectory?: unknown}} */ (
+    /** @type {{libraryPaths?: unknown, qtPluginDirectory?: unknown, qtFontDirectory?: unknown, launchArguments?: unknown}} */ (
       value
     );
   if (
     Object.keys(profile).some(
-      (k) => !['libraryPaths', 'qtPluginDirectory', 'qtFontDirectory'].includes(k)
+      (k) =>
+        !['libraryPaths', 'qtPluginDirectory', 'qtFontDirectory', 'launchArguments'].includes(k)
     )
   )
     throw new Error('Unknown QNX runtime profile field.');
@@ -132,6 +133,20 @@ function runtimeProfile(value) {
     (!Array.isArray(profile.libraryPaths) || profile.libraryPaths.length > 16)
   )
     throw new Error('libraryPaths must be an array of at most 16 target directories.');
+  if (
+    profile.launchArguments !== undefined &&
+    (!Array.isArray(profile.launchArguments) ||
+      profile.launchArguments.length > 16 ||
+      profile.launchArguments.some(
+        (argument) =>
+          typeof argument !== 'string' ||
+          /[\x00-\x1f\x7f]/.test(argument) ||
+          Buffer.byteLength(argument, 'utf8') > 1024
+      ))
+  )
+    throw new Error(
+      'launchArguments must contain at most 16 strings of at most 1024 bytes without control characters.'
+    );
   return {
     libraryPaths: /** @type {unknown[]} */ (profile.libraryPaths ?? []).map((p) =>
       targetPath(p, 'libraryPaths')
@@ -142,6 +157,9 @@ function runtimeProfile(value) {
     ...(profile.qtFontDirectory === undefined
       ? {}
       : { qtFontDirectory: targetPath(profile.qtFontDirectory, 'qtFontDirectory') }),
+    ...(profile.launchArguments === undefined
+      ? {}
+      : { launchArguments: [.../** @type {string[]} */ (profile.launchArguments)] }),
   };
 }
 
@@ -228,7 +246,8 @@ export function launcherFiles(config, appDirectory, registry, executable = confi
   if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(executable) || executable === '.' || executable === '..')
     throw new Error('Executable must be a filename, not a command or path.');
   const entry = `${registry}/apps/${config.appId}`;
-  const profile = config.runtime;
+  const profile = runtimeProfile(config.runtime);
+  const extraArguments = (profile.launchArguments ?? []).map(shellQuote);
   const wrapper = [
     '#!/bin/sh',
     'set -eu',
@@ -245,7 +264,7 @@ export function launcherFiles(config, appDirectory, registry, executable = confi
     ...(profile.qtFontDirectory
       ? [`export QT_QPA_FONTDIR=${shellQuote(profile.qtFontDirectory)}`]
       : []),
-    `exec ${shellQuote(appDirectory + '/' + executable)} --fullscreen`,
+    `exec ${shellQuote(appDirectory + '/' + executable)} --fullscreen${extraArguments.length ? ' ' + extraArguments.join(' ') : ''}`,
     '',
   ].join('\n');
   const displayName = config.displayName.replaceAll('\\', '\\\\');

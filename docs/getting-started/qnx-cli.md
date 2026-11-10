@@ -142,10 +142,27 @@ probe deployment, not a complete native consumer installer.
 
 Optional process-local target runtime settings belong under
 `expo.extra.rnqnx.qnx.runtime`: `libraryPaths` (an array of absolute directories),
-`qtPluginDirectory`, and `qtFontDirectory`. The deployed application directory is
+`qtPluginDirectory`, `qtFontDirectory`, and `launchArguments`. The deployed application directory is
 first in its library path. The generated launch script enforces non-root
 execution and `QT_QPA_PLATFORM=qnx`; no global environment or system library is
 changed. These settings do not prove a complete runtime dependency closure.
+
+`launchArguments` adds literal argument strings after the launcher's mandatory
+`--fullscreen`; it does not replace fullscreen or run a shell command. At most
+16 arguments are accepted, each at most 1024 UTF-8 bytes and without control
+characters. Omitted or empty arguments preserve the existing launch action.
+For a consumer compiled with desktop controls enabled, configure:
+
+```json
+{
+  "launchArguments": ["--desktop"]
+}
+```
+
+This object belongs under `expo.extra.rnqnx.qnx.runtime`. The application still
+opens fullscreen, with its own menus/close controls if that native build supports
+them. Arguments do not enable missing native features; unsupported options are
+reported by the executable. Rerun launcher installation after changing them.
 
 Registration uses a user-owned overlay at
 `$HOME/.local/share/rnqnx/launcher`, copying the installed stock QNX demo

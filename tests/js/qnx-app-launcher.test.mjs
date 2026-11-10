@@ -150,6 +150,40 @@ try {
       files['launch.sh'].includes('must not run as root')
   );
   check(!files['launch.sh'].includes('wayland'));
+  check(files['launch.sh'].endsWith("/app' --fullscreen\n"));
+  check(
+    launcherFiles(
+      { ...configuration, runtime: { ...configuration.runtime, launchArguments: [] } },
+      deployed,
+      registry,
+      'app'
+    )['launch.sh'] === files['launch.sh']
+  );
+  const literalArguments = [
+    '--desktop',
+    '--invert-wheel',
+    'a value with spaces',
+    "an apostrophe's value",
+    '$(touch injected)',
+    '; touch injected',
+    '',
+    'QNX — fullscreen',
+  ];
+  const configured = {
+    ...configuration,
+    runtime: { ...configuration.runtime, launchArguments: literalArguments },
+  };
+  const argumentFiles = launcherFiles(configured, deployed, registry, 'app');
+  await writeFile(deployed + '/app', '#!/bin/sh\nprintf "%s\\n" "$@" > received-arguments\n');
+  shell(argumentFiles['launch.sh']);
+  assert.deepEqual((await readFile(deployed + '/received-arguments', 'utf8')).split('\n'), [
+    '--fullscreen',
+    ...literalArguments,
+    '',
+  ]);
+  checks++;
+  await rejects(() => lstat(deployed + '/injected'));
+  await writeFile(deployed + '/app', '#!/bin/sh\nexit 0\n');
   await launcherMain([
     'install',
     '--project',
@@ -175,7 +209,11 @@ try {
   await writeFile(registry + '/incoming-' + configuration.appId + '.png', 'corrupt icon');
   shell(installLauncherScript(configuration, home, deployed, 'app', false, stock), false);
   check((await readFile(desktop)).equals(unchanged));
-  const updated = { ...configuration, displayName: 'Renamed Notes' };
+  const updated = {
+    ...configuration,
+    displayName: 'Renamed Notes',
+    runtime: { ...configuration.runtime, launchArguments: ['--desktop'] },
+  };
   const hashBin = temporary + '/openssl-only';
   await mkdir(hashBin);
   for (const command of [
@@ -200,6 +238,11 @@ try {
     PATH: hashBin,
   });
   check((await readFile(desktop, 'utf8')).includes('Name=Renamed Notes\n'));
+  check(
+    (await readFile(registry + '/apps/' + configuration.appId + '/launch.sh', 'utf8')).endsWith(
+      "/app' --fullscreen '--desktop'\n"
+    )
+  );
   check(
     (await readFile(registry + '/desktop.conf', 'utf8')).split(
       'DesktopFileName=org.example.notes.desktop'
@@ -301,6 +344,7 @@ try {
                 libraryPaths: ['/usr/lib'],
                 qtPluginDirectory: '/opt/qt/plugins',
                 qtFontDirectory: '/usr/share/fonts',
+                launchArguments: ['--desktop'],
               },
             },
           },
@@ -313,10 +357,21 @@ try {
     override.configuration.icon.source === 'assets/override.png' &&
       override.configuration.runtime.qtPluginDirectory === '/opt/qt/plugins'
   );
+  assert.deepEqual(override.configuration.runtime.launchArguments, ['--desktop']);
+  checks++;
   for (const runtime of [
     { libraryPaths: '/usr/lib' },
     { libraryPaths: ['/usr/lib;bad'] },
     { libraryPaths: Array(17).fill('/usr/lib') },
+    { launchArguments: '--desktop' },
+    { launchArguments: [1] },
+    { launchArguments: [null] },
+    { launchArguments: ['line\nbreak'] },
+    { launchArguments: ['nul\x00value'] },
+    { launchArguments: ['\x7f'] },
+    { launchArguments: ['a'.repeat(1025)] },
+    { launchArguments: ['é'.repeat(513)] },
+    { launchArguments: Array(17).fill('--desktop') },
     { unrecognized: true },
   ]) {
     await writeFile(
@@ -327,6 +382,9 @@ try {
       })
     );
     await rejects(() => launcherConfiguration(project));
+    const invalidConfiguration = JSON.parse(JSON.stringify({ ...configuration, runtime }));
+    assert.throws(() => launcherFiles(invalidConfiguration, deployed, registry, 'app'));
+    checks++;
   }
   await writeFile(project + '/app.json', JSON.stringify(app));
   const target = launcherTarget({
