@@ -1,5 +1,12 @@
 # NEXT_ACTIONS.md
 
+## 2026-11-10 — PR #110 SDK follow-through
+
+Publish the filter-only follow-up to `73f7da0` and inspect its own SDK run.
+Merge that published follow-up into dependent #108 to keep ancestry intact;
+native sources and recorded evidence remain unchanged.
+[Receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+
 ## 2026-11-10 — Combined PR #106/#110 continuation
 
 Review and publish the merge of #110 `2657620` and #106 `5e3bb88`, preserving

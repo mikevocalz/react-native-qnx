@@ -1,5 +1,12 @@
 # Current state
 
+## 2026-11-10 — PR #110 receives its own SDK validation
+
+The follow-up to `73f7da0` removes only the SDK workflow's PR base filter so
+#110's stacked base receives full SDK checks. Native sources and evidence are
+unchanged; the new published head's CI remains pending.
+[Receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+
 ## 2026-11-10 — PR #110 integrates the PR #106 public API
 
 Combined published #110 `2657620` with #106 `5e3bb88` in a merge preserving

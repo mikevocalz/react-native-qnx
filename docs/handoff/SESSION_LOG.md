@@ -1,5 +1,12 @@
 # SESSION_LOG.md
 
+## 2026-11-10 — Enable SDK checks on PR #110's stacked base
+
+Branched from published `73f7da0`, preserving earlier local history. Removed
+only the SDK PR base allowlist and updated handoff/generated evidence records.
+No native source, fixture, dependency or release-gate change is included.
+[Receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+
 ## 2026-11-10 — Integrate PR #106 into PR #110
 
 Created a separate integration branch from published #110 `2657620` and

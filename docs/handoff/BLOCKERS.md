@@ -1,5 +1,12 @@
 # BLOCKERS.md
 
+## 2026-11-10 — PR #110 SDK trigger gap
+
+At `73f7da0`, the SDK PR base filter excluded #110. The filter is removed;
+the published follow-up's SDK job must still pass. The child #108's checks
+do not qualify this parent head. Native evidence and release gates are unchanged.
+[Receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+
 ## 2026-11-10 — Combined PR #106/#110 review state
 
 The known Switch mock incompatibility is repaired in the combined tree:

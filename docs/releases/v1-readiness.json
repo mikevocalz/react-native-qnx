@@ -37,6 +37,13 @@
         "metroBundles": "Real reset-cache bundles passed: QNX 684840 bytes; Marathon 684881 bytes",
         "nativeAndDeviceEvidence": "Fresh full native CI pending; no new QNX or Marathon runtime evidence",
         "releaseGatesPromoted": false
+      },
+      "stackedSdkValidation": {
+        "sourceHeadBeforeFollowup": "73f7da04739fd790fb67565b68ff2fac6c3992e3",
+        "scope": "Remove SDK pull_request base allowlist only; preserve push branches, permissions, concurrency and jobs",
+        "nativeEvidence": "Native sources, fixtures, dependency pins and recorded hashes unchanged; no native or broad suite rerun",
+        "hostedCi": "Pending on the new published PR110 head; child PR108 checks do not substitute",
+        "releaseGatesPromoted": false
       }
     },
     "pr106": {

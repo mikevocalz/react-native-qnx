@@ -1,5 +1,13 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — PR #110 SDK trigger follow-up
+
+Parsed YAML equivalence apart from the PR filter, the existing host-renderer
+contract, docs sync/validation, changed-file Prettier and whitespace checks pass.
+Native sources/hashes are unchanged; no native or broad suite rerun is claimed.
+The published follow-up needs its own SDK result.
+[Receipt](../validation/pr110-merge-readiness-2026-11-10.md).
+
 ## 2026-11-10 — Combined PR #106/#110 validation
 
 Merge inputs: #110 `2657620` and #106 `5e3bb88`; Linux x86-64, Node 26.13.0,
