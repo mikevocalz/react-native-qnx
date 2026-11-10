@@ -912,3 +912,20 @@ detection it claimed was replaced with a measured one under ASan.
   checks pass. CMake 3.31.10 was installed after the initial missing-tool failure.
   Remote CI remains pending. No publish, merge, QNX build, or target run.
 - Continue with exact-head CI and eventual removal after an official fixed release.
+
+## 2026-11-10 — PR #111 CI coverage correction
+
+Reviewed the actual hosted renderer workflow and found that both existing lanes
+left the new SVG/motion/graphics capabilities OFF. Local native receipts did not
+make those CI runs feature validation. Added an explicit enabled lane while
+retaining OFF coverage, deterministic SVG generation and inventory guards for
+all five native feature tests. The original validator fails the new behavioral
+regression; the corrected implementation passes it.
+
+Published implementation: `295f7240099c7371dc8988f4d411b1840888a415` (same tree
+as local review commit `0cdc788f1e83d7beec10602d36558b6e0daf72c8`). Frozen install,
+typecheck, SVG codegen, formatting and docs checks pass. The new hosted native
+matrix is pending; no new device or release qualification is claimed. Applied
+the repository validation skill and pinned Callstack `github-actions` guidance;
+exact skill identities remain in the v2 receipt. Implementation/review owner:
+agent `audit_followups`; human merge and target qualification remain unassigned.
