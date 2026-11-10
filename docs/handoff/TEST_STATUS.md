@@ -1,5 +1,13 @@
 # TEST_STATUS.md
 
+## 2026-11-10 — PR #102 readiness follow-up
+
+Linux x86-64, Node 26.13.0, pnpm 12.8.1: `node tests/js/pi400-final-physical.test.mjs` and `node tests/js/qnx-runtime-probe-bytecode.test.mjs` exit 0. These exercise inert host deployment/failure fixtures and host HBC/binary-reader contracts. The frozen normal dependency install passed after an offline attempt lacked cached metadata. No QNX/VM/Marathon execution or native API test ran.
+
+`pnpm validate:docs`, `pnpm validate:dependencies`, `pnpm validate:architecture`, `pnpm validate:manifests`, and `pnpm exec tsc --noEmit` also exit 0. Generated documentation is synchronized; the lockfile is unchanged. These source/host checks do not qualify a target.
+
+Receipt: [pi400-review-2026-11-10.md](../evidence/pi400-review-2026-11-10.md).
+
 ## 2026-10-03 braces security backport
 
 Host: Linux cloud workspace, Node 26.10.0, pnpm 12.8.1. No QNX SDK or target.

@@ -1,5 +1,9 @@
 # Final supervised Raspberry Pi 400 physical test
 
+The [2026-11-10 review](../evidence/pi400-review-2026-11-10.md) records verified
+review fixes and repeated host failure tests. It preserves the separate
+physical-run and independent-acceptance limits below.
+
 Tracks [Issue #43](https://github.com/mikevocalz/react-native-qnx/issues/43) and the exact current [QNX-RN-008 / QNX-RN-009 queue](../handoff/QNX_VALIDATION_QUEUE.md). This is a **physical validation procedure** plus one recorded supervised run on the custom CTI 8.0.5 consumer (exact head 1a29431, 11 stages). The evidence for that run lives in the PR #102 body and is not committed. It does not qualify stock QSTI, cold boot, interaction, performance or release.
 
 ## What the issue already proves

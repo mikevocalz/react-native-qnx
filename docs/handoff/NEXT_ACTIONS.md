@@ -1,5 +1,11 @@
 # NEXT_ACTIONS.md
 
+## 2026-11-10 — PR #102 readiness follow-up
+
+Use the review receipt to dispose of the five outdated threads, then have the independent target reviewer inspect the retained physical artifacts and exact source/runtime hashes. Keep the separate stock-QSTI, cold-boot, interaction, performance, packaging and release gates unchanged.
+
+Receipt: [pi400-review-2026-11-10.md](../evidence/pi400-review-2026-11-10.md).
+
 ## Dependency-security follow-through (2026-10-03)
 
 Review the braces depth backport and guarded audit in `docs/security/braces.md`.

@@ -1,5 +1,11 @@
 # BLOCKERS.md
 
+## 2026-11-10 — PR #102 readiness follow-up
+
+Independent QNX/Qt review of the retained raw physical record and capture is still pending. Current-head host CI does not substitute for the skipped physical job. PR #110 owner feedback is a separate branch/report and does not promote this harness or the seven v1 release gates.
+
+Receipt: [pi400-review-2026-11-10.md](../evidence/pi400-review-2026-11-10.md).
+
 ## GHSA-vfj7-8cjw-p6xm — No official braces fixed release
 
 As of 2026-10-03, npm latest is 3.0.3 and upstream PR #72 is still open.

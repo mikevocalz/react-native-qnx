@@ -1,5 +1,11 @@
 # Current state
 
+## 2026-11-10 — PR #102 readiness follow-up
+
+Reviewed the five outdated PR #102 threads against the current runner and reran its failure fixtures. The substantive fixes are present; this follow-up changes documentation only. The physical receipt remains attached to 1a29431, and independent QNX/Qt evidence acceptance remains pending.
+
+Receipt: [pi400-review-2026-11-10.md](../evidence/pi400-review-2026-11-10.md).
+
 Reconciled against `main` at `5f17504` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the
 [compatibility matrix](../getting-started/compatibility-matrix.md) are generated
