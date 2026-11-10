@@ -182,3 +182,19 @@ dispatcher.
    [the public-component receipt](../validation/qt-public-component-equivalence-2026-11-10.md).
    Keep the PR draft and release gates pending until their required evidence and
    independent review are complete.
+
+### PR #112 follow-up: publish and verify the preserved descendant
+
+1. Review and publish the follow-up as a descendant of
+   `7bcf597047ddc493d1299a862ee7ab116293638f`, checking the expected current head
+   before the update. Preserve the concurrent native-control commits and the
+   installed-package metadata fix; keep the current PR body and its evidence.
+2. On that exact head, verify the new `services-only` Actions job's actual
+   services/accessibility ON and desktop/lifecycle/text-input OFF cache, both
+   registered CTests and JUnit output. Also inspect the existing full OFF/ON
+   jobs. The local result is 2/2 for each focused native configuration.
+3. When stacking with PR #108, reconcile its Modal logical-parent, viewport,
+   state and focus ownership with this branch before claiming combined proof.
+4. Continue the named QNX/device and Marathon compositor checks above. The
+   previously recorded native control suites are host evidence at their own
+   hashes, and this follow-up is only native input selection and item lifetime.

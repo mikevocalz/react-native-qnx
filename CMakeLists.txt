@@ -487,6 +487,25 @@ else()
           COMMAND $<TARGET_FILE:shadow_view_mutation_adapter_host_test>
                   -platform offscreen)
 
+        # Exercise the baseline dispatcher even when platform services add
+        # modal portals without enabling the independent desktop-input adapter.
+        if(NOT RNQNX_ENABLE_DESKTOP_INPUT)
+          add_executable(qt_touch_dispatcher_host_test
+            tests/cpp/QtTouchDispatcherHostTest.cpp)
+          target_link_libraries(qt_touch_dispatcher_host_test PRIVATE rnqnx_fabric_adapter)
+          rnqnx_enable_strict_warnings(qt_touch_dispatcher_host_test)
+          if(RNQNX_ENABLE_HOST_SANITIZERS AND CMAKE_CXX_COMPILER_ID MATCHES "AppleClang|Clang|GNU")
+            target_compile_options(qt_touch_dispatcher_host_test PRIVATE
+              -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer)
+            target_link_options(qt_touch_dispatcher_host_test PRIVATE -fsanitize=address,undefined)
+          endif()
+          set_target_properties(qt_touch_dispatcher_host_test PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+          add_test(NAME qt_touch_dispatcher_host_test
+            COMMAND $<TARGET_FILE:qt_touch_dispatcher_host_test> -platform offscreen)
+          set_tests_properties(qt_touch_dispatcher_host_test PROPERTIES
+            ENVIRONMENT "QT_QUICK_BACKEND=software;ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1")
+        endif()
 
         # The full pipeline: a real ShadowTree commit, React Native's differ,
         # MountingCoordinator, the adapter, and Yoga's geometry on Qt items.

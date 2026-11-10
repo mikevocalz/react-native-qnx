@@ -54,6 +54,8 @@ jobs:
       - name: Build and run the required full renderer graph
         run: |
           mkdir -p build/linux-host-renderer/evidence
+          exec > >(tee build/linux-host-renderer/evidence/commands.log) 2>&1
+          set -x
           git rev-parse HEAD > build/linux-host-renderer/evidence/commit.txt
           cmake --preset linux-host-renderer -DRNQNX_ENABLE_INPUT_LIFECYCLE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_DESKTOP_INPUT=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_PLATFORM_SERVICES=${{ matrix.input-lifecycle }} -DRNQNX_BUILD_PLATFORM_SERVICES_TESTS=ON
           node scripts/validate-host-renderer.mjs
@@ -103,4 +105,93 @@ jobs:
             build/linux-host-renderer/CMakeCache.txt
             build/linux-host-renderer/CMakeFiles/CMakeConfigureLog.yaml
             build/clean-app-evidence.*/
+          if-no-files-found: warn
+
+  services-only:
+    name: Qt 6.11 / RN 0.88 modal touch (services ON, desktop input OFF)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      QT_QPA_PLATFORM: offscreen
+      QT_QUICK_BACKEND: software
+      QSG_RHI_BACKEND: software
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - run: npm install --global pnpm@12.8.1
+      - run: pnpm install --frozen-lockfile
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libclang-dev libicu-dev
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Install exact host Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          cache: true
+      - name: Build and run services-only modal touch regressions
+        run: |
+          set -euo pipefail
+          native_build=build/linux-host-renderer-services-only
+          evidence="$PWD/$native_build/evidence"
+          mkdir -p "$evidence"
+          exec > >(tee "$evidence/commands.log") 2>&1
+          set -x
+          git rev-parse HEAD > "$evidence/commit.txt"
+          # Declare the host graph, then build only the two native regression targets.
+          cmake --preset linux-host-renderer -B "$native_build" \
+            -DRNQNX_ENABLE_PLATFORM_SERVICES:BOOL=ON \
+            -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON \
+            -DRNQNX_ENABLE_DESKTOP_INPUT:BOOL=OFF \
+            -DRNQNX_ENABLE_INPUT_LIFECYCLE:BOOL=OFF \
+            -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT:BOOL=OFF \
+            -DRNQNX_BUILD_PLATFORM_SERVICES_TESTS:BOOL=OFF
+          cmake --build "$native_build" --parallel 2 \
+            --target qt_touch_dispatcher_host_test qtquick_mounting_layer_host_test
+          test_filter='^(qt_touch_dispatcher_host_test|qtquick_mounting_layer_host_test)$'
+          ctest --test-dir "$native_build" -R "$test_filter" --show-only=json-v1 \
+            > "$evidence/ctest-inventory.json"
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          const build = 'build/linux-host-renderer-services-only';
+          const cache = readFileSync(`${build}/CMakeCache.txt`, 'utf8');
+          for (const [option, value] of Object.entries({
+            RNQNX_ENABLE_PLATFORM_SERVICES: 'ON',
+            RNQNX_ENABLE_ACCESSIBILITY_BRIDGE: 'ON',
+            RNQNX_ENABLE_DESKTOP_INPUT: 'OFF',
+            RNQNX_ENABLE_INPUT_LIFECYCLE: 'OFF',
+            RNQNX_ENABLE_TEXT_INPUT_CONTRACT: 'OFF',
+            RNQNX_BUILD_PLATFORM_SERVICES_TESTS: 'OFF',
+          })) {
+            assert.match(cache, new RegExp(`^${option}:BOOL=${value}$`, 'm'),
+              `Required services-only configuration missing: ${option}=${value}`);
+          }
+          const inventory = JSON.parse(readFileSync(`${build}/evidence/ctest-inventory.json`, 'utf8'));
+          const required = ['qt_touch_dispatcher_host_test', 'qtquick_mounting_layer_host_test'];
+          assert.deepEqual(inventory.tests.map(test => test.name).sort(), required.sort(),
+            'Both services-only modal touch regressions must be registered');
+          NODE
+          ctest --test-dir "$native_build" -R "$test_filter" --no-tests=error \
+            --output-on-failure --output-junit "$evidence/ctest.xml"
+      - name: Preserve services-only regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: host-renderer-${{ github.event.pull_request.head.sha || github.sha }}-services-ON-desktop-OFF
+          path: |
+            build/linux-host-renderer-services-only/evidence/
+            build/linux-host-renderer-services-only/Testing/Temporary/
+            build/linux-host-renderer-services-only/CMakeCache.txt
+            build/linux-host-renderer-services-only/CMakeFiles/CMakeConfigureLog.yaml
           if-no-files-found: warn

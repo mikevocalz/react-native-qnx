@@ -662,5 +662,386 @@
         }
       ]
     }
+  },
+  "baselineModalInputFollowup": {
+    "date": "2026-11-10",
+    "sourceBaseCommit": "7bcf597047ddc493d1299a862ee7ab116293638f",
+    "sourceIdentity": "Source hashes below identify the follow-up candidate; its published commit must be checked separately. The existing receipt above remains historical evidence for sourceCommit 92e88b9.",
+    "scope": "Linux offscreen native mouse-event routing and Qt item lifetime with platform services ON and desktop input OFF, plus the same narrow targets with both features OFF. No Hermes/JavaScript event-delivery or physical-target claim.",
+    "change": "Initialize the modal portal to root size and follow width/height using overlay-bound QObject connections; stable-sort baseline hit-test children by z while preserving equal-z child order.",
+    "sourceSha256": {
+      "vnext/src/fabric/QtQuickMountingLayer.cpp": "a4ee07d2f87126890d72eacf8c5d4f6674b2c12859f771e9da08635ea5b75067",
+      "vnext/src/fabric/QtTouchDispatcher.cpp": "0f0f7d21cb7cd49eebefe46989f07a6453cd9da661bd648f51b0e7bba031157f",
+      "tests/cpp/QtTouchDispatcherHostTest.cpp": "5d3b8cc09dbd36588aac8f900e5590d2013655678cc987b86079005a43f0a32e",
+      "tests/cpp/QtQuickMountingLayerHostTest.cpp": "51036cae2e8d9877bc387ec48130e415ee25a8ceb47f96486c696f533c55ec4d",
+      "CMakeLists.txt": "95e49452ace33549f6d0a1bd877632c8c3cf4132e69adc66e40b84d2807c7eb2",
+      "scripts/validate-host-renderer.mjs": "97f3c11639fd892a656dd2cf65a04f044a1d7f92f2ad2e37ac4de8abd993f2cf",
+      "tests/js/host-renderer-contract.test.mjs": "2fcdefb21e101db4a0f7b7cfe4bc2db879d3150c90927b9baa379fa308c7044b",
+      ".github/workflows/host-renderer.yml": "aa9811800068b9fda0529fc57cd0d865e28a8f3c88e5ecfa8b399494ec4b35bb",
+      "pnpm-lock.yaml": "b854ebe2e50a42b2e8e07124df065592d99d43b1d1a3a984b66d3835ad86c3e4"
+    },
+    "toolchain": {
+      "os": "Linux x86_64",
+      "compiler": "Clang 19.1.7 (Debian 3+b1)",
+      "qt": "6.11.1",
+      "cmake": "4.4.4",
+      "ninja": "1.13.2.git.kitware.jobserver-pipe-1",
+      "node": "26.13.0",
+      "reactNative": "0.88.1",
+      "buildType": "Debug -Og -g1"
+    },
+    "configureArgv": [
+      "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+      "-S",
+      "/workspace/scratch/2b8db1005468/pr-112",
+      "-B",
+      "/workspace/scratch/2b8db1005468/native-112-services-only",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/workspace/scratch/47ba65e0ccf9/qt-sdk-tools/bin/ninja",
+      "-DCMAKE_C_COMPILER=/workspace/scratch/5f29a2651a01/clang-sdk/root/usr/bin/clang-19",
+      "-DCMAKE_CXX_COMPILER=/workspace/scratch/5f29a2651a01/clang-sdk/root/usr/bin/clang++-19",
+      "-DCMAKE_PREFIX_PATH=/workspace/scratch/47ba65e0ccf9/qt-native-sdk/6.11.1/gcc_64;/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr;/workspace/scratch/2b8db1005468/qt-extra",
+      "-DCMAKE_CXX_SCAN_FOR_MODULES=OFF",
+      "-DCMAKE_BUILD_TYPE=Debug",
+      "-DCMAKE_CXX_FLAGS_DEBUG=-Og -g1",
+      "-DCMAKE_C_FLAGS_DEBUG=-Og -g1",
+      "-DBUILD_TESTING=ON",
+      "-DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON",
+      "-DRNQNX_BUILD_HERMES=ON",
+      "-DRNQNX_FETCH_REACT_NATIVE_DEPS=ON",
+      "-DRNQNX_ENABLE_HOST_SANITIZERS=ON",
+      "-DRNQNX_ENABLE_WEBSOCKETS=OFF",
+      "-DRNQNX_ENABLE_FRAME_TRACE=OFF",
+      "-DRNQNX_ENABLE_INPUT_LIFECYCLE=OFF",
+      "-DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=OFF",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_BOOST=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_boost-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_BOOST_CONFIG=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_boost_config-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_DOUBLE_CONVERSION=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_double_conversion-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FAST_FLOAT=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_fast_float-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FMT=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_fmt-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FOLLY=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_folly-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_GLOG=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_glog-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_HERMES=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_hermes-src",
+      "-DOPENGL_EGL_INCLUDE_DIR:PATH=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+      "-DOPENGL_GLX_INCLUDE_DIR:PATH=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+      "-DOPENGL_INCLUDE_DIR:PATH=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+      "-DOPENGL_egl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libEGL.so.1",
+      "-DOPENGL_glx_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libGLX.so.0",
+      "-DOPENGL_opengl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libOpenGL.so.0",
+      "-DICU_DATA_LIBRARY_RELEASE:FILEPATH=/usr/lib/x86_64-linux-gnu/libicudata.so.76",
+      "-DICU_I18N_LIBRARY_RELEASE:FILEPATH=/usr/lib/x86_64-linux-gnu/libicui18n.so.76",
+      "-DICU_INCLUDE_DIR:PATH=/workspace/scratch/5f29a2651a01/icu-dev/root/usr/include",
+      "-DICU_UC_LIBRARY_RELEASE:FILEPATH=/usr/lib/x86_64-linux-gnu/libicuuc.so.76",
+      "-DRNQNX_ENABLE_PLATFORM_SERVICES=ON",
+      "-DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=ON",
+      "-DRNQNX_ENABLE_DESKTOP_INPUT=OFF",
+      "-DRNQNX_BUILD_PLATFORM_SERVICES_TESTS=OFF",
+      "-DFETCHCONTENT_FULLY_DISCONNECTED=ON"
+    ],
+    "offConfigureArgv": [
+      "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+      "-S",
+      "/workspace/scratch/2b8db1005468/pr-112",
+      "-B",
+      "/workspace/scratch/2b8db1005468/native-112-services-only",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/workspace/scratch/47ba65e0ccf9/qt-sdk-tools/bin/ninja",
+      "-DCMAKE_C_COMPILER=/workspace/scratch/5f29a2651a01/clang-sdk/root/usr/bin/clang-19",
+      "-DCMAKE_CXX_COMPILER=/workspace/scratch/5f29a2651a01/clang-sdk/root/usr/bin/clang++-19",
+      "-DCMAKE_PREFIX_PATH=/workspace/scratch/47ba65e0ccf9/qt-native-sdk/6.11.1/gcc_64;/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr;/workspace/scratch/2b8db1005468/qt-extra",
+      "-DCMAKE_CXX_SCAN_FOR_MODULES=OFF",
+      "-DCMAKE_BUILD_TYPE=Debug",
+      "-DCMAKE_CXX_FLAGS_DEBUG=-Og -g1",
+      "-DCMAKE_C_FLAGS_DEBUG=-Og -g1",
+      "-DBUILD_TESTING=ON",
+      "-DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON",
+      "-DRNQNX_BUILD_HERMES=ON",
+      "-DRNQNX_FETCH_REACT_NATIVE_DEPS=ON",
+      "-DRNQNX_ENABLE_HOST_SANITIZERS=ON",
+      "-DRNQNX_ENABLE_WEBSOCKETS=OFF",
+      "-DRNQNX_ENABLE_FRAME_TRACE=OFF",
+      "-DRNQNX_ENABLE_INPUT_LIFECYCLE=OFF",
+      "-DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=OFF",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_BOOST=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_boost-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_BOOST_CONFIG=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_boost_config-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_DOUBLE_CONVERSION=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_double_conversion-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FAST_FLOAT=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_fast_float-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FMT=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_fmt-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_FOLLY=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_folly-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_GLOG=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_glog-src",
+      "-DFETCHCONTENT_SOURCE_DIR_RNQNX_HERMES=/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-full/_deps/rnqnx_hermes-src",
+      "-DOPENGL_EGL_INCLUDE_DIR:PATH=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+      "-DOPENGL_GLX_INCLUDE_DIR:PATH=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+      "-DOPENGL_INCLUDE_DIR:PATH=/workspace/scratch/47ba65e0ccf9/qt-build-deps/usr/include",
+      "-DOPENGL_egl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libEGL.so.1",
+      "-DOPENGL_glx_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libGLX.so.0",
+      "-DOPENGL_opengl_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libOpenGL.so.0",
+      "-DICU_DATA_LIBRARY_RELEASE:FILEPATH=/usr/lib/x86_64-linux-gnu/libicudata.so.76",
+      "-DICU_I18N_LIBRARY_RELEASE:FILEPATH=/usr/lib/x86_64-linux-gnu/libicui18n.so.76",
+      "-DICU_INCLUDE_DIR:PATH=/workspace/scratch/5f29a2651a01/icu-dev/root/usr/include",
+      "-DICU_UC_LIBRARY_RELEASE:FILEPATH=/usr/lib/x86_64-linux-gnu/libicuuc.so.76",
+      "-DRNQNX_ENABLE_PLATFORM_SERVICES=OFF",
+      "-DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=OFF",
+      "-DRNQNX_ENABLE_DESKTOP_INPUT=OFF",
+      "-DRNQNX_BUILD_PLATFORM_SERVICES_TESTS=OFF",
+      "-DFETCHCONTENT_FULLY_DISCONNECTED=ON"
+    ],
+    "configureExitCodes": {
+      "servicesOnly": 0,
+      "defaultOff": 0
+    },
+    "build": {
+      "targets": ["qt_touch_dispatcher_host_test", "qtquick_mounting_layer_host_test"],
+      "originalParallelism": 1,
+      "incrementalParallelism": 2,
+      "originalExitCode": 0,
+      "originalTranscript": {
+        "receipt": "qt-modal-baseline-input-build-2026-11-10.txt",
+        "sha256": "ed931f2491ec4587bd4338d0bba2783efbae96c8d40e49d345c765c3850f6c98"
+      },
+      "sizeOnlyExitCode": 0,
+      "sizeOnlyOutput": "[0/2] Re-checking globbed directories...\n[1/6] Automatic MOC for target rnqnx_views_qt\n[2/5] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/fabric/QtQuickMountingLayer.cpp.o\n[3/5] Linking CXX static library librnqnx_views_qt.a\n[4/5] Linking CXX executable bin/qt_touch_dispatcher_host_test\n",
+      "finalOnExitCode": 0,
+      "finalOnOutput": "[0/2] Re-checking globbed directories...\n[1/7] Automatic MOC for target rnqnx_fabric_adapter\n[2/6] Linking CXX executable bin/qtquick_mounting_layer_host_test\n[3/6] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtTouchDispatcher.cpp.o\n[4/6] Linking CXX static library librnqnx_fabric_adapter.a\n[5/6] Linking CXX executable bin/qt_touch_dispatcher_host_test\n",
+      "finalOffExitCode": 0,
+      "finalOffOutput": "[0/2] Re-checking globbed directories...\n[1/17] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QnxImageProvider.cpp.o\n[2/17] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtQuickItemFactory.cpp.o\n[3/17] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtTextInputQml.cpp.o\n[4/17] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/fabric/QtQuickMountingLayer.cpp.o\n[5/17] Linking CXX static library librnqnx_views_qt.a\n[6/17] Building CXX object CMakeFiles/qtquick_mounting_layer_host_test.dir/tests/cpp/QtQuickMountingLayerHostTest.cpp.o\n[7/17] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/rnqnx_fabric_adapter_autogen/mocs_compilation.cpp.o\n[8/17] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/ShadowViewMutationAdapter.cpp.o\n[9/17] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtTouchDispatcher.cpp.o\n[10/17] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtScrollBridge.cpp.o\n[11/17] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtSwitchBridge.cpp.o\n[12/17] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtImageBridge.cpp.o\n[13/17] Linking CXX static library librnqnx_fabric_adapter.a\n[14/17] Linking CXX executable bin/qtquick_mounting_layer_host_test\n[15/17] Building CXX object CMakeFiles/qt_touch_dispatcher_host_test.dir/tests/cpp/QtTouchDispatcherHostTest.cpp.o\n[16/17] Linking CXX executable bin/qt_touch_dispatcher_host_test\n",
+      "hermes": "Declared by the full-graph configure contract; not compiled or executed by these two targets.",
+      "dependencyReuse": "Existing pinned source directories reused read-only; fresh build graph, no borrowed renderer/adapter binaries or modified dependency sources.",
+      "originalArgv": [
+        "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "--build",
+        "/workspace/scratch/2b8db1005468/native-112-services-only",
+        "--target",
+        "qt_touch_dispatcher_host_test",
+        "qtquick_mounting_layer_host_test",
+        "-j",
+        "1"
+      ],
+      "sizeOnlyArgv": [
+        "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "--build",
+        "/workspace/scratch/2b8db1005468/native-112-services-only",
+        "--target",
+        "qt_touch_dispatcher_host_test",
+        "-j",
+        "2"
+      ],
+      "finalOnArgv": [
+        "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "--build",
+        "/workspace/scratch/2b8db1005468/native-112-services-only",
+        "--target",
+        "qt_touch_dispatcher_host_test",
+        "qtquick_mounting_layer_host_test",
+        "-j",
+        "2"
+      ],
+      "finalOffArgv": [
+        "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "--build",
+        "/workspace/scratch/2b8db1005468/native-112-services-only",
+        "--target",
+        "qt_touch_dispatcher_host_test",
+        "qtquick_mounting_layer_host_test",
+        "-j",
+        "2"
+      ]
+    },
+    "sanitizers": {
+      "instrumented": ["qt_touch_dispatcher_host_test", "qtquick_mounting_layer_host_test"],
+      "notInstrumented": [
+        "rnqnx_views_qt",
+        "rnqnx_fabric_adapter",
+        "React Native libraries",
+        "Qt libraries"
+      ],
+      "addressAndUndefinedBehavior": true,
+      "leakDetection": false,
+      "claim": "Partial host instrumentation and native routing assertions, not whole-runtime or leak qualification."
+    },
+    "negativeControls": {
+      "originalSource": {
+        "argv": [
+          "/workspace/scratch/2b8db1005468/native-112-services-only/bin/qt_touch_dispatcher_host_test",
+          "-platform",
+          "offscreen"
+        ],
+        "exitCode": 1,
+        "sourceSha256": {
+          "vnext/src/fabric/QtQuickMountingLayer.cpp": "4a64a5a7021f53807b13b9a725e75c64f4beb59f65f1e8853cf931356286e27a",
+          "vnext/src/fabric/QtTouchDispatcher.cpp": "c4d167af87c188e62c8b27aead816cc1181f915eca4a022bae94b7e88dae3ec8",
+          "tests/cpp/QtTouchDispatcherHostTest.cpp": "5d3b8cc09dbd36588aac8f900e5590d2013655678cc987b86079005a43f0a32e"
+        },
+        "binarySha256": "8c17fc1b6619229a8d409dd74964370fe983b2550dec1076164696b52a25466e",
+        "receipt": "qt-modal-baseline-input-original-2026-11-10.txt",
+        "sha256": "b9eef5e257e213ffde9611095a17fdab70df4a7c9e0be8f507f0b1b21c1dcd34",
+        "expectedFailure": "Three routing failures: higher-z view, initial modal control, and modal above later background. Only teardown passes (1/4)."
+      },
+      "sizingOnly": {
+        "argv": [
+          "/workspace/scratch/2b8db1005468/native-112-services-only/bin/qt_touch_dispatcher_host_test",
+          "-platform",
+          "offscreen"
+        ],
+        "exitCode": 1,
+        "sourceSha256": {
+          "vnext/src/fabric/QtQuickMountingLayer.cpp": "a4ee07d2f87126890d72eacf8c5d4f6674b2c12859f771e9da08635ea5b75067",
+          "vnext/src/fabric/QtTouchDispatcher.cpp": "c4d167af87c188e62c8b27aead816cc1181f915eca4a022bae94b7e88dae3ec8",
+          "tests/cpp/QtTouchDispatcherHostTest.cpp": "5d3b8cc09dbd36588aac8f900e5590d2013655678cc987b86079005a43f0a32e"
+        },
+        "binarySha256": "c29fee131e2f8050452a0bcb1f428273ef90a32389f440e3fc3b1c1e78e951cf",
+        "receipt": "qt-modal-baseline-input-size-only-2026-11-10.txt",
+        "sha256": "0ce53eb194de8d3bfd2b4a5badd69b2339d860821ca1b77ea4d9dae6d3ed3ef0",
+        "expectedFailure": "Portal sizing/lifetime passes; higher-z and later-background routing still fail (2/4). Source is final mounting-layer sizing with the base QtTouchDispatcher."
+      }
+    },
+    "servicesOnlyRun": {
+      "argv": [
+        "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/ctest",
+        "--test-dir",
+        "/workspace/scratch/2b8db1005468/native-112-services-only",
+        "-R",
+        "^(qt_touch_dispatcher_host_test|qtquick_mounting_layer_host_test)$",
+        "--no-tests=error",
+        "--output-on-failure",
+        "--output-junit",
+        "/workspace/scratch/2b8db1005468/logs/native-112-final-on.xml"
+      ],
+      "exitCode": 0,
+      "sourceSha256": {
+        "vnext/src/fabric/QtQuickMountingLayer.cpp": "a4ee07d2f87126890d72eacf8c5d4f6674b2c12859f771e9da08635ea5b75067",
+        "vnext/src/fabric/QtTouchDispatcher.cpp": "0f0f7d21cb7cd49eebefe46989f07a6453cd9da661bd648f51b0e7bba031157f",
+        "tests/cpp/QtTouchDispatcherHostTest.cpp": "5d3b8cc09dbd36588aac8f900e5590d2013655678cc987b86079005a43f0a32e",
+        "tests/cpp/QtQuickMountingLayerHostTest.cpp": "51036cae2e8d9877bc387ec48130e415ee25a8ceb47f96486c696f533c55ec4d",
+        "CMakeLists.txt": "95e49452ace33549f6d0a1bd877632c8c3cf4132e69adc66e40b84d2807c7eb2",
+        "scripts/validate-host-renderer.mjs": "97f3c11639fd892a656dd2cf65a04f044a1d7f92f2ad2e37ac4de8abd993f2cf",
+        "tests/js/host-renderer-contract.test.mjs": "2fcdefb21e101db4a0f7b7cfe4bc2db879d3150c90927b9baa379fa308c7044b",
+        ".github/workflows/host-renderer.yml": "aa9811800068b9fda0529fc57cd0d865e28a8f3c88e5ecfa8b399494ec4b35bb",
+        "pnpm-lock.yaml": "b854ebe2e50a42b2e8e07124df065592d99d43b1d1a3a984b66d3835ad86c3e4"
+      },
+      "binarySha256": {
+        "qt_touch_dispatcher_host_test": "c24935710240db724b4d70bb1a5bb8d3e57518a53476ecdbb5dbd8bb2b0b993c",
+        "qtquick_mounting_layer_host_test": "83c318956d37dfb7077b3262e4f7b436bffbfc896a802732a37f6421f429916b"
+      },
+      "suite": {
+        "receipt": "qt-modal-baseline-input-on-2026-11-10.xml",
+        "sha256": "1c57405fdb3215ba0862341f89824155efad9eff4a51617dd44fa3237bb76e22",
+        "tests": [
+          {
+            "name": "qt_touch_dispatcher_host_test",
+            "classname": "qt_touch_dispatcher_host_test",
+            "time": "0.0677486",
+            "status": "run",
+            "output": "PASS baselineUsesZOrderAndPreservesEqualZOrder\nPASS portalReceivesInputAfterResizeAndRecreation\nPASS modalStaysAboveLaterBackgroundSibling\nPASS portalDisconnectsWhenLayerIsDestroyed\n4/4 baseline native routing cases passed; platform_services=1 desktop_input=0\n"
+          },
+          {
+            "name": "qtquick_mounting_layer_host_test",
+            "classname": "qtquick_mounting_layer_host_test",
+            "time": "0.120295",
+            "status": "run",
+            "output": "[PASS] rootIsMountedButNotOwned\n[PASS] createLeavesItemUnparented\n[PASS] insertParentsAndOrdersChildren\n[PASS] insertRejectsBadArguments\n[PASS] fabricIndicesExcludeQmlDecorations\n[PASS] removeDetachesWithoutDestroying\n[PASS] removeRejectsIndexDisagreement\n[PASS] destroyReleasesTagAndItem\n[PASS] destroyDetachesStillMountedItem\n[PASS] nestedTreeIsTornDownWithTheLayer\n[PASS] updateLayoutAppliesAbsoluteGeometry\n[PASS] modalPortalEscapesClippedLogicalAncestor\n[PASS] modalLogicalIndicesStayIndependentOfVisualSiblings\n[PASS] modalRemoveRejectsUnexpectedVisualParent\n[PASS] modalDeleteWithoutRemoveClearsPortalAndAllowsTagReuse\n[PASS] modalPortalIsTornDownWithTheLayer\n[PASS] unregisteredComponentTypeFails\n[PASS] brokenQmlSourceFails\n[PASS] nonItemTypeFails\n[PASS] duplicateTagFails\n[PASS] reregisteringATypeReplacesIt\nAll 21 QtQuickMountingLayer host tests passed.\n"
+          }
+        ]
+      },
+      "ctestOutput": "Test project /workspace/scratch/2b8db1005468/native-112-services-only\n    Start 17: qt_touch_dispatcher_host_test\n1/2 Test #17: qt_touch_dispatcher_host_test ......   Passed    0.07 sec\n    Start 19: qtquick_mounting_layer_host_test\n2/2 Test #19: qtquick_mounting_layer_host_test ...   Passed    0.12 sec\n\n100% tests passed out of 2\n\nTotal Test time (real) =   0.21 sec\n"
+    },
+    "defaultOffRun": {
+      "argv": [
+        "/workspace/scratch/47ba65e0ccf9/build-tools/lib/python3.12/site-packages/cmake/data/bin/ctest",
+        "--test-dir",
+        "/workspace/scratch/2b8db1005468/native-112-services-only",
+        "-R",
+        "^(qt_touch_dispatcher_host_test|qtquick_mounting_layer_host_test)$",
+        "--no-tests=error",
+        "--output-on-failure",
+        "--output-junit",
+        "/workspace/scratch/2b8db1005468/logs/native-112-final-off.xml"
+      ],
+      "exitCode": 0,
+      "binarySha256": {
+        "qt_touch_dispatcher_host_test": "26f50f71b4f7c47018b464b03ce35adc9e6c9ba5fe9e67492331d56184908a68",
+        "qtquick_mounting_layer_host_test": "d4f57cb20b1cb2dacbbe9fd9a492e910dd88a0015a9052b9797df497a3ec2ef5"
+      },
+      "cache": {
+        "RNQNX_ENABLE_ACCESSIBILITY_BRIDGE": "OFF",
+        "RNQNX_ENABLE_DESKTOP_INPUT": "OFF",
+        "RNQNX_ENABLE_HOST_SANITIZERS": "ON",
+        "RNQNX_ENABLE_INPUT_LIFECYCLE": "OFF",
+        "RNQNX_ENABLE_PLATFORM_SERVICES": "OFF",
+        "RNQNX_ENABLE_TEXT_INPUT_CONTRACT": "OFF"
+      },
+      "suite": {
+        "receipt": "qt-modal-baseline-input-off-2026-11-10.xml",
+        "sha256": "e46e58caabc4fbc195ffe497edfe5454035f986765744ada71af6c4b3d4c7565",
+        "tests": [
+          {
+            "name": "qt_touch_dispatcher_host_test",
+            "classname": "qt_touch_dispatcher_host_test",
+            "time": "0.0394069",
+            "status": "run",
+            "output": "PASS baselineUsesZOrderAndPreservesEqualZOrder\n1/1 baseline native routing cases passed; platform_services=0 desktop_input=0\n"
+          },
+          {
+            "name": "qtquick_mounting_layer_host_test",
+            "classname": "qtquick_mounting_layer_host_test",
+            "time": "0.0741546",
+            "status": "run",
+            "output": "[PASS] rootIsMountedButNotOwned\n[PASS] createLeavesItemUnparented\n[PASS] insertParentsAndOrdersChildren\n[PASS] insertRejectsBadArguments\n[PASS] fabricIndicesExcludeQmlDecorations\n[PASS] removeDetachesWithoutDestroying\n[PASS] removeRejectsIndexDisagreement\n[PASS] destroyReleasesTagAndItem\n[PASS] destroyDetachesStillMountedItem\n[PASS] nestedTreeIsTornDownWithTheLayer\n[PASS] updateLayoutAppliesAbsoluteGeometry\n[PASS] unregisteredComponentTypeFails\n[PASS] brokenQmlSourceFails\n[PASS] nonItemTypeFails\n[PASS] duplicateTagFails\n[PASS] reregisteringATypeReplacesIt\nAll 16 QtQuickMountingLayer host tests passed.\n"
+          }
+        ]
+      },
+      "ctestOutput": "Test project /workspace/scratch/2b8db1005468/native-112-services-only\n    Start 12: qt_touch_dispatcher_host_test\n1/2 Test #12: qt_touch_dispatcher_host_test ......   Passed    0.04 sec\n    Start 14: qtquick_mounting_layer_host_test\n2/2 Test #14: qtquick_mounting_layer_host_test ...   Passed    0.07 sec\n\n100% tests passed out of 2\n\nTotal Test time (real) =   0.12 sec\n"
+    },
+    "hostedCi": {
+      "status": "Not executed for this follow-up at preparation time; verify the exact published head.",
+      "job": "services-only in .github/workflows/host-renderer.yml",
+      "scope": "Separate focused job checks six actual BOOL values and exact two-test inventory, builds/runs only those targets, and retains commit/commands/cache/configure/inventory/JUnit. Full OFF/ON jobs remain, adding only command-log capture.",
+      "sourceValidation": "Workflow structure comparison, Bash syntax, eleven positive/negative fixtures of the actual inline validator, Prettier, and host-renderer-contract.test.mjs passed."
+    },
+    "review": {
+      "implementation": "audit_followups",
+      "independentSourceAndEvidenceReview": "audit_base_stack",
+      "ciImplementation": "audit_small_prs",
+      "coordinatingReview": "root"
+    },
+    "skills": {
+      "margeloApiDesignBuildNitroCpp": "1e9e17be6f41c838db472d6a4b943fc26355a3be",
+      "decision": "Keep the fix in the existing private Qt/Fabric adapter; use QObject receiver lifetime instead of new async ownership or a public/native-module API. No Nitrogen regeneration or dependency change.",
+      "repository": "qnx-native-api and qnx-platform-validation; native source/host/target evidence remains separate."
+    },
+    "limits": [
+      "The regression uses actual Qt mouse events and the production filter, with only the expected TouchEventEmitter registered; its EventDispatcher weak reference is empty. Counts assert native down/up target selection, not queued JS delivery.",
+      "No rerun of the full 20-step core / 39-step per-platform installed-control runtime suites for this follow-up; their earlier source-bound receipts are preserved.",
+      "No integration of the separate PR #108 Modal implementation is established by this isolated branch run.",
+      "No QNX cross-build/device, Marathon Wayland, physical HID, speech, IME, multitouch or performance qualification; no release gate promoted."
+    ],
+    "buildEnvironment": {
+      "LD_LIBRARY_PATH": null,
+      "environmentConvention": "null means unset; no explicit LD_LIBRARY_PATH override was passed to configure or any build.",
+      "nodePathPrefixes": [
+        "/workspace/scratch/5f29a2651a01/task-tools/node_modules/node/bin",
+        "/workspace/scratch/5f29a2651a01/task-tools/node_modules/.bin"
+      ],
+      "pathScope": "Prepended for initial configure/build and the OFF configure/build. Sizing-only and final-ON incremental builds used inherited PATH and the absolute CMake/Ninja/compiler paths.",
+      "offBuildAlsoReceivedTestOverrides": true,
+      "compilerLoader": {
+        "inspection": "Read-only post-run readelf/ldd inspection of the exact configured compiler; no compilation or native test rerun.",
+        "compilerPath": "/workspace/scratch/5f29a2651a01/clang-sdk/root/usr/bin/clang++-19",
+        "resolvedCompilerPath": "/workspace/scratch/5f29a2651a01/clang-sdk/root/usr/lib/llvm-19/bin/clang",
+        "runpath": "$ORIGIN/../lib",
+        "libclangCppResolved": "/workspace/scratch/5f29a2651a01/clang-sdk/root/usr/lib/llvm-19/lib/libclang-cpp.so.19.1",
+        "libLLVMResolved": "/lib/x86_64-linux-gnu/libLLVM.so.19.1",
+        "note": "This provisioned SDK resolves its compiler libraries without an LD_LIBRARY_PATH override. An override to the SDK x86_64-linux-gnu directory was not part of the measured invocation."
+      }
+    },
+    "testEnvironment": {
+      "QT_QPA_PLATFORM": "offscreen",
+      "QT_QUICK_BACKEND": "software",
+      "ASAN_OPTIONS": "detect_leaks=0:halt_on_error=1",
+      "UBSAN_OPTIONS": "halt_on_error=1",
+      "LD_LIBRARY_PATH": null
+    }
   }
 }

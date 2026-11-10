@@ -109,3 +109,18 @@ target qualification, physical input, compositor delivery, accessibility speech
 and performance remain outside this host/configuration receipt. The companion
 consumer's separately scoped engine proof does not close those platform gates.
 Human merge review and named target validation ownership remain required.
+
+### PR #112 follow-up: what remains after the native routing fix
+
+The zero-size portal and baseline z-order defects are reproduced and corrected
+by the scoped candidate based on `7bcf597047ddc493d1299a862ee7ab116293638f`.
+Its positive and negative native controls are complete; they are not an open
+local routing blocker. The new services-only job and the full OFF/ON jobs must
+finish on the exact published follow-up head. Earlier-head Actions results do
+not establish that result.
+
+The isolated branch run does not integrate PR #108's separate Modal ownership
+implementation. Reconcile that overlap and validate the combined native modes
+when stacking the branches. The existing physical-target, compositor, complete
+JS-suite environment and release boundaries above remain unchanged. No new
+physical input, JavaScript delivery, leak or performance claim is made.

@@ -38,7 +38,18 @@
       "localValidation": "Focused discovery and consumer tests, typecheck, dependency/architecture/manifest checks, formatting and docs passed; full JS stopped after 14 completed files on Marathon Unix-socket EPERM.",
       "hostedValidation": "New candidate workflows pending; native results require exact-head verification.",
       "targetValidation": "No new QNX cross-build/device or Marathon compositor execution.",
-      "releaseAuthorized": false
+      "releaseAuthorized": false,
+      "modalInputFollowup": {
+        "reviewedAt": "2026-11-10",
+        "sourceBaseCommit": "7bcf597047ddc493d1299a862ee7ab116293638f",
+        "sourceIdentity": "docs/evidence/qt-platform-services-host-2026-11-10.json baselineModalInputFollowup.sourceSha256",
+        "preservedEvidence": "Installed-package binding at 95e5d5c and native-control/platform-service receipts at 92e88b9 remain attached to their source.",
+        "change": "Size the modal portal to the root with receiver-bound resize connections and respect stable z order in baseline Qt touch selection.",
+        "localValidation": "Original control exits 1 with 1/4 passing; sizing-only control exits 1 with 2/4 passing. Final services ON/desktop OFF: 2/2 CTests (4 routing +21 mounting cases); all relevant features OFF: 2/2 (1 routing +16 mounting). Partial ASan/UBSan with leaks disabled; native event selection only, no JS delivery.",
+        "hostedValidation": "Focused services-only job added with actual-cache and two-test inventory checks; exact published-head Actions results pending.",
+        "targetValidation": "No new QNX cross/device, Marathon compositor, physical input, speech or performance evidence. Integration with PR108 Modal ownership remains separately required.",
+        "releaseAuthorized": false
+      }
     }
   },
   "activeMilestone": "v1 preparation; release gates remain open",

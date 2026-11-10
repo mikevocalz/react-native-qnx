@@ -931,3 +931,33 @@ is claimed. Pinned native API-design, Nitro and C++ skills informed the metadata
 and ABI boundary; the repository platform-validation skill governed evidence.
 Implementation/review owner: agent `audit_followups`; human merge review and
 target qualification remain unassigned. All seven release gates stay pending.
+
+## 2026-11-10 — PR #112 modal routing with services ON and desktop input OFF
+
+Preserved the external merge `7bcf597047ddc493d1299a862ee7ab116293638f`, which
+contains the installed-package fix/handoff and the separately measured native
+control work. Review found that its modal overlay never received a size, while
+the baseline touch dispatcher also ignored z order. Added a real Qt event-filter
+regression before production changes, then reproduced original failure (1/4 passing)
+and sizing-only failure (2/4 passing). Bound root width/height updates to the overlay's
+QObject lifetime and added stable z ordering to the existing baseline path.
+
+The fresh Clang 19/Qt 6.11.1 native build passes the two selected CTests with
+services/accessibility ON and desktop input OFF (four routing plus 21 mounting
+cases), then again with the features OFF (one routing plus 16 mounting cases).
+Mouse down/up, equal-z Fabric order, initial and resized modal hits, later
+background insertion, portal recreation and layer teardown are covered.
+ASan/UBSan applies to the test executables only; leak detection is disabled.
+No JavaScript, physical-target or broader control-runtime result is inferred.
+
+Implementation owner: `audit_followups`; independent source, failure-control
+and final evidence review: `audit_base_stack`; focused CI implementation:
+`audit_small_prs`; coordinating review: `root`. The Margelo API-design →
+build-nitro-modules → C++ sequence at
+`1e9e17be6f41c838db472d6a4b943fc26355a3be` kept the change private to the
+existing adapter and made receiver lifetime explicit. Repository native/API
+and platform-validation skills kept host, source, CI and target evidence
+separate. No Nitrogen output, ABI, dependency, license or release gate changes.
+The existing evidence receipt now has an additive `baselineModalInputFollowup`
+record; the earlier source-bound data is preserved. Exact-head hosted CI and
+human PR merge review remain pending.

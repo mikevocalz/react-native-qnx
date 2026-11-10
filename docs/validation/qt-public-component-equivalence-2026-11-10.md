@@ -198,3 +198,57 @@ Rollback: remove the opt-in public entry wrapper to return to the prior import
 surface; revert this additive change to remove the new target export conditions.
 No dependency migration, application data migration or native ABI rollback is
 needed. Selected optional packages remain independently removable.
+
+## Baseline modal input follow-up
+
+The published merge `7bcf597047ddc493d1299a862ee7ab116293638f` preserves the
+installed-package metadata fix and the native-control work at `92e88b9`.
+Review of the supported platform-services ON / desktop-input OFF combination
+found two related input defects: the visual portal was 0×0, and the baseline
+dispatcher selected later root children even when a portal had a higher z.
+
+The follow-up changes only the existing Qt/Fabric boundary. The portal receives
+root size immediately and follows width/height through connections whose
+receiver is that portal. Removal or layer destruction disconnects them. The
+baseline dispatcher stable-sorts children by z before its existing reverse
+walk, preserving equal-z sibling order. No public API, renderer, Nitro binding,
+dependency, license, permission or default feature state changes.
+
+The added `QtTouchDispatcherHostTest.cpp` drives QMouseEvents through the
+production event filter with only the intended control registered to an actual
+RN TouchEventEmitter. Separate count checks verify down/up target selection;
+the emitter has no event dispatcher, so no JavaScript delivery is claimed.
+The test covers both input-lifecycle constructor modes, root resize, a later
+background sibling, equal-z Fabric order, removal/recreation and layer teardown.
+
+A fresh Clang 19.1.7 / Qt 6.11.1 Linux offscreen graph reproduces the original
+failure (1/4 routing cases pass) and the sizing-only failure (2/4 pass). The complete fix
+passes 2/2 selected CTests with services ON (four routing plus 21 mounting
+cases), and 2/2 with services OFF (one routing plus 16 mounting cases).
+The existing [platform-services receipt](../evidence/qt-platform-services-host-2026-11-10.json)
+contains the additive `baselineModalInputFollowup` source hashes, exact
+configure/test commands, binary hashes, raw controls and JUnit evidence.
+Earlier full runtime/control receipts remain bound to their original source.
+
+A separate services-only workflow job declares the full graph but builds and
+runs only these two regression targets. It checks actual feature cache values
+and exact test registration before CTest, then retains commit, commands,
+inventory, cache, configure logs and JUnit. Existing full OFF/ON jobs retain
+their behavior and additionally capture the build/test commands. Workflow
+structure/Bash checks, 11 validator fixtures and the host-renderer orchestration
+test pass; the published candidate's hosted jobs remain pending.
+
+The test executables are instrumented with ASan/UBSan; production libraries
+are not, and leak detection is disabled. This adds no QNX cross/device,
+Marathon compositor, physical HID, speech or performance qualification, and
+it does not establish integration with PR #108's separate Modal implementation.
+Stable sorting adds work on each initial hit-test descent; no input-latency
+budget or performance improvement was measured. The implementation and evidence
+were independently reviewed by `audit_base_stack` and the coordinating agent.
+Pinned Margelo API-design/build-nitro/C++ guidance governed the private API and
+receiver ownership, while the repository validation skill governed proof scope.
+
+Rollback this focused follow-up without rewriting the concurrent commits or
+the installed-package fix. That restores the known services-only modal routing
+defect, so remove the corresponding validation claim when reverting it. No
+application data migration is required. All seven release gates stay pending.

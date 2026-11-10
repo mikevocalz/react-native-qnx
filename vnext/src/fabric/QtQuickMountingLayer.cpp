@@ -287,6 +287,20 @@ MountError QtQuickMountingLayer::insert(
       modalLayer_ = new QQuickItem(&rootItem_);
       modalLayer_->setObjectName(QStringLiteral("rnqnxModalLayer"));
       modalLayer_->setZ(std::numeric_limits<qreal>::max());
+      // The baseline touch dispatcher descends through containing items. Keep
+      // the portal's hit area aligned with the borrowed root, including when
+      // platform services are enabled without the desktop-input adapter.
+      auto* root = &rootItem_;
+      auto* overlay = modalLayer_;
+      overlay->setSize(root->size());
+      QObject::connect(root, &QQuickItem::widthChanged, overlay, [root, overlay] {
+        overlay->setWidth(root->width());
+      });
+      QObject::connect(root, &QQuickItem::heightChanged, overlay, [root, overlay] {
+        overlay->setHeight(root->height());
+      });
+      // The overlay is the connection context: removing the last modal or
+      // destroying this layer disconnects these callbacks before recreation.
     }
     parentItem = modalLayer_;
   }

@@ -109,3 +109,30 @@ blocked by `listen EPERM` on its local Unix socket. It is not a full-suite pass.
 Hosted native results for this candidate and QNX/Marathon target execution remain
 pending. This handoff changes only records; the implementation is committed at
 the candidate above. No release gate is promoted.
+
+## PR #112 — services-only modal input follow-up (2026-11-10)
+
+The later published head `7bcf597047ddc493d1299a862ee7ab116293638f` preserves
+both the installed-package fix above and the concurrent native-control work at
+`92e88b9`. Its 20-step core and 39-step-per-platform installed-control receipts
+remain attached to their recorded source. The new follow-up is identified by
+source hashes in `baselineModalInputFollowup` in the existing
+[platform-services receipt](../evidence/qt-platform-services-host-2026-11-10.json).
+
+That review found a supported combination missing from the earlier runs:
+platform services ON with desktop input OFF. The modal overlay had zero size,
+and baseline input traversed insertion order without respecting its z value.
+The follow-up binds the overlay to root dimensions with receiver-bound resize
+connections and preserves Qt's visual z order during baseline hit testing.
+No feature default, public API, native-module ABI or dependency pin changes.
+
+A fresh Clang 19/Qt 6.11.1 Linux offscreen build reproduced both defects.
+Original source fails three of four routing cases; sizing alone still fails
+the two stacking cases. The complete fix passes 2/2 selected CTests with
+services ON (four routing cases and 21 mounting cases), and 2/2 with the
+features OFF (one routing case and 16 mounting cases). Routing cases separately
+check mouse down/up with input-lifecycle behavior disabled and enabled.
+The emitter has no event dispatcher, so these counts establish native target
+selection, not JavaScript delivery. The new focused CI job remains pending on
+the published follow-up. The complete local scope includes native code, tests,
+CI, the receipt, and these handoff/state records; no release gate is promoted.

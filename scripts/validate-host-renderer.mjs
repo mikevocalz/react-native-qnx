@@ -63,6 +63,8 @@ if (/^RNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON$/m.test(cache)) {
 }
 if (/^RNQNX_ENABLE_DESKTOP_INPUT:BOOL=ON$/m.test(cache)) {
   expectedTests.push('rnqnx_desktop_input_fabric');
+} else {
+  expectedTests.push('qt_touch_dispatcher_host_test');
 }
 if (/^RNQNX_BUILD_PLATFORM_SERVICES_TESTS:BOOL=ON$/m.test(cache)) {
   expectedTests.push('rnqnx_platform_services_qnx', 'rnqnx_platform_services_marathon');

@@ -168,3 +168,21 @@ return to the generic RN platform props and the prior pointer path. Disabling
 the flag requires a native rebuild because the RN props layout differs. No
 application data migration is involved. Optional control and engine packages
 remain independently removable.
+
+## Modal input when desktop input is disabled
+
+`RNQNX_ENABLE_PLATFORM_SERVICES=ON` also enables modal portals, independently of
+`RNQNX_ENABLE_DESKTOP_INPUT`. The portal therefore follows the root's width and
+height, and the baseline touch dispatcher respects visual z order while keeping
+equal-z Fabric sibling order. The overlay owns the resize connections; removing
+the last modal or destroying the mounting layer disconnects them before reuse.
+
+The scoped follow-up based on `7bcf597` has a fresh Linux offscreen native-routing
+regression for this flag combination: initial hit, root resize, a later background
+sibling, removal/recreation and layer teardown. Original-source and sizing-only
+negative controls fail as expected. Services ON and the default OFF configuration
+each pass the two selected native CTests. See `baselineModalInputFollowup` in the
+[platform-services receipt](../evidence/qt-platform-services-host-2026-11-10.json).
+These tests check native down/up target selection with no attached JS dispatcher;
+they do not rerun or extend the earlier full control-runtime, physical-input or
+target-platform claims.

@@ -11,6 +11,7 @@
 #include <QQuickItem>
 #include <QTouchEvent>
 
+#include <algorithm>
 #include <utility>
 
 namespace rnqnx::fabric {
@@ -133,14 +134,17 @@ Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
 #if RNQNX_ENABLE_DESKTOP_INPUT
   return desktopInput_->hitTest(windowPoint);
 #endif
-  // Walk down from the root taking the last (topmost) child that contains the
-  // point, which matches Qt's own stacking order.
+  // Walk down in Qt's visual stacking order. Equal-z items retain their child
+  // order; a higher-z portal stays above background views inserted later.
   const QQuickItem* target = nullptr;
   const QQuickItem* current = &rootItem_;
 
   while (true) {
     const QQuickItem* next = nullptr;
-    const QList<QQuickItem*> children = current->childItems();
+    QList<QQuickItem*> children = current->childItems();
+    std::stable_sort(children.begin(), children.end(), [](auto* left, auto* right) {
+      return left->z() < right->z();
+    });
     for (auto iterator = children.crbegin(); iterator != children.crend();
          ++iterator) {
       QQuickItem* child = *iterator;

@@ -818,3 +818,53 @@ The ignored local `build/handoff-js.log` records the interrupted runner and
 `build/manifest-binding-regression/before.log` records the original behavior.
 The committed discovery test reproduces the metadata boundary without relying
 on those temporary logs.
+
+## PR #112 — services-only baseline modal routing (2026-11-10)
+
+Source base: `7bcf597047ddc493d1299a862ee7ab116293638f`. The final source,
+commands, executable hashes and raw evidence are recorded under
+`baselineModalInputFollowup` in the existing
+[platform-services receipt](../evidence/qt-platform-services-host-2026-11-10.json).
+This extends the earlier source-bound record without relabeling its runtime
+results. The fresh native graph uses Clang 19.1.7, Qt 6.11.1, CMake 4.4.4,
+Ninja 1.13.2, RN 0.88.1, and Debug `-Og -g1` on Linux x86_64.
+
+The receipt separates `buildEnvironment` from `testEnvironment`.
+`LD_LIBRARY_PATH` was unset (recorded as JSON `null`), and the measured commands
+supplied no override. Read-only inspection of the exact SDK compiler confirms
+`RUNPATH=$ORIGIN/../lib`: `libclang-cpp.so.19.1` resolves from its SDK LLVM lib
+directory, and `libLLVM.so.19.1` resolves from `/lib/x86_64-linux-gnu`.
+The recorded Node PATH prefixes and the test-specific Qt/ASan/UBSan overrides
+are separate; the OFF configure/build also inherited those test overrides.
+This clarifies the existing invocation without rerunning the native tests.
+
+| Check                                                                                 | Observed result                 | Boundary                                                                                                                                           |
+| ------------------------------------------------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fresh build of `qt_touch_dispatcher_host_test` and `qtquick_mounting_layer_host_test` | Exit 0                          | The adapter and installed RN dependencies compile; Hermes is declared but neither built nor executed by these targets.                             |
+| Original-source routing control                                                       | Expected exit 1; 1/4 cases pass | Higher-z selection, initial modal input and a later background sibling fail.                                                                       |
+| Sizing-only routing control                                                           | Expected exit 1; 2/4 cases pass | Initial input, resize and portal recreation pass; both stacking cases still fail.                                                                  |
+| Final services/accessibility ON, desktop/lifecycle/text-input OFF                     | Exit 0; 2/2 CTests, 0.21 s      | Four native routing cases plus all 21 existing mounting cases. The routing fixture explicitly exercises both constructor lifecycle modes.          |
+| Final services/accessibility/desktop/lifecycle/text-input OFF                         | Exit 0; 2/2 CTests, 0.12 s      | One baseline routing case plus all 16 default mounting cases.                                                                                      |
+| `node tests/js/host-renderer-contract.test.mjs`                                       | Exit 0                          | The baseline native test must be in the inventory when desktop input is OFF.                                                                       |
+| Focused CI job source validation                                                      | Passed                          | YAML/full-job comparison, Bash syntax and 11 positive/negative fixtures of the actual cache/inventory validator; hosted execution remains pending. |
+
+The CTest selection is anchored to those two names and uses `--no-tests=error`.
+The complete configure arguments are in the receipt; the core commands are:
+
+```sh
+cmake --build /workspace/scratch/2b8db1005468/native-112-services-only \
+  --target qt_touch_dispatcher_host_test qtquick_mounting_layer_host_test -j 2
+ctest --test-dir /workspace/scratch/2b8db1005468/native-112-services-only \
+  -R '^(qt_touch_dispatcher_host_test|qtquick_mounting_layer_host_test)$' \
+  --no-tests=error --output-on-failure
+```
+
+The first build used one worker; incremental controls and the final OFF rebuild
+used two. Both selected test executables have ASan/UBSan instrumentation, while
+Qt, RN and the production adapter libraries retain their normal build flags.
+Leak detection is disabled. This is partial host instrumentation, not complete
+sanitizer coverage or leak proof. Actual QMouseEvents reach the production
+filter; only the expected TouchEventEmitter is registered, with an empty
+EventDispatcher weak reference. Separate down/up count increments prove native
+routing only. The previous complete control-runtime suites, QNX cross/device,
+Marathon compositor, physical input, speech and performance were not rerun here.

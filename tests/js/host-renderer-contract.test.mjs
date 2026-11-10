@@ -19,6 +19,7 @@ if (process.platform === 'linux') {
     'qt_react_host_host_test',
     'rnqnx_rn_headers_probe',
     'shadow_view_mutation_adapter_host_test',
+    'qt_touch_dispatcher_host_test',
     'shadow_tree_mounting_host_test',
     'qtquick_mounting_layer_host_test',
     'rnqnx_qtquick_host_probe',
