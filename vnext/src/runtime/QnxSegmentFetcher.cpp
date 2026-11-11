@@ -15,10 +15,15 @@ void QnxSegmentFetcher::registerMethods() {
 
 namespace {
 
-void invokeErrorCallback(facebook::jsi::Runtime& rt, const facebook::jsi::Value* args) {
-  // The third argument is the error callback.
-  if (!args[2].isObject()) {
-    return;
+void invokeErrorCallback(
+    facebook::jsi::Runtime& rt,
+    const facebook::jsi::Value* args,
+    size_t count) {
+  // TurboModule method metadata sets Function.length; it does not enforce arity.
+  if (count < 3 || !args[2].isObject() ||
+      !args[2].asObject(rt).isFunction(rt)) {
+    throw facebook::jsi::JSError(
+        rt, "SegmentFetcher requires a callable error callback as its third argument");
   }
   auto callback = args[2].asObject(rt).asFunction(rt);
   auto Error = rt.global().getPropertyAsObject(rt, "Error");
@@ -39,8 +44,8 @@ facebook::jsi::Value QnxSegmentFetcher::fetchSegment(
     facebook::jsi::Runtime& rt,
     facebook::react::TurboModule& /*tm*/,
     const facebook::jsi::Value* args,
-    size_t /*count*/) {
-  invokeErrorCallback(rt, args);
+    size_t count) {
+  invokeErrorCallback(rt, args, count);
   return facebook::jsi::Value::undefined();
 }
 
@@ -48,8 +53,8 @@ facebook::jsi::Value QnxSegmentFetcher::getSegment(
     facebook::jsi::Runtime& rt,
     facebook::react::TurboModule& /*tm*/,
     const facebook::jsi::Value* args,
-    size_t /*count*/) {
-  invokeErrorCallback(rt, args);
+    size_t count) {
+  invokeErrorCallback(rt, args, count);
   return facebook::jsi::Value::undefined();
 }
 
