@@ -387,6 +387,48 @@ void javaScriptErrorsAreReportedNotSwallowed() {
   EXPECT(fixture.host().lastError().contains(QStringLiteral("deliberate")));
 }
 
+/// Invoke the actual core TurboModule in Hermes, including short argument arrays.
+void segmentFetcherValidatesCallbackBoundary() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  if (!fixture.host().evaluate(R"JS(
+    const segmentFetcher = nativeModuleProxy.SegmentFetcher;
+    const check = (ok, message) => { if (!ok) throw new Error(message); };
+    for (const method of ['fetchSegment', 'getSegment']) {
+      for (const args of [
+        [], [1], [1, null], [1, null, undefined], [1, null, null],
+        [1, null, false], [1, null, 7], [1, null, 'callback'],
+        [1, null, {}], [1, null, []],
+      ]) {
+        let error;
+        try { segmentFetcher[method](...args); } catch (caught) { error = caught; }
+        check(error instanceof Error && error.message.includes('callable error callback'),
+              method + ' accepted an invalid callback invocation with ' + args.length + ' arguments');
+      }
+
+      let calls = 0;
+      const result = segmentFetcher[method](1, null, error => {
+        ++calls;
+        check(error instanceof Error && error.message.includes('not implemented'),
+              method + ' did not report unsupported segment loading');
+      });
+      check(result === undefined && calls === 1, method + ' callback result/count changed');
+
+      const sentinel = new Error(method + ' callback failure');
+      let caught;
+      try {
+        segmentFetcher[method](1, null, () => { throw sentinel; });
+      } catch (error) {
+        caught = error;
+      }
+      check(caught === sentinel, method + ' swallowed or replaced the callback exception');
+    }
+  )JS", "segment-fetcher-contract.js")) {
+    fail("SegmentFetcher callback contract", __FILE__, __LINE__,
+         fixture.host().lastError().toStdString());
+  }
+}
+
 void evaluateRejectsReentrantJavaScript() {
   Fixture fixture;
   auto& runtime = fixture.host().runtime();
@@ -2628,6 +2670,8 @@ int main(int argc, char** argv) {
       {"runtimeEvaluatesJavaScript", runtimeEvaluatesJavaScript},
       {"javaScriptErrorsAreReportedNotSwallowed",
        javaScriptErrorsAreReportedNotSwallowed},
+      {"segmentFetcherValidatesCallbackBoundary",
+       segmentFetcherValidatesCallbackBoundary},
       {"evaluateRejectsReentrantJavaScript", evaluateRejectsReentrantJavaScript},
       {"timerCallbacksRunMicrotaskCheckpoints", timerCallbacksRunMicrotaskCheckpoints},
       {"throwingMicrotasksAreReportedAndRecover", throwingMicrotasksAreReportedAndRecover},
