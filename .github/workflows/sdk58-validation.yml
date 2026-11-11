@@ -38,6 +38,11 @@ jobs:
       - name: Install exact lockfile
         run: pnpm install --frozen-lockfile
 
+      - name: Install repository CMake floor
+        run: |
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
       - name: Verify security override contract
         run: node scripts/validate-security-overrides.mjs
 
@@ -73,11 +78,6 @@ jobs:
 
       - name: Exercise a fresh source checkout
         run: pnpm validate:clean-app
-
-      - name: Install repository CMake floor
-        run: |
-          python3 -m pip install --user --break-system-packages cmake==3.31.10
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Linux host C++ smoke tests
         run: |
