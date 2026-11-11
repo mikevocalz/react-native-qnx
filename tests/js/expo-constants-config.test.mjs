@@ -16,7 +16,7 @@ function configure(config, expected) {
   writeFileSync(file, config);
   writeFileSync(
     join(directory, 'CMakeLists.txt'),
-    `cmake_minimum_required(VERSION 3.31.9)
+    `cmake_minimum_required(VERSION 3.31)
 project(ConstantsConfig NONE)
 add_library(constants STATIC dummy.cpp)
 include("${root}/cmake/RnqnxExpoConstants.cmake")
