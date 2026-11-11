@@ -1,5 +1,14 @@
 # Current state
 
+## PR 105 review follow-up — 2026-11-10
+
+The constrained Nitro generator at `c09a5b1` rejects unsupported contracts and
+preserves the canonical generated bindings. Its hosted workflows passed;
+the local generator, typecheck and installed-source checks passed again.
+This follow-up changes documentation and structured evidence only. See
+[the candidate receipt](../validation/pr105-merge-readiness-2026-11-10.md).
+The historical platform baseline below and all seven release gates are unchanged.
+
 Reconciled against `main` at `5f17504` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the
 [compatibility matrix](../getting-started/compatibility-matrix.md) are generated
