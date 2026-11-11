@@ -17,7 +17,7 @@ overrides:
   '@expo/fingerprint>minimatch': 11.0.1
   '@ts-morph/common>minimatch': 11.0.1
   'glob': 14.0.3
-  'node-forge': 1.4.2
+  'node-forge': 1.4.3
 
 # Do not suppress moderate-or-higher advisories. The source-verified braces
 # backport below is the sole separately documented exception.
