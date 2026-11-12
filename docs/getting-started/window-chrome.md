@@ -9,46 +9,85 @@ This is experimental and off by default. One Pi 400 run is recorded below.
 
 ## Configure
 
-The window comes from the `window` object that `project prepare-native` writes
-into `build/<platform>/native-app.json`. With the Expo config plugin from
-PR #122 it is set in app config:
+The title bar is optional and set per app in `extra.rnqnx.window`.
+`project prepare-native` writes it into `build/<platform>/native-app.json`,
+and the native build compiles it in.
+
+`app.json`:
 
 ```json
 {
   "expo": {
-    "name": "My App",
-    "plugins": [
-      [
-        "@rn-qnx/expo-qnx-config-plugins",
-        {
-          "appId": "org.example.myapp",
-          "componentName": "main",
-          "window": {
-            "controls": "windows",
-            "titleBarStyle": "default",
-            "initialSize": { "width": 1024, "height": 600 }
-          }
+    "name": "QNX Components",
+    "icon": "./assets/icon.png",
+    "extra": {
+      "rnqnx": {
+        "appId": "org.rnqnx.showcase",
+        "componentName": "RNQnxPlayground",
+        "window": {
+          "controls": "macos",
+          "titleBarStyle": "default",
+          "initialSize": { "width": 1280, "height": 800 }
         }
-      ]
-    ]
+      }
+    }
   }
 }
 ```
 
-| Field           | Values                                   | Default   |
-| --------------- | ---------------------------------------- | --------- |
-| `controls`      | `macos` (left, round), `windows` (right) | `macos`   |
-| `titleBarStyle` | `default`, `hidden`, `none`              | `default` |
-| `initialSize`   | `{ width, height }`, integers 1 to 16384 | none      |
+`app.config.ts`, through the Expo config plugin (plugin options win over
+`extra.rnqnx`):
+
+```ts
+import type { ExpoConfig } from 'expo/config';
+
+const config: ExpoConfig = {
+  name: 'My App',
+  slug: 'my-app',
+  icon: './assets/icon.png',
+  plugins: [
+    [
+      '@rn-qnx/expo-qnx-config-plugins',
+      {
+        appId: 'org.example.myapp',
+        componentName: 'main',
+        window: {
+          controls: 'windows',
+          titleBarStyle: 'default',
+          initialSize: { width: 1024, height: 600 },
+        },
+      },
+    ],
+  ],
+};
+
+export default config;
+```
+
+| Field                 | Values                                   | Default   |
+| --------------------- | ---------------------------------------- | --------- |
+| `controls`            | `macos` (left, round), `windows` (right) | `macos`   |
+| `titleBarStyle`       | `default`, `hidden`, `none`              | `default` |
+| `initialSize`         | `{ width, height }`, integers 1 to 16384 | none      |
+| `unavailableControls` | `hide`, `disable`                        | `hide`    |
 
 - `default` draws the bar and starts the React content below it.
 - `hidden` draws the controls only, floating over the top of the content.
   The content starts at the top edge, and the controls cover part of it.
-- `none` draws nothing, including no close control.
+- `none` draws nothing: no bar, no controls, the React content fills the
+  window. The app owns its exit path.
+- `initialSize` is the whole window, title bar included, clamped to the
+  screen. With it the app opens as a normal window; without it the app fills
+  the screen on QNX.
+- `unavailableControls` decides what happens to a control the platform cannot
+  run, for example expand on a full-screen QNX app: `hide` leaves it out,
+  `disable` draws it grey and inert. Prefer `hide`; a grey control that never
+  works is a dead button (ADR-0016 item 2).
 
-`initialSize` is the whole window, title bar included, clamped to the screen.
-The window title is `expo.name`. A `native-app.json` written before the
-`window` field existed keeps the old window without chrome.
+The window title is `expo.name` and the bar shows the app's generated icon.
+A `native-app.json` written before the `window` field existed keeps the old
+window without chrome. Each value is validated by the config plugin,
+`prepare-native`, CMake and the C++ reader, so a typo fails at prebuild.
 
 ## Build
 
@@ -73,36 +112,41 @@ can show both layouts on a device.
 
 ## What runs on QNX
 
-| Control  | QNX                                                               |
-| -------- | ----------------------------------------------------------------- |
-| Close    | Shown. Closes the window; the app exits.                          |
-| Minimize | Not shown. Qt 6.12.0 cannot minimize on QNX and nothing restores. |
-| Maximize | Not shown yet: the React surface keeps its first size.            |
-| Drag     | Off. The QNX platform plugin has no system move.                  |
+Under the stock `fullscreen-winmgr` desktop:
 
-At startup the host prints one line per hidden control, for example:
+| Control  | QNX                                                                                                      |
+| -------- | -------------------------------------------------------------------------------------------------------- |
+| Close    | Closes the window; the app exits.                                                                        |
+| Minimize | Releases the native window so the launcher shows; the app keeps running. Launching it again restores it. |
+| Maximize | Windowed apps only: toggles between the full display and `initialSize`. Double-click on the bar too.     |
+| Drag     | Off. The QNX platform plugin has no system move.                                                         |
+
+The [Pi 400 desktop guide](pi400-desktop-app.md) explains each one, how a
+minimized app comes back, and how windowed mode works with
+`fullscreen-winmgr`.
+
+At startup the host prints the chrome line and one line per control it left
+out, for example on a full-screen app:
 
 ```text
 RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=1920x1080
-RNQNX_WINDOW_CHROME platform=qnx hidden=minimize reason=Qt 6.12.0 QQnxWindow::minimize() ...
+RNQNX_WINDOW_CHROME platform=qnx hidden=maximize reason=the qnx QPA keeps the root window at screen size unless it runs with no-fullscreen
 ```
 
-Each activation prints `RNQNX_WINDOW_ACTION <action>`.
+Each activation prints `RNQNX_WINDOW_ACTION <action>`; a disabled control
+prints `RNQNX_WINDOW_ACTION_UNAVAILABLE <action> reason=...`. The playground
+flag `--unavailable-controls hide|disable` overrides the app's setting.
 
-`--unavailable-controls disable` keeps a control the platform cannot run and
-draws it grey instead of leaving it out, so the macOS layout shows all three
-lights on QNX. A disabled control does nothing when pressed, is skipped by Tab,
-and prints `RNQNX_WINDOW_ACTION_UNAVAILABLE <action> reason=...`. The startup
-line reads `disabled=` instead of `hidden=`. The default is `hide`.
+The React surface follows the window: a resize, maximize or restore lays the
+app out again at the new size and fires `onLayout` on the root view.
 
-The bar draws the app icon left of the title. A consumer app uses its
-generated icon set (`icons/icon-<size>.png`, the smallest size of at least 40
-px); the playground takes `--window-icon <png>`.
+## Appearance
 
-On the Pi 400 (2026-11-12, public-source Qt 6.12.0, `QT_QPA_PLATFORM=qnx`,
-software Qt Quick backend under `fullscreen-winmgr`) the bar drew at the top of
-the full-screen window with icon, title, a live close light and grey minimize
-and maximize lights.
+The bar is dark (`#13202f`, light title text) unless the platform reports a
+light colour scheme, which macOS and Windows do. QNX reports none, so QNX apps
+get the dark bar, matching the QNX launcher and dark app themes. The traffic
+lights keep their macOS colours, with `×`, `−` and `↗` drawn on them so the
+controls are not told apart by colour alone.
 
 ## Controls
 
@@ -121,12 +165,15 @@ or `Restore window`.
   under it when the input-lifecycle dispatcher is on.
 - With the input-lifecycle dispatcher on, touch `pageX`/`pageY` include the
   44 px bar in the `default` style.
-- Maximize is hidden on every platform until the surface follows the window.
-  On QNX it will then need `-platform qnx:no-fullscreen`.
+- On QNX, maximize needs a windowed app (`initialSize`); a full-screen app has
+  nothing to expand to, so the control is left out.
+- A minimized QNX app is not in the Alt+Tab list; it comes back by launching
+  it again.
 - Wayland, including Marathon, gets close only, and the chrome build is
   rejected for Marathon until its shell's behaviour is defined.
-- No runtime layout change, close guard, window icon or edge resize yet.
-- The surface keeps its first size when the window is resized, as before.
+- No runtime layout change, close guard or edge resize yet.
+- `Dimensions` reports the screen, not the window; use `onLayout` for the
+  window's content size.
 
 ## Host tests
 
