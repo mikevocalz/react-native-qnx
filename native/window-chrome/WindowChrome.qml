@@ -64,11 +64,12 @@ Item {
             readonly property string action: modelData.action
             readonly property bool hovered: hover.hovered
             readonly property bool pressed: tap.pressed
+            readonly property var geometry: root.chrome.controlGeometry[action]
             objectName: "rnqnxWindowControl_" + action
-            x: modelData.x
-            y: modelData.y
-            width: modelData.width
-            height: modelData.height
+            x: geometry.x
+            y: geometry.y
+            width: geometry.width
+            height: geometry.height
             activeFocusOnTab: true
 
             Accessible.role: Accessible.Button

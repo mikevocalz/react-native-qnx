@@ -53,6 +53,8 @@ export async function planNativeBuild(
   const descriptorPath = path.join(project, 'build', platform, 'native-app.json');
   const original = JSON.parse(await smallRegular(descriptorPath));
   const window = readWindowDescriptor(original);
+  if (windowChrome && platform === 'marathon')
+    throw new Error('--window-chrome is not supported for Marathon yet (docs/adr/0016).');
   // Revalidate the exact selected bundle, including QNX .hbc inputs. A stale
   // descriptor must never silently point to a different JS entry.
   const relativeBundle = path.relative(project, original.bundle ?? '');

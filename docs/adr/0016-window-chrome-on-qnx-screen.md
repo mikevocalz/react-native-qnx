@@ -49,15 +49,18 @@ sets these limits:
    (`RNQNX_WINDOW_CHROME hidden=<action> reason=<text>`), so a receipt can quote
    it.
 
-   | Control  | Action                             | QNX (`qnx` QPA)                                                                                                     | macOS / Windows / X11 / Wayland host preview |
-   | -------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-   | Close    | `QWindow::close()`; the app quits  | Live                                                                                                                | Live                                         |
-   | Minimize | `QWindow::showMinimized()`         | Hidden. The QPA stub does nothing and the image has no restore path (see item 3).                                   | Live                                         |
-   | Maximize | `showMaximized()` / `showNormal()` | Live only when the QPA runs with `no-fullscreen`; otherwise hidden, because the window already fills the screen.    | Live                                         |
-   | Drag     | `QWindow::startSystemMove()`       | Off. The QPA returns `false`, and moving a window by hand is not done without a window manager that owns placement. | On where the QPA reports support             |
+   | Control  | Action                             | QNX (`qnx` QPA)                                                                                                     | macOS / Windows / X11 host preview |
+   | -------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+   | Close    | `QWindow::close()`; the app quits  | Live                                                                                                                | Live                               |
+   | Minimize | `QWindow::showMinimized()`         | Hidden. The QPA stub does nothing and the image has no restore path (see item 3).                                   | Live                               |
+   | Maximize | `showMaximized()` / `showNormal()` | Hidden while the React surface keeps its first size (item 9). After that: live only with `no-fullscreen`.           | Hidden for the same reason         |
+   | Drag     | `QWindow::startSystemMove()`       | Off. The QPA returns `false`, and moving a window by hand is not done without a window manager that owns placement. | On where the QPA reports support   |
 
    `offscreen` and `minimal` QPAs, which the host tests use, behave like QNX for
-   minimize and drag. An unknown QPA gets close only.
+   minimize and drag. Wayland gets close only until a compositor, Marathon's
+   shell in particular, is verified; `RNQNX_ENABLE_WINDOW_CHROME` is rejected
+   together with `RNQNX_BUILD_MARATHON_HOST`, and `build-native` rejects
+   `--window-chrome` for Marathon. An unknown QPA gets close only.
 
 3. **Minimize on QNX Screen** means: the app's Screen window becomes invisible
    (`SCREEN_PROPERTY_VISIBLE` 0), React Native `AppState` moves to `background`,
@@ -92,11 +95,23 @@ sets these limits:
    `Minimize window`, `Maximize window` or `Restore window`) and a press action.
    Enter and Space activate the focused control. A focus ring is drawn only
    while the control has keyboard focus; pointer presses do not take focus.
+   The control set is fixed for the window's life and a resize only moves the
+   controls, so keyboard focus stays on the focused control. Glyphs are always
+   drawn so controls are not told apart by colour alone; only on `cocoa`, where
+   hover exists and is the convention, do they appear on hover or focus.
 
 8. **Initial size.** `initialSize` is the outer window size, title bar
    included. It is clamped to the screen's available geometry before the window
    is first shown and the window is centred there. `--fullscreen` overrides it.
-   On QNX without `no-fullscreen`, the QPA overrides it with the screen size.
+   On QNX without `no-fullscreen`, the QPA overrides it with the screen size,
+   so the host applies the screen geometry before the surface starts.
+
+9. **Maximize waits for surface resize.** `QtReactHost` starts the React
+   surface once with a fixed size. A maximize would grow the window around a
+   surface that does not follow, so maximize is hidden on every QPA with the
+   reason "the React surface keeps its first size". It returns when the host
+   resizes the surface on window changes; `capabilitiesForPlatform` takes that
+   as `SurfaceResize::FollowsWindow`.
 
 ## Consequences
 
@@ -112,6 +127,15 @@ sets these limits:
   too. The gate's "chrome still operable while the JS thread is deliberately
   blocked" needs the host to move JavaScript to its own thread first; this
   ADR does not claim it.
+- Touch coordinates: with the input-lifecycle dispatcher on, `pagePoint` and
+  `screenPoint` are window coordinates (`QtTouchDispatcher.cpp`), so in the
+  `default` style they include the 44 px bar. `offsetPoint` is item-local and
+  correct. Fixing it means mapping through the Fabric root in the dispatcher,
+  which is outside this slice.
+- In `hidden` style the dispatcher, a window-level event filter that never
+  consumes events, also delivers a press on a floating control to the Fabric
+  view underneath. The chrome cannot consume it from QML; the dispatcher needs
+  an exclusion for control rectangles. Not done here.
 - Drag-to-move and edge resize are off on QNX. They can be enabled per target
   once a receipt shows the QPA supports them.
 
@@ -141,6 +165,12 @@ sets these limits:
 - `packages/react-native-qnx-cli/src/window-descriptor.mjs`
 
 ## Notes
+
+The window options are validated in four places: the config plugin (PR #122),
+`window-descriptor.mjs`, `cmake/RnqnxConsumerApp.cmake` and
+`parseWindowChromeConfig`. The native lane and the JS test share the fixtures
+in `native/window-chrome/fixtures/`; a parity test against `resolveQnxWindow`
+follows once PR #122 lands.
 
 The windows API (Nitro v1 HybridClass), close guards, runtime layout changes,
 the title-bar inset in JavaScript, the window icon in the bar (PR #125's

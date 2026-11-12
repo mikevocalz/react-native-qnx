@@ -19,6 +19,10 @@ WindowChrome::WindowChrome(QQuickWindow& window, QQmlEngine& engine, WindowChrom
                            WindowCapabilities capabilities)
     : window_(&window), config_(std::move(config)), capabilities_(std::move(capabilities)) {
   layout_ = layoutChrome(config_, capabilities_, window.width());
+  for (const auto& slot : layout_.controls) {
+    controls_.append(QVariantMap{{QStringLiteral("action"), nameOf(slot.action)},
+                                 {QStringLiteral("name"), slot.accessibleName}});
+  }
 
   content_ = std::make_unique<QQuickItem>();
   content_->setObjectName(QStringLiteral("rnqnxContentRoot"));
@@ -58,15 +62,13 @@ QQuickItem& WindowChrome::contentRoot() const { return *content_; }
 
 QQuickItem* WindowChrome::chromeItem() const { return chrome_.get(); }
 
-QVariantList WindowChrome::controls() const {
-  QVariantList result;
+QVariantMap WindowChrome::controlGeometry() const {
+  QVariantMap result;
   for (const auto& slot : layout_.controls) {
-    result.append(QVariantMap{{QStringLiteral("action"), nameOf(slot.action)},
-                              {QStringLiteral("name"), slot.accessibleName},
-                              {QStringLiteral("x"), slot.hitRect.x()},
-                              {QStringLiteral("y"), slot.hitRect.y()},
-                              {QStringLiteral("width"), slot.hitRect.width()},
-                              {QStringLiteral("height"), slot.hitRect.height()}});
+    result.insert(nameOf(slot.action), QVariantMap{{QStringLiteral("x"), slot.hitRect.x()},
+                                                   {QStringLiteral("y"), slot.hitRect.y()},
+                                                   {QStringLiteral("width"), slot.hitRect.width()},
+                                                   {QStringLiteral("height"), slot.hitRect.height()}});
   }
   return result;
 }

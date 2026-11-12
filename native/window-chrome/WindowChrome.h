@@ -12,6 +12,7 @@
 #include <QPointer>
 #include <QRectF>
 #include <QVariantList>
+#include <QVariantMap>
 
 #include <QStringList>
 
@@ -26,7 +27,11 @@ namespace rnqnx::window {
 class WindowChrome final : public QObject {
   Q_OBJECT
   Q_PROPERTY(QString controlsLayout READ controlsLayout CONSTANT)
-  Q_PROPERTY(QVariantList controls READ controls NOTIFY layoutChanged)
+  // The set of controls is fixed for the window's life; only their geometry
+  // changes. Keeping the model constant keeps the Repeater's delegates (and
+  // keyboard focus) across resizes.
+  Q_PROPERTY(QVariantList controls READ controls CONSTANT)
+  Q_PROPERTY(QVariantMap controlGeometry READ controlGeometry NOTIFY layoutChanged)
   Q_PROPERTY(QRectF titleRect READ titleRect NOTIFY layoutChanged)
   Q_PROPERTY(bool titleCentered READ titleCentered CONSTANT)
   Q_PROPERTY(bool barVisible READ barVisible CONSTANT)
@@ -36,8 +41,9 @@ class WindowChrome final : public QObject {
   Q_PROPERTY(bool active READ active NOTIFY stateChanged)
   Q_PROPERTY(bool maximized READ maximized NOTIFY stateChanged)
   Q_PROPERTY(bool systemMoveAvailable READ systemMoveAvailable CONSTANT)
-  // QNX targets are touch-first: no hover, so glyphs stay visible and the
-  // controls are not told apart by colour alone.
+  // Glyphs stay visible so controls are not told apart by colour alone. Only
+  // cocoa, where hover exists and is the platform convention, reveals them on
+  // hover or focus.
   Q_PROPERTY(bool alwaysShowGlyphs READ alwaysShowGlyphs CONSTANT)
 
  public:
@@ -58,7 +64,8 @@ class WindowChrome final : public QObject {
   const WindowCapabilities& capabilities() const { return capabilities_; }
 
   QString controlsLayout() const { return nameOf(config_.controls); }
-  QVariantList controls() const;
+  QVariantList controls() const { return controls_; }
+  QVariantMap controlGeometry() const;
   QRectF titleRect() const { return layout_.titleRect; }
   bool titleCentered() const { return layout_.titleAlignment == Qt::AlignHCenter; }
   bool barVisible() const { return layout_.barVisible; }
@@ -68,7 +75,7 @@ class WindowChrome final : public QObject {
   bool active() const;
   bool maximized() const;
   bool systemMoveAvailable() const { return capabilities_.systemMove; }
-  bool alwaysShowGlyphs() const { return capabilities_.platform == QLatin1String("qnx"); }
+  bool alwaysShowGlyphs() const { return capabilities_.platform != QLatin1String("cocoa"); }
 
   // One line per hidden control, for logs and device receipts.
   QStringList describeHiddenControls() const;
@@ -90,6 +97,7 @@ class WindowChrome final : public QObject {
   WindowChromeConfig config_;
   WindowCapabilities capabilities_;
   ChromeLayout layout_;
+  QVariantList controls_;
   std::unique_ptr<QQuickItem> content_;
   std::unique_ptr<QQuickItem> chrome_;
 };

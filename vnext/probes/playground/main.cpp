@@ -232,7 +232,7 @@ constexpr int kWindowHeight = 480;
 int main(int argc, char** argv) {
 #if RNQNX_ENABLE_WINDOW_CHROME
   // Read before QGuiApplication strips -platform from argv (ADR-0016).
-  const QStringList platformOptions = rnqnx::window::platformOptionsFromArguments(
+  const QStringList platformSpecs = rnqnx::window::platformSpecsFromArguments(
       argc, argv, qEnvironmentVariable("QT_QPA_PLATFORM"));
 #endif
   QGuiApplication app(argc, argv);
@@ -405,6 +405,8 @@ int main(int argc, char** argv) {
   std::unique_ptr<rnqnx::window::WindowChrome> chrome;
   if (!parser.isSet(fullscreenOption) &&
       chromeConfig.titleBarStyle != rnqnx::window::TitleBarStyle::None) {
+    const QStringList platformOptions =
+        rnqnx::window::platformOptionsFor(QGuiApplication::platformName(), platformSpecs);
     // The qnx QPA resizes the root window to the screen only once events run,
     // after the surface has started. Apply that size now so the content item
     // and the React surface match the window from the first frame.

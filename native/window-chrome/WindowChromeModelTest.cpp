@@ -19,7 +19,10 @@ std::vector<WindowAction> actions(const ChromeLayout& layout) {
   return result;
 }
 
-WindowCapabilities desktop() { return capabilitiesForPlatform(QStringLiteral("cocoa")); }
+// Layout tests use a host that resizes its surface, so every control shows.
+WindowCapabilities desktop() {
+  return capabilitiesForPlatform(QStringLiteral("cocoa"), {}, SurfaceResize::FollowsWindow);
+}
 
 }  // namespace
 
@@ -78,14 +81,50 @@ class WindowChromeModelTest : public QObject {
   }
 
   void qnxMaximizeDependsOnFullscreenOption() {
-    const auto fullscreen = capabilitiesForPlatform(QStringLiteral("qnx"));
+    const auto fullscreen =
+        capabilitiesForPlatform(QStringLiteral("qnx"), {}, SurfaceResize::FollowsWindow);
     QVERIFY(!fullscreen.maximize.available);
     QVERIFY(fullscreen.maximize.reason.contains(QStringLiteral("no-fullscreen")));
-    const auto windowed = capabilitiesForPlatform(
-        QStringLiteral("qnx"), {QStringLiteral("desktop"), QStringLiteral("no-fullscreen")});
+    const auto windowed =
+        capabilitiesForPlatform(QStringLiteral("qnx"),
+                                {QStringLiteral("desktop"), QStringLiteral("no-fullscreen")},
+                                SurfaceResize::FollowsWindow);
     QVERIFY(windowed.maximize.available);
     QVERIFY(windowed.maximize.reason.isEmpty());
     QVERIFY(!windowed.minimize.available);
+  }
+
+  // Review item 2: the host starts the React surface once, so maximize is
+  // hidden everywhere until the surface follows the window.
+  void fixedSurfaceHidesMaximize_data() {
+    QTest::addColumn<QString>("platform");
+    QTest::addColumn<QStringList>("options");
+    QTest::newRow("qnx no-fullscreen") << "qnx" << QStringList{QStringLiteral("no-fullscreen")};
+    QTest::newRow("cocoa") << "cocoa" << QStringList{};
+    QTest::newRow("xcb") << "xcb" << QStringList{};
+    QTest::newRow("offscreen") << "offscreen" << QStringList{};
+  }
+
+  void fixedSurfaceHidesMaximize() {
+    QFETCH(QString, platform);
+    QFETCH(QStringList, options);
+    const auto caps = capabilitiesForPlatform(platform, options);
+    QVERIFY(!caps.maximize.available);
+    QVERIFY(caps.maximize.reason.contains(QStringLiteral("first size")));
+    QVERIFY(capabilitiesForPlatform(platform, options, SurfaceResize::FollowsWindow).maximize.available);
+    const auto layout = layoutChrome({}, caps, 800);
+    for (const auto& slot : layout.controls) QVERIFY(slot.action != WindowAction::Maximize);
+  }
+
+  void waylandIsCloseOnlyUntilVerified() {
+    for (const auto surface : {SurfaceResize::Fixed, SurfaceResize::FollowsWindow}) {
+      const auto caps = capabilitiesForPlatform(QStringLiteral("wayland"), {}, surface);
+      QVERIFY(!caps.minimize.available);
+      QVERIFY(!caps.maximize.available);
+      QVERIFY(!caps.systemMove);
+      QVERIFY(caps.minimize.reason.contains(QStringLiteral("Wayland")));
+    }
+    QVERIFY(!capabilitiesForPlatform(QStringLiteral("wayland-egl")).minimize.available);
   }
 
   void knowsWhenTheQpaForcesFullScreen() {
@@ -98,12 +137,12 @@ class WindowChromeModelTest : public QObject {
 
   void desktopPluginsKeepEveryControl_data() {
     QTest::addColumn<QString>("platform");
-    for (const char* name : {"cocoa", "windows", "xcb", "wayland"}) QTest::newRow(name) << name;
+    for (const char* name : {"cocoa", "windows", "xcb"}) QTest::newRow(name) << name;
   }
 
   void desktopPluginsKeepEveryControl() {
     QFETCH(QString, platform);
-    const auto caps = capabilitiesForPlatform(platform);
+    const auto caps = capabilitiesForPlatform(platform, {}, SurfaceResize::FollowsWindow);
     QVERIFY(caps.minimize.available);
     QVERIFY(caps.maximize.available);
     QVERIFY(caps.systemMove);
@@ -121,20 +160,38 @@ class WindowChromeModelTest : public QObject {
 
   void readsPlatformOptionsFromArguments() {
     const char* argv[] = {"app", "-platform", "qnx:no-fullscreen", "--bundle", "x"};
-    QCOMPARE(platformOptionsFromArguments(5, argv, QString()),
+    const QStringList specs = platformSpecsFromArguments(5, argv, QString());
+    QCOMPARE(platformOptionsFor(QStringLiteral("qnx"), specs),
              QStringList{QStringLiteral("no-fullscreen")});
     const char* equals[] = {"app", "--platform=qnx:desktop:no-fullscreen"};
-    QCOMPARE(platformOptionsFromArguments(2, equals, QString()),
+    QCOMPARE(platformOptionsFor(QStringLiteral("qnx"), platformSpecsFromArguments(2, equals, QString())),
              (QStringList{QStringLiteral("desktop"), QStringLiteral("no-fullscreen")}));
     const char* none[] = {"app"};
-    QCOMPARE(platformOptionsFromArguments(1, none, QStringLiteral("qnx:no-fullscreen")),
+    QCOMPARE(platformOptionsFor(QStringLiteral("qnx"),
+                                platformSpecsFromArguments(1, none, QStringLiteral("qnx:no-fullscreen"))),
              QStringList{QStringLiteral("no-fullscreen")});
-    QVERIFY(platformOptionsFromArguments(1, none, QStringLiteral("qnx")).isEmpty());
+    QVERIFY(platformOptionsFor(QStringLiteral("qnx"),
+                               platformSpecsFromArguments(1, none, QStringLiteral("qnx")))
+                .isEmpty());
     // The argument wins over the environment, as in QGuiApplication.
-    QVERIFY(platformOptionsFromArguments(3, argv, QStringLiteral("cocoa:x")).contains(
-        QStringLiteral("no-fullscreen")));
+    QCOMPARE(platformSpecsFromArguments(3, argv, QStringLiteral("cocoa:x")),
+             QStringList{QStringLiteral("qnx:no-fullscreen")});
     const char* dangling[] = {"app", "-platform"};
-    QVERIFY(platformOptionsFromArguments(2, dangling, QString()).isEmpty());
+    QVERIFY(platformSpecsFromArguments(2, dangling, QString()).isEmpty());
+  }
+
+  // Review item 8: QT_QPA_PLATFORM may hold a `;` fallback list. Options come
+  // from the entry for the QPA that actually loaded.
+  void readsOptionsFromFallbackLists() {
+    const char* none[] = {"app"};
+    const QStringList specs =
+        platformSpecsFromArguments(1, none, QStringLiteral("wayland:foo;qnx:no-fullscreen;xcb"));
+    QCOMPARE(specs.size(), 3);
+    QCOMPARE(platformOptionsFor(QStringLiteral("qnx"), specs),
+             QStringList{QStringLiteral("no-fullscreen")});
+    QCOMPARE(platformOptionsFor(QStringLiteral("wayland"), specs), QStringList{QStringLiteral("foo")});
+    QVERIFY(platformOptionsFor(QStringLiteral("xcb"), specs).isEmpty());
+    QVERIFY(platformOptionsFor(QStringLiteral("cocoa"), specs).isEmpty());
   }
 
   void macosLayoutPutsControlsLeftInOrder() {

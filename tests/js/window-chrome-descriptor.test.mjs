@@ -78,9 +78,11 @@ await check('rejects a non-object descriptor', () => {
   assert.throws(() => readWindowDescriptor([]), /must be an object/);
 });
 
-await check('chrome is opt-in: a descriptor alone adds no CMake flag', async () => {
+await check('chrome is opt-in and OFF is explicit, so a reused cache cannot keep ON', async () => {
   const window = readWindowDescriptor(await fixture('windows-hidden-sized.json'));
-  assert.deepEqual(windowChromeCMakeFlags(window, false), []);
+  assert.deepEqual(windowChromeCMakeFlags(window, false), ['-DRNQNX_ENABLE_WINDOW_CHROME=OFF']);
+  const legacy = readWindowDescriptor(await fixture('legacy-no-window.json'));
+  assert.deepEqual(windowChromeCMakeFlags(legacy, false), ['-DRNQNX_ENABLE_WINDOW_CHROME=OFF']);
   assert.deepEqual(windowChromeCMakeFlags(window, true), ['-DRNQNX_ENABLE_WINDOW_CHROME=ON']);
 });
 

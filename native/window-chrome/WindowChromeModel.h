@@ -50,21 +50,33 @@ struct WindowCapabilities {
   bool systemMove{false};
 };
 
+// Whether the host resizes the React surface when the window changes size.
+// QtReactHost starts the surface once with a fixed size, so today it does not,
+// and maximize stays hidden: it would grow the window around a surface that
+// keeps its first size.
+enum class SurfaceResize { Fixed, FollowsWindow };
+
 // The QPA name is QGuiApplication::platformName(). `platformOptions` are the
 // colon-separated options after the name (for example `no-fullscreen` in
-// `qnx:no-fullscreen`); see qnxPlatformOptions().
+// `qnx:no-fullscreen`); see platformOptionsFor().
 WindowCapabilities capabilitiesForPlatform(const QString& platform,
-                                           const QStringList& platformOptions = {});
+                                           const QStringList& platformOptions = {},
+                                           SurfaceResize surface = SurfaceResize::Fixed);
 
 // True when the QPA will force the root window to the screen size whatever
 // size the app asks for (the qnx plugin without `no-fullscreen`).
 bool platformForcesFullScreen(const QString& platform, const QStringList& platformOptions);
 
-// Extracts the QPA options from `-platform <spec>` / `--platform <spec>` /
-// `-platform=<spec>` in argv, falling back to QT_QPA_PLATFORM. Must run before
+// The QPA specs Qt will try, in order: the `-platform <spec>` /
+// `--platform <spec>` / `-platform=<spec>` argument if present, otherwise the
+// `;`-separated fallback list in QT_QPA_PLATFORM. Must run before
 // QGuiApplication removes `-platform` from argv.
-QStringList platformOptionsFromArguments(int argc, const char* const* argv,
-                                         const QString& environmentSpec);
+QStringList platformSpecsFromArguments(int argc, const char* const* argv,
+                                       const QString& environmentSpec);
+
+// The options of the first spec whose name is `platform` (the QPA Qt actually
+// loaded, QGuiApplication::platformName()). Empty when none matches.
+QStringList platformOptionsFor(const QString& platform, const QStringList& specs);
 
 struct ControlSlot {
   WindowAction action;

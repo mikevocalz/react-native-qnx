@@ -75,12 +75,14 @@ export function readWindowDescriptor(descriptor) {
 
 /**
  * CMake flags for the opt-in chrome. The chrome is compiled only when the
- * developer asks for it; a descriptor alone never turns it on.
+ * developer asks for it; a descriptor alone never turns it on. OFF is passed
+ * explicitly because build-native reuses build/<platform>/native, whose CMake
+ * cache would otherwise keep an earlier ON.
  * @param {WindowDescriptor} window
  * @param {boolean} enabled
  */
 export function windowChromeCMakeFlags(window, enabled) {
-  if (!enabled) return [];
+  if (!enabled) return ['-DRNQNX_ENABLE_WINDOW_CHROME=OFF'];
   if (window.titleBarStyle === 'none')
     throw new Error(
       '--window-chrome has nothing to draw: the descriptor has no window or titleBarStyle "none".'

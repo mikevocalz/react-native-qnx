@@ -77,7 +77,7 @@ can show both layouts on a device.
 | -------- | ----------------------------------------------------------------- |
 | Close    | Shown. Closes the window; the app exits.                          |
 | Minimize | Not shown. Qt 6.12.0 cannot minimize on QNX and nothing restores. |
-| Maximize | Shown only with `-platform qnx:no-fullscreen`.                    |
+| Maximize | Not shown yet: the React surface keeps its first size.            |
 | Drag     | Off. The QNX platform plugin has no system move.                  |
 
 At startup the host prints one line per hidden control, for example:
@@ -104,6 +104,12 @@ or `Restore window`.
   bar along with the rest of the window.
 - With `hidden`, a press on a floating control also reaches the React view
   under it when the input-lifecycle dispatcher is on.
+- With the input-lifecycle dispatcher on, touch `pageX`/`pageY` include the
+  44 px bar in the `default` style.
+- Maximize is hidden on every platform until the surface follows the window.
+  On QNX it will then need `-platform qnx:no-fullscreen`.
+- Wayland, including Marathon, gets close only, and the chrome build is
+  rejected for Marathon until its shell's behaviour is defined.
 - No runtime layout change, close guard, window icon or edge resize yet.
 - The surface keeps its first size when the window is resized, as before.
 

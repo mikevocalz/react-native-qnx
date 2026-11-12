@@ -8,6 +8,7 @@
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
+#include <QPointer>
 #include <QSignalSpy>
 #include <QtTest>
 
@@ -34,7 +35,7 @@ void collect(QQuickItem* root, QList<QQuickItem*>& out) {
 
 struct Harness {
   explicit Harness(WindowChromeConfig config,
-                   WindowCapabilities caps = capabilitiesForPlatform(QStringLiteral("cocoa")),
+                   WindowCapabilities caps = capabilitiesForPlatform(QStringLiteral("cocoa"), {}, SurfaceResize::FollowsWindow),
                    QSize size = QSize(800, 600)) {
     window = std::make_unique<QQuickWindow>();
     window->setTitle(QStringLiteral("My App"));
@@ -221,8 +222,46 @@ class WindowChromeQuickTest : public QObject {
     QTRY_VERIFY(!harness.window->isVisible());
   }
 
+  // Review item 1: a resize must not recreate the controls, or keyboard focus
+  // falls off the focused control.
+  void keyboardFocusSurvivesResize() {
+    for (const auto controls : {ControlsLayout::Windows, ControlsLayout::MacOS}) {
+      WindowChromeConfig config;
+      config.controls = controls;
+      Harness harness(config);
+      QVERIFY(QTest::qWaitForWindowActive(harness.window.get()));
+      // QPointer: a recreated delegate shows up as a null pointer, not a crash.
+      QPointer<QQuickItem> maximize = harness.control(QStringLiteral("maximize"));
+      maximize->forceActiveFocus(Qt::TabFocusReason);
+      QCOMPARE(harness.window->activeFocusItem(), maximize);
+      const qreal before = maximize->x();
+      harness.window->resize(1100, 700);
+      QTRY_COMPARE(harness.chrome->contentRoot().width(), 1100.0);
+      QVERIFY2(maximize, "the maximize control was destroyed by the resize");
+      QCOMPARE(harness.control(QStringLiteral("maximize")), maximize.data());
+      QCOMPARE(harness.window->activeFocusItem(), maximize.data());
+      QCOMPARE(harness.window->activeFocusItem()->objectName(),
+               QStringLiteral("rnqnxWindowControl_maximize"));
+      if (controls == ControlsLayout::Windows)
+        QCOMPARE(maximize->x(), before + 300);  // Right-anchored row moved with the edge.
+      else
+        QCOMPARE(maximize->x(), before);
+      QVERIFY(findItem(maximize, QStringLiteral("focusRing"))->isVisible());
+    }
+  }
+
+  // Review item 2: with a surface that keeps its first size, maximize is not
+  // drawn and the reason is logged.
+  void fixedSurfaceDrawsNoMaximize() {
+    Harness harness({}, capabilitiesForPlatform(QStringLiteral("cocoa")));
+    QCOMPARE(controlNames(harness), (QStringList{QStringLiteral("close"), QStringLiteral("minimize")}));
+    const QStringList hidden = harness.chrome->describeHiddenControls();
+    QCOMPARE(hidden.size(), 1);
+    QVERIFY(hidden.at(0).contains(QStringLiteral("hidden=maximize reason=the React surface keeps its first size")));
+  }
+
   void pointerTogglesMaximizeWithoutTakingFocus() {
-    Harness harness({}, capabilitiesForPlatform(QStringLiteral("offscreen")), QSize(640, 480));
+    Harness harness({}, capabilitiesForPlatform(QStringLiteral("offscreen"), {}, SurfaceResize::FollowsWindow), QSize(640, 480));
     QVERIFY(QTest::qWaitForWindowExposed(harness.window.get()));
     QSignalSpy spy(harness.chrome.get(), &WindowChrome::actionTriggered);
     const QPoint point = harness.centre(QStringLiteral("maximize"));
@@ -287,7 +326,7 @@ class WindowChromeQuickTest : public QObject {
       WindowChromeConfig config;
       config.controls = item.controls;
       config.titleBarStyle = item.style;
-      Harness harness(config, capabilitiesForPlatform(QString::fromLatin1(item.platform)), QSize(480, 160));
+      Harness harness(config, capabilitiesForPlatform(QString::fromLatin1(item.platform), {}, SurfaceResize::FollowsWindow), QSize(480, 160));
       harness.window->setColor(QColor(QStringLiteral("#dbe7f5")));
       QVERIFY(QTest::qWaitForWindowExposed(harness.window.get()));
       if (item.style == TitleBarStyle::Default && item.controls == ControlsLayout::MacOS &&

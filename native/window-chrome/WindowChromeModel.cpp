@@ -44,6 +44,11 @@ const QString kQnxMaximizeReason = QStringLiteral(
 const QString kNoWindowManagerReason =
     QStringLiteral("this QPA has no window manager to restore a minimized window");
 const QString kUnknownReason = QStringLiteral("not verified on this QPA");
+const QString kWaylandReason = QStringLiteral(
+    "not verified on a Wayland compositor; the Marathon shell may own window placement and "
+    "restore");
+const QString kSurfaceReason = QStringLiteral(
+    "the React surface keeps its first size, so a maximized window would not resize the app");
 
 }  // namespace
 
@@ -121,7 +126,8 @@ WindowChromeConfig parseWindowChromeConfig(const QJsonObject& window) {
 }
 
 WindowCapabilities capabilitiesForPlatform(const QString& platform,
-                                           const QStringList& platformOptions) {
+                                           const QStringList& platformOptions,
+                                           SurfaceResize surface) {
   WindowCapabilities caps;
   caps.platform = platform;
   const ActionSupport live{true, {}};
@@ -132,7 +138,7 @@ WindowCapabilities capabilitiesForPlatform(const QString& platform,
                         : ActionSupport{false, kQnxMaximizeReason};
     caps.systemMove = false;  // QQnxWindow does not override startSystemMove().
   } else if (platform == QLatin1String("cocoa") || platform == QLatin1String("windows") ||
-             platform == QLatin1String("xcb") || platform == QLatin1String("wayland")) {
+             platform == QLatin1String("xcb")) {
     caps.minimize = live;
     caps.maximize = live;
     caps.systemMove = true;  // startSystemMove() still reports failure at runtime.
@@ -140,11 +146,16 @@ WindowCapabilities capabilitiesForPlatform(const QString& platform,
     caps.minimize = {false, kNoWindowManagerReason};
     caps.maximize = live;
     caps.systemMove = false;
+  } else if (platform.startsWith(QLatin1String("wayland"))) {
+    caps.minimize = {false, kWaylandReason};
+    caps.maximize = {false, kWaylandReason};
+    caps.systemMove = false;
   } else {
     caps.minimize = {false, kUnknownReason};
     caps.maximize = {false, kUnknownReason};
     caps.systemMove = false;
   }
+  if (caps.maximize.available && surface == SurfaceResize::Fixed) caps.maximize = {false, kSurfaceReason};
   return caps;
 }
 
@@ -152,22 +163,30 @@ bool platformForcesFullScreen(const QString& platform, const QStringList& platfo
   return platform == QLatin1String("qnx") && !platformOptions.contains(QStringLiteral("no-fullscreen"));
 }
 
-QStringList platformOptionsFromArguments(int argc, const char* const* argv,
-                                         const QString& environmentSpec) {
-  QString spec = environmentSpec;
+QStringList platformSpecsFromArguments(int argc, const char* const* argv,
+                                       const QString& environmentSpec) {
+  QStringList specs = environmentSpec.split(QLatin1Char(';'), Qt::SkipEmptyParts);
   for (int i = 1; i < argc; ++i) {
     const QString argument = QString::fromLocal8Bit(argv[i]);
     if (argument == QLatin1String("-platform") || argument == QLatin1String("--platform")) {
-      spec = i + 1 < argc ? QString::fromLocal8Bit(argv[i + 1]) : QString();
+      specs = i + 1 < argc ? QStringList{QString::fromLocal8Bit(argv[i + 1])} : QStringList{};
       ++i;
     } else if (argument.startsWith(QLatin1String("-platform=")) ||
                argument.startsWith(QLatin1String("--platform="))) {
-      spec = argument.mid(argument.indexOf(QLatin1Char('=')) + 1);
+      specs = QStringList{argument.mid(argument.indexOf(QLatin1Char('=')) + 1)};
     }
   }
-  QStringList parts = spec.split(QLatin1Char(':'), Qt::SkipEmptyParts);
-  if (!parts.isEmpty()) parts.removeFirst();
-  return parts;
+  return specs;
+}
+
+QStringList platformOptionsFor(const QString& platform, const QStringList& specs) {
+  for (const QString& spec : specs) {
+    QStringList parts = spec.split(QLatin1Char(':'), Qt::SkipEmptyParts);
+    if (parts.isEmpty() || parts.first() != platform) continue;
+    parts.removeFirst();
+    return parts;
+  }
+  return {};
 }
 
 ChromeLayout layoutChrome(const WindowChromeConfig& config,
