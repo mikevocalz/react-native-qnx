@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["react"],
+    "allowJs": false,
+    "checkJs": false
+  },
+  "include": ["./adaptive.ts"],
+  "exclude": []
+}

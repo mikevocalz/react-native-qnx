@@ -6,7 +6,8 @@
   "main": "index.js",
   "files": [
     "index.js",
-    "Libraries"
+    "Libraries",
+    "adaptive"
   ],
   "peerDependencies": {
     "react-native": "0.88.1"
