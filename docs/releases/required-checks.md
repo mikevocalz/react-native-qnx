@@ -49,7 +49,7 @@ it currently reports.
 | `nitro-v1-host.yml`                 | `source-and-compile`                                           | Compiles the pinned Nitro v1 core and both platform adapters.                                                         | pass ([run](https://github.com/mikevocalz/react-native-qnx/actions/runs/43145836157))                   |
 | `nitro-qnx-source-check.yml`        | `source-contract`                                              | QNX Nitro runtime source contract against the installed graph.                                                        | pass ([run](https://github.com/mikevocalz/react-native-qnx/actions/runs/43145839290))                   |
 | `expo-modules-qnx-source-check.yml` | `source-contract`                                              | Expo Modules QNX source contract.                                                                                     | pass ([run](https://github.com/mikevocalz/react-native-qnx/actions/runs/43145842426))                   |
-| `expo-qnx-autolinking.yml`          | `validate`                                                     | Expo autolinking and config-plugin behavior for QNX packages.                                                         | pass ([run](https://github.com/mikevocalz/react-native-qnx/actions/runs/43145845069))                   |
+| `expo-qnx-autolinking.yml`          | `autolinking`                                                  | Expo autolinking and config-plugin behavior for QNX packages.                                                         | pass ([run](https://github.com/mikevocalz/react-native-qnx/actions/runs/43145845069))                   |
 | `hermes-qnx-source-check.yml`       | `patch`                                                        | Applies the QNX Hermes transforms to the exact audited Hermes source.                                                 | pass ([run](https://github.com/mikevocalz/react-native-qnx/actions/runs/43145848024))                   |
 | `react-qnx-source-check.yml`        | `source-contract`                                              | Builds the React probe bundle against the pinned renderer sources.                                                    | pass ([run](https://github.com/mikevocalz/react-native-qnx/actions/runs/43145851065))                   |
 | `pi-tooling-quality.yml`            | `Shell syntax and lint`                                        | Bash syntax and ShellCheck for the scripts used to build and deploy to the board.                                     | pass ([run](https://github.com/mikevocalz/react-native-qnx/actions/runs/43145854066))                   |
@@ -132,18 +132,27 @@ resolved through the GitHub API on 2026-11-11 from the tag in use:
 Node in `setup-node` is 26.13.1, the Node 26 LTS release of 2026-11-10.
 Workflows that are not required keep their earlier references.
 
+## Branch ruleset on `main`
+
+Ruleset `main` (id 27120426, active since 2026-11-12) applies to the default
+branch. It blocks deletion and force-pushes, requires a pull request, and
+requires these checks, which run on every pull request to `main`:
+
+- `validate` from `SDK 58 validation`
+- `Qt 6.11 / RN 0.88 / Hermes (input lifecycle ON)` and `(... OFF)` from
+  `SDK 58 full host renderer`
+- `image-cache` from `Image loader HTTP and cache`
+
+Path-filtered workflows are not required there, because a pull request that
+skips them would wait forever. Run them by dispatch on the candidate. The
+`Expo QNX autolinking` job is named `autolinking` so that `validate` names one
+check only. Repository admins can bypass the ruleset only through a pull
+request. No approving review is required while the repository has one
+maintainer.
+
 ## Owner actions
 
-- Add a `main` ruleset requiring the checks that run on every pull request to
-  `main`: the `validate` job of the `SDK 58 validation` workflow, both
-  host-renderer matrix checks and `image-cache`. `Expo QNX autolinking` also
-  has a job named `validate`, so the ruleset must bind the check to the
-  `SDK 58 validation` workflow (or one job must be renamed); a bare
-  `validate` is ambiguous. Requiring a path-filtered check would leave pull requests
-  that skip it waiting forever. Run those by dispatch on the candidate instead.
 - Authorize a self-hosted runner with the licensed QNX SDP, then add the QNX
   cross-build workflow described above.
-- Land the node-forge 1.4.3 update (#113 or #114), then rerun the four failing
-  checks on the candidate.
 - After the optional workflows are pinned too, turn on the Actions setting
   that requires SHA-pinned actions (`sha_pinning_required` is `false` today).
