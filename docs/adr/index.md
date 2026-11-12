@@ -19,3 +19,4 @@ This directory records significant architectural decisions for `react-native-qnx
 | [0011](0011-qt-module-licensing.md)         | Qt module licensing gate                           | Restricted evaluation; open-source matrix proposed | 2026-08-14 |
 | [0012](0012-quick-controls-styling.md)      | Quick Controls style for QNX                       | Proposed                                           | 2026-08-14 |
 | [0013](0013-open-source-qt.md)              | Open-source Qt without a paid-license prerequisite | Accepted                                           | 2026-11-07 |
+| [0016](0016-window-chrome-on-qnx-screen.md) | Client-drawn window chrome on QNX Screen           | Proposed; host tests only                          | 2026-11-12 |

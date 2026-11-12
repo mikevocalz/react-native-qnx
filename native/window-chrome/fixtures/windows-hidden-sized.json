@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "window": {
+    "controls": "windows",
+    "titleBarStyle": "hidden",
+    "initialSize": { "width": 1024, "height": 600 }
+  }
+}

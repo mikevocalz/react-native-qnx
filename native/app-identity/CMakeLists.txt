@@ -17,6 +17,9 @@ add_library(rnqnx_identity_core STATIC IconSet.cpp LabelFit.cpp)
 target_compile_features(rnqnx_identity_core PUBLIC cxx_std_17)
 target_include_directories(rnqnx_identity_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}" "../../vnext/include")
 target_link_libraries(rnqnx_identity_core PUBLIC Qt6::Core Qt6::Gui)
+# Same rule as the renderer: no bare signals/slots/emit, so this code can be
+# shared with targets that define QT_NO_KEYWORDS.
+target_compile_definitions(rnqnx_identity_core PUBLIC QT_NO_KEYWORDS)
 set_target_properties(rnqnx_identity_core PROPERTIES AUTOMOC OFF)
 
 add_executable(rnqnx_identity_tool IdentityTool.cpp)

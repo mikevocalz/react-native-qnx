@@ -41,7 +41,7 @@ Each implementation report includes source/skill revision, local installation/re
 
 Preserve PRs74-79 and [integration PR80](https://github.com/mikevocalz/react-native-qnx/pull/80) as implementation prerequisites. These planning PRs neither merge them nor inherit their checks. Preserve [Marathon fork PR1](https://github.com/mikevocalz/Marathon-Shell/pull/1) as the companion shell-contract RFC; future implementation belongs in reviewed client/fork slices.
 
-Use the [seven v1 gates](../releases/v1-readiness.json), [component matrix](../component-support.md), [source handoff](../handoff/CURRENT_STATE.md) and [eligible open-source Qt decision](../adr/0013-open-source-qt.md). No readiness status is changed by this series. No runtime, dependency version, lockfile, recovery boot, package publication or premium-product contents are changed.
+Use the [v1 gates](../releases/v1-readiness.json), [component matrix](../component-support.md), [source handoff](../handoff/CURRENT_STATE.md) and [eligible open-source Qt decision](../adr/0013-open-source-qt.md). No readiness status is changed by this series. No runtime, dependency version, lockfile, recovery boot, package publication or premium-product contents are changed.
 
 ## Expo SDK 58 package support list
 

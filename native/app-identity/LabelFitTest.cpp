@@ -58,7 +58,7 @@ qsizetype checkBoundary(const QString& text) {
 
 class LabelFitTest final : public QObject {
   Q_OBJECT
- private slots:
+ private Q_SLOTS:
   void upstreamReferenceLabelFits() {
     // Upstream LauncherGrid.js sizes columns so "Calculator" fits at fontSizeTiny.
     const auto measured = measureLabel(QStringLiteral("Calculator"), marathonBox());

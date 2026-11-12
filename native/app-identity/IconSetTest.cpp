@@ -60,7 +60,7 @@ const QList<int> kSizes{16, 24, 32, 48, 64, 96, 128, 192, 256, 512};
 
 class IconSetTest final : public QObject {
   Q_OBJECT
- private slots:
+ private Q_SLOTS:
   void writesEverySizeWithSquareCorners() {
     QTemporaryDir dir;
     const auto source = writeSource(dir, QStringLiteral("icon.png"), {1024, 1024});

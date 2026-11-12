@@ -1,0 +1,14 @@
+#pragma once
+// Generated from the consumer's native-app.json `window` object. Do not edit.
+#include "WindowChromeModel.h"
+namespace rnqnx::window {
+inline WindowChromeConfig configuredWindowChrome() {
+  WindowChromeConfig config;
+  config.controls = parseControlsLayout(QStringLiteral("@RNQNX_WINDOW_CONTROLS@"));
+  config.titleBarStyle = parseTitleBarStyle(QStringLiteral("@RNQNX_WINDOW_STYLE@"));
+  constexpr int width = @RNQNX_WINDOW_WIDTH@;
+  constexpr int height = @RNQNX_WINDOW_HEIGHT@;
+  if (width > 0 && height > 0) config.initialSize = QSize(width, height);
+  return config;
+}
+}  // namespace rnqnx::window
