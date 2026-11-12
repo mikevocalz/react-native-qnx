@@ -135,8 +135,11 @@ Workflows that are not required keep their earlier references.
 ## Owner actions
 
 - Add a `main` ruleset requiring the checks that run on every pull request to
-  `main`: `validate` (SDK 58 validation), both host-renderer matrix checks and
-  `image-cache`. Requiring a path-filtered check would leave pull requests
+  `main`: the `validate` job of the `SDK 58 validation` workflow, both
+  host-renderer matrix checks and `image-cache`. `Expo QNX autolinking` also
+  has a job named `validate`, so the ruleset must bind the check to the
+  `SDK 58 validation` workflow (or one job must be renamed); a bare
+  `validate` is ambiguous. Requiring a path-filtered check would leave pull requests
   that skip it waiting forever. Run those by dispatch on the candidate instead.
 - Authorize a self-hosted runner with the licensed QNX SDP, then add the QNX
   cross-build workflow described above.
