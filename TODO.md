@@ -1,41 +1,79 @@
-# Ordered Work Queue
+# Ordered work queue: v1 gates
 
-## Active — G0-A toolchain truth
+V1 has eleven gates. [v1-readiness.md](docs/releases/v1-readiness.md) holds the
+acceptance text and status, generated from
+[v1-readiness.json](docs/releases/v1-readiness.json). This file only orders the
+work and names an owner role for each gate. When the two disagree, the readiness
+record wins.
 
-- [x] Obtain access to a supported x86-64 QNX SDP 8.0 development host with a
-      deployed QNX Everywhere license (Windows host with SDP 8.0 at
-      `C:\Users\Owner\qnx800`).
-- [x] Capture the installed SDP/package identity and complete `qcc -V`/`q++ -V`
-      output without license or account data (recorded in `artifacts/g0/`).
-- [x] Audit the installed compiler target against `gcc_ntoaarch64le`.
-- [x] Cross-build the concepts/ranges/designated-initializer/`std::jthread`
-      probe with the `qnx-pi4` preset; `std::jthread` is unsupported in this SDP's
-      libc++, so the probe falls back to `std::thread` and reports the gap.
-- [ ] Run that exact binary on the physical Pi 4 and record its output.
+Gates 1 to 7 are on `main`. Gates 8 to 11 (`app-identity`, `window-chrome`,
+`expo`, `dependencies`) arrive with
+[PR #115](https://github.com/mikevocalz/react-native-qnx/pull/115); until it
+merges, `pnpm validate:docs` reports seven gates.
 
-## Blocked behind G0-A — G0-D device loop
+Owner roles come from the [contributor roster](docs/marathon/ROSTER.md). A role
+is a responsibility, not a named person. Each PR names its own DRI and an
+independent reviewer.
 
-- [ ] Record the current QSTI image package/build and SDP compatibility.
-- [ ] Document a named SSH user and key setup; do not assume `root` access.
-- [ ] Deploy, launch, and collect stdout plus `slog2info` through the checked-in
-      device script.
+## Gates
+
+All eleven are `pending` as of 2026-11-11. "Device" means the gate cannot pass
+without a run on the named board; host work can still land first.
+
+| #   | Gate id          | Title                              | Owner role                                                 | Needs a device | Next step                                                                                                                       |
+| --- | ---------------- | ---------------------------------- | ---------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `distribution`   | Open-source runtime packaging      | Release / dependency engineer                              | No             | Build Qt from the public source archive and record module/QPA notices, hashes and the library/plugin closure                    |
+| 2   | `ci`             | Candidate CI                       | Security / QA engineer                                     | No             | Define the required checks ([PR #116](https://github.com/mikevocalz/react-native-qnx/pull/116)), then run them on the candidate |
+| 3   | `cold-boot`      | Repeatable graphics cold boot      | QNX regression owner                                       | Yes            | 20 consecutive supervised cold boots on the named release board and image, with logs                                            |
+| 4   | `device-parity`  | Device component and input results | QNX regression owner, Qt Quick / Fabric engineer           | Yes            | A disposition for every component on stock Pi 4 QSTI; keyboard and touch proof                                                  |
+| 5   | `performance`    | QNX performance measurements       | Security / QA engineer                                     | Yes            | Startup-to-first-frame, presented-frame intervals and RSS for Hello World, the 1000-row list and drawer drag                    |
+| 6   | `developer-path` | Clean-host app workflow            | Documentation / DX engineer, Metro / Expo tools engineer   | Yes            | A new licensed developer creates, builds, deploys and runs an app from the docs alone                                           |
+| 7   | `documentation`  | Versioned v1 documentation         | Documentation / DX engineer                                | No             | Review the [v1 docs set](docs/v1/README.md) and publish it at a versioned location                                              |
+| 8   | `app-identity`   | App identity: icon and name        | Metro / Expo tools engineer, Qt Quick / Fabric engineer    | Yes            | Icon and short-name pipeline from Expo config, with measured tile-label fit                                                     |
+| 9   | `window-chrome`  | Window chrome and windows API      | Qt Quick / Fabric engineer, Nitro 1.x migration engineer   | Yes            | QML title bar outside the Fabric root, a minimize ADR for QNX Screen, and the Nitro v1 windows API                              |
+| 10  | `expo`           | Expo readiness                     | Metro / Expo tools engineer, Expo Modules API 2.0 engineer | Yes            | Prebuild from `expo-qnx-config-plugins`, a prebuilt runner, and Expo Router on device                                           |
+| 11  | `dependencies`   | Packages updated                   | Release / dependency engineer                              | No             | Land every Bump row in the dependency baseline that PR #115 adds, and attach `pnpm outdated -r`                                 |
+
+Gates 1, 2, 7 and 11 can pass on hosts and hosted runners. The other seven need
+the release board; for `device-parity` that is stock Pi 4 QSTI, kept separate
+from the custom Pi 400 image.
+
+## Order
+
+1. `ci` and `dependencies`. Every later receipt has to cite a candidate that
+   passed the required checks on the updated graph.
+2. `distribution`. The release candidate needs a public-source Qt build before
+   any device receipt can describe the shipped runtime. The evaluation Qt used by
+   the Pi 400 receipts expires on 2026-11-17.
+3. `cold-boot`, then `device-parity` and `performance` on the same board and
+   image.
+4. `app-identity`, `window-chrome` and `expo`. Host work can start now; their
+   device receipts follow step 3.
+5. `developer-path`, run by someone who did not write the docs.
+6. `documentation` last, so the published set describes the candidate that
+   passed the other gates.
+
+## Carried over from the G0 queue
+
+These items predate the gate list and are still open. They feed the gates in
+brackets.
+
+- [ ] Run the C++20 probe binary on a stock Pi 4. The recorded run is on the
+      Pi 400 ([receipt](docs/evidence/pi400-hermes-2026-11-06.txt)).
+      [`device-parity`]
+- [ ] Record the QSTI image package/build and its SDP compatibility.
+      [`device-parity`]
 - [ ] Measure a rebuilt hello-world round trip below 30 seconds.
-- [ ] Repeat the smoke path on the licensed QEMU QSTI environment.
+      [`developer-path`]
+- [ ] Repeat the smoke path on the licensed QEMU QSTI environment. [`ci`]
+- [ ] Supply the permanent npm organization that replaces provisional
+      `@rn-qnx`. [`developer-path`]
+- [ ] Define package manifests and release units before enabling
+      release-please or per-package changelogs. [`distribution`]
 
-## Blocked behind G0-D — Qt decisions
-
-- [ ] Resolve the Qt-for-QNX commercial-license wording against the proposed
-      LGPLv3 source-build posture before downloading or distributing Qt for QNX.
-- [ ] Select an exact Qt 6 LTS tag only after it builds with the installed SDP.
-- [ ] Verify the pinned QNX QPA and mkspec/toolchain source paths.
-- [ ] Complete on-glass G0-B evidence and then replace ADR-0001.
-- [ ] Complete the G0-C item-instantiation source audit and Pi benchmark.
-
-## Governance inputs required
-
-- [ ] Supply verified GitHub users/team slugs for CODEOWNERS.
-- [ ] Supply the permanent npm organization replacing provisional `@rn-qnx`.
-- [x] Resolve the specification's Nitro conflict: retain the registry-current,
-      mutually coherent 0.36.5/0.36.5 pair under ADR-0008.
-- [ ] Define actual package manifests/release units before enabling
-      release-please or per-package changelogs.
+Dropped from the old queue because they are done: the named SSH user and key
+setup and the deploy/log scripts ([build and deploy](docs/getting-started/build-and-deploy.md)),
+CODEOWNERS (`.github/CODEOWNERS`), and the Nitro version conflict (ADR-0008).
+The Qt licensing questions are closed by
+[ADR-0013](docs/adr/0013-open-source-qt.md). The full G0 list is in this file's
+git history and in [the dated handoff history](docs/handoff/HISTORY_THROUGH_2026_11_07.md).
