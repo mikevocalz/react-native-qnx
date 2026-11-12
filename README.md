@@ -17,6 +17,22 @@ prerequisite. The Pi 400 receipts retain their evaluation-artifact provenance. R
 Use Node 26+ and pnpm 12.8.1. The CLI operates inside this checkout; no npm
 installation or standalone native-project support is claimed.
 
+Node 26 does not bundle Corepack. If `pnpm --version` does not print 12.8.1,
+install it first. An older global pnpm (for example Homebrew's pnpm 10) tries to
+switch itself to 12.8.1 from `packageManager` and can fail with
+`Failed to switch pnpm to v12.8.1`:
+
+```bash
+npm install -g pnpm@12.8.1
+pnpm --version   # 12.8.1
+```
+
+JavaScript work and host validation run on macOS or Linux. QNX cross-builds need
+an x86-64 Linux host (canonically Ubuntu 22.04) with the licensed QNX SDP,
+because SDP 8.0 ships Linux and Windows host tools only.
+`pnpm qnx doctor` reports which of these prerequisites are missing and what to run
+next.
+
 ```bash
 git clone https://github.com/mikevocalz/react-native-qnx.git
 cd react-native-qnx
@@ -61,6 +77,11 @@ Physical Pi 400 export, protected-file failure, OFF-path capture and traced
 Nitro worker/shutdown assertions passed at the cited revisions. These native
 diagnostics do not establish input/Fabric/render-loop or presentation markers,
 tracing overhead, or performance budgets. Tracing remains OFF by default.
+
+`pnpm test:js` stops at the first failing file. On macOS at `b51b49c`, five files
+fail before any change: `qnx-consumer-native-config`, `qnx-device-tools`,
+`qnx-external-project`, `qnx-native-consumer-build` and `qnx-project-create`.
+To see every file's result, run each one with `node tests/js/<file>.test.mjs`.
 
 `validate:macos` runs host checks. It does not cross-build or run QNX.
 The dated handoff records earlier billing refusals.
