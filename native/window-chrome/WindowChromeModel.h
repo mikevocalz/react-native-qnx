@@ -56,6 +56,10 @@ struct WindowCapabilities {
 WindowCapabilities capabilitiesForPlatform(const QString& platform,
                                            const QStringList& platformOptions = {});
 
+// True when the QPA will force the root window to the screen size whatever
+// size the app asks for (the qnx plugin without `no-fullscreen`).
+bool platformForcesFullScreen(const QString& platform, const QStringList& platformOptions);
+
 // Extracts the QPA options from `-platform <spec>` / `--platform <spec>` /
 // `-platform=<spec>` in argv, falling back to QT_QPA_PLATFORM. Must run before
 // QGuiApplication removes `-platform` from argv.

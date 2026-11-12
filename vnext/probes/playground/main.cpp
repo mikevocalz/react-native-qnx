@@ -53,6 +53,7 @@
 #include <cstdio>
 #include <memory>
 #include <sstream>
+#include <stdexcept>
 
 namespace {
 
@@ -404,6 +405,13 @@ int main(int argc, char** argv) {
   std::unique_ptr<rnqnx::window::WindowChrome> chrome;
   if (!parser.isSet(fullscreenOption) &&
       chromeConfig.titleBarStyle != rnqnx::window::TitleBarStyle::None) {
+    // The qnx QPA resizes the root window to the screen only once events run,
+    // after the surface has started. Apply that size now so the content item
+    // and the React surface match the window from the first frame.
+    if (rnqnx::window::platformForcesFullScreen(QGuiApplication::platformName(), platformOptions) &&
+        window.screen() != nullptr) {
+      window.setGeometry(window.screen()->geometry());
+    }
     try {
       chrome = std::make_unique<rnqnx::window::WindowChrome>(window, engine, chromeConfig,
           rnqnx::window::capabilitiesForPlatform(QGuiApplication::platformName(), platformOptions));

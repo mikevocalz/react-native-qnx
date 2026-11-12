@@ -148,6 +148,10 @@ WindowCapabilities capabilitiesForPlatform(const QString& platform,
   return caps;
 }
 
+bool platformForcesFullScreen(const QString& platform, const QStringList& platformOptions) {
+  return platform == QLatin1String("qnx") && !platformOptions.contains(QStringLiteral("no-fullscreen"));
+}
+
 QStringList platformOptionsFromArguments(int argc, const char* const* argv,
                                          const QString& environmentSpec) {
   QString spec = environmentSpec;

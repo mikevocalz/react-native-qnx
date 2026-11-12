@@ -51,7 +51,7 @@ await check('keeps a descriptor written before the field chromeless', async () =
 
 await check('rejects every invalid fixture the native lane rejects', async () => {
   const invalid = (await readdir(fixtures)).filter((name) => name.startsWith('invalid-'));
-  assert.equal(invalid.length, 8);
+  assert.equal(invalid.length, 9);
   for (const name of invalid) {
     const descriptor = await fixture(name);
     assert.throws(() => readWindowDescriptor(descriptor), /native-app\.json window/, name);

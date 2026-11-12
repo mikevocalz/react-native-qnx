@@ -69,6 +69,7 @@ foreach(pair
     "size-fraction|initialSize.width must be an integer"
     "size-large|initialSize.height must be an integer"
     "size-extra|initialSize must be {width, height}"
+    "size-string|initialSize.width must be an integer"
     "injection|Invalid consumer window.controls")
   string(REPLACE "|" ";" pair "${pair}")
   list(GET pair 0 case)

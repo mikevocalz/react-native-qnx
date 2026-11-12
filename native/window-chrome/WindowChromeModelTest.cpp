@@ -88,6 +88,14 @@ class WindowChromeModelTest : public QObject {
     QVERIFY(!windowed.minimize.available);
   }
 
+  void knowsWhenTheQpaForcesFullScreen() {
+    QVERIFY(platformForcesFullScreen(QStringLiteral("qnx"), {}));
+    QVERIFY(platformForcesFullScreen(QStringLiteral("qnx"), {QStringLiteral("desktop")}));
+    QVERIFY(!platformForcesFullScreen(QStringLiteral("qnx"), {QStringLiteral("no-fullscreen")}));
+    QVERIFY(!platformForcesFullScreen(QStringLiteral("cocoa"), {}));
+    QVERIFY(!platformForcesFullScreen(QStringLiteral("offscreen"), {}));
+  }
+
   void desktopPluginsKeepEveryControl_data() {
     QTest::addColumn<QString>("platform");
     for (const char* name : {"cocoa", "windows", "xcb", "wayland"}) QTest::newRow(name) << name;
