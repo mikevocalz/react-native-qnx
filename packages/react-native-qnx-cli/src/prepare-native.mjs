@@ -1,16 +1,35 @@
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
-import { lstat, mkdir, open, readFile, realpath, rm } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp, open, readFile, realpath, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
+import {
+  generateIconSet,
+  identityToolPath,
+  measureTileLabel,
+  resolveTileLabel,
+  validateIconSource,
+} from './app-identity.mjs';
+import { boundedFile, projectPath } from './project-path.mjs';
 
-/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string}} NativeConfiguration */
+/** @typedef {import('./app-identity.mjs').IconSet} IconSet */
+/** @typedef {import('./app-identity.mjs').LabelFit} LabelFit */
+/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string}} BaseConfiguration */
+/** @typedef {BaseConfiguration & {shortName: string, icon: IconSet, labelFit: LabelFit}} NativeConfiguration */
 const help = `React Native QNX native consumer configuration
   project prepare-native --project <directory> [--platform qnx|marathon]
-                         [--bundle build/<platform>/app.bundle.js] [--dry-run]
+                         [--bundle build/<platform>/app.bundle.js]
+                         [--identity-tool <path>] [--dry-run]
 
-Reads static app.json: expo.name and expo.extra.rnqnx.{appId,componentName}.
-Writes build/<platform>/native-app.json for the existing native CMake backend.
+Reads static app.json: expo.name, expo.icon and
+expo.extra.rnqnx.{appId,componentName,icon,shortName}.
+The icon must be a square PNG of at least 1024x1024. The tile label
+(shortName, else expo.name) must fit the target launcher on one line.
+--identity-tool (or RNQNX_IDENTITY_TOOL) names the Qt host tool built from
+native/app-identity that scales the icon set and measures the label.
+Writes build/<platform>/icons/ and build/<platform>/native-app.json for the
+existing native CMake backend.
 An identical rerun does not write. Changed generated output is not overwritten:
 remove only that generated file after reviewing your app/bundle change, then rerun.
 This does not install packages, compile native code or deploy to a device.
@@ -51,56 +70,9 @@ export function validateAppIdentity(value) {
   return { appId, displayName, componentName };
 }
 
-/** @param {unknown} error */
-function absent(error) {
-  return error instanceof Error && 'code' in error && error.code === 'ENOENT';
-}
-/** @param {string} root @param {string} relative @param {boolean} [createParents] */
-async function projectPath(root, relative, createParents = false) {
-  if (
-    !relative ||
-    /[\x00-\x1f\\;"$]/.test(relative) ||
-    path.isAbsolute(relative) ||
-    path.win32.isAbsolute(relative) ||
-    relative.split('/').some((part) => !part || part === '.' || part === '..')
-  )
-    throw new Error(
-      'Use a project-relative path without escapes, control characters or CMake metacharacters.'
-    );
-  let current = root;
-  const parts = relative.split('/');
-  for (const [index, part] of parts.entries()) {
-    current = path.join(current, part);
-    const parent = index < parts.length - 1;
-    let stat;
-    try {
-      stat = await lstat(current);
-    } catch (error) {
-      if (!absent(error)) throw error;
-      if (parent && createParents) {
-        try {
-          await mkdir(current);
-        } catch (created) {
-          if (!(created instanceof Error && 'code' in created && created.code === 'EEXIST'))
-            throw created;
-        }
-        stat = await lstat(current);
-      } else continue;
-    }
-    if (stat.isSymbolicLink() || (parent && !stat.isDirectory()))
-      throw new Error('Consumer paths cannot contain symlinks or non-directory parents.');
-  }
-  return current;
-}
-/** @param {string} file @param {number} maximum */
-async function boundedFile(file, maximum) {
-  const stat = await lstat(file);
-  if (!stat.isFile() || stat.isSymbolicLink() || stat.size < 1 || stat.size > maximum)
-    throw new Error('Expected a nonempty regular file within the size limit.');
-  return stat;
-}
-
-/** @param {string} project @param {string} platform @param {string} [relativeBundle] */
+/** Identity and bundle fields only; the icon set and tile label are added by
+ * prepareNativeMain and re-checked by verifyPreparedIdentity.
+ * @param {string} project @param {string} platform @param {string} [relativeBundle] */
 export async function nativeConfiguration(project, platform = 'qnx', relativeBundle) {
   if (!['qnx', 'marathon'].includes(platform)) throw new Error('Use platform qnx or marathon.');
   if (!project.trim()) throw new Error('Project directory must not be empty.');
@@ -121,7 +93,7 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
   await boundedFile(bundle, 256 * 1024 * 1024);
   const hash = createHash('sha256');
   for await (const chunk of createReadStream(bundle)) hash.update(chunk);
-  /** @type {NativeConfiguration} */
+  /** @type {BaseConfiguration} */
   const configuration = {
     schemaVersion: 1,
     generatedBy: 'react-native-qnx/prepare-native-v1',
@@ -130,7 +102,21 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
     bundle,
     bundleSha256: hash.digest('hex'),
   };
-  return { root, configuration };
+  return { root, configuration, app };
+}
+
+/** @param {string} root @param {import('./app-identity.mjs').ResolvedAppConfig} app
+ * @param {string} platform @param {string | undefined} tool @param {string} staging
+ * @returns {Promise<{shortName: string, icon: IconSet, labelFit: LabelFit}>} */
+async function identityAssets(root, app, platform, tool, staging) {
+  const source = await validateIconSource(root, app);
+  const tile = resolveTileLabel(app);
+  const labelFit = measureTileLabel(() => identityToolPath(tool), platform, tile);
+  const icons = path.join(root, 'build', platform, 'icons');
+  const icon = await generateIconSet(identityToolPath(tool), source.file, staging, (size) =>
+    path.join(icons, `icon-${size}.png`)
+  );
+  return { shortName: tile.label, icon, labelFit };
 }
 
 /** @param {string[]} argv */
@@ -145,6 +131,7 @@ export async function prepareNativeMain(argv) {
       project: { type: 'string' },
       platform: { type: 'string' },
       bundle: { type: 'string' },
+      'identity-tool': { type: 'string' },
       'dry-run': { type: 'boolean' },
     },
   });
@@ -159,35 +146,55 @@ export async function prepareNativeMain(argv) {
     return 0;
   }
   if (positionals.length) throw new Error('prepare-native does not accept positional arguments.');
-  const { root, configuration } = await nativeConfiguration(
-    values.project ?? '.',
-    values.platform ?? 'qnx',
-    values.bundle
+  const dryRun = Boolean(values['dry-run']);
+  const {
+    root,
+    configuration: base,
+    app,
+  } = await nativeConfiguration(values.project ?? '.', values.platform ?? 'qnx', values.bundle);
+  const relative = `build/${base.platform}/native-app.json`;
+  const output = await projectPath(root, relative, !dryRun);
+  const staging = await mkdtemp(
+    dryRun ? path.join(tmpdir(), 'rnqnx-icons-') : path.join(path.dirname(output), '.icons-')
   );
-  const relative = `build/${configuration.platform}/native-app.json`;
-  const output = await projectPath(root, relative, !values['dry-run']);
-  const encoded = JSON.stringify(configuration, null, 2) + '\n';
-  let action = values['dry-run'] ? 'dry-run' : 'created';
-  if (!values['dry-run']) {
-    try {
-      const handle = await open(output, 'wx', 0o600);
+  /** @type {NativeConfiguration} */
+  let configuration;
+  let action = dryRun ? 'dry-run' : 'created';
+  try {
+    configuration = {
+      ...base,
+      ...(await identityAssets(root, app, base.platform, values['identity-tool'], staging)),
+    };
+    const encoded = JSON.stringify(configuration, null, 2) + '\n';
+    if (!dryRun) {
       try {
-        await handle.writeFile(encoded);
+        const handle = await open(output, 'wx', 0o600);
+        try {
+          await handle.writeFile(encoded);
+        } catch (error) {
+          await rm(output);
+          throw error;
+        } finally {
+          await handle.close();
+        }
       } catch (error) {
-        await rm(output);
-        throw error;
-      } finally {
-        await handle.close();
+        if (!(error instanceof Error && 'code' in error && error.code === 'EEXIST')) throw error;
+        await boundedFile(output, 65536);
+        if ((await readFile(output, 'utf8')) !== encoded)
+          throw new Error(
+            'Generated native configuration differs; review and remove only native-app.json before preparing again.'
+          );
+        action = 'unchanged';
       }
-    } catch (error) {
-      if (!(error instanceof Error && 'code' in error && error.code === 'EEXIST')) throw error;
-      await boundedFile(output, 65536);
-      if ((await readFile(output, 'utf8')) !== encoded)
-        throw new Error(
-          'Generated native configuration differs; review and remove only native-app.json before preparing again.'
-        );
-      action = 'unchanged';
+      // Stage icons only after the descriptor that names their hashes is in place.
+      const icons = await projectPath(root, `build/${base.platform}/icons`);
+      await mkdir(icons, { recursive: true });
+      for (const entry of configuration.icon.sizes) {
+        await copyFile(path.join(staging, path.basename(entry.path)), entry.path);
+      }
     }
+  } finally {
+    await rm(staging, { recursive: true, force: true });
   }
   console.log(
     JSON.stringify(

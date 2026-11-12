@@ -5,6 +5,8 @@ on:
       - 'vnext/include/react-native-qnx/runtime/ApplicationIdentity.h'
       - 'vnext/include/react-native-qnx/runtime/ApplicationIcon.h'
       - 'native/app-identity/**'
+      - 'packages/react-native-qnx-cli/src/app-identity.mjs'
+      - 'tests/js/app-identity.test.mjs'
       - '.github/workflows/app-identity.yml'
 permissions:
   contents: read
@@ -48,6 +50,18 @@ jobs:
           cmake -S native/app-identity -B build/app-identity -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DRNQNX_BUILD_APP_IDENTITY_TESTS=ON -DRNQNX_APP_IDENTITY_SANITIZERS=${{ matrix.sanitizers }} -DCMAKE_BUILD_TYPE=Debug
           cmake --build build/app-identity -j 2
           ctest --test-dir build/app-identity --output-on-failure -V 2>&1 | tee build/app-identity-evidence/tests.txt
+          "$PWD/build/app-identity/rnqnx_identity_tool" label --text-hex "$(printf 'Calculator' | xxd -p)" \
+            --font native/app-identity/fonts/source-sans-3/SourceSans3-Regular.ttf \
+            --font native/app-identity/fonts/source-sans-3/SourceSans3-Light.ttf \
+            --pixel-size 20 --box-width 92.4 | tee build/app-identity-evidence/label-calculator.json
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26.10.0
+          package-manager-cache: false
+      - name: CLI icon and label checks against the real tool
+        run: |
+          set -euo pipefail
+          RNQNX_IDENTITY_TOOL="$PWD/build/app-identity/rnqnx_identity_tool" node tests/js/app-identity.test.mjs 2>&1 | tee build/app-identity-evidence/cli.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:

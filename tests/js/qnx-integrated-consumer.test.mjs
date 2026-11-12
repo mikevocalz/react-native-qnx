@@ -16,6 +16,7 @@ import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { CONSUMER_CONTRACT } from '../../packages/react-native-qnx-cli/src/consumer-contract.mjs';
+import { identityToolForTests } from './helpers/identity-tool.mjs';
 
 const root = process.cwd();
 const require = createRequire(path.join(root, 'package.json'));
@@ -27,6 +28,13 @@ const temporaryRoot = await realpath(
 );
 const project = path.join(temporaryRoot, 'external-app');
 await mkdir(project);
+const identityTool = await identityToolForTests();
+process.env.RNQNX_IDENTITY_TOOL = identityTool.tool;
+await mkdir(path.join(project, 'assets'));
+await copyFile(
+  path.join(root, 'template/qnx/assets/icon.png'),
+  path.join(project, 'assets/icon.png')
+);
 const renderer = process.env.RNQNX_INTEGRATED_RENDERER;
 const evidence = process.env.RNQNX_INTEGRATED_EVIDENCE;
 const consumerBuild = process.env.RNQNX_CONSUMER_BUILD;
@@ -91,7 +99,14 @@ AppRegistry.registerComponent('ExternalConsumer', () => App);
     JSON.stringify({
       expo: {
         name: appIdentity.displayName,
-        extra: { rnqnx: { appId: appIdentity.appId, componentName: appIdentity.componentName } },
+        icon: './assets/icon.png',
+        extra: {
+          rnqnx: {
+            appId: appIdentity.appId,
+            componentName: appIdentity.componentName,
+            shortName: 'Notes',
+          },
+        },
       },
     })
   );
@@ -351,5 +366,7 @@ module.exports = withPublicEntry(${factory}(__dirname, {
     }
   } finally {
     await rm(temporaryRoot, { recursive: true, force: true });
+    if (!identityTool.real)
+      await rm(path.dirname(identityTool.tool), { recursive: true, force: true });
   }
 }

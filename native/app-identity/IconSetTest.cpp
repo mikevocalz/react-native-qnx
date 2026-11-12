@@ -1,5 +1,6 @@
 #include "IconSet.h"
 #include "react-native-qnx/runtime/ApplicationIcon.h"
+#include "react-native-qnx/runtime/ApplicationIdentity.h"
 
 #include <QCryptographicHash>
 #include <QFile>
@@ -86,7 +87,10 @@ class IconSetTest final : public QObject {
     writeIconSet(source, out, kSizes);
     const QIcon icon = rnqnx::runtime::loadApplicationIcon(out, kSizes);
     rnqnx::runtime::applyApplicationIcon(icon);
-    const auto described = rnqnx::runtime::describeApplicationIconSizes();
+    const auto described = QJsonDocument::fromJson(rnqnx::runtime::describeApplicationIdentity({}))
+                               .object()
+                               .value(QStringLiteral("windowIconSizes"))
+                               .toArray();
     QCOMPARE(described.size(), kSizes.size());
     for (const auto size : kSizes) QVERIFY(described.contains(size));
   }

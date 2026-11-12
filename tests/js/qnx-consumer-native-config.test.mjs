@@ -1,7 +1,16 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { lstat, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
+import {
+  copyFile,
+  lstat,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  symlink,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import {
@@ -9,8 +18,11 @@ import {
   prepareNativeMain,
   validateAppIdentity,
 } from '../../packages/react-native-qnx-cli/src/prepare-native.mjs';
+import { identityToolForTests } from './helpers/identity-tool.mjs';
 
 const root = process.cwd();
+const identityTool = await identityToolForTests();
+process.env.RNQNX_IDENTITY_TOOL = identityTool.tool;
 const temporary = await mkdtemp(path.join(tmpdir(), 'rnqnx-native-config-'));
 const project = path.join(temporary, 'one external app');
 let checks = 0;
@@ -27,11 +39,16 @@ async function rejects(operation) {
 const app = {
   expo: {
     name: 'Field Notes — 学習',
-    extra: { rnqnx: { appId: 'org.rnqnx.notes', componentName: 'FieldNotes' } },
+    icon: './assets/icon.png',
+    extra: { rnqnx: { appId: 'org.rnqnx.notes', componentName: 'FieldNotes', shortName: 'Notes' } },
   },
 };
 try {
-  await mkdir(project);
+  await mkdir(path.join(project, 'assets'), { recursive: true });
+  await copyFile(
+    path.join(root, 'template/qnx/assets/icon.png'),
+    path.join(project, 'assets/icon.png')
+  );
   await writeFile(path.join(project, 'app.json'), JSON.stringify(app));
   for (const platform of ['qnx', 'marathon']) {
     await mkdir(path.join(project, 'build', platform), { recursive: true });
@@ -169,6 +186,18 @@ rnqnx_add_consumer_app()
     'utf8'
   );
   check(generated.includes('FieldNotes') && generated.includes('学習'));
+  check(
+    generated.includes(
+      'configuredIconSizes() { return {16, 24, 32, 48, 64, 96, 128, 192, 256, 512}; }'
+    )
+  );
+  const tamperedIcon = JSON.parse(await readFile(config, 'utf8'));
+  tamperedIcon.icon.sizes[0].sha256 = '0'.repeat(64);
+  await writeFile(config, JSON.stringify(tamperedIcon));
+  configure('stale-icon', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);
+  delete tamperedIcon.icon;
+  await writeFile(config, JSON.stringify(tamperedIcon));
+  configure('missing-icon', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);
   const originalConfig = await readFile(config, 'utf8');
   const tampered = JSON.parse(originalConfig);
   tampered.bundleSha256 = '0'.repeat(64);
@@ -194,4 +223,6 @@ rnqnx_add_consumer_app()
   );
 } finally {
   await rm(temporary, { recursive: true, force: true });
+  if (!identityTool.real)
+    await rm(path.dirname(identityTool.tool), { recursive: true, force: true });
 }

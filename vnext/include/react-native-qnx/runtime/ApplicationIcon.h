@@ -4,7 +4,6 @@
 #include <QGuiApplication>
 #include <QIcon>
 #include <QImage>
-#include <QJsonArray>
 #include <QList>
 #include <QString>
 #include <stdexcept>
@@ -36,12 +35,6 @@ inline QIcon loadApplicationIcon(const QString& directory, const QList<int>& siz
 // platform's own app metadata, not from this call.
 inline void applyApplicationIcon(const QIcon& icon) {
   QGuiApplication::setWindowIcon(icon);
-}
-
-inline QJsonArray describeApplicationIconSizes() {
-  QJsonArray sizes;
-  for (const auto& size : QGuiApplication::windowIcon().availableSizes()) sizes.append(size.width());
-  return sizes;
 }
 
 } // namespace rnqnx::runtime

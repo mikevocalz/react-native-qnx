@@ -4,14 +4,23 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
+import {
+  identityToolPath,
+  measureTileLabel,
+  resolveTileLabel,
+  validateIconSource,
+} from './app-identity.mjs';
 import { CONSUMER_CONTRACT } from './consumer-contract.mjs';
 
 const help = `React Native QNX consumer project diagnostics
   rnqnx project doctor --project <directory> [--platform qnx|marathon]
-                       [--entry index.js] [--json]
+                       [--entry index.js] [--identity-tool <path>] [--json]
 
 Read-only metadata checks. QNX is default. No config/package JavaScript,
 package-manager process, compiler, network request or device command runs.
+The app icon header and tile label text are checked from app.json. The tile
+label is measured against the launcher only when --identity-tool names the
+Qt host tool built from native/app-identity.
 Exit 0: inspected metadata matches; 1: failed check; 2: invalid invocation.
 A compatible report is not a native build, security audit or runtime proof.
 `;
@@ -80,9 +89,67 @@ async function projectFile(root, relative) {
   return file;
 }
 
+/** Check the app icon and tile label from static app.json.
+ * @param {string} root @param {string} platform @param {string | undefined} tool
+ * @returns {Promise<Check[]>} */
+async function identityChecks(root, platform, tool) {
+  let app;
+  try {
+    app = await readMetadata(await projectFile(root, 'app.json'));
+  } catch (error) {
+    return [
+      {
+        id: 'app-identity',
+        status: 'not-checked',
+        message: `app.json is not readable (${description(error)}); icon and tile label were not checked.`,
+      },
+    ];
+  }
+  /** @type {Check[]} */
+  const checks = [];
+  try {
+    const icon = await validateIconSource(root, app);
+    checks.push({
+      id: 'app-icon',
+      status: 'passed',
+      observed: `${icon.width}x${icon.height} PNG`,
+      message: `${icon.field} is a square PNG of at least 1024x1024.`,
+    });
+  } catch (error) {
+    checks.push({ id: 'app-icon', status: 'failed', message: description(error) });
+  }
+  try {
+    const tile = resolveTileLabel(app);
+    if (!tool) {
+      checks.push({
+        id: 'tile-label',
+        status: 'not-checked',
+        observed: tile.label,
+        message: `Tile label comes from ${tile.field}; its rendered width was not measured. Pass --identity-tool to measure it.`,
+      });
+    } else {
+      const fit = measureTileLabel(() => identityToolPath(tool), platform, tile);
+      checks.push(
+        fit.status === 'measured'
+          ? {
+              id: 'tile-label',
+              status: 'passed',
+              observed: `${fit.widthPx.toFixed(1)} px`,
+              expected: `<= ${fit.boxWidthPx} px, ${fit.lineCount} line`,
+              message: `Tile label from ${tile.field} fits ${fit.launcher} on one line (host measurement, not a device run).`,
+            }
+          : { id: 'tile-label', status: 'not-checked', message: fit.reason }
+      );
+    }
+  } catch (error) {
+    checks.push({ id: 'tile-label', status: 'failed', message: description(error) });
+  }
+  return checks;
+}
+
 /** Inspect only declared files and installed package metadata; never import config code.
  * @param {string} project
- * @param {{platform?: string, entry?: string}} [options] */
+ * @param {{platform?: string, entry?: string, identityTool?: string}} [options] */
 export async function inspectConsumer(project, options = {}) {
   const platform = options.platform ?? 'qnx';
   if (!['qnx', 'marathon'].includes(platform)) throw new Error('Use --platform qnx or marathon.');
@@ -156,6 +223,7 @@ export async function inspectConsumer(project, options = {}) {
       checks.push({ id, status: 'failed', message: description(error) });
     }
   }
+  checks.push(...(await identityChecks(root, platform, options.identityTool)));
   /** @type {Record<string, string>} */
   const packages = {
     ...CONSUMER_CONTRACT.packages,
@@ -238,6 +306,7 @@ export async function doctorMain(argv) {
       project: { type: 'string' },
       platform: { type: 'string' },
       entry: { type: 'string' },
+      'identity-tool': { type: 'string' },
       json: { type: 'boolean' },
     },
   });
@@ -255,6 +324,7 @@ export async function doctorMain(argv) {
   const report = await inspectConsumer(values.project ?? '.', {
     platform: values.platform,
     entry: values.entry,
+    identityTool: values['identity-tool'],
   });
   if (values.json) console.log(JSON.stringify(report, null, 2));
   else {

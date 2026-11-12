@@ -16,6 +16,7 @@
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
 #include "react-native-qnx/runtime/ApplicationIdentity.h"
+#include "react-native-qnx/runtime/ApplicationIcon.h"
 #ifdef RNQNX_CONSUMER_APP_HEADER
 #include RNQNX_CONSUMER_APP_HEADER
 #endif
@@ -267,6 +268,12 @@ int main(int argc, char** argv) {
 #endif
     identity = rnqnx::runtime::readApplicationIdentity(parser, identity);
     rnqnx::runtime::applyApplicationIdentity(identity);
+#ifdef RNQNX_CONSUMER_APP_HEADER
+    // Title bar and task switcher icon; the build staged the hashed set here.
+    rnqnx::runtime::applyApplicationIcon(rnqnx::runtime::loadApplicationIcon(
+        QCoreApplication::applicationDirPath() + QStringLiteral("/icons"),
+        rnqnx::runtime::configuredIconSizes()));
+#endif
   } catch (const std::exception& error) {
     std::fprintf(stderr, "RNQNX_APP_IDENTITY_ERROR %s\n", error.what());
     return 2;
