@@ -80,7 +80,10 @@ export async function loadExpoConfig(root) {
     const stat = await lstat(path.join(root, 'package.json'));
     if (!stat.isFile()) throw new Error('package.json must be a regular file.');
   } catch (error) {
-    if (absent(error)) throw new Error('The project needs a package.json next to its Expo config.');
+    if (absent(error))
+      throw new Error(
+        `The project needs a package.json next to its Expo config (${root}); @expo/config resolves app.json and app.config.* from it, as Expo CLI does.`
+      );
     throw error;
   }
   const loader = resolveExpoConfigModule(root);

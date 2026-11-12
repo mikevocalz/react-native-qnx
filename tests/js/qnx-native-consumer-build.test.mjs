@@ -45,6 +45,7 @@ async function createDescriptor(platform, filename = 'app.bundle.js') {
         platform,
         bundle,
         bundleSha256: createHash('sha256').update(bytes).digest('hex'),
+        window: { controls: 'macos', titleBarStyle: 'default' },
       },
       null,
       2
@@ -55,6 +56,14 @@ async function createDescriptor(platform, filename = 'app.bundle.js') {
 try {
   await createDescriptor('qnx');
   await createDescriptor('marathon');
+  await caseNamed(async () => {
+    // @expo/config resolves the app config relative to package.json, as Expo CLI does.
+    await assert.rejects(planNativeBuild(project, 'qnx'), /needs a package\.json/);
+    await writeFile(
+      path.join(project, 'package.json'),
+      JSON.stringify({ name: 'my-app', version: '1.0.0', private: true })
+    );
+  }, 'Expo project without package.json rejects');
   await caseNamed(async () => {
     const plan = await planNativeBuild(project, 'qnx', true);
     assert.equal(plan.platform, 'qnx');
