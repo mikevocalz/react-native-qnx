@@ -13,7 +13,7 @@
   ],
   "peerDependencies": {
     "react-native": "0.88.1",
-    "react-native-nitro-modules": "1.0.0-alpha.nightly.105.g69d365fc9b18",
-    "nitro-core": "1.0.0-alpha.nightly.105.g69d365fc9b18"
+    "react-native-nitro-modules": "1.0.0-alpha.nightly.136.gdb81de61bd32",
+    "nitro-core": "1.0.0-alpha.nightly.136.gdb81de61bd32"
   }
 }

@@ -36,7 +36,7 @@ The following boundaries must be distinguished for a QNX React Native feature cl
   does not change the default Cargo graph or establish an officially supported
   prebuilt Rust target distribution.
 - **Nitro ABI:** this repository pins
-  `1.0.0-alpha.nightly.105.g69d365fc9b18`, while the Forge implementation baseline
+  `1.0.0-alpha.nightly.136.gdb81de61bd32`, while the Forge implementation baseline
   uses `1.0.0-alpha.nightly.120.g33ef045b96c0`. The reused session and queue have
   no Nitro dependency. Forge's `Hybrid*` classes are deliberately not linked
   into this QNX target until a matching generated/runtime ABI is proven.

@@ -13,6 +13,6 @@
     "src"
   ],
   "peerDependencies": {
-    "expo": "58.0.22"
+    "expo": "58.0.24"
   }
 }
