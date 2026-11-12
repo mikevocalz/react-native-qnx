@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import {
+  chmod,
   copyFile,
   lstat,
   mkdir,
@@ -15,6 +16,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { crc32 } from 'node:zlib';
 import {
+  DEFAULT_ICON,
   ICON_SIZES,
   LAUNCHER_PROFILES,
   iconSetting,
@@ -102,7 +104,22 @@ try {
   await writeFile(path.join(project, 'assets', 'ok.png'), pngHeaderOnly(1024, 1024));
   assert.equal((await validateIconSource(project, { icon: './assets/ok.png' })).width, 1024);
   checks++;
-  await rejectsWith(() => validateIconSource(project, {}), /No app icon is set/);
+  // No icon set: the default template icon is used, as Expo does. A field
+  // that is set but empty or not a string is still an error.
+  const defaulted = await validateIconSource(project, {});
+  assert.equal(defaulted.defaulted, true);
+  assert.equal(await realpath(defaulted.file), await realpath(templateIcon));
+  assert.equal(defaulted.width, 1024);
+  assert.equal((await validateIconSource(project, { icon: './assets/ok.png' })).defaulted, false);
+  checks++;
+  await rejectsWith(
+    () => validateIconSource(project, { icon: '' }),
+    /expo\.icon must be a project-relative path/
+  );
+  await rejectsWith(
+    () => validateIconSource(project, { extra: { rnqnx: { icon: 7 } } }),
+    /expo\.extra\.rnqnx\.icon must be a project-relative path/
+  );
   await rejectsWith(
     () => validateIconSource(project, { icon: '../outside.png' }),
     /expo.icon "..\/outside.png" is not a readable file inside the project/
@@ -306,14 +323,102 @@ try {
       prepareNativeMain(['--project', overflow, '--platform', 'marathon', '--identity-tool', tool]),
     /expo\.icon "\.\/assets\/icon\.png" is 640x640/
   );
-  // Without a tool the message says how to build one.
-  const saved = process.env.RNQNX_IDENTITY_TOOL;
-  delete process.env.RNQNX_IDENTITY_TOOL;
-  await rejectsWith(
-    () => prepareNativeMain(['--project', app, '--platform', 'marathon']),
-    /RNQNX_BUILD_IDENTITY_TOOL=ON/
+  // Without a tool prepare-native builds one with CMake. A stand-in cmake on
+  // PATH plays the build here: first failing (no Qt), then producing the tool.
+  const savedEnv = {
+    tool: process.env.RNQNX_IDENTITY_TOOL,
+    buildDir: process.env.RNQNX_IDENTITY_TOOL_BUILD_DIR,
+    path: process.env.PATH,
+  };
+  const fakeBin = path.join(temporary, 'fake-bin');
+  const cmakeLog = path.join(temporary, 'cmake.log');
+  await mkdir(fakeBin);
+  await writeFile(
+    path.join(fakeBin, 'cmake'),
+    `#!/usr/bin/env node
+const fs = require('node:fs');
+const path = require('node:path');
+const args = process.argv.slice(2);
+fs.appendFileSync(${JSON.stringify(cmakeLog)}, args.join(' ') + '\\n');
+if (process.env.FAKE_CMAKE_FAIL) {
+  console.error('Could not find a package configuration file provided by "Qt6"');
+  process.exit(1);
+}
+if (args[0] === '--build') {
+  const out = path.join(args[1], 'rnqnx_identity_tool');
+  fs.copyFileSync(process.env.FAKE_CMAKE_TOOL, out);
+  fs.chmodSync(out, 0o755);
+} else fs.mkdirSync(args[args.indexOf('-B') + 1], { recursive: true });
+`
   );
-  if (saved !== undefined) process.env.RNQNX_IDENTITY_TOOL = saved;
+  await chmod(path.join(fakeBin, 'cmake'), 0o755);
+  const autoBuildDir = path.join(temporary, 'auto-identity-tool');
+  delete process.env.RNQNX_IDENTITY_TOOL;
+  process.env.RNQNX_IDENTITY_TOOL_BUILD_DIR = autoBuildDir;
+  process.env.PATH = `${fakeBin}${path.delimiter}${savedEnv.path}`;
+  const autoApp = path.join(temporary, 'auto-built');
+  await mkdir(path.join(autoApp, 'build', 'marathon'), { recursive: true });
+  await writeFile(path.join(autoApp, 'build', 'marathon', 'app.bundle.js'), 'bundle\n');
+  // No expo.icon at all: the default template icon goes through the tool.
+  const { icon: _unused, ...expoWithoutIcon } = expo;
+  await writeApp(autoApp, expoWithoutIcon);
+  const autoArgs = ['--project', autoApp, '--platform', 'marathon'];
+  /** @type {string[]} */
+  const errors = [];
+  const consoleError = console.error;
+  console.error = (/** @type {unknown[]} */ ...line) => errors.push(line.join(' '));
+  try {
+    process.env.FAKE_CMAKE_FAIL = '1';
+    await rejectsWith(
+      () => prepareNativeMain(autoArgs),
+      /Cannot build rnqnx_identity_tool, which generates the app icon set; "cmake -S" failed:\n[^]*Qt6[^]*Qt 6\.11\.1 or later[^]*No native-app\.json was written/
+    );
+    await rejectsWith(
+      () => lstat(path.join(autoApp, 'build', 'marathon', 'native-app.json')),
+      /ENOENT/
+    );
+    delete process.env.FAKE_CMAKE_FAIL;
+    process.env.FAKE_CMAKE_TOOL = tool;
+    await prepareNativeMain(autoArgs);
+    assert.ok(errors.some((line) => /building rnqnx_identity_tool in /.test(line)));
+    assert.ok(
+      errors.some((line) =>
+        /no app icon is set, so the default icon template\/qnx\/assets\/icon\.png is used\. Set expo\.icon/.test(
+          line
+        )
+      )
+    );
+    const autoDescriptor = JSON.parse(
+      await readFile(path.join(autoApp, 'build', 'marathon', 'native-app.json'), 'utf8')
+    );
+    assert.equal(autoDescriptor.icon.source, DEFAULT_ICON);
+    assert.equal(
+      autoDescriptor.icon.sha256,
+      createHash('sha256')
+        .update(await readFile(templateIcon))
+        .digest('hex')
+    );
+    assert.deepEqual(
+      autoDescriptor.icon.sizes.map((/** @type {{size: number}} */ entry) => entry.size),
+      [...ICON_SIZES]
+    );
+    for (const entry of autoDescriptor.icon.sizes) assert.ok((await lstat(entry.path)).isFile());
+    await verifyPreparedIdentity(await realpath(autoApp), expoWithoutIcon, autoDescriptor);
+    checks += 4;
+    // The built tool is reused: a rerun calls cmake no more.
+    const callsBefore = (await readFile(cmakeLog, 'utf8')).trim().split('\n').length;
+    await prepareNativeMain(autoArgs);
+    assert.equal((await readFile(cmakeLog, 'utf8')).trim().split('\n').length, callsBefore);
+    checks++;
+  } finally {
+    console.error = consoleError;
+    delete process.env.FAKE_CMAKE_FAIL;
+    delete process.env.FAKE_CMAKE_TOOL;
+    process.env.PATH = savedEnv.path;
+    if (savedEnv.buildDir === undefined) delete process.env.RNQNX_IDENTITY_TOOL_BUILD_DIR;
+    else process.env.RNQNX_IDENTITY_TOOL_BUILD_DIR = savedEnv.buildDir;
+    if (savedEnv.tool !== undefined) process.env.RNQNX_IDENTITY_TOOL = savedEnv.tool;
+  }
 
   // Icons above 8192 px are refused before decoding.
   await writeFile(path.join(overflow, 'assets', 'icon.png'), pngHeaderOnly(9000, 9000));
@@ -382,32 +487,20 @@ try {
   );
   checks++;
 
-  // --skip-identity-tool: no tool, no icons, label recorded as not measured,
-  // and build-native's re-verification accepts the empty set.
-  const savedTool = process.env.RNQNX_IDENTITY_TOOL;
-  delete process.env.RNQNX_IDENTITY_TOOL;
-  const skipped = path.join(temporary, 'skipped');
-  await mkdir(path.join(skipped, 'assets'), { recursive: true });
-  await mkdir(path.join(skipped, 'build', 'qnx'), { recursive: true });
-  await copyFile(templateIcon, path.join(skipped, 'assets', 'icon.png'));
-  await writeFile(path.join(skipped, 'build', 'qnx', 'app.bundle.js'), 'bundle\n');
-  await writeApp(skipped, expo);
-  await prepareNativeMain(['--project', skipped, '--platform', 'qnx', '--skip-identity-tool']);
-  const skippedDescriptor = JSON.parse(
-    await readFile(path.join(skipped, 'build', 'qnx', 'native-app.json'), 'utf8')
+  // --skip-identity-tool is gone: there is no prepared app without an icon
+  // set, and a descriptor with an empty set is stale to build-native.
+  await rejectsWith(
+    () => prepareNativeMain(['--project', app, '--platform', 'marathon', '--skip-identity-tool']),
+    /--skip-identity-tool was removed: every prepared app gets a generated icon set/
   );
-  assert.deepEqual(skippedDescriptor.icon.sizes, []);
-  assert.equal(skippedDescriptor.labelFit.status, 'not-measured');
-  assert.match(skippedDescriptor.labelFit.reason, /--skip-identity-tool/);
-  await verifyPreparedIdentity(await realpath(skipped), expo, skippedDescriptor);
-  await rejectsWith(() => lstat(path.join(skipped, 'build', 'qnx', 'icons')), /ENOENT/);
   await rejectsWith(
     () =>
-      prepareNativeMain(['--project', skipped, '--skip-identity-tool', '--identity-tool', standIn]),
-    /either --identity-tool or --skip-identity-tool/
+      verifyPreparedIdentity(realApp, expo, {
+        ...descriptor,
+        icon: { ...descriptor.icon, sizes: [] },
+      }),
+    /stale/
   );
-  if (savedTool !== undefined) process.env.RNQNX_IDENTITY_TOOL = savedTool;
-  checks += 4;
   await rm(path.dirname(standIn), { recursive: true, force: true });
 
   // Identity reaches native-app.json from a resolved Expo config, not only a
@@ -515,6 +608,47 @@ try {
   assert.equal(good.checks.find((check) => check.id === 'app-icon')?.status, 'passed');
   assert.equal(good.checks.find((check) => check.id === 'tile-label')?.status, 'passed');
   checks += 5;
+  // doctor applies prepare-native's rules: a missing icon passes with the
+  // default named, and it reports where the identity tool comes from.
+  const defaultReport = await inspectConsumer(path.join(temporary, 'auto-built'), {
+    platform: 'marathon',
+    identityTool: tool,
+  });
+  const defaultIcon = defaultReport.checks.find((check) => check.id === 'app-icon');
+  assert.equal(defaultIcon?.status, 'passed');
+  assert.match(defaultIcon?.observed ?? '', /^default icon, 1024x1024 PNG$/);
+  assert.match(
+    defaultIcon?.message ?? '',
+    /default icon template\/qnx\/assets\/icon\.png\. Set expo\.icon/
+  );
+  const toolCheck = defaultReport.checks.find((check) => check.id === 'identity-tool');
+  assert.equal(toolCheck?.status, 'passed');
+  assert.match(toolCheck?.message ?? '', /--identity-tool/);
+  const savedForDoctor = {
+    tool: process.env.RNQNX_IDENTITY_TOOL,
+    buildDir: process.env.RNQNX_IDENTITY_TOOL_BUILD_DIR,
+  };
+  delete process.env.RNQNX_IDENTITY_TOOL;
+  process.env.RNQNX_IDENTITY_TOOL_BUILD_DIR = path.join(temporary, 'never-built');
+  try {
+    const unbuilt = (await inspectConsumer(app, { platform: 'marathon' })).checks.find(
+      (check) => check.id === 'identity-tool'
+    );
+    assert.equal(unbuilt?.status, 'not-checked');
+    assert.match(unbuilt?.message ?? '', /prepare-native builds it in .*never-built/);
+    await rejectsWith(() => lstat(path.join(temporary, 'never-built')), /ENOENT/);
+    process.env.RNQNX_IDENTITY_TOOL_BUILD_DIR = path.join(temporary, 'auto-identity-tool');
+    const reused = (await inspectConsumer(app, { platform: 'marathon' })).checks.find(
+      (check) => check.id === 'identity-tool'
+    );
+    assert.equal(reused?.status, 'passed');
+    assert.match(reused?.message ?? '', /automatic build/);
+  } finally {
+    if (savedForDoctor.buildDir === undefined) delete process.env.RNQNX_IDENTITY_TOOL_BUILD_DIR;
+    else process.env.RNQNX_IDENTITY_TOOL_BUILD_DIR = savedForDoctor.buildDir;
+    if (savedForDoctor.tool !== undefined) process.env.RNQNX_IDENTITY_TOOL = savedForDoctor.tool;
+  }
+  checks += 4;
   console.log(
     `App identity: ${checks} checks passed (${real ? 'real Qt identity tool' : 'protocol stand-in; Qt measurement runs in native/app-identity CTest'}).`
   );

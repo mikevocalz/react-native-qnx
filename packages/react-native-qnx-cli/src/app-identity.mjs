@@ -32,9 +32,12 @@ export const MAXIMUM_ICON_PX = 8192;
 export const ICON_SIZES = Object.freeze([16, 24, 32, 48, 64, 96, 128, 192, 256, 512]);
 const MAXIMUM_ICON_BYTES = 32 * 1024 * 1024;
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
-const fontDirectory = fileURLToPath(
-  new URL('../../../native/app-identity/fonts/', import.meta.url)
-);
+const sourceRoot = fileURLToPath(new URL('../../../', import.meta.url));
+const fontDirectory = path.join(sourceRoot, 'native', 'app-identity', 'fonts');
+/** Used when neither expo.icon nor expo.extra.rnqnx.icon is set, as Expo does. */
+export const DEFAULT_ICON = path.join(sourceRoot, 'template', 'qnx', 'assets', 'icon.png');
+export const DEFAULT_ICON_NOTICE =
+  'rnqnx: notice: no app icon is set, so the default icon template/qnx/assets/icon.png is used. Set expo.icon to a square PNG of at least 1024x1024 to use your own.';
 
 /** Launcher label boxes this repository can measure. Each is derived from the
  * named upstream source, not from a device; see docs/getting-started/app-identity.md.
@@ -88,29 +91,38 @@ export async function readPngHeader(file) {
   }
 }
 
-/** @param {ExpoConfig} config */
+/** Which icon the app uses. When neither field is set the default template
+ * icon is used (`defaulted: true`); a field that is set is never replaced.
+ * @param {ExpoConfig} config */
 export function iconSetting(config) {
   const override = config?.extra?.rnqnx?.icon;
   const icon = override ?? config?.icon;
-  const field = override === undefined ? 'expo.icon' : 'expo.extra.rnqnx.icon';
+  const field = override == null ? 'expo.icon' : 'expo.extra.rnqnx.icon';
+  if (icon == null)
+    return { field: 'default icon', relative: null, declared: DEFAULT_ICON, defaulted: true };
   if (typeof icon !== 'string' || !icon)
     throw new Error(
-      'No app icon is set. Add "icon": "./assets/icon.png" under expo in app.json, pointing at a square PNG of at least 1024x1024.'
+      `${field} must be a project-relative path such as "./assets/icon.png", pointing at a square PNG of at least 1024x1024.`
     );
   return { field, relative: icon.replace(/^\.\//, ''), declared: icon };
 }
 
-/** Check the configured icon source without decoding it.
+/** Check the icon source without decoding it: the configured one, or the
+ * default template icon when none is configured.
  * @param {string} root @param {ExpoConfig} config */
 export async function validateIconSource(root, config) {
-  const { field, relative, declared } = iconSetting(config);
+  const setting = iconSetting(config);
+  const { field, relative, declared } = setting;
+  const defaulted = setting.defaulted === true;
   let file;
   try {
-    file = await projectPath(root, relative);
+    file = relative === null ? DEFAULT_ICON : await projectPath(root, relative);
     await boundedFile(file, MAXIMUM_ICON_BYTES);
   } catch (error) {
     throw new Error(
-      `${field} "${declared}" is not a readable file inside the project (${reason(error)}). Point it at a square PNG of at least 1024x1024.`
+      defaulted
+        ? `No app icon is set and the default icon ${DEFAULT_ICON} is not readable (${reason(error)}). Set expo.icon to a square PNG of at least 1024x1024.`
+        : `${field} "${declared}" is not a readable file inside the project (${reason(error)}). Point it at a square PNG of at least 1024x1024.`
     );
   }
   let header;
@@ -129,7 +141,7 @@ export async function validateIconSource(root, config) {
     throw new Error(
       `${field} "${declared}" is ${header.width}x${header.height}. Export a square PNG no larger than ${MAXIMUM_ICON_PX}x${MAXIMUM_ICON_PX}.`
     );
-  return { field, file, ...header };
+  return { field, file, defaulted, ...header };
 }
 
 /** True when a ZERO WIDTH JOINER at `index` sits between two pictographs, as in
@@ -182,14 +194,74 @@ function reason(error) {
   return error instanceof Error ? error.message.replace(/\.$/, '') : String(error);
 }
 
-/** @param {string | undefined} explicit */
-export function identityToolPath(explicit) {
-  const tool = explicit ?? process.env.RNQNX_IDENTITY_TOOL;
-  if (!tool)
-    throw new Error(
-      'The icon and label tool is not available. On a Linux or macOS host with Qt 6.11.1 or later, build it with "cmake -S native/app-identity -B build/identity-tool -DRNQNX_BUILD_IDENTITY_TOOL=ON && cmake --build build/identity-tool", then pass --identity-tool build/identity-tool/rnqnx_identity_tool or set RNQNX_IDENTITY_TOOL. On other hosts, pass --skip-identity-tool to prepare without an icon set or label measurement.'
-    );
-  return path.resolve(tool);
+const IDENTITY_TOOL_HOSTS = ['linux', 'darwin'];
+const BUILD_HINT =
+  'It needs CMake 3.31.9 or later and Qt 6.11.1 or later (Core and Gui); point CMAKE_PREFIX_PATH at Qt if CMake cannot find it. Or pass --identity-tool with a tool built on another machine of the same OS.';
+
+/** Where prepare-native builds rnqnx_identity_tool when no tool is given.
+ * RNQNX_IDENTITY_TOOL_BUILD_DIR moves it (tests use this). */
+export function identityToolBuildDirectory() {
+  return path.resolve(
+    process.env.RNQNX_IDENTITY_TOOL_BUILD_DIR || path.join(sourceRoot, 'build', 'identity-tool')
+  );
+}
+
+/** Find the tool without building it: --identity-tool, then
+ * RNQNX_IDENTITY_TOOL, then an earlier automatic build.
+ * @param {string | undefined} explicit
+ * @returns {{path: string, origin: string} | null} */
+export function locateIdentityTool(explicit) {
+  if (explicit) return { path: path.resolve(explicit), origin: '--identity-tool' };
+  if (process.env.RNQNX_IDENTITY_TOOL)
+    return { path: path.resolve(process.env.RNQNX_IDENTITY_TOOL), origin: 'RNQNX_IDENTITY_TOOL' };
+  const built = path.join(identityToolBuildDirectory(), 'rnqnx_identity_tool');
+  return existsSync(built) ? { path: built, origin: 'automatic build' } : null;
+}
+
+/** The error for a host where the tool cannot be built. */
+export function unsupportedIdentityHost(platform = process.platform) {
+  return `Cannot generate the app icon set on this ${platform} host: rnqnx_identity_tool, the Qt program that scales the icon, builds only on Linux and macOS. Run prepare-native on a Linux or macOS host, or pass --identity-tool with a tool built for this host.`;
+}
+
+/** Return the tool, building it from native/app-identity with CMake when it
+ * is missing. Every prepared app gets a generated icon set, so there is no
+ * path that continues without the tool.
+ * @param {string | undefined} explicit @param {(line: string) => void} [log] */
+export function ensureIdentityTool(explicit, log = (line) => console.error(line)) {
+  const found = locateIdentityTool(explicit);
+  if (found) {
+    if (!existsSync(found.path))
+      throw new Error(`The identity tool from ${found.origin} does not exist: ${found.path}.`);
+    return found.path;
+  }
+  if (!IDENTITY_TOOL_HOSTS.includes(process.platform)) throw new Error(unsupportedIdentityHost());
+  const directory = identityToolBuildDirectory();
+  const source = path.join(sourceRoot, 'native', 'app-identity');
+  log(`rnqnx: building rnqnx_identity_tool in ${directory} (first run only).`);
+  for (const args of [
+    ['-S', source, '-B', directory, '-DRNQNX_BUILD_IDENTITY_TOOL=ON', '-DCMAKE_BUILD_TYPE=Release'],
+    ['--build', directory, '--target', 'rnqnx_identity_tool'],
+  ]) {
+    const result = spawnSync('cmake', args, {
+      encoding: 'utf8',
+      timeout: 15 * 60_000,
+      maxBuffer: 16 * 1024 * 1024,
+    });
+    if (result.error || result.status !== 0) {
+      const output = (result.error?.message ?? `${result.stdout}\n${result.stderr}`)
+        .trim()
+        .split('\n')
+        .slice(-8)
+        .join('\n');
+      throw new Error(
+        `Cannot build rnqnx_identity_tool, which generates the app icon set; "cmake ${args[0]}" failed:\n${output}\n${BUILD_HINT} No native-app.json was written.`
+      );
+    }
+  }
+  const built = path.join(directory, 'rnqnx_identity_tool');
+  if (!existsSync(built))
+    throw new Error(`CMake finished without producing ${built}. ${BUILD_HINT}`);
+  return built;
 }
 
 /** The label fit recorded when the tool is skipped or cannot measure.
@@ -333,8 +405,8 @@ export function hostIndependentDescriptor(descriptor) {
 }
 
 /** Re-check a prepared descriptor's icon and tile label against the current
- * config and files without running the tool. Throws when anything drifted.
- * An empty icon set is valid: it was prepared with --skip-identity-tool.
+ * config and files without running the tool. Throws when anything drifted,
+ * including a descriptor without the full generated icon set.
  * @param {string} root @param {ExpoConfig} config
  * @param {{icon?: IconSet, shortName?: unknown}} descriptor */
 export async function verifyPreparedIdentity(root, config, descriptor) {
@@ -348,7 +420,7 @@ export async function verifyPreparedIdentity(root, config, descriptor) {
     icon.sha256 !== (await sha256(source.file)) ||
     descriptor.shortName !== resolveTileLabel(config).label ||
     !Array.isArray(icon.sizes) ||
-    (icon.sizes.length > 0 && icon.sizes.map((entry) => entry.size).join() !== ICON_SIZES.join())
+    icon.sizes.map((entry) => entry.size).join() !== ICON_SIZES.join()
   )
     throw new Error(stale);
   for (const entry of icon.sizes) {
