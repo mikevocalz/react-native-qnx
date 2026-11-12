@@ -22,7 +22,8 @@ Usage: pnpm qnx <command> [options]
 
   init <name>       Create apps/<name>; never overwrites an existing app
   bundle-qnx       Production Metro bundle for --app <name> [--out build/<file>]
-  doctor           Check the licensed QNX development environment
+  doctor           Check host tools, the QNX SDP environment and target settings;
+                   each failure names its fix
   configure-qnx    Configure the existing QNX CMake preset
   build-qnx        Build the existing QNX CMake preset
   deploy-qnx       Deploy one executable with the existing atomic deploy script
@@ -57,7 +58,9 @@ export async function findWorkspace(from) {
     }
     const parent = path.dirname(candidate);
     if (parent === candidate)
-      throw new Error('Run this command inside a react-native-qnx source checkout.');
+      throw new Error(
+        'Run this command inside a react-native-qnx clone. Clone it with git clone https://github.com/mikevocalz/react-native-qnx.git, cd into it, then run pnpm install --frozen-lockfile.'
+      );
     candidate = parent;
   }
 }
@@ -209,14 +212,22 @@ export async function main(argv, cwd = process.cwd()) {
     'log-qnx': ['dry-run'],
     evidence: ['dir', 'dry-run'],
   };
+  if (command === undefined)
+    throw new Error('Missing command. Run pnpm qnx --help to list commands.');
   if (!Object.hasOwn(allowed, command))
-    throw new Error(`Unknown command: ${command}. Run pnpm qnx --help.`);
+    throw new Error(`Unknown command: ${command}. Run pnpm qnx --help to list commands.`);
   for (const option of Object.keys(values)) {
     if (!allowed[command].includes(option))
       throw new Error(`${command} does not accept --${option}.`);
   }
-  if (rest.length !== (command === 'init' || command === 'evidence' ? 1 : 0))
-    throw new Error(`Unexpected arguments for ${command}. Run pnpm qnx --help.`);
+  if (command === 'init' && rest.length !== 1)
+    throw new Error('init needs exactly one app name, for example: pnpm qnx init dashboard');
+  if (command === 'evidence' && rest.length !== 1)
+    throw new Error('Use pnpm qnx evidence verify [--dir <path>].');
+  if (command !== 'init' && command !== 'evidence' && rest.length)
+    throw new Error(
+      `${command} takes options only; remove ${rest.join(' ')}. Run pnpm qnx --help for its options.`
+    );
   if (command === 'evidence' && rest[0] !== 'verify')
     throw new Error('Use pnpm qnx evidence verify [--dir <path>].');
   const root = await findWorkspace(cwd);
@@ -244,7 +255,13 @@ export async function main(argv, cwd = process.cwd()) {
   } else if (command === 'bundle-qnx') {
     const name = appName(values.app);
     workingDirectory = path.join(root, 'apps', name);
-    await access(path.join(workingDirectory, 'index.js'));
+    try {
+      await access(path.join(workingDirectory, 'index.js'));
+    } catch {
+      throw new Error(
+        `apps/${name}/index.js not found. Create the app with pnpm qnx init ${name} and run pnpm install --no-frozen-lockfile, or pass an existing --app name.`
+      );
+    }
     const output = path.resolve(root, values.out ?? `build/${name}.bundle.js`);
     if (!output.startsWith(path.join(root, 'build') + path.sep))
       throw new Error('Bundle output must be inside this checkout’s build/ directory.');
@@ -267,7 +284,14 @@ export async function main(argv, cwd = process.cwd()) {
     if (!isInside(realRoot, realBuild) || !isInside(realBuild, realOutput))
       throw new Error('Bundle output symlinks must stay inside this checkout’s build/ directory.');
     const require = createRequire(path.join(root, 'package.json'));
-    const metroPackage = require.resolve('metro/package.json');
+    let metroPackage;
+    try {
+      metroPackage = require.resolve('metro/package.json');
+    } catch {
+      throw new Error(
+        'Metro is not installed in this checkout. Run pnpm install --frozen-lockfile from the repository root.'
+      );
+    }
     const metro = JSON.parse(await readFile(metroPackage, 'utf8'));
     const metroBin = typeof metro.bin === 'string' ? metro.bin : metro.bin?.metro;
     if (typeof metroBin !== 'string') throw new Error('Installed Metro has no CLI entry point.');
@@ -295,7 +319,22 @@ export async function main(argv, cwd = process.cwd()) {
     console.log(JSON.stringify({ executable, args, cwd: workingDirectory }, null, 2));
     return 0;
   }
-  return execute(executable, args, workingDirectory);
+  const code = await execute(executable, args, workingDirectory);
+  if (code !== 0) {
+    const next = {
+      'configure-qnx': 'Run pnpm qnx doctor; it names the missing QNX SDP or build tool.',
+      'build-qnx': `Run pnpm qnx configure-qnx --arch ${arch} --config ${config} first; if it fails too, run pnpm qnx doctor.`,
+      'deploy-qnx': `Check that pnpm qnx build-qnx --arch ${arch} --config ${config} succeeded and that QNX_TARGET_IP and QNX_TARGET_USER reach the board over SSH.`,
+      'run-qnx': `Deploy first with pnpm qnx deploy-qnx --arch ${arch} --target ${target}, and check QNX_TARGET_IP and QNX_TARGET_USER.`,
+      'log-qnx': 'Check QNX_TARGET_IP and QNX_TARGET_USER; the board must accept SSH.',
+      doctor: '',
+      'bundle-qnx':
+        'Read the Metro error above; a missing module usually means pnpm install --no-frozen-lockfile was not run after init.',
+      evidence: '',
+    }[command];
+    if (next) console.error(`rnqnx: ${command} exited with code ${code}. ${next}`);
+  }
+  return code;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

@@ -7,7 +7,7 @@ preserves the canonical generated bindings. Its hosted workflows passed;
 the local generator, typecheck and installed-source checks passed again.
 This follow-up changes documentation and structured evidence only. See
 [the candidate receipt](../validation/pr105-merge-readiness-2026-11-10.md).
-The historical platform baseline below and all seven release gates are unchanged.
+The historical platform baseline below and the seven original release gates are unchanged. Four owner gates (app identity, window chrome, Expo readiness, updated packages) were added on 2026-11-11 as pending.
 
 Reconciled against `main` at `5f17504` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the

@@ -20,6 +20,7 @@ This directory records significant architectural decisions for `react-native-qnx
 | [0012](0012-quick-controls-styling.md)               | Quick Controls style for QNX                                    | Proposed                                           | 2026-08-14 |
 | [0013](0013-open-source-qt.md)                       | Open-source Qt without a paid-license prerequisite              | Accepted                                           | 2026-11-07 |
 | [0015](0015-marathon-linux-wayland-native-target.md) | MarathonOS Linux/Wayland target on the shared Qt/Fabric backend | Proposed                                           | 2026-11-02 |
+| [0016](0016-window-chrome-on-qnx-screen.md)          | Client-drawn window chrome on QNX Screen                        | Proposed; host tests only                          | 2026-11-12 |
 
 ADR-0015 was filed as a second ADR-0013 and renumbered on 2026-11-11. Links to
 `0013-marathon-linux-wayland-native-target.md` now point to

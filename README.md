@@ -18,8 +18,24 @@ by target, and draft release notes.
 
 ## Start from source
 
-Use Node 26+ and pnpm 12.8.1. The CLI operates inside this checkout; no npm
+Use Node 26+ and pnpm 12.18.0. The CLI operates inside this checkout; no npm
 installation or standalone native-project support is claimed.
+
+Node 26 does not bundle Corepack. If `pnpm --version` does not print 12.18.0,
+install it first. An older global pnpm (for example Homebrew's pnpm 10) tries to
+switch itself to 12.18.0 from `packageManager` and can fail with
+`Failed to switch pnpm to v12.18.0`:
+
+```bash
+npm install -g pnpm@12.18.0
+pnpm --version   # 12.18.0
+```
+
+JavaScript work and host validation run on macOS or Linux. QNX cross-builds need
+an x86-64 Linux host (canonically Ubuntu 22.04) with the licensed QNX SDP,
+because SDP 8.0 ships Linux and Windows host tools only.
+`pnpm qnx doctor` reports which of these prerequisites are missing and what to run
+next.
 
 ```bash
 git clone https://github.com/mikevocalz/react-native-qnx.git
@@ -65,6 +81,10 @@ Physical Pi 400 export, protected-file failure, OFF-path capture and traced
 Nitro worker/shutdown assertions passed at the cited revisions. These native
 diagnostics do not establish input/Fabric/render-loop or presentation markers,
 tracing overhead, or performance budgets. Tracing remains OFF by default.
+
+`pnpm test:js` stops at the first failing file. Known macOS failures and a
+per-file command are in
+[the clean-host simulation receipt](docs/evidence/clean-host-sim-2026-11-12-b51b49c.md#known-test-failures-on-macos).
 
 `validate:macos` runs host checks. It does not cross-build or run QNX.
 The dated handoff records earlier billing refusals.
