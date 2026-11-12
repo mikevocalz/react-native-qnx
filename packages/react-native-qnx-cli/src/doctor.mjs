@@ -14,6 +14,7 @@ import {
 } from './app-identity.mjs';
 import { CONSUMER_CONTRACT } from './consumer-contract.mjs';
 import { EXPO_CONFIG_FILES } from './expo-config.mjs';
+import { discoverNitroModules } from './nitro-modules.mjs';
 
 const help = `React Native QNX consumer project diagnostics
   rnqnx project doctor --project <directory> [--platform qnx|marathon]
@@ -327,6 +328,20 @@ export async function inspectConsumer(project, options = {}) {
           message: `Cannot inspect installed package metadata (${reason}). Check installation or package exports; absence was not assumed.`,
         });
       }
+    }
+    try {
+      const modules = await discoverNitroModules(root, platform);
+      checks.push({
+        id: 'nitro-modules',
+        status: 'passed',
+        observed:
+          modules.map((module) => `${module.package}@${module.version}`).join(', ') || 'none',
+        message: modules.length
+          ? 'Nitro module declarations in package.json are well formed (docs/adr/0019); nothing was compiled.'
+          : 'No direct dependency declares a Nitro module for this platform.',
+      });
+    } catch (error) {
+      checks.push({ id: 'nitro-modules', status: 'failed', message: description(error) });
     }
   } else {
     checks.push({

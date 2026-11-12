@@ -26,6 +26,7 @@ import {
   verifyPreparedIdentity,
 } from './app-identity.mjs';
 import { loadExpoConfig } from './expo-config.mjs';
+import { discoverNitroModules } from './nitro-modules.mjs';
 import { boundedFile, projectPath } from './project-path.mjs';
 
 const { resolveQnxWindow } = createRequire(import.meta.url)(
@@ -35,7 +36,8 @@ const { resolveQnxWindow } = createRequire(import.meta.url)(
 /** @typedef {import('./app-identity.mjs').IconSet} IconSet */
 /** @typedef {import('./app-identity.mjs').LabelFit} LabelFit */
 /** @typedef {{controls: string, titleBarStyle: string, initialSize?: {width: number, height: number}}} NativeWindow */
-/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string, window: NativeWindow}} BaseConfiguration */
+/** @typedef {import('./nitro-modules.mjs').NitroModule} NitroModule */
+/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string, window: NativeWindow, nitroModules?: NitroModule[]}} BaseConfiguration */
 /** @typedef {BaseConfiguration & {shortName: string, icon: IconSet, labelFit: LabelFit}} NativeConfiguration */
 const help = `React Native QNX native consumer configuration
   project prepare-native --project <directory> [--platform qnx|marathon]
@@ -46,6 +48,9 @@ const help = `React Native QNX native consumer configuration
 Resolves app.json or app.config.js/ts through @expo/config (config plugins
 included) and reads expo.name, expo.icon and
 expo.extra.rnqnx.{appId,componentName,window,icon,shortName}.
+Direct dependencies whose package.json declares "react-native-qnx": {"nitro":
+{...}} for the platform are recorded as nitroModules (docs/adr/0019). Only
+JSON is read for that; no package code runs.
 Set the extra.rnqnx values through the @rn-qnx/expo-qnx-config-plugins entry
 in "plugins".
 The icon must be a square PNG of at least 1024x1024. With no icon set, the
@@ -125,6 +130,7 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
   await boundedFile(bundle, 256 * 1024 * 1024);
   const hash = createHash('sha256');
   for await (const chunk of createReadStream(bundle)) hash.update(chunk);
+  const nitroModules = await discoverNitroModules(root, platform);
   /** @type {BaseConfiguration} */
   const configuration = {
     schemaVersion: 1,
@@ -134,6 +140,9 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
     bundle,
     bundleSha256: hash.digest('hex'),
     window,
+    // Omitted when empty, so descriptors from apps without Nitro modules stay
+    // byte-identical to those written before this field existed.
+    ...(nitroModules.length ? { nitroModules } : {}),
   };
   return { root, configuration, expoConfig };
 }
