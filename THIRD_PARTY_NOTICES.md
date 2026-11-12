@@ -29,7 +29,11 @@ basis for those artifacts. Track the separate open-source build in
 
 The public-source Qt 6.12.0 build for QNX is recorded in
 [its Pi 400 receipt](docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md) and
-[closure manifest](docs/evidence/qt-public-runtime-closure-2026-11-12-b51b49c.json).
+[closure manifest](docs/evidence/qt-public-runtime-closure-2026-11-12-b51b49c.json);
+its `-O2` rebuild with the QNX plugin patches is in
+[the -O2 receipt](docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md) and
+[its closure manifest](docs/evidence/qt-public-runtime-closure-o2-2026-11-12-a79e16a.json),
+with the same modules and license findings.
 Its runtime contains Qt Core, Gui, Network, OpenGL, Qml, QmlMeta, QmlModels,
 QmlWorkerScript, Quick and QuickShapes, the QNX QPA plugin and five QML
 plugins, all under `LGPL-3.0-only` (with GPL and commercial alternatives).

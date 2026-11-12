@@ -1,0 +1,365 @@
+{
+  "qt": {
+    "version": "6.12.0",
+    "archive": "qt-everywhere-src-6.12.0.tar.xz",
+    "url": "https://download.qt.io/official_releases/qt/6.12/6.12.0/single/qt-everywhere-src-6.12.0.tar.xz",
+    "sha256": "98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165",
+    "md5": "ac677cc64158740f257fd37a5b4c5ffb",
+    "checksum_sources": [
+      "https://download.qt.io/official_releases/qt/6.12/6.12.0/single/qt-everywhere-src-6.12.0.tar.xz.sha256",
+      "https://download.qt.io/official_releases/qt/6.12/6.12.0/single/md5sums.txt"
+    ],
+    "newer_patch_release_checked": "2026-11-12: download.qt.io/official_releases/qt/6.12/ lists only 6.12.0/",
+    "extracted_submodules": ["qtbase", "qtdeclarative", "qtshadertools"],
+    "security_patches_applied_to_qtbase_src": {
+      "CVE-2026-116337-qtbase-6.12-0001.diff": "74c5028985dcc0455255909de4dc80f50cf5472dbf465ce46ebc791a7b080f12",
+      "CVE-2026-116337-qtbase-6.12-0002.diff": "83abc89d507dbd9a94dc5718b0125492c1c37b0609a8f404a1f164925940faec",
+      "CVE-2026-105924-qtbase-6.12.diff": "c27d27b86aaf2cdab0c18d513fbb94a432e98782eddfc5f856387e4be68be50b"
+    },
+    "qnx_platform_patches_applied_to_qtbase_src": {
+      "qtbase-qnx-offscreen-surface.patch": "scripts/qt-public/patches/qtbase-qnx-offscreen-surface.patch",
+      "qtbase-qnx-resize-swap.patch": "scripts/qt-public/patches/qtbase-qnx-resize-swap.patch"
+    }
+  },
+  "build": {
+    "repository_base": "a79e16a",
+    "build_tree": "/home/qnxbuild/qt-6.12.0-public/qnx-build (reconfigured in place; previous CMakeCache.txt removed first)",
+    "host_tools": "unchanged from the 2026-11-12 -O0 build (host-build/qtbase, system GCC -O2)",
+    "qnx_log_end": "[1710/1710] EXIT=0 2026-11-12T19:54:27Z",
+    "toolchain": "QNX SDP 8.0.5 qcc -Vgcc_ntoaarch64le (GCC 12.2.0)",
+    "recipes": "scripts/qt-public/ at a79e16a (configure-qnx.sh per ADR-0017)",
+    "configure_qnx": "-developer-build -release -no-pch -nomake tests -nomake examples \\\n  -prefix /data/qt612-public -extprefix /home/qnxbuild/qt-6.12.0-public/qnx-stage \\\n  -opengl es2 -qt-host-path \"$host\" -submodules qtbase,qtshadertools,qtdeclarative -- \\\n  -DCMAKE_TOOLCHAIN_FILE=<scripts>/qt612-public-qnx-aarch64le.cmake \\\n  -DCMAKE_SYSTEM_VERSION=800 -DFEATURE_no_prefix=OFF \\\n  -DFEATURE_widgets=OFF -DFEATURE_printsupport=OFF -DFEATURE_sql=OFF \\\n  -DFEATURE_dbus=OFF -DFEATURE_icu=OFF -DFEATURE_fontconfig=OFF \\\n  -DFEATURE_system_freetype=OFF -DFEATURE_system_harfbuzz=OFF \\\n  -DFEATURE_system_zlib=OFF -DFEATURE_system_png=OFF -DFEATURE_system_jpeg=OFF \\\n  -DFEATURE_system_pcre2=OFF -DFEATURE_vulkan=OFF -DFEATURE_qml_debug=OFF \\\n  -DFEATURE_qqnx_imf=OFF -DFEATURE_optimize_size=OFF -DFEATURE_optimize_full=OFF",
+    "build_targets": "Core Network Gui Qml Quick QuickShapes QQnxIntegrationPlugin qmlplugin modelsplugin workerscriptplugin qtquick2plugin qmlshapesplugin",
+    "optimization": {
+      "CMAKE_C_FLAGS_RELEASE": "-DNDEBUG   -DNDEBUG -O2",
+      "CMAKE_CXX_FLAGS_RELEASE": "-DNDEBUG   -DNDEBUG -O2",
+      "FEATURE_optimize_size": "OFF",
+      "FEATURE_optimize_full": "OFF",
+      "build_ninja_FLAGS_lines": 2992,
+      "with_O2": 2345,
+      "with_O3": 647,
+      "without_O_level": 0,
+      "O3_note": "the -O3 lines are QtCore and QtGui sources: qtbase/src/corelib and qtbase/src/gui call qt_internal_add_optimize_full_flags(), which Qt applies whenever optimize_size is off",
+      "fortify_source_warnings": {
+        "this_build": 0,
+        "2026_11_12_O0_build": 2248
+      }
+    }
+  },
+  "runtime": {
+    "tarball": "qt612-public-runtime-o2.tar.gz (tar --no-xattrs --no-mac-metadata -czf ... -C runtime-o2 .)",
+    "tarball_sha256": "9ead47f44e7ba79ab9abc08ef59279d5d49a28693b03676988b82bd805ec0cc4",
+    "tarball_bytes": 18387854,
+    "SHA256SUMS_sha256": "17319f433075169e117e38980ab97d09429f6b76c7c948cf8af1cce44a2492f7",
+    "manifest_json_sha256": "0fb5e893d12e189dfd34d56c30950f79cf92d651b9b41520ae4ea26fd3e41e3c",
+    "files": 159,
+    "symlinks": 20,
+    "difference_from_2026_11_12_runtime": "same 159 paths; the 16 ELF files changed, every license, qmldir and qmltypes file is byte-identical",
+    "board_copy": {
+      "path": "/data/home/qnxuser/qt612-public-o2",
+      "sha256sum_c": "159 of 159 OK"
+    },
+    "qpa_plugin": "plugins/platforms/libqqnx.so",
+    "elf": {
+      "lib/libQt6Core.so.6.12.0": {
+        "sha256": "38dca9e606dd023c02b1dfb8dc6cb1aba862e9a8261773ace9c67d17c4b68800",
+        "bytes": 12766608,
+        "needed": [
+          "libfsnotify.so.1",
+          "libm.so.3",
+          "libzstd.so.1",
+          "libeventfd.so.1",
+          "libslog2.so.1",
+          "libc++.so.2",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6Gui.so.6.12.0": {
+        "sha256": "6c09e10fc947298338da9f2966ba32b4c9854d30408479e2dfb2367d2b49ca66",
+        "bytes": 12054496,
+        "needed": [
+          "libGLESv2.so.1",
+          "libEGL.so.1",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6Network.so.6.12.0": {
+        "sha256": "ede91bfa7fc18ae816eb3622efe4679cc3883fd0b0b4b9ed81288ab3a49110a5",
+        "bytes": 2884592,
+        "needed": [
+          "libzstd.so.1",
+          "libQt6Core.so.6",
+          "libsocket.so.4",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6OpenGL.so.6.12.0": {
+        "sha256": "3a2c7880ba12870430f3c68114c70bca5b51c8405ec8e3f93f19678924d2d3b7",
+        "bytes": 725624,
+        "needed": [
+          "libQt6Gui.so.6",
+          "libGLESv2.so.1",
+          "libEGL.so.1",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6Qml.so.6.12.0": {
+        "sha256": "0d8d9de3f45269d747add566ac627abaa58a4cb690acaa7665bae5970b7d7ce3",
+        "bytes": 8472352,
+        "needed": [
+          "libQt6Network.so.6",
+          "libQt6Core.so.6",
+          "libsocket.so.4",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6QmlMeta.so.6.12.0": {
+        "sha256": "d9f486db103359fb35176cba2f61564ad1dd8f4c69f6195cc14a604cc443efea",
+        "bytes": 243880,
+        "needed": [
+          "libQt6QmlModels.so.6",
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6QmlModels.so.6.12.0": {
+        "sha256": "bd3c26c2c0d96a939ade6f9df41153bbccd228536e153c1024929840c816c105",
+        "bytes": 1759368,
+        "needed": [
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6QmlWorkerScript.so.6.12.0": {
+        "sha256": "fd860778b32202aad14e333b82255dfdfadeeffe09a9afe463421b62a7af7d71",
+        "bytes": 117352,
+        "needed": [
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6Quick.so.6.12.0": {
+        "sha256": "2ed025fa5dfe490d8f28d392f7850568d8048045d6e29e96226d38696e528c82",
+        "bytes": 11194064,
+        "needed": [
+          "libQt6QmlMeta.so.6",
+          "libQt6QmlModels.so.6",
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6OpenGL.so.6",
+          "libQt6Gui.so.6",
+          "libQt6Core.so.6",
+          "libGLESv2.so.1",
+          "libEGL.so.1",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6QuickShapes.so.6.12.0": {
+        "sha256": "cb4fc6ad0c8b64bbc1a57f947f373ac8546b6cda24c22d34051bd38cc33aee16",
+        "bytes": 558128,
+        "needed": [
+          "libQt6Quick.so.6",
+          "libQt6OpenGL.so.6",
+          "libQt6Gui.so.6",
+          "libGLESv2.so.1",
+          "libEGL.so.1",
+          "libQt6QmlMeta.so.6",
+          "libQt6QmlModels.so.6",
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libQt6Core.so.6",
+          "libsocket.so.4",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "plugins/platforms/libqqnx.so": {
+        "sha256": "6b6419aac23b27fd58cffc096a7095b8934526f46bffdf5c661bac4f80821a17",
+        "bytes": 403104,
+        "needed": [
+          "libscreen.so.1",
+          "libEGL.so.1",
+          "libQt6Gui.so.6",
+          "libQt6Core.so.6",
+          "libGLESv2.so.1",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "qml/QtQml/Models/libmodelsplugin.so": {
+        "sha256": "7564aac16e16df0175fa0b61667cc8d130a065243ed2237fe7411c371e64e57d",
+        "bytes": 16736,
+        "needed": [
+          "libQt6QmlModels.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "qml/QtQml/WorkerScript/libworkerscriptplugin.so": {
+        "sha256": "54bc51d64ebd48955166cf4661b3fcbac25a54d4a1aa187df54e0019aa124401",
+        "bytes": 16888,
+        "needed": [
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "qml/QtQml/libqmlplugin.so": {
+        "sha256": "07e06a0cccad6e52dd7c6b282d367ecf5aaa4bbcf7dec40bcd2b7661453c439c",
+        "bytes": 16584,
+        "needed": [
+          "libQt6QmlMeta.so.6",
+          "libQt6QmlModels.so.6",
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "qml/QtQuick/Shapes/libqmlshapesplugin.so": {
+        "sha256": "b7097efc28fe98457d3e78ef3fdcfd2ec1e5e092401665b86849a9853a438b05",
+        "bytes": 20840,
+        "needed": [
+          "libQt6QuickShapes.so.6",
+          "libQt6Quick.so.6",
+          "libQt6QmlMeta.so.6",
+          "libQt6QmlModels.so.6",
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6OpenGL.so.6",
+          "libQt6Gui.so.6",
+          "libQt6Core.so.6",
+          "libGLESv2.so.1",
+          "libEGL.so.1",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "qml/QtQuick/libqtquick2plugin.so": {
+        "sha256": "c33dc6e64f531495712c56bf2bc6de7176885a58d1ab011513d8ca0ce765ec8c",
+        "bytes": 20800,
+        "needed": [
+          "libQt6Quick.so.6",
+          "libQt6OpenGL.so.6",
+          "libQt6Gui.so.6",
+          "libGLESv2.so.1",
+          "libEGL.so.1",
+          "libQt6QmlMeta.so.6",
+          "libQt6QmlModels.so.6",
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      }
+    },
+    "elf_bytes_total": {
+      "2026_11_12_O0": 122755752,
+      "this_build": 51271416
+    },
+    "non_qt_system_libraries": [
+      "libEGL.so.1",
+      "libGLESv2.so.1",
+      "libc++.so.2",
+      "libc.so.6",
+      "libeventfd.so.1",
+      "libfsnotify.so.1",
+      "libgcc_s.so.1",
+      "libm.so.3",
+      "libscreen.so.1",
+      "libslog2.so.1",
+      "libsocket.so.4",
+      "libzstd.so.1"
+    ]
+  },
+  "license_audit": {
+    "tool": "scripts/qt-public/spdx-audit.py (ninja -t deps over every object)",
+    "output_sha256": "e5df4ca6124a86a8b381a8518a74141363924ef436379ffbc6827f44b2c8ab98",
+    "objects": 1335,
+    "files_read_total": 6788,
+    "difference_from_2026_11_12_audit": "files_read_total 6771 -> 6788, qtbase/include/QtGui 336 -> 337, toolchain_and_sysroot_files 1016 -> 1032 (the patched plugin and -O2 headers); license expressions, components and attributions unchanged"
+  },
+  "application_abi": {
+    "binary": "org.rnqnx.showcase (sha256 7c1e726e0edd8545392f608ce4a793447c599e5f1770d2908abbf2f44155f57e, /home/qnxbuild/wm-pr build, same file as on the board)",
+    "qt_symbol_imports": 423,
+    "unresolved_against_this_runtime": 0,
+    "unresolved_against_2026_11_12_runtime": 0,
+    "exported_Qt_symbols": {
+      "2026_11_12_O0": 37476,
+      "this_build": 36244,
+      "present_only_in_O0": 1232
+    },
+    "rebuild_needed": false,
+    "DT_RPATH": "/work/pr102-candidate/build/hermes-qnx-aarch64/lib:/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase/lib: (build-host paths, absent on the board)"
+  }
+}
