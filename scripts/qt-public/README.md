@@ -51,8 +51,12 @@ python3 -I stage-runtime.py "$QT_PUBLIC_ROOT/runtime" "$QT_PUBLIC_ROOT/runtime-s
 `needed.json`; the receipt's `SHA256SUMS` was then written with
 `shasum -a 256` over every staged file.
 
-The Release configuration carries no `-O` level, as in the evaluation build;
-see the receipt.
+Qt is compiled at `-O2` ([ADR-0017](../../docs/adr/0017-qt-qnx-optimization-level.md)).
+`configure-qnx.sh` no longer passes `-optimize-size`, sets
+`FEATURE_optimize_size` and `FEATURE_optimize_full` off, and exits after
+configure unless `CMAKE_C_FLAGS_RELEASE` and `CMAKE_CXX_FLAGS_RELEASE` contain
+`-O2`. The 2026-11-12 runtime in the receipt predates this and was compiled
+with no `-O` level.
 
 ## On the board
 
