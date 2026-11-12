@@ -84,6 +84,12 @@ QStringList platformSpecsFromArguments(int argc, const char* const* argv,
 // loaded, QGuiApplication::platformName()). Empty when none matches.
 QStringList platformOptionsFor(const QString& platform, const QStringList& specs);
 
+// The QT_QPA_PLATFORM value that lets a QNX app open at its own size: every
+// `qnx` entry gains `no-fullscreen` (kept once). An empty value becomes
+// `qnx:no-fullscreen` when `defaultIsQnx` (a QNX build, where qnx is the
+// default plugin). Other plugins are returned unchanged.
+QString windowedPlatformSpec(const QString& environmentSpec, bool defaultIsQnx);
+
 struct ControlSlot {
   WindowAction action;
   QRectF hitRect;  // Device-independent pixels, window coordinates.

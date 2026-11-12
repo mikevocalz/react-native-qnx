@@ -6,6 +6,7 @@ declare function withQnxProject<T extends withQnxProject.ExpoConfigLike>(
 declare namespace withQnxProject {
   type WindowControls = 'macos' | 'windows';
   type TitleBarStyle = 'default' | 'hidden' | 'none';
+  type UnavailableControls = 'hide' | 'disable';
 
   interface QnxWindowOptions {
     /** Title bar button layout. Default: 'macos'. */
@@ -14,12 +15,18 @@ declare namespace withQnxProject {
     titleBarStyle?: TitleBarStyle;
     /** Initial window size in logical pixels, 1-16384 per edge. */
     initialSize?: { width: number; height: number };
+    /**
+     * A control the platform cannot run: left out ('hide', the default) or
+     * drawn grey and inert ('disable').
+     */
+    unavailableControls?: UnavailableControls;
   }
 
   interface ResolvedQnxWindow {
     controls: WindowControls;
     titleBarStyle: TitleBarStyle;
     initialSize?: { width: number; height: number };
+    unavailableControls?: UnavailableControls;
   }
 
   interface QnxProjectOptions {

@@ -37,9 +37,6 @@ QString accessibleName(WindowAction action) {
   return {};
 }
 
-const QString kQnxMinimizeReason = QStringLiteral(
-    "Qt 6.12.0 QQnxWindow::minimize() only logs that minimize is unsupported, and no "
-    "window-manager client on the image can restore the window (ADR-0016)");
 const QString kQnxMaximizeReason = QStringLiteral(
     "the qnx QPA keeps the root window at screen size unless it runs with no-fullscreen");
 const QString kNoWindowManagerReason =
@@ -69,7 +66,7 @@ TitleBarStyle parseTitleBarStyle(const QString& value) {
 UnavailableControls parseUnavailableControls(const QString& value) {
   if (value == QLatin1String("hide")) return UnavailableControls::Hide;
   if (value == QLatin1String("disable")) return UnavailableControls::Disable;
-  reject(QStringLiteral("unavailable controls must be one of: hide, disable."));
+  reject(QStringLiteral("window.unavailableControls must be one of: hide, disable."));
 }
 
 QString nameOf(ControlsLayout value) {
@@ -103,7 +100,7 @@ QString nameOf(WindowAction value) {
 WindowChromeConfig parseWindowChromeConfig(const QJsonObject& window) {
   for (auto it = window.begin(); it != window.end(); ++it) {
     if (it.key() != QLatin1String("controls") && it.key() != QLatin1String("titleBarStyle") &&
-        it.key() != QLatin1String("initialSize")) {
+        it.key() != QLatin1String("initialSize") && it.key() != QLatin1String("unavailableControls")) {
       reject(QStringLiteral("window.%1 is not a supported window option.").arg(it.key()));
     }
   }
@@ -118,6 +115,12 @@ WindowChromeConfig parseWindowChromeConfig(const QJsonObject& window) {
     if (!value.isString())
       reject(QStringLiteral("window.titleBarStyle must be one of: default, hidden, none."));
     config.titleBarStyle = parseTitleBarStyle(value.toString());
+  }
+  if (window.contains(QLatin1String("unavailableControls"))) {
+    const QJsonValue value = window.value(QLatin1String("unavailableControls"));
+    if (!value.isString())
+      reject(QStringLiteral("window.unavailableControls must be one of: hide, disable."));
+    config.unavailableControls = parseUnavailableControls(value.toString());
   }
   if (window.contains(QLatin1String("initialSize"))) {
     const QJsonValue value = window.value(QLatin1String("initialSize"));
@@ -139,7 +142,10 @@ WindowCapabilities capabilitiesForPlatform(const QString& platform,
   caps.platform = platform;
   const ActionSupport live{true, {}};
   if (platform == QLatin1String("qnx")) {
-    caps.minimize = {false, kQnxMinimizeReason};
+    // Qt's QQnxWindow::minimize() does nothing. The host minimizes by releasing
+    // the native window, which makes fullscreen-winmgr show the launcher, and
+    // restores it when the app is launched again (WindowHost.h, ADR-0016).
+    caps.minimize = live;
     caps.maximize = platformOptions.contains(QStringLiteral("no-fullscreen"))
                         ? live
                         : ActionSupport{false, kQnxMaximizeReason};
@@ -194,6 +200,19 @@ QStringList platformOptionsFor(const QString& platform, const QStringList& specs
     return parts;
   }
   return {};
+}
+
+QString windowedPlatformSpec(const QString& environmentSpec, bool defaultIsQnx) {
+  if (environmentSpec.trimmed().isEmpty())
+    return defaultIsQnx ? QStringLiteral("qnx:no-fullscreen") : environmentSpec;
+  QStringList specs = environmentSpec.split(QLatin1Char(';'));
+  for (QString& spec : specs) {
+    QStringList parts = spec.split(QLatin1Char(':'));
+    if (parts.isEmpty() || parts.first().trimmed() != QLatin1String("qnx")) continue;
+    if (!parts.contains(QStringLiteral("no-fullscreen"))) parts.append(QStringLiteral("no-fullscreen"));
+    spec = parts.join(QLatin1Char(':'));
+  }
+  return specs.join(QLatin1Char(';'));
 }
 
 ChromeLayout layoutChrome(const WindowChromeConfig& config,

@@ -1,13 +1,15 @@
 include_guard(GLOBAL)
 
 # Reads the optional `window` object that prepare-native writes (PR #122 shape:
-# controls, titleBarStyle, initialSize) and generates a header for main.cpp.
+# controls, titleBarStyle, initialSize, plus unavailableControls) and generates
+# a header for main.cpp.
 # The same rules as resolveQnxWindow and rnqnx::window::parseWindowChromeConfig.
 # A descriptor without `window` predates the field and keeps the chromeless
 # window. See docs/adr/0016.
 function(rnqnx_consumer_window_chrome config output_dir out_header)
   set(controls "macos")
   set(style "none")
+  set(unavailable "hide")
   set(width 0)
   set(height 0)
   string(JSON window_type ERROR_VARIABLE json_error TYPE "${config}" window)
@@ -21,12 +23,13 @@ function(rnqnx_consumer_window_chrome config output_dir out_header)
       math(EXPR last "${member_count} - 1")
       foreach(index RANGE ${last})
         string(JSON key MEMBER "${config}" window ${index})
-        if(NOT key MATCHES "^(controls|titleBarStyle|initialSize)$")
+        if(NOT key MATCHES "^(controls|titleBarStyle|initialSize|unavailableControls)$")
           message(FATAL_ERROR "Consumer window.${key} is not a supported window option")
         endif()
       endforeach()
     endif()
-    foreach(pair "controls;controls;^(macos|windows)$" "titleBarStyle;style;^(default|hidden|none)$")
+    foreach(pair "controls;controls;^(macos|windows)$" "titleBarStyle;style;^(default|hidden|none)$"
+        "unavailableControls;unavailable;^(hide|disable)$")
       list(GET pair 0 key)
       list(GET pair 1 variable)
       list(GET pair 2 pattern)
@@ -58,6 +61,7 @@ function(rnqnx_consumer_window_chrome config output_dir out_header)
   endif()
   set(RNQNX_WINDOW_CONTROLS "${controls}")
   set(RNQNX_WINDOW_STYLE "${style}")
+  set(RNQNX_WINDOW_UNAVAILABLE "${unavailable}")
   set(RNQNX_WINDOW_WIDTH "${width}")
   set(RNQNX_WINDOW_HEIGHT "${height}")
   set(header "${output_dir}/WindowChrome.generated.h")

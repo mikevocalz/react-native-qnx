@@ -73,10 +73,10 @@ class WindowChromeModelTest : public QObject {
     QCOMPARE(config.initialSize.value(), QSize(16384, 1));
   }
 
-  void qnxHidesMinimizeAndDrag() {
+  void qnxMinimizesButCannotDrag() {
     const auto caps = capabilitiesForPlatform(QStringLiteral("qnx"));
-    QVERIFY(!caps.minimize.available);
-    QVERIFY(caps.minimize.reason.contains(QStringLiteral("minimize()")));
+    QVERIFY(caps.minimize.available);
+    QVERIFY(caps.minimize.reason.isEmpty());
     QVERIFY(!caps.systemMove);
   }
 
@@ -91,7 +91,7 @@ class WindowChromeModelTest : public QObject {
                                 SurfaceResize::FollowsWindow);
     QVERIFY(windowed.maximize.available);
     QVERIFY(windowed.maximize.reason.isEmpty());
-    QVERIFY(!windowed.minimize.available);
+    QVERIFY(windowed.minimize.available);
   }
 
   // Review item 2: the host starts the React surface once, so maximize is
@@ -194,6 +194,19 @@ class WindowChromeModelTest : public QObject {
     QVERIFY(platformOptionsFor(QStringLiteral("cocoa"), specs).isEmpty());
   }
 
+  void windowedSpecAddsNoFullscreenToQnxOnly() {
+    QCOMPARE(windowedPlatformSpec(QString(), true), QStringLiteral("qnx:no-fullscreen"));
+    QCOMPARE(windowedPlatformSpec(QString(), false), QString());
+    QCOMPARE(windowedPlatformSpec(QStringLiteral("qnx"), true), QStringLiteral("qnx:no-fullscreen"));
+    QCOMPARE(windowedPlatformSpec(QStringLiteral("qnx:no-fullscreen"), true),
+             QStringLiteral("qnx:no-fullscreen"));
+    QCOMPARE(windowedPlatformSpec(QStringLiteral("qnx:flush-screen-context"), true),
+             QStringLiteral("qnx:flush-screen-context:no-fullscreen"));
+    QCOMPARE(windowedPlatformSpec(QStringLiteral("offscreen;qnx"), true),
+             QStringLiteral("offscreen;qnx:no-fullscreen"));
+    QCOMPARE(windowedPlatformSpec(QStringLiteral("cocoa"), false), QStringLiteral("cocoa"));
+  }
+
   void macosLayoutPutsControlsLeftInOrder() {
     const auto layout = layoutChrome({}, desktop(), 800);
     QVERIFY(layout.barVisible);
@@ -235,19 +248,36 @@ class WindowChromeModelTest : public QObject {
     }
   }
 
+  // Full-screen QNX (no `no-fullscreen`): maximize is the only control that
+  // cannot run, and the remaining two close up.
   void hiddenControlsCloseUpOnQnx() {
     for (const auto controls : {ControlsLayout::MacOS, ControlsLayout::Windows}) {
       WindowChromeConfig config;
       config.controls = controls;
       const auto layout = layoutChrome(config, capabilitiesForPlatform(QStringLiteral("qnx")), 1920);
-      QCOMPARE(actions(layout), std::vector<WindowAction>{WindowAction::Close});
-      QCOMPARE(layout.hidden.size(), size_t(2));
-      for (const auto& hidden : layout.hidden) QVERIFY(!hidden.reason.isEmpty());
+      const auto expected = controls == ControlsLayout::MacOS
+                                ? std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize}
+                                : std::vector<WindowAction>{WindowAction::Minimize, WindowAction::Close};
+      QCOMPARE(actions(layout), expected);
+      QCOMPARE(layout.hidden.size(), size_t(1));
+      QCOMPARE(layout.hidden.front().action, WindowAction::Maximize);
+      QVERIFY(!layout.hidden.front().reason.isEmpty());
       if (controls == ControlsLayout::MacOS)
         QCOMPARE(layout.controls.front().hitRect.left(), kEdgePadding);
       else
-        QCOMPARE(layout.controls.front().hitRect.right(), 1920.0);
+        QCOMPARE(layout.controls.back().hitRect.right(), 1920.0);
     }
+  }
+
+  void windowedQnxKeepsAllThreeLive() {
+    const auto caps = capabilitiesForPlatform(QStringLiteral("qnx"), {QStringLiteral("no-fullscreen")},
+                                              SurfaceResize::FollowsWindow);
+    const auto layout = layoutChrome({}, caps, 1280);
+    QCOMPARE(actions(layout), (std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize,
+                                                         WindowAction::Maximize}));
+    QVERIFY(layout.hidden.empty());
+    QVERIFY(layout.disabled.empty());
+    for (const auto& slot : layout.controls) QVERIFY(slot.enabled);
   }
 
   void disabledModeKeepsAllThreeOnQnx() {
@@ -257,11 +287,11 @@ class WindowChromeModelTest : public QObject {
     QCOMPARE(actions(layout), (std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize,
                                                          WindowAction::Maximize}));
     QVERIFY(layout.hidden.empty());
-    QCOMPARE(layout.disabled.size(), size_t(2));
+    QCOMPARE(layout.disabled.size(), size_t(1));
     QVERIFY(layout.controls.at(0).enabled);
-    QVERIFY(!layout.controls.at(1).enabled);
-    QVERIFY(!layout.controls.at(1).reason.isEmpty());
+    QVERIFY(layout.controls.at(1).enabled);
     QVERIFY(!layout.controls.at(2).enabled);
+    QVERIFY(!layout.controls.at(2).reason.isEmpty());
     // Live platforms are unchanged by the mode.
     QVERIFY(layoutChrome(config, desktop(), 800).disabled.empty());
   }

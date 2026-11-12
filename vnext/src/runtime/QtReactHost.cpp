@@ -54,6 +54,7 @@
 #include <QMetaObject>
 
 #include <algorithm>
+#include <cstdio>
 #include <exception>
 #include <utility>
 
@@ -137,6 +138,13 @@ void QtSchedulerDelegate::schedulerShouldRenderTransactions(
   while (auto transaction = mountingCoordinator->pullTransaction()) {
     lastFailures_ = adapter_.apply(transaction->getMutations());
     ++mountedTransactionCount_;
+    // A failed mutation leaves a view (and often its subtree) off screen with
+    // no other trace, so each one is logged.
+    for (const auto& failure : lastFailures_) {
+      std::fprintf(stderr, "RNQNX_MOUNT_FAILURE type=%d tag=%d error=%d %s\n",
+                   static_cast<int>(failure.type), static_cast<int>(failure.tag),
+                   static_cast<int>(failure.error), failure.detail.toUtf8().constData());
+    }
   }
 }
 
@@ -1057,6 +1065,15 @@ void QtReactHost::startEmptySurface(
 #if RNQNX_ENABLE_FRAME_TRACE
   if (impl_->trace) impl_->surfaceGenerations[surfaceId] = generation;
 #endif
+}
+
+void QtReactHost::resizeSurface(SurfaceId surfaceId, float width, float height) {
+  const auto found = impl_->surfaces.find(surfaceId);
+  if (found == impl_->surfaces.end() || width <= 0 || height <= 0) {
+    return;
+  }
+  found->second->constraintLayout(
+      makeLayoutConstraints(width, height), facebook::react::LayoutContext{});
 }
 
 void QtReactHost::stopSurface(SurfaceId surfaceId) {

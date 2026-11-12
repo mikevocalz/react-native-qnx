@@ -6,6 +6,7 @@ inline WindowChromeConfig configuredWindowChrome() {
   WindowChromeConfig config;
   config.controls = parseControlsLayout(QStringLiteral("@RNQNX_WINDOW_CONTROLS@"));
   config.titleBarStyle = parseTitleBarStyle(QStringLiteral("@RNQNX_WINDOW_STYLE@"));
+  config.unavailableControls = parseUnavailableControls(QStringLiteral("@RNQNX_WINDOW_UNAVAILABLE@"));
   constexpr int width = @RNQNX_WINDOW_WIDTH@;
   constexpr int height = @RNQNX_WINDOW_HEIGHT@;
   if (width > 0 && height > 0) config.initialSize = QSize(width, height);

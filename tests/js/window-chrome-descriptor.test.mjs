@@ -30,6 +30,7 @@ await check('reads the PR #122 resolved window object', async () => {
     controls: 'windows',
     titleBarStyle: 'hidden',
     initialSize: { width: 1024, height: 600 },
+    unavailableControls: 'hide',
     legacy: false,
   });
 });
@@ -39,8 +40,20 @@ await check('fills defaults for an empty window object', async () => {
     controls: 'macos',
     titleBarStyle: 'default',
     initialSize: null,
+    unavailableControls: 'hide',
     legacy: false,
   });
+});
+
+await check('reads unavailableControls and rejects other modes', () => {
+  assert.equal(
+    readWindowDescriptor({ window: { unavailableControls: 'disable' } }).unavailableControls,
+    'disable'
+  );
+  assert.throws(
+    () => readWindowDescriptor({ window: { unavailableControls: 'grey' } }),
+    /window\.unavailableControls must be one of: hide, disable/
+  );
 });
 
 await check('keeps a descriptor written before the field chromeless', async () => {

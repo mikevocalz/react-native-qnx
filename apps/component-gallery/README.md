@@ -14,3 +14,8 @@ node packages/react-native-qnx-cli/src/bin.mjs bundle-qnx --app component-galler
 
 Stage `assets/icon.png` as `assets/assets/icon.png` next to the bundle; the
 Image card loads it from there.
+
+The app opens as a 1280 x 800 window (`extra.rnqnx.window.initialSize`) with
+the macOS-style title bar. The Components page lays its cards out in one, two
+or three columns from the measured window width. Building and running it on
+the Pi 400 is in [the Pi 400 desktop guide](../../docs/getting-started/pi400-desktop-app.md).

@@ -9,6 +9,17 @@ Item {
     required property QtObject chrome
     readonly property bool macos: chrome.controlsLayout === "macos"
     readonly property bool maximized: chrome.maximized
+    // Light only when the platform says the system is light (macOS, Windows).
+    // QNX reports no colour scheme, so the bar is dark there, like the QNX
+    // desktop launcher and most QNX apps (ADR-0016 item 10).
+    readonly property bool light: Qt.styleHints.colorScheme === Qt.ColorScheme.Light
+    readonly property color barColor: light ? (chrome.active ? "#ececec" : "#f6f6f6")
+                                            : (chrome.active ? "#13202f" : "#172433")
+    readonly property color separatorColor: light ? "#d0d0d0" : "#060c14"
+    readonly property color titleColor: light ? (chrome.active ? "#1d1d1f" : "#86868b")
+                                              : (chrome.active ? "#e6edf3" : "#7d8a99")
+    readonly property color glyphInk: light ? "#1d1d1f" : "#e6edf3"
+    readonly property color unavailableLight: light ? "#d4d4d4" : "#3b4858"
 
     x: 0
     y: 0
@@ -22,13 +33,13 @@ Item {
         objectName: "rnqnxTitleBar"
         anchors.fill: parent
         visible: root.chrome.barVisible
-        color: root.chrome.active ? "#ececec" : "#f6f6f6"
+        color: root.barColor
         Rectangle {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             height: 1
-            color: "#d0d0d0"
+            color: root.separatorColor
         }
         // Drag-to-move only where the QPA reports support (never on QNX).
         MouseArea {
@@ -36,6 +47,12 @@ Item {
             enabled: root.chrome.systemMoveAvailable
             acceptedButtons: Qt.LeftButton
             onPressed: root.chrome.beginSystemMove()
+        }
+        // Double click on the bar toggles maximize, as on macOS and Windows.
+        TapHandler {
+            enabled: root.chrome.maximizeAvailable
+            acceptedButtons: Qt.LeftButton
+            onDoubleTapped: root.chrome.trigger("maximize")
         }
         // Icon and title as one group, centred (macOS) or left-aligned
         // (Windows) inside the title rectangle the C++ layout reserved.
@@ -72,7 +89,7 @@ Item {
                 width: titleArea.textWidth
                 height: parent.height
                 text: root.chrome.title
-                color: root.chrome.active ? "#1d1d1f" : "#86868b"
+                color: root.titleColor
                 font.pixelSize: 14
                 font.weight: Font.DemiBold
                 elide: Text.ElideRight
@@ -125,7 +142,7 @@ Item {
                 radius: 7
                 // Disabled lights are grey, as macOS draws a control the
                 // window cannot use.
-                color: !control.live ? "#d4d4d4"
+                color: !control.live ? root.unavailableLight
                      : control.action === "close" ? "#ff5f57"
                      : control.action === "minimize" ? "#febc2e" : "#28c840"
                 border.width: 1
@@ -151,12 +168,13 @@ Item {
                 color: !control.live ? "transparent"
                     : control.action === "close"
                     ? (control.pressed ? "#f1707a" : control.hovered ? "#e81123" : "transparent")
-                    : (control.pressed ? "#cccccc" : control.hovered ? "#e0e0e0" : "transparent")
+                    : (control.pressed ? (root.light ? "#cccccc" : "#2c3b4d")
+                                       : control.hovered ? (root.light ? "#e0e0e0" : "#223142") : "transparent")
                 Item {
                     anchors.centerIn: parent
                     width: 10
                     height: 10
-                    readonly property color ink: control.action === "close" && control.hovered ? "white" : "#1d1d1f"
+                    readonly property color ink: control.action === "close" && control.hovered ? "white" : root.glyphInk
                     Rectangle {
                         visible: control.action === "minimize"
                         anchors.verticalCenter: parent.verticalCenter

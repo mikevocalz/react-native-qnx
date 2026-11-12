@@ -23,6 +23,19 @@ const INK = '#e9f0f7';
 const MUTED = '#9dafc2';
 const ACCENT = '#79e8dc';
 const PANEL = '#142538';
+const BACKGROUND = '#0c1929';
+const SELECTED = '#1b5b61';
+const GAP = 20;
+
+// Columns for the card grid. Card widths are whole pixels computed from the
+// measured content width: percentage widths that add up to exactly 100%
+// (48% + 2% margin) can overflow by a rounding error in Yoga and wrap every
+// card onto its own line, which left the right half of a 1920 px window empty.
+function gridColumns(width) {
+  if (width >= 1500) return 3;
+  if (width >= 900) return 2;
+  return 1;
+}
 
 const useConformance = create((set) => ({
   page: 'gallery',
@@ -65,16 +78,37 @@ function NavButton({ id, title, selected, onChoose, compact = false }) {
       accessibilityRole: 'button',
       accessibilityLabel: title,
       style: {
-        minHeight: compact ? 34 : 42,
-        paddingHorizontal: compact ? 12 : 16,
-        paddingVertical: compact ? 6 : 10,
-        backgroundColor: selected ? '#1b5b61' : PANEL,
-        borderRadius: 10,
-        marginRight: compact ? 6 : 8,
-        marginBottom: compact ? 6 : 8,
+        minHeight: compact ? 34 : 40,
+        paddingHorizontal: compact ? 12 : 18,
+        justifyContent: 'center',
+        backgroundColor: selected ? SELECTED : 'transparent',
+        borderRadius: 9,
+        marginRight: compact ? 4 : 6,
       },
     },
-    h(Label, { color: selected ? '#f2ffff' : INK, size: 14 }, title)
+    h(Label, { color: selected ? '#f2ffff' : MUTED, size: 15 }, title)
+  );
+}
+
+function ActionButton({ title, onPress }) {
+  return h(
+    Pressable,
+    {
+      onPress,
+      accessible: true,
+      accessibilityRole: 'button',
+      accessibilityLabel: title,
+      style: ({ pressed }) => ({
+        alignSelf: 'flex-start',
+        minHeight: 44,
+        paddingHorizontal: 20,
+        justifyContent: 'center',
+        backgroundColor: pressed ? '#237a80' : SELECTED,
+        borderRadius: 10,
+        marginBottom: 12,
+      }),
+    },
+    h(Label, { color: '#f2ffff', size: 15 }, title)
   );
 }
 
@@ -89,17 +123,24 @@ function GalleryPage() {
   const setModal = useConformance((state) => state.setModal);
   const width = useConformance((state) => state.width);
   const [imageStatus, setImageStatus] = React.useState('Waiting for image decode');
-  const card = (key, title, detail, ...children) =>
-    h(
+  // The page is the root's content width; the root pads 28 px on each side.
+  const inner = Math.max(0, width - 2 * 28);
+  const columns = gridColumns(inner);
+  const cardWidth = Math.floor((inner - GAP * (columns - 1)) / columns);
+  let cardIndex = 0;
+  const card = (key, title, detail, ...children) => {
+    const lastInRow = cardIndex % columns === columns - 1;
+    cardIndex += 1;
+    return h(
       View,
       {
         key,
         style: {
-          width: width >= 900 ? '48%' : '100%',
-          padding: 20,
-          marginBottom: 16,
-          marginRight: width >= 900 ? '2%' : 0,
-          minHeight: 220,
+          width: inner > 0 ? cardWidth : '100%',
+          padding: 22,
+          marginBottom: GAP,
+          marginRight: lastInRow ? 0 : GAP,
+          minHeight: 236,
           borderRadius: 14,
           backgroundColor: PANEL,
         },
@@ -107,6 +148,7 @@ function GalleryPage() {
       h(Heading, { title, detail }),
       ...children
     );
+  };
   return h(
     ScrollView,
     { style: { flex: 1 }, contentContainerStyle: { paddingBottom: 24 } },
@@ -156,12 +198,7 @@ function GalleryPage() {
         'press',
         'Pressable',
         'Mouse/touch → React handler → native text update',
-        h(NavButton, {
-          id: 'press',
-          title: 'Press count: ' + presses,
-          selected: true,
-          onChoose: press,
-        }),
+        h(ActionButton, { title: 'Press count: ' + presses, onPress: press }),
         h(
           Label,
           null,
@@ -181,7 +218,7 @@ function GalleryPage() {
             paddingHorizontal: 14,
             fontSize: 18,
             color: INK,
-            backgroundColor: '#0c1929',
+            backgroundColor: BACKGROUND,
             borderRadius: 8,
             marginBottom: 12,
           },
@@ -199,6 +236,8 @@ function GalleryPage() {
             value: toggle,
             onValueChange: setToggle,
             accessibilityLabel: 'Gallery switch',
+            trackColor: { false: '#3a4d63', true: '#2fb5a8' },
+            thumbColor: '#f4f8fb',
           }),
           h(
             Label,
@@ -213,12 +252,7 @@ function GalleryPage() {
         'modal',
         'Modal',
         'React-controlled overlay; not a separate OS window',
-        h(NavButton, {
-          id: 'modal',
-          title: 'Open modal',
-          selected: true,
-          onChoose: () => setModal(true),
-        }),
+        h(ActionButton, { title: 'Open modal', onPress: () => setModal(true) }),
         h(Label, null, 'Close the overlay and return to the same component state.')
       )
     ),
@@ -251,12 +285,7 @@ function GalleryPage() {
             detail: 'This content uses the same Fabric / Qt Quick renderer.',
           }),
           h(Label, { color: INK, style: { marginBottom: 20 } }, 'Press count remains ' + presses),
-          h(NavButton, {
-            id: 'close',
-            title: 'Close modal',
-            selected: true,
-            onChoose: () => setModal(false),
-          })
+          h(ActionButton, { title: 'Close modal', onPress: () => setModal(false) })
         )
       )
     )
@@ -397,7 +426,12 @@ function ControlsPage() {
           marginBottom: 16,
         },
       },
-      h(Switch, { value: toggle, onValueChange: setToggle }),
+      h(Switch, {
+        value: toggle,
+        onValueChange: setToggle,
+        trackColor: { false: '#3a4d63', true: '#2fb5a8' },
+        thumbColor: '#f4f8fb',
+      }),
       h(Label, { color: INK, style: { marginLeft: 12 } }, toggle ? 'Switch ON' : 'Switch OFF')
     ),
     h(
@@ -521,6 +555,26 @@ function ConformanceApp() {
             : page === 'adaptive'
               ? h(AdaptivePage)
               : h(LimitationsPage);
+  const width = useConformance((state) => state.width);
+  // Wide windows put the tabs beside the title; narrow ones stack them.
+  const wide = width >= 900;
+  const tabs = h(
+    View,
+    {
+      style: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignSelf: wide ? 'center' : 'flex-start',
+        padding: 4,
+        borderRadius: 12,
+        backgroundColor: PANEL,
+        marginTop: wide ? 0 : 12,
+      },
+    },
+    ...pages.map(([id, title]) =>
+      h(NavButton, { key: id, id, title, selected: page === id, onChoose: goTo, compact })
+    )
+  );
   return h(
     View,
     {
@@ -529,29 +583,40 @@ function ConformanceApp() {
         flex: 1,
         width: '100%',
         height: '100%',
-        backgroundColor: '#0c1929',
-        padding: compact ? 10 : 18,
+        backgroundColor: BACKGROUND,
+        paddingHorizontal: compact ? 12 : 28,
+        paddingTop: compact ? 10 : 22,
+        paddingBottom: compact ? 8 : 14,
       },
       onLayout: (event) => {
-        const { width, height } = event.nativeEvent.layout;
-        if (Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0) {
-          setViewport(Math.round(width), Math.round(height));
+        const { width: w, height: hgt } = event.nativeEvent.layout;
+        if (Number.isFinite(w) && w > 0 && Number.isFinite(hgt) && hgt > 0) {
+          setViewport(Math.round(w), Math.round(hgt));
         }
       },
     },
-    !compact &&
-      h(Label, { color: ACCENT, size: 13 }, 'REACT NATIVE QNX / FABRIC + YOGA + QT QUICK'),
-    h(
-      Label,
-      { color: INK, size: compact ? 22 : 28, style: { marginTop: compact ? 0 : 4 } },
-      'Component gallery'
-    ),
     h(
       View,
-      { style: { flexDirection: 'row', flexWrap: 'wrap', marginTop: compact ? 8 : 14 } },
-      ...pages.map(([id, title]) =>
-        h(NavButton, { key: id, id, title, selected: page === id, onChoose: goTo, compact })
-      )
+      {
+        style: {
+          flexDirection: wide ? 'row' : 'column',
+          justifyContent: 'space-between',
+          alignItems: wide ? 'center' : 'flex-start',
+          marginBottom: compact ? 10 : 22,
+        },
+      },
+      h(
+        View,
+        null,
+        !compact &&
+          h(Label, { color: ACCENT, size: 12 }, 'REACT NATIVE QNX  ·  FABRIC + YOGA + QT QUICK'),
+        h(
+          Label,
+          { color: INK, size: compact ? 22 : 30, style: { marginTop: compact ? 0 : 4 } },
+          'Component gallery'
+        )
+      ),
+      tabs
     ),
     h(View, { style: { flex: 1, minHeight: 0 } }, content),
     !compact &&

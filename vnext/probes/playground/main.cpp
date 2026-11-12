@@ -23,6 +23,7 @@
 #include "react-native-qnx/fabric/QtTouchDispatcher.h"
 #if RNQNX_ENABLE_WINDOW_CHROME
 #include "WindowChrome.h"
+#include "WindowHost.h"
 #ifdef RNQNX_CONSUMER_WINDOW_HEADER
 #include RNQNX_CONSUMER_WINDOW_HEADER
 #endif
@@ -43,6 +44,8 @@
 #include <QCoreApplication>
 #include <QFile>
 #include <QFileInfo>
+#include <QFont>
+#include <QFontDatabase>
 #include <QGuiApplication>
 #include <QImage>
 #include <QQmlEngine>
@@ -156,8 +159,49 @@ constexpr const char* kImageSource =
 // multi-line `TextEdit`, both hosted in an `Item` that provides a `text`
 // property, `textChanged` signal, and an overlaid placeholder `Text`.
 const char* kTextInputSource = rnqnx::views::textInputQml();
+// Mouse wheel: Flickable turns a wheel notch into a fling scaled to 120
+// angle units, but Qt's QNX plugin reports a notch as 10 (Screen's +-1 times
+// -10), so a notch moved the page a few pixels. The handler scrolls a fixed
+// distance per notch on every platform, eases over 120 ms, and leaves the event
+// to an outer scroll view when this one is already at its edge.
 constexpr const char* kScrollViewSource =
-    "import QtQuick\nFlickable { visible: true; clip: true }\n";
+    "import QtQuick\n"
+    "Flickable {\n"
+    "  id: root\n"
+    "  visible: true\n"
+    "  clip: true\n"
+    "  boundsBehavior: Flickable.StopAtBounds\n"
+    "  property real wheelStep: 100\n"
+    "  readonly property real notchUnits: Qt.platform.os === 'qnx' ? 10 : 120\n"
+    "  property real wheelTargetX: 0\n"
+    "  property real wheelTargetY: 0\n"
+    "  function clampTo(value, low, high) { return Math.max(low, Math.min(high, value)); }\n"
+    "  NumberAnimation { id: wheelX; target: root; property: 'contentX'; duration: 120;\n"
+    "    easing.type: Easing.OutCubic }\n"
+    "  NumberAnimation { id: wheelY; target: root; property: 'contentY'; duration: 120;\n"
+    "    easing.type: Easing.OutCubic }\n"
+    "  WheelHandler {\n"
+    "    target: null\n"
+    "    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad\n"
+    "    onWheel: (event) => {\n"
+    "      let dx = event.pixelDelta.x !== 0 ? event.pixelDelta.x\n"
+    "                                          : event.angleDelta.x / root.notchUnits * root.wheelStep;\n"
+    "      let dy = event.pixelDelta.y !== 0 ? event.pixelDelta.y\n"
+    "                                          : event.angleDelta.y / root.notchUnits * root.wheelStep;\n"
+    "      if ((event.modifiers & Qt.ShiftModifier) && dx === 0) { dx = dy; dy = 0; }\n"
+    "      const maxX = root.originX + Math.max(0, root.contentWidth - root.width);\n"
+    "      const maxY = root.originY + Math.max(0, root.contentHeight - root.height);\n"
+    "      const fromX = wheelX.running ? root.wheelTargetX : root.contentX;\n"
+    "      const fromY = wheelY.running ? root.wheelTargetY : root.contentY;\n"
+    "      const toX = root.clampTo(fromX - dx, root.originX, maxX);\n"
+    "      const toY = root.clampTo(fromY - dy, root.originY, maxY);\n"
+    "      let moved = false;\n"
+    "      if (toX !== fromX) { root.wheelTargetX = toX; wheelX.to = toX; wheelX.restart(); moved = true; }\n"
+    "      if (toY !== fromY) { root.wheelTargetY = toY; wheelY.to = toY; wheelY.restart(); moved = true; }\n"
+    "      event.accepted = moved;\n"
+    "    }\n"
+    "  }\n"
+    "}\n";
 constexpr const char* kActivityIndicatorSource =
     "import QtQuick\n"
     "Item {\n"
@@ -194,51 +238,113 @@ constexpr const char* kActivityIndicatorSource =
     "    }\n"
     "  }\n"
     "}\n";
+// Drawn like a native switch on any background: a grey off track (white
+// track and white thumb used to read as an empty pill), a thumb with a hairline
+// edge, a short slide, and a dimmed look when disabled. The root draws nothing
+// itself, so RN background styles cannot cover the track.
 constexpr const char* kSwitchSource =
     "import QtQuick\n"
-    "Rectangle {\n"
+    "Item {\n"
     "  id: root\n"
     "  property bool value: false\n"
     "  property bool disabled: false\n"
-    "  property color trackOnColor: '#4cd964'\n"
-    "  property color trackOffColor: '#ffffff'\n"
+    "  property color trackOnColor: '#34c759'\n"
+    "  property color trackOffColor: '#d1d1d6'\n"
     "  property color thumbColor: '#ffffff'\n"
     "  visible: true\n"
+    "  opacity: disabled ? 0.5 : 1\n"
     "  Rectangle {\n"
     "    id: track\n"
+    "    objectName: 'switchTrack'\n"
     "    anchors.fill: parent\n"
-    "    radius: parent.height / 2\n"
+    "    radius: height / 2\n"
     "    color: root.value ? root.trackOnColor : root.trackOffColor\n"
+    "    Behavior on color { ColorAnimation { duration: 120 } }\n"
     "  }\n"
     "  Rectangle {\n"
     "    id: thumb\n"
+    "    objectName: 'switchThumb'\n"
     "    width: parent.height - 4\n"
     "    height: width\n"
     "    radius: width / 2\n"
     "    color: root.thumbColor\n"
+    "    border.width: 1\n"
+    "    border.color: Qt.rgba(0, 0, 0, 0.12)\n"
     "    anchors.verticalCenter: parent.verticalCenter\n"
     "    x: root.value ? parent.width - width - 2 : 2\n"
+    "    Behavior on x { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }\n"
     "  }\n"
     "  MouseArea {\n"
     "    anchors.fill: parent\n"
     "    enabled: !root.disabled\n"
-    "    onClicked: {\n"
-    "      root.value = !root.value;\n"
-    "    }\n"
+    "    cursorShape: Qt.PointingHandCursor\n"
+    "    onClicked: root.value = !root.value\n"
     "  }\n"
     "}\n";
 constexpr int kWindowWidth = 640;
 constexpr int kWindowHeight = 480;
 
+#if RNQNX_ENABLE_WINDOW_CHROME
+// True when argv has `name` as a flag or as `name=value`.
+bool hasArgument(int argc, char** argv, const char* name) {
+  const QByteArray wanted(name);
+  for (int i = 1; i < argc; ++i) {
+    const QByteArray argument(argv[i]);
+    if (argument == wanted || argument.startsWith(wanted + '=')) return true;
+  }
+  return false;
+}
+#endif
+
 }  // namespace
 
 int main(int argc, char** argv) {
 #if RNQNX_ENABLE_WINDOW_CHROME
+  // A desktop app with an initial size opens as a normal window. On QNX that
+  // needs the qnx plugin's no-fullscreen option, which has to be in place
+  // before QGuiApplication loads the plugin (ADR-0016 item 8). --fullscreen,
+  // or an explicit -platform argument, keeps the old full-screen window.
+  {
+    bool sized = hasArgument(argc, argv, "--window-size");
+#ifdef RNQNX_CONSUMER_WINDOW_HEADER
+    try {
+      sized = sized || rnqnx::window::configuredWindowChrome().initialSize.has_value();
+    } catch (const std::exception&) {
+      // Reported with the rest of the window configuration below.
+    }
+#endif
+    if (sized && !hasArgument(argc, argv, "--fullscreen") &&
+        !hasArgument(argc, argv, "-platform") && !hasArgument(argc, argv, "--platform")) {
+#if defined(Q_OS_QNX)
+      constexpr bool defaultIsQnx = true;
+#else
+      constexpr bool defaultIsQnx = false;
+#endif
+      const QString spec = rnqnx::window::windowedPlatformSpec(
+          qEnvironmentVariable("QT_QPA_PLATFORM"), defaultIsQnx);
+      if (!spec.isEmpty()) qputenv("QT_QPA_PLATFORM", spec.toUtf8());
+    }
+  }
   // Read before QGuiApplication strips -platform from argv (ADR-0016).
   const QStringList platformSpecs = rnqnx::window::platformSpecsFromArguments(
       argc, argv, qEnvironmentVariable("QT_QPA_PLATFORM"));
 #endif
   QGuiApplication app(argc, argv);
+#if defined(Q_OS_QNX)
+  // The QNX font database has no system default; with only DejaVu installed Qt
+  // picked DejaVu Serif. React Native's default text is a sans-serif face.
+  {
+    const QStringList families = QFontDatabase::families();
+    for (const char* name : {"Inter", "Roboto", "Noto Sans", "DejaVu Sans"}) {
+      if (families.contains(QLatin1String(name))) {
+        QFont font = QGuiApplication::font();
+        font.setFamily(QLatin1String(name));
+        QGuiApplication::setFont(font);
+        break;
+      }
+    }
+  }
+#endif
 #ifdef RNQNX_MARATHON_HOST
   // Qt Wayland uses desktopFileName for xdg_toplevel app_id. Marathon's app
   // identity/manifest must ultimately match the upstream-approved runner.
@@ -324,6 +430,22 @@ int main(int argc, char** argv) {
     std::printf("%s\n", rnqnx::runtime::describeApplicationIdentity(identity).constData());
     return 0;
   }
+
+#if RNQNX_ENABLE_WINDOW_CHROME
+  // One window per app: launching it again (from a launcher tile or its run
+  // script) brings back the running copy, including after minimize, instead
+  // of starting a second one. Screenshot runs are one-shot and skip this.
+  std::unique_ptr<rnqnx::window::SingleInstance> singleInstance;
+  if (identity.custom && !parser.isSet(screenshotOption)) {
+    singleInstance = std::make_unique<rnqnx::window::SingleInstance>(identity.appId);
+    if (singleInstance->forwardedToRunningInstance()) {
+      std::printf("RNQNX_SINGLE_INSTANCE restored the running %s\n",
+                  identity.appId.toUtf8().constData());
+      return 0;
+    }
+    singleInstance->listen();
+  }
+#endif
 
   const QString bundlePath = parser.isSet(bundleOption)
       ? parser.value(bundleOption)
@@ -444,8 +566,11 @@ int main(int argc, char** argv) {
       window.setGeometry(window.screen()->geometry());
     }
     try {
+      // The host resizes the React surface with the window (below), so
+      // maximize can be offered wherever the platform can run it.
       chrome = std::make_unique<rnqnx::window::WindowChrome>(window, engine, chromeConfig,
-          rnqnx::window::capabilitiesForPlatform(QGuiApplication::platformName(), platformOptions));
+          rnqnx::window::capabilitiesForPlatform(QGuiApplication::platformName(), platformOptions,
+                                                 rnqnx::window::SurfaceResize::FollowsWindow));
     } catch (const std::exception& error) {
       std::fprintf(stderr, "RNQNX_WINDOW_CHROME_ERROR %s\n", error.what());
       return 1;
@@ -573,6 +698,38 @@ int main(int argc, char** argv) {
       identity.componentName.toStdString(),
       static_cast<float>(surfaceSize.width()),
       static_cast<float>(surfaceSize.height()));
+
+  // The React surface follows the window: a resize, maximize or restore lays
+  // the app out again at the new size. Coalesced so a burst of width and
+  // height changes produces one layout pass.
+  QQuickItem* surfaceRoot = mountRoot;
+  QTimer surfaceResize;
+  surfaceResize.setSingleShot(true);
+  surfaceResize.setInterval(0);
+  QObject::connect(&surfaceResize, &QTimer::timeout, [&host, &adapter, surfaceRoot, &window]() {
+    const QSizeF size = surfaceRoot == window.contentItem() ? QSizeF(window.size()) : surfaceRoot->size();
+    host.resizeSurface(kSurfaceId, static_cast<float>(size.width()), static_cast<float>(size.height()));
+    adapter.surfaceResized();
+  });
+  const auto scheduleResize = [&surfaceResize]() { surfaceResize.start(); };
+  if (surfaceRoot == window.contentItem()) {
+    QObject::connect(&window, &QWindow::widthChanged, scheduleResize);
+    QObject::connect(&window, &QWindow::heightChanged, scheduleResize);
+  } else {
+    QObject::connect(surfaceRoot, &QQuickItem::widthChanged, scheduleResize);
+    QObject::connect(surfaceRoot, &QQuickItem::heightChanged, scheduleResize);
+  }
+#if RNQNX_ENABLE_WINDOW_CHROME
+  if (!parser.isSet(fullscreenOption)) rnqnx::window::keepWindowedGeometry(window);
+  if (singleInstance) {
+    QObject::connect(singleInstance.get(), &rnqnx::window::SingleInstance::restoreRequested,
+        &window, [&window]() {
+          std::printf("RNQNX_WINDOW_ACTION restore\n");
+          std::fflush(stdout);
+          rnqnx::window::restoreMinimizedWindow(window);
+        });
+  }
+#endif
 
   if (parser.isSet(screenshotOption)) {
     for (int i = 0; i < 20; ++i) {

@@ -7,12 +7,14 @@
       "rnqnx": {
         "appId": "org.rnqnx.showcase",
         "componentName": "RNQnxPlayground",
-        "platforms": [
-          "qnx"
-        ],
+        "platforms": ["qnx"],
         "window": {
           "controls": "macos",
-          "titleBarStyle": "default"
+          "titleBarStyle": "default",
+          "initialSize": {
+            "width": 1280,
+            "height": 800
+          }
         }
       }
     }

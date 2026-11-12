@@ -1,6 +1,7 @@
 #include "WindowChrome.h"
 
 #include "WindowChromeQml.generated.h"
+#include "WindowHost.h"
 
 #include <QQmlComponent>
 #include <QQmlEngine>
@@ -113,13 +114,24 @@ void WindowChrome::trigger(const QString& action) {
   if (action == QLatin1String("close")) {
     window_->close();
   } else if (action == QLatin1String("minimize")) {
-    window_->showMinimized();
+    if (capabilities_.platform == QLatin1String("qnx")) {
+      // QQnxWindow::minimize() does nothing; see WindowHost.h.
+      minimizeByDestroyingWindow(*window_);
+    } else {
+      window_->showMinimized();
+    }
   } else if (action == QLatin1String("maximize")) {
     if (maximized())
       window_->showNormal();
     else
       window_->showMaximized();
   }
+}
+
+bool WindowChrome::maximizeAvailable() const {
+  for (const auto& slot : layout_.controls)
+    if (slot.action == WindowAction::Maximize && slot.enabled) return true;
+  return false;
 }
 
 void WindowChrome::setIconSource(const QUrl& source) {

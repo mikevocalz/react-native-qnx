@@ -2,6 +2,7 @@
 // Qt pointer and key events. Host evidence only; no QNX Screen involved.
 
 #include "WindowChrome.h"
+#include "WindowHost.h"
 
 #include <QAccessible>
 #include <QImage>
@@ -11,6 +12,8 @@
 #include <QPointer>
 #include <QSignalSpy>
 #include <QtTest>
+#include <QGuiApplication>
+#include <QStyleHints>
 
 #include <memory>
 
@@ -124,19 +127,20 @@ class WindowChromeQuickTest : public QObject {
     QVERIFY(windows.centre(QStringLiteral("close")).x() > windows.centre(QStringLiteral("maximize")).x());
   }
 
+  // Full-screen QNX: close and minimize are live, maximize is left out.
   void qnxDrawsOnlyLiveControls() {
     for (const auto controls : {ControlsLayout::MacOS, ControlsLayout::Windows}) {
       WindowChromeConfig config;
       config.controls = controls;
       Harness harness(config, capabilitiesForPlatform(QStringLiteral("qnx")), QSize(1920, 1080));
-      QCOMPARE(controlNames(harness), QStringList{QStringLiteral("close")});
+      QCOMPARE(controlNames(harness), (QStringList{QStringLiteral("close"), QStringLiteral("minimize")}));
       QVERIFY(harness.chrome->alwaysShowGlyphs());
       const QStringList hidden = harness.chrome->describeHiddenControls();
-      QCOMPARE(hidden.size(), 2);
-      QVERIFY(hidden.at(0).startsWith(QStringLiteral("RNQNX_WINDOW_CHROME platform=qnx hidden=")));
+      QCOMPARE(hidden.size(), 1);
+      QVERIFY(hidden.at(0).startsWith(QStringLiteral("RNQNX_WINDOW_CHROME platform=qnx hidden=maximize")));
       // A stale call for a hidden control is ignored.
       QSignalSpy spy(harness.chrome.get(), &WindowChrome::actionTriggered);
-      harness.chrome->trigger(QStringLiteral("minimize"));
+      harness.chrome->trigger(QStringLiteral("maximize"));
       QCOMPARE(spy.count(), 0);
     }
   }
@@ -147,10 +151,10 @@ class WindowChromeQuickTest : public QObject {
     Harness harness(config, capabilitiesForPlatform(QStringLiteral("qnx")), QSize(1920, 1080));
     QCOMPARE(controlNames(harness),
         (QStringList{QStringLiteral("close"), QStringLiteral("maximize"), QStringLiteral("minimize")}));
-    QVERIFY(harness.chrome->describeHiddenControls().at(0).contains(QStringLiteral("disabled=minimize")));
+    QVERIFY(harness.chrome->describeHiddenControls().at(0).contains(QStringLiteral("disabled=maximize")));
     QSignalSpy triggered(harness.chrome.get(), &WindowChrome::actionTriggered);
     QSignalSpy unavailable(harness.chrome.get(), &WindowChrome::actionUnavailable);
-    harness.chrome->trigger(QStringLiteral("minimize"));
+    harness.chrome->trigger(QStringLiteral("maximize"));
     QCOMPARE(triggered.count(), 0);
     QCOMPARE(unavailable.count(), 1);
   }
@@ -317,9 +321,26 @@ class WindowChromeQuickTest : public QObject {
     const QColor belowBar = frame.pixelColor(x, qRound(50 * expectedDpr_));
     QVERIFY2(inBar != QColor(Qt::white), qPrintable(inBar.name()));
     QCOMPARE(belowBar, QColor(Qt::white));
-    // The last bar row in device pixels is the 1 px separator.
+    // The last bar row in device pixels is the 1 px separator. The bar is
+    // light only when the platform reports a light colour scheme.
     const QColor separator = frame.pixelColor(x, qRound(44 * expectedDpr_) - 1);
-    QCOMPARE(separator, QColor(QStringLiteral("#d0d0d0")));
+    const bool light = QGuiApplication::styleHints()->colorScheme() == Qt::ColorScheme::Light;
+    QCOMPARE(separator, QColor(light ? QStringLiteral("#d0d0d0") : QStringLiteral("#060c14")));
+  }
+
+  // A second launch of the same app id hands a restore request to the first
+  // and reports that it should exit; a different app id is not affected.
+  void singleInstanceForwardsRestore() {
+    const QString appId = QStringLiteral("org.rnqnx.test%1").arg(QCoreApplication::applicationPid());
+    SingleInstance first(appId);
+    QVERIFY(!first.forwardedToRunningInstance());
+    QVERIFY(first.listen());
+    QSignalSpy restored(&first, &SingleInstance::restoreRequested);
+    SingleInstance second(appId);
+    QVERIFY(second.forwardedToRunningInstance());
+    QTRY_COMPARE(restored.count(), 1);
+    SingleInstance other(appId + QStringLiteral("x"));
+    QVERIFY(!other.forwardedToRunningInstance());
   }
 
   // Writes reference frames when RNQNX_CHROME_FRAMES_DIR is set; used for the

@@ -48,6 +48,8 @@ class WindowChrome final : public QObject {
   Q_PROPERTY(bool alwaysShowGlyphs READ alwaysShowGlyphs CONSTANT)
   // App icon drawn beside the title; empty URL draws none.
   Q_PROPERTY(QUrl iconSource READ iconSource NOTIFY iconChanged)
+  // A double click on the bar toggles maximize only when that control is live.
+  Q_PROPERTY(bool maximizeAvailable READ maximizeAvailable CONSTANT)
 
  public:
   // Creates the chrome item and the content root inside `window`. Throws
@@ -80,6 +82,7 @@ class WindowChrome final : public QObject {
   bool systemMoveAvailable() const { return capabilities_.systemMove; }
   bool alwaysShowGlyphs() const { return capabilities_.platform != QLatin1String("cocoa"); }
   QUrl iconSource() const { return iconSource_; }
+  bool maximizeAvailable() const;
   void setIconSource(const QUrl& source);
 
   // One line per hidden or disabled control, for logs and device receipts.
