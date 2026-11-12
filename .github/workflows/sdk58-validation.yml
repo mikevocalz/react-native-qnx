@@ -11,6 +11,7 @@ on:
       - feat/qnx-integrated-dx-candidate
       - feat/qnx-phases-1-7-integration
       - feat/qnx-consumer-native-app-identity
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -24,12 +25,12 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       - name: Use Node 26
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
-          node-version: 26.10.0
+          node-version: 26.13.1
           package-manager-cache: false
 
       - name: Install pnpm
@@ -89,7 +90,7 @@ jobs:
 
       - name: Preserve fresh-checkout evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: clean-app-${{ github.event.pull_request.head.sha || github.sha }}
           path: build/clean-app-evidence.*/

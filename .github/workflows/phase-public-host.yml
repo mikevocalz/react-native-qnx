@@ -9,6 +9,7 @@ on:
       - 'apps/rn-playground/public-api-probe.js'
       - 'apps/rn-playground/metro.public*'
       - '.github/workflows/phase-public-host.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,12 +27,12 @@ jobs:
       QT_QUICK_BACKEND: software
       QSG_RHI_BACKEND: software
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - uses: actions/setup-node@v5
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
-          node-version: 26.10.0
+          node-version: 26.13.1
           package-manager-cache: false
       - run: npm install --global pnpm@12.8.1
       - run: pnpm install --frozen-lockfile
@@ -41,7 +42,7 @@ jobs:
           sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0 libclang-dev libicu-dev
           python3 -m pip install --user --break-system-packages cmake==3.31.10
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-      - uses: jurplel/install-qt-action@v4
+      - uses: jurplel/install-qt-action@b344308e4483fc892e0d27b3cd1b173ebdd95f06 # v4.5.0
         with:
           version: '6.11.1'
           host: linux
@@ -67,8 +68,8 @@ jobs:
             test -s "$evidence/public-$platform.png"
             sha256sum "$evidence/public-$platform.bundle.js" "$evidence/public-$platform.png" > "$evidence/public-$platform.sha256"
           done
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
-          name: public-host-${{ github.event.pull_request.head.sha }}
+          name: public-host-${{ github.event.pull_request.head.sha || github.sha }}
           path: build/linux-host-renderer/evidence/
