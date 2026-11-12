@@ -12,7 +12,7 @@ const help = `React Native QNX external-project bundling
                   [--out build/<platform>/app.bundle.js] [--dry-run]
 
 QNX is the default. The project supplies installed Metro and its target config:
-metro.config.js for qnx; metro.marathon.config.js for marathon.
+metro.qnx.config.js (else metro.config.js) for qnx; metro.marathon.config.js for marathon.
 Output must be a NEW file below the project's build/ directory.
 This produces JavaScript only, not a native project, module registration or deployment.
 `;
@@ -109,9 +109,20 @@ export async function planProject(argv, cwd = process.cwd()) {
     throw new Error('Project package.json must have a name.');
   }
   const entry = await confined(root, values.entry ?? 'index.js', true);
+  // An app that added QNX with project add-qnx keeps metro.config.js for
+  // iOS/Android/web and carries its QNX config in metro.qnx.config.js.
+  let qnxConfigName = 'metro.config.js';
+  if (platform === 'qnx') {
+    try {
+      await lstat(path.join(root, 'metro.qnx.config.js'));
+      qnxConfigName = 'metro.qnx.config.js';
+    } catch (error) {
+      if (!missing(error)) throw error;
+    }
+  }
   const config = await confined(
     root,
-    platform === 'qnx' ? 'metro.config.js' : 'metro.marathon.config.js',
+    platform === 'qnx' ? qnxConfigName : 'metro.marathon.config.js',
     true
   );
   const relativeOutput = values.out ?? `build/${platform}/app.bundle.js`;
