@@ -129,11 +129,11 @@ library closure were inspected from the built artifacts, rather than assumed.
 An Expo app reaches a QNX board or a desktop host in one of three ways. All
 three use the same `native-app.json` from `rnqnx project prepare-native`.
 
-| Mode                        | What runs                                                                     | Needs the SDP | Command                                            |
-| --------------------------- | ----------------------------------------------------------------------------- | ------------- | -------------------------------------------------- |
-| Prebuilt development runner | A published native host, downloaded once per version set; loads JS from Metro | No            | `rnqnx runner fetch`                               |
-| Custom development build    | A native host built from this checkout with the app's native modules linked   | Yes (QNX)     | `rnqnx project build-native`                       |
-| Standalone package          | The app executable with its bundle embedded (`.hbc` on QNX)                   | Yes (QNX)     | `rnqnx project build-native` with a release bundle |
+| Mode                        | What runs                                                                   | Needs the SDP | Status on this branch                                                      |
+| --------------------------- | --------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
+| Prebuilt development runner | A published native host for one exact SDP + Qt + React Native set           | No            | `rnqnx runner fetch` downloads and verifies it; no runner is published yet |
+| Custom development build    | A native host built from this checkout with the app's native modules linked | Yes (QNX)     | Not a separate command yet; `rnqnx project build-native` is the build path |
+| Standalone package          | The app executable plus its staged bundle (`.hbc` on QNX)                   | Yes (QNX)     | `rnqnx project build-native`; device launch not run                        |
 
 ### Runner manifest format
 
