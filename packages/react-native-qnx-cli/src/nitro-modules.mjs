@@ -1,5 +1,5 @@
 // Discovery of Nitro modules that declare a QNX native build in their own
-// package.json. The format is defined in docs/adr/0017. Discovery reads JSON
+// package.json. The format is defined in docs/adr/0019. Discovery reads JSON
 // only: no package, config or CMake code runs here.
 import { lstat, readFile, realpath } from 'node:fs/promises';
 import path from 'node:path';

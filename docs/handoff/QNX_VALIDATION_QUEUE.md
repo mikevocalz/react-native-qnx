@@ -186,7 +186,7 @@ pending.
 
 A Nitro package declares `"react-native-qnx": {"nitro": {platforms,
 cmakeListsPath, target, initializer}}` in its own `package.json`
-([ADR-0017](../adr/0017-nitro-package-metadata.md)). `project prepare-native`
+([ADR-0019](../adr/0019-nitro-package-metadata.md)). `project prepare-native`
 records matching direct dependencies as `nitroModules` in `native-app.json`;
 `RnqnxConsumerApp.cmake` adds and links each target and calls each
 initializer before `installQnxNitroRuntime`. Evidence:

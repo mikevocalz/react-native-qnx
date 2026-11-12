@@ -81,7 +81,7 @@ Running preparation twice with unchanged config leaves `build/` byte-identical; 
 
 ## Link Nitro modules from npm packages
 
-A Nitro module published outside this repository declares its QNX build in its own `package.json` ([ADR-0017](../adr/0017-nitro-package-metadata.md)):
+A Nitro module published outside this repository declares its QNX build in its own `package.json` ([ADR-0019](../adr/0019-nitro-package-metadata.md)):
 
 ```json
 {

@@ -1,5 +1,5 @@
 // A Nitro module published outside this repository declares its QNX build in
-// its own package.json (docs/adr/0017). This test installs such a package into
+// its own package.json (docs/adr/0019). This test installs such a package into
 // an app that lives outside the workspace, checks discovery, the descriptor,
 // the build-native plan and the CMake reader, then compiles and runs the
 // generated registration header on the host. It is not a QNX build.

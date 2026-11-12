@@ -66,7 +66,7 @@ function(rnqnx_consumer_window_chrome config output_dir out_header)
 endfunction()
 
 # Reads the optional `nitroModules` array that prepare-native writes from each
-# dependency's package.json "react-native-qnx".nitro declaration (docs/adr/0017).
+# dependency's package.json "react-native-qnx".nitro declaration (docs/adr/0019).
 # Adds each package's CMakeLists.txt, checks it defines the declared target and
 # generates a header whose rnqnx::consumer::registerNitroModules() calls every
 # declared initializer. A descriptor without the array links no modules.

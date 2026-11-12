@@ -497,7 +497,7 @@ int main(int argc, char** argv) {
 #endif
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
 #ifdef RNQNX_CONSUMER_NITRO_HEADER
-  // Hybrid classes from the app's Nitro dependencies (docs/adr/0017), before
+  // Hybrid classes from the app's Nitro dependencies (docs/adr/0019), before
   // the Nitro proxy is installed into the runtime.
   rnqnx::consumer::registerNitroModules();
 #endif

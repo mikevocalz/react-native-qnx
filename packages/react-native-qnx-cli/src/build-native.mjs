@@ -19,7 +19,7 @@ const HELP = [
   '--window-chrome compiles the experimental title bar from native-app.json',
   '"window" (RNQNX_ENABLE_WINDOW_CHROME, default OFF; see docs/adr/0016).',
   'Nitro modules recorded in native-app.json "nitroModules" are added with',
-  'add_subdirectory, linked and registered at startup (docs/adr/0017). They',
+  'add_subdirectory, linked and registered at startup (docs/adr/0019). They',
   'need the QNX toolchain build; --host-preview rejects them.',
   'Requires the reviewed source checkout/native prerequisites. No deployment.',
 ].join('\n');
@@ -81,7 +81,7 @@ export async function planNativeBuild(
   const nitroModules = configuration.nitroModules ?? [];
   if (nitroModules.length && preview)
     throw new Error(
-      `--host-preview does not build the Nitro runtime; drop it to build ${nitroModules.map((module) => module.package).join(', ')} with the QNX toolchain (docs/adr/0017).`
+      `--host-preview does not build the Nitro runtime; drop it to build ${nitroModules.map((module) => module.package).join(', ')} with the QNX toolchain (docs/adr/0019).`
     );
   const buildDir = path.join(project, 'build', platform, preview ? 'preview-native' : 'native');
   try {

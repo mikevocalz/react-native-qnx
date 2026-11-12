@@ -309,7 +309,7 @@ export async function inspectConsumer(project, options = {}) {
         observed:
           modules.map((module) => `${module.package}@${module.version}`).join(', ') || 'none',
         message: modules.length
-          ? 'Nitro module declarations in package.json are well formed (docs/adr/0017); nothing was compiled.'
+          ? 'Nitro module declarations in package.json are well formed (docs/adr/0019); nothing was compiled.'
           : 'No direct dependency declares a Nitro module for this platform.',
       });
     } catch (error) {

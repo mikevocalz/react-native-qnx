@@ -49,7 +49,7 @@ Resolves app.json or app.config.js/ts through @expo/config (config plugins
 included) and reads expo.name, expo.icon and
 expo.extra.rnqnx.{appId,componentName,window,icon,shortName}.
 Direct dependencies whose package.json declares "react-native-qnx": {"nitro":
-{...}} for the platform are recorded as nitroModules (docs/adr/0017). Only
+{...}} for the platform are recorded as nitroModules (docs/adr/0019). Only
 JSON is read for that; no package code runs.
 Set the extra.rnqnx values through the @rn-qnx/expo-qnx-config-plugins entry
 in "plugins".
