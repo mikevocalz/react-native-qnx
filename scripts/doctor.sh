@@ -256,17 +256,20 @@ fi
 echo ""
 echo "[4/8] Node.js tooling" | tee -a "${LOG_FILE}"
 check_cmd node "26.0.0" "install Node.js 26 or newer from https://nodejs.org (or your version manager), then open a new shell"
-PNPM_FIX="install pnpm 12.8.1: npm install -g pnpm@12.8.1 (Node 26 does not bundle Corepack)"
+# The pin comes from package.json "packageManager", so a pnpm bump needs no edit here.
+PNPM_PIN="$(sed -n 's/.*"packageManager": *"pnpm@\([^"]*\)".*/\1/p' "${PROJECT_ROOT}/package.json" 2>/dev/null)"
+PNPM_PIN="${PNPM_PIN:-12.18.0}"
+PNPM_FIX="install pnpm ${PNPM_PIN}: npm install -g pnpm@${PNPM_PIN} (Node 26 does not bundle Corepack)"
 if ! command -v pnpm >/dev/null 2>&1; then
   fail "pnpm is not installed or not on PATH." "${PNPM_FIX}"
 else
   set +e
   PNPM_ACTUAL="$(pnpm --version 2>&1 | head -n1 | sed 's/^v//')"
   set -e
-  if [[ "${PNPM_ACTUAL}" == "12.8.1" ]]; then
+  if [[ "${PNPM_ACTUAL}" == "${PNPM_PIN}" ]]; then
     ok "pnpm ${PNPM_ACTUAL} matches the repository pin"
   else
-    fail "pnpm reported '${PNPM_ACTUAL}', but this repository pins 12.8.1." "${PNPM_FIX}"
+    fail "pnpm reported '${PNPM_ACTUAL}', but this repository pins ${PNPM_PIN}." "${PNPM_FIX}"
   fi
 fi
 if [[ -f "${PROJECT_ROOT}/package.json" ]]; then

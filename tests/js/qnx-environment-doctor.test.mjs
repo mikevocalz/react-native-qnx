@@ -52,7 +52,7 @@ async function run(scenario) {
   );
   const versioned = /** @type {const} */ ([
     ['node', scenario.node === undefined ? 'v26.13.0' : scenario.node],
-    ['pnpm', scenario.pnpm === undefined ? '12.8.1' : scenario.pnpm],
+    ['pnpm', scenario.pnpm === undefined ? '12.18.0' : scenario.pnpm],
     ['cmake', scenario.cmake === undefined ? 'cmake version 4.1.2' : scenario.cmake],
     ['ninja', scenario.ninja === undefined ? '1.13.1' : scenario.ninja],
     ['python3', scenario.python === undefined ? 'Python 3.13.1' : scenario.python],
@@ -171,12 +171,12 @@ try {
   r = await run({ pnpm: null });
   assert.match(
     r.out,
-    /ERROR: pnpm is not installed or not on PATH\.\n {4}Fix: install pnpm 12\.8\.1/
+    /ERROR: pnpm is not installed or not on PATH\.\n {4}Fix: install pnpm 12\.18\.0/
   );
   r = await run({ pnpm: '10.32.1' });
   assert.equal(r.status, 1);
-  assert.match(r.out, /ERROR: pnpm reported '10\.32\.1', but this repository pins 12\.8\.1\./);
-  assert.match(r.out, /npm install -g pnpm@12\.8\.1/);
+  assert.match(r.out, /ERROR: pnpm reported '10\.32\.1', but this repository pins 12\.18\.0\./);
+  assert.match(r.out, /npm install -g pnpm@12\.18\.0/);
   checks += 1;
 
   // CMake, Ninja and Python minimums name the bootstrap script for the host.

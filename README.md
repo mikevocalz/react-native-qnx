@@ -14,17 +14,17 @@ prerequisite. The Pi 400 receipts retain their evaluation-artifact provenance. R
 
 ## Start from source
 
-Use Node 26+ and pnpm 12.8.1. The CLI operates inside this checkout; no npm
+Use Node 26+ and pnpm 12.18.0. The CLI operates inside this checkout; no npm
 installation or standalone native-project support is claimed.
 
-Node 26 does not bundle Corepack. If `pnpm --version` does not print 12.8.1,
+Node 26 does not bundle Corepack. If `pnpm --version` does not print 12.18.0,
 install it first. An older global pnpm (for example Homebrew's pnpm 10) tries to
-switch itself to 12.8.1 from `packageManager` and can fail with
-`Failed to switch pnpm to v12.8.1`:
+switch itself to 12.18.0 from `packageManager` and can fail with
+`Failed to switch pnpm to v12.18.0`:
 
 ```bash
-npm install -g pnpm@12.8.1
-pnpm --version   # 12.8.1
+npm install -g pnpm@12.18.0
+pnpm --version   # 12.18.0
 ```
 
 JavaScript work and host validation run on macOS or Linux. QNX cross-builds need
@@ -103,20 +103,20 @@ and Reanimated integration remain gaps.
 | ---------------------- | --------------------------------------- |
 | reactNative            | `0.88.1`                                |
 | react                  | `19.3.0`                                |
-| expo                   | `58.0.22`                               |
+| expo                   | `58.0.24`                               |
 | metro                  | `0.87.1`                                |
 | reactNativeMetroConfig | `0.88.1`                                |
-| babelPresetExpo        | `58.0.23`                               |
-| nitroCore              | `1.0.0-alpha.nightly.105.g69d365fc9b18` |
-| nitroModules           | `1.0.0-alpha.nightly.105.g69d365fc9b18` |
-| nitrogen               | `1.0.0-alpha.nightly.105.g69d365fc9b18` |
+| babelPresetExpo        | `58.0.25`                               |
+| nitroCore              | `1.0.0-alpha.nightly.136.gdb81de61bd32` |
+| nitroModules           | `1.0.0-alpha.nightly.136.gdb81de61bd32` |
+| nitrogen               | `1.0.0-alpha.nightly.136.gdb81de61bd32` |
 | typescript             | `7.0.2`                                 |
 | codegenTypescript      | `6.0.2`                                 |
 | node                   | `>=26.0.0`                              |
-| packageManager         | `pnpm@12.8.1`                           |
-| expoModulesCore        | `58.0.29`                               |
+| packageManager         | `pnpm@12.18.0`                          |
+| expoModulesCore        | `58.1.0`                                |
 | expoMetro              | `58.0.0`                                |
-| expoMetroConfig        | `58.0.20`                               |
+| expoMetroConfig        | `58.0.22`                               |
 | hermesCompiler         | `260318099.0.5`                         |
 | hermesSource           | `hermes-v260318099.0.5`                 |
 
