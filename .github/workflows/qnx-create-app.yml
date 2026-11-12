@@ -19,9 +19,9 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v5
         with:
-          node-version: 26.10.0
+          node-version: 26.13.1
           package-manager-cache: false
-      - run: npm install --global pnpm@12.8.1
+      - run: npm install --global pnpm@12.18.0
       - run: pnpm install --frozen-lockfile
       - name: Validate source and dependencies
         run: |
