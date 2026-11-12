@@ -36,7 +36,7 @@ const Switch = forwardRef(function Switch(props, ref) {
       ref,
       disabled: props.disabled,
       onTintColor: trackColorForTrue,
-      style: Object.assign({ alignSelf: 'flex-start' }, props.style),
+      style: [{ alignSelf: 'flex-start' }, props.style],
       thumbTintColor: props.thumbColor,
       tintColor: trackColorForFalse,
       value: props.value === true,
