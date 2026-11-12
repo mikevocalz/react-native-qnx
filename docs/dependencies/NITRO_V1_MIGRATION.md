@@ -2,6 +2,8 @@
 
 **Source verified:** upstream margelo/nitro tag `v1.0.0-alpha.nightly.105.g69d365fc9b18`. This is a prerelease, **not stable npm latest**. Actual matching npm artifacts, full native ABI, regenerated lockfile and QNX target execution remain **unverified** until the instructions below pass. Date 2026-11-02.
 
+**Current pin:** `1.0.0-alpha.nightly.136.gdb81de61bd32` (#119). The source review above was done on 105. Audited on 105; re-pinned to 136 with `Dispatcher.hpp`/`Callback.hpp` byte-identical; QNX cross-build and device not re-run.
+
 ## V0.37 -> V1 concrete breaking changes
 
 | Area            | 0.37.x                                                      | 1.0 alpha                                               | react-native-qnx change                                                  |

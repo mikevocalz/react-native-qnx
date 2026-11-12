@@ -9,7 +9,7 @@ const expected = {
   'nitrogen>zod': '4.6.6',
   'glob>minimatch': '11.0.1',
   glob: '14.0.3',
-  'node-forge': '1.4.2',
+  'node-forge': '1.4.3',
 };
 for (const [name, version] of Object.entries(expected)) {
   assert.ok(

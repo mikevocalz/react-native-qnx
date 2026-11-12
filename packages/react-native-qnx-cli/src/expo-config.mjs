@@ -56,8 +56,10 @@ export function resolveExpoConfigModule(root) {
  * config plugins listed in `plugins`. app.config.* is code from the app and runs
  * here, exactly as it does under `expo start` and `expo prebuild`.
  * @param {string} root absolute, realpath'd project directory
+ * @param {{skipPlugins?: boolean}} [options] skipPlugins reads the config
+ *   without running plugins, for callers that only need fields such as name.
  */
-export async function loadExpoConfig(root) {
+export async function loadExpoConfig(root, options = {}) {
   /** @type {string[]} */
   const present = [];
   for (const name of EXPO_CONFIG_FILES) {
@@ -87,10 +89,28 @@ export async function loadExpoConfig(root) {
     throw error;
   }
   const loader = resolveExpoConfigModule(root);
-  const { exp, dynamicConfigPath, staticConfigPath } = loader.module.getConfig(root, {
-    skipSDKVersionRequirement: true,
-    isPublicConfig: false,
-  });
+  let result;
+  try {
+    result = loader.module.getConfig(root, {
+      skipSDKVersionRequirement: true,
+      isPublicConfig: false,
+      skipPlugins: !!options.skipPlugins,
+    });
+  } catch (error) {
+    const pluginError = /** @type {{code?: string, message?: string}} */ (error);
+    if (
+      pluginError?.code === 'PLUGIN_NOT_FOUND' ||
+      /Failed to resolve plugin/.test(String(pluginError?.message))
+    ) {
+      const name = /for module "([^"]+)"/.exec(String(pluginError.message))?.[1] ?? 'unknown';
+      throw new Error(
+        `Config plugin "${name}" in ${present.join(', ')} is not installed in ${root}. Install the app's dependencies (npm install, pnpm install or yarn), then run this again.`,
+        { cause: error }
+      );
+    }
+    throw error;
+  }
+  const { exp, dynamicConfigPath, staticConfigPath } = result;
   return {
     exp,
     files: present,
