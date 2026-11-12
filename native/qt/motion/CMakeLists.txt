@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.24)
+
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  project(rnqnx_qt_motion_native LANGUAGES CXX)
+endif()
+option(RNQNX_ENABLE_QT_MOTION "Build experimental native Qt motion" OFF)
+if(NOT RNQNX_ENABLE_QT_MOTION)
+  return()
+endif()
+if(NOT CMAKE_SYSTEM_NAME MATCHES "^(QNX|Linux|Darwin)$")
+  message(FATAL_ERROR "Native Qt motion is audited only for QNX and Linux/macOS hosts")
+endif()
+
+find_package(Qt6 6.11.1 REQUIRED COMPONENTS Core Gui Quick)
+add_library(rnqnx_qt_motion STATIC
+  MotionController.cpp MotionController.h MotionTypes.h
+  MotionTransform.cpp MotionTransform.h)
+set_target_properties(rnqnx_qt_motion PROPERTIES AUTOMOC ON)
+target_compile_features(rnqnx_qt_motion PUBLIC cxx_std_20)
+target_compile_definitions(rnqnx_qt_motion PUBLIC QT_NO_KEYWORDS)
+target_include_directories(rnqnx_qt_motion PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(rnqnx_qt_motion PUBLIC Qt6::Core Qt6::Gui Qt6::Quick)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+  target_compile_options(rnqnx_qt_motion PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()

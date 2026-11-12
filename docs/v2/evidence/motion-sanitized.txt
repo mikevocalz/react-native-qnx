@@ -1,0 +1,19 @@
+Start testing: Nov 10 00:44 EST
+----------------------------------------------------------
+1/1 Testing: rnqnx_qt_motion_test
+1/1 Test: rnqnx_qt_motion_test
+Command: "/workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-qt-motion-asan/rnqnx_qt_motion_test" "-platform" "offscreen"
+Directory: /workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-qt-motion-asan
+"rnqnx_qt_motion_test" start time: Nov 10 00:44 EST
+Output:
+----------------------------------------------------------
+RNQNX_QT_MOTION_OK progress easing interruption pause resume cancel lifetime ownership reentrancy affinity clock
+<end of output>
+Test time =   0.17 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_motion_test" end time: Nov 10 00:44 EST
+"rnqnx_qt_motion_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 10 00:44 EST

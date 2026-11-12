@@ -1,0 +1,7 @@
+$ tsc --noEmit
+$ node scripts/qt-svg-codegen.mjs --check
+Qt SVG Fabric codegen check passed (0.88.1, 11 files)
+$ node scripts/validate-docs.mjs
+Documentation validated: 22 components, 7 release gates.
+Checking formatting...
+All matched files use Prettier code style!

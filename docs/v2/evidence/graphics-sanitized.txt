@@ -1,0 +1,55 @@
+Start testing: Nov 10 00:34 EST
+----------------------------------------------------------
+1/2 Testing: rnqnx_qt_graphics
+1/2 Test: rnqnx_qt_graphics
+Command: "/workspace/scratch/5f29a2651a01/build-qt-graphics/rnqnx_qt_graphics_test" "-platform" "offscreen"
+Directory: /workspace/scratch/5f29a2651a01/build-qt-graphics
+"rnqnx_qt_graphics" start time: Nov 10 00:34 EST
+Output:
+----------------------------------------------------------
+********* Start testing of GraphicsSurfaceTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : GraphicsSurfaceTest::initTestCase()
+PASS   : GraphicsSurfaceTest::viewportValidation()
+PASS   : GraphicsSurfaceTest::realWindowLifecycle()
+PASS   : GraphicsSurfaceTest::destroyWindowDropsPendingEvents()
+PASS   : GraphicsSurfaceTest::closeDuringDeliveryAndWrongThread()
+PASS   : GraphicsSurfaceTest::deleteDuringDelivery()
+PASS   : GraphicsSurfaceTest::cleanupTestCase()
+Totals: 7 passed, 0 failed, 0 skipped, 0 blacklisted, 3ms
+********* Finished testing of GraphicsSurfaceTest *********
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_graphics" end time: Nov 10 00:34 EST
+"rnqnx_qt_graphics" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/2 Testing: rnqnx_qt_graphics_null
+2/2 Test: rnqnx_qt_graphics_null
+Command: "/workspace/scratch/5f29a2651a01/build-qt-graphics/rnqnx_qt_graphics_test" "-platform" "offscreen"
+Directory: /workspace/scratch/5f29a2651a01/build-qt-graphics
+"rnqnx_qt_graphics_null" start time: Nov 10 00:34 EST
+Output:
+----------------------------------------------------------
+********* Start testing of GraphicsSurfaceTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : GraphicsSurfaceTest::initTestCase()
+PASS   : GraphicsSurfaceTest::viewportValidation()
+PASS   : GraphicsSurfaceTest::realWindowLifecycle()
+PASS   : GraphicsSurfaceTest::destroyWindowDropsPendingEvents()
+PASS   : GraphicsSurfaceTest::closeDuringDeliveryAndWrongThread()
+PASS   : GraphicsSurfaceTest::deleteDuringDelivery()
+PASS   : GraphicsSurfaceTest::cleanupTestCase()
+Totals: 7 passed, 0 failed, 0 skipped, 0 blacklisted, 3ms
+********* Finished testing of GraphicsSurfaceTest *********
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_graphics_null" end time: Nov 10 00:34 EST
+"rnqnx_qt_graphics_null" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 10 00:34 EST

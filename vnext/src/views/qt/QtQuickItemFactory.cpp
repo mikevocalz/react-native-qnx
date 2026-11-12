@@ -8,6 +8,10 @@
 
 #include <utility>
 
+#if RNQNX_ENABLE_QT_SVG
+#include <QtSvgItem.h>
+#endif
+
 namespace rnqnx::views {
 namespace {
 
@@ -89,6 +93,14 @@ QQmlComponent* QtQuickItemFactory::componentFor(const QString& componentName) {
 QQuickItem* QtQuickItemFactory::create(
     const QString& componentName,
     QQuickItem* parent) {
+#if RNQNX_ENABLE_QT_SVG
+  if (componentName == QStringLiteral("QnxSvgDocument")) {
+    auto* item = new QtSvgItem(parent);
+    QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
+    lastError_.clear();
+    return item;
+  }
+#endif
   auto* component = componentFor(componentName);
   if (component == nullptr) {
     return nullptr;

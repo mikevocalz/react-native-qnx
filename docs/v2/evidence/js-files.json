@@ -1,0 +1,257 @@
+[
+  {
+    "file": "accessibility-action-controls.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "accessibility-action-fixture-config.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "accessibility-view-config.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "braces-security.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "compression-security.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "docs-validation.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "expo-dual-discovery.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "expo-dual-platform.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "expo-modules2-compat.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "expo-qnx-autolinking.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "expo-qnx-discovery.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "expo-qnx-prepare.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "host-renderer-contract.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "js-runner.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "marathon-development-launcher.test.mjs",
+    "status": 1,
+    "signal": null
+  },
+  {
+    "file": "marathon-metro-platform.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "marathon-native-host-contract.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "nitro-api-skill-contract.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "nitro-dual-host-contract.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "nitro-platform-codegen.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "nitro-v1-native-migration.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "pi-evidence.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "pressable-cancellation.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "pressable-fixture-config.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-appstate-optional-registry.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-cli-evidence.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-cli.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-component-conformance.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-consumer-doctor-installed.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-consumer-doctor.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-consumer-native-config.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-device-tools.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-external-project-metro.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-external-project.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-integrated-consumer.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-native-consumer-build.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-performance-lab.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-project-create.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-public-entry-metro.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-public-entry.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-qualification.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-release-dossier.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "qnx-release-matrix.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "runtime-baseline-qnx.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "runtime-baseline.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "sdk58-stable-manifest-pins.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "shell-quote-security.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "source-map-security.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "text-input-fixture-config.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "text-input-qml-source.test.mjs",
+    "status": 0,
+    "signal": null
+  },
+  {
+    "file": "text-input-state.test.mjs",
+    "status": 0,
+    "signal": null
+  }
+]

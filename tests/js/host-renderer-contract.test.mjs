@@ -131,6 +131,36 @@ if (process.platform === 'linux') {
       }),
     });
     assert.equal(bothPresent.status, 0, bothPresent.stderr);
+    // Feature-enabled CI must run the actual native and React/Fabric SVG
+    // tests. A successful baseline-only inventory is not v2 runtime proof.
+    const qtFeatures = [
+      ['SVG', ['rnqnx_qt_svg_test', 'rnqnx_qt_svg_fabric_test']],
+      ['MOTION', ['rnqnx_qt_motion_test']],
+      ['GRAPHICS', ['rnqnx_qt_graphics', 'rnqnx_qt_graphics_null']],
+    ];
+    for (const [feature, tests] of qtFeatures) {
+      writeFileSync(cache, bothOff + `RNQNX_ENABLE_QT_${feature}:BOOL=ON\n`);
+      const present = [...names, ...tests];
+      const accepted = invoke({
+        FAKE_INVENTORY: JSON.stringify({ tests: present.map((name) => ({ name })) }),
+      });
+      assert.equal(accepted.status, 0, accepted.stderr);
+      for (const missing of tests) {
+        const result = invoke({
+          FAKE_INVENTORY: JSON.stringify({
+            tests: present.filter((name) => name !== missing).map((name) => ({ name })),
+          }),
+        });
+        assert.notEqual(result.status, 0);
+        assert.match(result.stderr, new RegExp(`Required host-renderer test missing: ${missing}`));
+      }
+      writeFileSync(cache, bothOff + `RNQNX_ENABLE_QT_${feature}:BOOL=OFF\n`);
+      const unexpected = invoke({
+        FAKE_INVENTORY: JSON.stringify({ tests: present.map((name) => ({ name })) }),
+      });
+      assert.notEqual(unexpected.status, 0);
+      assert.match(unexpected.stderr, /Disabled Qt feature registered a test:/);
+    }
     writeFileSync(cache, bothOff);
     assert.notEqual(invoke({ FAKE_BUILD_STATUS: '7' }).status, 0);
     const testFailure = invoke({ FAKE_TEST_STATUS: '8' });

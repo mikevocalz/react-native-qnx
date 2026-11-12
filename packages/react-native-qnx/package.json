@@ -7,12 +7,15 @@
   "files": [
     "index.js",
     "Libraries",
-    "adaptive"
+    "adaptive",
+    "qt"
   ],
   "peerDependencies": {
+    "react": "19.3.0",
     "react-native": "0.88.1"
   },
   "dependencies": {
+    "@babel/runtime": "7.29.7",
     "zustand": "5.1.0"
   }
 }

@@ -100,3 +100,20 @@ it is not a core platform dependency or a release gate.
 Older statements, toolchains and commands remain in
 [the dated handoff history](HISTORY_THROUGH_2026_11_07.md). They are historical
 context, not the active support contract.
+
+## PR #111 — Qt v2 CI coverage (2026-11-10)
+
+The implementation candidate is `295f7240099c7371dc8988f4d411b1840888a415`
+on `feat/v2-native-qt-apis`. The enabled-input hosted renderer lane now also
+enables Qt SVG, motion and graphics; the other lane explicitly keeps all three
+OFF. The validator requires the five feature CTests and rejects unexpected
+registrations in an OFF lane. Deterministic SVG generation is checked before
+the enabled native build. Product feature defaults and native APIs are unchanged.
+
+The orchestration regression reproduced the former missing-test acceptance and
+passes after the fix. Typechecking, SVG generation, formatting and documentation
+validation pass. New hosted native execution is pending on this candidate; the
+prior Linux runtime receipt remains scoped to its cited source. QNX and Marathon
+execution for the v2 slice remain unrun. See [the v2 receipt](../v2/validation.md).
+This handoff changes only records; implementation/workflow edits are committed
+at the candidate above. No release gate is promoted.

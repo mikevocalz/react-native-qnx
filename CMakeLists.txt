@@ -50,6 +50,7 @@ function(rnqnx_add_runtime_baseline_supervisor)
 endfunction()
 
 include(CTest)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxQtNative.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxRuntimeTrace.cmake)
 rnqnx_add_runtime_trace()
 
