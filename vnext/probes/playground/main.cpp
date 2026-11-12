@@ -284,47 +284,15 @@ constexpr const char* kSwitchSource =
 constexpr int kWindowWidth = 640;
 constexpr int kWindowHeight = 480;
 
-#if RNQNX_ENABLE_WINDOW_CHROME
-// True when argv has `name` as a flag or as `name=value`.
-bool hasArgument(int argc, char** argv, const char* name) {
-  const QByteArray wanted(name);
-  for (int i = 1; i < argc; ++i) {
-    const QByteArray argument(argv[i]);
-    if (argument == wanted || argument.startsWith(wanted + '=')) return true;
-  }
-  return false;
-}
-#endif
 
 }  // namespace
 
 int main(int argc, char** argv) {
 #if RNQNX_ENABLE_WINDOW_CHROME
-  // A desktop app with an initial size opens as a normal window. On QNX that
-  // needs the qnx plugin's no-fullscreen option, which has to be in place
-  // before QGuiApplication loads the plugin (ADR-0016 item 8). --fullscreen,
-  // or an explicit -platform argument, keeps the old full-screen window.
-  {
-    bool sized = hasArgument(argc, argv, "--window-size");
-#ifdef RNQNX_CONSUMER_WINDOW_HEADER
-    try {
-      sized = sized || rnqnx::window::configuredWindowChrome().initialSize.has_value();
-    } catch (const std::exception&) {
-      // Reported with the rest of the window configuration below.
-    }
-#endif
-    if (sized && !hasArgument(argc, argv, "--fullscreen") &&
-        !hasArgument(argc, argv, "-platform") && !hasArgument(argc, argv, "--platform")) {
-#if defined(Q_OS_QNX)
-      constexpr bool defaultIsQnx = true;
-#else
-      constexpr bool defaultIsQnx = false;
-#endif
-      const QString spec = rnqnx::window::windowedPlatformSpec(
-          qEnvironmentVariable("QT_QPA_PLATFORM"), defaultIsQnx);
-      if (!spec.isEmpty()) qputenv("QT_QPA_PLATFORM", spec.toUtf8());
-    }
-  }
+  // A desktop app with an initial size opens as a normal window. On QNX the
+  // qnx plugin keeps its default full-screen root window: fullscreen-winmgr
+  // sets every window to the display size on each post anyway, so the chrome
+  // draws the app's window inside it (WindowChrome's contained window).
   // Read before QGuiApplication strips -platform from argv (ADR-0016).
   const QStringList platformSpecs = rnqnx::window::platformSpecsFromArguments(
       argc, argv, qEnvironmentVariable("QT_QPA_PLATFORM"));
@@ -720,7 +688,6 @@ int main(int argc, char** argv) {
     QObject::connect(surfaceRoot, &QQuickItem::heightChanged, scheduleResize);
   }
 #if RNQNX_ENABLE_WINDOW_CHROME
-  if (!parser.isSet(fullscreenOption)) rnqnx::window::keepWindowedGeometry(window);
   if (singleInstance) {
     QObject::connect(singleInstance.get(), &rnqnx::window::SingleInstance::restoreRequested,
         &window, [&window]() {

@@ -118,19 +118,28 @@ Under the stock `fullscreen-winmgr` desktop:
 | -------- | -------------------------------------------------------------------------------------------------------- |
 | Close    | Closes the window; the app exits.                                                                        |
 | Minimize | Releases the native window so the launcher shows; the app keeps running. Launching it again restores it. |
-| Maximize | Windowed apps only: toggles between the full display and `initialSize`. Double-click on the bar too.     |
-| Drag     | Off. The QNX platform plugin has no system move.                                                         |
+| Maximize | Apps with `initialSize`: toggles between the full display and the window. Double-click on the bar too.   |
+| Drag     | The bar moves the window; edges and corners resize it (minimum 400 x 300).                               |
+
+`fullscreen-winmgr` sets every native window to the display size each time it
+posts a frame, so on QNX an app with `initialSize` gets a contained window: the
+native window fills the display and the chrome draws the app's window inside
+it, centred at `initialSize`, with a 1 px outline. Moving, resizing and
+maximizing change that frame, and the React surface is laid out again at the
+new size. Screen has no resize cursor shapes, so a resize arrow is drawn
+beside the pointer on an edge or corner; on macOS, Windows and X11 the
+platform cursor changes instead. After a move or resize the host prints
+`RNQNX_WINDOW_FRAME <w>x<h>+<x>+<y>`.
 
 The [Pi 400 desktop guide](pi400-desktop-app.md) explains each one, how a
-minimized app comes back, and how windowed mode works with
-`fullscreen-winmgr`.
+minimized app comes back, and what `fullscreen-winmgr` allows.
 
 At startup the host prints the chrome line and one line per control it left
 out, for example on a full-screen app:
 
 ```text
 RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=1920x1080
-RNQNX_WINDOW_CHROME platform=qnx hidden=maximize reason=the qnx QPA keeps the root window at screen size unless it runs with no-fullscreen
+RNQNX_WINDOW_CHROME platform=qnx hidden=maximize reason=the app has no initialSize, so there is no window size to return to
 ```
 
 Each activation prints `RNQNX_WINDOW_ACTION <action>`; a disabled control
@@ -145,8 +154,23 @@ app out again at the new size and fires `onLayout` on the root view.
 The bar is dark (`#13202f`, light title text) unless the platform reports a
 light colour scheme, which macOS and Windows do. QNX reports none, so QNX apps
 get the dark bar, matching the QNX launcher and dark app themes. The traffic
-lights keep their macOS colours, with `×`, `−` and `↗` drawn on them so the
-controls are not told apart by colour alone.
+lights keep their macOS colours, with `×` and `−` drawn on close and minimize
+so the controls are not told apart by colour alone.
+
+The green light's glyph follows the window state:
+
+| Window                | macOS layout                              | Windows layout          | Accessible name   |
+| --------------------- | ----------------------------------------- | ----------------------- | ----------------- |
+| Compact (normal size) | Two triangles pointing out of the corners | One square              | `Maximize window` |
+| Filling the screen    | Two triangles pointing into the centre    | Two overlapping squares | `Restore window`  |
+
+"Filling the screen" means maximized or full screen, a QNX contained window
+expanded to the display, or a window that a window manager sized to the
+screen's available area without a state change. The glyph is read from the
+window, so it stays right after a double click on the bar or a resize by the
+window manager. `expandGlyphFollowsWindowState` and
+`containedWindowMovesResizesAndExpands` in `WindowChromeQuickTest.cpp` cover
+both states for both layouts.
 
 ## Controls
 
@@ -165,13 +189,17 @@ or `Restore window`.
   under it when the input-lifecycle dispatcher is on.
 - With the input-lifecycle dispatcher on, touch `pageX`/`pageY` include the
   44 px bar in the `default` style.
-- On QNX, maximize needs a windowed app (`initialSize`); a full-screen app has
-  nothing to expand to, so the control is left out.
-- A minimized QNX app is not in the Alt+Tab list; it comes back by launching
-  it again.
+- On QNX, maximize needs `initialSize`; a full-screen app has nothing to
+  expand to, so the control is left out.
+- On QNX the window is a frame inside a display-sized native window, so the
+  Alt+Tab preview shows the whole display and there is nothing behind the
+  frame but the desktop colour.
+- A minimized QNX app is not in the Alt+Tab list; it comes back from its
+  launcher tile (`project desktop-entry`) or by running its script again.
 - Wayland, including Marathon, gets close only, and the chrome build is
   rejected for Marathon until its shell's behaviour is defined.
-- No runtime layout change, close guard or edge resize yet.
+- No runtime layout change or close guard yet. Edge resize exists only for
+  the QNX contained window.
 - `Dimensions` reports the screen, not the window; use `onLayout` for the
   window's content size.
 

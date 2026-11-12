@@ -21,12 +21,45 @@ Item {
     readonly property color glyphInk: light ? "#1d1d1f" : "#e6edf3"
     readonly property color unavailableLight: light ? "#d4d4d4" : "#3b4858"
 
-    x: 0
-    y: 0
+    x: chrome.frameRect.x
+    y: chrome.frameRect.y
     z: 1000
     width: chrome.windowWidth
     height: chrome.barHeight
     visible: chrome.barHeight > 0
+
+    // Outline of a contained window, so it reads as a window on the display.
+    Rectangle {
+        objectName: "rnqnxWindowFrame"
+        visible: root.chrome.contained && !root.maximized
+        x: -1
+        y: -1
+        z: -1
+        width: root.chrome.frameRect.width + 2
+        height: root.chrome.frameRect.height + 2
+        color: "transparent"
+        border.width: 1
+        border.color: root.light ? "#9aa4b0" : "#3b4858"
+    }
+
+    // Resize hint beside the pointer on an edge or corner. QNX Screen has no
+    // resize cursor shapes, so the arrow cursor stays and this shows the
+    // direction instead; elsewhere the platform cursor changes as well.
+    Text {
+        objectName: "rnqnxResizeHint"
+        readonly property string hint: root.chrome.resizeHint
+        visible: root.chrome.contained && hint !== ""
+        x: root.chrome.pointer.x - root.x + 12
+        y: root.chrome.pointer.y - root.y + 12
+        z: 10
+        text: "\u2194"
+        rotation: hint === "vertical" ? 90 : hint === "diagonal" ? 45 : hint === "antidiagonal" ? -45 : 0
+        color: "#ffffff"
+        style: Text.Outline
+        styleColor: "#000000"
+        font.pixelSize: 22
+        font.bold: true
+    }
 
     Rectangle {
         id: bar
@@ -148,15 +181,46 @@ Item {
                 border.width: 1
                 border.color: Qt.darker(color, 1.25)
                 opacity: control.pressed && control.live ? 0.7 : 1
+                readonly property bool glyphShown: control.live && (root.chrome.alwaysShowGlyphs || control.hovered || control.activeFocus)
                 Text {
                     anchors.centerIn: parent
-                    visible: control.live && (root.chrome.alwaysShowGlyphs || control.hovered || control.activeFocus)
-                    text: control.action === "close" ? "×"
-                        : control.action === "minimize" ? "−"
-                        : root.maximized ? "↙" : "↗"
+                    visible: parent.glyphShown && control.action !== "maximize"
+                    text: control.action === "close" ? "×" : "−"
                     color: "#4d0000"
                     font.pixelSize: 11
                     font.bold: true
+                }
+                // Full-screen light, drawn like macOS: two triangles pointing
+                // out of the corners while the window is compact, and into the
+                // centre while it fills the screen.
+                Canvas {
+                    objectName: "rnqnxExpandGlyph"
+                    readonly property string glyph: root.maximized ? "restore" : "expand"
+                    anchors.centerIn: parent
+                    width: 8
+                    height: 8
+                    visible: parent.glyphShown && control.action === "maximize"
+                    onGlyphChanged: requestPaint()
+                    onPaint: {
+                        const ctx = getContext("2d")
+                        ctx.reset()
+                        ctx.fillStyle = "#0a5a12"
+                        const tri = (ax, ay, bx, by, cx, cy) => {
+                            ctx.beginPath()
+                            ctx.moveTo(ax, ay)
+                            ctx.lineTo(bx, by)
+                            ctx.lineTo(cx, cy)
+                            ctx.closePath()
+                            ctx.fill()
+                        }
+                        if (glyph === "expand") {
+                            tri(0.5, 0.5, 5.5, 0.5, 0.5, 5.5)
+                            tri(7.5, 7.5, 2.5, 7.5, 7.5, 2.5)
+                        } else {
+                            tri(3.5, 3.5, 0, 3.5, 3.5, 0)
+                            tri(4.5, 4.5, 8, 4.5, 4.5, 8)
+                        }
+                    }
                 }
             }
 
@@ -180,12 +244,37 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         width: 10; height: 1; color: parent.ink
                     }
-                    Rectangle {
+                    // Maximize is one square; restore is two overlapping
+                    // squares, as Windows draws them.
+                    Item {
+                        objectName: "rnqnxMaximizeGlyph"
+                        readonly property string glyph: root.maximized ? "restore" : "expand"
                         visible: control.action === "maximize"
                         anchors.fill: parent
-                        color: "transparent"
-                        border.width: 1
-                        border.color: parent.ink
+                        Rectangle {
+                            visible: parent.glyph === "expand"
+                            anchors.fill: parent
+                            color: "transparent"
+                            border.width: 1
+                            border.color: parent.parent.ink
+                        }
+                        Rectangle {
+                            visible: parent.glyph === "restore"
+                            x: 0; y: 2; width: 8; height: 8
+                            color: "transparent"
+                            border.width: 1
+                            border.color: parent.parent.ink
+                        }
+                        Rectangle {
+                            visible: parent.glyph === "restore"
+                            x: 2; y: 0; width: 8; height: 1
+                            color: parent.parent.ink
+                        }
+                        Rectangle {
+                            visible: parent.glyph === "restore"
+                            x: 9; y: 0; width: 1; height: 8
+                            color: parent.parent.ink
+                        }
                     }
                     Rectangle {
                         visible: control.action === "close"

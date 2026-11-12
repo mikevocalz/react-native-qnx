@@ -5,6 +5,8 @@
 // so the rules are testable without a window. See docs/adr/0016.
 
 #include <QJsonObject>
+#include <QPoint>
+#include <QRect>
 #include <QRectF>
 #include <QSize>
 #include <QString>
@@ -54,6 +56,11 @@ struct WindowCapabilities {
   ActionSupport minimize;
   ActionSupport maximize;
   bool systemMove{false};
+  // The window manager keeps the native window at the display size, so the
+  // app draws its window frame inside it and moves, resizes and maximizes
+  // that frame itself (QNX with fullscreen-winmgr, which sets every window to
+  // the display size each time it posts a frame). See WindowChrome.h.
+  bool containedWindow{false};
 };
 
 // Whether the host resizes the React surface when the window changes size.
@@ -121,6 +128,24 @@ inline constexpr qreal kMacHitWidth = 44;
 inline constexpr qreal kWindowsHitWidth = 46;
 inline constexpr qreal kEdgePadding = 4;
 inline constexpr qreal kTitlePadding = 12;
+// Client-side move and resize (WindowCapabilities::clientMoveResize).
+inline constexpr qreal kResizeBorder = 6;   // Edge band that resizes.
+inline constexpr qreal kResizeCorner = 16;  // Corner reach along each edge.
+inline constexpr int kMinWindowWidth = 400;
+inline constexpr int kMinWindowHeight = 300;
+inline constexpr int kKeepVisible = 80;     // Bar pixels kept on screen when moving.
+
+// Which frame edges a pointer at `point` (frame coordinates) would resize:
+// within kResizeBorder of an edge, inside or outside the frame, and within
+// kResizeCorner of a corner for both edges. Empty elsewhere and on a control.
+Qt::Edges resizeEdgesAt(QPointF point, QSizeF frame, const std::vector<QRectF>& controls);
+// `start` dragged by `delta` on `edges`, no smaller than `minimum` and inside
+// `screen` (an invalid screen does not constrain). The opposite edges stay put.
+QRect resizedGeometry(const QRect& start, Qt::Edges edges, QPoint delta, QSize minimum,
+                      const QRect& screen);
+// `start` moved by `delta`, keeping the bar inside `screen` vertically and at
+// least kKeepVisible pixels of it horizontally.
+QRect movedGeometry(const QRect& start, QPoint delta, const QRect& screen);
 
 ChromeLayout layoutChrome(const WindowChromeConfig& config,
                           const WindowCapabilities& capabilities,

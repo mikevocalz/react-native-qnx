@@ -3,11 +3,10 @@
 #include <QByteArray>
 #include <QLocalServer>
 #include <QLocalSocket>
-#include <QTimer>
+#include <QScreen>
 #include <QWindow>
 
 #include <cstdio>
-#include <memory>
 
 #if defined(Q_OS_QNX)
 #include <screen/screen.h>
@@ -20,33 +19,15 @@ namespace rnqnx::window {
 namespace {
 
 #if defined(Q_OS_QNX)
-// One pass: when Screen reports a different size than Qt asked for, put Qt's
-// size back. Returns true when a correction was written.
-bool correctNativeGeometry(QWindow& window) {
-  if (window.handle() == nullptr || !window.isVisible()) return false;
-  if (window.windowStates() & (Qt::WindowFullScreen | Qt::WindowMaximized)) return false;
+// False when the window manager shows another window in front of this one.
+bool nativeWindowVisible(QWindow& window) {
+  if (window.handle() == nullptr) return false;
   auto native = reinterpret_cast<screen_window_t>(window.winId());
-  if (native == nullptr) return false;
-  const qreal ratio = window.devicePixelRatio();
-  const int wanted[2] = {static_cast<int>(window.width() * ratio),
-                         static_cast<int>(window.height() * ratio)};
-  int actual[2] = {0, 0};
-  if (screen_get_window_property_iv(native, SCREEN_PROPERTY_SIZE, actual) != 0) return false;
-  if (actual[0] == wanted[0] && actual[1] == wanted[1]) return false;
-  const int position[2] = {static_cast<int>(window.x() * ratio), static_cast<int>(window.y() * ratio)};
-  screen_set_window_property_iv(native, SCREEN_PROPERTY_SIZE, wanted);
-  screen_set_window_property_iv(native, SCREEN_PROPERTY_SOURCE_SIZE, wanted);
-  screen_set_window_property_iv(native, SCREEN_PROPERTY_POSITION, position);
-  screen_context_t context = nullptr;
-  if (screen_get_window_property_pv(native, SCREEN_PROPERTY_CONTEXT,
-                                    reinterpret_cast<void**>(&context)) == 0 &&
-      context != nullptr) {
-    screen_flush_context(context, 0);
-  }
-  std::printf("RNQNX_WINDOW_GEOMETRY restored=%dx%d+%d+%d was=%dx%d\n", wanted[0], wanted[1],
-              position[0], position[1], actual[0], actual[1]);
-  std::fflush(stdout);
-  return true;
+  int visible = 1;
+  if (native == nullptr ||
+      screen_get_window_property_iv(native, SCREEN_PROPERTY_VISIBLE, &visible) != 0)
+    return true;
+  return visible != 0;
 }
 #endif
 
@@ -60,21 +41,13 @@ QString currentUser() {
 
 }  // namespace
 
-void keepWindowedGeometry(QWindow& window) {
-#if defined(Q_OS_QNX)
-  // fullscreen-winmgr resizes a window when it is first posted, which happens
-  // after show() returns. Watch for about two seconds and undo it.
-  auto* timer = new QTimer(&window);
-  auto checks = std::make_shared<int>(0);
-  timer->setInterval(50);
-  QObject::connect(timer, &QTimer::timeout, &window, [timer, checks, &window]() {
-    correctNativeGeometry(window);
-    if (++*checks >= 40) timer->deleteLater();
-  });
-  timer->start();
-#else
-  (void)window;
-#endif
+bool windowExpanded(const QWindow& window) {
+  if (window.windowStates() & (Qt::WindowFullScreen | Qt::WindowMaximized)) return true;
+  const QScreen* screen = window.screen();
+  if (screen == nullptr) return false;
+  const QSize available = screen->availableGeometry().size();
+  return available.isValid() && window.width() >= available.width() &&
+         window.height() >= available.height();
 }
 
 SingleInstance::SingleInstance(const QString& appId, QObject* parent)
@@ -143,8 +116,16 @@ void minimizeByDestroyingWindow(QWindow& window) {
 void restoreMinimizedWindow(QWindow& window) {
   if (!window.isVisible()) {
     window.show();
-    keepWindowedGeometry(window);
   }
+#if defined(Q_OS_QNX)
+  else if (!nativeWindowVisible(window)) {
+    // fullscreen-winmgr shows the most recent window, and its switch message
+    // needs a tag this window may not have, so make it the most recent one.
+    window.hide();
+    window.destroy();
+    window.show();
+  }
+#endif
   window.raise();
   window.requestActivate();
 }

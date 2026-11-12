@@ -298,6 +298,131 @@ class WindowChromeQuickTest : public QObject {
     QTRY_VERIFY(!(harness.window->windowStates() & Qt::WindowMaximized));
   }
 
+  // The green light's glyph follows the window, not the last press: expand
+  // while compact, restore while the window fills the screen, including when
+  // a window manager sized it to the screen without a state change.
+  void expandGlyphFollowsWindowState_data() {
+    QTest::addColumn<int>("controls");
+    QTest::addColumn<QString>("glyphItem");
+    QTest::newRow("macos") << static_cast<int>(ControlsLayout::MacOS) << QStringLiteral("rnqnxExpandGlyph");
+    QTest::newRow("windows") << static_cast<int>(ControlsLayout::Windows) << QStringLiteral("rnqnxMaximizeGlyph");
+  }
+  void expandGlyphFollowsWindowState() {
+    QFETCH(int, controls);
+    QFETCH(QString, glyphItem);
+    WindowChromeConfig config;
+    config.controls = static_cast<ControlsLayout>(controls);
+    Harness harness(config, capabilitiesForPlatform(QStringLiteral("offscreen"), {}, SurfaceResize::FollowsWindow), QSize(480, 320));
+    QVERIFY(QTest::qWaitForWindowExposed(harness.window.get()));
+    QQuickItem* glyph = findItem(harness.control(QStringLiteral("maximize")), glyphItem);
+    QVERIFY(glyph);
+    QVERIFY(glyph->isVisible());
+    QCOMPARE(glyph->property("glyph").toString(), QStringLiteral("expand"));
+    QVERIFY(!harness.chrome->maximized());
+
+    harness.chrome->trigger(QStringLiteral("maximize"));
+    QTRY_VERIFY(harness.window->windowStates() & Qt::WindowMaximized);
+    QTRY_COMPARE(glyph->property("glyph").toString(), QStringLiteral("restore"));
+    harness.chrome->trigger(QStringLiteral("maximize"));
+    QTRY_VERIFY(!(harness.window->windowStates() & Qt::WindowMaximized));
+    QTRY_COMPARE(glyph->property("glyph").toString(), QStringLiteral("expand"));
+
+    // A window manager sizing the window to the screen, state unchanged.
+    const QRect screen = harness.window->screen()->availableGeometry();
+    harness.window->setGeometry(screen);
+    QTRY_COMPARE(harness.window->size(), screen.size());
+    QVERIFY(!(harness.window->windowStates() & Qt::WindowMaximized));
+    QTRY_COMPARE(glyph->property("glyph").toString(), QStringLiteral("restore"));
+    QAccessibleInterface* iface =
+        QAccessible::queryAccessibleInterface(harness.control(QStringLiteral("maximize")));
+    QCOMPARE(iface->text(QAccessible::Name), QStringLiteral("Restore window"));
+    harness.window->resize(480, 320);
+    QTRY_COMPARE(glyph->property("glyph").toString(), QStringLiteral("expand"));
+  }
+
+  // QNX: the native window is display-sized and the chrome draws the app's
+  // window inside it. It opens at initialSize, centred; the bar moves it,
+  // edges and corners resize it, and maximize fills the display and back.
+  void containedWindowMovesResizesAndExpands() {
+    WindowChromeConfig config;
+    config.initialSize = QSize(640, 400);
+    Harness harness(config, capabilitiesForPlatform(QStringLiteral("qnx"), {}, SurfaceResize::FollowsWindow),
+                    QSize(1600, 1000));
+    QVERIFY(QTest::qWaitForWindowExposed(harness.window.get()));
+    QVERIFY(harness.chrome->contained());
+    QCOMPARE(harness.chrome->frameRect(), QRectF(480, 300, 640, 400));
+    QCOMPARE(harness.chrome->chromeItem()->position(), QPointF(480, 300));
+    QCOMPARE(harness.chrome->contentRoot().position(), QPointF(480, 344));
+    QCOMPARE(harness.chrome->contentRoot().size(), QSizeF(640, 356));
+    QCOMPARE(controlNames(harness),
+             (QStringList{QStringLiteral("close"), QStringLiteral("maximize"), QStringLiteral("minimize")}));
+    QQuickItem* glyph = findItem(harness.control(QStringLiteral("maximize")), QStringLiteral("rnqnxExpandGlyph"));
+    QCOMPARE(glyph->property("glyph").toString(), QStringLiteral("expand"));
+    auto* frame = findItem(harness.chrome->chromeItem(), QStringLiteral("rnqnxWindowFrame"));
+    QVERIFY(frame && frame->isVisible());
+    QSignalSpy pressed(harness.chrome.get(), &WindowChrome::actionTriggered);
+
+    // Drag the bar from its middle: the frame follows the pointer.
+    QPoint at(800, 320);
+    QTest::mousePress(harness.window.get(), Qt::LeftButton, {}, at);
+    for (int step = 1; step <= 5; ++step)
+      QTest::mouseMove(harness.window.get(), at + QPoint(20 * step, 10 * step));
+    QTest::mouseRelease(harness.window.get(), Qt::LeftButton, {}, at + QPoint(100, 50));
+    QTRY_COMPARE(harness.chrome->frameRect(), QRectF(580, 350, 640, 400));
+    QCOMPARE(harness.chrome->contentRoot().position(), QPointF(580, 394));
+
+    // Hover on the right edge shows the horizontal hint; drag the bottom
+    // right corner to grow, then far up-left to hit the minimum size.
+    QTest::mouseMove(harness.window.get(), QPoint(1218, 550));
+    QTRY_COMPARE(harness.chrome->resizeHint(), QStringLiteral("horizontal"));
+    QVERIFY(findItem(harness.chrome->chromeItem(), QStringLiteral("rnqnxResizeHint"))->isVisible());
+    at = QPoint(1218, 748);
+    QTest::mouseMove(harness.window.get(), at);
+    QTRY_COMPARE(harness.chrome->resizeHint(), QStringLiteral("diagonal"));
+    QTest::mousePress(harness.window.get(), Qt::LeftButton, {}, at);
+    QTest::mouseMove(harness.window.get(), at + QPoint(60, 40));
+    QTest::mouseRelease(harness.window.get(), Qt::LeftButton, {}, at + QPoint(60, 40));
+    QTRY_COMPARE(harness.chrome->frameRect(), QRectF(580, 350, 700, 440));
+    QCOMPARE(harness.chrome->contentRoot().size(), QSizeF(700, 396));
+    at = QPoint(1278, 788);
+    QTest::mousePress(harness.window.get(), Qt::LeftButton, {}, at);
+    QTest::mouseMove(harness.window.get(), at - QPoint(900, 900));
+    QTest::mouseRelease(harness.window.get(), Qt::LeftButton, {}, at - QPoint(900, 900));
+    QTRY_COMPARE(harness.chrome->frameRect(), QRectF(580, 350, kMinWindowWidth, kMinWindowHeight));
+    QCOMPARE(pressed.count(), 0);  // No drag pressed a control.
+
+    // Maximize fills the window; the outline goes and the glyph turns.
+    harness.chrome->trigger(QStringLiteral("maximize"));
+    QTRY_COMPARE(harness.chrome->frameRect(), QRectF(0, 0, 1600, 1000));
+    QVERIFY(harness.chrome->maximized());
+    QTRY_COMPARE(glyph->property("glyph").toString(), QStringLiteral("restore"));
+    QVERIFY(!frame->isVisible());
+    QCOMPARE(harness.chrome->contentRoot().size(), QSizeF(1600, 956));
+    // No moving or resizing while it fills the display.
+    QTest::mousePress(harness.window.get(), Qt::LeftButton, {}, QPoint(800, 20));
+    QTest::mouseMove(harness.window.get(), QPoint(900, 120));
+    QTest::mouseRelease(harness.window.get(), Qt::LeftButton, {}, QPoint(900, 120));
+    QCOMPARE(harness.chrome->frameRect(), QRectF(0, 0, 1600, 1000));
+    // Back to the size and place it had.
+    harness.chrome->trigger(QStringLiteral("maximize"));
+    QTRY_COMPARE(harness.chrome->frameRect(), QRectF(580, 350, kMinWindowWidth, kMinWindowHeight));
+    QTRY_COMPARE(glyph->property("glyph").toString(), QStringLiteral("expand"));
+    // A double click on the bar toggles too.
+    const QPoint bar(580 + kMinWindowWidth / 2, 350 + 20);
+    QTest::mouseDClick(harness.window.get(), Qt::LeftButton, {}, bar);
+    QTRY_VERIFY(harness.chrome->maximized());
+  }
+
+  // A full-screen QNX app (no initialSize) is not contained and has no
+  // maximize control.
+  void qnxWithoutInitialSizeFillsTheWindow() {
+    Harness harness({}, capabilitiesForPlatform(QStringLiteral("qnx"), {}, SurfaceResize::FollowsWindow), QSize(1600, 1000));
+    QVERIFY(QTest::qWaitForWindowExposed(harness.window.get()));
+    QVERIFY(!harness.chrome->contained());
+    QCOMPARE(harness.chrome->frameRect(), QRectF(0, 0, 1600, 1000));
+    QCOMPARE(controlNames(harness), (QStringList{QStringLiteral("close"), QStringLiteral("minimize")}));
+  }
+
   void pointerMissOutsideTargetDoesNothing() {
     Harness harness({});
     QVERIFY(QTest::qWaitForWindowExposed(harness.window.get()));
