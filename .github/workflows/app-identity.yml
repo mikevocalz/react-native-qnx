@@ -5,6 +5,7 @@ on:
       - 'vnext/include/react-native-qnx/runtime/ApplicationIdentity.h'
       - 'native/app-identity/**'
       - '.github/workflows/app-identity.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
@@ -20,9 +21,9 @@ jobs:
       ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
       UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Native prerequisites
         run: |
@@ -30,7 +31,7 @@ jobs:
           sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0
           python3 -m pip install --user --break-system-packages cmake==3.31.10
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-      - uses: jurplel/install-qt-action@v4
+      - uses: jurplel/install-qt-action@b344308e4483fc892e0d27b3cd1b173ebdd95f06 # v4.5.0
         with:
           version: '6.11.1'
           host: linux
@@ -47,8 +48,8 @@ jobs:
           cmake -S native/app-identity -B build/app-identity -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DRNQNX_BUILD_APP_IDENTITY_TESTS=ON -DRNQNX_APP_IDENTITY_SANITIZERS=${{ matrix.sanitizers }} -DCMAKE_BUILD_TYPE=Debug
           cmake --build build/app-identity -j 2
           ctest --test-dir build/app-identity --output-on-failure -V 2>&1 | tee build/app-identity-evidence/tests.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
-          name: app-identity-${{ matrix.sanitizers }}-${{ github.event.pull_request.head.sha }}
+          name: app-identity-${{ matrix.sanitizers }}-${{ github.event.pull_request.head.sha || github.sha }}
           path: build/app-identity-evidence/
