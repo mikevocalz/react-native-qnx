@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 const read = (p) => readFile(p, 'utf8');
 const root = JSON.parse(await read('package.json'));
 const manifest = JSON.parse(await read('packages/qnx-nitro-runtime/package.json'));
-const version = '1.0.0-alpha.nightly.105.g69d365fc9b18';
+const version = '1.0.0-alpha.nightly.136.gdb81de61bd32';
 assert.equal(root.devDependencies['react-native-nitro-modules'], version);
 assert.equal(root.devDependencies.nitrogen, version);
 assert.equal(root.devDependencies['nitro-core'], version);
