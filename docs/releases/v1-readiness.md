@@ -20,6 +20,8 @@ reviewed. This preparation PR does not tag or publish a release.
 <!-- generated:gates:end -->
 
 The table is generated from [v1-readiness.json](v1-readiness.json).
+[Required checks](required-checks.md) lists the workflows the Candidate CI
+gate needs, with hosted, QNX cross-build and device results kept apart.
 `pnpm validate:docs` checks that documentation matches its sources.
 `pnpm validate:v1` additionally exits nonzero unless every required gate is
 passed with a repository evidence path. A reviewer must inspect the cited
