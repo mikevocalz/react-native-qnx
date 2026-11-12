@@ -15,6 +15,7 @@ closure, including transitive components.
 | Qt                                                       | Selected open-source source/module licenses                          | Record the public-source build, every module/plugin, notices and applicable LGPL/GPL materials                                         |
 | QNX                                                      | Licensed SDP/BSP/image and runtime terms                             | Obtain independently; do not include tools, sysroots, headers, vendor libraries, images or account/license material in public packages |
 | Optional premium Forge packages                          | Separately licensed product terms                                    | Excluded from core platform distributions; follow [the consumer boundary](docs/policy/premium-components.md)                           |
+| Source Sans 3 Regular and Light (host label measurement) | `native/app-identity/fonts/source-sans-3/LICENSE.md` (SIL OFL 1.1)   | Host-tool test data only, never linked or shipped in an app; keep the license file beside the fonts                                    |
 
 Qt's [licensing documentation](https://doc.qt.io/qt-6/licensing.html) describes
 commercial and open-source options and module-specific exceptions. Its

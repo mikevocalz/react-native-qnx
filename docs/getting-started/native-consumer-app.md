@@ -44,6 +44,8 @@ pnpm qnx project prepare-native --project /absolute/path/to/field-notes
 
 Preparation reads `app.json`, hashes the selected bundle and exclusively creates `build/qnx/native-app.json` inside the consumer project. It does not execute a JavaScript Expo configuration, install dependencies, compile or contact a device. Use `--dry-run` to inspect without writing. Identical reruns leave the file unchanged. After changing the app identity or bundle, review and remove only the generated `native-app.json` before preparing it again; changed generated output is not silently overwritten.
 
+Preparation also needs an app icon and a tile label that fits the launcher, and it generates the icon set with the Qt host tool; see [App icon and tile name](app-identity.md).
+
 For Marathon, supply `--platform marathon` to both commands. Each target gets its own descriptor and bundle. A project containing only dynamic `app.config.js` must provide this explicit static identity; dynamic Expo configuration integration is not implemented here.
 
 ## Build a Linux preview of the QNX application
