@@ -167,7 +167,8 @@ three use the same `native-app.json` from `rnqnx project prepare-native`.
 
 - `target` is one of `qnx-aarch64-pi400`, `macos-arm64`, `macos-x86_64`,
   `linux-x86_64`, `linux-aarch64`. Host runners set `versions.sdp` to `null`;
-  QNX runners must name the SDP.
+  QNX runners must name the SDP, and `fetch` for a QNX target requires
+  `--sdp <version>`.
 - The client picks the single `development` entry whose target and all five
   versions match exactly. A near miss fails and lists the published entries
   for that target, then points at `rnqnx project build-native`.
@@ -178,8 +179,17 @@ three use the same `native-app.json` from `rnqnx project prepare-native`.
   `sha256`, and only then renamed into
   `$XDG_CACHE_HOME/rnqnx/runners/<sha256>/` (default `~/.cache`). A mismatch
   deletes the download. A cached archive is re-hashed before reuse.
+- Requests ask for `accept-encoding: identity`; a compressed response is
+  refused, so `content-length` is the archive size. The manifest is read with
+  a 1 MiB byte counter. A download that receives no data for 30 seconds is
+  abandoned.
 - `fetch` does not unpack, install or launch the runner and does not contact
   a device.
+
+Limitation: the client refuses every redirect (any 3xx). The publication host
+must serve the manifest and archives at their final URLs, so CDN or
+release-asset URLs that redirect to signed storage URLs cannot be listed
+directly.
 
 `tests/js/qnx-runner-manifest.test.mjs` covers the format and client against a
 local fixture server with synthetic archives.

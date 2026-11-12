@@ -39,10 +39,11 @@ Targets: ${RUNNER_TARGETS.join(', ')}.
 The manifest URL comes from --manifest or RNQNX_RUNNER_MANIFEST. No runner
 manifest is published yet; until one is, pass the URL of your own manifest.
 fetch prints the cached archive path. It verifies size and SHA-256 against the
-manifest and deletes any download that does not match. It does not unpack,
+manifest and deletes any download that does not match. Redirects are
+refused, so the manifest must list final URLs. It does not unpack,
 install or launch the runner, and it does not contact a device.
 Version flags default to the versions this checkout pins. Host runners use
---sdp none.
+--sdp none; QNX targets require --sdp <version>.
 `;
 
 /** Keys: reactNativeQnx, reactNative, hermes, qt, sdp (null for host runners). @typedef {Record<string, string | null>} RunnerVersions */
@@ -142,36 +143,88 @@ export function selectRunner(manifest, target, versions) {
   );
 }
 
-/** @param {URL} url @param {typeof fetch} fetchImpl */
-async function get(url, fetchImpl) {
+export const DEFAULT_IDLE_TIMEOUT_MS = 30000;
+
+/**
+ * GET with redirects refused, no content encoding (so content-length is the
+ * byte count) and an idle timeout that every received chunk resets.
+ * @param {URL} url @param {typeof fetch} fetchImpl @param {number} idleMs
+ */
+async function get(url, fetchImpl, idleMs) {
+  const controller = new AbortController();
+  /** @type {NodeJS.Timeout | undefined} */
+  let timer;
+  const touch = () => {
+    clearTimeout(timer);
+    timer = setTimeout(
+      () => controller.abort(new Error(`No data from ${url.origin} for ${idleMs} ms; timed out.`)),
+      idleMs
+    );
+    timer.unref?.();
+  };
+  touch();
   let response;
   try {
-    response = await fetchImpl(url, { redirect: 'error' });
+    response = await fetchImpl(url, {
+      redirect: 'manual',
+      headers: { 'accept-encoding': 'identity' },
+      signal: controller.signal,
+    });
   } catch (error) {
+    clearTimeout(timer);
+    if (controller.signal.aborted) throw controller.signal.reason;
     const cause =
       error instanceof Error && error.cause instanceof Error ? `: ${error.cause.message}` : '';
+    throw new Error(`Cannot reach ${url.origin}${cause}.`);
+  }
+  if (response.status >= 300 && response.status < 400) {
+    clearTimeout(timer);
     throw new Error(
-      `Cannot reach ${url.origin}${cause}. Redirects are refused; publish the final URL.`
+      `${url} redirects (${response.status}${response.headers.get('location') ? ` to ${response.headers.get('location')}` : ''}). Redirects are refused; publish the final URL.`
     );
   }
-  if (!response.ok || !response.body)
+  if (!response.ok || !response.body) {
+    clearTimeout(timer);
     throw new Error(`Download failed: ${response.status} ${response.statusText} for ${url}`);
-  return response;
+  }
+  const encoding = response.headers.get('content-encoding');
+  if (encoding && encoding !== 'identity') {
+    clearTimeout(timer);
+    throw new Error(`${url} was sent with content-encoding ${encoding}; serve it uncompressed.`);
+  }
+  return { response, touch, done: () => clearTimeout(timer) };
 }
 
-/** @param {string} url @param {{fetchImpl?: typeof fetch}} [options] */
+/**
+ * @param {string} url
+ * @param {{fetchImpl?: typeof fetch, idleTimeoutMs?: number}} [options]
+ */
 export async function loadRunnerManifest(url, options = {}) {
   const fetchImpl = options.fetchImpl ?? fetch;
   const manifestUrl = runnerUrl(url);
-  const response = await get(manifestUrl, fetchImpl);
-  const declared = Number(response.headers.get('content-length') ?? 0);
-  if (declared > MAX_MANIFEST_BYTES) throw new Error('Runner manifest is too large.');
-  const body = await response.text();
-  if (Buffer.byteLength(body) > MAX_MANIFEST_BYTES)
-    throw new Error('Runner manifest is too large.');
+  const { response, touch, done } = await get(
+    manifestUrl,
+    fetchImpl,
+    options.idleTimeoutMs ?? DEFAULT_IDLE_TIMEOUT_MS
+  );
+  /** @type {Buffer[]} */
+  const chunks = [];
+  let received = 0;
+  try {
+    if (Number(response.headers.get('content-length') ?? 0) > MAX_MANIFEST_BYTES)
+      throw new Error('Runner manifest is too large.');
+    for await (const chunk of Readable.fromWeb(/** @type {any} */ (response.body))) {
+      touch();
+      received += chunk.length;
+      if (received > MAX_MANIFEST_BYTES) throw new Error('Runner manifest is too large.');
+      chunks.push(chunk);
+    }
+  } finally {
+    done();
+  }
   let parsed;
   try {
-    parsed = JSON.parse(body);
+    parsed = JSON.parse(Buffer.concat(chunks).toString('utf8'));
   } catch {
     throw new Error('Runner manifest is not valid JSON.');
   }
@@ -194,7 +247,7 @@ export function defaultRunnerCache() {
 /**
  * Download (or reuse) a runner archive and verify it against the manifest.
  * @param {RunnerEntry} entry @param {URL} manifestUrl
- * @param {{cacheDir?: string, fetchImpl?: typeof fetch}} [options]
+ * @param {{cacheDir?: string, fetchImpl?: typeof fetch, idleTimeoutMs?: number}} [options]
  */
 export async function fetchRunner(entry, manifestUrl, options = {}) {
   const fetchImpl = options.fetchImpl ?? fetch;
@@ -213,18 +266,25 @@ export async function fetchRunner(entry, manifestUrl, options = {}) {
   const url = runnerUrl(entry.url, manifestUrl);
   if (manifestUrl.protocol === 'https:' && url.protocol !== 'https:')
     throw new Error('An https manifest cannot point to a non-https runner.');
-  const response = await get(url, fetchImpl);
+  const { response, touch, done } = await get(
+    url,
+    fetchImpl,
+    options.idleTimeoutMs ?? DEFAULT_IDLE_TIMEOUT_MS
+  );
   const declared = response.headers.get('content-length');
-  if (declared !== null && Number(declared) !== entry.size)
+  if (declared !== null && Number(declared) !== entry.size) {
+    done();
     throw new Error(
       `Runner ${entry.id} size ${declared} does not match the manifest (${entry.size}).`
     );
+  }
   const partial = path.join(directory, `.${entry.id}.${randomBytes(6).toString('hex')}.partial`);
   const hash = createHash('sha256');
   let received = 0;
   try {
     const body = Readable.fromWeb(/** @type {any} */ (response.body));
     body.on('data', (chunk) => {
+      touch();
       received += chunk.length;
       if (received > entry.size)
         body.destroy(new Error(`Runner ${entry.id} is larger than the manifest says.`));
@@ -242,6 +302,8 @@ export async function fetchRunner(entry, manifestUrl, options = {}) {
   } catch (error) {
     await rm(partial, { force: true });
     throw error;
+  } finally {
+    done();
   }
   return { action: 'downloaded', archive, entry };
 }
@@ -326,6 +388,10 @@ export async function runnerMain(argv, options = {}) {
         `Pass --${key.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase())} <version>; this checkout does not pin it.`
       );
   }
+  if (values.target.startsWith('qnx-') && versions.sdp === null)
+    throw new Error(
+      'QNX runners are built against one QNX SDP. Pass --sdp <version>, for example --sdp 8.0.5.'
+    );
   const entry = selectRunner(manifest, values.target, versions);
   const result = await fetchRunner(entry, manifestUrl, {
     cacheDir: values.cache,

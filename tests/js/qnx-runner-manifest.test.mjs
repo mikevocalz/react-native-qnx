@@ -21,9 +21,16 @@ const sha = (/** @type {Buffer} */ b) => createHash('sha256').update(b).digest('
 /** @type {Map<string, Buffer | (() => [number, Buffer])>} */
 const routes = new Map();
 const hits = new Map();
+/** Raw handlers for misbehaving-server cases. @type {Map<string, (req: import('node:http').IncomingMessage, res: import('node:http').ServerResponse) => void>} */
+const handlers = new Map();
+/** @type {Map<string, string | undefined>} */
+const acceptEncoding = new Map();
 const server = createServer((request, response) => {
   const url = request.url ?? '';
   hits.set(url, (hits.get(url) ?? 0) + 1);
+  acceptEncoding.set(url, request.headers['accept-encoding']);
+  const handler = handlers.get(url);
+  if (handler) return handler(request, response);
   const route = routes.get(url);
   if (!route) return response.writeHead(404).end();
   if (typeof route === 'function') {
@@ -218,6 +225,100 @@ try {
     /non-https/
   );
 
+  // Same-size tamper: only the hash check catches it.
+  const cachedArchive = third.archive;
+  await writeFile(cachedArchive, Buffer.alloc(good.length, 0x78));
+  const beforeHits = hits.get('/runners/qnx-pi400-dev.tar.gz');
+  const fourth = await fetchRunner(
+    selectRunner(loaded.manifest, 'qnx-aarch64-pi400', versions),
+    loaded.manifestUrl,
+    { cacheDir }
+  );
+  ok(
+    fourth.action === 'downloaded' &&
+      hits.get('/runners/qnx-pi400-dev.tar.gz') === (beforeHits ?? 0) + 1 &&
+      sha(await readFile(fourth.archive)) === sha(good),
+    'same-size tampered cache is re-downloaded'
+  );
+  ok(
+    acceptEncoding.get('/runners/qnx-pi400-dev.tar.gz') === 'identity',
+    'asks for identity encoding'
+  );
+
+  // Redirects are refused, for the manifest and for archives.
+  handlers.set('/moved.json', (_req, res) =>
+    res.writeHead(302, { location: '/manifest.json' }).end()
+  );
+  handlers.set('/runners/moved.tar.gz', (_req, res) =>
+    res.writeHead(301, { location: '/runners/qnx-pi400-dev.tar.gz' }).end()
+  );
+  await rejects(loadRunnerManifest(`${base}/moved.json`), /redirects \(302.*publish the final URL/);
+  await rejects(
+    fetchRunner(entry({ id: 'moved', url: 'runners/moved.tar.gz' }), loaded.manifestUrl, {
+      cacheDir,
+    }),
+    /redirects \(301/
+  );
+
+  // Byte counting: short and long bodies without content-length, and a
+  // content-length that promises more than is sent.
+  const chunked =
+    (/** @type {Buffer} */ body) => (/** @type {any} */ _req, /** @type {any} */ res) => {
+      res.writeHead(200, { 'transfer-encoding': 'chunked' });
+      res.end(body);
+    };
+  handlers.set('/runners/short-chunked.tar.gz', chunked(good.subarray(0, 100)));
+  handlers.set(
+    '/runners/long-chunked.tar.gz',
+    chunked(Buffer.concat([good, Buffer.from('extra')]))
+  );
+  handlers.set('/runners/lying.tar.gz', (_req, res) => {
+    res.writeHead(200, { 'content-length': good.length });
+    res.write(good.subarray(0, 100));
+    res.destroy();
+  });
+  for (const [id, pattern] of [
+    ['short-chunked', /is 100 bytes; the manifest says/],
+    ['long-chunked', /larger than the manifest/],
+    ['lying', /terminated|socket|closed|aborted|bytes/i],
+  ]) {
+    const e = entry({ id: String(id), url: `runners/${id}.tar.gz` });
+    await rejects(
+      fetchRunner(e, loaded.manifestUrl, { cacheDir }),
+      /** @type {RegExp} */ (pattern)
+    );
+    ok(
+      (await readdir(path.join(cacheDir, e.sha256))).filter((f) => f.includes(String(id)))
+        .length === 0,
+      `${id} left nothing`
+    );
+  }
+  handlers.set('/huge.json', (_req, res) => {
+    res.writeHead(200, { 'transfer-encoding': 'chunked' });
+    res.end(Buffer.alloc(1024 * 1024 + 1, 0x20));
+  });
+  await rejects(loadRunnerManifest(`${base}/huge.json`), /too large/);
+  handlers.set('/gzip.tar.gz', (_req, res) =>
+    res.writeHead(200, { 'content-encoding': 'gzip', 'content-length': good.length }).end(good)
+  );
+  await rejects(
+    fetchRunner(entry({ id: 'gzip', url: 'gzip.tar.gz' }), loaded.manifestUrl, { cacheDir }),
+    /content-encoding gzip/
+  );
+
+  // A server that stops sending is abandoned after the idle timeout.
+  handlers.set('/runners/stall.tar.gz', (_req, res) => {
+    res.writeHead(200, { 'content-length': good.length });
+    res.write(good.subarray(0, 10));
+  });
+  await rejects(
+    fetchRunner(entry({ id: 'stall', url: 'runners/stall.tar.gz' }), loaded.manifestUrl, {
+      cacheDir,
+      idleTimeoutMs: 200,
+    }),
+    /timed out/
+  );
+
   // CLI.
   const out = await quiet(() =>
     runnerMain([
@@ -252,6 +353,26 @@ try {
     /No runner manifest is published yet/
   );
   if (saved !== undefined) process.env.RNQNX_RUNNER_MANIFEST = saved;
+  await rejects(
+    runnerMain([
+      'fetch',
+      '--target',
+      'qnx-aarch64-pi400',
+      '--manifest',
+      `${base}/manifest.json`,
+      '--cache',
+      cacheDir,
+      '--react-native-qnx',
+      '0.1.0',
+      '--react-native',
+      '0.88.1',
+      '--hermes',
+      '0.88.1',
+      '--qt',
+      '6.12.0',
+    ]),
+    /QNX runners are built against one QNX SDP\. Pass --sdp <version>/
+  );
   await rejects(
     runnerMain(['fetch', '--target', 'macos-arm64', '--manifest', `${base}/manifest.json`]),
     /does not pin/
