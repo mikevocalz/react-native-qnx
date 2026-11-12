@@ -5,15 +5,18 @@ import { lstat, readFile, realpath, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { nativeConfiguration } from './prepare-native.mjs';
+import { readWindowDescriptor, windowChromeCMakeFlags } from './window-descriptor.mjs';
 
 const platformRoot = path.resolve(import.meta.dirname, '../../..');
 const HELP = [
   'React Native QNX - build an external native consumer application',
   '  project build-native --project <directory> [--platform qnx|marathon]',
-  '                       [--host-preview] [--dry-run]',
+  '                       [--host-preview] [--window-chrome] [--dry-run]',
   '',
   'QNX defaults to the QNX toolchain; --host-preview is an explicit Linux-only',
   'QNX app preview. Marathon builds a separate Linux executable using Qt/Wayland.',
+  '--window-chrome compiles the experimental title bar from native-app.json',
+  '"window" (RNQNX_ENABLE_WINDOW_CHROME, default OFF; see docs/adr/0016).',
   'Requires the reviewed source checkout/native prerequisites. No deployment.',
 ].join('\n');
 
@@ -31,8 +34,13 @@ async function smallRegular(file) {
   return readFile(file, 'utf8');
 }
 
-/** @param {string} root @param {string} platform @param {boolean} preview */
-export async function planNativeBuild(root, platform = 'qnx', preview = false) {
+/** @param {string} root @param {string} platform @param {boolean} preview @param {boolean} [windowChrome] */
+export async function planNativeBuild(
+  root,
+  platform = 'qnx',
+  preview = false,
+  windowChrome = false
+) {
   if (preview && platform !== 'qnx') throw new Error('--host-preview applies only to QNX.');
   if (preview && process.platform !== 'linux') {
     throw new Error('The QNX Linux preview requires a Linux development host.');
@@ -44,6 +52,7 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
   const project = await realpath(path.resolve(root));
   const descriptorPath = path.join(project, 'build', platform, 'native-app.json');
   const original = JSON.parse(await smallRegular(descriptorPath));
+  const window = readWindowDescriptor(original);
   // Revalidate the exact selected bundle, including QNX .hbc inputs. A stale
   // descriptor must never silently point to a different JS entry.
   const relativeBundle = path.relative(project, original.bundle ?? '');
@@ -75,6 +84,7 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
       : []),
     ...(preview ? ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'] : []),
     ...(platform === 'marathon' ? ['-DRNQNX_BUILD_MARATHON_HOST=ON'] : []),
+    ...windowChromeCMakeFlags(window, windowChrome),
   ];
   if (platform === 'qnx' && !preview && !configuration.bundle.endsWith('.hbc')) {
     throw new Error('Real QNX builds require a prepared matching Hermes .hbc bundle.');
@@ -94,6 +104,7 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
     platform,
     preview,
     appId: configuration.appId,
+    window,
     descriptorPath,
     buildDir,
     output,
@@ -135,6 +146,7 @@ export async function buildNativeMain(args) {
       platform: { type: 'string' },
       'host-preview': { type: 'boolean' },
       'dry-run': { type: 'boolean' },
+      'window-chrome': { type: 'boolean' },
     },
   });
   const seen = new Set();
@@ -151,7 +163,8 @@ export async function buildNativeMain(args) {
   const plan = await planNativeBuild(
     values.project ?? '.',
     values.platform ?? 'qnx',
-    !!values['host-preview']
+    !!values['host-preview'],
+    !!values['window-chrome']
   );
   if (values['dry-run']) {
     console.log(JSON.stringify({ ...plan, action: 'dry-run' }, null, 2));
