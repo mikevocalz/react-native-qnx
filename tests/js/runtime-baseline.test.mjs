@@ -18,7 +18,10 @@ mode, destination = sys.argv[1:]
 if mode == 'interrupt':
     signal.signal(signal.SIGTERM, signal.SIG_IGN)
     signal.signal(signal.SIGHUP, signal.SIG_IGN)
-    open(destination+'.pid','w').write(str(os.getpid()))
+    # The final path is the readiness signal; publish it only after close.
+    with open(destination+'.pid.pending','w') as pid_file:
+        pid_file.write(str(os.getpid()))
+    os.replace(destination+'.pid.pending', destination+'.pid')
     time.sleep(60)
 if mode == 'hang':
     signal.signal(signal.SIGTERM, signal.SIG_IGN)

@@ -219,6 +219,10 @@ Once the Pi 400 is reachable over SSH and QNX Screen is running, the repository
 does not require a Pi-400-specific application binary. The target is still
 AArch64le and uses the same QNX Screen deployment lane.
 
+The macOS build host that runs this lane (Colima, the `qnx805-build` container,
+the licensed SDP and Qt 6.12) is documented in
+[QNX SDK build host on macOS](../handoff/QNX_SDK_CONTAINER_MACOS.md).
+
 On the development host:
 
 ```bash
