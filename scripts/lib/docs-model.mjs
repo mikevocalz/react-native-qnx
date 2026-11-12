@@ -187,6 +187,7 @@ export async function syncDocs(root, write = false, release = false) {
   for (const [file, key, block] of [
     ['README.md', 'dependencies', dependencies],
     ['docs/getting-started/compatibility-matrix.md', 'dependencies', dependencies],
+    ['docs/v1/release-notes.md', 'dependencies', dependencies],
     ['docs/component-support.md', 'components', components],
     ['docs/releases/v1-readiness.md', 'gates', gates],
   ]) {
@@ -224,6 +225,10 @@ export async function syncDocs(root, write = false, release = false) {
       'docs/getting-started/qnx-cli.md',
       'docs/policy/premium-components.md',
       'docs/adr/index.md',
+      'docs/v1/README.md',
+      'docs/v1/evidence-gallery.md',
+      'docs/v1/app-design-handoff.md',
+      'TODO.md',
       'THIRD_PARTY_NOTICES.md',
       'SECURITY.md',
       'CODE_OF_CONDUCT.md',
