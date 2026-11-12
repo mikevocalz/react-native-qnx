@@ -100,7 +100,7 @@ Item {
                 opacity: control.pressed ? 0.7 : 1
                 Text {
                     anchors.centerIn: parent
-                    visible: control.hovered || control.activeFocus
+                    visible: root.chrome.alwaysShowGlyphs || control.hovered || control.activeFocus
                     text: control.action === "close" ? "×"
                         : control.action === "minimize" ? "−"
                         : root.maximized ? "↙" : "↗"

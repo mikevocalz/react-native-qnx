@@ -129,6 +129,7 @@ class WindowChromeQuickTest : public QObject {
       config.controls = controls;
       Harness harness(config, capabilitiesForPlatform(QStringLiteral("qnx")), QSize(1920, 1080));
       QCOMPARE(controlNames(harness), QStringList{QStringLiteral("close")});
+      QVERIFY(harness.chrome->alwaysShowGlyphs());
       const QStringList hidden = harness.chrome->describeHiddenControls();
       QCOMPARE(hidden.size(), 2);
       QVERIFY(hidden.at(0).startsWith(QStringLiteral("RNQNX_WINDOW_CHROME platform=qnx hidden=")));

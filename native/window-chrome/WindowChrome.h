@@ -34,6 +34,9 @@ class WindowChrome final : public QObject {
   Q_PROPERTY(bool active READ active NOTIFY stateChanged)
   Q_PROPERTY(bool maximized READ maximized NOTIFY stateChanged)
   Q_PROPERTY(bool systemMoveAvailable READ systemMoveAvailable CONSTANT)
+  // QNX targets are touch-first: no hover, so glyphs stay visible and the
+  // controls are not told apart by colour alone.
+  Q_PROPERTY(bool alwaysShowGlyphs READ alwaysShowGlyphs CONSTANT)
 
  public:
   // Creates the chrome item and the content root inside `window`. Throws
@@ -63,6 +66,7 @@ class WindowChrome final : public QObject {
   bool active() const;
   bool maximized() const;
   bool systemMoveAvailable() const { return capabilities_.systemMove; }
+  bool alwaysShowGlyphs() const { return capabilities_.platform == QLatin1String("qnx"); }
 
   // One line per hidden control, for logs and device receipts.
   QStringList describeHiddenControls() const;
