@@ -37,6 +37,21 @@ async function exists(file) {
   }
 }
 
+/**
+ * The indentation a JSON file already uses (tab or N spaces), so rewriting it
+ * keeps the user's style. Falls back to two spaces.
+ * @param {string} text
+ */
+export function jsonIndent(text) {
+  const match = /^[{[][^\S\n]*\n([\t ]+)\S/.exec(text);
+  return match ? match[1] : '  ';
+}
+
+/** @param {unknown} value @param {string} original */
+function formatLike(value, original) {
+  return JSON.stringify(value, null, jsonIndent(original)) + (original.endsWith('\n') ? '\n' : '');
+}
+
 /** Metro config for the qnx platform that leaves metro.config.js to Expo. */
 export function qnxMetroConfigSource() {
   return [
@@ -67,7 +82,10 @@ export async function addQnx(options) {
   const manifest = JSON.parse(manifestText);
   if (!manifest.dependencies?.expo)
     throw new Error('package.json does not depend on expo; add-qnx targets existing Expo apps.');
-  const expo = await loadExpoConfig(root);
+  // Plugins are not run: before the first install the QNX plugin (and any
+  // other listed plugin) cannot be resolved, and add-qnx only needs plain
+  // fields. A rerun before install therefore behaves like any other rerun.
+  const expo = await loadExpoConfig(root, { skipPlugins: true });
   const name = expo.exp.name;
   validateAppIdentity({ appId: options.appId, componentName, displayName: name });
 
@@ -110,7 +128,7 @@ export async function addQnx(options) {
       next[section][key] = value;
     }
   }
-  const nextText = JSON.stringify(next, null, 2) + '\n';
+  const nextText = formatLike(next, manifestText);
   if (JSON.stringify(next) === JSON.stringify(manifest))
     changes.push({ file: 'package.json', action: 'unchanged' });
   else {
@@ -124,8 +142,25 @@ export async function addQnx(options) {
   /** @type {string | null} */
   let manualStep = null;
   if (expo.dynamicConfigPath) {
-    const configured = expo.exp.extra?.rnqnx;
-    if (configured?.appId === options.appId && configured?.componentName === componentName)
+    // A dynamic config only shows its plugin options once plugins run. Run
+    // them when they are installed; before install, fall back to finding the
+    // plugin name in the file and say the options are not verified yet.
+    /** @type {any} */
+    let configured;
+    let unverified = false;
+    try {
+      configured = (await loadExpoConfig(root)).exp.extra?.rnqnx;
+    } catch (error) {
+      if (!/is not installed/.test(String(/** @type {Error} */ (error).message))) throw error;
+      unverified = (await readFile(expo.dynamicConfigPath, 'utf8')).includes(PLUGIN);
+    }
+    if (unverified)
+      changes.push({
+        file: path.basename(expo.dynamicConfigPath),
+        action: 'unchanged',
+        detail: `lists ${PLUGIN}; options are checked after install`,
+      });
+    else if (configured?.appId === options.appId && configured?.componentName === componentName)
       changes.push({ file: path.basename(expo.dynamicConfigPath), action: 'unchanged' });
     else {
       manualStep = `Add to "plugins" in ${path.basename(expo.dynamicConfigPath)}: ${JSON.stringify(pluginEntry)}`;
@@ -137,7 +172,8 @@ export async function addQnx(options) {
     }
   } else {
     const appJsonPath = path.join(root, 'app.json');
-    const appJson = JSON.parse(await readFile(appJsonPath, 'utf8'));
+    const appJsonText = await readFile(appJsonPath, 'utf8');
+    const appJson = JSON.parse(appJsonText);
     const holder = appJson.expo ?? appJson;
     const plugins = Array.isArray(holder.plugins) ? [...holder.plugins] : [];
     const index = plugins.findIndex((p) => p === PLUGIN || (Array.isArray(p) && p[0] === PLUGIN));
@@ -155,7 +191,7 @@ export async function addQnx(options) {
       if (index >= 0) plugins[index] = merged;
       else plugins.push(merged);
       holder.plugins = plugins;
-      writes.set(appJsonPath, JSON.stringify(appJson, null, 2) + '\n');
+      writes.set(appJsonPath, formatLike(appJson, appJsonText));
       changes.push({ file: 'app.json', action: index >= 0 ? 'updated' : 'plugin added' });
     }
   }

@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  symlink,
+  utimes,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { addQnx } from '../../packages/react-native-qnx-cli/src/add-qnx.mjs';
@@ -172,6 +181,73 @@ try {
     'descriptor from plugin'
   );
 
+  // project run after a rebundle: the descriptor it owns is refreshed when
+  // only the bundle changed, and real config divergence is still refused.
+  await writeFile(path.join(app, 'build/qnx/app.bundle.js'), 'rebuilt bundle\n');
+  run = await runProject({ project: app, env: {} });
+  ok(run.steps[2].status === 'done' && run.steps[3].status === 'needs SDP', 'rerun after rebundle');
+  const refreshed = JSON.parse(await readFile(path.join(app, 'build/qnx/native-app.json'), 'utf8'));
+  ok(
+    refreshed.bundleSha256 === createHash('sha256').update('rebuilt bundle\n').digest('hex'),
+    'descriptor carries the new bundle hash'
+  );
+  const tamperedDescriptor = { ...refreshed, appId: 'org.example.other' };
+  await writeFile(
+    path.join(app, 'build/qnx/native-app.json'),
+    JSON.stringify(tamperedDescriptor, null, 2) + '\n'
+  );
+  await assert.rejects(() => runProject({ project: app, env: {} }), /differs/);
+  checks++;
+  await writeFile(
+    path.join(app, 'build/qnx/native-app.json'),
+    JSON.stringify(refreshed, null, 2) + '\n'
+  );
+
+  // The newer of app.bundle.hbc and app.bundle.js is used.
+  await writeFile(path.join(app, 'build/qnx/app.bundle.hbc'), 'old hbc\n');
+  const old = new Date(Date.now() - 60_000);
+  await utimes(path.join(app, 'build/qnx/app.bundle.hbc'), old, old);
+  run = await runProject({ project: app, env: {} });
+  ok(run.steps[1].detail === 'build/qnx/app.bundle.js', 'newer .js wins over stale .hbc');
+  const later = new Date(Date.now() + 60_000);
+  await utimes(path.join(app, 'build/qnx/app.bundle.hbc'), later, later);
+  run = await runProject({ project: app, env: {} });
+  ok(run.steps[1].detail === 'build/qnx/app.bundle.hbc', 'newer .hbc wins');
+
+  // Before install: the QNX plugin is not in node_modules. add-qnx and its
+  // rerun still work, and the user's JSON indentation is kept.
+  const fresh = path.join(temporary, 'fresh');
+  await mkdir(fresh);
+  await writeFile(
+    path.join(fresh, 'package.json'),
+    '{\n\t"name": "fresh",\n\t"main": "index.js",\n\t"dependencies": {\n\t\t"expo": "58.0.24"\n\t}\n}\n'
+  );
+  await writeFile(
+    path.join(fresh, 'app.json'),
+    '{\n    "expo": {\n        "name": "Fresh",\n        "slug": "fresh"\n    }\n}\n'
+  );
+  const freshFirst = await addQnx({ project: fresh, appId: 'org.example.fresh' });
+  ok(
+    freshFirst.changes.some((c) => c.file === 'app.json' && c.action === 'plugin added'),
+    'pre-install first run'
+  );
+  const freshSnapshot = await readFile(path.join(fresh, 'app.json'), 'utf8');
+  const freshSecond = await addQnx({ project: fresh, appId: 'org.example.fresh' });
+  ok(
+    freshSecond.changes.every((c) => c.action === 'unchanged'),
+    'pre-install rerun is a no-op'
+  );
+  ok(
+    (await readFile(path.join(fresh, 'app.json'), 'utf8')) === freshSnapshot,
+    'pre-install rerun byte-identical'
+  );
+  const freshManifest = await readFile(path.join(fresh, 'package.json'), 'utf8');
+  ok(freshManifest.includes('\n\t"scripts": {\n\t\t"qnx"'), 'package.json keeps tab indentation');
+  ok(
+    freshSnapshot.includes('\n    "expo": {\n        "name"'),
+    'app.json keeps 4-space indentation'
+  );
+
   // Dynamic config: printed, not edited.
   const dynamic = path.join(temporary, 'dynamic');
   await mkdir(dynamic);
@@ -190,6 +266,24 @@ try {
   ok(
     (await readFile(path.join(dynamic, 'app.config.js'), 'utf8')) === configSource,
     'app.config.js not edited'
+  );
+  // An app.config.js that already lists the plugin, before install. A separate
+  // directory, because Node caches the first app.config.js it evaluated.
+  const dynamicListed = path.join(temporary, 'dynamic-listed');
+  await mkdir(dynamicListed);
+  await writeFile(
+    path.join(dynamicListed, 'package.json'),
+    JSON.stringify({ name: 'dyn2', dependencies: { expo: '58.0.24' } })
+  );
+  await writeFile(
+    path.join(dynamicListed, 'app.config.js'),
+    `module.exports = ({ config }) => ({ ...config, name: 'Dyn', slug: 'dyn', plugins: [['@rn-qnx/expo-qnx-config-plugins', { appId: 'org.example.dyn', componentName: 'main' }]] });\n`
+  );
+  await addQnx({ project: dynamicListed, appId: 'org.example.dyn' });
+  const dynAgain = await addQnx({ project: dynamicListed, appId: 'org.example.dyn' });
+  ok(
+    dynAgain.manualStep === null && dynAgain.changes.every((c) => c.action === 'unchanged'),
+    'dynamic config with entry is unchanged'
   );
   console.log(
     `Add QNX to an existing Expo app: ${checks} checks passed (fixture outside the checkout).`

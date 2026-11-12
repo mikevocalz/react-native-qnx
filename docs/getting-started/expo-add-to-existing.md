@@ -25,7 +25,19 @@ the same arguments changes nothing; a conflicting value already in
 `package.json` or the plugin entry stops the command instead of being
 overwritten. Use `--dry-run` to see the plan first.
 
+The rewritten `package.json` and `app.json` keep their existing indentation
+(tabs or spaces). add-qnx reads the Expo config without running config
+plugins, so it works and reruns cleanly before the first install. For
+`app.config.js`/`.ts`, an existing plugin entry is only matched by name until
+dependencies are installed; its options are checked after install.
+
 Then install dependencies with your package manager.
+
+Limitation: the `file:` links and the `qnx` script use absolute paths to this
+platform checkout. Moving or deleting the checkout, or sharing the app with a
+teammate whose checkout lives elsewhere, breaks the install and the script
+until you rerun add-qnx (after removing the old entries) or edit the paths.
+They become normal package versions once the `@rn-qnx` packages are published.
 
 ## Develop and run
 
@@ -45,7 +57,11 @@ deploy             not run       waits for native-build
 launch             not run       waits for native-build
 ```
 
-Steps marked `not run` did not happen. Deploying a consumer app to the board
+Steps marked `not run` did not happen. When two bundles exist, `project run`
+uses whichever of `app.bundle.hbc` and `app.bundle.js` is newer. After a
+rebundle it refreshes the `native-app.json` it generated if only the bundle
+path or hash changed; any other difference, such as a changed app ID, still
+stops with "Generated native configuration differs" so you can review it. Deploying a consumer app to the board
 from `project run` is not implemented yet, so a run with `--device` still
 stops before copying anything.
 
