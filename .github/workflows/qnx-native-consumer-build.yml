@@ -4,6 +4,11 @@ on:
     paths:
       - 'packages/react-native-qnx-cli/src/**'
       - 'tests/js/qnx-native-consumer-build.test.mjs'
+      - 'native/app-identity/**'
+      - 'cmake/RnqnxConsumerApp.cmake'
+      - 'cmake/ConsumerApplicationIdentity.h.in'
+      - 'vnext/include/react-native-qnx/runtime/ApplicationIcon.h'
+      - 'vnext/probes/playground/main.cpp'
       - '.github/workflows/qnx-native-consumer-build.yml'
   workflow_dispatch:
 
@@ -48,6 +53,12 @@ jobs:
           target: desktop
           arch: linux_gcc_64
           cache: true
+      - name: Build the icon and label tool
+        run: |
+          set -euo pipefail
+          cmake -S native/app-identity -B build/identity-tool -G Ninja -DRNQNX_BUILD_IDENTITY_TOOL=ON
+          cmake --build build/identity-tool
+          echo "RNQNX_IDENTITY_TOOL=$PWD/build/identity-tool/rnqnx_identity_tool" >> "$GITHUB_ENV"
       - name: Create and bundle shared Expo source
         run: |
           set -euo pipefail
@@ -73,6 +84,7 @@ jobs:
             test -x "$executable"
             "$executable" --describe-app | tee "$app/build/$kind/native-identity.txt"
             grep -F org.example.build "$app/build/$kind/native-identity.txt"
+            grep -F '"windowIconSizes":[16,24,32,48,64,96,128,192,256,512]' "$app/build/$kind/native-identity.txt"
             timeout 45s "$executable" --screenshot "$app/build/$kind/native-preview.png"
             test -s "$app/build/$kind/native-preview.png"
           done
@@ -82,6 +94,7 @@ jobs:
           name: consumer-native-preview-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             ${{ env.RNQNX_TEST_CONSUMER }}/build/**/native-identity.txt
+            ${{ env.RNQNX_TEST_CONSUMER }}/build/**/native-app.json
             ${{ env.RNQNX_TEST_CONSUMER }}/build/**/native-preview.png
             ${{ env.RNQNX_TEST_CONSUMER }}/build/**/CMakeCache.txt
           if-no-files-found: warn

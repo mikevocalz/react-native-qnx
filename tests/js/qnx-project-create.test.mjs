@@ -38,6 +38,14 @@ try {
     JSON.parse(await readFile(path.join(qnx, 'app.json'), 'utf8')).expo.extra.rnqnx.componentName,
     'main'
   );
+  assert.equal(
+    JSON.parse(await readFile(path.join(qnx, 'app.json'), 'utf8')).expo.icon,
+    './assets/icon.png'
+  );
+  assert.deepEqual(
+    await readFile(path.join(qnx, 'assets', 'icon.png')),
+    await readFile(path.join(process.cwd(), 'template', 'qnx', 'assets', 'icon.png'))
+  );
   const qnxArtifacts = JSON.parse(await readFile(path.join(qnx, 'platform-packages.json'), 'utf8'));
   assert.equal(Object.keys(qnxArtifacts.artifacts).length, 2);
   for (const artifact of Object.values(qnxArtifacts.artifacts)) {

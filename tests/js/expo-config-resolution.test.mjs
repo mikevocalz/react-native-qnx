@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
+import {
+  copyFile,
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  symlink,
+  writeFile,
+} from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -9,11 +18,15 @@ import {
   prepareNativeMain,
 } from '../../packages/react-native-qnx-cli/src/prepare-native.mjs';
 import { loadExpoConfig } from '../../packages/react-native-qnx-cli/src/expo-config.mjs';
+import { useIdentityToolInEnvironment } from './helpers/identity-tool.mjs';
 
 const require = createRequire(import.meta.url);
 const withQnxProject = require('../../packages/expo-qnx-config-plugins/index.js');
 const { resolveQnxWindow } = withQnxProject;
 const pluginRoot = path.resolve('packages/expo-qnx-config-plugins');
+const templateIcon = path.resolve('template/qnx/assets/icon.png');
+// prepare-native generates the icon set; the stand-in tool unless one is configured.
+const identityTool = await useIdentityToolInEnvironment();
 // Fixture apps live outside the checkout so nothing resolves through the workspace.
 const temporary = await mkdtemp(path.join(tmpdir(), 'rnqnx-expo-config-'));
 let checks = 0;
@@ -53,6 +66,7 @@ const pluginEntry = [
     appId: 'org.example.fieldnotes',
     componentName: 'FieldNotes',
     shortName: 'Notes',
+    icon: './icon.png',
     window: {
       controls: 'windows',
       titleBarStyle: 'hidden',
@@ -132,6 +146,7 @@ try {
     await symlink(pluginRoot, path.join(project, 'node_modules/@rn-qnx/expo-qnx-config-plugins'));
     await writeFile(path.join(project, 'package.json'), '{"name":"field-notes","version":"1.0.0"}');
     await writeFile(path.join(project, file), contents);
+    await copyFile(templateIcon, path.join(project, 'icon.png'));
     await mkdir(path.join(project, 'build/qnx'), { recursive: true });
     await writeFile(path.join(project, 'build/qnx/app.bundle.js'), 'bundle\n');
 
@@ -230,4 +245,5 @@ try {
   );
 } finally {
   await rm(temporary, { recursive: true, force: true });
+  await identityTool.release();
 }

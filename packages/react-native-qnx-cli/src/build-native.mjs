@@ -5,6 +5,7 @@ import { lstat, readFile, realpath, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { nativeConfiguration } from './prepare-native.mjs';
+import { verifyPreparedIdentity } from './app-identity.mjs';
 import { readWindowDescriptor, windowChromeCMakeFlags } from './window-descriptor.mjs';
 
 const platformRoot = path.resolve(import.meta.dirname, '../../..');
@@ -58,12 +59,22 @@ export async function planNativeBuild(
   // Revalidate the exact selected bundle, including QNX .hbc inputs. A stale
   // descriptor must never silently point to a different JS entry.
   const relativeBundle = path.relative(project, original.bundle ?? '');
-  const { configuration } = await nativeConfiguration(project, platform, relativeBundle);
-  if (JSON.stringify(original) !== JSON.stringify(configuration)) {
+  const { configuration, expoConfig } = await nativeConfiguration(
+    project,
+    platform,
+    relativeBundle
+  );
+  const { shortName, icon, labelFit, ...base } = original;
+  if (JSON.stringify(base) !== JSON.stringify(configuration) || !labelFit) {
     throw new Error(
       'Native descriptor is stale. Review the bundle and run project prepare-native.'
     );
   }
+  await verifyPreparedIdentity(
+    project,
+    /** @type {import('./app-identity.mjs').ExpoConfig} */ (expoConfig.exp),
+    { shortName, icon }
+  );
   const buildDir = path.join(project, 'build', platform, preview ? 'preview-native' : 'native');
   try {
     const current = await lstat(buildDir);

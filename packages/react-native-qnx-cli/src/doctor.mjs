@@ -4,14 +4,24 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
+import {
+  identityToolPath,
+  measureTileLabel,
+  resolveTileLabel,
+  validateIconSource,
+} from './app-identity.mjs';
 import { CONSUMER_CONTRACT } from './consumer-contract.mjs';
+import { EXPO_CONFIG_FILES } from './expo-config.mjs';
 
 const help = `React Native QNX consumer project diagnostics
   rnqnx project doctor --project <directory> [--platform qnx|marathon]
-                       [--entry index.js] [--json]
+                       [--entry index.js] [--identity-tool <path>] [--json]
 
 Read-only metadata checks. QNX is default. No config/package JavaScript,
-package-manager process, compiler, network request or device command runs.
+package-manager process, compiler, network request or device command runs,
+with one opt-in exception: --identity-tool runs that Qt host binary (built
+from native/app-identity) to measure the tile label. Without it, the app icon
+header and tile label text are checked from static app.json only.
 Exit 0: inspected metadata matches; 1: failed check; 2: invalid invocation.
 A compatible report is not a native build, security audit or runtime proof.
 `;
@@ -80,9 +90,110 @@ async function projectFile(root, relative) {
   return file;
 }
 
+/** The identity fields as @expo/config would resolve them for a static
+ * app.json: extra.rnqnx, with the @rn-qnx/expo-qnx-config-plugins entry's
+ * options merged over it (the plugin's own rule). Plugin options are JSON in
+ * app.json, so no plugin or config code runs here.
+ * @param {Record<string, unknown>} expo */
+export function staticIdentityConfig(expo) {
+  const extra = /** @type {Record<string, unknown>} */ (expo.extra ?? {});
+  const rnqnx = { .../** @type {Record<string, unknown>} */ (extra.rnqnx ?? {}) };
+  for (const entry of Array.isArray(expo.plugins) ? expo.plugins : []) {
+    if (!Array.isArray(entry) || typeof entry[0] !== 'string') continue;
+    if (!/(^|\/)expo-qnx-config-plugins(\/app\.plugin(\.js)?)?$/.test(entry[0])) continue;
+    const options = entry[1];
+    if (!options || typeof options !== 'object' || Array.isArray(options)) continue;
+    for (const key of ['icon', 'shortName'])
+      if (/** @type {Record<string, unknown>} */ (options)[key] !== undefined)
+        rnqnx[key] = /** @type {Record<string, unknown>} */ (options)[key];
+  }
+  return /** @type {import('./app-identity.mjs').ExpoConfig} */ ({
+    ...expo,
+    extra: { ...extra, rnqnx },
+  });
+}
+
+/** Check the app icon and tile label from static app.json. app.config.* is
+ * code, so its presence leaves these checks to prepare-native.
+ * @param {string} root @param {string} platform @param {string | undefined} tool
+ * @returns {Promise<Check[]>} */
+async function identityChecks(root, platform, tool) {
+  for (const name of EXPO_CONFIG_FILES.filter((file) => file !== 'app.json')) {
+    try {
+      await lstat(path.join(root, name));
+    } catch {
+      continue;
+    }
+    return [
+      {
+        id: 'app-identity',
+        status: 'not-checked',
+        message: `${name} is code and doctor does not run it; project prepare-native resolves it and checks the icon and tile label.`,
+      },
+    ];
+  }
+  let app;
+  try {
+    app = await readMetadata(await projectFile(root, 'app.json'));
+  } catch (error) {
+    return [
+      {
+        id: 'app-identity',
+        status: 'not-checked',
+        message: `app.json is not readable (${description(error)}); icon and tile label were not checked.`,
+      },
+    ];
+  }
+  /** @type {Check[]} */
+  const checks = [];
+  const expo = staticIdentityConfig(
+    /** @type {Record<string, unknown>} */ (
+      app.expo && typeof app.expo === 'object' && !Array.isArray(app.expo) ? app.expo : {}
+    )
+  );
+  try {
+    const icon = await validateIconSource(root, expo);
+    checks.push({
+      id: 'app-icon',
+      status: 'passed',
+      observed: `${icon.width}x${icon.height} PNG`,
+      message: `${icon.field} is a square PNG of at least 1024x1024.`,
+    });
+  } catch (error) {
+    checks.push({ id: 'app-icon', status: 'failed', message: description(error) });
+  }
+  try {
+    const tile = resolveTileLabel(expo);
+    if (!tool) {
+      checks.push({
+        id: 'tile-label',
+        status: 'not-checked',
+        observed: tile.label,
+        message: `Tile label comes from ${tile.field}; its rendered width was not measured. Pass --identity-tool to measure it.`,
+      });
+    } else {
+      const fit = measureTileLabel(() => identityToolPath(tool), platform, tile);
+      checks.push(
+        fit.status === 'measured'
+          ? {
+              id: 'tile-label',
+              status: 'passed',
+              observed: `${fit.widthPx.toFixed(1)} px`,
+              expected: `<= ${fit.boxWidthPx} px, ${fit.lineCount} line`,
+              message: `Tile label from ${tile.field} fits ${fit.launcher} on one line (host measurement, not a device run).`,
+            }
+          : { id: 'tile-label', status: 'not-checked', message: fit.reason }
+      );
+    }
+  } catch (error) {
+    checks.push({ id: 'tile-label', status: 'failed', message: description(error) });
+  }
+  return checks;
+}
+
 /** Inspect only declared files and installed package metadata; never import config code.
  * @param {string} project
- * @param {{platform?: string, entry?: string}} [options] */
+ * @param {{platform?: string, entry?: string, identityTool?: string}} [options] */
 export async function inspectConsumer(project, options = {}) {
   const platform = options.platform ?? 'qnx';
   if (!['qnx', 'marathon'].includes(platform)) throw new Error('Use --platform qnx or marathon.');
@@ -156,6 +267,7 @@ export async function inspectConsumer(project, options = {}) {
       checks.push({ id, status: 'failed', message: description(error) });
     }
   }
+  checks.push(...(await identityChecks(root, platform, options.identityTool)));
   /** @type {Record<string, string>} */
   const packages = {
     ...CONSUMER_CONTRACT.packages,
@@ -238,6 +350,7 @@ export async function doctorMain(argv) {
       project: { type: 'string' },
       platform: { type: 'string' },
       entry: { type: 'string' },
+      'identity-tool': { type: 'string' },
       json: { type: 'boolean' },
     },
   });
@@ -255,6 +368,7 @@ export async function doctorMain(argv) {
   const report = await inspectConsumer(values.project ?? '.', {
     platform: values.platform,
     entry: values.entry,
+    identityTool: values['identity-tool'],
   });
   if (values.json) console.log(JSON.stringify(report, null, 2));
   else {

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import {
+  copyFile,
   mkdir,
   mkdtemp,
   readFile,
@@ -94,10 +95,16 @@ try {
       ios: { bundleIdentifier: 'org.example.existing' },
       android: { package: 'org.example.existing' },
       web: { bundler: 'metro', output: 'static' },
+      icon: './assets/icon.png',
       plugins: ['./plugins/with-existing.js'],
     },
   };
   await writeFile(path.join(app, 'app.json'), JSON.stringify(appJson, null, 2) + '\n');
+  await mkdir(path.join(app, 'assets'), { recursive: true });
+  await copyFile(
+    path.resolve('template/qnx/assets/icon.png'),
+    path.join(app, 'assets', 'icon.png')
+  );
   const before = await hashTree(preserved);
 
   const dry = await addQnx({ project: app, appId: 'org.example.existing', dryRun: true });
@@ -180,6 +187,12 @@ try {
     descriptor.appId === 'org.example.existing' && descriptor.componentName === 'main',
     'descriptor from plugin'
   );
+  // No RNQNX_IDENTITY_TOOL in env: the icon set is skipped, and run says so.
+  ok(
+    descriptor.icon.sizes.length === 0 && descriptor.labelFit.status === 'not-measured',
+    'icon set skipped without the identity tool'
+  );
+  ok(/icon set and tile label skipped/.test(run.steps[2].detail), 'run reports the skip');
 
   // project run after a rebundle: the descriptor it owns is refreshed when
   // only the bundle changed, and real config divergence is still refused.

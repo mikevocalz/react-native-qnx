@@ -34,7 +34,30 @@ jobs:
         run: |
           node tests/js/qnx-project-create.test.mjs
           pnpm test:js
+      - name: Native prerequisites for the icon and label tool
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - uses: jurplel/install-qt-action@b344308e4483fc892e0d27b3cd1b173ebdd95f06 # v4.5.0
+        with:
+          version: '6.11.1'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          cache: true
+      - name: Build the icon and label tool
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          set -euo pipefail
+          cmake -S native/app-identity -B build/identity-tool -G Ninja -DRNQNX_BUILD_IDENTITY_TOOL=ON
+          cmake --build build/identity-tool
+          echo "RNQNX_IDENTITY_TOOL=$PWD/build/identity-tool/rnqnx_identity_tool" >> "$GITHUB_ENV"
       - name: Build one externally generated Expo app for both JS targets
+        env:
+          QT_QPA_PLATFORM: offscreen
         run: |
           set -euo pipefail
           app="$RUNNER_TEMP/rnqnx-created-dual"
@@ -49,6 +72,8 @@ jobs:
           node "$GITHUB_WORKSPACE/packages/react-native-qnx-cli/src/bin.mjs" project prepare-native --project "$app" --platform marathon
           test -s build/qnx/native-app.json
           test -s build/marathon/native-app.json
+          test -s build/marathon/icons/icon-512.png
+          node -e 'const d=require("./build/marathon/native-app.json"); if (d.labelFit.status !== "measured" || d.shortName !== "Created") process.exit(1)'
           sha256sum build/qnx/app.bundle.js build/marathon/app.bundle.js
       - name: Validate architecture, codegen and dependency integrity
         run: |
