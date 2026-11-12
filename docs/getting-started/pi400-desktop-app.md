@@ -323,7 +323,8 @@ on -d /data/rnqnx-winmgr/rnqnx-winmgr -s demolauncher,st,gtk
 sleep 2; on -d demolauncher -a /system/etc/desktop_files
 ```
 
-`-v` logs every Screen event to stderr. To go back to the stock desktop:
+`-v` logs every Screen event to stderr. To go back to the stock desktop from
+a hand-started `rnqnx-winmgr`:
 
 ```sh
 slay rnqnx-winmgr demolauncher
@@ -339,7 +340,10 @@ and `tools/qnx-winmgr/install-boot.sh` into one directory on the Pi and run
    root at boot);
 2. writes `/system/etc/startup/rnqnx-desktop.sh`, the stock desktop start
    with `rnqnx-winmgr` as the window manager. If the binary is missing or
-   exits within two seconds, it starts `fullscreen-winmgr` instead;
+   exits within two seconds, it starts `fullscreen-winmgr` instead. If
+   `rnqnx-winmgr` stops later, a watcher starts `fullscreen-winmgr` and a
+   fresh `demolauncher`, so `slay rnqnx-winmgr` is also how to switch a
+   running board back to the stock desktop;
 3. keeps `full_startup.sh` as `full_startup.sh.before-rnqnx-winmgr` and
    changes its last line to run `rnqnx-desktop.sh`.
 

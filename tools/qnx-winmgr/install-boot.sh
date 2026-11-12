@@ -19,7 +19,9 @@ stock_exec='exec /bin/sh /usr/etc/startup/full_startup.sh.before-rnqnx-autostart
 
 if [ "${1:-}" = --undo ]; then
     [ -f "$backup" ] || { echo "install-boot.sh: no backup at $backup"; exit 1; }
-    cp -p "$backup" "$startup"
+    # Copy then rename, so a power cut never leaves a half-written file.
+    cp -p "$backup" "$startup.rnqnx-tmp"
+    mv -f "$startup.rnqnx-tmp" "$startup"
     echo "restored $startup from $backup ($desktop and $dest stay; unused)"
     exit 0
 fi
@@ -43,13 +45,23 @@ chown root:root "$dest/rnqnx-winmgr.new"
 chmod 0755 "$dest/rnqnx-winmgr.new"
 mv -f "$dest/rnqnx-winmgr.new" "$dest/rnqnx-winmgr"
 
-cp "$here/rnqnx-desktop.sh" "$desktop"
-chown root:root "$desktop"
-chmod 0555 "$desktop"
+cp "$here/rnqnx-desktop.sh" "$desktop.rnqnx-tmp"
+chown root:root "$desktop.rnqnx-tmp"
+chmod 0555 "$desktop.rnqnx-tmp"
+mv -f "$desktop.rnqnx-tmp" "$desktop"
 
-[ -f "$backup" ] || cp -p "$startup" "$backup"
+# Back up the unpatched file; a second install keeps the first backup.
+if grep -qx "$stock_exec" "$startup"; then
+    cp -p "$startup" "$backup.rnqnx-tmp"
+    mv -f "$backup.rnqnx-tmp" "$backup"
+fi
 tmp=$startup.rnqnx-tmp
 sed "s|^$stock_exec\$|exec /bin/sh $desktop|" "$startup" > "$tmp"
+if ! sh -n "$tmp" || ! grep -qx "exec /bin/sh $desktop" "$tmp"; then
+    rm -f "$tmp"
+    echo "install-boot.sh: the edited $startup did not check out; left unchanged"
+    exit 1
+fi
 chmod 0555 "$tmp"
 mv -f "$tmp" "$startup"
 

@@ -4,6 +4,7 @@
 #include "WindowHost.h"
 
 #include <QCursor>
+#include <QGuiApplication>
 #include <QMouseEvent>
 #include <QQmlComponent>
 #include <QQmlEngine>
@@ -101,6 +102,10 @@ bool WindowChrome::active() const { return window_ && window_->isActive(); }
 
 bool WindowChrome::maximized() const {
   if (contained_) return frameExpanded_;
+  // A window the chrome moves is maximized only by the control; one dragged
+  // out to the screen's size can still be moved and made smaller.
+  if (movesWindow_)
+    return window_ && (window_->windowStates() & (Qt::WindowMaximized | Qt::WindowFullScreen));
   return window_ && windowExpanded(*window_);
 }
 
@@ -272,7 +277,10 @@ bool WindowChrome::handleFramePointer(QEvent* event) {
   if (event->type() == QEvent::MouseMove) {
     const QPoint delta = (mouse->globalPosition() - dragStart_).toPoint();
     QRect screen(0, 0, window_->width(), window_->height());
-    if (!contained_) screen = window_->screen() ? window_->screen()->availableGeometry() : QRect();
+    if (!contained_) {
+      const QScreen* on = window_->screen() ? window_->screen() : QGuiApplication::primaryScreen();
+      screen = on ? on->availableGeometry() : QRect();
+    }
     if (drag_ == Drag::PendingMove && delta.manhattanLength() >= 4) drag_ = Drag::Move;
     if (drag_ == Drag::Move || drag_ == Drag::Resize) {
       const QRect geometry = drag_ == Drag::Move

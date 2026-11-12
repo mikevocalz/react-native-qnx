@@ -380,9 +380,13 @@ static void update_dock(void) {
   dock_rect[2] = width;
   dock_rect[3] = height;
 
-  /* Buffers are made once at the largest size the dock can have. */
-  screen_buffer_t buffer;
-  if (screen_get_window_property_pv(dock, SCREEN_PROPERTY_RENDER_BUFFERS, (void**)&buffer)) return;
+  /* Buffers are made once at the largest size the dock can have. The
+   * property fills one handle per buffer; the first is the one to draw. */
+  screen_buffer_t buffers[2] = {NULL, NULL};
+  if (screen_get_window_property_pv(dock, SCREEN_PROPERTY_RENDER_BUFFERS, (void**)buffers) ||
+      !buffers[0])
+    return;
+  screen_buffer_t buffer = buffers[0];
   uint32_t* px = NULL;
   int stride_bytes = 0;
   screen_get_buffer_property_pv(buffer, SCREEN_PROPERTY_POINTER, (void**)&px);
@@ -404,7 +408,9 @@ static void update_dock(void) {
     uint32_t bg = m == front ? 0xff2f4258 : 0x00000000;
     if (bg) fill_round_rect(px, stride, width, height, x, DOCK_PAD, w, height - 2 * DOCK_PAD, 10, bg);
     int iy = (height - ITEM_ICON) / 2;
-    if (m->icon) {
+    if (w < 8 + ITEM_ICON + 8) {
+      /* No room left for the icon in a full dock. */
+    } else if (m->icon) {
       for (int yy = 0; yy < ITEM_ICON; ++yy)
         for (int xx = 0; xx < ITEM_ICON; ++xx) {
           uint32_t* d = &px[(iy + yy) * stride + x + 8 + xx];
@@ -417,7 +423,8 @@ static void update_dock(void) {
     } else {
       draw_monogram(px, stride, width, height, x + 8, iy, m->title);
     }
-    draw_text(px, stride, width, height, x + 8 + ITEM_ICON + 10, height / 2 + 6, m->title,
+    if (w > 8 + ITEM_ICON + 18)
+      draw_text(px, stride, width, height, x + 8 + ITEM_ICON + 10, height / 2 + 6, m->title,
               w - (8 + ITEM_ICON + 10) - 8, m->minimized ? 0x8a96a3 : 0xf2f5f8);
     if (m == front) fill_round_rect(px, stride, width, height, x + w / 2 - 10, height - 5, 20, 3, 1,
                                     0xff4fc3f7);
@@ -546,10 +553,16 @@ static void handle_manager_message(screen_window_t from, const char* data) {
   char copy[512];
   snprintf(copy, sizeof copy, "%s", data);
   managed_t* m = from ? find(from) : NULL;
-  char* save = NULL;
-  for (char* key = strtok_r(copy, "=", &save); key; key = strtok_r(NULL, "=", &save)) {
-    char* value = strtok_r(NULL, "=", &save);
+  /* "key=value=key=value": split on '=' by hand so an empty value keeps the
+   * pairs aligned. */
+  char* next = copy;
+  while (next && *next) {
+    char* key = next;
+    char* value = strchr(key, '=');
     if (!value) break;
+    *value++ = 0;
+    next = strchr(value, '=');
+    if (next) *next++ = 0;
     if (!strcasecmp(key, "Launcher")) {
       if ((value[0] == 'Y' || value[0] == 'y') && m && !launcher_window()) {
         m->launcher = true;
@@ -651,7 +664,10 @@ static void on_post(screen_window_t win) {
 
 static void on_close(screen_window_t win) {
   managed_t* m = find(win);
-  if (!m) return;
+  if (!m) {
+    screen_destroy_window(win); /* release this context's handle */
+    return;
+  }
   LOG("close pid=%d '%s'", (int)m->pid, m->title);
   stack_remove(win);
   managed_t* launcher = launcher_window();
@@ -669,23 +685,28 @@ static void on_property(screen_window_t win, int name) {
   if (!m) return;
   if (name == SCREEN_PROPERTY_MANAGER_STRING) {
     /* An app asking which manager runs: the property holds one value, so
-     * answer by writing ours again. */
-    screen_set_window_property_cv(win, SCREEN_PROPERTY_MANAGER_STRING, (int)strlen(MANAGER_REPLY),
-                                  MANAGER_REPLY);
-    screen_flush_context(ctx, 0);
+     * answer by writing ours again when the app replaced it. */
+    char current[128] = {0};
+    screen_get_window_property_cv(win, SCREEN_PROPERTY_MANAGER_STRING, sizeof current - 1, current);
+    if (strcmp(current, MANAGER_REPLY) != 0) {
+      screen_set_window_property_cv(win, SCREEN_PROPERTY_MANAGER_STRING,
+                                    (int)strlen(MANAGER_REPLY), MANAGER_REPLY);
+      screen_flush_context(ctx, 0);
+    }
   } else if (name == SCREEN_PROPERTY_VISIBLE && !m->launcher) {
     int visible = 1;
     screen_get_window_property_iv(win, SCREEN_PROPERTY_VISIBLE, &visible);
     LOG("visible=%d from pid=%d", visible, (int)m->pid);
-    /* The manager also writes VISIBLE; only a change it did not make counts
-     * as the app hiding or showing itself. */
-    bool expected = !m->minimized;
-    if (visible != expected) {
-      m->hidden_by_app = !visible;
-      if (visible) {
-        m->minimized = false;
-        stack_push_top(win);
-      }
+    /* The manager writes VISIBLE too (minimize); those writes reach this
+     * context as no events. A 0 the manager did not ask for is the app
+     * hiding itself; a 1 after that is the app showing itself again. */
+    if (!visible && !m->minimized && !m->hidden_by_app) {
+      m->hidden_by_app = true;
+      apply_stack();
+    } else if (visible && (m->hidden_by_app || m->minimized)) {
+      m->hidden_by_app = false;
+      m->minimized = false;
+      stack_push_top(win);
       apply_stack();
     }
   } else if (name == SCREEN_PROPERTY_ZORDER && !m->launcher) {
@@ -826,10 +847,11 @@ int main(int argc, char** argv) {
     WARN("no display");
     return 1;
   }
-  screen_display_t displays[16];
-  if (count > 16) count = 16;
+  screen_display_t* displays = calloc((size_t)count, sizeof *displays);
+  if (!displays) return 1;
   screen_get_context_property_pv(ctx, SCREEN_PROPERTY_DISPLAYS, (void**)displays);
-  display = displays[0];
+  display = displays[0]; /* the first display; others are left alone */
+  free(displays);
   screen_get_display_property_iv(display, SCREEN_PROPERTY_SIZE, display_size);
   LOG("display %dx%d", display_size[0], display_size[1]);
 
