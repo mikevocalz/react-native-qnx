@@ -82,6 +82,12 @@ with every runtime file's SHA-256 in
   domain, CC0, Apache-2.0 (emoji-segmenter, BLAKE2 option), MPL-2.0 data
   (Public Suffix List) or, for FreeType, `FTL OR GPL-2.0-only` with the FTL
   taken. The receipt lists each component.
+- **Optimisation:** `-O2`, per [ADR-0017](adr/0017-qt-qnx-optimization-level.md).
+  The 2026-11-12 build passed `-optimize-size`, which in Qt 6.12.0 gives qcc
+  no `-O` flag at all, so its libraries are unoptimised. `configure-qnx.sh`
+  now drops that option and fails unless the Release flags contain `-O2`. The
+  qualified runtime hash, and every runner or package that includes Qt, must
+  come from a build made with `-O2`; the 2026-11-12 hashes do not qualify.
 - **Recipes:** [`scripts/qt-public/`](../scripts/qt-public/) holds the
   extract, patch, host-tool and QNX configure scripts, the toolchain file,
   the runtime staging script that checks the `DT_NEEDED` closure, the SPDX
@@ -133,12 +139,15 @@ that includes these Qt libraries carries:
    installation information needed to run a modified library must also be
    supplied.
 
-Keep the runtime package free of QNX SDP files (sysroot, headers,
+Keep the runtime package and every runner archive free of QNX SDP files (sysroot, headers,
 `libscreen`, `libEGL`, `libc++` and other system libraries from the board),
 the Pi 400 Mesa/libdrm overlay under `/data/pi400-graphics-compat` (QNX
 Software Center payloads), evaluation artifacts and account or license
 material. The closure manifest lists those QNX libraries as dependencies
-only.
+only. Redistributing any QNX SDP or target-image file is out of scope until the
+owner has checked QNX's licence terms for it; nothing in this repository is a
+reading of those terms. [ADR-0018](adr/0018-runner-hosting-and-sdp-boundary.md)
+records how `rnqnx runner fetch` enforces this.
 
 No package has been produced yet. The public runtime currently exists only as
 a local build output and the board copy under the test user's home.
@@ -217,7 +226,7 @@ three use the same `native-app.json` from `rnqnx project prepare-native`.
 
 | Mode                        | What runs                                                                   | Needs the SDP | Status on this branch                                                      |
 | --------------------------- | --------------------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------- |
-| Prebuilt development runner | A published native host for one exact SDP + Qt + React Native set           | No            | `rnqnx runner fetch` downloads and verifies it; no runner is published yet |
+| Prebuilt development runner | A published native host for one exact SDP + Qt + React Native set           | No (host)     | `rnqnx runner fetch` downloads and verifies it; no runner is published yet |
 | Custom development build    | A native host built from this checkout with the app's native modules linked | Yes (QNX)     | Not a separate command yet; `rnqnx project build-native` is the build path |
 | Standalone package          | The app executable plus its staged bundle (`.hbc` on QNX)                   | Yes (QNX)     | `rnqnx project build-native`; device launch not run                        |
 
@@ -245,7 +254,8 @@ three use the same `native-app.json` from `rnqnx project prepare-native`.
       "url": "runners/qnx-pi400-dev-0.1.0.tar.gz",
       "sha256": "<64 lowercase hex>",
       "size": 123456789,
-      "format": "tar.gz"
+      "format": "tar.gz",
+      "targetLibraries": ["libc.so.6", "libc++.so.2", "libscreen.so.1", "libEGL.so.1"]
     }
   ]
 }
@@ -258,13 +268,24 @@ three use the same `native-app.json` from `rnqnx project prepare-native`.
 - The client picks the single `development` entry whose target and all five
   versions match exactly. A near miss fails and lists the published entries
   for that target, then points at `rnqnx project build-native`.
+- QNX entries must list `targetLibraries`, the QNX libraries the runner loads
+  from the board. Host entries may omit it.
 - `url` may be relative to the manifest. Manifests and archives must use
-  `https`; plain `http` is accepted only for loopback test servers. Redirects
-  and URLs with credentials are refused.
+  `https`; plain `http` is accepted only for loopback test servers. URLs with
+  credentials are refused. Redirects are refused except from a GitHub Release
+  download path on `github.com` to another such path or to an https
+  `githubusercontent.com` host (ADR-0018).
 - The archive is streamed to a temporary file, checked against `size` and
   `sha256`, and only then renamed into
   `$XDG_CACHE_HOME/rnqnx/runners/<sha256>/` (default `~/.cache`). A mismatch
   deletes the download. A cached archive is re-hashed before reuse.
+- After the hash check, `fetch` lists the archive without extracting it. It
+  refuses absolute or `..` paths, and for QNX targets any file named like a
+  QNX SDP or target-image library (`QNX_SDP_FILE_PATTERNS` in `runner.mjs`)
+  or listed in `targetLibraries`.
+- `fetch --target-libs <file>` checks `targetLibraries` against a listing made
+  on the board with `ls -1 /usr/lib /lib /proc/boot`. Without it the output
+  reports `targetLibrariesChecked: false`.
 - Requests ask for `accept-encoding: identity`; a compressed response is
   refused, so `content-length` is the archive size. The manifest is read with
   a 1 MiB byte counter. A download that receives no data for 30 seconds is
@@ -272,22 +293,33 @@ three use the same `native-app.json` from `rnqnx project prepare-native`.
 - `fetch` does not unpack, install or launch the runner and does not contact
   a device.
 
-Limitation: the client refuses every redirect (any 3xx). The publication host
-must serve the manifest and archives at their final URLs, so CDN or
-release-asset URLs that redirect to signed storage URLs cannot be listed
-directly.
+Limitation: apart from GitHub Release downloads, the client refuses every
+redirect (any 3xx), so other hosts must serve the manifest and archives at
+their final URLs.
 
 `tests/js/qnx-runner-manifest.test.mjs` covers the format and client against a
 local fixture server with synthetic archives.
 
-### Owner TODOs before runners are published
+### Runner publication (ADR-0018)
 
-- Publication host and the manifest URL to set as the default for
-  `RNQNX_RUNNER_MANIFEST`. Until then no default exists and `fetch` says so.
-- Real archives. The QNX runner comes from the public-source Qt 6.12.0 build
-  (A1); its notices and accompanying materials must ship inside the archive
-  under the open-source Qt packaging rules above.
-- Publication basis: who signs off each entry, which source SHA and lockfile
-  hash it was built from, and whether the manifest itself is signed. The v1
-  client trusts the manifest over https and verifies archives by hash only.
-- Redistribution terms for QNX SDP runtime files inside a QNX runner archive.
+The owner delegated the open runner items; [ADR-0018](adr/0018-runner-hosting-and-sdp-boundary.md)
+records the decision.
+
+- **Host:** GitHub Releases of `mikevocalz/react-native-qnx`. The manifest is
+  the release asset `rnqnx-runner-manifest.json`. After the first runner is
+  published, the default for `RNQNX_RUNNER_MANIFEST` becomes
+  `https://github.com/mikevocalz/react-native-qnx/releases/latest/download/rnqnx-runner-manifest.json`.
+  Until then no default exists and `fetch` says so.
+- **Signing:** per-archive SHA-256 in the manifest (checked by `fetch`), a
+  `SHA256SUMS` release asset, and GitHub artifact attestations for the archive
+  and manifest from `.github/workflows/runner-release.yml`. Check one with
+  `gh attestation verify <file> --repo mikevocalz/react-native-qnx`. The
+  attestation names the publishing workflow and commit, not the machine that
+  compiled the archive; each release names the source commit, lockfile hash
+  and Qt runtime hash it was built from.
+- **QNX SDP files:** none in any runner archive. The archive holds
+  project-built binaries, the public-source Qt runtime from an `-O2` build
+  (ADR-0017) and the Qt/LGPL material listed above. The developer's own
+  licensed SDP and target image supply the QNX libraries. Redistributing SDP
+  files is out of scope until QNX's terms have been checked.
+- **Real archives:** still to be built. ADR-0018 lists the release steps.
