@@ -73,25 +73,74 @@ class WindowChromeModelTest : public QObject {
     QCOMPARE(config.initialSize.value(), QSize(16384, 1));
   }
 
-  void qnxHidesMinimizeAndDrag() {
+  void qnxMinimizesButCannotDrag() {
     const auto caps = capabilitiesForPlatform(QStringLiteral("qnx"));
-    QVERIFY(!caps.minimize.available);
-    QVERIFY(caps.minimize.reason.contains(QStringLiteral("minimize()")));
+    QVERIFY(caps.minimize.available);
+    QVERIFY(caps.minimize.reason.isEmpty());
     QVERIFY(!caps.systemMove);
   }
 
-  void qnxMaximizeDependsOnFullscreenOption() {
-    const auto fullscreen =
-        capabilitiesForPlatform(QStringLiteral("qnx"), {}, SurfaceResize::FollowsWindow);
-    QVERIFY(!fullscreen.maximize.available);
-    QVERIFY(fullscreen.maximize.reason.contains(QStringLiteral("no-fullscreen")));
-    const auto windowed =
-        capabilitiesForPlatform(QStringLiteral("qnx"),
-                                {QStringLiteral("desktop"), QStringLiteral("no-fullscreen")},
-                                SurfaceResize::FollowsWindow);
-    QVERIFY(windowed.maximize.available);
-    QVERIFY(windowed.maximize.reason.isEmpty());
-    QVERIFY(!windowed.minimize.available);
+  // fullscreen-winmgr keeps every window at the display size, so on QNX the
+  // app frames its own window; maximize toggles that frame and needs an
+  // initial size to come back to.
+  void qnxFramesItsOwnWindow() {
+    const auto caps = capabilitiesForPlatform(QStringLiteral("qnx"), {}, SurfaceResize::FollowsWindow);
+    QVERIFY(caps.containedWindow);
+    QVERIFY(caps.maximize.available);
+    QVERIFY(!caps.systemMove);
+    const auto fullScreen = layoutChrome({}, caps, 1920);
+    QCOMPARE(actions(fullScreen), (std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize}));
+    QCOMPARE(fullScreen.hidden.size(), size_t(1));
+    QVERIFY(fullScreen.hidden.at(0).reason.contains(QStringLiteral("initialSize")));
+    WindowChromeConfig windowed;
+    windowed.initialSize = QSize(1280, 800);
+    QCOMPARE(actions(layoutChrome(windowed, caps, 1280)),
+             (std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize, WindowAction::Maximize}));
+    QVERIFY(!desktop().containedWindow);
+  }
+
+  void resizeBandCoversEdgesAndCorners() {
+    const QSizeF frame(400, 300);
+    const std::vector<QRectF> controls{QRectF(4, 0, 44, 44)};
+    QCOMPARE(resizeEdgesAt(QPointF(200, 150), frame, controls), Qt::Edges());
+    QCOMPARE(resizeEdgesAt(QPointF(2, 150), frame, controls), Qt::Edges(Qt::LeftEdge));
+    QCOMPARE(resizeEdgesAt(QPointF(-4, 150), frame, controls), Qt::Edges(Qt::LeftEdge));
+    QCOMPARE(resizeEdgesAt(QPointF(399, 150), frame, controls), Qt::Edges(Qt::RightEdge));
+    QCOMPARE(resizeEdgesAt(QPointF(200, 298), frame, controls), Qt::Edges(Qt::BottomEdge));
+    QCOMPARE(resizeEdgesAt(QPointF(200, 1), frame, controls), Qt::Edges(Qt::TopEdge));
+    QCOMPARE(resizeEdgesAt(QPointF(398, 290), frame, controls), Qt::RightEdge | Qt::BottomEdge);
+    QCOMPARE(resizeEdgesAt(QPointF(390, 298), frame, controls), Qt::RightEdge | Qt::BottomEdge);
+    QCOMPARE(resizeEdgesAt(QPointF(2, 2), frame, {}), Qt::LeftEdge | Qt::TopEdge);
+    // A control in the top-left corner keeps its clicks.
+    QCOMPARE(resizeEdgesAt(QPointF(10, 2), frame, controls), Qt::Edges());
+    QCOMPARE(resizeEdgesAt(QPointF(-20, 150), frame, controls), Qt::Edges());
+  }
+
+  void resizeKeepsMinimumAndScreen() {
+    const QRect start(100, 100, 800, 600);
+    const QRect screen(0, 0, 1920, 1080);
+    const QSize minimum(kMinWindowWidth, kMinWindowHeight);
+    QCOMPARE(resizedGeometry(start, Qt::RightEdge | Qt::BottomEdge, QPoint(50, 30), minimum, screen),
+             QRect(100, 100, 850, 630));
+    QCOMPARE(resizedGeometry(start, Qt::LeftEdge, QPoint(-30, 0), minimum, screen), QRect(70, 100, 830, 600));
+    // Never below the minimum; the right edge stays where it was.
+    QCOMPARE(resizedGeometry(start, Qt::LeftEdge | Qt::TopEdge, QPoint(700, 700), minimum, screen),
+             QRect(500, 400, 400, 300));
+    // Never past the screen.
+    QCOMPARE(resizedGeometry(start, Qt::RightEdge | Qt::BottomEdge, QPoint(5000, 5000), minimum, screen),
+             QRect(100, 100, 1820, 980));
+    QCOMPARE(resizedGeometry(start, Qt::LeftEdge | Qt::TopEdge, QPoint(-500, -500), minimum, screen),
+             QRect(0, 0, 900, 700));
+  }
+
+  void moveKeepsTheBarReachable() {
+    const QRect start(100, 100, 800, 600);
+    const QRect screen(0, 0, 1920, 1080);
+    QCOMPARE(movedGeometry(start, QPoint(20, -30), screen), QRect(120, 70, 800, 600));
+    QCOMPARE(movedGeometry(start, QPoint(0, -500), screen).top(), 0);
+    QCOMPARE(movedGeometry(start, QPoint(0, 5000), screen).top(), 1080 - 44);
+    QCOMPARE(movedGeometry(start, QPoint(5000, 0), screen).left(), 1920 - kKeepVisible);
+    QCOMPARE(movedGeometry(start, QPoint(-5000, 0), screen).left(), -800 + kKeepVisible);
   }
 
   // Review item 2: the host starts the React surface once, so maximize is
@@ -99,7 +148,7 @@ class WindowChromeModelTest : public QObject {
   void fixedSurfaceHidesMaximize_data() {
     QTest::addColumn<QString>("platform");
     QTest::addColumn<QStringList>("options");
-    QTest::newRow("qnx no-fullscreen") << "qnx" << QStringList{QStringLiteral("no-fullscreen")};
+    QTest::newRow("qnx") << "qnx" << QStringList{};
     QTest::newRow("cocoa") << "cocoa" << QStringList{};
     QTest::newRow("xcb") << "xcb" << QStringList{};
     QTest::newRow("offscreen") << "offscreen" << QStringList{};
@@ -194,6 +243,19 @@ class WindowChromeModelTest : public QObject {
     QVERIFY(platformOptionsFor(QStringLiteral("cocoa"), specs).isEmpty());
   }
 
+  void windowedSpecAddsNoFullscreenToQnxOnly() {
+    QCOMPARE(windowedPlatformSpec(QString(), true), QStringLiteral("qnx:no-fullscreen"));
+    QCOMPARE(windowedPlatformSpec(QString(), false), QString());
+    QCOMPARE(windowedPlatformSpec(QStringLiteral("qnx"), true), QStringLiteral("qnx:no-fullscreen"));
+    QCOMPARE(windowedPlatformSpec(QStringLiteral("qnx:no-fullscreen"), true),
+             QStringLiteral("qnx:no-fullscreen"));
+    QCOMPARE(windowedPlatformSpec(QStringLiteral("qnx:flush-screen-context"), true),
+             QStringLiteral("qnx:flush-screen-context:no-fullscreen"));
+    QCOMPARE(windowedPlatformSpec(QStringLiteral("offscreen;qnx"), true),
+             QStringLiteral("offscreen;qnx:no-fullscreen"));
+    QCOMPARE(windowedPlatformSpec(QStringLiteral("cocoa"), false), QStringLiteral("cocoa"));
+  }
+
   void macosLayoutPutsControlsLeftInOrder() {
     const auto layout = layoutChrome({}, desktop(), 800);
     QVERIFY(layout.barVisible);
@@ -235,19 +297,59 @@ class WindowChromeModelTest : public QObject {
     }
   }
 
+  // A full-screen QNX app (no initialSize): maximize is the only control that
+  // cannot run, and the remaining two close up.
   void hiddenControlsCloseUpOnQnx() {
     for (const auto controls : {ControlsLayout::MacOS, ControlsLayout::Windows}) {
       WindowChromeConfig config;
       config.controls = controls;
       const auto layout = layoutChrome(config, capabilitiesForPlatform(QStringLiteral("qnx")), 1920);
-      QCOMPARE(actions(layout), std::vector<WindowAction>{WindowAction::Close});
-      QCOMPARE(layout.hidden.size(), size_t(2));
-      for (const auto& hidden : layout.hidden) QVERIFY(!hidden.reason.isEmpty());
+      const auto expected = controls == ControlsLayout::MacOS
+                                ? std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize}
+                                : std::vector<WindowAction>{WindowAction::Minimize, WindowAction::Close};
+      QCOMPARE(actions(layout), expected);
+      QCOMPARE(layout.hidden.size(), size_t(1));
+      QCOMPARE(layout.hidden.front().action, WindowAction::Maximize);
+      QVERIFY(!layout.hidden.front().reason.isEmpty());
       if (controls == ControlsLayout::MacOS)
         QCOMPARE(layout.controls.front().hitRect.left(), kEdgePadding);
       else
-        QCOMPARE(layout.controls.front().hitRect.right(), 1920.0);
+        QCOMPARE(layout.controls.back().hitRect.right(), 1920.0);
     }
+  }
+
+  void windowedQnxKeepsAllThreeLive() {
+    const auto caps = capabilitiesForPlatform(QStringLiteral("qnx"), {}, SurfaceResize::FollowsWindow);
+    WindowChromeConfig config;
+    config.initialSize = QSize(1280, 800);
+    const auto layout = layoutChrome(config, caps, 1280);
+    QCOMPARE(actions(layout), (std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize,
+                                                         WindowAction::Maximize}));
+    QVERIFY(layout.hidden.empty());
+    QVERIFY(layout.disabled.empty());
+    for (const auto& slot : layout.controls) QVERIFY(slot.enabled);
+  }
+
+  void disabledModeKeepsAllThreeOnQnx() {
+    WindowChromeConfig config;
+    config.unavailableControls = UnavailableControls::Disable;
+    const auto layout = layoutChrome(config, capabilitiesForPlatform(QStringLiteral("qnx")), 1920);
+    QCOMPARE(actions(layout), (std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize,
+                                                         WindowAction::Maximize}));
+    QVERIFY(layout.hidden.empty());
+    QCOMPARE(layout.disabled.size(), size_t(1));
+    QVERIFY(layout.controls.at(0).enabled);
+    QVERIFY(layout.controls.at(1).enabled);
+    QVERIFY(!layout.controls.at(2).enabled);
+    QVERIFY(!layout.controls.at(2).reason.isEmpty());
+    // Live platforms are unchanged by the mode.
+    QVERIFY(layoutChrome(config, desktop(), 800).disabled.empty());
+  }
+
+  void parsesUnavailableControls() {
+    QCOMPARE(parseUnavailableControls(QStringLiteral("hide")), UnavailableControls::Hide);
+    QCOMPARE(parseUnavailableControls(QStringLiteral("disable")), UnavailableControls::Disable);
+    QVERIFY_THROWS_EXCEPTION(std::invalid_argument, parseUnavailableControls(QStringLiteral("grey")));
   }
 
   void hiddenStyleFloatsControlsWithoutInset() {

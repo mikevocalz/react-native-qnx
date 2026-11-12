@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
+#include <utility>
 
 namespace rnqnx::window {
 namespace {
@@ -36,11 +37,8 @@ QString accessibleName(WindowAction action) {
   return {};
 }
 
-const QString kQnxMinimizeReason = QStringLiteral(
-    "Qt 6.12.0 QQnxWindow::minimize() only logs that minimize is unsupported, and no "
-    "window-manager client on the image can restore the window (ADR-0016)");
-const QString kQnxMaximizeReason = QStringLiteral(
-    "the qnx QPA keeps the root window at screen size unless it runs with no-fullscreen");
+const QString kFullScreenAppReason =
+    QStringLiteral("the app has no initialSize, so there is no window size to return to");
 const QString kNoWindowManagerReason =
     QStringLiteral("this QPA has no window manager to restore a minimized window");
 const QString kUnknownReason = QStringLiteral("not verified on this QPA");
@@ -63,6 +61,12 @@ TitleBarStyle parseTitleBarStyle(const QString& value) {
   if (value == QLatin1String("hidden")) return TitleBarStyle::Hidden;
   if (value == QLatin1String("none")) return TitleBarStyle::None;
   reject(QStringLiteral("window.titleBarStyle must be one of: default, hidden, none."));
+}
+
+UnavailableControls parseUnavailableControls(const QString& value) {
+  if (value == QLatin1String("hide")) return UnavailableControls::Hide;
+  if (value == QLatin1String("disable")) return UnavailableControls::Disable;
+  reject(QStringLiteral("window.unavailableControls must be one of: hide, disable."));
 }
 
 QString nameOf(ControlsLayout value) {
@@ -96,7 +100,7 @@ QString nameOf(WindowAction value) {
 WindowChromeConfig parseWindowChromeConfig(const QJsonObject& window) {
   for (auto it = window.begin(); it != window.end(); ++it) {
     if (it.key() != QLatin1String("controls") && it.key() != QLatin1String("titleBarStyle") &&
-        it.key() != QLatin1String("initialSize")) {
+        it.key() != QLatin1String("initialSize") && it.key() != QLatin1String("unavailableControls")) {
       reject(QStringLiteral("window.%1 is not a supported window option.").arg(it.key()));
     }
   }
@@ -112,6 +116,12 @@ WindowChromeConfig parseWindowChromeConfig(const QJsonObject& window) {
       reject(QStringLiteral("window.titleBarStyle must be one of: default, hidden, none."));
     config.titleBarStyle = parseTitleBarStyle(value.toString());
   }
+  if (window.contains(QLatin1String("unavailableControls"))) {
+    const QJsonValue value = window.value(QLatin1String("unavailableControls"));
+    if (!value.isString())
+      reject(QStringLiteral("window.unavailableControls must be one of: hide, disable."));
+    config.unavailableControls = parseUnavailableControls(value.toString());
+  }
   if (window.contains(QLatin1String("initialSize"))) {
     const QJsonValue value = window.value(QLatin1String("initialSize"));
     if (!value.isObject()) reject(QStringLiteral("window.initialSize must be {width, height}."));
@@ -126,17 +136,21 @@ WindowChromeConfig parseWindowChromeConfig(const QJsonObject& window) {
 }
 
 WindowCapabilities capabilitiesForPlatform(const QString& platform,
-                                           const QStringList& platformOptions,
+                                           [[maybe_unused]] const QStringList& platformOptions,
                                            SurfaceResize surface) {
   WindowCapabilities caps;
   caps.platform = platform;
   const ActionSupport live{true, {}};
   if (platform == QLatin1String("qnx")) {
-    caps.minimize = {false, kQnxMinimizeReason};
-    caps.maximize = platformOptions.contains(QStringLiteral("no-fullscreen"))
-                        ? live
-                        : ActionSupport{false, kQnxMaximizeReason};
+    // Qt's QQnxWindow::minimize() does nothing. The host minimizes by releasing
+    // the native window, which makes fullscreen-winmgr show the launcher, and
+    // restores it when the app is launched again (WindowHost.h, ADR-0016).
+    caps.minimize = live;
+    caps.maximize = live;
     caps.systemMove = false;  // QQnxWindow does not override startSystemMove().
+    // fullscreen-winmgr sets every window to the display size on each post,
+    // whatever size Qt asks for, so the app frames its window inside it.
+    caps.containedWindow = true;
   } else if (platform == QLatin1String("cocoa") || platform == QLatin1String("windows") ||
              platform == QLatin1String("xcb")) {
     caps.minimize = live;
@@ -189,6 +203,19 @@ QStringList platformOptionsFor(const QString& platform, const QStringList& specs
   return {};
 }
 
+QString windowedPlatformSpec(const QString& environmentSpec, bool defaultIsQnx) {
+  if (environmentSpec.trimmed().isEmpty())
+    return defaultIsQnx ? QStringLiteral("qnx:no-fullscreen") : environmentSpec;
+  QStringList specs = environmentSpec.split(QLatin1Char(';'));
+  for (QString& spec : specs) {
+    QStringList parts = spec.split(QLatin1Char(':'));
+    if (parts.isEmpty() || parts.first().trimmed() != QLatin1String("qnx")) continue;
+    if (!parts.contains(QStringLiteral("no-fullscreen"))) parts.append(QStringLiteral("no-fullscreen"));
+    spec = parts.join(QLatin1Char(':'));
+  }
+  return specs.join(QLatin1Char(';'));
+}
+
 ChromeLayout layoutChrome(const WindowChromeConfig& config,
                           const WindowCapabilities& capabilities,
                           qreal windowWidth) {
@@ -199,22 +226,32 @@ ChromeLayout layoutChrome(const WindowChromeConfig& config,
   const std::vector<WindowAction> order =
       mac ? std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize, WindowAction::Maximize}
           : std::vector<WindowAction>{WindowAction::Minimize, WindowAction::Maximize, WindowAction::Close};
-  std::vector<WindowAction> shown;
+  std::vector<std::pair<WindowAction, ActionSupport>> shown;
   for (const auto action : order) {
-    const ActionSupport support = action == WindowAction::Close      ? ActionSupport{true, {}}
-                                  : action == WindowAction::Minimize ? capabilities.minimize
-                                                                     : capabilities.maximize;
-    if (support.available)
-      shown.push_back(action);
-    else
+    ActionSupport support = action == WindowAction::Close      ? ActionSupport{true, {}}
+                            : action == WindowAction::Minimize ? capabilities.minimize
+                                                               : capabilities.maximize;
+    // A contained window toggles between its initial size and the display;
+    // a full-screen app has nothing to toggle to.
+    if (action == WindowAction::Maximize && support.available && capabilities.containedWindow &&
+        !config.initialSize)
+      support = {false, kFullScreenAppReason};
+    if (support.available) {
+      shown.emplace_back(action, support);
+    } else if (config.unavailableControls == UnavailableControls::Disable) {
+      shown.emplace_back(action, support);
+      layout.disabled.push_back({action, support.reason});
+    } else {
       layout.hidden.push_back({action, support.reason});
+    }
   }
 
   const qreal hitWidth = mac ? kMacHitWidth : kWindowsHitWidth;
   const qreal rowWidth = hitWidth * static_cast<qreal>(shown.size());
   qreal x = mac ? kEdgePadding : windowWidth - rowWidth;
-  for (const auto action : shown) {
-    layout.controls.push_back({action, QRectF(x, 0, hitWidth, kBarHeight), accessibleName(action)});
+  for (const auto& [action, support] : shown) {
+    layout.controls.push_back({action, QRectF(x, 0, hitWidth, kBarHeight), accessibleName(action),
+                               support.available, support.reason});
     x += hitWidth;
   }
 
@@ -241,6 +278,75 @@ ChromeLayout layoutChrome(const WindowChromeConfig& config,
 QSize clampWindowSize(QSize requested, QSize available) {
   if (!available.isValid() || available.isEmpty()) return requested;
   return requested.boundedTo(available);
+}
+
+}  // namespace rnqnx::window
+
+namespace rnqnx::window {
+
+Qt::Edges resizeEdgesAt(QPointF point, QSizeF frame, const std::vector<QRectF>& controls) {
+  Qt::Edges edges;
+  const qreal b = kResizeBorder;
+  if (frame.width() < 3 * kResizeCorner || frame.height() < 3 * kResizeCorner) return edges;
+  if (point.x() < -b || point.y() < -b || point.x() >= frame.width() + b ||
+      point.y() >= frame.height() + b)
+    return edges;
+  for (const QRectF& control : controls)
+    if (control.contains(point)) return edges;
+  const bool nearLeft = point.x() < b;
+  const bool nearRight = point.x() >= frame.width() - b;
+  const bool nearTop = point.y() < b;
+  const bool nearBottom = point.y() >= frame.height() - b;
+  if (nearLeft) edges |= Qt::LeftEdge;
+  if (nearRight) edges |= Qt::RightEdge;
+  if (nearTop) edges |= Qt::TopEdge;
+  if (nearBottom) edges |= Qt::BottomEdge;
+  if (nearLeft || nearRight) {
+    if (point.y() < kResizeCorner) edges |= Qt::TopEdge;
+    if (point.y() >= frame.height() - kResizeCorner) edges |= Qt::BottomEdge;
+  }
+  if (nearTop || nearBottom) {
+    if (point.x() < kResizeCorner) edges |= Qt::LeftEdge;
+    if (point.x() >= frame.width() - kResizeCorner) edges |= Qt::RightEdge;
+  }
+  return edges;
+}
+
+QRect resizedGeometry(const QRect& start, Qt::Edges edges, QPoint delta, QSize minimum,
+                      const QRect& screen) {
+  int left = start.left();
+  int top = start.top();
+  int right = start.left() + start.width();   // Exclusive.
+  int bottom = start.top() + start.height();  // Exclusive.
+  const bool bounded = screen.isValid();
+  if (edges & Qt::LeftEdge) {
+    left = std::min(left + delta.x(), right - minimum.width());
+    if (bounded) left = std::max(left, screen.left());
+  }
+  if (edges & Qt::RightEdge) {
+    right = std::max(right + delta.x(), left + minimum.width());
+    if (bounded) right = std::min(right, screen.left() + screen.width());
+  }
+  if (edges & Qt::TopEdge) {
+    top = std::min(top + delta.y(), bottom - minimum.height());
+    if (bounded) top = std::max(top, screen.top());
+  }
+  if (edges & Qt::BottomEdge) {
+    bottom = std::max(bottom + delta.y(), top + minimum.height());
+    if (bounded) bottom = std::min(bottom, screen.top() + screen.height());
+  }
+  return QRect(left, top, right - left, bottom - top);
+}
+
+QRect movedGeometry(const QRect& start, QPoint delta, const QRect& screen) {
+  QRect moved = start.translated(delta);
+  if (!screen.isValid()) return moved;
+  const int minX = screen.left() - moved.width() + kKeepVisible;
+  const int maxX = screen.left() + screen.width() - kKeepVisible;
+  const int maxY = screen.top() + screen.height() - static_cast<int>(kBarHeight);
+  moved.moveLeft(std::clamp(moved.left(), std::min(minX, maxX), std::max(minX, maxX)));
+  moved.moveTop(std::clamp(moved.top(), screen.top(), std::max(screen.top(), maxY)));
+  return moved;
 }
 
 }  // namespace rnqnx::window

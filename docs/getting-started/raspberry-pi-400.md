@@ -255,6 +255,14 @@ pnpm qnx:runtime:validate
 
 That is the next gate for the Hermes + Nitro + Expo Modules QNX runtime.
 
+## 8. Run an app on the desktop
+
+To build an app, deploy it, open it as a window on the QNX desktop and use
+its title bar, follow [Run a React Native app on the Pi 400 desktop](pi400-desktop-app.md).
+It also covers the boot lines for USB input and GPU access, OpenGL versus
+software rendering, and troubleshooting a black screen, a missing mouse or an
+app that will not close.
+
 ## What counts as Pi 400 support
 
 There are three separate claims; keep them separate:

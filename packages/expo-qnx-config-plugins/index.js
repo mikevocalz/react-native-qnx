@@ -7,6 +7,7 @@
 
 const WINDOW_CONTROLS = Object.freeze(['macos', 'windows']);
 const TITLE_BAR_STYLES = Object.freeze(['default', 'hidden', 'none']);
+const UNAVAILABLE_CONTROLS = Object.freeze(['hide', 'disable']);
 const IDENTITY_KEYS = Object.freeze(['appId', 'componentName', 'shortName', 'icon']);
 const MAX_WINDOW_EDGE = 16384;
 
@@ -27,7 +28,7 @@ function resolveQnxWindow(value) {
   if (!isPlainObject(value)) throw new Error('extra.rnqnx.window must be an object.');
   const input = /** @type {Record<string, unknown>} */ (value);
   for (const key of Object.keys(input))
-    if (!['controls', 'titleBarStyle', 'initialSize'].includes(key))
+    if (!['controls', 'titleBarStyle', 'initialSize', 'unavailableControls'].includes(key))
       throw new Error(`extra.rnqnx.window.${key} is not a supported window option.`);
   const controls = input.controls === undefined ? 'macos' : input.controls;
   if (typeof controls !== 'string' || !WINDOW_CONTROLS.includes(controls))
@@ -37,8 +38,16 @@ function resolveQnxWindow(value) {
     throw new Error(
       `extra.rnqnx.window.titleBarStyle must be one of: ${TITLE_BAR_STYLES.join(', ')}.`
     );
-  /** @type {{controls: string, titleBarStyle: string, initialSize?: {width: number, height: number}}} */
+  /** @type {{controls: string, titleBarStyle: string, initialSize?: {width: number, height: number}, unavailableControls?: string}} */
   const resolved = { controls, titleBarStyle };
+  if (input.unavailableControls !== undefined) {
+    const mode = input.unavailableControls;
+    if (typeof mode !== 'string' || !UNAVAILABLE_CONTROLS.includes(mode))
+      throw new Error(
+        `extra.rnqnx.window.unavailableControls must be one of: ${UNAVAILABLE_CONTROLS.join(', ')}.`
+      );
+    resolved.unavailableControls = mode;
+  }
   if (input.initialSize !== undefined) {
     const size = input.initialSize;
     if (!isPlainObject(size))

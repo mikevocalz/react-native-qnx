@@ -44,10 +44,15 @@ add_test(NAME rnqnx_window_chrome_quick COMMAND rnqnx_window_chrome_quick_test)
 # Same chrome under a 2x device pixel ratio: logical sizes must not change and
 # the rendered bar must double in device pixels.
 add_test(NAME rnqnx_window_chrome_quick_dpr2 COMMAND rnqnx_window_chrome_quick_test)
-set_tests_properties(rnqnx_window_chrome_model rnqnx_window_chrome_quick PROPERTIES
+# The quick tests run on a screen larger than every harness window, also at
+# 2x, so a window counts as expanded only when a test makes it fill the screen.
+set(quick_env "QT_QPA_PLATFORM=offscreen:configfile=${CMAKE_CURRENT_SOURCE_DIR}/fixtures/offscreen-screen.json;QT_QUICK_BACKEND=software;ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1")
+set_tests_properties(rnqnx_window_chrome_model PROPERTIES
   TIMEOUT 60 ENVIRONMENT "${test_env}")
+set_tests_properties(rnqnx_window_chrome_quick PROPERTIES
+  TIMEOUT 60 ENVIRONMENT "${quick_env}")
 set_tests_properties(rnqnx_window_chrome_quick_dpr2 PROPERTIES
-  TIMEOUT 60 ENVIRONMENT "${test_env};QT_SCALE_FACTOR=2;RNQNX_EXPECT_DPR=2")
+  TIMEOUT 60 ENVIRONMENT "${quick_env};QT_SCALE_FACTOR=2;RNQNX_EXPECT_DPR=2")
 
 # Consumer descriptor path: CMake reads native-app.json `window`, generates the
 # header main.cpp includes, and the generated values reach the C++ model.

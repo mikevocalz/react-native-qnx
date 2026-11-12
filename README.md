@@ -55,7 +55,10 @@ Qt provisioning have separate prerequisites.
 
 For stock Pi 4/5 QSTI 0.5.0 build 50, use [the QSTI guide](docs/getting-started/raspberry-pi-today.md).
 For the custom Pi 400 image, use [the Pi 400 guide](docs/getting-started/raspberry-pi-400.md)
-and [runtime bring-up](docs/getting-started/pi400-hello-world.md).
+and [runtime bring-up](docs/getting-started/pi400-hello-world.md). To run an
+app as a window on the Pi 400's QNX desktop, see
+[the Pi 400 desktop guide](docs/getting-started/pi400-desktop-app.md) and
+[window chrome](docs/getting-started/window-chrome.md).
 `rnqnx_playground` is the Screen probe; `rnqnx_playground_qnx` is the React
 Native runtime. See [CLI commands and limits](docs/getting-started/qnx-cli.md).
 

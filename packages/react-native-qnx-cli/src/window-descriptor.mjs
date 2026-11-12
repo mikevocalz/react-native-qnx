@@ -6,9 +6,10 @@
 
 export const WINDOW_CONTROLS = Object.freeze(['macos', 'windows']);
 export const TITLE_BAR_STYLES = Object.freeze(['default', 'hidden', 'none']);
+export const UNAVAILABLE_CONTROLS = Object.freeze(['hide', 'disable']);
 export const MAX_WINDOW_EDGE = 16384;
 
-/** @typedef {{controls: 'macos'|'windows', titleBarStyle: 'default'|'hidden'|'none', initialSize: {width: number, height: number} | null, legacy: boolean}} WindowDescriptor */
+/** @typedef {{controls: 'macos'|'windows', titleBarStyle: 'default'|'hidden'|'none', initialSize: {width: number, height: number} | null, unavailableControls: 'hide'|'disable', legacy: boolean}} WindowDescriptor */
 
 /** @param {unknown} value */
 function isPlainObject(value) {
@@ -24,13 +25,19 @@ export function readWindowDescriptor(descriptor) {
   const object = /** @type {Record<string, unknown>} */ (descriptor);
   if (!('window' in object)) {
     // Written before the field existed: keep the chromeless window.
-    return { controls: 'macos', titleBarStyle: 'none', initialSize: null, legacy: true };
+    return {
+      controls: 'macos',
+      titleBarStyle: 'none',
+      initialSize: null,
+      unavailableControls: 'hide',
+      legacy: true,
+    };
   }
   const window = object.window;
   if (!isPlainObject(window)) throw new Error('native-app.json window must be an object.');
   const input = /** @type {Record<string, unknown>} */ (window);
   for (const key of Object.keys(input))
-    if (!['controls', 'titleBarStyle', 'initialSize'].includes(key))
+    if (!['controls', 'titleBarStyle', 'initialSize', 'unavailableControls'].includes(key))
       throw new Error(`native-app.json window.${key} is not a supported window option.`);
   const controls = input.controls ?? 'macos';
   if (typeof controls !== 'string' || !WINDOW_CONTROLS.includes(controls))
@@ -41,6 +48,14 @@ export function readWindowDescriptor(descriptor) {
   if (typeof titleBarStyle !== 'string' || !TITLE_BAR_STYLES.includes(titleBarStyle))
     throw new Error(
       `native-app.json window.titleBarStyle must be one of: ${TITLE_BAR_STYLES.join(', ')}.`
+    );
+  const unavailableControls = input.unavailableControls ?? 'hide';
+  if (
+    typeof unavailableControls !== 'string' ||
+    !UNAVAILABLE_CONTROLS.includes(unavailableControls)
+  )
+    throw new Error(
+      `native-app.json window.unavailableControls must be one of: ${UNAVAILABLE_CONTROLS.join(', ')}.`
     );
   let initialSize = null;
   if (input.initialSize !== undefined) {
@@ -69,6 +84,7 @@ export function readWindowDescriptor(descriptor) {
     controls: /** @type {'macos'|'windows'} */ (controls),
     titleBarStyle: /** @type {'default'|'hidden'|'none'} */ (titleBarStyle),
     initialSize,
+    unavailableControls: /** @type {'hide'|'disable'} */ (unavailableControls),
     legacy: false,
   };
 }

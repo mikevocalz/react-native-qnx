@@ -100,6 +100,12 @@ try {
   // Plugin unit behaviour: defaults, option precedence, validation.
   assert.deepEqual(resolveQnxWindow(undefined), { controls: 'macos', titleBarStyle: 'default' });
   checks++;
+  assert.deepEqual(resolveQnxWindow({ unavailableControls: 'disable' }), {
+    controls: 'macos',
+    titleBarStyle: 'default',
+    unavailableControls: 'disable',
+  });
+  checks++;
   const merged = withQnxProject(
     { name: 'A', extra: { rnqnx: { appId: 'org.a.b', window: { controls: 'windows' } } } },
     { componentName: 'A', window: { titleBarStyle: 'none' } }
@@ -122,6 +128,8 @@ try {
     { position: 'center' },
     { controls: null },
     { titleBarStyle: null },
+    { unavailableControls: 'grey' },
+    { unavailableControls: null },
     { initialSize: null },
     { initialSize: { width: null, height: 10 } },
     null,

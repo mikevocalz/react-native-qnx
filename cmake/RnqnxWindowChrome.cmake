@@ -24,8 +24,16 @@ function(rnqnx_add_window_chrome_sources target)
   rnqnx_generate_window_chrome_qml("${generated}")
   target_sources(${target} PRIVATE
     "${root}/WindowChromeModel.cpp" "${root}/WindowChromeModel.h"
-    "${root}/WindowChrome.cpp" "${root}/WindowChrome.h")
+    "${root}/WindowChrome.cpp" "${root}/WindowChrome.h"
+    "${root}/WindowHost.cpp" "${root}/WindowHost.h")
   target_include_directories(${target} PUBLIC "${root}" PRIVATE "${generated}")
+  # WindowHost: single-instance restore over a local socket, and on QNX the
+  # Screen calls that keep a windowed app at its own size.
+  find_package(Qt6 6.11.1 REQUIRED COMPONENTS Network)
+  target_link_libraries(${target} PUBLIC Qt6::Network)
+  if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
+    target_link_libraries(${target} PUBLIC screen)
+  endif()
   set_target_properties(${target} PROPERTIES AUTOMOC ON)
 endfunction()
 
