@@ -101,7 +101,9 @@ The pipeline:
 - A module author adds one `package.json` key, a CMake project and one
   registration function. Nothing in this repository changes per module.
 - Discovery and doctor never execute package code. The package's CMake and
-  C++ do run at build time, as for any native dependency.
+  C++ do run at build time, as for any native dependency: `add_subdirectory`
+  runs the dependency's CMake during configure and its code is compiled into
+  the app, so "no package code runs" covers discovery only.
 - The initializer is the author's responsibility. nitrogen does not generate
   a QNX initializer; its Android `registerAllNatives()` shows the shape but
   also calls JNI `registerNatives()`, so it cannot be reused unchanged.

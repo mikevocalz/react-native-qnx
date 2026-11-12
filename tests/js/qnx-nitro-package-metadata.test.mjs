@@ -18,11 +18,15 @@ import {
 } from '../../packages/react-native-qnx-cli/src/prepare-native.mjs';
 import { planNativeBuild } from '../../packages/react-native-qnx-cli/src/build-native.mjs';
 import { inspectConsumer } from '../../packages/react-native-qnx-cli/src/doctor.mjs';
+import { useIdentityToolInEnvironment } from './helpers/identity-tool.mjs';
 
 const repo = process.cwd();
 const temporary = await mkdtemp(path.join(tmpdir(), 'rnqnx-nitro-metadata-'));
 const project = path.join(temporary, 'apps', 'gauge app');
 const store = path.join(temporary, 'store');
+// prepare-native always generates the icon set; it finds the tool through
+// RNQNX_IDENTITY_TOOL.
+const identityTool = await useIdentityToolInEnvironment();
 let checks = 0;
 /** @param {() => unknown} operation @param {RegExp} pattern */
 function throwsWith(operation, pattern) {
@@ -189,13 +193,7 @@ try {
   const { configuration } = await nativeConfiguration(project, 'qnx', 'build/qnx/app.hbc');
   assert.deepEqual(configuration.nitroModules, found);
   checks++;
-  await prepareNativeMain([
-    '--project',
-    project,
-    '--bundle',
-    'build/qnx/app.hbc',
-    '--skip-identity-tool',
-  ]);
+  await prepareNativeMain(['--project', project, '--bundle', 'build/qnx/app.hbc']);
   const descriptorFile = path.join(project, 'build/qnx/native-app.json');
   const descriptor = JSON.parse(await readFile(descriptorFile, 'utf8'));
   assert.equal(descriptor.nitroModules.length, 2);
@@ -358,6 +356,7 @@ try {
   assert.equal(failed.checks.find((check) => check.id === 'nitro-modules')?.status, 'failed');
   checks++;
 } finally {
+  await identityTool.release();
   await rm(temporary, { recursive: true, force: true });
 }
 
