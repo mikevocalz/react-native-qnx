@@ -8,7 +8,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 MINIMUM_NODE_VERSION="26.0.0"
-REQUIRED_PNPM_VERSION="12.8.1"
+REQUIRED_PNPM_VERSION="12.18.0"
 
 version_at_least() {
   local current="$1"
