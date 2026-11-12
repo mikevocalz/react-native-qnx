@@ -2,14 +2,23 @@ import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { lstat, mkdir, open, readFile, realpath, rm } from 'node:fs/promises';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import { parseArgs } from 'node:util';
+import { loadExpoConfig } from './expo-config.mjs';
 
-/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string}} NativeConfiguration */
+const { resolveQnxWindow } = createRequire(import.meta.url)(
+  '../../expo-qnx-config-plugins/index.js'
+);
+
+/** @typedef {{controls: string, titleBarStyle: string, initialSize?: {width: number, height: number}}} NativeWindow */
+/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string, window: NativeWindow}} NativeConfiguration */
 const help = `React Native QNX native consumer configuration
   project prepare-native --project <directory> [--platform qnx|marathon]
                          [--bundle build/<platform>/app.bundle.js] [--dry-run]
 
-Reads static app.json: expo.name and expo.extra.rnqnx.{appId,componentName}.
+Resolves app.json or app.config.js/ts through @expo/config (config plugins
+included) and reads expo.name and expo.extra.rnqnx.{appId,componentName,window}.
+Set those through the @rn-qnx/expo-qnx-config-plugins entry in "plugins".
 Writes build/<platform>/native-app.json for the existing native CMake backend.
 An identical rerun does not write. Changed generated output is not overwritten:
 remove only that generated file after reviewing your app/bundle change, then rerun.
@@ -107,13 +116,14 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
   const root = await realpath(path.resolve(project));
   if (/[\x00-\x1f;"$\\]/.test(root))
     throw new Error('Project path contains unsupported CMake characters.');
-  const configFile = await projectPath(root, 'app.json');
-  await boundedFile(configFile, 65536);
-  const app = JSON.parse(await readFile(configFile, 'utf8'));
+  const expoConfig = await loadExpoConfig(root);
+  const rnqnx = expoConfig.exp.extra?.rnqnx ?? {};
   const identity = validateAppIdentity({
-    ...app?.expo?.extra?.rnqnx,
-    displayName: app?.expo?.name,
+    appId: rnqnx.appId,
+    componentName: rnqnx.componentName,
+    displayName: expoConfig.exp.name,
   });
+  const window = resolveQnxWindow(rnqnx.window);
   const relative = relativeBundle ?? `build/${platform}/app.bundle.js`;
   if (!relative.startsWith(`build/${platform}/`))
     throw new Error('Bundle must be below the selected build/<platform>/ directory.');
@@ -129,8 +139,9 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
     platform,
     bundle,
     bundleSha256: hash.digest('hex'),
+    window,
   };
-  return { root, configuration };
+  return { root, configuration, expoConfig };
 }
 
 /** @param {string[]} argv */

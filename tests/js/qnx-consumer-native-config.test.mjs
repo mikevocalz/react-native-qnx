@@ -32,6 +32,7 @@ const app = {
 };
 try {
   await mkdir(project);
+  await writeFile(path.join(project, 'package.json'), '{"name":"field-notes","version":"1.0.0"}');
   await writeFile(path.join(project, 'app.json'), JSON.stringify(app));
   for (const platform of ['qnx', 'marathon']) {
     await mkdir(path.join(project, 'build', platform), { recursive: true });
