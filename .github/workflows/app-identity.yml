@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'vnext/include/react-native-qnx/runtime/ApplicationIdentity.h'
+      - 'vnext/include/react-native-qnx/runtime/ApplicationIcon.h'
       - 'native/app-identity/**'
       - '.github/workflows/app-identity.yml'
 permissions:
