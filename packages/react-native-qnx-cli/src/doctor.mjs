@@ -5,9 +5,11 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import {
-  identityToolPath,
+  identityToolBuildDirectory,
+  locateIdentityTool,
   measureTileLabel,
   resolveTileLabel,
+  unsupportedIdentityHost,
   validateIconSource,
 } from './app-identity.mjs';
 import { CONSUMER_CONTRACT } from './consumer-contract.mjs';
@@ -21,7 +23,10 @@ Read-only metadata checks. QNX is default. No config/package JavaScript,
 package-manager process, compiler, network request or device command runs,
 with one opt-in exception: --identity-tool runs that Qt host binary (built
 from native/app-identity) to measure the tile label. Without it, the app icon
-header and tile label text are checked from static app.json only.
+header and tile label text are checked from static app.json only. With no
+icon set, the default template icon is checked and reported. doctor also
+reports whether prepare-native has rnqnx_identity_tool or will build it; it
+never builds it.
 Exit 0: inspected metadata matches; 1: failed check; 2: invalid invocation.
 A compatible report is not a native build, security audit or runtime proof.
 `;
@@ -156,8 +161,10 @@ async function identityChecks(root, platform, tool) {
     checks.push({
       id: 'app-icon',
       status: 'passed',
-      observed: `${icon.width}x${icon.height} PNG`,
-      message: `${icon.field} is a square PNG of at least 1024x1024.`,
+      observed: `${icon.defaulted ? 'default icon, ' : ''}${icon.width}x${icon.height} PNG`,
+      message: icon.defaulted
+        ? 'No app icon is set, so prepare-native uses the default icon template/qnx/assets/icon.png. Set expo.icon to a square PNG of at least 1024x1024 to use your own.'
+        : `${icon.field} is a square PNG of at least 1024x1024.`,
     });
   } catch (error) {
     checks.push({ id: 'app-icon', status: 'failed', message: description(error) });
@@ -172,7 +179,7 @@ async function identityChecks(root, platform, tool) {
         message: `Tile label comes from ${tile.field}; its rendered width was not measured. Pass --identity-tool to measure it.`,
       });
     } else {
-      const fit = measureTileLabel(() => identityToolPath(tool), platform, tile);
+      const fit = measureTileLabel(() => path.resolve(tool), platform, tile);
       checks.push(
         fit.status === 'measured'
           ? {
@@ -189,6 +196,26 @@ async function identityChecks(root, platform, tool) {
     checks.push({ id: 'tile-label', status: 'failed', message: description(error) });
   }
   return checks;
+}
+
+/** The same tool rule prepare-native applies, reported without building.
+ * @param {string | undefined} tool @returns {Check} */
+function identityToolCheck(tool) {
+  const found = locateIdentityTool(tool);
+  if (found)
+    return {
+      id: 'identity-tool',
+      status: 'passed',
+      observed: found.path,
+      message: `prepare-native generates the icon set with the tool from ${found.origin}; doctor did not check that it runs.`,
+    };
+  if (!['linux', 'darwin'].includes(process.platform))
+    return { id: 'identity-tool', status: 'failed', message: unsupportedIdentityHost() };
+  return {
+    id: 'identity-tool',
+    status: 'not-checked',
+    message: `rnqnx_identity_tool is not built yet. prepare-native builds it in ${identityToolBuildDirectory()} with CMake and Qt 6.11.1 or later before generating the icon set; doctor runs no compiler.`,
+  };
 }
 
 /** Inspect only declared files and installed package metadata; never import config code.
@@ -268,6 +295,7 @@ export async function inspectConsumer(project, options = {}) {
     }
   }
   checks.push(...(await identityChecks(root, platform, options.identityTool)));
+  checks.push(identityToolCheck(options.identityTool));
   /** @type {Record<string, string>} */
   const packages = {
     ...CONSUMER_CONTRACT.packages,
