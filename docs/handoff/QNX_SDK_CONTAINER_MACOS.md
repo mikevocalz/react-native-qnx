@@ -10,7 +10,7 @@ Related documents:
 - [Raspberry Pi 400 bring-up](../getting-started/raspberry-pi-400.md)
 - [QNX x86_64 VM on Windows](QNX_VM_WINDOWS.md): the older Windows workaround. It uses SDP 8.0.2 and a different target.
 - `scripts/lib/qnx-target.sh`: the SSH defaults the physical lane uses.
-- The final physical runner (`scripts/final-pi400-test.mjs`) and its procedure (`docs/validation/pi400-final-test.md`) are introduced by PR #102 and are not on `main` yet. The section on running the lane below follows that branch.
+- PR #102 proposed a supervised runner (`scripts/final-pi400-test.mjs`). It is not on `main`; the lane on `main` is `pnpm pi:preflight` and `pnpm pi:install` (see [Raspberry Pi 400 bring-up](../getting-started/raspberry-pi-400.md)), and running an app on the desktop is covered by [Run a React Native app on the Pi 400 desktop](../getting-started/pi400-desktop-app.md). Sections below that mention the supervised harness describe how the host was used for that run.
 
 ## What the host looks like
 
@@ -23,7 +23,7 @@ Related documents:
 | Container arch      | `x86_64` (the QNX host tools are Linux x86_64, run through Rosetta)                               | confirmed                            |
 | Mount               | one bind mount, macOS `/Users/mikevocalz/qnx-pi400-8.0.5` to `/work`, read-write                  | confirmed                            |
 | Build user          | `qnxbuild` (uid 1001, home `/home/qnxbuild`) owns the Qt trees                                    | confirmed                            |
-| Node / pnpm / CMake | Node 26.10.0, pnpm 12.8.1, CMake 3.31.9 (plus Ninja, Python 3, git)                               | confirmed                            |
+| Node / pnpm / CMake | Node 26.10.0, pnpm 12.18.0, CMake 3.31.9 (plus Ninja, Python 3, git)                              | confirmed                            |
 
 The container has no extra environment variables beyond `PATH`. The `--platform` flag used when it was created is not recorded in the container config (**unconfirmed**; the architecture above is what the running container reports).
 
@@ -54,7 +54,7 @@ Only needed if `qnx805-build` is gone. The original `docker run` command is **un
       -v /Users/mikevocalz/qnx-pi400-8.0.5:/work -w /work \
       ubuntu:24.04 sleep infinity
 
-Then install the toolchain packages inside it (build-essential-style tools, git, Ninja, Python 3, curl). The package list is **unconfirmed**. CMake 3.31.9 is in `/usr/local/bin`, so it was installed from the upstream release, not apt. Node 26.10.0 and pnpm 12.8.1 are the pins from `package.json` (`engines.node >= 26`, `packageManager pnpm@12.8.1`); install them so `node --version` prints `v26.10.0` and `pnpm --version` prints `12.8.1`. The supervised-run harness asserts both.
+Then install the toolchain packages inside it (build-essential-style tools, git, Ninja, Python 3, curl). The package list is **unconfirmed**. CMake 3.31.9 is in `/usr/local/bin`, so it was installed from the upstream release, not apt. Node 26.10.0 and pnpm 12.18.0 are the pins from `package.json` (`engines.node >= 26`, `packageManager pnpm@12.18.0`); install them so `node --version` prints `v26.10.0` and `pnpm --version` prints `12.18.0`. The supervised-run harness asserts both.
 
 Create the `qnxbuild` user (uid 1001) and keep Qt and the SDP installer state under its home.
 
@@ -161,44 +161,30 @@ Use a key made for this lane, not your personal key. No key or address belongs i
        mkdir -p /work/<private-dir>
        ssh-keygen -t ed25519 -N '' -C 'rnqnx-pi400-lane' -f /work/<private-dir>/id_ed25519
 
-   `/work` is bind-mounted from the Mac, so keep the directory out of any git checkout and out of backups you share. A passphrase-protected key plus an agent is also fine; the runner uses `IdentitiesOnly=yes` with the file named in `QNX_SSH_KEY`.
+   `/work` is bind-mounted from the Mac, so keep the directory out of any git checkout and out of backups you share. A passphrase-protected key plus an agent is also fine. Export `QNX_SSH_KEY` with the private key's path; `scripts/lib/qnx-target.sh` passes it to `ssh` and `scp` with `-i`.
 
-2. Install the public key on the Pi 400 for the non-root `qnxuser` account only. Use the recovery console or an existing authorized session, append the `.pub` line to `/data/home/qnxuser/.ssh/authorized_keys`, and keep the directory `0700` and the file `0600`. Never install it for `root`; the runner rejects root and numeric usernames.
-3. Record the target's host key out of band and add it to the container's `known_hosts`. The runner uses `StrictHostKeyChecking=yes`, so an unknown host fails closed.
+2. Install the public key on the Pi 400 for the non-root `qnxuser` account only. Use the recovery console or an existing authorized session, append the `.pub` line to `/data/home/qnxuser/.ssh/authorized_keys`, and keep the directory `0700` and the file `0600`. Never install it for `root`.
+3. Record the target's host key out of band and add it to the container's `known_hosts` before the first connection.
 4. Test with a batch-mode login that runs `id -u` and expects a non-zero value.
 5. To retire the key, remove its line from `authorized_keys` on the target and delete the private file.
 
 ## Run the Pi 400 lane from the container
 
-These steps follow the procedure in PR #102 (`docs/validation/pi400-final-test.md` there). Run them inside the container as `qnxbuild`, from a clean checkout of the candidate under `/work`.
+Run these inside the container as `qnxbuild`, from a clean checkout under `/work`:
 
     docker exec -it -u qnxbuild qnx805-build bash
     source /work/pr102-sdk-env.sh        # or your own copy of the template above
     cd /work/<checkout>
-    node scripts/final-pi400-test.mjs plan
-
-`plan` lists the stages as `not-run` and never runs SSH, installs, builds or changes the device. Then, with a consumer project already built to a matching Hermes `.hbc` and prepared with `project prepare-native`:
-
+    export QNX_SDP_ENV=/work/qnx800/qnxsdp-env.sh
     export RNQNX_PI_BOARD=pi400
-    export RNQNX_FINAL_TEST_CONFIRM=pi400
     export QNX_TARGET_USER=qnxuser
     export QNX_TARGET_IP=<verified-pi400-hostname>
-    export QNX_SSH_KEY=/work/<private-dir>/id_ed25519
-    export QNX_TARGET_DIR=/data/home/qnxuser/<unique-run-directory>
-    unset QNX_SSH_OPTS
-    node scripts/final-pi400-test.mjs execute --consumer-project /work/<consumer>
+    pnpm pi:preflight
+    pnpm pi:install
 
-Variables the supervised run also set, for the Qt runtime already installed on the target:
+`pnpm pi:preflight` and `pnpm pi:install` are the scripts described in [Raspberry Pi 400 bring-up](../getting-started/raspberry-pi-400.md); they read the SSH defaults from `scripts/lib/qnx-target.sh`. Use the dedicated key from the section above. Both touch physical hardware, so only run them when a person is supervising and a recovery path exists.
 
-| Variable                  | Used for                                                                          |
-| ------------------------- | --------------------------------------------------------------------------------- |
-| `RNQNX_PI_QT_FONTDIR`     | existing font directory on the target (the run used `/usr/share/fonts/dejavu`)    |
-| `RNQNX_PI_LIBRARY_PATH`   | colon-separated target library directories, placed after `.` in `LD_LIBRARY_PATH` |
-| `RNQNX_PI_QT_PLUGIN_PATH` | target Qt plugin directory (must contain `platforms/libqqnx.so`)                  |
-| `RNQNX_PI_CONFIG`         | build configuration; the run used `Debug`                                         |
-| `QNX_SSH_PORT`            | optional; default 22                                                              |
-
-`QNX_SSH_OPTS` is refused by the runner. `QNX_HOST` and `QNX_TARGET` come from the SDP environment. The supervised run also set `CMAKE_BUILD_PARALLEL_LEVEL=1`, wrapped `execute` in `timeout 90m`, and ran the disk watchdog described above. `execute` touches physical hardware, so only run it when a person is supervising and a recovery path exists.
+The 2026-11-09 supervised run used PR #102's runner with `CMAKE_BUILD_PARALLEL_LEVEL=1`, `timeout 90m` and the disk watchdog described above. That runner was not merged, and its run is not release evidence on `main`.
 
 ## Unconfirmed
 
