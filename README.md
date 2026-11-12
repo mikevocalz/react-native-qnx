@@ -3,7 +3,7 @@
 Run React Native on QNX with Fabric, Hermes, Yoga and a Qt Quick view backend.
 The experimental Pi 400 target renders Hello World at 1920×1080 on QNX SDP 8.0.5.
 
-![React Native QNX Hello World on the Pi 400](docs/evidence/pi400-hello-world-fullscreen-2026-11-07.png)
+![A Pi 400 display showing "React Native QNX: Hello World" in white text centred on dark blue, captured fullscreen at 1920×1080](docs/evidence/pi400-hello-world-fullscreen-2026-11-07.png)
 
 This is v1 preparation. Graphics cold boot, stock Pi 4 QSTI parity, performance
 measurements and release packaging remain open. Development follows the
@@ -11,6 +11,10 @@ measurements and release packaging remain open. Development follows the
 prerequisite. The Pi 400 receipts retain their evaluation-artifact provenance. Read
 [the evidence boundaries](docs/handoff/CURRENT_STATE.md) and
 [v1 gates](docs/releases/v1-readiness.md) before selecting a target.
+
+The [v1 documentation draft](docs/v1/README.md) collects the getting-started
+pages, support limits, an [evidence gallery](docs/v1/evidence-gallery.md) split
+by target, and draft release notes.
 
 ## Start from source
 

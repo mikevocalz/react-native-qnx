@@ -17,6 +17,7 @@ try {
     'SECURITY.md',
     'CODE_OF_CONDUCT.md',
     'CONTRIBUTING.md',
+    'TODO.md',
   ]) {
     await cp(path.join(root, file), path.join(temporary, file), { recursive: true });
   }
