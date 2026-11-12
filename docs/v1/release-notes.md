@@ -54,15 +54,15 @@ candidates, listed in the [evidence gallery](evidence-gallery.md); the release
 candidate needs its own.
 
 - Hello World renders fullscreen at 1920×1080 on the custom Pi 400 image
-  ([receipt](../evidence/pi400-hello-world-2026-11-07.txt)).
+  ([Hello World receipt](../evidence/pi400-hello-world-2026-11-07.txt)).
 - A synchronous Nitro v1 call and the opt-in Qt dispatcher for callbacks and
   Promises run on the Pi 400
-  ([receipt](../evidence/pi400-nitro-qt-2026-11-07.md)).
+  ([dispatcher receipt](../evidence/pi400-nitro-qt-2026-11-07.md)).
 - Synthetic Qt input reaches React `Pressable` on the Pi 400
-  ([receipt](../evidence/pressable-qnx-2026-11-07.md)). Input stays OFF by
+  ([Pressable receipt](../evidence/pressable-qnx-2026-11-07.md)). Input stays OFF by
   default.
 - The CLI creates a workspace app, bundles it with Metro and renders it in the
-  host playground ([receipt](../evidence/v1-polish-host-2026-11-07.md)).
+  host playground ([V1 preparation receipt](../evidence/v1-polish-host-2026-11-07.md)).
 - Component behavior is listed per target in
   [component support](../component-support.md).
 
