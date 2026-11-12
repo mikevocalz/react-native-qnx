@@ -72,7 +72,12 @@ function withQnxProject(config, options = {}) {
   if (!isPlainObject(options)) throw new Error('withQnxProject options must be an object.');
   const current = config.extra?.rnQnx || {};
   const rnqnx = { ...(config.extra?.rnqnx || {}) };
-  for (const key of IDENTITY_KEYS) if (options[key] !== undefined) rnqnx[key] = options[key];
+  for (const key of IDENTITY_KEYS) {
+    if (options[key] === undefined) continue;
+    if (typeof options[key] !== 'string' || !options[key].trim())
+      throw new Error(`@rn-qnx/expo-qnx-config-plugins option ${key} must be a nonempty string.`);
+    rnqnx[key] = options[key];
+  }
   if (options.window !== undefined || rnqnx.window !== undefined)
     rnqnx.window = resolveQnxWindow({ ...(rnqnx.window || {}), ...(options.window || {}) });
   const extra = {

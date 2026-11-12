@@ -181,6 +181,38 @@ try {
   await writeFile(path.join(bare, 'build/qnx/app.bundle.js'), 'bundle\n');
   await assert.rejects(() => nativeConfiguration(bare, 'qnx'), /window\.controls/);
   checks += 4;
+
+  // Plugin listed but not installed (for example right after add-qnx, before
+  // install): the error names the plugin and the install step.
+  const uninstalled = path.join(temporary, 'uninstalled');
+  await mkdir(uninstalled);
+  await writeFile(path.join(uninstalled, 'package.json'), '{"name":"uninstalled"}');
+  await writeFile(
+    path.join(uninstalled, 'app.json'),
+    JSON.stringify({ expo: { name: 'Pending', plugins: ['@rn-qnx/expo-qnx-config-plugins'] } })
+  );
+  await assert.rejects(
+    () => loadExpoConfig(uninstalled),
+    /"@rn-qnx\/expo-qnx-config-plugins" .*not installed.*Install the app's dependencies/
+  );
+  const skipped = await loadExpoConfig(uninstalled, { skipPlugins: true });
+  ok(skipped.exp.name === 'Pending', 'skipPlugins reads the config without the plugin');
+
+  // Option types.
+  for (const bad of [
+    { shortName: 7 },
+    { icon: { path: 'a.png' } },
+    { appId: '' },
+    { componentName: ['A'] },
+  ]) {
+    assert.throws(() => withQnxProject({}, /** @type {any} */ (bad)), /must be a nonempty string/);
+    checks++;
+  }
+  ok(
+    withQnxProject({}, { shortName: 'Notes', icon: './assets/icon.png' }).extra.rnqnx?.icon ===
+      './assets/icon.png',
+    'string icon accepted'
+  );
   console.log(
     `Expo config resolution: ${checks} checks passed (app.json, app.config.js, app.config.ts).`
   );
