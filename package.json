@@ -5,10 +5,10 @@
   "description": "Production-grade React Native out-of-tree platform for QNX",
   "license": "MIT",
   "author": "react-native-qnx contributors",
-  "packageManager": "pnpm@12.8.1",
+  "packageManager": "pnpm@12.18.0",
   "engines": {
     "node": ">=26.0.0",
-    "pnpm": ">=12.8.1"
+    "pnpm": ">=12.18.0"
   },
   "scripts": {
     "doctor": "bash scripts/doctor.sh",
@@ -38,6 +38,8 @@
     "pi:evidence:verify": "node scripts/verify-pi-evidence.mjs",
     "validate:qnx-expo-modules": "node scripts/validate-qnx-expo-modules.mjs",
     "validate:qnx-expo-autolinking": "node scripts/validate-qnx-expo-autolinking.mjs",
+    "validate:expo-sdk58-support": "node scripts/expo-sdk58-support.mjs --check",
+    "expo:sdk58-support:write": "node scripts/expo-sdk58-support.mjs --write",
     "qnx:runtime:validate": "bash scripts/validate-runtime-qnx.sh",
     "validate:qnx-react": "node scripts/validate-react-qnx-source.mjs",
     "nitro:platform:generate": "node scripts/nitro-platform-codegen.mjs --write",
@@ -54,16 +56,16 @@
     "@react-native/metro-config": "0.88.1",
     "@types/node": "26.6.6",
     "@types/react": "19.3.0",
-    "babel-preset-expo": "58.0.23",
-    "expo": "58.0.22",
+    "babel-preset-expo": "58.0.25",
+    "expo": "58.0.24",
     "metro": "0.87.1",
-    "nitrogen": "1.0.0-alpha.nightly.105.g69d365fc9b18",
-    "prettier": "3.9.9",
+    "nitrogen": "1.0.0-alpha.nightly.136.gdb81de61bd32",
+    "prettier": "3.9.10",
     "react": "19.3.0",
     "react-native": "0.88.1",
-    "react-native-nitro-modules": "1.0.0-alpha.nightly.105.g69d365fc9b18",
+    "react-native-nitro-modules": "1.0.0-alpha.nightly.136.gdb81de61bd32",
     "typescript": "7.0.2",
-    "nitro-core": "1.0.0-alpha.nightly.105.g69d365fc9b18",
+    "nitro-core": "1.0.0-alpha.nightly.136.gdb81de61bd32",
     "@typescript/typescript6": "6.0.2",
     "zustand": "5.1.0"
   }

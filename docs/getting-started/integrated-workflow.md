@@ -9,7 +9,7 @@ on this combined candidate.
 
 ## Create and prepare an app
 
-Use Node 26+ and pnpm 12.8.1. From the repository root:
+Use Node 26+ and pnpm 12.18.0. From the repository root:
 
 ```bash
 pnpm install --frozen-lockfile

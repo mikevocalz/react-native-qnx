@@ -1,0 +1,5 @@
+#pragma once
+// Generated from native/window-chrome/WindowChrome.qml. Do not edit.
+namespace rnqnx::window {
+inline constexpr char kWindowChromeQml[] = R"rnqnxqml(@RNQNX_WINDOW_CHROME_QML@)rnqnxqml";
+}

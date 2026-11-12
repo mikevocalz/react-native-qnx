@@ -1,18 +1,73 @@
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
-import { lstat, mkdir, open, readFile, realpath, rm } from 'node:fs/promises';
+import {
+  copyFile,
+  lstat,
+  mkdir,
+  mkdtemp,
+  open,
+  readFile,
+  realpath,
+  rename,
+  rm,
+} from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import { parseArgs } from 'node:util';
+import {
+  DEFAULT_ICON_NOTICE,
+  ensureIdentityTool,
+  generateIconSet,
+  hostIndependentDescriptor,
+  measureTileLabel,
+  resolveTileLabel,
+  validateIconSource,
+  verifyPreparedIdentity,
+} from './app-identity.mjs';
+import { loadExpoConfig } from './expo-config.mjs';
+import { discoverNitroModules } from './nitro-modules.mjs';
+import { boundedFile, projectPath } from './project-path.mjs';
 
-/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string}} NativeConfiguration */
+const { resolveQnxWindow } = createRequire(import.meta.url)(
+  '../../expo-qnx-config-plugins/index.js'
+);
+
+/** @typedef {import('./app-identity.mjs').IconSet} IconSet */
+/** @typedef {import('./app-identity.mjs').LabelFit} LabelFit */
+/** @typedef {{controls: string, titleBarStyle: string, initialSize?: {width: number, height: number}}} NativeWindow */
+/** @typedef {import('./nitro-modules.mjs').NitroModule} NitroModule */
+/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string, window: NativeWindow, nitroModules?: NitroModule[]}} BaseConfiguration */
+/** @typedef {BaseConfiguration & {shortName: string, icon: IconSet, labelFit: LabelFit}} NativeConfiguration */
 const help = `React Native QNX native consumer configuration
   project prepare-native --project <directory> [--platform qnx|marathon]
-                         [--bundle build/<platform>/app.bundle.js] [--dry-run]
+                         [--bundle build/<platform>/app.bundle.js]
+                         [--identity-tool <path>]
+                         [--dry-run]
 
-Reads static app.json: expo.name and expo.extra.rnqnx.{appId,componentName}.
-Writes build/<platform>/native-app.json for the existing native CMake backend.
-An identical rerun does not write. Changed generated output is not overwritten:
-remove only that generated file after reviewing your app/bundle change, then rerun.
+Resolves app.json or app.config.js/ts through @expo/config (config plugins
+included) and reads expo.name, expo.icon and
+expo.extra.rnqnx.{appId,componentName,window,icon,shortName}.
+Direct dependencies whose package.json declares "react-native-qnx": {"nitro":
+{...}} for the platform are recorded as nitroModules (docs/adr/0019). Only
+JSON is read for that; no package code runs.
+Set the extra.rnqnx values through the @rn-qnx/expo-qnx-config-plugins entry
+in "plugins".
+The icon must be a square PNG of at least 1024x1024. With no icon set, the
+default template/qnx/assets/icon.png is used and a notice names expo.icon.
+The tile label (shortName, else expo.name) must fit the target launcher on
+one line.
+Every run generates the icon set with rnqnx_identity_tool, a Qt host program
+from native/app-identity: --identity-tool, else RNQNX_IDENTITY_TOOL, else the
+tool under build/identity-tool in this checkout, which is built with CMake
+and Qt 6.11.1+ the first time it is missing. On a host where it cannot be
+built (anything but Linux and macOS) prepare-native fails; there is no
+option to continue without an icon set.
+Writes build/<platform>/icons/ and build/<platform>/native-app.json for the
+existing native CMake backend.
+An identical rerun keeps the existing files. Changed generated output is not
+overwritten: remove only native-app.json after reviewing your app/bundle
+change, then rerun.
 This does not install packages, compile native code or deploy to a device.
 `;
 
@@ -51,69 +106,23 @@ export function validateAppIdentity(value) {
   return { appId, displayName, componentName };
 }
 
-/** @param {unknown} error */
-function absent(error) {
-  return error instanceof Error && 'code' in error && error.code === 'ENOENT';
-}
-/** @param {string} root @param {string} relative @param {boolean} [createParents] */
-async function projectPath(root, relative, createParents = false) {
-  if (
-    !relative ||
-    /[\x00-\x1f\\;"$]/.test(relative) ||
-    path.isAbsolute(relative) ||
-    path.win32.isAbsolute(relative) ||
-    relative.split('/').some((part) => !part || part === '.' || part === '..')
-  )
-    throw new Error(
-      'Use a project-relative path without escapes, control characters or CMake metacharacters.'
-    );
-  let current = root;
-  const parts = relative.split('/');
-  for (const [index, part] of parts.entries()) {
-    current = path.join(current, part);
-    const parent = index < parts.length - 1;
-    let stat;
-    try {
-      stat = await lstat(current);
-    } catch (error) {
-      if (!absent(error)) throw error;
-      if (parent && createParents) {
-        try {
-          await mkdir(current);
-        } catch (created) {
-          if (!(created instanceof Error && 'code' in created && created.code === 'EEXIST'))
-            throw created;
-        }
-        stat = await lstat(current);
-      } else continue;
-    }
-    if (stat.isSymbolicLink() || (parent && !stat.isDirectory()))
-      throw new Error('Consumer paths cannot contain symlinks or non-directory parents.');
-  }
-  return current;
-}
-/** @param {string} file @param {number} maximum */
-async function boundedFile(file, maximum) {
-  const stat = await lstat(file);
-  if (!stat.isFile() || stat.isSymbolicLink() || stat.size < 1 || stat.size > maximum)
-    throw new Error('Expected a nonempty regular file within the size limit.');
-  return stat;
-}
-
-/** @param {string} project @param {string} platform @param {string} [relativeBundle] */
+/** Identity, bundle and window fields; the icon set and tile label are added
+ * by prepareNativeMain and re-checked by verifyPreparedIdentity.
+ * @param {string} project @param {string} platform @param {string} [relativeBundle] */
 export async function nativeConfiguration(project, platform = 'qnx', relativeBundle) {
   if (!['qnx', 'marathon'].includes(platform)) throw new Error('Use platform qnx or marathon.');
   if (!project.trim()) throw new Error('Project directory must not be empty.');
   const root = await realpath(path.resolve(project));
   if (/[\x00-\x1f;"$\\]/.test(root))
     throw new Error('Project path contains unsupported CMake characters.');
-  const configFile = await projectPath(root, 'app.json');
-  await boundedFile(configFile, 65536);
-  const app = JSON.parse(await readFile(configFile, 'utf8'));
+  const expoConfig = await loadExpoConfig(root);
+  const rnqnx = expoConfig.exp.extra?.rnqnx ?? {};
   const identity = validateAppIdentity({
-    ...app?.expo?.extra?.rnqnx,
-    displayName: app?.expo?.name,
+    appId: rnqnx.appId,
+    componentName: rnqnx.componentName,
+    displayName: expoConfig.exp.name,
   });
+  const window = resolveQnxWindow(rnqnx.window);
   const relative = relativeBundle ?? `build/${platform}/app.bundle.js`;
   if (!relative.startsWith(`build/${platform}/`))
     throw new Error('Bundle must be below the selected build/<platform>/ directory.');
@@ -121,7 +130,8 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
   await boundedFile(bundle, 256 * 1024 * 1024);
   const hash = createHash('sha256');
   for await (const chunk of createReadStream(bundle)) hash.update(chunk);
-  /** @type {NativeConfiguration} */
+  const nitroModules = await discoverNitroModules(root, platform);
+  /** @type {BaseConfiguration} */
   const configuration = {
     schemaVersion: 1,
     generatedBy: 'react-native-qnx/prepare-native-v1',
@@ -129,8 +139,54 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
     platform,
     bundle,
     bundleSha256: hash.digest('hex'),
+    window,
+    // Omitted when empty, so descriptors from apps without Nitro modules stay
+    // byte-identical to those written before this field existed.
+    ...(nitroModules.length ? { nitroModules } : {}),
   };
-  return { root, configuration };
+  return { root, configuration, expoConfig };
+}
+
+/** @param {string} root @param {import('./app-identity.mjs').ExpoConfig} expo
+ * @param {string} platform @param {string | undefined} tool @param {string} staging
+ * @returns {Promise<{shortName: string, icon: IconSet, labelFit: LabelFit}>} */
+async function identityAssets(root, expo, platform, tool, staging) {
+  const source = await validateIconSource(root, expo);
+  if (source.defaulted) console.error(DEFAULT_ICON_NOTICE);
+  const tile = resolveTileLabel(expo);
+  const toolPath = ensureIdentityTool(tool);
+  const labelFit = measureTileLabel(() => toolPath, platform, tile);
+  const icons = path.join(root, 'build', platform, 'icons');
+  const icon = await generateIconSet(toolPath, source.file, staging, (size) =>
+    path.join(icons, `icon-${size}.png`)
+  );
+  return { shortName: tile.label, icon, labelFit };
+}
+
+/** Move generated icons into build/<platform>/icons without following a
+ * symlink planted at any destination: each file lands under a fresh temporary
+ * name in the same directory and is renamed over the leaf.
+ * @param {string} root @param {string} platform @param {string} staging
+ * @param {IconSet} icon */
+async function stageIcons(root, platform, staging, icon) {
+  const directory = await projectPath(root, `build/${platform}/icons`);
+  await mkdir(directory, { recursive: true });
+  if (!(await lstat(directory)).isDirectory() || (await lstat(directory)).isSymbolicLink())
+    throw new Error(`${directory} must be a real directory.`);
+  for (const entry of icon.sizes) {
+    try {
+      const leaf = await lstat(entry.path);
+      if (!leaf.isFile() || leaf.isSymbolicLink())
+        throw new Error(
+          `${entry.path} is a symlink or not a regular file. Remove it and prepare again; icons are never written through links.`
+        );
+    } catch (error) {
+      if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error;
+    }
+    const temporary = path.join(directory, `.${path.basename(entry.path)}.${process.pid}.tmp`);
+    await copyFile(path.join(staging, path.basename(entry.path)), temporary, 1 /* COPYFILE_EXCL */);
+    await rename(temporary, entry.path);
+  }
 }
 
 /** @param {string[]} argv */
@@ -145,6 +201,8 @@ export async function prepareNativeMain(argv) {
       project: { type: 'string' },
       platform: { type: 'string' },
       bundle: { type: 'string' },
+      'identity-tool': { type: 'string' },
+      'skip-identity-tool': { type: 'boolean' },
       'dry-run': { type: 'boolean' },
     },
   });
@@ -159,35 +217,66 @@ export async function prepareNativeMain(argv) {
     return 0;
   }
   if (positionals.length) throw new Error('prepare-native does not accept positional arguments.');
-  const { root, configuration } = await nativeConfiguration(
-    values.project ?? '.',
-    values.platform ?? 'qnx',
-    values.bundle
+  const dryRun = Boolean(values['dry-run']);
+  if (values['skip-identity-tool'])
+    throw new Error(
+      '--skip-identity-tool was removed: every prepared app gets a generated icon set. prepare-native builds rnqnx_identity_tool when it is missing; pass --identity-tool to use one built elsewhere.'
+    );
+  const {
+    root,
+    configuration: base,
+    expoConfig,
+  } = await nativeConfiguration(values.project ?? '.', values.platform ?? 'qnx', values.bundle);
+  const expo = /** @type {import('./app-identity.mjs').ExpoConfig} */ (expoConfig.exp);
+  const relative = `build/${base.platform}/native-app.json`;
+  const output = await projectPath(root, relative, !dryRun);
+  const staging = await mkdtemp(
+    dryRun ? path.join(tmpdir(), 'rnqnx-icons-') : path.join(path.dirname(output), '.icons-')
   );
-  const relative = `build/${configuration.platform}/native-app.json`;
-  const output = await projectPath(root, relative, !values['dry-run']);
-  const encoded = JSON.stringify(configuration, null, 2) + '\n';
-  let action = values['dry-run'] ? 'dry-run' : 'created';
-  if (!values['dry-run']) {
-    try {
-      const handle = await open(output, 'wx', 0o600);
+  /** @type {NativeConfiguration} */
+  let configuration;
+  let action = dryRun ? 'dry-run' : 'created';
+  try {
+    configuration = {
+      ...base,
+      ...(await identityAssets(root, expo, base.platform, values['identity-tool'], staging)),
+    };
+    if (!dryRun) {
+      let existing;
       try {
-        await handle.writeFile(encoded);
+        await boundedFile(output, 65536);
+        existing = JSON.parse(await readFile(output, 'utf8'));
       } catch (error) {
-        await rm(output);
-        throw error;
-      } finally {
-        await handle.close();
+        if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error;
       }
-    } catch (error) {
-      if (!(error instanceof Error && 'code' in error && error.code === 'EEXIST')) throw error;
-      await boundedFile(output, 65536);
-      if ((await readFile(output, 'utf8')) !== encoded)
-        throw new Error(
-          'Generated native configuration differs; review and remove only native-app.json before preparing again.'
-        );
-      action = 'unchanged';
+      if (existing) {
+        // Compare only what every host computes the same way; then check the
+        // icons already on disk against the hashes the existing file names.
+        if (
+          JSON.stringify(hostIndependentDescriptor(existing)) !==
+          JSON.stringify(hostIndependentDescriptor(configuration))
+        )
+          throw new Error(
+            'Generated native configuration differs; review and remove only native-app.json before preparing again.'
+          );
+        await verifyPreparedIdentity(root, expo, existing);
+        configuration = existing;
+        action = 'unchanged';
+      } else {
+        await stageIcons(root, base.platform, staging, configuration.icon);
+        const handle = await open(output, 'wx', 0o600);
+        try {
+          await handle.writeFile(JSON.stringify(configuration, null, 2) + '\n');
+        } catch (error) {
+          await rm(output);
+          throw error;
+        } finally {
+          await handle.close();
+        }
+      }
     }
+  } finally {
+    await rm(staging, { recursive: true, force: true });
   }
   console.log(
     JSON.stringify(

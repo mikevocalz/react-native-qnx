@@ -1,6 +1,11 @@
-# ADR-0013 — Add MarathonOS as a Linux/Wayland target using the existing Qt/Fabric backend
+# ADR-0015: Add MarathonOS as a Linux/Wayland target using the existing Qt/Fabric backend
 
 Status: proposed (2026-11-02)
+
+This record was filed as ADR-0013 (`0013-marathon-linux-wayland-native-target.md`)
+on 2026-11-02. ADR-0013 also names the [open-source Qt decision](0013-open-source-qt.md),
+which more documents cite, so this record moved to 0015 on 2026-11-11. Number 0014
+is claimed by an open pull request. The decision text below is unchanged.
 
 ## Context
 

@@ -1,9 +1,10 @@
 # Create and bundle a QNX app
 
 The CLI runs from a React Native QNX source checkout with Node 26+ and pnpm
-12.8.1. `init` creates a workspace app. `bundle-qnx` produces JavaScript for
+12.18.0. `init` creates a workspace app. `bundle-qnx` produces JavaScript for
 the existing native runner. Native Qt/Hermes builds, licenses and runtime
-library deployment remain separate prerequisites.
+library deployment remain separate prerequisites. If `pnpm --version` is not
+12.18.0, follow [the pnpm install note](../../README.md#start-from-source) first.
 
 ## Create an app
 
@@ -109,7 +110,13 @@ promoting a result.
 - `already exists`: choose a different app name; existing files are preserved.
 - Missing Metro or a workspace dependency: run the documented install from the
   repository root. Newly created apps need the second install above.
-- `does not accept`: check `pnpm qnx --help`; unrelated options are rejected.
+- `does not accept` or `takes options only`: check `pnpm qnx --help`; unrelated
+  options and extra words are rejected.
+- `apps/<name>/index.js not found`: run `pnpm qnx init <name>` and the second
+  install, or pass an app that exists under `apps/`.
+- `configure-qnx exited with code 1` (or build, deploy, run): the line after it
+  names the next command. For configure and build, run `pnpm qnx doctor` first;
+  every failed check prints a `Fix:` line.
 - Missing binary or configured build: run configure/build for the matching
   architecture and Debug/Release preset before deploying.
 - QNX/Qt provisioning or graphics failure: follow the named board runbook and
