@@ -29,7 +29,7 @@ WindowCapabilities desktop() {
 class WindowChromeModelTest : public QObject {
   Q_OBJECT
 
- private slots:
+ private Q_SLOTS:
   void parsesDefaults() {
     const auto config = parseWindowChromeConfig(QJsonObject{});
     QCOMPARE(config.controls, ControlsLayout::MacOS);

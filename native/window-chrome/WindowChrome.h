@@ -83,7 +83,7 @@ class WindowChrome final : public QObject {
   Q_INVOKABLE void trigger(const QString& action);
   Q_INVOKABLE void beginSystemMove();
 
- signals:
+ Q_SIGNALS:
   void layoutChanged();
   void titleChanged();
   void stateChanged();

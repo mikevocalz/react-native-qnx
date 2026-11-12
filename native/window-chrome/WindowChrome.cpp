@@ -99,7 +99,7 @@ void WindowChrome::trigger(const QString& action) {
   bool live = false;
   for (const auto& slot : layout_.controls) live = live || nameOf(slot.action) == action;
   if (!live) return;
-  emit actionTriggered(action);
+  Q_EMIT actionTriggered(action);
   if (action == QLatin1String("close")) {
     window_->close();
   } else if (action == QLatin1String("minimize")) {
@@ -121,7 +121,7 @@ void WindowChrome::relayout() {
   layout_ = layoutChrome(config_, capabilities_, window_->width());
   content_->setPosition(QPointF(0, layout_.contentInset));
   content_->setSize(QSizeF(window_->width(), std::max<qreal>(0, window_->height() - layout_.contentInset)));
-  emit layoutChanged();
+  Q_EMIT layoutChanged();
 }
 
 }  // namespace rnqnx::window

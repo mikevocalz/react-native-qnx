@@ -23,6 +23,9 @@ endif()
 add_library(rnqnx_window_chrome STATIC)
 target_compile_features(rnqnx_window_chrome PUBLIC cxx_std_17)
 target_link_libraries(rnqnx_window_chrome PUBLIC Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick)
+# The renderer graph builds with QT_NO_KEYWORDS (Folly defines `signals`), so the
+# tests do too: plain `signals:`/`emit` would compile here and fail there.
+target_compile_definitions(rnqnx_window_chrome PUBLIC QT_NO_KEYWORDS)
 rnqnx_add_window_chrome_sources(rnqnx_window_chrome)
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
   target_compile_options(rnqnx_window_chrome PRIVATE -Wall -Wextra -Wpedantic -Werror)

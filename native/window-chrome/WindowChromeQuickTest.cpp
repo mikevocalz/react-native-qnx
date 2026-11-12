@@ -86,7 +86,7 @@ QStringList controlNames(const Harness& harness) {
 class WindowChromeQuickTest : public QObject {
   Q_OBJECT
 
- private slots:
+ private Q_SLOTS:
   void initTestCase() {
     const QByteArray expected = qgetenv("RNQNX_EXPECT_DPR");
     expectedDpr_ = expected.isEmpty() ? 1.0 : expected.toDouble();
