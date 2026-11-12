@@ -37,6 +37,11 @@ export const OVERRIDES = Object.freeze({
     'partial',
     'Upstream native core is iOS/Android; packages/expo-modules-core-qnx supplies the QNX JSI host contract, covered by host tests only.',
   ],
+  'expo-server': [
+    'host-tooling',
+    'Server API for Expo Router API routes; runs on the server or development host, not in a QNX app bundle.',
+  ],
+  'expo-mcp': ['host-tooling', 'Local MCP capabilities provider for Expo; a development-host CLI.'],
   'expo-build-properties': ['no-op', 'Config plugin for iOS/Android build properties only.'],
 });
 
@@ -111,14 +116,13 @@ async function generate() {
         moduleConfig = { platforms: null, unparsed: 'expo-module.config.json is not JSON' };
       }
     }
+    // Evidence is every published file the classifier looks at: native
+    // directories, podspecs and expo-module.config.json. Other files cannot
+    // change a status, so they are not stored.
     const evidence = {
-      files: files
-        .filter((/** @type {string} */ f) =>
-          /^\/(ios|android|apple|cpp|common\/cpp)\/|\.podspec$|^\/expo-module\.config\.json$/.test(
-            f
-          )
-        )
-        .slice(0, 5),
+      files: files.filter((/** @type {string} */ f) =>
+        /^\/(ios|android|apple|cpp|common\/cpp)\/|\.podspec$|^\/expo-module\.config\.json$/.test(f)
+      ),
       moduleConfig: moduleConfig ? { platforms: moduleConfig.platforms ?? null } : null,
     };
     rows.push({
