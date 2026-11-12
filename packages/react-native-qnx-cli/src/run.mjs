@@ -1,0 +1,152 @@
+import { lstat, realpath } from 'node:fs/promises';
+import path from 'node:path';
+import { parseArgs } from 'node:util';
+import { buildNativeMain } from './build-native.mjs';
+import { loadExpoConfig } from './expo-config.mjs';
+import { nativeConfiguration, prepareNativeMain } from './prepare-native.mjs';
+
+// `node --run qnx` in an app calls this. It walks the steps from config to
+// launch, runs each one the host can do, and stops at the first one that needs
+// something the host lacks (a bundle, the SDP, the board). It never reports a
+// step it did not run as done.
+
+export const NEEDS_DEVICE_EXIT = 3;
+
+const help = `React Native QNX - build, deploy and launch an Expo app on QNX
+  project run --project <directory> [--platform qnx|marathon] [--device <host>]
+
+Steps: config -> bundle -> native-descriptor -> native-build -> deploy -> launch.
+Metro, logs and Fast Refresh belong to Expo CLI: run npx expo start alongside.
+Exit 0 when every step ran, 3 when a step needs the board, the SDP or a
+bundle first (the output names the command), 1 on failure.
+`;
+
+/** @typedef {{step: string, status: 'done'|'needs bundle'|'needs SDP'|'needs device'|'not run', detail: string}} RunStep */
+
+/** @param {string} file */
+async function isFile(file) {
+  try {
+    const stat = await lstat(file);
+    return stat.isFile() && !stat.isSymbolicLink();
+  } catch {
+    return false;
+  }
+}
+
+/** Swallow a subcommand's JSON report; run prints its own step table. */
+async function quietly(/** @type {() => Promise<number>} */ run) {
+  const log = console.log;
+  console.log = () => {};
+  try {
+    return await run();
+  } finally {
+    console.log = log;
+  }
+}
+
+/**
+ * @param {{project: string, platform?: string, device?: string, env?: NodeJS.ProcessEnv}} options
+ * @returns {Promise<{steps: RunStep[], exitCode: number}>}
+ */
+export async function runProject(options) {
+  const platform = options.platform ?? 'qnx';
+  if (!['qnx', 'marathon'].includes(platform)) throw new Error('Use --platform qnx or marathon.');
+  const env = options.env ?? process.env;
+  const root = await realpath(path.resolve(options.project));
+  /** @type {RunStep[]} */
+  const steps = [];
+  const stop = (/** @type {RunStep} */ step) => {
+    steps.push(step);
+    const rest = ['bundle', 'native-descriptor', 'native-build', 'deploy', 'launch'];
+    for (const name of rest.slice(rest.indexOf(step.step) + 1))
+      steps.push({ step: name, status: 'not run', detail: `waits for ${step.step}` });
+    return { steps, exitCode: NEEDS_DEVICE_EXIT };
+  };
+
+  const expo = await loadExpoConfig(root);
+  steps.push({
+    step: 'config',
+    status: 'done',
+    detail: `${expo.exp.name} from ${expo.files.join(', ')} via @expo/config ${expo.loader.version}`,
+  });
+
+  const hbc = path.join(root, `build/${platform}/app.bundle.hbc`);
+  const js = path.join(root, `build/${platform}/app.bundle.js`);
+  const bundle = (await isFile(hbc)) ? hbc : (await isFile(js)) ? js : null;
+  if (!bundle)
+    return stop({
+      step: 'bundle',
+      status: 'needs bundle',
+      detail: `No build/${platform}/app.bundle.{hbc,js}. Run: rnqnx project bundle --project . --platform ${platform}`,
+    });
+  steps.push({ step: 'bundle', status: 'done', detail: path.relative(root, bundle) });
+
+  await quietly(() =>
+    prepareNativeMain([
+      '--project',
+      root,
+      '--platform',
+      platform,
+      '--bundle',
+      path.relative(root, bundle),
+    ])
+  );
+  const { configuration } = await nativeConfiguration(root, platform, path.relative(root, bundle));
+  steps.push({
+    step: 'native-descriptor',
+    status: 'done',
+    detail: `build/${platform}/native-app.json for ${configuration.appId}`,
+  });
+
+  if (platform === 'qnx' && (!env.QNX_HOST || !env.QNX_TARGET))
+    return stop({
+      step: 'native-build',
+      status: 'needs SDP',
+      detail:
+        'QNX_HOST and QNX_TARGET are not set. Source the SDP environment, or download a prebuilt development runner: rnqnx runner fetch --help.',
+    });
+  await quietly(() => buildNativeMain(['--project', root, '--platform', platform]));
+  steps.push({ step: 'native-build', status: 'done', detail: `build/${platform}/native` });
+
+  if (!options.device)
+    return stop({
+      step: 'deploy',
+      status: 'needs device',
+      detail: 'No --device given. Connect the board and pass --device <host>.',
+    });
+  return stop({
+    step: 'deploy',
+    status: 'needs device',
+    detail: `Deploying consumer apps to ${options.device} is not implemented in project run yet; nothing was copied or launched.`,
+  });
+}
+
+/** @param {string[]} argv */
+export async function runMain(argv) {
+  const { values, positionals } = parseArgs({
+    args: argv,
+    strict: true,
+    allowPositionals: true,
+    options: {
+      help: { type: 'boolean', short: 'h' },
+      project: { type: 'string' },
+      platform: { type: 'string' },
+      device: { type: 'string' },
+    },
+  });
+  if (values.help) {
+    console.log(help);
+    return 0;
+  }
+  if (positionals.length) throw new Error('project run accepts no positional arguments.');
+  const { steps, exitCode } = await runProject({
+    project: values.project ?? '.',
+    platform: values.platform,
+    device: values.device,
+  });
+  for (const { step, status, detail } of steps)
+    console.log(`${step.padEnd(18)} ${status.padEnd(13)} ${detail}`);
+  if (exitCode === NEEDS_DEVICE_EXIT)
+    console.log('\nStopped before launch. Nothing above marked "not run" happened.');
+  return exitCode;
+}
