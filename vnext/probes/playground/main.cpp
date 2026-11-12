@@ -20,6 +20,12 @@
 #include RNQNX_CONSUMER_APP_HEADER
 #endif
 #include "react-native-qnx/fabric/QtTouchDispatcher.h"
+#if RNQNX_ENABLE_WINDOW_CHROME
+#include "WindowChrome.h"
+#ifdef RNQNX_CONSUMER_WINDOW_HEADER
+#include RNQNX_CONSUMER_WINDOW_HEADER
+#endif
+#endif
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
@@ -45,7 +51,9 @@
 #include <QTimer>
 
 #include <cstdio>
+#include <memory>
 #include <sstream>
+#include <stdexcept>
 
 namespace {
 
@@ -222,6 +230,11 @@ constexpr int kWindowHeight = 480;
 }  // namespace
 
 int main(int argc, char** argv) {
+#if RNQNX_ENABLE_WINDOW_CHROME
+  // Read before QGuiApplication strips -platform from argv (ADR-0016).
+  const QStringList platformSpecs = rnqnx::window::platformSpecsFromArguments(
+      argc, argv, qEnvironmentVariable("QT_QPA_PLATFORM"));
+#endif
   QGuiApplication app(argc, argv);
 #ifdef RNQNX_MARATHON_HOST
   // Qt Wayland uses desktopFileName for xdg_toplevel app_id. Marathon's app
@@ -256,6 +269,17 @@ int main(int argc, char** argv) {
   parser.addOption(traceOption);
 #endif
   parser.addOption(fullscreenOption);
+#if RNQNX_ENABLE_WINDOW_CHROME
+  const QCommandLineOption windowControlsOption(QStringLiteral("window-controls"),
+      QStringLiteral("Title bar control layout: macos or windows."), QStringLiteral("layout"));
+  const QCommandLineOption titleBarStyleOption(QStringLiteral("title-bar-style"),
+      QStringLiteral("Title bar style: default, hidden or none."), QStringLiteral("style"));
+  const QCommandLineOption windowSizeOption(QStringLiteral("window-size"),
+      QStringLiteral("Initial outer window size, clamped to the screen."), QStringLiteral("WxH"));
+  parser.addOption(windowControlsOption);
+  parser.addOption(titleBarStyleOption);
+  parser.addOption(windowSizeOption);
+#endif
   parser.addOption(bundleOption);
   parser.addOption(screenshotOption);
   parser.process(app);
@@ -294,6 +318,43 @@ int main(int argc, char** argv) {
   }
   const QByteArray bundle = bundleFile.readAll();
 
+#if RNQNX_ENABLE_WINDOW_CHROME
+  // The playground keeps its original chromeless window unless asked; a
+  // consumer app uses the `window` object from its native-app.json.
+  rnqnx::window::WindowChromeConfig chromeConfig;
+  chromeConfig.titleBarStyle = rnqnx::window::TitleBarStyle::None;
+  try {
+#ifdef RNQNX_CONSUMER_WINDOW_HEADER
+    chromeConfig = rnqnx::window::configuredWindowChrome();
+#endif
+    if (parser.isSet(windowControlsOption)) {
+      chromeConfig.controls = rnqnx::window::parseControlsLayout(parser.value(windowControlsOption));
+      if (!parser.isSet(titleBarStyleOption) &&
+          chromeConfig.titleBarStyle == rnqnx::window::TitleBarStyle::None) {
+        chromeConfig.titleBarStyle = rnqnx::window::TitleBarStyle::Default;
+      }
+    }
+    if (parser.isSet(titleBarStyleOption)) {
+      chromeConfig.titleBarStyle = rnqnx::window::parseTitleBarStyle(parser.value(titleBarStyleOption));
+    }
+    if (parser.isSet(windowSizeOption)) {
+      const QStringList edges = parser.value(windowSizeOption).split(QLatin1Char('x'));
+      bool widthOk = false;
+      bool heightOk = false;
+      const int width = edges.size() == 2 ? edges.at(0).toInt(&widthOk) : 0;
+      const int height = edges.size() == 2 ? edges.at(1).toInt(&heightOk) : 0;
+      if (!widthOk || !heightOk || width < 1 || height < 1 ||
+          width > rnqnx::window::kMaxWindowEdge || height > rnqnx::window::kMaxWindowEdge) {
+        throw std::invalid_argument("--window-size must be WxH with edges from 1 to 16384.");
+      }
+      chromeConfig.initialSize = QSize(width, height);
+    }
+  } catch (const std::exception& error) {
+    std::fprintf(stderr, "RNQNX_WINDOW_CONFIG_ERROR %s\n", error.what());
+    return 2;
+  }
+#endif
+
   QQuickWindow window;
 #ifdef RNQNX_MARATHON_HOST
   window.setTitle(QStringLiteral("React Native MarathonOS playground"));
@@ -303,6 +364,16 @@ int main(int argc, char** argv) {
   if (identity.custom) window.setTitle(identity.displayName);
   window.setWidth(kWindowWidth);
   window.setHeight(kWindowHeight);
+#if RNQNX_ENABLE_WINDOW_CHROME
+  if (chromeConfig.initialSize && !parser.isSet(fullscreenOption)) {
+    const QRect available = window.screen() != nullptr ? window.screen()->availableGeometry() : QRect();
+    const QSize size = rnqnx::window::clampWindowSize(*chromeConfig.initialSize, available.size());
+    window.resize(size);
+    if (available.isValid()) {
+      window.setPosition(available.center() - QPoint(size.width() / 2, size.height() / 2));
+    }
+  }
+#endif
   window.setColor(QColor(Qt::white));
   if (parser.isSet(fullscreenOption)) {
     if (window.screen() == nullptr) {
@@ -327,8 +398,47 @@ int main(int argc, char** argv) {
   factory.registerType(
       QStringLiteral("Switch"), QByteArray(kSwitchSource));
 
+  QQuickItem* mountRoot = window.contentItem();
+#if RNQNX_ENABLE_WINDOW_CHROME
+  // Declared after the engine and before the mounting layer, so the layer
+  // unmounts first and the chrome items go before the engine.
+  std::unique_ptr<rnqnx::window::WindowChrome> chrome;
+  if (!parser.isSet(fullscreenOption) &&
+      chromeConfig.titleBarStyle != rnqnx::window::TitleBarStyle::None) {
+    const QStringList platformOptions =
+        rnqnx::window::platformOptionsFor(QGuiApplication::platformName(), platformSpecs);
+    // The qnx QPA resizes the root window to the screen only once events run,
+    // after the surface has started. Apply that size now so the content item
+    // and the React surface match the window from the first frame.
+    if (rnqnx::window::platformForcesFullScreen(QGuiApplication::platformName(), platformOptions) &&
+        window.screen() != nullptr) {
+      window.setGeometry(window.screen()->geometry());
+    }
+    try {
+      chrome = std::make_unique<rnqnx::window::WindowChrome>(window, engine, chromeConfig,
+          rnqnx::window::capabilitiesForPlatform(QGuiApplication::platformName(), platformOptions));
+    } catch (const std::exception& error) {
+      std::fprintf(stderr, "RNQNX_WINDOW_CHROME_ERROR %s\n", error.what());
+      return 1;
+    }
+    mountRoot = &chrome->contentRoot();
+    std::printf("RNQNX_WINDOW_CHROME platform=%s controls=%s style=%s inset=%g window=%dx%d\n",
+        QGuiApplication::platformName().toUtf8().constData(),
+        rnqnx::window::nameOf(chromeConfig.controls).toUtf8().constData(),
+        rnqnx::window::nameOf(chromeConfig.titleBarStyle).toUtf8().constData(),
+        chrome->layout().contentInset, window.width(), window.height());
+    for (const QString& line : chrome->describeHiddenControls()) {
+      std::printf("%s\n", line.toUtf8().constData());
+    }
+    QObject::connect(chrome.get(), &rnqnx::window::WindowChrome::actionTriggered,
+        [](const QString& action) {
+          std::printf("RNQNX_WINDOW_ACTION %s\n", action.toUtf8().constData());
+          std::fflush(stdout);
+        });
+  }
+#endif
   rnqnx::fabric::QtQuickMountingLayer layer(
-      factory, *window.contentItem(), kSurfaceId);
+      factory, *mountRoot, kSurfaceId);
   rnqnx::fabric::ShadowViewMutationAdapter adapter(layer);
   adapter.mapComponent(QStringLiteral("View"), QStringLiteral("View"));
   adapter.mapComponent(QStringLiteral("Paragraph"), QStringLiteral("Text"));
@@ -349,7 +459,7 @@ int main(int argc, char** argv) {
 
 #if RNQNX_ENABLE_INPUT_LIFECYCLE
   // Outlive the host: stopping its surface can still remove captured targets.
-  rnqnx::fabric::QtTouchDispatcher touchDispatcher(layer, *window.contentItem());
+  rnqnx::fabric::QtTouchDispatcher touchDispatcher(layer, *mountRoot);
   adapter.setTouchDispatcher(&touchDispatcher);
   window.installEventFilter(&touchDispatcher);
 #endif
@@ -392,11 +502,16 @@ int main(int argc, char** argv) {
   } else {
     window.show();
   }
+  // Without chrome the surface is the whole window, as before.
+  QSizeF surfaceSize(window.width(), window.height());
+#if RNQNX_ENABLE_WINDOW_CHROME
+  if (chrome) surfaceSize = chrome->contentRoot().size();
+#endif
   host.startSurface(
       kSurfaceId,
       identity.componentName.toStdString(),
-      static_cast<float>(window.width()),
-      static_cast<float>(window.height()));
+      static_cast<float>(surfaceSize.width()),
+      static_cast<float>(surfaceSize.height()));
 
   if (parser.isSet(screenshotOption)) {
     for (int i = 0; i < 20; ++i) {
