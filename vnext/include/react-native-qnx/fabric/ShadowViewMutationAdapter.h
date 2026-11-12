@@ -40,6 +40,10 @@ class QtSwitchBridge;
 /// returned instead.
 class ShadowViewMutationAdapter {
  public:
+  /// Call after the surface root changes size (window resize, maximize):
+  /// open modals are resized to cover the new surface.
+  void surfaceResized();
+
   explicit ShadowViewMutationAdapter(QtQuickMountingLayer& layer);
   ~ShadowViewMutationAdapter();
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
@@ -88,6 +92,7 @@ class ShadowViewMutationAdapter {
   MountError applyTextInput(const facebook::react::ShadowView& view);
   void applyActivityIndicator(const facebook::react::ShadowView& view);
   void applySwitch(const facebook::react::ShadowView& view);
+  MountError applyModal(const facebook::react::ShadowView& view);
   void registerEventEmitter(const facebook::react::ShadowView& view);
 
   /// Connects an editable item's text changes to its shadow view's
@@ -122,6 +127,9 @@ class ShadowViewMutationAdapter {
   QHash<Tag, QtSwitchBridge*> switchBridges_;
   /// Image bridges, indexed by tag, so load/error events reach JavaScript.
   QHash<Tag, QtImageBridge*> imageBridges_;
+  // ModalHostView: React Native's Modal, drawn as an overlay over the whole
+  // surface and sized through its state the way iOS and Android size it.
+  QHash<Tag, facebook::react::ShadowView> modalViews_;
 };
 
 /// Converts React Native's view props to the visual style the mounting layer

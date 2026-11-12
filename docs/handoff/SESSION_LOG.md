@@ -1,13 +1,13 @@
 # SESSION_LOG.md
 
-## 2026-11-10 — PR 106 committed handoff and integration review
+## 2026-11-10 — PR 105 committed handoff repair
 
-Re-ran the public Image/Switch contract test, both isolated-cache Metro bundles,
-types and installed-source validation on `6b528c1`. Recorded later successful
-hosted native runs and updated the stale image guide statement. Inspected
-PR 110's controlled-Switch hooks and identified the combined-fixture work
-without changing this branch's runtime or tests.
-[Full receipt](../validation/pr106-merge-readiness-2026-11-10.md).
+Inspected `c09a5b1`, its green hosted workflows, the unresolved handoff review,
+the repository validation/API skills and ordered pinned Margelo sources.
+Re-ran generator/type/source checks, recorded the exact lock and CI runs, and
+updated all six required handoff artifacts through the canonical readiness
+record and `pnpm docs:sync`. No implementation or acceptance gate changed.
+[Full receipt](../validation/pr105-merge-readiness-2026-11-10.md).
 
 ## 2026-10-04 — Replace arithmetic-only React QNX probe
 

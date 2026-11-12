@@ -16,7 +16,7 @@ vm.runInNewContext(exportsSource, {
   module,
   require: (/** @type {string} */ name) => {
     loaded.push(name);
-    return { default: values, AppRegistry: values };
+    return { default: values, AppRegistry: values, findNodeHandle: values };
   },
 });
 assert.equal(loaded.length, 0, 'Public imports stay lazy until read');
@@ -38,6 +38,11 @@ const expected = [
   'StyleSheet',
   'Platform',
   'Animated',
+  'I18nManager',
+  'findNodeHandle',
+  'Dimensions',
+  'PixelRatio',
+  'useWindowDimensions',
 ];
 assert.deepEqual(Object.keys(api), expected);
 for (const name of expected) assert.equal(api[name], values);

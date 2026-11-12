@@ -1,0 +1,68 @@
+diff --git a/src/plugins/platforms/qnx/qqnxglcontext.cpp b/src/plugins/platforms/qnx/qqnxglcontext.cpp
+--- a/src/plugins/platforms/qnx/qqnxglcontext.cpp
++++ b/src/plugins/platforms/qnx/qqnxglcontext.cpp
+@@ -9,6 +9,7 @@
+ #include "qqnxwindow.h"
+ 
+ #include "private/qeglconvenience_p.h"
++#include "private/qeglpbuffer_p.h"
+ 
+ #include <QtCore/QDebug>
+ #include <QtGui/QOpenGLContext>
+@@ -42,6 +43,9 @@ QQnxGLContext::~QQnxGLContext()
+ 
+ EGLSurface QQnxGLContext::eglSurfaceForPlatformSurface(QPlatformSurface *surface)
+ {
++    if (surface->surface()->surfaceClass() == QSurface::Offscreen)
++        return static_cast<QEGLPbuffer *>(surface)->pbuffer();
++
+     QQnxEglWindow *window = static_cast<QQnxEglWindow *>(surface);
+     window->ensureInitialized(this);
+     return window->surface();
+diff --git a/src/plugins/platforms/qnx/qqnxintegration.cpp b/src/plugins/platforms/qnx/qqnxintegration.cpp
+--- a/src/plugins/platforms/qnx/qqnxintegration.cpp
++++ b/src/plugins/platforms/qnx/qqnxintegration.cpp
+@@ -65,6 +65,8 @@
+ #if !defined(QT_NO_OPENGL)
+ #include "qqnxglcontext.h"
+ #include <QtGui/QOpenGLContext>
++#include <QtGui/QOffscreenSurface>
++#include <QtGui/private/qeglpbuffer_p.h>
+ #endif
+ 
+ #include <private/qsimpledrag_p.h>
+@@ -424,6 +426,23 @@ QPlatformOpenGLContext *QQnxIntegration::createPlatformOpenGLContext(QOpenGLCont
+     QQnxGLContext *ctx = new QQnxGLContext(context->format(), context->shareHandle());
+     return ctx;
+ }
++
++QPlatformOffscreenSurface *QQnxIntegration::createPlatformOffscreenSurface(QOffscreenSurface *surface) const
++{
++    // Without this, QOffscreenSurface falls back to a hidden QWindow. On QNX that
++    // hidden QWindow still creates a top-level screen application window, which
++    // a window manager such as fullscreen-winmgr manages like any other app
++    // window. Qt Quick creates one for every OpenGL-rendered QQuickWindow, and
++    // under fullscreen-winmgr the real window then stays black. A pbuffer, or a
++    // surfaceless context when EGL_KHR_surfaceless_context is available, needs
++    // no screen window.
++    QEGLPlatformContext::Flags flags;
++    if (!(options() & SurfacelessEGLContext))
++        flags |= QEGLPlatformContext::NoSurfaceless;
++    auto *pbuffer = new QEGLPbuffer(m_eglDisplay, surface->requestedFormat(), surface, flags);
++    qCDebug(lcQpaQnx) << Q_FUNC_INFO << "valid =" << pbuffer->isValid();
++    return pbuffer;
++}
+ #endif
+ 
+ QPlatformInputContext *QQnxIntegration::inputContext() const
+diff --git a/src/plugins/platforms/qnx/qqnxintegration.h b/src/plugins/platforms/qnx/qqnxintegration.h
+--- a/src/plugins/platforms/qnx/qqnxintegration.h
++++ b/src/plugins/platforms/qnx/qqnxintegration.h
+@@ -69,6 +69,7 @@ public:
+ #if QT_CONFIG(opengl)
+     EGLDisplay eglDisplay() const { return m_eglDisplay; }
+     QPlatformOpenGLContext *createPlatformOpenGLContext(QOpenGLContext *context) const override;
++    QPlatformOffscreenSurface *createPlatformOffscreenSurface(QOffscreenSurface *surface) const override;
+ #endif
+ 
+ #if QT_CONFIG(vulkan)

@@ -1,13 +1,13 @@
 # NEXT_ACTIONS.md
 
-## PR 106 continuation — 2026-11-10
+## PR 105 continuation — 2026-11-10
 
-Review/publish this follow-up and inspect its CI before resolving the handoff
-thread. When integrating PR 110, retain the style-array repair and move Switch
-style/prop checks into its retained-hook test harness; preserve all Image tests.
-Run `node tests/js/qnx-public-entry.test.mjs`,
-`node tests/js/qnx-public-entry-metro.test.mjs` and the combined controlled-Switch
-test/native-host checks. [Receipt and rollback](../validation/pr106-merge-readiness-2026-11-10.md).
+Review and publish the documentation follow-up to `c09a5b1`, inspect its
+current-head CI, then resolve the mandatory-handoff thread. Run
+`node tests/js/nitro-platform-codegen.test.mjs` and
+`pnpm nitro:platform:check` after integrating another generator change.
+Do not count PR 110's device smoke test as evidence for this independent
+branch. [Receipt and rollback](../validation/pr105-merge-readiness-2026-11-10.md).
 
 ## Dependency-security follow-through (2026-10-03)
 

@@ -5,20 +5,20 @@
   "dependencyBaseline": {
     "reactNative": "0.88.1",
     "react": "19.3.0",
-    "expo": "58.0.22",
+    "expo": "58.0.24",
     "metro": "0.87.1",
     "reactNativeMetroConfig": "0.88.1",
-    "babelPresetExpo": "58.0.23",
-    "nitroCore": "1.0.0-alpha.nightly.105.g69d365fc9b18",
-    "nitroModules": "1.0.0-alpha.nightly.105.g69d365fc9b18",
-    "nitrogen": "1.0.0-alpha.nightly.105.g69d365fc9b18",
+    "babelPresetExpo": "58.0.25",
+    "nitroCore": "1.0.0-alpha.nightly.136.gdb81de61bd32",
+    "nitroModules": "1.0.0-alpha.nightly.136.gdb81de61bd32",
+    "nitrogen": "1.0.0-alpha.nightly.136.gdb81de61bd32",
     "typescript": "7.0.2",
     "codegenTypescript": "6.0.2",
     "node": ">=26.0.0",
-    "packageManager": "pnpm@12.8.1",
-    "expoModulesCore": "58.0.29",
+    "packageManager": "pnpm@12.18.0",
+    "expoModulesCore": "58.1.0",
     "expoMetro": "58.0.0",
-    "expoMetroConfig": "58.0.20",
+    "expoMetroConfig": "58.0.22",
     "hermesCompiler": "260318099.0.5",
     "hermesSource": "hermes-v260318099.0.5"
   },
@@ -31,13 +31,12 @@
     "qtTarget": "Historical Pi 400 receipts: 6.12.0 evaluation expires 2026-11-17. Selected route: eligible open-source Qt per ADR-0013; separate public-source build receipt pending.",
     "hostedCi": "blocked before runner startup by billing/spending limits at the reviewed baseline",
     "performance": "unmeasured on QNX",
-    "pr106": {
+    "pr105": {
       "reviewedAt": "2026-11-10",
-      "implementationCommit": "6b528c17967177f92b5894565fb0b93eac226dd2",
-      "receipt": "docs/validation/pr106-merge-readiness-2026-11-10.md",
-      "hostedCi": "public-import native host, full renderer, SDK, Marathon Metro and image workflows passed at implementation head",
-      "localValidation": "public-wrapper contracts and reset-cache QNX/Marathon Metro bundles passed",
-      "targetExecution": "QNX and Marathon not run for this candidate; independent from PR 110 smoke test"
+      "implementationCommit": "c09a5b19800c2d7d79268c3466b618aa20430ba2",
+      "receipt": "docs/validation/pr105-merge-readiness-2026-11-10.md",
+      "hostedCi": "passed at the implementation commit; follow-up CI must be checked after publication",
+      "targetExecution": "not run for this candidate; generated C++ unchanged"
     }
   },
   "activeMilestone": "v1 preparation; release gates remain open",
@@ -48,7 +47,11 @@
     { "id": "device-parity", "status": "pending" },
     { "id": "performance", "status": "pending" },
     { "id": "developer-path", "status": "pending" },
-    { "id": "documentation", "status": "pending" }
+    { "id": "documentation", "status": "pending" },
+    { "id": "app-identity", "status": "pending" },
+    { "id": "window-chrome", "status": "pending" },
+    { "id": "expo", "status": "pending" },
+    { "id": "dependencies", "status": "pending" }
   ],
   "historicalState": "docs/handoff/HISTORY_THROUGH_2026_11_07.md"
 }

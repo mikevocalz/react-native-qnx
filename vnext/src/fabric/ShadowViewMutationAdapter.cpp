@@ -28,6 +28,7 @@
 #include <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
 #include <react/renderer/components/FBReactNativeSpec/Props.h>
 #include <react/renderer/components/image/ImageEventEmitter.h>
+#include <react/renderer/components/modal/ModalHostViewShadowNode.h>
 #include <react/renderer/components/scrollview/BaseScrollViewProps.h>
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
@@ -554,6 +555,41 @@ void ShadowViewMutationAdapter::applySwitch(const ShadowView& view) {
   layer_.updateSwitch(view.tag, style);
 }
 
+MountError ShadowViewMutationAdapter::applyModal(const ShadowView& view) {
+  if (componentNameOf(view) != QStringLiteral("ModalHostView")) {
+    return MountError::None;
+  }
+  const MountError error = layer_.markOverlay(view.tag);
+  if (error != MountError::None) {
+    return error;
+  }
+  modalViews_.insert(view.tag, view);
+  // The shadow node takes its size from this state. The portable C++ default
+  // is 0x0, which laid the modal and all of its content out as nothing; the
+  // surface root's size is the screen a QNX modal covers.
+  const QSizeF size = layer_.rootSize();
+  using ModalState =
+      facebook::react::ConcreteState<facebook::react::ModalHostViewState>;
+  if (const auto state = std::dynamic_pointer_cast<const ModalState>(view.state);
+      state != nullptr && size.width() > 0 && size.height() > 0) {
+    const auto& current = state->getData().screenSize;
+    const auto width = static_cast<facebook::react::Float>(size.width());
+    const auto height = static_cast<facebook::react::Float>(size.height());
+    if (current.width != width || current.height != height) {
+      state->updateState(facebook::react::ModalHostViewState(
+          facebook::react::Size{.width = width, .height = height}));
+    }
+  }
+  return MountError::None;
+}
+
+void ShadowViewMutationAdapter::surfaceResized() {
+  const auto modals = modalViews_;
+  for (const auto& view : modals) {
+    applyModal(view);
+  }
+}
+
 void ShadowViewMutationAdapter::connectSwitchEvents(const ShadowView& view) {
   if (switchBridges_.contains(view.tag)) {
     return;
@@ -931,6 +967,10 @@ MountError ShadowViewMutationAdapter::applyOne(
         detail = layer_.lastError();
         return error;
       }
+      if (const auto modalError = applyModal(view); modalError != MountError::None) {
+        detail = layer_.lastError();
+        return modalError;
+      }
 
       // Create carries the first layout and props, so applying both here avoids
       // a frame at the origin with zero size and no colour before the first
@@ -978,6 +1018,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       textInputConnected_.remove(mutation.oldChildShadowView.tag);
 #endif
       switchBridges_.remove(mutation.oldChildShadowView.tag);
+      modalViews_.remove(mutation.oldChildShadowView.tag);
       imageBridges_.remove(mutation.oldChildShadowView.tag);
       return layer_.destroy(mutation.oldChildShadowView.tag);
 
@@ -1030,6 +1071,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (textInputError != MountError::None) { detail = layer_.lastError(); return textInputError; }
       applyActivityIndicator(view);
       applySwitch(view);
+      applyModal(view);
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) {
         return styleError;

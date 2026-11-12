@@ -3,8 +3,9 @@
 The opt-in QNX dispatcher runs Nitro callbacks and Promise settlement through
 the existing Qt event loop and React Native RuntimeScheduler. Physical Pi 400
 and host results are in [the receipt](../evidence/pi400-nitro-qt-2026-11-07.md).
-This is a runtime integration experiment on pinned alpha 105, not a Forge
+This is a runtime integration experiment on pinned alpha 136, not a Forge
 JavaScript binding, an ABI upgrade or general third-party module support.
+Audited on 105; re-pinned to 136 with `Dispatcher.hpp`/`Callback.hpp` byte-identical; QNX cross-build and device not re-run.
 
 ## Ownership and execution
 
@@ -46,7 +47,9 @@ disposal still need their own binding-level integration and tests.
 
 ## Pinned Nitro compatibility
 
-`NitroDispatcherPatches.cmake` requires the exact alpha 105 source structure:
+`NitroDispatcherPatches.cmake` requires the exact alpha 136 source structure.
+Audited on 105; re-pinned to 136 with `Dispatcher.hpp`/`Callback.hpp` byte-identical; QNX cross-build and device not re-run.
+The patches:
 
 - `Dispatcher::runAsyncAwaitable` catches admission failure and rejects its native
   Promise. Without this, a closed queue could throw into a native caller.
@@ -74,7 +77,7 @@ normal full-host or QNX options, pass:
 
 The flag defaults OFF and requires the full Qt/Hermes React host. QNX also
 requires `RNQNX_BUILD_NITRO_QNX=ON`. The audited core version is exactly
-`1.0.0-alpha.nightly.105.g69d365fc9b18`; unsupported OS/configurations fail.
+`1.0.0-alpha.nightly.136.gdb81de61bd32`; unsupported OS/configurations fail.
 The existing no-dispatcher installer remains available for synchronous probes.
 
 For QNX, also supply `RNQNX_NITRO_TEST_HERMESC` pointing to the build host's
@@ -108,11 +111,11 @@ that specialization restored the full suite without disabling ASan checks.
 
 ## Boundaries and rollback
 
-The physical test covers typed/void Promise resolution, rejection, callback
+The physical test ran on alpha 105 and covers typed/void Promise resolution, rejection, callback
 errors, checkpoints, accepted-work draining, owner-thread capture release,
 transitive JS settlement and 3,000 posts racing teardown. It does not establish
 listener cancellation, reload, suspend/resume, third-party Nitro APIs, QNX
-Nitrogen generation or Forge alpha 120/alpha 105 compatibility. No frame, startup
+Nitrogen generation or Forge alpha 120/alpha 136 compatibility. No frame, startup
 or memory budget was measured. Marathon's installer is unchanged and was not
 runtime-tested by this QNX lane.
 

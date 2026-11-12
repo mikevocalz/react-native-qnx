@@ -28,14 +28,14 @@ jobs:
       QT_QUICK_BACKEND: software
       QSG_RHI_BACKEND: software
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
-          node-version: 26.10.0
+          node-version: 26.13.1
           package-manager-cache: false
-      - run: npm install --global pnpm@12.8.1
+      - run: npm install --global pnpm@12.18.0
       - run: pnpm install --frozen-lockfile
       - name: Install native build dependencies
         run: |
@@ -44,7 +44,7 @@ jobs:
           python3 -m pip install --user --break-system-packages cmake==3.31.10
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Install exact host Qt
-        uses: jurplel/install-qt-action@v4
+        uses: jurplel/install-qt-action@b344308e4483fc892e0d27b3cd1b173ebdd95f06 # v4.5.0
         with:
           version: '6.11.1'
           host: linux
@@ -55,7 +55,7 @@ jobs:
         run: |
           mkdir -p build/linux-host-renderer/evidence
           git rev-parse HEAD > build/linux-host-renderer/evidence/commit.txt
-          cmake --preset linux-host-renderer -DRNQNX_ENABLE_INPUT_LIFECYCLE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=${{ matrix.input-lifecycle }}
+          cmake --preset linux-host-renderer -DRNQNX_ENABLE_INPUT_LIFECYCLE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_WINDOW_CHROME=${{ matrix.input-lifecycle }}
           node scripts/validate-host-renderer.mjs
       - name: Render the conformance app (Linux host only)
         run: |
@@ -69,6 +69,26 @@ jobs:
           grep -F 'RNQNX_PLAYGROUND_SCREENSHOT' "$evidence/conformance-render.log"
           test -s "$evidence/conformance.png"
           sha256sum build/component-conformance.bundle.js "$evidence/conformance.png" > "$evidence/conformance-sha256.txt"
+      - name: Render both window chrome layouts (Linux host only, chrome ON leg)
+        if: matrix.input-lifecycle == 'ON'
+        run: |
+          set -euo pipefail
+          evidence=build/linux-host-renderer/evidence
+          for controls in macos windows; do
+            timeout 30s build/linux-host-renderer/bin/rnqnx_playground_host \
+              --bundle "$PWD/build/component-conformance.bundle.js" \
+              --window-controls "$controls" --window-size 700x500 \
+              --screenshot "$PWD/$evidence/chrome-$controls.png" \
+              2>&1 | tee "$evidence/chrome-$controls.log"
+            grep -F "RNQNX_WINDOW_CHROME platform=offscreen controls=$controls style=default inset=44 window=700x500" "$evidence/chrome-$controls.log"
+            grep -F 'RNQNX_WINDOW_CHROME platform=offscreen hidden=minimize' "$evidence/chrome-$controls.log"
+            grep -F 'RNQNX_PLAYGROUND_SCREENSHOT' "$evidence/chrome-$controls.log"
+          done
+          if build/linux-host-renderer/bin/rnqnx_playground_host --bundle "$PWD/build/component-conformance.bundle.js" --window-controls gnome > "$evidence/chrome-invalid.log" 2>&1; then
+            echo "invalid --window-controls was accepted"; exit 1
+          fi
+          grep -F 'RNQNX_WINDOW_CONFIG_ERROR' "$evidence/chrome-invalid.log"
+          sha256sum "$evidence"/chrome-*.png > "$evidence/chrome-sha256.txt"
       - name: Render performance workloads (Linux host only)
         run: |
           set -euo pipefail
@@ -94,7 +114,7 @@ jobs:
           node tests/js/qnx-integrated-consumer.test.mjs
       - name: Preserve exact-run test evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: host-renderer-${{ github.event.pull_request.head.sha || github.sha }}-input-${{ matrix.input-lifecycle }}
           path: |

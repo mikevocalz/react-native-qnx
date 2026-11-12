@@ -13,7 +13,7 @@ static ApplicationIdentity parse(QStringList args, ApplicationIdentity defaults 
 
 class ApplicationIdentityTest final : public QObject {
   Q_OBJECT
- private slots:
+ private Q_SLOTS:
   void legacyDefaults() {
     QCoreApplication::setApplicationName("legacy");
     const auto identity = parse({});

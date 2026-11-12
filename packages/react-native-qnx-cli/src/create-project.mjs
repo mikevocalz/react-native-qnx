@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import {
+  copyFile,
   cp,
   lstat,
   mkdir,
@@ -279,6 +280,7 @@ export async function createProjectMain(argv) {
           expo: {
             name: identity.displayName,
             slug: identity.appId.split('.').pop()?.toLowerCase(),
+            icon: './assets/icon.png',
             extra: {
               rnqnx: { appId: identity.appId, componentName: identity.componentName, platforms },
             },
@@ -288,6 +290,15 @@ export async function createProjectMain(argv) {
         2
       ) + '\n'
     );
+    // Default icon: a full-bleed 1024x1024 PNG. Replace it with your own; keep
+    // corners square because each platform applies its own mask.
+    const defaultIcon = path.join(sourceRoot, 'template', 'qnx', 'assets', 'icon.png');
+    const iconInfo = await lstat(defaultIcon);
+    if (!iconInfo.isFile() || iconInfo.isSymbolicLink() || iconInfo.size > 1024 * 1024) {
+      throw new Error('Invalid bounded template icon.');
+    }
+    await mkdir(path.join(destination, 'assets'));
+    await copyFile(defaultIcon, path.join(destination, 'assets', 'icon.png'));
     // Carry the reviewed pnpm overrides and patch inventory into the
     // standalone consumer instead of silently dropping source/security fixes.
     const workspace = await smallSource(path.join(sourceRoot, 'pnpm-workspace.yaml'));

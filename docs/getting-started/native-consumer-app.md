@@ -42,9 +42,67 @@ pnpm qnx project bundle --project /absolute/path/to/field-notes
 pnpm qnx project prepare-native --project /absolute/path/to/field-notes
 ```
 
-Preparation reads `app.json`, hashes the selected bundle and exclusively creates `build/qnx/native-app.json` inside the consumer project. It does not execute a JavaScript Expo configuration, install dependencies, compile or contact a device. Use `--dry-run` to inspect without writing. Identical reruns leave the file unchanged. After changing the app identity or bundle, review and remove only the generated `native-app.json` before preparing it again; changed generated output is not silently overwritten.
+Preparation resolves the app's Expo config through `@expo/config`, the same loader `expo start` and `expo prebuild` use, so `app.json`, `app.config.js` and `app.config.ts` all work and config plugins listed in `plugins` run. It then hashes the selected bundle and exclusively creates `build/qnx/native-app.json` inside the consumer project. Preparation executes code on the host: a dynamic `app.config.*` file and every config plugin listed in `plugins`, with your user's permissions, exactly as `expo start` and `expo prebuild` do. Only prepare projects you trust. The checks preparation adds (each config file is a regular file of at most 64 KiB, never a symlink) cover the config files themselves, not the modules they import or the plugins they load. If a plugin in `plugins` is not installed yet, for example right after `project add-qnx`, preparation stops with an error naming the plugin; install the app's dependencies and run it again. Preparation does not install dependencies, compile or contact a device. The project needs a `package.json` and an installed `expo` package; the platform checkout's `@expo/config` is the fallback when the app has none. Use `--dry-run` to inspect without writing. Identical reruns leave the file unchanged. After changing the app identity or bundle, review and remove only the generated `native-app.json` before preparing it again; changed generated output is not silently overwritten.
 
-For Marathon, supply `--platform marathon` to both commands. Each target gets its own descriptor and bundle. A project containing only dynamic `app.config.js` must provide this explicit static identity; dynamic Expo configuration integration is not implemented here.
+Preparation also needs an app icon and a tile label that fits the launcher, and it generates the icon set with the Qt host tool; see [App icon and tile name](app-identity.md). The plugin's `icon` and `shortName` options feed that check.
+
+For Marathon, supply `--platform marathon` to both commands. Each target gets its own descriptor and bundle.
+
+### Set native configuration through the config plugin
+
+`@rn-qnx/expo-qnx-config-plugins` is the one place to set native app configuration. Add it to `plugins` instead of editing generated files:
+
+```json
+{
+  "expo": {
+    "name": "Field Notes",
+    "plugins": [
+      [
+        "@rn-qnx/expo-qnx-config-plugins",
+        {
+          "appId": "org.example.fieldnotes",
+          "componentName": "FieldNotes",
+          "shortName": "Notes",
+          "window": {
+            "controls": "macos",
+            "titleBarStyle": "default",
+            "initialSize": { "width": 1024, "height": 600 }
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+The plugin writes these values to `expo.extra.rnqnx`. Plugin options override values already in `extra.rnqnx`. `window.controls` is `macos` (default) or `windows`; `window.titleBarStyle` is `default` (default), `hidden` or `none`; `window.initialSize` takes integer `width` and `height` from 1 to 16384 and opens the app as a window of that size; `window.unavailableControls` is `hide` (default) or `disable`. See [window chrome](window-chrome.md) for what each option draws and [the Pi 400 desktop guide](pi400-desktop-app.md) for how the controls behave on QNX. Unknown window keys and values fail preparation, and so does `null` for `window` or any of its fields: leave a field out to get its default. The CMake and C++ readers of `native-app.json` reject `null` the same way. `native-app.json` always carries the resolved `window` object. The title bar that consumes it is tracked under the window-chrome gate; `shortName` and `icon` validation belongs to the app-identity gate.
+
+Running preparation twice with unchanged config leaves `build/` byte-identical; `tests/js/expo-config-resolution.test.mjs` hashes the tree after each run to check it. Descriptors generated before the `window` field existed differ from new output, so remove that `native-app.json` once and prepare again.
+
+## Link Nitro modules from npm packages
+
+A Nitro module published outside this repository declares its QNX build in its own `package.json` ([ADR-0019](../adr/0019-nitro-package-metadata.md)):
+
+```json
+{
+  "name": "react-native-qnx-battery",
+  "version": "2.1.0",
+  "react-native-qnx": {
+    "nitro": {
+      "platforms": ["qnx"],
+      "cmakeListsPath": "qnx/CMakeLists.txt",
+      "target": "QnxBattery",
+      "initializer": "margelo::nitro::battery::registerQnxHybridClasses"
+    }
+  }
+}
+```
+
+`qnx/CMakeLists.txt` must define the `QnxBattery` target, and the package must define `void margelo::nitro::battery::registerQnxHybridClasses()`, which calls `HybridClassRegistry::registerHybridClass` for each hybrid class. Build the module against the `react-native-nitro-modules` and `nitro-core` versions this checkout pins; that match is not checked.
+
+List the package in the app's `dependencies` and install it. `prepare-native` reads the key from each installed direct dependency, without running package code, and records matches as `nitroModules` in `native-app.json`. Dependencies that are not installed are skipped. A malformed key stops preparation with an error that names the package and field. `project doctor` reports the same result as its `nitro-modules` check.
+
+`build-native` then enables the Nitro runtime (`RNQNX_BUILD_NITRO_QNX=ON`), adds each package's CMake directory, links its target, and has the app call every initializer before the Nitro proxy is installed. Adding or removing a Nitro dependency makes `native-app.json` stale; remove it and prepare again. Nitro modules need the QNX toolchain build: `--host-preview` refuses a descriptor that lists them, and Marathon apps cannot declare them yet.
 
 ## Build a Linux preview of the QNX application
 
@@ -78,4 +136,4 @@ Generated descriptors and native build inputs are trusted local project files, n
 
 The JavaScript tests cover file ownership, hash checks, no-overwrite behavior and actual CMake configuration. Separate native Qt tests cover identity validation and metadata under plain and sanitizer configurations. The full-host workflow builds and relocates configured executables for both platform bundles, tests wrong registrations and preserves screenshots/logs. Each result belongs to its exact source revision; Linux offscreen success is not physical QNX or Marathon shell qualification.
 
-General native package registration, Router, full lifecycle integration, debugger/Fast Refresh, dynamic Expo configuration and deployment/distribution automation are not completed by this identity slice. Core builds still require no Nitro Forge package.
+Nitro modules beyond the host-tested registration path, Expo native package registration in the consumer build, Router, full lifecycle integration, debugger/Fast Refresh, dynamic Expo configuration and deployment/distribution automation are not completed by this identity slice. Core builds still require no Nitro Forge package.

@@ -1,0 +1,51 @@
+name: Native window chrome
+on:
+  pull_request:
+    paths:
+      - 'native/window-chrome/**'
+      - 'cmake/RnqnxWindowChrome.cmake'
+      - 'cmake/WindowChromeQml.h.in'
+      - '.github/workflows/window-chrome.yml'
+permissions:
+  contents: read
+jobs:
+  chrome:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizers: ['OFF', 'ON']
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang ninja-build libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxcb-cursor0
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.11.1'
+          host: linux
+          target: desktop
+          arch: linux_gcc_64
+          cache: true
+      - name: Compile and run window chrome host tests
+        run: |
+          set -euo pipefail
+          mkdir -p build/window-chrome-evidence
+          git rev-parse HEAD > build/window-chrome-evidence/commit.txt
+          cmake -S native/window-chrome -B build/window-chrome-off -G Ninja
+          cmake --build build/window-chrome-off
+          cmake -S native/window-chrome -B build/window-chrome -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DRNQNX_BUILD_WINDOW_CHROME_TESTS=ON -DRNQNX_WINDOW_CHROME_SANITIZERS=${{ matrix.sanitizers }} -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build/window-chrome -j 2
+          ctest --test-dir build/window-chrome --output-on-failure -V 2>&1 | tee build/window-chrome-evidence/tests.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: window-chrome-${{ matrix.sanitizers }}-${{ github.event.pull_request.head.sha }}
+          path: build/window-chrome-evidence/

@@ -49,9 +49,19 @@ pnpm typecheck
 
 The generator intentionally supports **only** the reviewed proof:
 two required string getters and one two-argument numeric method.
-It rejects optional properties, callbacks, Promise returns, unsupported
-types, unknown class names and additional methods instead of silently
-mis-generating native ABI. Do not expand this into a general compiler
+It requires an exported ambient `PlatformInfo` class extending `HybridObject`,
+with public instance members. Explicit `public` modifiers are accepted.
+Static, private, protected, optional and generic members are rejected, as are
+generic or abstract classes, extra/incorrect heritage, property initializers,
+method bodies, generator methods and unsupported parameter shapes. Callbacks,
+Promise returns, unsupported types, unknown class names and additional methods
+are also rejected instead of silently emitting a different native contract.
+The parser test exercises invalid declarations and a supported explicit-public
+declaration; the generated QNX and Marathon C++ output remains unchanged for
+the canonical spec. This is constrained AST validation, not a replacement for
+TypeScript semantic checking or native compilation.
+
+Do not expand this into a general compiler
 without a source-backed Nitrogen extension and reviewed native ABI.
 
 ## Independent verification gates

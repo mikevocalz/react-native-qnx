@@ -1,12 +1,13 @@
 # Current state
 
-## PR 106 public-API review — 2026-11-10
+## PR 105 review follow-up — 2026-11-10
 
-The repaired Image methods and Switch style composition at `6b528c1` have
-green hosted native/public-import checks. Public-wrapper tests and both real,
-reset-cache Metro bundles pass again locally. This follow-up updates records
-only. [Candidate receipt and PR 110 integration notes](../validation/pr106-merge-readiness-2026-11-10.md).
-Physical QNX/Marathon qualification and all seven v1 gates remain separate.
+The constrained Nitro generator at `c09a5b1` rejects unsupported contracts and
+preserves the canonical generated bindings. Its hosted workflows passed;
+the local generator, typecheck and installed-source checks passed again.
+This follow-up changes documentation and structured evidence only. See
+[the candidate receipt](../validation/pr105-merge-readiness-2026-11-10.md).
+The historical platform baseline below and the seven original release gates are unchanged. Four owner gates (app identity, window chrome, Expo readiness, updated packages) were added on 2026-11-11 as pending.
 
 Reconciled against `main` at `5f17504` on 2026-11-07. The structured dependency
 baseline in [project state](../../.project-state.json) and the
@@ -24,6 +25,8 @@ change. Evidence is curated separately from dependency versions.
 | Same physical Pi 400                                                   | Ten supervised application launch/capture/exit trials and failure controls                                                | [Runtime baseline](../evidence/pi400-runtime-baseline-2026-11-07.md)                                          |
 | Same physical Pi 400                                                   | Synthetic Qt input reaches raw Fabric JS callbacks                                                                        | [Input receipt](../evidence/pi400-input-js-2026-11-07.md)                                                     |
 | Development host                                                       | Component and prop coverage; full native suite reported 16/16 in the dated receipt                                        | [Support table](../component-support.md), [runtime receipt](../evidence/pi400-runtime-baseline-2026-11-07.md) |
+
+The Pi 400 Nitro device evidence (Hello World getter/add and Qt dispatcher) is for Nitro alpha 105 only; it was not re-run after the 136 re-pin (#119).
 
 These are historical prerequisite results from the cited revisions. A new PR
 must attach its own relevant validation. The raw Fabric callback input receipt does not establish USB

@@ -1,0 +1,101 @@
+# Public-source Qt 6.12.0 for QNX aarch64le
+
+These scripts rebuild the Qt runtime recorded in
+[the Pi 400 receipt](../../docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md).
+They run in a Linux container with QNX SDP 8.0.5 installed (the
+`qnx805-build` container used on 2026-11-12, user `qnxbuild`). The QNX SDP is
+licensed separately and is not part of this repository.
+
+## Layout
+
+[`layout.sh`](layout.sh) sets every path; override with environment
+variables.
+
+| Variable          | Default                           | Holds                                                              |
+| ----------------- | --------------------------------- | ------------------------------------------------------------------ |
+| `QT_PUBLIC_ROOT`  | `/work/qt-6.12.0-public`          | `download/` (archive, `cve-patches/`), `src/`, `runtime/`, `logs/` |
+| `QT_PUBLIC_BUILD` | `/home/qnxbuild/qt-6.12.0-public` | `host-build/`, `qnx-build/`, `qnx-stage/`                          |
+| `QNX_SDP`         | `/work/qnx800`                    | `qnxsdp-env.sh`                                                    |
+| `GUARD_PATH`      | `/work`                           | Mount whose free space `guarded-run.sh` watches                    |
+
+`/work` was the host's `~/qnx-pi400-8.0.5` mounted into the container. Put
+the downloads in place first:
+
+- `$QT_PUBLIC_ROOT/download/qt-everywhere-src-6.12.0.tar.xz` from
+  `https://download.qt.io/official_releases/qt/6.12/6.12.0/single/`
+  (SHA-256 `98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165`).
+- `$QT_PUBLIC_ROOT/download/cve-patches/` with
+  `CVE-2026-116337-qtbase-6.12-0001.diff`, `...-0002.diff` and
+  `CVE-2026-105924-qtbase-6.12.diff` from
+  `https://download.qt.io/official_releases/qt/6.12/`.
+
+## Order
+
+Run from this directory inside the container:
+
+```sh
+source ./layout.sh                  # exports the paths used below
+./extract-source.sh                 # checks the archive hash, extracts 3 submodules
+./apply-cve-patches.sh              # checks patch hashes, applies src/ hunks once
+./apply-qnx-patches.sh              # applies patches/*.patch to qtbase once
+MIN_KB=4194304 ./guarded-run.sh ./configure-host.sh "$QT_PUBLIC_ROOT/logs/host-build.log"
+MIN_KB=4194304 JOBS=4 ./guarded-run.sh ./configure-qnx.sh "$QT_PUBLIC_ROOT/logs/qnx-build.log"
+source "$QNX_SDP/qnxsdp-env.sh"
+python3 -I spdx-audit.py "$QT_PUBLIC_BUILD/qnx-build" "$QT_PUBLIC_SRC" \
+  "$QT_PUBLIC_ROOT/runtime-spdx-audit.json" Core Network Gui OpenGL Qml QmlMeta \
+  QmlModels QmlWorkerScript Quick QuickShapes QQnxIntegrationPlugin qmlplugin \
+  modelsplugin workerscriptplugin qtquick2plugin qmlshapesplugin
+python3 -I stage-runtime.py "$QT_PUBLIC_ROOT/runtime" "$QT_PUBLIC_ROOT/runtime-spdx-audit.json"
+```
+
+`stage-runtime.py` writes `manifest.json` and
+`needed.json`; the receipt's `SHA256SUMS` was then written with
+`shasum -a 256` over every staged file.
+
+Qt is compiled at `-O2` ([ADR-0017](../../docs/adr/0017-qt-qnx-optimization-level.md)).
+`configure-qnx.sh` no longer passes `-optimize-size`, sets
+`FEATURE_optimize_size` and `FEATURE_optimize_full` off, and exits after
+configure unless `CMAKE_C_FLAGS_RELEASE` and `CMAKE_CXX_FLAGS_RELEASE` contain
+`-O2`. The 2026-11-12 runtime in the receipt predates this and was compiled
+with no `-O` level.
+
+## QNX platform plugin patch
+
+[`patches/qtbase-qnx-offscreen-surface.patch`](patches/qtbase-qnx-offscreen-surface.patch)
+targets the black window Qt Quick's OpenGL path shows under
+`fullscreen-winmgr` on the Pi 400. Unpatched, the window stays black there, while the same app renders with
+`QT_QUICK_BACKEND=software`, renders with OpenGL when no window manager runs,
+and `grabWindow()` returns the right pixels.
+
+The cause: for every OpenGL-rendered `QQuickWindow`, Qt Quick asks for a
+`QOffscreenSurface` (`QSGRhiSupport::maybeCreateOffscreenSurface`, then
+`QRhiGles2InitParams::newFallbackSurface`). The stock qnx plugin does not
+implement `createPlatformOffscreenSurface()`, so `QOffscreenSurface::create()`
+falls back to a hidden `QWindow`. That hidden window still becomes a top-level
+libscreen application window (1x1, created right after the real one), and
+`fullscreen-winmgr` manages it like any other app window. With
+`QT_LOGGING_RULES="qt.qpa.*=true"` the unpatched run logs
+`QWindow(..., name="QOffscreenSurface")` being created and added to the
+screen, followed by two `SCREEN_PROPERTY_VISIBLE` (51) events on the real
+window; the software backend creates no such window.
+
+The patch implements `createPlatformOffscreenSurface()` with `QEGLPbuffer`,
+as eglfs does: a surfaceless context when `EGL_KHR_surfaceless_context` is
+available (Mesa on the Pi has it), otherwise a pbuffer. No screen window is
+created. `QQnxGLContext::eglSurfaceForPlatformSurface()` returns the pbuffer
+for offscreen surfaces instead of casting them to `QQnxEglWindow`. The patched
+run logs `createPlatformOffscreenSurface ... valid = true` and no
+`QOffscreenSurface` window.
+
+To rebuild only the plugin, apply the patch and build the
+`QQnxIntegrationPlugin` target; `libqqnx.so` is the only changed file. When
+deploying it beside the stock runtime, point both `QT_QPA_PLATFORM_PLUGIN_PATH`
+and `QT_PLUGIN_PATH` at the new plugin tree: with `QT_PLUGIN_PATH` still on the
+stock `plugins/`, Qt loaded the stock `platforms/libqqnx.so` even though
+`QT_QPA_PLATFORM_PLUGIN_PATH` named the patched one.
+
+## On the board
+
+`public-qt-env.sh` and the `run-public-*.sh` launchers expect the runtime at
+`/data/home/qnxuser/qt612-public` and the proof directory at
+`/data/home/qnxuser/qt612-public-proofs`. They do not touch boot files.

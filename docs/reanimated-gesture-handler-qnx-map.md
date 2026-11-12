@@ -60,7 +60,7 @@ Repository base: `e84b51430c239bc89dbd48ac35afab89f7c77c01`.
 Relevant existing contracts: [ADR-0001](adr/0001-qt-quick-backend.md),
 [ADR-0002](adr/0002-qt-quick-item-instantiation.md),
 [ADR-0009](adr/0009-fabric-only.md),
-[ADR-0013](adr/0013-marathon-linux-wayland-native-target.md).
+[ADR-0015](adr/0015-marathon-linux-wayland-native-target.md).
 
 ## Reanimated mapping
 

@@ -1,21 +1,36 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { lstat, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import {
+  copyFile,
+  lstat,
+  mkdir,
+  mkdtemp,
+  readFile,
+  realpath,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import {
   planNativeBuild,
   buildNativeMain,
 } from '../../packages/react-native-qnx-cli/src/build-native.mjs';
+import { generateIconSet } from '../../packages/react-native-qnx-cli/src/app-identity.mjs';
+import { identityToolForTests } from './helpers/identity-tool.mjs';
 
-const root = await mkdtemp(path.join(tmpdir(), 'rnqnx-native-build-'));
+const root = await realpath(await mkdtemp(path.join(tmpdir(), 'rnqnx-native-build-')));
 const project = path.join(root, 'my app');
-await mkdir(project);
+await mkdir(path.join(project, 'assets'), { recursive: true });
+const iconSource = path.join(project, 'assets', 'icon.png');
+await copyFile(path.join(process.cwd(), 'template/qnx/assets/icon.png'), iconSource);
+const identityTool = await identityToolForTests();
 await writeFile(
   path.join(project, 'app.json'),
   JSON.stringify({
     expo: {
       name: 'My App',
+      icon: './assets/icon.png',
       extra: { rnqnx: { appId: 'org.example.myapp', componentName: 'main' } },
     },
   })
@@ -33,6 +48,10 @@ async function createDescriptor(platform, filename = 'app.bundle.js') {
   const bundle = path.join(dir, filename);
   const bytes = Buffer.from('real local JS fixture');
   await writeFile(bundle, bytes);
+  const icons = path.join(dir, 'icons');
+  const icon = await generateIconSet(identityTool.tool, iconSource, icons, (size) =>
+    path.join(icons, `icon-${size}.png`)
+  );
   await writeFile(
     path.join(dir, 'native-app.json'),
     JSON.stringify(
@@ -45,6 +64,15 @@ async function createDescriptor(platform, filename = 'app.bundle.js') {
         platform,
         bundle,
         bundleSha256: createHash('sha256').update(bytes).digest('hex'),
+        window: { controls: 'macos', titleBarStyle: 'default' },
+        shortName: 'My App',
+        icon,
+        labelFit: {
+          target: platform,
+          status: 'not-measured',
+          reason: 'fixture',
+          deviceMeasured: false,
+        },
       },
       null,
       2
@@ -55,6 +83,14 @@ async function createDescriptor(platform, filename = 'app.bundle.js') {
 try {
   await createDescriptor('qnx');
   await createDescriptor('marathon');
+  await caseNamed(async () => {
+    // @expo/config resolves the app config relative to package.json, as Expo CLI does.
+    await assert.rejects(planNativeBuild(project, 'qnx'), /needs a package\.json/);
+    await writeFile(
+      path.join(project, 'package.json'),
+      JSON.stringify({ name: 'my-app', version: '1.0.0', private: true })
+    );
+  }, 'Expo project without package.json rejects');
   await caseNamed(async () => {
     const plan = await planNativeBuild(project, 'qnx', true);
     assert.equal(plan.platform, 'qnx');
@@ -70,6 +106,7 @@ try {
     assert.equal(plan.platform, 'marathon');
     assert.equal(plan.configure[2], 'linux-host-renderer');
     assert.ok(plan.configure.includes('-DRNQNX_BUILD_MARATHON_HOST=ON'));
+    assert.ok(plan.configure.includes('-DRNQNX_ENABLE_WINDOW_CHROME=OFF'));
     assert.ok(!plan.configure.includes('-DRNQNX_CONSUMER_HOST_PREVIEW=ON'));
     assert.ok(plan.output.includes('/marathon/'));
   }, 'Marathon Linux target');
@@ -117,6 +154,20 @@ try {
     await writeFile(file, JSON.stringify(doc));
   }, 'identity drift rejects');
   await caseNamed(async () => {
+    const file = path.join(project, 'build/marathon/icons/icon-16.png');
+    const original = await readFile(file);
+    await writeFile(file, 'tampered');
+    await assert.rejects(planNativeBuild(project, 'marathon'), /stale/);
+    await writeFile(file, original);
+    const app = path.join(project, 'app.json');
+    const config = JSON.parse(await readFile(app, 'utf8'));
+    config.expo.extra.rnqnx.shortName = 'Mine';
+    await writeFile(app, JSON.stringify(config));
+    await assert.rejects(planNativeBuild(project, 'marathon'), /stale/);
+    delete config.expo.extra.rnqnx.shortName;
+    await writeFile(app, JSON.stringify(config));
+  }, 'icon and tile label drift rejects');
+  await caseNamed(async () => {
     await assert.rejects(
       buildNativeMain([
         '--project',
@@ -145,4 +196,6 @@ try {
   );
 } finally {
   await rm(root, { recursive: true, force: true });
+  if (!identityTool.real)
+    await rm(path.dirname(identityTool.tool), { recursive: true, force: true });
 }

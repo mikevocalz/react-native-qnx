@@ -37,10 +37,24 @@ export function parseSpec(source) {
   assert.equal(classes.length, 1, 'Exactly one exported Nitro HybridObject class required');
   const cls = classes[0];
   assert.equal(cls.name?.text, 'PlatformInfo');
-  const mods = ts.getModifiers(cls) ?? [];
+  // This adapter emits fixed public instance bindings. Valid TypeScript forms
+  // such as static/optional/generic members must not silently change that API.
+  const mods = cls.modifiers ?? [];
   assert.ok(mods.some((m) => m.kind === ts.SyntaxKind.ExportKeyword));
   assert.ok(mods.some((m) => m.kind === ts.SyntaxKind.DeclareKeyword));
-  assert.equal(cls.heritageClauses?.[0]?.types?.[0]?.expression.getText(file), 'HybridObject');
+  assert.ok(
+    mods.every(
+      (m) => m.kind === ts.SyntaxKind.ExportKeyword || m.kind === ts.SyntaxKind.DeclareKeyword
+    ),
+    'Only export declare class modifiers supported'
+  );
+  assert.equal(cls.typeParameters, undefined, 'No generic class support');
+  assert.equal(cls.heritageClauses?.length, 1, 'Only one extends clause supported');
+  const heritage = cls.heritageClauses?.[0];
+  assert.equal(heritage?.token, ts.SyntaxKind.ExtendsKeyword, 'Class must extend HybridObject');
+  assert.equal(heritage?.types.length, 1, 'Only the HybridObject base class supported');
+  assert.equal(heritage?.types[0]?.expression.getText(file), 'HybridObject');
+  assert.equal(heritage?.types[0]?.typeArguments, undefined, 'No generic base class support');
   const props = [];
   const methods = [];
   for (const m of cls.members) {
@@ -48,16 +62,38 @@ export function parseSpec(source) {
       throw new Error('Computed/string-literal members not supported');
     }
     if (ts.isPropertyDeclaration(m)) {
+      const modifiers = m.modifiers ?? [];
       assert.ok(
-        (ts.getModifiers(m) ?? []).some((mod) => mod.kind === ts.SyntaxKind.ReadonlyKeyword)
+        modifiers.every(
+          (mod) =>
+            mod.kind === ts.SyntaxKind.ReadonlyKeyword || mod.kind === ts.SyntaxKind.PublicKeyword
+        ),
+        'Only public readonly instance properties supported'
       );
+      assert.ok(modifiers.some((mod) => mod.kind === ts.SyntaxKind.ReadonlyKeyword));
       assert.equal(m.type?.kind, ts.SyntaxKind.StringKeyword, 'Only string getters supported');
       assert.equal(m.questionToken, undefined, 'No optional property support');
+      assert.equal(m.exclamationToken, undefined, 'No definite-assignment property support');
+      assert.equal(m.initializer, undefined, 'No property initializer support');
       props.push(m.name.text);
     } else if (ts.isMethodDeclaration(m)) {
+      assert.ok(
+        (m.modifiers ?? []).every((mod) => mod.kind === ts.SyntaxKind.PublicKeyword),
+        'Only public instance methods supported'
+      );
+      assert.equal(m.questionToken, undefined, 'No optional method support');
+      assert.equal(m.typeParameters, undefined, 'No generic method support');
+      assert.equal(m.asteriskToken, undefined, 'No generator method support');
+      assert.equal(m.body, undefined, 'Only method signatures supported');
       assert.equal(m.type?.kind, ts.SyntaxKind.NumberKeyword, 'Only numeric methods supported');
       assert.equal(m.parameters.length, 2, 'Only two-argument methods supported');
       for (const p of m.parameters) {
+        assert.ok(
+          ts.isIdentifier(p.name) && p.name.text !== 'this',
+          'Only named value parameters supported'
+        );
+        assert.equal(p.modifiers?.length ?? 0, 0, 'No parameter modifier support');
+        assert.equal(p.dotDotDotToken, undefined, 'No rest parameter support');
         assert.equal(p.type?.kind, ts.SyntaxKind.NumberKeyword);
         assert.equal(p.questionToken, undefined);
         assert.equal(p.initializer, undefined);

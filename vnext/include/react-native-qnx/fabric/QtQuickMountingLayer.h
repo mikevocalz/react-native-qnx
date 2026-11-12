@@ -11,6 +11,7 @@
 #include <QHash>
 #include <QList>
 #include <QSet>
+#include <QSizeF>
 #include <QString>
 
 #include <cstdint>
@@ -271,6 +272,15 @@ class QtQuickMountingLayer {
   /// unlike React Native it does not infer them from its children.
   MountError updateScrollContentSize(Tag tag);
 
+  /// Marks a mounted tag as a window-level overlay (React Native's Modal).
+  /// Its item is drawn on the surface root, above every other view and outside
+  /// any ancestor's clip, and fills the root. A zero-size placeholder keeps its
+  /// slot in the Fabric parent, so sibling indices stay what React expects.
+  MountError markOverlay(Tag tag);
+  bool isOverlay(Tag tag) const;
+  /// Size of the surface root item, which overlays fill.
+  QSizeF rootSize() const;
+
   /// Borrowed; nullptr when the tag is not mounted.
   QQuickItem* itemForTag(Tag tag) const;
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
@@ -301,6 +311,10 @@ class QtQuickMountingLayer {
   QHash<Tag, MountedItem> items_;
   // Non-owning membership index, kept in step with the tag registry.
   QSet<QQuickItem*> mountedPointers_;
+  // Overlay tag -> placeholder item that holds its index in the Fabric parent.
+  QHash<Tag, QQuickItem*> overlayPlaceholders_;
+  // Overlay items live on the root but are not Fabric children of it.
+  QSet<QQuickItem*> overlayItems_;
   QString lastError_;
 };
 

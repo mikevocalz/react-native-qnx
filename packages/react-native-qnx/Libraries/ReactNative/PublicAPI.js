@@ -51,6 +51,24 @@ const api = Object.freeze({
   get Animated() {
     return require('react-native/Libraries/Animated/Animated').default;
   },
+  // FlatList and SectionList (@react-native/virtualized-lists) import these
+  // from 'react-native'; without them the Documents and Sections pages threw.
+  get I18nManager() {
+    return require('react-native/Libraries/ReactNative/I18nManager').default;
+  },
+  get findNodeHandle() {
+    return require('react-native/Libraries/ReactNative/RendererProxy').findNodeHandle;
+  },
+  // Backed by the host's DeviceInfo module (QnxDeviceInfo).
+  get Dimensions() {
+    return require('react-native/Libraries/Utilities/Dimensions').default;
+  },
+  get PixelRatio() {
+    return require('react-native/Libraries/Utilities/PixelRatio').default;
+  },
+  get useWindowDimensions() {
+    return require('react-native/Libraries/Utilities/useWindowDimensions').default;
+  },
 });
 
 module.exports = new Proxy(api, {
