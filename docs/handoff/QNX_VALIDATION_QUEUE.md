@@ -179,6 +179,25 @@ full QNX React/Qt runtime supplies Nitro's real JS/event-loop dispatcher.
 **Advance when:** `RNQNX_BUILD_NITRO_QNX=ON` cross-builds on SDP 8.0.5 and a
 Nitro HybridObject call is executed through Hermes on the Pi.
 
+## QNX-NITRO-002 — Nitro modules from packages outside the repo
+
+**Status:** Implemented; host tests only. QNX cross-build and device run
+pending.
+
+A Nitro package declares `"react-native-qnx": {"nitro": {platforms,
+cmakeListsPath, target, initializer}}` in its own `package.json`
+([ADR-0019](../adr/0019-nitro-package-metadata.md)). `project prepare-native`
+records matching direct dependencies as `nitroModules` in `native-app.json`;
+`RnqnxConsumerApp.cmake` adds and links each target and calls each
+initializer before `installQnxNitroRuntime`. Evidence:
+`tests/js/qnx-nitro-package-metadata.test.mjs` configures, compiles and runs
+the generated registration header with the host compiler. That is host
+evidence, not QNX.
+
+**Advance when:** a Nitro package using the key builds into a consumer app
+with `project build-native` on SDP 8.0.5 and one of its hybrid objects is
+called from JavaScript on the Pi.
+
 ## QNX-EXPO-001 — Expo Modules Core QNX JSI bootstrap
 
 **Status:** Implemented; current target validation pending.

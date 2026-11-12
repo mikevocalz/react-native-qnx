@@ -79,6 +79,31 @@ The plugin writes these values to `expo.extra.rnqnx`. Plugin options override va
 
 Running preparation twice with unchanged config leaves `build/` byte-identical; `tests/js/expo-config-resolution.test.mjs` hashes the tree after each run to check it. Descriptors generated before the `window` field existed differ from new output, so remove that `native-app.json` once and prepare again.
 
+## Link Nitro modules from npm packages
+
+A Nitro module published outside this repository declares its QNX build in its own `package.json` ([ADR-0019](../adr/0019-nitro-package-metadata.md)):
+
+```json
+{
+  "name": "react-native-qnx-battery",
+  "version": "2.1.0",
+  "react-native-qnx": {
+    "nitro": {
+      "platforms": ["qnx"],
+      "cmakeListsPath": "qnx/CMakeLists.txt",
+      "target": "QnxBattery",
+      "initializer": "margelo::nitro::battery::registerQnxHybridClasses"
+    }
+  }
+}
+```
+
+`qnx/CMakeLists.txt` must define the `QnxBattery` target, and the package must define `void margelo::nitro::battery::registerQnxHybridClasses()`, which calls `HybridClassRegistry::registerHybridClass` for each hybrid class. Build the module against the `react-native-nitro-modules` and `nitro-core` versions this checkout pins; that match is not checked.
+
+List the package in the app's `dependencies` and install it. `prepare-native` reads the key from each installed direct dependency, without running package code, and records matches as `nitroModules` in `native-app.json`. Dependencies that are not installed are skipped. A malformed key stops preparation with an error that names the package and field. `project doctor` reports the same result as its `nitro-modules` check.
+
+`build-native` then enables the Nitro runtime (`RNQNX_BUILD_NITRO_QNX=ON`), adds each package's CMake directory, links its target, and has the app call every initializer before the Nitro proxy is installed. Adding or removing a Nitro dependency makes `native-app.json` stale; remove it and prepare again. Nitro modules need the QNX toolchain build: `--host-preview` refuses a descriptor that lists them, and Marathon apps cannot declare them yet.
+
 ## Build a Linux preview of the QNX application
 
 The following is explicitly a **Linux preview**, not QNX device execution. From the platform root with native prerequisites installed:
@@ -111,4 +136,4 @@ Generated descriptors and native build inputs are trusted local project files, n
 
 The JavaScript tests cover file ownership, hash checks, no-overwrite behavior and actual CMake configuration. Separate native Qt tests cover identity validation and metadata under plain and sanitizer configurations. The full-host workflow builds and relocates configured executables for both platform bundles, tests wrong registrations and preserves screenshots/logs. Each result belongs to its exact source revision; Linux offscreen success is not physical QNX or Marathon shell qualification.
 
-General native package registration, Router, full lifecycle integration, debugger/Fast Refresh, dynamic Expo configuration and deployment/distribution automation are not completed by this identity slice. Core builds still require no Nitro Forge package.
+Nitro modules beyond the host-tested registration path, Expo native package registration in the consumer build, Router, full lifecycle integration, debugger/Fast Refresh, dynamic Expo configuration and deployment/distribution automation are not completed by this identity slice. Core builds still require no Nitro Forge package.

@@ -32,6 +32,9 @@
 
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
 #include "QnxNitroRuntime.hpp"
+#ifdef RNQNX_CONSUMER_NITRO_HEADER
+#include RNQNX_CONSUMER_NITRO_HEADER
+#endif
 #ifdef RNQNX_PLAYGROUND_NITRO_QT
 #include "QtNitroDispatcher.hpp"
 #endif
@@ -631,6 +634,11 @@ int main(int argc, char** argv) {
   host.delegate().setTouchDispatcher(&touchDispatcher);
 #endif
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
+#ifdef RNQNX_CONSUMER_NITRO_HEADER
+  // Hybrid classes from the app's Nitro dependencies (docs/adr/0019), before
+  // the Nitro proxy is installed into the runtime.
+  rnqnx::consumer::registerNitroModules();
+#endif
 #ifdef RNQNX_PLAYGROUND_NITRO_QT
   rnqnx::nitro::installQnxNitroRuntime(
       host.runtime(), std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue()));

@@ -117,8 +117,8 @@ export async function runProject(options) {
     )
       await rm(descriptorPath);
   }
-  // The icon set and label measurement need rnqnx_identity_tool (a Qt host
-  // program). Without it, run still prepares the descriptor and says so.
+  // prepare-native always generates the icon set. It finds rnqnx_identity_tool
+  // itself (and builds it when missing); pass on the one named in env.
   const identityTool = env.RNQNX_IDENTITY_TOOL;
   await quietly(() =>
     prepareNativeMain([
@@ -128,18 +128,14 @@ export async function runProject(options) {
       platform,
       '--bundle',
       path.relative(root, bundle),
-      ...(identityTool ? ['--identity-tool', identityTool] : ['--skip-identity-tool']),
+      ...(identityTool ? ['--identity-tool', identityTool] : []),
     ])
   );
   const { configuration } = await nativeConfiguration(root, platform, path.relative(root, bundle));
   steps.push({
     step: 'native-descriptor',
     status: 'done',
-    detail:
-      `build/${platform}/native-app.json for ${configuration.appId}` +
-      (identityTool
-        ? ''
-        : '; icon set and tile label skipped (set RNQNX_IDENTITY_TOOL, see docs/getting-started/app-identity.md)'),
+    detail: `build/${platform}/native-app.json and icon set for ${configuration.appId}`,
   });
 
   if (platform === 'qnx' && (!env.QNX_HOST || !env.QNX_TARGET))

@@ -1,0 +1,69 @@
+name: Runner release attestation
+
+# Attests and publishes checksums for a prebuilt development runner that is
+# already uploaded to a draft GitHub Release (ADR-0018). This workflow builds
+# nothing: QNX runners are built on a machine with a licensed QNX SDP, and the
+# archive is uploaded to the draft release by hand with the manifest
+# (rnqnx-runner-manifest.json). The provenance names this workflow run and the
+# checked-out commit as the publisher; it does not prove which machine
+# compiled the archive.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Draft release tag that holds the archive and rnqnx-runner-manifest.json
+        required: true
+        type: string
+      archive:
+        description: Archive asset name, for example qnx-pi400-dev-0.1.0.tar.gz
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runner-release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  attest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ inputs.tag }}
+      ARCHIVE: ${{ inputs.archive }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 26.13.1
+      - name: Download draft release assets
+        run: |
+          case "$ARCHIVE" in
+            *[!A-Za-z0-9._-]* | '' | .*) echo "invalid archive name" >&2; exit 1 ;;
+          esac
+          test "$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft)" = true
+          mkdir -p runner-release
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir runner-release \
+            --pattern "$ARCHIVE" --pattern rnqnx-runner-manifest.json
+      - name: Check archive against manifest and SDP boundary
+        run: node scripts/verify-runner-archive.mjs runner-release/rnqnx-runner-manifest.json "runner-release/$ARCHIVE"
+      - name: Write SHA256SUMS
+        working-directory: runner-release
+        run: sha256sum "$ARCHIVE" rnqnx-runner-manifest.json > SHA256SUMS
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            runner-release/${{ inputs.archive }}
+            runner-release/rnqnx-runner-manifest.json
+      - name: Attach SHA256SUMS to the draft release
+        run: gh release upload "$TAG" runner-release/SHA256SUMS --repo "$GITHUB_REPOSITORY" --clobber

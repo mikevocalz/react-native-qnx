@@ -4,6 +4,7 @@ on:
     paths:
       - 'packages/react-native-qnx-cli/src/**'
       - 'tests/js/qnx-native-consumer-build.test.mjs'
+      - 'tests/js/qnx-nitro-package-metadata.test.mjs'
       - 'native/app-identity/**'
       - 'cmake/RnqnxConsumerApp.cmake'
       - 'cmake/ConsumerApplicationIdentity.h.in'
@@ -40,6 +41,7 @@ jobs:
           pnpm typecheck
           pnpm validate:dependencies
           node tests/js/qnx-native-consumer-build.test.mjs
+          node tests/js/qnx-nitro-package-metadata.test.mjs
       - name: Install native compiler prerequisites
         run: |
           sudo apt-get update
