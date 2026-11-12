@@ -19,7 +19,7 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "lint": "prettier --check .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tests/types/adaptive.tsconfig.json",
     "test": "pnpm test:js && pnpm test:cpp:host",
     "test:js": "node scripts/run-js-tests.mjs",
     "test:cpp:host": "node scripts/run-cpp-host-tests.mjs",

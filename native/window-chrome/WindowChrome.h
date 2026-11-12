@@ -9,6 +9,12 @@
 // an edge or corner resizes it, and the maximize control toggles it between
 // that size and the whole display. The area around the frame is the desktop
 // colour; the window manager hides every other window anyway.
+//
+// Client move and resize (WindowCapabilities::clientMoveResize, QNX with
+// rnqnx-winmgr): the native window is the app's window. The same drags move
+// and resize the native window, maximize uses Qt's window states, and the
+// desktop shows around it.
+//
 // Lives on the Qt GUI thread with the window and never calls into JavaScript.
 // QtReactHost currently runs JavaScript on that same thread, so a blocked JS
 // call also blocks these controls until the host gets its own JS thread.
@@ -66,6 +72,8 @@ class WindowChrome final : public QObject {
   // except for a contained window.
   Q_PROPERTY(QRectF frameRect READ frameRect NOTIFY layoutChanged)
   Q_PROPERTY(bool contained READ contained CONSTANT)
+  // The chrome moves and resizes the native window itself (no system move).
+  Q_PROPERTY(bool movesWindow READ movesWindow CONSTANT)
   // Edge or corner under the pointer of a contained window, for the resize
   // hint drawn where the platform has no resize cursors: "", "horizontal",
   // "vertical", "diagonal" (top-left/bottom-right) or "antidiagonal".
@@ -107,6 +115,7 @@ class WindowChrome final : public QObject {
   void setIconSource(const QUrl& source);
   QRectF frameRect() const { return frame_; }
   bool contained() const { return contained_; }
+  bool movesWindow() const { return movesWindow_; }
   QString resizeHint() const { return resizeHint_; }
   QPointF pointer() const { return pointer_; }
   // The contained frame when not maximized: initialSize centred until the
@@ -145,12 +154,14 @@ class WindowChrome final : public QObject {
   QVariantList controls_;
   QUrl iconSource_;
   bool contained_{false};
+  bool movesWindow_{false};
   bool frameExpanded_{false};
   QRectF frame_;
   QRectF normalFrame_;
   QString resizeHint_;
   QPointF pointer_;
-  // Pointer drag on a contained frame: Move on the bar, Resize on an edge.
+  // Pointer drag on a contained frame or a window the chrome moves: Move on
+  // the bar, Resize on an edge.
   enum class Drag { None, PendingMove, Move, Resize };
   Drag drag_{Drag::None};
   Qt::Edges dragEdges_;

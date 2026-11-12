@@ -56,8 +56,9 @@ function createMarathonResolveRequest(
 
 /**
  * @param {string} projectRoot
- * @param {import('metro-config').InputConfigT} [overrides]
- * @returns {import('metro-config').InputConfigT}
+ * @param {import('metro-config').InputConfigT} [overrides] Project settings are
+ *   merged before adding the required Marathon package export condition.
+ * @returns {import('metro-config').ConfigT}
  */
 function getMarathonMetroConfig(projectRoot, overrides) {
   const defaultConfig = getDefaultConfig(projectRoot);
@@ -71,7 +72,23 @@ function getMarathonMetroConfig(projectRoot, overrides) {
     },
   };
   const merged = mergeConfig(defaultConfig, platformConfig);
-  return overrides ? mergeConfig(merged, overrides) : merged;
+  const config = overrides ? mergeConfig(merged, overrides) : merged;
+  const conditions = config.resolver.unstable_conditionsByPlatform ?? {};
+  // An explicit .native.js package export bypasses suffix resolution. Allow
+  // installed packages to select a Qt entry without changing mobile or web
+  // resolution. The package controls condition priority through export order.
+  return {
+    ...config,
+    resolver: {
+      ...config.resolver,
+      unstable_conditionsByPlatform: {
+        ...conditions,
+        [MARATHON_PLATFORM]: [
+          ...new Set([...(conditions[MARATHON_PLATFORM] ?? []), MARATHON_PLATFORM]),
+        ],
+      },
+    },
+  };
 }
 
 module.exports = {
