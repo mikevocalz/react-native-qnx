@@ -373,7 +373,19 @@ static void update_dock(void) {
     item_w[i] = 8 + ITEM_ICON + 10 + tw + 14;
     width += item_w[i] + DOCK_PAD;
   }
-  if (width > display_size[0] - 2 * DOCK_MARGIN) width = display_size[0] - 2 * DOCK_MARGIN;
+  const int max_width = display_size[0] - 2 * DOCK_MARGIN;
+  if (width > max_width && n > 0) {
+    /* Too many entries: share the width so every window keeps a clickable
+     * entry; titles are cut and, below the icon's width, left out. */
+    int share = (max_width - DOCK_PAD) / n - DOCK_PAD;
+    if (share < ITEM_ICON + 16) share = ITEM_ICON + 16;
+    width = DOCK_PAD;
+    for (int i = 0; i < n; ++i) {
+      if (item_w[i] > share) item_w[i] = share;
+      width += item_w[i] + DOCK_PAD;
+    }
+  }
+  if (width > max_width) width = max_width;
   int height = DOCK_HEIGHT;
   dock_rect[0] = (display_size[0] - width) / 2;
   dock_rect[1] = display_size[1] - LAUNCHER_BANNER - height - DOCK_MARGIN;
