@@ -1,4 +1,4 @@
-import type { InputConfigT } from 'metro-config';
+import type { ConfigT, InputConfigT } from 'metro-config';
 
 export declare const MARATHON_PLATFORM: 'marathon';
 
@@ -10,4 +10,4 @@ export declare function createMarathonResolveRequest(
 export declare function getMarathonMetroConfig(
   projectRoot: string,
   overrides?: InputConfigT
-): InputConfigT;
+): ConfigT;
