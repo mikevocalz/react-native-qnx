@@ -34,7 +34,7 @@ prepare-native resolves the config through `@expo/config`, the same way
 | Field                        | Required | Meaning                                                                                        |
 | ---------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
 | `expo.name`                  | yes      | Window title and About name. Also the tile label when `shortName` is absent.                   |
-| `expo.icon`                  | yes      | Project-relative path to the icon source.                                                      |
+| `expo.icon`                  | no       | Project-relative path to the icon source. Unset: the default icon (see below).                 |
 | `expo.extra.rnqnx.icon`      | no       | Overrides `expo.icon` for QNX and Marathon only, so another platform can keep its own icon.    |
 | `expo.extra.rnqnx.shortName` | no       | Tile label. Use it when `expo.name` is too wide for the launcher; `expo.name` stays the title. |
 
@@ -56,6 +56,19 @@ prepare-native resolves the config through `@expo/config`, the same way
 
 `rnqnx project create` writes `expo.icon` and copies the default icon from
 `template/qnx/assets/icon.png`. Replace that file with your own.
+
+Every prepared app gets a generated icon set. When neither `expo.icon` nor
+`expo.extra.rnqnx.icon` is set, prepare-native uses
+`template/qnx/assets/icon.png` from the checkout, the way Expo falls back to
+its default icon, and prints one line:
+
+```text
+rnqnx: notice: no app icon is set, so the default icon template/qnx/assets/icon.png is used. Set expo.icon to a square PNG of at least 1024x1024 to use your own.
+```
+
+A field that is set is checked strictly and never replaced by the default: an
+empty string, a non-string, a missing file or a PNG that fails the checks
+below stops prepare-native.
 
 ## Icon
 
@@ -223,33 +236,52 @@ golden values in `LabelFitTest.cpp`:
 ## The identity tool
 
 prepare-native uses `rnqnx_identity_tool`, a small Qt host program, for the
-icon set and the label measurement.
+icon set and the label measurement. It looks for the tool in this order:
 
-| Host                         | Support                                                                                 |
-| ---------------------------- | --------------------------------------------------------------------------------------- |
-| Linux, macOS                 | Build the tool from a source checkout with Qt 6.11.1 or later.                          |
-| Windows and any other host   | The tool's CMake refuses to configure. Use `--skip-identity-tool`.                      |
-| Cross-compiling environments | The tool is a host program; build it with a native host compiler, never the target one. |
+1. `--identity-tool <path>`
+2. `RNQNX_IDENTITY_TOOL`
+3. `build/identity-tool/rnqnx_identity_tool` in the source checkout (moved with
+   `RNQNX_IDENTITY_TOOL_BUILD_DIR`)
+
+When none exists, prepare-native builds the third one itself with
+`cmake -S native/app-identity -B build/identity-tool -DRNQNX_BUILD_IDENTITY_TOOL=ON`
+and `cmake --build`, then reuses it on later runs. CMake finds Qt the same way
+the native build does, so set `CMAKE_PREFIX_PATH` when Qt is not in a default
+location. If the build fails, prepare-native prints the last CMake lines and
+what it needs, and writes no `native-app.json`.
+
+| Host                         | Support                                                                                          |
+| ---------------------------- | ------------------------------------------------------------------------------------------------ |
+| Linux, macOS                 | Built on first use with CMake 3.31.9 or later and Qt 6.11.1 or later (Core, Gui).                |
+| Windows and any other host   | The tool's CMake refuses to configure, so prepare-native fails. Run it on a Linux or macOS host. |
+| Cross-compiling environments | The tool is a host program; build it with a native host compiler, never the target one.          |
+
+To build it ahead of time:
 
 ```bash
 cmake -S native/app-identity -B build/identity-tool -DRNQNX_BUILD_IDENTITY_TOOL=ON
 cmake --build build/identity-tool
-export RNQNX_IDENTITY_TOOL="$PWD/build/identity-tool/rnqnx_identity_tool"
 ```
 
-Or pass `--identity-tool <path>` to prepare-native and doctor. Without either,
-prepare-native stops and prints these commands and the skip option.
+There is no way to prepare an app without an icon set. The
+`--skip-identity-tool` option, which used to write `icon.sizes: []` and let the
+app run with the platform's blank default icon, was removed; passing it now
+fails with a message saying so. The consumer CMake build also refuses a
+`native-app.json` whose icon set is empty, and `build-native` treats one as
+stale. `rnqnx project run` lets prepare-native find or build the tool, and
+passes `RNQNX_IDENTITY_TOOL` on when it is set.
 
-`--skip-identity-tool` lets a host without the tool continue. prepare-native
-still checks the icon file header and the label text, then prints a warning,
-writes `icon.sizes: []` and records `labelFit.status: "not-measured"`. The
-consumer build configures with a CMake warning and the app runs with the
-platform's default icon. Run prepare-native again with the tool before a
-release build.
+After a pull, prepare-native runs `cmake --build build/identity-tool` again
+before it uses the tool it built, so a change under `native/app-identity`
+rebuilds it. When nothing changed the build does no work. A tool named with
+`--identity-tool` or `RNQNX_IDENTITY_TOOL` is used as given.
 
-`rnqnx project run` passes `--skip-identity-tool` itself when
-`RNQNX_IDENTITY_TOOL` is not set, and its native-descriptor step says the icon
-set and tile label were skipped.
+Upgrading from a checkout that had `--skip-identity-tool`: a
+`build/<platform>/native-app.json` prepared with that option has
+`icon.sizes: []`, and the consumer build now rejects it. Delete that file and
+run prepare-native again. `rnqnx project run` on a Windows host used to skip
+the icon set and continue; it now stops at prepare-native, because the tool
+cannot be built there.
 
 The label fonts are read from `native/app-identity/fonts/` in the source
 checkout. The CLI is a source-checkout tool today; if it runs somewhere those
@@ -261,6 +293,12 @@ as JSON, following the plugin's rule. When the project has `app.config.js` or
 `app.config.ts`, doctor reports the icon and label as not checked and leaves
 them to prepare-native, which resolves that code. The one binary doctor can run
 is the one passed with `--identity-tool`, to measure the label.
+
+doctor applies the same icon and tool rules. A missing icon is reported as
+`passed` with `observed: "default icon, 1024x1024 PNG"` and a message naming
+`expo.icon`. The `identity-tool` check is `passed` when prepare-native would
+find a tool, `not-checked` when prepare-native would build one first (doctor
+never runs a compiler), and `failed` on a host where it cannot be built.
 
 ### Reruns on another host
 

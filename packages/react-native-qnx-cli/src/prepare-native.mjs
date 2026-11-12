@@ -16,16 +16,17 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { parseArgs } from 'node:util';
 import {
+  DEFAULT_ICON_NOTICE,
+  ensureIdentityTool,
   generateIconSet,
   hostIndependentDescriptor,
-  identityToolPath,
   measureTileLabel,
-  notMeasured,
   resolveTileLabel,
   validateIconSource,
   verifyPreparedIdentity,
 } from './app-identity.mjs';
 import { loadExpoConfig } from './expo-config.mjs';
+import { discoverNitroModules } from './nitro-modules.mjs';
 import { boundedFile, projectPath } from './project-path.mjs';
 
 const { resolveQnxWindow } = createRequire(import.meta.url)(
@@ -35,26 +36,33 @@ const { resolveQnxWindow } = createRequire(import.meta.url)(
 /** @typedef {import('./app-identity.mjs').IconSet} IconSet */
 /** @typedef {import('./app-identity.mjs').LabelFit} LabelFit */
 /** @typedef {{controls: string, titleBarStyle: string, initialSize?: {width: number, height: number}}} NativeWindow */
-/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string, window: NativeWindow}} BaseConfiguration */
+/** @typedef {import('./nitro-modules.mjs').NitroModule} NitroModule */
+/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string, window: NativeWindow, nitroModules?: NitroModule[]}} BaseConfiguration */
 /** @typedef {BaseConfiguration & {shortName: string, icon: IconSet, labelFit: LabelFit}} NativeConfiguration */
 const help = `React Native QNX native consumer configuration
   project prepare-native --project <directory> [--platform qnx|marathon]
                          [--bundle build/<platform>/app.bundle.js]
-                         [--identity-tool <path> | --skip-identity-tool]
+                         [--identity-tool <path>]
                          [--dry-run]
 
 Resolves app.json or app.config.js/ts through @expo/config (config plugins
 included) and reads expo.name, expo.icon and
 expo.extra.rnqnx.{appId,componentName,window,icon,shortName}.
+Direct dependencies whose package.json declares "react-native-qnx": {"nitro":
+{...}} for the platform are recorded as nitroModules (docs/adr/0019). Only
+JSON is read for that; no package code runs.
 Set the extra.rnqnx values through the @rn-qnx/expo-qnx-config-plugins entry
 in "plugins".
-The icon must be a square PNG of at least 1024x1024. The tile label
-(shortName, else expo.name) must fit the target launcher on one line.
---identity-tool (or RNQNX_IDENTITY_TOOL) names the Qt host tool built from
-native/app-identity that scales the icon set and measures the label. It
-builds on Linux and macOS. Elsewhere, --skip-identity-tool still checks the
-icon file and label text but writes no icon set and records the label as not
-measured; the app then runs with the platform's default icon.
+The icon must be a square PNG of at least 1024x1024. With no icon set, the
+default template/qnx/assets/icon.png is used and a notice names expo.icon.
+The tile label (shortName, else expo.name) must fit the target launcher on
+one line.
+Every run generates the icon set with rnqnx_identity_tool, a Qt host program
+from native/app-identity: --identity-tool, else RNQNX_IDENTITY_TOOL, else the
+tool under build/identity-tool in this checkout, which is built with CMake
+and Qt 6.11.1+ the first time it is missing. On a host where it cannot be
+built (anything but Linux and macOS) prepare-native fails; there is no
+option to continue without an icon set.
 Writes build/<platform>/icons/ and build/<platform>/native-app.json for the
 existing native CMake backend.
 An identical rerun keeps the existing files. Changed generated output is not
@@ -122,6 +130,7 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
   await boundedFile(bundle, 256 * 1024 * 1024);
   const hash = createHash('sha256');
   for await (const chunk of createReadStream(bundle)) hash.update(chunk);
+  const nitroModules = await discoverNitroModules(root, platform);
   /** @type {BaseConfiguration} */
   const configuration = {
     schemaVersion: 1,
@@ -131,30 +140,24 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
     bundle,
     bundleSha256: hash.digest('hex'),
     window,
+    // Omitted when empty, so descriptors from apps without Nitro modules stay
+    // byte-identical to those written before this field existed.
+    ...(nitroModules.length ? { nitroModules } : {}),
   };
   return { root, configuration, expoConfig };
 }
 
 /** @param {string} root @param {import('./app-identity.mjs').ExpoConfig} expo
- * @param {string} platform @param {string | undefined} tool @param {boolean} skip
- * @param {string} staging
+ * @param {string} platform @param {string | undefined} tool @param {string} staging
  * @returns {Promise<{shortName: string, icon: IconSet, labelFit: LabelFit}>} */
-async function identityAssets(root, expo, platform, tool, skip, staging) {
+async function identityAssets(root, expo, platform, tool, staging) {
   const source = await validateIconSource(root, expo);
+  if (source.defaulted) console.error(DEFAULT_ICON_NOTICE);
   const tile = resolveTileLabel(expo);
-  if (skip) {
-    const sha256 = createHash('sha256')
-      .update(await readFile(source.file))
-      .digest('hex');
-    return {
-      shortName: tile.label,
-      icon: { source: source.file, sha256, sizes: [] },
-      labelFit: notMeasured(platform, 'Skipped with --skip-identity-tool; no label was measured.'),
-    };
-  }
-  const labelFit = measureTileLabel(() => identityToolPath(tool), platform, tile);
+  const toolPath = ensureIdentityTool(tool);
+  const labelFit = measureTileLabel(() => toolPath, platform, tile);
   const icons = path.join(root, 'build', platform, 'icons');
-  const icon = await generateIconSet(identityToolPath(tool), source.file, staging, (size) =>
+  const icon = await generateIconSet(toolPath, source.file, staging, (size) =>
     path.join(icons, `icon-${size}.png`)
   );
   return { shortName: tile.label, icon, labelFit };
@@ -166,7 +169,6 @@ async function identityAssets(root, expo, platform, tool, skip, staging) {
  * @param {string} root @param {string} platform @param {string} staging
  * @param {IconSet} icon */
 async function stageIcons(root, platform, staging, icon) {
-  if (!icon.sizes.length) return;
   const directory = await projectPath(root, `build/${platform}/icons`);
   await mkdir(directory, { recursive: true });
   if (!(await lstat(directory)).isDirectory() || (await lstat(directory)).isSymbolicLink())
@@ -216,9 +218,10 @@ export async function prepareNativeMain(argv) {
   }
   if (positionals.length) throw new Error('prepare-native does not accept positional arguments.');
   const dryRun = Boolean(values['dry-run']);
-  const skip = Boolean(values['skip-identity-tool']);
-  if (skip && values['identity-tool'])
-    throw new Error('Use either --identity-tool or --skip-identity-tool, not both.');
+  if (values['skip-identity-tool'])
+    throw new Error(
+      '--skip-identity-tool was removed: every prepared app gets a generated icon set. prepare-native builds rnqnx_identity_tool when it is missing; pass --identity-tool to use one built elsewhere.'
+    );
   const {
     root,
     configuration: base,
@@ -236,12 +239,8 @@ export async function prepareNativeMain(argv) {
   try {
     configuration = {
       ...base,
-      ...(await identityAssets(root, expo, base.platform, values['identity-tool'], skip, staging)),
+      ...(await identityAssets(root, expo, base.platform, values['identity-tool'], staging)),
     };
-    if (skip)
-      console.error(
-        'rnqnx: warning: --skip-identity-tool: no icon set was generated and the tile label was not measured. The app will use the platform default icon.'
-      );
     if (!dryRun) {
       let existing;
       try {
