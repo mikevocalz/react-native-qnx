@@ -18,6 +18,9 @@ const HELP = [
   'QNX app preview. Marathon builds a separate Linux executable using Qt/Wayland.',
   '--window-chrome compiles the experimental title bar from native-app.json',
   '"window" (RNQNX_ENABLE_WINDOW_CHROME, default OFF; see docs/adr/0016).',
+  'Nitro modules recorded in native-app.json "nitroModules" are added with',
+  'add_subdirectory, linked and registered at startup (docs/adr/0017). They',
+  'need the QNX toolchain build; --host-preview rejects them.',
   'Requires the reviewed source checkout/native prerequisites. No deployment.',
 ].join('\n');
 
@@ -75,6 +78,11 @@ export async function planNativeBuild(
     /** @type {import('./app-identity.mjs').ExpoConfig} */ (expoConfig.exp),
     { shortName, icon }
   );
+  const nitroModules = configuration.nitroModules ?? [];
+  if (nitroModules.length && preview)
+    throw new Error(
+      `--host-preview does not build the Nitro runtime; drop it to build ${nitroModules.map((module) => module.package).join(', ')} with the QNX toolchain (docs/adr/0017).`
+    );
   const buildDir = path.join(project, 'build', platform, preview ? 'preview-native' : 'native');
   try {
     const current = await lstat(buildDir);
@@ -96,6 +104,7 @@ export async function planNativeBuild(
         ]
       : []),
     ...(preview ? ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'] : []),
+    ...(nitroModules.length ? ['-DRNQNX_BUILD_NITRO_QNX=ON'] : []),
     ...(platform === 'marathon' ? ['-DRNQNX_BUILD_MARATHON_HOST=ON'] : []),
     ...windowChromeCMakeFlags(window, windowChrome),
   ];
@@ -118,6 +127,7 @@ export async function planNativeBuild(
     preview,
     appId: configuration.appId,
     window,
+    nitroModules: nitroModules.map((module) => module.package),
     descriptorPath,
     buildDir,
     output,
