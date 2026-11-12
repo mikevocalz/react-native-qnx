@@ -1,0 +1,76 @@
+Scope: all 11 workspace projects
+✓ Lockfile passes supply-chain policies (verified 14m ago)
+Lockfile is up to date, resolution step is skipped
+Done in 151ms using pnpm v12.8.1
+$ node scripts/validate-dependencies.mjs
+PIN: @react-native/metro-config@0.88.1
+PIN: @types/node@26.6.6
+PIN: @types/react@19.3.0
+PIN: babel-preset-expo@58.0.23
+PIN: expo@58.0.22
+PIN: metro@0.87.1
+PIN: nitrogen@1.0.0-alpha.nightly.105.g69d365fc9b18
+PIN: nitro-core@1.0.0-alpha.nightly.105.g69d365fc9b18
+PIN: prettier@3.9.9
+PIN: react@19.3.0
+PIN: react-native@0.88.1
+PIN: react-native-nitro-modules@1.0.0-alpha.nightly.105.g69d365fc9b18
+PIN: typescript@7.0.2
+RESOLVED: expo-modules-core@58.0.29
+RESOLVED: @expo/metro@58.0.0
+RESOLVED: @expo/metro-config@58.0.20
+CXX PIN: folly@2024.11.18.00
+CXX PIN: fmt@12.1.0
+CXX PIN: glog@0.3.5
+CXX PIN: doubleConversion@1.1.6
+CXX PIN: fastFloat@8.0.0
+CXX PIN: boost@1.84.0
+BUNDLED: Hermes source hermes-v260318099.0.5
+RESOLVED: hermes-compiler@260318099.0.5
+SOURCE: ReactCommon/react/renderer/scheduler/Scheduler.h -> class Scheduler final
+SOURCE: Libraries/Renderer/implementations/ReactFabric-dev.js -> reconcilerVersion: "19.3.0"
+SOURCE: ReactCommon/react/renderer/scheduler/SchedulerToolbox.h -> struct SchedulerToolbox final
+SOURCE: ReactCommon/react/renderer/scheduler/SchedulerDelegate.h -> schedulerDidFinishTransaction
+SOURCE: ReactCommon/react/renderer/mounting/MountingCoordinator.h -> pullTransaction(
+SOURCE: ReactCommon/react/renderer/mounting/MountingTransaction.h -> class MountingTransaction final
+SOURCE: ReactCommon/react/renderer/mounting/ShadowViewMutation.h -> struct ShadowViewMutation final
+SOURCE: ReactCommon/react/renderer/uimanager/UIManagerBinding.h -> createAndInstallIfNeeded
+SOURCE: ReactCommon/yoga/yoga/YGNode.h -> YGNodeCalculateLayout
+SOURCE: ReactCommon/react/runtime/hermes/HermesInstance.h -> createJSRuntime(
+SOURCE: native/cpp/include/NitroModules/HybridClassRegistry.hpp -> registerHybridClass
+SOURCE: native/cpp/include/NitroModules/HybridClass.hpp -> registerHybridConstructor
+SOURCE: native/cpp/include/NitroModules/InstallNitro.hpp -> void install(
+SOURCE: src/getPlatformSpecs.ts -> const platformSchema = z.enum(['apple', 'android'])
+SOURCE: android/src/main/cpp/ExpoModulesHostObject.h -> class ExpoModulesHostObject
+SOURCE: src/ensureNativeModulesAreInstalled.native.ts -> TurboModuleRegistry.get('ExpoModulesCore')
+SOURCE: src/requireNativeModule.ts -> export function requireNativeModule
+SOURCE: build/ExpoMetroConfig.js -> platforms:
+SOURCE: build/ExpoMetroConfig.js -> OUT_OF_TREE_PLATFORMS
+SOURCE: lib/pbxProject.js -> crypto.randomUUID()
+validate:dependencies passed.
+$ node scripts/validate-manifests.mjs
+OK: @rn-qnx/expo-modules-core-qnx
+SCAFFOLD: packages/expo-qnx
+OK: @rn-qnx/expo-qnx-autolinking
+OK: @rn-qnx/expo-qnx-config-plugins
+OK: @rn-qnx/metro-config-marathon
+OK: @rn-qnx/metro-config-qnx
+SCAFFOLD: packages/qnx-devtools
+OK: @rn-qnx/qnx-nitro-runtime
+OK: @rn-qnx/react-native-marathon
+OK: @rn-qnx/react-native-qnx
+OK: @rn-qnx/react-native-qnx-cli
+SCAFFOLD: packages/react-native-qnx-codegen
+SCAFFOLD: apps/component-conformance
+SCAFFOLD: apps/expo-router-example
+SCAFFOLD: apps/native-service-demo
+SCAFFOLD: apps/performance-lab
+OK: @rn-qnx/rn-playground
+validate:manifests passed (10 manifests, 7 scaffold-only directories).
+$ node scripts/validate-architecture.mjs
+validate:architecture passed.
+$ tsc --noEmit
+$ node scripts/qt-svg-codegen.mjs --check
+Qt SVG Fabric codegen check passed (0.88.1, 11 files)
+$ node scripts/validate-docs.mjs
+Documentation validated: 22 components, 7 release gates.

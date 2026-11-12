@@ -25,6 +25,7 @@ struct MutationFailure {
 class QtAccessibilityActivation;
 class QtImageBridge;
 class QtSwitchBridge;
+class QtSvgBridge;
 
 /// Translates a React Native mount transaction into QtQuickMountingLayer calls.
 ///
@@ -93,6 +94,10 @@ class ShadowViewMutationAdapter {
   void applyActivityIndicator(const facebook::react::ShadowView& view);
   void applySwitch(const facebook::react::ShadowView& view);
   MountError applyModal(const facebook::react::ShadowView& view);
+#if RNQNX_ENABLE_QT_SVG
+  void applySvgDocument(const facebook::react::ShadowView& view);
+  QHash<Tag, QPointer<QtSvgBridge>> svgBridges_;
+#endif
   void registerEventEmitter(const facebook::react::ShadowView& view);
 
   /// Connects an editable item's text changes to its shadow view's

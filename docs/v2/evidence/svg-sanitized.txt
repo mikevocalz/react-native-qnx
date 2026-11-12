@@ -1,0 +1,77 @@
+Start testing: Nov 10 00:48 EST
+----------------------------------------------------------
+1/1 Testing: rnqnx_qt_svg_test
+1/1 Test: rnqnx_qt_svg_test
+Command: "/workspace/scratch/5f29a2651a01/svg-host-build/rnqnx_qt_svg_test" "-platform" "offscreen"
+Directory: /workspace/scratch/5f29a2651a01/svg-host-build
+"rnqnx_qt_svg_test" start time: Nov 10 00:48 EST
+Output:
+----------------------------------------------------------
+********* Start testing of SvgDocumentTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : SvgDocumentTest::initTestCase()
+PASS   : SvgDocumentTest::fitModesMetadataAndResize()
+PASS   : SvgDocumentTest::replacementClearAndRecovery()
+PASS   : SvgDocumentTest::gradientsPathsAndShapes()
+PASS   : SvgDocumentTest::borrowedSourceIsOwnedBeforeReturn()
+PASS   : SvgDocumentTest::compactPathNumbersAndArcFlags()
+PASS   : SvgDocumentTest::unsupportedInput(script)
+PASS   : SvgDocumentTest::unsupportedInput(image)
+PASS   : SvgDocumentTest::unsupportedInput(external-use)
+PASS   : SvgDocumentTest::unsupportedInput(animation)
+PASS   : SvgDocumentTest::unsupportedInput(style-block)
+PASS   : SvgDocumentTest::unsupportedInput(style-attribute)
+PASS   : SvgDocumentTest::unsupportedInput(clip-path)
+PASS   : SvgDocumentTest::unsupportedInput(filter)
+PASS   : SvgDocumentTest::unsupportedInput(text)
+PASS   : SvgDocumentTest::unsupportedInput(external-paint)
+PASS   : SvgDocumentTest::unsupportedInput(missing-gradient)
+PASS   : SvgDocumentTest::unsupportedInput(wrong-reference-kind)
+PASS   : SvgDocumentTest::unsupportedInput(duplicate-id)
+PASS   : SvgDocumentTest::unsupportedInput(custom-namespace)
+PASS   : SvgDocumentTest::unsupportedInput(event-handler)
+PASS   : SvgDocumentTest::unsupportedInput(nested-root)
+PASS   : SvgDocumentTest::unsupportedInput(nonfinite)
+PASS   : SvgDocumentTest::unsupportedInput(overflow)
+PASS   : SvgDocumentTest::unsupportedInput(huge-dimension)
+PASS   : SvgDocumentTest::unsupportedInput(zero-dimension)
+PASS   : SvgDocumentTest::unsupportedInput(percentage-size)
+PASS   : SvgDocumentTest::unsupportedInput(unknown-attribute)
+PASS   : SvgDocumentTest::unsupportedInput(invalid-path)
+PASS   : SvgDocumentTest::unsupportedInput(incomplete-path)
+PASS   : SvgDocumentTest::unsupportedInput(incomplete-path-pair)
+PASS   : SvgDocumentTest::unsupportedInput(invalid-arc-flag)
+PASS   : SvgDocumentTest::unsupportedInput(numbers-after-close)
+PASS   : SvgDocumentTest::unsupportedInput(negative-radius)
+PASS   : SvgDocumentTest::unsupportedInput(negative-stroke)
+PASS   : SvgDocumentTest::unsupportedInput(negative-dash)
+PASS   : SvgDocumentTest::unsupportedInput(zero-dashes)
+PASS   : SvgDocumentTest::unsupportedInput(tiny-viewbox)
+PASS   : SvgDocumentTest::unsupportedInput(transform-product)
+PASS   : SvgDocumentTest::unsupportedInput(nested-transform-product)
+PASS   : SvgDocumentTest::unsupportedInput(singular-skew)
+PASS   : SvgDocumentTest::unsupportedInput(gradient-as-color)
+PASS   : SvgDocumentTest::unsupportedInput(gradient-as-stop-color)
+PASS   : SvgDocumentTest::unsupportedInput(huge-path-number)
+PASS   : SvgDocumentTest::unsupportedInput(broken-xml)
+PASS   : SvgDocumentTest::unsupportedInput(no-size)
+PASS   : SvgDocumentTest::unsupportedInput(doctype)
+PASS   : SvgDocumentTest::unsupportedInput(processing-instruction)
+PASS   : SvgDocumentTest::unsupportedInput(invalid-utf8)
+PASS   : SvgDocumentTest::unsupportedInput(nul)
+PASS   : SvgDocumentTest::boundedInputAndTexture()
+PASS   : SvgDocumentTest::ownerThreadAndLifetime()
+PASS   : SvgDocumentTest::workerConstructionAndChangedAffinityAreRejected()
+PASS   : SvgDocumentTest::actualQuickSceneRendersAndClears()
+PASS   : SvgDocumentTest::cleanupTestCase()
+Totals: 55 passed, 0 failed, 0 skipped, 0 blacklisted, 36ms
+********* Finished testing of SvgDocumentTest *********
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_svg_test" end time: Nov 10 00:48 EST
+"rnqnx_qt_svg_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 10 00:48 EST
