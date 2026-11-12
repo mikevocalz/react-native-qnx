@@ -131,21 +131,13 @@
  void QQnxGLContext::doneCurrent()
 --- a/src/plugins/platforms/qnx/qqnxwindow.cpp
 +++ b/src/plugins/platforms/qnx/qqnxwindow.cpp
-@@ -331,30 +331,33 @@
+@@ -331,30 +331,32 @@
      // Call base class method
      QPlatformWindow::setGeometry(rect);
  
 -    int val[2];
 -
      // Set window geometry equal to widget geometry
--    if (m_desktopNotify & DesktopNotifyPosition) {
-+    if (m_desktopNotify & DesktopNotifyPosition)
-         notifyManager(QString::asprintf("Pos=%d,%d", rect.x(), rect.y()));
--    } else {
--        val[0] = rect.x();
--        val[1] = rect.y();
--        Q_SCREEN_CHECKERROR(screen_set_window_property_iv(m_window, SCREEN_PROPERTY_POSITION, val),
-+
 +    if (!m_deferScreenGeometry)
 +        setScreenWindowGeometry(rect);
 +
@@ -156,7 +148,12 @@
 +
 +void QQnxWindow::setScreenWindowGeometry(const QRect &rect)
 +{
-+    if (!(m_desktopNotify & DesktopNotifyPosition)) {
+     if (m_desktopNotify & DesktopNotifyPosition) {
+         notifyManager(QString::asprintf("Pos=%d,%d", rect.x(), rect.y()));
+     } else {
+-        val[0] = rect.x();
+-        val[1] = rect.y();
+-        Q_SCREEN_CHECKERROR(screen_set_window_property_iv(m_window, SCREEN_PROPERTY_POSITION, val),
 +        int pos[2] = { rect.x(), rect.y() };
 +        Q_SCREEN_CHECKERROR(screen_set_window_property_iv(m_window, SCREEN_PROPERTY_POSITION, pos),
                              "Failed to set window position");
@@ -184,8 +181,8 @@
  
      void initWindow();
  
-+    // Writes SCREEN_PROPERTY_POSITION (unless the position goes to the window
-+    // manager as a Pos= message), SCREEN_PROPERTY_SIZE and
++    // Writes SCREEN_PROPERTY_POSITION (or sends the window manager a Pos=
++    // message when it places the window), SCREEN_PROPERTY_SIZE and
 +    // SCREEN_PROPERTY_SOURCE_SIZE without flushing the context.
 +    void setScreenWindowGeometry(const QRect &rect);
 +

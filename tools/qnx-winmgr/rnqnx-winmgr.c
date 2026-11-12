@@ -131,6 +131,10 @@ static screen_window_t switch_list[MAX_WINDOWS]; /* most recently used first */
 static int switch_count;
 static int switch_sel;
 static int switcher_rect[4];
+/* Keys whose press the switcher used; their releases are not passed on
+ * either, so an app never sees a release without its press. */
+static int swallowed[8];
+static int swallowed_count;
 static int tile_x[MAX_WINDOWS], tile_y[MAX_WINDOWS]; /* display coordinates */
 
 /* Windows asked to close from the switcher, with their SIGTERM deadline. */
@@ -736,6 +740,7 @@ static void draw_switcher(void) {
   int caption_w = text_width(caption);
   if (width < caption_w + 2 * PANEL_PAD) width = caption_w + 2 * PANEL_PAD;
   if (width > display_size[0]) width = display_size[0];
+  if (height > display_size[1]) return; /* a display too small for one row */
   switcher_rect[0] = (display_size[0] - width) / 2;
   switcher_rect[1] = (display_size[1] - height) / 2;
   switcher_rect[2] = width;
@@ -887,7 +892,7 @@ static void close_window(managed_t* m) {
     screen_flush_context(ctx, 0);
   }
   if (!sent) {
-    kill(m->pid, SIGTERM);
+    if (m->pid > 1) kill(m->pid, SIGTERM);
     return;
   }
   for (int i = 0; i < closing_count; ++i)
@@ -926,7 +931,7 @@ static int64_t check_closing(void) {
       ++i;
       continue;
     }
-    if (find(closing[i].win)) {
+    if (find(closing[i].win) && closing[i].pid > 1) {
       WARN("pid %d did not close its window; sending SIGTERM", (int)closing[i].pid);
       kill(closing[i].pid, SIGTERM);
     }
@@ -1039,6 +1044,23 @@ static void forward_key(screen_event_t ev) {
   screen_flush_context(ctx, 0);
 }
 
+static void swallow(int key) {
+  for (int i = 0; i < swallowed_count; ++i)
+    if (swallowed[i] == key) return;
+  if (swallowed_count < (int)(sizeof swallowed / sizeof swallowed[0])) swallowed[swallowed_count++] = key;
+}
+
+/* True, and forgotten, when this is the release of a press the switcher
+ * used. */
+static bool unswallow(int key) {
+  for (int i = 0; i < swallowed_count; ++i) {
+    if (swallowed[i] != key) continue;
+    swallowed[i] = swallowed[--swallowed_count];
+    return true;
+  }
+  return false;
+}
+
 static void on_keyboard(screen_event_t ev) {
   int flags = 0, cap = 0, sym = 0, mods = 0;
   screen_get_event_property_iv(ev, SCREEN_PROPERTY_FLAGS, &flags);
@@ -1052,34 +1074,47 @@ static void on_keyboard(screen_event_t ev) {
   bool backwards = (mods & KEYMOD_SHIFT) && switch_mod != KEYMOD_SHIFT;
   LOG("key 0x%x %s mods=0x%x", key, down ? "down" : "up", mods);
 
+  if (!down && unswallow(key)) return;
   if (switcher_open) {
-    if ((is_mod && !down) || (!held && !is_mod)) {
+    /* After a modifier key's release the event's modifiers say whether the
+     * other one (left or right) is still held. */
+    if ((is_mod && !down && !held) || (!held && !is_mod)) {
       /* Modifier released: switch, and let the app see the release. */
       activate_switcher();
       forward_key(ev);
-    } else if (is_mod) {
+      return;
+    }
+    if (is_mod || !down) {
+      /* Modifier presses, and releases of keys pressed before the switcher
+       * opened, go to the app as usual. */
       forward_key(ev);
-    } else if (down && key == switch_key) {
+      return;
+    }
+    if (key == switch_key) {
       step_switcher(backwards ? -1 : 1);
-    } else if (down && key == KEYCODE_RIGHT) {
+    } else if (key == KEYCODE_RIGHT) {
       step_switcher(1);
-    } else if (down && key == KEYCODE_LEFT) {
+    } else if (key == KEYCODE_LEFT) {
       step_switcher(-1);
-    } else if (down && (key == KEYCODE_DELETE || key == KEYCODE_KP_DELETE)) {
+    } else if (key == KEYCODE_DELETE || key == KEYCODE_KP_DELETE) {
       managed_t* m = find(switch_list[switch_sel]);
       if (m) close_window(m);
-    } else if (down && key == KEYCODE_ESCAPE) {
+    } else if (key == KEYCODE_ESCAPE) {
       LOG("switcher cancelled");
       hide_switcher();
       apply_stack(); /* focus back on the front window */
     }
-    /* Other keys, and releases of the switcher's keys, go nowhere while it
-     * is open. */
+    /* Every other press goes nowhere while the switcher is open, and its
+     * release neither. */
+    swallow(key);
     return;
   }
   if (down && held && !is_mod && key == switch_key && !(flags & SCREEN_FLAG_KEY_REPEAT)) {
     open_switcher(backwards);
-    if (switcher_open) return;
+    if (switcher_open) {
+      swallow(key);
+      return;
+    }
   }
   forward_key(ev);
 }
@@ -1266,6 +1301,12 @@ static void on_dock_pointer(screen_event_t ev) {
       activate_switcher();
       return;
     }
+    return;
+  }
+  if (switcher_open) {
+    /* A click outside the panel closes it, as Escape does. */
+    hide_switcher();
+    apply_stack();
     return;
   }
   LOG("dock press at %d,%d", pos[0], pos[1]);
