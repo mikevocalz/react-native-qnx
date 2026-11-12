@@ -40,6 +40,14 @@ alone would pair a 19.3.1 package with a 19.3.0 renderer. The bump waits for a
 React Native release that bundles a 19.3.1 renderer, or for an owner decision
 to carry a mismatched pair.
 
+### Held: metro 0.88.0
+
+`metro` stays at `0.87.1`. `@react-native/community-cli-plugin` 0.88.1 depends
+on `metro` `^0.87.1`, and `@react-native/metro-config` 0.88.1 on
+`metro-config` and `metro-runtime` `^0.87.1`. A caret on a `0.x` version
+excludes the next minor, so 0.88.0 is outside the range React Native 0.88.1
+supports. The bump waits for a React Native release that accepts Metro 0.88.
+
 These versions do not imply upstream QNX support. The platform supplies the
 QNX integration and keeps the exact Nitro v1 alpha pin. The constrained
 platform-info generator is not general Nitrogen QNX support. See
