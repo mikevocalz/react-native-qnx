@@ -15,6 +15,7 @@
 #include <QVariantMap>
 
 #include <QStringList>
+#include <QUrl>
 
 #include <memory>
 
@@ -45,6 +46,8 @@ class WindowChrome final : public QObject {
   // cocoa, where hover exists and is the platform convention, reveals them on
   // hover or focus.
   Q_PROPERTY(bool alwaysShowGlyphs READ alwaysShowGlyphs CONSTANT)
+  // App icon drawn beside the title; empty URL draws none.
+  Q_PROPERTY(QUrl iconSource READ iconSource NOTIFY iconChanged)
 
  public:
   // Creates the chrome item and the content root inside `window`. Throws
@@ -76,8 +79,10 @@ class WindowChrome final : public QObject {
   bool maximized() const;
   bool systemMoveAvailable() const { return capabilities_.systemMove; }
   bool alwaysShowGlyphs() const { return capabilities_.platform != QLatin1String("cocoa"); }
+  QUrl iconSource() const { return iconSource_; }
+  void setIconSource(const QUrl& source);
 
-  // One line per hidden control, for logs and device receipts.
+  // One line per hidden or disabled control, for logs and device receipts.
   QStringList describeHiddenControls() const;
 
   Q_INVOKABLE void trigger(const QString& action);
@@ -89,6 +94,9 @@ class WindowChrome final : public QObject {
   void stateChanged();
   // Emitted before the action runs. Tests and receipts log it.
   void actionTriggered(const QString& action);
+  // A disabled control was activated; nothing ran.
+  void actionUnavailable(const QString& action, const QString& reason);
+  void iconChanged();
 
  private:
   void relayout();
@@ -98,6 +106,7 @@ class WindowChrome final : public QObject {
   WindowCapabilities capabilities_;
   ChromeLayout layout_;
   QVariantList controls_;
+  QUrl iconSource_;
   std::unique_ptr<QQuickItem> content_;
   std::unique_ptr<QQuickItem> chrome_;
 };

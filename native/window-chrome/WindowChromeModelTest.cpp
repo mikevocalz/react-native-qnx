@@ -250,6 +250,28 @@ class WindowChromeModelTest : public QObject {
     }
   }
 
+  void disabledModeKeepsAllThreeOnQnx() {
+    WindowChromeConfig config;
+    config.unavailableControls = UnavailableControls::Disable;
+    const auto layout = layoutChrome(config, capabilitiesForPlatform(QStringLiteral("qnx")), 1920);
+    QCOMPARE(actions(layout), (std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize,
+                                                         WindowAction::Maximize}));
+    QVERIFY(layout.hidden.empty());
+    QCOMPARE(layout.disabled.size(), size_t(2));
+    QVERIFY(layout.controls.at(0).enabled);
+    QVERIFY(!layout.controls.at(1).enabled);
+    QVERIFY(!layout.controls.at(1).reason.isEmpty());
+    QVERIFY(!layout.controls.at(2).enabled);
+    // Live platforms are unchanged by the mode.
+    QVERIFY(layoutChrome(config, desktop(), 800).disabled.empty());
+  }
+
+  void parsesUnavailableControls() {
+    QCOMPARE(parseUnavailableControls(QStringLiteral("hide")), UnavailableControls::Hide);
+    QCOMPARE(parseUnavailableControls(QStringLiteral("disable")), UnavailableControls::Disable);
+    QVERIFY_THROWS_EXCEPTION(std::invalid_argument, parseUnavailableControls(QStringLiteral("grey")));
+  }
+
   void hiddenStyleFloatsControlsWithoutInset() {
     WindowChromeConfig config;
     config.titleBarStyle = TitleBarStyle::Hidden;

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
+#include <utility>
 
 namespace rnqnx::window {
 namespace {
@@ -63,6 +64,12 @@ TitleBarStyle parseTitleBarStyle(const QString& value) {
   if (value == QLatin1String("hidden")) return TitleBarStyle::Hidden;
   if (value == QLatin1String("none")) return TitleBarStyle::None;
   reject(QStringLiteral("window.titleBarStyle must be one of: default, hidden, none."));
+}
+
+UnavailableControls parseUnavailableControls(const QString& value) {
+  if (value == QLatin1String("hide")) return UnavailableControls::Hide;
+  if (value == QLatin1String("disable")) return UnavailableControls::Disable;
+  reject(QStringLiteral("unavailable controls must be one of: hide, disable."));
 }
 
 QString nameOf(ControlsLayout value) {
@@ -199,22 +206,27 @@ ChromeLayout layoutChrome(const WindowChromeConfig& config,
   const std::vector<WindowAction> order =
       mac ? std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize, WindowAction::Maximize}
           : std::vector<WindowAction>{WindowAction::Minimize, WindowAction::Maximize, WindowAction::Close};
-  std::vector<WindowAction> shown;
+  std::vector<std::pair<WindowAction, ActionSupport>> shown;
   for (const auto action : order) {
     const ActionSupport support = action == WindowAction::Close      ? ActionSupport{true, {}}
                                   : action == WindowAction::Minimize ? capabilities.minimize
                                                                      : capabilities.maximize;
-    if (support.available)
-      shown.push_back(action);
-    else
+    if (support.available) {
+      shown.emplace_back(action, support);
+    } else if (config.unavailableControls == UnavailableControls::Disable) {
+      shown.emplace_back(action, support);
+      layout.disabled.push_back({action, support.reason});
+    } else {
       layout.hidden.push_back({action, support.reason});
+    }
   }
 
   const qreal hitWidth = mac ? kMacHitWidth : kWindowsHitWidth;
   const qreal rowWidth = hitWidth * static_cast<qreal>(shown.size());
   qreal x = mac ? kEdgePadding : windowWidth - rowWidth;
-  for (const auto action : shown) {
-    layout.controls.push_back({action, QRectF(x, 0, hitWidth, kBarHeight), accessibleName(action)});
+  for (const auto& [action, support] : shown) {
+    layout.controls.push_back({action, QRectF(x, 0, hitWidth, kBarHeight), accessibleName(action),
+                               support.available, support.reason});
     x += hitWidth;
   }
 

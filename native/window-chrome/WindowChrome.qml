@@ -37,22 +37,49 @@ Item {
             acceptedButtons: Qt.LeftButton
             onPressed: root.chrome.beginSystemMove()
         }
-        Text {
-            objectName: "rnqnxWindowTitle"
+        // Icon and title as one group, centred (macOS) or left-aligned
+        // (Windows) inside the title rectangle the C++ layout reserved.
+        Item {
+            id: titleArea
             x: root.chrome.titleRect.x
             y: root.chrome.titleRect.y
             width: root.chrome.titleRect.width
             height: root.chrome.titleRect.height
             visible: width > 0
-            text: root.chrome.title
-            color: root.chrome.active ? "#1d1d1f" : "#86868b"
-            font.pixelSize: 14
-            font.weight: Font.DemiBold
-            elide: Text.ElideRight
-            horizontalAlignment: root.chrome.titleCentered ? Text.AlignHCenter : Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            Accessible.role: Accessible.TitleBar
-            Accessible.name: text
+            readonly property bool hasIcon: icon.status === Image.Ready
+            readonly property real iconSpace: hasIcon ? icon.width + 8 : 0
+            readonly property real textWidth: Math.max(0, Math.min(title.implicitWidth, width - iconSpace))
+            readonly property real groupX: root.chrome.titleCentered
+                ? (width - iconSpace - textWidth) / 2 : 0
+            Image {
+                id: icon
+                objectName: "rnqnxWindowIcon"
+                x: titleArea.groupX
+                anchors.verticalCenter: parent.verticalCenter
+                width: 20
+                height: 20
+                sourceSize.width: 40
+                sourceSize.height: 40
+                source: root.chrome.iconSource
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                visible: titleArea.hasIcon
+            }
+            Text {
+                id: title
+                objectName: "rnqnxWindowTitle"
+                x: titleArea.groupX + titleArea.iconSpace
+                width: titleArea.textWidth
+                height: parent.height
+                text: root.chrome.title
+                color: root.chrome.active ? "#1d1d1f" : "#86868b"
+                font.pixelSize: 14
+                font.weight: Font.DemiBold
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
+                Accessible.role: Accessible.TitleBar
+                Accessible.name: text
+            }
         }
     }
 
@@ -62,6 +89,7 @@ Item {
             id: control
             required property var modelData
             readonly property string action: modelData.action
+            readonly property bool live: modelData.enabled !== false
             readonly property bool hovered: hover.hovered
             readonly property bool pressed: tap.pressed
             readonly property var geometry: root.chrome.controlGeometry[action]
@@ -70,10 +98,11 @@ Item {
             y: geometry.y
             width: geometry.width
             height: geometry.height
-            activeFocusOnTab: true
+            activeFocusOnTab: live
 
             Accessible.role: Accessible.Button
             Accessible.name: action === "maximize" && root.maximized ? "Restore window" : modelData.name
+            Accessible.description: live ? "" : "Not available on this platform"
             Accessible.focusable: true
             Accessible.onPressAction: root.chrome.trigger(action)
             Keys.onReturnPressed: root.chrome.trigger(action)
@@ -94,14 +123,17 @@ Item {
                 width: 14
                 height: 14
                 radius: 7
-                color: control.action === "close" ? "#ff5f57"
+                // Disabled lights are grey, as macOS draws a control the
+                // window cannot use.
+                color: !control.live ? "#d4d4d4"
+                     : control.action === "close" ? "#ff5f57"
                      : control.action === "minimize" ? "#febc2e" : "#28c840"
                 border.width: 1
                 border.color: Qt.darker(color, 1.25)
-                opacity: control.pressed ? 0.7 : 1
+                opacity: control.pressed && control.live ? 0.7 : 1
                 Text {
                     anchors.centerIn: parent
-                    visible: root.chrome.alwaysShowGlyphs || control.hovered || control.activeFocus
+                    visible: control.live && (root.chrome.alwaysShowGlyphs || control.hovered || control.activeFocus)
                     text: control.action === "close" ? "×"
                         : control.action === "minimize" ? "−"
                         : root.maximized ? "↙" : "↗"
@@ -115,7 +147,9 @@ Item {
             Rectangle {
                 visible: !root.macos
                 anchors.fill: parent
-                color: control.action === "close"
+                opacity: control.live ? 1 : 0.35
+                color: !control.live ? "transparent"
+                    : control.action === "close"
                     ? (control.pressed ? "#f1707a" : control.hovered ? "#e81123" : "transparent")
                     : (control.pressed ? "#cccccc" : control.hovered ? "#e0e0e0" : "transparent")
                 Item {

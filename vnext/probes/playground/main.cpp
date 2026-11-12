@@ -42,6 +42,7 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QFile>
+#include <QFileInfo>
 #include <QGuiApplication>
 #include <QImage>
 #include <QQmlEngine>
@@ -50,6 +51,7 @@
 #include <QScreen>
 #include <QString>
 #include <QTimer>
+#include <QUrl>
 
 #include <cstdio>
 #include <memory>
@@ -277,9 +279,16 @@ int main(int argc, char** argv) {
       QStringLiteral("Title bar style: default, hidden or none."), QStringLiteral("style"));
   const QCommandLineOption windowSizeOption(QStringLiteral("window-size"),
       QStringLiteral("Initial outer window size, clamped to the screen."), QStringLiteral("WxH"));
+  const QCommandLineOption unavailableControlsOption(QStringLiteral("unavailable-controls"),
+      QStringLiteral("Controls this platform cannot run: hide (default) or disable (drawn grey)."),
+      QStringLiteral("mode"));
+  const QCommandLineOption windowIconOption(QStringLiteral("window-icon"),
+      QStringLiteral("Image drawn beside the title."), QStringLiteral("path"));
   parser.addOption(windowControlsOption);
   parser.addOption(titleBarStyleOption);
   parser.addOption(windowSizeOption);
+  parser.addOption(unavailableControlsOption);
+  parser.addOption(windowIconOption);
 #endif
   parser.addOption(bundleOption);
   parser.addOption(screenshotOption);
@@ -352,6 +361,10 @@ int main(int argc, char** argv) {
     }
     if (parser.isSet(titleBarStyleOption)) {
       chromeConfig.titleBarStyle = rnqnx::window::parseTitleBarStyle(parser.value(titleBarStyleOption));
+    }
+    if (parser.isSet(unavailableControlsOption)) {
+      chromeConfig.unavailableControls =
+          rnqnx::window::parseUnavailableControls(parser.value(unavailableControlsOption));
     }
     if (parser.isSet(windowSizeOption)) {
       const QStringList edges = parser.value(windowSizeOption).split(QLatin1Char('x'));
@@ -446,6 +459,20 @@ int main(int argc, char** argv) {
     for (const QString& line : chrome->describeHiddenControls()) {
       std::printf("%s\n", line.toUtf8().constData());
     }
+    if (parser.isSet(windowIconOption)) {
+      const QString iconPath = parser.value(windowIconOption);
+      if (QFile::exists(iconPath)) {
+        chrome->setIconSource(QUrl::fromLocalFile(QFileInfo(iconPath).absoluteFilePath()));
+      } else {
+        std::fprintf(stderr, "RNQNX_WINDOW_ICON_WARNING no file at %s\n", iconPath.toUtf8().constData());
+      }
+    }
+    QObject::connect(chrome.get(), &rnqnx::window::WindowChrome::actionUnavailable,
+        [](const QString& action, const QString& reason) {
+          std::printf("RNQNX_WINDOW_ACTION_UNAVAILABLE %s reason=%s\n", action.toUtf8().constData(),
+              reason.toUtf8().constData());
+          std::fflush(stdout);
+        });
     QObject::connect(chrome.get(), &rnqnx::window::WindowChrome::actionTriggered,
         [](const QString& action) {
           std::printf("RNQNX_WINDOW_ACTION %s\n", action.toUtf8().constData());

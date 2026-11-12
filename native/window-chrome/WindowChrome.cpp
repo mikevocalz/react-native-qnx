@@ -21,7 +21,8 @@ WindowChrome::WindowChrome(QQuickWindow& window, QQmlEngine& engine, WindowChrom
   layout_ = layoutChrome(config_, capabilities_, window.width());
   for (const auto& slot : layout_.controls) {
     controls_.append(QVariantMap{{QStringLiteral("action"), nameOf(slot.action)},
-                                 {QStringLiteral("name"), slot.accessibleName}});
+                                 {QStringLiteral("name"), slot.accessibleName},
+                                 {QStringLiteral("enabled"), slot.enabled}});
   }
 
   content_ = std::make_unique<QQuickItem>();
@@ -89,6 +90,10 @@ QStringList WindowChrome::describeHiddenControls() const {
     lines.append(QStringLiteral("RNQNX_WINDOW_CHROME platform=%1 hidden=%2 reason=%3")
                      .arg(capabilities_.platform, nameOf(hidden.action), hidden.reason));
   }
+  for (const auto& disabled : layout_.disabled) {
+    lines.append(QStringLiteral("RNQNX_WINDOW_CHROME platform=%1 disabled=%2 reason=%3")
+                     .arg(capabilities_.platform, nameOf(disabled.action), disabled.reason));
+  }
   return lines;
 }
 
@@ -96,9 +101,14 @@ void WindowChrome::trigger(const QString& action) {
   if (!window_) return;
   // Only controls that are laid out can act; a stale QML call for a hidden
   // control does nothing.
-  bool live = false;
-  for (const auto& slot : layout_.controls) live = live || nameOf(slot.action) == action;
-  if (!live) return;
+  const ControlSlot* found = nullptr;
+  for (const auto& slot : layout_.controls)
+    if (nameOf(slot.action) == action) found = &slot;
+  if (found == nullptr) return;
+  if (!found->enabled) {
+    Q_EMIT actionUnavailable(action, found->reason);
+    return;
+  }
   Q_EMIT actionTriggered(action);
   if (action == QLatin1String("close")) {
     window_->close();
@@ -110,6 +120,12 @@ void WindowChrome::trigger(const QString& action) {
     else
       window_->showMaximized();
   }
+}
+
+void WindowChrome::setIconSource(const QUrl& source) {
+  if (source == iconSource_) return;
+  iconSource_ = source;
+  Q_EMIT iconChanged();
 }
 
 void WindowChrome::beginSystemMove() {

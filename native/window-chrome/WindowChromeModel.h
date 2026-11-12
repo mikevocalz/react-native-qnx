@@ -18,11 +18,16 @@ namespace rnqnx::window {
 enum class ControlsLayout { MacOS, Windows };
 enum class TitleBarStyle { Default, Hidden, None };
 enum class WindowAction { Close, Minimize, Maximize };
+// What to do with a control the platform cannot run. `Hide` leaves it out
+// (the default). `Disable` draws it greyed out and inert, so a macOS-style bar
+// keeps all three lights on a platform such as QNX where only close works.
+enum class UnavailableControls { Hide, Disable };
 
 struct WindowChromeConfig {
   ControlsLayout controls{ControlsLayout::MacOS};
   TitleBarStyle titleBarStyle{TitleBarStyle::Default};
   std::optional<QSize> initialSize;
+  UnavailableControls unavailableControls{UnavailableControls::Hide};
 };
 
 // Largest edge PR #122's config plugin accepts (MAX_WINDOW_EDGE).
@@ -37,6 +42,7 @@ TitleBarStyle parseTitleBarStyle(const QString& value);
 QString nameOf(ControlsLayout value);
 QString nameOf(TitleBarStyle value);
 QString nameOf(WindowAction value);
+UnavailableControls parseUnavailableControls(const QString& value);
 
 struct ActionSupport {
   bool available{false};
@@ -82,6 +88,8 @@ struct ControlSlot {
   WindowAction action;
   QRectF hitRect;  // Device-independent pixels, window coordinates.
   QString accessibleName;
+  bool enabled{true};
+  QString reason;  // Why it is disabled; empty when enabled.
 };
 
 struct HiddenControl {
@@ -97,6 +105,7 @@ struct ChromeLayout {
   Qt::Alignment titleAlignment{Qt::AlignHCenter};
   std::vector<ControlSlot> controls;
   std::vector<HiddenControl> hidden;
+  std::vector<HiddenControl> disabled;  // Drawn but inert (UnavailableControls::Disable).
 };
 
 // Sizes in device-independent pixels. Qt multiplies them by the device pixel

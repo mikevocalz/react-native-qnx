@@ -141,6 +141,20 @@ class WindowChromeQuickTest : public QObject {
     }
   }
 
+  void disabledControlsAreDrawnButInert() {
+    WindowChromeConfig config;
+    config.unavailableControls = UnavailableControls::Disable;
+    Harness harness(config, capabilitiesForPlatform(QStringLiteral("qnx")), QSize(1920, 1080));
+    QCOMPARE(controlNames(harness),
+        (QStringList{QStringLiteral("close"), QStringLiteral("maximize"), QStringLiteral("minimize")}));
+    QVERIFY(harness.chrome->describeHiddenControls().at(0).contains(QStringLiteral("disabled=minimize")));
+    QSignalSpy triggered(harness.chrome.get(), &WindowChrome::actionTriggered);
+    QSignalSpy unavailable(harness.chrome.get(), &WindowChrome::actionUnavailable);
+    harness.chrome->trigger(QStringLiteral("minimize"));
+    QCOMPARE(triggered.count(), 0);
+    QCOMPARE(unavailable.count(), 1);
+  }
+
   void hiddenStyleFloatsControlsOverContent() {
     WindowChromeConfig config;
     config.titleBarStyle = TitleBarStyle::Hidden;
