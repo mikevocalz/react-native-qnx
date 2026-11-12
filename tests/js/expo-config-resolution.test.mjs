@@ -106,12 +106,24 @@ try {
     { initialSize: { width: 10, height: 10, depth: 1 } },
     { initialSize: [10, 10] },
     { position: 'center' },
+    { controls: null },
+    { titleBarStyle: null },
+    { initialSize: null },
+    { initialSize: { width: null, height: 10 } },
+    null,
     'macos',
   ]) {
     assert.throws(() => resolveQnxWindow(bad), /extra\.rnqnx\.window/);
     checks++;
   }
   assert.throws(() => withQnxProject({}, /** @type {any} */ ({ window: { controls: 'gnome' } })));
+  checks++;
+  assert.throws(() => withQnxProject({}, /** @type {any} */ ({ window: null })), /not null/);
+  checks++;
+  assert.throws(
+    () => withQnxProject(/** @type {any} */ ({ extra: { rnqnx: { window: null } } }), {}),
+    /not null/
+  );
   checks++;
 
   for (const [file, contents] of Object.entries(fixtures)) {
