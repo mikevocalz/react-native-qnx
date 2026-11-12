@@ -5,6 +5,7 @@
 #include <QFontDatabase>
 #include <QRawFont>
 #include <QTextBoundaryFinder>
+#include <QTextDocument>
 #include <QTextLayout>
 #include <QTextOption>
 #include <algorithm>
@@ -17,6 +18,9 @@ QFont launcherFont(const LauncherFace& face, qreal pixelSize) {
   QFont font(face.family);
   font.setWeight(QFont::Weight(face.weight));
   font.setPixelSize(qRound(pixelSize));
+  // Unhinted outlines give the same advances under CoreText and FreeType, so
+  // a fit decision does not change with the machine running prepare-native.
+  font.setHintingPreference(QFont::PreferNoHinting);
   return font;
 }
 
@@ -73,8 +77,13 @@ LabelMeasurement measureLabel(const QString& text, const LabelBox& box) {
   if (!(box.pixelSize > 0) || !(box.widthPx > 0)) {
     throw std::invalid_argument("Label box size and width must be positive.");
   }
+  if (box.marginPx < 0 || box.marginPx >= box.widthPx) {
+    throw std::invalid_argument("Label margin must be at least 0 and smaller than the box.");
+  }
   LabelMeasurement result;
   result.boxWidthPx = box.widthPx;
+  result.marginPx = box.marginPx;
+  result.mightBeRichText = Qt::mightBeRichText(text);
   result.rightToLeft = text.isRightToLeft();
   QList<QFont> fonts;
   for (const auto& face : box.faces) {
@@ -102,9 +111,11 @@ LabelMeasurement measureLabel(const QString& text, const LabelBox& box) {
       if (!(words.boundaryReasons() & QTextBoundaryFinder::EndOfItem)) continue;
       const auto prefix = text.left(end).trimmed();
       if (prefix.isEmpty() || prefix == text) continue;
+      // Never offer a markup fragment such as "<b>Notes" as a label.
+      if (prefix.contains(QLatin1Char('<')) || prefix.contains(QLatin1Char('&'))) continue;
       qreal width = 0;
       for (const auto& font : fonts) width = std::max(width, layOut(prefix, font).widthPx);
-      if (width > box.widthPx) break;
+      if (width > result.limitPx()) break;
       result.suggestion = prefix;
     }
   }

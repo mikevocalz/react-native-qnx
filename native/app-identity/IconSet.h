@@ -6,6 +6,7 @@
 namespace rnqnx::identity {
 
 inline constexpr int kMinimumIconSourcePx = 1024;
+inline constexpr int kMaximumIconSourcePx = 8192;
 
 struct GeneratedIcon {
   int size;

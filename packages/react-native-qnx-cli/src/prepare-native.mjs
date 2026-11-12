@@ -1,15 +1,28 @@
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
-import { copyFile, mkdir, mkdtemp, open, readFile, realpath, rm } from 'node:fs/promises';
+import {
+  copyFile,
+  lstat,
+  mkdir,
+  mkdtemp,
+  open,
+  readFile,
+  realpath,
+  rename,
+  rm,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import {
   generateIconSet,
+  hostIndependentDescriptor,
   identityToolPath,
   measureTileLabel,
+  notMeasured,
   resolveTileLabel,
   validateIconSource,
+  verifyPreparedIdentity,
 } from './app-identity.mjs';
 import { boundedFile, projectPath } from './project-path.mjs';
 
@@ -20,14 +33,18 @@ import { boundedFile, projectPath } from './project-path.mjs';
 const help = `React Native QNX native consumer configuration
   project prepare-native --project <directory> [--platform qnx|marathon]
                          [--bundle build/<platform>/app.bundle.js]
-                         [--identity-tool <path>] [--dry-run]
+                         [--identity-tool <path> | --skip-identity-tool]
+                         [--dry-run]
 
 Reads static app.json: expo.name, expo.icon and
 expo.extra.rnqnx.{appId,componentName,icon,shortName}.
 The icon must be a square PNG of at least 1024x1024. The tile label
 (shortName, else expo.name) must fit the target launcher on one line.
 --identity-tool (or RNQNX_IDENTITY_TOOL) names the Qt host tool built from
-native/app-identity that scales the icon set and measures the label.
+native/app-identity that scales the icon set and measures the label. It
+builds on Linux and macOS. Elsewhere, --skip-identity-tool still checks the
+icon file and label text but writes no icon set and records the label as not
+measured; the app then runs with the platform's default icon.
 Writes build/<platform>/icons/ and build/<platform>/native-app.json for the
 existing native CMake backend.
 An identical rerun does not write. Changed generated output is not overwritten:
@@ -105,18 +122,56 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
   return { root, configuration, app };
 }
 
-/** @param {string} root @param {import('./app-identity.mjs').ResolvedAppConfig} app
- * @param {string} platform @param {string | undefined} tool @param {string} staging
+/** @param {string} root @param {import('./app-identity.mjs').ExpoConfig} expo
+ * @param {string} platform @param {string | undefined} tool @param {boolean} skip
+ * @param {string} staging
  * @returns {Promise<{shortName: string, icon: IconSet, labelFit: LabelFit}>} */
-async function identityAssets(root, app, platform, tool, staging) {
-  const source = await validateIconSource(root, app);
-  const tile = resolveTileLabel(app);
+async function identityAssets(root, expo, platform, tool, skip, staging) {
+  const source = await validateIconSource(root, expo);
+  const tile = resolveTileLabel(expo);
+  if (skip) {
+    const sha256 = createHash('sha256')
+      .update(await readFile(source.file))
+      .digest('hex');
+    return {
+      shortName: tile.label,
+      icon: { source: source.file, sha256, sizes: [] },
+      labelFit: notMeasured(platform, 'Skipped with --skip-identity-tool; no label was measured.'),
+    };
+  }
   const labelFit = measureTileLabel(() => identityToolPath(tool), platform, tile);
   const icons = path.join(root, 'build', platform, 'icons');
   const icon = await generateIconSet(identityToolPath(tool), source.file, staging, (size) =>
     path.join(icons, `icon-${size}.png`)
   );
   return { shortName: tile.label, icon, labelFit };
+}
+
+/** Move generated icons into build/<platform>/icons without following a
+ * symlink planted at any destination: each file lands under a fresh temporary
+ * name in the same directory and is renamed over the leaf.
+ * @param {string} root @param {string} platform @param {string} staging
+ * @param {IconSet} icon */
+async function stageIcons(root, platform, staging, icon) {
+  if (!icon.sizes.length) return;
+  const directory = await projectPath(root, `build/${platform}/icons`);
+  await mkdir(directory, { recursive: true });
+  if (!(await lstat(directory)).isDirectory() || (await lstat(directory)).isSymbolicLink())
+    throw new Error(`${directory} must be a real directory.`);
+  for (const entry of icon.sizes) {
+    try {
+      const leaf = await lstat(entry.path);
+      if (!leaf.isFile() || leaf.isSymbolicLink())
+        throw new Error(
+          `${entry.path} is a symlink or not a regular file. Remove it and prepare again; icons are never written through links.`
+        );
+    } catch (error) {
+      if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error;
+    }
+    const temporary = path.join(directory, `.${path.basename(entry.path)}.${process.pid}.tmp`);
+    await copyFile(path.join(staging, path.basename(entry.path)), temporary, 1 /* COPYFILE_EXCL */);
+    await rename(temporary, entry.path);
+  }
 }
 
 /** @param {string[]} argv */
@@ -132,6 +187,7 @@ export async function prepareNativeMain(argv) {
       platform: { type: 'string' },
       bundle: { type: 'string' },
       'identity-tool': { type: 'string' },
+      'skip-identity-tool': { type: 'boolean' },
       'dry-run': { type: 'boolean' },
     },
   });
@@ -147,6 +203,9 @@ export async function prepareNativeMain(argv) {
   }
   if (positionals.length) throw new Error('prepare-native does not accept positional arguments.');
   const dryRun = Boolean(values['dry-run']);
+  const skip = Boolean(values['skip-identity-tool']);
+  if (skip && values['identity-tool'])
+    throw new Error('Use either --identity-tool or --skip-identity-tool, not both.');
   const {
     root,
     configuration: base,
@@ -163,34 +222,51 @@ export async function prepareNativeMain(argv) {
   try {
     configuration = {
       ...base,
-      ...(await identityAssets(root, app, base.platform, values['identity-tool'], staging)),
+      ...(await identityAssets(
+        root,
+        app.expo,
+        base.platform,
+        values['identity-tool'],
+        skip,
+        staging
+      )),
     };
-    const encoded = JSON.stringify(configuration, null, 2) + '\n';
+    if (skip)
+      console.error(
+        'rnqnx: warning: --skip-identity-tool: no icon set was generated and the tile label was not measured. The app will use the platform default icon.'
+      );
     if (!dryRun) {
+      let existing;
       try {
+        await boundedFile(output, 65536);
+        existing = JSON.parse(await readFile(output, 'utf8'));
+      } catch (error) {
+        if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error;
+      }
+      if (existing) {
+        // Compare only what every host computes the same way; then check the
+        // icons already on disk against the hashes the existing file names.
+        if (
+          JSON.stringify(hostIndependentDescriptor(existing)) !==
+          JSON.stringify(hostIndependentDescriptor(configuration))
+        )
+          throw new Error(
+            'Generated native configuration differs; review and remove only native-app.json before preparing again.'
+          );
+        await verifyPreparedIdentity(root, app.expo, existing);
+        configuration = existing;
+        action = 'unchanged';
+      } else {
+        await stageIcons(root, base.platform, staging, configuration.icon);
         const handle = await open(output, 'wx', 0o600);
         try {
-          await handle.writeFile(encoded);
+          await handle.writeFile(JSON.stringify(configuration, null, 2) + '\n');
         } catch (error) {
           await rm(output);
           throw error;
         } finally {
           await handle.close();
         }
-      } catch (error) {
-        if (!(error instanceof Error && 'code' in error && error.code === 'EEXIST')) throw error;
-        await boundedFile(output, 65536);
-        if ((await readFile(output, 'utf8')) !== encoded)
-          throw new Error(
-            'Generated native configuration differs; review and remove only native-app.json before preparing again.'
-          );
-        action = 'unchanged';
-      }
-      // Stage icons only after the descriptor that names their hashes is in place.
-      const icons = await projectPath(root, `build/${base.platform}/icons`);
-      await mkdir(icons, { recursive: true });
-      for (const entry of configuration.icon.sizes) {
-        await copyFile(path.join(staging, path.basename(entry.path)), entry.path);
       }
     }
   } finally {

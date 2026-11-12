@@ -24,12 +24,14 @@ QList<GeneratedIcon> writeIconSet(
   }
   QImageReader reader(sourcePng, "png");
   const QSize declared = reader.size();
-  if (declared.width() != declared.height() || declared.width() < kMinimumIconSourcePx) {
-    reject(QStringLiteral("%1 is %2x%3. Export a square PNG of at least %4x%4.")
+  if (declared.width() != declared.height() || declared.width() < kMinimumIconSourcePx ||
+      declared.width() > kMaximumIconSourcePx) {
+    reject(QStringLiteral("%1 is %2x%3. Export a square PNG from %4x%4 to %5x%5.")
                .arg(sourcePng)
                .arg(declared.width())
                .arg(declared.height())
-               .arg(kMinimumIconSourcePx));
+               .arg(kMinimumIconSourcePx)
+               .arg(kMaximumIconSourcePx));
   }
   QImage source = reader.read();
   if (source.isNull()) reject(sourcePng + " cannot be decoded: " + reader.errorString());

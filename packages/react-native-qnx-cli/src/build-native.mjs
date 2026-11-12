@@ -55,7 +55,7 @@ export async function planNativeBuild(root, platform = 'qnx', preview = false) {
       'Native descriptor is stale. Review the bundle and run project prepare-native.'
     );
   }
-  await verifyPreparedIdentity(project, app, { shortName, icon });
+  await verifyPreparedIdentity(project, app.expo, { shortName, icon });
   const buildDir = path.join(project, 'build', platform, preview ? 'preview-native' : 'native');
   try {
     const current = await lstat(buildDir);

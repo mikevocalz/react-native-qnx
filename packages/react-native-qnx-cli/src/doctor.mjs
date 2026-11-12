@@ -17,10 +17,10 @@ const help = `React Native QNX consumer project diagnostics
                        [--entry index.js] [--identity-tool <path>] [--json]
 
 Read-only metadata checks. QNX is default. No config/package JavaScript,
-package-manager process, compiler, network request or device command runs.
-The app icon header and tile label text are checked from app.json. The tile
-label is measured against the launcher only when --identity-tool names the
-Qt host tool built from native/app-identity.
+package-manager process, compiler, network request or device command runs,
+with one opt-in exception: --identity-tool runs that Qt host binary (built
+from native/app-identity) to measure the tile label. Without it, the app icon
+header and tile label text are checked from static app.json only.
 Exit 0: inspected metadata matches; 1: failed check; 2: invalid invocation.
 A compatible report is not a native build, security audit or runtime proof.
 `;
@@ -107,8 +107,9 @@ async function identityChecks(root, platform, tool) {
   }
   /** @type {Check[]} */
   const checks = [];
+  const expo = /** @type {import('./app-identity.mjs').ExpoConfig} */ (app.expo ?? {});
   try {
-    const icon = await validateIconSource(root, app);
+    const icon = await validateIconSource(root, expo);
     checks.push({
       id: 'app-icon',
       status: 'passed',
@@ -119,7 +120,7 @@ async function identityChecks(root, platform, tool) {
     checks.push({ id: 'app-icon', status: 'failed', message: description(error) });
   }
   try {
-    const tile = resolveTileLabel(app);
+    const tile = resolveTileLabel(expo);
     if (!tool) {
       checks.push({
         id: 'tile-label',

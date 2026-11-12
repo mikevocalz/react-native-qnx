@@ -195,6 +195,22 @@ rnqnx_add_consumer_app()
   tamperedIcon.icon.sizes[0].sha256 = '0'.repeat(64);
   await writeFile(config, JSON.stringify(tamperedIcon));
   configure('stale-icon', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);
+  // --skip-identity-tool output: an empty set configures with a warning.
+  tamperedIcon.icon.sizes = [];
+  await writeFile(config, JSON.stringify(tamperedIcon));
+  const skipped = configure('skipped-icon', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], true);
+  check(skipped.stderr.includes('Consumer icon set was not generated'));
+  check(
+    (
+      await readFile(
+        path.join(
+          temporary,
+          'skipped-icon/consumer/qnx/org.rnqnx.notes/ApplicationIdentity.generated.h'
+        ),
+        'utf8'
+      )
+    ).includes('configuredIconSizes() { return {}; }')
+  );
   delete tamperedIcon.icon;
   await writeFile(config, JSON.stringify(tamperedIcon));
   configure('missing-icon', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);

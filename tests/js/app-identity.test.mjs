@@ -8,6 +8,7 @@ import {
   readFile,
   realpath,
   rm,
+  symlink,
   writeFile,
 } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -25,7 +26,7 @@ import {
 } from '../../packages/react-native-qnx-cli/src/app-identity.mjs';
 import { inspectConsumer } from '../../packages/react-native-qnx-cli/src/doctor.mjs';
 import { prepareNativeMain } from '../../packages/react-native-qnx-cli/src/prepare-native.mjs';
-import { identityToolForTests } from './helpers/identity-tool.mjs';
+import { identityToolForTests, standInIdentityTool } from './helpers/identity-tool.mjs';
 
 const root = process.cwd();
 const templateIcon = path.join(root, 'template/qnx/assets/icon.png');
@@ -91,55 +92,70 @@ try {
   cases.push(['corrupt.png', corrupt, /IHDR\) is corrupt/]);
   for (const [name, bytes, pattern] of cases) {
     await writeFile(path.join(project, 'assets', name), bytes);
-    await rejectsWith(
-      () => validateIconSource(project, { expo: { icon: `./assets/${name}` } }),
-      pattern
-    );
+    await rejectsWith(() => validateIconSource(project, { icon: `./assets/${name}` }), pattern);
   }
   await writeFile(path.join(project, 'assets', 'ok.png'), pngHeaderOnly(1024, 1024));
-  assert.equal(
-    (await validateIconSource(project, { expo: { icon: './assets/ok.png' } })).width,
-    1024
-  );
+  assert.equal((await validateIconSource(project, { icon: './assets/ok.png' })).width, 1024);
   checks++;
-  await rejectsWith(() => validateIconSource(project, { expo: {} }), /No app icon is set/);
+  await rejectsWith(() => validateIconSource(project, {}), /No app icon is set/);
   await rejectsWith(
-    () => validateIconSource(project, { expo: { icon: '../outside.png' } }),
+    () => validateIconSource(project, { icon: '../outside.png' }),
     /expo.icon "..\/outside.png" is not a readable file inside the project/
   );
   await rejectsWith(
-    () => validateIconSource(project, { expo: { icon: './assets/missing.png' } }),
+    () => validateIconSource(project, { icon: './assets/missing.png' }),
     /missing\.png/
   );
-  assert.deepEqual(
-    iconSetting({ expo: { icon: './a.png', extra: { rnqnx: { icon: './b.png' } } } }),
-    { field: 'expo.extra.rnqnx.icon', relative: 'b.png', declared: './b.png' }
-  );
+  assert.deepEqual(iconSetting({ icon: './a.png', extra: { rnqnx: { icon: './b.png' } } }), {
+    field: 'expo.extra.rnqnx.icon',
+    relative: 'b.png',
+    declared: './b.png',
+  });
   checks++;
 
   // Tile label: shortName wins; expo.name stays the fallback.
-  assert.deepEqual(resolveTileLabel({ expo: { name: 'Field Notes Pro' } }), {
+  assert.deepEqual(resolveTileLabel({ name: 'Field Notes Pro' }), {
     field: 'expo.name',
     label: 'Field Notes Pro',
   });
   assert.deepEqual(
     resolveTileLabel({
-      expo: { name: 'Field Notes Pro', extra: { rnqnx: { shortName: 'Notes' } } },
+      name: 'Field Notes Pro',
+      extra: { rnqnx: { shortName: 'Notes' } },
     }),
     { field: 'expo.extra.rnqnx.shortName', label: 'Notes' }
   );
   checks += 2;
   for (const shortName of ['', ' Notes', 'Notes\nTwo', '\ud800', 'a'.repeat(129), 7])
     throwsWith(
-      () => resolveTileLabel({ expo: { name: 'Notes', extra: { rnqnx: { shortName } } } }),
+      () => resolveTileLabel({ name: 'Notes', extra: { rnqnx: { shortName } } }),
       /shortName must be 1-128 characters/
     );
   // Emoji, CJK and RTL text are valid label text; their width is the tool's job.
   for (const shortName of ['学習ノート', 'Notes 📝', 'פתקים', '👩‍💻'])
-    assert.equal(
-      resolveTileLabel({ expo: { name: 'x', extra: { rnqnx: { shortName } } } }).label,
-      shortName
+    assert.equal(resolveTileLabel({ name: 'x', extra: { rnqnx: { shortName } } }).label, shortName);
+  checks++;
+
+  // Invisible format characters are rejected; ZWJ only inside emoji sequences.
+  for (const shortName of [
+    'Notes\u200B',
+    'No\u200Btes',
+    '\u202ENotes',
+    'Notes\u00ADPad',
+    'Notes\u2060',
+    'Notes\u{E0041}',
+    'A\u200DB',
+  ])
+    throwsWith(
+      () => resolveTileLabel({ name: 'x', extra: { rnqnx: { shortName } } }),
+      /invisible format character U\+[0-9A-F]{4,5}/
     );
+  throwsWith(
+    () => resolveTileLabel({ name: 'x', extra: { rnqnx: { shortName: '\u0301\u0302' } } }),
+    /no visible character/
+  );
+  for (const shortName of ['👩‍💻', '👩🏽‍💻 Dev', '🏳️‍🌈'])
+    assert.equal(resolveTileLabel({ name: 'x', extra: { rnqnx: { shortName } } }).label, shortName);
   checks++;
 
   // QNX has no launcher profile: the label is recorded as not measured and the
@@ -166,8 +182,25 @@ try {
         field: 'expo.name',
         label: 'Field Notes Professional Edition',
       }),
-    /Tile label "Field Notes Professional Edition" \(expo\.name\) is [\d.]+ px too wide for the Marathon launcher: it measures [\d.]+ px in Source Sans 3 Regular \/ Source Sans 3 Light at 20 px, and the label box is 92\.4 px wide on one line\. Set expo\.extra\.rnqnx\.shortName to a shorter label, for example "Field/
+    /Tile label "Field Notes Professional Edition" \(expo\.name\) is [\d.]+ px too wide for the Marathon launcher: it measures [\d.]+ px in Source Sans 3 Regular \/ Source Sans 3 Light at 20 px, and the label box is 92\.4 px wide on one line with 2 px kept free\. Set expo\.extra\.rnqnx\.shortName to a shorter label, for example "Field/
   );
+  // Markup is refused: the launcher's AutoText would render tags as formatting.
+  throwsWith(
+    () => measureTileLabel(() => tool, 'marathon', { field: 'expo.name', label: '<b>Note</b>' }),
+    /looks like markup/
+  );
+  // Suggestions never contain markup fragments or entities.
+  assert.throws(
+    () =>
+      measureTileLabel(() => tool, 'marathon', {
+        field: 'expo.name',
+        label: 'A&B Notes and More',
+      }),
+    (/** @type {Error} */ error) =>
+      !/[<&]/.test(/for example "(.*)"\./.exec(error.message)?.[1] ?? '') &&
+      /shorter label/.test(error.message)
+  );
+  checks++;
   const fit = measureTileLabel(() => tool, 'marathon', { field: 'expo.name', label: 'Notes' });
   assert.equal(fit.status, 'measured');
   assert.ok(fit.status === 'measured' && fit.widthPx <= fit.boxWidthPx && fit.lineCount === 1);
@@ -226,20 +259,20 @@ try {
   await prepareNativeMain(args);
   assert.equal((await lstat(descriptorPath)).mtimeMs, before);
   checks++;
-  await verifyPreparedIdentity(realApp, { expo }, descriptor);
+  await verifyPreparedIdentity(realApp, expo, descriptor);
   checks++;
   // Drift is caught without the tool: a changed shortName or icon file.
   await rejectsWith(
     () =>
       verifyPreparedIdentity(
         realApp,
-        { expo: { ...expo, extra: { rnqnx: { ...expo.extra.rnqnx, shortName: 'Other' } } } },
+        { ...expo, extra: { rnqnx: { ...expo.extra.rnqnx, shortName: 'Other' } } },
         descriptor
       ),
     /stale/
   );
   await writeFile(descriptor.icon.sizes[0].path, 'tampered');
-  await rejectsWith(() => verifyPreparedIdentity(realApp, { expo }, descriptor), /stale/);
+  await rejectsWith(() => verifyPreparedIdentity(realApp, expo, descriptor), /stale/);
 
   // A label that does not fit stops prepare-native before anything is written.
   const overflow = path.join(temporary, 'overflow');
@@ -276,6 +309,101 @@ try {
     /RNQNX_BUILD_IDENTITY_TOOL=ON/
   );
   if (saved !== undefined) process.env.RNQNX_IDENTITY_TOOL = saved;
+
+  // Icons above 8192 px are refused before decoding.
+  await writeFile(path.join(overflow, 'assets', 'icon.png'), pngHeaderOnly(9000, 9000));
+  await rejectsWith(
+    () => validateIconSource(overflow, { icon: './assets/icon.png' }),
+    /9000x9000.*no larger than 8192x8192/
+  );
+  await writeFile(path.join(overflow, 'assets', 'icon.png'), pngHeaderOnly(640, 640));
+
+  // A rerun on another host (different Qt, font engine or PNG encoder) keeps
+  // the existing descriptor and icons when the host-independent parts match.
+  const standIn = await standInIdentityTool();
+  const hostA = path.join(temporary, 'host-a');
+  await mkdir(path.join(hostA, 'assets'), { recursive: true });
+  await mkdir(path.join(hostA, 'build', 'marathon'), { recursive: true });
+  await copyFile(templateIcon, path.join(hostA, 'assets', 'icon.png'));
+  await writeFile(path.join(hostA, 'build', 'marathon', 'app.bundle.js'), 'bundle\n');
+  await writeApp(hostA, expo);
+  const hostArgs = ['--project', hostA, '--platform', 'marathon', '--identity-tool', standIn];
+  await prepareNativeMain(hostArgs);
+  const hostDescriptor = path.join(hostA, 'build', 'marathon', 'native-app.json');
+  const firstBytes = await readFile(hostDescriptor, 'utf8');
+  process.env.RNQNX_FAKE_HOST_VARIANT = '1';
+  try {
+    await prepareNativeMain(hostArgs);
+    assert.equal(await readFile(hostDescriptor, 'utf8'), firstBytes);
+    checks++;
+    // A real change is still caught.
+    await writeApp(hostA, { ...expo, extra: { rnqnx: { ...expo.extra.rnqnx, shortName: 'Pad' } } });
+    await rejectsWith(() => prepareNativeMain(hostArgs), /Generated native configuration differs/);
+    await writeApp(hostA, expo);
+    // Tampered icons on disk are caught instead of silently accepted.
+    const firstIcon = JSON.parse(firstBytes).icon.sizes[0].path;
+    await writeFile(firstIcon, 'tampered');
+    await rejectsWith(() => prepareNativeMain(hostArgs), /stale/);
+  } finally {
+    delete process.env.RNQNX_FAKE_HOST_VARIANT;
+  }
+
+  // A symlink planted at an icon destination is refused, not written through.
+  const planted = path.join(temporary, 'planted');
+  const victim = path.join(temporary, 'victim.txt');
+  await writeFile(victim, 'keep me');
+  await mkdir(path.join(planted, 'assets'), { recursive: true });
+  await mkdir(path.join(planted, 'build', 'marathon', 'icons'), { recursive: true });
+  await copyFile(templateIcon, path.join(planted, 'assets', 'icon.png'));
+  await writeFile(path.join(planted, 'build', 'marathon', 'app.bundle.js'), 'bundle\n');
+  await writeApp(planted, expo);
+  await symlink(victim, path.join(planted, 'build', 'marathon', 'icons', 'icon-16.png'));
+  await rejectsWith(
+    () =>
+      prepareNativeMain([
+        '--project',
+        planted,
+        '--platform',
+        'marathon',
+        '--identity-tool',
+        standIn,
+      ]),
+    /symlink or not a regular file/
+  );
+  assert.equal(await readFile(victim, 'utf8'), 'keep me');
+  await rejectsWith(
+    () => lstat(path.join(planted, 'build', 'marathon', 'native-app.json')),
+    /ENOENT/
+  );
+  checks++;
+
+  // --skip-identity-tool: no tool, no icons, label recorded as not measured,
+  // and build-native's re-verification accepts the empty set.
+  const savedTool = process.env.RNQNX_IDENTITY_TOOL;
+  delete process.env.RNQNX_IDENTITY_TOOL;
+  const skipped = path.join(temporary, 'skipped');
+  await mkdir(path.join(skipped, 'assets'), { recursive: true });
+  await mkdir(path.join(skipped, 'build', 'qnx'), { recursive: true });
+  await copyFile(templateIcon, path.join(skipped, 'assets', 'icon.png'));
+  await writeFile(path.join(skipped, 'build', 'qnx', 'app.bundle.js'), 'bundle\n');
+  await writeApp(skipped, expo);
+  await prepareNativeMain(['--project', skipped, '--platform', 'qnx', '--skip-identity-tool']);
+  const skippedDescriptor = JSON.parse(
+    await readFile(path.join(skipped, 'build', 'qnx', 'native-app.json'), 'utf8')
+  );
+  assert.deepEqual(skippedDescriptor.icon.sizes, []);
+  assert.equal(skippedDescriptor.labelFit.status, 'not-measured');
+  assert.match(skippedDescriptor.labelFit.reason, /--skip-identity-tool/);
+  await verifyPreparedIdentity(await realpath(skipped), expo, skippedDescriptor);
+  await rejectsWith(() => lstat(path.join(skipped, 'build', 'qnx', 'icons')), /ENOENT/);
+  await rejectsWith(
+    () =>
+      prepareNativeMain(['--project', skipped, '--skip-identity-tool', '--identity-tool', standIn]),
+    /either --identity-tool or --skip-identity-tool/
+  );
+  if (savedTool !== undefined) process.env.RNQNX_IDENTITY_TOOL = savedTool;
+  checks += 4;
+  await rm(path.dirname(standIn), { recursive: true, force: true });
 
   // doctor reports the icon and label without running the tool by default.
   const report = await inspectConsumer(overflow, { platform: 'marathon' });

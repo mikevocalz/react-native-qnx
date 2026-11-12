@@ -32,6 +32,28 @@ QByteArray sha256(const QString& path) {
   return QCryptographicHash::hash(file.readAll(), QCryptographicHash::Sha256).toHex();
 }
 
+// A PNG signature and IHDR only: QImageReader reads the size without
+// allocating the (huge) pixel buffer.
+QString writeHeaderOnly(const QTemporaryDir& dir, const QString& name, quint32 edge) {
+  QByteArray chunk("IHDR");
+  for (const quint32 value : {edge, edge}) {
+    for (int shift = 24; shift >= 0; shift -= 8) chunk.append(char((value >> shift) & 0xff));
+  }
+  chunk.append(QByteArray::fromHex("0806000000"));
+  quint32 crc = 0xffffffffu;
+  for (const char byte : chunk) {
+    crc ^= quint8(byte);
+    for (int bit = 0; bit < 8; ++bit) crc = (crc >> 1) ^ (0xedb88320u & (0u - (crc & 1u)));
+  }
+  crc ^= 0xffffffffu;
+  QByteArray bytes = QByteArray::fromHex("89504e470d0a1a0a0000000d") + chunk;
+  for (int shift = 24; shift >= 0; shift -= 8) bytes.append(char((crc >> shift) & 0xff));
+  const QString path = dir.filePath(name);
+  QFile file(path);
+  if (!file.open(QIODevice::WriteOnly) || file.write(bytes) != bytes.size()) throw std::runtime_error("fixture");
+  return path;
+}
+
 const QList<int> kSizes{16, 24, 32, 48, 64, 96, 128, 192, 256, 512};
 
 } // namespace
@@ -70,6 +92,12 @@ class IconSetTest final : public QObject {
         writeIconSet(writeSource(dir, QStringLiteral("icon.jpg"), {1024, 1024}, "jpg"), out, kSizes));
     QVERIFY_THROWS_EXCEPTION(std::runtime_error,
         writeIconSet(writeSource(dir, QStringLiteral("ok.png"), {1024, 1024}), out, {2048}));
+    try {
+      writeIconSet(writeHeaderOnly(dir, QStringLiteral("huge.png"), 9000), out, kSizes);
+      QFAIL("expected rejection of a 9000 px source");
+    } catch (const std::runtime_error& error) {
+      QVERIFY(QString::fromUtf8(error.what()).contains(QStringLiteral("8192x8192")));
+    }
     try {
       writeIconSet(writeSource(dir, QStringLiteral("named.png"), {1000, 1000}), out, kSizes);
       QFAIL("expected rejection");

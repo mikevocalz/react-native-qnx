@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { open, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -7,20 +8,24 @@ import { crc32 } from 'node:zlib';
 import { boundedFile, projectPath } from './project-path.mjs';
 
 /** Validation and generation for the app's icon and launcher tile label.
- * prepare-native and doctor pass an already-resolved Expo config object here;
- * this module never reads or evaluates app config files itself. */
+ * Callers pass the resolved Expo config object (the `expo` value of app.json,
+ * or `exp` from @expo/config); this module never reads or evaluates app config
+ * files itself. */
 
-/** @typedef {{expo?: {name?: unknown, icon?: unknown, extra?: {rnqnx?: {icon?: unknown, shortName?: unknown}}}}} ResolvedAppConfig */
+/** @typedef {{name?: unknown, icon?: unknown, extra?: {rnqnx?: {icon?: unknown, shortName?: unknown}}}} ExpoConfig */
 /** @typedef {{size: number, path: string, sha256: string}} IconFile */
 /** @typedef {{source: string, sha256: string, sizes: IconFile[]}} IconSet */
 /** @typedef {{width: number, height: number, bitDepth: number, colorType: number, interlaced: boolean}} PngHeader */
-/** @typedef {{id: string, name: string, source: string, fonts: string[], fontNames: string[], pixelSize: number, boxWidthPx: number, lineCount: 1}} LauncherProfile */
-/** @typedef {{target: string, status: 'measured', launcher: string, launcherSource: string,
- * fontNames: string[], pixelSize: number, boxWidthPx: number, lineCount: number,
+/** @typedef {{id: string, name: string, source: string, fonts: string[], fontNames: string[], pixelSize: number, boxWidthPx: number, marginPx: number, lineCount: 1}} LauncherProfile */
+/** labelFit. `widthPx` and `fallbackCodePoints` depend on the host's Qt and
+ * fallback fonts; prepare-native leaves them out when comparing reruns.
+ * @typedef {{target: string, status: 'measured', launcher: string, launcherSource: string,
+ * fontNames: string[], pixelSize: number, boxWidthPx: number, marginPx: number, lineCount: number,
  * widthPx: number, fallbackCodePoints: string[], deviceMeasured: false}
  * | {target: string, status: 'not-measured', reason: string, deviceMeasured: false}} LabelFit */
 
 export const MINIMUM_ICON_PX = 1024;
+export const MAXIMUM_ICON_PX = 8192;
 /** Generated edges. 16-48 cover title bars and task switchers at 1x-2x; 64-256
  * cover launcher tiles (Marathon's Keel iconSizeLauncher is 86 px at pixel
  * ratio 1 and 128 px at 1.5); 512 covers a 2x tile at ratio 3. */
@@ -47,6 +52,8 @@ export const LAUNCHER_PROFILES = Object.freeze({
     fontNames: ['Source Sans 3 Regular', 'Source Sans 3 Light'],
     pixelSize: 20,
     boxWidthPx: 92.4,
+    // Room for device rendering differences the host measurement cannot see.
+    marginPx: 2,
     lineCount: 1,
   },
   qnx: {
@@ -81,10 +88,10 @@ export async function readPngHeader(file) {
   }
 }
 
-/** @param {ResolvedAppConfig} config */
+/** @param {ExpoConfig} config */
 export function iconSetting(config) {
-  const override = config?.expo?.extra?.rnqnx?.icon;
-  const icon = override ?? config?.expo?.icon;
+  const override = config?.extra?.rnqnx?.icon;
+  const icon = override ?? config?.icon;
   const field = override === undefined ? 'expo.icon' : 'expo.extra.rnqnx.icon';
   if (typeof icon !== 'string' || !icon)
     throw new Error(
@@ -94,7 +101,7 @@ export function iconSetting(config) {
 }
 
 /** Check the configured icon source without decoding it.
- * @param {string} root @param {ResolvedAppConfig} config */
+ * @param {string} root @param {ExpoConfig} config */
 export async function validateIconSource(root, config) {
   const { field, relative, declared } = iconSetting(config);
   let file;
@@ -118,16 +125,30 @@ export async function validateIconSource(root, config) {
     throw new Error(
       `${field} "${declared}" is ${header.width}x${header.height}. Export a square PNG of at least ${MINIMUM_ICON_PX}x${MINIMUM_ICON_PX}; keep corners square, the platform applies any mask.`
     );
+  if (header.width > MAXIMUM_ICON_PX)
+    throw new Error(
+      `${field} "${declared}" is ${header.width}x${header.height}. Export a square PNG no larger than ${MAXIMUM_ICON_PX}x${MAXIMUM_ICON_PX}.`
+    );
   return { field, file, ...header };
+}
+
+/** True when a ZERO WIDTH JOINER at `index` sits between two pictographs, as in
+ * an emoji sequence such as woman + ZWJ + laptop.
+ * @param {string[]} chars @param {number} index */
+function joinsPictographs(chars, index) {
+  const pictograph = /^\p{Extended_Pictographic}$/u;
+  let before = index - 1;
+  while (before >= 0 && /^[\uFE0F\p{Emoji_Modifier}]$/u.test(chars[before])) before--;
+  return before >= 0 && pictograph.test(chars[before]) && pictograph.test(chars[index + 1] ?? '');
 }
 
 /** Tile label: extra.rnqnx.shortName when set, otherwise expo.name. expo.name
  * stays the title bar and About name.
- * @param {ResolvedAppConfig} config */
+ * @param {ExpoConfig} config */
 export function resolveTileLabel(config) {
-  const shortName = config?.expo?.extra?.rnqnx?.shortName;
+  const shortName = config?.extra?.rnqnx?.shortName;
   const field = shortName === undefined ? 'expo.name' : 'expo.extra.rnqnx.shortName';
-  const label = shortName ?? config?.expo?.name;
+  const label = shortName ?? config?.name;
   if (
     typeof label !== 'string' ||
     !label ||
@@ -139,6 +160,20 @@ export function resolveTileLabel(config) {
     throw new Error(
       `${field} must be 1-128 characters on one line without surrounding whitespace.`
     );
+  // Invisible format characters (zero-width space, bidi overrides such as
+  // U+202E, soft hyphen, tags) change how a label reads without being seen.
+  // The only one allowed is ZERO WIDTH JOINER inside an emoji sequence.
+  const chars = [...label];
+  for (const [index, char] of chars.entries()) {
+    if (/^\p{Cf}$/u.test(char) && !(char === '\u200D' && joinsPictographs(chars, index))) {
+      const code = char.codePointAt(0)?.toString(16).toUpperCase().padStart(4, '0');
+      throw new Error(
+        `${field} contains the invisible format character U+${code}. Remove it; tile labels allow only visible text and emoji.`
+      );
+    }
+  }
+  if (!/[^\p{Z}\p{C}\p{M}]/u.test(label))
+    throw new Error(`${field} has no visible character. Use a label people can read.`);
   return { field, label };
 }
 
@@ -152,9 +187,15 @@ export function identityToolPath(explicit) {
   const tool = explicit ?? process.env.RNQNX_IDENTITY_TOOL;
   if (!tool)
     throw new Error(
-      'The icon and label tool is not available. Build it with "cmake -S native/app-identity -B build/identity-tool -DRNQNX_BUILD_IDENTITY_TOOL=ON && cmake --build build/identity-tool", then pass --identity-tool build/identity-tool/rnqnx_identity_tool or set RNQNX_IDENTITY_TOOL.'
+      'The icon and label tool is not available. On a Linux or macOS host with Qt 6.11.1 or later, build it with "cmake -S native/app-identity -B build/identity-tool -DRNQNX_BUILD_IDENTITY_TOOL=ON && cmake --build build/identity-tool", then pass --identity-tool build/identity-tool/rnqnx_identity_tool or set RNQNX_IDENTITY_TOOL. On other hosts, pass --skip-identity-tool to prepare without an icon set or label measurement.'
     );
   return path.resolve(tool);
+}
+
+/** The label fit recorded when the tool is skipped or cannot measure.
+ * @param {string} platform @param {string} reason @returns {LabelFit} */
+export function notMeasured(platform, reason) {
+  return { target: platform, status: 'not-measured', reason, deviceMeasured: false };
 }
 
 /** @param {string} tool @param {string[]} args */
@@ -217,13 +258,12 @@ function quoted(text) {
 export function measureTileLabel(tool, platform, tile) {
   const profile = LAUNCHER_PROFILES[platform];
   if (!profile) throw new Error(`No launcher profile for ${platform}.`);
-  if (!('fonts' in profile))
-    return {
-      target: platform,
-      status: 'not-measured',
-      reason: profile.reason,
-      deviceMeasured: false,
-    };
+  if (!('fonts' in profile)) return notMeasured(platform, profile.reason);
+  if (!profile.fonts.every((font) => existsSync(font)))
+    return notMeasured(
+      platform,
+      `The ${profile.name} fonts are not installed with this CLI (expected under native/app-identity/fonts in a source checkout).`
+    );
   const measured = runTool(tool(), [
     'label',
     '--text-hex',
@@ -233,9 +273,15 @@ export function measureTileLabel(tool, platform, tile) {
     String(profile.pixelSize),
     '--box-width',
     String(profile.boxWidthPx),
+    '--margin',
+    String(profile.marginPx),
   ]);
   if (measured.lineCount !== 1 || typeof measured.widthPx !== 'number')
     throw new Error('The label tool returned an unexpected measurement.');
+  if (measured.mightBeRichText)
+    throw new Error(
+      `Tile label ${quoted(tile.label)} (${tile.field}) looks like markup. The ${profile.name} shows labels with QML's automatic text format, so tags such as <b> would render as formatting instead of the measured text. Remove the markup from the label.`
+    );
   if (!measured.fits) {
     const fix = measured.suggestion
       ? `Set expo.extra.rnqnx.shortName to a shorter label, for example ${quoted(measured.suggestion)}.`
@@ -243,7 +289,7 @@ export function measureTileLabel(tool, platform, tile) {
     throw new Error(
       `Tile label ${quoted(tile.label)} (${tile.field}) is ${measured.overflowPx.toFixed(1)} px too wide for the ${profile.name}: ` +
         `it measures ${measured.widthPx.toFixed(1)} px in ${profile.fontNames.join(' / ')} at ${profile.pixelSize} px, ` +
-        `and the label box is ${profile.boxWidthPx} px wide on one line. ${fix} expo.name stays the window title.`
+        `and the label box is ${profile.boxWidthPx} px wide on one line with ${profile.marginPx} px kept free. ${fix} expo.name stays the window title.`
     );
   }
   return {
@@ -254,6 +300,7 @@ export function measureTileLabel(tool, platform, tile) {
     fontNames: profile.fontNames,
     pixelSize: profile.pixelSize,
     boxWidthPx: profile.boxWidthPx,
+    marginPx: profile.marginPx,
     lineCount: profile.lineCount,
     widthPx: measured.widthPx,
     fallbackCodePoints: measured.fallbackCodePoints ?? [],
@@ -261,9 +308,34 @@ export function measureTileLabel(tool, platform, tile) {
   };
 }
 
+/** The parts of a descriptor that must match between reruns on different
+ * hosts. Icon pixel hashes and measured label widths depend on the host's Qt
+ * version and font engine, so they are left out here and checked against the
+ * files on disk by verifyPreparedIdentity instead.
+ * @param {Record<string, unknown> & {icon?: IconSet, labelFit?: LabelFit}} descriptor */
+export function hostIndependentDescriptor(descriptor) {
+  const { icon, labelFit, ...rest } = descriptor;
+  /** @type {Record<string, unknown>} */
+  const stable = { ...rest };
+  if (icon)
+    stable.icon = {
+      source: icon.source,
+      sha256: icon.sha256,
+      sizes: icon.sizes.map((entry) => ({ size: entry.size, path: entry.path })),
+    };
+  if (labelFit) {
+    const copy = /** @type {Record<string, unknown>} */ ({ ...labelFit });
+    delete copy.widthPx;
+    delete copy.fallbackCodePoints;
+    stable.labelFit = copy;
+  }
+  return stable;
+}
+
 /** Re-check a prepared descriptor's icon and tile label against the current
  * config and files without running the tool. Throws when anything drifted.
- * @param {string} root @param {ResolvedAppConfig} config
+ * An empty icon set is valid: it was prepared with --skip-identity-tool.
+ * @param {string} root @param {ExpoConfig} config
  * @param {{icon?: IconSet, shortName?: unknown}} descriptor */
 export async function verifyPreparedIdentity(root, config, descriptor) {
   const stale =
@@ -276,7 +348,7 @@ export async function verifyPreparedIdentity(root, config, descriptor) {
     icon.sha256 !== (await sha256(source.file)) ||
     descriptor.shortName !== resolveTileLabel(config).label ||
     !Array.isArray(icon.sizes) ||
-    icon.sizes.map((entry) => entry.size).join() !== ICON_SIZES.join()
+    (icon.sizes.length > 0 && icon.sizes.map((entry) => entry.size).join() !== ICON_SIZES.join())
   )
     throw new Error(stale);
   for (const entry of icon.sizes) {

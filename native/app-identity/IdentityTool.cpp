@@ -1,7 +1,7 @@
 // Host tool for `rnqnx project prepare-native` and `doctor`:
 //   rnqnx_identity_tool icon  --source <png> --out-dir <dir> --size <px>...
 //   rnqnx_identity_tool label --text-hex <utf8 hex> --font <ttf>...
-//                             --pixel-size <px> --box-width <px>
+//                             --pixel-size <px> --box-width <px> [--margin <px>]
 // Prints one JSON object on stdout. Exit 0: measured or written; 1: rejected
 // input (message on stderr); 2: invalid invocation.
 #include "IconSet.h"
@@ -63,6 +63,11 @@ int runLabel(const QCommandLineParser& parser) {
   if (text.toUtf8() != utf8) throw std::invalid_argument("--text-hex is not well-formed UTF-8");
   LabelBox box{registerFontFiles(fonts), positive(parser, QStringLiteral("pixel-size")),
       positive(parser, QStringLiteral("box-width"))};
+  if (parser.isSet(QStringLiteral("margin"))) {
+    bool ok = false;
+    box.marginPx = parser.value(QStringLiteral("margin")).toDouble(&ok);
+    if (!ok) throw std::invalid_argument("--margin must be a number");
+  }
   const auto measured = measureLabel(text, box);
   QJsonArray faces;
   for (const auto& face : box.faces) faces.append(face.name());
@@ -74,6 +79,8 @@ int runLabel(const QCommandLineParser& parser) {
   QJsonObject result{{QStringLiteral("widthPx"), measured.widthPx},
       {QStringLiteral("boxWidthPx"), measured.boxWidthPx},
       {QStringLiteral("overflowPx"), measured.overflowPx()},
+      {QStringLiteral("marginPx"), measured.marginPx},
+      {QStringLiteral("mightBeRichText"), measured.mightBeRichText},
       {QStringLiteral("fits"), measured.fits()},
       {QStringLiteral("lineCount"), measured.lineCount},
       {QStringLiteral("widestFace"), measured.widestFace},
@@ -100,7 +107,8 @@ int main(int argc, char** argv) {
       {QStringLiteral("text-hex"), QStringLiteral("Label text as UTF-8 hex."), QStringLiteral("hex")},
       {QStringLiteral("font"), QStringLiteral("Launcher font file; repeatable."), QStringLiteral("ttf")},
       {QStringLiteral("pixel-size"), QStringLiteral("Launcher font pixel size."), QStringLiteral("px")},
-      {QStringLiteral("box-width"), QStringLiteral("Label box width."), QStringLiteral("px")}});
+      {QStringLiteral("box-width"), QStringLiteral("Label box width."), QStringLiteral("px")},
+      {QStringLiteral("margin"), QStringLiteral("Width kept free inside the box."), QStringLiteral("px")}});
   if (!parser.parse(QCoreApplication::arguments()) || parser.positionalArguments().size() != 1) {
     std::fprintf(stderr, "rnqnx_identity_tool: %s\n",
         parser.errorText().isEmpty() ? "expected one command: icon or label" : parser.errorText().toUtf8().constData());

@@ -268,16 +268,25 @@ int main(int argc, char** argv) {
 #endif
     identity = rnqnx::runtime::readApplicationIdentity(parser, identity);
     rnqnx::runtime::applyApplicationIdentity(identity);
-#ifdef RNQNX_CONSUMER_APP_HEADER
-    // Title bar and task switcher icon; the build staged the hashed set here.
-    rnqnx::runtime::applyApplicationIcon(rnqnx::runtime::loadApplicationIcon(
-        QCoreApplication::applicationDirPath() + QStringLiteral("/icons"),
-        rnqnx::runtime::configuredIconSizes()));
-#endif
   } catch (const std::exception& error) {
     std::fprintf(stderr, "RNQNX_APP_IDENTITY_ERROR %s\n", error.what());
     return 2;
   }
+#ifdef RNQNX_CONSUMER_APP_HEADER
+  // Window icon from the staged, hash-checked set. A missing or skipped set
+  // is not fatal: the app runs with the platform's default icon.
+  if (rnqnx::runtime::configuredIconSizes().isEmpty()) {
+    std::fprintf(stderr, "RNQNX_APP_ICON_WARNING no icon set was generated for this build\n");
+  } else {
+    try {
+      rnqnx::runtime::applyApplicationIcon(rnqnx::runtime::loadApplicationIcon(
+          QCoreApplication::applicationDirPath() + QStringLiteral("/icons"),
+          rnqnx::runtime::configuredIconSizes()));
+    } catch (const std::exception& error) {
+      std::fprintf(stderr, "RNQNX_APP_ICON_WARNING %s\n", error.what());
+    }
+  }
+#endif
   if (parser.isSet(QStringLiteral("describe-app"))) {
     std::printf("%s\n", rnqnx::runtime::describeApplicationIdentity(identity).constData());
     return 0;

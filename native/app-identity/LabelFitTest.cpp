@@ -9,12 +9,13 @@ namespace {
 
 // Marathon Shell launcher label at upstream 567f1fa with Keel's unscaled
 // metrics on a 540 px phone: Theme.fontSizeTiny = 20 px and a label width of
-// (540 - 2 * 24) / 5 - 6 = 92.4 px. See docs/getting-started/app-identity.md.
+// (540 - 2 * 24) / 5 - 6 = 92.4 px, with the 2 px margin prepare-native keeps.
+// See docs/getting-started/app-identity.md.
 LabelBox marathonBox() {
   static const QList<LauncherFace> faces = registerFontFiles(
       {QStringLiteral(RNQNX_IDENTITY_FONT_DIR "/source-sans-3/SourceSans3-Regular.ttf"),
           QStringLiteral(RNQNX_IDENTITY_FONT_DIR "/source-sans-3/SourceSans3-Light.ttf")});
-  return {faces, 20, 92.4};
+  return {faces, 20, 92.4, 2};
 }
 
 QStringList graphemes(const QString& text) {
@@ -126,11 +127,67 @@ class LabelFitTest final : public QObject {
     }
     QCOMPARE(widest, both.widthPx);
   }
+  // Golden advances for the bundled fonts, unhinted, so a regression in size,
+  // weight or face selection fails instead of agreeing with itself.
+  void goldenWidthsPerFace() {
+    const auto box = marathonBox();
+    QCOMPARE(box.faces[0].weight, 400);
+    QCOMPARE(box.faces[1].weight, 300);
+    const struct {
+      const char* text;
+      qreal regular;
+      qreal light;
+    } golden[] = {{"Calculator", 85.73, 82.80}, {"Messages", 79.34, 77.03}, {"WWWWWWWWWW", 157.19, 153.91}};
+    for (const auto& row : golden) {
+      const QString text = QString::fromLatin1(row.text);
+      const auto regular = measureLabel(text, {{box.faces[0]}, 20, 92.4, 0});
+      const auto light = measureLabel(text, {{box.faces[1]}, 20, 92.4, 0});
+      QVERIFY2(qAbs(regular.widthPx - row.regular) <= 0.5, qPrintable(text + QString::number(regular.widthPx)));
+      QVERIFY2(qAbs(light.widthPx - row.light) <= 0.5, qPrintable(text + QString::number(light.widthPx)));
+      // Both faces measured; the wider (Regular) decides.
+      const auto both = measureLabel(text, box);
+      QCOMPARE(both.widthPx, regular.widthPx);
+      QCOMPARE(both.widestFace, box.faces[0].name());
+      // Order must not matter: with Light listed first, Regular still decides.
+      const auto reversed = measureLabel(text, {{box.faces[1], box.faces[0]}, 20, 92.4, 0});
+      QCOMPARE(reversed.widthPx, regular.widthPx);
+      QCOMPARE(reversed.widestFace, box.faces[0].name());
+    }
+    // Half the pixel size is roughly half the width: the size is applied.
+    const auto half = measureLabel(QStringLiteral("Calculator"), {{box.faces[0]}, 10, 92.4, 0});
+    QVERIFY(qAbs(half.widthPx - 85.73 / 2) <= 0.5);
+  }
+  void fixedFitCounts() {
+    // 92.4 px box minus 2 px margin = 90.4 px; Regular W = 15.72 px, i = 4.91 px.
+    QCOMPARE(checkBoundary(QString(20, QLatin1Char('W'))), qsizetype(5));
+    QCOMPARE(checkBoundary(QString(40, QLatin1Char('i'))), qsizetype(18));
+  }
+  void marginShrinksTheBox() {
+    auto box = marathonBox();
+    const QString text = QString(6, QLatin1Char('W')).left(5) + QStringLiteral("ii"); // 88.4 px
+    box.marginPx = 0;
+    QVERIFY(measureLabel(text, box).fits());
+    box.marginPx = 5;
+    const auto tight = measureLabel(text, box);
+    QVERIFY(!tight.fits());
+    QVERIFY(qAbs(tight.overflowPx() - (tight.widthPx - 87.4)) < 0.001);
+  }
+  void markupIsMeasuredAsPlainTextAndFlagged() {
+    const auto markup = measureLabel(QStringLiteral("<b>Notes</b> Pad"), marathonBox());
+    QVERIFY(markup.mightBeRichText);
+    QVERIFY(!markup.fits()); // The tags count as characters: plain-text width.
+    QVERIFY(!markup.suggestion.contains(QLatin1Char('<')));
+    QVERIFY(!measureLabel(QStringLiteral("R and D"), marathonBox()).mightBeRichText);
+    const auto amp = measureLabel(QStringLiteral("A&B Notes and More"), marathonBox());
+    QVERIFY(!amp.suggestion.contains(QLatin1Char('&')));
+  }
   void invalidInputsThrow() {
     QVERIFY_THROWS_EXCEPTION(std::invalid_argument, measureLabel(QString(), marathonBox()));
     QVERIFY_THROWS_EXCEPTION(std::invalid_argument, measureLabel(QStringLiteral("a"), LabelBox{{}, 20, 92}));
     QVERIFY_THROWS_EXCEPTION(std::invalid_argument, measureLabel(QStringLiteral("a"), LabelBox{marathonBox().faces, 0, 92}));
     QVERIFY_THROWS_EXCEPTION(std::runtime_error, registerFontFiles({QStringLiteral("/nonexistent/font.ttf")}));
+    QVERIFY_THROWS_EXCEPTION(std::invalid_argument, measureLabel(QStringLiteral("a"), LabelBox{marathonBox().faces, 20, 92, -1}));
+    QVERIFY_THROWS_EXCEPTION(std::invalid_argument, measureLabel(QStringLiteral("a"), LabelBox{marathonBox().faces, 20, 92, 92}));
   }
 };
 

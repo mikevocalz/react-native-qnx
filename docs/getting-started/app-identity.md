@@ -36,7 +36,8 @@ All fields live in static `app.json`; dynamic `app.config.js` is not read.
 
 ## Icon
 
-The source must be a PNG, square, and at least 1024×1024. The check reads the
+The source must be a PNG, square, at least 1024×1024 and at most 8192×8192. The
+check reads the
 PNG signature and `IHDR` header, so a renamed JPEG or a corrupt header fails
 with the file name and the fix:
 
@@ -67,7 +68,21 @@ Each file's SHA-256, and the source's, go into `native-app.json`. The consumer
 CMake build refuses an icon whose hash changed, copies the set next to the
 executable under `icons/`, and the host calls
 `QGuiApplication::setWindowIcon` with all ten sizes. `--describe-app` prints
-the loaded sizes as `windowIconSizes`.
+the loaded sizes as `windowIconSizes`. prepare-native writes each icon under a
+temporary name and renames it into place, and refuses a destination that is a
+symlink.
+
+If the staged set is missing or damaged at launch, the app prints
+`RNQNX_APP_ICON_WARNING` and keeps running with the platform's default icon.
+
+Where the window icon shows up depends on the platform plugin:
+
+- Marathon (Qt Wayland): Qt passes the window icon to the compositor; whether
+  the Marathon shell shows it in the title bar or task switcher is not measured
+  (needs device).
+- QNX: Qt's QNX platform plugin (`QQnxWindow`, Qt 6.12.0) has no
+  `setWindowIcon`. On QNX the icon reaches `QGuiApplication::windowIcon()` and
+  the `--describe-app` output, and nothing on screen.
 
 ## Tile label
 
@@ -78,18 +93,40 @@ narrow letters can fit where six wide ones do not. A label that does not fit
 fails prepare-native with the measured overflow; nothing is shortened for you.
 
 ```text
-Tile label "Field Notes Pro" (expo.name) is 33.5 px too wide for the Marathon launcher: it measures 125.9 px in Source Sans 3 Regular / Source Sans 3 Light at 20 px, and the label box is 92.4 px wide on one line. Set expo.extra.rnqnx.shortName to a shorter label, for example "Field". expo.name stays the window title.
+Tile label "Field Notes Pro" (expo.name) is 35.5 px too wide for the Marathon launcher: it measures 125.9 px in Source Sans 3 Regular / Source Sans 3 Light at 20 px, and the label box is 92.4 px wide on one line with 2 px kept free. Set expo.extra.rnqnx.shortName to a shorter label, for example "Field". expo.name stays the window title.
 ```
 
-The suggestion is the longest run of whole words that fits. When no whole word
-fits, the message asks for a shorter label without proposing one.
+The check keeps 2 px of the box free, so a label fits when it measures at most
+90.4 px. The margin absorbs small differences between this host measurement
+and the device's font rendering. Text is laid out unhinted
+(`QFont::PreferNoHinting`) so macOS and Linux hosts produce the same widths for
+the bundled fonts. The suggestion is the longest run of whole words that fits
+and contains no `<` or `&`. When none fits, the message asks for a shorter label
+without proposing one.
+
+Rules for the label text, checked without the tool:
+
+- 1-128 characters on one line, no surrounding whitespace, no control
+  characters.
+- No invisible format characters (Unicode category Cf), such as U+200B zero
+  width space, U+202E right-to-left override, U+00AD soft hyphen or tag
+  characters. The one exception is U+200D zero width joiner between two emoji,
+  as in 👩‍💻.
+- At least one visible character: a label made only of spaces or combining
+  marks is refused.
+
+With the tool, a label that Qt would treat as rich text (`Qt::mightBeRichText`,
+for example `<b>Notes</b>`) is refused. Marathon shows labels in a QML `Text`
+with the default automatic format, which would render the tags as formatting,
+so the plain-text width measured here would not be what appears. A plain `&` is
+measured as a literal character.
 
 ### Launcher label boxes
 
-| Target   | Launcher source                                                                   | Font                                                   | Size  | Box width | Lines | Device check                |
-| -------- | --------------------------------------------------------------------------------- | ------------------------------------------------------ | ----- | --------- | ----- | --------------------------- |
-| Marathon | `patrickjquinn/Marathon-Shell@567f1fa` `shell/qml/components/MarathonAppGrid.qml` | Source Sans 3 Regular and Light; the wider result wins | 20 px | 92.4 px   | 1     | not measured (needs device) |
-| QNX      | none known                                                                        | —                                                      | —     | —         | —     | not measured (needs device) |
+| Target   | Launcher source                                                                   | Font                                                   | Size  | Box width                               | Lines | Device check                |
+| -------- | --------------------------------------------------------------------------------- | ------------------------------------------------------ | ----- | --------------------------------------- | ----- | --------------------------- |
+| Marathon | `patrickjquinn/Marathon-Shell@567f1fa` `shell/qml/components/MarathonAppGrid.qml` | Source Sans 3 Regular and Light; the wider result wins | 20 px | 92.4 px (90.4 px after the 2 px margin) | 1     | not measured (needs device) |
+| QNX      | none known                                                                        | —                                                      | —     | —                                       | —     | not measured (needs device) |
 
 How the Marathon box is derived, all from upstream source at
 `567f1faa8bfdf31611dd401134c293daa160221c` plus Keel (Silica on Qt 6) at
@@ -115,8 +152,8 @@ launcher. On a device with another pixel ratio, ambience font scale or
 `not measured (needs device)`.
 
 Upstream Marathon wraps a long label to a second line (`maximumLineCount: 2`).
-This check is stricter on purpose: one line, so a tile with the longest
-allowed name and a tile with a short name stay the same size.
+This check is stricter on purpose, as a product decision: one line, so a tile
+with the longest allowed name and a tile with a short name stay the same size.
 
 This repository owns no launcher QML, so there is no repo-owned tile that
 applies single-line elision. If a launcher is added here, its label must use
@@ -130,7 +167,8 @@ label box to measure. prepare-native records
 ### Writing a label that fits
 
 Measured on macOS with Homebrew Qt 6.12.0 against the Marathon box
-(92.4 px, 20 px, Source Sans 3):
+(92.4 px less the 2 px margin, 20 px, Source Sans 3). The Latin rows are also
+golden values in `LabelFitTest.cpp`:
 
 | Label         | Width (px) | Fits |
 | ------------- | ---------- | ---- |
@@ -157,8 +195,14 @@ Measured on macOS with Homebrew Qt 6.12.0 against the Marathon box
 
 ## The identity tool
 
-prepare-native needs `rnqnx_identity_tool`, a small Qt host program, for the
-icon set and the label measurement. Build it once with any Qt 6.11.1 or later:
+prepare-native uses `rnqnx_identity_tool`, a small Qt host program, for the
+icon set and the label measurement.
+
+| Host                         | Support                                                                                 |
+| ---------------------------- | --------------------------------------------------------------------------------------- |
+| Linux, macOS                 | Build the tool from a source checkout with Qt 6.11.1 or later.                          |
+| Windows and any other host   | The tool's CMake refuses to configure. Use `--skip-identity-tool`.                      |
+| Cross-compiling environments | The tool is a host program; build it with a native host compiler, never the target one. |
 
 ```bash
 cmake -S native/app-identity -B build/identity-tool -DRNQNX_BUILD_IDENTITY_TOOL=ON
@@ -166,10 +210,34 @@ cmake --build build/identity-tool
 export RNQNX_IDENTITY_TOOL="$PWD/build/identity-tool/rnqnx_identity_tool"
 ```
 
-Or pass `--identity-tool <path>` to prepare-native and doctor. Without it,
-prepare-native stops and prints these commands. doctor checks the icon header
-and the label text without the tool, and measures the label only when you pass
-`--identity-tool`.
+Or pass `--identity-tool <path>` to prepare-native and doctor. Without either,
+prepare-native stops and prints these commands and the skip option.
+
+`--skip-identity-tool` lets a host without the tool continue. prepare-native
+still checks the icon file header and the label text, then prints a warning,
+writes `icon.sizes: []` and records `labelFit.status: "not-measured"`. The
+consumer build configures with a CMake warning and the app runs with the
+platform's default icon. Run prepare-native again with the tool before a
+release build.
+
+The label fonts are read from `native/app-identity/fonts/` in the source
+checkout. The CLI is a source-checkout tool today; if it runs somewhere those
+files are absent, the label is recorded as not measured instead of failing.
+
+doctor checks the icon header and the label text from static `app.json` and
+runs nothing else. The one exception is `--identity-tool`: it runs that binary
+to measure the label.
+
+### Reruns on another host
+
+Icon pixels and measured widths can differ slightly between Qt versions and
+font engines. When `native-app.json` already exists, prepare-native compares
+only the host-independent fields: identity, bundle hash, short name, icon
+source and its hash, icon sizes and paths, and the label box. The icon file
+hashes, `labelFit.widthPx` and `labelFit.fallbackCodePoints` are left out of
+that comparison. The existing icon files are then checked against the hashes
+the existing file records. If everything matches, the existing descriptor and
+icons are kept and the rerun reports `unchanged`.
 
 ## native-app.json fields
 
@@ -190,6 +258,7 @@ and the label text without the tool, and measures the label only when you pass
     "fontNames": ["Source Sans 3 Regular", "Source Sans 3 Light"],
     "pixelSize": 20,
     "boxWidthPx": 92.4,
+    "marginPx": 2,
     "lineCount": 1,
     "widthPx": 79.3,
     "fallbackCodePoints": [],
