@@ -9,18 +9,19 @@ type checking and host C++ smoke tests, but `pnpm audit:dependencies` found
 audit gate. Do not add another advisory to `audit.ignore` or claim a test
 passed merely because a version is patched upstream.
 
-| CI affected package | CI version | Proposed version | Reason                                    |
-| ------------------- | ---------- | ---------------- | ----------------------------------------- |
-| `source-map-js`     | 1.2.1      | 1.2.2            | GHSA-68fv-2mgg-jv7q                       |
-| `compression`       | 1.8.1      | 1.8.2            | GHSA-vc2v-76pw-4v95                       |
-| `shell-quote`       | 1.9.x      | 1.12.0           | GHSA-pqg4-j6r4-53mv, critical             |
-| `zod`               | 4.4.3      | 4.6.6            | GHSA-mrhx-c7xc-m3w5                       |
-| `minimatch`         | 10.2.6     | 11.0.1           | GHSA-g3hv-75wg-m249                       |
-| `glob`              | 13.0.6     | 14.0.3           | GHSA-3g3m-2fjr-6pw4                       |
-| `node-forge`        | 1.4.0      | 1.4.2            | eight new Forge advisories, fixed >=1.4.1 |
+| CI affected package | CI version | Proposed version | Reason                                                                     |
+| ------------------- | ---------- | ---------------- | -------------------------------------------------------------------------- |
+| `source-map-js`     | 1.2.1      | 1.2.2            | GHSA-68fv-2mgg-jv7q                                                        |
+| `compression`       | 1.8.1      | 1.8.2            | GHSA-vc2v-76pw-4v95                                                        |
+| `shell-quote`       | 1.9.x      | 1.12.0           | GHSA-pqg4-j6r4-53mv, critical                                              |
+| `zod`               | 4.4.3      | 4.6.6            | GHSA-mrhx-c7xc-m3w5                                                        |
+| `minimatch`         | 10.2.6     | 11.0.1           | GHSA-g3hv-75wg-m249                                                        |
+| `glob`              | 13.0.6     | 14.0.3           | GHSA-3g3m-2fjr-6pw4                                                        |
+| `node-forge`        | 1.4.0      | 1.4.2            | eight new Forge advisories, fixed >=1.4.1                                  |
+| `node-forge`        | 1.4.2      | 1.4.3            | GHSA-w4xr-hqv8-ch44, GHSA-6cv4-p8m7-4r25, GHSA-j8rw-jp99-435v (2026-11-11) |
 
-The last row is supported by the published security release for
-[node-forge 1.4.2](https://www.npmjs.com/package/node-forge).
+The node-forge rows are supported by the published security releases for
+[node-forge 1.4.2 and 1.4.3](https://www.npmjs.com/package/node-forge).
 `glob` / `minimatch` contain major version changes, so **do not**
 treat a clean audit as sufficient compatibility proof. Check the Expo
 CLI, Metro bundles, native QNX/Marathon host graph and file glob tests

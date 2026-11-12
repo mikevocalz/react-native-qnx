@@ -1,7 +1,7 @@
 # Create and bundle a QNX app
 
 The CLI runs from a React Native QNX source checkout with Node 26+ and pnpm
-12.8.1. `init` creates a workspace app. `bundle-qnx` produces JavaScript for
+12.18.0. `init` creates a workspace app. `bundle-qnx` produces JavaScript for
 the existing native runner. Native Qt/Hermes builds, licenses and runtime
 library deployment remain separate prerequisites.
 

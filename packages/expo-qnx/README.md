@@ -2,7 +2,7 @@
 
 Use this source-checkout command to discover installed Expo modules that declare
 `qnx` support and generate their CMake linking metadata. You need the repository's
-Node 26 and pnpm 12.8.1 dependency graph installed with `pnpm install --frozen-lockfile`.
+Node 26 and pnpm 12.18.0 dependency graph installed with `pnpm install --frozen-lockfile`.
 The selected project must have a named `package.json` and its dependencies installed.
 
 This is **not** `expo prebuild`, a standalone app template, Expo Go, Expo Router

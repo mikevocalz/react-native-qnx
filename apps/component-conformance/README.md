@@ -7,7 +7,7 @@ components, binaries or entitlement code.
 
 ## Build the QNX JavaScript bundle
 
-From the repository root, with Node 26+, pnpm 12.8.1 and the repository's
+From the repository root, with Node 26+, pnpm 12.18.0 and the repository's
 frozen dependencies installed:
 
 ```bash

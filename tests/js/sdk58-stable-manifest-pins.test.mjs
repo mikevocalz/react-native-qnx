@@ -4,12 +4,12 @@ import { readFile } from 'node:fs/promises';
 /** @param {string} p */
 const read = async (p) => JSON.parse(await readFile(p, 'utf8'));
 const root = await read('package.json');
-assert.equal(root.devDependencies.expo, '58.0.22');
+assert.equal(root.devDependencies.expo, '58.0.24');
 assert.equal(root.devDependencies['react-native'], '0.88.1');
 assert.equal(root.devDependencies.react, '19.3.0');
 assert.equal(root.devDependencies.metro, '0.87.1');
 assert.equal(root.devDependencies['@react-native/metro-config'], '0.88.1');
-assert.equal(root.devDependencies['babel-preset-expo'], '58.0.23');
+assert.equal(root.devDependencies['babel-preset-expo'], '58.0.25');
 
 for (const file of [
   'apps/rn-playground/package.json',
@@ -31,5 +31,5 @@ for (const file of [
   }
 }
 const expo = await read('packages/expo-modules-core-qnx/package.json');
-assert.equal(expo.peerDependencies['expo-modules-core'], '58.0.29');
+assert.equal(expo.peerDependencies['expo-modules-core'], '58.1.0');
 console.log('sdk58-stable-manifest-pins.test.mjs passed');
