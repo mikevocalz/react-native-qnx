@@ -238,6 +238,9 @@ The preflight must prove:
 - QNX AArch64le toolchain is available on the host
 - target reports `aarch64le`
 - `/dev/screen` exists
+- if `/dev/drm/card0` exists, the SSH user can read and write both
+  `/dev/drm/card0` and `/dev/drm/renderD128` (see
+  [GPU node access](#gpu-node-access))
 - deployment directory is writable
 - SSH/SCP work
 
@@ -294,3 +297,41 @@ and verify the image actually booted the expected QNX AArch64 configuration.
 
 The React Native QNX physical lane requires QNX Screen. Fix the custom image's
 graphics/Screen startup before debugging React Native, Hermes, Nitro, or Expo.
+
+### GPU node access
+
+On the Pi 400 compat graphics stack (`drm-rpi4` from
+`/data/pi400-graphics-compat`), the DRM server creates `/dev/drm/card0` and
+`/dev/drm/renderD128` as `root:root 0660`. Mesa opens both nodes when an app
+initializes EGL, so an app run as `qnxuser` exits 134 with
+`QQnxIntegration: failed to initialize EGL display, err=12289`
+(`EGL_NOT_INITIALIZED`). Granting only `renderD128` is not enough; the same
+error comes back.
+
+`drm-rpi4` has no option for node owner, group or mode (`use drm-rpi4` lists
+only debug, firmware, module and video options), so the boot script sets them.
+In `/usr/etc/startup/full_startup.sh`, right after
+`waitfor /dev/drm/card0 15 || echo PI400_BOOT_ERROR_DRM`, add:
+
+```sh
+    waitfor /dev/drm/renderD128 15 || echo PI400_BOOT_ERROR_DRM_RENDER
+    chgrp 36 /dev/drm/card0 /dev/drm/renderD128 && chmod 0660 /dev/drm/card0 /dev/drm/renderD128 || echo PI400_BOOT_ERROR_GPU_ACCESS
+```
+
+Group 36 is `screen`. On the stock image `qnxuser` and `user1`..`user6` are its
+members, and the boot script already gives `/dev/io-hid/io-hid` that group.
+The mode stays `0660`, so users outside `screen` still have no access. Screen
+and `drm-rpi4` run as root and are unaffected.
+
+Check from the host with `pnpm pi:preflight`; it fails with a pointer to this
+section when the SSH user cannot read and write either node. On the board:
+
+```sh
+ls -l /dev/drm    # card0 and renderD128 should show group "screen"
+```
+
+Before this boot change, earlier proofs granted a temporary
+`setfacl -m u:qnxuser:rw` on both nodes as root and removed it afterwards
+([public Qt receipt](../evidence/pi400-public-qt-2026-11-12-b51b49c.md)).
+Restarting `drm-rpi4` by hand recreates the nodes as `root:root`; rerun the two
+lines above after doing that.
