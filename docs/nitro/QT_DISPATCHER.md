@@ -74,7 +74,7 @@ normal full-host or QNX options, pass:
 
 The flag defaults OFF and requires the full Qt/Hermes React host. QNX also
 requires `RNQNX_BUILD_NITRO_QNX=ON`. The audited core version is exactly
-`1.0.0-alpha.nightly.105.g69d365fc9b18`; unsupported OS/configurations fail.
+`1.0.0-alpha.nightly.136.gdb81de61bd32`; unsupported OS/configurations fail.
 The existing no-dispatcher installer remains available for synchronous probes.
 
 For QNX, also supply `RNQNX_NITRO_TEST_HERMESC` pointing to the build host's
