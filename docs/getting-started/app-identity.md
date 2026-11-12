@@ -247,6 +247,10 @@ consumer build configures with a CMake warning and the app runs with the
 platform's default icon. Run prepare-native again with the tool before a
 release build.
 
+`rnqnx project run` passes `--skip-identity-tool` itself when
+`RNQNX_IDENTITY_TOOL` is not set, and its native-descriptor step says the icon
+set and tile label were skipped.
+
 The label fonts are read from `native/app-identity/fonts/` in the source
 checkout. The CLI is a source-checkout tool today; if it runs somewhere those
 files are absent, the label is recorded as not measured instead of failing.

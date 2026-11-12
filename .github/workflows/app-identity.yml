@@ -7,6 +7,8 @@ on:
       - 'native/app-identity/**'
       - 'packages/react-native-qnx-cli/src/app-identity.mjs'
       - 'tests/js/app-identity.test.mjs'
+      - 'packages/react-native-qnx-cli/src/prepare-native.mjs'
+      - 'packages/react-native-qnx-cli/src/run.mjs'
       - '.github/workflows/app-identity.yml'
   workflow_dispatch:
 permissions:
@@ -59,6 +61,10 @@ jobs:
         with:
           node-version: 26.13.1
           package-manager-cache: false
+      - name: Install the frozen workspace (prepare-native resolves config through @expo/config)
+        run: |
+          npm install --global pnpm@12.18.0
+          pnpm install --frozen-lockfile
       - name: CLI icon and label checks against the real tool
         run: |
           set -euo pipefail

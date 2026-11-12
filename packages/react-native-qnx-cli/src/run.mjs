@@ -100,7 +100,16 @@ export async function runProject(options) {
       platform,
       path.relative(root, bundle)
     );
-    const { bundle: _b1, bundleSha256: _h1, ...currentRest } = current;
+    // The icon set and tile label are regenerated with the descriptor; compare
+    // only the fields nativeConfiguration computes.
+    const {
+      bundle: _b1,
+      bundleSha256: _h1,
+      shortName: _s1,
+      icon: _i1,
+      labelFit: _l1,
+      ...currentRest
+    } = current;
     const { bundle: _b2, bundleSha256: _h2, ...wantedRest } = wanted;
     if (
       JSON.stringify(currentRest) === JSON.stringify(wantedRest) &&
@@ -108,6 +117,9 @@ export async function runProject(options) {
     )
       await rm(descriptorPath);
   }
+  // The icon set and label measurement need rnqnx_identity_tool (a Qt host
+  // program). Without it, run still prepares the descriptor and says so.
+  const identityTool = env.RNQNX_IDENTITY_TOOL;
   await quietly(() =>
     prepareNativeMain([
       '--project',
@@ -116,13 +128,18 @@ export async function runProject(options) {
       platform,
       '--bundle',
       path.relative(root, bundle),
+      ...(identityTool ? ['--identity-tool', identityTool] : ['--skip-identity-tool']),
     ])
   );
   const { configuration } = await nativeConfiguration(root, platform, path.relative(root, bundle));
   steps.push({
     step: 'native-descriptor',
     status: 'done',
-    detail: `build/${platform}/native-app.json for ${configuration.appId}`,
+    detail:
+      `build/${platform}/native-app.json for ${configuration.appId}` +
+      (identityTool
+        ? ''
+        : '; icon set and tile label skipped (set RNQNX_IDENTITY_TOOL, see docs/getting-started/app-identity.md)'),
   });
 
   if (platform === 'qnx' && (!env.QNX_HOST || !env.QNX_TARGET))
