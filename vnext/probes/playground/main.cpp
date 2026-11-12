@@ -704,11 +704,11 @@ int main(int argc, char** argv) {
   });
   const auto scheduleResize = [&surfaceResize]() { surfaceResize.start(); };
   if (surfaceRoot == window.contentItem()) {
-    QObject::connect(&window, &QWindow::widthChanged, scheduleResize);
-    QObject::connect(&window, &QWindow::heightChanged, scheduleResize);
+    QObject::connect(&window, &QWindow::widthChanged, &surfaceResize, scheduleResize);
+    QObject::connect(&window, &QWindow::heightChanged, &surfaceResize, scheduleResize);
   } else {
-    QObject::connect(surfaceRoot, &QQuickItem::widthChanged, scheduleResize);
-    QObject::connect(surfaceRoot, &QQuickItem::heightChanged, scheduleResize);
+    QObject::connect(surfaceRoot, &QQuickItem::widthChanged, &surfaceResize, scheduleResize);
+    QObject::connect(surfaceRoot, &QQuickItem::heightChanged, &surfaceResize, scheduleResize);
   }
 #if RNQNX_ENABLE_WINDOW_CHROME
   if (singleInstance) {

@@ -168,10 +168,18 @@ bool SingleInstance::listen() {
   auto* server = new QLocalServer(this);
   server->setSocketOptions(QLocalServer::UserAccessOption);
   if (!server->listen(serverName_)) {
-    // A socket file left by a process that crashed: nobody answered the
-    // connect in forwardedToRunningInstance(), so it is stale.
-    QLocalServer::removeServer(serverName_);
-    if (!server->listen(serverName_)) {
+    // Remove the socket file only when it is stale, left by a process that
+    // crashed. A live instance that was too busy to answer within the timeout
+    // in forwardedToRunningInstance() still owns it, and unlinking its socket
+    // would leave that instance unreachable.
+    QLocalSocket probe;
+    probe.connectToServer(serverName_);
+    const bool stale = !probe.waitForConnected(200) &&
+                       (probe.error() == QLocalSocket::ServerNotFoundError ||
+                        probe.error() == QLocalSocket::ConnectionRefusedError);
+    probe.abort();
+    if (stale) QLocalServer::removeServer(serverName_);
+    if (!stale || !server->listen(serverName_)) {
       std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING cannot listen on %s: %s\n",
                    serverName_.toUtf8().constData(), server->errorString().toUtf8().constData());
       delete server;
