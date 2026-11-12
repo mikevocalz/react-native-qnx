@@ -57,6 +57,65 @@ the open-source option; [the LGPL terms](https://doc.qt.io/qt-6/lgpl.html) descr
 the associated conditions. The [QNX commercial product page](https://doc.qt.io/qt-6/qnx.html)
 does not replace the per-file/source audit for the selected open-source build.
 
+### Public-source Qt 6.12.0 for QNX (2026-11-12)
+
+The first public-source build is recorded in
+[the Pi 400 public Qt receipt](evidence/pi400-public-qt-2026-11-12-b51b49c.md),
+with every runtime file's SHA-256 in
+[the closure manifest](evidence/qt-public-runtime-closure-2026-11-12-b51b49c.json).
+
+- **Source:** `qt-everywhere-src-6.12.0.tar.xz` from
+  `download.qt.io/official_releases/qt/6.12/6.12.0/single/`, SHA-256
+  `98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165`, MD5
+  `ac677cc64158740f257fd37a5b4c5ffb`. No 6.12.1 was published on 2026-11-12.
+  The three published qtbase 6.12 security diffs (`CVE-2026-116337` 0001 and
+  0002, `CVE-2026-105924`) are applied to `src/` before building.
+- **Modules:** qtbase (Core, Gui, Network, OpenGL), qtdeclarative (Qml,
+  QmlMeta, QmlModels, QmlWorkerScript, Quick, QuickShapes) and the QNX QPA
+  plugin `plugins/platforms/libqqnx.so`, plus the QtQml, Models, WorkerScript,
+  QtQuick and Shapes QML plugins. qtshadertools is a host build tool only.
+  This is the evaluation build's subset; nothing was added.
+- **Terms:** every compiled Qt module file offers `LGPL-3.0-only`; no compiled
+  file is GPL-only. Bundled third-party code is permissive or, for FreeType,
+  `FTL OR GPL-2.0-only` with the FTL taken.
+- **Recipes:** [`scripts/qt-public/`](../scripts/qt-public/) holds the
+  extract, patch, host-tool and QNX configure scripts, the toolchain file,
+  the runtime staging script that checks the `DT_NEEDED` closure, the SPDX
+  audit and the device launchers.
+
+#### Material to ship with a runtime built this way
+
+Per [Qt's LGPL page](https://doc.qt.io/qt-6/lgpl.html) and LGPL-3.0, a package
+that includes these Qt libraries carries:
+
+1. **Notices:** the staged `licenses/` tree (LGPL-3.0-only and GPL texts from
+   each module's `LICENSES/`, plus every bundled third-party LICENSE, COPYING,
+   LICENCE and FreeType `FTL.TXT` file) and a statement that the application
+   uses Qt under LGPL-3.0.
+2. **Corresponding source:** the exact archive above, identified by URL and
+   checksum, the three security diffs with their checksums, and the scripts in
+   `scripts/qt-public/`. If the package is distributed, offer that source from
+   the same place or with a written offer, as GPL-3.0 section 6 requires for
+   the library's object code (LGPL-3.0 incorporates the GPL). Relying on a
+   third-party mirror requires that mirror to keep serving that source.
+3. **Library replacement:** Qt is linked as shared libraries
+   (`libQt6*.so.6`), so a user can rebuild Qt from the source above with the
+   same configure line and put the result on `LD_LIBRARY_PATH`, or replace the
+   files in the runtime directory. The Pi 400 receipt shows this path working:
+   application binaries linked against the evaluation libraries ran
+   unchanged on the public-source libraries. For a locked-down device
+   ("User Product" under LGPL-3.0 section 4e and GPL-3.0 section 6), the
+   installation information needed to run a modified library must also be
+   supplied.
+
+Keep the runtime package free of QNX SDP files (sysroot, headers,
+`libscreen`, `libEGL`, `libc++` and other system libraries from the board),
+evaluation artifacts and account or license material. The closure manifest
+lists those QNX libraries as dependencies only.
+
+No package has been produced yet. The public runtime currently exists only as
+a local build output and the board copy under the test user's home.
+
 ## Pi 400 evaluation authorization (2026-11-06)
 
 The owner requested the free ten-day Qt evaluation. The signed-in commercial

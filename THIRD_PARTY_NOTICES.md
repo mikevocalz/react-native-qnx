@@ -26,6 +26,19 @@ expires on 17 November 2026 and does not establish a production distribution
 basis for those artifacts. Track the separate open-source build in
 [packaging](docs/packaging.md).
 
+The public-source Qt 6.12.0 build for QNX is recorded in
+[its Pi 400 receipt](docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md) and
+[closure manifest](docs/evidence/qt-public-runtime-closure-2026-11-12-b51b49c.json).
+Its runtime contains Qt Core, Gui, Network, OpenGL, Qml, QmlMeta, QmlModels,
+QmlWorkerScript, Quick and QuickShapes, the QNX QPA plugin and five QML
+plugins, all under `LGPL-3.0-only` (with GPL and commercial alternatives), and
+these bundled components with their own terms: FreeType (FTL), HarfBuzz (MIT),
+libpng (Libpng/libpng-2.0), zlib (Zlib), PCRE2 (BSD with binary exception),
+double-conversion (BSD-3-Clause), libpsl (BSD-3-Clause) with Public Suffix List
+data (MPL-2.0), MD4C (MIT), JavaScriptCore masm (BSD-2-Clause) and Imlib2-derived
+scaling code (BSD-2-Clause and Imlib2). The runtime's `licenses/` directory
+holds those texts; [packaging](docs/packaging.md) lists what must ship with it.
+
 For the selected LGPL route, document the corresponding
 source, notices, library replacement/relinking and installation obligations
 that apply to that release. Tie those materials to the exact source and build
