@@ -100,6 +100,8 @@ or `Restore window`.
 ## Known gaps
 
 - The title-bar inset is not reported to JavaScript or `SafeAreaView`.
+- JavaScript runs on the Qt GUI thread, so a long JS call freezes the title
+  bar along with the rest of the window.
 - With `hidden`, a press on a floating control also reaches the React view
   under it when the input-lifecycle dispatcher is on.
 - No runtime layout change, close guard, window icon or edge resize yet.

@@ -107,6 +107,11 @@ sets these limits:
 - The React surface is shorter by the bar height in the `default` style. The
   inset is not yet reported to JavaScript or `SafeAreaView`, so `hidden` style
   content can sit under the floating controls. That is the next slice.
+- The chrome never calls into JavaScript, but `QtReactHost` runs JavaScript on
+  the Qt GUI thread today. A JS call that blocks therefore blocks the title bar
+  too. The gate's "chrome still operable while the JS thread is deliberately
+  blocked" needs the host to move JavaScript to its own thread first; this
+  ADR does not claim it.
 - Drag-to-move and edge resize are off on QNX. They can be enabled per target
   once a receipt shows the QPA supports them.
 

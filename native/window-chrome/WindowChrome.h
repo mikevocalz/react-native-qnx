@@ -1,8 +1,10 @@
 #pragma once
 
 // Owns the client-drawn title bar and the item the Fabric root mounts into.
-// Lives on the Qt GUI thread with the window; it never calls into JavaScript,
-// so the controls keep working while the JS thread is busy. See ADR-0016.
+// Lives on the Qt GUI thread with the window and never calls into JavaScript.
+// QtReactHost currently runs JavaScript on that same thread, so a blocked JS
+// call also blocks these controls until the host gets its own JS thread.
+// See ADR-0016.
 
 #include "WindowChromeModel.h"
 
