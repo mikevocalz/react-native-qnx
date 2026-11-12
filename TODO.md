@@ -11,8 +11,8 @@ Gates 1 to 7 are on `main`. Gates 8 to 11 (`app-identity`, `window-chrome`,
 [PR #115](https://github.com/mikevocalz/react-native-qnx/pull/115); until it
 merges, `pnpm validate:docs` reports seven gates.
 
-Owner roles come from the [contributor roster](docs/marathon/ROSTER.md). A role
-is a responsibility, not a named person. Each PR names its own DRI and an
+Owner roles come from the [contributor roster](docs/marathon/ROSTER.md). Roles are
+responsibilities; each PR names its own DRI and an
 independent reviewer.
 
 ## Gates
