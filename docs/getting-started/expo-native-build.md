@@ -17,4 +17,4 @@ For actual QNX cross-compilation, prepare an HBC bundle using the Hermes compile
 
 `--dry-run` prints the selected preset, flags and output paths without spawning CMake or creating files. The command refuses a stale descriptor, missing bundle, identity mismatch, cross-target confusion and unsupported previews. Native code, config files and installed packages are trusted local inputs; this is not a build sandbox.
 
-The build command does not claim that native modules were registered, Expo Router/Worklets/RNGH work, debugger/Fast Refresh is available, or that the app was launched inside MarathonOS. The existing seven QNX physical/release gates and independently reviewed Marathon managed-app lifecycle remain open. No Nitro Forge dependency is bundled.
+The build command does not claim that native modules were registered, Expo Router/Worklets/RNGH work, debugger/Fast Refresh is available, or that the app was launched inside MarathonOS. The QNX v1 physical and release gates and independently reviewed Marathon managed-app lifecycle remain open. No Nitro Forge dependency is bundled.

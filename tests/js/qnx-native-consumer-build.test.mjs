@@ -79,6 +79,7 @@ try {
     assert.equal(plan.platform, 'marathon');
     assert.equal(plan.configure[2], 'linux-host-renderer');
     assert.ok(plan.configure.includes('-DRNQNX_BUILD_MARATHON_HOST=ON'));
+    assert.ok(plan.configure.includes('-DRNQNX_ENABLE_WINDOW_CHROME=OFF'));
     assert.ok(!plan.configure.includes('-DRNQNX_CONSUMER_HOST_PREVIEW=ON'));
     assert.ok(plan.output.includes('/marathon/'));
   }, 'Marathon Linux target');

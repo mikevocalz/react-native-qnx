@@ -18,7 +18,7 @@ verification means **file integrity**, not completed release qualification.
 ## Add an observed receipt
 
 The generated JSON records the exact HEAD commit, tree, lockfile, package manifest,
-component matrix and existing seven release gates. Its `receipts` array starts empty.
+component matrix and eleven release gates. Its `receipts` array starts empty.
 Do not fill it with invented results. Place authorized logs or capture files under
 `build/release-candidate/artifacts/`, then add a receipt using this shape:
 
