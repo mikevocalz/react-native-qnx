@@ -37,6 +37,7 @@ Run from this directory inside the container:
 source ./layout.sh                  # exports the paths used below
 ./extract-source.sh                 # checks the archive hash, extracts 3 submodules
 ./apply-cve-patches.sh              # checks patch hashes, applies src/ hunks once
+./apply-qnx-patches.sh              # applies patches/*.patch to qtbase once
 MIN_KB=4194304 ./guarded-run.sh ./configure-host.sh "$QT_PUBLIC_ROOT/logs/host-build.log"
 MIN_KB=4194304 JOBS=4 ./guarded-run.sh ./configure-qnx.sh "$QT_PUBLIC_ROOT/logs/qnx-build.log"
 source "$QNX_SDP/qnxsdp-env.sh"
@@ -53,6 +54,41 @@ python3 -I stage-runtime.py "$QT_PUBLIC_ROOT/runtime" "$QT_PUBLIC_ROOT/runtime-s
 
 The Release configuration carries no `-O` level, as in the evaluation build;
 see the receipt.
+
+## QNX platform plugin patch
+
+[`patches/qtbase-qnx-offscreen-surface.patch`](patches/qtbase-qnx-offscreen-surface.patch)
+targets the black window Qt Quick's OpenGL path shows under
+`fullscreen-winmgr` on the Pi 400. Unpatched, the window stays black there, while the same app renders with
+`QT_QUICK_BACKEND=software`, renders with OpenGL when no window manager runs,
+and `grabWindow()` returns the right pixels.
+
+The cause: for every OpenGL-rendered `QQuickWindow`, Qt Quick asks for a
+`QOffscreenSurface` (`QSGRhiSupport::maybeCreateOffscreenSurface`, then
+`QRhiGles2InitParams::newFallbackSurface`). The stock qnx plugin does not
+implement `createPlatformOffscreenSurface()`, so `QOffscreenSurface::create()`
+falls back to a hidden `QWindow`. That hidden window still becomes a top-level
+libscreen application window (1x1, created right after the real one), and
+`fullscreen-winmgr` manages it like any other app window. With
+`QT_LOGGING_RULES="qt.qpa.*=true"` the unpatched run logs
+`QWindow(..., name="QOffscreenSurface")` being created and added to the
+screen, followed by two `SCREEN_PROPERTY_VISIBLE` (51) events on the real
+window; the software backend creates no such window.
+
+The patch implements `createPlatformOffscreenSurface()` with `QEGLPbuffer`,
+as eglfs does: a surfaceless context when `EGL_KHR_surfaceless_context` is
+available (Mesa on the Pi has it), otherwise a pbuffer. No screen window is
+created. `QQnxGLContext::eglSurfaceForPlatformSurface()` returns the pbuffer
+for offscreen surfaces instead of casting them to `QQnxEglWindow`. The patched
+run logs `createPlatformOffscreenSurface ... valid = true` and no
+`QOffscreenSurface` window.
+
+To rebuild only the plugin, apply the patch and build the
+`QQnxIntegrationPlugin` target; `libqqnx.so` is the only changed file. When
+deploying it beside the stock runtime, point both `QT_QPA_PLATFORM_PLUGIN_PATH`
+and `QT_PLUGIN_PATH` at the new plugin tree: with `QT_PLUGIN_PATH` still on the
+stock `plugins/`, Qt loaded the stock `platforms/libqqnx.so` even though
+`QT_QPA_PLATFORM_PLUGIN_PATH` named the patched one.
 
 ## On the board
 
