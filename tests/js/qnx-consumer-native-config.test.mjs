@@ -18,11 +18,10 @@ import {
   prepareNativeMain,
   validateAppIdentity,
 } from '../../packages/react-native-qnx-cli/src/prepare-native.mjs';
-import { identityToolForTests } from './helpers/identity-tool.mjs';
+import { useIdentityToolInEnvironment } from './helpers/identity-tool.mjs';
 
 const root = process.cwd();
-const identityTool = await identityToolForTests();
-process.env.RNQNX_IDENTITY_TOOL = identityTool.tool;
+const identityTool = await useIdentityToolInEnvironment();
 const temporary = await mkdtemp(path.join(tmpdir(), 'rnqnx-native-config-'));
 const project = path.join(temporary, 'one external app');
 let checks = 0;
@@ -239,6 +238,5 @@ rnqnx_add_consumer_app()
   );
 } finally {
   await rm(temporary, { recursive: true, force: true });
-  if (!identityTool.real)
-    await rm(path.dirname(identityTool.tool), { recursive: true, force: true });
+  await identityTool.release();
 }

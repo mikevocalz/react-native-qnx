@@ -1,4 +1,5 @@
-import { chmod, mkdtemp, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { chmod, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
@@ -73,10 +74,35 @@ export async function standInIdentityTool() {
 
 /** @returns {Promise<{tool: string, real: boolean}>} */
 export async function identityToolForTests() {
-  if (process.env.RNQNX_IDENTITY_TOOL) return { tool: process.env.RNQNX_IDENTITY_TOOL, real: true };
+  const configured = process.env.RNQNX_IDENTITY_TOOL;
+  if (configured) {
+    if (!existsSync(configured))
+      throw new Error(`RNQNX_IDENTITY_TOOL points at a missing file: ${configured}`);
+    return { tool: configured, real: true };
+  }
   const directory = await mkdtemp(path.join(tmpdir(), 'rnqnx-identity-tool-'));
   const tool = path.join(directory, 'fake-identity-tool.mjs');
   await writeFile(tool, fake);
   await chmod(tool, 0o755);
   return { tool, real: false };
+}
+
+/** For tests whose child processes find the tool through RNQNX_IDENTITY_TOOL.
+ * scripts/run-js-tests.mjs imports every test into one process, so the
+ * variable must be restored and the stand-in removed when the test ends;
+ * otherwise a later test inherits a path to a deleted file.
+ * @returns {Promise<{tool: string, real: boolean, release: () => Promise<void>}>} */
+export async function useIdentityToolInEnvironment() {
+  const previous = process.env.RNQNX_IDENTITY_TOOL;
+  const { tool, real } = await identityToolForTests();
+  process.env.RNQNX_IDENTITY_TOOL = tool;
+  return {
+    tool,
+    real,
+    async release() {
+      if (previous === undefined) delete process.env.RNQNX_IDENTITY_TOOL;
+      else process.env.RNQNX_IDENTITY_TOOL = previous;
+      if (!real) await rm(path.dirname(tool), { recursive: true, force: true });
+    },
+  };
 }
