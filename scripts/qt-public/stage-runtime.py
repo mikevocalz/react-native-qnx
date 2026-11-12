@@ -2,6 +2,10 @@
 """Stage the public-source Qt 6.12.0 QNX runtime closure, verify its DT_NEEDED
 closure, and write sha256 manifests.
 
+Usage: stage-runtime.py [<out-dir> [<spdx-audit.json>]]
+With the audit file, also writes licenses/THIRD_PARTY_ATTRIBUTIONS.txt and
+copies the license files named by each qt_attribution.json the audit found.
+Paths come from layout.sh's QT_PUBLIC_ROOT and QT_PUBLIC_BUILD.
 Run inside qnx805-build after sourcing qnxsdp-env.sh (needs ntoaarch64-readelf).
 The staged layout matches the private evaluation runtime minus its smoke binary.
 When the evaluation manifest is present, the file lists are compared; it is
@@ -10,10 +14,11 @@ never read for content and nothing from it is copied.
 import hashlib, json, os, re, shutil, subprocess, sys
 from pathlib import Path
 
-stage = Path('/home/qnxbuild/qt-6.12.0-public/qnx-build/qtbase')
-src = Path('/work/qt-6.12.0-public/src/qt-everywhere-src-6.12.0')
-out = Path(sys.argv[1] if len(sys.argv) > 1 else '/work/qt-6.12.0-public/runtime')
-eval_manifest = Path('/work/qt612-runtime/manifest.json')
+root = Path(os.environ.get('QT_PUBLIC_ROOT', '/work/qt-6.12.0-public'))
+stage = Path(os.environ.get('QT_PUBLIC_BUILD', '/home/qnxbuild/qt-6.12.0-public')) / 'qnx-build/qtbase'
+src = root / 'src/qt-everywhere-src-6.12.0'
+out = Path(sys.argv[1] if len(sys.argv) > 1 else root / 'runtime')
+eval_manifest = Path(os.environ.get('QT_EVAL_MANIFEST', '/work/qt612-runtime/manifest.json'))
 
 LIBS = ['Core', 'Gui', 'Network', 'OpenGL', 'Qml', 'QmlMeta', 'QmlModels',
         'QmlWorkerScript', 'Quick', 'QuickShapes']
@@ -63,6 +68,45 @@ for mod in MODULES:
         # plus FreeType's FTL text, which the FTL option requires to accompany it.
         if f.is_file() and (re.search(r'(LICEN[CS]E|COPYING)', f.name) or f.name == 'FTL.TXT'):
             copy(f'licenses/{mod}/third-party/{f.relative_to(base / "src/3rdparty")}', f)
+
+# Notices for bundled code the compiler read, from the SPDX audit's
+# qt_attribution.json entries. Some components ship no license file of their
+# own (emoji-segmenter, md4, md5, siphash, sha1, Unicode data); their
+# copyright line and SPDX id are written here, and the license text is the
+# module's LICENSES/<id>.txt copied above.
+audit = Path(sys.argv[2]) if len(sys.argv) > 2 else None
+if audit:
+    a = json.loads(audit.read_text())
+    items = [(d, e) for d, c in a['third_party_components'].items()
+             for e in (c['attribution'] or [])]
+    items += [(str(Path(e['attribution']).parent), e) for e in a['embedded_attributions']]
+    lines = ['Bundled third-party code compiled into this Qt 6.12.0 runtime.',
+             'Generated from qt_attribution.json entries listed by the SPDX audit.', '']
+    for d, e in items:
+        mod, sub = d.split('/', 1)
+        files = e.get('license_files') or []
+        files = files.split() if isinstance(files, str) else files
+        texts = []
+        for f in files:
+            if (src / d / f).is_file():
+                rel = os.path.normpath(f'licenses/{mod}/attributed/{sub}/{f}')
+                if rel not in entries:
+                    copy(rel, src / d / f)
+                texts.append(rel)
+        ids = re.findall(r'[A-Za-z0-9.+-]+', e.get('license') or '')
+        texts = [f'licenses/{mod}/{i}.txt' for i in ids
+                 if f'licenses/{mod}/{i}.txt' in entries and i not in ('AND', 'OR')] + texts
+        lines += [f"{e.get('name')} {e.get('version') or ''}".rstrip(),
+                  f'  Source: {d}',
+                  f"  License: {e.get('license')}",
+                  '  Copyright: ' + ('\n    '.join(e['copyright']) if isinstance(e.get('copyright'), list)
+                                    else (e.get('copyright') or '(see license text)')),
+                  f"  License texts: {', '.join(texts) or 'none found'}", '']
+    rel = 'licenses/THIRD_PARTY_ATTRIBUTIONS.txt'
+    (out / rel).write_text('\n'.join(lines))
+    data = (out / rel).read_bytes()
+    entries[rel] = {'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)}
+
 
 def needed(p):
     t = subprocess.run(['ntoaarch64-readelf', '-d', str(p)], capture_output=True,
