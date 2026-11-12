@@ -82,10 +82,10 @@ and Reanimated integration remain gaps.
 | ---------------------- | --------------------------------------- |
 | reactNative            | `0.88.1`                                |
 | react                  | `19.3.0`                                |
-| expo                   | `58.0.22`                               |
+| expo                   | `58.0.24`                               |
 | metro                  | `0.87.1`                                |
 | reactNativeMetroConfig | `0.88.1`                                |
-| babelPresetExpo        | `58.0.23`                               |
+| babelPresetExpo        | `58.0.25`                               |
 | nitroCore              | `1.0.0-alpha.nightly.105.g69d365fc9b18` |
 | nitroModules           | `1.0.0-alpha.nightly.105.g69d365fc9b18` |
 | nitrogen               | `1.0.0-alpha.nightly.105.g69d365fc9b18` |
@@ -93,9 +93,9 @@ and Reanimated integration remain gaps.
 | codegenTypescript      | `6.0.2`                                 |
 | node                   | `>=26.0.0`                              |
 | packageManager         | `pnpm@12.18.0`                          |
-| expoModulesCore        | `58.0.29`                               |
+| expoModulesCore        | `58.1.0`                                |
 | expoMetro              | `58.0.0`                                |
-| expoMetroConfig        | `58.0.20`                               |
+| expoMetroConfig        | `58.0.22`                               |
 | hermesCompiler         | `260318099.0.5`                         |
 | hermesSource           | `hermes-v260318099.0.5`                 |
 
