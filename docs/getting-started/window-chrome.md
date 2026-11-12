@@ -114,3 +114,9 @@ cmake --build build/window-chrome
 ctest --test-dir build/window-chrome --output-on-failure
 node tests/js/window-chrome-descriptor.test.mjs
 ```
+
+Host frames rendered by `rendersReferenceFrames` at a 2× device pixel ratio
+(offscreen QPA, Qt 6.12.0, macOS host; not QNX output) are in
+[`docs/evidence/window-chrome-host-2026-11-12/`](../evidence/window-chrome-host-2026-11-12/).
+The `qnx-*` frames use the QNX capability table on the host, so they show the
+layout QNX would get, not a QNX render.

@@ -268,6 +268,38 @@ class WindowChromeQuickTest : public QObject {
     QCOMPARE(separator, QColor(QStringLiteral("#d0d0d0")));
   }
 
+  // Writes reference frames when RNQNX_CHROME_FRAMES_DIR is set; used for the
+  // PR's host screenshots. Always checks that each frame renders.
+  void rendersReferenceFrames() {
+    const QString dir = qEnvironmentVariable("RNQNX_CHROME_FRAMES_DIR");
+    struct Case {
+      const char* name;
+      ControlsLayout controls;
+      TitleBarStyle style;
+      const char* platform;
+    };
+    for (const Case& item : {Case{"macos-default", ControlsLayout::MacOS, TitleBarStyle::Default, "cocoa"},
+                             Case{"windows-default", ControlsLayout::Windows, TitleBarStyle::Default, "cocoa"},
+                             Case{"macos-hidden", ControlsLayout::MacOS, TitleBarStyle::Hidden, "cocoa"},
+                             Case{"qnx-macos", ControlsLayout::MacOS, TitleBarStyle::Default, "qnx"},
+                             Case{"qnx-windows", ControlsLayout::Windows, TitleBarStyle::Default, "qnx"}}) {
+      WindowChromeConfig config;
+      config.controls = item.controls;
+      config.titleBarStyle = item.style;
+      Harness harness(config, capabilitiesForPlatform(QString::fromLatin1(item.platform)), QSize(480, 160));
+      harness.window->setColor(QColor(QStringLiteral("#dbe7f5")));
+      QVERIFY(QTest::qWaitForWindowExposed(harness.window.get()));
+      if (item.style == TitleBarStyle::Default && item.controls == ControlsLayout::MacOS &&
+          QString::fromLatin1(item.platform) == QLatin1String("cocoa")) {
+        // Show the keyboard focus ring on the first control in one frame.
+        QTest::keyClick(harness.window.get(), Qt::Key_Tab);
+      }
+      const QImage frame = harness.window->grabWindow();
+      QVERIFY(!frame.isNull());
+      if (!dir.isEmpty()) QVERIFY(frame.save(dir + QLatin1Char('/') + QLatin1String(item.name) + QStringLiteral(".png")));
+    }
+  }
+
  private:
   qreal expectedDpr_{1.0};
 };
