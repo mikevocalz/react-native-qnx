@@ -123,3 +123,75 @@ evaluation runtime. `qtbase/src/opengl/qopenglshaderprogram.cpp` offers
 `LicenseRef-Qt-Commercial` alongside LGPLv3/GPL alternatives. The built QNX QPA
 plugin is `plugins/platforms/libqqnx.so`; QML plugin filenames and the shared
 library closure were inspected from the built artifacts, rather than assumed.
+
+## Expo run modes
+
+An Expo app reaches a QNX board or a desktop host in one of three ways. All
+three use the same `native-app.json` from `rnqnx project prepare-native`.
+
+| Mode                        | What runs                                                                     | Needs the SDP | Command                                            |
+| --------------------------- | ----------------------------------------------------------------------------- | ------------- | -------------------------------------------------- |
+| Prebuilt development runner | A published native host, downloaded once per version set; loads JS from Metro | No            | `rnqnx runner fetch`                               |
+| Custom development build    | A native host built from this checkout with the app's native modules linked   | Yes (QNX)     | `rnqnx project build-native`                       |
+| Standalone package          | The app executable with its bundle embedded (`.hbc` on QNX)                   | Yes (QNX)     | `rnqnx project build-native` with a release bundle |
+
+### Runner manifest format
+
+`rnqnx runner fetch` reads a JSON manifest with schema
+`rnqnx-runner-manifest/v1`:
+
+```json
+{
+  "schema": "rnqnx-runner-manifest/v1",
+  "publishedAt": "2026-11-12T00:00:00Z",
+  "runners": [
+    {
+      "id": "qnx-pi400-dev-0.1.0",
+      "target": "qnx-aarch64-pi400",
+      "kind": "development",
+      "versions": {
+        "reactNativeQnx": "0.1.0",
+        "reactNative": "0.88.1",
+        "hermes": "<version>",
+        "qt": "6.12.0",
+        "sdp": "8.0.5"
+      },
+      "url": "runners/qnx-pi400-dev-0.1.0.tar.gz",
+      "sha256": "<64 lowercase hex>",
+      "size": 123456789,
+      "format": "tar.gz"
+    }
+  ]
+}
+```
+
+- `target` is one of `qnx-aarch64-pi400`, `macos-arm64`, `macos-x86_64`,
+  `linux-x86_64`, `linux-aarch64`. Host runners set `versions.sdp` to `null`;
+  QNX runners must name the SDP.
+- The client picks the single `development` entry whose target and all five
+  versions match exactly. A near miss fails and lists the published entries
+  for that target, then points at `rnqnx project build-native`.
+- `url` may be relative to the manifest. Manifests and archives must use
+  `https`; plain `http` is accepted only for loopback test servers. Redirects
+  and URLs with credentials are refused.
+- The archive is streamed to a temporary file, checked against `size` and
+  `sha256`, and only then renamed into
+  `$XDG_CACHE_HOME/rnqnx/runners/<sha256>/` (default `~/.cache`). A mismatch
+  deletes the download. A cached archive is re-hashed before reuse.
+- `fetch` does not unpack, install or launch the runner and does not contact
+  a device.
+
+`tests/js/qnx-runner-manifest.test.mjs` covers the format and client against a
+local fixture server with synthetic archives.
+
+### Owner TODOs before runners are published
+
+- Publication host and the manifest URL to set as the default for
+  `RNQNX_RUNNER_MANIFEST`. Until then no default exists and `fetch` says so.
+- Real archives. The QNX runner comes from the public-source Qt 6.12.0 build
+  (A1); its notices and accompanying materials must ship inside the archive
+  under the open-source Qt packaging rules above.
+- Publication basis: who signs off each entry, which source SHA and lockfile
+  hash it was built from, and whether the manifest itself is signed. The v1
+  client trusts the manifest over https and verifies archives by hash only.
+- Redistribution terms for QNX SDP runtime files inside a QNX runner archive.
