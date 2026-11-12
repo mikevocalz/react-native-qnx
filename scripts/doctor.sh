@@ -9,7 +9,8 @@ set -euo pipefail
 # as SKIPPED instead of repeating the same root cause.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+# RNQNX_DOCTOR_PROJECT_ROOT lets tests point the doctor at a fixture checkout.
+PROJECT_ROOT="${RNQNX_DOCTOR_PROJECT_ROOT:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
 LOG_DIR="${RNQNX_DOCTOR_LOG_DIR:-${PROJECT_ROOT}/artifacts/logs}"
 LOG_FILE="${LOG_DIR}/$(date +%Y-%m-%d)-qnx-doctor.txt"
 GUIDE="docs/getting-started/build-and-deploy.md"
@@ -162,10 +163,8 @@ else
 fi
 
 if [[ ${SDP_READY} -eq 1 ]]; then
-  HOST_TOOLS_READY=1
   for tool in qcc q++; do
     if ! command -v "${tool}" >/dev/null 2>&1; then
-      HOST_TOOLS_READY=0
       if [[ -x "${QNX_HOST}/usr/bin/${tool}" ]]; then
         fail "${tool} exists in \${QNX_HOST}/usr/bin but that directory is not on PATH." \
           "export PATH=\"\${QNX_HOST}/usr/bin:\${PATH}\", or source qnxsdp-env.sh again"
@@ -181,7 +180,6 @@ if [[ ${SDP_READY} -eq 1 ]]; then
     if TOOL_OUTPUT="$("${tool}" -V 2>&1)"; then
       ok "${tool} target list is readable ($(printf '%s\n' "${TOOL_OUTPUT}" | head -n1))"
     else
-      HOST_TOOLS_READY=0
       fail "${tool} -V failed: $(printf '%s\n' "${TOOL_OUTPUT}" | head -n1)" \
         "check the QNX license with ./scripts/verify-qnx-license.sh"
     fi
@@ -257,7 +255,10 @@ echo ""
 echo "[4/8] Node.js tooling" | tee -a "${LOG_FILE}"
 check_cmd node "26.0.0" "install Node.js 26 or newer from https://nodejs.org (or your version manager), then open a new shell"
 # The pin comes from package.json "packageManager", so a pnpm bump needs no edit here.
-PNPM_PIN="$(sed -n 's/.*"packageManager": *"pnpm@\([^"]*\)".*/\1/p' "${PROJECT_ROOT}/package.json" 2>/dev/null)"
+# A missing package.json must not abort here: the check below reports it.
+PNPM_PIN="$(sed -n 's/.*"packageManager": *"pnpm@\([^"]*\)".*/\1/p' "${PROJECT_ROOT}/package.json" 2>/dev/null || true)"
+# packageManager may carry an integrity suffix such as 12.18.0+sha512.<hash>.
+PNPM_PIN="${PNPM_PIN%%+*}"
 PNPM_PIN="${PNPM_PIN:-12.18.0}"
 PNPM_FIX="install pnpm ${PNPM_PIN}: npm install -g pnpm@${PNPM_PIN} (Node 26 does not bundle Corepack)"
 if ! command -v pnpm >/dev/null 2>&1; then

@@ -29,6 +29,7 @@ async function stub(dir, name, body) {
  * @typedef {{os?: string, arch?: string, node?: string|null, pnpm?: string|null,
  *   cmake?: string|null, ninja?: string|null, python?: string|null, qt?: string|null,
  *   qcc?: 'path'|'sdp-only'|'none', sdp?: boolean, screen?: boolean,
+ *   manifest?: string|null,
  *   env?: Record<string, string>}} Scenario
  */
 let counter = 0;
@@ -64,8 +65,25 @@ async function run(scenario) {
   }
   const qt = scenario.qt === undefined ? '6.12.0' : scenario.qt;
   if (qt !== null) await stub(bin, 'qtpaths6', `[ "$1" = --qt-version ] && echo ${qt}; exit 0`);
+  // Fixture checkout: the doctor never reads this repository's own install,
+  // so the test passes in a fresh clone before pnpm install.
+  const project = path.join(root, 'project');
+  for (const dir of ['native', 'packages', 'apps', 'scripts', 'tests', 'cmake', 'node_modules'])
+    await mkdir(path.join(project, dir), { recursive: true });
+  await mkdir(path.join(project, 'docs/getting-started'), { recursive: true });
+  await writeFile(path.join(project, 'docs/getting-started/compatibility-matrix.md'), '');
+  const manifest =
+    scenario.manifest === undefined
+      ? '{\n  "name": "react-native-qnx-monorepo",\n  "packageManager": "pnpm@12.18.0"\n}\n'
+      : scenario.manifest;
+  if (manifest !== null) await writeFile(path.join(project, 'package.json'), manifest);
   /** @type {Record<string, string>} */
-  const env = { PATH: bin, HOME: root, RNQNX_DOCTOR_LOG_DIR: logs };
+  const env = {
+    PATH: bin,
+    HOME: root,
+    RNQNX_DOCTOR_LOG_DIR: logs,
+    RNQNX_DOCTOR_PROJECT_ROOT: project,
+  };
   if (scenario.sdp ?? true) {
     const host = path.join(root, 'sdp/host');
     const target = path.join(root, 'sdp/target');
@@ -210,6 +228,24 @@ try {
   assert.match(r.out, /WARNING: QNX_TARGET_IP is set but QNX_TARGET_USER is not/);
   r = await run({ env: { QNX_TARGET_IP: 'qnxpi.local', QNX_TARGET_USER: 'qnxuser' } });
   assert.doesNotMatch(r.out, /WARNING|SKIPPED: target/);
+  checks += 1;
+
+  // The pnpm pin comes from packageManager; an integrity suffix is ignored.
+  r = await run({
+    manifest:
+      '{"name": "react-native-qnx-monorepo", "packageManager": "pnpm@12.18.0+sha512.abc123"}\n',
+  });
+  assert.equal(r.status, 0, r.out);
+  assert.match(r.out, /OK: pnpm 12\.18\.0 matches the repository pin/);
+  r = await run({ manifest: '{"name": "x", "packageManager": "pnpm@12.20.1"}\n' });
+  assert.match(r.out, /ERROR: pnpm reported '12\.18\.0', but this repository pins 12\.20\.1\./);
+  checks += 1;
+
+  // A missing package.json is reported, not a silent abort before the summary.
+  r = await run({ manifest: null });
+  assert.equal(r.status, 1);
+  assert.match(r.out, /ERROR: package\.json not found at project root/);
+  assert.match(r.out, /Environment has \d+ error\(s\)/);
   checks += 1;
 
   // Every ERROR or WARNING carries a Fix line.

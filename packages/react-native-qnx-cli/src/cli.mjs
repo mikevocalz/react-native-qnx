@@ -324,7 +324,7 @@ export async function main(argv, cwd = process.cwd()) {
     const next = {
       'configure-qnx': 'Run pnpm qnx doctor; it names the missing QNX SDP or build tool.',
       'build-qnx': `Run pnpm qnx configure-qnx --arch ${arch} --config ${config} first; if it fails too, run pnpm qnx doctor.`,
-      'deploy-qnx': `Check that build-qnx --arch ${arch} --config ${config} succeeded and that QNX_TARGET_IP and QNX_TARGET_USER reach the board over SSH.`,
+      'deploy-qnx': `Check that pnpm qnx build-qnx --arch ${arch} --config ${config} succeeded and that QNX_TARGET_IP and QNX_TARGET_USER reach the board over SSH.`,
       'run-qnx': `Deploy first with pnpm qnx deploy-qnx --arch ${arch} --target ${target}, and check QNX_TARGET_IP and QNX_TARGET_USER.`,
       'log-qnx': 'Check QNX_TARGET_IP and QNX_TARGET_USER; the board must accept SSH.',
       doctor: '',
