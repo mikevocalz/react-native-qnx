@@ -78,10 +78,9 @@ Nitro worker/shutdown assertions passed at the cited revisions. These native
 diagnostics do not establish input/Fabric/render-loop or presentation markers,
 tracing overhead, or performance budgets. Tracing remains OFF by default.
 
-`pnpm test:js` stops at the first failing file. On macOS at `b51b49c`, five files
-fail before any change: `qnx-consumer-native-config`, `qnx-device-tools`,
-`qnx-external-project`, `qnx-native-consumer-build` and `qnx-project-create`.
-To see every file's result, run each one with `node tests/js/<file>.test.mjs`.
+`pnpm test:js` stops at the first failing file. Known macOS failures and a
+per-file command are in
+[the clean-host simulation receipt](docs/evidence/clean-host-sim-2026-11-12-b51b49c.md#known-test-failures-on-macos).
 
 `validate:macos` runs host checks. It does not cross-build or run QNX.
 The dated handoff records earlier billing refusals.

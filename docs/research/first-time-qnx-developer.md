@@ -21,17 +21,18 @@ presets, or SSH deploys to a board without root.
 
 ## What they have installed
 
-| Likely present                            | Likely missing or wrong                            |
-| ----------------------------------------- | -------------------------------------------------- |
-| macOS laptop, often Apple Silicon         | an x86-64 Linux host for QNX builds                |
-| Node from Homebrew or a version manager   | Node 26 specifically                               |
-| a global pnpm (often 9 or 10) or only npm | pnpm 12.8.1; Node 26 ships no Corepack to fetch it |
-| Xcode command line tools, maybe CMake     | Ninja, CMake 3.31.9+, Qt 6.11.1+ host tools        |
-| nothing QNX                               | a QNX license, SDP 8.0.5, the board's QSTI package |
+| Likely present                            | Likely missing or wrong                                                               |
+| ----------------------------------------- | ------------------------------------------------------------------------------------- |
+| macOS laptop, often Apple Silicon         | an x86-64 Linux host for QNX builds                                                   |
+| Node from Homebrew or a version manager   | Node 26 specifically                                                                  |
+| a global pnpm (often 9 or 10) or only npm | the pinned pnpm (12.18.0 since the main merge); Node 26 ships no Corepack to fetch it |
+| Xcode command line tools, maybe CMake     | Ninja, CMake 3.31.9+, Qt 6.11.1+ host tools                                           |
+| nothing QNX                               | a QNX license, SDP 8.0.5, the board's QSTI package                                    |
 
 ## Where the guides lost them
 
-Ordered by where the walk stopped first.
+Ordered by where the walk stopped first. The walk ran when the pin was pnpm
+12.8.1; the repository now pins 12.18.0.
 
 1. **Installing dependencies.** The README said "use pnpm 12.8.1" and went
    straight to `pnpm install`. With Homebrew pnpm 10 in a fresh HOME, pnpm tried
@@ -62,7 +63,7 @@ including the 9-second first install.
 ## What changed in response
 
 See the "Fixes on the branch" table in the simulation receipt. In short: the
-README installs pnpm 12.8.1 explicitly and states the Linux build host up
+README installs the pinned pnpm explicitly and states the Linux build host up
 front; the doctor names one fix per failure, collapses cascades into `SKIPPED`
 lines, checks Qt host tools and reports "no target configured" as skipped; CLI
 errors name the next command.

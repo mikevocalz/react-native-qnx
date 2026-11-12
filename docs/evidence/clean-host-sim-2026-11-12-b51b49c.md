@@ -37,6 +37,18 @@ branch `v1/gate6-developer-path` (PR #123).
 | 12  | Host render (`qnx-cli.md`, Hermes from source) | not run                 | Same reason. The guide does not state the disk or time cost of building Hermes; not measured here.                                                                                                                                                                                                               |
 | 13  | `pnpm qnx doctor`                              | exit 1, 8 errors        | D5. One root cause (SDP not sourced) produced 8 errors (`QNX_HOST`, `QNX_TARGET`, two "directory does not exist: " with an empty path, `qcc`, `q++`, Screen headers, Screen library). No error named a command to run.                                                                                           |
 
+## Known test failures on macOS
+
+`pnpm test:js` imports the files in `tests/js` in order and stops at the first
+failure. On macOS at `b51b49c`, five files fail before any change:
+`qnx-consumer-native-config`, `qnx-device-tools`, `qnx-external-project`,
+`qnx-native-consumer-build` and `qnx-project-create`. To see every file's
+result, run each one in its own process:
+
+```bash
+for f in tests/js/*.test.mjs; do node "$f" >/dev/null 2>&1 && echo "PASS $f" || echo "FAIL $f"; done
+```
+
 ## Steps with the SDP sourced
 
 `source /Users/…/qnx-pi400-8.0.5/qnx800/qnxsdp-env.sh` on macOS sets
@@ -66,7 +78,7 @@ branch `v1/gate6-developer-path` (PR #123).
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | D1, D2       | README: install pnpm 12.8.1 explicitly, with the exact switch error; doctor's pnpm fix line says Node 26 has no Corepack.                                      |
 | D3           | Help footer lists `pnpm qnx project …` and `pnpm qnx marathon …`.                                                                                              |
-| D4           | README lists the five macOS failures at `b51b49c` and the per-file command.                                                                                    |
+| D4           | README points to the "Known test failures on macOS" section of this receipt.                                                                                   |
 | D5           | Doctor reports one SDP error and marks dependent checks `SKIPPED`; every `ERROR`/`WARNING` has a `Fix:` line; the summary ends with `Start with: <first fix>`. |
 | D6           | Doctor distinguishes "no runnable `qcc` for this OS", "`qcc` exists in `${QNX_HOST}/usr/bin` but is not on PATH" and "`qcc` missing from a Linux SDP".         |
 | D7           | `libscreen.so` symlinks count as present.                                                                                                                      |
