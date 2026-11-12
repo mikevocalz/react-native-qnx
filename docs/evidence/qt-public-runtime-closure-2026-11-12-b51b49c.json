@@ -1,0 +1,1260 @@
+{
+  "qt": {
+    "version": "6.12.0",
+    "archive": "qt-everywhere-src-6.12.0.tar.xz",
+    "url": "https://download.qt.io/official_releases/qt/6.12/6.12.0/single/qt-everywhere-src-6.12.0.tar.xz",
+    "sha256": "98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165",
+    "md5": "ac677cc64158740f257fd37a5b4c5ffb",
+    "checksum_sources": [
+      "https://download.qt.io/official_releases/qt/6.12/6.12.0/single/qt-everywhere-src-6.12.0.tar.xz.sha256",
+      "https://download.qt.io/official_releases/qt/6.12/6.12.0/single/md5sums.txt"
+    ],
+    "newer_patch_release_checked": "2026-11-12: download.qt.io/official_releases/qt/6.12/ lists only 6.12.0/",
+    "extracted_submodules": ["qtbase", "qtdeclarative", "qtshadertools"],
+    "security_patches_applied_to_qtbase_src": {
+      "CVE-2026-116337-qtbase-6.12-0001.diff": "74c5028985dcc0455255909de4dc80f50cf5472dbf465ce46ebc791a7b080f12",
+      "CVE-2026-116337-qtbase-6.12-0002.diff": "83abc89d507dbd9a94dc5718b0125492c1c37b0609a8f404a1f164925940faec",
+      "CVE-2026-105924-qtbase-6.12.diff": "c27d27b86aaf2cdab0c18d513fbb94a432e98782eddfc5f856387e4be68be50b"
+    }
+  },
+  "build": {
+    "host_tools_log_end": "[1754/1754] EXIT=0 2026-11-12T05:16:05Z",
+    "qnx_log_end": "[1721/1721] EXIT=0 2026-11-12T06:41:18Z",
+    "toolchain": "QNX SDP 8.0.5 qcc -Vgcc_ntoaarch64le (GCC 12.2.0)",
+    "recipes": "scripts/qt-public/ (paths in scripts/qt-public/layout.sh)",
+    "configure_qnx": "-developer-build -release -optimize-size -no-pch -nomake tests -nomake examples \\\n  -prefix /data/qt612-public -extprefix /home/qnxbuild/qt-6.12.0-public/qnx-stage \\\n  -opengl es2 -qt-host-path \"$host\" -submodules qtbase,qtshadertools,qtdeclarative -- \\\n  -DCMAKE_TOOLCHAIN_FILE=/work/qt-6.12.0-public/scripts/qt612-public-qnx-aarch64le.cmake \\\n  -DCMAKE_SYSTEM_VERSION=800 -DFEATURE_no_prefix=OFF \\\n  -DFEATURE_widgets=OFF -DFEATURE_printsupport=OFF -DFEATURE_sql=OFF \\\n  -DFEATURE_dbus=OFF -DFEATURE_icu=OFF -DFEATURE_fontconfig=OFF \\\n  -DFEATURE_system_freetype=OFF -DFEATURE_system_harfbuzz=OFF \\\n  -DFEATURE_system_zlib=OFF -DFEATURE_system_png=OFF -DFEATURE_system_jpeg=OFF \\\n  -DFEATURE_system_pcre2=OFF -DFEATURE_vulkan=OFF -DFEATURE_qml_debug=OFF \\\n  -DFEATURE_qqnx_imf=OFF",
+    "build_targets": "Core Network Gui Qml Quick QuickShapes QQnxIntegrationPlugin qmlplugin modelsplugin workerscriptplugin qtquick2plugin qmlshapesplugin",
+    "note_optimization": "CMAKE_CXX_FLAGS_RELEASE is \"-DNDEBUG -DNDEBUG\" with no -O level, identical to the evaluation build cache; compile lines carry no -O flag"
+  },
+  "runtime": {
+    "board_copy_2026_11_12": {
+      "tarball_sha256": "3d87aae5458c65b099e3e79a4119e0f5b8990171b9fcb9902105f2407a27f663",
+      "SHA256SUMS_sha256": "345d8ac241981faf3c06a20618bf95fd07c37a162b6212a0c27515fb5c5743bf",
+      "files": 132
+    },
+    "current": {
+      "tarball_sha256": "64afc468edb2641fbd3b121805f2e0b62140fa2086a4b0ab2486eae53ef49312",
+      "SHA256SUMS_sha256": "a3a4e3ebaa72b5fc94395d79ca7ec7b0916d12ff74f346cb1814f372e0d64d91",
+      "manifest_json_sha256": "02e48b8733d6b7fba9d3df542beda417348027e2186226493b93016ff95498bf",
+      "files": 159,
+      "difference_from_board_copy": "26 license files named by qt_attribution.json and licenses/THIRD_PARTY_ATTRIBUTIONS.txt added; manifest.json and needed.json regenerated; all ELF and other file hashes unchanged"
+    },
+    "qpa_plugin": "plugins/platforms/libqqnx.so",
+    "elf": {
+      "lib/libQt6Core.so.6.12.0": {
+        "sha256": "f5eb3a5f5509895f9ad632889ea033ebf0b21603403683634a3d0d640451d344",
+        "bytes": 25197224,
+        "needed": [
+          "libfsnotify.so.1",
+          "libm.so.3",
+          "libzstd.so.1",
+          "libeventfd.so.1",
+          "libslog2.so.1",
+          "libc++.so.2",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6Gui.so.6.12.0": {
+        "sha256": "bdcc38e36ba0c276bd81732a17f8282621efde5ab1c78192933cfd5d8bbfe280",
+        "bytes": 31131136,
+        "needed": [
+          "libGLESv2.so.1",
+          "libEGL.so.1",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6Network.so.6.12.0": {
+        "sha256": "eeb3b8bed79e73f683587cadbc611aa3ae1399dc6130ff9765655d699b880b6c",
+        "bytes": 7836840,
+        "needed": [
+          "libzstd.so.1",
+          "libQt6Core.so.6",
+          "libsocket.so.4",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6OpenGL.so.6.12.0": {
+        "sha256": "d95af05132066d4cc88b05c8b9d1d61ad59ab67b52cbc13700ddbcbf43290f45",
+        "bytes": 1686328,
+        "needed": [
+          "libQt6Gui.so.6",
+          "libGLESv2.so.1",
+          "libEGL.so.1",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6Qml.so.6.12.0": {
+        "sha256": "fa5b2d25e7e376798d3b8a2645fcfa23c220eac50f7871890c7f434335a0fc3e",
+        "bytes": 23710344,
+        "needed": [
+          "libQt6Network.so.6",
+          "libQt6Core.so.6",
+          "libsocket.so.4",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6QmlMeta.so.6.12.0": {
+        "sha256": "987351003849f12a19ef8f816cc552cfafa31d9fd63043a76686ab24908e1ca2",
+        "bytes": 775184,
+        "needed": [
+          "libQt6QmlModels.so.6",
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6QmlModels.so.6.12.0": {
+        "sha256": "acffb659e7d82f47f1774a5c77a6049d863d2ce8c9aa20cb9a247c37e8e4a02b",
+        "bytes": 5020296,
+        "needed": [
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6QmlWorkerScript.so.6.12.0": {
+        "sha256": "1c40b24902ec0cfcb5fa20267e4056a816c781f2967caf2e80a7a8b038f47457",
+        "bytes": 345840,
+        "needed": [
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6Quick.so.6.12.0": {
+        "sha256": "8c5a8e7d01bb783b32c04e09bca40fbdc245aa0f6fcec3c9082a033db83fe548",
+        "bytes": 24539128,
+        "needed": [
+          "libQt6QmlMeta.so.6",
+          "libQt6QmlModels.so.6",
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6OpenGL.so.6",
+          "libQt6Gui.so.6",
+          "libQt6Core.so.6",
+          "libGLESv2.so.1",
+          "libEGL.so.1",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "lib/libQt6QuickShapes.so.6.12.0": {
+        "sha256": "f9419585363dc07f7fdde7a5fdcd74e29be28a12faa4834a7665219afb4c5aa9",
+        "bytes": 1435424,
+        "needed": [
+          "libQt6Quick.so.6",
+          "libQt6OpenGL.so.6",
+          "libQt6Gui.so.6",
+          "libGLESv2.so.1",
+          "libEGL.so.1",
+          "libQt6QmlMeta.so.6",
+          "libQt6QmlModels.so.6",
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libQt6Core.so.6",
+          "libsocket.so.4",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "plugins/platforms/libqqnx.so": {
+        "sha256": "c27c1802d44ac33fc4f94b4a7e8ca05ec21c01318257003afd3138c75c2419aa",
+        "bytes": 921208,
+        "needed": [
+          "libscreen.so.1",
+          "libEGL.so.1",
+          "libQt6Gui.so.6",
+          "libQt6Core.so.6",
+          "libGLESv2.so.1",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "qml/QtQml/Models/libmodelsplugin.so": {
+        "sha256": "5a2104f428c07c683bcf036756c723306e3d74610eb255e095a6c4b62866cfe9",
+        "bytes": 28088,
+        "needed": [
+          "libQt6QmlModels.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "qml/QtQml/WorkerScript/libworkerscriptplugin.so": {
+        "sha256": "daab680fc9925aa291244ef6bc66360d037677442c1541cf085c36aa03dc92be",
+        "bytes": 28304,
+        "needed": [
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "qml/QtQml/libqmlplugin.so": {
+        "sha256": "059499871303085df3ad97f0de023348a3082156516f02a95e55185b61c7c821",
+        "bytes": 27872,
+        "needed": [
+          "libQt6QmlMeta.so.6",
+          "libQt6QmlModels.so.6",
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "qml/QtQuick/Shapes/libqmlshapesplugin.so": {
+        "sha256": "91aad842427ac6d6f1258c524fec2ccf85d7d528da8989ae4712ae7b4f5b464a",
+        "bytes": 40416,
+        "needed": [
+          "libQt6QuickShapes.so.6",
+          "libQt6Quick.so.6",
+          "libQt6QmlMeta.so.6",
+          "libQt6QmlModels.so.6",
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6OpenGL.so.6",
+          "libQt6Gui.so.6",
+          "libQt6Core.so.6",
+          "libGLESv2.so.1",
+          "libEGL.so.1",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      },
+      "qml/QtQuick/libqtquick2plugin.so": {
+        "sha256": "e3687d0d76be605f237edcfcc6f398d1af285574f3c4d833713c0ff793ca9974",
+        "bytes": 32120,
+        "needed": [
+          "libQt6Quick.so.6",
+          "libQt6OpenGL.so.6",
+          "libQt6Gui.so.6",
+          "libGLESv2.so.1",
+          "libEGL.so.1",
+          "libQt6QmlMeta.so.6",
+          "libQt6QmlModels.so.6",
+          "libQt6QmlWorkerScript.so.6",
+          "libQt6Qml.so.6",
+          "libQt6Network.so.6",
+          "libsocket.so.4",
+          "libQt6Core.so.6",
+          "libc++.so.2",
+          "libm.so.3",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ]
+      }
+    },
+    "non_qt_system_libraries": [
+      "libEGL.so.1",
+      "libGLESv2.so.1",
+      "libc++.so.2",
+      "libc.so.6",
+      "libeventfd.so.1",
+      "libfsnotify.so.1",
+      "libgcc_s.so.1",
+      "libm.so.3",
+      "libscreen.so.1",
+      "libslog2.so.1",
+      "libsocket.so.4",
+      "libzstd.so.1"
+    ],
+    "files_with_sha256": {
+      "lib/libQt6Core.so.6.12.0": "f5eb3a5f5509895f9ad632889ea033ebf0b21603403683634a3d0d640451d344",
+      "lib/libQt6Gui.so.6.12.0": "bdcc38e36ba0c276bd81732a17f8282621efde5ab1c78192933cfd5d8bbfe280",
+      "lib/libQt6Network.so.6.12.0": "eeb3b8bed79e73f683587cadbc611aa3ae1399dc6130ff9765655d699b880b6c",
+      "lib/libQt6OpenGL.so.6.12.0": "d95af05132066d4cc88b05c8b9d1d61ad59ab67b52cbc13700ddbcbf43290f45",
+      "lib/libQt6Qml.so.6.12.0": "fa5b2d25e7e376798d3b8a2645fcfa23c220eac50f7871890c7f434335a0fc3e",
+      "lib/libQt6QmlMeta.so.6.12.0": "987351003849f12a19ef8f816cc552cfafa31d9fd63043a76686ab24908e1ca2",
+      "lib/libQt6QmlModels.so.6.12.0": "acffb659e7d82f47f1774a5c77a6049d863d2ce8c9aa20cb9a247c37e8e4a02b",
+      "lib/libQt6QmlWorkerScript.so.6.12.0": "1c40b24902ec0cfcb5fa20267e4056a816c781f2967caf2e80a7a8b038f47457",
+      "lib/libQt6Quick.so.6.12.0": "8c5a8e7d01bb783b32c04e09bca40fbdc245aa0f6fcec3c9082a033db83fe548",
+      "lib/libQt6QuickShapes.so.6.12.0": "f9419585363dc07f7fdde7a5fdcd74e29be28a12faa4834a7665219afb4c5aa9",
+      "licenses/THIRD_PARTY_ATTRIBUTIONS.txt": "173830acff115ef792ed1ed4941f0a42e238b858abf2882ba020a3bd3e76261d",
+      "licenses/qtbase/AFL-2.1.txt": "93bb4f7417aa775bab9026cc3d0af28aeb64451fc5a8ec651876785edd8eaf9b",
+      "licenses/qtbase/Apache-2.0.txt": "e3ba223bb1423f0aad8c3dfce0fe3148db48926d41e6fbc3afbbf5ff9e1c89cb",
+      "licenses/qtbase/BSD-2-Clause.txt": "8fda146749ca071ac9cdce2e24d25444676ea48d1f9dccc2b7c15c054b717db8",
+      "licenses/qtbase/BSD-3-Clause.txt": "9f0490f18656c6f2435bd14f603ef0c96434d1825615363dce43abb42ed1dcce",
+      "licenses/qtbase/BSD-4-Clause.txt": "83faa0d205c316ce3efeafee465b6a165914fb29595968c08dc6437021b7b6fd",
+      "licenses/qtbase/BSL-1.0.txt": "3abd6471b9a9a08d65ce771143f8e278bb4c1aeb10c1c2d476935a6b049653f5",
+      "licenses/qtbase/Bitstream-Vera.txt": "7a083b136e64d064794c3419751e5c7dd10d2f64c108fe5ba161eae5e5958a93",
+      "licenses/qtbase/CC0-1.0.txt": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+      "licenses/qtbase/FTL.txt": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1",
+      "licenses/qtbase/GFDL-1.3-no-invariants-only.txt": "110535522396708cea37c72a802c5e7e81391139f5f7985631c93ef242b206a4",
+      "licenses/qtbase/GPL-2.0-only.txt": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "licenses/qtbase/GPL-2.0-or-later.txt": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "licenses/qtbase/GPL-3.0-only.txt": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "licenses/qtbase/HPND.txt": "67ac968431270291f5e9cd3ed76705e1169f57082ee102093b2543b28cef63cf",
+      "licenses/qtbase/IJG.txt": "1cb448f5e2e6d3aca60943f4eee1a04675628dc0266a074a42bc1560ebc28d61",
+      "licenses/qtbase/IPL-1.0.txt": "d5328e672fb1bff47ee18e890784541453380081cf3771bb7b3c06fc19c7d503",
+      "licenses/qtbase/Imlib2.txt": "8846f2baba1a7f4c36f7ca19a923a000d8a21afa37cf0fe006f6ce88a6058a89",
+      "licenses/qtbase/LGPL-2.1-or-later.txt": "1ccf09bf2f598308df4bed9cd8e9657dc5cd0973d2800318f2e241486e2edf3f",
+      "licenses/qtbase/LGPL-3.0-only.txt": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+      "licenses/qtbase/Libpng.txt": "58fe669792f9b4e0740bf75ecfe90b5326128bb2ce7e27e1c342abd9db4d8ea6",
+      "licenses/qtbase/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt": "0526625fcc746a42d3f19a0ab357d3dc8479fdbe3bfd168825498f50215c7a63",
+      "licenses/qtbase/LicenseRef-ICC-License.txt": "9e34ff47b3a44814e183342e7e198d127a6740e29d20e8381fba7688dafc79dd",
+      "licenses/qtbase/LicenseRef-Lcs-Telegraphics.txt": "c10225ebbd5191bfdd761b0d7752c785f2453ab665d6c454473fb12d254668aa",
+      "licenses/qtbase/LicenseRef-Qt-Commercial.txt": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700",
+      "licenses/qtbase/LicenseRef-SHA1-Public-Domain.txt": "65d86b8ec6b1cd8b8f6e64fd8710274ba00d6a3c520e00dfdcd1c3d2071f3305",
+      "licenses/qtbase/Linux-syscall-note.txt": "3f9e477523febab58de8b716ccfbcf02e6ef1c8e7728953905e8558637abe2a9",
+      "licenses/qtbase/MIT-Khronos-old.txt": "3c58021633974f9ed3c3d445a374240a5244fd039628f4d7f6f3e674bc8e6694",
+      "licenses/qtbase/MIT-open-group.txt": "c55d2ab72d8a4f9e9cd8fbd1379268e575e8cfa16874affa5899b75a6d754514",
+      "licenses/qtbase/MIT.txt": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc",
+      "licenses/qtbase/MPL-2.0.txt": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04",
+      "licenses/qtbase/Qt-GPL-exception-1.0.txt": "40678d338ce53cd93f8b22b281a2ecbcaa3ee65ce60b25ffb0c462b0530846b2",
+      "licenses/qtbase/SPL-1.0.txt": "f58f2f30909982445f97f1a61667261920a7caeab21ef5bea1b740f5b144d141",
+      "licenses/qtbase/Unicode-3.0.txt": "80bb6294022d8764adb36a9d65ebb6bd94efb1865918a71e31e6c247607d7634",
+      "licenses/qtbase/X11.txt": "e2936c6509784b4f0ec27bac74182393866fad9422b29a70e085ff14aba87193",
+      "licenses/qtbase/Xerox.txt": "b6bc52205d01e10cf43dbb7b8aec06dcaa3b21d1486e7c9c0bec329ee8244d8d",
+      "licenses/qtbase/Zlib.txt": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080",
+      "licenses/qtbase/attributed/src/3rdparty/blake2/COPYING": "4103f471877ed0bae500752c5fcd7ecca409d4a4a8dc2ad40437daba60f1a2bc",
+      "licenses/qtbase/attributed/src/3rdparty/double-conversion/LICENSE": "4af93c12062c58058378de2397dc1c92bbff9ddfb1d583a01c84127557ce97ca",
+      "licenses/qtbase/attributed/src/3rdparty/easing/LICENSE": "92fac99458f1754b73edf50f9c9983e0efaa06ad96e2afd5e538c79f45b4b191",
+      "licenses/qtbase/attributed/src/3rdparty/forkfd/LICENSE": "d0d683ae18e78fbef90eb41168fb781920da2d12bf80704490f0882915c18ae0",
+      "licenses/qtbase/attributed/src/3rdparty/freetype/BDF-LICENSE.txt": "e4e792f29e66750f2e410fd7b50a567652c180f6ee15e1a4dfa0bb5cde524537",
+      "licenses/qtbase/attributed/src/3rdparty/freetype/LICENSE.txt": "bf543cdda11864477b8d2ca2aa9afc2aaa8f9133461b4d962ed6ec73646256a1",
+      "licenses/qtbase/attributed/src/3rdparty/freetype/PCF-LICENSE.txt": "6938597bfdeca0db191a8f9ede52eaf2482c2c71a0094c084747a1235f9958fe",
+      "licenses/qtbase/attributed/src/3rdparty/freetype/ZLIB-LICENSE.txt": "2b1f5d615382a151af3eb71462ad17d89e2efee8fa7664058d35d3d9237ebb19",
+      "licenses/qtbase/attributed/src/3rdparty/harfbuzz-ng/COPYING": "ba8f810f2455c2f08e2d56bb49b72f37fcf68f1f4fade38977cfd7372050ad64",
+      "licenses/qtbase/attributed/src/3rdparty/libpng/LICENSE": "bdb0a645ea18c60507d0368379b1ac5474b92255fcc2d115e07486a7672ba526",
+      "licenses/qtbase/attributed/src/3rdparty/libpsl/PSL-LICENSE.txt": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04",
+      "licenses/qtbase/attributed/src/3rdparty/libpsl/src/LICENSE.chromium": "1d7f52747a9169751cdf2641a8299c0098e9ecdf9429296ffd55bdb14c9ed5b3",
+      "licenses/qtbase/attributed/src/3rdparty/md4c/LICENSE.md": "d30937367d5413e7eaa218b1640b8946ff76fd34d97152f6979fd96169d5d0fc",
+      "licenses/qtbase/attributed/src/3rdparty/pcre2/LICENCE.md": "197d8a73ffee0d6b09adba2f9c677b5f5aede24edf89258a68e48248d010d811",
+      "licenses/qtbase/attributed/src/3rdparty/pcre2/LICENSE-SLJIT": "5f216505c0f6ea3273caec89e766eef93cdeb7bbb0c429f9360116d7c938feeb",
+      "licenses/qtbase/attributed/src/3rdparty/rfc6234/LICENSE": "7ccebd514aaabc86192f957d773cebf06577c12fe9f25ecd419c6cac5da7a14c",
+      "licenses/qtbase/attributed/src/3rdparty/sha3/BRG_ENDIAN_LICENSE": "2fed6f252ca4a7e813811de3cd3cd08183edd4138bdee909410ef6eee394e82c",
+      "licenses/qtbase/attributed/src/3rdparty/sha3/CC0_LICENSE": "1f2786e2c5befeb4dcba6638db6528bf96ef5d2cf24bc85ab5a81ef00abef59d",
+      "licenses/qtbase/attributed/src/3rdparty/tinycbor/LICENSE": "3c6ba0b5bfa7830505301ffb336a17b0748e0d61c4d34216e9dc98f10e40395e",
+      "licenses/qtbase/attributed/src/3rdparty/zlib/LICENSE": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080",
+      "licenses/qtbase/attributed/src/gui/opengl/LICENSE.KHRONOS.txt": "2e484f3c26ff5008c704a3ca9dd809d43f24a004a1abb6c202660fbff0d19715",
+      "licenses/qtbase/attributed/src/gui/painting/LICENSE.QIMAGETRANSFORM.txt": "46b3cbfa2f2946b93291506351e9be1dd0a28d2a53260f5aa488abd36fbeca9d",
+      "licenses/qtbase/attributed/src/gui/painting/LICENSE.XCONSORTIUM.txt": "a216b01291eb38fc1af93cfccf1fc67b48d9923612e517c2a695e95b3f03c22c",
+      "licenses/qtbase/attributed/src/gui/text/LICENSE.AGLFN.txt": "40818155548ff41c67d3a40edf355e9658992b292c227f4c1147425cedc746c6",
+      "licenses/qtbase/attributed/src/gui/util/LICENSE.XSVG.txt": "3a946598a9f674d44df764279ca0b85b5d6faba08f3bc75d8e0fcf6cd729a9bd",
+      "licenses/qtbase/blessing.txt": "592db1199aab67aafe4515db9808b420db122083807c5329b2f061951e79acbe",
+      "licenses/qtbase/libpng-2.0.txt": "7317e078e2d3b5d7ba5a6159e650945153262b44b76f6700f8e9edb261c5143e",
+      "licenses/qtbase/third-party/D3D12MemoryAllocator/LICENSE.txt": "5478a2f36b736e13dd3250b9c71a4ab521bc327fb9d112a92c647bf3e69ddb68",
+      "licenses/qtbase/third-party/VulkanMemoryAllocator/LICENSE.txt": "846d97c8b74ccaa92b9ad031140a04363b3b3985f318094552f297b8bda1c68e",
+      "licenses/qtbase/third-party/android/LICENSE": "4a51cf7f724f51bedb5fa4f9583a2762f1db8d05e43a577e2487c7aab2fdce18",
+      "licenses/qtbase/third-party/blake2/COPYING": "4103f471877ed0bae500752c5fcd7ecca409d4a4a8dc2ad40437daba60f1a2bc",
+      "licenses/qtbase/third-party/double-conversion/LICENSE": "4af93c12062c58058378de2397dc1c92bbff9ddfb1d583a01c84127557ce97ca",
+      "licenses/qtbase/third-party/easing/LICENSE": "92fac99458f1754b73edf50f9c9983e0efaa06ad96e2afd5e538c79f45b4b191",
+      "licenses/qtbase/third-party/forkfd/LICENSE": "d0d683ae18e78fbef90eb41168fb781920da2d12bf80704490f0882915c18ae0",
+      "licenses/qtbase/third-party/freetype/BDF-LICENSE.txt": "e4e792f29e66750f2e410fd7b50a567652c180f6ee15e1a4dfa0bb5cde524537",
+      "licenses/qtbase/third-party/freetype/LICENSE.txt": "bf543cdda11864477b8d2ca2aa9afc2aaa8f9133461b4d962ed6ec73646256a1",
+      "licenses/qtbase/third-party/freetype/PCF-LICENSE.txt": "6938597bfdeca0db191a8f9ede52eaf2482c2c71a0094c084747a1235f9958fe",
+      "licenses/qtbase/third-party/freetype/ZLIB-LICENSE.txt": "2b1f5d615382a151af3eb71462ad17d89e2efee8fa7664058d35d3d9237ebb19",
+      "licenses/qtbase/third-party/freetype/docs/FTL.TXT": "5a5ee54c5001bbad1cdc1a57cc3dd4c42199b2da09d39c7ee41fab002d02967f",
+      "licenses/qtbase/third-party/gradle/LICENSE": "cf234c4188d773406f640bf89be680d9288f40ff96901c70d643fcea96ad46df",
+      "licenses/qtbase/third-party/harfbuzz-ng/COPYING": "ba8f810f2455c2f08e2d56bb49b72f37fcf68f1f4fade38977cfd7372050ad64",
+      "licenses/qtbase/third-party/icc/LICENSE.txt": "9e34ff47b3a44814e183342e7e198d127a6740e29d20e8381fba7688dafc79dd",
+      "licenses/qtbase/third-party/libjpeg/LICENSE": "ba6bceebcba0fdd35488477c2cca8c4632ce82c74dbfbc87d886ce6fc4433579",
+      "licenses/qtbase/third-party/libpng/LICENSE": "bdb0a645ea18c60507d0368379b1ac5474b92255fcc2d115e07486a7672ba526",
+      "licenses/qtbase/third-party/libpsl/PSL-LICENSE.txt": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04",
+      "licenses/qtbase/third-party/libpsl/src/LICENSE.chromium": "1d7f52747a9169751cdf2641a8299c0098e9ecdf9429296ffd55bdb14c9ed5b3",
+      "licenses/qtbase/third-party/md4c/LICENSE.md": "d30937367d5413e7eaa218b1640b8946ff76fd34d97152f6979fd96169d5d0fc",
+      "licenses/qtbase/third-party/pcre2/LICENCE.md": "197d8a73ffee0d6b09adba2f9c677b5f5aede24edf89258a68e48248d010d811",
+      "licenses/qtbase/third-party/pcre2/LICENSE-SLJIT": "5f216505c0f6ea3273caec89e766eef93cdeb7bbb0c429f9360116d7c938feeb",
+      "licenses/qtbase/third-party/pixman/LICENSE": "942c4f2a80394d3f53599b8382e9f27349b95c45d92b69b84f26d404f4dd74a5",
+      "licenses/qtbase/third-party/rfc6234/LICENSE": "7ccebd514aaabc86192f957d773cebf06577c12fe9f25ecd419c6cac5da7a14c",
+      "licenses/qtbase/third-party/sha3/BRG_ENDIAN_LICENSE": "2fed6f252ca4a7e813811de3cd3cd08183edd4138bdee909410ef6eee394e82c",
+      "licenses/qtbase/third-party/sha3/CC0_LICENSE": "1f2786e2c5befeb4dcba6638db6528bf96ef5d2cf24bc85ab5a81ef00abef59d",
+      "licenses/qtbase/third-party/tinycbor/LICENSE": "3c6ba0b5bfa7830505301ffb336a17b0748e0d61c4d34216e9dc98f10e40395e",
+      "licenses/qtbase/third-party/wasm/DEJAVU-LICENSE": "7a083b136e64d064794c3419751e5c7dd10d2f64c108fe5ba161eae5e5958a93",
+      "licenses/qtbase/third-party/wayland/protocols/MIT_LICENSE.txt": "a8341b9c90ef447a77f55d550e6691e370d3ac15d60edb584def356e348ab828",
+      "licenses/qtbase/third-party/wayland/protocols/text-input/v2/HPND_LICENSE.txt": "8172d52f3b7bba7d10af2f9134c63d0f699ba6b20a47e35f5ac45654c500bfd7",
+      "licenses/qtbase/third-party/xcb/LICENSE": "82775191bc05f85b40404d77bb69b1edeaeb4033f48387e9e5eab4dd67f5d6f1",
+      "licenses/qtbase/third-party/zlib/LICENSE": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080",
+      "licenses/qtdeclarative/Apache-2.0.txt": "e3ba223bb1423f0aad8c3dfce0fe3148db48926d41e6fbc3afbbf5ff9e1c89cb",
+      "licenses/qtdeclarative/BSD-2-Clause.txt": "8fda146749ca071ac9cdce2e24d25444676ea48d1f9dccc2b7c15c054b717db8",
+      "licenses/qtdeclarative/BSD-3-Clause.txt": "9f0490f18656c6f2435bd14f603ef0c96434d1825615363dce43abb42ed1dcce",
+      "licenses/qtdeclarative/CC-BY-3.0.txt": "e6bc9e9c474700b708f568bac9e5a8a9bcb2b1dad53442f5ba449fcb848b8e76",
+      "licenses/qtdeclarative/CC0-1.0.txt": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+      "licenses/qtdeclarative/GFDL-1.3-no-invariants-only.txt": "110535522396708cea37c72a802c5e7e81391139f5f7985631c93ef242b206a4",
+      "licenses/qtdeclarative/GPL-2.0-only.txt": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "licenses/qtdeclarative/GPL-3.0-only.txt": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "licenses/qtdeclarative/LGPL-3.0-only.txt": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+      "licenses/qtdeclarative/LicenseRef-Qt-Commercial.txt": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700",
+      "licenses/qtdeclarative/MIT.txt": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc",
+      "licenses/qtdeclarative/OFL-1.1.txt": "1d361a8f8e8ce6e68457dcd93fb56e162e6baa3bbb7e7573a290d44399f6b57e",
+      "licenses/qtdeclarative/Qt-GPL-exception-1.0.txt": "40678d338ce53cd93f8b22b281a2ecbcaa3ee65ce60b25ffb0c462b0530846b2",
+      "licenses/qtdeclarative/Unlicense.txt": "ffc5ee3c1dca43a6aa11ec05d67358dadc66bcf47e0196823ea754c8dfdb1229",
+      "licenses/qtdeclarative/attributed/src/3rdparty/masm/LICENSE": "9ba0c20a2972274f27e975d79ed3582e322d6891338266a52e2d3a9417fc0a72",
+      "licenses/qtdeclarative/third-party/masm/LICENSE": "9ba0c20a2972274f27e975d79ed3582e322d6891338266a52e2d3a9417fc0a72",
+      "licenses/qtdeclarative/third-party/yoga/LICENSE": "52412d7bc7ce4157ea628bbaacb8829e0a9cb3c58f57f99176126bc8cf2bfc85",
+      "licenses/qtshadertools/AML-glslang.txt": "b5545d31e12c303e8ee9a0cc203d0a2a8d6e02729dd450d4cda5f8ff0e1193d0",
+      "licenses/qtshadertools/Apache-2.0.txt": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff",
+      "licenses/qtshadertools/BSD-3-Clause.txt": "9f0490f18656c6f2435bd14f603ef0c96434d1825615363dce43abb42ed1dcce",
+      "licenses/qtshadertools/Bison-exception-2.2.txt": "193ff9d6e52b80b654fa9402ff351fd1f9f855381f31062a5b7400fd82409b29",
+      "licenses/qtshadertools/GFDL-1.3-no-invariants-only.txt": "110535522396708cea37c72a802c5e7e81391139f5f7985631c93ef242b206a4",
+      "licenses/qtshadertools/GPL-2.0-only.txt": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "licenses/qtshadertools/GPL-3.0-only.txt": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "licenses/qtshadertools/GPL-3.0-or-later.txt": "1a52218b744fa3a722df8d0477a2041571ec2cecdb9906cf1f626fc1a2cf0d6f",
+      "licenses/qtshadertools/LGPL-3.0-only.txt": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+      "licenses/qtshadertools/LicenseRef-MIT-Khronos-old.txt": "fbeaca472f4f70e276dd1106ca5097435967a22ad6c1d8200aef7ad9f70aaf3f",
+      "licenses/qtshadertools/LicenseRef-Qt-Commercial.txt": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700",
+      "licenses/qtshadertools/MIT.txt": "d040359701c01996a017d5c515678929cd1b0625e64cb86db44025fbb6cdf1fc",
+      "licenses/qtshadertools/Qt-GPL-exception-1.0.txt": "40678d338ce53cd93f8b22b281a2ecbcaa3ee65ce60b25ffb0c462b0530846b2",
+      "licenses/qtshadertools/third-party/SPIRV-Cross/LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "licenses/qtshadertools/third-party/glslang/LICENSE.txt": "adb783e734e906d1f46db5df29991dbde84bdb0ceab502ac2febb44fe3c2b5f4",
+      "plugins/platforms/libqqnx.so": "c27c1802d44ac33fc4f94b4a7e8ca05ec21c01318257003afd3138c75c2419aa",
+      "qml/QML/jsroot.qmltypes": "14a12cc93e195cb129c3c3d79a0161023954f46f3e4255a258c7e87e99b46cb2",
+      "qml/QML/plugins.qmltypes": "c018b66cff7d6093281fce51332a179cda733dcc1b43958282a9dbf53ca5cb06",
+      "qml/QML/qmldir": "e7f96a2ecf537ff772872b3da26a77712c659c15328e77c5426e5d2f0d633114",
+      "qml/QtQml/Models/libmodelsplugin.so": "5a2104f428c07c683bcf036756c723306e3d74610eb255e095a6c4b62866cfe9",
+      "qml/QtQml/Models/plugins.qmltypes": "0a5b76dbcc1d431a973e4d7f29b804e237733c9b59c556072df763e9b53b2ac2",
+      "qml/QtQml/Models/qmldir": "4abed3b5d84d4252f6bb292998a566b09a21ae4f2a435e6807cf7047fe14c58a",
+      "qml/QtQml/WorkerScript/libworkerscriptplugin.so": "daab680fc9925aa291244ef6bc66360d037677442c1541cf085c36aa03dc92be",
+      "qml/QtQml/WorkerScript/plugins.qmltypes": "701cd44fd43b9bdae92685471d0e8f8cf6d7c743518aaa6fc3e544fb3989807d",
+      "qml/QtQml/WorkerScript/qmldir": "4ed1b6b0ad3980ae5c882f5c0a4eea8a84bcca35c300f0eec430b89cd30ff768",
+      "qml/QtQml/libqmlplugin.so": "059499871303085df3ad97f0de023348a3082156516f02a95e55185b61c7c821",
+      "qml/QtQml/plugins.qmltypes": "2832f8f726dc5dbb14260f02b07d1d0173c89d7b4b1adc0edb2dfa43aea60520",
+      "qml/QtQml/qmldir": "ff1b83e0cfee28b7dfc809f2acf8d1281e31f037481e80570ad4d23badbc67e2",
+      "qml/QtQuick/Shapes/libqmlshapesplugin.so": "91aad842427ac6d6f1258c524fec2ccf85d7d528da8989ae4712ae7b4f5b464a",
+      "qml/QtQuick/Shapes/plugins.qmltypes": "36f2d7df9dfd03450b554ad6d0b1e7ecf669b716d6383376c8256b9fab6829ed",
+      "qml/QtQuick/Shapes/qmldir": "fbebfff93729f32b000c9d467282655814eea445a92f0979989207870ce25ddd",
+      "qml/QtQuick/libqtquick2plugin.so": "e3687d0d76be605f237edcfcc6f398d1af285574f3c4d833713c0ff793ca9974",
+      "qml/QtQuick/plugins.qmltypes": "8c57e13edb49e3c6f86df80c8c78f877bec44823ed6dcc64752e272f3e11326e",
+      "qml/QtQuick/qmldir": "c2fa2b26d9f8094c6eeb6ff924b18088ddcd512e133524e55b13fa3e5e70350b"
+    },
+    "symlinks": {
+      "lib/libQt6Core.so": "libQt6Core.so.6",
+      "lib/libQt6Core.so.6": "libQt6Core.so.6.12.0",
+      "lib/libQt6Gui.so": "libQt6Gui.so.6",
+      "lib/libQt6Gui.so.6": "libQt6Gui.so.6.12.0",
+      "lib/libQt6Network.so": "libQt6Network.so.6",
+      "lib/libQt6Network.so.6": "libQt6Network.so.6.12.0",
+      "lib/libQt6OpenGL.so": "libQt6OpenGL.so.6",
+      "lib/libQt6OpenGL.so.6": "libQt6OpenGL.so.6.12.0",
+      "lib/libQt6Qml.so": "libQt6Qml.so.6",
+      "lib/libQt6Qml.so.6": "libQt6Qml.so.6.12.0",
+      "lib/libQt6QmlMeta.so": "libQt6QmlMeta.so.6",
+      "lib/libQt6QmlMeta.so.6": "libQt6QmlMeta.so.6.12.0",
+      "lib/libQt6QmlModels.so": "libQt6QmlModels.so.6",
+      "lib/libQt6QmlModels.so.6": "libQt6QmlModels.so.6.12.0",
+      "lib/libQt6QmlWorkerScript.so": "libQt6QmlWorkerScript.so.6",
+      "lib/libQt6QmlWorkerScript.so.6": "libQt6QmlWorkerScript.so.6.12.0",
+      "lib/libQt6Quick.so": "libQt6Quick.so.6",
+      "lib/libQt6Quick.so.6": "libQt6Quick.so.6.12.0",
+      "lib/libQt6QuickShapes.so": "libQt6QuickShapes.so.6",
+      "lib/libQt6QuickShapes.so.6": "libQt6QuickShapes.so.6.12.0"
+    }
+  },
+  "license_audit": {
+    "tool": "scripts/qt-public/spdx-audit.py (ninja -t deps over every object)",
+    "output_sha256": "2bd001cdd4330a5a47ea40fb516f59eb9d98b5ab63ec6e7d4b194027c48faedb",
+    "objects": 1335,
+    "files_read_total": 6771,
+    "qt_files_by_expression": {
+      "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only": 2667,
+      "CC0-1.0": 1,
+      "Unicode-3.0": 8,
+      "(none in first 40 lines)": 2,
+      "FTL OR GPL-2.0-only": 1,
+      "BSD-2-Clause AND Imlib2": 1
+    },
+    "qt_files_without_lgpl_option": [
+      {
+        "file": "qtbase/src/corelib/global/qexpected_p.h",
+        "spdx": "CC0-1.0"
+      },
+      {
+        "file": "qtbase/src/corelib/text/qlocale_data_p.h",
+        "spdx": "Unicode-3.0"
+      },
+      {
+        "file": "qtbase/src/corelib/text/qunicodetables.cpp",
+        "spdx": "Unicode-3.0"
+      },
+      {
+        "file": "qtbase/src/corelib/text/qunicodetables_p.h",
+        "spdx": "Unicode-3.0"
+      },
+      {
+        "file": "qtbase/src/corelib/time/qhijricalendar_data_p.h",
+        "spdx": "Unicode-3.0"
+      },
+      {
+        "file": "qtbase/src/corelib/time/qjalalicalendar_data_p.h",
+        "spdx": "Unicode-3.0"
+      },
+      {
+        "file": "qtbase/src/corelib/time/qromancalendar_data_p.h",
+        "spdx": "Unicode-3.0"
+      },
+      {
+        "file": "qtbase/src/corelib/time/qtimezonelocale_data_p.h",
+        "spdx": "Unicode-3.0"
+      },
+      {
+        "file": "qtbase/src/corelib/time/qtimezoneprivate_data_p.h",
+        "spdx": "Unicode-3.0"
+      },
+      {
+        "file": "qtbase/src/gui/opengl/qopengles2ext.h",
+        "spdx": null
+      },
+      {
+        "file": "qtbase/src/gui/painting/qgrayraster.c",
+        "spdx": "FTL OR GPL-2.0-only"
+      },
+      {
+        "file": "qtbase/src/gui/painting/qimagescale.cpp",
+        "spdx": "BSD-2-Clause AND Imlib2"
+      },
+      {
+        "file": "qtbase/src/gui/text/qfontsubset_agl.cpp",
+        "spdx": null
+      }
+    ],
+    "embedded_attributions": [
+      {
+        "attribution": "qtbase/src/corelib/global/qt_attribution.json",
+        "name": "tl::expected",
+        "license": "CC0-1.0",
+        "copyright": "To the extent possible under law, Sy Brand has waived all copyright and related or neighboring rights to the expected library. This work is published from: United Kingdom.",
+        "license_files": null,
+        "files_read": ["qexpected_p.h"]
+      },
+      {
+        "attribution": "qtbase/src/corelib/text/qt_attribution.json",
+        "name": "Unicode Character Database (UCD)",
+        "license": "Unicode-3.0",
+        "copyright": "Copyright (C) 1991-2025 Unicode, Inc.",
+        "license_files": null,
+        "files_read": ["qunicodetables_p.h", "qunicodetables.cpp"]
+      },
+      {
+        "attribution": "qtbase/src/corelib/text/qt_attribution.json",
+        "name": "Unicode Common Locale Data Repository (CLDR)",
+        "license": "Unicode-3.0",
+        "copyright": "Copyright (C) 2004-2025 Unicode, Inc.",
+        "license_files": null,
+        "files_read": [
+          "qlocale_data_p.h",
+          "../time/qtimezoneprivate_data_p.h",
+          "../time/qtimezonelocale_data_p.h",
+          "../time/qhijricalendar_data_p.h",
+          "../time/qjalalicalendar_data_p.h",
+          "../time/qromancalendar_data_p.h"
+        ]
+      },
+      {
+        "attribution": "qtbase/src/gui/opengl/qt_attribution.json",
+        "name": "OpenGL ES 2 Headers",
+        "license": "MIT",
+        "copyright": "Copyright (c) 2013-2014 The Khronos Group Inc.",
+        "license_files": "LICENSE.KHRONOS.txt",
+        "files_read": ["qopengles2ext.h"]
+      },
+      {
+        "attribution": "qtbase/src/gui/painting/qt_attribution.json",
+        "name": "Anti-aliasing rasterizer from FreeType 2",
+        "license": "FTL OR GPL-2.0-only",
+        "copyright": "Copyright 2000-2016 by David Turner, Robert Wilhelm, and Werner Lemberg.",
+        "license_files": "../../3rdparty/freetype/LICENSE.txt",
+        "files_read": ["qgrayraster.c"]
+      },
+      {
+        "attribution": "qtbase/src/gui/painting/qt_attribution.json",
+        "name": "Smooth Scaling Algorithm",
+        "license": "BSD-2-Clause AND Imlib2",
+        "copyright": [
+          "Copyright (C) 2004, 2005 Daniel M. Duley.",
+          "(C) Carsten Haitzler and various contributors.",
+          "(C) Willem Monsuwe <willem@stack.nl>"
+        ],
+        "license_files": "LICENSE.QIMAGETRANSFORM.txt",
+        "files_read": ["qimagescale.cpp"]
+      },
+      {
+        "attribution": "qtbase/src/gui/painting/qt_attribution.json",
+        "name": "X Server helper",
+        "license": "X11 AND HPND",
+        "copyright": [
+          "Copyright (c) 1987, 1988 X Consortium",
+          "Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts."
+        ],
+        "license_files": "LICENSE.XCONSORTIUM.txt",
+        "files_read": ["qregion.cpp"]
+      },
+      {
+        "attribution": "qtbase/src/gui/text/qt_attribution.json",
+        "name": "Adobe Glyph List For New Fonts",
+        "license": "BSD-3-Clause",
+        "copyright": "Copyright 2002, 2003, 2005, 2006, 2008, 2010, 2015 Adobe Systems",
+        "license_files": "LICENSE.AGLFN.txt",
+        "files_read": ["qfontsubset_agl.cpp"]
+      },
+      {
+        "attribution": "qtbase/src/gui/util/qt_attribution.json",
+        "name": "XSVG",
+        "license": "HPND-sell-variant",
+        "copyright": "Copyright 2002 USC/Information Sciences Institute",
+        "license_files": "LICENSE.XSVG.txt",
+        "files_read": ["qguisvg.cpp"]
+      }
+    ],
+    "third_party_components": {
+      "qtbase/src/3rdparty/blake2": {
+        "files_read": 4,
+        "attribution": [
+          {
+            "name": "BLAKE2 (reference implementation)",
+            "version": "ed1974ea83433eba7b2d95c5dcd9ac33cb847913",
+            "license": "CC0-1.0 OR Apache-2.0",
+            "copyright": "Copyright 2012, Samuel Neves <sneves@dei.uc.pt>",
+            "license_files": "COPYING"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/double-conversion": {
+        "files_read": 20,
+        "attribution": [
+          {
+            "name": "Efficient Binary-Decimal and Decimal-Binary Conversion Routines for IEEE Doubles",
+            "version": "3.4.0",
+            "license": "BSD-3-Clause",
+            "copyright": "Copyright 2006-2012, the V8 project authors",
+            "license_files": "LICENSE"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/easing": {
+        "files_read": 1,
+        "attribution": [
+          {
+            "name": "Easing Equations by Robert Penner",
+            "version": null,
+            "license": "BSD-3-Clause",
+            "copyright": "Copyright (c) 2001 Robert Penner",
+            "license_files": "LICENSE"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/emoji-segmenter": {
+        "files_read": 1,
+        "attribution": [
+          {
+            "name": "Emoji Segmenter",
+            "version": "0.4.0",
+            "license": "Apache-2.0",
+            "copyright": "Copyright 2019 Google LLC",
+            "license_files": null
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/forkfd": {
+        "files_read": 4,
+        "attribution": [
+          {
+            "name": "forkfd",
+            "version": null,
+            "license": "MIT",
+            "copyright": "Copyright (C) 2016 Intel Corporation\nCopyright (C) 2015 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com",
+            "license_files": "LICENSE"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/freetype": {
+        "files_read": 408,
+        "attribution": [
+          {
+            "name": "Freetype 2",
+            "version": "2.14.3",
+            "license": "FTL OR GPL-2.0-only",
+            "copyright": [
+              "Copyright (c) 2007-2014 Adobe Systems Incorporated",
+              "Copyright (c) 2004-2026 Albert Chin-A-Young",
+              "Copyright (c) 2018-2026 Armin Hasitzka, David Turner, Robert Wilhelm, and Werner Lemberg",
+              "Copyright (c) 2000 Computing Research Labs, New Mexico State University",
+              "Copyright (c) 1996-2026 David Turner, Robert Wilhelm, Dominik Röttsches, and Werner Lemberg",
+              "Copyright (c) 2004-2026 David Turner, Robert Wilhelm, Werner Lemberg and George Williams",
+              "Copyright (c) 2022-2026 David Turner, Robert Wilhelm, Werner Lemberg, and Moazin Khatti",
+              "Copyright (c) 2008-2026 David Turner, Robert Wilhelm, Werner Lemberg, and suzuki toshiya",
+              "Copyright (c) 2003-2026 David Turner, Robert Wilhelm, and Werner Lemberg",
+              "Copyright (c) 2005-2026 David Turner",
+              "Copyright (c) 2007-2026 Derek Clegg and Michael Toftdal",
+              "Copyright (c) 2007 Dmitry Timoshkov for Codeweavers",
+              "Copyright (c) 2001-2015 Francesco Zappa Nardelli",
+              "Copyright (c) 2005, 2007, 2008, 2013 George Williams",
+              "Copyright (c) 2013-2026 Google, Inc. Google Author(s) Behdad Esfahbod and Stuart Gill",
+              "Copyright (c) 2013-2022 Google, Inc.",
+              "Copyright (c) 2003 Huw D M Davies for Codeweavers",
+              "Copyright (c) 2010-2026 Joel Klinghed",
+              "Copyright (c) 1996-2026 Just van Rossum, David Turner, Robert Wilhelm, and Werner Lemberg",
+              "Copyright (c) 2003-2026 Masatake YAMATO and Redhat K.K.",
+              "Copyright (c) 2004-2026 Masatake YAMATO, Redhat K.K, David Turner, Robert Wilhelm, and Werner Lemberg",
+              "Copyright (c) 2019-2026 Nikhil Ramakrishnan, David Turner, Robert Wilhelm, and Werner Lemberg",
+              "Copyright (c) 2009-2026 Oran Agra and Mickey Gabel",
+              "Copyright (c) 2007-2026 Rahul Bhalerao <rahul.bhalerao@redhat.com>",
+              "Copyright (c) 2002-2026 Roberto Alameda",
+              "Copyright (c) 2015-2026 Werner Lemberg",
+              "Copyright (c) 2004-2026 suzuki toshiya, Masatake YAMATO, Red Hat K.K., David Turner, Robert Wilhelm, and Werner Lemberg",
+              "Copyright (c) 2019 nyorain",
+              "Copyright (c) 2022-2026 David Turner, Robert Wilhelm, Werner Lemberg, George Williams, and Dominik Röttsches",
+              "Copyright (C) 2009, 2023  Red Hat, Inc."
+            ],
+            "license_files": "LICENSE.txt"
+          },
+          {
+            "name": "Freetype 2 - zlib",
+            "version": null,
+            "license": "Zlib",
+            "copyright": "Copyright (C) 1995-2024 Jean-loup Gailly and Mark Adler",
+            "license_files": "ZLIB-LICENSE.txt"
+          },
+          {
+            "name": "Freetype 2 - Bitmap Distribution Format (BDF) support",
+            "version": null,
+            "license": "MIT",
+            "copyright": [
+              "Copyright (c) 2000 Computing Research Labs, New Mexico State University",
+              "Copyright (c) 2001-2014 Francesco Zappa Nardelli"
+            ],
+            "license_files": "BDF-LICENSE.txt"
+          },
+          {
+            "name": "Freetype 2 - Portable Compiled Format (PCF) support",
+            "version": null,
+            "license": "MIT AND MIT-open-group",
+            "copyright": [
+              "Copyright (c) 2001, 2012 David Turner, Robert Wilhelm, and Werner Lemberg",
+              "Copyright (c) 2000-2014 Francesco Zappa Nardelli",
+              "Copyright (c) 1990, 1994, 1998 The Open Group"
+            ],
+            "license_files": "PCF-LICENSE.txt"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/harfbuzz-ng": {
+        "files_read": 358,
+        "attribution": [
+          {
+            "name": "HarfBuzz-NG",
+            "version": "14.5.0",
+            "license": "MIT",
+            "copyright": [
+              "Copyright © 2010-2022  Google, Inc.",
+              "Copyright © 2015-2020  Ebrahim Byagowi",
+              "Copyright © 2019,2020  Facebook, Inc.",
+              "Copyright © 2012,2015  Mozilla Foundation",
+              "Copyright © 2011  Codethink Limited",
+              "Copyright © 2008,2010  Nokia Corporation and/or its subsidiary(-ies)",
+              "Copyright © 2009  Keith Stribley",
+              "Copyright © 2011  Martin Hosken and SIL International",
+              "Copyright © 2007  Chris Wilson",
+              "Copyright © 2005,2006,2020,2021,2022,2023  Behdad Esfahbod",
+              "Copyright © 2004,2007,2008,2009,2010,2013,2021,2022,2023  Red Hat, Inc.",
+              "Copyright © 1998-2005  David Turner and Werner Lemberg",
+              "Copyright © 2016  Igalia S.L.",
+              "Copyright © 2022  Matthias Clasen",
+              "Copyright © 2018,2021  Khaled Hosny",
+              "Copyright © 2018,2019,2020  Adobe, Inc",
+              "Copyright © 2013-2015  Alexei Podtelezhnikov"
+            ],
+            "license_files": "COPYING"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/libpng": {
+        "files_read": 22,
+        "attribution": [
+          {
+            "name": "LibPNG",
+            "version": "1.6.58",
+            "license": "Libpng AND libpng-2.0",
+            "copyright": [
+              "Copyright (c) 1995-2026 The PNG Reference Library Authors",
+              "Copyright (c) 2000-2026 Cosmin Truta",
+              "Copyright (c) 1998-2018 Glenn Randers-Pehrson",
+              "Copyright (c) 1996-1997 Andreas Dilger",
+              "Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.",
+              "Copyright (c) 2000-2017 Simon-Pierre Cadieux",
+              "Copyright (c) 2000-2017 Eric S. Raymond",
+              "Copyright (c) 2000-2017 Mans Rullgard",
+              "Copyright (c) 2000-2017 Gilles Vollant",
+              "Copyright (c) 2000-2017 James Yu",
+              "Copyright (c) 2000-2017 Mandar Sahastrabuddhe",
+              "Copyright (c) 1998-2000 Tom Lane",
+              "Copyright (c) 1998-2000 Willem van Schaik",
+              "Copyright (c) 1996-1997 John Bowler",
+              "Copyright (c) 1996-1997 Kevin Bracey",
+              "Copyright (c) 1996-1997 Sam Bushell",
+              "Copyright (c) 1996-1997 Magnus Holmgren",
+              "Copyright (c) 1996-1997 Greg Roelofs",
+              "Copyright (c) 1996-1997 Tom Tanner",
+              "Copyright (c) 1995-1996 Dave Martindale",
+              "Copyright (c) 1995-1996 Paul Schmidt",
+              "Copyright (c) 1995-1996 Tim Wegner"
+            ],
+            "license_files": "LICENSE"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/libpsl": {
+        "files_read": 2,
+        "attribution": [
+          {
+            "name": "The Public Suffix List",
+            "version": "2026-05-14_08-35-31_UTC",
+            "license": "MPL-2.0",
+            "copyright": "The list was originally provided by Jo Hermans <jo.hermans@gmail.com>.\nIt is now maintained on github (https://github.com/publicsuffix/list).",
+            "license_files": "PSL-LICENSE.txt"
+          },
+          {
+            "name": "libpsl - C library to handle the Public Suffix List",
+            "version": "664f3dc85259ec65e30248a61fa1c45b7b0e4c3f",
+            "license": "BSD-3-Clause",
+            "copyright": "Copyright 2014-2016 The Chromium Authors. All rights reserved.",
+            "license_files": "src/LICENSE.chromium"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/md4": {
+        "files_read": 2,
+        "attribution": [
+          {
+            "name": "MD4",
+            "version": null,
+            "license": "CC0-1.0",
+            "copyright": "Written by Alexander Peslyak - better known as Solar Designer <solar@openwall.com> - in 2001, and placed in the public domain. There's absolutely no warranty.",
+            "license_files": null
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/md4c": {
+        "files_read": 2,
+        "attribution": [
+          {
+            "name": "MD4C",
+            "version": "0.5.3",
+            "license": "MIT",
+            "copyright": "Copyright © 2016-2024 Martin Mitáš",
+            "license_files": "LICENSE.md"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/md5": {
+        "files_read": 2,
+        "attribution": [
+          {
+            "name": "MD5",
+            "version": null,
+            "license": "CC0-1.0",
+            "copyright": "Written by Colin Plumb in 1993, no copyright is claimed. Ian Jackson <ian@chiark.greenend.org.uk>.",
+            "license_files": null
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/pcre2": {
+        "files_read": 40,
+        "attribution": [
+          {
+            "name": "PCRE2",
+            "version": "10.48",
+            "license": "LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception",
+            "copyright": [
+              "Copyright (c) 1997-2007 University of Cambridge",
+              "Copyright (c) 2007-2024 Philip Hazel",
+              "Copyright (c) 2010-2024 Zoltan Herczeg"
+            ],
+            "license_files": "LICENCE.md"
+          },
+          {
+            "name": "PCRE2 - Stack-less Just-In-Time Compiler",
+            "version": "10.48",
+            "license": "BSD-2-Clause",
+            "copyright": "Copyright Zoltan Herczeg",
+            "license_files": "LICENSE-SLJIT"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/rfc6234": {
+        "files_read": 4,
+        "attribution": [
+          {
+            "name": "Secure Hash Algorithms SHA-384 and SHA-512",
+            "version": null,
+            "license": "BSD-3-Clause",
+            "copyright": "Copyright (c) 2011 IETF Trust and the persons identified as authors of the code.",
+            "license_files": "LICENSE"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/sha1": {
+        "files_read": 1,
+        "attribution": [
+          {
+            "name": "Secure Hash Algorithm SHA-1",
+            "version": null,
+            "license": "LicenseRef-SHA1-Public-Domain",
+            "copyright": [
+              "Copyright (C) Dominik Reichl <dominik.reichl@t-online.de>",
+              "Copyright (C) 2016 The Qt Company Ltd"
+            ],
+            "license_files": null
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/sha3": {
+        "files_read": 10,
+        "attribution": [
+          {
+            "name": "Secure Hash Algorithm SHA-3 - brg_endian",
+            "version": "1.0.0",
+            "license": "BSD-2-Clause",
+            "copyright": "Copyright (c) 1998-2013, Brian Gladman, Worcester, UK. All rights reserved.",
+            "license_files": "BRG_ENDIAN_LICENSE"
+          },
+          {
+            "name": "Secure Hash Algorithm SHA-3 - Keccak",
+            "version": "3.2",
+            "license": "CC0-1.0",
+            "copyright": "Guido Bertoni, Joan Daemen, Michaël Peeters and Gilles Van Assche.\nTo the extent possible under law, the implementers have waived all copyright\nand related or neighboring rights to the source code in this file.",
+            "license_files": "CC0_LICENSE"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/siphash": {
+        "files_read": 1,
+        "attribution": [
+          {
+            "name": "SipHash Algorithm",
+            "version": null,
+            "license": "CC0-1.0",
+            "copyright": [
+              "Copyright (C) 2012-2014 Jean-Philippe Aumasson",
+              "Copyright (C) 2012-2014 Daniel J. Bernstein <djb@cr.yp.to>",
+              "Copyright (C) 2016 Intel Corporation"
+            ],
+            "license_files": null
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/tinycbor": {
+        "files_read": 14,
+        "attribution": [
+          {
+            "name": "TinyCBOR",
+            "version": "7.0",
+            "license": "MIT",
+            "copyright": "Copyright (C) 2015-2025 Intel Corporation",
+            "license_files": "LICENSE"
+          }
+        ]
+      },
+      "qtbase/src/3rdparty/zlib": {
+        "files_read": 26,
+        "attribution": [
+          {
+            "name": "Data Compression Library (zlib)",
+            "version": "1.3.2",
+            "license": "Zlib",
+            "copyright": "(C) 1995-2026 Jean-loup Gailly and Mark Adler",
+            "license_files": "LICENSE"
+          }
+        ]
+      },
+      "qtdeclarative/src/3rdparty/masm": {
+        "files_read": 94,
+        "attribution": [
+          {
+            "name": "JavaScriptCore Macro Assembler",
+            "version": null,
+            "license": "BSD-2-Clause",
+            "copyright": [
+              "Copyright (C) 2003-2018 Apple Inc. All rights reserved.",
+              "Copyright (C) 2007 Justin Haygood (jhaygood@reaktix.com)",
+              "Copyright (C) 2007-2009 Torch Mobile, Inc. All rights reserved. (http://www.torchmobile.com/)",
+              "Copyright (C) 2009, 2010 University of Szeged",
+              "Copyright (C) 2009-2011 STMicroelectronics. All rights reserved.",
+              "Copyright (C) 2010 MIPS Technologies, Inc. All rights reserved.",
+              "Copyright (C) 2010 Peter Varga (pvarga@inf.u-szeged.hu), University of Szeged",
+              "Copyright (C) 2010 MIPS Technologies, Inc. All rights reserved.",
+              "Copyright (C) 2010, 2011 Research In Motion Limited. All rights reserved.",
+              "Copyright (C) 2011 Google Inc. All rights reserved.",
+              "Copyright (C) 2013 Samsung Electronics. All rights reserved.",
+              "Copyright (C) 2015 Cisco Systems, Inc. All rights reserved.",
+              "Copyright (c) 2002-2009 Vivek Thampi"
+            ],
+            "license_files": "LICENSE"
+          }
+        ]
+      }
+    },
+    "generated_files": 2059,
+    "toolchain_and_sysroot_files": 1016,
+    "gpl_only": [],
+    "attributions_file": "licenses/THIRD_PARTY_ATTRIBUTIONS.txt",
+    "attributions_file_sha256": "173830acff115ef792ed1ed4941f0a42e238b858abf2882ba020a3bd3e76261d"
+  },
+  "device_loaded_objects": {
+    "hello-world.log": [
+      "/data/home/qnxuser/qt612-public/lib/libQt6Core.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Gui.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Network.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6OpenGL.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Qml.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlMeta.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlModels.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlWorkerScript.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Quick.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QuickShapes.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/plugins/platforms/libqqnx.so",
+      "/data/home/qnxuser/qt612-public/qml/QtQuick/Shapes/libqmlshapesplugin.so",
+      "/data/home/qnxuser/rnqnx-hello-world/libhermesvmlean.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libEGL-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libGLESv2-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libglapi-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/v3d_dri.so",
+      "/data/pi400-graphics-compat/usr/lib/libdrm.so.1",
+      "/proc/boot/libfsnotify.so.1",
+      "/usr/lib/libEGL.so.1",
+      "/usr/lib/libGLESv2.so.1",
+      "/usr/lib/libc++.so.2",
+      "/usr/lib/libc.so.6",
+      "/usr/lib/libeventfd.so.1",
+      "/usr/lib/libgcc_s.so.1",
+      "/usr/lib/libm.so.3",
+      "/usr/lib/libscreen.so.1",
+      "/usr/lib/libslog2.so.1",
+      "/usr/lib/libsocket.so.4",
+      "/usr/lib/libz.so.2",
+      "/usr/lib/libzstd.so.1.5.6"
+    ],
+    "nitro-qt.log": [
+      "/data/home/qnxuser/qt612-public/lib/libQt6Core.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Gui.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Network.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6OpenGL.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Qml.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlMeta.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlModels.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlWorkerScript.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Quick.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/plugins/platforms/libqqnx.so",
+      "/data/home/qnxuser/rnqnx-hello-world/libhermesvmlean.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libEGL-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libglapi-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/v3d_dri.so",
+      "/data/pi400-graphics-compat/usr/lib/libdrm.so.1",
+      "/proc/boot/libfsnotify.so.1",
+      "/usr/lib/libEGL.so.1",
+      "/usr/lib/libGLESv2.so.1",
+      "/usr/lib/libc++.so.2",
+      "/usr/lib/libc.so.6",
+      "/usr/lib/libeventfd.so.1",
+      "/usr/lib/libgcc_s.so.1",
+      "/usr/lib/libm.so.3",
+      "/usr/lib/libscreen.so.1",
+      "/usr/lib/libslog2.so.1",
+      "/usr/lib/libsocket.so.4",
+      "/usr/lib/libz.so.2",
+      "/usr/lib/libzstd.so.1.5.6"
+    ],
+    "pressable-intercept.log": [
+      "/data/home/qnxuser/qt612-public/lib/libQt6Core.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Gui.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Network.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6OpenGL.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Qml.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlMeta.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlModels.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlWorkerScript.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Quick.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/plugins/platforms/libqqnx.so",
+      "/data/home/qnxuser/rnqnx-hello-world/libhermesvmlean.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libEGL-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libGLESv2-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libglapi-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/v3d_dri.so",
+      "/data/pi400-graphics-compat/usr/lib/libdrm.so.1",
+      "/proc/boot/libfsnotify.so.1",
+      "/usr/lib/libEGL.so.1",
+      "/usr/lib/libGLESv2.so.1",
+      "/usr/lib/libc++.so.2",
+      "/usr/lib/libc.so.6",
+      "/usr/lib/libeventfd.so.1",
+      "/usr/lib/libgcc_s.so.1",
+      "/usr/lib/libm.so.3",
+      "/usr/lib/libscreen.so.1",
+      "/usr/lib/libslog2.so.1",
+      "/usr/lib/libsocket.so.4",
+      "/usr/lib/libz.so.2",
+      "/usr/lib/libzstd.so.1.5.6"
+    ],
+    "pressable-positive-recovery.log": [
+      "/data/home/qnxuser/qt612-public/lib/libQt6Core.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Gui.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Network.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6OpenGL.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Qml.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlMeta.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlModels.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlWorkerScript.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Quick.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/plugins/platforms/libqqnx.so",
+      "/data/home/qnxuser/rnqnx-hello-world/libhermesvmlean.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libEGL-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libGLESv2-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libglapi-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/v3d_dri.so",
+      "/data/pi400-graphics-compat/usr/lib/libdrm.so.1",
+      "/proc/boot/libfsnotify.so.1",
+      "/usr/lib/libEGL.so.1",
+      "/usr/lib/libGLESv2.so.1",
+      "/usr/lib/libc++.so.2",
+      "/usr/lib/libc.so.6",
+      "/usr/lib/libeventfd.so.1",
+      "/usr/lib/libgcc_s.so.1",
+      "/usr/lib/libm.so.3",
+      "/usr/lib/libscreen.so.1",
+      "/usr/lib/libslog2.so.1",
+      "/usr/lib/libsocket.so.4",
+      "/usr/lib/libz.so.2",
+      "/usr/lib/libzstd.so.1.5.6"
+    ],
+    "pressable-positive.log": [
+      "/data/home/qnxuser/qt612-public/lib/libQt6Core.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Gui.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Network.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6OpenGL.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Qml.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlMeta.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlModels.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlWorkerScript.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Quick.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/plugins/platforms/libqqnx.so",
+      "/data/home/qnxuser/rnqnx-hello-world/libhermesvmlean.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libEGL-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libGLESv2-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libglapi-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/v3d_dri.so",
+      "/data/pi400-graphics-compat/usr/lib/libdrm.so.1",
+      "/proc/boot/libfsnotify.so.1",
+      "/usr/lib/libEGL.so.1",
+      "/usr/lib/libGLESv2.so.1",
+      "/usr/lib/libc++.so.2",
+      "/usr/lib/libc.so.6",
+      "/usr/lib/libeventfd.so.1",
+      "/usr/lib/libgcc_s.so.1",
+      "/usr/lib/libm.so.3",
+      "/usr/lib/libscreen.so.1",
+      "/usr/lib/libslog2.so.1",
+      "/usr/lib/libsocket.so.4",
+      "/usr/lib/libz.so.2",
+      "/usr/lib/libzstd.so.1.5.6"
+    ],
+    "pressable-removed-target.log": [
+      "/data/home/qnxuser/qt612-public/lib/libQt6Core.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Gui.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Network.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6OpenGL.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Qml.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlMeta.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlModels.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6QmlWorkerScript.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/lib/libQt6Quick.so.6.12.0",
+      "/data/home/qnxuser/qt612-public/plugins/platforms/libqqnx.so",
+      "/data/home/qnxuser/rnqnx-hello-world/libhermesvmlean.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libEGL-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libGLESv2-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libglapi-mesa.so",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/v3d_dri.so",
+      "/data/pi400-graphics-compat/usr/lib/libdrm.so.1",
+      "/proc/boot/libfsnotify.so.1",
+      "/usr/lib/libEGL.so.1",
+      "/usr/lib/libGLESv2.so.1",
+      "/usr/lib/libc++.so.2",
+      "/usr/lib/libc.so.6",
+      "/usr/lib/libeventfd.so.1",
+      "/usr/lib/libgcc_s.so.1",
+      "/usr/lib/libm.so.3",
+      "/usr/lib/libscreen.so.1",
+      "/usr/lib/libslog2.so.1",
+      "/usr/lib/libsocket.so.4",
+      "/usr/lib/libz.so.2",
+      "/usr/lib/libzstd.so.1.5.6"
+    ]
+  },
+  "out_of_closure_runtime_dependencies": {
+    "note": "QNX vendor graphics payloads, not part of the Qt build and not redistributed. Hashes of local copies in ~/qnx-pi400-8.0.5/pi400-graphics-compat.",
+    "source_packages": {
+      "com.qnx.qnx800.target.screen.board.rpi4_4.0.1.00106T202312020421L.qpkg": "d07068edab3a0b616a449c5186bd1abcc2a08392464416dac931f6c1cf1d911a",
+      "com.qnx.qnx800.target.screen.board.drm_4.0.2.00132T202501161817L.qpkg": "4432f2d39619529056b9c1603556a1fc7c45f635a33741f90aa59b5666ee8b82"
+    },
+    "files": {
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libEGL-mesa.so": "50e6f5aa223032a53f2fa9be64bacba125c9eb2fce22bbf91de4206f7408e90b",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libGLESv2-mesa.so": "baf39723ac03851f982ca9afba30c5e62e43aba3554e1da2fe962c19545a5997",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/libglapi-mesa.so": "c3246915519639e13b0715d43c79540138a634b05bb87caeecc43707dcbb94a8",
+      "/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm/v3d_dri.so": "754a35f5de8b1cf486e11ddae3fa97ec7bfcb23fb620e769e62a9fe90dffe5da",
+      "/data/pi400-graphics-compat/usr/lib/libdrm.so.1": "559d439194206e62502005db5931e53cfcfa28b202f3f098b98deda89c5536b2"
+    },
+    "transitive_system": ["/usr/lib/libz.so.2 (needed by v3d_dri.so)"]
+  },
+  "application_rpath": {
+    "DT_RPATH": "/home/qnxbuild/qt612-qnx/qtbase/lib:/home/qnxbuild/rn-build/hermes/lib",
+    "binaries": ["rnqnx_playground_qnx", "rnqnx_nitro_qt_test", "pressable-probe.qnx"],
+    "note": "searched before LD_LIBRARY_PATH; absent on the board, so the public libraries were found via LD_LIBRARY_PATH"
+  }
+}
