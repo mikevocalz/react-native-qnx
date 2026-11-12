@@ -5,6 +5,8 @@ import { doctorMain } from './doctor.mjs';
 import { prepareNativeMain } from './prepare-native.mjs';
 import { createProjectMain } from './create-project.mjs';
 import { buildNativeMain } from './build-native.mjs';
+import { addQnxMain } from './add-qnx.mjs';
+import { runMain } from './run.mjs';
 import { runnerMain } from './runner.mjs';
 import { marathonMain } from '../../qnx-devtools/src/marathon.mjs';
 
@@ -16,6 +18,10 @@ try {
     process.exitCode = await buildNativeMain(args.slice(2));
   else if (args[0] === 'project' && args[1] === 'create')
     process.exitCode = await createProjectMain(args.slice(2));
+  else if (args[0] === 'project' && args[1] === 'add-qnx')
+    process.exitCode = await addQnxMain(args.slice(2));
+  else if (args[0] === 'project' && args[1] === 'run')
+    process.exitCode = await runMain(args.slice(2));
   else if (args[0] === 'project' && args[1] === 'prepare-native')
     process.exitCode = await prepareNativeMain(args.slice(2));
   else if (args[0] === 'runner') process.exitCode = await runnerMain(args.slice(1));
@@ -26,6 +32,8 @@ try {
     console.log('\nMore commands (each has --help):');
     console.log('  pnpm qnx project --help                 Bundle an app outside this checkout');
     console.log('  pnpm qnx project create --help          Create a shared Expo app');
+    console.log('  pnpm qnx project add-qnx --help         Add QNX to an existing Expo app');
+    console.log('  pnpm qnx project run --help             Build, deploy and launch');
     console.log('  pnpm qnx project prepare-native --help  Configure a native application');
     console.log('  pnpm qnx project build-native --help    Build a native consumer application');
     console.log('  pnpm qnx project doctor --help          Check a consumer project');
