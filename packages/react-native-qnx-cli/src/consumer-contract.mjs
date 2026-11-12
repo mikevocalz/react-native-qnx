@@ -4,7 +4,7 @@ export const CONSUMER_CONTRACT = Object.freeze({
   schemaVersion: 1,
   baseline: '43f0692aabea57e0f965b892858811349db8ec5a',
   minimumNodeMajor: 26,
-  packageManager: 'pnpm@12.8.1',
+  packageManager: 'pnpm@12.18.0',
   packages: Object.freeze({
     react: '19.3.0',
     'react-native': '0.88.1',

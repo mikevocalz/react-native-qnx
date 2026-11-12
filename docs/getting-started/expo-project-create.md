@@ -12,7 +12,7 @@ To create **one source tree** targeting QNX and MarathonOS:
     node packages/react-native-qnx-cli/src/bin.mjs project create \
       --project ../notes-both --app-id org.example.notes --name "Notes" --with-marathon
 
-This creates app.json with a unique reverse-DNS app ID, a React component name, a public React Native + Zustand example, QNX Metro config, optional Marathon Metro config, local npm archives in vendor/ and a SHA-256 inventory. Node 26/pnpm 12.8.1 are the app's required development versions. The tool does not install dependencies, modify an existing directory, build a native binary, flash a device or make release claims. Avoid checking generated vendor archives into a public release without independently reviewing each included license and source.
+This creates app.json with a unique reverse-DNS app ID, a React component name, a public React Native + Zustand example, QNX Metro config, optional Marathon Metro config, local npm archives in vendor/ and a SHA-256 inventory. Node 26/pnpm 12.18.0 are the app's required development versions. The tool does not install dependencies, modify an existing directory, build a native binary, flash a device or make release claims. Avoid checking generated vendor archives into a public release without independently reviewing each included license and source.
 
 After reviewing the source and its local package contents, install with the documented pinned dependency graph. Then run project doctor, project bundle and project prepare-native from the earlier phase implementation. QNX is always the default. A Marathon target requires its separately compiled Linux/Wayland native host; the QNX executable and Marathon executable are never interchangeable.
 

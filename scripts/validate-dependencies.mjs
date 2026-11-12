@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 
 const root = process.cwd();
-const EXPECTED_PNPM = '12.8.1';
+const EXPECTED_PNPM = '12.18.0';
 const EXPECTED_EXPO_SDK_MAJOR = 58;
 
 /** @param {string} file */
