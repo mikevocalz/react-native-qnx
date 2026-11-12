@@ -58,6 +58,21 @@ if [ ! -d /dev/screen ]; then
   exit 22
 fi
 echo screen=ready
+# Mesa opens both DRM nodes when a non-root app initializes EGL. On the Pi 400
+# compat graphics stack drm-rpi4 creates them root:root 0660, so qnxuser gets
+# EGL_NOT_INITIALIZED until the boot script grants a group it belongs to.
+if [ -e /dev/drm/card0 ]; then
+  gpu=rw
+  for node in /dev/drm/card0 /dev/drm/renderD128; do
+    if [ ! -r "$node" ] || [ ! -w "$node" ]; then
+      gpu=denied
+      echo "gpu_node_denied=$node $(ls -l "$node" 2>&1)"
+    fi
+  done
+  echo "gpu_nodes=$gpu"
+else
+  echo gpu_nodes=absent
+fi
 mkdir -p "$target_dir"
 test -w "$target_dir"
 echo target_dir=writable
@@ -82,6 +97,9 @@ grep -Fq "machine=aarch64le" "${EVIDENCE_DIR}/target-preflight.txt" ||
   fail "Target is not reporting QNX AArch64le."
 grep -Fq "screen=ready" "${EVIDENCE_DIR}/target-preflight.txt" ||
   fail "QNX Screen is not ready on the target."
+if grep -Fq "gpu_nodes=denied" "${EVIDENCE_DIR}/target-preflight.txt"; then
+  fail "${QNX_TARGET_USER} cannot read and write /dev/drm/card0 and /dev/drm/renderD128, so EGL will fail with EGL_NOT_INITIALIZED. See \"GPU node access\" in docs/getting-started/raspberry-pi-400.md."
+fi
 grep -Fq "target_dir=writable" "${EVIDENCE_DIR}/target-preflight.txt" ||
   fail "Target deployment directory is not writable."
 
