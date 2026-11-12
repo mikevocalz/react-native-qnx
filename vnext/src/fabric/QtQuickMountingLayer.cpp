@@ -140,6 +140,14 @@ QtQuickMountingLayer::~QtQuickMountingLayer() {
     }
   }
 #endif
+  // Overlay placeholders have no QObject parent either; one left attached to
+  // the borrowed root would outlive the layer as a stray child.
+  for (QQuickItem* placeholder : std::as_const(overlayPlaceholders_)) {
+    placeholder->setParentItem(nullptr);
+    delete placeholder;
+  }
+  overlayPlaceholders_.clear();
+  overlayItems_.clear();
   // Items are owned individually rather than through QObject parentage, so a
   // surviving tree is torn down one item at a time. QQuickItem's destructor
   // detaches any remaining visual children, so order does not matter.

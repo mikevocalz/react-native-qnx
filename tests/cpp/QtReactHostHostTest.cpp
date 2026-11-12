@@ -2331,9 +2331,23 @@ void modalMounts() {
   }
 
   EXPECT(fixture.host().delegate().lastFailures().empty());
-  EXPECT(fixture.rootChildCount() == 1);
+  // The modal is drawn on the root as an overlay; a hidden placeholder keeps
+  // its Fabric slot, so the root holds both.
+  EXPECT(fixture.rootChildCount() == 2);
 
-  QQuickItem* modal = fixture.root().childItems().at(0);
+  QQuickItem* modal = nullptr;
+  int placeholders = 0;
+  for (QQuickItem* child : fixture.root().childItems()) {
+    if (child->objectName() == QStringLiteral("rnqnxOverlayPlaceholder")) {
+      ++placeholders;
+      EXPECT(!child->isVisible());
+    } else {
+      modal = child;
+    }
+  }
+  EXPECT(placeholders == 1);
+  EXPECT(modal != nullptr);
+  EXPECT(modal->width() == 640.0 && modal->height() == 480.0);
   EXPECT(modal->childItems().size() == 1);
   QQuickItem* content = modal->childItems().at(0);
   EXPECT(content->property("color").value<QColor>() ==
