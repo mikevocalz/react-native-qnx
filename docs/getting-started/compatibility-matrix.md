@@ -10,24 +10,43 @@ with `pnpm docs:sync`; check with `pnpm validate:docs`.
 | ---------------------- | --------------------------------------- |
 | reactNative            | `0.88.1`                                |
 | react                  | `19.3.0`                                |
-| expo                   | `58.0.22`                               |
+| expo                   | `58.0.24`                               |
 | metro                  | `0.87.1`                                |
 | reactNativeMetroConfig | `0.88.1`                                |
-| babelPresetExpo        | `58.0.23`                               |
-| nitroCore              | `1.0.0-alpha.nightly.105.g69d365fc9b18` |
-| nitroModules           | `1.0.0-alpha.nightly.105.g69d365fc9b18` |
-| nitrogen               | `1.0.0-alpha.nightly.105.g69d365fc9b18` |
+| babelPresetExpo        | `58.0.25`                               |
+| nitroCore              | `1.0.0-alpha.nightly.136.gdb81de61bd32` |
+| nitroModules           | `1.0.0-alpha.nightly.136.gdb81de61bd32` |
+| nitrogen               | `1.0.0-alpha.nightly.136.gdb81de61bd32` |
 | typescript             | `7.0.2`                                 |
 | codegenTypescript      | `6.0.2`                                 |
 | node                   | `>=26.0.0`                              |
-| packageManager         | `pnpm@12.8.1`                           |
-| expoModulesCore        | `58.0.29`                               |
+| packageManager         | `pnpm@12.18.0`                          |
+| expoModulesCore        | `58.1.0`                                |
 | expoMetro              | `58.0.0`                                |
-| expoMetroConfig        | `58.0.20`                               |
+| expoMetroConfig        | `58.0.22`                               |
 | hermesCompiler         | `260318099.0.5`                         |
 | hermesSource           | `hermes-v260318099.0.5`                 |
 
 <!-- generated:dependencies:end -->
+
+### Held: react 19.3.1
+
+`react` stays at `19.3.0` until the owner decides. React 19.3.1 is published,
+but `react-native` 0.88.1 ships its Fabric renderer prebuilt from React
+`19.3.0` (`version` and `reconcilerVersion` in
+`Libraries/Renderer/implementations/ReactFabric-*.js`). React requires the
+`react` package and the renderer to be the same version, so bumping `react`
+alone would pair a 19.3.1 package with a 19.3.0 renderer. The bump waits for a
+React Native release that bundles a 19.3.1 renderer, or for an owner decision
+to carry a mismatched pair.
+
+### Held: metro 0.88.0
+
+`metro` stays at `0.87.1`. `@react-native/community-cli-plugin` 0.88.1 depends
+on `metro` `^0.87.1`, and `@react-native/metro-config` 0.88.1 on
+`metro-config` and `metro-runtime` `^0.87.1`. A caret on a `0.x` version
+excludes the next minor, so 0.88.0 is outside the range React Native 0.88.1
+supports. The bump waits for a React Native release that accepts Metro 0.88.
 
 These versions do not imply upstream QNX support. The platform supplies the
 QNX integration and keeps the exact Nitro v1 alpha pin. The constrained

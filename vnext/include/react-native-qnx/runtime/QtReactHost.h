@@ -238,6 +238,10 @@ class QtReactHost {
       float width,
       float height);
   void stopSurface(facebook::react::SurfaceId surfaceId);
+  /// Lays a running surface out at a new size, for a window that was resized,
+  /// maximized or restored. React sees it as a new layout of the root view
+  /// (onLayout fires); nothing remounts. Unknown surfaces are ignored.
+  void resizeSurface(facebook::react::SurfaceId surfaceId, float width, float height);
 
   /// Commits `children` as the surface root's children through the UIManager's
   /// shadow tree, which is the same path a React commit takes.

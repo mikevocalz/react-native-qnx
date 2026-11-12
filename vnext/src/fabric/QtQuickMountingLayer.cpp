@@ -140,6 +140,14 @@ QtQuickMountingLayer::~QtQuickMountingLayer() {
     }
   }
 #endif
+  // Overlay placeholders have no QObject parent either; one left attached to
+  // the borrowed root would outlive the layer as a stray child.
+  for (QQuickItem* placeholder : std::as_const(overlayPlaceholders_)) {
+    placeholder->setParentItem(nullptr);
+    delete placeholder;
+  }
+  overlayPlaceholders_.clear();
+  overlayItems_.clear();
   // Items are owned individually rather than through QObject parentage, so a
   // surviving tree is torn down one item at a time. QQuickItem's destructor
   // detaches any remaining visual children, so order does not matter.
@@ -207,7 +215,7 @@ MountError QtQuickMountingLayer::create(
 QList<QQuickItem*> QtQuickMountingLayer::mountedChildren(QQuickItem* parent) const {
   QList<QQuickItem*> children;
   for (auto* child : parent->childItems()) {
-    if (mountedPointers_.contains(child)) {
+    if (mountedPointers_.contains(child) && !overlayItems_.contains(child)) {
       children.append(child);
     }
   }
@@ -249,15 +257,52 @@ MountError QtQuickMountingLayer::insert(
         QStringLiteral("Index %1 is outside 0..%2").arg(index).arg(childCount));
   }
 
-  child->item->setParentItem(parentItem);
+  // An overlay's placeholder takes its slot; the overlay itself goes on top of
+  // the root so no ancestor clips it and it stacks above every other view.
+  QQuickItem* slotItem = child->item;
+  if (auto placeholder = overlayPlaceholders_.constFind(childTag);
+      placeholder != overlayPlaceholders_.constEnd()) {
+    slotItem = placeholder.value();
+    child->item->setParentItem(&rootItem_);
+    child->item->setZ(1000000);
+    child->item->setPosition(QPointF(0, 0));
+  }
+  slotItem->setParentItem(parentItem);
 
   // Append above the QML decorations, then order only against Fabric siblings.
   if (index < childCount) {
-    child->item->stackBefore(children.at(index));
+    slotItem->stackBefore(children.at(index));
   }
 
   lastError_.clear();
   return MountError::None;
+}
+
+MountError QtQuickMountingLayer::markOverlay(Tag tag) {
+  const auto mounted = items_.constFind(tag);
+  if (mounted == items_.constEnd() || !mounted->owned) {
+    return failWith(
+        MountError::UnknownTag, QStringLiteral("Tag %1 is not mounted").arg(tag));
+  }
+  if (overlayPlaceholders_.contains(tag)) {
+    return MountError::None;
+  }
+  auto* placeholder = new QQuickItem();
+  placeholder->setObjectName(QStringLiteral("rnqnxOverlayPlaceholder"));
+  placeholder->setVisible(false);
+  overlayPlaceholders_.insert(tag, placeholder);
+  mountedPointers_.insert(placeholder);
+  overlayItems_.insert(mounted->item);
+  lastError_.clear();
+  return MountError::None;
+}
+
+bool QtQuickMountingLayer::isOverlay(Tag tag) const {
+  return overlayPlaceholders_.contains(tag);
+}
+
+QSizeF QtQuickMountingLayer::rootSize() const {
+  return rootItem_.size();
 }
 
 MountError QtQuickMountingLayer::remove(
@@ -283,7 +328,8 @@ MountError QtQuickMountingLayer::remove(
     parentItem = content;
   }
 
-  if (child->item->parentItem() != parentItem) {
+  QQuickItem* slotItem = overlayPlaceholders_.value(childTag, child->item);
+  if (slotItem->parentItem() != parentItem) {
     return failWith(
         MountError::NotAChildOfParent,
         QStringLiteral("Tag %1 is not a child of tag %2")
@@ -295,7 +341,7 @@ MountError QtQuickMountingLayer::remove(
   // means our tree has diverged from the shadow tree, which is a defect worth
   // surfacing rather than papering over.
   const int actualIndex =
-      static_cast<int>(mountedChildren(parentItem).indexOf(child->item));
+      static_cast<int>(mountedChildren(parentItem).indexOf(slotItem));
   if (actualIndex != index) {
     return failWith(
         MountError::IndexOutOfRange,
@@ -305,6 +351,9 @@ MountError QtQuickMountingLayer::remove(
             .arg(index));
   }
 
+  if (slotItem != child->item) {
+    slotItem->setParentItem(nullptr);
+  }
   child->item->setParentItem(nullptr);
   lastError_.clear();
   return MountError::None;
@@ -330,6 +379,11 @@ MountError QtQuickMountingLayer::destroy(Tag tag) {
 #endif
   items_.erase(mounted);
   mountedPointers_.remove(item);
+  overlayItems_.remove(item);
+  if (QQuickItem* placeholder = overlayPlaceholders_.take(tag)) {
+    mountedPointers_.remove(placeholder);
+    delete placeholder;
+  }
 
   // Defensive: a well-formed transaction removes before it deletes.
   if (item->parentItem() != nullptr) {
@@ -383,8 +437,10 @@ MountError QtQuickMountingLayer::updateStyle(Tag tag, const ViewStyle& style) {
       item->property("layoutX").value<qreal>();
   const auto baseY =
       item->property("layoutY").value<qreal>();
-  item->setX(baseX + static_cast<qreal>(style.translateX));
-  item->setY(baseY + static_cast<qreal>(style.translateY));
+  if (item != &rootItem_) {
+    item->setX(baseX + static_cast<qreal>(style.translateX));
+    item->setY(baseY + static_cast<qreal>(style.translateY));
+  }
   item->setScale(static_cast<qreal>(style.scale));
   item->setRotation(static_cast<qreal>(style.rotation));
 
@@ -796,6 +852,26 @@ MountError QtQuickMountingLayer::updateLayout(
   }
 
   QQuickItem* item = mounted->item;
+  if (item == &rootItem_) {
+    // The host owns where the surface root sits in the window (below the
+    // window chrome's title bar, for example). Yoga reports the root at 0,0,
+    // so moving it here would slide the app up under the bar.
+    item->setWidth(static_cast<qreal>(frame.width));
+    item->setHeight(static_cast<qreal>(frame.height));
+    lastError_.clear();
+    return MountError::None;
+  }
+  if (overlayItems_.contains(item)) {
+    // Yoga places a Modal where it sits in the tree; on screen it covers the
+    // surface root from its top-left corner.
+    item->setProperty("layoutX", 0.0);
+    item->setProperty("layoutY", 0.0);
+    item->setPosition(QPointF(0, 0));
+    item->setWidth(frame.width > 0 ? static_cast<qreal>(frame.width) : rootItem_.width());
+    item->setHeight(frame.height > 0 ? static_cast<qreal>(frame.height) : rootItem_.height());
+    lastError_.clear();
+    return MountError::None;
+  }
   item->setProperty("layoutX", static_cast<qreal>(frame.x));
   item->setProperty("layoutY", static_cast<qreal>(frame.y));
   item->setX(static_cast<qreal>(frame.x));

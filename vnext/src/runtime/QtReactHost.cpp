@@ -50,11 +50,14 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QFileInfo>
 #include <QSysInfo>
 #include <QTimer>
+#include <QUrl>
 #include <QMetaObject>
 
 #include <algorithm>
+#include <cstdio>
 #include <exception>
 #include <utility>
 
@@ -138,6 +141,13 @@ void QtSchedulerDelegate::schedulerShouldRenderTransactions(
   while (auto transaction = mountingCoordinator->pullTransaction()) {
     lastFailures_ = adapter_.apply(transaction->getMutations());
     ++mountedTransactionCount_;
+    // A failed mutation leaves a view (and often its subtree) off screen with
+    // no other trace, so each one is logged.
+    for (const auto& failure : lastFailures_) {
+      std::fprintf(stderr, "RNQNX_MOUNT_FAILURE type=%d tag=%d error=%d %s\n",
+                   static_cast<int>(failure.type), static_cast<int>(failure.tag),
+                   static_cast<int>(failure.error), failure.detail.toUtf8().constData());
+    }
   }
 }
 
@@ -671,6 +681,18 @@ bool QtReactHost::evaluate(
     impl_->lastError = QStringLiteral("Cannot re-enter an active JavaScript task");
     return false;
   }
+  // RN reads and caches SourceCode.scriptURL during bundle initialization, so
+  // it must be set before evaluation. A local path becomes an absolute file
+  // URL; without one, a bundled asset resolves to file://assets/... and never
+  // loads. Ported from 083c4bd (v1 integration).
+  {
+    const auto sourceLocation = QString::fromStdString(sourceUrl);
+    impl_->scriptUrl = sourceLocation.isEmpty() || !QUrl(sourceLocation).scheme().isEmpty()
+        ? sourceUrl
+        : QUrl::fromLocalFile(QFileInfo(sourceLocation).absoluteFilePath())
+              .toString(QUrl::FullyEncoded)
+              .toStdString();
+  }
   try {
     std::exception_ptr evaluationError;
     const auto previousTaskError = impl_->taskErrorSequence;
@@ -691,7 +713,6 @@ bool QtReactHost::evaluate(
       // Keep the host error from that checkpoint rather than clearing it.
       return false;
     }
-    impl_->scriptUrl = sourceUrl;
     impl_->lastError.clear();
     return true;
   } catch (const facebook::jsi::JSError& error) {
@@ -1054,6 +1075,15 @@ void QtReactHost::startEmptySurface(
 #if RNQNX_ENABLE_FRAME_TRACE
   if (impl_->trace) impl_->surfaceGenerations[surfaceId] = generation;
 #endif
+}
+
+void QtReactHost::resizeSurface(SurfaceId surfaceId, float width, float height) {
+  const auto found = impl_->surfaces.find(surfaceId);
+  if (found == impl_->surfaces.end() || width <= 0 || height <= 0) {
+    return;
+  }
+  found->second->constraintLayout(
+      makeLayoutConstraints(width, height), facebook::react::LayoutContext{});
 }
 
 void QtReactHost::stopSurface(SurfaceId surfaceId) {

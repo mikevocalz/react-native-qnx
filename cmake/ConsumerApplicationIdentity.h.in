@@ -5,4 +5,6 @@ inline ApplicationIdentity configuredApplicationIdentity() {
   return {QString::fromUtf8("@appId_cpp@"), QString::fromUtf8("@displayName_cpp@"),
       QString::fromUtf8("@componentName_cpp@"), true};
 }
+// Edges of the staged icons/icon-<size>.png set, from native-app.json.
+inline QList<int> configuredIconSizes() { return {@iconSizes_cpp@}; }
 }

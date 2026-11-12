@@ -9,3 +9,6 @@ vnext/generated/
 
 # Editor and local tool state.
 .*/
+
+# Third-party license text, kept byte-identical to its upstream source.
+native/app-identity/fonts/

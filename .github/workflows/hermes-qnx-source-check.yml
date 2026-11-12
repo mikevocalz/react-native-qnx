@@ -17,6 +17,7 @@ on:
       - 'patches/hermes-qnx-260318099.0.2.patch'
       - 'scripts/*hermes-qnx.sh'
       - '.github/workflows/hermes-qnx-source-check.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -25,7 +26,7 @@ jobs:
   patch:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
       - name: Fetch audited Hermes source
         run: |
           git clone --filter=blob:none --no-checkout https://github.com/facebook/hermes.git /tmp/hermes

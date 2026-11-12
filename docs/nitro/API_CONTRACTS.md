@@ -5,7 +5,7 @@ Reviewed 2026-11-07. This is a **migration/proof API**, not a claim of general Q
 ## Source provenance and status
 
 - `react-native-qnx`: QNX Nitro v0.37.1 originally implements a native synchronous `QnxPlatformInfo` and a Hermes JSI probe. Only historical Screen/host checks have run, not the upgraded Nitro v1 on a QNX Pi.
-- `margelo/nitro` source tag: `v1.0.0-alpha.nightly.105.g69d365fc9b18` (reviewed source, npm artifacts still must be verified). In v1 the public runtime entry moves into `nitro-core`, registration uses `HybridClassRegistry`, and JS obtains a constructor with `NitroModules.getHybridClass()`.
+- `margelo/nitro` source tag: `v1.0.0-alpha.nightly.136.gdb81de61bd32` (reviewed source, npm artifacts still must be verified). Audited on 105; re-pinned to 136 with `Dispatcher.hpp`/`Callback.hpp` byte-identical; QNX cross-build and device not re-run. In v1 the public runtime entry moves into `nitro-core`, registration uses `HybridClassRegistry`, and JS obtains a constructor with `NitroModules.getHybridClass()`.
 - Nitro 1.0 is **alpha**. Explicitly reject calling the migration production-ready until frozen lockfile, C++ compiler, Hermes JSI and physical runtime evidence are captured.
 - The inspected v1 Nitrogen source `packages/nitrogen/src/getPlatformSpecs.ts` presently uses `platformSchema = z.enum(['apple', 'android'])`. QNX and Marathon codegen are not there today. Do not falsify generated binding output. Hand-written `QnxPlatformInfo` is an **experimental native registration probe** and an intentionally narrow exception, not the finished public Nitro module strategy.
 
@@ -104,7 +104,7 @@ actual React Native/Fabric/Hermes/Qt Quick Hello World app. Its v1
 See [device evidence](../evidence/pi400-hello-world-2026-11-07.txt).
 Official npm SHA-512 checks and complete installed-file comparisons passed
 for core (333 files), RN adapter (280), and Nitrogen (608), all locked to
-nightly 105. This supersedes the older no-physical-run statement only for
+nightly 105 (device evidence for alpha 105 only; not re-run on 136). This supersedes the older no-physical-run statement only for
 this synchronous proof. The later opt-in [Qt dispatcher](QT_DISPATCHER.md)
 also has physical callback/Promise/checkpoint/teardown evidence. General QNX
 codegen and third-party Nitro modules remain unverified. The normal upstream RN

@@ -31,12 +31,20 @@ try {
   const qnxManifest = JSON.parse(await readFile(path.join(qnx, 'package.json'), 'utf8'));
   assert.equal(qnxManifest.private, true);
   assert.equal((await lstat(path.join(qnx, 'build', 'qnx'))).isDirectory(), true);
-  assert.equal(qnxManifest.dependencies.expo, '58.0.22');
+  assert.equal(qnxManifest.dependencies.expo, '58.0.24');
   assert.ok(qnxManifest.dependencies['@rn-qnx/react-native-qnx'].startsWith('file:vendor/'));
   assert.equal(qnxManifest.dependencies['@rn-qnx/react-native-marathon'], undefined);
   assert.equal(
     JSON.parse(await readFile(path.join(qnx, 'app.json'), 'utf8')).expo.extra.rnqnx.componentName,
     'main'
+  );
+  assert.equal(
+    JSON.parse(await readFile(path.join(qnx, 'app.json'), 'utf8')).expo.icon,
+    './assets/icon.png'
+  );
+  assert.deepEqual(
+    await readFile(path.join(qnx, 'assets', 'icon.png')),
+    await readFile(path.join(process.cwd(), 'template', 'qnx', 'assets', 'icon.png'))
   );
   const qnxArtifacts = JSON.parse(await readFile(path.join(qnx, 'platform-packages.json'), 'utf8'));
   assert.equal(Object.keys(qnxArtifacts.artifacts).length, 2);

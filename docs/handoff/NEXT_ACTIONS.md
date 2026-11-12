@@ -1,5 +1,14 @@
 # NEXT_ACTIONS.md
 
+## PR 105 continuation — 2026-11-10
+
+Review and publish the documentation follow-up to `c09a5b1`, inspect its
+current-head CI, then resolve the mandatory-handoff thread. Run
+`node tests/js/nitro-platform-codegen.test.mjs` and
+`pnpm nitro:platform:check` after integrating another generator change.
+Do not count PR 110's device smoke test as evidence for this independent
+branch. [Receipt and rollback](../validation/pr105-merge-readiness-2026-11-10.md).
+
 ## Dependency-security follow-through (2026-10-03)
 
 Review the braces depth backport and guarded audit in `docs/security/braces.md`.

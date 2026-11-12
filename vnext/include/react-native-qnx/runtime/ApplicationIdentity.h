@@ -3,6 +3,8 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QGuiApplication>
+#include <QIcon>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QRegularExpression>
@@ -82,6 +84,8 @@ inline void applyApplicationIdentity(const ApplicationIdentity& identity) {
 }
 
 inline QByteArray describeApplicationIdentity(const ApplicationIdentity& identity) {
+  QJsonArray iconSizes;
+  for (const auto& size : QGuiApplication::windowIcon().availableSizes()) iconSizes.append(size.width());
   return QJsonDocument(QJsonObject{
       {QStringLiteral("schemaVersion"), 1},
       {QStringLiteral("applicationName"), QCoreApplication::applicationName()},
@@ -89,6 +93,7 @@ inline QByteArray describeApplicationIdentity(const ApplicationIdentity& identit
       {QStringLiteral("desktopFileName"), QGuiApplication::desktopFileName()},
       {QStringLiteral("componentName"), identity.componentName},
       {QStringLiteral("customIdentity"), identity.custom},
+      {QStringLiteral("windowIconSizes"), iconSizes},
       {QStringLiteral("runtimeVerified"), false},
       {QStringLiteral("osAuthorizationVerified"), false}}).toJson(QJsonDocument::Compact);
 }
