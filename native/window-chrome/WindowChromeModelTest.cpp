@@ -99,6 +99,27 @@ class WindowChromeModelTest : public QObject {
     QVERIFY(!desktop().containedWindow);
   }
 
+  // rnqnx-winmgr keeps app windows at their own size: no contained frame,
+  // the chrome moves the native window, and the other platforms are left as
+  // they are.
+  void sizeKeepingManagerLiftsTheContainedWindow() {
+    const auto caps = withSizeKeepingWindowManager(
+        capabilitiesForPlatform(QStringLiteral("qnx"), {}, SurfaceResize::FollowsWindow));
+    QVERIFY(!caps.containedWindow);
+    QVERIFY(caps.clientMoveResize);
+    QVERIFY(caps.minimize.available);
+    QVERIFY(caps.maximize.available);
+    QVERIFY(!caps.systemMove);
+    WindowChromeConfig windowed;
+    windowed.initialSize = QSize(1280, 800);
+    QCOMPARE(actions(layoutChrome(windowed, caps, 1280)),
+             (std::vector<WindowAction>{WindowAction::Close, WindowAction::Minimize, WindowAction::Maximize}));
+    const auto cocoa = withSizeKeepingWindowManager(capabilitiesForPlatform(QStringLiteral("cocoa")));
+    QVERIFY(!cocoa.clientMoveResize);
+    QVERIFY(!cocoa.containedWindow);
+    QVERIFY(!capabilitiesForPlatform(QStringLiteral("qnx")).clientMoveResize);
+  }
+
   void resizeBandCoversEdgesAndCorners() {
     const QSizeF frame(400, 300);
     const std::vector<QRectF> controls{QRectF(4, 0, 44, 44)};

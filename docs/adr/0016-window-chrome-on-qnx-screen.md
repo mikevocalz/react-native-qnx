@@ -147,6 +147,28 @@ sets these limits:
     the QNX launcher and the dark gallery theme. A per-app appearance option
     is not part of this decision.
 
+11. **Real windows under rnqnx-winmgr** (added 2026-11-12). The contained
+    window shows the app's own dark colour around the frame, never the
+    desktop, because `fullscreen-winmgr` hides the launcher whenever an app is
+    in front (the launcher window reads `status = INVISIBLE` in
+    `/dev/screen/<pid>/win-1` while the app shows). `tools/qnx-winmgr` adds a
+    window manager of our own that keeps the launcher visible at the bottom
+    of the stack, leaves app windows at their own size and position, and
+    lists them in a dock. It grants each app window
+    `SCREEN_PROPERTY_SELF_LAYOUT`; without it Screen ignores an app's own
+    `SIZE` and `POSITION` while a window manager runs. It sets the window's
+    `SCREEN_PROPERTY_MANAGER_STRING` to `rnqnx-winmgr windowed`. When the app
+    reads that answer at start (`windowManagerKeepsWindowSize()`, run with
+    `qnx:no-fullscreen`), it drops the contained window
+    (`withSizeKeepingWindowManager()`):
+    the bar and edges move and resize the native window
+    (`WindowCapabilities::clientMoveResize`), maximize uses Qt's window
+    states, and minimize and restore are `rnqnx=minimize` and
+    `rnqnx=restore` manager messages, sent the way `demolauncher` sends its
+    own. Under `fullscreen-winmgr` nothing changes. The qnx plugin also needed
+    `qtbase-qnx-resize-swap.patch` (`scripts/qt-public`) so a resize neither
+    loses a frame nor stretches one.
+
 ## Consequences
 
 - QNX apps get a title and a working close control without a window manager.
@@ -208,6 +230,8 @@ sets these limits:
 - `cmake/RnqnxConsumerApp.cmake`, `cmake/ConsumerWindowChrome.h.in`
 - `vnext/probes/playground/main.cpp`
 - `packages/react-native-qnx-cli/src/window-descriptor.mjs`
+- `tools/qnx-winmgr/` (rnqnx-winmgr and its boot install)
+- `scripts/qt-public/patches/qtbase-qnx-resize-swap.patch`
 
 ## Notes
 

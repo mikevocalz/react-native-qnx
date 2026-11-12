@@ -131,8 +131,16 @@ beside the pointer on an edge or corner; on macOS, Windows and X11 the
 platform cursor changes instead. After a move or resize the host prints
 `RNQNX_WINDOW_FRAME <w>x<h>+<x>+<y>`.
 
+Under `rnqnx-winmgr` (`tools/qnx-winmgr`), the app gets a real native window
+instead: the desktop shows around it, the bar and edges move and resize the
+native window, minimize hides it into the manager's dock, and maximize fills
+the screen. The app finds out at start by reading the manager's answer in
+`SCREEN_PROPERTY_MANAGER_STRING`, and needs `QT_QPA_PLATFORM=qnx:no-fullscreen`.
+The startup line reports `mode=native-moved` there and `mode=contained` under
+`fullscreen-winmgr`.
+
 The [Pi 400 desktop guide](pi400-desktop-app.md) explains each one, how a
-minimized app comes back, and what `fullscreen-winmgr` allows.
+minimized app comes back, and what each window manager allows.
 
 At startup the host prints the chrome line and one line per control it left
 out, for example on a full-screen app:

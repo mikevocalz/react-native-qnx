@@ -142,14 +142,16 @@ WindowCapabilities capabilitiesForPlatform(const QString& platform,
   caps.platform = platform;
   const ActionSupport live{true, {}};
   if (platform == QLatin1String("qnx")) {
-    // Qt's QQnxWindow::minimize() does nothing. The host minimizes by releasing
-    // the native window, which makes fullscreen-winmgr show the launcher, and
-    // restores it when the app is launched again (WindowHost.h, ADR-0016).
+    // Qt's QQnxWindow::minimize() does nothing. Under fullscreen-winmgr the
+    // host minimizes by releasing the native window, which makes the manager
+    // show the launcher, and restores it when the app is launched again; under
+    // rnqnx-winmgr it asks the manager (WindowHost.h, ADR-0016).
     caps.minimize = live;
     caps.maximize = live;
     caps.systemMove = false;  // QQnxWindow does not override startSystemMove().
     // fullscreen-winmgr sets every window to the display size on each post,
     // whatever size Qt asks for, so the app frames its window inside it.
+    // withSizeKeepingWindowManager() lifts this under rnqnx-winmgr.
     caps.containedWindow = true;
   } else if (platform == QLatin1String("cocoa") || platform == QLatin1String("windows") ||
              platform == QLatin1String("xcb")) {
@@ -171,6 +173,13 @@ WindowCapabilities capabilitiesForPlatform(const QString& platform,
   }
   if (caps.maximize.available && surface == SurfaceResize::Fixed) caps.maximize = {false, kSurfaceReason};
   return caps;
+}
+
+WindowCapabilities withSizeKeepingWindowManager(WindowCapabilities capabilities) {
+  if (capabilities.platform != QLatin1String("qnx")) return capabilities;
+  capabilities.containedWindow = false;
+  capabilities.clientMoveResize = true;
+  return capabilities;
 }
 
 bool platformForcesFullScreen(const QString& platform, const QStringList& platformOptions) {

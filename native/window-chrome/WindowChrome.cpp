@@ -4,11 +4,13 @@
 #include "WindowHost.h"
 
 #include <QCursor>
+#include <QGuiApplication>
 #include <QMouseEvent>
 #include <QQmlComponent>
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
+#include <QScreen>
 #include <QUrl>
 #include <QVariantMap>
 
@@ -24,6 +26,8 @@ WindowChrome::WindowChrome(QQuickWindow& window, QQmlEngine& engine, WindowChrom
     : window_(&window), config_(std::move(config)), capabilities_(std::move(capabilities)) {
   contained_ = capabilities_.containedWindow && config_.initialSize.has_value() &&
                config_.titleBarStyle != TitleBarStyle::None;
+  movesWindow_ = !contained_ && capabilities_.clientMoveResize &&
+                 config_.titleBarStyle != TitleBarStyle::None;
   frame_ = QRectF(0, 0, window.width(), window.height());
   layout_ = layoutChrome(config_, capabilities_, frame_.width());
   for (const auto& slot : layout_.controls) {
@@ -63,8 +67,8 @@ WindowChrome::WindowChrome(QQuickWindow& window, QQmlEngine& engine, WindowChrom
   if (contained_) {
     // The display around the frame. Dark like the QNX launcher.
     window.setColor(QColor(QStringLiteral("#0b1016")));
-    window.installEventFilter(this);
   }
+  if (contained_ || movesWindow_) window.installEventFilter(this);
   relayout();
 }
 
@@ -98,6 +102,10 @@ bool WindowChrome::active() const { return window_ && window_->isActive(); }
 
 bool WindowChrome::maximized() const {
   if (contained_) return frameExpanded_;
+  // A window the chrome moves is maximized only by the control; one dragged
+  // out to the screen's size can still be moved and made smaller.
+  if (movesWindow_)
+    return window_ && (window_->windowStates() & (Qt::WindowMaximized | Qt::WindowFullScreen));
   return window_ && windowExpanded(*window_);
 }
 
@@ -130,7 +138,10 @@ void WindowChrome::trigger(const QString& action) {
   if (action == QLatin1String("close")) {
     window_->close();
   } else if (action == QLatin1String("minimize")) {
-    if (capabilities_.platform == QLatin1String("qnx")) {
+    if (capabilities_.clientMoveResize) {
+      // rnqnx-winmgr hides the window and lists it in its dock.
+      sendWindowManagerRequest(*window_, "minimize");
+    } else if (capabilities_.platform == QLatin1String("qnx")) {
       // QQnxWindow::minimize() does nothing; see WindowHost.h.
       minimizeByDestroyingWindow(*window_);
     } else {
@@ -218,7 +229,7 @@ void WindowChrome::setResizeHint(Qt::Edges edges, QPointF pointer) {
 }
 
 bool WindowChrome::eventFilter(QObject* watched, QEvent* event) {
-  if (watched == window_ && contained_) {
+  if (watched == window_ && (contained_ || movesWindow_)) {
     switch (event->type()) {
       case QEvent::MouseButtonPress:
       case QEvent::MouseMove:
@@ -240,11 +251,14 @@ bool WindowChrome::handleFramePointer(QEvent* event) {
   std::vector<QRectF> controls;
   for (const auto& slot : layout_.controls) controls.push_back(slot.hitRect);
 
+  // A contained frame moves inside the window; otherwise the native window
+  // moves on its screen.
+  const bool expanded = contained_ ? frameExpanded_ : maximized();
   if (event->type() == QEvent::MouseButtonPress) {
-    if (mouse->button() != Qt::LeftButton || frameExpanded_) return false;
+    if (mouse->button() != Qt::LeftButton || expanded) return false;
     const Qt::Edges edges = resizeEdgesAt(local, frame_.size(), controls);
     dragStart_ = mouse->globalPosition();
-    dragStartFrame_ = frame_.toRect();
+    dragStartFrame_ = contained_ ? frame_.toRect() : window_->geometry();
     if (edges) {
       drag_ = Drag::Resize;
       dragEdges_ = edges;
@@ -262,19 +276,35 @@ bool WindowChrome::handleFramePointer(QEvent* event) {
 
   if (event->type() == QEvent::MouseMove) {
     const QPoint delta = (mouse->globalPosition() - dragStart_).toPoint();
-    const QRect screen(0, 0, window_->width(), window_->height());
+    QRect screen(0, 0, window_->width(), window_->height());
+    if (!contained_) {
+      const QScreen* on = window_->screen() ? window_->screen() : QGuiApplication::primaryScreen();
+      screen = on ? on->availableGeometry() : QRect();
+    }
     if (drag_ == Drag::PendingMove && delta.manhattanLength() >= 4) drag_ = Drag::Move;
     if (drag_ == Drag::Move || drag_ == Drag::Resize) {
-      normalFrame_ = drag_ == Drag::Move
-          ? QRectF(movedGeometry(dragStartFrame_, delta, screen))
-          : QRectF(resizedGeometry(dragStartFrame_, dragEdges_, delta,
-                                   QSize(kMinWindowWidth, kMinWindowHeight), screen));
-      relayout();
-      if (drag_ == Drag::Resize) setResizeHint(dragEdges_, point);
+      const QRect geometry = drag_ == Drag::Move
+          ? movedGeometry(dragStartFrame_, delta, screen)
+          : resizedGeometry(dragStartFrame_, dragEdges_, delta,
+                            QSize(kMinWindowWidth, kMinWindowHeight), screen);
+      if (contained_) {
+        normalFrame_ = QRectF(geometry);
+        relayout();
+        if (drag_ == Drag::Resize) setResizeHint(dragEdges_, point);
+      } else {
+        if (drag_ == Drag::Move)
+          window_->setPosition(geometry.topLeft());
+        else
+          window_->setGeometry(geometry);
+        // The event's window coordinates predate the move; the pointer's
+        // place in the moved window comes from its global position.
+        if (drag_ == Drag::Resize)
+          setResizeHint(dragEdges_, mouse->globalPosition() - QPointF(geometry.topLeft()));
+      }
       return true;
     }
     if (drag_ == Drag::None && !(mouse->buttons() & Qt::LeftButton))
-      setResizeHint(frameExpanded_ ? Qt::Edges() : resizeEdgesAt(local, frame_.size(), controls), point);
+      setResizeHint(expanded ? Qt::Edges() : resizeEdgesAt(local, frame_.size(), controls), point);
     return false;
   }
 
@@ -283,8 +313,9 @@ bool WindowChrome::handleFramePointer(QEvent* event) {
   drag_ = Drag::None;
   if (consumed) {
     setResizeHint(resizeEdgesAt(local, frame_.size(), controls), point);
-    std::printf("RNQNX_WINDOW_FRAME %dx%d+%d+%d\n", int(frame_.width()), int(frame_.height()),
-                int(frame_.x()), int(frame_.y()));
+    const QRect placed = contained_ ? frame_.toRect() : window_->geometry();
+    std::printf("RNQNX_WINDOW_FRAME %dx%d+%d+%d\n", placed.width(), placed.height(), placed.x(),
+                placed.y());
     std::fflush(stdout);
   }
   return consumed;

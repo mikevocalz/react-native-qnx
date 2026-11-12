@@ -61,6 +61,11 @@ struct WindowCapabilities {
   // that frame itself (QNX with fullscreen-winmgr, which sets every window to
   // the display size each time it posts a frame). See WindowChrome.h.
   bool containedWindow{false};
+  // The window manager leaves the native window at the size and place the app
+  // sets but offers no system move, so the chrome moves and resizes the native
+  // window itself (QNX with rnqnx-winmgr, tools/qnx-winmgr). Minimize and
+  // restore go to that manager. See WindowHost.h.
+  bool clientMoveResize{false};
 };
 
 // Whether the host resizes the React surface when the window changes size.
@@ -75,6 +80,11 @@ enum class SurfaceResize { Fixed, FollowsWindow };
 WindowCapabilities capabilitiesForPlatform(const QString& platform,
                                            const QStringList& platformOptions = {},
                                            SurfaceResize surface = SurfaceResize::Fixed);
+
+// QNX capabilities when the Screen window manager keeps app windows at their
+// own size (rnqnx-winmgr): a real window the chrome moves and resizes instead
+// of a contained one. Other platforms are returned unchanged.
+WindowCapabilities withSizeKeepingWindowManager(WindowCapabilities capabilities);
 
 // True when the QPA will force the root window to the screen size whatever
 // size the app asks for (the qnx plugin without `no-fullscreen`).
@@ -128,7 +138,8 @@ inline constexpr qreal kMacHitWidth = 44;
 inline constexpr qreal kWindowsHitWidth = 46;
 inline constexpr qreal kEdgePadding = 4;
 inline constexpr qreal kTitlePadding = 12;
-// Client-side move and resize (WindowCapabilities::clientMoveResize).
+// Client-side move and resize (WindowCapabilities::containedWindow and
+// WindowCapabilities::clientMoveResize).
 inline constexpr qreal kResizeBorder = 6;   // Edge band that resizes.
 inline constexpr qreal kResizeCorner = 16;  // Corner reach along each edge.
 inline constexpr int kMinWindowWidth = 400;
