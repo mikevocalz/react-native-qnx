@@ -21,16 +21,18 @@ function isPlainObject(value) {
  * @param {unknown} value
  */
 function resolveQnxWindow(value) {
-  if (value === undefined || value === null) value = {};
+  // Only undefined means "not set". null is rejected everywhere, matching the
+  // CMake and C++ readers of native-app.json.
+  if (value === undefined) value = {};
   if (!isPlainObject(value)) throw new Error('extra.rnqnx.window must be an object.');
   const input = /** @type {Record<string, unknown>} */ (value);
   for (const key of Object.keys(input))
     if (!['controls', 'titleBarStyle', 'initialSize'].includes(key))
       throw new Error(`extra.rnqnx.window.${key} is not a supported window option.`);
-  const controls = input.controls ?? 'macos';
+  const controls = input.controls === undefined ? 'macos' : input.controls;
   if (typeof controls !== 'string' || !WINDOW_CONTROLS.includes(controls))
     throw new Error(`extra.rnqnx.window.controls must be one of: ${WINDOW_CONTROLS.join(', ')}.`);
-  const titleBarStyle = input.titleBarStyle ?? 'default';
+  const titleBarStyle = input.titleBarStyle === undefined ? 'default' : input.titleBarStyle;
   if (typeof titleBarStyle !== 'string' || !TITLE_BAR_STYLES.includes(titleBarStyle))
     throw new Error(
       `extra.rnqnx.window.titleBarStyle must be one of: ${TITLE_BAR_STYLES.join(', ')}.`
@@ -78,8 +80,10 @@ function withQnxProject(config, options = {}) {
       throw new Error(`@rn-qnx/expo-qnx-config-plugins option ${key} must be a nonempty string.`);
     rnqnx[key] = options[key];
   }
+  if (options.window === null || rnqnx.window === null)
+    throw new Error('extra.rnqnx.window must be an object, not null.');
   if (options.window !== undefined || rnqnx.window !== undefined)
-    rnqnx.window = resolveQnxWindow({ ...(rnqnx.window || {}), ...(options.window || {}) });
+    rnqnx.window = resolveQnxWindow({ ...(rnqnx.window ?? {}), ...(options.window ?? {}) });
   const extra = {
     ...config.extra,
     rnQnx: {
