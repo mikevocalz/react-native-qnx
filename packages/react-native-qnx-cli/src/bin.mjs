@@ -5,6 +5,7 @@ import { doctorMain } from './doctor.mjs';
 import { prepareNativeMain } from './prepare-native.mjs';
 import { createProjectMain } from './create-project.mjs';
 import { buildNativeMain } from './build-native.mjs';
+import { runnerMain } from './runner.mjs';
 import { marathonMain } from '../../qnx-devtools/src/marathon.mjs';
 
 try {
@@ -17,6 +18,7 @@ try {
     process.exitCode = await createProjectMain(args.slice(2));
   else if (args[0] === 'project' && args[1] === 'prepare-native')
     process.exitCode = await prepareNativeMain(args.slice(2));
+  else if (args[0] === 'runner') process.exitCode = await runnerMain(args.slice(1));
   else if (args[0] === 'marathon') process.exitCode = await marathonMain(args.slice(1));
   else if (args[0] === 'project') process.exitCode = await projectMain(args.slice(1));
   else process.exitCode = await main(args);
@@ -28,6 +30,7 @@ try {
     console.log('  pnpm qnx project build-native --help    Build a native consumer application');
     console.log('  pnpm qnx project doctor --help          Check a consumer project');
     console.log('  pnpm qnx marathon --help                Marathon development client');
+    console.log('  pnpm qnx runner --help                  Download a prebuilt development runner');
   }
 } catch (error) {
   console.error(`rnqnx: ${error instanceof Error ? error.message : error}`);
