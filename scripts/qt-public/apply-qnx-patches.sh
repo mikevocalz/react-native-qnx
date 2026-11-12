@@ -7,7 +7,7 @@ source "$(dirname "$0")/layout.sh"
 qtbase=$QT_PUBLIC_SRC/qtbase
 stamp=$qtbase/.qnx-patches-applied
 test ! -e "$stamp"
-patches=(qtbase-qnx-offscreen-surface.patch)
+patches=(qtbase-qnx-offscreen-surface.patch qtbase-qnx-resize-swap.patch)
 cd "$qtbase"
 # The extracted tree has no .git of its own. When a parent directory is a git
 # repository (the container's /work is one), git apply resolves paths against

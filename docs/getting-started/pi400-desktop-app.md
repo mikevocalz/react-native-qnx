@@ -8,10 +8,13 @@ QNX desktop yet.
 
 Everything here is experimental. The build and deploy steps were run for one
 Pi 400 with the QNX SDP 8.0.5 image, public-source Qt 6.12.0 and the stock QNX
-desktop. On 2026-11-12 the board ran the windowed start, the launcher tile,
-minimize, restore from the tile and expand, driven with keyboard input through
-Screen. Moving and resizing with the mouse is covered by host tests and still
-needs a run with the board's own mouse.
+launcher. On 2026-11-12 the board ran, under `rnqnx-winmgr` started by hand:
+the app as a 1280 x 800 window over the desktop, moving and resizing it by
+the title bar and a corner, minimize and restore from the dock, maximize and
+back, restore by running the launch script again, and a click beside the
+window reaching the launcher. Those runs used pointer events injected through
+Screen; `demolauncher` ignores injected clicks, so the tile itself was not
+driven that way.
 
 ## What the desktop runs
 
@@ -27,8 +30,11 @@ At boot, `/system/etc/startup/full_startup.sh` starts, in order:
 3. GPU access for apps: `chgrp 36` and `chmod 0660` on `/dev/drm/card0` and
    `/dev/drm/renderD128`. Mesa opens both, and apps run as `qnxuser`, who is
    in group 36.
-4. The stock desktop: `fullscreen-winmgr -s demolauncher,st,gtk` and
-   `demolauncher -a /system/etc/desktop_files`.
+4. The desktop: a window manager, then
+   `demolauncher -a /system/etc/desktop_files`. The stock image starts
+   `fullscreen-winmgr -s demolauncher,st,gtk`; after the install step in
+   [Desktop window manager](#desktop-window-manager) it starts `rnqnx-winmgr`
+   instead, and falls back to `fullscreen-winmgr` if that one cannot run.
 
 No React Native app starts at boot. Launch apps by hand (below).
 
@@ -115,7 +121,7 @@ The launcher script sets a self-contained environment. This is
 A=/data/home/qnxuser/rnqnx-chrome-app
 Q=/data/home/qnxuser/qt612-public
 export LD_LIBRARY_PATH="$A:$Q/lib:/data/pi400-graphics-compat/lib/dll:/data/pi400-graphics-compat/usr/lib:/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm:/usr/lib"
-export QT_QPA_PLATFORM=qnx
+export QT_QPA_PLATFORM=qnx:no-fullscreen
 export QT_QPA_PLATFORM_PLUGIN_PATH=/data/home/qnxuser/glfix/plugins/platforms
 export QT_PLUGIN_PATH=/data/home/qnxuser/glfix/plugins
 export QML_IMPORT_PATH=$Q/qml
@@ -163,14 +169,25 @@ returns no image with it.
 An app with `extra.rnqnx.window.initialSize` opens as a window of that size
 (title bar included), centred on the display. The gallery asks for
 1280 x 800. Without `initialSize`, or with `--fullscreen`, the app fills the
-display.
+display. Run the app with `QT_QPA_PLATFORM=qnx:no-fullscreen`; with plain
+`qnx` the Qt plugin makes the first window full screen.
 
-`fullscreen-winmgr` sets every window to the display size each time the
-window posts a frame, whatever size the app asks for. So on QNX the native
-window fills the display and the title bar code draws the app's window inside
-it: a frame with a 1 px outline on the dark desktop colour. Everything else on
-the display is hidden by the window manager anyway, so this looks the same as a
-real window of that size.
+What the window is depends on the window manager. At start the app sets its
+window's `SCREEN_PROPERTY_MANAGER_STRING` to `rnqnx:hello` and waits up to
+500 ms for the answer (`RNQNX_WINDOW_MANAGER=windowed` or `fullscreen` skips
+the wait). The startup line reports the result as `mode=`:
+
+- **`rnqnx-winmgr`** answers `rnqnx-winmgr windowed`
+  (`RNQNX_WINDOW_CHROME ... window=1280x800 mode=native-moved`). The app gets
+  a real native window of its own size. The QNX desktop, its wallpaper and
+  tiles stay visible and clickable around it, and the title bar code moves and
+  resizes the native window.
+- **`fullscreen-winmgr`** sets every window to the display size each time the
+  window posts a frame and hides every other window, the launcher included
+  (`mode=contained`). The native window fills the display and the title bar
+  code draws the app's window inside it: a frame with a 1 px outline on the
+  dark desktop colour. The area around it is the app's own window, so it
+  stays dark.
 
 - Drag the title bar to move the window. The bar stays on the display.
 - Drag an edge to resize; within 16 px of a corner both edges move. The
@@ -178,9 +195,21 @@ real window of that size.
   arrow appears beside the pointer while it is on an edge.
 - The React app is laid out again at the new size.
 - After each move or resize the log shows
-  `RNQNX_WINDOW_FRAME 1280x800+320+140`.
+  `RNQNX_WINDOW_FRAME 1280x800+320+140`, the window's place on the display.
 
-## Title bar buttons under fullscreen-winmgr
+## Title bar buttons
+
+Under `rnqnx-winmgr`:
+
+| Button            | What happens                                                                                    |
+| ----------------- | ----------------------------------------------------------------------------------------------- |
+| Close (red)       | Closes the window; the app exits and its dock entry goes.                                       |
+| Minimize (yellow) | The window hides; its dock entry dims. The app keeps running with its state.                    |
+| Expand (green)    | Toggles between the screen and the window's last size and place. A double click on the bar too. |
+
+Click the dock entry, or the app's tile, to bring a minimized window back.
+
+Under `fullscreen-winmgr`:
 
 | Button            | What happens                                                                                                            |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
@@ -250,34 +279,72 @@ again, then the launcher.
 Clicking the tile starts the app; with the app minimized it brings the running
 copy back. The test board has had this tile since 2026-11-12.
 
-## A dock that stays on screen
+## Desktop window manager
 
-`fullscreen-winmgr` cannot show one. It makes exactly one window per display
-visible, the most recent one, and hides the rest, the launcher included. Its
-messages cannot bring an untagged window, such as the launcher, to the front,
-and it resets every window to the display size on each frame. A taskbar or
-dock next to an app would itself be a window, and the manager would hide
-either it or the app. The tile plus Alt+Tab is as close as this window manager
-gets.
+`fullscreen-winmgr` cannot show the desktop next to an app. It makes exactly
+one window per display visible, the most recent one, hides the rest (the
+launcher too) and resets every window to the display size on each frame. Its
+source is not published: the SDP's Screen tutorials include a `win-manager`
+sample, but under a QNX confidential licence that forbids redistribution and
+modification without a written licence.
 
-A real desktop needs a different window manager. Options on this image, for
-the owner to choose (the board keeps booting to the stock desktop either way):
+`tools/qnx-winmgr/rnqnx-winmgr.c` is a small window manager of our own
+(MIT, like the rest of this repository), written against the public Screen
+API. It speaks the launcher protocol `demolauncher` uses with
+`fullscreen-winmgr`, so the stock launcher runs unchanged:
 
-1. **Weston, already on the image.** The "Developer Desktop" tile runs
-   `/usr/bin/startDesktop.sh`, which starts `weston --fullscreen` with the
-   XFCE session: a stacking desktop with movable, resizable windows, minimize
-   and a panel. Apps there are Wayland clients. Running this app there needs
-   Qt's Wayland platform plugin for QNX, which the public Qt 6.12.0 build used
-   here does not include, and the chrome's Wayland support (close only today,
-   ADR-0016).
-2. **A changed fullscreen-winmgr.** It is QNX sample code ("window manager
-   sample code", screen demos 5.0.0.00343). A copy that sizes a window only on
-   its first post and keeps a strip of minimized windows would give native
-   windowed apps and a dock under the same launcher. Starting it at boot means
-   changing the startup script.
-3. **A window manager of our own** registered with Screen
-   (`SCREEN_WINDOW_MANAGER_CONTEXT`), with dock, placement and resize. The
-   most work; it replaces `fullscreen-winmgr` at boot.
+- The launcher window fills the display at the bottom of the stack and stays
+  visible: wallpaper, tiles and the bottom banner.
+- App windows keep the size and position they ask for and stack above the
+  launcher. Clicking a window behind another brings it to the front.
+- A dock floats above the launcher's bottom banner while any app window
+  exists. Each entry shows the app's name and icon, taken from the launcher's
+  `.desktop` file (the launch tag, or a file named after the program such as
+  `org.rnqnx.showcase.desktop`). Click an entry to restore a minimized window,
+  raise a covered one, or minimize the one in front.
+- `Tag=`, `switch=` and `closed=` messages work as before, so a tile with
+  `Singleton=Y` brings back a running app instead of starting another.
+
+It has no Alt+Tab switcher yet; the launcher's banner still mentions one.
+
+Build it with the SDP (the container in this project):
+
+```bash
+source /work/qnx800/qnxsdp-env.sh
+tools/qnx-winmgr/build.sh build/qnx-winmgr/rnqnx-winmgr
+```
+
+Try it without touching boot. As root on the Pi, with the binary in
+`/data/rnqnx-winmgr/`:
+
+```sh
+slay fullscreen-winmgr demolauncher
+on -d /data/rnqnx-winmgr/rnqnx-winmgr -s demolauncher,st,gtk
+sleep 2; on -d demolauncher -a /system/etc/desktop_files
+```
+
+`-v` logs every Screen event to stderr. To go back to the stock desktop:
+
+```sh
+slay rnqnx-winmgr demolauncher
+on -d fullscreen-winmgr -s demolauncher,st,gtk
+sleep 2; on -d demolauncher -a /system/etc/desktop_files
+```
+
+To start it at boot, copy `rnqnx-winmgr`, `tools/qnx-winmgr/rnqnx-desktop.sh`
+and `tools/qnx-winmgr/install-boot.sh` into one directory on the Pi and run
+`sh install-boot.sh` as root. It:
+
+1. copies the binary to `/data/rnqnx-winmgr/` (root-owned, since it runs as
+   root at boot);
+2. writes `/system/etc/startup/rnqnx-desktop.sh`, the stock desktop start
+   with `rnqnx-winmgr` as the window manager. If the binary is missing or
+   exits within two seconds, it starts `fullscreen-winmgr` instead;
+3. keeps `full_startup.sh` as `full_startup.sh.before-rnqnx-winmgr` and
+   changes its last line to run `rnqnx-desktop.sh`.
+
+USB input, the graphics drivers, Screen, the launcher and its tiles start as
+before. `sh install-boot.sh --undo` puts the old `full_startup.sh` back.
 
 Each press logs `RNQNX_WINDOW_ACTION close|minimize|maximize`.
 
@@ -307,9 +374,13 @@ it runs does not start a second copy; it brings the first one back.
 
 **The window fills the screen although `initialSize` is set.** `--fullscreen`
 turns windowed mode off. Check that the build has `initialSize` in
-`native-app.json`; the startup line `RNQNX_WINDOW_CHROME ... window=1920x1080`
-is expected, because the native window is always display-sized under
-`fullscreen-winmgr`.
+`native-app.json`. Under `fullscreen-winmgr` the startup line
+`RNQNX_WINDOW_CHROME ... window=1920x1080 mode=contained` is expected, because
+the native window is always display-sized there.
+
+**Black around the app.** The startup line says `mode=contained`: either the
+window manager is `fullscreen-winmgr` (`pidin -F "%a %N" | grep winmgr`), or
+the app runs with `QT_QPA_PLATFORM=qnx` instead of `qnx:no-fullscreen`.
 
 **The tile does nothing.** `demolauncher` reads tiles only when it starts, and
 it rejects a `.desktop` file with a second `=` on a line. Run

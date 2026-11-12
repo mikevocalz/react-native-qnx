@@ -413,6 +413,71 @@ class WindowChromeQuickTest : public QObject {
     QTRY_VERIFY(harness.chrome->maximized());
   }
 
+  // QNX with rnqnx-winmgr: the native window is the app's window. The bar
+  // moves it on its screen, edges resize it, minimize goes to the manager
+  // and maximize uses Qt's window states.
+  void sizeKeepingManagerMovesTheNativeWindow() {
+    WindowChromeConfig config;
+    config.initialSize = QSize(640, 400);
+    Harness harness(config,
+                    withSizeKeepingWindowManager(
+                        capabilitiesForPlatform(QStringLiteral("qnx"), {}, SurfaceResize::FollowsWindow)),
+                    QSize(640, 400));
+    harness.window->setPosition(300, 200);
+    QVERIFY(QTest::qWaitForWindowExposed(harness.window.get()));
+    QVERIFY(!harness.chrome->contained());
+    QVERIFY(harness.chrome->movesWindow());
+    QCOMPARE(harness.chrome->frameRect(), QRectF(0, 0, 640, 400));
+    QCOMPARE(harness.chrome->contentRoot().size(), QSizeF(640, 356));
+    QCOMPARE(controlNames(harness),
+             (QStringList{QStringLiteral("close"), QStringLiteral("maximize"), QStringLiteral("minimize")}));
+    QVERIFY(!findItem(harness.chrome->chromeItem(), QStringLiteral("rnqnxWindowFrame"))->isVisible());
+    QSignalSpy pressed(harness.chrome.get(), &WindowChrome::actionTriggered);
+
+    // Drag the bar: the window follows the pointer on the screen. The
+    // pointer moves in screen coordinates while the window moves under it.
+    QWindow* window = harness.window.get();
+    const auto pointerAt = [window](QPoint global) { return window->mapFromGlobal(global); };
+    QPoint start = window->mapToGlobal(QPoint(320, 20));
+    QTest::mousePress(window, Qt::LeftButton, {}, pointerAt(start));
+    for (int step = 1; step <= 5; ++step)
+      QTest::mouseMove(window, pointerAt(start + QPoint(20 * step, 10 * step)));
+    QTest::mouseRelease(window, Qt::LeftButton, {}, pointerAt(start + QPoint(100, 50)));
+    QTRY_COMPARE(harness.window->geometry(), QRect(400, 250, 640, 400));
+    QCOMPARE(harness.chrome->frameRect(), QRectF(0, 0, 640, 400));
+
+    // Drag the bottom right corner to grow the window.
+    const QPoint at(638, 398);
+    QTest::mouseMove(harness.window.get(), at);
+    QTRY_COMPARE(harness.chrome->resizeHint(), QStringLiteral("diagonal"));
+    QVERIFY(findItem(harness.chrome->chromeItem(), QStringLiteral("rnqnxResizeHint"))->isVisible());
+    start = window->mapToGlobal(at);
+    QTest::mousePress(window, Qt::LeftButton, {}, at);
+    QTest::mouseMove(window, pointerAt(start + QPoint(60, 40)));
+    QTest::mouseRelease(window, Qt::LeftButton, {}, pointerAt(start + QPoint(60, 40)));
+    QTRY_COMPARE(harness.window->geometry(), QRect(400, 250, 700, 440));
+    QTRY_COMPARE(harness.chrome->contentRoot().size(), QSizeF(700, 396));
+    QCOMPARE(pressed.count(), 0);
+
+    // Maximize fills the screen and comes back to the same place.
+    harness.chrome->trigger(QStringLiteral("maximize"));
+    QTRY_VERIFY(harness.chrome->maximized());
+    // No moving while maximized.
+    const QRect maximized = harness.window->geometry();
+    QTest::mousePress(harness.window.get(), Qt::LeftButton, {}, QPoint(800, 20));
+    QTest::mouseMove(harness.window.get(), QPoint(900, 120));
+    QTest::mouseRelease(harness.window.get(), Qt::LeftButton, {}, QPoint(900, 120));
+    QCOMPARE(harness.window->geometry(), maximized);
+    harness.chrome->trigger(QStringLiteral("maximize"));
+    QTRY_COMPARE(harness.window->geometry(), QRect(400, 250, 700, 440));
+
+    // Minimize asks the manager; off QNX that request does nothing, and the
+    // window is neither hidden nor destroyed here.
+    harness.chrome->trigger(QStringLiteral("minimize"));
+    QVERIFY(harness.window->isVisible());
+    QVERIFY(harness.window->handle() != nullptr);
+  }
+
   // A full-screen QNX app (no initialSize) is not contained and has no
   // maximize control.
   void qnxWithoutInitialSizeFillsTheWindow() {

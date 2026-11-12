@@ -529,29 +529,44 @@ int main(int argc, char** argv) {
       chromeConfig.titleBarStyle != rnqnx::window::TitleBarStyle::None) {
     const QStringList platformOptions =
         rnqnx::window::platformOptionsFor(QGuiApplication::platformName(), platformSpecs);
-    // The qnx QPA resizes the root window to the screen only once events run,
-    // after the surface has started. Apply that size now so the content item
-    // and the React surface match the window from the first frame.
-    if (rnqnx::window::platformForcesFullScreen(QGuiApplication::platformName(), platformOptions) &&
-        window.screen() != nullptr) {
+    const bool forcedFullScreen =
+        rnqnx::window::platformForcesFullScreen(QGuiApplication::platformName(), platformOptions);
+    // The host resizes the React surface with the window (below), so
+    // maximize can be offered wherever the platform can run it.
+    rnqnx::window::WindowCapabilities capabilities = rnqnx::window::capabilitiesForPlatform(
+        QGuiApplication::platformName(), platformOptions, rnqnx::window::SurfaceResize::FollowsWindow);
+    // rnqnx-winmgr keeps the window at the size Qt asks for, so the app can
+    // open a real window on the QNX desktop. The qnx plugin still makes the
+    // first window full screen unless started with `no-fullscreen`.
+    if (capabilities.containedWindow && !forcedFullScreen && chromeConfig.initialSize &&
+        rnqnx::window::windowManagerKeepsWindowSize(window)) {
+      capabilities = rnqnx::window::withSizeKeepingWindowManager(capabilities);
+      // Screen dropped the position Qt gave the new window before the
+      // manager allowed it to place itself; send it again.
+      rnqnx::window::applyNativePosition(window);
+    }
+    // A contained window ends up display-sized: the qnx QPA resizes the root
+    // window to the screen only once events run, after the surface has
+    // started, and fullscreen-winmgr does the same on every post. Apply that
+    // size now so the content item and the React surface match the window
+    // from the first frame.
+    if ((forcedFullScreen || capabilities.containedWindow) && window.screen() != nullptr) {
       window.setGeometry(window.screen()->geometry());
     }
     try {
-      // The host resizes the React surface with the window (below), so
-      // maximize can be offered wherever the platform can run it.
       chrome = std::make_unique<rnqnx::window::WindowChrome>(window, engine, chromeConfig,
-          rnqnx::window::capabilitiesForPlatform(QGuiApplication::platformName(), platformOptions,
-                                                 rnqnx::window::SurfaceResize::FollowsWindow));
+                                                             capabilities);
     } catch (const std::exception& error) {
       std::fprintf(stderr, "RNQNX_WINDOW_CHROME_ERROR %s\n", error.what());
       return 1;
     }
     mountRoot = &chrome->contentRoot();
-    std::printf("RNQNX_WINDOW_CHROME platform=%s controls=%s style=%s inset=%g window=%dx%d\n",
+    std::printf("RNQNX_WINDOW_CHROME platform=%s controls=%s style=%s inset=%g window=%dx%d mode=%s\n",
         QGuiApplication::platformName().toUtf8().constData(),
         rnqnx::window::nameOf(chromeConfig.controls).toUtf8().constData(),
         rnqnx::window::nameOf(chromeConfig.titleBarStyle).toUtf8().constData(),
-        chrome->layout().contentInset, window.width(), window.height());
+        chrome->layout().contentInset, window.width(), window.height(),
+        chrome->contained() ? "contained" : chrome->movesWindow() ? "native-moved" : "native");
     for (const QString& line : chrome->describeHiddenControls()) {
       std::printf("%s\n", line.toUtf8().constData());
     }
@@ -697,11 +712,12 @@ int main(int argc, char** argv) {
   }
 #if RNQNX_ENABLE_WINDOW_CHROME
   if (singleInstance) {
+    const bool sizeKeepingManager = chrome && chrome->capabilities().clientMoveResize;
     QObject::connect(singleInstance.get(), &rnqnx::window::SingleInstance::restoreRequested,
-        &window, [&window]() {
+        &window, [&window, sizeKeepingManager]() {
           std::printf("RNQNX_WINDOW_ACTION restore\n");
           std::fflush(stdout);
-          rnqnx::window::restoreMinimizedWindow(window);
+          rnqnx::window::restoreMinimizedWindow(window, sizeKeepingManager);
         });
   }
 #endif

@@ -48,7 +48,7 @@ Item {
     Text {
         objectName: "rnqnxResizeHint"
         readonly property string hint: root.chrome.resizeHint
-        visible: root.chrome.contained && hint !== ""
+        visible: (root.chrome.contained || root.chrome.movesWindow) && hint !== ""
         x: root.chrome.pointer.x - root.x + 12
         y: root.chrome.pointer.y - root.y + 12
         z: 10

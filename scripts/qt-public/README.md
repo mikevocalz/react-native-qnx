@@ -94,6 +94,39 @@ and `QT_PLUGIN_PATH` at the new plugin tree: with `QT_PLUGIN_PATH` still on the
 stock `plugins/`, Qt loaded the stock `platforms/libqqnx.so` even though
 `QT_QPA_PLATFORM_PLUGIN_PATH` named the patched one.
 
+## Resizing a window under a window manager
+
+[`patches/qtbase-qnx-resize-swap.patch`](patches/qtbase-qnx-resize-swap.patch)
+applies after the offscreen-surface patch and fixes two faults that showed
+when an app resized its own window under `rnqnx-winmgr`
+(`tools/qnx-winmgr`):
+
+1. **A lost frame at the start of every resize.** Each resize gesture logged
+   `QEGLPlatformContext: eglSwapBuffers failed: 300d` (`EGL_BAD_SURFACE`), with
+   the threaded and the basic render loop alike: six failed swaps in six
+   corner drags on the Pi 400. `QEGLPlatformContext::swapBuffers()` looks the
+   surface up again through `eglSurfaceForPlatformSurface()`, and the qnx
+   plugin applies a resize requested since `makeCurrent()` there: it releases
+   the context, destroys the bound surface and creates a new one that is not
+   current, then swaps it. The patched `QQnxGLContext::swapBuffers()` swaps
+   the surface `makeCurrent()` bound and leaves the resize to the next
+   `makeCurrent()`.
+2. **A stretched frame while resizing.** `setGeometry()` wrote the new
+   `SCREEN_PROPERTY_SIZE` and `SOURCE_SIZE` straight away, while the buffers
+   kept the old size until the next frame, so Screen scaled the last frame
+   to the new size. The patched `QQnxEglWindow` leaves the Screen window size
+   alone until buffers of the new size exist and sets it just before the swap
+   that posts the first frame drawn into them, so the size and the pixels
+   arrive in one post. Moves are not delayed.
+
+After the patch the same six drags logged no failed swap, and a screenshot
+taken during a slow drag showed the title bar and content drawn at the
+window's size.
+
+Rebuilding the plugin recompiles every source in `platforms/qnx`, because
+the patch adds a member to `QQnxWindow`; mixing old and new objects breaks
+the class layout.
+
 ## On the board
 
 `public-qt-env.sh` and the `run-public-*.sh` launchers expect the runtime at
