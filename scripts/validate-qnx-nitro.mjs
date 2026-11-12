@@ -9,7 +9,7 @@ import path from 'node:path';
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
-const expected = '1.0.0-alpha.nightly.105.g69d365fc9b18';
+const expected = '1.0.0-alpha.nightly.136.gdb81de61bd32';
 /** @param {string} p */
 const read = (p) => readFile(p, 'utf8');
 const coreManifestPath = require.resolve('nitro-core/package.json');

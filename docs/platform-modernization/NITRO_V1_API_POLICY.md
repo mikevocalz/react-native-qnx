@@ -4,7 +4,7 @@ The owner explicitly requires this program to use **Nitro v1's new APIs** and AP
 
 ## Actual source baseline
 
-The publication base is `48e37f7550b4244f8a7936c01af75419e1fec416`; the source links below retain the inspected implementation revision `62d530bcd8cea578f59bb0d693e0402a5cadefde`. Its installed graph pins `nitro-core`, `react-native-nitro-modules` and `nitrogen` to `1.0.0-alpha.nightly.105.g69d365fc9b18`. Those are audited prerelease dependencies. A later v1 revision may be selected only through an explicit compatibility change with matching core, adapter, generator, lockfile, native headers and runtime tests.
+The publication base is `48e37f7550b4244f8a7936c01af75419e1fec416`; the source links below retain the inspected implementation revision `62d530bcd8cea578f59bb0d693e0402a5cadefde`. Its installed graph pins `nitro-core`, `react-native-nitro-modules` and `nitrogen` to `1.0.0-alpha.nightly.105.g69d365fc9b18`. Those are audited prerelease dependencies. A later v1 revision may be selected only through an explicit compatibility change with matching core, adapter, generator, lockfile, native headers and runtime tests. #119 is that change: the pin is now `1.0.0-alpha.nightly.136.gdb81de61bd32`. Audited on 105; re-pinned to 136 with `Dispatcher.hpp`/`Callback.hpp` byte-identical; QNX cross-build and device not re-run.
 
 The following are actual repository sources, not inferred v1 syntax:
 
