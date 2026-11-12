@@ -459,8 +459,26 @@ int main(int argc, char** argv) {
     for (const QString& line : chrome->describeHiddenControls()) {
       std::printf("%s\n", line.toUtf8().constData());
     }
-    if (parser.isSet(windowIconOption)) {
-      const QString iconPath = parser.value(windowIconOption);
+    // The title bar shows the app icon: the generated icon set of a consumer
+    // app (the same files the window icon comes from), or --window-icon.
+    QString iconPath;
+#ifdef RNQNX_CONSUMER_APP_HEADER
+    {
+      int chosen = 0;
+      for (const int size : rnqnx::runtime::configuredIconSizes()) {
+        // Smallest size that still looks sharp at 20 px on a 2x screen.
+        if (size >= 40 && (chosen == 0 || size < chosen)) chosen = size;
+      }
+      if (chosen == 0 && !rnqnx::runtime::configuredIconSizes().isEmpty())
+        chosen = rnqnx::runtime::configuredIconSizes().last();
+      if (chosen != 0) {
+        iconPath = QCoreApplication::applicationDirPath() +
+            QStringLiteral("/icons/icon-%1.png").arg(chosen);
+      }
+    }
+#endif
+    if (parser.isSet(windowIconOption)) iconPath = parser.value(windowIconOption);
+    if (!iconPath.isEmpty()) {
       if (QFile::exists(iconPath)) {
         chrome->setIconSource(QUrl::fromLocalFile(QFileInfo(iconPath).absoluteFilePath()));
       } else {

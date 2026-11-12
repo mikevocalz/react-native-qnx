@@ -1,0 +1,7 @@
+{
+  "name": "@rn-qnx/component-gallery",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tabbed React Native component gallery for QNX, run on the Pi 400",
+  "main": "index.js"
+}

@@ -5,7 +5,7 @@ draws no decorations, so the bar is Qt Quick inside the app window, above the
 React Native surface. The reasoning, and what each control does on QNX, is in
 [ADR-0016](../adr/0016-window-chrome-on-qnx-screen.md).
 
-This is experimental and off by default. No QNX device has run it yet.
+This is experimental and off by default. One Pi 400 run is recorded below.
 
 ## Configure
 
@@ -88,6 +88,21 @@ RNQNX_WINDOW_CHROME platform=qnx hidden=minimize reason=Qt 6.12.0 QQnxWindow::mi
 ```
 
 Each activation prints `RNQNX_WINDOW_ACTION <action>`.
+
+`--unavailable-controls disable` keeps a control the platform cannot run and
+draws it grey instead of leaving it out, so the macOS layout shows all three
+lights on QNX. A disabled control does nothing when pressed, is skipped by Tab,
+and prints `RNQNX_WINDOW_ACTION_UNAVAILABLE <action> reason=...`. The startup
+line reads `disabled=` instead of `hidden=`. The default is `hide`.
+
+The bar draws the app icon left of the title. A consumer app uses its
+generated icon set (`icons/icon-<size>.png`, the smallest size of at least 40
+px); the playground takes `--window-icon <png>`.
+
+On the Pi 400 (2026-11-12, public-source Qt 6.12.0, `QT_QPA_PLATFORM=qnx`,
+software Qt Quick backend under `fullscreen-winmgr`) the bar drew at the top of
+the full-screen window with icon, title, a live close light and grey minimize
+and maximize lights.
 
 ## Controls
 

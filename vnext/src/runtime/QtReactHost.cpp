@@ -47,8 +47,10 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QFileInfo>
 #include <QSysInfo>
 #include <QTimer>
+#include <QUrl>
 #include <QMetaObject>
 
 #include <algorithm>
@@ -661,6 +663,18 @@ bool QtReactHost::evaluate(
     impl_->lastError = QStringLiteral("Cannot re-enter an active JavaScript task");
     return false;
   }
+  // RN reads and caches SourceCode.scriptURL during bundle initialization, so
+  // it must be set before evaluation. A local path becomes an absolute file
+  // URL; without one, a bundled asset resolves to file://assets/... and never
+  // loads. Ported from 083c4bd (v1 integration).
+  {
+    const auto sourceLocation = QString::fromStdString(sourceUrl);
+    impl_->scriptUrl = sourceLocation.isEmpty() || !QUrl(sourceLocation).scheme().isEmpty()
+        ? sourceUrl
+        : QUrl::fromLocalFile(QFileInfo(sourceLocation).absoluteFilePath())
+              .toString(QUrl::FullyEncoded)
+              .toStdString();
+  }
   try {
     std::exception_ptr evaluationError;
     const auto previousTaskError = impl_->taskErrorSequence;
@@ -681,7 +695,6 @@ bool QtReactHost::evaluate(
       // Keep the host error from that checkpoint rather than clearing it.
       return false;
     }
-    impl_->scriptUrl = sourceUrl;
     impl_->lastError.clear();
     return true;
   } catch (const facebook::jsi::JSError& error) {

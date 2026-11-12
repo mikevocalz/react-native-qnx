@@ -383,8 +383,10 @@ MountError QtQuickMountingLayer::updateStyle(Tag tag, const ViewStyle& style) {
       item->property("layoutX").value<qreal>();
   const auto baseY =
       item->property("layoutY").value<qreal>();
-  item->setX(baseX + static_cast<qreal>(style.translateX));
-  item->setY(baseY + static_cast<qreal>(style.translateY));
+  if (item != &rootItem_) {
+    item->setX(baseX + static_cast<qreal>(style.translateX));
+    item->setY(baseY + static_cast<qreal>(style.translateY));
+  }
   item->setScale(static_cast<qreal>(style.scale));
   item->setRotation(static_cast<qreal>(style.rotation));
 
@@ -796,6 +798,15 @@ MountError QtQuickMountingLayer::updateLayout(
   }
 
   QQuickItem* item = mounted->item;
+  if (item == &rootItem_) {
+    // The host owns where the surface root sits in the window (below the
+    // window chrome's title bar, for example). Yoga reports the root at 0,0,
+    // so moving it here would slide the app up under the bar.
+    item->setWidth(static_cast<qreal>(frame.width));
+    item->setHeight(static_cast<qreal>(frame.height));
+    lastError_.clear();
+    return MountError::None;
+  }
   item->setProperty("layoutX", static_cast<qreal>(frame.x));
   item->setProperty("layoutY", static_cast<qreal>(frame.y));
   item->setX(static_cast<qreal>(frame.x));

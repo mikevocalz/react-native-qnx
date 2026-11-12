@@ -7,7 +7,13 @@
       "rnqnx": {
         "appId": "org.rnqnx.showcase",
         "componentName": "RNQnxPlayground",
-        "platforms": ["qnx"]
+        "platforms": [
+          "qnx"
+        ],
+        "window": {
+          "controls": "macos",
+          "titleBarStyle": "default"
+        }
       }
     }
   }
