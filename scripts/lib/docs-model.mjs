@@ -104,7 +104,10 @@ export async function syncDocs(root, write = false, release = false) {
       }
       await checkEvidence(root, component.evidence?.[lane]);
       const evidence = component.evidence[lane]
-        .map((/** @type {string} */ p) => `[receipt](${path.posix.relative('docs', p)})`)
+        .map(
+          (/** @type {string} */ p) =>
+            `[${path.posix.basename(p, path.posix.extname(p))}](${path.posix.relative('docs', p)})`
+        )
         .join(', ');
       devices.push(`${component[lane]}${evidence ? ` (${evidence})` : ''}`);
     }
