@@ -20,11 +20,11 @@ const GATES = [
   'device-parity',
   'performance',
   'developer-path',
+  'documentation',
   'app-identity',
   'window-chrome',
   'expo',
   'dependencies',
-  'documentation',
 ];
 const LANES = [
   'hosted-ci',
@@ -113,7 +113,7 @@ export function candidateSnapshot(root) {
     !Array.isArray(readiness.gates) ||
     readiness.gates.length !== GATES.length
   ) {
-    throw new Error('Expected the existing seven v1 release gates.');
+    throw new Error('Expected every required v1 release gate.');
   }
   const ids = new Set();
   const gates = /** @type {unknown[]} */ (readiness.gates).map((/** @type {unknown} */ input) => {

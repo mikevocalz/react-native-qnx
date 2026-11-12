@@ -216,7 +216,7 @@ try {
   );
   git(['add', 'docs/releases/v1-readiness.json']);
   git(['commit', '-qm', 'missing gate fixture']);
-  await rejects(async () => candidateSnapshot(root), /seven/);
+  await rejects(async () => candidateSnapshot(root), /every required v1 release gate/);
   console.log(
     `qnx-release-dossier: ${checks} checks passed (synthetic Git and artifacts only; no release qualification).`
   );
