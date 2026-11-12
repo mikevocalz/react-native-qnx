@@ -137,7 +137,12 @@ class LabelFitTest final : public QObject {
       const char* text;
       qreal regular;
       qreal light;
-    } golden[] = {{"Calculator", 85.73, 82.80}, {"Messages", 79.34, 77.03}, {"WWWWWWWWWW", 157.19, 153.91}};
+    } golden[] = {{"Messages", 79.34, 77.03}, {"WWWWWWWWWW", 157.19, 153.91},
+        {"Field Notes Pro", 125.92, 122.09}, {"Notes", 48.17, 46.94}};
+    // Identical on Linux (Qt 6.11.1, FreeType) and macOS (Qt 6.12.0, CoreText)
+    // to 0.01 px. "Calculator" is left out: its kerning differs between those
+    // hosts (Regular 85.69 vs 85.73, Light 83.72 vs 82.80), more than the
+    // tolerance allows. It still fits on both; see upstreamReferenceLabelFits.
     for (const auto& row : golden) {
       const QString text = QString::fromLatin1(row.text);
       const auto regular = measureLabel(text, {{box.faces[0]}, 20, 92.4, 0});
@@ -154,8 +159,8 @@ class LabelFitTest final : public QObject {
       QCOMPARE(reversed.widestFace, box.faces[0].name());
     }
     // Half the pixel size is roughly half the width: the size is applied.
-    const auto half = measureLabel(QStringLiteral("Calculator"), {{box.faces[0]}, 10, 92.4, 0});
-    QVERIFY(qAbs(half.widthPx - 85.73 / 2) <= 0.5);
+    const auto half = measureLabel(QStringLiteral("Messages"), {{box.faces[0]}, 10, 92.4, 0});
+    QVERIFY(qAbs(half.widthPx - 79.34 / 2) <= 0.5);
   }
   void fixedFitCounts() {
     // 92.4 px box minus 2 px margin = 90.4 px; Regular W = 15.72 px, i = 4.91 px.
@@ -180,6 +185,16 @@ class LabelFitTest final : public QObject {
     QVERIFY(!measureLabel(QStringLiteral("R and D"), marathonBox()).mightBeRichText);
     const auto amp = measureLabel(QStringLiteral("A&B Notes and More"), marathonBox());
     QVERIFY(!amp.suggestion.contains(QLatin1Char('&')));
+  }
+  // Each face must resolve to its own file. A face whose recorded 'head' table
+  // belongs to the other file is refused instead of measured with the wrong font.
+  void faceResolvesToItsOwnFile() {
+    const auto box = marathonBox();
+    QVERIFY(box.faces[0].headTable != box.faces[1].headTable);
+    for (const auto& face : box.faces) measureLabel(QStringLiteral("Notes"), {{face}, 20, 92.4, 0});
+    LauncherFace mismatched = box.faces[1];
+    mismatched.headTable = box.faces[0].headTable;
+    QVERIFY_THROWS_EXCEPTION(std::runtime_error, measureLabel(QStringLiteral("Notes"), {{mismatched}, 20, 92.4, 0}));
   }
   void invalidInputsThrow() {
     QVERIFY_THROWS_EXCEPTION(std::invalid_argument, measureLabel(QString(), marathonBox()));

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QByteArray>
 #include <QList>
 #include <QString>
 #include <QStringList>
@@ -7,10 +8,13 @@
 namespace rnqnx::identity {
 
 // One registered launcher face: a family plus its weight, so two faces of the
-// same family (Regular and Light) stay distinct.
+// same family (Regular and Light) stay distinct. `headTable` is the font
+// file's 'head' table; when set, measureLabel refuses to measure if Qt's font
+// matching picked any other file for this family and weight.
 struct LauncherFace {
   QString family;
   int weight{400};
+  QByteArray headTable;
 
   QString name() const { return family + QStringLiteral(" ") + QString::number(weight); }
 };

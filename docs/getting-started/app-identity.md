@@ -122,8 +122,12 @@ Tile label "Field Notes Pro" (expo.name) is 35.5 px too wide for the Marathon la
 The check keeps 2 px of the box free, so a label fits when it measures at most
 90.4 px. The margin absorbs small differences between this host measurement
 and the device's font rendering. Text is laid out unhinted
-(`QFont::PreferNoHinting`) so macOS and Linux hosts produce the same widths for
-the bundled fonts. The suggestion is the longest run of whole words that fits
+(`QFont::PreferNoHinting`) with design metrics, as Qt Quick's `Text` does by
+default. For the golden labels in `LabelFitTest.cpp`, macOS (Qt 6.12.0) and
+Linux (Qt 6.11.1) give the same widths to 0.01 px; a few words with kerning
+pairs, such as `Calculator`, differ by up to 1 px between those hosts. Each
+face is selected by its file: the weight comes from the font's OS/2 table, and
+the measurement stops if Qt resolves a face to a different file. The suggestion is the longest run of whole words that fits
 and contains no `<` or `&`. When none fits, the message asks for a shorter label
 without proposing one.
 

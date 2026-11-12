@@ -32,22 +32,33 @@ QByteArray sha256(const QString& path) {
   return QCryptographicHash::hash(file.readAll(), QCryptographicHash::Sha256).toHex();
 }
 
-// A PNG signature and IHDR only: QImageReader reads the size without
-// allocating the (huge) pixel buffer.
-QString writeHeaderOnly(const QTemporaryDir& dir, const QString& name, quint32 edge) {
-  QByteArray chunk("IHDR");
-  for (const quint32 value : {edge, edge}) {
-    for (int shift = 24; shift >= 0; shift -= 8) chunk.append(char((value >> shift) & 0xff));
-  }
-  chunk.append(QByteArray::fromHex("0806000000"));
+// One PNG chunk: length, type, data, CRC-32 over type and data.
+QByteArray pngChunk(const QByteArray& type, const QByteArray& data) {
+  QByteArray bytes;
+  for (int shift = 24; shift >= 0; shift -= 8) bytes.append(char((quint32(data.size()) >> shift) & 0xff));
+  const QByteArray body = type + data;
   quint32 crc = 0xffffffffu;
-  for (const char byte : chunk) {
+  for (const char byte : body) {
     crc ^= quint8(byte);
     for (int bit = 0; bit < 8; ++bit) crc = (crc >> 1) ^ (0xedb88320u & (0u - (crc & 1u)));
   }
   crc ^= 0xffffffffu;
-  QByteArray bytes = QByteArray::fromHex("89504e470d0a1a0a0000000d") + chunk;
+  bytes += body;
   for (int shift = 24; shift >= 0; shift -= 8) bytes.append(char((crc >> shift) & 0xff));
+  return bytes;
+}
+
+// Signature, IHDR, an empty IDAT and IEND: QImageReader reads the declared
+// size without allocating the (huge) pixel buffer. The empty IDAT lets libpng
+// finish reading the header without hitting end of file.
+QString writeHeaderOnly(const QTemporaryDir& dir, const QString& name, quint32 edge) {
+  QByteArray ihdr;
+  for (const quint32 value : {edge, edge}) {
+    for (int shift = 24; shift >= 0; shift -= 8) ihdr.append(char((value >> shift) & 0xff));
+  }
+  ihdr.append(QByteArray::fromHex("0806000000"));
+  const QByteArray bytes = QByteArray::fromHex("89504e470d0a1a0a") + pngChunk("IHDR", ihdr) +
+      pngChunk("IDAT", {}) + pngChunk("IEND", {});
   const QString path = dir.filePath(name);
   QFile file(path);
   if (!file.open(QIODevice::WriteOnly) || file.write(bytes) != bytes.size()) throw std::runtime_error("fixture");
@@ -96,6 +107,8 @@ class IconSetTest final : public QObject {
       writeIconSet(writeHeaderOnly(dir, QStringLiteral("huge.png"), 9000), out, kSizes);
       QFAIL("expected rejection of a 9000 px source");
     } catch (const std::runtime_error& error) {
+      // The declared 9000x9000 must be what was rejected, not an unreadable header.
+      QVERIFY(QString::fromUtf8(error.what()).contains(QStringLiteral("9000x9000")));
       QVERIFY(QString::fromUtf8(error.what()).contains(QStringLiteral("8192x8192")));
     }
     try {

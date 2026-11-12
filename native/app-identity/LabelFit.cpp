@@ -35,6 +35,10 @@ SingleLine layOut(const QString& text, const QFont& font) {
   QTextLayout layout(text, font);
   QTextOption option;
   option.setWrapMode(QTextOption::NoWrap);
+  // QQuickText enables design metrics for its default QtRendering type, so the
+  // launcher lays out unrounded advances. Doing the same here also makes the
+  // result independent of the FreeType versus CoreText engine on the host.
+  option.setUseDesignMetrics(true);
   layout.setTextOption(option);
   layout.beginLayout();
   int lines = 0;
@@ -63,10 +67,20 @@ QList<LauncherFace> registerFontFiles(const QStringList& files) {
     const int id = QFontDatabase::addApplicationFont(file);
     const auto names = id < 0 ? QStringList{} : QFontDatabase::applicationFontFamilies(id);
     const QRawFont raw(file, 20);
-    if (names.isEmpty() || !raw.isValid()) {
+    // Weight comes from the file's OS/2 usWeightClass. QRawFont::weight() is
+    // not usable here: Qt's FreeType engine (Linux, QNX) reports only regular
+    // or bold, so Source Sans 3 Light read as 400 and both faces resolved to
+    // Regular. CoreText (macOS) happened to report 300.
+    const QByteArray os2 = raw.isValid() ? raw.fontTable("OS/2") : QByteArray();
+    const QByteArray head = raw.isValid() ? raw.fontTable("head") : QByteArray();
+    if (names.isEmpty() || os2.size() < 6 || head.isEmpty()) {
       throw std::runtime_error(("Cannot load launcher font " + file).toStdString());
     }
-    faces.append({names.first(), raw.weight()});
+    const int weight = (quint8(os2[4]) << 8) | quint8(os2[5]);
+    if (weight < 1 || weight > 1000) {
+      throw std::runtime_error(("Launcher font " + file + " has no valid OS/2 weight").toStdString());
+    }
+    faces.append({names.first(), weight, head});
   }
   return faces;
 }
@@ -88,6 +102,10 @@ LabelMeasurement measureLabel(const QString& text, const LabelBox& box) {
   QList<QFont> fonts;
   for (const auto& face : box.faces) {
     const auto font = launcherFont(face, box.pixelSize);
+    if (!face.headTable.isEmpty() && QRawFont::fromFont(font).fontTable("head") != face.headTable) {
+      throw std::runtime_error(("Qt resolved launcher face " + face.name() +
+          " to a different font file; the measurement would not use that face.").toStdString());
+    }
     fonts.append(font);
     const auto line = layOut(text, font);
     result.lineCount = std::max(result.lineCount, line.lineCount);
