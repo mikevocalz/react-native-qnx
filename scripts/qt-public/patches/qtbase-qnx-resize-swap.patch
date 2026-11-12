@@ -1,18 +1,36 @@
 --- a/src/plugins/platforms/qnx/qqnxeglwindow.cpp
 +++ b/src/plugins/platforms/qnx/qqnxeglwindow.cpp
-@@ -86,6 +86,7 @@
+@@ -24,6 +24,8 @@
+     initWindow();
+ 
+     m_requestedBufferSize = shouldMakeFullScreen() ? screen()->geometry().size() : window->geometry().size();
++    // initWindow() placed the window; the first surface keeps it there.
++    m_requestedPosition = geometry().topLeft();
+ }
+ 
+ QQnxEglWindow::~QQnxEglWindow()
+@@ -52,6 +54,8 @@
+         } else {
+             // Must've been a sequence of unprocessed changes returning us to the original size.
+             resetBuffers();
++            // A move requested with them still waits for the next swap.
++            m_pendingScreenGeometry = QRect(m_requestedPosition, bufferSize());
+         }
+     }
+ }
+@@ -86,6 +90,7 @@
  
      // update the window's buffers before we create the EGL surface
      setBufferSize(m_requestedBufferSize);
-+    m_pendingScreenSize = bufferSize();
++    m_pendingScreenGeometry = QRect(m_requestedPosition, bufferSize());
  
      const EGLint eglSurfaceAttrs[] =
      {
-@@ -133,16 +134,34 @@
+@@ -133,16 +138,43 @@
  
      //We need to request that the GL context updates
      // the EGLsurface on which it is rendering.
-+    bool deferScreenSize = false;
++    bool deferScreenGeometry = false;
      {
          // We want the setting of the atomic bool in the GL context to be atomic with
          // setting m_requestedBufferSize and therefore extended the scope to include
@@ -20,50 +38,63 @@
          const QMutexLocker locker(&m_mutex);
          m_requestedBufferSize = newGeometry.size();
 -        if (isInitialized() && bufferSize() != newGeometry.size())
-+        deferScreenSize = isInitialized() && bufferSize() != newGeometry.size();
-+        if (deferScreenSize)
++        m_requestedPosition = newGeometry.topLeft();
++        if (isInitialized() && bufferSize() != newGeometry.size()) {
              m_newSurfaceRequested.testAndSetRelease(false, true);
++            deferScreenGeometry = true;
++        } else if (m_pendingScreenGeometry.isValid()) {
++            // Buffers of this size exist but their first frame is not posted
++            // yet, so the window still shows the previous size: the new
++            // place waits for that frame too.
++            m_pendingScreenGeometry = newGeometry;
++            deferScreenGeometry = true;
++        }
      }
-+    // Until buffers of the new size exist the window keeps its old size.
-+    // Resizing it now would stretch the last frame over the new size, and a
-+    // window manager would show that distorted frame until the next post.
-+    // applyPendingScreenSize() catches up in the swap that posts the first
-+    // frame at the new size.
-+    m_deferScreenSize = deferScreenSize;
++    // Until buffers of the new size exist the window keeps its old size and
++    // place. Resizing it now would stretch the last frame over the new size,
++    // and moving it now would shift the last frame: a left or top edge drag
++    // would jump by the drag distance for one frame. A window manager would
++    // show that frame until the next post. applyPendingScreenGeometry()
++    // catches up in the swap that posts the first frame at the new size.
++    m_deferScreenGeometry = deferScreenGeometry;
      QQnxWindow::setGeometry(newGeometry);
-+    m_deferScreenSize = false;
++    m_deferScreenGeometry = false;
 +}
 +
-+void QQnxEglWindow::applyPendingScreenSize()
++void QQnxEglWindow::applyPendingScreenGeometry()
 +{
 +    const QMutexLocker locker(&m_mutex);
-+    if (!m_pendingScreenSize.isValid())
++    if (!m_pendingScreenGeometry.isValid())
 +        return;
-+    setScreenWindowSize(m_pendingScreenSize);
-+    m_pendingScreenSize = QSize();
++    setScreenWindowGeometry(m_pendingScreenGeometry);
++    m_pendingScreenGeometry = QRect();
  }
  
  int QQnxEglWindow::pixelFormat() const
 --- a/src/plugins/platforms/qnx/qqnxeglwindow.h
 +++ b/src/plugins/platforms/qnx/qqnxeglwindow.h
-@@ -28,6 +28,11 @@
+@@ -28,6 +28,12 @@
  
      void setGeometry(const QRect &rect) override;
  
-+    // Gives the Screen window the size of buffers made since the last call.
-+    // Called just before the swap that posts the first frame drawn into
-+    // them, so the new size and the new pixels reach the display together.
-+    void applyPendingScreenSize();
++    // Gives the Screen window the position and size that go with the buffers
++    // made since the last call. Called just before the swap that posts the
++    // first frame drawn into them, so the new place, the new size and the new
++    // pixels reach the display together.
++    void applyPendingScreenGeometry();
 +
      QSurfaceFormat format() const override { return m_format; }
  
  protected:
-@@ -39,6 +44,8 @@
+@@ -39,6 +45,11 @@
      void destroyEGLSurface();
  
      QSize m_requestedBufferSize;
-+    // Buffer size the Screen window size has not caught up with yet.
-+    QSize m_pendingScreenSize;
++    // Position requested with m_requestedBufferSize.
++    QPoint m_requestedPosition;
++    // Geometry the Screen window has not caught up with yet; its size is the
++    // buffer size. Invalid when there is none.
++    QRect m_pendingScreenGeometry;
  
      // This mutex is used to protect access to the m_requestedBufferSize
      // member. This member is used in conjunction with QQnxGLContext::requestNewSurface()
@@ -91,7 +122,7 @@
 +    const EGLSurface eglSurface = platformWindow->surface();
 +    if (eglSurface == EGL_NO_SURFACE)
 +        return;
-+    platformWindow->applyPendingScreenSize();
++    platformWindow->applyPendingScreenGeometry();
 +    eglBindAPI(EGL_OPENGL_ES_API);
 +    if (!eglSwapBuffers(eglDisplay(), eglSurface))
 +        qWarning("QQnxGLContext: eglSwapBuffers failed: %x", eglGetError());
@@ -100,23 +131,40 @@
  void QQnxGLContext::doneCurrent()
 --- a/src/plugins/platforms/qnx/qqnxwindow.cpp
 +++ b/src/plugins/platforms/qnx/qqnxwindow.cpp
-@@ -343,18 +343,23 @@
-                             "Failed to set window position");
-     }
+@@ -331,30 +331,33 @@
+     // Call base class method
+     QPlatformWindow::setGeometry(rect);
  
--    val[0] = rect.width();
--    val[1] = rect.height();
-+    if (!m_deferScreenSize)
-+        setScreenWindowSize(rect.size());
+-    int val[2];
+-
+     // Set window geometry equal to widget geometry
+-    if (m_desktopNotify & DesktopNotifyPosition) {
++    if (m_desktopNotify & DesktopNotifyPosition)
+         notifyManager(QString::asprintf("Pos=%d,%d", rect.x(), rect.y()));
+-    } else {
+-        val[0] = rect.x();
+-        val[1] = rect.y();
+-        Q_SCREEN_CHECKERROR(screen_set_window_property_iv(m_window, SCREEN_PROPERTY_POSITION, val),
++
++    if (!m_deferScreenGeometry)
++        setScreenWindowGeometry(rect);
 +
 +    screen_flush_context(m_screenContext, 0);
 +
 +    QWindowSystemInterface::handleGeometryChange(window(), rect);
 +}
 +
-+void QQnxWindow::setScreenWindowSize(const QSize &size)
++void QQnxWindow::setScreenWindowGeometry(const QRect &rect)
 +{
-+    int val[2] = { size.width(), size.height() };
++    if (!(m_desktopNotify & DesktopNotifyPosition)) {
++        int pos[2] = { rect.x(), rect.y() };
++        Q_SCREEN_CHECKERROR(screen_set_window_property_iv(m_window, SCREEN_PROPERTY_POSITION, pos),
+                             "Failed to set window position");
+     }
+ 
+-    val[0] = rect.width();
+-    val[1] = rect.height();
++    int val[2] = { rect.width(), rect.height() };
      Q_SCREEN_CHECKERROR(screen_set_window_property_iv(m_window, SCREEN_PROPERTY_SIZE, val),
                          "Failed to set window size");
  
@@ -132,18 +180,22 @@
  void QQnxWindow::setVisible(bool visible)
 --- a/src/plugins/platforms/qnx/qqnxwindow.h
 +++ b/src/plugins/platforms/qnx/qqnxwindow.h
-@@ -88,7 +88,14 @@
+@@ -88,7 +88,18 @@
  
      void initWindow();
  
-+    // Writes SCREEN_PROPERTY_SIZE and SCREEN_PROPERTY_SOURCE_SIZE without
-+    // flushing the context.
-+    void setScreenWindowSize(const QSize &size);
++    // Writes SCREEN_PROPERTY_POSITION (unless the position goes to the window
++    // manager as a Pos= message), SCREEN_PROPERTY_SIZE and
++    // SCREEN_PROPERTY_SOURCE_SIZE without flushing the context.
++    void setScreenWindowGeometry(const QRect &rect);
 +
      screen_context_t m_screenContext;
 +    // Set by QQnxEglWindow while a resize waits for buffers of the new size,
-+    // so setGeometryHelper() leaves the Screen window size alone.
-+    bool m_deferScreenSize = false;
++    // so setGeometryHelper() leaves the Screen window's position and size
++    // alone. Both change in the swap that posts the first frame at the new
++    // size: a left or top edge resize moves the window and changes its size,
++    // and moving it a frame early shifts the old frame by the drag distance.
++    bool m_deferScreenGeometry = false;
  
  private:
      void collectWindowGroup();

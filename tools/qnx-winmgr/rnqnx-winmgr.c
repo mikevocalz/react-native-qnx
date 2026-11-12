@@ -20,7 +20,12 @@
  *     an entry restores a minimized window, raises a covered one, or
  *     minimizes the one in front;
  *   - every app window gets SCREEN_PROPERTY_MANAGER_STRING "rnqnx-winmgr
- *     windowed", so an app can tell it may use a real window of its own size.
+ *     windowed", so an app can tell it may use a real window of its own size;
+ *   - Alt+Tab opens a switcher with each app's icon and name; Tab again moves
+ *     the selection, Delete closes the selected app, Escape cancels, and
+ *     releasing Alt brings the selected window to the front (restoring it
+ *     when minimized). WINMGR_KEYMOD and WINMGR_HOTKEY change the keys as
+ *     they do for fullscreen-winmgr.
  * Apps send requests the way the launcher does, as manager messages naming
  * their window:
  *   "rnqnx=minimize"  hide the window (it stays in the dock)
@@ -30,6 +35,9 @@
  * Usage: rnqnx-winmgr [-v] [-s list] [-d] [-m] [-l n]
  *   -v  log every event to stderr. -s, -d, -m and -l are accepted for
  *   command-line compatibility with fullscreen-winmgr and ignored.
+ * Environment:
+ *   WINMGR_KEYMOD  shift, ctrl, alt (default) or ralt
+ *   WINMGR_HOTKEY  tab (default), space, grave, f1-f12, q, w, t or m
  */
 
 #include <screen/screen.h>
@@ -40,11 +48,14 @@
 
 #include <ctype.h>
 #include <errno.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
+#include <sys/keycodes.h>
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
@@ -62,6 +73,17 @@
 #define ITEM_MAX_TEXT 200
 #define DOCK_Z 1000
 #define APP_Z_BASE 10
+/* Alt+Tab switcher: a panel of tiles centred on the display. */
+#define SWITCHER_Z 2000
+#define TILE_W 168
+#define TILE_H 128
+#define TILE_ICON 64
+#define TILE_GAP 10
+#define PANEL_PAD 18
+#define PANEL_CAPTION 34
+/* Seconds an app gets to close its window after the switcher asks before it
+ * is sent SIGTERM. */
+#define CLOSE_GRACE_S 3
 
 typedef struct {
   screen_window_t win;
@@ -73,6 +95,7 @@ typedef struct {
   char tag[128];
   char title[128];
   uint32_t* icon; /* ITEM_ICON x ITEM_ICON premultiplied BGRA, or NULL */
+  uint32_t* tile_icon; /* TILE_ICON x TILE_ICON, for the switcher */
   int dock_x, dock_w; /* hit area in the dock, display coordinates */
 } managed_t;
 
@@ -95,6 +118,29 @@ static screen_window_t dock;
 static int dock_rect[4]; /* x, y, w, h on the display */
 static FT_Library ft;
 static FT_Face face;
+
+/* Alt+Tab. The keyboard session takes every key press first; keys that are
+ * not the switcher's go on to the focused window. */
+static screen_session_t key_session;
+static int switch_mod = KEYMOD_ALT;
+static int switch_mod_keys[2] = {KEYCODE_LEFT_ALT, KEYCODE_RIGHT_ALT};
+static int switch_key = KEYCODE_TAB;
+static screen_window_t switcher;
+static bool switcher_open;
+static screen_window_t switch_list[MAX_WINDOWS]; /* most recently used first */
+static int switch_count;
+static int switch_sel;
+static int switcher_rect[4];
+static int tile_x[MAX_WINDOWS], tile_y[MAX_WINDOWS]; /* display coordinates */
+
+/* Windows asked to close from the switcher, with their SIGTERM deadline. */
+typedef struct {
+  screen_window_t win;
+  pid_t pid;
+  struct timespec deadline;
+} closing_t;
+static closing_t closing[MAX_WINDOWS];
+static int closing_count;
 
 #define LOG(...) \
   do { \
@@ -200,7 +246,8 @@ static void process_name(pid_t pid, char* out, size_t len) {
   if (!out[0]) snprintf(out, len, "Window %d", (int)pid);
 }
 
-static uint32_t* load_icon(const char* path) {
+/* Reads a PNG and box-filters it to size x size premultiplied BGRA. */
+static uint32_t* load_icon(const char* path, int size) {
   if (!path || !path[0]) return NULL;
   png_image image;
   memset(&image, 0, sizeof image);
@@ -217,13 +264,12 @@ static uint32_t* load_icon(const char* path) {
     free(src);
     return NULL;
   }
-  uint32_t* out = calloc(ITEM_ICON * ITEM_ICON, sizeof *out);
+  uint32_t* out = calloc((size_t)size * (size_t)size, sizeof *out);
   if (out) {
-    /* Box filter down to ITEM_ICON, premultiplied. */
-    for (int y = 0; y < ITEM_ICON; ++y) {
-      for (int x = 0; x < ITEM_ICON; ++x) {
-        int x0 = x * (int)image.width / ITEM_ICON, x1 = (x + 1) * (int)image.width / ITEM_ICON;
-        int y0 = y * (int)image.height / ITEM_ICON, y1 = (y + 1) * (int)image.height / ITEM_ICON;
+    for (int y = 0; y < size; ++y) {
+      for (int x = 0; x < size; ++x) {
+        int x0 = x * (int)image.width / size, x1 = (x + 1) * (int)image.width / size;
+        int y0 = y * (int)image.height / size, y1 = (y + 1) * (int)image.height / size;
         if (x1 <= x0) x1 = x0 + 1;
         if (y1 <= y0) y1 = y0 + 1;
         unsigned long b = 0, g = 0, r = 0, a = 0, n = 0;
@@ -238,7 +284,7 @@ static uint32_t* load_icon(const char* path) {
             ++n;
           }
         }
-        out[y * ITEM_ICON + x] = (uint32_t)((a / n) << 24 | (r / n / 255) << 16 |
+        out[y * size + x] = (uint32_t)((a / n) << 24 | (r / n / 255) << 16 |
                                             (g / n / 255) << 8 | (b / n / 255));
       }
     }
@@ -261,7 +307,9 @@ static void describe_window(managed_t* m) {
     snprintf(m->title, sizeof m->title, "%s", process);
   }
   free(m->icon);
-  m->icon = load_icon(icon);
+  free(m->tile_icon);
+  m->icon = load_icon(icon, ITEM_ICON);
+  m->tile_icon = load_icon(icon, TILE_ICON);
 }
 
 /* ---------- dock drawing ---------- */
@@ -335,12 +383,30 @@ static void draw_text(uint32_t* px, int stride, int bw, int bh, int x, int basel
   }
 }
 
-static void draw_monogram(uint32_t* px, int stride, int bw, int bh, int x, int y, const char* title) {
-  fill_round_rect(px, stride, bw, bh, x, y, ITEM_ICON, ITEM_ICON, 8, 0xff3a6ea5);
+/* A coloured square with the title's first letter, for an app without an
+ * icon. */
+static void draw_monogram(uint32_t* px, int stride, int bw, int bh, int x, int y, int size,
+                          const char* title) {
+  fill_round_rect(px, stride, bw, bh, x, y, size, size, size / 4, 0xff3a6ea5);
   char letter[2] = {(char)toupper((unsigned char)(title[0] ? title[0] : '?')), 0};
+  if (face) FT_Set_Pixel_Sizes(face, 0, (FT_UInt)(size / 2));
   int tw = text_width(letter);
-  draw_text(px, stride, bw, bh, x + (ITEM_ICON - tw) / 2, y + ITEM_ICON / 2 + 6, letter, ITEM_ICON,
+  draw_text(px, stride, bw, bh, x + (size - tw) / 2, y + size / 2 + size / 6, letter, size,
             0xffffff);
+  if (face) FT_Set_Pixel_Sizes(face, 0, 17);
+}
+
+/* Copies a premultiplied size x size icon, at half opacity when dim. */
+static void draw_icon(uint32_t* px, int stride, int x, int y, const uint32_t* icon, int size,
+                      bool dim) {
+  for (int yy = 0; yy < size; ++yy)
+    for (int xx = 0; xx < size; ++xx) {
+      uint32_t* d = &px[(y + yy) * stride + x + xx];
+      uint32_t s = icon[yy * size + xx];
+      /* Premultiplied, so halving every channel halves the opacity. */
+      if (dim) s = s >> 1 & 0x7f7f7f7f;
+      *d = blend(*d, s);
+    }
 }
 
 /* Entries shown in the dock: posted app windows the app has not hidden. */
@@ -423,17 +489,10 @@ static void update_dock(void) {
     if (w < 8 + ITEM_ICON + 8) {
       /* No room left for the icon in a full dock. */
     } else if (m->icon) {
-      for (int yy = 0; yy < ITEM_ICON; ++yy)
-        for (int xx = 0; xx < ITEM_ICON; ++xx) {
-          uint32_t* d = &px[(iy + yy) * stride + x + 8 + xx];
-          uint32_t s = m->icon[yy * ITEM_ICON + xx];
-          /* Half opacity for a minimized window (premultiplied, so every
-           * channel halves). */
-          if (m->minimized) s = s >> 1 & 0x7f7f7f7f;
-          *d = blend(*d, s);
-        }
+      /* Half opacity for a minimized window. */
+      draw_icon(px, stride, x + 8, iy, m->icon, ITEM_ICON, m->minimized);
     } else {
-      draw_monogram(px, stride, width, height, x + 8, iy, m->title);
+      draw_monogram(px, stride, width, height, x + 8, iy, ITEM_ICON, m->title);
     }
     if (w > 8 + ITEM_ICON + 18)
       draw_text(px, stride, width, height, x + 8 + ITEM_ICON + 10, height / 2 + 6, m->title,
@@ -476,6 +535,8 @@ static void create_dock(void) {
   screen_set_window_property_iv(dock, SCREEN_PROPERTY_TRANSPARENCY, &transparency);
   screen_set_window_property_iv(dock, SCREEN_PROPERTY_ALPHA_MODE, &premultiplied);
   screen_set_window_property_iv(dock, SCREEN_PROPERTY_ZORDER, &z);
+  int sensitivity = SCREEN_SENSITIVITY_MASK_NO_FOCUS;
+  screen_set_window_property_iv(dock, SCREEN_PROPERTY_SENSITIVITY, &sensitivity);
   screen_set_window_property_iv(dock, SCREEN_PROPERTY_VISIBLE, &visible);
   screen_set_window_property_iv(dock, SCREEN_PROPERTY_BUFFER_SIZE, buffer_size);
   if (screen_create_window_buffers(dock, 2)) {
@@ -538,6 +599,15 @@ static void raise_window(managed_t* m) {
 static void minimize_window(managed_t* m) {
   if (m->launcher) return;
   m->minimized = true;
+  /* A minimized window goes to the bottom of the stack, so the stack stays in
+   * the order Alt+Tab lists: visible windows front to back, then minimized
+   * ones. */
+  stack_remove(m->win);
+  if (stack_count < MAX_WINDOWS) {
+    memmove(&stack[1], &stack[0], (size_t)stack_count * sizeof stack[0]);
+    stack[0] = m->win;
+    ++stack_count;
+  }
   LOG("minimize pid=%d '%s'", (int)m->pid, m->title);
   apply_stack();
 }
@@ -602,6 +672,416 @@ static void handle_manager_message(screen_window_t from, const char* data) {
     }
     /* can_close, Frame and Title need nothing here. */
   }
+}
+
+/* ---------- Alt+Tab switcher ---------- */
+
+static void create_switcher(void) {
+  if (screen_create_window(&switcher, ctx)) {
+    WARN("cannot create the switcher window: %s", strerror(errno));
+    switcher = NULL;
+    return;
+  }
+  const char* id = "rnqnx-winmgr-switcher";
+  screen_set_window_property_cv(switcher, SCREEN_PROPERTY_ID_STRING, (int)strlen(id), id);
+  int usage = SCREEN_USAGE_WRITE | SCREEN_USAGE_NATIVE;
+  int format = SCREEN_FORMAT_RGBA8888;
+  int transparency = SCREEN_TRANSPARENCY_SOURCE_OVER;
+  int premultiplied = SCREEN_PRE_MULTIPLIED_ALPHA;
+  int z = SWITCHER_Z;
+  int visible = 0;
+  int buffer_size[2] = {display_size[0], display_size[1]};
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_USAGE, &usage);
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_FORMAT, &format);
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_TRANSPARENCY, &transparency);
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_ALPHA_MODE, &premultiplied);
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_ZORDER, &z);
+  /* Clicks reach it, keyboard focus stays with the app. */
+  int sensitivity = SCREEN_SENSITIVITY_MASK_NO_FOCUS;
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_SENSITIVITY, &sensitivity);
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_VISIBLE, &visible);
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_BUFFER_SIZE, buffer_size);
+  if (screen_create_window_buffers(switcher, 2)) {
+    WARN("cannot create the switcher buffers: %s", strerror(errno));
+    screen_destroy_window(switcher);
+    switcher = NULL;
+  }
+}
+
+/* Copies s into out, cut with "..." when it is wider than max_w. */
+static void fit_text(const char* s, int max_w, char* out, size_t len) {
+  snprintf(out, len, "%s", s);
+  if (text_width(out) <= max_w) return;
+  for (size_t n = strlen(out); n > 0; --n) {
+    snprintf(out, len, "%.*s...", (int)n - 1, s);
+    if (text_width(out) <= max_w) return;
+  }
+}
+
+static void draw_switcher(void) {
+  if (!switcher || !switcher_open || switch_count == 0) return;
+  const int margin = 40;
+  int cols = (display_size[0] - 2 * margin - 2 * PANEL_PAD + TILE_GAP) / (TILE_W + TILE_GAP);
+  if (cols < 1) cols = 1;
+  if (cols > switch_count) cols = switch_count;
+  int rows = (switch_count + cols - 1) / cols;
+  int max_rows = (display_size[1] - 2 * margin - 2 * PANEL_PAD - PANEL_CAPTION + TILE_GAP) /
+                 (TILE_H + TILE_GAP);
+  if (max_rows < 1) max_rows = 1;
+  if (rows > max_rows) rows = max_rows; /* more windows than fit: the rest are not drawn */
+  int width = 2 * PANEL_PAD + cols * TILE_W + (cols - 1) * TILE_GAP;
+  int height = 2 * PANEL_PAD + rows * TILE_H + (rows - 1) * TILE_GAP + PANEL_CAPTION;
+  /* Wide enough for the caption. */
+  const char* caption = "Tab: next   Del: close   Esc: cancel";
+  int caption_w = text_width(caption);
+  if (width < caption_w + 2 * PANEL_PAD) width = caption_w + 2 * PANEL_PAD;
+  if (width > display_size[0]) width = display_size[0];
+  switcher_rect[0] = (display_size[0] - width) / 2;
+  switcher_rect[1] = (display_size[1] - height) / 2;
+  switcher_rect[2] = width;
+  switcher_rect[3] = height;
+
+  screen_buffer_t buffers[2] = {NULL, NULL};
+  if (screen_get_window_property_pv(switcher, SCREEN_PROPERTY_RENDER_BUFFERS, (void**)buffers) ||
+      !buffers[0])
+    return;
+  uint32_t* px = NULL;
+  int stride_bytes = 0;
+  screen_get_buffer_property_pv(buffers[0], SCREEN_PROPERTY_POINTER, (void**)&px);
+  screen_get_buffer_property_iv(buffers[0], SCREEN_PROPERTY_STRIDE, &stride_bytes);
+  if (!px) return;
+  int stride = stride_bytes / 4;
+  for (int y = 0; y < height; ++y) memset(px + y * stride, 0, (size_t)width * 4);
+  fill_round_rect(px, stride, width, height, 0, 0, width, height, 18, 0xff141b24);
+
+  int grid_w = cols * TILE_W + (cols - 1) * TILE_GAP;
+  int x0 = (width - grid_w) / 2;
+  for (int i = 0; i < switch_count; ++i) {
+    tile_x[i] = tile_y[i] = -1;
+    int row = i / cols, col = i % cols;
+    if (row >= rows) continue;
+    managed_t* m = find(switch_list[i]);
+    if (!m) continue;
+    int tx = x0 + col * (TILE_W + TILE_GAP);
+    int ty = PANEL_PAD + row * (TILE_H + TILE_GAP);
+    tile_x[i] = switcher_rect[0] + tx;
+    tile_y[i] = switcher_rect[1] + ty;
+    if (i == switch_sel) {
+      fill_round_rect(px, stride, width, height, tx, ty, TILE_W, TILE_H, 12, 0xff4fc3f7);
+      fill_round_rect(px, stride, width, height, tx + 3, ty + 3, TILE_W - 6, TILE_H - 6, 10,
+                      0xff2f4258);
+    }
+    int ix = tx + (TILE_W - TILE_ICON) / 2, iy = ty + 14;
+    if (m->tile_icon)
+      draw_icon(px, stride, ix, iy, m->tile_icon, TILE_ICON, m->minimized);
+    else
+      draw_monogram(px, stride, width, height, ix, iy, TILE_ICON, m->title);
+    char name[sizeof m->title + 3];
+    fit_text(m->title, TILE_W - 16, name, sizeof name);
+    int tw = text_width(name);
+    draw_text(px, stride, width, height, tx + (TILE_W - tw) / 2, ty + TILE_H - 22, name, TILE_W - 16,
+              m->minimized ? 0x8a96a3 : 0xf2f5f8);
+  }
+  draw_text(px, stride, width, height, (width - caption_w) / 2, height - PANEL_PAD - 4, caption,
+            width - 2 * PANEL_PAD, 0x8a96a3);
+
+  int pos[2] = {switcher_rect[0], switcher_rect[1]};
+  int size[2] = {width, height};
+  int visible = 1;
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_POSITION, pos);
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_SIZE, size);
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_SOURCE_SIZE, size);
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_VISIBLE, &visible);
+  int rect[4] = {0, 0, width, height};
+  screen_post_window(switcher, buffers[0], 1, rect, 0);
+  screen_flush_context(ctx, 0);
+}
+
+static void hide_switcher(void) {
+  switcher_open = false;
+  switch_count = 0;
+  if (!switcher) return;
+  int visible = 0;
+  screen_set_window_property_iv(switcher, SCREEN_PROPERTY_VISIBLE, &visible);
+  screen_flush_context(ctx, 0);
+}
+
+/* Opens the switcher with the window after the front one selected, or the
+ * last one when going backwards. */
+static void open_switcher(bool backwards) {
+  switch_count = 0;
+  for (int i = stack_count - 1; i >= 0; --i) {
+    managed_t* m = find(stack[i]);
+    if (m && m->posted && !m->launcher && !m->hidden_by_app) switch_list[switch_count++] = m->win;
+  }
+  if (switch_count == 0) return;
+  managed_t* front = front_window();
+  if (backwards)
+    switch_sel = switch_count - 1;
+  else
+    switch_sel = switch_count > 1 && front && front->win == switch_list[0] ? 1 : 0;
+  switcher_open = true;
+  LOG("switcher open, %d windows, selected %d", switch_count, switch_sel);
+  draw_switcher();
+}
+
+static void step_switcher(int delta) {
+  if (switch_count == 0) return;
+  switch_sel = ((switch_sel + delta) % switch_count + switch_count) % switch_count;
+  draw_switcher();
+}
+
+static bool is_closing(screen_window_t win) {
+  for (int i = 0; i < closing_count; ++i)
+    if (closing[i].win == win) return true;
+  return false;
+}
+
+static void activate_switcher(void) {
+  managed_t* m = switch_count > 0 ? find(switch_list[switch_sel]) : NULL;
+  hide_switcher();
+  if (m && is_closing(m->win)) {
+    /* Closing it from the switcher: nothing to bring forward. */
+    apply_stack();
+  } else if (m) {
+    LOG("switch to pid=%d '%s'", (int)m->pid, m->title);
+    raise_window(m);
+  }
+}
+
+/* The window left the screen: drop it from the switcher. */
+static void switcher_forget(screen_window_t win) {
+  for (int i = 0; i < switch_count; ++i) {
+    if (switch_list[i] != win) continue;
+    memmove(&switch_list[i], &switch_list[i + 1], (size_t)(switch_count - i - 1) * sizeof win);
+    --switch_count;
+    if (switch_sel > i || switch_sel >= switch_count) --switch_sel;
+    if (switch_sel < 0) switch_sel = 0;
+    break;
+  }
+  if (!switcher_open) return;
+  if (switch_count == 0) {
+    hide_switcher();
+    apply_stack();
+  } else {
+    draw_switcher();
+  }
+}
+
+/* Asks the app to close the window the way a title-bar close does: a manager
+ * close event, which Qt turns into QWindow::close(). An app that is still
+ * there CLOSE_GRACE_S seconds later gets SIGTERM. */
+static void close_window(managed_t* m) {
+  if (m->launcher) return;
+  LOG("close request pid=%d '%s'", (int)m->pid, m->title);
+  screen_event_t ev;
+  bool sent = false;
+  if (!screen_create_event(&ev)) {
+    int type = SCREEN_EVENT_MANAGER, subtype = SCREEN_EVENT_CLOSE;
+    screen_set_event_property_iv(ev, SCREEN_PROPERTY_TYPE, &type);
+    screen_set_event_property_pv(ev, SCREEN_PROPERTY_WINDOW, (void**)&m->win);
+    screen_set_event_property_iv(ev, SCREEN_PROPERTY_SUBTYPE, &subtype);
+    sent = screen_send_event(ctx, ev, m->pid) == 0;
+    if (!sent) WARN("cannot send close to pid %d: %s", (int)m->pid, strerror(errno));
+    screen_destroy_event(ev);
+    screen_flush_context(ctx, 0);
+  }
+  if (!sent) {
+    kill(m->pid, SIGTERM);
+    return;
+  }
+  for (int i = 0; i < closing_count; ++i)
+    if (closing[i].win == m->win) return;
+  if (closing_count >= MAX_WINDOWS) return;
+  closing_t* c = &closing[closing_count++];
+  c->win = m->win;
+  c->pid = m->pid;
+  clock_gettime(CLOCK_MONOTONIC, &c->deadline);
+  c->deadline.tv_sec += CLOSE_GRACE_S;
+}
+
+static void closing_forget(screen_window_t win) {
+  for (int i = 0; i < closing_count; ++i) {
+    if (closing[i].win != win) continue;
+    memmove(&closing[i], &closing[i + 1], (size_t)(closing_count - i - 1) * sizeof closing[0]);
+    --closing_count;
+    return;
+  }
+}
+
+static int64_t ns_until(const struct timespec* t) {
+  struct timespec now;
+  clock_gettime(CLOCK_MONOTONIC, &now);
+  return (int64_t)(t->tv_sec - now.tv_sec) * 1000000000 + (t->tv_nsec - now.tv_nsec);
+}
+
+/* SIGTERM for apps that kept a window past their close deadline. Returns the
+ * nanoseconds to the next deadline, or -1 when none is left. */
+static int64_t check_closing(void) {
+  int64_t next = -1;
+  for (int i = 0; i < closing_count;) {
+    int64_t left = ns_until(&closing[i].deadline);
+    if (left > 0) {
+      if (next < 0 || left < next) next = left;
+      ++i;
+      continue;
+    }
+    if (find(closing[i].win)) {
+      WARN("pid %d did not close its window; sending SIGTERM", (int)closing[i].pid);
+      kill(closing[i].pid, SIGTERM);
+    }
+    memmove(&closing[i], &closing[i + 1], (size_t)(closing_count - i - 1) * sizeof closing[0]);
+    --closing_count;
+  }
+  return next;
+}
+
+/* ---------- keyboard ---------- */
+
+static bool parse_keymod(const char* v) {
+  if (!strcasecmp(v, "alt")) {
+    switch_mod = KEYMOD_ALT;
+    switch_mod_keys[0] = KEYCODE_LEFT_ALT;
+    switch_mod_keys[1] = KEYCODE_RIGHT_ALT;
+  } else if (!strcasecmp(v, "ralt")) {
+    /* Right Alt is AltGr on most layouts. */
+    switch_mod = KEYMOD_ALTGR;
+    switch_mod_keys[0] = switch_mod_keys[1] = KEYCODE_RIGHT_ALT;
+  } else if (!strcasecmp(v, "ctrl")) {
+    switch_mod = KEYMOD_CTRL;
+    switch_mod_keys[0] = KEYCODE_LEFT_CTRL;
+    switch_mod_keys[1] = KEYCODE_RIGHT_CTRL;
+  } else if (!strcasecmp(v, "shift")) {
+    switch_mod = KEYMOD_SHIFT;
+    switch_mod_keys[0] = KEYCODE_LEFT_SHIFT;
+    switch_mod_keys[1] = KEYCODE_RIGHT_SHIFT;
+  } else {
+    return false;
+  }
+  return true;
+}
+
+static bool parse_hotkey(const char* v) {
+  static const struct {
+    const char* name;
+    int key;
+  } keys[] = {
+      {"tab", KEYCODE_TAB}, {"space", KEYCODE_SPACE}, {"grave", KEYCODE_GRAVE},
+      {"q", KEYCODE_Q},     {"w", KEYCODE_W},         {"t", KEYCODE_T},
+      {"m", KEYCODE_M},
+  };
+  for (size_t i = 0; i < sizeof keys / sizeof keys[0]; ++i)
+    if (!strcasecmp(v, keys[i].name)) {
+      switch_key = keys[i].key;
+      return true;
+    }
+  if ((v[0] == 'f' || v[0] == 'F') && isdigit((unsigned char)v[1])) {
+    char* end = NULL;
+    long n = strtol(v + 1, &end, 10);
+    if (*end == 0 && n >= 1 && n <= 12) {
+      switch_key = KEYCODE_F1 + (int)n - 1;
+      return true;
+    }
+  }
+  return false;
+}
+
+static void read_key_env(void) {
+  const char* v = getenv("WINMGR_KEYMOD");
+  if (v && *v && !parse_keymod(v)) WARN("invalid WINMGR_KEYMOD '%s'; using alt", v);
+  v = getenv("WINMGR_HOTKEY");
+  if (v && *v && !parse_hotkey(v)) WARN("invalid WINMGR_HOTKEY '%s'; using tab", v);
+}
+
+static void route_keyboard(screen_device_t device) {
+  int type = 0;
+  screen_get_device_property_iv(device, SCREEN_PROPERTY_TYPE, &type);
+  if (type != SCREEN_EVENT_KEYBOARD) return;
+  if (screen_set_device_property_pv(device, SCREEN_PROPERTY_SESSION, (void**)&key_session))
+    WARN("cannot route a keyboard to the switcher: %s", strerror(errno));
+  else
+    LOG("keyboard %p routed through the switcher", (void*)device);
+}
+
+/* Every keyboard sends its events to a session of ours first; route_key()
+ * passes the ones the switcher does not use to the focused window. */
+static void create_key_session(void) {
+  if (screen_create_session_type(&key_session, ctx, SCREEN_EVENT_KEYBOARD)) {
+    WARN("cannot create a keyboard session, Alt+Tab is off: %s", strerror(errno));
+    key_session = NULL;
+    return;
+  }
+  int pos[2] = {0, 0};
+  int z = 0x7fffffff;
+  screen_set_session_property_iv(key_session, SCREEN_PROPERTY_POSITION, pos);
+  screen_set_session_property_iv(key_session, SCREEN_PROPERTY_SIZE, display_size);
+  screen_set_session_property_iv(key_session, SCREEN_PROPERTY_ZORDER, &z);
+  screen_set_session_property_pv(key_session, SCREEN_PROPERTY_DISPLAY, (void**)&display);
+  int count = 0;
+  screen_get_context_property_iv(ctx, SCREEN_PROPERTY_DEVICE_COUNT, &count);
+  if (count > 0) {
+    screen_device_t* devices = calloc((size_t)count, sizeof *devices);
+    if (devices) {
+      screen_get_context_property_pv(ctx, SCREEN_PROPERTY_DEVICES, (void**)devices);
+      for (int i = 0; i < count; ++i) route_keyboard(devices[i]);
+      free(devices);
+    }
+  }
+  screen_flush_context(ctx, 0);
+}
+
+/* Sends a key the switcher does not take on to the focused window. Without
+ * a device the event is not routed back to our session. */
+static void forward_key(screen_event_t ev) {
+  screen_device_t none = NULL;
+  screen_set_event_property_pv(ev, SCREEN_PROPERTY_DEVICE, (void**)&none);
+  if (screen_inject_event(display, ev)) WARN("cannot pass a key on: %s", strerror(errno));
+  screen_flush_context(ctx, 0);
+}
+
+static void on_keyboard(screen_event_t ev) {
+  int flags = 0, cap = 0, sym = 0, mods = 0;
+  screen_get_event_property_iv(ev, SCREEN_PROPERTY_FLAGS, &flags);
+  screen_get_event_property_iv(ev, SCREEN_PROPERTY_KEY_CAP, &cap);
+  screen_get_event_property_iv(ev, SCREEN_PROPERTY_SYM, &sym);
+  screen_get_event_property_iv(ev, SCREEN_PROPERTY_MODIFIERS, &mods);
+  int key = (flags & SCREEN_FLAG_CAP_VALID) ? cap : sym;
+  bool down = flags & SCREEN_FLAG_KEY_DOWN;
+  bool held = mods & switch_mod;
+  bool is_mod = key == switch_mod_keys[0] || key == switch_mod_keys[1];
+  bool backwards = (mods & KEYMOD_SHIFT) && switch_mod != KEYMOD_SHIFT;
+  LOG("key 0x%x %s mods=0x%x", key, down ? "down" : "up", mods);
+
+  if (switcher_open) {
+    if ((is_mod && !down) || (!held && !is_mod)) {
+      /* Modifier released: switch, and let the app see the release. */
+      activate_switcher();
+      forward_key(ev);
+    } else if (is_mod) {
+      forward_key(ev);
+    } else if (down && key == switch_key) {
+      step_switcher(backwards ? -1 : 1);
+    } else if (down && key == KEYCODE_RIGHT) {
+      step_switcher(1);
+    } else if (down && key == KEYCODE_LEFT) {
+      step_switcher(-1);
+    } else if (down && (key == KEYCODE_DELETE || key == KEYCODE_KP_DELETE)) {
+      managed_t* m = find(switch_list[switch_sel]);
+      if (m) close_window(m);
+    } else if (down && key == KEYCODE_ESCAPE) {
+      LOG("switcher cancelled");
+      hide_switcher();
+      apply_stack(); /* focus back on the front window */
+    }
+    /* Other keys, and releases of the switcher's keys, go nowhere while it
+     * is open. */
+    return;
+  }
+  if (down && held && !is_mod && key == switch_key && !(flags & SCREEN_FLAG_KEY_REPEAT)) {
+    open_switcher(backwards);
+    if (switcher_open) return;
+  }
+  forward_key(ev);
 }
 
 /* ---------- Screen events ---------- */
@@ -682,9 +1162,12 @@ static void on_close(screen_window_t win) {
   }
   LOG("close pid=%d '%s'", (int)m->pid, m->title);
   stack_remove(win);
+  closing_forget(win);
+  switcher_forget(win);
   managed_t* launcher = launcher_window();
   if (m->tag[0] && launcher && launcher != m) send_manager_message(launcher->win, "closed", m->tag);
   free(m->icon);
+  free(m->tile_icon);
   int index = (int)(m - windows);
   memmove(&windows[index], &windows[index + 1], (size_t)(window_count - index - 1) * sizeof windows[0]);
   --window_count;
@@ -695,6 +1178,16 @@ static void on_close(screen_window_t win) {
 static void on_property(screen_window_t win, int name) {
   managed_t* m = find(win);
   if (!m) return;
+  if (verbose && !m->launcher &&
+      (name == SCREEN_PROPERTY_POSITION || name == SCREEN_PROPERTY_SIZE)) {
+    /* Each place and size the app gives its window. During a left or top
+     * edge resize the right and bottom edges must not move. */
+    int size[2] = {0, 0}, pos[2] = {0, 0};
+    screen_get_window_property_iv(win, SCREEN_PROPERTY_SIZE, size);
+    screen_get_window_property_iv(win, SCREEN_PROPERTY_POSITION, pos);
+    LOG("geometry pid=%d %dx%d+%d+%d right=%d bottom=%d", (int)m->pid, size[0], size[1], pos[0],
+        pos[1], pos[0] + size[0], pos[1] + size[1]);
+  }
   if (name == SCREEN_PROPERTY_MANAGER_STRING) {
     /* An app asking which manager runs: the property holds one value, so
      * answer by writing ours again when the app replaced it. */
@@ -762,6 +1255,19 @@ static void on_dock_pointer(screen_event_t ev) {
   bool pressed = (buttons & SCREEN_LEFT_MOUSE_BUTTON) && !(last_buttons & SCREEN_LEFT_MOUSE_BUTTON);
   last_buttons = buttons;
   if (!pressed) return;
+  if (switcher_open && pos[0] >= switcher_rect[0] && pos[0] < switcher_rect[0] + switcher_rect[2] &&
+      pos[1] >= switcher_rect[1] && pos[1] < switcher_rect[1] + switcher_rect[3]) {
+    /* A click on a switcher tile switches to it. */
+    for (int i = 0; i < switch_count; ++i) {
+      if (tile_x[i] < 0 || pos[0] < tile_x[i] || pos[0] >= tile_x[i] + TILE_W || pos[1] < tile_y[i] ||
+          pos[1] >= tile_y[i] + TILE_H)
+        continue;
+      switch_sel = i;
+      activate_switcher();
+      return;
+    }
+    return;
+  }
   LOG("dock press at %d,%d", pos[0], pos[1]);
   managed_t* entries[MAX_WINDOWS];
   int n = dock_entries(entries);
@@ -791,9 +1297,19 @@ static void handle_event(screen_event_t ev) {
         on_display_property(ev);
         return;
       }
+      if (object == SCREEN_OBJECT_TYPE_DEVICE && type == SCREEN_EVENT_CREATE && key_session) {
+        /* A keyboard plugged in later goes through the switcher too. */
+        screen_device_t device = NULL;
+        screen_get_event_property_pv(ev, SCREEN_PROPERTY_DEVICE, (void**)&device);
+        if (device) {
+          route_keyboard(device);
+          screen_flush_context(ctx, 0);
+        }
+        return;
+      }
       if (object != SCREEN_OBJECT_TYPE_WINDOW) return;
       screen_get_event_property_pv(ev, SCREEN_PROPERTY_WINDOW, (void**)&win);
-      if (!win || win == dock) return;
+      if (!win || win == dock || win == switcher) return;
       break;
     default:
       break;
@@ -830,10 +1346,15 @@ static void handle_event(screen_event_t ev) {
       break;
     }
     case SCREEN_EVENT_POINTER:
-      /* The manager's only window is the dock, so every pointer event that
-       * reaches this context is for it. */
+      /* The manager's windows are the dock and the switcher; every pointer
+       * event that reaches this context is for one of them. */
       on_dock_pointer(ev);
       break;
+    case SCREEN_EVENT_KEYBOARD:
+      on_keyboard(ev);
+      break;
+    case SCREEN_EVENT_NONE:
+      break; /* screen_get_event timed out for a close deadline */
     default:
       LOG("event type %d", type);
       break;
@@ -849,7 +1370,10 @@ int main(int argc, char** argv) {
       return 2;
     }
   }
-  if (screen_create_context(&ctx, SCREEN_WINDOW_MANAGER_CONTEXT)) {
+  read_key_env();
+  /* Input provider too: keys the switcher does not use are injected again
+   * for the focused window. */
+  if (screen_create_context(&ctx, SCREEN_WINDOW_MANAGER_CONTEXT | SCREEN_INPUT_PROVIDER_CONTEXT)) {
     WARN("cannot create a window manager context: %s", strerror(errno));
     return 1;
   }
@@ -869,11 +1393,14 @@ int main(int argc, char** argv) {
 
   load_font();
   create_dock();
+  create_switcher();
+  create_key_session();
 
   screen_event_t ev;
   if (screen_create_event(&ev)) return 1;
   for (;;) {
-    if (screen_get_event(ctx, ev, -1)) {
+    int64_t timeout = check_closing();
+    if (screen_get_event(ctx, ev, timeout < 0 ? (uint64_t)-1 : (uint64_t)timeout)) {
       if (errno == EINTR) continue;
       WARN("screen_get_event: %s", strerror(errno));
       return 1;

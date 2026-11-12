@@ -74,8 +74,9 @@ sets these limits:
    React tree stay. The restore path is a relaunch: the host listens on a
    per-user local socket named after the app id, and a second launch (launcher
    tile or run script) asks the running copy to show its window and exits.
-   A minimized app is not in the Alt+Tab list, since the window manager tracks
-   windows only. `project desktop-entry` writes the app's launcher tile, which
+   Under `fullscreen-winmgr` a minimized app is not in the Alt+Tab list,
+   since that window manager tracks windows only (item 11 covers
+   `rnqnx-winmgr`, which lists it). `project desktop-entry` writes the app's launcher tile, which
    is the way back from the desktop. A restore request while the window still
    exists behind another one recreates it, because only a new window becomes
    the manager's front window. `AppState` does not change yet. Evidence for the window
@@ -167,7 +168,12 @@ sets these limits:
     `rnqnx=restore` manager messages, sent the way `demolauncher` sends its
     own. Under `fullscreen-winmgr` nothing changes. The qnx plugin also needed
     `qtbase-qnx-resize-swap.patch` (`scripts/qt-public`) so a resize neither
-    loses a frame nor stretches one.
+    loses a frame, stretches one, nor shifts one: a left or top edge drag
+    moves the window and changes its size, and the patch applies both in the
+    swap that posts the first frame at the new size. `rnqnx-winmgr` also
+    implements the launcher banner's Alt+Tab and Alt+Tab+Del: a switcher with
+    each app's icon and name (minimized apps included), and close by manager
+    close event with `SIGTERM` after three seconds.
 
 ## Consequences
 

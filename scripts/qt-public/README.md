@@ -117,7 +117,19 @@ when an app resized its own window under `rnqnx-winmgr`
    to the new size. The patched `QQnxEglWindow` leaves the Screen window size
    alone until buffers of the new size exist and sets it just before the swap
    that posts the first frame drawn into them, so the size and the pixels
-   arrive in one post. Moves are not delayed.
+   arrive in one post.
+3. **A shifted frame on a left or top edge resize.** Such a resize moves the
+   window and changes its size. With only the size deferred, `setGeometry()`
+   still wrote `SCREEN_PROPERTY_POSITION` at once, so for one frame the old
+   pixels showed at the new place and the right (or bottom) edge jumped by the
+   drag distance. On the Pi 400, `rnqnx-winmgr -v` logged the window's edges
+   at each property change of a left edge drag: the right edge read 1960 and
+   2000 between frames instead of 1920. The patch defers the position with
+   the size and writes both just before that swap. A pure move, with no size
+   change, is applied at once; a move made while a resized frame is still
+   unposted waits for that frame. After the patch the right edge stayed at
+   1599 for every change in a 10-step left edge drag, and the bottom edge at
+   939 in a top edge drag.
 
 After the patch the same six drags logged no failed swap, and a screenshot
 taken during a slow drag showed the title bar and content drawn at the

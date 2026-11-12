@@ -229,11 +229,12 @@ RNQNX_SINGLE_INSTANCE restored the running org.rnqnx.showcase   (second launch)
 RNQNX_WINDOW_ACTION restore                                     (running app)
 ```
 
-Alt+Tab does not list a minimized app. `fullscreen-winmgr` lists windows, and
-minimize has to release the app's window, because that is the only event that
-makes this window manager show the launcher again. The Alt+Tab bar shows a
-preview of each window and no title or icon; the manager ignores the `Title`
-message.
+Under `fullscreen-winmgr`, Alt+Tab does not list a minimized app.
+`fullscreen-winmgr` lists windows, and minimize has to release the app's
+window, because that is the only event that makes this window manager show
+the launcher again. Its Alt+Tab bar shows a preview of each window and no
+title or icon; the manager ignores the `Title` message. Under `rnqnx-winmgr`
+a minimized app keeps its window and stays in the Alt+Tab list (below).
 
 ## Launcher tile
 
@@ -304,8 +305,30 @@ API. It speaks the launcher protocol `demolauncher` uses with
   raise a covered one, or minimize the one in front.
 - `Tag=`, `switch=` and `closed=` messages work as before, so a tile with
   `Singleton=Y` brings back a running app instead of starting another.
+- Alt+Tab, as the launcher's banner says. Hold Alt and press Tab: a panel in
+  the middle of the display lists every app window, minimized ones included
+  (dimmed), with the icon and name from the same `.desktop` file as the dock,
+  most recently used first. The window after the front one is selected. Tab
+  again (or the arrow keys) moves the selection, Shift+Tab moves back, and
+  releasing Alt brings the selected window to the front, restoring it if it
+  was minimized. A click on a tile does the same. Escape closes the panel
+  without switching.
+- Alt+Tab+Del closes the selected app: with the panel open, press Delete. The
+  manager sends the window a close event, the same request as the title-bar
+  close (Qt calls `QWindow::close()`), and the tile disappears when the
+  window goes. An app that still has its window three seconds later gets
+  `SIGTERM`.
+- `WINMGR_KEYMOD` (`shift`, `ctrl`, `alt`, `ralt`) and `WINMGR_HOTKEY`
+  (`tab`, `space`, `grave`, `f1` to `f12`, `q`, `w`, `t`, `m`) change the keys,
+  with the values `fullscreen-winmgr` takes. Set them in the environment that
+  starts `rnqnx-winmgr`.
 
-It has no Alt+Tab switcher yet; the launcher's banner still mentions one.
+To see Alt+Tab, the manager routes every keyboard to an input session of its
+own (`screen_create_session_type(..., SCREEN_EVENT_KEYBOARD)` and each
+keyboard's `SCREEN_PROPERTY_SESSION`, the way `fullscreen-winmgr` does) and
+injects every key it does not use back into the display, where it reaches the
+focused window. Typing in an app is unchanged; a keyboard plugged in later is
+routed when Screen reports it.
 
 Build it with the SDP (the container in this project):
 
