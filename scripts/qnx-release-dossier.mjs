@@ -20,6 +20,10 @@ const GATES = [
   'device-parity',
   'performance',
   'developer-path',
+  'app-identity',
+  'window-chrome',
+  'expo',
+  'dependencies',
   'documentation',
 ];
 const LANES = [

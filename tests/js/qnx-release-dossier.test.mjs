@@ -56,6 +56,10 @@ try {
     'performance',
     'developer-path',
     'documentation',
+    'app-identity',
+    'window-chrome',
+    'expo',
+    'dependencies',
   ];
   const source = {
     schemaVersion: 1,
@@ -81,7 +85,7 @@ try {
   check(created.releaseAuthorized === false);
   check(created.candidate === git(['rev-parse', 'HEAD']).trim());
   const empty = await verifyDossier(root, file);
-  check(empty.receiptCount === 0 && empty.openGates.length === 7);
+  check(empty.receiptCount === 0 && empty.openGates.length === gates.length);
   check(empty.releaseAuthorized === false && empty.integrityVerified === true);
   await rejects(() => createDossier(root, file), /EEXIST/);
   await rejects(() => createDossier(root, 'outside.json'), /below build/);
@@ -189,7 +193,7 @@ try {
   await rejects(() => verifyDossier(root, file), /bounded/);
   await save(good);
   const run = cli(['verify', '--file', file]);
-  check(run.status === 0 && JSON.parse(run.stdout).openGates.length === 7);
+  check(run.status === 0 && JSON.parse(run.stdout).openGates.length === gates.length);
   for (const args of [
     ['create'],
     ['verify', '--file', file, '--file', file],

@@ -141,6 +141,10 @@ export async function syncDocs(root, write = false, release = false) {
     'device-parity',
     'performance',
     'developer-path',
+    'app-identity',
+    'window-chrome',
+    'expo',
+    'dependencies',
     'documentation',
   ];
   if (ids.size !== requiredGates.length || requiredGates.some((id) => !ids.has(id))) {

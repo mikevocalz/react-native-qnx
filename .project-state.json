@@ -47,7 +47,11 @@
     { "id": "device-parity", "status": "pending" },
     { "id": "performance", "status": "pending" },
     { "id": "developer-path", "status": "pending" },
-    { "id": "documentation", "status": "pending" }
+    { "id": "documentation", "status": "pending" },
+    { "id": "app-identity", "status": "pending" },
+    { "id": "window-chrome", "status": "pending" },
+    { "id": "expo", "status": "pending" },
+    { "id": "dependencies", "status": "pending" }
   ],
   "historicalState": "docs/handoff/HISTORY_THROUGH_2026_11_07.md"
 }
