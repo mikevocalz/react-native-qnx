@@ -229,7 +229,8 @@ This passed on the Pi with exit zero. The exact locked core, RN adapter and
 Nitrogen version is `1.0.0-alpha.nightly.105.g69d365fc9b18`. Official npm archive
 SHA-512 checks and comparisons of all 333 core, 280 adapter and 608 Nitrogen
 files matched the installed packages. A newer nightly was observed; no version
-upgrade was made. This uses the repository's constrained generated binding
+upgrade was made. The repository has since moved to `1.0.0-alpha.nightly.136.gdb81de61bd32` (#119); this
+Pi run was not repeated on 136. This uses the repository's constrained generated binding
 proof, not a claim of upstream Nitrogen QNX support. A subsequent opt-in
 [Qt dispatcher experiment](../nitro/QT_DISPATCHER.md) passed callback/Promise
 and teardown tests on the Pi and retained this fullscreen Hello World result.
