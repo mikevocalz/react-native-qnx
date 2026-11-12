@@ -5,10 +5,10 @@
   "description": "Production-grade React Native out-of-tree platform for QNX",
   "license": "MIT",
   "author": "react-native-qnx contributors",
-  "packageManager": "pnpm@12.8.1",
+  "packageManager": "pnpm@12.18.0",
   "engines": {
     "node": ">=26.0.0",
-    "pnpm": ">=12.8.1"
+    "pnpm": ">=12.18.0"
   },
   "scripts": {
     "doctor": "bash scripts/doctor.sh",

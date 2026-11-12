@@ -92,7 +92,7 @@ and Reanimated integration remain gaps.
 | typescript             | `7.0.2`                                 |
 | codegenTypescript      | `6.0.2`                                 |
 | node                   | `>=26.0.0`                              |
-| packageManager         | `pnpm@12.8.1`                           |
+| packageManager         | `pnpm@12.18.0`                          |
 | expoModulesCore        | `58.0.29`                               |
 | expoMetro              | `58.0.0`                                |
 | expoMetroConfig        | `58.0.20`                               |
