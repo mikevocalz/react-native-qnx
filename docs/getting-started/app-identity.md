@@ -6,7 +6,30 @@ runs the same checks without writing anything.
 
 ## Config fields
 
-All fields live in static `app.json`; dynamic `app.config.js` is not read.
+prepare-native resolves the config through `@expo/config`, the same way
+`expo start` and `expo prebuild` do: `app.json`, `app.config.js` or
+`app.config.ts`, with config plugins applied. Options on the
+`@rn-qnx/expo-qnx-config-plugins` entry in `plugins` win over values already in
+`extra.rnqnx`, so `icon` and `shortName` can come from either place.
+
+```json
+{
+  "expo": {
+    "name": "Field Notes Professional",
+    "plugins": [
+      [
+        "@rn-qnx/expo-qnx-config-plugins",
+        {
+          "appId": "org.example.fieldnotes",
+          "componentName": "FieldNotes",
+          "icon": "./assets/icon.png",
+          "shortName": "Notes"
+        }
+      ]
+    ]
+  }
+}
+```
 
 | Field                        | Required | Meaning                                                                                        |
 | ---------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
@@ -224,9 +247,12 @@ The label fonts are read from `native/app-identity/fonts/` in the source
 checkout. The CLI is a source-checkout tool today; if it runs somewhere those
 files are absent, the label is recorded as not measured instead of failing.
 
-doctor checks the icon header and the label text from static `app.json` and
-runs nothing else. The one exception is `--identity-tool`: it runs that binary
-to measure the label.
+doctor never runs app config code. It reads static `app.json` and applies the
+`icon` and `shortName` options of the `@rn-qnx/expo-qnx-config-plugins` entry
+as JSON, following the plugin's rule. When the project has `app.config.js` or
+`app.config.ts`, doctor reports the icon and label as not checked and leaves
+them to prepare-native, which resolves that code. The one binary doctor can run
+is the one passed with `--identity-tool`, to measure the label.
 
 ### Reruns on another host
 

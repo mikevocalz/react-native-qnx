@@ -6,6 +6,10 @@ on:
       - 'packages/react-native-qnx-cli/src/consumer-contract.mjs'
       - 'packages/react-native-qnx-cli/src/bin.mjs'
       - 'tests/js/qnx-consumer-doctor*.test.mjs'
+      - 'scripts/doctor.sh'
+      - 'tests/js/qnx-environment-doctor.test.mjs'
+      - 'packages/react-native-qnx-cli/src/cli.mjs'
+      - 'tests/js/qnx-cli.test.mjs'
       - 'docs/getting-started/consumer-project-doctor.md'
       - '.github/workflows/phase6-doctor.yml'
   workflow_dispatch:

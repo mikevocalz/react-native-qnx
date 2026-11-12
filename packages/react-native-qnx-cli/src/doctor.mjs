@@ -11,6 +11,7 @@ import {
   validateIconSource,
 } from './app-identity.mjs';
 import { CONSUMER_CONTRACT } from './consumer-contract.mjs';
+import { EXPO_CONFIG_FILES } from './expo-config.mjs';
 
 const help = `React Native QNX consumer project diagnostics
   rnqnx project doctor --project <directory> [--platform qnx|marathon]
@@ -89,10 +90,48 @@ async function projectFile(root, relative) {
   return file;
 }
 
-/** Check the app icon and tile label from static app.json.
+/** The identity fields as @expo/config would resolve them for a static
+ * app.json: extra.rnqnx, with the @rn-qnx/expo-qnx-config-plugins entry's
+ * options merged over it (the plugin's own rule). Plugin options are JSON in
+ * app.json, so no plugin or config code runs here.
+ * @param {Record<string, unknown>} expo */
+export function staticIdentityConfig(expo) {
+  const extra = /** @type {Record<string, unknown>} */ (expo.extra ?? {});
+  const rnqnx = { .../** @type {Record<string, unknown>} */ (extra.rnqnx ?? {}) };
+  for (const entry of Array.isArray(expo.plugins) ? expo.plugins : []) {
+    if (!Array.isArray(entry) || typeof entry[0] !== 'string') continue;
+    if (!/(^|\/)expo-qnx-config-plugins(\/app\.plugin(\.js)?)?$/.test(entry[0])) continue;
+    const options = entry[1];
+    if (!options || typeof options !== 'object' || Array.isArray(options)) continue;
+    for (const key of ['icon', 'shortName'])
+      if (/** @type {Record<string, unknown>} */ (options)[key] !== undefined)
+        rnqnx[key] = /** @type {Record<string, unknown>} */ (options)[key];
+  }
+  return /** @type {import('./app-identity.mjs').ExpoConfig} */ ({
+    ...expo,
+    extra: { ...extra, rnqnx },
+  });
+}
+
+/** Check the app icon and tile label from static app.json. app.config.* is
+ * code, so its presence leaves these checks to prepare-native.
  * @param {string} root @param {string} platform @param {string | undefined} tool
  * @returns {Promise<Check[]>} */
 async function identityChecks(root, platform, tool) {
+  for (const name of EXPO_CONFIG_FILES.filter((file) => file !== 'app.json')) {
+    try {
+      await lstat(path.join(root, name));
+    } catch {
+      continue;
+    }
+    return [
+      {
+        id: 'app-identity',
+        status: 'not-checked',
+        message: `${name} is code and doctor does not run it; project prepare-native resolves it and checks the icon and tile label.`,
+      },
+    ];
+  }
   let app;
   try {
     app = await readMetadata(await projectFile(root, 'app.json'));
@@ -107,7 +146,11 @@ async function identityChecks(root, platform, tool) {
   }
   /** @type {Check[]} */
   const checks = [];
-  const expo = /** @type {import('./app-identity.mjs').ExpoConfig} */ (app.expo ?? {});
+  const expo = staticIdentityConfig(
+    /** @type {Record<string, unknown>} */ (
+      app.expo && typeof app.expo === 'object' && !Array.isArray(app.expo) ? app.expo : {}
+    )
+  );
   try {
     const icon = await validateIconSource(root, expo);
     checks.push({

@@ -44,6 +44,7 @@ const app = {
 };
 try {
   await mkdir(path.join(project, 'assets'), { recursive: true });
+  await writeFile(path.join(project, 'package.json'), '{"name":"field-notes","version":"1.0.0"}');
   await copyFile(
     path.join(root, 'template/qnx/assets/icon.png'),
     path.join(project, 'assets/icon.png')

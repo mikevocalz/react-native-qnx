@@ -51,6 +51,9 @@ jobs:
           pnpm typecheck
           pnpm peers check
 
+      - name: Expo SDK 58 package support list matches installed expo
+        run: pnpm validate:expo-sdk58-support
+
       - name: Bundle playground for QNX
         run: |
           cd apps/rn-playground

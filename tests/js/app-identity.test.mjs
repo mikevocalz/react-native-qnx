@@ -66,6 +66,11 @@ function pngHeaderOnly(width, height) {
 /** @param {string} project @param {Record<string, unknown>} expo */
 async function writeApp(project, expo) {
   await writeFile(path.join(project, 'app.json'), JSON.stringify({ expo }));
+  // @expo/config resolves the config from the project's package.json.
+  await writeFile(
+    path.join(project, 'package.json'),
+    '{"name":"identity-fixture","version":"1.0.0"}'
+  );
 }
 
 try {
@@ -404,6 +409,98 @@ try {
   if (savedTool !== undefined) process.env.RNQNX_IDENTITY_TOOL = savedTool;
   checks += 4;
   await rm(path.dirname(standIn), { recursive: true, force: true });
+
+  // Identity reaches native-app.json from a resolved Expo config, not only a
+  // static app.json: (1) app.config.js and (2) config plugin options.
+  const pluginRoot = path.join(root, 'packages', 'expo-qnx-config-plugins');
+  /** @param {string} name @param {Record<string, string>} files */
+  async function resolvedProject(name, files) {
+    const dir = path.join(temporary, name);
+    await mkdir(path.join(dir, 'assets'), { recursive: true });
+    await mkdir(path.join(dir, 'art'), { recursive: true });
+    await mkdir(path.join(dir, 'build', 'marathon'), { recursive: true });
+    await mkdir(path.join(dir, 'node_modules', '@rn-qnx'), { recursive: true });
+    await symlink(pluginRoot, path.join(dir, 'node_modules', '@rn-qnx', 'expo-qnx-config-plugins'));
+    await copyFile(templateIcon, path.join(dir, 'art', 'tile.png'));
+    await writeFile(path.join(dir, 'build', 'marathon', 'app.bundle.js'), 'bundle\n');
+    await writeFile(path.join(dir, 'package.json'), '{"name":"resolved","version":"1.0.0"}');
+    for (const [file, contents] of Object.entries(files))
+      await writeFile(path.join(dir, file), contents);
+    await prepareNativeMain(['--project', dir, '--platform', 'marathon', '--identity-tool', tool]);
+    return JSON.parse(
+      await readFile(path.join(dir, 'build', 'marathon', 'native-app.json'), 'utf8')
+    );
+  }
+  const fromConfigJs = await resolvedProject('from-app-config-js', {
+    'app.config.js': `module.exports = () => ({
+  name: 'Field Notes Professional',
+  slug: 'field-notes',
+  extra: {
+    rnqnx: {
+      appId: 'org.rnqnx.notes',
+      componentName: 'Notes',
+      icon: './art/tile.png',
+      shortName: 'Notes JS',
+    },
+  },
+});
+`,
+  });
+  assert.equal(fromConfigJs.shortName, 'Notes JS');
+  assert.equal(path.basename(fromConfigJs.icon.source), 'tile.png');
+  assert.equal(fromConfigJs.icon.sizes.length, ICON_SIZES.length);
+  assert.equal(fromConfigJs.labelFit.status, 'measured');
+  assert.deepEqual(Object.keys(fromConfigJs).slice(-4), [
+    'window',
+    'shortName',
+    'icon',
+    'labelFit',
+  ]);
+  checks++;
+  const fromPlugin = await resolvedProject('from-plugin-options', {
+    'app.json': JSON.stringify({
+      expo: {
+        name: 'Field Notes Professional',
+        slug: 'field-notes',
+        icon: './assets/missing-and-overridden.png',
+        extra: { rnqnx: { shortName: 'Ignored by plugin' } },
+        plugins: [
+          [
+            '@rn-qnx/expo-qnx-config-plugins',
+            {
+              appId: 'org.rnqnx.notes',
+              componentName: 'Notes',
+              icon: './art/tile.png',
+              shortName: 'Pad',
+            },
+          ],
+        ],
+      },
+    }),
+  });
+  // Plugin options win over extra.rnqnx and over expo.icon.
+  assert.equal(fromPlugin.shortName, 'Pad');
+  assert.equal(path.basename(fromPlugin.icon.source), 'tile.png');
+  assert.equal(fromPlugin.labelFit.status, 'measured');
+  // doctor sees the same plugin options statically, without running code.
+  const pluginDoctor = await inspectConsumer(path.join(temporary, 'from-plugin-options'), {
+    platform: 'marathon',
+    identityTool: tool,
+  });
+  assert.equal(pluginDoctor.checks.find((check) => check.id === 'app-icon')?.status, 'passed');
+  const pluginLabel = pluginDoctor.checks.find((check) => check.id === 'tile-label');
+  assert.equal(pluginLabel?.status, 'passed');
+  // The stand-in measures 10 px per character: 'Pad' (30 px), not the ignored extra.rnqnx value.
+  if (!real) assert.equal(pluginLabel?.observed, '30.0 px');
+  const jsDoctor = await inspectConsumer(path.join(temporary, 'from-app-config-js'), {
+    platform: 'marathon',
+  });
+  assert.equal(jsDoctor.checks.find((check) => check.id === 'app-identity')?.status, 'not-checked');
+  assert.match(
+    jsDoctor.checks.find((check) => check.id === 'app-identity')?.message ?? '',
+    /app\.config\.js is code/
+  );
+  checks += 2;
 
   // doctor reports the icon and label without running the tool by default.
   const report = await inspectConsumer(overflow, { platform: 'marathon' });

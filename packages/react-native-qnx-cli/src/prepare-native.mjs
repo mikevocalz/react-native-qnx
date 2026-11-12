@@ -13,6 +13,7 @@ import {
 } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import { parseArgs } from 'node:util';
 import {
   generateIconSet,
@@ -24,11 +25,17 @@ import {
   validateIconSource,
   verifyPreparedIdentity,
 } from './app-identity.mjs';
+import { loadExpoConfig } from './expo-config.mjs';
 import { boundedFile, projectPath } from './project-path.mjs';
+
+const { resolveQnxWindow } = createRequire(import.meta.url)(
+  '../../expo-qnx-config-plugins/index.js'
+);
 
 /** @typedef {import('./app-identity.mjs').IconSet} IconSet */
 /** @typedef {import('./app-identity.mjs').LabelFit} LabelFit */
-/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string}} BaseConfiguration */
+/** @typedef {{controls: string, titleBarStyle: string, initialSize?: {width: number, height: number}}} NativeWindow */
+/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string, window: NativeWindow}} BaseConfiguration */
 /** @typedef {BaseConfiguration & {shortName: string, icon: IconSet, labelFit: LabelFit}} NativeConfiguration */
 const help = `React Native QNX native consumer configuration
   project prepare-native --project <directory> [--platform qnx|marathon]
@@ -36,8 +43,11 @@ const help = `React Native QNX native consumer configuration
                          [--identity-tool <path> | --skip-identity-tool]
                          [--dry-run]
 
-Reads static app.json: expo.name, expo.icon and
-expo.extra.rnqnx.{appId,componentName,icon,shortName}.
+Resolves app.json or app.config.js/ts through @expo/config (config plugins
+included) and reads expo.name, expo.icon and
+expo.extra.rnqnx.{appId,componentName,window,icon,shortName}.
+Set the extra.rnqnx values through the @rn-qnx/expo-qnx-config-plugins entry
+in "plugins".
 The icon must be a square PNG of at least 1024x1024. The tile label
 (shortName, else expo.name) must fit the target launcher on one line.
 --identity-tool (or RNQNX_IDENTITY_TOOL) names the Qt host tool built from
@@ -47,8 +57,9 @@ icon file and label text but writes no icon set and records the label as not
 measured; the app then runs with the platform's default icon.
 Writes build/<platform>/icons/ and build/<platform>/native-app.json for the
 existing native CMake backend.
-An identical rerun does not write. Changed generated output is not overwritten:
-remove only that generated file after reviewing your app/bundle change, then rerun.
+An identical rerun keeps the existing files. Changed generated output is not
+overwritten: remove only native-app.json after reviewing your app/bundle
+change, then rerun.
 This does not install packages, compile native code or deploy to a device.
 `;
 
@@ -87,8 +98,8 @@ export function validateAppIdentity(value) {
   return { appId, displayName, componentName };
 }
 
-/** Identity and bundle fields only; the icon set and tile label are added by
- * prepareNativeMain and re-checked by verifyPreparedIdentity.
+/** Identity, bundle and window fields; the icon set and tile label are added
+ * by prepareNativeMain and re-checked by verifyPreparedIdentity.
  * @param {string} project @param {string} platform @param {string} [relativeBundle] */
 export async function nativeConfiguration(project, platform = 'qnx', relativeBundle) {
   if (!['qnx', 'marathon'].includes(platform)) throw new Error('Use platform qnx or marathon.');
@@ -96,13 +107,14 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
   const root = await realpath(path.resolve(project));
   if (/[\x00-\x1f;"$\\]/.test(root))
     throw new Error('Project path contains unsupported CMake characters.');
-  const configFile = await projectPath(root, 'app.json');
-  await boundedFile(configFile, 65536);
-  const app = JSON.parse(await readFile(configFile, 'utf8'));
+  const expoConfig = await loadExpoConfig(root);
+  const rnqnx = expoConfig.exp.extra?.rnqnx ?? {};
   const identity = validateAppIdentity({
-    ...app?.expo?.extra?.rnqnx,
-    displayName: app?.expo?.name,
+    appId: rnqnx.appId,
+    componentName: rnqnx.componentName,
+    displayName: expoConfig.exp.name,
   });
+  const window = resolveQnxWindow(rnqnx.window);
   const relative = relativeBundle ?? `build/${platform}/app.bundle.js`;
   if (!relative.startsWith(`build/${platform}/`))
     throw new Error('Bundle must be below the selected build/<platform>/ directory.');
@@ -118,8 +130,9 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
     platform,
     bundle,
     bundleSha256: hash.digest('hex'),
+    window,
   };
-  return { root, configuration, app };
+  return { root, configuration, expoConfig };
 }
 
 /** @param {string} root @param {import('./app-identity.mjs').ExpoConfig} expo
@@ -209,8 +222,9 @@ export async function prepareNativeMain(argv) {
   const {
     root,
     configuration: base,
-    app,
+    expoConfig,
   } = await nativeConfiguration(values.project ?? '.', values.platform ?? 'qnx', values.bundle);
+  const expo = /** @type {import('./app-identity.mjs').ExpoConfig} */ (expoConfig.exp);
   const relative = `build/${base.platform}/native-app.json`;
   const output = await projectPath(root, relative, !dryRun);
   const staging = await mkdtemp(
@@ -222,14 +236,7 @@ export async function prepareNativeMain(argv) {
   try {
     configuration = {
       ...base,
-      ...(await identityAssets(
-        root,
-        app.expo,
-        base.platform,
-        values['identity-tool'],
-        skip,
-        staging
-      )),
+      ...(await identityAssets(root, expo, base.platform, values['identity-tool'], skip, staging)),
     };
     if (skip)
       console.error(
@@ -253,7 +260,7 @@ export async function prepareNativeMain(argv) {
           throw new Error(
             'Generated native configuration differs; review and remove only native-app.json before preparing again.'
           );
-        await verifyPreparedIdentity(root, app.expo, existing);
+        await verifyPreparedIdentity(root, expo, existing);
         configuration = existing;
         action = 'unchanged';
       } else {

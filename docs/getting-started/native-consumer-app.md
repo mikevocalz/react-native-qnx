@@ -42,11 +42,42 @@ pnpm qnx project bundle --project /absolute/path/to/field-notes
 pnpm qnx project prepare-native --project /absolute/path/to/field-notes
 ```
 
-Preparation reads `app.json`, hashes the selected bundle and exclusively creates `build/qnx/native-app.json` inside the consumer project. It does not execute a JavaScript Expo configuration, install dependencies, compile or contact a device. Use `--dry-run` to inspect without writing. Identical reruns leave the file unchanged. After changing the app identity or bundle, review and remove only the generated `native-app.json` before preparing it again; changed generated output is not silently overwritten.
+Preparation resolves the app's Expo config through `@expo/config`, the same loader `expo start` and `expo prebuild` use, so `app.json`, `app.config.js` and `app.config.ts` all work and config plugins listed in `plugins` run. It then hashes the selected bundle and exclusively creates `build/qnx/native-app.json` inside the consumer project. Preparation executes code on the host: a dynamic `app.config.*` file and every config plugin listed in `plugins`, with your user's permissions, exactly as `expo start` and `expo prebuild` do. Only prepare projects you trust. The checks preparation adds (each config file is a regular file of at most 64 KiB, never a symlink) cover the config files themselves, not the modules they import or the plugins they load. If a plugin in `plugins` is not installed yet, for example right after `project add-qnx`, preparation stops with an error naming the plugin; install the app's dependencies and run it again. Preparation does not install dependencies, compile or contact a device. The project needs a `package.json` and an installed `expo` package; the platform checkout's `@expo/config` is the fallback when the app has none. Use `--dry-run` to inspect without writing. Identical reruns leave the file unchanged. After changing the app identity or bundle, review and remove only the generated `native-app.json` before preparing it again; changed generated output is not silently overwritten.
 
-Preparation also needs an app icon and a tile label that fits the launcher, and it generates the icon set with the Qt host tool; see [App icon and tile name](app-identity.md).
+Preparation also needs an app icon and a tile label that fits the launcher, and it generates the icon set with the Qt host tool; see [App icon and tile name](app-identity.md). The plugin's `icon` and `shortName` options feed that check.
 
-For Marathon, supply `--platform marathon` to both commands. Each target gets its own descriptor and bundle. A project containing only dynamic `app.config.js` must provide this explicit static identity; dynamic Expo configuration integration is not implemented here.
+For Marathon, supply `--platform marathon` to both commands. Each target gets its own descriptor and bundle.
+
+### Set native configuration through the config plugin
+
+`@rn-qnx/expo-qnx-config-plugins` is the one place to set native app configuration. Add it to `plugins` instead of editing generated files:
+
+```json
+{
+  "expo": {
+    "name": "Field Notes",
+    "plugins": [
+      [
+        "@rn-qnx/expo-qnx-config-plugins",
+        {
+          "appId": "org.example.fieldnotes",
+          "componentName": "FieldNotes",
+          "shortName": "Notes",
+          "window": {
+            "controls": "macos",
+            "titleBarStyle": "default",
+            "initialSize": { "width": 1024, "height": 600 }
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+The plugin writes these values to `expo.extra.rnqnx`. Plugin options override values already in `extra.rnqnx`. `window.controls` is `macos` (default) or `windows`; `window.titleBarStyle` is `default` (default), `hidden` or `none`; `window.initialSize` takes integer `width` and `height` from 1 to 16384. Unknown window keys and values fail preparation, and so does `null` for `window` or any of its fields: leave a field out to get its default. The CMake and C++ readers of `native-app.json` reject `null` the same way. `native-app.json` always carries the resolved `window` object. The title bar that consumes it is tracked under the window-chrome gate; `shortName` and `icon` validation belongs to the app-identity gate.
+
+Running preparation twice with unchanged config leaves `build/` byte-identical; `tests/js/expo-config-resolution.test.mjs` hashes the tree after each run to check it. Descriptors generated before the `window` field existed differ from new output, so remove that `native-app.json` once and prepare again.
 
 ## Build a Linux preview of the QNX application
 
