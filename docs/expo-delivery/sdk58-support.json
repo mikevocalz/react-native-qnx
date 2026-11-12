@@ -1,0 +1,2180 @@
+{
+  "schema": "rnqnx-expo-sdk-support/v1",
+  "sdk": 58,
+  "expoVersion": "58.0.22",
+  "generatedBy": "scripts/expo-sdk58-support.mjs --write",
+  "evidenceScope": "Published package contents via jsDelivr. No status is a device run.",
+  "counts": {
+    "unsupported": 104,
+    "host-tooling": 4,
+    "js-only": 10,
+    "no-op": 4,
+    "partial": 1,
+    "platform": 1
+  },
+  "packages": [
+    {
+      "name": "@expo/dom-webview",
+      "range": "~58.0.2",
+      "resolved": "58.0.2",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/webview/DomWebView.kt",
+          "/android/src/main/java/expo/modules/webview/DomWebViewBridge.kt",
+          "/android/src/main/java/expo/modules/webview/DomWebViewBrowserScripts.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "@expo/fingerprint",
+      "range": "~0.21.8",
+      "resolved": "0.21.10",
+      "status": "host-tooling",
+      "reason": "Build fingerprinting on the development host.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@expo/metro-runtime",
+      "range": "~58.0.16",
+      "resolved": "58.0.17",
+      "status": "js-only",
+      "reason": "No native code published; bundles as JavaScript.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@expo/ui",
+      "range": "~58.0.26",
+      "resolved": "58.0.28",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/ui/AlertDialogView.kt",
+          "/android/src/main/java/expo/modules/ui/AnimatedVisibilityView.kt",
+          "/android/src/main/java/expo/modules/ui/BadgedBoxView.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "@expo/vector-icons",
+      "range": "^15.0.2",
+      "resolved": "15.1.1",
+      "status": "js-only",
+      "reason": "No native code published; bundles as JavaScript.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@react-native-async-storage/async-storage",
+      "range": "2.2.0",
+      "resolved": "2.2.0",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/config.gradle",
+          "/android/gradle.properties",
+          "/android/src/javaPackage/java/com/reactnativecommunity/asyncstorage/AsyncStoragePackage.java",
+          "/android/src/kotlinPackage/java/com/reactnativecommunity/asyncstorage/AsyncStoragePackage.kt"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@react-native-community/datetimepicker",
+      "range": "9.2.1",
+      "resolved": "9.2.1",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/com/reactcommunity/rndatetimepicker/Common.java",
+          "/android/src/main/java/com/reactcommunity/rndatetimepicker/DatePickerModule.java",
+          "/android/src/main/java/com/reactcommunity/rndatetimepicker/MaterialDatePickerModule.kt"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@react-native-community/netinfo",
+      "range": "12.0.1",
+      "resolved": "12.0.1",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/gradle.properties",
+          "/android/gradle/wrapper/gradle-wrapper.jar",
+          "/android/gradle/wrapper/gradle-wrapper.properties",
+          "/android/gradlew"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@react-native-community/slider",
+      "range": "5.2.1",
+      "resolved": "5.2.1",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/.gradle/config.properties",
+          "/android/.idea/AndroidProjectSystem.xml",
+          "/android/.idea/caches/deviceStreaming.xml",
+          "/android/.idea/deviceManager.xml",
+          "/android/.idea/gradle.xml"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@react-native-community/viewpager",
+      "range": "5.0.11",
+      "resolved": "5.0.11",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/gradle.properties",
+          "/android/gradle/wrapper/gradle-wrapper.jar",
+          "/android/gradle/wrapper/gradle-wrapper.properties",
+          "/android/reactnativeviewpager.iml"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@react-native-masked-view/masked-view",
+      "range": "0.3.2",
+      "resolved": "0.3.2",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/ic_launcher-web.png",
+          "/android/src/main/java/org/reactnative/maskedview/RNCMaskedView.java",
+          "/android/src/main/java/org/reactnative/maskedview/RNCMaskedViewManager.java"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@react-native-picker/picker",
+      "range": "2.11.4",
+      "resolved": "2.11.4",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/gradle.properties",
+          "/android/src/fabric/java/com/reactnativecommunity/picker/FabricEnabledPicker.java",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/com/reactnativecommunity/picker/CheckedTextViewImpl.java"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@react-native-segmented-control/segmented-control",
+      "range": "2.5.7",
+      "resolved": "2.5.7",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/ios/RNCSegmentedControl.h",
+          "/ios/RNCSegmentedControl.m",
+          "/ios/RNCSegmentedControl.xcodeproj/project.pbxproj",
+          "/ios/RNCSegmentedControlManager.h",
+          "/ios/RNCSegmentedControlManager.m"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@sentry/react-native",
+      "range": "~8.28.0",
+      "resolved": "8.28.0",
+      "status": "unsupported",
+      "reason": "Native code for android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/AGENTS.md",
+          "/android/build.gradle",
+          "/android/expo-handler/build.gradle",
+          "/android/expo-handler/src/main/java/io/sentry/react/expo/SentryExpoPackage.java",
+          "/android/expo-handler/src/main/java/io/sentry/react/expo/SentryReactNativeHostHandler.java"
+        ],
+        "moduleConfig": {
+          "platforms": ["android"]
+        }
+      }
+    },
+    {
+      "name": "@shopify/flash-list",
+      "range": "2.3.2",
+      "resolved": "2.3.2",
+      "status": "js-only",
+      "reason": "No native code published; bundles as JavaScript.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@shopify/react-native-skia",
+      "range": "2.14.0",
+      "resolved": "2.14.0",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/CMakeLists.txt",
+          "/android/cpp/jni/include/JniPlatformContext.h",
+          "/android/cpp/jni/include/JniSkiaBaseView.h",
+          "/android/cpp/jni/include/JniSkiaManager.h"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "@stripe/stripe-react-native",
+      "range": "0.81.0",
+      "resolved": "0.81.0",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/.project",
+          "/android/.settings/org.eclipse.buildship.core.prefs",
+          "/android/build.gradle",
+          "/android/detekt/detekt.gradle",
+          "/android/detekt/detekt.yml"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "eslint-config-expo",
+      "range": "~58.0.4",
+      "resolved": "58.0.4",
+      "status": "host-tooling",
+      "reason": "Lint config; runs on the development host.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "expo-analytics-amplitude",
+      "range": "~11.3.0",
+      "resolved": "11.3.0",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/analytics/amplitude/AmplitudeModule.kt",
+          "/android/src/main/java/expo/modules/analytics/amplitude/AmplitudePackage.kt",
+          "/ios/EXAmplitude.podspec"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "expo-app-auth",
+      "range": "~11.1.0",
+      "resolved": "11.1.1",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/appauth/AppAuthBrowserActivity.java",
+          "/android/src/main/java/expo/modules/appauth/AppAuthConstants.java",
+          "/android/src/main/java/expo/modules/appauth/AppAuthModule.java"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "expo-app-intents",
+      "range": "~0.5.15",
+      "resolved": "0.5.17",
+      "status": "unsupported",
+      "reason": "Native code for apple only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/expo-module.config.json",
+          "/ios/AppEntityIdentifierModifier.swift",
+          "/ios/AppEntityView.swift",
+          "/ios/AppIntentDispatcher.swift",
+          "/ios/AppIntentDonation.swift"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple"]
+        }
+      }
+    },
+    {
+      "name": "expo-app-loader-provider",
+      "range": "~8.0.0",
+      "resolved": "8.0.0",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/loaders/provider/AppLoaderProvider.java",
+          "/android/src/main/java/expo/loaders/provider/interfaces/AppLoaderInterface.java",
+          "/android/src/main/java/expo/loaders/provider/interfaces/AppLoaderPackagesProviderInterface.java"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "expo-app-metrics",
+      "range": "~58.0.14",
+      "resolved": "58.0.15",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/appmetrics/AppMetadata.kt",
+          "/android/src/main/java/expo/modules/appmetrics/AppMetadataProvider.kt",
+          "/android/src/main/java/expo/modules/appmetrics/AppMetricsActivityLifecycleListeners.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-apple-authentication",
+      "range": "~58.0.2",
+      "resolved": "58.0.3",
+      "status": "unsupported",
+      "reason": "Native code for apple only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/expo-module.config.json",
+          "/ios/AppleAuthenticationButton.swift",
+          "/ios/AppleAuthenticationExceptions.swift",
+          "/ios/AppleAuthenticationModule.swift",
+          "/ios/AppleAuthenticationRequest.swift"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple"]
+        }
+      }
+    },
+    {
+      "name": "expo-application",
+      "range": "~58.1.2",
+      "resolved": "58.1.2",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/application/ApplicationExceptions.kt",
+          "/android/src/main/java/expo/modules/application/ApplicationModule.kt",
+          "/expo-module.config.json"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-asset",
+      "range": "~58.0.19",
+      "resolved": "58.0.21",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/asset/AssetModule.kt",
+          "/android/src/main/java/expo/modules/asset/FileUtils.kt",
+          "/android/src/main/java/expo/modules/asset/OkHttpExtensions.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-audio",
+      "range": "~58.0.11",
+      "resolved": "58.0.12",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/audio/AudioExceptions.kt",
+          "/android/src/main/java/expo/modules/audio/AudioModule.kt",
+          "/android/src/main/java/expo/modules/audio/AudioPlayer.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-auth-session",
+      "range": "~58.0.16",
+      "resolved": "58.0.18",
+      "status": "js-only",
+      "reason": "No native code published; bundles as JavaScript.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "expo-background-fetch",
+      "range": "~58.0.12",
+      "resolved": "58.0.13",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/proguard-rules.pro",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/backgroundfetch/BackgroundFetchModule.kt",
+          "/android/src/main/java/expo/modules/backgroundfetch/BackgroundFetchTaskConsumer.java"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-background-task",
+      "range": "~58.0.12",
+      "resolved": "58.0.13",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/proguard-rules.pro",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/backgroundtask/BackgroundTaskConsumer.kt",
+          "/android/src/main/java/expo/modules/backgroundtask/BackgroundTaskExceptions.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-battery",
+      "range": "~58.0.3",
+      "resolved": "58.0.4",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/battery/BatteryLevelReceiver.kt",
+          "/android/src/main/java/expo/modules/battery/BatteryModule.kt",
+          "/android/src/main/java/expo/modules/battery/BatteryStateReceiver.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-blur",
+      "range": "~58.0.5",
+      "resolved": "58.0.6",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/blur/BlurModule.kt",
+          "/android/src/main/java/expo/modules/blur/BlurModuleExceptions.kt",
+          "/android/src/main/java/expo/modules/blur/enums/BlurMethod.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-brightness",
+      "range": "~58.0.2",
+      "resolved": "58.0.3",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/brightness/BrightnessModule.kt",
+          "/android/src/main/java/expo/modules/brightness/Exceptions.kt",
+          "/expo-module.config.json"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-brownfield",
+      "range": "~58.0.18",
+      "resolved": "58.0.20",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/brownfield/DevMenuSupport.kt",
+          "/android/src/main/java/expo/modules/brownfield/ExpoBrownfieldModule.kt",
+          "/android/src/main/java/expo/modules/brownfield/ExpoBrownfieldStateModule.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-build-properties",
+      "range": "~58.0.12",
+      "resolved": "58.0.12",
+      "status": "no-op",
+      "reason": "Config plugin for iOS/Android build properties only.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "expo-calendar",
+      "range": "~58.0.6",
+      "resolved": "58.0.6",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/calendar/CalendarModule.kt",
+          "/android/src/main/java/expo/modules/calendar/CalendarUtils.kt",
+          "/android/src/main/java/expo/modules/calendar/dialogs/CreatedEventOptions.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-camera",
+      "range": "~58.0.14",
+      "resolved": "58.0.14",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/proguard-rules.pro",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/camera/analyzers/BarcodeAnalyzer.kt",
+          "/android/src/main/java/expo/modules/camera/analyzers/BarcodeScannerResultSerializer.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-cellular",
+      "range": "~58.0.3",
+      "resolved": "58.0.4",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/cellular/CellularGeneration.kt",
+          "/android/src/main/java/expo/modules/cellular/CellularModule.kt",
+          "/expo-module.config.json"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-checkbox",
+      "range": "~58.0.2",
+      "resolved": "58.0.2",
+      "status": "js-only",
+      "reason": "No native code published; bundles as JavaScript.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "expo-clipboard",
+      "range": "~58.0.4",
+      "resolved": "58.0.4",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/clipboard/ClipboardExceptions.kt",
+          "/android/src/main/java/expo/modules/clipboard/ClipboardFileProvider.kt",
+          "/android/src/main/java/expo/modules/clipboard/ClipboardImage.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-constants",
+      "range": "~58.0.14",
+      "resolved": "58.0.16",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/constants/ConstantsModule.kt",
+          "/android/src/main/java/expo/modules/constants/ConstantsService.kt",
+          "/expo-module.config.json"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-contacts",
+      "range": "~58.0.10",
+      "resolved": "58.0.10",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/contacts/Columns.kt",
+          "/android/src/main/java/expo/modules/contacts/CommonProvider.kt",
+          "/android/src/main/java/expo/modules/contacts/Contact.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-crypto",
+      "range": "~58.0.7",
+      "resolved": "58.0.8",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/crypto/aes/AesConfig.kt",
+          "/android/src/main/java/expo/modules/crypto/aes/AesCryptoModule.kt",
+          "/android/src/main/java/expo/modules/crypto/aes/AesExceptions.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-dev-client",
+      "range": "~58.0.18",
+      "resolved": "58.0.19",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/expo-module.config.json",
+          "/ios/expo-dev-client.podspec"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-device",
+      "range": "~58.0.5",
+      "resolved": "58.0.5",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/device/DeviceExceptions.kt",
+          "/android/src/main/java/expo/modules/device/DeviceModule.kt",
+          "/expo-module.config.json"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-document-picker",
+      "range": "~58.0.4",
+      "resolved": "58.0.5",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/documentpicker/DocumentDetailsReader.kt",
+          "/android/src/main/java/expo/modules/documentpicker/DocumentPickerExceptions.kt",
+          "/android/src/main/java/expo/modules/documentpicker/DocumentPickerModule.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-eas-client",
+      "range": "~58.0.2",
+      "resolved": "58.0.2",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/easclient/EASClientID.kt",
+          "/android/src/main/java/expo/modules/easclient/EASClientModule.kt",
+          "/expo-module.config.json"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-file-system",
+      "range": "~58.0.13",
+      "resolved": "58.0.13",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/filesystem/FilePickerContract.kt",
+          "/android/src/main/java/expo/modules/filesystem/FileSystemDirectory.kt",
+          "/android/src/main/java/expo/modules/filesystem/FileSystemDownload.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-font",
+      "range": "~58.0.11",
+      "resolved": "58.0.12",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/font/FontBytes.kt",
+          "/android/src/main/java/expo/modules/font/FontFamilyFaces.kt",
+          "/android/src/main/java/expo/modules/font/FontLoaderModule.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-gl",
+      "range": "~58.0.4",
+      "resolved": "58.0.4",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/CMakeLists.txt",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/cpp/EXGLJniApi.cpp",
+          "/android/src/main/cpp/EXGLPchOwner.cpp"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-glass-effect",
+      "range": "~58.0.5",
+      "resolved": "58.0.5",
+      "status": "unsupported",
+      "reason": "Native code for apple only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/expo-module.config.json",
+          "/ios/ExpoGlassEffect.podspec",
+          "/ios/GlassContainer.swift",
+          "/ios/GlassEffectModule.swift",
+          "/ios/GlassStyle.swift"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple"]
+        }
+      }
+    },
+    {
+      "name": "expo-google-app-auth",
+      "range": "~8.3.0",
+      "resolved": "8.3.0",
+      "status": "js-only",
+      "reason": "No native code published; bundles as JavaScript.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "expo-haptics",
+      "range": "~58.0.7",
+      "resolved": "58.0.8",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/haptics/arguments/HapticsExceptions.kt",
+          "/android/src/main/java/expo/modules/haptics/arguments/HapticsTypes.kt",
+          "/android/src/main/java/expo/modules/haptics/HapticsModule.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-hinge",
+      "range": "~58.0.2",
+      "resolved": "58.0.2",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/hinge/ExpoHingeModule.kt",
+          "/android/src/main/java/expo/modules/hinge/HingeObserver.kt",
+          "/android/src/main/java/expo/modules/hinge/HingeWorkletListeners.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-image",
+      "range": "~58.0.18",
+      "resolved": "58.0.18",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/proguard-rules.pro",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/com/caverock/androidsvg/SVGStyler.kt",
+          "/android/src/main/java/expo/modules/image/blurhash/BlurhashDecoder.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-image-loader",
+      "range": "~58.0.3",
+      "resolved": "58.0.3",
+      "status": "unsupported",
+      "reason": "Native code for android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/.gitignore",
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/imageloader/ImageLoaderService.kt",
+          "/android/src/main/java/expo/modules/imageloader/SimpleSettableFuture.java"
+        ],
+        "moduleConfig": {
+          "platforms": ["android"]
+        }
+      }
+    },
+    {
+      "name": "expo-image-manipulator",
+      "range": "~58.0.16",
+      "resolved": "58.0.16",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/imagemanipulator/FileUtils.kt",
+          "/android/src/main/java/expo/modules/imagemanipulator/ImageDownsampling.kt",
+          "/android/src/main/java/expo/modules/imagemanipulator/ImageManipulatorArguments.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-image-picker",
+      "range": "~58.0.10",
+      "resolved": "58.0.10",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/imagepicker/contracts/CameraContract.kt",
+          "/android/src/main/java/expo/modules/imagepicker/contracts/ContractsUtils.kt",
+          "/android/src/main/java/expo/modules/imagepicker/contracts/CropImageContract.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-insights",
+      "range": "~58.0.11",
+      "resolved": "58.0.11",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/insights/ExpoInsightsApplicationLifecycle.kt",
+          "/android/src/main/java/expo/modules/insights/ExpoInsightsModule.kt",
+          "/android/src/main/java/expo/modules/insights/ExpoInsightsPackage.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-intent-launcher",
+      "range": "~58.0.3",
+      "resolved": "58.0.3",
+      "status": "unsupported",
+      "reason": "Native code for android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/intentlauncher/exceptions/ActivityAlreadyStartedException.kt",
+          "/android/src/main/java/expo/modules/intentlauncher/exceptions/PackageNotFoundException.kt",
+          "/android/src/main/java/expo/modules/intentlauncher/IntentLauncherModule.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["android"]
+        }
+      }
+    },
+    {
+      "name": "expo-keep-awake",
+      "range": "~58.0.3",
+      "resolved": "58.0.4",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/keepawake/ExpoKeepAwakeManager.kt",
+          "/android/src/main/java/expo/modules/keepawake/KeepAwakeExceptions.kt",
+          "/android/src/main/java/expo/modules/keepawake/KeepAwakeModule.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-linear-gradient",
+      "range": "~58.0.3",
+      "resolved": "58.0.4",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/lineargradient/LinearGradientModule.kt",
+          "/android/src/main/java/expo/modules/lineargradient/LinearGradientView.java",
+          "/expo-module.config.json"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-linking",
+      "range": "~58.0.15",
+      "resolved": "58.0.17",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/linking/ExpoLinkingModule.kt",
+          "/android/src/main/java/expo/modules/linking/ExpoLinkingPackage.kt",
+          "/android/src/main/java/expo/modules/linking/LinkingReactActivityLifecycleListener.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-live-photo",
+      "range": "~58.0.7",
+      "resolved": "58.0.8",
+      "status": "unsupported",
+      "reason": "Native code for apple only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/expo-module.config.json",
+          "/ios/ExpoLivePhoto.podspec",
+          "/ios/LivePhotoEnums.swift",
+          "/ios/LivePhotoExceptions.swift",
+          "/ios/LivePhotoModule.swift"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple"]
+        }
+      }
+    },
+    {
+      "name": "expo-local-authentication",
+      "range": "~58.0.2",
+      "resolved": "58.0.3",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/localauthentication/LocalAuthenticationModule.kt",
+          "/android/src/main/java/expo/modules/localauthentication/LocalAuthenticationRecords.kt",
+          "/expo-module.config.json"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-localization",
+      "range": "~58.0.5",
+      "resolved": "58.0.5",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/localization/LocalizationModule.kt",
+          "/android/src/main/java/expo/modules/localization/LocalizationPackage.kt",
+          "/android/src/main/java/expo/modules/localization/LocalizationUtils.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-location",
+      "range": "~58.0.20",
+      "resolved": "58.0.21",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/proguard-rules.pro",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/location/LocationActivityResultListener.kt",
+          "/android/src/main/java/expo/modules/location/LocationExceptions.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-mail-composer",
+      "range": "~58.0.3",
+      "resolved": "58.0.4",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/mailcomposer/MailComposerExceptions.kt",
+          "/android/src/main/java/expo/modules/mailcomposer/MailComposerFileProvider.kt",
+          "/android/src/main/java/expo/modules/mailcomposer/MailComposerModule.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-manifests",
+      "range": "~58.0.1",
+      "resolved": "58.0.1",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/manifests/core/EmbeddedManifest.kt",
+          "/android/src/main/java/expo/modules/manifests/core/ExpoUpdatesManifest.kt",
+          "/android/src/main/java/expo/modules/manifests/core/JSONObjectExtension.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-maps",
+      "range": "~58.0.11",
+      "resolved": "58.0.11",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/maps/CustomLocationSource.kt",
+          "/android/src/main/java/expo/modules/maps/GoogleMapsModule.kt",
+          "/android/src/main/java/expo/modules/maps/GoogleMapsView.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-mcp",
+      "range": "~0.2.1",
+      "resolved": "0.2.4",
+      "status": "js-only",
+      "reason": "No native code published; bundles as JavaScript.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "expo-media-library",
+      "range": "~58.0.13",
+      "resolved": "58.0.14",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/medialibrary/albums/AddAssetsToAlbum.kt",
+          "/android/src/main/java/expo/modules/medialibrary/albums/AlbumUtils.kt",
+          "/android/src/main/java/expo/modules/medialibrary/albums/AssetFileStrategy.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-mesh-gradient",
+      "range": "~58.0.3",
+      "resolved": "58.0.4",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/meshgradient/CubicInterpolation.kt",
+          "/android/src/main/java/expo/modules/meshgradient/MeshGradientModule.kt",
+          "/android/src/main/java/expo/modules/meshgradient/MeshGradientPointData.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-module-template",
+      "range": "~58.0.9",
+      "resolved": "58.0.9",
+      "status": "host-tooling",
+      "reason": "Template for create-expo-module.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/{%= project.package %}/{%- project.moduleName %}.kt",
+          "/expo-module.config.json",
+          "/ios/{%- project.moduleName %}.swift"
+        ],
+        "moduleConfig": {
+          "platforms": null
+        }
+      }
+    },
+    {
+      "name": "expo-modules-core",
+      "range": "~58.0.29",
+      "resolved": "58.0.30",
+      "status": "partial",
+      "reason": "Upstream native core is iOS/Android; packages/expo-modules-core-qnx supplies the QNX JSI host contract, covered by host tests only.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/cmake/common.cmake",
+          "/android/cmake/jsi.cmake",
+          "/android/cmake/main.cmake",
+          "/android/cmake/modulesV2.cmake"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-navigation-bar",
+      "range": "~58.0.4",
+      "resolved": "58.0.4",
+      "status": "unsupported",
+      "reason": "Native code for android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/navigationbar/NavigationBarModule.kt",
+          "/android/src/main/java/expo/modules/navigationbar/NavigationBarPackage.kt",
+          "/android/src/main/java/expo/modules/navigationbar/NavigationBarReactActivityLifecycleListener.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["android"]
+        }
+      }
+    },
+    {
+      "name": "expo-network",
+      "range": "~58.0.4",
+      "resolved": "58.0.5",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/network/NetworkExceptions.kt",
+          "/android/src/main/java/expo/modules/network/NetworkModule.kt",
+          "/android/src/main/java/expo/modules/network/NetworkUtils.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-notifications",
+      "range": "~58.1.7",
+      "resolved": "58.1.9",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/proguard-rules.pro",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/notifications/badge/BadgeHelper.kt",
+          "/android/src/main/java/expo/modules/notifications/badge/BadgeModule.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-observe",
+      "range": "~58.0.17",
+      "resolved": "58.0.19",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/observe/Constants.kt",
+          "/android/src/main/java/expo/modules/observe/CursorRepair.kt",
+          "/android/src/main/java/expo/modules/observe/DispatchUtils.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-print",
+      "range": "~58.0.8",
+      "resolved": "58.0.9",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/print/FileUtils.kt",
+          "/android/src/main/java/expo/modules/print/PrintDocumentAdapter.kt",
+          "/android/src/main/java/expo/modules/print/PrintDocumentAdapterLayoutCallback.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-router",
+      "range": "~58.0.29",
+      "resolved": "58.0.31",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/java/expo/modules/router/ExpoRouterModule.kt",
+          "/expo-module.config.json",
+          "/ios/ExpoHeadAppDelegateSubscriber.swift",
+          "/ios/ExpoHeadModule.swift"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-screen-capture",
+      "range": "~58.0.6",
+      "resolved": "58.0.6",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, web only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/screencapture/ScreenCaptureModule.kt",
+          "/android/src/main/java/expo/modules/screencapture/ScreenShotEventEmitter.kt",
+          "/expo-module.config.json"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "web"]
+        }
+      }
+    },
+    {
+      "name": "expo-screen-orientation",
+      "range": "~58.0.3",
+      "resolved": "58.0.4",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/screenorientation/enums/Orientation.kt",
+          "/android/src/main/java/expo/modules/screenorientation/enums/OrientationAttr.kt",
+          "/android/src/main/java/expo/modules/screenorientation/enums/OrientationLock.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-secure-store",
+      "range": "~58.0.2",
+      "resolved": "58.0.3",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/securestore/AuthenticationHelper.kt",
+          "/android/src/main/java/expo/modules/securestore/AuthenticationPrompt.kt",
+          "/android/src/main/java/expo/modules/securestore/encryptors/AESEncryptor.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-sensors",
+      "range": "~58.0.4",
+      "resolved": "58.0.5",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/sensors/modules/AccelerometerModule.kt",
+          "/android/src/main/java/expo/modules/sensors/modules/BarometerModule.kt",
+          "/android/src/main/java/expo/modules/sensors/modules/DeviceMotionModule.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-server",
+      "range": "~58.0.6",
+      "resolved": "58.0.6",
+      "status": "js-only",
+      "reason": "No native code published; bundles as JavaScript.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "expo-sharing",
+      "range": "~58.0.21",
+      "resolved": "58.0.23",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/sharing/dataParsers/ResolvingShareIntentDataParser.kt",
+          "/android/src/main/java/expo/modules/sharing/dataParsers/SimpleShareIntentDataParser.kt",
+          "/android/src/main/java/expo/modules/sharing/ShareIntoFileStore.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-sms",
+      "range": "~58.0.2",
+      "resolved": "58.0.3",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/sms/SMSExceptions.kt",
+          "/android/src/main/java/expo/modules/sms/SMSModule.kt",
+          "/android/src/main/java/expo/modules/sms/SMSOptions.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-speech",
+      "range": "~58.0.3",
+      "resolved": "58.0.4",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/speech/LanguageUtils.kt",
+          "/android/src/main/java/expo/modules/speech/SpeechExceptions.kt",
+          "/android/src/main/java/expo/modules/speech/SpeechModule.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-splash-screen",
+      "range": "~58.0.12",
+      "resolved": "58.0.14",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/splashscreen/SplashScreenManager.kt",
+          "/android/src/main/java/expo/modules/splashscreen/SplashScreenModule.kt",
+          "/android/src/main/res/values/colors_splashscreen.xml"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-sqlite",
+      "range": "~58.0.15",
+      "resolved": "58.0.16",
+      "status": "unsupported",
+      "reason": "Native code for apple, android, devtools only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/CMakeLists.txt",
+          "/android/shouldUsePublication.groovy",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/cpp/Exceptions.h"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android", "devtools"]
+        }
+      }
+    },
+    {
+      "name": "expo-status-bar",
+      "range": "~58.0.4",
+      "resolved": "58.0.5",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/statusbar/StatusBarPackage.kt",
+          "/android/src/main/java/expo/modules/statusbar/StatusBarReactActivityLifecycleListener.kt",
+          "/android/src/main/res/values/attrs.xml"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-store-review",
+      "range": "~58.0.2",
+      "resolved": "58.0.3",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/storereview/StoreReviewExceptions.kt",
+          "/android/src/main/java/expo/modules/storereview/StoreReviewModule.kt",
+          "/expo-module.config.json"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-symbols",
+      "range": "~58.0.4",
+      "resolved": "58.0.5",
+      "status": "unsupported",
+      "reason": "Native code for apple only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/expo-module.config.json",
+          "/ios/ExpoSymbols.podspec",
+          "/ios/SymbolEffects.swift",
+          "/ios/SymbolModule.swift",
+          "/ios/SymbolRecords.swift"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple"]
+        }
+      }
+    },
+    {
+      "name": "expo-system-ui",
+      "range": "~58.0.7",
+      "resolved": "58.0.7",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/systemui/singletons/SystemUI.kt",
+          "/android/src/main/java/expo/modules/systemui/SystemUIModule.kt",
+          "/android/src/main/java/expo/modules/systemui/SystemUIPackage.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-task-manager",
+      "range": "~58.0.13",
+      "resolved": "58.0.14",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/proguard-rules.pro",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/taskmanager/EmitEventWrapper.java",
+          "/android/src/main/java/expo/modules/taskmanager/exceptions/InvalidConsumerClassException.java"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-tracking-transparency",
+      "range": "~58.0.2",
+      "resolved": "58.0.2",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/trackingtransparency/TrackingTransparencyModule.kt",
+          "/expo-module.config.json",
+          "/ios/ExpoTrackingTransparency.podspec"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-updates",
+      "range": "~58.0.20",
+      "resolved": "58.0.22",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/CMakeLists.txt",
+          "/android/proguard-rules.pro",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/certificates/expo-root.pem"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-video",
+      "range": "~58.0.13",
+      "resolved": "58.0.14",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/video/cache/CachePolicy.kt",
+          "/android/src/main/java/expo/modules/video/cache/CacheVariantIndex.kt",
+          "/android/src/main/java/expo/modules/video/cache/ExpoVideoCacheKeyFactory.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-video-thumbnails",
+      "range": "~58.0.2",
+      "resolved": "58.0.3",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/videothumbnails/Exceptions.kt",
+          "/android/src/main/java/expo/modules/videothumbnails/VideoThumbnailOptions.kt",
+          "/android/src/main/java/expo/modules/videothumbnails/VideoThumbnailsModule.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-web-browser",
+      "range": "~58.0.7",
+      "resolved": "58.0.8",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/expo/modules/webbrowser/BrowserProxyActivity.kt",
+          "/android/src/main/java/expo/modules/webbrowser/CustomTabsActivitiesHelper.kt",
+          "/android/src/main/java/expo/modules/webbrowser/CustomTabsConnectionHelper.kt"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "expo-widgets",
+      "range": "~58.0.26",
+      "resolved": "58.0.28",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/CMakeLists.txt",
+          "/android/proguard-rules.pro",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/cpp/WidgetsHermesRuntime.cpp"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "jest-expo",
+      "range": "~58.0.13",
+      "resolved": "58.0.14",
+      "status": "host-tooling",
+      "reason": "Test preset; runs on the development host.",
+      "evidence": {
+        "files": ["/android/jest-preset.js", "/ios/jest-preset.js"],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "lottie-react-native",
+      "range": "~7.5.0",
+      "resolved": "7.5.0",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/gradle.properties",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewManagerImpl.kt",
+          "/android/src/main/java/com/airbnb/android/react/lottie/LottieAnimationViewPropertyManager.kt"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react",
+      "range": "19.3.0",
+      "resolved": "19.3.0",
+      "status": "js-only",
+      "reason": "Renderer-independent React; QNX uses it through react-native.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-dom",
+      "range": "19.3.0",
+      "resolved": "19.3.0",
+      "status": "no-op",
+      "reason": "Web renderer; not part of a QNX bundle.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native",
+      "range": "0.88.1",
+      "resolved": "0.88.1",
+      "status": "platform",
+      "reason": "Provided on QNX by @rn-qnx/react-native-qnx out of tree.",
+      "evidence": {
+        "files": [
+          "/Libraries/ActionSheetIOS/React-RCTActionSheet.podspec",
+          "/Libraries/AppDelegate/React-RCTAppDelegate.podspec",
+          "/Libraries/Blob/React-RCTBlob.podspec",
+          "/Libraries/FBLazyVector/FBLazyVector.podspec",
+          "/Libraries/Image/React-RCTImage.podspec"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-bootsplash",
+      "range": "^6.3.10",
+      "resolved": "6.3.12",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/app/build/generated/source/codegen/java/com/facebook/fbreact/specs/NativeRNBootSplashSpec.java",
+          "/android/app/build/generated/source/codegen/jni/CMakeLists.txt",
+          "/android/app/build/generated/source/codegen/jni/react/renderer/components/RNBootSplashSpec/RNBootSplashSpecJSI.h",
+          "/android/app/build/generated/source/codegen/jni/react/renderer/components/RNBootSplashSpec/RNBootSplashSpecJSI-generated.cpp",
+          "/android/app/build/generated/source/codegen/jni/RNBootSplashSpec.h"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-gesture-handler",
+      "range": "~3.3.0",
+      "resolved": "3.3.0",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/CMakeLists.txt",
+          "/android/gradle.properties",
+          "/android/noreanimated/src/main/java/com/swmansion/gesturehandler/ReanimatedProxy.kt",
+          "/android/nosvg/src/main/java/com/swmansion/gesturehandler/RNSVGHitTester.kt"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-keyboard-controller",
+      "range": "1.22.7",
+      "resolved": "1.22.7",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/gradle.properties",
+          "/android/react-native-helpers.gradle",
+          "/android/src/base/java/com/reactnativekeyboardcontroller/KeyboardControllerPackage.kt",
+          "/android/src/fabric/java/com/reactnativekeyboardcontroller/ClippingScrollViewDecoratorViewManager.kt"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-maps",
+      "range": "1.29.11",
+      "resolved": "1.29.11",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/gradle/wrapper/gradle-wrapper.jar",
+          "/android/gradle/wrapper/gradle-wrapper.properties",
+          "/android/gradlew",
+          "/android/gradlew.bat"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-pager-view",
+      "range": "9.0.7",
+      "resolved": "9.0.7",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/.gradle/9.2.0/checksums/checksums.lock",
+          "/android/.gradle/9.2.0/fileChanges/last-build.bin",
+          "/android/.gradle/9.2.0/fileHashes/fileHashes.bin",
+          "/android/.gradle/9.2.0/fileHashes/fileHashes.lock",
+          "/android/.gradle/9.2.0/gc.properties"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-reanimated",
+      "range": "4.7.1",
+      "resolved": "4.7.1",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle.kts",
+          "/android/CMakeLists.txt",
+          "/android/generate-stub-pch.gradle.kts",
+          "/android/gradle.properties",
+          "/android/gradle/wrapper/gradle-wrapper.jar"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-safe-area-context",
+      "range": "~5.10.1",
+      "resolved": "5.10.1",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/gradle.properties",
+          "/android/spotless.gradle",
+          "/android/src/fabric/java/com/th3rdwave/safeareacontext/InsetsChangeEvent.kt",
+          "/android/src/fabric/java/com/th3rdwave/safeareacontext/UIManagerHelperCompat.kt"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-screens",
+      "range": "~4.30.1",
+      "resolved": "4.30.1",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/CMakeLists.txt",
+          "/android/consumer-rules.pro",
+          "/android/src/fabric/java/com/swmansion/rnscreens/FabricEnabledHeaderConfigViewGroup.kt",
+          "/android/src/fabric/java/com/swmansion/rnscreens/FabricEnabledHeaderSubviewViewGroup.kt"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-svg",
+      "range": "15.16.0",
+      "resolved": "15.16.0",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/gradle/wrapper/gradle-wrapper.jar",
+          "/android/gradle/wrapper/gradle-wrapper.properties",
+          "/android/gradlew",
+          "/android/gradlew.bat"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-view-shot",
+      "range": "6.1.1",
+      "resolved": "6.1.1",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/fr/greweb/reactnativeviewshot/RNViewShotModule.java",
+          "/android/src/main/java/fr/greweb/reactnativeviewshot/RNViewShotPackage.java",
+          "/android/src/main/java/fr/greweb/reactnativeviewshot/ViewShot.java"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-web",
+      "range": "~0.21.4",
+      "resolved": "0.21.4",
+      "status": "no-op",
+      "reason": "Web target only; not part of a QNX bundle.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-webview",
+      "range": "14.0.1",
+      "resolved": "14.0.1",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/gradle.properties",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/AndroidManifestNew.xml",
+          "/android/src/main/java/com/reactnativecommunity/webview/events/SubResourceErrorEvent.kt"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-native-worklets",
+      "range": "0.13.0",
+      "resolved": "0.13.0",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle.kts",
+          "/android/CMakeLists.txt",
+          "/android/fix-prefab.gradle.kts",
+          "/android/generate-stub-pch.gradle.kts",
+          "/android/gradle.properties"
+        ],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "react-server-dom-webpack",
+      "range": "~19.3.0",
+      "resolved": "19.3.1",
+      "status": "no-op",
+      "reason": "React Server Components for web/server output.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "sentry-expo",
+      "range": "~7.0.0",
+      "resolved": "7.0.1",
+      "status": "js-only",
+      "reason": "No native code published; bundles as JavaScript.",
+      "evidence": {
+        "files": [],
+        "moduleConfig": null
+      }
+    },
+    {
+      "name": "unimodules-app-loader",
+      "range": "~58.0.2",
+      "resolved": "58.0.2",
+      "status": "unsupported",
+      "reason": "Native code for apple, android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/.gitignore",
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/expo-module.config.json",
+          "/ios/Tests/UMAppLoaderProviderTests.swift"
+        ],
+        "moduleConfig": {
+          "platforms": ["apple", "android"]
+        }
+      }
+    },
+    {
+      "name": "unimodules-image-loader-interface",
+      "range": "~6.1.0",
+      "resolved": "6.1.0",
+      "status": "unsupported",
+      "reason": "Native code for ios/android only; no qnx implementation.",
+      "evidence": {
+        "files": [
+          "/android/build.gradle",
+          "/android/src/main/AndroidManifest.xml",
+          "/android/src/main/java/org/unimodules/interfaces/imageloader/ImageLoader.java",
+          "/ios/UMImageLoaderInterface.podspec",
+          "/ios/UMImageLoaderInterface/UMImageLoaderInterface.h"
+        ],
+        "moduleConfig": null
+      }
+    }
+  ]
+}
