@@ -26,8 +26,8 @@ fi
 for tool in git tar timeout pnpm node sha256sum; do
   command -v "$tool" >/dev/null || { echo "Missing prerequisite: $tool" >&2; exit 2; }
 done
-if [[ "$(pnpm --version)" != 12.8.1 ]] || ! node -e 'process.exit(Number(process.versions.node.split(".")[0]) >= 26 ? 0 : 1)'; then
-  echo 'Use the repository Node 26+ and pnpm 12.8.1 prerequisites.' >&2
+if [[ "$(pnpm --version)" != 12.18.0 ]] || ! node -e 'process.exit(Number(process.versions.node.split(".")[0]) >= 26 ? 0 : 1)'; then
+  echo 'Use the repository Node 26+ and pnpm 12.18.0 prerequisites.' >&2
   exit 2
 fi
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
