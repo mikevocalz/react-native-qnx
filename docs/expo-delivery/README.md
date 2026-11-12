@@ -42,3 +42,31 @@ Each implementation report includes source/skill revision, local installation/re
 Preserve PRs74-79 and [integration PR80](https://github.com/mikevocalz/react-native-qnx/pull/80) as implementation prerequisites. These planning PRs neither merge them nor inherit their checks. Preserve [Marathon fork PR1](https://github.com/mikevocalz/Marathon-Shell/pull/1) as the companion shell-contract RFC; future implementation belongs in reviewed client/fork slices.
 
 Use the [seven v1 gates](../releases/v1-readiness.json), [component matrix](../component-support.md), [source handoff](../handoff/CURRENT_STATE.md) and [eligible open-source Qt decision](../adr/0013-open-source-qt.md). No readiness status is changed by this series. No runtime, dependency version, lockfile, recovery boot, package publication or premium-product contents are changed.
+
+## Expo SDK 58 package support list
+
+[sdk58-support.json](sdk58-support.json) lists every package in the installed
+`expo` package's `bundledNativeModules.json` with the version its SDK range
+resolved to and a QNX status read from that version's published files:
+
+- `qnx-native`: `expo-module.config.json` declares `qnx`. No SDK 58 package does.
+- `partial`: `expo-modules-core`; this repo's `packages/expo-modules-core-qnx` supplies the QNX JSI host contract, covered by host tests only.
+- `js-only`: no native code published; it bundles as JavaScript. This says only that nothing native is missing. It is not a claim that the package works on QNX.
+- `no-op`: web-only or iOS/Android build configuration; nothing runs on QNX.
+- `host-tooling`: lint, test, build, server or MCP tooling that runs on the development host or a server, such as `expo-server` (Expo Router API routes) and `expo-mcp`.
+- `platform`: `react-native`, provided on QNX by `@rn-qnx/react-native-qnx`.
+- `unsupported`: native iOS/Android code with no QNX implementation.
+
+No status is a device run. `js-only` means the package has no native code, so
+whether it works depends on the React Native and Expo APIs it calls.
+
+Each row's `evidence.files` lists every published file the classifier reads
+(native directories, podspecs, `expo-module.config.json`), uncapped.
+
+`node scripts/expo-sdk58-support.mjs --write` regenerates the file (network:
+jsDelivr). `pnpm validate:expo-sdk58-support` and
+`tests/js/expo-sdk58-support.test.mjs` fail offline when the installed `expo`
+version, its package list or a range changes, or when a row no longer follows
+the classifier for its recorded evidence. The `SDK 58 validation` workflow
+runs the check on every pull request. An `expo` bump therefore needs a
+regenerated list in the same PR.
