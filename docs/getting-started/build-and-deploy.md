@@ -19,10 +19,10 @@ From the repository root:
 pnpm validate:macos
 ```
 
-The dependency audit verifies the current workspace pins (Expo 58.0.0, React
-Native 0.88.0-rc.3, React 19.3.0, Metro 0.87.1, Nitro/Nitrogen 0.37.1,
-TypeScript 7.0.2, Node 26+, and pnpm 12.18.0), resolved Expo packages, Hermes
-source identity, and installed source symbols.
+The dependency audit verifies the workspace pins listed in the
+[README dependency table](../../README.md#know-what-is-supported) (generated from
+the root manifest), resolved Expo packages, Hermes source identity, and
+installed source symbols.
 
 Do not record this result as a QNX compile or runtime pass. QNX-specific follow-up belongs in `docs/handoff/QNX_VALIDATION_QUEUE.md`.
 
@@ -79,18 +79,28 @@ The actual path is installation-specific. Do not copy proprietary SDK headers, l
 
 ```bash
 ./scripts/verify-qnx-license.sh
-./scripts/doctor.sh
+pnpm qnx doctor
 ```
 
-The doctor checks:
+`pnpm qnx doctor` runs `scripts/doctor.sh`. It checks:
 
-- host OS and architecture
+- host OS and architecture, and whether the SDP host tools can run on this OS
 - `QNX_HOST` and `QNX_TARGET`
-- `qcc` / `q++`
+- `qcc` / `q++`, including the case where they exist under `${QNX_HOST}/usr/bin`
+  but are not on `PATH`
 - QNX Screen and EGL headers/libraries
-- CMake, Ninja, Node.js, pnpm, and Python
+- CMake, Ninja, Qt 6.11.1+ host tools (a warning: only the host renderer and
+  `rnqnx_playground_qnx` need Qt), Node.js, pnpm, and Python
 - installed React Native/Expo/Nitro version and source contracts
+- target settings: with neither `QNX_TARGET_IP` nor `QNX_TARGET_USER` set, it
+  reports `SKIPPED: target device (no target configured ...)`
 - repository structure
+
+Each `ERROR` and `WARNING` line is followed by a `Fix:` line, and the summary
+ends with `Start with:` and the first fix. When the SDP environment is not
+loaded, the doctor reports one error and marks the compiler and sysroot checks
+`SKIPPED`. On macOS with the SDP sourced, `qcc` is reported as unavailable
+because `QNX_HOST` selects the Windows host tools.
 
 Resolve every error before configuration. In particular, an unset SDP environment or missing Screen development files is a hard blocker, not a condition to bypass with a host stub.
 
