@@ -79,7 +79,7 @@ function(rnqnx_add_nitro_v1_core)
     "${RNQNX_NITRO_ROOT}/include"
   )
   target_compile_definitions(rnqnx_nitro_core PUBLIC
-    NITRO_VERSION=\"1.0.0-alpha.nightly.105.g69d365fc9b18\"
+    NITRO_VERSION=\"1.0.0-alpha.nightly.136.gdb81de61bd32\"
   )
   target_link_libraries(rnqnx_nitro_core PUBLIC Threads::Threads)
   target_compile_features(rnqnx_nitro_core PUBLIC cxx_std_20)

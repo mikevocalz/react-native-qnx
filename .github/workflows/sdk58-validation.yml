@@ -34,7 +34,7 @@ jobs:
           package-manager-cache: false
 
       - name: Install pnpm
-        run: npm install --global pnpm@12.8.1
+        run: npm install --global pnpm@12.18.0
 
       - name: Install exact lockfile
         run: pnpm install --frozen-lockfile

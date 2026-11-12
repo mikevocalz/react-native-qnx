@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: 26.13.1
           package-manager-cache: false
-      - run: npm install --global pnpm@12.8.1
+      - run: npm install --global pnpm@12.18.0
       - name: Frozen exact Nitro alpha graph
         run: pnpm install --frozen-lockfile
       - name: Nitro/JSI static source and package contracts

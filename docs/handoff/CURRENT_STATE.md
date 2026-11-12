@@ -26,6 +26,8 @@ change. Evidence is curated separately from dependency versions.
 | Same physical Pi 400                                                   | Synthetic Qt input reaches raw Fabric JS callbacks                                                                        | [Input receipt](../evidence/pi400-input-js-2026-11-07.md)                                                     |
 | Development host                                                       | Component and prop coverage; full native suite reported 16/16 in the dated receipt                                        | [Support table](../component-support.md), [runtime receipt](../evidence/pi400-runtime-baseline-2026-11-07.md) |
 
+The Pi 400 Nitro device evidence (Hello World getter/add and Qt dispatcher) is for Nitro alpha 105 only; it was not re-run after the 136 re-pin (#119).
+
 These are historical prerequisite results from the cited revisions. A new PR
 must attach its own relevant validation. The raw Fabric callback input receipt does not establish USB
 keyboard/touch behavior or real React responder behavior; the scoped Pressable
