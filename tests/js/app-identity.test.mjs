@@ -405,11 +405,24 @@ if (args[0] === '--build') {
     for (const entry of autoDescriptor.icon.sizes) assert.ok((await lstat(entry.path)).isFile());
     await verifyPreparedIdentity(await realpath(autoApp), expoWithoutIcon, autoDescriptor);
     checks += 4;
-    // The built tool is reused: a rerun calls cmake no more.
+    // The built tool is reused, but a rerun still runs the incremental
+    // `cmake --build` (a no-op when current) so a pull that changes
+    // native/app-identity rebuilds it; it never configures again.
     const callsBefore = (await readFile(cmakeLog, 'utf8')).trim().split('\n').length;
+    errors.length = 0;
     await prepareNativeMain(autoArgs);
-    assert.equal((await readFile(cmakeLog, 'utf8')).trim().split('\n').length, callsBefore);
-    checks++;
+    const rerunCalls = (await readFile(cmakeLog, 'utf8')).trim().split('\n').slice(callsBefore);
+    assert.deepEqual(rerunCalls, [`--build ${autoBuildDir} --target rnqnx_identity_tool`]);
+    assert.ok(!errors.some((line) => /building rnqnx_identity_tool in /.test(line)));
+    // A failing incremental build stops prepare-native instead of running the
+    // stale binary.
+    process.env.FAKE_CMAKE_FAIL = '1';
+    await rejectsWith(
+      () => prepareNativeMain(autoArgs),
+      /Cannot build rnqnx_identity_tool, which generates the app icon set; "cmake --build" failed/
+    );
+    delete process.env.FAKE_CMAKE_FAIL;
+    checks += 3;
   } finally {
     console.error = consoleError;
     delete process.env.FAKE_CMAKE_FAIL;

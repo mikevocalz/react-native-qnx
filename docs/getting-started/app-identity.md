@@ -271,6 +271,18 @@ fails with a message saying so. The consumer CMake build also refuses a
 stale. `rnqnx project run` lets prepare-native find or build the tool, and
 passes `RNQNX_IDENTITY_TOOL` on when it is set.
 
+After a pull, prepare-native runs `cmake --build build/identity-tool` again
+before it uses the tool it built, so a change under `native/app-identity`
+rebuilds it. When nothing changed the build does no work. A tool named with
+`--identity-tool` or `RNQNX_IDENTITY_TOOL` is used as given.
+
+Upgrading from a checkout that had `--skip-identity-tool`: a
+`build/<platform>/native-app.json` prepared with that option has
+`icon.sizes: []`, and the consumer build now rejects it. Delete that file and
+run prepare-native again. `rnqnx project run` on a Windows host used to skip
+the icon set and continue; it now stops at prepare-native, because the tool
+cannot be built there.
+
 The label fonts are read from `native/app-identity/fonts/` in the source
 checkout. The CLI is a source-checkout tool today; if it runs somewhere those
 files are absent, the label is recorded as not measured instead of failing.

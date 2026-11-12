@@ -223,13 +223,16 @@ export function unsupportedIdentityHost(platform = process.platform) {
   return `Cannot generate the app icon set on this ${platform} host: rnqnx_identity_tool, the Qt program that scales the icon, builds only on Linux and macOS. Run prepare-native on a Linux or macOS host, or pass --identity-tool with a tool built for this host.`;
 }
 
-/** Return the tool, building it from native/app-identity with CMake when it
- * is missing. Every prepared app gets a generated icon set, so there is no
- * path that continues without the tool.
+/** Return the tool, building it from native/app-identity with CMake. Every
+ * prepared app gets a generated icon set, so there is no path that continues
+ * without the tool. A tool from --identity-tool or RNQNX_IDENTITY_TOOL is used
+ * as given. The checkout-built tool always gets an incremental `cmake --build`,
+ * a no-op when it is current, so a pull that changes native/app-identity never
+ * leaves a stale binary in use.
  * @param {string | undefined} explicit @param {(line: string) => void} [log] */
 export function ensureIdentityTool(explicit, log = (line) => console.error(line)) {
   const found = locateIdentityTool(explicit);
-  if (found) {
+  if (found && found.origin !== 'automatic build') {
     if (!existsSync(found.path))
       throw new Error(`The identity tool from ${found.origin} does not exist: ${found.path}.`);
     return found.path;
@@ -237,11 +240,21 @@ export function ensureIdentityTool(explicit, log = (line) => console.error(line)
   if (!IDENTITY_TOOL_HOSTS.includes(process.platform)) throw new Error(unsupportedIdentityHost());
   const directory = identityToolBuildDirectory();
   const source = path.join(sourceRoot, 'native', 'app-identity');
-  log(`rnqnx: building rnqnx_identity_tool in ${directory} (first run only).`);
-  for (const args of [
-    ['-S', source, '-B', directory, '-DRNQNX_BUILD_IDENTITY_TOOL=ON', '-DCMAKE_BUILD_TYPE=Release'],
-    ['--build', directory, '--target', 'rnqnx_identity_tool'],
-  ]) {
+  /** @type {string[][]} */
+  const steps = [];
+  if (!found) {
+    log(`rnqnx: building rnqnx_identity_tool in ${directory} (first run only).`);
+    steps.push([
+      '-S',
+      source,
+      '-B',
+      directory,
+      '-DRNQNX_BUILD_IDENTITY_TOOL=ON',
+      '-DCMAKE_BUILD_TYPE=Release',
+    ]);
+  }
+  steps.push(['--build', directory, '--target', 'rnqnx_identity_tool']);
+  for (const args of steps) {
     const result = spawnSync('cmake', args, {
       encoding: 'utf8',
       timeout: 15 * 60_000,
