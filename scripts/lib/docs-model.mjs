@@ -142,6 +142,10 @@ export async function syncDocs(root, write = false, release = false) {
     'performance',
     'developer-path',
     'documentation',
+    'app-identity',
+    'window-chrome',
+    'expo',
+    'dependencies',
   ];
   if (ids.size !== requiredGates.length || requiredGates.some((id) => !ids.has(id))) {
     throw new Error('The v1 record must retain every required release gate.');

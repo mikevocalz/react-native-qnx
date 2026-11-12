@@ -23,7 +23,7 @@ try {
   await symlink(path.join(root, 'node_modules'), path.join(temporary, 'node_modules'), 'dir');
   const baseline = await syncDocs(temporary);
   assert.equal(baseline.components, 22);
-  assert.equal(baseline.gates, 7);
+  assert.equal(baseline.gates, 11);
   await assert.rejects(
     syncDocs(temporary, false, true),
     /v1 is not release-ready:[\s\S]*distribution[\s\S]*cold-boot[\s\S]*performance/
