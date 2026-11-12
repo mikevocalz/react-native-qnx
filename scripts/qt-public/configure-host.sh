@@ -2,8 +2,9 @@
 # Host tools from the public 6.12.0 source. Same options as the evaluation's
 # configure-qt-host.sh, plus -no-pch to bound disk use on this host.
 set -euo pipefail
-src=/work/qt-6.12.0-public/src/qt-everywhere-src-6.12.0
-build=/home/qnxbuild/qt-6.12.0-public/host-build
+source "$(dirname "$0")/layout.sh"
+src=$QT_PUBLIC_SRC
+build=$QT_PUBLIC_BUILD/host-build
 mkdir -p "$build"; cd "$build"
 "$src/configure" -developer-build -release -no-opengl -no-pch -nomake tests -nomake examples \
   -submodules qtbase,qtshadertools,qtdeclarative -- \

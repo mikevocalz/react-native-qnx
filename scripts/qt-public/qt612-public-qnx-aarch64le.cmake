@@ -1,5 +1,9 @@
 # Same as the evaluation's qt612-qnx-aarch64le.cmake, pointed at the public source tree.
-include(/work/qt-6.12.0-public/src/qt-everywhere-src-6.12.0/coin/provisioning/common/shared/cmake_toolchain_files/qnx-toolchain-aarch64le.cmake)
+# QT_PUBLIC_SRC is exported by layout.sh (configure-qnx.sh).
+if(NOT DEFINED ENV{QT_PUBLIC_SRC})
+  message(FATAL_ERROR "QT_PUBLIC_SRC is not set; run through configure-qnx.sh")
+endif()
+include($ENV{QT_PUBLIC_SRC}/coin/provisioning/common/shared/cmake_toolchain_files/qnx-toolchain-aarch64le.cmake)
 set(CMAKE_SYSTEM_VERSION 800)
 # QNX target pthread ABI requires the native feature surface.
 set(CMAKE_C_FLAGS_INIT "-Vgcc_ntoaarch64le -D_QNX_SOURCE")
