@@ -9,6 +9,8 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const mockPath = path.join(root, 'tests/js/helpers/mock-react-native.cjs');
 const originalLoad = Module._load;
+let dismissed = 0;
+const reactNative = { ...require(mockPath), Keyboard: { dismiss: () => dismissed++ } };
 const React = require('react');
 
 // A native component the way the host registers one: a host element that keeps its props.
@@ -21,7 +23,7 @@ const nativeFake = {
   },
 };
 Module._load = function load(request, parent, isMain) {
-  if (request === 'react-native') return originalLoad.call(this, mockPath, parent, isMain);
+  if (request === 'react-native') return reactNative;
   if (request === 'react-native/Libraries/ReactNative/UIManager')
     return { default: { hasViewManagerConfig: () => true } };
   if (request === 'react-native/Libraries/NativeComponent/NativeComponentRegistry')
@@ -34,6 +36,8 @@ const { act } = React;
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 const { QtDrawer } = require(path.join(root, 'packages/expo-router-qnx/src/QtDrawer.js'));
 const { Drawer } = require(path.join(root, 'packages/expo-router-qnx/src/drawer-layout.js'));
+const { JsDrawer } = require(path.join(root, 'packages/expo-router-qnx/src/JsDrawer.js'));
+globalThis.__DEV__ = true;
 
 /** @param {any} element */
 function render(element) {
@@ -205,6 +209,122 @@ for (const position of ['left', 'right']) {
     'RNQnxDrawer'
   );
   assert.equal(native.props.edgeWidth, 40);
+}
+
+// ---- gestures, swipeMinDistance, keyboard, progress, unsupported props ------------------
+{
+  const { resetWarnings } = require(path.join(root, 'packages/expo-router-qnx/src/devWarnings.js'));
+  const { DrawerProgressContext } = require(
+    path.join(root, 'packages/expo-router-qnx/src/drawerContexts.js')
+  );
+  /** @type {string[]} */
+  const events = [];
+  /** @type {any} */
+  let progress;
+  const Probe = () => ((progress ??= React.useContext(DrawerProgressContext)), null);
+  const props = {
+    ...base,
+    swipeMinDistance: 72,
+    onGestureStart: () => events.push('start'),
+    onGestureEnd: () => events.push('end'),
+    onGestureCancel: () => events.push('cancel'),
+    children: React.createElement(Probe),
+  };
+  const renderer = render(React.createElement(QtDrawer, props));
+  const native = hostOf(renderer, 'RNQnxDrawer');
+  assert.equal(native.props.swipeMinDistance, 72, 'swipeMinDistance reaches the native item');
+  assert.ok(
+    progress && typeof progress.interpolate === 'function',
+    'useDrawerProgress has a value on the native path'
+  );
+  assert.equal(progress.value, 0);
+  act(() => native.props.onGestureStart({ nativeEvent: { open: false } }));
+  act(() => native.props.onGestureEnd({ nativeEvent: { open: false } }));
+  act(() => native.props.onGestureCancel({ nativeEvent: { open: false } }));
+  assert.deepEqual(events, ['start', 'end', 'cancel'], 'gesture callbacks');
+  assert.equal(
+    dismissed,
+    1,
+    'a drag blurs the focused input by default (keyboardDismissMode on-drag)'
+  );
+  const quiet = hostOf(
+    render(React.createElement(QtDrawer, { ...props, keyboardDismissMode: 'none' })),
+    'RNQnxDrawer'
+  );
+  act(() => quiet.props.onGestureStart({ nativeEvent: { open: false } }));
+  assert.equal(dismissed, 1, "keyboardDismissMode 'none' leaves the input alone");
+  act(() => renderer.update(React.createElement(QtDrawer, { ...props, open: true })));
+  assert.equal(progress.value, 1, 'the progress follows open');
+
+  // Unsupported props: one development warning per name, none in release builds.
+  const warnings = /** @type {string[]} */ ([]);
+  const originalWarn = console.warn;
+  console.warn = (/** @type {string} */ message) => warnings.push(message);
+  resetWarnings();
+  const unsupported = {
+    hideStatusBarOnOpen: true,
+    statusBarAnimation: 'fade',
+    configureGestureHandler: () => {},
+  };
+  render(React.createElement(QtDrawer, { ...base, ...unsupported }));
+  render(React.createElement(QtDrawer, { ...base, ...unsupported }));
+  render(React.createElement(JsDrawer, { ...base, ...unsupported }));
+  assert.equal(warnings.length, 3, 'one warning for each of the three props, once');
+  for (const name of Object.keys(unsupported)) {
+    assert.ok(
+      warnings.some((w) => w.includes(`"${name}"`)),
+      `the warning names ${name}`
+    );
+  }
+  // hideStatusBarOnOpen=false asks for nothing.
+  resetWarnings();
+  warnings.length = 0;
+  render(React.createElement(QtDrawer, { ...base, hideStatusBarOnOpen: false }));
+  assert.equal(warnings.length, 0);
+  globalThis.__DEV__ = false;
+  resetWarnings();
+  render(React.createElement(QtDrawer, { ...base, ...unsupported }));
+  assert.equal(warnings.length, 0, 'release builds are silent');
+  globalThis.__DEV__ = true;
+  console.warn = originalWarn;
+}
+{
+  // JsDrawer: gesture callbacks, swipeMinDistance and keyboardDismissMode.
+  /** @type {any} */
+  let captured;
+  const rn = require('react-native');
+  const originalCreate = rn.PanResponder.create;
+  rn.PanResponder.create = (/** @type {any} */ config) => (
+    (captured = config),
+    { panHandlers: {} }
+  );
+  /** @type {string[]} */
+  const events = [];
+  /** @type {string[]} */
+  const calls = [];
+  render(
+    React.createElement(JsDrawer, {
+      ...base,
+      drawerWidth: 200,
+      swipeMinDistance: 100,
+      onOpen: () => calls.push('open'),
+      onGestureStart: () => events.push('start'),
+      onGestureEnd: () => events.push('end'),
+      onGestureCancel: () => events.push('cancel'),
+    })
+  );
+  const before = dismissed;
+  act(() => captured.onPanResponderGrant());
+  assert.equal(dismissed, before + 1);
+  // 90 px is 45% of 200 (past the 40% rule) but under swipeMinDistance 100: it does not open.
+  act(() => captured.onPanResponderRelease({}, { dx: 90 }));
+  assert.deepEqual(calls, []);
+  act(() => captured.onPanResponderGrant());
+  act(() => captured.onPanResponderRelease({}, { dx: 110 }));
+  assert.deepEqual(calls, ['open']);
+  act(() => captured.onPanResponderTerminate());
+  assert.deepEqual(events, ['start', 'end', 'start', 'end', 'cancel']);
+  rn.PanResponder.create = originalCreate;
 }
 
 Module._load = originalLoad;

@@ -7,6 +7,7 @@ const React = require('react');
 const { Animated, Easing, PanResponder, Pressable, StyleSheet, View } = require('react-native');
 const { DrawerProgressContext } = require('./drawerContexts');
 const { getSwipeExclusionLeft, subscribeSwipeExclusion } = require('./swipeExclusion');
+const { dismissKeyboardOnDrag, warnUnsupportedDrawerProps } = require('./drawerOptions');
 
 const DURATION = 220;
 
@@ -32,9 +33,16 @@ function JsDrawer({
   overlayAccessibilityLabel,
   swipeEnabled = true,
   swipeEdgeWidth = 24,
+  swipeMinDistance = 0,
+  keyboardDismissMode,
+  onGestureStart,
+  onGestureEnd,
+  onGestureCancel,
   style,
   children,
+  ...rest
 }) {
+  warnUnsupportedDrawerProps(rest);
   const right = drawerPosition === 'right';
   const width =
     drawerWidth ??
@@ -45,7 +53,16 @@ function JsDrawer({
   const exclusion = useExclusionLeft();
   const openRef = React.useRef(open);
   const callbacks = React.useRef({});
-  callbacks.current = { onOpen, onClose, onTransitionStart, onTransitionEnd };
+  callbacks.current = {
+    onOpen,
+    onClose,
+    onTransitionStart,
+    onTransitionEnd,
+    onGestureStart,
+    onGestureEnd,
+    onGestureCancel,
+    keyboardDismissMode,
+  };
 
   const mounted = React.useRef(false);
   React.useEffect(() => {
@@ -88,6 +105,8 @@ function JsDrawer({
         onPanResponderGrant: () => {
           dragStart.current = openRef.current ? 1 : 0;
           setVisible(true);
+          dismissKeyboardOnDrag(callbacks.current.keyboardDismissMode);
+          callbacks.current.onGestureStart?.();
         },
         onPanResponderMove: (_e, g) => {
           const delta = (right ? -g.dx : g.dx) / width;
@@ -96,15 +115,25 @@ function JsDrawer({
         onPanResponderRelease: (_e, g) => {
           const delta = (right ? -g.dx : g.dx) / width;
           const target = dragStart.current + delta;
-          // Past 40% of the width in the direction of travel flips the state.
-          const wantOpen = dragStart.current === 1 ? target >= 0.6 : target > 0.4;
+          callbacks.current.onGestureEnd?.();
+          // Past 40% of the width in the direction of travel flips the state,
+          // and so does a drag of at least swipeMinDistance px if it is not shorter.
+          const farEnough = Math.abs(delta) * width >= swipeMinDistance;
+          const wantOpen = !farEnough
+            ? dragStart.current === 1
+            : dragStart.current === 1
+              ? target >= 0.6
+              : target > 0.4;
           if (wantOpen && !openRef.current) callbacks.current.onOpen?.();
           else if (!wantOpen && openRef.current) callbacks.current.onClose?.();
           snapBack();
         },
-        onPanResponderTerminate: () => snapBack(),
+        onPanResponderTerminate: () => {
+          callbacks.current.onGestureCancel?.();
+          snapBack();
+        },
       }),
-    [progress, right, width]
+    [progress, right, width, swipeMinDistance]
   );
 
   if (drawerType === 'permanent') {

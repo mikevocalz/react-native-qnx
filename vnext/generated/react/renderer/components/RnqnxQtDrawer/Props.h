@@ -80,6 +80,7 @@ class RNQnxDrawerProps final : public ViewProps {
   double edgeWidth{24.0};
   double swipeExclusionLeft{0.0};
   double topInset{0.0};
+  double swipeMinDistance{0.0};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;

@@ -5,10 +5,17 @@
 // BottomTabView's decision, from the `tabBarPosition` screen option: the
 // QnxTabs layout helper sets that from the window width.
 const React = require('react');
-const { I18nManager, useWindowDimensions } = require('react-native');
+const { Animated, I18nManager, Keyboard, useWindowDimensions } = require('react-native');
 const { hasNative } = require('./native');
 const { JsTabBar } = require('./JsTabBar');
-const { buildTabs, tintsFor, resolveTabBarLayout, resolveTabBarEdge, isRail } = require('./tabBarModel');
+const {
+  buildTabs,
+  needsJsTabBar,
+  tintsFor,
+  resolveTabBarLayout,
+  resolveTabBarEdge,
+  isRail,
+} = require('./tabBarModel');
 const { setSwipeExclusionLeft } = require('./swipeExclusion');
 
 const BOTTOM_HEIGHT = 60;
@@ -20,7 +27,7 @@ function getTabBarHeight({ state, descriptors, insets }) {
   return BOTTOM_HEIGHT + (tabBarPosition === 'top' ? 0 : (insets?.bottom ?? 0));
 }
 
-function BottomTabBar({ state, descriptors, emitter, navigateToTab, insets }) {
+function TabBarContent({ state, descriptors, emitter, navigateToTab, insets }) {
   const { width } = useWindowDimensions();
   const focusedKey = state.routes[state.index].key;
   const options = descriptors[focusedKey].options;
@@ -37,7 +44,8 @@ function BottomTabBar({ state, descriptors, emitter, navigateToTab, insets }) {
   const tabs = React.useMemo(() => buildTabs(state, descriptors), [state, descriptors]);
   const tint = tintsFor(options);
   const showLabel = options.tabBarShowLabel !== false;
-  const barHeight = typeof options.tabBarStyle?.height === 'number' ? options.tabBarStyle.height : BOTTOM_HEIGHT;
+  const barHeight =
+    typeof options.tabBarStyle?.height === 'number' ? options.tabBarStyle.height : BOTTOM_HEIGHT;
 
   const hidden = options.tabBarStyle?.display === 'none' || options.qnxTabBarHidden;
   // A rail on the physical left keeps the drawer's edge swipe from starting on it.
@@ -63,12 +71,14 @@ function BottomTabBar({ state, descriptors, emitter, navigateToTab, insets }) {
     ? { width: RAIL_WIDTH }
     : { height: barHeight + bottomInset, paddingBottom: bottomInset };
 
-  // tabBarIcon is a React element factory and cannot cross to a native bar.
-  // A tab that has one and no qnxIcon is drawn by the React tab bar, which
-  // calls it with { focused, color, size } like every other platform.
-  const needsReactIcons = tabs.some((tab) => typeof tab.options.tabBarIcon === 'function' && !tab.icon);
+  // React elements (tabBarIcon without qnxIcon, tabBarBackground, tabBarButton)
+  // cannot cross to a native bar, and the native bar draws a fixed set of
+  // styles. A bar that needs more is drawn by JsTabBar, which draws every tab
+  // bar option, and `tabBarIcon` is called with { focused, color, size } like
+  // on every other platform.
+  const needsJs = needsJsTabBar(tabs, options);
 
-  if (hasNative('RNQnxTabBar') && !needsReactIcons) {
+  if (hasNative('RNQnxTabBar') && !needsJs) {
     const { QtTabBar } = require('./QtTabBar');
     return React.createElement(QtTabBar, {
       tabs,
@@ -96,7 +106,67 @@ function BottomTabBar({ state, descriptors, emitter, navigateToTab, insets }) {
     onTabPress,
     onTabLongPress,
     style: sizeStyle,
+    options,
   });
+}
+
+// Follows the software keyboard: it is only reported where the host has a
+// Keyboard module that emits (QNX has no on-screen keyboard unless one is
+// installed, so the bar then stays).
+function useKeyboardShown(enabled) {
+  const [shown, setShown] = React.useState(false);
+  React.useEffect(() => {
+    if (!enabled || typeof Keyboard?.addListener !== 'function') return undefined;
+    const subscriptions = [
+      Keyboard.addListener('keyboardDidShow', () => setShown(true)),
+      Keyboard.addListener('keyboardDidHide', () => setShown(false)),
+    ];
+    return () => subscriptions.forEach((subscription) => subscription?.remove?.());
+  }, [enabled]);
+  return enabled && shown;
+}
+
+// tabBarHideOnKeyboard with tabBarVisibilityAnimationConfig ({ show, hide }:
+// { animation: 'timing' | 'spring', config }).
+function VisibilityGate({ hideOnKeyboard, config, children }) {
+  const hide = useKeyboardShown(hideOnKeyboard);
+  const opacity = React.useRef(new Animated.Value(1)).current;
+  const [gone, setGone] = React.useState(false);
+  const first = React.useRef(true);
+  React.useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return undefined;
+    }
+    const spec = hide ? config?.hide : config?.show;
+    const kind = spec?.animation === 'spring' && Animated.spring ? 'spring' : 'timing';
+    if (!hide) setGone(false);
+    const animation = Animated[kind](opacity, {
+      toValue: hide ? 0 : 1,
+      useNativeDriver: false,
+      ...(kind === 'timing' ? { duration: hide ? 200 : 250 } : null),
+      ...spec?.config,
+    });
+    animation.start(({ finished }) => {
+      if (finished && hide) setGone(true);
+    });
+    return () => animation.stop();
+  }, [hide, config, opacity]);
+  if (!hideOnKeyboard) return children;
+  if (gone && hide) return null;
+  return React.createElement(Animated.View, { style: { opacity } }, children);
+}
+
+function BottomTabBar(props) {
+  const options = props.descriptors[props.state.routes[props.state.index].key].options;
+  return React.createElement(
+    VisibilityGate,
+    {
+      hideOnKeyboard: options.tabBarHideOnKeyboard === true,
+      config: options.tabBarVisibilityAnimationConfig,
+    },
+    React.createElement(TabBarContent, props)
+  );
 }
 
 module.exports = { BottomTabBar, getTabBarHeight };

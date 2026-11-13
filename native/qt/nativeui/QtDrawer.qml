@@ -34,6 +34,8 @@ Item {
     property color scrimColor: "#99000000"
     property string scrimLabel: ""
     property real edgeWidth: 24
+    // Px a drag must cover to count, unless it is a fling. 0: only the 40% rule.
+    property real swipeMinDistance: 0
     property real swipeExclusionLeft: 0
     property real topInset: 0
     // px/s of release velocity that decides a drag on its own.
@@ -513,6 +515,18 @@ Item {
         revertTimer.stop();
         dragStartProgress = progress;
         dragging = true;
+        if (bridge)
+            bridge.gestureStart(open);
+    }
+
+    // The system took the drag away: settle where the drawer was and say so.
+    function cancelDrag() {
+        if (!dragging)
+            return;
+        dragging = false;
+        animateTo(open ? 1 : 0);
+        if (bridge)
+            bridge.gestureCancel(open);
     }
 
     function updateDrag(deltaX) {
@@ -525,11 +539,15 @@ Item {
         if (!dragging)
             return;
         dragging = false;
+        if (bridge)
+            bridge.gestureEnd(open);
         var towardOpen = direction * velocityX;
         var moved = progress - dragStartProgress;
         var next;
         if (Math.abs(velocityX) > flingVelocity)
             next = towardOpen > 0;
+        else if (Math.abs(moved) * drawerWidth < swipeMinDistance)
+            next = dragStartProgress >= 0.5;
         else if (Math.abs(moved) >= 0.4)
             next = moved > 0;
         else
@@ -567,6 +585,7 @@ Item {
                     root.endDrag(centroid.velocity.x);
             }
             onTranslationChanged: root.updateDrag(translation.x)
+            onCanceled: root.cancelDrag()
         }
     }
 
@@ -584,6 +603,7 @@ Item {
                 root.endDrag(centroid.velocity.x);
         }
         onTranslationChanged: root.updateDrag(translation.x)
+        onCanceled: root.cancelDrag()
     }
 
     Accessible.role: Accessible.Pane

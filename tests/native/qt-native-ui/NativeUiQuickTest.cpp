@@ -37,6 +37,9 @@ class Recorder final : public QObject {
   Q_INVOKABLE void transitionEnd(bool open) {
     calls << QStringLiteral("transitionEnd:%1").arg(open ? "open" : "closed");
   }
+  Q_INVOKABLE void gestureStart(bool open) { calls << QStringLiteral("gestureStart:%1").arg(open ? "open" : "closed"); }
+  Q_INVOKABLE void gestureEnd(bool open) { calls << QStringLiteral("gestureEnd:%1").arg(open ? "open" : "closed"); }
+  Q_INVOKABLE void gestureCancel(bool open) { calls << QStringLiteral("gestureCancel:%1").arg(open ? "open" : "closed"); }
   Q_INVOKABLE void tabPressed(const QString& key) { calls << QStringLiteral("tabPressed:") + key; }
   Q_INVOKABLE void tabLongPressed(const QString& key) {
     calls << QStringLiteral("tabLongPressed:") + key;
@@ -619,6 +622,58 @@ class NativeUiQuickTest : public QObject {
     QVERIFY(QTest::qWaitFor([&] { return settled(drawer.get(), 1.0); }, 2000));
     QCOMPARE(panel->mapToItem(drawer.get(), QPointF(0, 0)).x(), 0.0);
     QCOMPARE(main->mapToItem(drawer.get(), QPointF(0, 0)).x(), 200.0);
+  }
+
+
+  void swipeMinDistanceRejectsShortDragsThatPassTheFortyPercentRule() {
+    auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(drawer);
+    Recorder recorder;
+    drawer->setProperty("bridge", QVariant::fromValue(static_cast<QObject*>(&recorder)));
+    drawer->setProperty("flingVelocity", 1.0e9);
+    drawer->setProperty("drawerWidth", 100.0);  // 50 px is 50% of the panel
+    drawer->setProperty("edgeWidth", 100.0);
+    mountChild(drawer.get(), QRectF(0, 0, 100, 400));
+    mountChild(drawer.get(), QRectF(0, 0, 600, 400));
+    QVERIFY(QTest::qWaitFor([&] { return drawer->property("ready").toBool(); }));
+
+    drawer->setProperty("swipeMinDistance", 80.0);
+    drag(QPoint(5, 200), QPoint(60, 200));  // 55 px: over 40% of 100, under 80 px
+    QTest::qWait(250);
+    QCOMPARE(recorder.count(QStringLiteral("requestChange")), 0);
+    QVERIFY(settled(drawer.get(), 0.0));
+
+    drawer->setProperty("swipeMinDistance", 30.0);
+    drag(QPoint(5, 200), QPoint(60, 200));
+    QVERIFY(QTest::qWaitFor([&] { return recorder.count(QStringLiteral("requestChange:open:swipe")) == 1; }));
+  }
+
+  void gestureEventsBracketADragAndCancelSettlesBack() {
+    auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(drawer);
+    Recorder recorder;
+    drawer->setProperty("bridge", QVariant::fromValue(static_cast<QObject*>(&recorder)));
+    drawer->setProperty("flingVelocity", 1.0e9);
+    mountChild(drawer.get(), QRectF(0, 0, 280, 400));
+    mountChild(drawer.get(), QRectF(0, 0, 600, 400));
+    QVERIFY(QTest::qWaitFor([&] { return drawer->property("ready").toBool(); }));
+
+    drag(QPoint(5, 200), QPoint(220, 200));
+    QVERIFY(QTest::qWaitFor([&] { return recorder.count(QStringLiteral("requestChange:open:swipe")) == 1; }));
+    QCOMPARE(recorder.calls.indexOf(QStringLiteral("gestureStart:closed")), 0);
+    QVERIFY(recorder.calls.indexOf(QStringLiteral("gestureEnd:closed")) > 0);
+    QCOMPARE(recorder.count(QStringLiteral("gestureCancel")), 0);
+
+    // A drag the system takes away reports a cancel and goes back to `open`.
+    recorder.calls.clear();
+    drawer->setProperty("open", false);
+    drawer->setProperty("progress", 0.0);
+    QMetaObject::invokeMethod(drawer.get(), "beginDrag");
+    drawer->setProperty("progress", 0.6);
+    QMetaObject::invokeMethod(drawer.get(), "cancelDrag");
+    QCOMPARE(recorder.calls, (QStringList{QStringLiteral("gestureStart:closed"), QStringLiteral("gestureCancel:closed")}));
+    QVERIFY(QTest::qWaitFor([&] { return settled(drawer.get(), 0.0); }, 2000));
+    QCOMPARE(recorder.count(QStringLiteral("requestChange")), 0);
   }
 
   // ---- tab bar ----------------------------------------------------------
