@@ -164,17 +164,24 @@ void QtSchedulerDelegate::schedulerShouldRenderTransactions(
     return;
   }
 
-  // Transactions can queue up, so drain rather than pulling once.
-  while (auto transaction = mountingCoordinator->pullTransaction()) {
-    lastFailures_ = adapter_.apply(transaction->getMutations());
-    ++mountedTransactionCount_;
-    // A failed mutation leaves a view (and often its subtree) off screen with
-    // no other trace, so each one is logged.
-    for (const auto& failure : lastFailures_) {
-      std::fprintf(stderr, "RNQNX_MOUNT_FAILURE type=%d tag=%d error=%d %s\n",
-                   static_cast<int>(failure.type), static_cast<int>(failure.tag),
-                   static_cast<int>(failure.error), failure.detail.toUtf8().constData());
-    }
+  // One pull per notification. The coordinator holds at most one pending
+  // revision, and every later commit or animation frame notifies again. A
+  // `while (pullTransaction())` loop never ends once a MountingOverrideDelegate
+  // is installed: Reanimated's layout-animation proxy answers every pull with a
+  // transaction, empty or not, so the loop spun at 100% CPU on the first
+  // screen that mounted a Reanimated component.
+  auto transaction = mountingCoordinator->pullTransaction();
+  if (!transaction) {
+    return;
+  }
+  lastFailures_ = adapter_.apply(transaction->getMutations());
+  ++mountedTransactionCount_;
+  // A failed mutation leaves a view (and often its subtree) off screen with
+  // no other trace, so each one is logged.
+  for (const auto& failure : lastFailures_) {
+    std::fprintf(stderr, "RNQNX_MOUNT_FAILURE type=%d tag=%d error=%d %s\n",
+                 static_cast<int>(failure.type), static_cast<int>(failure.tag),
+                 static_cast<int>(failure.error), failure.detail.toUtf8().constData());
   }
 }
 

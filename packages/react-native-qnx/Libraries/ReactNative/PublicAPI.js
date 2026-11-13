@@ -148,6 +148,18 @@ const api = Object.freeze({
     const module = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
     return module.default ?? module;
   },
+  // react-native-gesture-handler and Legend List read these when their module
+  // loads. Gesture Handler's Android-only DrawerLayoutAndroid stays
+  // unimplemented: it loads that export on first render of its own wrapper.
+  get DeviceEventEmitter() {
+    return require('react-native/Libraries/EventEmitter/RCTDeviceEventEmitter').default;
+  },
+  get RefreshControl() {
+    return require('react-native/Libraries/Components/RefreshControl/RefreshControl');
+  },
+  get TouchableNativeFeedback() {
+    return require('react-native/Libraries/Components/Touchable/TouchableNativeFeedback').default;
+  },
   get TouchableOpacity() {
     return require('react-native/Libraries/Components/Touchable/TouchableOpacity').default;
   },
