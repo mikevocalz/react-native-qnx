@@ -41,6 +41,10 @@ void QtVideoBridge::apply(
     const facebook::react::QnxQtVideoProps& props,
     std::shared_ptr<const facebook::react::QnxQtVideoEventEmitter> emitter) {
   emitter_ = std::move(emitter);
+  if (!last_ && !item_.isReady() && emitter_) {
+    // The item failed to load its QML before this bridge could connect.
+    emitter_->onVideoError(facebook::react::QnxQtVideoEventEmitter::OnVideoError{item_.errorString().toStdString(), -1});
+  }
   const Applied* prev = last_ ? &*last_ : nullptr;
   if (!prev || prev->source != props.source) item_.setSource(QString::fromStdString(props.source));
   if (!prev || prev->poster != props.poster) item_.setPoster(QString::fromStdString(props.poster));

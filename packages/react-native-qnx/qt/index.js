@@ -52,15 +52,6 @@ const QtVideo = React.forwardRef(function QtVideo(props, ref) {
     onFullscreen,
     ...rest
   } = props;
-  if (source != null && typeof source !== 'string' && typeof source?.uri !== 'string') {
-    throw new TypeError('QtVideo.source must be a string or { uri: string }.');
-  }
-  if (resizeMode != null && !RESIZE_MODES.includes(resizeMode)) {
-    throw new TypeError('QtVideo.resizeMode must be contain, cover, or stretch.');
-  }
-  if (!UIManager.hasViewManagerConfig('QnxQtVideo')) {
-    throw new Error('QtVideo is unavailable. Build the QNX/Qt host with RNQNX_ENABLE_QT_VIDEO=ON.');
-  }
   const nativeRef = React.useRef(null);
   React.useImperativeHandle(
     ref,
@@ -72,6 +63,15 @@ const QtVideo = React.forwardRef(function QtVideo(props, ref) {
     }),
     []
   );
+  if (source != null && typeof source !== 'string' && typeof source?.uri !== 'string') {
+    throw new TypeError('QtVideo.source must be a string or { uri: string }.');
+  }
+  if (resizeMode != null && !RESIZE_MODES.includes(resizeMode)) {
+    throw new TypeError('QtVideo.resizeMode must be contain, cover, or stretch.');
+  }
+  if (!UIManager.hasViewManagerConfig('QnxQtVideo')) {
+    throw new Error('QtVideo is unavailable. Build the QNX/Qt host with RNQNX_ENABLE_QT_VIDEO=ON.');
+  }
   const uri = typeof source === 'string' ? source : source?.uri;
   const wrap = (handler) => (handler ? (event) => handler(event.nativeEvent) : undefined);
   return React.createElement(NativeVideo, {

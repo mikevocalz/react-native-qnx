@@ -47,8 +47,8 @@ Item {
         player.position = Math.round(seconds * 1000)
         seekReport.restart()
     }
-    function play() { player.play() }
-    function pause() { player.pause() }
+    function play() { paused = false; applyPaused() }
+    function pause() { paused = true; applyPaused() }
     function applyPaused() {
         if (player.mediaStatus === MediaPlayer.NoMedia
             || player.mediaStatus === MediaPlayer.InvalidMedia
@@ -203,12 +203,10 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if (playButton.playing) {
-                        player.pause()
-                    } else {
-                        if (player.mediaStatus === MediaPlayer.EndOfMedia) player.position = 0
-                        player.play()
-                    }
+                    // Write the property so applyPaused() stays the one path.
+                    if (player.mediaStatus === MediaPlayer.EndOfMedia) player.position = 0
+                    root.paused = playButton.playing
+                    root.applyPaused()
                 }
             }
         }

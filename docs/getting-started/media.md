@@ -113,8 +113,8 @@ and the Qt core from `qt612-public-o2`. Files: `qt612-media/SHA256SUMS` was
 written at stage time (`/home/qnxbuild/media/SHA256SUMS`).
 
 - The ffmpeg plugin loads: `Using Qt multimedia with FFmpeg version 8.0 LGPL
-  version 2.1 or later`. It is the only backend (`Available backends
-  ("ffmpeg")`).
+version 2.1 or later`. It is the only backend (`Available backends
+("ffmpeg")`).
 - Software H.264 decode of the 480 x 270 clip ran in real time: 170 frames in
   7.0 s (24 fps), position tracking the wall clock, `hasAudio=1 hasVideo=1`.
   Hardware decoders: none listed.
@@ -130,7 +130,7 @@ written at stage time (`/home/qnxbuild/media/SHA256SUMS`).
   ms at 1 s wall-clock steps, then `EndOfMedia` and stopped. Whether sound is
   audible at the jack has to be confirmed by ear; nothing here measures it.
 - A bad URL (`http://192.168.2.1:9/none.mp4`) gives `error=1 Could not open
-  file` and `InvalidMedia`.
+file` and `InvalidMedia`.
 
 Audio debugging after an owner report of "no audio" (same day):
 

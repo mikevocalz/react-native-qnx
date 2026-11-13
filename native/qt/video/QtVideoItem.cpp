@@ -31,6 +31,9 @@ QtVideoItem::QtVideoItem(QQmlEngine& engine, QQuickItem* parent) : QQuickItem(pa
     return;
   }
   QQmlEngine::setObjectOwnership(inner_, QQmlEngine::CppOwnership);
+  // QObject parent as well as visual parent: ~QQuickItem only detaches visual
+  // children, so without this the player would outlive the item.
+  inner_->setParent(this);
   inner_->setParentItem(this);
   inner_->setSize(size());
 
@@ -49,6 +52,10 @@ QtVideoItem::~QtVideoItem() {
   if (inner_ != nullptr) {
     QMetaObject::invokeMethod(inner_, "pause");
     inner_->setProperty("source", QUrl());
+    inner_->setParentItem(nullptr);
+    inner_->setParent(nullptr);
+    delete inner_;
+    inner_ = nullptr;
   }
 }
 
@@ -66,10 +73,9 @@ QUrl QtVideoItem::resolveSource(const QString& source, const QString& baseDirect
   if (source.isEmpty()) return QUrl();
   const QUrl parsed(source);
   const QString scheme = parsed.scheme();
-  if (scheme == QLatin1String("http") || scheme == QLatin1String("https") ||
-      scheme == QLatin1String("file") || scheme == QLatin1String("qrc")) {
-    return parsed;
-  }
+  // Any real URL scheme (http, https, file, qrc, rtsp, udp ...) passes through;
+  // a one-letter scheme is a Windows drive letter, not a URL.
+  if (parsed.isValid() && scheme.size() > 1) return parsed;
   if (QDir::isAbsolutePath(source)) return QUrl::fromLocalFile(source);
   // Bundled assets (`assets/media/clip.mp4`) live next to the executable.
   return QUrl::fromLocalFile(QDir(baseDirectory).absoluteFilePath(source));

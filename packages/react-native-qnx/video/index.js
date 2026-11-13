@@ -114,8 +114,8 @@ class VideoPlayer {
   async preload() {}
   release() {
     this._released = true;
-    this.clearAllEvents();
     this._views.clear();
+    this._seekers?.clear();
   }
 }
 
@@ -199,7 +199,10 @@ const VideoView = React.forwardRef(function VideoView(props, ref) {
         bufferDuration: e.playableDuration,
       });
     },
-    onEnd: () => player._emit('onEnd', undefined),
+    onEnd: () => {
+      player._set({ paused: true });
+      player._emit('onEnd', undefined);
+    },
     onError: (e) => {
       player._set({ status: 'error' });
       player._emit('onError', { code: String(e.code), message: e.message });

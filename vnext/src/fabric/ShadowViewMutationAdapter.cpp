@@ -1229,24 +1229,21 @@ MutationFailure ShadowViewMutationAdapter::dispatchCommand(
     const ShadowView* shadowView) {
 #if RNQNX_ENABLE_QT_VIDEO
   if (commandName == "seek" || commandName == "play" || commandName == "pause") {
-    auto* video = qobject_cast<views::QtVideoItem*>(layer_.itemForTag(tag));
-    if (video == nullptr) {
-      return MutationFailure{.type = ShadowViewMutation::Type::Update, .tag = tag,
-          .error = MountError::UnknownTag,
-          .detail = QStringLiteral("%1 sent to a view that is not a QtVideo").arg(QString::fromStdString(commandName))};
-    }
-    if (commandName == "seek") {
-      if (!args.isArray() || args.size() != 1 || !args[0].isNumber()) {
-        return MutationFailure{.type = ShadowViewMutation::Type::Update, .tag = tag,
-            .error = MountError::IndexOutOfRange, .detail = QStringLiteral("seek expects [seconds]")};
+    // Other components may define commands with these names; only act on a QtVideo.
+    if (auto* video = qobject_cast<views::QtVideoItem*>(layer_.itemForTag(tag))) {
+      if (commandName == "seek") {
+        if (!args.isArray() || args.size() != 1 || !args[0].isNumber()) {
+          return MutationFailure{.type = ShadowViewMutation::Type::Update, .tag = tag,
+              .error = MountError::IndexOutOfRange, .detail = QStringLiteral("seek expects [seconds]")};
+        }
+        video->seek(args[0].asDouble());
+      } else if (commandName == "play") {
+        video->play();
+      } else {
+        video->pause();
       }
-      video->seek(args[0].asDouble());
-    } else if (commandName == "play") {
-      video->play();
-    } else {
-      video->pause();
+      return MutationFailure{};
     }
-    return MutationFailure{};
   }
 #endif
 

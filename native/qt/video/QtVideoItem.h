@@ -17,8 +17,8 @@ enum class VideoResizeMode { Contain, Cover, Stretch };
 // as a scene-graph texture, so the item composes with sibling React views,
 // the window chrome and clipping like any other item.
 // All methods require the Qt GUI thread. Playback needs the Qt Multimedia QML
-// module at runtime; when it is missing the item stays empty and emits
-// videoFailed once, instead of aborting the host.
+// module at runtime; when it is missing the item stays empty and reports
+// the error through the bridge (onError), instead of aborting the host.
 class QtVideoItem final : public QQuickItem {
   Q_OBJECT
 
