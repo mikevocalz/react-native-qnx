@@ -50,12 +50,14 @@ jobs:
           host: linux
           target: desktop
           arch: linux_gcc_64
+          modules: qtmultimedia
           cache: true
       - name: Verify reproducible SVG bindings
         if: matrix.input-lifecycle == 'ON'
         run: |
           pnpm qt:svg:check
           pnpm qt:rnsvg:check
+          pnpm qt:video:check
       - name: Build and run the required full renderer graph
         run: |
           mkdir -p build/linux-host-renderer/evidence
@@ -68,7 +70,8 @@ jobs:
             -DRNQNX_ENABLE_QT_SVG=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_RNSVG=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_MOTION=${{ matrix.input-lifecycle }} \
-            -DRNQNX_ENABLE_QT_GRAPHICS=${{ matrix.input-lifecycle }}
+            -DRNQNX_ENABLE_QT_GRAPHICS=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_QT_VIDEO=${{ matrix.input-lifecycle }}
           node scripts/validate-host-renderer.mjs
       - name: Render the conformance app (Linux host only)
         run: |
