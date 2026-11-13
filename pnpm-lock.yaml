@@ -234,7 +234,14 @@ importers:
         specifier: 5.1.0
         version: 5.1.0(@types/react@19.3.0)(react@19.3.0)
 
-  apps/component-gallery: {}
+  apps/component-gallery:
+    dependencies:
+      '@rn-qnx/expo-constants-qnx':
+        specifier: workspace:*
+        version: link:../../packages/expo-constants-qnx
+      expo-constants:
+        specifier: 58.0.16
+        version: 58.0.16(expo@58.0.24(@babel/core@7.29.7(supports-color@8.1.1))(react-native@0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2))(react-native@0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@7.0.2)
 
   apps/rn-playground:
     dependencies:
@@ -254,6 +261,12 @@ importers:
       '@rn-qnx/metro-config-qnx':
         specifier: workspace:*
         version: link:../../packages/metro-config-qnx
+
+  packages/expo-constants-qnx:
+    dependencies:
+      expo-constants:
+        specifier: 58.0.16
+        version: 58.0.16(expo@58.0.24(@babel/core@7.29.7(supports-color@8.1.1))(react-native@0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)(supports-color@8.1.1)(typescript@7.0.2))(react-native@0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@7.0.2)
 
   packages/expo-modules-core-qnx:
     dependencies:

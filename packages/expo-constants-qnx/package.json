@@ -1,0 +1,24 @@
+{
+  "name": "@rn-qnx/expo-constants-qnx",
+  "version": "0.1.0",
+  "description": "QNX native implementation of expo-constants' ExponentConstants module",
+  "license": "MIT",
+  "files": [
+    "cpp",
+    "CMakeLists.txt",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "expo-constants": "58.0.16"
+  },
+  "react-native-qnx": {
+    "expo": {
+      "platforms": [
+        "qnx"
+      ],
+      "cmakeListsPath": "CMakeLists.txt",
+      "target": "expo_constants_qnx",
+      "initializer": "rnqnx::expo::constants::registerModule"
+    }
+  }
+}
