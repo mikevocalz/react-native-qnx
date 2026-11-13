@@ -1,3 +1,4 @@
+// @ts-nocheck: test harness around untyped Babel, Yoga and react-test-renderer.
 // Loads the component gallery's real route and screen files in plain Node:
 // Babel turns their ESM and JSX into CommonJS, `react-native` and the native
 // Expo packages are replaced by host-element stand-ins that keep every prop,

@@ -1,3 +1,4 @@
+// @ts-nocheck: Module._load test doubles.
 // QtDrawer, the adapter for the native RNQnxDrawer: every drawer prop that
 // react-native-drawer-layout passes reaches the native item or the panel, and
 // native events become onOpen, onClose and the transition callbacks.
@@ -292,7 +293,9 @@ for (const position of ['left', 'right']) {
   // JsDrawer: gesture callbacks, swipeMinDistance and keyboardDismissMode.
   /** @type {any} */
   let captured;
-  const rn = require('react-native');
+  // Not a literal: a literal would pull React Native's type declarations into tsc.
+  const rnName = 'react-native';
+  const rn = require(rnName);
   const originalCreate = rn.PanResponder.create;
   rn.PanResponder.create = (/** @type {any} */ config) => (
     (captured = config),

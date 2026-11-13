@@ -1,3 +1,4 @@
+// @ts-nocheck: test harness around untyped Babel, Yoga and react-test-renderer.
 // Lays out a react-test-renderer tree with the real Yoga engine (yoga-layout,
 // the same flexbox implementation React Native's Fabric renderer compiles in).
 // Host elements become Yoga nodes the way Fabric builds shadow nodes from view

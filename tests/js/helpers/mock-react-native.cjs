@@ -1,3 +1,4 @@
+// @ts-nocheck: React Native stand-in for tests.
 // A small stand-in for `react-native` so component code can be rendered with
 // react-test-renderer in plain Node (the real package is Flow source). Host
 // components keep their props, so tests assert on what a view would receive.

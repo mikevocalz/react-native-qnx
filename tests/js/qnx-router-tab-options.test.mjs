@@ -1,3 +1,4 @@
+// @ts-nocheck: Module._load test doubles.
 // expo-router Tabs options on QNX: each tab bar option either reaches the bar
 // that draws it (the native Qt bar for the set it can draw, JsTabBar for the
 // rest) or is covered by a test here. Groups: bar routing, item styling, custom

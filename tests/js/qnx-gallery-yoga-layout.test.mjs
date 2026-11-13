@@ -1,3 +1,4 @@
+// @ts-nocheck: test harness around untyped Babel, Yoga and react-test-renderer.
 // Runs the component gallery's real route files through React and the real
 // Yoga engine (tests/js/helpers/yoga-host.mjs) at 586x600, 880x600 and
 // 1280x800, with a drawer destination mounted next to the tab pages, and
