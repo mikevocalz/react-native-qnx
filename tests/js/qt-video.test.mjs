@@ -61,7 +61,9 @@ assert.equal(rendered.at(-1).props.source, 'http://host/a.mp4');
 let loaded;
 let ended = 'unset';
 QtVideo({ source: 'a', onLoad: (e) => (loaded = e), onEnd: (...a) => (ended = a.length) });
-rendered.at(-1).props.onVideoLoad({ nativeEvent: { duration: 8, width: 480, height: 270, audioDevice: 'x' } });
+rendered
+  .at(-1)
+  .props.onVideoLoad({ nativeEvent: { duration: 8, width: 480, height: 270, audioDevice: 'x' } });
 assert.deepEqual(loaded, { duration: 8, width: 480, height: 270, audioDevice: 'x' });
 rendered.at(-1).props.onVideoEnd({ nativeEvent: { ended: true } });
 assert.equal(ended, 0);

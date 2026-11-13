@@ -172,13 +172,14 @@ a local build output and the board copies under the test user's home
 `scripts/qt-media/` builds an optional add-on in its own directory
 (`/data/home/qnxuser/qt612-media`); the Qt core runtime is unchanged.
 
-| Component     | Version and source                                                                                             | SHA-256                                                            | Licence                                                                                                                                          |
-| ------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Qt Multimedia | 6.12.0, `download.qt.io/official_releases/qt/6.12/6.12.0/submodules/qtmultimedia-everywhere-src-6.12.0.tar.xz` | `3143f53b64257ba2a0685c940f5dce476c75871ff86b516de45cfd54ea93a62d` | LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only (as Qt core, ADR-0013)                                                                             |
-| FFmpeg        | 8.0, `ffmpeg.org/releases/ffmpeg-8.0.tar.xz`                                                                   | `b2751fccb6cc4c77708113cd78b561059b6fa904b24162fa0be2d60273d27b8e` | LGPL-2.1-or-later: configure printed `License: LGPL version 2.1 or later` and the runtime reports `FFmpeg version 8.0 LGPL version 2.1 or later` |
+| Component     | Version and source                                                                                             | SHA-256                                                            | Licence                                                                                                                                                                |
+| ------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Qt Multimedia | 6.12.0, `download.qt.io/official_releases/qt/6.12/6.12.0/submodules/qtmultimedia-everywhere-src-6.12.0.tar.xz` | `3143f53b64257ba2a0685c940f5dce476c75871ff86b516de45cfd54ea93a62d` | LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only (as Qt core, ADR-0013)                                                                                                   |
+| FFmpeg        | 8.0, `ffmpeg.org/releases/ffmpeg-8.0.tar.xz`                                                                   | `b2751fccb6cc4c77708113cd78b561059b6fa904b24162fa0be2d60273d27b8e` | LGPL-3.0-or-later with OpenSSL 3 (Apache-2.0) for https, built with `--enable-version3`; the first build without OpenSSL reported `License: LGPL version 2.1 or later` |
 
-FFmpeg is configured with `--disable-gpl --disable-nonfree --disable-version3
---disable-autodetect`, no external codec libraries, shared libraries only, and
+FFmpeg is configured with `--disable-gpl --disable-nonfree --enable-version3
+--enable-openssl --disable-autodetect`, no external codec libraries (the SDP's
+OpenSSL 3 is linked for https), shared libraries only, and
 a fixed decoder list (H.264, VP8, VP9, MPEG-4, MJPEG, AAC, MP3, Opus, Vorbis,
 FLAC, PCM). The shared libraries are replaceable: an app that ships them must
 ship the FFmpeg and Qt Multimedia source references above, the LGPL texts, and

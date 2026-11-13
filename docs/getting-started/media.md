@@ -1,10 +1,9 @@
 # Video and audio on QNX (Qt Multimedia)
 
-Status: work in progress. Nothing in this page has played on the Pi 400 yet.
-The sections marked "measured" are facts read from the board, the QNX SDP and
-the Qt sources on 2026-11-13. The component code is written but has not been
-compiled for QNX, and no frame or sound has been produced. The device results
-are listed under [Not yet run](#not-yet-run).
+Status: video and audio play on the Pi 400 through `QtVideo` in the gallery
+(software decode, 3.5 mm jack output). The measured results are in
+[the evidence note](../evidence/media-2026-11-13.md); what has not been done
+is under [Open work](#open-work).
 
 ## Backend choice
 
@@ -46,11 +45,9 @@ plugin.
 `/data/home/qnxuser/qt612-media/` (never `qt612-public-o2`):
 
 1. `build-ffmpeg.sh`: FFmpeg 8.0 (`ffmpeg.org/releases/ffmpeg-8.0.tar.xz`,
-   SHA-256 `b2751fcc...27b8e`). configure reported `License: LGPL version 2.1
-or later` with `--disable-gpl --disable-nonfree --disable-version3
---disable-autodetect`. Decoders: H.264, VP8, VP9, MPEG-4, MJPEG, AAC, MP3,
-   Opus, Vorbis, FLAC, PCM. Protocols: file, http, tcp, pipe, cache (no TLS, so
-   no `https://` streams). Assembly is off. It built and installed.
+   SHA-256 `b2751fcc...27b8e`). configure uses `--disable-gpl --disable-nonfree
+--enable-version3 --enable-openssl --disable-autodetect` (LGPL 3.0 or later). Decoders: H.264, VP8, VP9, MPEG-4, MJPEG, AAC, MP3,
+   Opus, Vorbis, FLAC, PCM. Protocols: file, http, https, tls, tcp, udp, pipe, cache. Assembly is off. It built and installed.
 2. `build-qtmultimedia.sh`: `qtmultimedia-everywhere-src-6.12.0.tar.xz`
    (SHA-256 `3143f53b...a62d`, equal to the value published next to the archive
    on download.qt.io). It needs `libQt6Concurrent`, which the existing Qt core
@@ -61,7 +58,7 @@ or later` with `--disable-gpl --disable-nonfree --disable-version3
 `run-media-app.sh` starts an app with `LD_LIBRARY_PATH` and `QT_PLUGIN_PATH`
 pointing at the add-on first.
 
-## Components (written, not yet built for QNX)
+## Components
 
 - `QtVideo` (`packages/react-native-qnx/qt`): Fabric component `QnxQtVideo`,
   behind `RNQNX_ENABLE_QT_VIDEO` (default OFF). `native/qt/video/` holds
@@ -156,8 +153,80 @@ Audio debugging after an owner report of "no audio" (same day):
 io-snd keeps running until reboot or until it is stopped; it was started only
 for this test.
 
-## Not yet run
+## Audio at boot
 
-The React Native component on the device: first frame in the gallery window,
-control bar, seek, pause, end and error events through `QtVideo`, and
-screenshots. The gallery build was still compiling when this was written.
+`tools/qnx-audio/install-audio-boot.sh` adds a block to
+`/system/etc/startup/full_startup.sh` that starts `io-snd` with
+`/etc/system/config/sound/io_snd.conf` when `/dev/snd` does not exist. It
+backs the file up to `full_startup.sh.before-audio`, is idempotent, checks the
+patched file with `sh -n`, and `--undo` restores the backup. Run on a copy of
+the board's real `full_startup.sh` it installed, refused a second install, and
+restored the identical file. From the Mac:
+
+```sh
+K=~/qnx-pi400-8.0.5/pr102-ssh
+ssh -i $K/id_ed25519 -o UserKnownHostsFile=$K/pr104-sdk-trusted-hosts \
+  qnxuser@192.168.2.2 'sudo -n sh -s' < tools/qnx-audio/install-audio-boot.sh
+```
+
+The change takes effect at the next boot. It has not been installed on the
+board.
+
+## HDMI audio
+
+No HDMI audio driver exists for this image.
+
+- The QNX SDP 8.0.5 sound drivers for aarch64le (`target/qnx/aarch64le/lib/dll`)
+  are `snd-restore`, `snd-splitter`, `snd-swmix` and `sndrv-ctrl-usb`. No
+  `sndrv`, `deva` or `devc` driver mentions HDMI or vc4 (`find` over the SDP
+  for `*hdmi*` finds only Screen graphics configs, an EDID blob and the DRM
+  header `vc4_drm.h`).
+- The board's own `/system/lib/dll` adds `sndrv-ctrl-bcm2711_pcm` (I2S),
+  `sndrv-ctrl-bcm2711_pwm` (the 3.5 mm jack) and `sndrv-mixer-wm8960`. Nothing
+  for HDMI.
+- The Raspberry Pi 4 QNX 8.0 BSP repository
+  (`gitlab.com/qnx/custom-target-image-builds/raspberry-pi-4-qnx-8.0`, `main`
+  archive, 9.8 MB) contains no audio source: `grep -ril "io-snd\|hdmi"` hits
+  only `README.md` (the display cable), the graphics configs and `mtouch.conf`;
+  its `src/` holds a patch Makefile for the graphics trace tool.
+
+An HDMI audio path would need a new `sndrv` driver for the BCM2711 HDMI audio
+block, with no existing source to start from. Speakers go in the 3.5 mm jack,
+or in a USB audio device (`sndrv-ctrl-usb` is installed and `QtVideo` prefers a
+USB output).
+
+## Streams over https
+
+FFmpeg is built with the SDP's OpenSSL 3 (`--enable-openssl`). OpenSSL 3 is
+Apache-2.0, which LGPL 2.1 cannot include, so the FFmpeg build is LGPL 3.0 or
+later (`--enable-version3`, still `--disable-gpl --disable-nonfree`). The
+packaging notice records this.
+
+## Tests
+
+- `tests/js/qt-video.test.mjs`: the `QtVideo` wrapper (source forms, event
+  unwrapping, ref commands, argument errors) and the `react-native-video` API
+  subset, against a recording stub of the native view. It failed when the
+  `onEnd` wrapper was broken and passed when restored.
+- `tests/native/qt-video/`: `QtVideoItem` on the offscreen platform with a 1 s
+  generated VP8 clip (`clip.webm`, 9.7 KB). It checks source resolution, the
+  load, seek, end and error signals, and that the QML player is destroyed with
+  its item. The Linux host-renderer job installs the `qtmultimedia` module and
+  builds with `RNQNX_ENABLE_QT_VIDEO=ON`. On a Qt without a working backend
+  (the Homebrew Qt on the Mac has only AVFoundation) the two playback tests
+  skip; set `RNQNX_QT_VIDEO_REQUIRE_PLAYBACK=1` to make a skip a failure. The
+  skip path and the lifetime test were run on the Mac; the playback tests have
+  not run anywhere.
+
+## Open work
+
+- The real `react-native-video` 7 beta and `react-native-audio-api` do not run;
+  see the section above for why and for what each needs.
+- Subtitles, audio-track selection, HLS and DASH playlists: the FFmpeg build
+  has the HLS demuxer but no subtitle decoders or DASH demuxer, and `QtVideo`
+  exposes no track props.
+- On the board: control-bar taps, fullscreen toggle, the Audio card buttons and
+  the Mac URL chip need pointer input that was not available during the run.
+- Audibility at the jack is unconfirmed.
+- Picture-in-picture has no counterpart here: `rnqnx-winmgr` has no
+  picture-in-picture window type.

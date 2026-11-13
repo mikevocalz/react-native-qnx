@@ -19,9 +19,9 @@ mkdir -p ff-build; cd ff-build
   --ar=ntoaarch64-ar --nm=ntoaarch64-nm --ranlib=ntoaarch64-ranlib --strip=ntoaarch64-strip \
   --enable-shared --disable-static --disable-programs --disable-doc --disable-debug \
   --disable-everything --disable-autodetect --disable-asm --enable-pic \
-  --disable-gpl --disable-nonfree --disable-version3 \
+  --disable-gpl --disable-nonfree --enable-version3 --enable-openssl \
   --enable-avcodec --enable-avformat --enable-avutil --enable-swscale --enable-swresample --enable-network \
-  --enable-protocol=file,http,tcp,pipe,cache \
+  --enable-protocol=file,http,https,tls,tcp,udp,pipe,cache \
   --enable-demuxer=mov,matroska,ogg,wav,mp3,flac,aac,avi,mpegts,hls \
   --enable-decoder=h264,vp8,vp9,mpeg4,mjpeg,aac,aac_latm,mp3,mp3float,opus,vorbis,flac,pcm_s16le,pcm_s16be,pcm_u8,pcm_f32le \
   --enable-parser=h264,vp8,vp9,aac,aac_latm,mpegaudio,opus,vorbis,flac,mpeg4video,mjpeg \

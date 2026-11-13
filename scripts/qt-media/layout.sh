@@ -1,3 +1,4 @@
+# shellcheck shell=bash disable=SC2034
 # Shared paths for the Qt Multimedia add-on build. Sourced by the other scripts.
 MEDIA_ROOT=${MEDIA_ROOT:-/home/qnxbuild/media}
 QT_PUBLIC_BUILD=${QT_PUBLIC_BUILD:-/home/qnxbuild/qt-6.12.0-public}

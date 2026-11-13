@@ -80,7 +80,7 @@ payloads out of npm tarballs, public artifacts and this repository.
 
 The optional media add-on (`scripts/qt-media/`) adds Qt Multimedia 6.12.0
 (LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only) and FFmpeg 8.0
-(LGPL-2.1-or-later, built without GPL or nonfree parts). Sources, hashes and
+(LGPL-3.0-or-later, built without GPL or nonfree parts, linked to the QNX SDP's OpenSSL 3 for https). Sources, hashes and
 relinking obligations are in [docs/packaging.md](docs/packaging.md). The
 bundled gallery test media are generated for this repository and released
 under CC0-1.0 (`apps/component-gallery/assets/media/LICENSE.md`).
