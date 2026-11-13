@@ -45,6 +45,7 @@
 #if RNQNX_ENABLE_APP_STATE
 #include "react-native-qnx/runtime/QnxAppStateModule.h"
 #endif
+#include "react-native-qnx/runtime/QnxDevSupportModules.h"
 #include "react-native-qnx/runtime/QnxImageLoader.h"
 #include "react-native-qnx/runtime/QnxSegmentFetcher.h"
 #include "react-native-qnx/runtime/QnxWebSocketModule.h"
@@ -868,6 +869,15 @@ void QtReactHost::installTurboModuleBinding() {
           if (auto module = impl->turboModuleProvider(name, callInvoker)) {
             return module;
           }
+        }
+
+        // DevSettings.js imports NativeDevSettings, which calls
+        // getEnforcing('DevSettings') at module load in release bundles too
+        // (React Native's own RCTDevSettings exists in iOS release builds).
+        // Without a development client the module accepts every call and
+        // does nothing, which is what DevSettings promises in release.
+        if (name == "DevSettings") {
+          return makeDevSupportModule(name, callInvoker, {});
         }
 
         // Without this, every JavaScript error aborts the process: React

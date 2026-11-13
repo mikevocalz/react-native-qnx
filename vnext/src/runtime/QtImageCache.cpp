@@ -113,7 +113,11 @@ void QtImageCache::load(const QString& uri, const Headers& headers,
       }
       if (failure->isEmpty() && (reply->error() != QNetworkReply::NoError ||
                                 status < 200 || status >= 300)) {
-        *failure = QStringLiteral("Image request failed (HTTP %1)").arg(status);
+        // No HTTP status means the request never got an answer: name the
+        // network reason (DNS, refused, TLS verification) instead of "HTTP 0".
+        *failure = status == 0
+            ? QStringLiteral("Image request failed: %1").arg(reply->errorString())
+            : QStringLiteral("Image request failed (HTTP %1)").arg(status);
       }
       // Respect private/no-store: never expose these in the URI-only cache.
       const auto control = reply->rawHeader("Cache-Control").toLower();

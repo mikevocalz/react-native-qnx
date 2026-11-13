@@ -21,7 +21,10 @@ The opt-in [v2 Qt APIs](v2/README.md) have their own
 [validation receipt](v2/validation.md). `QtSvgDocument` has Linux host
 React/Fabric rendering coverage; native motion and graphics expose C++ APIs.
 QNX/Marathon device coverage and full `react-native-svg`, Reanimated, Worklets
-and GPU-library compatibility remain separate gates.
+and GPU-library compatibility remain separate gates. A pinned Dawn WebGPU
+backend ran on the Pi 400 through OpenGL ES, in a native test app only
+([WebGPU on QNX](v2/webgpu-qnx.md)); no React Native WebGPU, TypeGPU, Three.js
+or Skia component is supported.
 
 ## Components
 
