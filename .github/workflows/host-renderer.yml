@@ -51,11 +51,21 @@ jobs:
           target: desktop
           arch: linux_gcc_64
           cache: true
+      - name: Verify reproducible SVG bindings
+        if: matrix.input-lifecycle == 'ON'
+        run: pnpm qt:svg:check
       - name: Build and run the required full renderer graph
         run: |
           mkdir -p build/linux-host-renderer/evidence
           git rev-parse HEAD > build/linux-host-renderer/evidence/commit.txt
-          cmake --preset linux-host-renderer -DRNQNX_ENABLE_INPUT_LIFECYCLE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=${{ matrix.input-lifecycle }} -DRNQNX_ENABLE_WINDOW_CHROME=${{ matrix.input-lifecycle }}
+          cmake --preset linux-host-renderer \
+            -DRNQNX_ENABLE_INPUT_LIFECYCLE=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_WINDOW_CHROME=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_QT_SVG=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_QT_MOTION=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_QT_GRAPHICS=${{ matrix.input-lifecycle }}
           node scripts/validate-host-renderer.mjs
       - name: Render the conformance app (Linux host only)
         run: |

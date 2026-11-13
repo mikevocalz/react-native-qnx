@@ -803,3 +803,23 @@ override to uuid 11.1.1 removed that moderate advisory, and its installed call
 shape is part of `validate:dependencies`. The two remaining high findings are
 `UPSTREAM-DEP-001`; they are recorded rather than ignored. Consequently, “full
 host validation passed” does not mean “registry security audit is clean.”
+
+## PR #111 — Qt v2 validation automation (2026-11-10)
+
+Candidate: `295f7240099c7371dc8988f4d411b1840888a415`; Linux x86-64,
+Node 26.13.0, pnpm 12.8.1. No native source changed in this follow-up.
+
+| Command or lane                                                               | Outcome         | Scope                                                                                                      |
+| ----------------------------------------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
+| `pnpm install --offline --frozen-lockfile --store-dir /workspace/.pnpm-store` | Exit 0          | Exact installed dependency graph; no dependency change                                                     |
+| `node tests/js/host-renderer-contract.test.mjs`                               | Exit 0          | Validator behavior with fake executables, including each missing v2 test and disabled-feature registration |
+| Same new regression against the original validator                            | Expected exit 1 | Reproduces acceptance of a missing enabled-feature test; not native proof                                  |
+| `pnpm typecheck`                                                              | Exit 0          | Repository JS/TS contract                                                                                  |
+| `pnpm qt:svg:check`                                                           | Exit 0          | RN 0.88.1 generation matches all 11 committed files                                                        |
+| Changed-file Prettier, `pnpm validate:docs`, `git diff --check`               | Exit 0          | Formatting, handoff/schema and whitespace checks                                                           |
+| New hosted full-renderer ON/OFF matrix                                        | Pending         | Actual CTest inventory/JUnit and effective CMake options are uploaded by the workflow                      |
+| QNX cross-build, VM/device, Marathon compositor                               | Not run         | Existing target acceptance gates remain open                                                               |
+
+The native evidence in [v2 validation](../v2/validation.md) predates the CI
+coverage correction. Passing mocked orchestration cannot substitute for the
+new enabled hosted lane or target execution.

@@ -176,3 +176,19 @@ treat these source implementations as proof that arbitrary Android/iOS Expo or
 Nitro modules work on QNX: each native package still needs an explicit QNX
 implementation/target, and Nitro async work still needs the actual QNX JS
 dispatcher.
+
+## PR #111 — executable continuation (2026-11-10)
+
+1. Inspect the hosted `SDK 58 full host renderer` runs on
+   `295f7240099c7371dc8988f4d411b1840888a415`. Confirm the ON lane executes native
+   SVG, real React/Fabric SVG, motion, software graphics and null-RHI graphics,
+   and the OFF lane contains none of those five tests.
+2. If a lane fails, retain its exact CMake selections and JUnit/log artifacts,
+   fix the reported failure and rerun that candidate; do not bypass inventory.
+3. Follow [the v2 reproduction guide](../v2/validation.md) for the matching
+   QNX build and target qualification. Keep QNX Screen and Marathon/Wayland
+   results separate, and keep feature switches OFF until their required
+   acceptance is recorded.
+
+Do not mark Worklets, Reanimated, RNGH, full react-native-svg or GPU libraries
+supported from these native primitive tests. The release record remains pending.

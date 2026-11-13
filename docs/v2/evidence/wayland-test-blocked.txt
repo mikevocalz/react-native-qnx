@@ -1,0 +1,19 @@
+node:net:2368
+      const error = new UVExceptionWithHostPort(rval, 'listen', address, port);
+                    ^
+
+Error: listen EPERM: operation not permitted /tmp/rnqnx-marathon-launch-noA3SK/runtime/wayland-fixture
+    at Server.setupListenHandle [as _listen2] (node:net:2368:21)
+    at listenInCluster (node:net:2499:12)
+    at Server.listen (node:net:2641:5)
+    at file:///workspace/scratch/5f29a2651a01/react-native-qnx/tests/js/marathon-development-launcher.test.mjs:89:14
+    at new Promise (<anonymous>)
+    at file:///workspace/scratch/5f29a2651a01/react-native-qnx/tests/js/marathon-development-launcher.test.mjs:87:11 {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '/tmp/rnqnx-marathon-launch-noA3SK/runtime/wayland-fixture',
+  port: -1
+}
+
+Node.js v26.13.0

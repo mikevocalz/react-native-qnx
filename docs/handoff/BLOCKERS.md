@@ -102,3 +102,17 @@ execution remain required afterward. See [probe instructions](../react-render-pr
 3. Full RN + Hermes + Fabric + Qt Quick target runtime proof.
 
 There is no current npm dependency-audit blocker.
+
+## PR #111 — remaining qualification (2026-11-10)
+
+The CI omission is fixed at `295f7240099c7371dc8988f4d411b1840888a415`:
+new Qt v2 feature tests can no longer be silently absent from an enabled lane.
+The replacement hosted ON/OFF renderer results remain pending. Inspect their
+actual CTest inventory and results on that commit before accepting the CI gate.
+
+QNX cross-build/device execution and an actual Marathon compositor run are
+still missing for the v2 slice. They require the selected licensed QNX SDP and
+matching Qt closure, an authorized target operator and independent target
+review. Prior PR #110 interaction is evidence for its separate candidate, not
+this branch. No additional owner permission is needed for the already-authorized
+software validation; unavailable target evidence keeps this PR draft.

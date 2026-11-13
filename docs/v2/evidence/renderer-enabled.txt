@@ -1,0 +1,13 @@
+Test project /workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-clang
+    Start 10: qt_react_host_host_test
+1/4 Test #10: qt_react_host_host_test ..................   Passed   39.58 sec
+    Start 12: shadow_view_mutation_adapter_host_test
+2/4 Test #12: shadow_view_mutation_adapter_host_test ...   Passed    0.04 sec
+    Start 13: shadow_tree_mounting_host_test
+3/4 Test #13: shadow_tree_mounting_host_test ...........   Passed    0.03 sec
+    Start 14: qtquick_mounting_layer_host_test
+4/4 Test #14: qtquick_mounting_layer_host_test .........   Passed    0.08 sec
+
+100% tests passed out of 4
+
+Total Test time (real) =  39.76 sec

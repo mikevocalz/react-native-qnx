@@ -61,6 +61,18 @@ if (/^RNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON$/m.test(cache)) {
     'rnqnx_accessibility_action_rejects_registration'
   );
 }
+const disabledQtTests = [];
+for (const [feature, tests] of [
+  ['SVG', ['rnqnx_qt_svg_test', 'rnqnx_qt_svg_fabric_test']],
+  ['MOTION', ['rnqnx_qt_motion_test']],
+  ['GRAPHICS', ['rnqnx_qt_graphics', 'rnqnx_qt_graphics_null']],
+]) {
+  if (new RegExp(`^RNQNX_ENABLE_QT_${feature}:BOOL=ON$`, 'm').test(cache)) {
+    expectedTests.push(...tests);
+  } else {
+    disabledQtTests.push(...tests);
+  }
+}
 run('cmake', ['--build', '--preset', preset]);
 const inventory = run('ctest', ['--test-dir', build, '--show-only=json-v1'], true);
 const registered = new Set(
@@ -68,6 +80,9 @@ const registered = new Set(
 );
 for (const name of expectedTests) {
   if (!registered.has(name)) throw new Error(`Required host-renderer test missing: ${name}`);
+}
+for (const name of disabledQtTests) {
+  if (registered.has(name)) throw new Error(`Disabled Qt feature registered a test: ${name}`);
 }
 mkdirSync(path.join(build, 'evidence'), { recursive: true });
 writeFileSync(path.join(build, 'evidence', 'ctest-inventory.json'), inventory);

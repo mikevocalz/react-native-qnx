@@ -1,0 +1,15 @@
+Test project /workspace/scratch/5f29a2651a01/react-native-qnx/build/v2-clang
+    Start  4: rnqnx_qt_svg_fabric_test
+1/5 Test  #4: rnqnx_qt_svg_fabric_test .........   Passed    1.20 sec
+    Start 16: rnqnx_qt_motion_test
+2/5 Test #16: rnqnx_qt_motion_test .............   Passed    0.15 sec
+    Start 17: rnqnx_qt_svg_test
+3/5 Test #17: rnqnx_qt_svg_test ................   Passed    0.03 sec
+    Start 18: rnqnx_qt_graphics
+4/5 Test #18: rnqnx_qt_graphics ................   Passed    0.02 sec
+    Start 19: rnqnx_qt_graphics_null
+5/5 Test #19: rnqnx_qt_graphics_null ...........   Passed    0.01 sec
+
+100% tests passed out of 5
+
+Total Test time (real) =   1.41 sec

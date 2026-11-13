@@ -1,0 +1,42 @@
+$ node scripts/run-cpp-host-tests.mjs
+-- The C compiler identification is GNU 14.2.0
+-- The CXX compiler identification is GNU 14.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Configuring react-native-qnx for host development
+-- Qt6 >= 6.11.1 not found; skipping Qt Quick host targets
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/scratch/5f29a2651a01/react-native-qnx/build/linux-host-tests
+[1/12] Scanning /workspace/scratch/5f29a2651a01/react-native-qnx/tests/cpp/QnxScreenSurfaceHostTest.cpp for CXX dependencies
+[2/12] Scanning /workspace/scratch/5f29a2651a01/react-native-qnx/native/platform/qnx/screen/QnxScreenSurface.cpp for CXX dependencies
+[3/12] Scanning /workspace/scratch/5f29a2651a01/react-native-qnx/vnext/probes/cxx20/main.cpp for CXX dependencies
+[4/12] Scanning /workspace/scratch/5f29a2651a01/react-native-qnx/tests/cpp/qnx-screen-fake/FakeQnxScreen.cpp for CXX dependencies
+[5/12] Generating CXX dyndep file CMakeFiles/qnx_screen_surface_host_test.dir/CXX.dd
+[6/12] Generating CXX dyndep file CMakeFiles/rnqnx_g0_cxx20_probe.dir/CXX.dd
+[7/12] Building CXX object CMakeFiles/qnx_screen_surface_host_test.dir/native/platform/qnx/screen/QnxScreenSurface.cpp.o
+[8/12] Building CXX object CMakeFiles/rnqnx_g0_cxx20_probe.dir/vnext/probes/cxx20/main.cpp.o
+[9/12] Linking CXX executable bin/rnqnx_g0_cxx20_probe
+[10/12] Building CXX object CMakeFiles/qnx_screen_surface_host_test.dir/tests/cpp/QnxScreenSurfaceHostTest.cpp.o
+[11/12] Building CXX object CMakeFiles/qnx_screen_surface_host_test.dir/tests/cpp/qnx-screen-fake/FakeQnxScreen.cpp.o
+[12/12] Linking CXX executable bin/qnx_screen_surface_host_test
+Test project /workspace/scratch/5f29a2651a01/react-native-qnx/build/linux-host-tests
+    Start 1: rnqnx_g0_cxx20_probe
+1/2 Test #1: rnqnx_g0_cxx20_probe .............   Passed    0.00 sec
+    Start 2: qnx_screen_surface_host_test
+2/2 Test #2: qnx_screen_surface_host_test .....   Passed    0.01 sec
+
+100% tests passed out of 2
+
+Total Test time (real) =   0.01 sec

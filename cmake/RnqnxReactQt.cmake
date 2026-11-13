@@ -48,6 +48,11 @@ function(rnqnx_add_qt_views_target)
     "${RNQNX_REACT_QT_ROOT}/vnext/include"
   )
   target_link_libraries(rnqnx_views_qt PUBLIC Qt6::Quick Qt6::Qml Qt6::Gui)
+  target_compile_definitions(rnqnx_views_qt PUBLIC
+    RNQNX_ENABLE_QT_SVG=$<BOOL:${RNQNX_ENABLE_QT_SVG}>)
+  if(RNQNX_ENABLE_QT_SVG)
+    target_link_libraries(rnqnx_views_qt PUBLIC rnqnx_qt_svg)
+  endif()
 
   # Qt's keyword macros collide with React Native's EventEmitter::emit.
   target_compile_definitions(rnqnx_views_qt PUBLIC QT_NO_KEYWORDS)
@@ -80,6 +85,24 @@ function(rnqnx_add_fabric_adapter_target)
     rnqnx_views_qt
   )
   set_target_properties(rnqnx_fabric_adapter PROPERTIES AUTOMOC ON)
+  if(RNQNX_ENABLE_QT_SVG)
+    set(svg_generated "${RNQNX_REACT_QT_ROOT}/vnext/generated/react/renderer/components/RnqnxQtSvg")
+    target_sources(rnqnx_fabric_adapter PRIVATE
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtSvgBridge.cpp"
+      "${svg_generated}/ComponentDescriptors.cpp"
+      "${svg_generated}/EventEmitters.cpp"
+      "${svg_generated}/Props.cpp"
+      "${svg_generated}/ShadowNodes.cpp"
+      "${svg_generated}/States.cpp")
+    # Upstream generated headers contain warning patterns outside our control.
+    target_include_directories(rnqnx_fabric_adapter SYSTEM PUBLIC
+      "${RNQNX_REACT_QT_ROOT}/vnext/generated")
+    set_source_files_properties(
+      "${svg_generated}/ComponentDescriptors.cpp" "${svg_generated}/EventEmitters.cpp"
+      "${svg_generated}/Props.cpp" "${svg_generated}/ShadowNodes.cpp"
+      "${svg_generated}/States.cpp" PROPERTIES COMPILE_OPTIONS
+      "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas>")
+  endif()
   target_compile_definitions(rnqnx_fabric_adapter PUBLIC
     RNQNX_ENABLE_INPUT_LIFECYCLE=$<BOOL:${RNQNX_ENABLE_INPUT_LIFECYCLE}>)
   rnqnx_enable_strict_warnings(rnqnx_fabric_adapter)
@@ -122,6 +145,8 @@ function(rnqnx_add_react_host_target)
   endif()
   rnqnx_configure_app_state()
   rnqnx_configure_window_chrome()
+  include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxQtSvgFabric.cmake)
+  rnqnx_add_qt_svg_fabric_test()
   rnqnx_enable_strict_warnings(rnqnx_react_host)
   if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE)
     include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxAccessibilityActions.cmake)

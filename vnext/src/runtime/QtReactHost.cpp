@@ -18,6 +18,9 @@
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#if RNQNX_ENABLE_QT_SVG
+#include <react/renderer/components/RnqnxQtSvg/ComponentDescriptors.h>
+#endif
 #include <react/renderer/imagemanager/ImageManager.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
@@ -222,6 +225,9 @@ std::vector<std::string> registeredComponentNames() {
   // so the two cannot drift apart.
   return {
       std::string(RootComponentDescriptor::ConcreteShadowNode::Name()),
+#if RNQNX_ENABLE_QT_SVG
+      std::string(facebook::react::QnxSvgDocumentComponentDescriptor::ConcreteShadowNode::Name()),
+#endif
       std::string(ViewComponentDescriptor::ConcreteShadowNode::Name()),
       std::string(facebook::react::ParagraphComponentDescriptor::
                       ConcreteShadowNode::Name()),
@@ -264,6 +270,10 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<
             RootComponentDescriptor>());
+#if RNQNX_ENABLE_QT_SVG
+    providerRegistry->add(facebook::react::concreteComponentDescriptorProvider<
+        facebook::react::QnxSvgDocumentComponentDescriptor>());
+#endif
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<
             ViewComponentDescriptor>());
