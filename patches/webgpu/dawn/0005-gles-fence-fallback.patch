@@ -1,0 +1,40 @@
+diff --git a/src/dawn/native/opengl/QueueGL.cpp b/src/dawn/native/opengl/QueueGL.cpp
+index 3de996098..d304fce8b 100644
+--- a/src/dawn/native/opengl/QueueGL.cpp
++++ b/src/dawn/native/opengl/QueueGL.cpp
+@@ -43,6 +43,7 @@
+ #include "src/dawn/native/opengl/UtilsGL.h"
+ #include "src/dawn/platform/tracing/TraceEvent.h"
+ #include "src/utils/compiler.h"
++#include "src/utils/log.h"
+ #include "src/utils/numeric.h"
+ #include "src/utils/span.h"
+ 
+@@ -238,9 +239,25 @@ MaybeError Queue::SubmitFenceSync() {
+     Device* device = ToBackend(GetDevice());
+     return device->EnqueueAndFlushGL(
+         SubmitMode::Passive, [&](const OpenGLFunctions& gl) -> MaybeError {
+-            Ref<WrappedEGLSync> sync;
+             DisplayEGL* display = ToBackend(device->GetPhysicalDevice())->GetDisplay();
+-            DAWN_TRY_ASSIGN(sync, WrappedEGLSync::Create(display, gl, mEGLSyncType, {}));
++            auto created = WrappedEGLSync::Create(display, gl, mEGLSyncType, {});
++            if (created.IsError()) {
++                // react-native-qnx: eglCreateSyncKHR returns EGL_NO_SYNC without an error on
++                // the QNX Mesa 21.2 V3D EGL for Dawn's context. WaitForQueueSerialImpl treats a
++                // serial without a fence as completed, so wait for the GPU here instead.
++                static bool warned = false;
++                if (!warned) {
++                    warned = true;
++                    WarningLog() << "eglCreateSync failed; submissions are completed with "
++                                    "glFinish instead of an EGL fence.";
++                }
++                created.AcquireError();
++                DAWN_GL_TRY(gl, Finish());
++                IncrementLastSubmittedCommandSerial();
++                mHasPendingUnsignaledCommands = false;
++                return {};
++            }
++            Ref<WrappedEGLSync> sync = created.AcquireSuccess();
+ 
+             // Signal the sync if it is EGL_SYNC_REUSABLE_KHR. On the other hand,
+             // EGL_SYNC_FENCE_KHR has its signal scheduled on creation.

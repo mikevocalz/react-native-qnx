@@ -1,0 +1,55 @@
+name: WebGPU host smoke (Dawn null backend)
+# Manual and weekly only. Building Dawn and Tint takes well over half an hour
+# on a hosted runner, so this does not run on pull requests and is not a
+# required check. It proves the pinned Dawn commit plus the QNX patches
+# configure and build on Linux, and that the test app's WebGPU calls validate
+# against the null backend. The null backend executes no GPU work, so it
+# cannot confirm pixels or compute results; those need the Pi 400 run.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 1'
+permissions:
+  contents: read
+jobs:
+  null-backend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang ninja-build python3 git
+          python3 -m pip install --user --break-system-packages cmake==3.31.10
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Fetch pinned Dawn and apply the QNX patches
+        run: scripts/webgpu/fetch-dawn.sh "$RUNNER_TEMP/dawn"
+      - name: Configure and build Dawn (null backend only)
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          cmake -G Ninja -S "$RUNNER_TEMP/dawn" -B "$RUNNER_TEMP/dawn-build" \
+            -DCMAKE_BUILD_TYPE=Release -DDAWN_FETCH_DEPENDENCIES=ON \
+            -DDAWN_BUILD_MONOLITHIC_LIBRARY=STATIC \
+            -DDAWN_ENABLE_VULKAN=OFF -DDAWN_ENABLE_OPENGLES=OFF -DDAWN_ENABLE_DESKTOP_GL=OFF \
+            -DDAWN_ENABLE_NULL=ON -DDAWN_ENABLE_SPIRV_VALIDATION=OFF \
+            -DDAWN_USE_X11=OFF -DDAWN_USE_WAYLAND=OFF -DDAWN_USE_GLFW=OFF \
+            -DDAWN_BUILD_SAMPLES=OFF -DDAWN_BUILD_TESTS=OFF -DDAWN_BUILD_PROTOBUF=OFF \
+            -DTINT_BUILD_TESTS=OFF -DTINT_BUILD_CMD_TOOLS=OFF -DTINT_BUILD_IR_BINARY=OFF \
+            -DTINT_BUILD_SPV_READER=OFF -DTINT_BUILD_SPV_WRITER=OFF \
+            -DTINT_BUILD_GLSL_WRITER=ON -DTINT_BUILD_GLSL_VALIDATOR=OFF
+          ninja -C "$RUNNER_TEMP/dawn-build" webgpu_dawn
+      - name: Build and run the test app on the null backend
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          cmake -G Ninja -S native/webgpu -B "$RUNNER_TEMP/testapp" -DCMAKE_BUILD_TYPE=Release \
+            -DRNQNX_DAWN_SOURCE_DIR="$RUNNER_TEMP/dawn" -DRNQNX_DAWN_BUILD_DIR="$RUNNER_TEMP/dawn-build"
+          ninja -C "$RUNNER_TEMP/testapp" rnqnx_webgpu_test
+          "$RUNNER_TEMP/testapp/rnqnx_webgpu_test" --backend=null --headless --out-dir="$RUNNER_TEMP" | tee "$RUNNER_TEMP/null.log"
+          grep -q 'RNQNX_WEBGPU RESULT PASS' "$RUNNER_TEMP/null.log"

@@ -1,8 +1,10 @@
 # V2 graphics backends and native surface contract
 
-Reviewed on 2026-11-10. The existing Fabric → Yoga → Qt Quick renderer remains
-the platform renderer. This document distinguishes the native foundation in
-this branch from adapters that still need implementation and target evidence.
+Reviewed on 2026-11-10; the QNX graphics backend section was added on
+2026-11-13 after the stage 5 device run. The existing Fabric → Yoga → Qt Quick
+renderer remains the platform renderer. This document distinguishes the native
+foundation in this branch from adapters that still need implementation and
+target evidence.
 
 ## Implemented foundation
 
@@ -66,13 +68,13 @@ headers, `QRhi` dependencies, or raw GPU handles exposed to JavaScript.
 
 ## Engines and adapters are separate work
 
-| Consumer             | Actual rendering contract                                                                     | QNX work still required                                                                                                                                    |
-| -------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| React Native WebGPU  | Its native JSI/Canvas implementation over Dawn, with WGSL shaders                             | Dawn/Tint target build, supported driver/backend, QNX surface or Qt composition path, platform context, runtime installation, frame ownership and teardown |
-| TypeGPU              | Typed resource/shader layer that consumes WebGPU                                              | A working RN WebGPU adapter and its required features/limits; validate render and compute workloads independently                                          |
-| React Native Skia v3 | Skia Graphite, sharing the selected Dawn build with RN WebGPU on supported upstream platforms | Skia native platform context, font/image/assets, render surface, resource lifetime, matching Dawn and actual target execution                              |
-| Three.js             | Its `WebGPURenderer` over the WebGPU device/context, or its separate WebGL renderer           | Real graphics adapter, renderer bootstrap, assets/loaders, input, resize, manual native presentation and cleanup                                           |
-| Qt Quick 3D          | Qt's `View3D` scene, models, materials, cameras and picking inside Qt Quick                   | An optional native scene/component adapter and device qualification; this does not implement the Three.js API                                              |
+| Consumer             | Actual rendering contract                                                                     | QNX work still required                                                                                                                                                                               |
+| -------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| React Native WebGPU  | Its native JSI/Canvas implementation over Dawn, with WGSL shaders                             | Dawn/Tint target build and OpenGL ES adapter exist from stage 5 (compatibility level only). Still required: Qt composition path, platform context, runtime installation, frame ownership and teardown |
+| TypeGPU              | Typed resource/shader layer that consumes WebGPU                                              | A working RN WebGPU adapter and its required features/limits; validate render and compute workloads independently                                                                                     |
+| React Native Skia v3 | Skia Graphite, sharing the selected Dawn build with RN WebGPU on supported upstream platforms | Skia native platform context, font/image/assets, render surface, resource lifetime, matching Dawn and actual target execution                                                                         |
+| Three.js             | Its `WebGPURenderer` over the WebGPU device/context, or its separate WebGL renderer           | Real graphics adapter, renderer bootstrap, assets/loaders, input, resize, manual native presentation and cleanup                                                                                      |
+| Qt Quick 3D          | Qt's `View3D` scene, models, materials, cameras and picking inside Qt Quick                   | An optional native scene/component adapter and device qualification; this does not implement the Three.js API                                                                                         |
 
 [RN WebGPU](https://wcandillon.github.io/react-native-webgpu/) does not list QNX
 as an upstream target. Its inspected
@@ -166,10 +168,14 @@ tests use independent non-premium fixtures.
 
 QNX documents Vulkan presentation via
 [`VK_QNX_screen_surface`](https://www.qnx.com/developers/docs/8.0/com.qnx.doc.screen/topic/manual/cscreen_rendering-hardware-vulkan.html).
-The installed Vulkan loader, physical-device features, queue presentation
-support and board-specific driver still need probing. API documentation and
-Linux Raspberry Pi driver support do not establish Vulkan on the custom Pi
-400 QNX image. There is no such target result in this slice.
+Stage 5 probed the custom Pi 400 image
+([evidence](../evidence/webgpu-qnx-2026-11-13/gpu-probe-pi400.txt)): the working
+Vulkan driver there is a Mesa v3dv for `V3D 4.2` that reports Vulkan **1.0.182**,
+the system loader cannot find it because the ICD file names a path that does not
+exist on the board, and the newer `/usr/lib/vulkan_broadcom.so` enumerates no
+device. Dawn's Vulkan backend needs 1.1, so it cannot run on this image today.
+The OpenGL ES 3.1 path (`Mesa 21.2.4`, `V3D 4.2`) does work with Dawn; see
+[WebGPU on QNX](webgpu-qnx.md) for what ran and what did not.
 
 [Dawn's current support document](https://github.com/google/dawn/blob/main/docs/support.md)
 specifies Vulkan 1.1 and additional features/limits. Its OpenGL path targets
@@ -179,6 +185,11 @@ requires ES 3.1 or desktop GL 4.4, extra float-color/robustness support as
 applicable, and exposes WebGPU's compatibility feature level. An existing
 Qt ES 2/3 render path is not enough to enable this backend. Select and test
 the exact Dawn revision and actual adapter features for the consuming apps.
+Stage 5 did that for Dawn `1716e88c`, the commit RN WebGPU and RN Skia v3 both
+pin: on the Pi 400 it needed five small patches (the board's EGL lacks
+`EGL_EXT_create_context_robustness`, `eglCreateSyncKHR` returns nothing inside
+Dawn's context, and Dawn has no QNX platform or window source), and the adapter
+is compatibility-level with no optional WebGPU features.
 
 [QQuickRhiItem](https://doc.qt.io/qt-6/qquickrhiitem.html) is a public Qt item for
 compositing custom native rendering. Its rendering implementation uses
