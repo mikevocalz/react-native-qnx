@@ -44,9 +44,12 @@ Item {
     readonly property int direction: side === "right" ? -1 : 1
     // The panel sits at x = 0 from Yoga. A right drawer starts that far over.
     readonly property real panelOffset: (side === "right" ? width - drawerWidth : 0)
-                                        - direction * (1 - progress) * drawerWidth
-    // `slide` pushes the content along with the panel.
-    readonly property real mainOffset: drawerType === "slide" ? direction * progress * drawerWidth : 0
+                                        - (panelBehind ? 0 : direction * (1 - progress) * drawerWidth)
+    // `slide` pushes the content along with the panel. `back` keeps the panel
+    // in place under the content and slides the content away from it.
+    readonly property real mainOffset: (drawerType === "slide" || drawerType === "back")
+                                       ? direction * progress * drawerWidth : 0
+    readonly property bool panelBehind: drawerType === "back"
 
     property Item drawerPanel: null
     property Item mainPanel: null
@@ -68,7 +71,7 @@ Item {
                 drawerPanel.transform = [];
             drawerPanel = nextDrawer;
             if (drawerPanel) {
-                drawerPanel.z = 2;
+                drawerPanel.z = root.panelBehind ? -1 : 2;
                 drawerPanel.transform = [panelTranslate];
             }
         }
@@ -81,9 +84,12 @@ Item {
                 mainPanel.transform = [mainTranslate];
             }
         }
-        if (drawerPanel)
+        if (drawerPanel) {
             drawerPanel.visible = progress > 0;
+            drawerPanel.z = panelBehind ? -1 : 2;
+        }
     }
+    onPanelBehindChanged: syncPanels()
 
     readonly property Translate panelTranslate: Translate { x: root.panelOffset }
     readonly property Translate mainTranslate: Translate { x: root.mainOffset }
@@ -204,6 +210,7 @@ Item {
         height: parent ? parent.height : 0
         z: 100000
         color: root.scrimColor
+        // In `back` the content is pushed aside, and the scrim still shades it.
         opacity: root.progress
         visible: root.progress > 0 && root.mainPanel !== null
 

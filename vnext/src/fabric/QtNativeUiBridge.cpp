@@ -195,6 +195,9 @@ bool applyTabBar(QQuickItem* item, const rn::ShadowView& view) {
   }
 
   item->setProperty("layout", QString::fromUtf8(rn::toString(props->layout)));
+  item->setProperty("position", QString::fromStdString(props->position));
+  item->setProperty("showLabel", props->showLabel);
+  item->setProperty("rtl", props->rtl);
   item->setProperty("sideBreakpoint", props->sideBreakpoint);
   item->setProperty("railWidth", props->railWidth);
   item->setProperty("barHeight", props->barHeight);

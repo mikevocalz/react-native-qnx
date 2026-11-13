@@ -64,6 +64,17 @@ function QtDrawer({
     last.current = open;
   }, [open, onTransitionStart]);
 
+  // A permanent drawer is always on screen beside the content: a row, with no
+  // scrim or gestures, so there is nothing for a native item to do.
+  if (drawerType === 'permanent') {
+    return React.createElement(
+      View,
+      { style: [{ flex: 1, flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row' }, style] },
+      React.createElement(View, { style: [{ width }, drawerStyle] }, renderDrawerContent()),
+      React.createElement(View, { style: { flex: 1 } }, children)
+    );
+  }
+
   return React.createElement(
     NativeDrawer,
     {
@@ -71,7 +82,7 @@ function QtDrawer({
       open,
       drawerWidth: width,
       side: drawerPosition,
-      drawerType: drawerType === 'slide' ? 'slide' : 'front',
+      drawerType: drawerType === 'slide' || drawerType === 'back' ? drawerType : 'front',
       swipeEnabled,
       scrimColor: scrimColorOf(overlayStyle),
       edgeWidth: swipeEdgeWidth,

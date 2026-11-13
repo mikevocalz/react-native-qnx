@@ -5,6 +5,25 @@
 const DEFAULT_ACTIVE = '#79e8dc';
 const DEFAULT_INACTIVE = '#9dafc2';
 const DEFAULT_BACKGROUND = '#102338';
+const DEFAULT_BADGE = '#e5484d';
+const DEFAULT_BADGE_TEXT = '#ffffff';
+
+/**
+ * The edge a tab bar sits on, from the `tabBarPosition` screen option: `top`,
+ * `bottom`, `left` (start side) or `right` (end side). Without one, `layout`
+ * decides between a bottom bar and a left rail.
+ */
+function resolveTabBarEdge(position, layout) {
+  if (position === 'top' || position === 'bottom' || position === 'left' || position === 'right') {
+    return position;
+  }
+  return layout === 'side' ? 'left' : 'bottom';
+}
+
+/** Whether a bar on \`edge\` draws as a vertical rail. */
+function isRail(edge) {
+  return edge === 'left' || edge === 'right';
+}
 
 /** `auto` follows the window width; `bottom` and `side` are fixed. */
 function resolveTabBarLayout(layout, width, breakpoint = 700) {
@@ -54,11 +73,16 @@ function tintsFor(options) {
   const style = Array.isArray(options.tabBarStyle)
     ? Object.assign({}, ...options.tabBarStyle.filter(Boolean))
     : (options.tabBarStyle ?? {});
+  const badge = Array.isArray(options.tabBarBadgeStyle)
+    ? Object.assign({}, ...options.tabBarBadgeStyle.filter(Boolean))
+    : (options.tabBarBadgeStyle ?? {});
   return {
     active: options.tabBarActiveTintColor ?? DEFAULT_ACTIVE,
     inactive: options.tabBarInactiveTintColor ?? DEFAULT_INACTIVE,
     background: style.backgroundColor ?? DEFAULT_BACKGROUND,
+    badge: badge.backgroundColor ?? DEFAULT_BADGE,
+    badgeText: badge.color ?? DEFAULT_BADGE_TEXT,
   };
 }
 
-module.exports = { buildTabs, tintsFor, resolveTabBarLayout, labelFor };
+module.exports = { buildTabs, tintsFor, resolveTabBarLayout, resolveTabBarEdge, isRail, labelFor };

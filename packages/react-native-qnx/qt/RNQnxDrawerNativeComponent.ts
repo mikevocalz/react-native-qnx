@@ -15,8 +15,12 @@ interface NativeProps extends ViewProps {
   /** Width in px of the drawer panel (child 0). Style the panel with the same width. */
   drawerWidth?: CodegenTypes.WithDefault<CodegenTypes.Double, 280>;
   side?: CodegenTypes.WithDefault<'left' | 'right', 'left'>;
-  /** `front` draws the panel over the content; `slide` also moves the content. */
-  drawerType?: CodegenTypes.WithDefault<'front' | 'slide', 'front'>;
+  /**
+   * `front` draws the panel over the content; `slide` moves the content along
+   * with it; `back` keeps the panel in place and slides the content away from
+   * it. (`permanent` is a plain row layout in JavaScript; it has no native view.)
+   */
+  drawerType?: CodegenTypes.WithDefault<'front' | 'slide' | 'back', 'front'>;
   swipeEnabled?: CodegenTypes.WithDefault<boolean, true>;
   /** A CSS color string (including rgba()) or a processed color number. */
   scrimColor?: CodegenTypes.UnsafeMixed;

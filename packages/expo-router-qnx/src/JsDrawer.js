@@ -122,7 +122,23 @@ function JsDrawer({
     inputRange: [0, 1],
     outputRange: [0, right ? -width : width],
   });
-  const slide = drawerType === 'slide';
+  const slide = drawerType === 'slide' || drawerType === 'back';
+  // `back` keeps the panel where it is, under the content that slides away.
+  const back = drawerType === 'back';
+  const panel = React.createElement(
+    Animated.View,
+    {
+      ...(open && swipeEnabled ? edgePan.panHandlers : {}),
+      pointerEvents: visible ? 'auto' : 'none',
+      style: [
+        styles.panel,
+        right ? { right: 0 } : { left: 0 },
+        { width, transform: [{ translateX: back ? 0 : translate }] },
+        drawerStyle,
+      ],
+    },
+    visible ? renderDrawerContent() : null
+  );
 
   return React.createElement(
     DrawerProgressContext.Provider,
@@ -130,6 +146,7 @@ function JsDrawer({
     React.createElement(
       View,
       { style: [styles.fill, style] },
+      back && panel,
       React.createElement(
         Animated.View,
         { style: [styles.fill, slide && { transform: [{ translateX: pushed }] }] },
@@ -146,20 +163,7 @@ function JsDrawer({
             style: [StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)' }, overlayStyle],
           }),
         }),
-      React.createElement(
-        Animated.View,
-        {
-          ...(open && swipeEnabled ? edgePan.panHandlers : {}),
-          pointerEvents: visible ? 'auto' : 'none',
-          style: [
-            styles.panel,
-            right ? { right: 0 } : { left: 0 },
-            { width, transform: [{ translateX: translate }] },
-            drawerStyle,
-          ],
-        },
-        visible ? renderDrawerContent() : null
-      ),
+      !back && panel,
       swipeEnabled &&
         !open &&
         React.createElement(View, {

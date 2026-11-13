@@ -6,6 +6,8 @@
 #include <QImage>
 #include <QObject>
 #include <QAccessible>
+#include <algorithm>
+#include <functional>
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlProperty>
@@ -306,6 +308,23 @@ class NativeUiQuickTest : public QObject {
     QCOMPARE(main->mapToItem(drawer.get(), QPointF(0, 0)).x(), -280.0);
   }
 
+  void backDrawerKeepsThePanelAndSlidesTheContentAway() {
+    auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(drawer);
+    drawer->setProperty("drawerType", QStringLiteral("back"));
+    auto* panel = mountChild(drawer.get(), QRectF(0, 0, 280, 400));
+    auto* main = mountChild(drawer.get(), QRectF(0, 0, 600, 400));
+    QVERIFY(QTest::qWaitFor([&] { return drawer->property("ready").toBool(); }));
+    drawer->setProperty("open", true);
+    QVERIFY(QTest::qWaitFor([&] { return settled(drawer.get(), 1.0); }, 2000));
+    QCOMPARE(panel->mapToItem(drawer.get(), QPointF(0, 0)).x(), 0.0);   // the panel never moves
+    QCOMPARE(main->mapToItem(drawer.get(), QPointF(0, 0)).x(), 280.0);  // the content slides away
+    QVERIFY(panel->z() < main->z());                                    // and the panel is under it
+    drawer->setProperty("open", false);
+    QVERIFY(QTest::qWaitFor([&] { return settled(drawer.get(), 0.0); }, 2000));
+    QCOMPARE(main->mapToItem(drawer.get(), QPointF(0, 0)).x(), 0.0);
+  }
+
   // ---- tab bar ----------------------------------------------------------
 
   QVariantList tabs() const {
@@ -408,6 +427,85 @@ class NativeUiQuickTest : public QObject {
       QCOMPARE(frame.pixelColor(static_cast<int>(rail) + 28 + 2, midY), cardColor);
     }
     window_->resize(800, 500);
+  }
+
+  void tabBarEdgesRtlAndLabels() {
+    auto bar = load(QStringLiteral("QtTabBar.qml"), QSize(600, 60));
+    QVERIFY(bar);
+    Recorder recorder;
+    bar->setProperty("bridge", QVariant::fromValue(static_cast<QObject*>(&recorder)));
+    bar->setProperty("tabs", tabs());
+    bar->setProperty("activeKey", QStringLiteral("home"));
+    bar->setProperty("dividerColor", QColor(255, 0, 0));
+    const auto tabItem = [&](int index) -> QQuickItem* {
+      // The Repeater's delegates are the direct children that carry Accessible.PageTab.
+      QList<QQuickItem*> found;
+      for (auto* child : bar->childItems())
+        if (child->property("active").isValid()) found.append(child);
+      std::sort(found.begin(), found.end(), [](QQuickItem* a, QQuickItem* b) { return a->property("index").toInt() < b->property("index").toInt(); });
+      return index < found.size() ? found.at(index) : nullptr;
+    };
+
+    QVERIFY(QTest::qWaitFor([&] { return tabItem(2) != nullptr; }));
+    // top: a horizontal bar whose divider is on its bottom row.
+    bar->setProperty("position", QStringLiteral("top"));
+    QVERIFY(QTest::qWaitFor([&] { return !recorder.calls.isEmpty() && recorder.calls.last() == QStringLiteral("layoutMode:bottom:60"); }));
+    QCOMPARE(bar->property("edge").toString(), QStringLiteral("top"));
+    QVERIFY(tabItem(0)->x() < tabItem(1)->x());
+
+    // right: a rail whose divider is the left column.
+    bar->setSize(QSizeF(96, 400));
+    bar->setProperty("position", QStringLiteral("right"));
+    QVERIFY(QTest::qWaitFor([&] { return !recorder.calls.isEmpty() && recorder.calls.last() == QStringLiteral("layoutMode:side:88"); }));
+    QCOMPARE(bar->property("railOnRight").toBool(), true);
+
+    // left in right-to-left sits on the physical right, and horizontal tabs run right to left.
+    bar->setProperty("position", QStringLiteral("left"));
+    bar->setProperty("rtl", true);
+    QCOMPARE(bar->property("railOnRight").toBool(), true);
+    bar->setProperty("position", QStringLiteral("bottom"));
+    bar->setSize(QSizeF(600, 60));
+    QVERIFY(QTest::qWaitFor([&] { return tabItem(2) && tabItem(0)->x() > tabItem(1)->x(); }));
+    bar->setProperty("rtl", false);
+
+    // showLabel false removes every title.
+    const auto visibleTitles = [&] {
+      int n = 0;
+      std::function<void(QQuickItem*)> walk = [&](QQuickItem* item) {
+        if (item->property("text").toString() == QStringLiteral("HOME") && item->isVisible()) ++n;
+        for (auto* child : item->childItems()) walk(child);
+      };
+      walk(bar.get());
+      return n;
+    };
+    QCOMPARE(visibleTitles(), 1);
+    bar->setProperty("showLabel", false);
+    QCOMPARE(visibleTitles(), 0);
+  }
+
+  void tabBarPressedStateAndEscape() {
+    auto bar = load(QStringLiteral("QtTabBar.qml"), QSize(600, 60));
+    QVERIFY(bar);
+    bar->setProperty("tabs", tabs());
+    bar->setProperty("activeKey", QStringLiteral("home"));
+    bar->setProperty("layout", QStringLiteral("bottom"));
+    bar->setProperty("backgroundColor", QColor(0, 0, 0));
+    QTest::qWait(50);
+    const QPoint second(300, 30);  // the middle tab, inactive
+    const QRgb before = window_->grabWindow().pixel(second.x() - 40, 8);
+    QTest::mousePress(window_.get(), Qt::LeftButton, Qt::NoModifier, second);
+    QTest::qWait(250);  // the plate's color animation
+    const QRgb pressed = window_->grabWindow().pixel(second.x() - 40, 8);
+    QVERIFY2(pressed != before, "a pressed tab is drawn differently from a resting one");
+    QTest::mouseRelease(window_.get(), Qt::LeftButton, Qt::NoModifier, second);
+
+    // Keyboard focus: Escape leaves the bar.
+    bar->forceActiveFocus();
+    QTest::keyClick(window_.get(), Qt::Key_Right);
+    QVERIFY(bar->property("focusVisible").toBool());
+    QTest::keyClick(window_.get(), Qt::Key_Escape);
+    QVERIFY(!bar->property("focusVisible").toBool());
+    QVERIFY(!bar->hasActiveFocus());
   }
 
   void tabBarMouseAndKeyboard() {
