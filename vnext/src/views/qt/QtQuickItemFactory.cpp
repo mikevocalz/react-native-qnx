@@ -26,6 +26,7 @@ QtQuickItemFactory::QtQuickItemFactory(QQmlEngine& engine) : engine_(engine) {
   imageProvider_ = new QnxImageProvider();
   engine_.addImageProvider(
       QLatin1String(QnxImageProvider::providerId()), imageProvider_);
+  setExtraItemEngine(engine_);
   registerExtraQmlTypes(*this);
 }
 

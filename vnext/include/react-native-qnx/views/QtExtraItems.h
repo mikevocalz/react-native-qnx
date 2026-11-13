@@ -18,6 +18,10 @@ class QtQuickItemFactory;
 ///
 /// Returns a new item for a component built in C++ (react-native-svg, the SVG
 /// document), or nullptr when \a componentName is not one of them.
+/// The engine the QML-backed extra items (QtVideo) create their QML from. The
+/// item factory sets it once, before any item is created.
+void setExtraItemEngine(QQmlEngine& engine);
+
 QQuickItem* createExtraItem(const QString& componentName, QQuickItem* parent);
 
 /// Registers the QML-sourced extra components (drawer, tab bar, ExpoImage

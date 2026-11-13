@@ -54,7 +54,14 @@ function QtDrawer({
     StyleSheet.flatten(drawerStyle)?.width ??
     Math.min(320, Math.max(240, Math.round((layout?.width ?? 800) * 0.8)));
   const [exclusion, setExclusion] = React.useState(getSwipeExclusionLeft);
-  React.useEffect(() => subscribeSwipeExclusion(setExclusion), []);
+  React.useEffect(() => {
+    const unsubscribe = subscribeSwipeExclusion(setExclusion);
+    // The tab bar is a child of the drawer, so its effect has already set the
+    // rail width when this subscription starts. Read the current value, or the
+    // edge strip stays at x = 0 on top of the rail.
+    setExclusion(getSwipeExclusionLeft());
+    return unsubscribe;
+  }, []);
   const last = React.useRef(open);
 
   // The native item animates on its own; JS only learns the start of a
