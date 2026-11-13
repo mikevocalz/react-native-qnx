@@ -23,7 +23,8 @@ the Pi 400 is in [the Pi 400 desktop guide](../../docs/getting-started/pi400-des
 ## Adding an Advanced card
 
 The Advanced tab shows every card in `components/advanced/`. A card is one
-file named `<id>.card.js` that default-exports:
+file named `<id>.card.js` with an ES module default export (`export default`;
+`module.exports` is rejected):
 
 ```js
 export default {
@@ -41,8 +42,14 @@ array, so adding a card adds one file and edits nothing else. Two pull
 requests that each add a card therefore cannot conflict. A card that needs a
 native module or a new dependency brings that change in the same pull
 request; keep the card file itself free of side effects at import time, since
-every card module loads when the gallery starts. The index throws at startup
-if a card is missing `id`, `title`, `detail` or `Component`, or reuses an id.
+every card module loads when the gallery starts. The index throws at startup,
+which stops the whole gallery, if a card is missing `id`, `title`, `detail`
+or `Component`, has a non-numeric `order`, or reuses an id.
+
+Editing a card file reloads the whole app rather than refreshing the card in
+place, because card modules export objects, not components; put the
+component in its own file if you want Fast Refresh to keep its state. Metro
+picks up a newly added card file on the next reload.
 
 When the gallery moves to expo-router the same directory feeds the Advanced
 tab route, so cards written now keep working.

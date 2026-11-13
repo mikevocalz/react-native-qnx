@@ -14,6 +14,8 @@ function validate(file, card) {
   }
   if (typeof card.Component !== 'function')
     throw new Error(`${where}: Component must be a component`);
+  if (card.order !== undefined && !Number.isFinite(card.order))
+    throw new Error(`${where}: order must be a number`);
   return card;
 }
 
@@ -21,7 +23,7 @@ function validate(file, card) {
 const ADVANCED_CARDS = context
   .keys()
   .map((file) => validate(file, context(file).default))
-  .sort((a, b) => (a.order ?? 100) - (b.order ?? 100) || a.id.localeCompare(b.id));
+  .sort((a, b) => (a.order ?? 100) - (b.order ?? 100) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 
 const ids = new Set();
 for (const card of ADVANCED_CARDS) {

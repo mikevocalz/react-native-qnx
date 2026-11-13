@@ -601,7 +601,8 @@ function ConformanceApp() {
     ['limits', 'Limits'],
   ];
   // Developer menu entries (F1 or Ctrl+D) that switch tabs from the keyboard,
-  // for runs where only keys can be injected. A no-op in release builds.
+  // for runs where only keys can be injected. A no-op in release builds. The
+  // entries last until the next reload; this root mounts once per bundle.
   React.useEffect(() => {
     for (const [id, title] of pages) DevSettings.addMenuItem('Show ' + title, () => goTo(id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
