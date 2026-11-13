@@ -28,6 +28,12 @@ class DecodedImageCache {
     const auto* found = images_.object(key);
     return found ? *found : QImage{};
   }
+  /// Drops every decoded image.
+  void clear() {
+    QMutexLocker lock(&mutex_);
+    images_.clear();
+  }
+  /// Whether an image stored under \a uri (or a storage key) is held.
   bool contains(const QString& uri) {
     QMutexLocker lock(&mutex_);
     return images_.contains(key(uri));
