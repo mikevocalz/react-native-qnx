@@ -123,6 +123,20 @@ QtQuickMountingLayer::QtQuickMountingLayer(
     : factory_(factory), rootItem_(rootItem), rootTag_(rootTag) {
   items_.insert(rootTag_, MountedItem{&rootItem_, false});
   mountedPointers_.insert(&rootItem_);
+  roots_.insert(&rootItem_);
+}
+
+MountError QtQuickMountingLayer::addRoot(QQuickItem& item, Tag rootTag) {
+  if (items_.contains(rootTag)) {
+    return failWith(
+        MountError::DuplicateTag,
+        QStringLiteral("Tag %1 is already mounted").arg(rootTag));
+  }
+  items_.insert(rootTag, MountedItem{&item, false});
+  mountedPointers_.insert(&item);
+  roots_.insert(&item);
+  lastError_.clear();
+  return MountError::None;
 }
 
 QtQuickMountingLayer::~QtQuickMountingLayer() {
@@ -437,7 +451,7 @@ MountError QtQuickMountingLayer::updateStyle(Tag tag, const ViewStyle& style) {
       item->property("layoutX").value<qreal>();
   const auto baseY =
       item->property("layoutY").value<qreal>();
-  if (item != &rootItem_) {
+  if (!roots_.contains(item)) {
     item->setX(baseX + static_cast<qreal>(style.translateX));
     item->setY(baseY + static_cast<qreal>(style.translateY));
   }
@@ -852,7 +866,7 @@ MountError QtQuickMountingLayer::updateLayout(
   }
 
   QQuickItem* item = mounted->item;
-  if (item == &rootItem_) {
+  if (roots_.contains(item)) {
     // The host owns where the surface root sits in the window (below the
     // window chrome's title bar, for example). Yoga reports the root at 0,0,
     // so moving it here would slide the app up under the bar.

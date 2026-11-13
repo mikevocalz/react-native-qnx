@@ -16,6 +16,14 @@ window reaching the launcher. Those runs used pointer events injected through
 Screen; `demolauncher` ignores injected clicks, so the tile itself was not
 driven that way.
 
+## Develop with Fast Refresh
+
+The build below is a release build: bundled bytecode, no Metro. For an
+edit-and-see loop on the board, build the development client once and run
+`rnqnx project dev`; see [the development workflow](dev-workflow.md). On the
+Pi 400 here it is installed as `/data/home/qnxuser/run-chrome-app-dev.sh`
+beside the release app.
+
 ## What the desktop runs
 
 At boot, `/system/etc/startup/full_startup.sh` starts, in order:

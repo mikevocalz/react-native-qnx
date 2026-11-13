@@ -69,6 +69,11 @@ const api = Object.freeze({
   get useWindowDimensions() {
     return require('react-native/Libraries/Utilities/useWindowDimensions').default;
   },
+  // Backed by the development client's DevSettings module; React Native makes
+  // it a no-op in release bundles.
+  get DevSettings() {
+    return require('react-native/Libraries/Utilities/DevSettings').default;
+  },
 });
 
 module.exports = new Proxy(api, {

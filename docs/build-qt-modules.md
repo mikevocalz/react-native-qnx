@@ -110,12 +110,20 @@ This is a draft implementation, not acceptance of Network on the QNX target;
 those measurements and licensed SDP/runtime verification still block target
 acceptance under the rule above.
 
-## Opt-in host WebSocket experiment (not a target module addition)
+## Opt-in WebSocket backend
 
-`RNQNX_ENABLE_WEBSOCKETS=ON` requires `Core`, `Network`, and `WebSockets` at Qt
-6.11.1 for the experimental host transport. It defaults to **OFF** and is rejected
-when `CMAKE_SYSTEM_NAME=QNX`. This does not change `RNQNX_QT_HOST_MODULES`, the
-baseline renderer dependencies, or the accepted QNX subset.
+`RNQNX_ENABLE_WEBSOCKETS=ON` requires `Core`, `Network`, and `WebSockets` (Qt
+6.11.1 or later). It defaults to **OFF**. This does not change
+`RNQNX_QT_HOST_MODULES`, the baseline renderer dependencies, or the accepted QNX
+subset.
+
+QNX, 2026-11-13: Qt WebSockets 6.12.0 cross-builds from the same public archive
+as the rest of the runtime with `scripts/qt-public/build-websockets-qnx.sh`
+(`qt-configure-module` against the QNX qtbase, `-O2`, 24 build steps, not timed).
+`libQt6WebSockets.so.6.12.0` is 333,792 bytes for aarch64le. The development
+client (`RNQNX_ENABLE_DEV_SUPPORT`, [dev workflow](getting-started/dev-workflow.md))
+is its first QNX user: React Native's `HMRClient` and Metro's `/message` channel
+ran over it on a Pi 400. Release apps do not link it.
 
 Network provides the asynchronous TCP/TLS substrate; Tier 2 WebSockets provides
 the RFC 6455 handshake, framing, and lifecycle for RN's WebSocket API. Both are

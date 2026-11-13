@@ -5,6 +5,7 @@
 #include <react/renderer/components/view/TouchEventEmitter.h>
 
 #include <QHash>
+#include <QList>
 #include <QObject>
 
 #include <react/renderer/components/view/TouchEvent.h>
@@ -56,6 +57,16 @@ class QtTouchDispatcher final : public QObject {
   /// it.
   void setJsResponder(Tag tag, bool isResponder);
 
+  /// Adds the root item of another React surface (the development LogBox).
+  /// While it is visible, a press inside it is hit-tested there first and
+  /// never reaches the views underneath.
+  void addRootItem(QQuickItem& rootItem);
+
+  /// A native item drawn over the React surface (the development menu and
+  /// error screen). While it is visible, presses inside it are left to Qt
+  /// Quick and not dispatched to React.
+  void addInputShield(QQuickItem& shield);
+
   /// Number of touch events delivered, so a test can tell "no handler ran" from
   /// "no event was dispatched".
   int dispatchedCount() const;
@@ -75,6 +86,8 @@ class QtTouchDispatcher final : public QObject {
 
   QtQuickMountingLayer& layer_;
   QQuickItem& rootItem_;
+  QList<QQuickItem*> extraRoots_;
+  QList<QQuickItem*> shields_;
   QHash<Tag, std::shared_ptr<const facebook::react::TouchEventEmitter>>
       emitters_;
   QHash<int, facebook::react::Touch> activeTouches_;
