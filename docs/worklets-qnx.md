@@ -20,11 +20,11 @@ by itself when the package is installed, so an app needs no Babel change.
 
 ## Threads
 
-| Thread                        | Runs                                                                                              |
-| ----------------------------- | ------------------------------------------------------------------------------------------------- |
-| Qt GUI thread = RN JS thread  | React, Hermes RN runtime, module calls, Qt item changes, `afterAnimating` signal                  |
-| `rnqnx-ui-worklet` (new)      | UI Worklet Runtime, every worklet passed to `scheduleOnUI`, `requestAnimationFrame` callbacks     |
-| Qt render thread (if present) | Scene graph rendering only; no worklet or React code runs there                                   |
+| Thread                        | Runs                                                                                          |
+| ----------------------------- | --------------------------------------------------------------------------------------------- |
+| Qt GUI thread = RN JS thread  | React, Hermes RN runtime, module calls, Qt item changes, `afterAnimating` signal              |
+| `rnqnx-ui-worklet` (new)      | UI Worklet Runtime, every worklet passed to `scheduleOnUI`, `requestAnimationFrame` callbacks |
+| Qt render thread (if present) | Scene graph rendering only; no worklet or React code runs there                               |
 
 The host still runs React Native on the thread that owns Qt, so the UI-worklet
 thread is the third thread, not a replacement for the JS thread. The seams

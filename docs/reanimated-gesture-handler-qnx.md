@@ -29,14 +29,14 @@ codegen (0.88.1).
 `installTurboModule()` builds the upstream `ReanimatedModuleProxy` with these
 platform methods:
 
-| Method                                      | Qt implementation                                                                                  |
-| ------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `requestRender`                             | Qt Quick `afterAnimating`, via the Worklets frame bridge                                           |
-| `getAnimationTimestamp`                     | `steady_clock` milliseconds, same clock as frame timestamps                                        |
-| `synchronouslyUpdateUIPropsFunction`        | GUI-thread `schedulerShouldSynchronouslyUpdateViewOnUIThread` into the mounted item               |
-| Fabric commit and mount hooks, measure, dispatchCommand | The upstream implementation over the host's `UIManager`; mounting re-posts to the GUI thread |
-| Events for `useAnimatedScrollHandler`, gesture handlers | `Scheduler::addEventListener`; the handler worklet runs on the UI thread                |
-| Sensors, keyboard, pseudo-selectors, platform CSS backends | Not provided; sensors and keyboard log and return -1                                  |
+| Method                                                     | Qt implementation                                                                            |
+| ---------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `requestRender`                                            | Qt Quick `afterAnimating`, via the Worklets frame bridge                                     |
+| `getAnimationTimestamp`                                    | `steady_clock` milliseconds, same clock as frame timestamps                                  |
+| `synchronouslyUpdateUIPropsFunction`                       | GUI-thread `schedulerShouldSynchronouslyUpdateViewOnUIThread` into the mounted item          |
+| Fabric commit and mount hooks, measure, dispatchCommand    | The upstream implementation over the host's `UIManager`; mounting re-posts to the GUI thread |
+| Events for `useAnimatedScrollHandler`, gesture handlers    | `Scheduler::addEventListener`; the handler worklet runs on the UI thread                     |
+| Sensors, keyboard, pseudo-selectors, platform CSS backends | Not provided; sensors and keyboard log and return -1                                         |
 
 Two upstream lines are text-patched in generated copies, and the configure step
 fails if either changes: the `SynchronouslyUpdateUIPropsFunction` type (defined
@@ -49,14 +49,14 @@ The recognizers are ours (`vnext/src/gesture/GestureHandlerCore.cpp`), a
 registry with no Qt or React dependency and host tests for each rule. The
 library's JavaScript and its detector shadow node are upstream's.
 
-| Handler     | Status                                                                                                                  |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Pan         | Min distance, active and fail offsets, velocity, translation, begin/activate/update/end/cancel                          |
-| Tap         | Tap count, max duration, max delay between taps, max distance                                                           |
-| LongPress   | Min duration deadline, max distance                                                                                     |
-| Fling       | Direction mask, minimum velocity                                                                                        |
-| Manual      | Driven by `GestureStateManager` through `_setGestureStateSync` and `_setGestureStateAsync`                              |
-| Pinch, Rotation, Native, Hover | Accepted and fail on the first pointer, with a log line. Not implemented.                              |
+| Handler                        | Status                                                                                         |
+| ------------------------------ | ---------------------------------------------------------------------------------------------- |
+| Pan                            | Min distance, active and fail offsets, velocity, translation, begin/activate/update/end/cancel |
+| Tap                            | Tap count, max duration, max delay between taps, max distance                                  |
+| LongPress                      | Min duration deadline, max distance                                                            |
+| Fling                          | Direction mask, minimum velocity                                                               |
+| Manual                         | Driven by `GestureStateManager` through `_setGestureStateSync` and `_setGestureStateAsync`     |
+| Pinch, Rotation, Native, Hover | Accepted and fail on the first pointer, with a log line. Not implemented.                      |
 
 Arbitration: by default the first handler to activate fails every other
 begun or active handler that shares a pointer. `simultaneousHandlers` lets two
