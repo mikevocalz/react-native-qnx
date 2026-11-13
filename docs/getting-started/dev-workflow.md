@@ -26,7 +26,11 @@ rnqnx project dev \
 
 That starts Metro on port 8081, works out which of your addresses the board
 reaches, and runs the launcher on the board with
-`--dev-server http://<that address>:8081`. Then:
+`--replace --dev-server http://<that address>:8081`. `--replace` makes the
+app quit the copy of itself that is already running (the release build, or an
+earlier dev run) before the new one starts, so the board never shows two
+windows of one app; see [one instance per app](pi400-desktop-app.md#one-instance-per-app).
+Then:
 
 | You do                                                               | The app does                                                                                    |
 | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
@@ -44,8 +48,11 @@ To run only Metro (for example when you start the app on the board yourself):
 ```sh
 rnqnx project start --project .
 # then on the board
-/data/home/qnxuser/run-chrome-app-dev.sh --dev-server http://192.168.2.1:8081
+/data/home/qnxuser/run-chrome-app-dev.sh --replace --dev-server http://192.168.2.1:8081
 ```
+
+Without `--replace` a second launch shows the running window and exits, which
+is what you want when the app is already the dev client.
 
 The launcher also reads `RNQNX_DEV_SERVER` from the environment. Without
 either, the development client runs its staged bundle like a release build.
@@ -111,29 +118,32 @@ Deploy the build to its own directory, separate from the release app, with:
 - a launcher like [`run-chrome-app-dev.sh`](#launcher) that puts the app
   directory first on `LD_LIBRARY_PATH` and `QT_PLUGIN_PATH`.
 
-A development client uses the single-instance key `<appId>.dev`, so it can run
-beside the installed release copy of the same app.
+A development client has the same single-instance key as the release build of
+the app: the app id without build-variant suffixes (`.dev`, `.debug` and
+`.preview`). It never runs beside the installed release copy; a dev launch
+with `--replace` takes its place. The launcher script below does the same for
+launches that skip the CLI.
 
 ### Launcher
 
+Use the guarded launcher, `template/qnx/run-app.sh` (the desktop tile installs
+it as `<app-dir>/run-app.sh`; set `RNQNX_APP_DIR` to the dev app directory).
+It looks for the app's process with `pidin` before it starts anything: a
+running copy is restored, or with `--replace` stopped (quit, then SIGTERM,
+never SIGKILL), so there is no way to start a second one even when the app's
+socket is unreachable. It sets up the Qt environment the app needs, then runs
+the app with the arguments it got:
+
 ```sh
-#!/bin/sh
-A=/data/home/qnxuser/<dev app dir>
-Q=/data/home/qnxuser/qt612-public-o2
-export LD_LIBRARY_PATH="$A:$Q/lib:/data/pi400-graphics-compat/lib/dll:/data/pi400-graphics-compat/usr/lib:/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm:/usr/lib"
-export QT_QPA_PLATFORM=qnx:no-fullscreen
-export QT_QPA_PLATFORM_PLUGIN_PATH=$Q/plugins/platforms
-export QT_PLUGIN_PATH=$A/plugins:$Q/plugins
-export QML_IMPORT_PATH=$Q/qml QML2_IMPORT_PATH=$Q/qml
-export QT_QPA_FONTDIR=/usr/share/fonts/dejavu
-[ -t 1 ] || exec >>/tmp/rnqnx-showcase-dev.log 2>&1
-cd "$A"
-exec ./org.rnqnx.showcase "$@"
+RNQNX_APP_DIR=/data/home/qnxuser/<dev app dir> \
+  /data/home/qnxuser/<app dir>/run-app.sh --replace --dev-server http://192.168.2.1:8081
 ```
+
+The log goes to `/tmp/rnqnx-<appId>.log` unless `RNQNX_LOG` says otherwise.
 
 ## Log lines
 
-The development client prints these to its log (`/tmp/rnqnx-showcase-dev.log`
+The development client prints these to its log (`/tmp/rnqnx-<appId>.log`
 with the launcher above):
 
 | Line                                        | Meaning                                                                        |
