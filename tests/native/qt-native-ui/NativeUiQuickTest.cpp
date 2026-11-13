@@ -37,6 +37,9 @@ class Recorder final : public QObject {
   Q_INVOKABLE void transitionEnd(bool open) {
     calls << QStringLiteral("transitionEnd:%1").arg(open ? "open" : "closed");
   }
+  Q_INVOKABLE void gestureStart(bool open) { calls << QStringLiteral("gestureStart:%1").arg(open ? "open" : "closed"); }
+  Q_INVOKABLE void gestureEnd(bool open) { calls << QStringLiteral("gestureEnd:%1").arg(open ? "open" : "closed"); }
+  Q_INVOKABLE void gestureCancel(bool open) { calls << QStringLiteral("gestureCancel:%1").arg(open ? "open" : "closed"); }
   Q_INVOKABLE void tabPressed(const QString& key) { calls << QStringLiteral("tabPressed:") + key; }
   Q_INVOKABLE void tabLongPressed(const QString& key) {
     calls << QStringLiteral("tabLongPressed:") + key;
@@ -90,6 +93,72 @@ class NativeUiQuickTest : public QObject {
 
   static bool settled(QQuickItem* drawer, double progress) {
     return qFuzzyCompare(drawer->property("progress").toDouble() + 1.0, progress + 1.0);
+  }
+
+
+  // A panel item the way the mounting layer exposes a Pressable: an accessible
+  // button with a press action. `presses` counts the accessibility press actions.
+  QQuickItem* mountNavItem(QQuickItem* panel, const QString& label, const QRectF& frame, bool selected = false) {
+    QQmlComponent component(&engine_);
+    component.setData(
+        "import QtQuick\n"
+        "Item {\n"
+        "  property bool accessible: true\n"
+        "  property string accessibilityRole: 'button'\n"
+        "  property string accessibilityLabel: ''\n"
+        "  property bool accessibilityStateSelected: false\n"
+        "  property bool accessibilityStateDisabled: false\n"
+        "  property real radius: 8\n"
+        "  property int presses: 0\n"
+        "  Accessible.role: Accessible.Button\n"
+        "  Accessible.name: accessibilityLabel\n"
+        "  Accessible.onPressAction: presses++\n"
+        "}\n",
+        QUrl());
+    auto* item = qobject_cast<QQuickItem*>(component.create());
+    if (item == nullptr) {
+      qWarning().noquote() << component.errorString();
+      return nullptr;
+    }
+    item->setProperty("accessibilityLabel", label);
+    item->setProperty("accessibilityStateSelected", selected);
+    item->setParentItem(panel);
+    item->setPosition(frame.topLeft());
+    item->setSize(frame.size());
+    return item;
+  }
+
+  static QQuickItem* layer(QQuickItem* drawer, const char* name) {
+    return drawer->findChild<QQuickItem*>(QString::fromLatin1(name));
+  }
+
+  // The window point at the middle of `item`.
+  QPoint centerOf(QQuickItem* item) const {
+    return item->mapToScene(QPointF(item->width() / 2, item->height() / 2)).toPoint();
+  }
+
+  // A drawer with a 280 px panel of three nav items (y 20, 70, 120) and the content.
+  struct DrawerFixture {
+    std::unique_ptr<QQuickItem> drawer;
+    Recorder recorder;
+    QQuickItem* panel = nullptr;
+    QQuickItem* main = nullptr;
+    QList<QQuickItem*> items;
+  };
+  void openedDrawerWithItems(DrawerFixture& fx) {
+    fx.drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(fx.drawer);
+    fx.drawer->setProperty("bridge", QVariant::fromValue(static_cast<QObject*>(&fx.recorder)));
+    fx.panel = mountChild(fx.drawer.get(), QRectF(0, 0, 280, 400));
+    fx.main = mountChild(fx.drawer.get(), QRectF(0, 0, 600, 400));
+    const QStringList labels = {QStringLiteral("Home"), QStringLiteral("Media"), QStringLiteral("About")};
+    for (int i = 0; i < labels.size(); ++i) {
+      fx.items << mountNavItem(fx.panel, labels[i], QRectF(10, 20 + 50 * i, 260, 40), i == 1);
+      QVERIFY(fx.items.last());
+    }
+    QVERIFY(QTest::qWaitFor([&] { return fx.drawer->property("ready").toBool(); }));
+    fx.drawer->setProperty("open", true);
+    QVERIFY(QTest::qWaitFor([&] { return settled(fx.drawer.get(), 1.0); }, 2000));
   }
 
   // A deliberate drag: slow enough that its release velocity is not a fling.
@@ -323,6 +392,288 @@ class NativeUiQuickTest : public QObject {
     drawer->setProperty("open", false);
     QVERIFY(QTest::qWaitFor([&] { return settled(drawer.get(), 0.0); }, 2000));
     QCOMPARE(main->mapToItem(drawer.get(), QPointF(0, 0)).x(), 0.0);
+  }
+
+
+  void drawerItemsShowHoverAndPressedStates() {
+    DrawerFixture fx;
+    openedDrawerWithItems(fx);
+    if (QTest::currentTestFailed()) return;
+    auto* state = layer(fx.drawer.get(), "rnqnxDrawerItemState");
+    QVERIFY(state);
+    QVERIFY(!state->isVisible());
+
+    QTest::mouseMove(window_.get(), centerOf(fx.items[1]));
+    QVERIFY(QTest::qWaitFor([&] { return state->isVisible(); }));
+    QCOMPARE(state->parentItem(), fx.panel);
+    QCOMPARE(state->width(), 260.0);
+    QCOMPARE(state->height(), 40.0);
+    QCOMPARE(state->mapToItem(fx.panel, QPointF(0, 0)), QPointF(10, 70));
+    QCOMPARE(state->property("radius").toDouble(), 8.0);
+    QCOMPARE(state->property("color").value<QColor>(), QColor::fromRgba(0x22ffffff));
+    QCOMPARE(fx.drawer->property("hoveredItem").value<QQuickItem*>(), fx.items[1]);
+
+    // Moving to another item moves the layer.
+    QTest::mouseMove(window_.get(), centerOf(fx.items[2]));
+    QVERIFY(QTest::qWaitFor([&] { return state->mapToItem(fx.panel, QPointF(0, 0)).y() == 120.0; }));
+
+    // Pressed is a stronger layer, and it ends with the button.
+    QTest::mousePress(window_.get(), Qt::LeftButton, Qt::NoModifier, centerOf(fx.items[2]));
+    QVERIFY(QTest::qWaitFor([&] { return fx.drawer->property("pressedItem").value<QQuickItem*>() == fx.items[2]; }));
+    QTRY_COMPARE(state->property("color").value<QColor>(), QColor::fromRgba(0x33ffffff));
+    QTest::mouseRelease(window_.get(), Qt::LeftButton, Qt::NoModifier, centerOf(fx.items[2]));
+    QVERIFY(QTest::qWaitFor([&] { return fx.drawer->property("pressedItem").value<QQuickItem*>() == nullptr; }));
+    QTRY_COMPARE(state->property("color").value<QColor>(), QColor::fromRgba(0x22ffffff));
+
+    // Off the items: no layer.
+    QTest::mouseMove(window_.get(), fx.drawer->mapToScene(QPointF(150, 300)).toPoint());
+    QVERIFY(QTest::qWaitFor([&] { return !state->isVisible(); }));
+  }
+
+  void drawerKeyboardMovesFocusAndPressesItems() {
+    DrawerFixture fx;
+    openedDrawerWithItems(fx);
+    if (QTest::currentTestFailed()) return;
+    QVERIFY(fx.drawer->hasActiveFocus());
+    auto* ring = layer(fx.drawer.get(), "rnqnxDrawerFocusRing");
+    QVERIFY(ring);
+    QVERIFY(!ring->isVisible());  // no keyboard use yet
+    auto ringIndex = [&] {
+      return ring->isVisible() ? qRound((ring->y() - 20) / 50) : -1;
+    };
+
+    // The drawer starts on the selected item (Media); the first arrow moves from it.
+    QCOMPARE(fx.drawer->property("focusedIndex").toInt(), 1);
+    QTest::keyClick(window_.get(), Qt::Key_Down);
+    QCOMPARE(ringIndex(), 2);
+    QCOMPARE(ring->width(), 260.0);
+    QTest::keyClick(window_.get(), Qt::Key_Down);  // wraps
+    QCOMPARE(ringIndex(), 0);
+    QTest::keyClick(window_.get(), Qt::Key_Up);    // wraps back
+    QCOMPARE(ringIndex(), 2);
+    QTest::keyClick(window_.get(), Qt::Key_Home);
+    QCOMPARE(ringIndex(), 0);
+    QTest::keyClick(window_.get(), Qt::Key_End);
+    QCOMPARE(ringIndex(), 2);
+    QTest::keyClick(window_.get(), Qt::Key_Tab);   // Tab stays in the panel
+    QCOMPARE(ringIndex(), 0);
+    QTest::keyClick(window_.get(), Qt::Key_Tab, Qt::ShiftModifier);
+    QCOMPARE(ringIndex(), 2);
+    QVERIFY(fx.drawer->hasActiveFocus());
+
+    QTest::keyClick(window_.get(), Qt::Key_Return);
+    QCOMPARE(fx.items[2]->property("presses").toInt(), 1);
+    QTest::keyClick(window_.get(), Qt::Key_Home);
+    QTest::keyClick(window_.get(), Qt::Key_Space);
+    QTest::keyClick(window_.get(), Qt::Key_Enter);
+    QCOMPARE(fx.items[0]->property("presses").toInt(), 2);
+    QCOMPARE(fx.items[1]->property("presses").toInt(), 0);
+
+    // Escape asks to close.
+    QTest::keyClick(window_.get(), Qt::Key_Escape);
+    QVERIFY(QTest::qWaitFor([&] { return fx.recorder.count(QStringLiteral("requestChange:close:escape")) == 1; }));
+  }
+
+  void drawerSkipsDisabledAndHiddenItems() {
+    DrawerFixture fx;
+    openedDrawerWithItems(fx);
+    if (QTest::currentTestFailed()) return;
+    fx.items[1]->setProperty("accessibilityStateDisabled", true);
+    fx.items[2]->setVisible(false);
+    QTest::keyClick(window_.get(), Qt::Key_Home);
+    QTest::keyClick(window_.get(), Qt::Key_Down);  // only Home is left
+    QCOMPARE(fx.drawer->property("focusedIndex").toInt(), 0);
+    QCOMPARE(fx.drawer->property("navItems").value<QJSValue>().property(QStringLiteral("length")).toInt(), 1);
+    // A pressable view that is not a button is not a nav item.
+    fx.items[0]->setProperty("accessibilityRole", QStringLiteral("text"));
+    QTest::keyClick(window_.get(), Qt::Key_End);
+    QCOMPARE(fx.drawer->property("navItems").value<QJSValue>().property(QStringLiteral("length")).toInt(), 0);
+  }
+
+  void drawerHoldsFocusWhileOpenAndGivesItBack() {
+    auto* opener = new QQuickItem(window_->contentItem());
+    opener->setSize(QSizeF(20, 20));
+    opener->setObjectName(QStringLiteral("opener"));
+    auto* other = new QQuickItem(window_->contentItem());
+    other->setSize(QSizeF(20, 20));
+    opener->forceActiveFocus();
+    QCOMPARE(window_->activeFocusItem(), opener);
+
+    DrawerFixture fx;
+    fx.drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(fx.drawer);
+    fx.drawer->setProperty("bridge", QVariant::fromValue(static_cast<QObject*>(&fx.recorder)));
+    mountChild(fx.drawer.get(), QRectF(0, 0, 280, 400));
+    mountChild(fx.drawer.get(), QRectF(0, 0, 600, 400));
+    QVERIFY(QTest::qWaitFor([&] { return fx.drawer->property("ready").toBool(); }));
+    QCOMPARE(window_->activeFocusItem(), opener);  // a closed drawer does not take focus
+
+    fx.drawer->setProperty("open", true);
+    QVERIFY(QTest::qWaitFor([&] { return settled(fx.drawer.get(), 1.0); }, 2000));
+    QCOMPARE(window_->activeFocusItem(), fx.drawer.get());
+    QCOMPARE(fx.drawer->property("opener").value<QQuickItem*>(), opener);
+
+    // Focus trap: something else asking for focus loses it.
+    other->forceActiveFocus();
+    QVERIFY(QTest::qWaitFor([&] { return window_->activeFocusItem() == fx.drawer.get(); }));
+
+    fx.drawer->setProperty("open", false);
+    QVERIFY(QTest::qWaitFor([&] { return settled(fx.drawer.get(), 0.0); }, 2000));
+    QVERIFY(QTest::qWaitFor([&] { return window_->activeFocusItem() == opener; }));
+    // Closed again: focus is free to move.
+    other->forceActiveFocus();
+    QCOMPARE(window_->activeFocusItem(), other);
+    fx.drawer.reset();
+    delete opener;
+    delete other;
+  }
+
+  void swipeEdgeWidthSetsTheStartStrip() {
+    auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(drawer);
+    Recorder recorder;
+    drawer->setProperty("bridge", QVariant::fromValue(static_cast<QObject*>(&recorder)));
+    drawer->setProperty("flingVelocity", 1.0e9);
+    mountChild(drawer.get(), QRectF(0, 0, 280, 400));
+    mountChild(drawer.get(), QRectF(0, 0, 600, 400));
+    QVERIFY(QTest::qWaitFor([&] { return drawer->property("ready").toBool(); }));
+
+    // Default 24 px: a drag from x = 50 starts outside the strip.
+    drag(QPoint(50, 200), QPoint(270, 200));
+    QTest::qWait(250);
+    QCOMPARE(recorder.count(QStringLiteral("requestChange")), 0);
+
+    drawer->setProperty("edgeWidth", 80.0);
+    drag(QPoint(50, 200), QPoint(270, 200));
+    QVERIFY(QTest::qWaitFor([&] { return recorder.count(QStringLiteral("requestChange:open:swipe")) == 1; }));
+
+    // A narrow strip excludes what the default would have taken.
+    drawer->setProperty("open", false);
+    drawer->setProperty("progress", 0.0);
+    recorder.calls.clear();
+    drawer->setProperty("edgeWidth", 4.0);
+    drag(QPoint(12, 200), QPoint(240, 200));
+    QTest::qWait(250);
+    QCOMPARE(recorder.count(QStringLiteral("requestChange")), 0);
+  }
+
+  void rightDrawerOpensFromTheRightEdgeStrip() {
+    auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(drawer);
+    Recorder recorder;
+    drawer->setProperty("bridge", QVariant::fromValue(static_cast<QObject*>(&recorder)));
+    drawer->setProperty("side", QStringLiteral("right"));
+    drawer->setProperty("edgeWidth", 40.0);
+    drawer->setProperty("flingVelocity", 1.0e9);
+    mountChild(drawer.get(), QRectF(0, 0, 280, 400));
+    mountChild(drawer.get(), QRectF(0, 0, 600, 400));
+    QVERIFY(QTest::qWaitFor([&] { return drawer->property("ready").toBool(); }));
+
+    drag(QPoint(10, 200), QPoint(240, 200));  // the left edge is not the right drawer's strip
+    QTest::qWait(250);
+    QCOMPARE(recorder.count(QStringLiteral("requestChange")), 0);
+
+    drag(QPoint(570, 200), QPoint(350, 200));  // inside the 40 px right strip, dragged left
+    QVERIFY(QTest::qWaitFor([&] { return recorder.count(QStringLiteral("requestChange:open:swipe")) == 1; }));
+  }
+
+  void overlayColorIsTheScrimColor() {
+    auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(drawer);
+    drawer->setProperty("scrimColor", QColor(0x12, 0x34, 0x56, 0x78));
+    mountChild(drawer.get(), QRectF(0, 0, 280, 400));
+    mountChild(drawer.get(), QRectF(0, 0, 600, 400));
+    drawer->setProperty("open", true);
+    QVERIFY(QTest::qWaitFor([&] { return settled(drawer.get(), 1.0); }, 2000));
+    auto* scrim = drawer->findChild<QQuickItem*>(QStringLiteral("rnqnxDrawerScrim"));
+    QVERIFY(scrim);
+    QCOMPARE(scrim->property("color").value<QColor>(), QColor(0x12, 0x34, 0x56, 0x78));
+    drawer->setProperty("scrimColor", QColor(Qt::transparent));
+    QCOMPARE(scrim->property("color").value<QColor>().alpha(), 0);
+    // A transparent scrim still closes the drawer on tap (the hit area stays).
+    QVERIFY(scrim->isVisible());
+  }
+
+  void frontDrawerLaysOverTheContentWithoutMovingIt() {
+    auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(drawer);
+    drawer->setProperty("drawerType", QStringLiteral("front"));
+    auto* panel = mountChild(drawer.get(), QRectF(0, 0, 280, 400));
+    auto* main = mountChild(drawer.get(), QRectF(0, 0, 600, 400));
+    QVERIFY(QTest::qWaitFor([&] { return drawer->property("ready").toBool(); }));
+    QCOMPARE(panel->mapToItem(drawer.get(), QPointF(0, 0)).x(), -280.0);  // parked off screen
+    drawer->setProperty("open", true);
+    QVERIFY(QTest::qWaitFor([&] { return settled(drawer.get(), 1.0); }, 2000));
+    QCOMPARE(panel->mapToItem(drawer.get(), QPointF(0, 0)).x(), 0.0);
+    QCOMPARE(main->mapToItem(drawer.get(), QPointF(0, 0)).x(), 0.0);  // the content stays put
+    QVERIFY(panel->z() > main->z());                                  // and the panel is over it
+  }
+
+  void drawerWidthMovesThePanelAndTheScrim() {
+    auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(drawer);
+    drawer->setProperty("drawerWidth", 200.0);
+    drawer->setProperty("drawerType", QStringLiteral("slide"));
+    auto* panel = mountChild(drawer.get(), QRectF(0, 0, 200, 400));
+    auto* main = mountChild(drawer.get(), QRectF(0, 0, 600, 400));
+    QVERIFY(QTest::qWaitFor([&] { return drawer->property("ready").toBool(); }));
+    QCOMPARE(panel->mapToItem(drawer.get(), QPointF(0, 0)).x(), -200.0);
+    drawer->setProperty("open", true);
+    QVERIFY(QTest::qWaitFor([&] { return settled(drawer.get(), 1.0); }, 2000));
+    QCOMPARE(panel->mapToItem(drawer.get(), QPointF(0, 0)).x(), 0.0);
+    QCOMPARE(main->mapToItem(drawer.get(), QPointF(0, 0)).x(), 200.0);
+  }
+
+
+  void swipeMinDistanceRejectsShortDragsThatPassTheFortyPercentRule() {
+    auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(drawer);
+    Recorder recorder;
+    drawer->setProperty("bridge", QVariant::fromValue(static_cast<QObject*>(&recorder)));
+    drawer->setProperty("flingVelocity", 1.0e9);
+    drawer->setProperty("drawerWidth", 100.0);  // 50 px is 50% of the panel
+    drawer->setProperty("edgeWidth", 100.0);
+    mountChild(drawer.get(), QRectF(0, 0, 100, 400));
+    mountChild(drawer.get(), QRectF(0, 0, 600, 400));
+    QVERIFY(QTest::qWaitFor([&] { return drawer->property("ready").toBool(); }));
+
+    drawer->setProperty("swipeMinDistance", 80.0);
+    drag(QPoint(5, 200), QPoint(60, 200));  // 55 px: over 40% of 100, under 80 px
+    QTest::qWait(250);
+    QCOMPARE(recorder.count(QStringLiteral("requestChange")), 0);
+    QVERIFY(settled(drawer.get(), 0.0));
+
+    drawer->setProperty("swipeMinDistance", 30.0);
+    drag(QPoint(5, 200), QPoint(60, 200));
+    QVERIFY(QTest::qWaitFor([&] { return recorder.count(QStringLiteral("requestChange:open:swipe")) == 1; }));
+  }
+
+  void gestureEventsBracketADragAndCancelSettlesBack() {
+    auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(drawer);
+    Recorder recorder;
+    drawer->setProperty("bridge", QVariant::fromValue(static_cast<QObject*>(&recorder)));
+    drawer->setProperty("flingVelocity", 1.0e9);
+    mountChild(drawer.get(), QRectF(0, 0, 280, 400));
+    mountChild(drawer.get(), QRectF(0, 0, 600, 400));
+    QVERIFY(QTest::qWaitFor([&] { return drawer->property("ready").toBool(); }));
+
+    drag(QPoint(5, 200), QPoint(220, 200));
+    QVERIFY(QTest::qWaitFor([&] { return recorder.count(QStringLiteral("requestChange:open:swipe")) == 1; }));
+    QCOMPARE(recorder.calls.indexOf(QStringLiteral("gestureStart:closed")), 0);
+    QVERIFY(recorder.calls.indexOf(QStringLiteral("gestureEnd:closed")) > 0);
+    QCOMPARE(recorder.count(QStringLiteral("gestureCancel")), 0);
+
+    // A drag the system takes away reports a cancel and goes back to `open`.
+    recorder.calls.clear();
+    drawer->setProperty("open", false);
+    drawer->setProperty("progress", 0.0);
+    QMetaObject::invokeMethod(drawer.get(), "beginDrag");
+    drawer->setProperty("progress", 0.6);
+    QMetaObject::invokeMethod(drawer.get(), "cancelDrag");
+    QCOMPARE(recorder.calls, (QStringList{QStringLiteral("gestureStart:closed"), QStringLiteral("gestureCancel:closed")}));
+    QVERIFY(QTest::qWaitFor([&] { return settled(drawer.get(), 0.0); }, 2000));
+    QCOMPARE(recorder.count(QStringLiteral("requestChange")), 0);
   }
 
   // ---- tab bar ----------------------------------------------------------

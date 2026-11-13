@@ -100,6 +100,16 @@ class DrawerBridge final : public QObject {
   Q_INVOKABLE void requestChange(bool open, const QString& reason) {
     if (emitter_) emitter_->onRequestChange({open, reason.toStdString()});
   }
+  /// A drag began, ended, or was taken away; `open` is the state at that moment.
+  Q_INVOKABLE void gestureStart(bool open) {
+    if (emitter_) emitter_->onGestureStart({open});
+  }
+  Q_INVOKABLE void gestureEnd(bool open) {
+    if (emitter_) emitter_->onGestureEnd({open});
+  }
+  Q_INVOKABLE void gestureCancel(bool open) {
+    if (emitter_) emitter_->onGestureCancel({open});
+  }
   /// The drawer settled open or closed, whatever started the move.
   Q_INVOKABLE void transitionEnd(bool open) {
     if (emitter_) emitter_->onTransitionEnd({open});
@@ -122,6 +132,7 @@ bool applyDrawer(QQuickItem* item, const rn::ShadowView& view) {
   setMixedColorProp(item, "scrimColor", props->scrimColor);
   item->setProperty("scrimLabel", QString::fromStdString(props->accessibilityLabel));
   item->setProperty("edgeWidth", props->edgeWidth);
+  item->setProperty("swipeMinDistance", props->swipeMinDistance);
   item->setProperty("swipeExclusionLeft", props->swipeExclusionLeft);
   item->setProperty("topInset", props->topInset);
   // Children may have been restacked since the last signal.

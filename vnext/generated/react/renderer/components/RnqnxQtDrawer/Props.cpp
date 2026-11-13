@@ -28,7 +28,8 @@ RNQnxDrawerProps::RNQnxDrawerProps(
     scrimColor(convertRawProp(context, rawProps, "scrimColor", sourceProps.scrimColor, {})),
     edgeWidth(convertRawProp(context, rawProps, "edgeWidth", sourceProps.edgeWidth, {24.0})),
     swipeExclusionLeft(convertRawProp(context, rawProps, "swipeExclusionLeft", sourceProps.swipeExclusionLeft, {0.0})),
-    topInset(convertRawProp(context, rawProps, "topInset", sourceProps.topInset, {0.0})) {}
+    topInset(convertRawProp(context, rawProps, "topInset", sourceProps.topInset, {0.0})),
+    swipeMinDistance(convertRawProp(context, rawProps, "swipeMinDistance", sourceProps.swipeMinDistance, {0.0})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNQnxDrawerProps::getDiffPropsImplementationTarget() const {
@@ -80,6 +81,10 @@ folly::dynamic RNQnxDrawerProps::getDiffProps(
 
   if ((topInset != oldProps->topInset) && !(std::isnan(topInset) && std::isnan(oldProps->topInset))) {
     result["topInset"] = topInset;
+  }
+
+  if ((swipeMinDistance != oldProps->swipeMinDistance) && !(std::isnan(swipeMinDistance) && std::isnan(oldProps->swipeMinDistance))) {
+    result["swipeMinDistance"] = swipeMinDistance;
   }
   return result;
 }

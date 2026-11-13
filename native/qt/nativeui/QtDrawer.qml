@@ -10,11 +10,20 @@ import QtQuick
 // The scrim is the last child of the main content, above everything in it, so
 // it is also what the touch dispatcher's hit test finds there. Nothing here
 // uses Reanimated or a gesture-handler package.
+//
+// Items in the panel. React Native draws them, so QML cannot restyle them; it
+// finds the ones that are `accessible` with a button-like `accessibilityRole`
+// (the nav items) and draws hover, pressed and keyboard-focus layers over them.
+// Keyboard, while the drawer is open and has focus: Up and Down (and Tab and
+// Shift+Tab, which wrap, so focus cannot leave the panel) move between nav
+// items, Home and End jump to the first and last, Enter and Space press the
+// focused one through its accessibility press action, Escape closes. Focus goes
+// to the drawer when it opens, is held there while it is open, and returns to
+// the item that had it before the drawer opened once it closes.
 Item {
     id: root
     visible: true
     clip: true
-    focus: true
 
     // ---- props (set by the Fabric bridge) ---------------------------------
     property bool open: false
@@ -25,11 +34,28 @@ Item {
     property color scrimColor: "#99000000"
     property string scrimLabel: ""
     property real edgeWidth: 24
+    // Px a drag must cover to count, unless it is a fling. 0: only the 40% rule.
+    property real swipeMinDistance: 0
     property real swipeExclusionLeft: 0
     property real topInset: 0
     // px/s of release velocity that decides a drag on its own.
     property real flingVelocity: 500
     property var bridge: null
+
+    // ---- nav item states ------------------------------------------------------
+    property color itemHoverColor: "#22ffffff"
+    property color itemPressedColor: "#33ffffff"
+    property color focusRingColor: "#ff79e8dc"
+    readonly property var navRoles: ["button", "link", "menuitem", "tab", "radio", "checkbox", "switch"]
+    // The panel's nav items in reading order, refreshed on every query.
+    property var navItems: []
+    property int focusedIndex: -1
+    property bool focusVisible: false
+    property Item hoveredItem: null
+    property Item pressedItem: null
+    // The item that had focus when the drawer opened; it gets focus back on close.
+    property Item opener: null
+    property bool focusEngaged: false
 
     // The mounting layer puts React children on `contentItem`.
     readonly property Item contentItem: container
@@ -56,6 +82,151 @@ Item {
     property int lastReported: -1
 
     function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+
+    // ---- nav items, focus and states --------------------------------------
+    function isNavItem(item) {
+        return item.visible && item.enabled && item.accessible === true
+               && navRoles.indexOf(item.accessibilityRole) >= 0
+               && item.accessibilityStateDisabled !== true;
+    }
+
+    function collectNavItems() {
+        var found = [];
+        var stack = drawerPanel ? [drawerPanel] : [];
+        while (stack.length > 0) {
+            var kids = stack.pop().children;
+            for (var i = 0; i < kids.length; i++) {
+                var kid = kids[i];
+                if (!kid.visible)
+                    continue;
+                if (isNavItem(kid))
+                    found.push(kid);
+                else
+                    stack.push(kid);
+            }
+        }
+        found.sort(function(a, b) {
+            var pa = a.mapToItem(root, 0, 0);
+            var pb = b.mapToItem(root, 0, 0);
+            return (pa.y - pb.y) || (pa.x - pb.x);
+        });
+        navItems = found;
+        if (focusedIndex >= found.length)
+            focusedIndex = found.length - 1;
+        return found;
+    }
+
+    function itemAt(position) {
+        var items = collectNavItems();
+        for (var i = 0; i < items.length; i++) {
+            var topLeft = items[i].mapToItem(root, 0, 0);
+            if (position.x >= topLeft.x && position.x < topLeft.x + items[i].width
+                    && position.y >= topLeft.y && position.y < topLeft.y + items[i].height)
+                return items[i];
+        }
+        return null;
+    }
+
+    function isInside(item) {
+        for (var node = item; node; node = node.parent) {
+            if (node === root)
+                return true;
+        }
+        return false;
+    }
+
+    function placeOver(layer, item) {
+        if (!item || !drawerPanel) {
+            layer.visible = false;
+            return;
+        }
+        var origin = drawerPanel.mapFromItem(item, 0, 0);
+        layer.x = origin.x;
+        layer.y = origin.y;
+        layer.width = item.width;
+        layer.height = item.height;
+        layer.radius = typeof item.radius === "number" ? item.radius : 0;
+        layer.visible = true;
+    }
+
+    // Redraws the hover, pressed and focus layers for the current state.
+    function updateLayers() {
+        var shown = pressedItem ? pressedItem : hoveredItem;
+        stateLayer.color = pressedItem ? itemPressedColor : itemHoverColor;
+        placeOver(stateLayer, shown);
+        var ringed = (activeFocus && focusVisible && focusedIndex >= 0 && focusedIndex < navItems.length)
+                     ? navItems[focusedIndex] : null;
+        placeOver(focusRing, ringed);
+    }
+
+    function moveFocus(delta) {
+        var items = collectNavItems();
+        if (items.length === 0)
+            return;
+        focusedIndex = focusedIndex < 0 ? (delta > 0 ? 0 : items.length - 1)
+                                        : (focusedIndex + delta + items.length) % items.length;
+        focusVisible = true;
+        updateLayers();
+    }
+
+    function focusEdge(last) {
+        var items = collectNavItems();
+        if (items.length === 0)
+            return;
+        focusedIndex = last ? items.length - 1 : 0;
+        focusVisible = true;
+        updateLayers();
+    }
+
+    // Presses the focused nav item the way an assistive technology would.
+    function activateFocused() {
+        var items = collectNavItems();
+        if (focusedIndex < 0 || focusedIndex >= items.length)
+            return false;
+        items[focusedIndex].Accessible.pressAction();
+        return true;
+    }
+
+    // Focus goes to the drawer as it starts to open, remembering who had it.
+    function engageFocus() {
+        focusEngaged = true;
+        var window = root.Window.window;
+        var current = window ? window.activeFocusItem : null;
+        opener = (current && !isInside(current)) ? current : null;
+        var items = collectNavItems();
+        focusedIndex = -1;
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].accessibilityStateSelected === true) {
+                focusedIndex = i;
+                break;
+            }
+        }
+        if (focusedIndex < 0 && items.length > 0)
+            focusedIndex = 0;
+        forceActiveFocus(Qt.PopupFocusReason);
+    }
+
+    function releaseFocus() {
+        focusEngaged = false;
+        focusVisible = false;
+        hoveredItem = null;
+        pressedItem = null;
+        updateLayers();
+        var back = opener;
+        opener = null;
+        if (back && back.visible)
+            back.forceActiveFocus(Qt.PopupFocusReason);
+    }
+
+    // While the drawer is open, focus that leaves it comes back.
+    function enforceFocusTrap() {
+        if (!open || progress <= 0.001 || dragging)
+            return;
+        var window = root.Window.window;
+        var current = window ? window.activeFocusItem : null;
+        if (current && !isInside(current))
+            forceActiveFocus(Qt.TabFocusReason);
+    }
 
     function syncPanels() {
         var panels = [];
@@ -128,8 +299,10 @@ Item {
     onProgressChanged: {
         if (drawerPanel)
             drawerPanel.visible = progress > 0;
-        if (progress > 0 && !activeFocus && !dragging)
-            forceActiveFocus();
+        if (progress > 0 && !focusEngaged && !dragging)
+            engageFocus();
+        else if (progress <= 0 && focusEngaged && !dragging)
+            releaseFocus();
     }
 
     onOpenChanged: {
@@ -184,6 +357,116 @@ Item {
         }
     }
 
+    Keys.onPressed: function(event) {
+        if (progress <= 0 || dragging)
+            return;
+        switch (event.key) {
+        case Qt.Key_Tab:
+            // Platforms send Backtab for Shift+Tab; some send Tab with Shift.
+            moveFocus((event.modifiers & Qt.ShiftModifier) ? -1 : 1);
+            break;
+        case Qt.Key_Down:
+            moveFocus(1);
+            break;
+        case Qt.Key_Up:
+        case Qt.Key_Backtab:
+            moveFocus(-1);
+            break;
+        case Qt.Key_Home:
+            focusEdge(false);
+            break;
+        case Qt.Key_End:
+            focusEdge(true);
+            break;
+        case Qt.Key_Return:
+        case Qt.Key_Enter:
+        case Qt.Key_Space:
+            focusVisible = true;
+            if (!activateFocused())
+                return;
+            break;
+        default:
+            return;
+        }
+        event.accepted = true;
+    }
+
+    onActiveFocusChanged: {
+        if (!activeFocus)
+            focusVisible = false;
+        updateLayers();
+    }
+
+    Connections {
+        target: root.Window.window
+        function onActiveFocusItemChanged() { root.enforceFocusTrap(); }
+    }
+
+    // Hover, pressed and focus layers over the panel's nav items. They sit in
+    // the panel, above everything React drew there.
+    Rectangle {
+        id: stateLayer
+        objectName: "rnqnxDrawerItemState"
+        parent: root.drawerPanel
+        z: 99990
+        visible: false
+        color: root.itemHoverColor
+        Behavior on color { ColorAnimation { duration: 100 } }
+    }
+    Rectangle {
+        id: focusRing
+        objectName: "rnqnxDrawerFocusRing"
+        parent: root.drawerPanel
+        z: 99991
+        visible: false
+        color: "transparent"
+        border.width: 2
+        border.color: root.focusRingColor
+    }
+
+    HoverHandler {
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.Stylus
+        enabled: root.progress > 0.001
+        onPointChanged: {
+            root.hoveredItem = root.itemAt(point.position);
+            root.updateLayers();
+        }
+        onHoveredChanged: {
+            if (!hovered) {
+                root.hoveredItem = null;
+                root.updateLayers();
+            }
+        }
+    }
+
+    // Watches presses without taking them from the React views or the drags.
+    PointHandler {
+        acceptedButtons: Qt.LeftButton
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchScreen | PointerDevice.Stylus
+        enabled: root.progress > 0.001
+        onActiveChanged: {
+            if (active) {
+                root.focusVisible = false;
+                root.pressedItem = root.itemAt(point.position);
+                var index = root.navItems.indexOf(root.pressedItem);
+                if (index >= 0)
+                    root.focusedIndex = index;
+            } else {
+                root.pressedItem = null;
+            }
+            root.updateLayers();
+        }
+        onPointChanged: {
+            if (!active)
+                return;
+            var hit = root.itemAt(point.position);
+            if (hit !== root.pressedItem) {
+                root.pressedItem = hit;
+                root.updateLayers();
+            }
+        }
+    }
+
     Item {
         id: container
         anchors.fill: parent
@@ -232,6 +515,18 @@ Item {
         revertTimer.stop();
         dragStartProgress = progress;
         dragging = true;
+        if (bridge)
+            bridge.gestureStart(open);
+    }
+
+    // The system took the drag away: settle where the drawer was and say so.
+    function cancelDrag() {
+        if (!dragging)
+            return;
+        dragging = false;
+        animateTo(open ? 1 : 0);
+        if (bridge)
+            bridge.gestureCancel(open);
     }
 
     function updateDrag(deltaX) {
@@ -244,11 +539,15 @@ Item {
         if (!dragging)
             return;
         dragging = false;
+        if (bridge)
+            bridge.gestureEnd(open);
         var towardOpen = direction * velocityX;
         var moved = progress - dragStartProgress;
         var next;
         if (Math.abs(velocityX) > flingVelocity)
             next = towardOpen > 0;
+        else if (Math.abs(moved) * drawerWidth < swipeMinDistance)
+            next = dragStartProgress >= 0.5;
         else if (Math.abs(moved) >= 0.4)
             next = moved > 0;
         else
@@ -286,6 +585,7 @@ Item {
                     root.endDrag(centroid.velocity.x);
             }
             onTranslationChanged: root.updateDrag(translation.x)
+            onCanceled: root.cancelDrag()
         }
     }
 
@@ -303,6 +603,7 @@ Item {
                 root.endDrag(centroid.velocity.x);
         }
         onTranslationChanged: root.updateDrag(translation.x)
+        onCanceled: root.cancelDrag()
     }
 
     Accessible.role: Accessible.Pane

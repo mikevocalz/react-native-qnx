@@ -63,10 +63,59 @@ function buildTabs(state, descriptors) {
         typeof options.tabBarAccessibilityLabel === 'string'
           ? options.tabBarAccessibilityLabel
           : labelFor(options, route.name),
+      // Per-tab overrides of the bar-wide values (the JavaScript bar draws them).
+      activeTint: options.tabBarActiveTintColor,
+      inactiveTint: options.tabBarInactiveTintColor,
+      activeBackground: options.tabBarActiveBackgroundColor,
+      inactiveBackground: options.tabBarInactiveBackgroundColor,
+      testID: options.tabBarButtonTestID,
       options,
     });
   });
   return tabs;
+}
+
+function flatStyle(style) {
+  return Array.isArray(style)
+    ? Object.assign({}, ...style.filter(Boolean).map(flatStyle))
+    : (style ?? {});
+}
+
+// What the native bar can draw. Any other tab bar option sends the bar to
+// JsTabBar, which draws the whole set (see BottomTabBar).
+const NATIVE_BAR_STYLE_KEYS = new Set(['backgroundColor', 'height', 'display']);
+const NATIVE_BADGE_STYLE_KEYS = new Set(['backgroundColor', 'color']);
+const JS_ONLY_TAB_OPTIONS = [
+  'tabBarButton',
+  'tabBarItemStyle',
+  'tabBarLabelStyle',
+  'tabBarIconStyle',
+  'tabBarAllowFontScaling',
+  'tabBarActiveBackgroundColor',
+  'tabBarInactiveBackgroundColor',
+  'tabBarButtonTestID',
+];
+
+/**
+ * Whether the bar needs JsTabBar: a React element (tabBarIcon without qnxIcon,
+ * tabBarBackground, tabBarButton) or a style the native bar does not draw.
+ */
+function needsJsTabBar(tabs, focusedOptions) {
+  if (tabs.some((tab) => typeof tab.options.tabBarIcon === 'function' && !tab.icon)) return true;
+  const bar = focusedOptions;
+  if (bar.tabBarBackground !== undefined) return true;
+  if (bar.tabBarVariant === 'material') return true;
+  if (bar.tabBarLabelPosition === 'beside-icon') return true;
+  const style = flatStyle(bar.tabBarStyle);
+  if (Object.keys(style).some((key) => !NATIVE_BAR_STYLE_KEYS.has(key))) return true;
+  return tabs.some((tab) => {
+    if (JS_ONLY_TAB_OPTIONS.some((name) => tab.options[name] !== undefined)) return true;
+    // The native bar takes one tint pair for the bar, from the focused tab.
+    if (tab.activeTint !== bar.tabBarActiveTintColor) return true;
+    if (tab.inactiveTint !== bar.tabBarInactiveTintColor) return true;
+    const badge = flatStyle(tab.options.tabBarBadgeStyle);
+    return Object.keys(badge).some((key) => !NATIVE_BADGE_STYLE_KEYS.has(key));
+  });
 }
 
 function tintsFor(options) {
@@ -85,4 +134,13 @@ function tintsFor(options) {
   };
 }
 
-module.exports = { buildTabs, tintsFor, resolveTabBarLayout, resolveTabBarEdge, isRail, labelFor };
+module.exports = {
+  buildTabs,
+  flatStyle,
+  needsJsTabBar,
+  tintsFor,
+  resolveTabBarLayout,
+  resolveTabBarEdge,
+  isRail,
+  labelFor,
+};
