@@ -159,6 +159,13 @@ done < "${state}/pids"
   assert.deepEqual(await calls(), ['--stop-running']);
   assert.equal(stubborn.exitCode, null);
 
+  // 6b. Run as root, the guard also sees another login's copy and stops it.
+  await reset();
+  const foreign = await fake('org.rnqnx.showcase', String(Number(uid) + 1));
+  assert.equal((await run(['--replace'], { RNQNX_UID: '0' })).status, 0);
+  await exited(foreign);
+  assert.equal(foreign.signalCode, 'SIGTERM');
+
   // 7. Other apps and other users' processes are not this app.
   await reset();
   const other = await fake('org.rnqnx.animshowcase');

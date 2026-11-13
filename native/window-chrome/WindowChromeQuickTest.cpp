@@ -611,8 +611,11 @@ class WindowChromeQuickTest : public QObject {
     QCOMPARE(baseAppId(QStringLiteral("org.dev")), QStringLiteral("org.dev"));
     QCOMPARE(SingleInstance::socketNameFor(QStringLiteral("org.rnqnx.showcase.dev")),
              SingleInstance::socketNameFor(QStringLiteral("org.rnqnx.showcase")));
-    QCOMPARE(SingleInstance::socketNameFor(QStringLiteral("org.rnqnx.showcase")),
+    QCOMPARE(QFileInfo(SingleInstance::socketNameFor(QStringLiteral("org.rnqnx.showcase"))).fileName(),
              QStringLiteral("rnqnx-org.rnqnx.showcase"));
+    // One directory for every launcher, whatever its TMPDIR.
+    QCOMPARE(QFileInfo(SingleInstance::socketNameFor(QStringLiteral("org.rnqnx.showcase"))).path(),
+             QStringLiteral("/tmp"));
     QVERIFY(SingleInstance::socketNameFor(QStringLiteral("org.rnqnx.a")) !=
             SingleInstance::socketNameFor(QStringLiteral("org.rnqnx.b")));
     QCOMPARE(buildVariantSuffixes(), (QStringList{QStringLiteral("dev"), QStringLiteral("debug"), QStringLiteral("preview")}));
@@ -726,6 +729,76 @@ class WindowChromeQuickTest : public QObject {
     QVERIFY(reach.waitForConnected(500));
   }
 #endif
+
+  // The socket protocol, one command per line, spoken raw.
+  void socketProtocol() {
+    const QString appId = uniqueAppId("proto");
+    InstanceThread running(appId, BuildKind::Dev, true);
+    QVERIFY(running.waitListening());
+    const QString path = SingleInstance::socketNameFor(appId);
+    const auto ask = [&path](const QByteArray& command) {
+      QLocalSocket socket;
+      socket.connectToServer(path);
+      if (!socket.waitForConnected(1000)) return QByteArray("no connection");
+      socket.write(command + "\n");
+      socket.waitForBytesWritten(1000);
+      if (!socket.canReadLine()) socket.waitForReadyRead(2000);
+      return socket.readLine().trimmed();
+    };
+    const QByteArray pid = QByteArray::number(static_cast<qlonglong>(QCoreApplication::applicationPid()));
+    const QByteArray expected = "ok pid=" + pid + " kind=dev";
+    QCOMPARE(ask("info"), expected);
+    QCOMPARE(ask("restore"), expected);
+    QCOMPARE(running.restores.load(), 1);
+    QCOMPARE(running.quits.load(), 0);
+    QCOMPARE(ask("bogus"), QByteArray("error unknown command"));
+    QCOMPARE(running.restores.load(), 1);
+    // Any login can reach it: world read and write on the socket file.
+    const auto permissions = QFileInfo(path).permissions();
+    QVERIFY(permissions.testFlag(QFileDevice::ReadOther) && permissions.testFlag(QFileDevice::WriteOther));
+    QCOMPARE(ask("quit"), expected);
+    QCOMPARE(running.quits.load(), 1);
+  }
+
+  // The socket directory is created when it is missing.
+  void missingSocketDirectoryIsCreated() {
+    // Short: a socket path is limited to about 100 bytes.
+    const QString root = QStringLiteral("/tmp/rq%1").arg(QCoreApplication::applicationPid());
+    const QString dir = root + QStringLiteral("/missing/run");
+    QVERIFY(!QFileInfo::exists(dir));
+    struct EnvGuard {
+      ~EnvGuard() { qunsetenv("RNQNX_SOCKET_DIR"); }
+    } guard;
+    qputenv("RNQNX_SOCKET_DIR", QFile::encodeName(dir));
+    {
+      SingleInstance instance(QStringLiteral("org.rnqnx.sockdir"), BuildKind::Release);
+      QVERIFY(instance.listen());
+      QVERIFY(QFileInfo(dir).isDir());
+      QLocalSocket reach;
+      reach.connectToServer(instance.serverName());
+      QVERIFY(reach.waitForConnected(500));
+    }
+    QDir(root).removeRecursively();
+  }
+
+  // A stale socket another login left and this one cannot remove (here: not a
+  // removable file) does not stop the app from owning the key: it listens on
+  // its per-user fallback and later launches find it there.
+  void unremovableStaleSocketUsesFallback() {
+    const QString appId = uniqueAppId("fallback");
+    const QString path = SingleInstance::socketNameFor(appId);
+    QVERIFY(QDir().mkdir(path));  // a directory squats on the primary path
+    SingleInstance owner(appId, BuildKind::Release);
+    QVERIFY(owner.listen());
+    SingleInstance later(appId + QStringLiteral(".dev"), BuildKind::Dev);
+    QVERIFY(!later.listen());  // the key is owned; no second instance
+    QVERIFY(later.candidateSockets().size() >= 2);
+    QLocalSocket reach;
+    reach.connectToServer(later.candidateSockets().at(1));
+    QVERIFY(reach.waitForConnected(500));
+    reach.abort();
+    QDir().rmdir(path);
+  }
 
   // Launches that start at the same moment: exactly one becomes the instance.
   void simultaneousLaunchesYieldOneOwner() {

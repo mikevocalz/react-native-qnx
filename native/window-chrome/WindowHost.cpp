@@ -3,7 +3,9 @@
 #include <QByteArray>
 #include <QCoreApplication>
 #include <QDir>
+#include <QFileInfo>
 #include <QElapsedTimer>
+#include <QFile>
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QScreen>
@@ -14,6 +16,10 @@
 #include <csignal>
 #include <cstdio>
 #include <cstring>
+#include <memory>
+#include <mutex>
+#include <set>
+#include <string>
 #include <thread>
 
 #if defined(Q_OS_QNX)
@@ -21,6 +27,10 @@
 #include <unistd.h>
 #elif defined(Q_OS_UNIX)
 #include <unistd.h>
+#endif
+#if defined(Q_OS_UNIX)
+#include <fcntl.h>
+#include <sys/stat.h>
 #endif
 
 namespace rnqnx::window {
@@ -193,6 +203,82 @@ void terminateProcess([[maybe_unused]] qint64 pid) {
 #endif
 }
 
+QString socketDirectory() {
+  QString dir = qEnvironmentVariable("RNQNX_SOCKET_DIR");
+#if defined(Q_OS_UNIX)
+  // A fixed directory: a session's TMPDIR may differ between an SSH login, the
+  // desktop launcher and a daemon, and each would then look in another place.
+  if (dir.isEmpty() && QFileInfo(QStringLiteral("/tmp")).isDir()) dir = QStringLiteral("/tmp");
+#endif
+  if (dir.isEmpty()) dir = QDir::tempPath();
+  QDir().mkpath(dir);
+  return dir;
+}
+
+// A lock on the instance key that any login can take and that disappears with
+// its process: fcntl record lock on a world-writable file. Record locks do not
+// separate threads of one process, so a process-wide set does.
+struct KeyLock {
+  static std::mutex& mutex() {
+    static std::mutex m;
+    return m;
+  }
+  static std::set<std::string>& held() {
+    static std::set<std::string> h;
+    return h;
+  }
+  std::string key;
+  int fd{-1};
+  ~KeyLock() {
+#if defined(Q_OS_UNIX)
+    if (fd >= 0) ::close(fd);
+#endif
+    std::lock_guard<std::mutex> guard(mutex());
+    held().erase(key);
+  }
+};
+
+std::shared_ptr<void> acquireKeyLock([[maybe_unused]] const QString& path, int timeoutMs) {
+#if defined(Q_OS_UNIX)
+  const std::string key = QFile::encodeName(path).toStdString();
+  QElapsedTimer waited;
+  waited.start();
+  for (;;) {
+    {
+      std::lock_guard<std::mutex> guard(KeyLock::mutex());
+      if (KeyLock::held().count(key) == 0) {
+        const int fd = ::open(key.c_str(), O_RDWR | O_CREAT | O_CLOEXEC, 0666);
+        if (fd >= 0) {
+          ::fchmod(fd, 0666);
+          struct flock lock {};
+          lock.l_type = F_WRLCK;
+          lock.l_whence = SEEK_SET;
+          if (::fcntl(fd, F_SETLK, &lock) == 0) {
+            auto result = std::make_shared<KeyLock>();
+            result->key = key;
+            result->fd = fd;
+            KeyLock::held().insert(key);
+            return result;
+          }
+          ::close(fd);
+        } else {
+          // The lock file cannot be made at all (read-only directory): the
+          // socket alone has to arbitrate.
+          auto result = std::make_shared<KeyLock>();
+          result->key = key;
+          KeyLock::held().insert(key);
+          return result;
+        }
+      }
+    }
+    if (waited.elapsed() >= timeoutMs) return nullptr;
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  }
+#else
+  return std::make_shared<int>(0);
+#endif
+}
+
 // "ok pid=<n> kind=<kind>"; an older instance answers a bare "ok".
 std::optional<InstanceInfo> parseReply(const QByteArray& line) {
   const QList<QByteArray> parts = line.trimmed().split(' ');
@@ -220,14 +306,29 @@ SingleInstance::~SingleInstance() {
 }
 
 QString SingleInstance::socketNameFor(const QString& appId) {
-  return QStringLiteral("rnqnx-%1").arg(baseAppId(appId));
+  return socketDirectory() + QStringLiteral("/rnqnx-%1").arg(baseAppId(appId));
 }
 
 QStringList SingleInstance::legacySocketNamesFor(const QString& appId) {
   const QString base = baseAppId(appId);
   const QString user = currentUser();
-  return {QStringLiteral("rnqnx-%1-%2").arg(base, user),
-          QStringLiteral("rnqnx-%1.dev-%2").arg(base, user)};
+  QStringList names;
+  for (const QString& dir : {socketDirectory(), QDir::tempPath()}) {
+    for (const QString& id : {base, base + QStringLiteral(".dev")}) {
+      const QString path = QStringLiteral("%1/rnqnx-%2-%3").arg(dir, id, user);
+      if (!names.contains(path)) names.append(path);
+    }
+  }
+  return names;
+}
+
+// The primary path; the per-user fallback a launch uses when a stale socket of
+// another login cannot be removed; then older builds' names.
+QStringList SingleInstance::candidateSockets() const {
+  QStringList names{serverName_, serverName_ + QLatin1Char('.') + currentUser()};
+  names.removeDuplicates();
+  names += legacySocketNamesFor(baseId_);
+  return names;
 }
 
 void SingleInstance::setProcessProbe(std::function<bool(qint64)> alive,
@@ -257,16 +358,14 @@ std::optional<InstanceInfo> SingleInstance::talk(const QString& socketName, cons
 }
 
 bool SingleInstance::forwardedToRunningInstance() {
-  QStringList names{serverName_};
-  names += legacySocketNamesFor(baseId_);
+  const QStringList names = candidateSockets();
   for (const QString& name : names)
     if (talk(name, "restore")) return true;
   return false;
 }
 
 std::optional<InstanceInfo> SingleInstance::runningInstanceInfo() {
-  QStringList names{serverName_};
-  names += legacySocketNamesFor(baseId_);
+  const QStringList names = candidateSockets();
   for (const QString& name : names)
     if (const auto info = talk(name, "info")) return info;
   return std::nullopt;
@@ -283,8 +382,7 @@ bool SingleInstance::waitForExit(qint64 pid, int timeoutMs) {
 }
 
 ReplaceResult SingleInstance::replaceRunningInstance(int quitTimeoutMs, int termTimeoutMs) {
-  QStringList names{serverName_};
-  names += legacySocketNamesFor(baseId_);
+  const QStringList names = candidateSockets();
   bool anyone = false;
   for (const QString& name : names) {
     const auto info = talk(name, "quit");
@@ -318,37 +416,47 @@ ReplaceResult SingleInstance::replaceRunningInstance(int quitTimeoutMs, int term
 }
 
 bool SingleInstance::listen() {
+  // Qt 6 lets a second listen() take over the name of a live server, which
+  // would leave the first instance unreachable and allow two windows. Look
+  // for a live owner on every candidate path and leave it alone.
+  const auto liveOwner = [this]() {
+    for (const QString& name : candidateSockets()) {
+      QLocalSocket probe;
+      probe.connectToServer(name);
+      if (probe.waitForConnected(200)) {
+        probe.abort();
+        std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING %s is owned by a running instance\n",
+                     name.toUtf8().constData());
+        return true;
+      }
+    }
+    return false;
+  };
+  if (liveOwner()) return false;
   // Probe, remove and listen are one step: another launch starting at the same
-  // moment waits here, then finds this socket live. Never stale by age, only
-  // when its owner process is gone.
-  auto lock = std::make_unique<QLockFile>(QDir::temp().filePath(serverName_ + QStringLiteral(".lock")));
-  lock->setStaleLockTime(0);
-  if (!lock->tryLock(1500)) {
+  // moment (any login) waits here, then finds this socket live. The lock goes
+  // with its process, so it is never stale.
+  auto lock = acquireKeyLock(serverName_ + QStringLiteral(".lock"), 1500);
+  if (!lock) {
     std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING %s is being started by another launch\n",
                  serverName_.toUtf8().constData());
     return false;
   }
-  // Qt 6 lets a second listen() take over the name of a live server, which
-  // would leave the first instance unreachable and allow two windows. Look
-  // for a live owner first and leave its socket alone. A socket file nobody
-  // answers on is stale (a crashed process) and is removed.
-  {
-    QLocalSocket probe;
-    probe.connectToServer(serverName_);
-    if (probe.waitForConnected(200)) {
-      probe.abort();
-      std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING %s is owned by a running instance\n",
-                   serverName_.toUtf8().constData());
-      return false;
-    }
-    const bool stale = probe.error() == QLocalSocket::ServerNotFoundError ||
-                       probe.error() == QLocalSocket::ConnectionRefusedError;
-    probe.abort();
-    if (stale) QLocalServer::removeServer(serverName_);
-  }
+  if (liveOwner()) return false;
+  // Nobody answers: a socket file that is still there is stale (a crashed
+  // process) and goes. If another login's stale file cannot be removed, this
+  // user's own fallback path takes its place (candidateSockets() covers it).
+  QString path = serverName_;
+  QLocalServer::removeServer(path);
   auto* server = new QLocalServer(this);
-  server->setSocketOptions(QLocalServer::UserAccessOption);
-  if (!server->listen(serverName_)) {
+  server->setSocketOptions(QLocalServer::WorldAccessOption);
+  bool listening = server->listen(path);
+  if (!listening) {
+    path = serverName_ + QLatin1Char('.') + currentUser();
+    QLocalServer::removeServer(path);
+    listening = server->listen(path);
+  }
+  if (!listening) {
     std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING cannot listen on %s: %s\n",
                  serverName_.toUtf8().constData(), server->errorString().toUtf8().constData());
     delete server;

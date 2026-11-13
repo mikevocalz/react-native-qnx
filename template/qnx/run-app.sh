@@ -41,12 +41,13 @@ base_id() {
 }
 BASE=$(base_id "$APP_ID")
 
-# Pids of this user's processes whose program is this app, in any build variant.
+# Pids of this app's processes, in any build variant: this user's, or every
+# user's when run as root (root sees them all and may stop them).
 running_pids() {
-  me=$(id -u)
+  me=${RNQNX_UID:-$(id -u)}
   "$PIDIN" -F '%a %N %U' 2>/dev/null | while read -r pid name uid rest; do
     case $pid in '' | *[!0-9]*) continue ;; esac
-    [ "$uid" = "$me" ] || continue
+    [ "$me" = 0 ] || [ "$uid" = "$me" ] || continue
     name=${name##*/}
     [ "$(base_id "$name")" = "$BASE" ] || continue
     [ "$pid" = "$$" ] && continue

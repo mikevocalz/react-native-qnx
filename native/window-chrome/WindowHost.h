@@ -24,7 +24,6 @@
 //   "rnqnx-winmgr windowed" and takes "rnqnx=minimize" and "rnqnx=restore"
 //   as SCREEN_EVENT_MANAGER messages, the way demolauncher talks to it.
 
-#include <QLockFile>
 #include <QObject>
 #include <QPointer>
 #include <QString>
@@ -85,11 +84,16 @@ class SingleInstance final : public QObject {
                           QObject* parent = nullptr);
   ~SingleInstance() override;
 
-  // The socket name for an app id (variant suffixes are ignored).
+  // The socket path for an app id (variant suffixes are ignored). It is the
+  // same for every launcher: /tmp (created if missing, RNQNX_SOCKET_DIR
+  // overrides it), whatever TMPDIR a session has, and world-accessible, so
+  // another login can still restore or replace the instance.
   static QString socketNameFor(const QString& appId);
-  // Names an older build may be listening on (`rnqnx-<id>-<uid>`, with and
+  // Paths an older build may be listening on (`rnqnx-<id>-<uid>`, with and
   // without the `.dev` suffix). They understand `restore` only.
   static QStringList legacySocketNamesFor(const QString& appId);
+  // Where this process looks for a running instance, in order.
+  QStringList candidateSockets() const;
 
   // True when another process with the same app took the restore request.
   // The caller should then exit without creating a window.
@@ -125,8 +129,8 @@ class SingleInstance final : public QObject {
   QString serverName_;
   QPointer<QLocalServer> server_;
   // Held while this process owns the key, so two launches that start together
-  // cannot both pass the probe in listen().
-  std::unique_ptr<QLockFile> lock_;
+  // (even as different users) cannot both pass the probe in listen().
+  std::shared_ptr<void> lock_;
   std::function<bool(qint64)> alive_;
   std::function<void(qint64)> terminate_;
 };

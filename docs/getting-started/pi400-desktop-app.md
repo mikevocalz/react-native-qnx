@@ -252,30 +252,42 @@ There is never more than one copy of an app on the board. The rules:
   suffix (`.dev`, `.debug`, `.preview`; the list is `buildVariantSuffixes()` in
   `native/window-chrome/WindowHost.cpp`). `org.rnqnx.showcase` and
   `org.rnqnx.showcase.dev` are one app. The first process listens on the local
-  socket `rnqnx-<base id>` (no uid in the name: one user per board).
+  socket `/tmp/rnqnx-<base id>`: a fixed directory (created if missing, so a
+  session's `TMPDIR` does not matter; `RNQNX_SOCKET_DIR` overrides it), no uid
+  in the name, and world read/write, so any login (the desktop launcher, SSH,
+  root) reaches it.
+- Starting is one step under a lock any login can take (`<socket>.lock`, an
+  `fcntl` record lock that disappears with its process). Launches that start
+  together cannot both become the instance: the loser finds the owner and
+  restores it. A socket file with nobody behind it (the app was killed) is
+  removed; one that cannot be removed gets the per-user fallback path
+  `<socket>.<uid>`, which later launches also check.
 - A second launch restores the running window and exits. This is the default,
   and what the tile does.
 - `--replace` (used by `rnqnx project dev` and `project run`) asks the running
   copy to quit over the socket (`quit`), waits up to 5 s for its process to
   exit, then sends SIGTERM to the pid it reported and waits 3 s more. It never
   sends SIGKILL; if the old copy will not go, the launch fails and starts
-  nothing.
+  nothing. A quit that arrives while the app fetches its bundle, shows the dev
+  error screen or reloads still ends the app.
 - The socket answers `restore`, `info` and `quit` with `ok pid=<n>
-kind=<dev|release>`, so a launcher can tell which build is running.
+kind=<dev|release>`, so a launcher can tell which build is running; anything
+  else gets `error unknown command`.
 - `--restore-only` shows the running copy and exits 75 without starting when
   none answers. `--stop-running` quits it and exits.
-- `run-app.sh` checks `pidin` for the app's executable (any variant suffix,
-  owned by the current user) before it starts the app, so a stale socket or a
-  socket owned by another login cannot let a duplicate through: it restores the
-  reachable copy, otherwise SIGTERMs the stale process and starts one new copy.
+- `run-app.sh` checks `pidin` for the app's executable (any variant suffix)
+  before it starts the app. As a normal user it sees that user's processes; as
+  root it sees all. A copy it cannot reach over the socket is stopped with
+  SIGTERM before one new copy starts, so there is still exactly one.
 - `rnqnx-winmgr` collapses windows of one app into a single dock entry. If a
   second window of an app appears anyway, the first window is raised and the
   manager logs `second window of '<app>'` to `/tmp/rnqnx-winmgr.log`; it kills
   nothing.
 
 Builds made before this change listen on `rnqnx-<id>-<uid>` and answer
-`restore` only: a new launch still restores them, but cannot `--replace` them
-over the socket. `run-app.sh` stops them by pid.
+`restore` only. A new launch still restores them; `--replace` cannot quit
+them over the socket, and `run-app.sh` stops them by pid. Every app is rebuilt
+with this change, so this only matters while an old build is still running.
 
 ## Launcher tile
 
