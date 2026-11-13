@@ -737,8 +737,6 @@ int main(int argc, char** argv) {
       QStringLiteral("Switch"), QStringLiteral("Switch"));
   adapter.mapComponent(
       QStringLiteral("SafeAreaView"), QStringLiteral("View"));
-  adapter.mapComponent(
-      QStringLiteral("ModalHostView"), QStringLiteral("View"));
 
 #if RNQNX_ENABLE_INPUT_LIFECYCLE
   // Outlive the host: stopping its surface can still remove captured targets.

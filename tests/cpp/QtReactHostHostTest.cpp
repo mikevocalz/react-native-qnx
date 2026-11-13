@@ -284,8 +284,6 @@ class Fixture {
         QStringLiteral("Switch"), QStringLiteral("Switch"));
     adapter_.mapComponent(
         QStringLiteral("SafeAreaView"), QStringLiteral("View"));
-    adapter_.mapComponent(
-        QStringLiteral("ModalHostView"), QStringLiteral("View"));
     adapter_.mapComponent(QStringLiteral("Image"), QStringLiteral("Image"));
     adapter_.mapComponent(QStringLiteral("Paragraph"), QStringLiteral("Text"));
   }
@@ -2408,8 +2406,9 @@ void modalMounts() {
   EXPECT(placeholders == 1);
   EXPECT(modal != nullptr);
   EXPECT(modal->width() == 640.0 && modal->height() == 480.0);
-  EXPECT(modal->childItems().size() == 1);
-  QQuickItem* content = modal->childItems().at(0);
+  // The modal's own background rectangle sits under the one React child.
+  EXPECT(modal->childItems().size() == 2);
+  QQuickItem* content = modal->childItems().last();
   EXPECT(content->property("color").value<QColor>() ==
          QColor(QStringLiteral("#336699")));
 }

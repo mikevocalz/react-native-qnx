@@ -53,3 +53,23 @@ endfunction()
 rnqnx_native_ui_test(rnqnx_qt_native_ui_test NativeUiQuickTest.cpp)
 rnqnx_native_ui_test(rnqnx_image_units_test ImageUnitsTest.cpp)
 rnqnx_native_ui_test(rnqnx_expo_image_item_test ExpoImageItemTest.cpp)
+
+# The Modal item and its focus bridge. Neither needs React Native: the bridge
+# takes a callback where the Fabric adapter passes the onRequestClose emitter.
+add_executable(rnqnx_modal_quick_test
+  ModalQuickTest.cpp
+  "${RNQNX_VNEXT}/src/fabric/QtModalBridge.cpp"
+  "${RNQNX_VNEXT}/include/react-native-qnx/fabric/QtModalBridge.h"
+  "${RNQNX_VNEXT}/src/views/qt/QtModalQml.cpp")
+set_target_properties(rnqnx_modal_quick_test PROPERTIES AUTOMOC ON)
+target_compile_features(rnqnx_modal_quick_test PRIVATE cxx_std_20)
+target_include_directories(rnqnx_modal_quick_test PRIVATE "${RNQNX_VNEXT}/include")
+target_compile_definitions(rnqnx_modal_quick_test PRIVATE QT_NO_KEYWORDS)
+target_link_libraries(rnqnx_modal_quick_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick Qt6::Test)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+  target_compile_options(rnqnx_modal_quick_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()
+if(BUILD_TESTING AND NOT CMAKE_CROSSCOMPILING)
+  add_test(NAME rnqnx_modal_quick_test COMMAND rnqnx_modal_quick_test -platform offscreen)
+  set_tests_properties(rnqnx_modal_quick_test PROPERTIES TIMEOUT 90 ENVIRONMENT "QT_QUICK_BACKEND=software")
+endif()
