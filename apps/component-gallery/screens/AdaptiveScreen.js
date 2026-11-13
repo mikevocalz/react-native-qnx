@@ -27,10 +27,11 @@ const {
   Label,
   Heading,
   ActionButton,
+  useViewport,
 } = ui;
 
 function AdaptivePage() {
-  const width = useConformance((state) => state.width);
+  const { width } = useViewport();
   const row = useConformance((state) => state.row);
   const wide = width >= 760;
   const panelStyle = {

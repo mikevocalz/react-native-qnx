@@ -5,7 +5,10 @@
 #include <QDir>
 #include <QImage>
 #include <QObject>
+#include <QAccessible>
 #include <QQmlComponent>
+#include <QQmlContext>
+#include <QQmlProperty>
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -14,6 +17,7 @@
 #include <QtTest>
 
 #include "react-native-qnx/views/QtCssColor.h"
+#include "react-native-qnx/views/image/ExpoImageItem.h"
 
 #include <memory>
 
@@ -39,13 +43,6 @@ class Recorder final : public QObject {
     calls << QStringLiteral("layoutMode:%1:%2").arg(mode).arg(size);
   }
   Q_INVOKABLE QString resolveImage(const QString& uri) { return uri; }
-  Q_INVOKABLE void imageLoadStarted() { calls << QStringLiteral("loadStart"); }
-  Q_INVOKABLE void imageProgress(double) {}
-  Q_INVOKABLE void imageLoaded(const QString&, double w, double h, const QString& cache) {
-    calls << QStringLiteral("load:%1x%2:%3").arg(w).arg(h).arg(cache);
-  }
-  Q_INVOKABLE void imageFailed(const QString&) { calls << QStringLiteral("error"); }
-  Q_INVOKABLE void imageDisplayed() { calls << QStringLiteral("display"); }
 
   int count(const QString& prefix) const {
     int n = 0;
@@ -107,6 +104,7 @@ class NativeUiQuickTest : public QObject {
 
  private Q_SLOTS:
   void initTestCase() {
+    rnqnx::views::ExpoImageItem::registerQmlType();
     window_ = std::make_unique<QQuickWindow>();
     window_->resize(800, 500);
     window_->show();
@@ -345,6 +343,73 @@ class NativeUiQuickTest : public QObject {
     QVERIFY(!bar->isVisible());
   }
 
+  // The content beside a left rail is the window minus the rail, so a card
+  // padded 28 px from the content's right edge ends 28 px inside the window
+  // with its corners rounded. Golden pixels at the right edge, at narrow,
+  // normal and wide windows, and after a resize.
+  void contentBesideTheRailEndsInsideTheWindowWithRoundedCorners() {
+    auto bar = load(QStringLiteral("QtTabBar.qml"), QSize(96, 400));
+    QVERIFY(bar);
+    Recorder recorder;
+    bar->setProperty("bridge", QVariant::fromValue(static_cast<QObject*>(&recorder)));
+    bar->setProperty("tabs", tabs());
+    bar->setProperty("activeKey", QStringLiteral("home"));
+    bar->setProperty("layout", QStringLiteral("side"));
+    bar->setProperty("railWidth", 96.0);
+    QVERIFY(QTest::qWaitFor([&] { return recorder.count(QStringLiteral("layoutMode:side:96")) >= 1; }));
+    const double rail = bar->property("occupied").toDouble();
+    QCOMPARE(rail, 96.0);
+
+    auto* content = new QQuickItem(window_->contentItem());
+    auto* card = new QQuickItem(content);
+    const QColor background(12, 25, 41);
+    const QColor cardColor(20, 37, 56);
+    // Two plain items stand in for the page and its rounded card.
+    const auto paint = [&](QQuickItem* item, const QColor& color, qreal radius) {
+      QQmlComponent component(&engine_);
+      component.setData(QByteArrayLiteral("import QtQuick\nRectangle { }"), QUrl());
+      auto* rect = qobject_cast<QQuickItem*>(component.create());
+      QVERIFY(rect);
+      rect->setParentItem(item);
+      rect->setZ(-1);  // behind the item's other children
+      rect->setProperty("color", color);
+      rect->setProperty("radius", radius);
+      rect->setWidth(item->width());
+      rect->setHeight(item->height());
+      QObject::connect(item, &QQuickItem::widthChanged, rect, [item, rect] { rect->setWidth(item->width()); });
+      QObject::connect(item, &QQuickItem::heightChanged, rect, [item, rect] { rect->setHeight(item->height()); });
+    };
+    content->setSize(QSizeF(1, 1));
+    paint(content, background, 0);
+    paint(card, cardColor, 14);
+
+    for (const int windowWidth : {360, 586, 880, 1280}) {
+      window_->resize(windowWidth, 400);
+      QVERIFY(QTest::qWaitFor([&] { return window_->width() == windowWidth; }));
+      bar->setSize(QSizeF(rail, 400));
+      // What the router's layout does: content starts where the rail ends.
+      content->setPosition(QPointF(rail, 0));
+      content->setSize(QSizeF(windowWidth - rail, 400));
+      card->setPosition(QPointF(28, 18));
+      card->setSize(QSizeF(content->width() - 56, 200));
+      QTest::qWait(60);
+      const QImage frame = window_->grabWindow();
+      QVERIFY(!frame.isNull());
+      const int right = windowWidth - 28;       // the card's right edge
+      const int midY = 18 + 100;
+      QCOMPARE(frame.pixelColor(right - 2, midY), cardColor);       // card reaches its edge
+      QCOMPARE(frame.pixelColor(right + 2, midY), background);      // and stops there: 28 px of padding
+      QCOMPARE(frame.pixelColor(windowWidth - 2, midY), background);
+      // The corner is rounded: the card's own color is absent at the very
+      // corner pixel and present a radius inwards.
+      QCOMPARE(frame.pixelColor(right - 1, 18), background);
+      QCOMPARE(frame.pixelColor(right - 14, 18 + 1), cardColor);
+      // The left edge is not shifted by the rail either.
+      QCOMPARE(frame.pixelColor(static_cast<int>(rail) + 28 + 2, midY), cardColor);
+    }
+    window_->resize(800, 500);
+  }
+
   void tabBarMouseAndKeyboard() {
     auto bar = load(QStringLiteral("QtTabBar.qml"), QSize(600, 60));
     QVERIFY(bar);
@@ -389,51 +454,29 @@ class NativeUiQuickTest : public QObject {
   }
 
   // ---- ExpoImage view ---------------------------------------------------
+  // Loading, painting and events are covered by ExpoImageItemTest; this checks
+  // the QML wrapper that maps the mounting layer's accessibility properties
+  // onto Qt's attached Accessible properties.
 
-  void expoImageLoadsDisplaysAndFails() {
-    QTemporaryDir directory;
-    QVERIFY(directory.isValid());
-    QImage image(32, 16, QImage::Format_ARGB32);
-    image.fill(Qt::red);
-    const QString path = directory.filePath(QStringLiteral("red.png"));
-    QVERIFY(image.save(path));
-
+  void expoImageAccessibilityFollowsProps() {
     auto view = load(QStringLiteral("QtExpoImage.qml"), QSize(100, 100));
     QVERIFY(view);
-    Recorder recorder;
-    view->setProperty("bridge", QVariant::fromValue(static_cast<QObject*>(&recorder)));
-    view->setProperty("transitionMs", 40.0);
-    view->setProperty("sourceUrl", QUrl::fromLocalFile(path).toString());
-    QVERIFY(QTest::qWaitFor([&] { return recorder.count(QStringLiteral("display")) == 1; }, 3000));
-    QVERIFY(recorder.calls.contains(QStringLiteral("load:32x16:none")));
-    QVERIFY(recorder.calls.indexOf(QStringLiteral("loadStart")) < recorder.calls.indexOf(QStringLiteral("display")));
-
-    view->setProperty("sourceUrl", QUrl::fromLocalFile(directory.filePath(QStringLiteral("missing.png"))).toString());
-    QVERIFY(QTest::qWaitFor([&] { return recorder.count(QStringLiteral("error")) == 1; }, 3000));
-  }
-
-  void expoImageContentFitMapsToFillMode() {
-    auto view = load(QStringLiteral("QtExpoImage.qml"), QSize(100, 100));
-    QVERIFY(view);
-    const struct { const char* fit; int mode; } cases[] = {
-        {"cover", 2}, {"contain", 1}, {"fill", 0}, {"none", 6}};  // Image.PreserveAspectCrop, ...Fit, Stretch, Pad
-    for (const auto& c : cases) {
-      view->setProperty("contentFit", QString::fromLatin1(c.fit));
-      QCOMPARE(view->property("fillMode").toInt(), c.mode);
-    }
-  }
-
-  void expoImageTintDegradesWithoutEffects() {
-    auto view = load(QStringLiteral("QtExpoImage.qml"), QSize(100, 100));
-    QVERIFY(view);
-    view->setProperty("tintColor", QColor(Qt::blue));
-    view->setProperty("hasTint", true);
-    // Either the effect item exists, or the module is missing and the view
-    // says so and still draws. Both are acceptable; a crash or a throw is not.
-    const bool haveEffect = view->property("effectItem").value<QObject*>() != nullptr;
-    const bool missing = view->property("effectsMissing").toBool();
-    QVERIFY(haveEffect || missing);
-    qInfo() << "QtQuick.Effects available:" << haveEffect;
+    const auto read = [&](const char* path) { return QQmlProperty(view.get(), QString::fromLatin1(path), qmlContext(view.get())).read(); };
+    QCOMPARE(read("Accessible.ignored").toBool(), true);  // not accessible by default
+    view->setProperty("accessible", true);
+    view->setProperty("accessibilityLabel", QStringLiteral("Profile photo"));
+    view->setProperty("accessibilityHint", QStringLiteral("Opens the profile"));
+    view->setProperty("accessibilityRole", QStringLiteral("button"));
+    view->setProperty("accessibilityStateSelected", true);
+    QCOMPARE(read("Accessible.ignored").toBool(), false);
+    QCOMPARE(read("Accessible.name").toString(), QStringLiteral("Profile photo"));
+    QCOMPARE(read("Accessible.description").toString(), QStringLiteral("Opens the profile"));
+    QCOMPARE(read("Accessible.role").toInt(), static_cast<int>(QAccessible::Button));
+    QCOMPARE(read("Accessible.selected").toBool(), true);
+    view->setProperty("accessibilityRole", QStringLiteral("image"));
+    QCOMPARE(read("Accessible.role").toInt(), static_cast<int>(QAccessible::Graphic));
+    view->setProperty("accessibilityStateDisabled", true);
+    QCOMPARE(view->property("enabled").toBool(), false);
   }
 };
 

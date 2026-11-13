@@ -273,6 +273,14 @@ class QtReactHost {
   /// (onLayout fires); nothing remounts. Unknown surfaces are ignored.
   void resizeSurface(facebook::react::SurfaceId surfaceId, float width, float height);
 
+  /// Tells JavaScript the size of the app's window, the way React Native's own
+  /// hosts do: `Dimensions` and `useWindowDimensions` read it, and react-navigation
+  /// sizes headers and drawers from it. DeviceInfo's constants hold only the
+  /// screen, so without this call a window that is smaller than the screen, or
+  /// resized later, reports the screen's size forever. Call it once the
+  /// surface exists and again on every resize; a repeated size is not re-sent.
+  void setWindowSize(float width, float height, float scale);
+
   /// Commits `children` as the surface root's children through the UIManager's
   /// shadow tree, which is the same path a React commit takes.
   bool commit(

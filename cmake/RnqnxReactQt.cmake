@@ -27,8 +27,12 @@ function(rnqnx_add_qt_views_target)
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtQuickItemFactory.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtExtraItems.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QnxImageProvider.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageDiskCache.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/QtImageFetcher.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtQuickMountingLayer.cpp"
   )
+  find_package(Qt6 6.11.1 REQUIRED COMPONENTS Network)
+  target_link_libraries(rnqnx_views_qt PUBLIC Qt6::Network)
   target_sources(rnqnx_views_qt PRIVATE "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtTextInputQml.cpp")
   target_compile_definitions(rnqnx_views_qt PUBLIC RNQNX_ENABLE_TEXT_INPUT_CONTRACT=$<BOOL:${RNQNX_ENABLE_TEXT_INPUT_CONTRACT}>)
   if(RNQNX_ENABLE_TEXT_INPUT_CONTRACT)
@@ -66,6 +70,19 @@ function(rnqnx_add_qt_views_target)
     RNQNX_ENABLE_QT_EXPO_IMAGE=$<BOOL:${RNQNX_ENABLE_QT_EXPO_IMAGE}>)
   if(RNQNX_ENABLE_QT_NATIVE_UI OR RNQNX_ENABLE_QT_EXPO_IMAGE)
     target_link_libraries(rnqnx_views_qt PUBLIC rnqnx_qt_nativeui)
+  endif()
+  if(RNQNX_ENABLE_QT_EXPO_IMAGE)
+    # The painted ExpoImage view: it draws with QPainter, so it needs no Qt
+    # module beyond Quick. The header is listed so AUTOMOC runs on it.
+    target_sources(rnqnx_views_qt PRIVATE
+      "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/views/image/ExpoImageItem.h"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ExpoImageItem.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageDecode.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageEffects.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageLayout.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/BlurHash.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ThumbHash.cpp")
+    set_target_properties(rnqnx_views_qt PROPERTIES AUTOMOC ON)
   endif()
 
   # Qt's keyword macros collide with React Native's EventEmitter::emit.
@@ -157,6 +174,10 @@ function(rnqnx_add_fabric_adapter_target)
     target_sources(rnqnx_fabric_adapter PRIVATE
       "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtNativeUiBridge.cpp"
       "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtNativeUiBridge.h")
+    if(RNQNX_ENABLE_QT_EXPO_IMAGE)
+      target_sources(rnqnx_fabric_adapter PRIVATE
+        "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtExpoImageBridge.cpp")
+    endif()
     foreach(library IN LISTS native_ui_libraries)
       set(native_ui_generated "${native_ui_generated_root}/${library}")
       set(native_ui_sources
@@ -173,6 +194,7 @@ function(rnqnx_add_fabric_adapter_target)
     target_include_directories(rnqnx_fabric_adapter SYSTEM PUBLIC
       "${RNQNX_REACT_QT_ROOT}/vnext/generated")
     set_source_files_properties("${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtNativeUiBridge.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtExpoImageBridge.cpp"
       PROPERTIES COMPILE_OPTIONS
       "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas>")
   endif()

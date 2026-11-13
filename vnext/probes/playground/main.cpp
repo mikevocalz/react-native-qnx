@@ -832,6 +832,8 @@ int main(int argc, char** argv) {
       identity.componentName.toStdString(),
       static_cast<float>(surfaceSize.width()),
       static_cast<float>(surfaceSize.height()));
+  host.setWindowSize(static_cast<float>(surfaceSize.width()), static_cast<float>(surfaceSize.height()),
+                     static_cast<float>(window.devicePixelRatio()));
 
 #if RNQNX_ENABLE_DEV_SUPPORT
   // Fast Refresh: what AppDelegate/ReactHost do on iOS and Android after the
@@ -899,6 +901,8 @@ int main(int argc, char** argv) {
   QObject::connect(&surfaceResize, &QTimer::timeout, [&host, &adapter, surfaceRoot, &window]() {
     const QSizeF size = surfaceRoot == window.contentItem() ? QSizeF(window.size()) : surfaceRoot->size();
     host.resizeSurface(kSurfaceId, static_cast<float>(size.width()), static_cast<float>(size.height()));
+    host.setWindowSize(static_cast<float>(size.width()), static_cast<float>(size.height()),
+                       static_cast<float>(window.devicePixelRatio()));
     adapter.surfaceResized();
   });
   const auto scheduleResize = [&surfaceResize]() { surfaceResize.start(); };

@@ -31,6 +31,7 @@ const {
   Label,
   Heading,
   ActionButton,
+  useViewport,
 } = ui;
 
 function GalleryPage() {
@@ -42,7 +43,7 @@ function GalleryPage() {
   const press = useConformance((state) => state.press);
   const modal = useConformance((state) => state.modal);
   const setModal = useConformance((state) => state.setModal);
-  const width = useConformance((state) => state.width);
+  const { width } = useViewport();
   const [imageStatus, setImageStatus] = React.useState('Waiting for image decode');
   // The page is the root's content width; the root pads 28 px on each side.
   const inner = Math.max(0, width - 2 * 28);

@@ -47,6 +47,18 @@ class QnxImageLoader final : public facebook::react::TurboModule {
       facebook::react::TurboModule& tm,
       const facebook::jsi::Value* args,
       size_t count);
+  static facebook::jsi::Value prefetchImageWithOptions(
+      facebook::jsi::Runtime& rt, facebook::react::TurboModule& tm,
+      const facebook::jsi::Value* args, size_t count);
+  static facebook::jsi::Value clearMemoryCache(
+      facebook::jsi::Runtime& rt, facebook::react::TurboModule& tm,
+      const facebook::jsi::Value* args, size_t count);
+  static facebook::jsi::Value clearDiskCache(
+      facebook::jsi::Runtime& rt, facebook::react::TurboModule& tm,
+      const facebook::jsi::Value* args, size_t count);
+  static facebook::jsi::Value getCachePath(
+      facebook::jsi::Runtime& rt, facebook::react::TurboModule& tm,
+      const facebook::jsi::Value* args, size_t count);
   static facebook::jsi::Value getConstants(
       facebook::jsi::Runtime& rt,
       facebook::react::TurboModule& tm,

@@ -17,6 +17,9 @@
 #if RNQNX_ENABLE_QT_NATIVE_UI || RNQNX_ENABLE_QT_EXPO_IMAGE
 #include <QtNativeUiQml.h>
 #endif
+#if RNQNX_ENABLE_QT_EXPO_IMAGE
+#include "react-native-qnx/views/image/ExpoImageItem.h"
+#endif
 
 namespace rnqnx::views {
 
@@ -48,6 +51,7 @@ void registerExtraQmlTypes(QtQuickItemFactory& factory) {
   factory.registerType(QStringLiteral("RNQnxTabBar"), QByteArray(nativeui::kTabBarQml));
 #endif
 #if RNQNX_ENABLE_QT_EXPO_IMAGE
+  ExpoImageItem::registerQmlType();
   factory.registerType(
       QStringLiteral("ViewManagerAdapter_ExpoImage"), QByteArray(nativeui::kExpoImageQml));
 #endif

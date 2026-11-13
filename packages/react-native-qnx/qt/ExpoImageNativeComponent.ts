@@ -21,6 +21,9 @@ interface NativeProps extends ViewProps {
   /** expo-image's resolved source array: [{ uri, width, height, headers, cacheKey, ... }]. */
   source?: CodegenTypes.UnsafeMixed;
   placeholder?: CodegenTypes.UnsafeMixed;
+  /** How the placeholder fits the view; expo-image's default is `scale-down`. */
+  placeholderContentFit?: string;
+  responsivePolicy?: string;
   contentFit?: string;
   contentPosition?: CodegenTypes.UnsafeMixed;
   transition?: CodegenTypes.UnsafeMixed;

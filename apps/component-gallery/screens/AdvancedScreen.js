@@ -28,13 +28,14 @@ const {
   Label,
   Heading,
   ActionButton,
+  useViewport,
 } = ui;
 
 // Cards registered under components/advanced/ (one *.card.js file each). A
 // FlatList rather than a ScrollView, so a card may itself hold a vertical
 // VirtualizedList (React Native forbids those inside a plain ScrollView).
 function AdvancedPage() {
-  const width = useConformance((state) => state.width);
+  const { width } = useViewport();
   const inner = Math.max(0, width - 2 * 28);
   const columns = gridColumns(inner);
   const cardWidth = Math.floor((inner - GAP * (columns - 1)) / columns);

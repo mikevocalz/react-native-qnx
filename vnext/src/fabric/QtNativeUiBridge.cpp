@@ -6,7 +6,6 @@
 // Image item calls QtImageBridge). The bridge holds the latest event emitter.
 #include "react-native-qnx/fabric/QtNativeUiBridge.h"
 
-#include "react-native-qnx/views/DecodedImageCache.h"
 #include "react-native-qnx/views/QtCssColor.h"
 #include "react-native-qnx/views/QtExtraItems.h"
 
@@ -21,11 +20,6 @@
 #include <react/renderer/components/RnqnxQtTabBar/ComponentDescriptors.h>
 #include <react/renderer/components/RnqnxQtTabBar/EventEmitters.h>
 #include <react/renderer/components/RnqnxQtTabBar/Props.h>
-#endif
-#if RNQNX_ENABLE_QT_EXPO_IMAGE
-#include <react/renderer/components/RnqnxExpoImage/ComponentDescriptors.h>
-#include <react/renderer/components/RnqnxExpoImage/EventEmitters.h>
-#include <react/renderer/components/RnqnxExpoImage/Props.h>
 #endif
 
 #include <QByteArray>
@@ -74,21 +68,8 @@ void setMixedColorProp(QQuickItem* item, const char* name, const folly::dynamic&
 
 #endif  // RNQNX_ENABLE_QT_NATIVE_UI
 
-#if RNQNX_ENABLE_QT_EXPO_IMAGE
 
-QColor toQColor(const rn::SharedColor& color) {
-  return QColor::fromRgba(static_cast<QRgb>(*color));
-}
-
-bool hasColor(const rn::SharedColor& color) {
-  // UndefinedColor is 0, which is also fully transparent black: an unset color
-  // and a fully transparent one both keep the item's default.
-  return *color != 0;
-}
-
-#endif  // RNQNX_ENABLE_QT_EXPO_IMAGE
-
-#if RNQNX_ENABLE_QT_NATIVE_UI || RNQNX_ENABLE_QT_EXPO_IMAGE
+#if RNQNX_ENABLE_QT_NATIVE_UI
 template <typename Bridge>
 Bridge* bridgeFor(QQuickItem* item) {
   auto* bridge = item->findChild<Bridge*>(QString(), Qt::FindDirectChildrenOnly);
@@ -230,171 +211,6 @@ bool applyTabBar(QQuickItem* item, const rn::ShadowView& view) {
 
 #endif  // RNQNX_ENABLE_QT_NATIVE_UI
 
-#if RNQNX_ENABLE_QT_EXPO_IMAGE
-
-// ---- ViewManagerAdapter_ExpoImage -------------------------------------------
-
-/// The first usable `uri` in expo-image's resolved source array
-/// ([{ uri, width, height, headers, cacheKey, ... }]). Blurhash and thumbhash
-/// entries have none and are skipped.
-QString firstUri(const folly::dynamic& source) {
-  const auto uriOf = [](const folly::dynamic& entry) -> QString {
-    if (!entry.isObject()) return {};
-    const auto found = entry.find("uri");
-    if (found == entry.items().end() || !found->second.isString()) return {};
-    return QString::fromStdString(found->second.getString());
-  };
-  if (source.isArray()) {
-    for (const auto& entry : source) {
-      const QString uri = uriOf(entry);
-      if (!uri.isEmpty()) return uri;
-    }
-    return {};
-  }
-  return uriOf(source);
-}
-
-QString mediaTypeFor(const QString& url) {
-  const QString lower = url.toLower();
-  const auto ends = [&](const char* suffix) { return lower.endsWith(QLatin1String(suffix)); };
-  if (ends(".png")) return QStringLiteral("image/png");
-  if (ends(".jpg") || ends(".jpeg")) return QStringLiteral("image/jpeg");
-  if (ends(".gif")) return QStringLiteral("image/gif");
-  if (ends(".webp")) return QStringLiteral("image/webp");
-  if (ends(".svg")) return QStringLiteral("image/svg+xml");
-  return {};
-}
-
-class ExpoImageBridge final : public QObject {
-  Q_OBJECT
-
- public:
-  explicit ExpoImageBridge(QObject* parent) : QObject(parent) {}
-
-  void setEmitter(std::shared_ptr<const rn::ViewManagerAdapter_ExpoImageEventEmitter> emitter) {
-    emitter_ = std::move(emitter);
-  }
-
-  /// The URI the item currently shows, to skip an unchanged source.
-  QString shownUri;
-  QString shownPlaceholder;
-
-  Q_INVOKABLE void imageLoadStarted() {
-    if (emitter_) emitter_->onLoadStart({true});
-  }
-  /// \a progress is Qt's 0..1 fraction. Qt does not expose byte counts, so
-  /// loaded and total are reported out of 1000.
-  Q_INVOKABLE void imageProgress(double progress) {
-    if (emitter_) emitter_->onProgress({std::round(progress * 1000.0), 1000.0});
-  }
-  Q_INVOKABLE void imageLoaded(const QString& url, double width, double height, const QString& cacheType) {
-    if (!emitter_) return;
-    rn::ViewManagerAdapter_ExpoImageEventEmitter::OnLoad event{};
-    event.cacheType = cacheType.toStdString();
-    // Report the app's own URI, not the resolved image-provider URL.
-    const QString& reported = shownUri.isEmpty() ? url : shownUri;
-    event.source.url = reported.toStdString();
-    event.source.width = width;
-    event.source.height = height;
-    event.source.mediaType = mediaTypeFor(reported).toStdString();
-    event.source.isAnimated = false;
-    emitter_->onLoad(std::move(event));
-  }
-  Q_INVOKABLE void imageFailed(const QString& message) {
-    if (emitter_) emitter_->onError({message.toStdString()});
-  }
-  Q_INVOKABLE void imageDisplayed() {
-    if (emitter_) emitter_->onDisplay({true});
-  }
-
- private:
-  std::shared_ptr<const rn::ViewManagerAdapter_ExpoImageEventEmitter> emitter_;
-};
-
-QString urlFor(QQuickItem* item, const QString& uri) {
-  if (uri.isEmpty()) return {};
-  auto* engine = qmlEngine(item);
-  const QString resolved = engine != nullptr ? views::resolveImageUri(*engine, uri) : uri;
-  return resolved.startsWith(QLatin1Char('/')) ? QUrl::fromLocalFile(resolved).toString() : resolved;
-}
-
-/// expo-image's contentPosition: an object ({ top, left, right, bottom }) or a
-/// shorthand string ("top left"). Only the edge it names is honored; offsets
-/// and percentages are not (docs/component-support.md).
-void applyContentPosition(QQuickItem* item, const folly::dynamic& position) {
-  QString horizontal = QStringLiteral("center");
-  QString vertical = QStringLiteral("center");
-  if (position.isObject()) {
-    if (position.count("left")) horizontal = QStringLiteral("left");
-    else if (position.count("right")) horizontal = QStringLiteral("right");
-    if (position.count("top")) vertical = QStringLiteral("top");
-    else if (position.count("bottom")) vertical = QStringLiteral("bottom");
-  } else if (position.isString()) {
-    const QString text = QString::fromStdString(position.getString());
-    if (text.contains(QLatin1String("left"))) horizontal = QStringLiteral("left");
-    else if (text.contains(QLatin1String("right"))) horizontal = QStringLiteral("right");
-    if (text.contains(QLatin1String("top"))) vertical = QStringLiteral("top");
-    else if (text.contains(QLatin1String("bottom"))) vertical = QStringLiteral("bottom");
-  }
-  item->setProperty("horizontalPosition", horizontal);
-  item->setProperty("verticalPosition", vertical);
-}
-
-/// expo-image's transition: a number of milliseconds or { duration, effect }.
-/// Every effect is drawn as a cross-dissolve; `effect: null`/`"none"` is 0 ms.
-double transitionMilliseconds(const folly::dynamic& transition) {
-  if (transition.isNumber()) return std::max(0.0, transition.asDouble());
-  if (!transition.isObject()) return 0.0;
-  const auto effect = transition.find("effect");
-  if (effect != transition.items().end() && effect->second.isString() &&
-      effect->second.getString() == "none") {
-    return 0.0;
-  }
-  const auto duration = transition.find("duration");
-  if (duration != transition.items().end() && duration->second.isNumber()) {
-    return std::max(0.0, duration->second.asDouble());
-  }
-  return 100.0;
-}
-
-bool applyExpoImage(QQuickItem* item, const rn::ShadowView& view) {
-  const auto* props = dynamic_cast<const rn::ViewManagerAdapter_ExpoImageProps*>(view.props.get());
-  if (props == nullptr) return false;
-  auto* bridge = bridgeFor<ExpoImageBridge>(item);
-  bridge->setEmitter(
-      std::dynamic_pointer_cast<const rn::ViewManagerAdapter_ExpoImageEventEmitter>(view.eventEmitter));
-
-  item->setProperty("contentFit", props->contentFit.empty()
-                                      ? QStringLiteral("cover")
-                                      : QString::fromStdString(props->contentFit));
-  applyContentPosition(item, props->contentPosition);
-  item->setProperty("transitionMs", transitionMilliseconds(props->transition));
-  item->setProperty("cacheImages", props->cachePolicy != "none");
-  item->setProperty("blurRadius", std::max(0.0, props->blurRadius));
-  if (hasColor(props->tintColor)) {
-    item->setProperty("tintColor", toQColor(props->tintColor));
-    item->setProperty("hasTint", true);
-  } else {
-    item->setProperty("hasTint", false);
-  }
-
-  const QString placeholderUri = firstUri(props->placeholder);
-  if (placeholderUri != bridge->shownPlaceholder) {
-    bridge->shownPlaceholder = placeholderUri;
-    item->setProperty("placeholderUrl", urlFor(item, placeholderUri));
-  }
-  const QString uri = firstUri(props->source);
-  if (uri != bridge->shownUri) {
-    bridge->shownUri = uri;
-    item->setProperty("reportedCacheType",
-                      views::DecodedImageCache::shared().contains(uri) ? QStringLiteral("memory")
-                                                                       : QStringLiteral("none"));
-    item->setProperty("sourceUrl", urlFor(item, uri));
-  }
-  return true;
-}
-
-#endif  // RNQNX_ENABLE_QT_EXPO_IMAGE
 
 }  // namespace
 
@@ -423,21 +239,6 @@ bool applyNativeUiProps(QQuickItem* item, const rn::ShadowView& view) {
 
 #endif
 
-#if RNQNX_ENABLE_QT_EXPO_IMAGE
-
-std::vector<std::string> expoImageComponentNames() {
-  return {std::string(rn::ViewManagerAdapter_ExpoImageComponentDescriptor::ConcreteShadowNode::Name())};
-}
-
-void addExpoImageComponentDescriptors(rn::ComponentDescriptorProviderRegistry& registry) {
-  registry.add(rn::concreteComponentDescriptorProvider<rn::ViewManagerAdapter_ExpoImageComponentDescriptor>());
-}
-
-bool applyExpoImageProps(QQuickItem* item, const rn::ShadowView& view) {
-  return applyExpoImage(item, view);
-}
-
-#endif
 
 }  // namespace rnqnx::fabric
 

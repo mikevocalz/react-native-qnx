@@ -8,7 +8,6 @@
 
 namespace rnqnx::runtime {
 namespace {
-constexpr qint64 kMaxEncodedBytes = 16 * 1024 * 1024;
 constexpr qint64 kMaxPixels = 16 * 1024 * 1024;
 }
 

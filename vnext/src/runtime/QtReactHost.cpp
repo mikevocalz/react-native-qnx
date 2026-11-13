@@ -52,6 +52,8 @@
 #include <jsi/JSIDynamic.h>
 
 #include <QCoreApplication>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QDebug>
 #include <QFileInfo>
 #include <QSysInfo>
@@ -624,6 +626,10 @@ class QtReactHost::Impl {
   std::unordered_map<std::string, facebook::jsi::Value> callableModules;
   /// Module objects from callableModules factories, resolved on first call.
   std::unordered_map<std::string, facebook::jsi::Object> resolvedCallableModules;
+  // The window size last sent to JavaScript (setWindowSize).
+  float windowWidth{0};
+  float windowHeight{0};
+  float windowScale{0};
   /// Extra TurboModules supplied by the embedding application.
   QtReactHost::TurboModuleProvider turboModuleProvider;
   std::unordered_map<int, std::unique_ptr<QTimer>> timers;
@@ -1184,6 +1190,33 @@ void QtReactHost::resizeSurface(SurfaceId surfaceId, float width, float height) 
   }
   found->second->constraintLayout(
       makeLayoutConstraints(width, height), facebook::react::LayoutContext{});
+}
+
+void QtReactHost::setWindowSize(float width, float height, float scale) {
+  if (width <= 0 || height <= 0) return;
+  if (impl_->windowWidth == width && impl_->windowHeight == height && impl_->windowScale == scale) {
+    return;
+  }
+  impl_->windowWidth = width;
+  impl_->windowHeight = height;
+  impl_->windowScale = scale;
+  // The shape Dimensions.set reads: { window, screen }, each with width,
+  // height, scale and fontScale. The screen keeps the device's size.
+  const auto metrics = [scale](double w, double h) {
+    return folly::dynamic::object("width", w)("height", h)("scale", scale)("fontScale", 1.0);
+  };
+  double screenWidth = width;
+  double screenHeight = height;
+  if (const auto* screen = QGuiApplication::primaryScreen()) {
+    screenWidth = screen->geometry().width();
+    screenHeight = screen->geometry().height();
+  }
+  callFunctionOnModule(
+      "RCTDeviceEventEmitter", "emit",
+      folly::dynamic::array(
+          "didUpdateDimensions",
+          folly::dynamic::object("window", metrics(width, height))(
+              "screen", metrics(screenWidth, screenHeight))));
 }
 
 void QtReactHost::stopSurface(SurfaceId surfaceId) {
