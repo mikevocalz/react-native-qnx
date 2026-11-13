@@ -1,5 +1,6 @@
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 #include "react-native-qnx/views/DecodedImageCache.h"
+#include "react-native-qnx/views/QtExtraItems.h"
 
 #include <QQmlComponent>
 #include <QQmlEngine>
@@ -7,13 +8,6 @@
 #include <QUrl>
 
 #include <utility>
-
-#if RNQNX_ENABLE_QT_SVG
-#include <QtSvgItem.h>
-#endif
-#if RNQNX_ENABLE_QT_RNSVG
-#include <RnsvgItems.h>
-#endif
 
 namespace rnqnx::views {
 namespace {
@@ -32,15 +26,11 @@ QtQuickItemFactory::QtQuickItemFactory(QQmlEngine& engine) : engine_(engine) {
   imageProvider_ = new QnxImageProvider();
   engine_.addImageProvider(
       QLatin1String(QnxImageProvider::providerId()), imageProvider_);
+  registerExtraQmlTypes(*this);
 }
 
 QString QtQuickItemFactory::resolveImageSource(const QString& uri) {
-  if (DecodedImageCache::shared().contains(uri)) {
-    return QStringLiteral("image://%1/cache/%2")
-        .arg(QLatin1String(QnxImageProvider::providerId()), DecodedImageCache::key(uri));
-  }
-  const QString provided = imageProvider_->registerDataUri(uri);
-  return provided.isEmpty() ? uri : provided;
+  return resolveImageUri(engine_, uri);
 }
 
 QtQuickItemFactory::~QtQuickItemFactory() {
@@ -96,23 +86,10 @@ QQmlComponent* QtQuickItemFactory::componentFor(const QString& componentName) {
 QQuickItem* QtQuickItemFactory::create(
     const QString& componentName,
     QQuickItem* parent) {
-#if RNQNX_ENABLE_QT_SVG
-  if (componentName == QStringLiteral("QnxSvgDocument")) {
-    auto* item = new QtSvgItem(parent);
-    QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
+  if (QQuickItem* extra = createExtraItem(componentName, parent)) {
     lastError_.clear();
-    return item;
+    return extra;
   }
-#endif
-#if RNQNX_ENABLE_QT_RNSVG
-  if (componentName.startsWith(QStringLiteral("RNSVG"))) {
-    if (auto* item = rnsvg::createItemForComponent(componentName, parent)) {
-      QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
-      lastError_.clear();
-      return item;
-    }
-  }
-#endif
   auto* component = componentFor(componentName);
   if (component == nullptr) {
     return nullptr;

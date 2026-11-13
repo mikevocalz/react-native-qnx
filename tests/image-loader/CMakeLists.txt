@@ -7,7 +7,8 @@ add_executable(qnx_image_cache_test
   QtImageCacheTest.cpp
   ../../vnext/src/runtime/QtImageCache.cpp
   ../../vnext/src/views/qt/QnxImageProvider.cpp
-  ../../vnext/src/views/qt/QtQuickItemFactory.cpp)
+  ../../vnext/src/views/qt/QtQuickItemFactory.cpp
+  ../../vnext/src/views/qt/QtExtraItems.cpp)
 target_include_directories(qnx_image_cache_test PRIVATE ../../vnext/include)
 target_link_libraries(qnx_image_cache_test PRIVATE Qt6::Core Qt6::Gui Qt6::Network Qt6::Qml Qt6::Quick)
 target_compile_options(qnx_image_cache_test PRIVATE -Wall -Wextra -Wpedantic -Werror)

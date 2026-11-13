@@ -64,6 +64,7 @@ const expected = [
   'StatusBar',
   'Alert',
   'LayoutAnimation',
+  'NativeComponentRegistry',
   'TouchableOpacity',
   'TouchableHighlight',
   'TouchableWithoutFeedback',

@@ -8,6 +8,7 @@
 #include <QQuickItem>
 #include <QTouchEvent>
 
+#include <algorithm>
 #include <utility>
 
 #if RNQNX_ENABLE_QT_RNSVG
@@ -152,7 +153,12 @@ Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
 
   while (true) {
     const QQuickItem* next = nullptr;
-    const QList<QQuickItem*> children = current->childItems();
+    // Topmost first: paint order is z, then sibling order. Sorting by z (a
+    // stable sort keeps sibling order among equal z) lets an item with a
+    // higher z win, which the drawer's panel and scrim rely on.
+    QList<QQuickItem*> children = current->childItems();
+    std::stable_sort(children.begin(), children.end(),
+                     [](const QQuickItem* a, const QQuickItem* b) { return a->z() < b->z(); });
     for (auto iterator = children.crbegin(); iterator != children.crend();
          ++iterator) {
       QQuickItem* child = *iterator;
