@@ -1,12 +1,12 @@
 const React = require('react');
-const { ScrollView, View, Text } = require('react-native');
+const { View, Text } = require('react-native');
 const { VideoCard } = require('./VideoCard.js');
 const { AudioCard } = require('./AudioCard.js');
 const { INK, MUTED } = require('./theme.js');
 
 const h = React.createElement;
 
-/** The fuller Media screen: video with controls, then audio. */
+/** Video with controls, then audio. The route supplies the scroll view. */
 function MediaPage({ width }) {
   const UIManager = require('react-native/Libraries/ReactNative/UIManager').default;
   if (!UIManager.hasViewManagerConfig('QnxQtVideo')) {
@@ -18,8 +18,8 @@ function MediaPage({ width }) {
   }
   const cardWidth = Math.max(320, Math.min(width, 720));
   return h(
-    ScrollView,
-    { contentContainerStyle: { paddingBottom: 24 } },
+    View,
+    null,
     h(
       View,
       { style: { marginBottom: 12 } },
