@@ -77,7 +77,7 @@ const descriptors = {
 };
 const tabs = buildTabs(state, descriptors);
 assert.deepEqual(
-  tabs.map(({ key, title, icon, badge }) => ({ key, title, icon, badge })),
+  tabs.map((/** @type {any} */ { key, title, icon, badge }) => ({ key, title, icon, badge })),
   [
     { key: 'a', title: 'Components', icon: 'X', badge: '3' },
     { key: 'b', title: 'Advanced', icon: '', badge: '' },
@@ -87,8 +87,9 @@ assert.equal(tintsFor({ tabBarActiveTintColor: '#fff' }).active, '#fff');
 assert.equal(tintsFor({ tabBarStyle: [{ backgroundColor: '#111' }] }).background, '#111');
 
 // Swipe exclusion: the drawer's edge zone starts right of the rail.
+/** @type {number[]} */
 const seen = [];
-const off = swipe.subscribeSwipeExclusion((value) => seen.push(value));
+const off = swipe.subscribeSwipeExclusion((/** @type {number} */ value) => seen.push(value));
 swipe.setSwipeExclusionLeft(96);
 swipe.setSwipeExclusionLeft(96);
 swipe.setSwipeExclusionLeft(-4);
