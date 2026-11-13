@@ -7,16 +7,16 @@ paint the same documents through the renderer and diff the pixels.
 
 ## Layout
 
-| Path | Content |
-| --- | --- |
-| `tests/fixtures/rnsvg/svg/<name>.svg` | One document per upstream scene, e.g. `Circle-1.svg` |
-| `tests/fixtures/rnsvg/golden/<name>.png` | resvg 0.50.0 rendering at 1x on white. Never edited by hand |
-| `tests/fixtures/rnsvg/manifest.json` | Per fixture: upstream file, scene and line range, elements and attributes used, status, thresholds, source hash, size. Also the resvg version and the scenes that are not drawings |
-| `scripts/rnsvg-reference.mjs` | Renders the goldens, checks them, writes the real-path data |
-| `tests/native/qt-rnsvg/RnsvgFixturesTest.cpp` | Host runner. Target `rnqnx_qt_rnsvg_fixtures_test` |
-| `tests/native/qt-rnsvg/RnsvgLoaderTest.cpp` | Tests of the loader and the diff. Target `rnqnx_qt_rnsvg_loader_test` |
-| `tests/native/qt-rnsvg/support/` | Test-only SVG loader, image diff, manifest reader |
-| `apps/rn-playground/rnsvg-corpus.js`, `tests/native/qt-rnsvg-fabric/RnsvgCorpusFabricTest.cpp` | Real-path runner |
+| Path                                                                                           | Content                                                                                                                                                                            |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tests/fixtures/rnsvg/svg/<name>.svg`                                                          | One document per upstream scene, e.g. `Circle-1.svg`                                                                                                                               |
+| `tests/fixtures/rnsvg/golden/<name>.png`                                                       | resvg 0.50.0 rendering at 1x on white. Never edited by hand                                                                                                                        |
+| `tests/fixtures/rnsvg/manifest.json`                                                           | Per fixture: upstream file, scene and line range, elements and attributes used, status, thresholds, source hash, size. Also the resvg version and the scenes that are not drawings |
+| `scripts/rnsvg-reference.mjs`                                                                  | Renders the goldens, checks them, writes the real-path data                                                                                                                        |
+| `tests/native/qt-rnsvg/RnsvgFixturesTest.cpp`                                                  | Host runner. Target `rnqnx_qt_rnsvg_fixtures_test`                                                                                                                                 |
+| `tests/native/qt-rnsvg/RnsvgLoaderTest.cpp`                                                    | Tests of the loader and the diff. Target `rnqnx_qt_rnsvg_loader_test`                                                                                                              |
+| `tests/native/qt-rnsvg/support/`                                                               | Test-only SVG loader, image diff, manifest reader                                                                                                                                  |
+| `apps/rn-playground/rnsvg-corpus.js`, `tests/native/qt-rnsvg-fabric/RnsvgCorpusFabricTest.cpp` | Real-path runner                                                                                                                                                                   |
 
 Fixture names follow the upstream file and a scene number: `Circle-2` is the
 second scene of `Circle.tsx`. A fixture is a standalone 1.1/2 document with the
@@ -41,11 +41,11 @@ reason and the test that covers them, if any: touch handlers, animations,
 
 ## Statuses
 
-| Status | Meaning |
-| --- | --- |
-| `pass` | The rendering must be within the fixture's thresholds |
+| Status              | Meaning                                                                                                                                           |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pass`              | The rendering must be within the fixture's thresholds                                                                                             |
 | `pending:<feature>` | The renderer cannot draw it yet. The runner skips it and names the feature. `pendingNote` records the measured difference and the suspected cause |
-| `reference-none` | resvg cannot render the document, `reason` says why. The runner loads and paints it and checks that nothing crashes |
+| `reference-none`    | resvg cannot render the document, `reason` says why. The runner loads and paints it and checks that nothing crashes                               |
 
 CI should fail while any `pending:` entry remains. Set
 `RNQNX_RNSVG_FAIL_ON_PENDING=1` to make the runners do that.
@@ -59,13 +59,13 @@ Both images are compared as opaque RGB. A pixel differs when any channel is
 more than 24 of 255 away. Five numbers come out, and a fixture fails when any
 exceeds its limit:
 
-| Number | Default limit | Catches |
-| --- | --- | --- |
-| Pixels that differ | 1.5 percent | wrong colors, shifted shapes |
-| Mean absolute difference | 2.0 | small differences everywhere, such as blur or gamma |
-| Largest block of differing pixels (4-connected) | 400 px | one wrong shape in a mostly right picture |
-| Pixels that match nothing within one pixel | 0.8 percent | the first number without edge noise |
-| Largest block of those | 60 px | the third number without edge noise |
+| Number                                          | Default limit | Catches                                             |
+| ----------------------------------------------- | ------------- | --------------------------------------------------- |
+| Pixels that differ                              | 1.5 percent   | wrong colors, shifted shapes                        |
+| Mean absolute difference                        | 2.0           | small differences everywhere, such as blur or gamma |
+| Largest block of differing pixels (4-connected) | 400 px        | one wrong shape in a mostly right picture           |
+| Pixels that match nothing within one pixel      | 0.8 percent   | the first number without edge noise                 |
+| Largest block of those                          | 60 px         | the third number without edge noise                 |
 
 The last two forgive a differing pixel when it equals some reference pixel in its
 3x3 neighbourhood (or the reverse). Two rasterisers place anti-aliased edge

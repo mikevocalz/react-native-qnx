@@ -73,6 +73,8 @@ RnsvgRootItem::RnsvgRootItem(QQuickItem* parent) : QQuickPaintedItem(parent) {
   if (target == "fbo") setRenderTarget(QQuickPaintedItem::FramebufferObject);
   else if (target == "image") setRenderTarget(QQuickPaintedItem::Image);
   else setRenderTarget(QQuickPaintedItem::Image);
+  // Created with its parent: itemChange() does not run for that, so decide here.
+  setVisible(!isNested());
 }
 
 RnsvgRootItem::~RnsvgRootItem() = default;

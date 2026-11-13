@@ -2,6 +2,7 @@
 // and pointerEvents, patterns, symbols, markers, gradient spread, dashes and
 // non-scaling strokes. Same method as RnsvgRenderTest.cpp: build the retained
 // tree directly, paint, probe pixels well inside or outside edges.
+#include "RnsvgForeignObjectItem.h"
 #include "RnsvgTestKit.h"
 
 #include <QPointer>
@@ -589,6 +590,81 @@ class RnsvgSceneTest final : public QObject {
     add(add(&s.root, m), rect(0, 0, 10, 10, Qt::red));
     render(s.root);
     QVERIFY(true);
+  }
+
+  void nestedSvgPaintsInlineWithItsOwnViewBox() {
+    Scene s(200, 100);
+    auto* group = add(&s.root, make(Kind::Group));
+    auto* nested = new RnsvgRootItem(group);
+    nested->setSize(QSizeF(60, 60));
+    RootProps rp;
+    rp.bbWidth = px(60); rp.bbHeight = px(60);
+    rp.vbWidth = 10; rp.vbHeight = 10;
+    nested->setRootProps(rp);
+    add(nested, rect(0, 0, 5, 5, Qt::red));      // 30x30 px
+    add(nested, rect(5, 5, 20, 20, Qt::blue));   // spills past the nested viewport: clipped at 60
+    add(&s.root, rect(100, 0, 20, 20, Qt::green));
+    const QImage img = render(s.root);
+    VERIFY_PX(img, 15, 15, Qt::red);
+    VERIFY_PX(img, 45, 45, Qt::blue);
+    VERIFY_TRANSPARENT(img, 70, 70);   // clipped to the nested 60x60
+    VERIFY_PX(img, 110, 10, Qt::green);
+    QVERIFY(nested->isNested());
+    QVERIFY(!nested->isVisible());     // it paints through the outer root only
+  }
+
+  void nestedSvgElementsTakeTouches() {
+    Scene s(200, 100);
+    auto* nested = new RnsvgRootItem(&s.root);
+    nested->setSize(QSizeF(100, 100));
+    RootProps rp;
+    rp.bbWidth = px(100); rp.bbHeight = px(100);
+    nested->setRootProps(rp);
+    ElementProps r = rect(10, 10, 40, 40, Qt::red);
+    r.responsible = true;
+    auto* item = add(nested, r);
+    QCOMPARE(s.root.hitElement(QPointF(30, 30)), item);
+    QCOMPARE(s.root.hitElement(QPointF(90, 90)), nullptr);
+  }
+
+  void foreignObjectIsPlacedThroughEveryAncestorTransform() {
+    Scene s(200, 200);
+    RootProps rp;
+    rp.vbWidth = 100; rp.vbHeight = 100;   // scale 2
+    s.root.setRootProps(rp);
+    ElementProps g = make(Kind::Group);
+    g.matrix = QTransform::fromTranslate(10, 20);
+    auto* group = add(&s.root, g);
+    auto* fo = new RnsvgForeignObjectItem(group);
+    ElementProps p = make(Kind::ForeignObject);
+    p.x = px(5); p.y = px(5); p.width = px(30); p.height = px(40);
+    fo->setProps(p);
+    s.root.layoutScene();
+    QVERIFY(fo->isPlaced());
+    QCOMPARE(fo->boxSize(), QSizeF(30, 40));
+    // The box corner: ((5 + 10) * 2, (5 + 20) * 2) in item space.
+    QCOMPARE(fo->mapToItem(&s.root, QPointF(0, 0)), QPointF(30, 50));
+    // One unit of the box is two item pixels.
+    QCOMPARE(fo->mapToItem(&s.root, QPointF(10, 0)), QPointF(50, 50));
+    // display:none removes the placement.
+    p.displayNone = true;
+    fo->setProps(p);
+    s.root.layoutScene();
+    QVERIFY(!fo->isPlaced());
+  }
+
+  void elementBoundsAreInRootCoordinates() {
+    Scene s(200, 200);
+    RootProps rp;
+    rp.vbWidth = 100; rp.vbHeight = 100;
+    s.root.setRootProps(rp);
+    ElementProps g = make(Kind::Group);
+    g.matrix = QTransform::fromTranslate(10, 0);
+    auto* group = add(&s.root, g);
+    auto* r = add(group, rect(5, 5, 20, 10, Qt::red));
+    const QRectF b = s.root.elementBounds(r);
+    QCOMPARE(b, QRectF(30, 10, 40, 20));
+    QVERIFY(s.root.elementBounds(group).contains(b));
   }
 
   void useGroupOpacityIsApplied() {

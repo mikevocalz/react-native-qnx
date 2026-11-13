@@ -1,6 +1,17 @@
 const React = require('react');
 const Svg = require('react-native-svg').default;
-const { Defs, Pattern, Symbol, Marker, Use, Rect, Circle, Path, Line, G } = require('react-native-svg');
+const {
+  Defs,
+  Pattern,
+  Symbol,
+  Marker,
+  Use,
+  Rect,
+  Circle,
+  Path,
+  Line,
+  G,
+} = require('react-native-svg');
 const { SvgCardFrame } = require('./SvgCardFrame');
 
 // Pattern in both unit systems and with a viewBox and patternTransform, Symbol
@@ -82,4 +93,8 @@ function PatternsCard() {
   );
 }
 
-module.exports = { id: 'svg-patterns', title: 'Pattern, symbol and marker', Component: PatternsCard };
+module.exports = {
+  id: 'svg-patterns',
+  title: 'Pattern, symbol and marker',
+  Component: PatternsCard,
+};

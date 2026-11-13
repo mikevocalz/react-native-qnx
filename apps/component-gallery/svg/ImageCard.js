@@ -27,10 +27,31 @@ function ImageCard() {
           </ClipPath>
         </Defs>
         <Rect x="10" y="10" width="120" height="60" fill="#142538" stroke="#e9f0f7" />
-        <Image x="10" y="10" width="120" height="60" href={{ uri: PIXELS }} preserveAspectRatio="xMidYMid meet" />
+        <Image
+          x="10"
+          y="10"
+          width="120"
+          height="60"
+          href={{ uri: PIXELS }}
+          preserveAspectRatio="xMidYMid meet"
+        />
         <Rect x="150" y="10" width="120" height="60" fill="#142538" stroke="#e9f0f7" />
-        <Image x="150" y="10" width="120" height="60" href={{ uri: PIXELS }} preserveAspectRatio="xMidYMid slice" />
-        <Image x="290" y="10" width="120" height="60" href={{ uri: PIXELS }} preserveAspectRatio="none" />
+        <Image
+          x="150"
+          y="10"
+          width="120"
+          height="60"
+          href={{ uri: PIXELS }}
+          preserveAspectRatio="xMidYMid slice"
+        />
+        <Image
+          x="290"
+          y="10"
+          width="120"
+          height="60"
+          href={{ uri: PIXELS }}
+          preserveAspectRatio="none"
+        />
         <Image
           x="430"
           y="10"

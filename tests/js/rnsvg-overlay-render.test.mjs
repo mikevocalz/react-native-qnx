@@ -66,6 +66,8 @@ const mod = {
   xml: require('react-native-svg/src/xml'),
   extractGradient: require('react-native-svg/src/lib/extract/extractGradient').default,
   Filter: require('react-native-svg/src/elements/filters/Filter').default,
+  Text: require('react-native-svg/src/elements/Text').default,
+  TSpan: require('react-native-svg/src/elements/TSpan').default,
   LinearGradient: require('react-native-svg/src/elements/LinearGradient').default,
   RadialGradient: require('react-native-svg/src/elements/RadialGradient').default,
   FeBlend: require('react-native-svg/src/elements/filters/FeBlend').default,
@@ -112,6 +114,9 @@ const el = (type, props) => React.createElement(type, props);
 const results = {};
 const R = (name, Component, props, children) => { results[name] = render(Component, props, children); };
 
+R('textLength', mod.Text, { x: '0', y: '10', textLength: 120, lengthAdjust: 'spacingAndGlyphs' }, 'Hello');
+R('textPlain', mod.Text, { x: '0', y: '10' }, 'Hello');
+R('tspanLength', mod.TSpan, { textLength: '50%', lengthAdjust: 'spacing' }, 'Hi');
 R('morphology', mod.FeMorphology, { in: 'a', operator: 'dilate', radius: '2 3', result: 'm' });
 R('morphologyDefault', mod.FeMorphology, {});
 R('turbulence', mod.FeTurbulence, {
@@ -470,6 +475,16 @@ try {
   assert.deepEqual(qnx.filterSrgb.childColorSpaces, ['sRGB', 'linearRGB', 'sRGB']);
   assert.deepEqual(Array.from(qnx.filterAuto.childColorSpaces), [undefined]);
   assert.deepEqual(Array.from(qnx.filterDefault.childColorSpaces), [undefined]);
+
+  // textLength and lengthAdjust, which the package's extractText drops.
+  native('textLength', 'RNSVGText');
+  assert.equal(props('textLength').textLength, 120);
+  assert.equal(props('textLength').lengthAdjust, 'spacingAndGlyphs');
+  assert.equal(props('textPlain').textLength, undefined);
+  assert.equal(props('textPlain').lengthAdjust, undefined);
+  native('tspanLength', 'RNSVGTSpan');
+  assert.equal(props('tspanLength').textLength, '50%');
+  assert.equal(props('tspanLength').lengthAdjust, 'spacing');
 
   // spreadMethod.
   native('linearRepeat', 'RNSVGLinearGradient');

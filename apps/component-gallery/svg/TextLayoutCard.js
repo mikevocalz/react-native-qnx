@@ -62,9 +62,14 @@ function TextLayoutCard() {
           Overline
         </Text>
         <Text x="350" y="188" fill="#e9f0f7" fontSize="20">
-          x<TSpan baselineShift="super" fontSize="13">2</TSpan>
+          x
+          <TSpan baselineShift="super" fontSize="13">
+            2
+          </TSpan>
           {' + y'}
-          <TSpan baselineShift="sub" fontSize="13">i</TSpan>
+          <TSpan baselineShift="sub" fontSize="13">
+            i
+          </TSpan>
         </Text>
         <Text fill="#f2994a" fontSize="22">
           <TextPath href="#wave" startOffset="5%">

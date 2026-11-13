@@ -40,19 +40,36 @@ function Fixture() {
   const e = React.createElement;
   return e(
     Svg,
-    { width: state.width, height: 100, viewBox: '0 0 200 100', style: { position: 'absolute', left: 0, top: 0 } },
+    {
+      width: state.width,
+      height: 100,
+      viewBox: '0 0 200 100',
+      style: { position: 'absolute', left: 0, top: 0 },
+    },
     e(Image, {
-      x: 0, y: 0, width: 50, height: 50, preserveAspectRatio: 'none',
+      x: 0,
+      y: 0,
+      width: 50,
+      height: 50,
+      preserveAspectRatio: 'none',
       href: state.dataHref === 'second' ? SECOND : FIRST,
       onLoad: loaded('data'),
     }),
     e(Image, {
-      x: 100, y: 0, width: 50, height: 50, preserveAspectRatio: 'none',
+      x: 100,
+      y: 0,
+      width: 50,
+      height: 50,
+      preserveAspectRatio: 'none',
       href: ASSET,
       onLoad: loaded('asset'),
     }),
     e(Image, {
-      x: 0, y: 50, width: 50, height: 50, preserveAspectRatio: 'none',
+      x: 0,
+      y: 50,
+      width: 50,
+      height: 50,
+      preserveAspectRatio: 'none',
       href: BROKEN,
       onLoad: loaded('broken'),
     })

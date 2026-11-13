@@ -29,14 +29,7 @@ function StrokesCard() {
           <ClipPath id="starClip">
             <Path d={STAR} />
           </ClipPath>
-          <LinearGradient
-            id="reflect"
-            x1="0.3"
-            y1="0"
-            x2="0.7"
-            y2="0"
-            spreadMethod="reflect"
-          >
+          <LinearGradient id="reflect" x1="0.3" y1="0" x2="0.7" y2="0" spreadMethod="reflect">
             <Stop offset="0" stopColor="#eb5757" />
             <Stop offset="1" stopColor="#2f80ed" />
           </LinearGradient>
@@ -65,7 +58,15 @@ function StrokesCard() {
         <Rect x="400" y="40" width="150" height="30" fill="url(#repeat)" />
         <Rect x="400" y="80" width="150" height="30" fill="url(#rad)" />
 
-        <Line x1="10" y1="130" x2="260" y2="130" stroke="#e9f0f7" strokeWidth="6" strokeDasharray="14 8" />
+        <Line
+          x1="10"
+          y1="130"
+          x2="260"
+          y2="130"
+          stroke="#e9f0f7"
+          strokeWidth="6"
+          strokeDasharray="14 8"
+        />
         <Line
           x1="10"
           y1="148"
@@ -111,7 +112,15 @@ function StrokesCard() {
           strokeLinejoin="round"
         />
         <Polygon points="530,130 550,130 540,150" fill="#eb5757" />
-        <Circle cx="540" cy="180" r="14" fill="none" stroke="#e9f0f7" strokeWidth="3" vectorEffect="non-scaling-stroke" />
+        <Circle
+          cx="540"
+          cy="180"
+          r="14"
+          fill="none"
+          stroke="#e9f0f7"
+          strokeWidth="3"
+          vectorEffect="non-scaling-stroke"
+        />
       </Svg>
     </SvgCardFrame>
   );

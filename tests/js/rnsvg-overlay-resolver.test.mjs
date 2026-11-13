@@ -43,6 +43,7 @@ const expected = [
   ].map((name) => `fabric/${name}NativeComponent`),
   'lib/extract/extractFilter',
   'lib/extract/extractGradient',
+  'lib/extract/extractText',
   'xmlTags',
 ]
   .filter((key, index, all) => all.indexOf(key) === index)

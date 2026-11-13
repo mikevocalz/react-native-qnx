@@ -79,7 +79,13 @@ function FiltersCard() {
           </Filter>
           <Filter id="warp">
             <FeTurbulence type="turbulence" baseFrequency="0.04" numOctaves="2" result="t" />
-            <FeDisplacementMap in="SourceGraphic" in2="t" scale="14" xChannelSelector="R" yChannelSelector="G" />
+            <FeDisplacementMap
+              in="SourceGraphic"
+              in2="t"
+              scale="14"
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
           </Filter>
           <Filter id="transfer">
             <FeComponentTransfer>
@@ -101,7 +107,12 @@ function FiltersCard() {
             </FeDiffuseLighting>
           </Filter>
           <Filter id="specular">
-            <FeSpecularLighting surfaceScale="5" specularConstant="1" specularExponent="20" lightingColor="#ffffe0">
+            <FeSpecularLighting
+              surfaceScale="5"
+              specularConstant="1"
+              specularExponent="20"
+              lightingColor="#ffffe0"
+            >
               <FePointLight x="40" y="20" z="60" />
             </FeSpecularLighting>
           </Filter>
@@ -113,16 +124,42 @@ function FiltersCard() {
         <Rect x="290" y="12" width="50" height="46" fill="#eb5757" filter="url(#hue)" />
         <Circle cx="385" cy="35" r="24" fill="#f2c94c" filter="url(#tint)" />
         <Circle cx="455" cy="35" r="24" fill="#f2c94c" filter="url(#multiply)" />
-        <Path d="M500 12 h46 v46 h-46 z M510 22 h26 v26 h-26 z" fill="#e9f0f7" fillRule="evenodd" filter="url(#dilate)" />
+        <Path
+          d="M500 12 h46 v46 h-46 z M510 22 h26 v26 h-26 z"
+          fill="#e9f0f7"
+          fillRule="evenodd"
+          filter="url(#dilate)"
+        />
 
-        <Path d="M10 90 h56 v50 h-56 z M20 100 h36 v30 h-36 z" fill="#e9f0f7" fillRule="evenodd" filter="url(#erode)" />
+        <Path
+          d="M10 90 h56 v50 h-56 z M20 100 h36 v30 h-36 z"
+          fill="#e9f0f7"
+          fillRule="evenodd"
+          filter="url(#erode)"
+        />
         <Rect x="80" y="82" width="70" height="60" filter="url(#noise)" />
         <Rect x="170" y="82" width="70" height="60" fill="#56ccf2" filter="url(#warp)" />
         <Rect x="260" y="82" width="70" height="60" fill="#79e8dc" filter="url(#transfer)" />
-        <Circle cx="385" cy="112" r="28" fill="#6fcf97" stroke="#142538" strokeWidth="6" filter="url(#sharpen)" />
+        <Circle
+          cx="385"
+          cy="112"
+          r="28"
+          fill="#6fcf97"
+          stroke="#142538"
+          strokeWidth="6"
+          filter="url(#sharpen)"
+        />
         <Rect x="440" y="82" width="110" height="60" fill="#f2994a" filter="url(#tile)" />
 
-        <Rect x="10" y="170" width="120" height="70" rx="12" fill="#f2c94c" filter="url(#diffuse)" />
+        <Rect
+          x="10"
+          y="170"
+          width="120"
+          height="70"
+          rx="12"
+          fill="#f2c94c"
+          filter="url(#diffuse)"
+        />
         <Circle cx="215" cy="205" r="34" fill="#bb6bd9" filter="url(#specular)" />
       </Svg>
     </SvgCardFrame>

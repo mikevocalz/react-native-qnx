@@ -32,10 +32,21 @@ function Corpus() {
         return (
           <View
             key={batch + ':' + cell.name}
-            style={{ position: 'absolute', left: cell.x, top: cell.y, width: cell.w, height: cell.h }}
+            style={{
+              position: 'absolute',
+              left: cell.x,
+              top: cell.y,
+              width: cell.w,
+              height: cell.h,
+            }}
           >
             {/* width and height override the document's own, as an app's layout would. */}
-            <Root xml={cell.xml} width={cell.w} height={cell.h} onError={(error) => console.error(cell.name + ': ' + error.message)} />
+            <Root
+              xml={cell.xml}
+              width={cell.w}
+              height={cell.h}
+              onError={(error) => console.error(cell.name + ': ' + error.message)}
+            />
           </View>
         );
       })}
