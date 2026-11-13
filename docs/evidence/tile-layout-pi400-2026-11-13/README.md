@@ -24,3 +24,10 @@ Live resize with the merged injector (tools/qnx-input, `drag`), sizes read from 
 tab bar, cards fill the width, right corners rounded), back to 1184x800
 (live-resized-back-wide-desktop.png: rail and two columns). The green button toggled maximise and
 restore twice (two `RNQNX_WINDOW_ACTION maximize` lines, both captures taken).
+
+Keyboard and pressed state, run from the final build of this PR (injector: `key f01b` is Escape on
+QNX, `down` holds the button):
+
+- modal-escape-before-after.png: the gallery's Modal open (left), then closed after `key f01b` (right). Escape reaches `onRequestClose` through `RNQnxModal`. `key Escape` and `key ff1b` do nothing because QNX Screen's Escape is 0xf01b (the injector's `esc` name).
+- drawer-escape-before-after.png: the drawer open (left), closed after the same key (right).
+- tab-pressed-advanced.png: `down` held on the Advanced tab of the rail: the tab shows its pressed wash and shrunken content.
