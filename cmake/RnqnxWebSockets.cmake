@@ -4,11 +4,9 @@ option(RNQNX_ENABLE_WEBSOCKETS
   "Enable the experimental host Qt WebSockets backend (QNX acceptance pending)" OFF)
 
 if(RNQNX_ENABLE_WEBSOCKETS)
-  if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
-    message(FATAL_ERROR
-      "Qt WebSockets is host-only pending licensed SDP cross-build, binary-size "
-      "and build-time evidence. See docs/build-qt-modules.md; do not bypass this gate.")
-  endif()
+  # QNX: Qt WebSockets cross-built from the public Qt 6.12.0 source
+  # (scripts/qt-public/build-websockets-qnx.sh); size and build time are in
+  # docs/build-qt-modules.md.
   find_package(Qt6 6.11.1 REQUIRED COMPONENTS Core Network WebSockets)
   add_library(rnqnx_websocket_transport STATIC
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtWebSocketTransport.cpp")

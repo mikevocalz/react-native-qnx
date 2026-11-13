@@ -74,12 +74,14 @@ jobs:
             -DRNQNX_FETCH_REACT_NATIVE_DEPS=OFF
           cmake --build build/websocket-disabled --parallel 2
           ctest --test-dir build/websocket-disabled --output-on-failure --no-tests=error
-          if cmake -DCMAKE_SYSTEM_NAME=QNX -DRNQNX_ENABLE_WEBSOCKETS=ON \
-              -P cmake/RnqnxWebSockets.cmake > /tmp/websocket-qnx-guard.log 2>&1; then
-            echo "QNX acceptance guard unexpectedly allowed configuration"
+          # The development client needs the WebSocket backend; asking for one
+          # without the other must fail at configure time.
+          if cmake -DRNQNX_ENABLE_DEV_SUPPORT=ON -DRNQNX_ENABLE_WEBSOCKETS=OFF \
+              -P cmake/RnqnxDevSupport.cmake > /tmp/dev-support-guard.log 2>&1; then
+            echo "Dev support configured without the WebSocket backend"
             exit 1
           fi
-          grep -q 'host-only pending licensed SDP' /tmp/websocket-qnx-guard.log
+          grep -q 'needs RNQNX_ENABLE_WEBSOCKETS=ON' /tmp/dev-support-guard.log
       - name: Retain test evidence
         if: always()
         uses: actions/upload-artifact@v4

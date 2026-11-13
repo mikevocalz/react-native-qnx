@@ -16,6 +16,8 @@ Target Expo development builds, not Expo Go. The `expo-qnx` platform layer imple
 
 - Application developers build a QNX-specific development client.
 - Fast Refresh, bundle reload, and the developer menu are provided by the QNX development client.
+  Implemented 2026-11-13 as the `RNQNX_ENABLE_DEV_SUPPORT` build of the consumer
+  app; see [the development workflow](../getting-started/dev-workflow.md).
 - Expo Go is not supported and never will be for this platform.
 
 ## Alternatives considered

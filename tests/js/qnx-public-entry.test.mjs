@@ -43,6 +43,7 @@ const expected = [
   'Dimensions',
   'PixelRatio',
   'useWindowDimensions',
+  'DevSettings',
 ];
 assert.deepEqual(Object.keys(api), expected);
 for (const name of expected) assert.equal(api[name], values);
