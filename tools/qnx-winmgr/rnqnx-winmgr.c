@@ -97,6 +97,7 @@ typedef struct {
   char tag[128];
   char app[128]; /* app key (appkey.h): build variants of one app share it */
   bool duplicate_warned;
+  unsigned post_seq; /* order the window was posted in; the app's first window is the lowest */
   char title[128];
   uint32_t* icon; /* ITEM_ICON x ITEM_ICON premultiplied BGRA, or NULL */
   uint32_t* tile_icon; /* TILE_ICON x TILE_ICON, for the switcher */
@@ -115,6 +116,7 @@ static int window_count;
 static screen_window_t stack[MAX_WINDOWS];
 static int stack_count;
 
+static unsigned post_counter;
 static char pending_tag[128];
 static time_t pending_tag_time;
 
@@ -418,17 +420,18 @@ static void draw_icon(uint32_t* px, int stride, int x, int y, const uint32_t* ic
     }
 }
 
-/* The earliest app window of the same app as `m`, or NULL when `m` is it.
+/* The first-posted app window of the same app as `m`, or NULL when `m` is it.
  * One app never has two entries or two windows in front of the user. */
 static managed_t* first_window_of_app(const managed_t* m) {
   if (!m->app[0]) return NULL;
+  managed_t* first = NULL;
   for (int i = 0; i < window_count; ++i) {
     managed_t* other = &windows[i];
-    if (other == m) return NULL;
     if (other->launcher || !other->posted || other->hidden_by_app) continue;
-    if (rnqnx_same_app(other->app, m->app)) return other;
+    if (!rnqnx_same_app(other->app, m->app)) continue;
+    if (!first || other->post_seq < first->post_seq) first = other;
   }
-  return NULL;
+  return first == m ? NULL : first;
 }
 
 /* Entries shown in the dock: posted app windows the app has not hidden, one
@@ -1187,6 +1190,7 @@ static void on_post(screen_window_t win) {
   managed_t* m = find(win);
   if (!m || m->posted) return;
   m->posted = true;
+  m->post_seq = ++post_counter;
   if (m->launcher) {
     int size[2] = {display_size[0], display_size[1]};
     int pos[2] = {0, 0};
@@ -1222,8 +1226,7 @@ static void on_post(screen_window_t win) {
         WARN("second window of '%s' (pid %d); the first is pid %d and stays in front", m->app,
              (int)m->pid, (int)first->pid);
       }
-      first->minimized = false;
-      stack_push_top(first->win);
+      raise_window(first);
     }
   }
   apply_stack();

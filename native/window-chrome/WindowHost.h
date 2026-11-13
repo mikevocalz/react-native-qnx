@@ -24,12 +24,14 @@
 //   "rnqnx-winmgr windowed" and takes "rnqnx=minimize" and "rnqnx=restore"
 //   as SCREEN_EVENT_MANAGER messages, the way demolauncher talks to it.
 
+#include <QLockFile>
 #include <QObject>
 #include <QPointer>
 #include <QString>
 #include <QStringList>
 
 #include <functional>
+#include <memory>
 #include <optional>
 
 class QLocalServer;
@@ -122,6 +124,9 @@ class SingleInstance final : public QObject {
   BuildKind kind_;
   QString serverName_;
   QPointer<QLocalServer> server_;
+  // Held while this process owns the key, so two launches that start together
+  // cannot both pass the probe in listen().
+  std::unique_ptr<QLockFile> lock_;
   std::function<bool(qint64)> alive_;
   std::function<void(qint64)> terminate_;
 };

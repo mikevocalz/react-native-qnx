@@ -2,6 +2,7 @@
 
 #include <QByteArray>
 #include <QCoreApplication>
+#include <QDir>
 #include <QElapsedTimer>
 #include <QLocalServer>
 #include <QLocalSocket>
@@ -302,6 +303,10 @@ ReplaceResult SingleInstance::replaceRunningInstance(int quitTimeoutMs, int term
     if (waitForExit(info->pid, quitTimeoutMs)) continue;
     std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING pid %lld ignored quit; sending SIGTERM\n",
                  static_cast<long long>(info->pid));
+    // The pid could have been reused if the old process exited meanwhile: only
+    // signal it while the same instance still answers with that pid.
+    const auto again = talk(name, "info");
+    if (!again || again->pid != info->pid) continue;
     terminate_(info->pid);
     if (!waitForExit(info->pid, termTimeoutMs)) {
       std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING pid %lld is still running\n",
@@ -313,6 +318,16 @@ ReplaceResult SingleInstance::replaceRunningInstance(int quitTimeoutMs, int term
 }
 
 bool SingleInstance::listen() {
+  // Probe, remove and listen are one step: another launch starting at the same
+  // moment waits here, then finds this socket live. Never stale by age, only
+  // when its owner process is gone.
+  auto lock = std::make_unique<QLockFile>(QDir::temp().filePath(serverName_ + QStringLiteral(".lock")));
+  lock->setStaleLockTime(0);
+  if (!lock->tryLock(1500)) {
+    std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING %s is being started by another launch\n",
+                 serverName_.toUtf8().constData());
+    return false;
+  }
   // Qt 6 lets a second listen() take over the name of a live server, which
   // would leave the first instance unreachable and allow two windows. Look
   // for a live owner first and leave its socket alone. A socket file nobody
@@ -339,6 +354,7 @@ bool SingleInstance::listen() {
     delete server;
     return false;
   }
+  lock_ = std::move(lock);
   server_ = server;
   connect(server, &QLocalServer::newConnection, this, &SingleInstance::acceptConnections);
   return true;

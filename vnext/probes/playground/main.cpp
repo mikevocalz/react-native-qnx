@@ -470,6 +470,8 @@ int main(int argc, char** argv) {
   // script) brings back the running copy, including after minimize, instead
   // of starting a second one. Screenshot runs are one-shot and skip this.
   std::unique_ptr<rnqnx::window::SingleInstance> singleInstance;
+  // Set when a later `--replace` launch asked this instance to quit.
+  bool quitByLaunch = false;
   if (identity.custom && !parser.isSet(screenshotOption)) {
     // The key is the base app id: a development client and the installed
     // release copy of one app are the same app, so they never run side by
@@ -497,7 +499,13 @@ int main(int argc, char** argv) {
                   identity.appId.toUtf8().constData());
       return 75;
     }
-    singleInstance->listen();
+    // Two launches that start together can both miss the other's socket; the
+    // one that cannot take it finds the owner now and restores it instead.
+    if (!singleInstance->listen() && singleInstance->forwardedToRunningInstance()) {
+      std::printf("RNQNX_SINGLE_INSTANCE restored the running %s\n",
+                  identity.appId.toUtf8().constData());
+      return 0;
+    }
   }
 #endif
 
@@ -766,18 +774,46 @@ int main(int argc, char** argv) {
   }
 #endif
   int result = 0;
+#if RNQNX_ENABLE_WINDOW_CHROME
+  // --replace from a later launch: leave the event loop, whatever state the
+  // app is in (fetching the bundle, showing the dev error screen, running).
+  // Connected once, here, so it holds across reloads. The launcher escalates
+  // to SIGTERM if this takes too long.
+  if (singleInstance) {
+    QObject::connect(singleInstance.get(), &rnqnx::window::SingleInstance::quitRequested, &app,
+        [&quitByLaunch
+#if RNQNX_ENABLE_DEV_SUPPORT
+         , &reloadRequested, &inApplicationLoop
+#endif
+        ]() {
+          std::printf("RNQNX_WINDOW_ACTION quit\n");
+          std::fflush(stdout);
+          quitByLaunch = true;
+#if RNQNX_ENABLE_DEV_SUPPORT
+          // Ends a bundle fetch in progress; the loops below then stop.
+          reloadRequested = true;
+          // Only exit() from inside the application loop: during a fetch it
+          // would end every later nested loop at once.
+          if (inApplicationLoop) QCoreApplication::exit(0);
+#else
+          QTimer::singleShot(0, QCoreApplication::instance(), []() { QCoreApplication::quit(); });
+#endif
+        });
+  }
+#endif
   for (;;) {
 #if RNQNX_ENABLE_DEV_SUPPORT
-  reloadRequested = false;
+  if (!quitByLaunch) reloadRequested = false;
   if (dev) {
     dev->resetForReload();
     const auto fetched = dev->fetchBundle();
+    if (quitByLaunch) break;
     if (fetched.superseded || reloadRequested) continue;
     if (!fetched.ok) {
       dev->showError(fetched.errorTitle, fetched.errorMessage);
       if (parser.isSet(screenshotOption)) return 1;
       result = runApplicationLoop();
-      if (reloadRequested) continue;
+      if (reloadRequested && !quitByLaunch) continue;
       break;
     }
     bundle = fetched.source;
@@ -947,36 +983,6 @@ int main(int argc, char** argv) {
           std::fflush(stdout);
           rnqnx::window::restoreMinimizedWindow(window, sizeKeepingManager);
         });
-    // --replace from a later launch: close the window and leave the event
-    // loop. A minimized window has no native window, so quit explicitly.
-    QObject::connect(singleInstance.get(), &rnqnx::window::SingleInstance::quitRequested,
-        &window, [&window
-#if RNQNX_ENABLE_DEV_SUPPORT
-                  , &inApplicationLoop
-#endif
-        ]() {
-          std::printf("RNQNX_WINDOW_ACTION quit\n");
-          std::fflush(stdout);
-          window.close();
-          // Quit only from inside the application loop: an exit() during the
-          // bundle fetch would end every later nested loop at once. The
-          // launcher escalates to SIGTERM if this takes too long.
-          auto quitWhenIdle = std::make_shared<std::function<void()>>();
-          *quitWhenIdle = [quitWhenIdle
-#if RNQNX_ENABLE_DEV_SUPPORT
-                           , &inApplicationLoop
-#endif
-          ]() {
-#if RNQNX_ENABLE_DEV_SUPPORT
-            if (!inApplicationLoop) {
-              QTimer::singleShot(100, QCoreApplication::instance(), *quitWhenIdle);
-              return;
-            }
-#endif
-            QCoreApplication::quit();
-          };
-          QTimer::singleShot(0, QCoreApplication::instance(), *quitWhenIdle);
-        });
   }
 #endif
 
@@ -1031,7 +1037,8 @@ int main(int argc, char** argv) {
   drainTimer.start(16);
 
 #if RNQNX_ENABLE_DEV_SUPPORT
-  const int exitCode = runApplicationLoop();
+  // A quit that arrived while the host was starting has no loop to leave yet.
+  const int exitCode = quitByLaunch ? 0 : runApplicationLoop();
 #else
   const int exitCode = QGuiApplication::exec();
 #endif
@@ -1043,7 +1050,7 @@ int main(int argc, char** argv) {
   return exitCode;
   }();
 #if RNQNX_ENABLE_DEV_SUPPORT
-  if (reloadRequested) continue;
+  if (reloadRequested && !quitByLaunch) continue;
 #endif
   break;
   }

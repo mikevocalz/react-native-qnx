@@ -73,6 +73,7 @@ class InstanceThread final : public QThread {
   }
 
   std::atomic<bool> listening{false};
+  std::atomic<bool> finishedListening{false};
   std::atomic<int> restores{0};
   std::atomic<int> quits{0};
 
@@ -86,6 +87,7 @@ class InstanceThread final : public QThread {
       if (honourQuit_) QThread::currentThread()->quit();
     }, Qt::DirectConnection);
     listening = instance.listen();
+    finishedListening = true;
     exec();
   }
 
@@ -724,6 +726,24 @@ class WindowChromeQuickTest : public QObject {
     QVERIFY(reach.waitForConnected(500));
   }
 #endif
+
+  // Launches that start at the same moment: exactly one becomes the instance.
+  void simultaneousLaunchesYieldOneOwner() {
+    const QString appId = uniqueAppId("race");
+    std::vector<std::unique_ptr<InstanceThread>> launches;
+    for (int i = 0; i < 4; ++i)
+      launches.push_back(std::make_unique<InstanceThread>(appId, BuildKind::Release, true));
+    for (auto& launch : launches) launch->start();
+    for (int i = 0; i < 300; ++i) {
+      bool settled = true;
+      for (auto& launch : launches) settled = settled && launch->finishedListening.load();
+      if (settled) break;
+      QThread::msleep(10);
+    }
+    int owners = 0;
+    for (auto& launch : launches) owners += launch->listening.load() ? 1 : 0;
+    QCOMPARE(owners, 1);
+  }
 
   // Writes reference frames when RNQNX_CHROME_FRAMES_DIR is set; used for the
   // PR's host screenshots. Always checks that each frame renders.
