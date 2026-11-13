@@ -48,16 +48,16 @@
   },
   "runtime": {
     "tarball": "qt612-public-runtime-o2.tar.gz (tar --no-xattrs --no-mac-metadata -czf ... -C runtime-o2 .)",
-    "tarball_sha256": "9ead47f44e7ba79ab9abc08ef59279d5d49a28693b03676988b82bd805ec0cc4",
-    "tarball_bytes": 18387854,
-    "SHA256SUMS_sha256": "17319f433075169e117e38980ab97d09429f6b76c7c948cf8af1cce44a2492f7",
-    "manifest_json_sha256": "0fb5e893d12e189dfd34d56c30950f79cf92d651b9b41520ae4ea26fd3e41e3c",
+    "tarball_sha256": "452bb9fb7e9c2e7b5520a620655fd9b14963a662498d0ab4f3c58c62be94189e",
+    "tarball_bytes": 18387912,
+    "SHA256SUMS_sha256": "edddf6bdfef37f33ae1c7f83ad667305276c67751d6322b6abbbdff163637185",
+    "manifest_json_sha256": "5ce5300fcc6f7ac45b8cbeed05690a3b3af1f97e889e4dff7e718d4268da5f33",
     "files": 159,
     "symlinks": 20,
     "difference_from_2026_11_12_runtime": "same 159 paths; the 16 ELF files changed, every license, qmldir and qmltypes file is byte-identical",
     "board_copy": {
       "path": "/data/home/qnxuser/qt612-public-o2",
-      "sha256sum_c": "159 of 159 OK"
+      "sha256sum_c": "159 of 159 OK (after the 2026-11-13 plugin rebuild)"
     },
     "qpa_plugin": "plugins/platforms/libqqnx.so",
     "elf": {
@@ -216,8 +216,8 @@
         ]
       },
       "plugins/platforms/libqqnx.so": {
-        "sha256": "6b6419aac23b27fd58cffc096a7095b8934526f46bffdf5c661bac4f80821a17",
-        "bytes": 403104,
+        "sha256": "4846766bfab98ba4803e0a67f7c7411bdc496c68eea6113b0d75367915eb0ccf",
+        "bytes": 403136,
         "needed": [
           "libscreen.so.1",
           "libEGL.so.1",
@@ -325,7 +325,7 @@
     },
     "elf_bytes_total": {
       "2026_11_12_O0": 122755752,
-      "this_build": 51271416
+      "this_build": 51271448
     },
     "non_qt_system_libraries": [
       "libEGL.so.1",
@@ -340,7 +340,27 @@
       "libslog2.so.1",
       "libsocket.so.4",
       "libzstd.so.1"
-    ]
+    ],
+    "plugin_rebuild_2026_11_13": {
+      "reason": "PR #141 changed scripts/qt-public/patches/qtbase-qnx-resize-swap.patch (position held back with size); only the qnx plugin was rebuilt with the patch from main 8efa95c",
+      "build_log_end": "[16/16] EXIT=0 2026-11-13T06:28:59Z",
+      "changed_files": ["plugins/platforms/libqqnx.so", "manifest.json"],
+      "superseded": {
+        "tarball_sha256": "9ead47f44e7ba79ab9abc08ef59279d5d49a28693b03676988b82bd805ec0cc4",
+        "tarball_bytes": 18387854,
+        "SHA256SUMS_sha256": "17319f433075169e117e38980ab97d09429f6b76c7c948cf8af1cce44a2492f7",
+        "manifest_json_sha256": "0fb5e893d12e189dfd34d56c30950f79cf92d651b9b41520ae4ea26fd3e41e3c",
+        "libqqnx_so_sha256": "6b6419aac23b27fd58cffc096a7095b8934526f46bffdf5c661bac4f80821a17"
+      },
+      "board_hand_built_plugin": {
+        "sha256": "52d1a506aa4f72bfabcfba535d273cf863309063d16e07a4a10cf2abd077accf",
+        "same_patched_sources": true,
+        "object_files_identical_objdump": 21,
+        "so_difference": "link order only"
+      },
+      "spdx_audit_unchanged": true,
+      "board_sha256sum_c": "159 of 159 OK"
+    }
   },
   "license_audit": {
     "tool": "scripts/qt-public/spdx-audit.py (ninja -t deps over every object)",
