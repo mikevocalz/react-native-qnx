@@ -11,6 +11,7 @@
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -61,7 +62,7 @@ class RNSVGCircleProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -108,7 +109,7 @@ class RNSVGClipPathProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -155,7 +156,7 @@ class RNSVGDefsProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -184,7 +185,7 @@ class RNSVGEllipseProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -217,6 +218,31 @@ class RNSVGEllipseProps final : public ViewProps {
 
 };
 
+enum class RNSVGFeBlendColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeBlendColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeBlendColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeBlendColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeBlendColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeBlendColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeBlendColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeBlendColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeBlendColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeBlendColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
 enum class RNSVGFeBlendMode { Unknown, Normal, Multiply, Screen, Darken, Lighten };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeBlendMode &result) {
@@ -261,6 +287,7 @@ class RNSVGFeBlendProps final : public ViewProps {
   folly::dynamic width{};
   folly::dynamic height{};
   std::string result{};
+  RNSVGFeBlendColorInterpolationFilters colorInterpolationFilters{RNSVGFeBlendColorInterpolationFilters::Auto};
   std::string in1{};
   std::string in2{};
   RNSVGFeBlendMode mode{RNSVGFeBlendMode::Normal};
@@ -274,6 +301,31 @@ class RNSVGFeBlendProps final : public ViewProps {
 
 };
 
+enum class RNSVGFeColorMatrixColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeColorMatrixColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeColorMatrixColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeColorMatrixColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeColorMatrixColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeColorMatrixColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeColorMatrixColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeColorMatrixColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeColorMatrixColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeColorMatrixColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
 enum class RNSVGFeColorMatrixType { Matrix, Saturate, HueRotate, LuminanceToAlpha };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeColorMatrixType &result) {
@@ -314,6 +366,7 @@ class RNSVGFeColorMatrixProps final : public ViewProps {
   folly::dynamic width{};
   folly::dynamic height{};
   std::string result{};
+  RNSVGFeColorMatrixColorInterpolationFilters colorInterpolationFilters{RNSVGFeColorMatrixColorInterpolationFilters::Auto};
   std::string in1{};
   RNSVGFeColorMatrixType type{RNSVGFeColorMatrixType::Matrix};
   std::vector<Float> values{};
@@ -327,6 +380,31 @@ class RNSVGFeColorMatrixProps final : public ViewProps {
 
 };
 
+enum class RNSVGFeCompositeColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeCompositeColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeCompositeColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeCompositeColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeCompositeColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeCompositeColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeCompositeColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeCompositeColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeCompositeColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeCompositeColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
 enum class RNSVGFeCompositeOperator1 { Over, In, Out, Atop, Xor, Arithmetic };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeCompositeOperator1 &result) {
@@ -371,6 +449,7 @@ class RNSVGFeCompositeProps final : public ViewProps {
   folly::dynamic width{};
   folly::dynamic height{};
   std::string result{};
+  RNSVGFeCompositeColorInterpolationFilters colorInterpolationFilters{RNSVGFeCompositeColorInterpolationFilters::Auto};
   std::string in1{};
   std::string in2{};
   RNSVGFeCompositeOperator1 operator1{RNSVGFeCompositeOperator1::Over};
@@ -388,6 +467,32 @@ class RNSVGFeCompositeProps final : public ViewProps {
 
 };
 
+enum class RNSVGFeFloodColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeFloodColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeFloodColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeFloodColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeFloodColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeFloodColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeFloodColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeFloodColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeFloodColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeFloodColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
+
 class RNSVGFeFloodProps final : public ViewProps {
  public:
   RNSVGFeFloodProps() = default;
@@ -400,6 +505,7 @@ class RNSVGFeFloodProps final : public ViewProps {
   folly::dynamic width{};
   folly::dynamic height{};
   std::string result{};
+  RNSVGFeFloodColorInterpolationFilters colorInterpolationFilters{RNSVGFeFloodColorInterpolationFilters::Auto};
   folly::dynamic floodColor{};
   Float floodOpacity{1.0};
 
@@ -412,6 +518,31 @@ class RNSVGFeFloodProps final : public ViewProps {
 
 };
 
+enum class RNSVGFeGaussianBlurColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeGaussianBlurColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeGaussianBlurColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeGaussianBlurColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeGaussianBlurColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeGaussianBlurColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeGaussianBlurColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeGaussianBlurColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeGaussianBlurColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeGaussianBlurColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
 enum class RNSVGFeGaussianBlurEdgeMode { Duplicate, Wrap, None };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeGaussianBlurEdgeMode &result) {
@@ -450,6 +581,7 @@ class RNSVGFeGaussianBlurProps final : public ViewProps {
   folly::dynamic width{};
   folly::dynamic height{};
   std::string result{};
+  RNSVGFeGaussianBlurColorInterpolationFilters colorInterpolationFilters{RNSVGFeGaussianBlurColorInterpolationFilters::Auto};
   std::string in1{};
   Float stdDeviationX{0.0};
   Float stdDeviationY{0.0};
@@ -464,6 +596,32 @@ class RNSVGFeGaussianBlurProps final : public ViewProps {
 
 };
 
+enum class RNSVGFeMergeColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeMergeColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeMergeColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeMergeColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeMergeColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeMergeColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeMergeColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeMergeColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeMergeColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeMergeColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
+
 class RNSVGFeMergeProps final : public ViewProps {
  public:
   RNSVGFeMergeProps() = default;
@@ -476,6 +634,7 @@ class RNSVGFeMergeProps final : public ViewProps {
   folly::dynamic width{};
   folly::dynamic height{};
   std::string result{};
+  RNSVGFeMergeColorInterpolationFilters colorInterpolationFilters{RNSVGFeMergeColorInterpolationFilters::Auto};
   std::vector<std::string> nodes{};
 
   #ifdef RN_SERIALIZABLE_STATE
@@ -486,6 +645,32 @@ class RNSVGFeMergeProps final : public ViewProps {
 
 
 };
+
+enum class RNSVGFeOffsetColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeOffsetColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeOffsetColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeOffsetColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeOffsetColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeOffsetColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeOffsetColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeOffsetColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeOffsetColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeOffsetColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
 
 class RNSVGFeOffsetProps final : public ViewProps {
  public:
@@ -499,6 +684,7 @@ class RNSVGFeOffsetProps final : public ViewProps {
   folly::dynamic width{};
   folly::dynamic height{};
   std::string result{};
+  RNSVGFeOffsetColorInterpolationFilters colorInterpolationFilters{RNSVGFeOffsetColorInterpolationFilters::Auto};
   std::string in1{};
   folly::dynamic dx{};
   folly::dynamic dy{};
@@ -598,7 +784,7 @@ class RNSVGForeignObjectProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -649,7 +835,7 @@ class RNSVGGroupProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -696,7 +882,7 @@ class RNSVGImageProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -747,7 +933,7 @@ class RNSVGLinearGradientProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -758,6 +944,7 @@ class RNSVGLinearGradientProps final : public ViewProps {
   std::vector<double> gradient{};
   int gradientUnits{0};
   std::vector<Float> gradientTransform{};
+  int spreadMethod{0};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -783,7 +970,7 @@ class RNSVGLineProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -831,7 +1018,7 @@ class RNSVGMarkerProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -890,7 +1077,7 @@ class RNSVGMaskProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -944,7 +1131,7 @@ class RNSVGPathProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -989,7 +1176,7 @@ class RNSVGPatternProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -1049,7 +1236,7 @@ class RNSVGRadialGradientProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -1062,6 +1249,7 @@ class RNSVGRadialGradientProps final : public ViewProps {
   std::vector<double> gradient{};
   int gradientUnits{0};
   std::vector<Float> gradientTransform{};
+  int spreadMethod{0};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -1087,7 +1275,7 @@ class RNSVGRectProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -1137,7 +1325,7 @@ class RNSVGSymbolProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -1190,7 +1378,7 @@ class RNSVGTextProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -1248,7 +1436,7 @@ class RNSVGTextPathProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -1312,7 +1500,7 @@ class RNSVGTSpanProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -1371,7 +1559,7 @@ class RNSVGUseProps final : public ViewProps {
   std::string markerMid{};
   std::string markerEnd{};
   std::string clipPath{};
-  int clipRule{0};
+  int clipRule{-1};
   bool responsible{false};
   std::string display{};
   std::string pointerEvents{};
@@ -1395,6 +1583,1224 @@ class RNSVGUseProps final : public ViewProps {
   folly::dynamic y{};
   folly::dynamic height{};
   folly::dynamic width{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+
+};
+
+enum class RNSVGFeComponentTransferColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeComponentTransferColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeComponentTransferColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeComponentTransferColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeComponentTransferColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeComponentTransferColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeComponentTransferColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeComponentTransferColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeComponentTransferColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeComponentTransferColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
+struct RNSVGFeComponentTransferFuncRStruct {
+  std::string type{};
+  std::vector<double> tableValues{};
+  double slope{1.0};
+  double intercept{0.0};
+  double amplitude{1.0};
+  double exponent{1.0};
+  double offset{0.0};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const RNSVGFeComponentTransferFuncRStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result["type"] = type;
+    result["tableValues"] = ::facebook::react::toDynamic(tableValues);
+    result["slope"] = slope;
+    result["intercept"] = intercept;
+    result["amplitude"] = amplitude;
+    result["exponent"] = exponent;
+    result["offset"] = offset;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeComponentTransferFuncRStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_type = map.find("type");
+  if (tmp_type != map.end()) {
+    fromRawValue(context, tmp_type->second, result.type);
+  }
+  auto tmp_tableValues = map.find("tableValues");
+  if (tmp_tableValues != map.end()) {
+    fromRawValue(context, tmp_tableValues->second, result.tableValues);
+  }
+  auto tmp_slope = map.find("slope");
+  if (tmp_slope != map.end()) {
+    fromRawValue(context, tmp_slope->second, result.slope);
+  }
+  auto tmp_intercept = map.find("intercept");
+  if (tmp_intercept != map.end()) {
+    fromRawValue(context, tmp_intercept->second, result.intercept);
+  }
+  auto tmp_amplitude = map.find("amplitude");
+  if (tmp_amplitude != map.end()) {
+    fromRawValue(context, tmp_amplitude->second, result.amplitude);
+  }
+  auto tmp_exponent = map.find("exponent");
+  if (tmp_exponent != map.end()) {
+    fromRawValue(context, tmp_exponent->second, result.exponent);
+  }
+  auto tmp_offset = map.find("offset");
+  if (tmp_offset != map.end()) {
+    fromRawValue(context, tmp_offset->second, result.offset);
+  }
+}
+
+static inline std::string toString(const RNSVGFeComponentTransferFuncRStruct &value) {
+  return "[Object RNSVGFeComponentTransferFuncRStruct]";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeComponentTransferFuncRStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+struct RNSVGFeComponentTransferFuncGStruct {
+  std::string type{};
+  std::vector<double> tableValues{};
+  double slope{1.0};
+  double intercept{0.0};
+  double amplitude{1.0};
+  double exponent{1.0};
+  double offset{0.0};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const RNSVGFeComponentTransferFuncGStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result["type"] = type;
+    result["tableValues"] = ::facebook::react::toDynamic(tableValues);
+    result["slope"] = slope;
+    result["intercept"] = intercept;
+    result["amplitude"] = amplitude;
+    result["exponent"] = exponent;
+    result["offset"] = offset;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeComponentTransferFuncGStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_type = map.find("type");
+  if (tmp_type != map.end()) {
+    fromRawValue(context, tmp_type->second, result.type);
+  }
+  auto tmp_tableValues = map.find("tableValues");
+  if (tmp_tableValues != map.end()) {
+    fromRawValue(context, tmp_tableValues->second, result.tableValues);
+  }
+  auto tmp_slope = map.find("slope");
+  if (tmp_slope != map.end()) {
+    fromRawValue(context, tmp_slope->second, result.slope);
+  }
+  auto tmp_intercept = map.find("intercept");
+  if (tmp_intercept != map.end()) {
+    fromRawValue(context, tmp_intercept->second, result.intercept);
+  }
+  auto tmp_amplitude = map.find("amplitude");
+  if (tmp_amplitude != map.end()) {
+    fromRawValue(context, tmp_amplitude->second, result.amplitude);
+  }
+  auto tmp_exponent = map.find("exponent");
+  if (tmp_exponent != map.end()) {
+    fromRawValue(context, tmp_exponent->second, result.exponent);
+  }
+  auto tmp_offset = map.find("offset");
+  if (tmp_offset != map.end()) {
+    fromRawValue(context, tmp_offset->second, result.offset);
+  }
+}
+
+static inline std::string toString(const RNSVGFeComponentTransferFuncGStruct &value) {
+  return "[Object RNSVGFeComponentTransferFuncGStruct]";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeComponentTransferFuncGStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+struct RNSVGFeComponentTransferFuncBStruct {
+  std::string type{};
+  std::vector<double> tableValues{};
+  double slope{1.0};
+  double intercept{0.0};
+  double amplitude{1.0};
+  double exponent{1.0};
+  double offset{0.0};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const RNSVGFeComponentTransferFuncBStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result["type"] = type;
+    result["tableValues"] = ::facebook::react::toDynamic(tableValues);
+    result["slope"] = slope;
+    result["intercept"] = intercept;
+    result["amplitude"] = amplitude;
+    result["exponent"] = exponent;
+    result["offset"] = offset;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeComponentTransferFuncBStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_type = map.find("type");
+  if (tmp_type != map.end()) {
+    fromRawValue(context, tmp_type->second, result.type);
+  }
+  auto tmp_tableValues = map.find("tableValues");
+  if (tmp_tableValues != map.end()) {
+    fromRawValue(context, tmp_tableValues->second, result.tableValues);
+  }
+  auto tmp_slope = map.find("slope");
+  if (tmp_slope != map.end()) {
+    fromRawValue(context, tmp_slope->second, result.slope);
+  }
+  auto tmp_intercept = map.find("intercept");
+  if (tmp_intercept != map.end()) {
+    fromRawValue(context, tmp_intercept->second, result.intercept);
+  }
+  auto tmp_amplitude = map.find("amplitude");
+  if (tmp_amplitude != map.end()) {
+    fromRawValue(context, tmp_amplitude->second, result.amplitude);
+  }
+  auto tmp_exponent = map.find("exponent");
+  if (tmp_exponent != map.end()) {
+    fromRawValue(context, tmp_exponent->second, result.exponent);
+  }
+  auto tmp_offset = map.find("offset");
+  if (tmp_offset != map.end()) {
+    fromRawValue(context, tmp_offset->second, result.offset);
+  }
+}
+
+static inline std::string toString(const RNSVGFeComponentTransferFuncBStruct &value) {
+  return "[Object RNSVGFeComponentTransferFuncBStruct]";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeComponentTransferFuncBStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
+struct RNSVGFeComponentTransferFuncAStruct {
+  std::string type{};
+  std::vector<double> tableValues{};
+  double slope{1.0};
+  double intercept{0.0};
+  double amplitude{1.0};
+  double exponent{1.0};
+  double offset{0.0};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const RNSVGFeComponentTransferFuncAStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result["type"] = type;
+    result["tableValues"] = ::facebook::react::toDynamic(tableValues);
+    result["slope"] = slope;
+    result["intercept"] = intercept;
+    result["amplitude"] = amplitude;
+    result["exponent"] = exponent;
+    result["offset"] = offset;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeComponentTransferFuncAStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_type = map.find("type");
+  if (tmp_type != map.end()) {
+    fromRawValue(context, tmp_type->second, result.type);
+  }
+  auto tmp_tableValues = map.find("tableValues");
+  if (tmp_tableValues != map.end()) {
+    fromRawValue(context, tmp_tableValues->second, result.tableValues);
+  }
+  auto tmp_slope = map.find("slope");
+  if (tmp_slope != map.end()) {
+    fromRawValue(context, tmp_slope->second, result.slope);
+  }
+  auto tmp_intercept = map.find("intercept");
+  if (tmp_intercept != map.end()) {
+    fromRawValue(context, tmp_intercept->second, result.intercept);
+  }
+  auto tmp_amplitude = map.find("amplitude");
+  if (tmp_amplitude != map.end()) {
+    fromRawValue(context, tmp_amplitude->second, result.amplitude);
+  }
+  auto tmp_exponent = map.find("exponent");
+  if (tmp_exponent != map.end()) {
+    fromRawValue(context, tmp_exponent->second, result.exponent);
+  }
+  auto tmp_offset = map.find("offset");
+  if (tmp_offset != map.end()) {
+    fromRawValue(context, tmp_offset->second, result.offset);
+  }
+}
+
+static inline std::string toString(const RNSVGFeComponentTransferFuncAStruct &value) {
+  return "[Object RNSVGFeComponentTransferFuncAStruct]";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeComponentTransferFuncAStruct &value) {
+  return value.toDynamic();
+}
+#endif
+class RNSVGFeComponentTransferProps final : public ViewProps {
+ public:
+  RNSVGFeComponentTransferProps() = default;
+  RNSVGFeComponentTransferProps(const PropsParserContext& context, const RNSVGFeComponentTransferProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  folly::dynamic x{};
+  folly::dynamic y{};
+  folly::dynamic width{};
+  folly::dynamic height{};
+  std::string result{};
+  RNSVGFeComponentTransferColorInterpolationFilters colorInterpolationFilters{RNSVGFeComponentTransferColorInterpolationFilters::Auto};
+  std::string in1{};
+  RNSVGFeComponentTransferFuncRStruct funcR{};
+  RNSVGFeComponentTransferFuncGStruct funcG{};
+  RNSVGFeComponentTransferFuncBStruct funcB{};
+  RNSVGFeComponentTransferFuncAStruct funcA{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+
+};
+
+enum class RNSVGFeConvolveMatrixColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeConvolveMatrixColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeConvolveMatrixColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeConvolveMatrixColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeConvolveMatrixColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeConvolveMatrixColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeConvolveMatrixColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeConvolveMatrixColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeConvolveMatrixColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeConvolveMatrixColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
+enum class RNSVGFeConvolveMatrixEdgeMode { Duplicate, Wrap, None };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeConvolveMatrixEdgeMode &result) {
+  auto string = (std::string)value;
+  if (string == "duplicate") { result = RNSVGFeConvolveMatrixEdgeMode::Duplicate; return; }
+  if (string == "wrap") { result = RNSVGFeConvolveMatrixEdgeMode::Wrap; return; }
+  if (string == "none") { result = RNSVGFeConvolveMatrixEdgeMode::None; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeConvolveMatrixEdgeMode &value) {
+  switch (value) {
+    case RNSVGFeConvolveMatrixEdgeMode::Duplicate: return "duplicate";
+    case RNSVGFeConvolveMatrixEdgeMode::Wrap: return "wrap";
+    case RNSVGFeConvolveMatrixEdgeMode::None: return "none";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeConvolveMatrixEdgeMode &value) {
+  return toString(value);
+}
+#endif
+
+class RNSVGFeConvolveMatrixProps final : public ViewProps {
+ public:
+  RNSVGFeConvolveMatrixProps() = default;
+  RNSVGFeConvolveMatrixProps(const PropsParserContext& context, const RNSVGFeConvolveMatrixProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  folly::dynamic x{};
+  folly::dynamic y{};
+  folly::dynamic width{};
+  folly::dynamic height{};
+  std::string result{};
+  RNSVGFeConvolveMatrixColorInterpolationFilters colorInterpolationFilters{RNSVGFeConvolveMatrixColorInterpolationFilters::Auto};
+  std::string in1{};
+  int orderX{3};
+  int orderY{3};
+  std::vector<double> kernelMatrix{};
+  double divisor{0.0};
+  double bias{0.0};
+  int targetX{-1};
+  int targetY{-1};
+  RNSVGFeConvolveMatrixEdgeMode edgeMode{RNSVGFeConvolveMatrixEdgeMode::Duplicate};
+  bool preserveAlpha{false};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+
+};
+
+enum class RNSVGFeDiffuseLightingColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeDiffuseLightingColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeDiffuseLightingColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeDiffuseLightingColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeDiffuseLightingColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeDiffuseLightingColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeDiffuseLightingColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeDiffuseLightingColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeDiffuseLightingColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeDiffuseLightingColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
+enum class RNSVGFeDiffuseLightingKind { None, Distant, Point, Spot };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeDiffuseLightingKind &result) {
+  auto string = (std::string)value;
+  if (string == "none") { result = RNSVGFeDiffuseLightingKind::None; return; }
+  if (string == "distant") { result = RNSVGFeDiffuseLightingKind::Distant; return; }
+  if (string == "point") { result = RNSVGFeDiffuseLightingKind::Point; return; }
+  if (string == "spot") { result = RNSVGFeDiffuseLightingKind::Spot; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeDiffuseLightingKind &value) {
+  switch (value) {
+    case RNSVGFeDiffuseLightingKind::None: return "none";
+    case RNSVGFeDiffuseLightingKind::Distant: return "distant";
+    case RNSVGFeDiffuseLightingKind::Point: return "point";
+    case RNSVGFeDiffuseLightingKind::Spot: return "spot";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeDiffuseLightingKind &value) {
+  return toString(value);
+}
+#endif
+struct RNSVGFeDiffuseLightingLightStruct {
+  RNSVGFeDiffuseLightingKind kind{RNSVGFeDiffuseLightingKind::None};
+  double azimuth{0.0};
+  double elevation{0.0};
+  double x{0.0};
+  double y{0.0};
+  double z{0.0};
+  double pointsAtX{0.0};
+  double pointsAtY{0.0};
+  double pointsAtZ{0.0};
+  double specularExponent{1.0};
+  double limitingConeAngle{0.0};
+  bool hasLimitingCone{false};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const RNSVGFeDiffuseLightingLightStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result["kind"] = ::facebook::react::toDynamic(kind);
+    result["azimuth"] = azimuth;
+    result["elevation"] = elevation;
+    result["x"] = x;
+    result["y"] = y;
+    result["z"] = z;
+    result["pointsAtX"] = pointsAtX;
+    result["pointsAtY"] = pointsAtY;
+    result["pointsAtZ"] = pointsAtZ;
+    result["specularExponent"] = specularExponent;
+    result["limitingConeAngle"] = limitingConeAngle;
+    result["hasLimitingCone"] = hasLimitingCone;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeDiffuseLightingLightStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_kind = map.find("kind");
+  if (tmp_kind != map.end()) {
+    fromRawValue(context, tmp_kind->second, result.kind);
+  }
+  auto tmp_azimuth = map.find("azimuth");
+  if (tmp_azimuth != map.end()) {
+    fromRawValue(context, tmp_azimuth->second, result.azimuth);
+  }
+  auto tmp_elevation = map.find("elevation");
+  if (tmp_elevation != map.end()) {
+    fromRawValue(context, tmp_elevation->second, result.elevation);
+  }
+  auto tmp_x = map.find("x");
+  if (tmp_x != map.end()) {
+    fromRawValue(context, tmp_x->second, result.x);
+  }
+  auto tmp_y = map.find("y");
+  if (tmp_y != map.end()) {
+    fromRawValue(context, tmp_y->second, result.y);
+  }
+  auto tmp_z = map.find("z");
+  if (tmp_z != map.end()) {
+    fromRawValue(context, tmp_z->second, result.z);
+  }
+  auto tmp_pointsAtX = map.find("pointsAtX");
+  if (tmp_pointsAtX != map.end()) {
+    fromRawValue(context, tmp_pointsAtX->second, result.pointsAtX);
+  }
+  auto tmp_pointsAtY = map.find("pointsAtY");
+  if (tmp_pointsAtY != map.end()) {
+    fromRawValue(context, tmp_pointsAtY->second, result.pointsAtY);
+  }
+  auto tmp_pointsAtZ = map.find("pointsAtZ");
+  if (tmp_pointsAtZ != map.end()) {
+    fromRawValue(context, tmp_pointsAtZ->second, result.pointsAtZ);
+  }
+  auto tmp_specularExponent = map.find("specularExponent");
+  if (tmp_specularExponent != map.end()) {
+    fromRawValue(context, tmp_specularExponent->second, result.specularExponent);
+  }
+  auto tmp_limitingConeAngle = map.find("limitingConeAngle");
+  if (tmp_limitingConeAngle != map.end()) {
+    fromRawValue(context, tmp_limitingConeAngle->second, result.limitingConeAngle);
+  }
+  auto tmp_hasLimitingCone = map.find("hasLimitingCone");
+  if (tmp_hasLimitingCone != map.end()) {
+    fromRawValue(context, tmp_hasLimitingCone->second, result.hasLimitingCone);
+  }
+}
+
+static inline std::string toString(const RNSVGFeDiffuseLightingLightStruct &value) {
+  return "[Object RNSVGFeDiffuseLightingLightStruct]";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeDiffuseLightingLightStruct &value) {
+  return value.toDynamic();
+}
+#endif
+class RNSVGFeDiffuseLightingProps final : public ViewProps {
+ public:
+  RNSVGFeDiffuseLightingProps() = default;
+  RNSVGFeDiffuseLightingProps(const PropsParserContext& context, const RNSVGFeDiffuseLightingProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  folly::dynamic x{};
+  folly::dynamic y{};
+  folly::dynamic width{};
+  folly::dynamic height{};
+  std::string result{};
+  RNSVGFeDiffuseLightingColorInterpolationFilters colorInterpolationFilters{RNSVGFeDiffuseLightingColorInterpolationFilters::Auto};
+  std::string in1{};
+  double surfaceScale{1.0};
+  double diffuseConstant{1.0};
+  folly::dynamic lightingColor{};
+  RNSVGFeDiffuseLightingLightStruct light{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+
+};
+
+enum class RNSVGFeDisplacementMapColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeDisplacementMapColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeDisplacementMapColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeDisplacementMapColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeDisplacementMapColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeDisplacementMapColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeDisplacementMapColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeDisplacementMapColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeDisplacementMapColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeDisplacementMapColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
+enum class RNSVGFeDisplacementMapXChannelSelector { R, G, B, A };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeDisplacementMapXChannelSelector &result) {
+  auto string = (std::string)value;
+  if (string == "R") { result = RNSVGFeDisplacementMapXChannelSelector::R; return; }
+  if (string == "G") { result = RNSVGFeDisplacementMapXChannelSelector::G; return; }
+  if (string == "B") { result = RNSVGFeDisplacementMapXChannelSelector::B; return; }
+  if (string == "A") { result = RNSVGFeDisplacementMapXChannelSelector::A; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeDisplacementMapXChannelSelector &value) {
+  switch (value) {
+    case RNSVGFeDisplacementMapXChannelSelector::R: return "R";
+    case RNSVGFeDisplacementMapXChannelSelector::G: return "G";
+    case RNSVGFeDisplacementMapXChannelSelector::B: return "B";
+    case RNSVGFeDisplacementMapXChannelSelector::A: return "A";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeDisplacementMapXChannelSelector &value) {
+  return toString(value);
+}
+#endif
+enum class RNSVGFeDisplacementMapYChannelSelector { R, G, B, A };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeDisplacementMapYChannelSelector &result) {
+  auto string = (std::string)value;
+  if (string == "R") { result = RNSVGFeDisplacementMapYChannelSelector::R; return; }
+  if (string == "G") { result = RNSVGFeDisplacementMapYChannelSelector::G; return; }
+  if (string == "B") { result = RNSVGFeDisplacementMapYChannelSelector::B; return; }
+  if (string == "A") { result = RNSVGFeDisplacementMapYChannelSelector::A; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeDisplacementMapYChannelSelector &value) {
+  switch (value) {
+    case RNSVGFeDisplacementMapYChannelSelector::R: return "R";
+    case RNSVGFeDisplacementMapYChannelSelector::G: return "G";
+    case RNSVGFeDisplacementMapYChannelSelector::B: return "B";
+    case RNSVGFeDisplacementMapYChannelSelector::A: return "A";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeDisplacementMapYChannelSelector &value) {
+  return toString(value);
+}
+#endif
+
+class RNSVGFeDisplacementMapProps final : public ViewProps {
+ public:
+  RNSVGFeDisplacementMapProps() = default;
+  RNSVGFeDisplacementMapProps(const PropsParserContext& context, const RNSVGFeDisplacementMapProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  folly::dynamic x{};
+  folly::dynamic y{};
+  folly::dynamic width{};
+  folly::dynamic height{};
+  std::string result{};
+  RNSVGFeDisplacementMapColorInterpolationFilters colorInterpolationFilters{RNSVGFeDisplacementMapColorInterpolationFilters::Auto};
+  std::string in1{};
+  std::string in2{};
+  double scale{0.0};
+  RNSVGFeDisplacementMapXChannelSelector xChannelSelector{RNSVGFeDisplacementMapXChannelSelector::A};
+  RNSVGFeDisplacementMapYChannelSelector yChannelSelector{RNSVGFeDisplacementMapYChannelSelector::A};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+
+};
+
+enum class RNSVGFeDropShadowColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeDropShadowColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeDropShadowColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeDropShadowColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeDropShadowColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeDropShadowColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeDropShadowColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeDropShadowColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeDropShadowColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeDropShadowColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
+
+class RNSVGFeDropShadowProps final : public ViewProps {
+ public:
+  RNSVGFeDropShadowProps() = default;
+  RNSVGFeDropShadowProps(const PropsParserContext& context, const RNSVGFeDropShadowProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  folly::dynamic x{};
+  folly::dynamic y{};
+  folly::dynamic width{};
+  folly::dynamic height{};
+  std::string result{};
+  RNSVGFeDropShadowColorInterpolationFilters colorInterpolationFilters{RNSVGFeDropShadowColorInterpolationFilters::Auto};
+  std::string in1{};
+  folly::dynamic dx{};
+  folly::dynamic dy{};
+  double stdDeviationX{2.0};
+  double stdDeviationY{2.0};
+  folly::dynamic floodColor{};
+  Float floodOpacity{1.0};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+
+};
+
+enum class RNSVGFeImageColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeImageColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeImageColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeImageColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeImageColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeImageColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeImageColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeImageColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeImageColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeImageColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
+
+class RNSVGFeImageProps final : public ViewProps {
+ public:
+  RNSVGFeImageProps() = default;
+  RNSVGFeImageProps(const PropsParserContext& context, const RNSVGFeImageProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  folly::dynamic x{};
+  folly::dynamic y{};
+  folly::dynamic width{};
+  folly::dynamic height{};
+  std::string result{};
+  RNSVGFeImageColorInterpolationFilters colorInterpolationFilters{RNSVGFeImageColorInterpolationFilters::Auto};
+  std::string href{};
+  std::string align{};
+  int meetOrSlice{0};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+
+};
+
+enum class RNSVGFeMorphologyColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeMorphologyColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeMorphologyColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeMorphologyColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeMorphologyColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeMorphologyColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeMorphologyColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeMorphologyColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeMorphologyColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeMorphologyColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
+enum class RNSVGFeMorphologyOperator1 { Erode, Dilate };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeMorphologyOperator1 &result) {
+  auto string = (std::string)value;
+  if (string == "erode") { result = RNSVGFeMorphologyOperator1::Erode; return; }
+  if (string == "dilate") { result = RNSVGFeMorphologyOperator1::Dilate; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeMorphologyOperator1 &value) {
+  switch (value) {
+    case RNSVGFeMorphologyOperator1::Erode: return "erode";
+    case RNSVGFeMorphologyOperator1::Dilate: return "dilate";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeMorphologyOperator1 &value) {
+  return toString(value);
+}
+#endif
+
+class RNSVGFeMorphologyProps final : public ViewProps {
+ public:
+  RNSVGFeMorphologyProps() = default;
+  RNSVGFeMorphologyProps(const PropsParserContext& context, const RNSVGFeMorphologyProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  folly::dynamic x{};
+  folly::dynamic y{};
+  folly::dynamic width{};
+  folly::dynamic height{};
+  std::string result{};
+  RNSVGFeMorphologyColorInterpolationFilters colorInterpolationFilters{RNSVGFeMorphologyColorInterpolationFilters::Auto};
+  std::string in1{};
+  RNSVGFeMorphologyOperator1 operator1{RNSVGFeMorphologyOperator1::Erode};
+  folly::dynamic radiusX{};
+  folly::dynamic radiusY{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+
+};
+
+enum class RNSVGFeSpecularLightingColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeSpecularLightingColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeSpecularLightingColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeSpecularLightingColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeSpecularLightingColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeSpecularLightingColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeSpecularLightingColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeSpecularLightingColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeSpecularLightingColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeSpecularLightingColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
+enum class RNSVGFeSpecularLightingKind { None, Distant, Point, Spot };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeSpecularLightingKind &result) {
+  auto string = (std::string)value;
+  if (string == "none") { result = RNSVGFeSpecularLightingKind::None; return; }
+  if (string == "distant") { result = RNSVGFeSpecularLightingKind::Distant; return; }
+  if (string == "point") { result = RNSVGFeSpecularLightingKind::Point; return; }
+  if (string == "spot") { result = RNSVGFeSpecularLightingKind::Spot; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeSpecularLightingKind &value) {
+  switch (value) {
+    case RNSVGFeSpecularLightingKind::None: return "none";
+    case RNSVGFeSpecularLightingKind::Distant: return "distant";
+    case RNSVGFeSpecularLightingKind::Point: return "point";
+    case RNSVGFeSpecularLightingKind::Spot: return "spot";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeSpecularLightingKind &value) {
+  return toString(value);
+}
+#endif
+struct RNSVGFeSpecularLightingLightStruct {
+  RNSVGFeSpecularLightingKind kind{RNSVGFeSpecularLightingKind::None};
+  double azimuth{0.0};
+  double elevation{0.0};
+  double x{0.0};
+  double y{0.0};
+  double z{0.0};
+  double pointsAtX{0.0};
+  double pointsAtY{0.0};
+  double pointsAtZ{0.0};
+  double specularExponent{1.0};
+  double limitingConeAngle{0.0};
+  bool hasLimitingCone{false};
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const RNSVGFeSpecularLightingLightStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result["kind"] = ::facebook::react::toDynamic(kind);
+    result["azimuth"] = azimuth;
+    result["elevation"] = elevation;
+    result["x"] = x;
+    result["y"] = y;
+    result["z"] = z;
+    result["pointsAtX"] = pointsAtX;
+    result["pointsAtY"] = pointsAtY;
+    result["pointsAtZ"] = pointsAtZ;
+    result["specularExponent"] = specularExponent;
+    result["limitingConeAngle"] = limitingConeAngle;
+    result["hasLimitingCone"] = hasLimitingCone;
+    return result;
+  }
+#endif
+};
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeSpecularLightingLightStruct &result) {
+  auto map = (std::unordered_map<std::string, RawValue>)value;
+
+  auto tmp_kind = map.find("kind");
+  if (tmp_kind != map.end()) {
+    fromRawValue(context, tmp_kind->second, result.kind);
+  }
+  auto tmp_azimuth = map.find("azimuth");
+  if (tmp_azimuth != map.end()) {
+    fromRawValue(context, tmp_azimuth->second, result.azimuth);
+  }
+  auto tmp_elevation = map.find("elevation");
+  if (tmp_elevation != map.end()) {
+    fromRawValue(context, tmp_elevation->second, result.elevation);
+  }
+  auto tmp_x = map.find("x");
+  if (tmp_x != map.end()) {
+    fromRawValue(context, tmp_x->second, result.x);
+  }
+  auto tmp_y = map.find("y");
+  if (tmp_y != map.end()) {
+    fromRawValue(context, tmp_y->second, result.y);
+  }
+  auto tmp_z = map.find("z");
+  if (tmp_z != map.end()) {
+    fromRawValue(context, tmp_z->second, result.z);
+  }
+  auto tmp_pointsAtX = map.find("pointsAtX");
+  if (tmp_pointsAtX != map.end()) {
+    fromRawValue(context, tmp_pointsAtX->second, result.pointsAtX);
+  }
+  auto tmp_pointsAtY = map.find("pointsAtY");
+  if (tmp_pointsAtY != map.end()) {
+    fromRawValue(context, tmp_pointsAtY->second, result.pointsAtY);
+  }
+  auto tmp_pointsAtZ = map.find("pointsAtZ");
+  if (tmp_pointsAtZ != map.end()) {
+    fromRawValue(context, tmp_pointsAtZ->second, result.pointsAtZ);
+  }
+  auto tmp_specularExponent = map.find("specularExponent");
+  if (tmp_specularExponent != map.end()) {
+    fromRawValue(context, tmp_specularExponent->second, result.specularExponent);
+  }
+  auto tmp_limitingConeAngle = map.find("limitingConeAngle");
+  if (tmp_limitingConeAngle != map.end()) {
+    fromRawValue(context, tmp_limitingConeAngle->second, result.limitingConeAngle);
+  }
+  auto tmp_hasLimitingCone = map.find("hasLimitingCone");
+  if (tmp_hasLimitingCone != map.end()) {
+    fromRawValue(context, tmp_hasLimitingCone->second, result.hasLimitingCone);
+  }
+}
+
+static inline std::string toString(const RNSVGFeSpecularLightingLightStruct &value) {
+  return "[Object RNSVGFeSpecularLightingLightStruct]";
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeSpecularLightingLightStruct &value) {
+  return value.toDynamic();
+}
+#endif
+class RNSVGFeSpecularLightingProps final : public ViewProps {
+ public:
+  RNSVGFeSpecularLightingProps() = default;
+  RNSVGFeSpecularLightingProps(const PropsParserContext& context, const RNSVGFeSpecularLightingProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  folly::dynamic x{};
+  folly::dynamic y{};
+  folly::dynamic width{};
+  folly::dynamic height{};
+  std::string result{};
+  RNSVGFeSpecularLightingColorInterpolationFilters colorInterpolationFilters{RNSVGFeSpecularLightingColorInterpolationFilters::Auto};
+  std::string in1{};
+  double surfaceScale{1.0};
+  double specularConstant{1.0};
+  double specularExponent{1.0};
+  folly::dynamic lightingColor{};
+  RNSVGFeSpecularLightingLightStruct light{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+
+};
+
+enum class RNSVGFeTileColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeTileColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeTileColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeTileColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeTileColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeTileColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeTileColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeTileColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeTileColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeTileColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
+
+class RNSVGFeTileProps final : public ViewProps {
+ public:
+  RNSVGFeTileProps() = default;
+  RNSVGFeTileProps(const PropsParserContext& context, const RNSVGFeTileProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  folly::dynamic x{};
+  folly::dynamic y{};
+  folly::dynamic width{};
+  folly::dynamic height{};
+  std::string result{};
+  RNSVGFeTileColorInterpolationFilters colorInterpolationFilters{RNSVGFeTileColorInterpolationFilters::Auto};
+  std::string in1{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+
+};
+
+enum class RNSVGFeTurbulenceColorInterpolationFilters { Auto, SRGB, LinearRGB };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeTurbulenceColorInterpolationFilters &result) {
+  auto string = (std::string)value;
+  if (string == "auto") { result = RNSVGFeTurbulenceColorInterpolationFilters::Auto; return; }
+  if (string == "sRGB") { result = RNSVGFeTurbulenceColorInterpolationFilters::SRGB; return; }
+  if (string == "linearRGB") { result = RNSVGFeTurbulenceColorInterpolationFilters::LinearRGB; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeTurbulenceColorInterpolationFilters &value) {
+  switch (value) {
+    case RNSVGFeTurbulenceColorInterpolationFilters::Auto: return "auto";
+    case RNSVGFeTurbulenceColorInterpolationFilters::SRGB: return "sRGB";
+    case RNSVGFeTurbulenceColorInterpolationFilters::LinearRGB: return "linearRGB";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeTurbulenceColorInterpolationFilters &value) {
+  return toString(value);
+}
+#endif
+enum class RNSVGFeTurbulenceStitchTiles { Stitch, NoStitch };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeTurbulenceStitchTiles &result) {
+  auto string = (std::string)value;
+  if (string == "stitch") { result = RNSVGFeTurbulenceStitchTiles::Stitch; return; }
+  if (string == "noStitch") { result = RNSVGFeTurbulenceStitchTiles::NoStitch; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeTurbulenceStitchTiles &value) {
+  switch (value) {
+    case RNSVGFeTurbulenceStitchTiles::Stitch: return "stitch";
+    case RNSVGFeTurbulenceStitchTiles::NoStitch: return "noStitch";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeTurbulenceStitchTiles &value) {
+  return toString(value);
+}
+#endif
+enum class RNSVGFeTurbulenceType { FractalNoise, Turbulence };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSVGFeTurbulenceType &result) {
+  auto string = (std::string)value;
+  if (string == "fractalNoise") { result = RNSVGFeTurbulenceType::FractalNoise; return; }
+  if (string == "turbulence") { result = RNSVGFeTurbulenceType::Turbulence; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSVGFeTurbulenceType &value) {
+  switch (value) {
+    case RNSVGFeTurbulenceType::FractalNoise: return "fractalNoise";
+    case RNSVGFeTurbulenceType::Turbulence: return "turbulence";
+    default:
+      abort();
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSVGFeTurbulenceType &value) {
+  return toString(value);
+}
+#endif
+
+class RNSVGFeTurbulenceProps final : public ViewProps {
+ public:
+  RNSVGFeTurbulenceProps() = default;
+  RNSVGFeTurbulenceProps(const PropsParserContext& context, const RNSVGFeTurbulenceProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  folly::dynamic x{};
+  folly::dynamic y{};
+  folly::dynamic width{};
+  folly::dynamic height{};
+  std::string result{};
+  RNSVGFeTurbulenceColorInterpolationFilters colorInterpolationFilters{RNSVGFeTurbulenceColorInterpolationFilters::Auto};
+  double baseFrequencyX{0.0};
+  double baseFrequencyY{0.0};
+  int numOctaves{1};
+  double seed{0.0};
+  RNSVGFeTurbulenceStitchTiles stitchTiles{RNSVGFeTurbulenceStitchTiles::NoStitch};
+  RNSVGFeTurbulenceType type{RNSVGFeTurbulenceType::Turbulence};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;

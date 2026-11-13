@@ -128,9 +128,15 @@ function(rnqnx_add_fabric_adapter_target)
       message(FATAL_ERROR "RNQNX_ENABLE_QT_RNSVG needs react-native-svg 15.16.0 installed (pnpm install): ${rnsvg_cpp}")
     endif()
     set(rnsvg_generated "${RNQNX_REACT_QT_ROOT}/vnext/generated/react/renderer/components/rnsvg")
+    # The bridge is one file per kind of work (values, shapes, defs, text,
+    # shadow nodes, layout events, filters, images); the list is a glob so a
+    # new one needs no edit here.
+    file(GLOB rnsvg_bridge_sources CONFIGURE_DEPENDS
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtRnsvg*.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtRnsvg*.h"
+      "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtRnsvg*.h")
     target_sources(rnqnx_fabric_adapter PRIVATE
-      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtRnsvgBridge.cpp"
-      "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtRnsvgBridge.h"
+      ${rnsvg_bridge_sources}
       "${rnsvg_cpp}/RNSVGLayoutableShadowNode.cpp"
       "${rnsvg_generated}/EventEmitters.cpp"
       "${rnsvg_generated}/Props.cpp")
@@ -139,7 +145,7 @@ function(rnqnx_add_fabric_adapter_target)
     set_source_files_properties(
       "${rnsvg_cpp}/RNSVGLayoutableShadowNode.cpp"
       "${rnsvg_generated}/EventEmitters.cpp" "${rnsvg_generated}/Props.cpp"
-      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtRnsvgBridge.cpp" PROPERTIES COMPILE_OPTIONS
+      ${rnsvg_bridge_sources} PROPERTIES COMPILE_OPTIONS
       "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas;-Wno-deprecated-declarations;-Wno-sign-compare;-Wno-extra>")
   endif()
   if(RNQNX_ENABLE_QT_NATIVE_UI OR RNQNX_ENABLE_QT_EXPO_IMAGE)
@@ -224,6 +230,8 @@ function(rnqnx_add_react_host_target)
   rnqnx_add_qt_svg_fabric_test()
   include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxQtRnsvgFabric.cmake)
   rnqnx_add_qt_rnsvg_fabric_test()
+  rnqnx_add_qt_rnsvg_image_fabric_test()
+  rnqnx_add_qt_rnsvg_corpus_test()
   rnqnx_enable_strict_warnings(rnqnx_react_host)
   if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE)
     include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxAccessibilityActions.cmake)

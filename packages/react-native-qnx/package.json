@@ -10,7 +10,8 @@
     "expo",
     "src",
     "adaptive",
-    "qt"
+    "qt",
+    "svg"
   ],
   "peerDependencies": {
     "react": "19.3.0",

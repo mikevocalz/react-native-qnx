@@ -73,6 +73,20 @@ jobs:
             -DRNQNX_ENABLE_QT_MOTION=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_GRAPHICS=${{ matrix.input-lifecycle }}
           node scripts/validate-host-renderer.mjs
+      - name: react-native-svg renderer, filters, text and images under ASan and UBSan (ON leg)
+        if: matrix.input-lifecycle == 'ON'
+        run: |
+          set -euo pipefail
+          cmake -S tests/native/qt-rnsvg -B build/rnsvg-sanitized -G Ninja \
+            -DRNQNX_ENABLE_QT_RNSVG=ON -DRNQNX_QT_RNSVG_SANITIZERS=ON \
+            -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
+          cmake --build build/rnsvg-sanitized
+          ctest --test-dir build/rnsvg-sanitized --output-on-failure
+          cmake -S tests/native/qt-rnsvg-image-http -B build/rnsvg-image-http -G Ninja \
+            -DRNQNX_QT_RNSVG_SANITIZERS=ON -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
+          cmake --build build/rnsvg-image-http
+          ctest --test-dir build/rnsvg-image-http --output-on-failure
       - name: Render the conformance app (Linux host only)
         run: |
           set -euo pipefail
