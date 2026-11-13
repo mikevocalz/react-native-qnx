@@ -10,6 +10,10 @@
 
 #include <utility>
 
+#if RNQNX_ENABLE_QT_RNSVG
+#include <RnsvgItems.h>
+#endif
+
 namespace rnqnx::fabric {
 namespace {
 
@@ -172,6 +176,24 @@ Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
   if (target == nullptr) {
     return -1;
   }
+
+#if RNQNX_ENABLE_QT_RNSVG
+  // An <Svg> paints its whole element tree into one item, so geometry alone
+  // cannot tell its elements apart. Ask it which responsible element, if any,
+  // is under the point; otherwise the <Svg> view itself is the target.
+  if (const auto* svg = qobject_cast<const views::RnsvgRootItem*>(target)) {
+    if (const auto* element = svg->hitElement(svg->mapFromScene(windowPoint))) {
+      // Only an element with a registered emitter can take the touch; if it
+      // has none, the <Svg> view keeps the press as before.
+      for (auto it = emitters_.constBegin(); it != emitters_.constEnd(); ++it) {
+        if (layer_.itemForTag(it.key()) == element) {
+          target = element;
+          break;
+        }
+      }
+    }
+  }
+#endif
 
   // Reverse-map the item to its tag. The registry is small — one entry per
   // mounted view — and this runs once per pointer event.

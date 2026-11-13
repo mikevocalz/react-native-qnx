@@ -5,13 +5,14 @@ include_guard(GLOBAL)
 option(RNQNX_ENABLE_QT_MOTION "Build experimental native Qt motion primitives" OFF)
 option(RNQNX_ENABLE_QT_SVG "Build the experimental native SVG document component" OFF)
 option(RNQNX_ENABLE_QT_GRAPHICS "Build the experimental Qt graphics surface observer" OFF)
+option(RNQNX_ENABLE_QT_RNSVG "Build react-native-svg element rendering on Qt Quick" OFF)
 
-if((RNQNX_ENABLE_QT_MOTION OR RNQNX_ENABLE_QT_SVG OR RNQNX_ENABLE_QT_GRAPHICS)
+if((RNQNX_ENABLE_QT_MOTION OR RNQNX_ENABLE_QT_SVG OR RNQNX_ENABLE_QT_GRAPHICS OR RNQNX_ENABLE_QT_RNSVG)
    AND NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Darwin|QNX)$")
   message(FATAL_ERROR "Qt native v2 experiments require a Linux, macOS or QNX Qt host")
 endif()
 
-foreach(feature MOTION SVG GRAPHICS)
+foreach(feature MOTION SVG GRAPHICS RNSVG)
   if(RNQNX_ENABLE_QT_${feature})
     string(TOLOWER "${feature}" leaf)
     add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/../native/qt/${leaf}"

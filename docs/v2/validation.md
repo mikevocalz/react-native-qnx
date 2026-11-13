@@ -235,3 +235,42 @@ next smallest runtime slice is explicit RN-JS/UI ownership plus an actual
 Worklets bootstrap and lifecycle test. The graphics track first needs a pinned
 Dawn build and a real QNX draw/readback/presentation test before adding the
 shared-device Rust adapter.
+
+## react-native-svg
+
+Stage 4: `react-native-svg` 15.16.0 elements on Qt Quick, behind
+`RNQNX_ENABLE_QT_RNSVG` (default OFF). Guide:
+[react-native-svg.md](react-native-svg.md).
+
+| Check                                                                           | Result                                                                                                                                   |
+| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm qt:rnsvg:check`                                                           | Generated props and events match the package's specs (codegen 0.88.1, package 15.16.0)                                                   |
+| `rnqnx_qt_rnsvg_test` (25 cases, golden pixels and hit tests)                   | 25/25 passed on a Linux aarch64 VM: Qt 6.12.0 offscreen software, GCC 13.3, ASan+UBSan, `-Werror` ([output](evidence/rnsvg-host-vm.txt)) |
+| `rnqnx_qt_rnsvg_fabric_test` (unmodified package through Metro, Hermes, Fabric) | Runs in the `host-renderer` workflow, input-lifecycle ON leg; see the PR for the run                                                     |
+| QNX aarch64 cross-build of the consumer app with the switch ON                  | See "Pi 400 device" below                                                                                                                |
+
+### Pi 400 device
+
+Run on 2026-11-13, one board: Raspberry Pi 400, QNX SDP 8.0.5 custom image,
+public-source Qt 6.12.0 `-O2` runtime, OpenGL ES through the patched `libqqnx`
+(the Qt Quick scene graph on the GPU; the SVG raster itself is CPU). The app is
+`apps/component-gallery` built in the `qnx805-build` container with
+`RNQNX_ENABLE_QT_RNSVG=ON` and `extra.rnqnx.componentName = RNQnxSvgGallery`
+(the SVG cards without the tab shell), app id `org.rnqnx.svgshowcase`, own
+directory, own launcher. Build flags matched the other gallery builds (`-O1`
+C++, input lifecycle and window chrome ON).
+
+| Check                                                                  | Result                                                                                                                                                                          |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| App `--screenshot` (the app's own window)                              | Cards drawn: [paths, gradients, clip/mask/use](evidence/rnsvg-pi400-cards-1.png), [text](evidence/rnsvg-pi400-text-card.png), [touch card](evidence/rnsvg-pi400-touch-card.png) |
+| Prop updates without remount                                           | The group's rotation (JS timer) and an `Animated.Value` radius change every frame; the rotation read 66 deg and the yellow circle was drawn in the second capture               |
+| Repaint cost (`RNQNX_RNSVG_TRACE=1`, `QQuickPaintedItem` Image target) | Touch card (300x150, 6 elements, two props changing continuously): 1.97 to 2.34 ms per repaint over 840 repaints in about 35 s. First paints of 1012x150 cards: 1.7 to 13 ms    |
+| JavaScript errors                                                      | None (`js fatal` count 0 in the live log)                                                                                                                                       |
+| Per-element `onPress` on the device                                    | **Not exercised.** No physical or injected pointer was sent to the board's SVG window; the touch path is covered by the host Fabric test only                                   |
+| Reanimated / Worklets                                                  | Not available on main at the time (stages 2 and 3 unmerged); props are JavaScript-driven                                                                                        |
+
+Not measured: the `FramebufferObject` paint target (`RNQNX_RNSVG_TARGET=fbo`),
+GPU memory, long-run frame pacing, and any other board. Getting the build onto
+the Pi needed the public `react-native` entry to export `processColor`,
+`PanResponder`, `Easing`, `TurboModuleRegistry` and `codegenNativeComponent`,
+which react-native-svg imports; they are real implementations from React Native.

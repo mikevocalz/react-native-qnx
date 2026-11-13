@@ -585,6 +585,23 @@ function LimitationsPage() {
   );
 }
 
+// Advanced widgets. The SVG cards live in ./svg (one file per card, listed in svg/cards.js); the module
+// is required here, not at the top, so a host without react-native-svg support
+// never evaluates it.
+function AdvancedPage() {
+  const { svgCards, svgAvailable, SvgUnavailable } = require('./svg/cards');
+  if (!svgAvailable()) return h(SvgUnavailable);
+  return h(
+    ScrollView,
+    { contentContainerStyle: { paddingBottom: 24 } },
+    h(Heading, {
+      title: 'Advanced widgets',
+      detail: 'react-native-svg 15.16.0 elements drawn by a Qt-backed renderer',
+    }),
+    ...svgCards.map((card) => h(card.Component, { key: card.id }))
+  );
+}
+
 function ConformanceApp() {
   const page = useConformance((state) => state.page);
   const goTo = useConformance((state) => state.goTo);
@@ -697,3 +714,5 @@ function ConformanceApp() {
 }
 
 AppRegistry.registerComponent('RNQnxPlayground', () => ConformanceApp);
+// The SVG cards alone, for the device screenshot check; see ./svg/standalone.js.
+AppRegistry.registerComponent('RNQnxSvgGallery', () => require('./svg/standalone').SvgGalleryApp);
