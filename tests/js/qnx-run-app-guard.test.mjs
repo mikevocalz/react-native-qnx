@@ -33,6 +33,7 @@ try {
     path.join(app, 'org.rnqnx.showcase'),
     `#!/bin/sh
 echo "$*" >> "${state}/calls"
+[ -n "$LD_LIBRARY_PATH" ] && [ -n "$QT_PLUGIN_PATH" ] || echo "no-qt-env $1" >> "${state}/calls"
 case "$1" in
   --restore-only) [ -f "${state}/reachable" ] && exit 0; exit 75 ;;
   --stop-running) [ -f "${state}/obeys-quit" ] && kill $(cat "${state}/pids") 2>/dev/null; exit 0 ;;

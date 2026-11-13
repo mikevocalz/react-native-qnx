@@ -72,6 +72,21 @@ terminate_running() {
   return 0
 }
 
+# The app runs below and, to restore or stop a running copy, above.
+export LD_LIBRARY_PATH="$APP_DIR:$QT_ROOT/lib:/data/pi400-graphics-compat/lib/dll:/data/pi400-graphics-compat/usr/lib:/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm:/usr/lib"
+# no-fullscreen: the window opens at the app size, a real window under
+# rnqnx-winmgr.
+export QT_QPA_PLATFORM=qnx:no-fullscreen
+export QT_QPA_PLATFORM_PLUGIN_PATH=$QT_ROOT/plugins/platforms
+# The app's own plugins (TLS backend, image formats) first, then the runtime's.
+export QT_PLUGIN_PATH=$APP_DIR/plugins:$QT_ROOT/plugins
+export QML_IMPORT_PATH=$QT_ROOT/qml
+export QML2_IMPORT_PATH=$QT_ROOT/qml
+export QT_QPA_FONTDIR=/usr/share/fonts/dejavu
+export QT_FORCE_STDERR_LOGGING=1
+unset QT_QUICK_BACKEND
+unset DL_DEBUG
+
 replace=
 for arg in "$@"; do
   [ "$arg" = --replace ] && replace=1
@@ -94,19 +109,6 @@ if [ -n "$(running_pids)" ]; then
   fi
 fi
 
-export LD_LIBRARY_PATH="$APP_DIR:$QT_ROOT/lib:/data/pi400-graphics-compat/lib/dll:/data/pi400-graphics-compat/usr/lib:/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm:/usr/lib"
-# no-fullscreen: the window opens at the app size, a real window under
-# rnqnx-winmgr.
-export QT_QPA_PLATFORM=qnx:no-fullscreen
-export QT_QPA_PLATFORM_PLUGIN_PATH=$QT_ROOT/plugins/platforms
-# The app's own plugins (TLS backend, image formats) first, then the runtime's.
-export QT_PLUGIN_PATH=$APP_DIR/plugins:$QT_ROOT/plugins
-export QML_IMPORT_PATH=$QT_ROOT/qml
-export QML2_IMPORT_PATH=$QT_ROOT/qml
-export QT_QPA_FONTDIR=/usr/share/fonts/dejavu
-export QT_FORCE_STDERR_LOGGING=1
-unset QT_QUICK_BACKEND
-unset DL_DEBUG
 [ -t 1 ] || exec >>"$LOG" 2>&1
 cd "$APP_DIR" || exit 1
 exec "$BIN" "$@"
