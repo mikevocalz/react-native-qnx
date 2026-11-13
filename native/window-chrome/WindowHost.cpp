@@ -1,13 +1,16 @@
 #include "WindowHost.h"
 
 #include <QByteArray>
+#include <QCoreApplication>
 #include <QElapsedTimer>
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QScreen>
 #include <QWindow>
 
+#include <cerrno>
 #include <chrono>
+#include <csignal>
 #include <cstdio>
 #include <cstring>
 #include <thread>
@@ -143,48 +146,198 @@ void sendWindowManagerRequest([[maybe_unused]] QWindow& window, [[maybe_unused]]
 #endif
 }
 
-SingleInstance::SingleInstance(const QString& appId, QObject* parent)
+const QStringList& buildVariantSuffixes() {
+  static const QStringList suffixes{QStringLiteral("dev"), QStringLiteral("debug"),
+                                    QStringLiteral("preview")};
+  return suffixes;
+}
+
+QString baseAppId(const QString& appId) {
+  QString base = appId;
+  for (bool stripped = true; stripped;) {
+    stripped = false;
+    for (const QString& suffix : buildVariantSuffixes()) {
+      const QString tail = QLatin1Char('.') + suffix;
+      // Keep at least two dotted parts: `org.dev` stays as it is.
+      if (base.endsWith(tail) && base.count(QLatin1Char('.')) >= 2) {
+        base.chop(tail.size());
+        stripped = true;
+      }
+    }
+  }
+  return base;
+}
+
+QString buildKindName(BuildKind kind) {
+  return kind == BuildKind::Dev ? QStringLiteral("dev") : QStringLiteral("release");
+}
+
+namespace {
+
+bool processAlive([[maybe_unused]] qint64 pid) {
+#if defined(Q_OS_UNIX)
+  if (pid <= 0) return false;
+  return ::kill(static_cast<pid_t>(pid), 0) == 0 || errno == EPERM;
+#else
+  return false;
+#endif
+}
+
+// SIGTERM only: a stuck app is asked to stop, never killed outright. The
+// launcher's own pid and pid 1 are never signalled.
+void terminateProcess([[maybe_unused]] qint64 pid) {
+#if defined(Q_OS_UNIX)
+  if (pid <= 1 || pid == static_cast<qint64>(::getpid())) return;
+  ::kill(static_cast<pid_t>(pid), SIGTERM);
+#endif
+}
+
+// "ok pid=<n> kind=<kind>"; an older instance answers a bare "ok".
+std::optional<InstanceInfo> parseReply(const QByteArray& line) {
+  const QList<QByteArray> parts = line.trimmed().split(' ');
+  if (parts.isEmpty() || parts.first() != QByteArrayLiteral("ok")) return std::nullopt;
+  InstanceInfo info;
+  for (const QByteArray& part : parts) {
+    if (part.startsWith("pid=")) info.pid = part.mid(4).toLongLong();
+    if (part.startsWith("kind=")) info.kind = QString::fromLatin1(part.mid(5));
+  }
+  return info;
+}
+
+}  // namespace
+
+SingleInstance::SingleInstance(const QString& appId, BuildKind kind, QObject* parent)
     : QObject(parent),
-      serverName_(QStringLiteral("rnqnx-%1-%2").arg(appId, currentUser())) {}
+      baseId_(baseAppId(appId)),
+      kind_(kind),
+      serverName_(socketNameFor(appId)),
+      alive_(processAlive),
+      terminate_(terminateProcess) {}
 
 SingleInstance::~SingleInstance() {
   if (server_) server_->close();
 }
 
-bool SingleInstance::forwardedToRunningInstance() {
+QString SingleInstance::socketNameFor(const QString& appId) {
+  return QStringLiteral("rnqnx-%1").arg(baseAppId(appId));
+}
+
+QStringList SingleInstance::legacySocketNamesFor(const QString& appId) {
+  const QString base = baseAppId(appId);
+  const QString user = currentUser();
+  return {QStringLiteral("rnqnx-%1-%2").arg(base, user),
+          QStringLiteral("rnqnx-%1.dev-%2").arg(base, user)};
+}
+
+void SingleInstance::setProcessProbe(std::function<bool(qint64)> alive,
+                                     std::function<void(qint64)> terminate) {
+  alive_ = std::move(alive);
+  terminate_ = std::move(terminate);
+}
+
+// Sends one command. nullopt: nothing listens there. A connected server that
+// does not answer (an older build and an unknown command) gives pid 0.
+std::optional<InstanceInfo> SingleInstance::talk(const QString& socketName, const char* command) {
   QLocalSocket socket;
-  socket.connectToServer(serverName_);
-  if (!socket.waitForConnected(500)) return false;
-  socket.write("restore\n");
-  if (!socket.waitForBytesWritten(500)) return false;
-  // Wait for the acknowledgement so the request is not lost when this process
-  // exits straight away.
-  socket.waitForReadyRead(1000);
+  socket.connectToServer(socketName);
+  if (!socket.waitForConnected(500)) return std::nullopt;
+  socket.write(command);
+  socket.write("\n");
+  if (!socket.waitForBytesWritten(500)) return std::nullopt;
+  // Wait for the answer so the request is not lost when this process exits
+  // straight away.
+  if (!socket.canReadLine()) socket.waitForReadyRead(1000);
+  InstanceInfo info;
+  if (socket.canReadLine()) {
+    if (const auto parsed = parseReply(socket.readLine())) info = *parsed;
+  }
   socket.disconnectFromServer();
+  return info;
+}
+
+bool SingleInstance::forwardedToRunningInstance() {
+  QStringList names{serverName_};
+  names += legacySocketNamesFor(baseId_);
+  for (const QString& name : names)
+    if (talk(name, "restore")) return true;
+  return false;
+}
+
+std::optional<InstanceInfo> SingleInstance::runningInstanceInfo() {
+  QStringList names{serverName_};
+  names += legacySocketNamesFor(baseId_);
+  for (const QString& name : names)
+    if (const auto info = talk(name, "info")) return info;
+  return std::nullopt;
+}
+
+bool SingleInstance::waitForExit(qint64 pid, int timeoutMs) {
+  QElapsedTimer elapsed;
+  elapsed.start();
+  while (alive_(pid)) {
+    if (elapsed.elapsed() >= timeoutMs) return false;
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+  }
   return true;
 }
 
+ReplaceResult SingleInstance::replaceRunningInstance(int quitTimeoutMs, int termTimeoutMs) {
+  QStringList names{serverName_};
+  names += legacySocketNamesFor(baseId_);
+  bool anyone = false;
+  for (const QString& name : names) {
+    const auto info = talk(name, "quit");
+    if (!info) continue;
+    anyone = true;
+    if (info->pid <= 0) {
+      // An older build: it takes `restore` only, so there is no pid to wait for.
+      std::fprintf(stderr,
+                   "RNQNX_SINGLE_INSTANCE_WARNING %s does not report a pid; stop it with the "
+                   "app's launcher script or by pid\n",
+                   name.toUtf8().constData());
+      return ReplaceResult::Failed;
+    }
+    std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE replacing pid %lld (%s)\n",
+                 static_cast<long long>(info->pid), info->kind.toUtf8().constData());
+    if (waitForExit(info->pid, quitTimeoutMs)) continue;
+    std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING pid %lld ignored quit; sending SIGTERM\n",
+                 static_cast<long long>(info->pid));
+    terminate_(info->pid);
+    if (!waitForExit(info->pid, termTimeoutMs)) {
+      std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING pid %lld is still running\n",
+                   static_cast<long long>(info->pid));
+      return ReplaceResult::Failed;
+    }
+  }
+  return anyone ? ReplaceResult::Replaced : ReplaceResult::NoneRunning;
+}
+
 bool SingleInstance::listen() {
+  // Qt 6 lets a second listen() take over the name of a live server, which
+  // would leave the first instance unreachable and allow two windows. Look
+  // for a live owner first and leave its socket alone. A socket file nobody
+  // answers on is stale (a crashed process) and is removed.
+  {
+    QLocalSocket probe;
+    probe.connectToServer(serverName_);
+    if (probe.waitForConnected(200)) {
+      probe.abort();
+      std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING %s is owned by a running instance\n",
+                   serverName_.toUtf8().constData());
+      return false;
+    }
+    const bool stale = probe.error() == QLocalSocket::ServerNotFoundError ||
+                       probe.error() == QLocalSocket::ConnectionRefusedError;
+    probe.abort();
+    if (stale) QLocalServer::removeServer(serverName_);
+  }
   auto* server = new QLocalServer(this);
   server->setSocketOptions(QLocalServer::UserAccessOption);
   if (!server->listen(serverName_)) {
-    // Remove the socket file only when it is stale, left by a process that
-    // crashed. A live instance that was too busy to answer within the timeout
-    // in forwardedToRunningInstance() still owns it, and unlinking its socket
-    // would leave that instance unreachable.
-    QLocalSocket probe;
-    probe.connectToServer(serverName_);
-    const bool stale = !probe.waitForConnected(200) &&
-                       (probe.error() == QLocalSocket::ServerNotFoundError ||
-                        probe.error() == QLocalSocket::ConnectionRefusedError);
-    probe.abort();
-    if (stale) QLocalServer::removeServer(serverName_);
-    if (!stale || !server->listen(serverName_)) {
-      std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING cannot listen on %s: %s\n",
-                   serverName_.toUtf8().constData(), server->errorString().toUtf8().constData());
-      delete server;
-      return false;
-    }
+    std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_WARNING cannot listen on %s: %s\n",
+                 serverName_.toUtf8().constData(), server->errorString().toUtf8().constData());
+    delete server;
+    return false;
   }
   server_ = server;
   connect(server, &QLocalServer::newConnection, this, &SingleInstance::acceptConnections);
@@ -197,11 +350,16 @@ void SingleInstance::acceptConnections() {
     connect(socket, &QLocalSocket::disconnected, socket, &QObject::deleteLater);
     connect(socket, &QLocalSocket::readyRead, this, [this, socket]() {
       while (socket->canReadLine()) {
-        if (socket->readLine().trimmed() == QByteArrayLiteral("restore")) {
-          socket->write("ok\n");
-          socket->flush();
-          Q_EMIT restoreRequested();
-        }
+        const QByteArray command = socket->readLine().trimmed();
+        const bool known = command == "restore" || command == "info" || command == "quit";
+        socket->write(known ? QByteArrayLiteral("ok pid=") +
+                                  QByteArray::number(static_cast<qlonglong>(QCoreApplication::applicationPid())) +
+                                  QByteArrayLiteral(" kind=") + buildKindName(kind_).toLatin1() +
+                                  QByteArrayLiteral("\n")
+                            : QByteArrayLiteral("error unknown command\n"));
+        socket->flush();
+        if (command == "restore") Q_EMIT restoreRequested();
+        if (command == "quit") Q_EMIT quitRequested();
       }
     });
   }

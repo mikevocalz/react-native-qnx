@@ -45,6 +45,19 @@ for (const line of entry.launcher
   .filter((l) => l && !l.startsWith('#') && !l.startsWith('[')))
   assert.equal(line.split('=').length, 2, line);
 
+// Without --exec the tile goes through the guarded launcher in the app directory,
+// and install-tile.sh puts that launcher there.
+const guarded = desktopEntry(descriptor, { appDir: options.appDir });
+assert.match(guarded.desktop, /^Exec=\/data\/home\/qnxuser\/rnqnx-chrome-app-next\/run-app\.sh$/m);
+assert.match(
+  guarded.install,
+  /cp "\$here\/run-app\.sh" "\/data\/home\/qnxuser\/rnqnx-chrome-app-next\/run-app\.sh"/
+);
+assert.ok(!entry.install.includes('run-app.sh'), 'a custom --exec script is left alone');
+assert.match(guarded.launcherScript, /^APP_ID=org\.rnqnx\.showcase$/m);
+assert.ok(!guarded.launcherScript.includes('__APP_ID__'));
+assert.equal(spawnSync('sh', ['-n'], { input: guarded.launcherScript }).status, 0);
+
 // The launcher runs as root; --run-as drops to the app's user.
 assert.match(
   desktopEntry(descriptor, { ...options, runAs: 'qnxuser' }).desktop,
@@ -95,6 +108,7 @@ try {
   assert.equal(await readFile(path.join(out, 'org.rnqnx.showcase.desktop'), 'utf8'), entry.desktop);
   assert.equal(await readFile(path.join(out, 'launcher-tile.conf'), 'utf8'), entry.launcher);
   assert.equal((await stat(path.join(out, 'install-tile.sh'))).mode & 0o777, 0o755);
+  assert.equal((await stat(path.join(out, 'run-app.sh'))).mode & 0o777, 0o755);
   const shell = spawnSync('sh', ['-n', path.join(out, 'install-tile.sh')]);
   assert.equal(shell.status, 0, String(shell.stderr));
 

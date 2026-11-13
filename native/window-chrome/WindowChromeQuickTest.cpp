@@ -12,10 +12,25 @@
 #include <QPointer>
 #include <QSignalSpy>
 #include <QtTest>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QLocalSocket>
 #include <QGuiApplication>
+#include <QLocalServer>
+#include <QThread>
 #include <QStyleHints>
 
+#include <atomic>
+#include <cstring>
+#include <vector>
 #include <memory>
+
+#if defined(Q_OS_UNIX)
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <unistd.h>
+#endif
 
 using namespace rnqnx::window;
 
@@ -34,6 +49,54 @@ void collect(QQuickItem* root, QList<QQuickItem*>& out) {
     out.append(child);
     collect(child, out);
   }
+}
+
+// A SingleInstance listening in its own thread, the way a separate process
+// would: it answers while the test thread waits inside replace/restore. The
+// thread ends when the instance is told to quit (honourQuit) or on stop().
+class InstanceThread final : public QThread {
+ public:
+  InstanceThread(QString appId, BuildKind kind, bool honourQuit)
+      : appId_(std::move(appId)), kind_(kind), honourQuit_(honourQuit) {}
+  ~InstanceThread() override { stop(); }
+
+  bool waitListening() {
+    start();
+    for (int i = 0; i < 200 && !listening.load(); ++i) QThread::msleep(10);
+    return listening.load();
+  }
+  void stop() {
+    if (isRunning()) {
+      quit();
+      wait(3000);
+    }
+  }
+
+  std::atomic<bool> listening{false};
+  std::atomic<int> restores{0};
+  std::atomic<int> quits{0};
+
+ protected:
+  void run() override {
+    SingleInstance instance(appId_, kind_);
+    connect(&instance, &SingleInstance::restoreRequested, &instance, [this]() { ++restores; },
+            Qt::DirectConnection);
+    connect(&instance, &SingleInstance::quitRequested, &instance, [this]() {
+      ++quits;
+      if (honourQuit_) QThread::currentThread()->quit();
+    }, Qt::DirectConnection);
+    listening = instance.listen();
+    exec();
+  }
+
+ private:
+  QString appId_;
+  BuildKind kind_;
+  bool honourQuit_;
+};
+
+QString uniqueAppId(const char* name) {
+  return QStringLiteral("org.rnqnx.%1%2").arg(QLatin1String(name)).arg(QCoreApplication::applicationPid());
 }
 
 struct Harness {
@@ -532,6 +595,135 @@ class WindowChromeQuickTest : public QObject {
     SingleInstance other(appId + QStringLiteral("x"));
     QVERIFY(!other.forwardedToRunningInstance());
   }
+
+  // Dev, debug and preview ids reduce to the base id, so every build of one
+  // app uses one socket; the name has no uid in it.
+  void baseAppIdStripsBuildVariants() {
+    QCOMPARE(baseAppId(QStringLiteral("org.rnqnx.showcase")), QStringLiteral("org.rnqnx.showcase"));
+    QCOMPARE(baseAppId(QStringLiteral("org.rnqnx.showcase.dev")), QStringLiteral("org.rnqnx.showcase"));
+    QCOMPARE(baseAppId(QStringLiteral("org.rnqnx.showcase.debug")), QStringLiteral("org.rnqnx.showcase"));
+    QCOMPARE(baseAppId(QStringLiteral("org.rnqnx.showcase.preview")), QStringLiteral("org.rnqnx.showcase"));
+    QCOMPARE(baseAppId(QStringLiteral("org.rnqnx.showcase.dev.debug")), QStringLiteral("org.rnqnx.showcase"));
+    // A part that only starts with a suffix is not one, and a two-part id keeps its last part.
+    QCOMPARE(baseAppId(QStringLiteral("org.rnqnx.devtools")), QStringLiteral("org.rnqnx.devtools"));
+    QCOMPARE(baseAppId(QStringLiteral("org.dev")), QStringLiteral("org.dev"));
+    QCOMPARE(SingleInstance::socketNameFor(QStringLiteral("org.rnqnx.showcase.dev")),
+             SingleInstance::socketNameFor(QStringLiteral("org.rnqnx.showcase")));
+    QCOMPARE(SingleInstance::socketNameFor(QStringLiteral("org.rnqnx.showcase")),
+             QStringLiteral("rnqnx-org.rnqnx.showcase"));
+    QVERIFY(SingleInstance::socketNameFor(QStringLiteral("org.rnqnx.a")) !=
+            SingleInstance::socketNameFor(QStringLiteral("org.rnqnx.b")));
+    QCOMPARE(buildVariantSuffixes(), (QStringList{QStringLiteral("dev"), QStringLiteral("debug"), QStringLiteral("preview")}));
+  }
+
+  // A dev launch finds the running release copy: restore reaches it and the
+  // instance reports its pid and kind.
+  void devLaunchReachesReleaseInstance() {
+    const QString appId = uniqueAppId("share");
+    InstanceThread release(appId, BuildKind::Release, true);
+    QVERIFY(release.waitListening());
+    SingleInstance dev(appId + QStringLiteral(".dev"), BuildKind::Dev);
+    QVERIFY(dev.forwardedToRunningInstance());
+    QTRY_COMPARE(release.restores.load(), 1);
+    const auto info = dev.runningInstanceInfo();
+    QVERIFY(info.has_value());
+    QCOMPARE(info->pid, static_cast<qint64>(QCoreApplication::applicationPid()));
+    QCOMPARE(info->kind, QStringLiteral("release"));
+    // A second listener for the same app cannot take the socket from the live one.
+    SingleInstance again(appId, BuildKind::Release);
+    QVERIFY(!again.listen());
+  }
+
+  // --replace: the running instance gets `quit`, its process exits, and the
+  // new launch can listen on the same key. No signal is sent.
+  void replaceQuitsRunningInstance() {
+    const QString appId = uniqueAppId("replace");
+    InstanceThread release(appId, BuildKind::Release, true);
+    QVERIFY(release.waitListening());
+    SingleInstance dev(appId + QStringLiteral(".dev"), BuildKind::Dev);
+    int signalled = 0;
+    // The thread stands in for the old process.
+    dev.setProcessProbe([&release](qint64) { return release.isRunning(); },
+                        [&signalled](qint64) { ++signalled; });
+    QCOMPARE(dev.replaceRunningInstance(3000, 500), ReplaceResult::Replaced);
+    QCOMPARE(release.quits.load(), 1);
+    QCOMPARE(signalled, 0);
+    // The key is free again for the new launch.
+    QVERIFY(dev.listen());
+    QLocalSocket reach;
+    reach.connectToServer(SingleInstance::socketNameFor(appId));
+    QVERIFY(reach.waitForConnected(500));
+  }
+
+  // An instance that ignores `quit` gets SIGTERM (once) after the quit wait.
+  void replaceEscalatesToTerm() {
+    const QString appId = uniqueAppId("term");
+    InstanceThread stuck(appId, BuildKind::Release, false);
+    QVERIFY(stuck.waitListening());
+    SingleInstance dev(appId + QStringLiteral(".dev"), BuildKind::Dev);
+    std::atomic<bool> gone{false};
+    std::vector<qint64> signalled;
+    dev.setProcessProbe([&gone](qint64) { return !gone.load(); },
+                        [&gone, &signalled](qint64 pid) { signalled.push_back(pid); gone = true; });
+    QCOMPARE(dev.replaceRunningInstance(200, 500), ReplaceResult::Replaced);
+    QCOMPARE(stuck.quits.load(), 1);
+    QCOMPARE(signalled.size(), size_t(1));
+    QCOMPARE(signalled.front(), static_cast<qint64>(QCoreApplication::applicationPid()));
+  }
+
+  // When neither quit nor SIGTERM ends it, replace fails and starts nothing.
+  void replaceFailsWhenInstanceWillNotStop() {
+    const QString appId = uniqueAppId("stuck");
+    InstanceThread stuck(appId, BuildKind::Release, false);
+    QVERIFY(stuck.waitListening());
+    SingleInstance dev(appId + QStringLiteral(".dev"), BuildKind::Dev);
+    int signalled = 0;
+    dev.setProcessProbe([](qint64) { return true; }, [&signalled](qint64) { ++signalled; });
+    QCOMPARE(dev.replaceRunningInstance(100, 100), ReplaceResult::Failed);
+    QCOMPARE(signalled, 1);
+  }
+
+  void replaceWithNothingRunning() {
+    SingleInstance only(uniqueAppId("alone"), BuildKind::Dev);
+    QCOMPARE(only.replaceRunningInstance(100, 100), ReplaceResult::NoneRunning);
+    QVERIFY(!only.runningInstanceInfo().has_value());
+  }
+
+#if defined(Q_OS_UNIX)
+  // A socket file left by a crashed process (nothing listening) neither
+  // counts as a running instance nor stops the next launch from listening.
+  void staleSocketIsRecovered() {
+    const QString appId = uniqueAppId("stale");
+    const QString name = SingleInstance::socketNameFor(appId);
+    QString path;
+    {
+      QLocalServer probe;
+      QVERIFY(probe.listen(name));
+      path = probe.fullServerName();
+    }
+    QVERIFY(!QFileInfo::exists(path));
+    // bind() without listen() and close(): the file stays, nobody answers.
+    const int fd = ::socket(AF_UNIX, SOCK_STREAM, 0);
+    QVERIFY(fd >= 0);
+    sockaddr_un address{};
+    address.sun_family = AF_UNIX;
+    const QByteArray local = QFile::encodeName(path);
+    QVERIFY(local.size() < static_cast<int>(sizeof address.sun_path));
+    std::memcpy(address.sun_path, local.constData(), static_cast<size_t>(local.size()));
+    QCOMPARE(::bind(fd, reinterpret_cast<sockaddr*>(&address), sizeof address), 0);
+    ::close(fd);
+    QVERIFY(QFileInfo::exists(path));
+
+    SingleInstance next(appId, BuildKind::Release);
+    QVERIFY(!next.forwardedToRunningInstance());
+    QCOMPARE(next.replaceRunningInstance(100, 100), ReplaceResult::NoneRunning);
+    QVERIFY(next.listen());
+    // It is live now: the socket accepts connections.
+    QLocalSocket reach;
+    reach.connectToServer(name);
+    QVERIFY(reach.waitForConnected(500));
+  }
+#endif
 
   // Writes reference frames when RNQNX_CHROME_FRAMES_DIR is set; used for the
   // PR's host screenshots. Always checks that each frame renders.

@@ -63,6 +63,8 @@
 #include <QScreen>
 #include <QString>
 #include <QTimer>
+#include <functional>
+#include <memory>
 #include <QUrl>
 
 #include <cstdio>
@@ -364,6 +366,17 @@ int main(int argc, char** argv) {
 #endif
   parser.addOption(fullscreenOption);
 #if RNQNX_ENABLE_WINDOW_CHROME
+  // One instance per app (build variants share it). Default: a second launch
+  // restores the running window and exits.
+  const QCommandLineOption replaceOption(QStringLiteral("replace"),
+      QStringLiteral("Quit the running instance of this app (graceful, then SIGTERM) and start this one."));
+  const QCommandLineOption restoreOnlyOption(QStringLiteral("restore-only"),
+      QStringLiteral("Show the running instance and exit; exit 75 without starting when none answers."));
+  const QCommandLineOption stopRunningOption(QStringLiteral("stop-running"),
+      QStringLiteral("Quit the running instance of this app and exit without starting."));
+  parser.addOption(replaceOption);
+  parser.addOption(restoreOnlyOption);
+  parser.addOption(stopRunningOption);
   const QCommandLineOption windowControlsOption(QStringLiteral("window-controls"),
       QStringLiteral("Title bar control layout: macos or windows."), QStringLiteral("layout"));
   const QCommandLineOption titleBarStyleOption(QStringLiteral("title-bar-style"),
@@ -458,15 +471,31 @@ int main(int argc, char** argv) {
   // of starting a second one. Screenshot runs are one-shot and skip this.
   std::unique_ptr<rnqnx::window::SingleInstance> singleInstance;
   if (identity.custom && !parser.isSet(screenshotOption)) {
-    // A development client is its own instance: it may run beside the
-    // installed release copy of the same app, and relaunching it brings the
-    // development window back instead of the release one.
+    // The key is the base app id: a development client and the installed
+    // release copy of one app are the same app, so they never run side by
+    // side. --replace swaps the running one for this launch.
     singleInstance = std::make_unique<rnqnx::window::SingleInstance>(
-        devMode ? identity.appId + QStringLiteral(".dev") : identity.appId);
-    if (singleInstance->forwardedToRunningInstance()) {
+        identity.appId,
+        devMode ? rnqnx::window::BuildKind::Dev : rnqnx::window::BuildKind::Release);
+    if (parser.isSet(replaceOption) || parser.isSet(stopRunningOption)) {
+      const auto result = singleInstance->replaceRunningInstance();
+      if (result == rnqnx::window::ReplaceResult::Failed) {
+        std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_ERROR the running %s did not stop\n",
+                     identity.appId.toUtf8().constData());
+        return 1;
+      }
+      if (parser.isSet(stopRunningOption)) {
+        std::printf("RNQNX_SINGLE_INSTANCE stopped %s\n", identity.appId.toUtf8().constData());
+        return 0;
+      }
+    } else if (singleInstance->forwardedToRunningInstance()) {
       std::printf("RNQNX_SINGLE_INSTANCE restored the running %s\n",
                   identity.appId.toUtf8().constData());
       return 0;
+    } else if (parser.isSet(restoreOnlyOption)) {
+      std::printf("RNQNX_SINGLE_INSTANCE no running %s answered\n",
+                  identity.appId.toUtf8().constData());
+      return 75;
     }
     singleInstance->listen();
   }
@@ -917,6 +946,36 @@ int main(int argc, char** argv) {
           std::printf("RNQNX_WINDOW_ACTION restore\n");
           std::fflush(stdout);
           rnqnx::window::restoreMinimizedWindow(window, sizeKeepingManager);
+        });
+    // --replace from a later launch: close the window and leave the event
+    // loop. A minimized window has no native window, so quit explicitly.
+    QObject::connect(singleInstance.get(), &rnqnx::window::SingleInstance::quitRequested,
+        &window, [&window
+#if RNQNX_ENABLE_DEV_SUPPORT
+                  , &inApplicationLoop
+#endif
+        ]() {
+          std::printf("RNQNX_WINDOW_ACTION quit\n");
+          std::fflush(stdout);
+          window.close();
+          // Quit only from inside the application loop: an exit() during the
+          // bundle fetch would end every later nested loop at once. The
+          // launcher escalates to SIGTERM if this takes too long.
+          auto quitWhenIdle = std::make_shared<std::function<void()>>();
+          *quitWhenIdle = [quitWhenIdle
+#if RNQNX_ENABLE_DEV_SUPPORT
+                           , &inApplicationLoop
+#endif
+          ]() {
+#if RNQNX_ENABLE_DEV_SUPPORT
+            if (!inApplicationLoop) {
+              QTimer::singleShot(100, QCoreApplication::instance(), *quitWhenIdle);
+              return;
+            }
+#endif
+            QCoreApplication::quit();
+          };
+          QTimer::singleShot(0, QCoreApplication::instance(), *quitWhenIdle);
         });
   }
 #endif

@@ -1,11 +1,17 @@
+import { readFileSync } from 'node:fs';
 import { lstat, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { boundedFile, projectPath } from './project-path.mjs';
 
+const guardedLauncher = fileURLToPath(new URL('../../../template/qnx/run-app.sh', import.meta.url));
+/** Name the tile's launcher script has in the app directory. */
+export const LAUNCHER_NAME = 'run-app.sh';
+
 const help = `React Native QNX desktop launcher tile
-  project desktop-entry --project <directory> --exec <device script>
-                        --app-dir <device directory> [--run-as <user>]
+  project desktop-entry --project <directory> --app-dir <device directory>
+                        [--exec <device script>] [--run-as <user>]
                         [--row 1|2] [--order <n>] [--dry-run]
 
 Reads build/qnx/native-app.json (written by project prepare-native with the
@@ -13,10 +19,17 @@ identity tool) and writes, under build/qnx/desktop/:
 
   <appId>.desktop     the tile: Name (the tile label), Exec, Icon, Singleton=Y
   launcher-tile.conf  the [Launcher] block to append to desktop.conf
-  install-tile.sh     copies both into /system/etc/desktop_files as root,
-                      keeping desktop.conf.before-rnqnx-tile as a backup
+  run-app.sh          the guarded launcher (template/qnx/run-app.sh): it looks
+                      for the app's process with pidin before it starts
+                      anything, so the tile never opens a second copy
+  install-tile.sh     copies the tile and conf into /system/etc/desktop_files
+                      as root, keeping desktop.conf.before-rnqnx-tile as a
+                      backup, and the launcher into --app-dir
 
 --exec is the absolute path of the script that starts the app on the device.
+It defaults to <app-dir>/run-app.sh, the guarded launcher written here; a
+script of your own should do what run-app.sh does (see
+docs/getting-started/pi400-desktop-app.md).
 --app-dir is the absolute device directory that holds the app's icons/; the
 tile uses icons/icon-128.png, the size of the stock QNX tiles.
 The tile goes in row 1 after the stock Developer Desktop, Terminal and Readme
@@ -50,7 +63,7 @@ function entryValue(value, label) {
 
 /** Desktop entry and launcher block for one app.
  * @param {{appId: string, shortName?: string, displayName: string, icon?: {sizes?: {size: number}[]}}} descriptor
- * @param {{exec: string, appDir: string, runAs?: string, row?: number, order?: number}} options */
+ * @param {{exec?: string, appDir: string, runAs?: string, row?: number, order?: number}} options */
 export function desktopEntry(descriptor, options) {
   const appId = descriptor.appId;
   if (
@@ -64,11 +77,12 @@ export function desktopEntry(descriptor, options) {
     throw new Error(
       `native-app.json has no ${TILE_ICON_SIZE} px icon. Run project prepare-native with the identity tool.`
     );
-  const script = devicePath(options.exec, '--exec');
+  const appDir = devicePath(options.appDir, '--app-dir');
+  const launcherPath = `${appDir}/${LAUNCHER_NAME}`;
+  const script = devicePath(options.exec ?? launcherPath, '--exec');
   if (options.runAs !== undefined && !/^[a-z_][a-z0-9_-]{0,31}$/.test(options.runAs))
     throw new Error('--run-as must be a user name of lowercase letters, digits, _ and -.');
   const exec = options.runAs ? `/usr/bin/sudo -u ${options.runAs} ${script}` : script;
-  const appDir = devicePath(options.appDir, '--app-dir');
   const row = options.row ?? 1;
   const order = options.order ?? 4;
   if (![1, 2].includes(row)) throw new Error('--row must be 1 or 2.');
@@ -115,10 +129,17 @@ if ! grep -q "^DesktopFileName=$F\\$" "$D/desktop.conf"; then
   [ -f "$D/desktop.conf.before-rnqnx-tile" ] || cp "$D/desktop.conf" "$D/desktop.conf.before-rnqnx-tile"
   cat "$here/launcher-tile.conf" >> "$D/desktop.conf"
 fi
-echo "Installed $D/$F. The launcher reads tiles when it starts:"
+${
+  script === launcherPath
+    ? `cp "$here/${LAUNCHER_NAME}" "${launcherPath}"
+chmod 755 "${launcherPath}"
+`
+    : ''
+}echo "Installed $D/$F. The launcher reads tiles when it starts:"
 echo "  slay demolauncher; on -d demolauncher -a $D"
 `;
-  return { fileName, desktop, launcher, install, icon, exec, name };
+  const launcherScript = readFileSync(guardedLauncher, 'utf8').replaceAll('__APP_ID__', appId);
+  return { fileName, desktop, launcher, install, launcherScript, icon, exec, name };
 }
 
 /** Write without following a planted symlink at the leaf.
@@ -162,7 +183,7 @@ export async function desktopEntryMain(argv) {
     return 0;
   }
   if (positionals.length) throw new Error('desktop-entry does not accept positional arguments.');
-  if (!values.exec || !values['app-dir']) throw new Error('Pass --exec and --app-dir.');
+  if (!values['app-dir']) throw new Error('Pass --app-dir.');
   const root = path.resolve(values.project ?? '.');
   const descriptorPath = await projectPath(root, 'build/qnx/native-app.json');
   await boundedFile(descriptorPath, 65536);
@@ -178,6 +199,7 @@ export async function desktopEntryMain(argv) {
   const files = {
     [entry.fileName]: [entry.desktop, 0o644],
     'launcher-tile.conf': [entry.launcher, 0o644],
+    [LAUNCHER_NAME]: [entry.launcherScript, 0o755],
     'install-tile.sh': [entry.install, 0o755],
   };
   const directory = await projectPath(root, 'build/qnx/desktop', !dryRun);
