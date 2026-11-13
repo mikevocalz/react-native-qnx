@@ -11,8 +11,8 @@ namespace rnqnx::fabric {
 QtVideoBridge::QtVideoBridge(views::QtVideoItem& item) : QObject(&item), item_(item) {
   using Emitter = facebook::react::QnxQtVideoEventEmitter;
   QObject::connect(&item, &views::QtVideoItem::videoLoaded, this,
-      [this](double duration, int width, int height) {
-        if (auto emitter = emitter_) emitter->onVideoLoad(Emitter::OnVideoLoad{duration, double(width), double(height)});
+      [this](double duration, int width, int height, const QString& device) {
+        if (auto emitter = emitter_) emitter->onVideoLoad(Emitter::OnVideoLoad{duration, double(width), double(height), device.toStdString()});
       });
   QObject::connect(&item, &views::QtVideoItem::videoProgress, this,
       [this](double current, double playable) {
@@ -44,6 +44,7 @@ void QtVideoBridge::apply(
   const Applied* prev = last_ ? &*last_ : nullptr;
   if (!prev || prev->source != props.source) item_.setSource(QString::fromStdString(props.source));
   if (!prev || prev->poster != props.poster) item_.setPoster(QString::fromStdString(props.poster));
+  if (!prev || prev->audioDevice != props.audioDevice) item_.setAudioDevice(QString::fromStdString(props.audioDevice));
   if (!prev || prev->paused != props.paused) item_.setPaused(props.paused);
   if (!prev || prev->muted != props.muted) item_.setMuted(props.muted);
   if (!prev || prev->volume != props.volume) item_.setVolume(props.volume);
@@ -59,7 +60,7 @@ void QtVideoBridge::apply(
       case Mode::Stretch: item_.setResizeMode(views::VideoResizeMode::Stretch); break;
     }
   }
-  last_ = Applied{props.source, props.poster, props.paused, props.muted, props.repeat,
+  last_ = Applied{props.source, props.poster, props.audioDevice, props.paused, props.muted, props.repeat,
                   props.controls, props.fullscreen, props.volume, props.rate,
                   static_cast<int>(props.resizeMode)};
 }

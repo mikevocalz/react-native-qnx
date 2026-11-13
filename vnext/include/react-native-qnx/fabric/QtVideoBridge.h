@@ -28,7 +28,7 @@ class QtVideoBridge final : public QObject {
   views::QtVideoItem& item_;
   std::shared_ptr<const facebook::react::QnxQtVideoEventEmitter> emitter_;
   struct Applied {
-    std::string source, poster;
+    std::string source, poster, audioDevice;
     bool paused, muted, repeat, controls, fullscreen;
     double volume, rate;
     int resizeMode;

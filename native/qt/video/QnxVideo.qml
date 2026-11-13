@@ -20,6 +20,11 @@ Item {
     property url poster
     property bool controls: false
     property bool fullscreen: false
+    // Output device: an id or part of the description from QMediaDevices; empty
+    // picks a USB device if one exists, else the first named card, else the platform default.
+    property string audioDevice: ""
+    readonly property var chosenDevice: pickDevice(devices.audioOutputs, audioDevice)
+    readonly property string audioDeviceName: chosenDevice ? chosenDevice.description : ""
     property bool hasFrame: false
     property bool loadedOnce: false
     property real durationSeconds: 0
@@ -28,7 +33,7 @@ Item {
     property color accent: "#79e8dc"
     readonly property real barHeight: 40
 
-    signal loaded(real duration, int videoWidth, int videoHeight)
+    signal loaded(real duration, int videoWidth, int videoHeight, string audioDevice)
     signal progress(real currentTime, real playableDuration)
     signal ended()
     signal failed(string message, int code)
@@ -50,6 +55,23 @@ Item {
             || player.mediaStatus === MediaPlayer.LoadingMedia) return
         if (paused) player.pause(); else player.play()
     }
+    function pickDevice(list, wanted) {
+        var key = String(wanted).toLowerCase()
+        for (var i = 0; i < list.length; ++i) {
+            var d = list[i]
+            if (key.length > 0 && (String(d.id) === wanted || d.description.toLowerCase().indexOf(key) >= 0))
+                return d
+        }
+        if (key.length === 0) {
+            for (var j = 0; j < list.length; ++j)
+                if (list[j].description.toLowerCase().indexOf("usb") >= 0) return list[j]
+            // No USB device: name the first real card (plughw converts rate and
+            // format) instead of the anonymous "default" route.
+            for (var k = 0; k < list.length; ++k)
+                if (String(list[k].id).indexOf("plughw:") === 0) return list[k]
+        }
+        return devices.defaultAudioOutput
+    }
     function fmt(ms) {
         var s = Math.max(0, Math.floor(ms / 1000))
         var m = Math.floor(s / 60)
@@ -59,6 +81,8 @@ Item {
 
     onPausedChanged: applyPaused()
     onSourceChanged: { hasFrame = false; loadedOnce = false; durationSeconds = 0 }
+
+    MediaDevices { id: devices }
 
     MediaPlayer {
         id: player
@@ -78,7 +102,7 @@ Item {
                     root.loadedOnce = true
                     root.durationSeconds = duration / 1000
                     var res = metaData.value(MediaMetaData.Resolution)
-                    root.loaded(duration / 1000, res ? res.width : 0, res ? res.height : 0)
+                    root.loaded(duration / 1000, res ? res.width : 0, res ? res.height : 0, root.audioDeviceName)
                 }
                 root.buffering(false)
                 root.applyPaused()
@@ -99,6 +123,7 @@ Item {
 
     AudioOutput {
         id: audioOut
+        device: root.chosenDevice
         volume: root.volume
         muted: root.muted
     }

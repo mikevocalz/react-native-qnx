@@ -39,6 +39,7 @@ class QtVideoItem final : public QQuickItem {
   void setPoster(const QString& poster);
   void setControls(bool controls);
   void setFullscreen(bool fullscreen);
+  void setAudioDevice(const QString& device);
 
   void seek(double seconds);
   void play();
@@ -49,7 +50,7 @@ class QtVideoItem final : public QQuickItem {
   static QUrl resolveSource(const QString& source, const QString& baseDirectory);
 
  Q_SIGNALS:
-  void videoLoaded(double duration, int width, int height);
+  void videoLoaded(double duration, int width, int height, const QString& audioDevice);
   void videoProgress(double currentTime, double playableDuration);
   void videoEnded();
   void videoFailed(const QString& message, int code);

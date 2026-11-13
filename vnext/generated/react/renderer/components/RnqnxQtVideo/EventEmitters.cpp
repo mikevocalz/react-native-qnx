@@ -19,6 +19,7 @@ void QnxQtVideoEventEmitter::onVideoLoad(OnVideoLoad event) const {
     payload.setProperty(runtime, "duration", event.duration);
 payload.setProperty(runtime, "width", event.width);
 payload.setProperty(runtime, "height", event.height);
+payload.setProperty(runtime, "audioDevice", event.audioDevice);
     return payload;
   });
 }

@@ -105,9 +105,59 @@ and Android (Oboe). A QNX `AudioPlayer` on `QAudioSink` and a JSI installer are
 missing. Until then audio is `QtVideo` with an audio file (the gallery's Audio
 card).
 
+## Pi 400 results: Qt Multimedia probe (2026-11-13)
+
+`rnqnx_media_probe` (a QMediaPlayer + QAudioOutput + QVideoSink program, no
+React Native) ran on the board with the add-on in `/data/home/qnxuser/qt612-media`
+and the Qt core from `qt612-public-o2`. Files: `qt612-media/SHA256SUMS` was
+written at stage time (`/home/qnxbuild/media/SHA256SUMS`).
+
+- The ffmpeg plugin loads: `Using Qt multimedia with FFmpeg version 8.0 LGPL
+  version 2.1 or later`. It is the only backend (`Available backends
+  ("ffmpeg")`).
+- Software H.264 decode of the 480 x 270 clip ran in real time: 170 frames in
+  7.0 s (24 fps), position tracking the wall clock, `hasAudio=1 hasVideo=1`.
+  Hardware decoders: none listed.
+- Audio: with no `io-snd`, `QMediaDevices::audioOutputs()` is empty
+  ("snd_device_name_hint failed"). I started
+  `sudo io-snd -c /etc/system/config/sound/io_snd.conf` by hand (a new process;
+  nothing was restarted). `/dev/snd` then showed `controlC0`, `controlC1`,
+  `pcmC0D0p`, `pcmPreferredp`, and the only output card is `bcm2711 pwm`: the
+  3.5 mm headphone jack. There is no HDMI or USB audio device. Qt opened it:
+  `Playback opened: "default" buffer_frames: 2112 period_frames: 704`, worker
+  at SCHED_FIFO 20, native format float32.
+- The 3 s WAV played to the end through that device: position 1021, 2043, 3000
+  ms at 1 s wall-clock steps, then `EndOfMedia` and stopped. Whether sound is
+  audible at the jack has to be confirmed by ear; nothing here measures it.
+- A bad URL (`http://192.168.2.1:9/none.mp4`) gives `error=1 Could not open
+  file` and `InvalidMedia`.
+
+Audio debugging after an owner report of "no audio" (same day):
+
+- The clip's AAC track is present and was quiet (mean -21 dB, peak -15 dB, a
+  440 Hz sine). It was regenerated 9 dB louder (peak -3.4 dB, mean -12 dB).
+- The only playback card is `bcm2711 pwm` (card 0, `pcmC0D0p`): the 3.5 mm
+  jack. Its mixer reads `PCM Mixer Playback Volume` 600/600 (0 dB) and
+  `Playback Switch` on, so nothing is muted. `snd_info` also lists card 1,
+  `USB`, which has a control node but no PCM: no USB audio device is attached
+  (`usb -v` shows only the hub, a Logitech receiver and the keyboard).
+- There is no HDMI audio path on this image: `/system/lib/dll` has no HDMI
+  `sndrv` driver and `io_snd.conf` defines only `bcm2711_pwm` (plus a commented
+  I2S card). Speakers must go in the 3.5 mm jack, or a USB audio device must be
+  plugged in.
+- The app now picks the output itself (`audioDevice` prop on `QtVideo`: id or
+  part of a device name; empty prefers a USB device, then the first named card
+  such as `plughw:CARD=bcm2711 pwm,DEV=0`). With the app running, Qt logged
+  `Playback opened: "plughw:CARD=bcm2711 pwm,DEV=0"`, float32, 2112-frame
+  buffer, with no underrun or decode warnings. The `aplay` command finished
+  without an error on the same card. None of this proves sound at the jack.
+  `onLoad` carries the chosen device name; the Audio card shows it.
+
+io-snd keeps running until reboot or until it is stopped; it was started only
+for this test.
+
 ## Not yet run
 
-On the Pi 400: FFmpeg and Qt Multimedia libraries loading, the audio device
-opening (`io-snd` must be started as root), first video frame, playing video,
-seek, pause, end, bad-URL error, and sound at the 3.5 mm jack (the owner has to
-confirm by ear).
+The React Native component on the device: first frame in the gallery window,
+control bar, seek, pause, end and error events through `QtVideo`, and
+screenshots. The gallery build was still compiling when this was written.

@@ -40,10 +40,17 @@ export interface QtVideoProps extends Omit<ViewProps, 'children'> {
   readonly repeat?: boolean;
   readonly resizeMode?: 'contain' | 'cover' | 'stretch';
   readonly poster?: string;
+  /** Audio output: a device id or part of its name from QMediaDevices. Empty picks a USB device if present, else the default. */
+  readonly audioDevice?: string;
   /** Native control bar: play/pause, seek, time, volume, fullscreen. */
   readonly controls?: boolean;
   readonly fullscreen?: boolean;
-  readonly onLoad?: (e: { duration: number; width: number; height: number }) => void;
+  readonly onLoad?: (e: {
+    duration: number;
+    width: number;
+    height: number;
+    audioDevice: string;
+  }) => void;
   readonly onProgress?: (e: { currentTime: number; playableDuration: number }) => void;
   readonly onEnd?: () => void;
   readonly onError?: (e: { message: string; code: number }) => void;

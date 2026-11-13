@@ -56,6 +56,7 @@ class QnxQtVideoProps final : public ViewProps {
   bool repeat{false};
   QnxQtVideoResizeMode resizeMode{QnxQtVideoResizeMode::Contain};
   std::string poster{};
+  std::string audioDevice{};
   bool controls{false};
   bool fullscreen{false};
 

@@ -34,7 +34,7 @@ QtVideoItem::QtVideoItem(QQmlEngine& engine, QQuickItem* parent) : QQuickItem(pa
   inner_->setParentItem(this);
   inner_->setSize(size());
 
-  connect(inner_, SIGNAL(loaded(double,int,int)), this, SIGNAL(videoLoaded(double,int,int)));
+  connect(inner_, SIGNAL(loaded(double,int,int,QString)), this, SIGNAL(videoLoaded(double,int,int,QString)));
   connect(inner_, SIGNAL(progress(double,double)), this, SIGNAL(videoProgress(double,double)));
   connect(inner_, SIGNAL(ended()), this, SIGNAL(videoEnded()));
   connect(inner_, SIGNAL(failed(QString,int)), this, SIGNAL(videoFailed(QString,int)));
@@ -95,6 +95,7 @@ void QtVideoItem::setPoster(const QString& poster) {
   inner_->setProperty("poster", resolveSource(poster, baseDirectory_));
 }
 void QtVideoItem::setControls(bool controls) { if (inner_) inner_->setProperty("controls", controls); }
+void QtVideoItem::setAudioDevice(const QString& device) { if (inner_) inner_->setProperty("audioDevice", device); }
 void QtVideoItem::setFullscreen(bool fullscreen) { if (inner_) inner_->setProperty("fullscreen", fullscreen); }
 
 void QtVideoItem::setResizeMode(VideoResizeMode mode) {

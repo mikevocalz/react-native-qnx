@@ -21,6 +21,7 @@ class QnxQtVideoEventEmitter : public ViewEventEmitter {
       double duration;
     double width;
     double height;
+    std::string audioDevice;
     };
 
   struct OnVideoProgress {

@@ -6,6 +6,7 @@ type VideoLoadEvent = Readonly<{
   duration: CodegenTypes.Double;
   width: CodegenTypes.Double;
   height: CodegenTypes.Double;
+  audioDevice: string;
 }>;
 type VideoProgressEvent = Readonly<{
   currentTime: CodegenTypes.Double;
@@ -29,6 +30,7 @@ interface NativeProps extends ViewProps {
   repeat?: CodegenTypes.WithDefault<boolean, false>;
   resizeMode?: CodegenTypes.WithDefault<'contain' | 'cover' | 'stretch', 'contain'>;
   poster?: string;
+  audioDevice?: string;
   controls?: CodegenTypes.WithDefault<boolean, false>;
   fullscreen?: CodegenTypes.WithDefault<boolean, false>;
   onVideoLoad?: CodegenTypes.DirectEventHandler<VideoLoadEvent>;

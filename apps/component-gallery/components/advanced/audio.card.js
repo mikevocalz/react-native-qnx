@@ -4,7 +4,7 @@ const React = require('react');
 const { Text } = require('react-native');
 
 function AudioAdvancedCard() {
-  const { UIManager } = require('react-native');
+  const UIManager = require('react-native/Libraries/ReactNative/UIManager').default;
   if (!UIManager.hasViewManagerConfig('QnxQtVideo')) {
     return React.createElement(
       Text,

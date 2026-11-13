@@ -57,7 +57,7 @@ function AudioCard({ width, bare = false }) {
       volume,
       repeat: false,
       style: { width: 1, height: 1 },
-      onLoad: (e) => setStatus(`loaded, ${e.duration.toFixed(1)} s`),
+      onLoad: (e) => setStatus(`loaded, ${e.duration.toFixed(1)} s, output: ${e.audioDevice}`),
       onProgress: (e) => setStatus(`playing ${e.currentTime.toFixed(1)} s`),
       onEnd: () => {
         setStatus('ended');

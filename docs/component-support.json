@@ -23,7 +23,9 @@
       "pi4Qsti": "unverified",
       "notes": "Styled, wrapped text and numberOfLines ellipsis. Inline attachments have zero size.",
       "evidence": {
-        "pi400": ["docs/evidence/pi400-hello-world-2026-11-07.txt"],
+        "pi400": [
+          "docs/evidence/pi400-hello-world-2026-11-07.txt"
+        ],
         "pi4Qsti": []
       }
     },
@@ -70,7 +72,9 @@
       "pi4Qsti": "unverified",
       "notes": "Host pointer press delivers onPress. Pi 400 synthetic Qt input exercises real React Pressable/responder dispatch and remount recovery; physical HID, RNGH and Worklets remain unverified.",
       "evidence": {
-        "pi400": ["docs/evidence/pressable-qnx-2026-11-07.md"],
+        "pi400": [
+          "docs/evidence/pressable-qnx-2026-11-07.md"
+        ],
         "pi4Qsti": []
       }
     },
@@ -247,6 +251,32 @@
       "notes": "Static API calls have no effect. The target has no status-bar integration.",
       "evidence": {
         "pi400": [],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "QtVideo",
+      "host": "unverified",
+      "pi400": "scoped",
+      "pi4Qsti": "unverified",
+      "notes": "Opt-in (RNQNX_ENABLE_QT_VIDEO, needs the Qt Multimedia add-on). Qt Multimedia FFmpeg backend, software decode, frames in the Qt Quick scene graph. Props: source, paused, muted, volume, rate, repeat, resizeMode, poster, controls, fullscreen; events: onLoad, onProgress, onEnd, onError, onBuffer, onSeek, onFullscreen; ref: seek, play, pause. Pi 400: 480x270 H.264/AAC clip played, seek, pause, play, end and bad-URL error reached JavaScript. No https (FFmpeg built without TLS), no hardware decode, no host tests, control-bar taps and fullscreen not exercised. The react-native-video 7 beta cannot load on the pinned Nitro v1; a JavaScript API subset exists but has not run.",
+      "evidence": {
+        "pi400": [
+          "docs/evidence/media-2026-11-13.md"
+        ],
+        "pi4Qsti": []
+      }
+    },
+    {
+      "name": "QtAudio",
+      "host": "unverified",
+      "pi400": "scoped",
+      "pi4Qsti": "unverified",
+      "notes": "Not a separate native component: QtVideo plays audio files through Qt AudioOutput and the QNX io-snd backend. The Pi 400 image has only the 3.5 mm jack (bcm2711_pwm); io-snd had to be started as root and was not running by default. The audio device opened and a 3 s WAV played to its end; audibility not confirmed by ear. No HDMI audio driver on this image. react-native-audio-api is not supported (no QNX player or JSI installer). Output device is chosen in QnxVideo.qml (audioDevice prop; empty picks a USB device, else the named card); onLoad reports the chosen device. The image has no HDMI audio driver.",
+      "evidence": {
+        "pi400": [
+          "docs/evidence/media-2026-11-13.md"
+        ],
         "pi4Qsti": []
       }
     }

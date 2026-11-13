@@ -17,6 +17,7 @@ const {
 } = require('react-native');
 const { create } = require('zustand');
 const { SCENARIOS, createDocumentRows } = require('./fixtures.js');
+const { MediaPage } = require('./media/MediaPage.js');
 const FastRefreshCard = require('./FastRefreshCard').default;
 const RemoteImageCard = require('./RemoteImageCard').default;
 const ExpoModulesCard = require('./ExpoModulesCard').default;
@@ -612,6 +613,7 @@ function ConformanceApp() {
     ['sections', 'Sections'],
     ['controls', 'Controls'],
     ['adaptive', 'Adaptive'],
+    ['media', 'Media'],
     ['limits', 'Limits'],
   ];
   // Developer menu entries (F1 or Ctrl+D) that switch tabs from the keyboard,
@@ -621,6 +623,7 @@ function ConformanceApp() {
     for (const [id, title] of pages) DevSettings.addMenuItem('Show ' + title, () => goTo(id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const width = useConformance((state) => state.width);
   const content =
     page === 'gallery'
       ? h(GalleryPage)
@@ -634,8 +637,9 @@ function ConformanceApp() {
               ? h(ControlsPage)
               : page === 'adaptive'
                 ? h(AdaptivePage)
-                : h(LimitationsPage);
-  const width = useConformance((state) => state.width);
+                : page === 'media'
+                  ? h(MediaPage, { width: Math.max(0, width - 56) })
+                  : h(LimitationsPage);
   // Wide windows put the tabs beside the title; narrow ones stack them.
   const wide = width >= 900;
   const tabs = h(

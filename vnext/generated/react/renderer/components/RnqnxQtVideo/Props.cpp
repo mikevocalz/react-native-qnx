@@ -27,6 +27,7 @@ QnxQtVideoProps::QnxQtVideoProps(
     repeat(convertRawProp(context, rawProps, "repeat", sourceProps.repeat, {false})),
     resizeMode(convertRawProp(context, rawProps, "resizeMode", sourceProps.resizeMode, {QnxQtVideoResizeMode::Contain})),
     poster(convertRawProp(context, rawProps, "poster", sourceProps.poster, {})),
+    audioDevice(convertRawProp(context, rawProps, "audioDevice", sourceProps.audioDevice, {})),
     controls(convertRawProp(context, rawProps, "controls", sourceProps.controls, {false})),
     fullscreen(convertRawProp(context, rawProps, "fullscreen", sourceProps.fullscreen, {false})) {}
 
@@ -76,6 +77,10 @@ folly::dynamic QnxQtVideoProps::getDiffProps(
 
   if (poster != oldProps->poster) {
     result["poster"] = poster;
+  }
+
+  if (audioDevice != oldProps->audioDevice) {
+    result["audioDevice"] = audioDevice;
   }
 
   if (controls != oldProps->controls) {
