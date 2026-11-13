@@ -4,7 +4,7 @@ This is a Fabric-only, Hermes-first out-of-tree React Native platform. QNX is an
 
 ## Startup sequence (mandatory)
 
-1. Read `README.md`, `docs/handoff/CURRENT_STATE.md`, `docs/component-support.md`, `docs/marathon/ARCHITECTURE.md`, `docs/marathon/ROSTER.md`, `docs/marathon/SKILLS.md` and the relevant ADRs completely.
+1. Read `README.md`, `docs/handoff/HANDOFF_2026-11-13.md` (how to run and control the app on the Pi, open PRs), `docs/handoff/CURRENT_STATE.md`, `docs/component-support.md`, `docs/marathon/ARCHITECTURE.md`, `docs/marathon/ROSTER.md`, `docs/marathon/SKILLS.md` and the relevant ADRs completely.
 2. Inspect current base, existing PRs, exact npm tags, Expo SDK compatibility, upstream Marathon manifests and source interfaces. Never rely on memory for changing APIs.
 3. Select roles from the roster by workstream, attach concrete path ownership and deliverable/acceptance evidence.
 4. Install and **read** exact relevant skill SKILL.md files. For Nitro and native APIs, use Margelo `api-design` → `build-nitro-modules` → `cpp` first; add `nitro-fetch`, `react-native-mmkv`, `swift` or `kotlin` only when the API actually needs them. Record upstream commit SHA, selected version, and what decision the skill changed. No skill invocation may be claimed without proof.
