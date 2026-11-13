@@ -1,0 +1,12 @@
+evalmachine.<anonymous>:1
+(function startFrameProbe_WorkletsProofJs2(frames,report){const[_worklet_16972887522090_init_data,scheduleOnRN]=this.__closure;const role=globalThis.__rnqnxThreadRole();const first=Date.now();let count=0;let last=0;let worst=0;const tick=function startFrameProbe_WorkletsProofJs2([_worklet_16972887522090_init_data,last,worst,count,frames,tick,scheduleOnRN,report,role,first]){const _e=[new global.Error(),-10,-27];const WorkletsProofJs1=function(timestamp){count+=1;if(last>0&&timestamp-last>worst)worst=timestamp-last;last=timestamp;if(count<frames){requestAnimationFrame(tick);}else{scheduleOnRN(report,{role:role,frames:count,elapsedMs:Date.now()-first,worstFrameMs:Math.round(worst),stats:globalThis.__rnqnxFrameStats()});}};WorkletsProofJs1.__closure=[last,worst,count,frames,tick,scheduleOnRN,report,role,first];WorkletsProofJs1.__workletHash=16972887522090;WorkletsProofJs1.__pluginVersion="0.13.1";WorkletsProofJs1.__initData=_worklet_16972887522090_init_data;WorkletsProofJs1.__stackDetails=_e;return WorkletsProofJs1;}([_worklet_16972887522090_init_data,last,worst,count,frames,tick,scheduleOnRN,report,role,first]);requestAnimationFrame(tick);})
+
+
+ReferenceError: Cannot access 'tick' before initialization
+    at Object.startFrameProbe_WorkletsProofJs2 (evalmachine.<anonymous>:1:1090)
+    at file:///private/tmp/rnqnx-worklets-1113/tests/js/worklets-frame-probe.test.mjs:45:7
+    at ModuleJob.run (node:internal/modules/esm/module_job:569:25)
+    at async node:internal/modules/esm/loader:650:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:105:5)
+
+Node.js v26.13.0

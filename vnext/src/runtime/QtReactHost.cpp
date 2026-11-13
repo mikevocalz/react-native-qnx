@@ -138,6 +138,10 @@ void QtSchedulerDelegate::setOwnerPoster(OwnerPoster poster) {
   ownerPoster_ = std::move(poster);
 }
 
+void QtSchedulerDelegate::setMountReporter(MountReporter reporter) {
+  mountReporter_ = std::move(reporter);
+}
+
 bool QtSchedulerDelegate::onOwnerOrPost(std::function<void()> work) {
   if (std::this_thread::get_id() == owner_) {
     return true;
@@ -176,6 +180,11 @@ void QtSchedulerDelegate::schedulerShouldRenderTransactions(
   }
   lastFailures_ = adapter_.apply(transaction->getMutations());
   ++mountedTransactionCount_;
+  // Mount hooks (including Reanimated) resume commits only after the native
+  // tree has applied the revision. Never acknowledge a partially failed mount.
+  if (lastFailures_.empty() && mountReporter_) {
+    mountReporter_(mountingCoordinator->getSurfaceId());
+  }
   // A failed mutation leaves a view (and often its subtree) off screen with
   // no other trace, so each one is logged.
   for (const auto& failure : lastFailures_) {
@@ -588,6 +597,13 @@ class QtReactHost::Impl {
 
     scheduler = std::make_shared<Scheduler>(
         toolbox, /*animationDelegate=*/nullptr, &delegate);
+    delegate.setMountReporter(
+        [weak = std::weak_ptr<facebook::react::UIManager>(scheduler->getUIManager())](
+            facebook::react::SurfaceId surfaceId) {
+          if (auto manager = weak.lock()) {
+            manager->reportMount(surfaceId);
+          }
+        });
 
     // React Native's JavaScript branches on this global to decide whether the
     // legacy bridge exists. Without it, loading a bundle throws

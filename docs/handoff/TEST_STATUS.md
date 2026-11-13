@@ -1,5 +1,10 @@
 # TEST_STATUS.md
 
+## PR 149 frame/mount continuation — 2026-11-13
+
+Transformed frame regression, public exports and typecheck pass. Pi frame continuation completed twice. Native mount-hook, corrected animation pixels and exact-head CI are pending; the macOS full JS lane stopped at a Linux-only test.
+[Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
+
 ## 2026-11-10 — PR 105 generator validation
 
 At `c09a5b19800c2d7d79268c3466b618aa20430ba2`, the hosted SDK, full renderer,

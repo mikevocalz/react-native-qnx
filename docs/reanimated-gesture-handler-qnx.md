@@ -81,7 +81,18 @@ smooth needs a dedicated JS thread with the GUI thread free to render, which is
 the host change [Plan 01](platform-modernization/01-runtime-baseline.md)
 describes and this work does not make.
 
-## Device receipts (Pi 400, 2026-11-13)
+## Continuation (Pi 400, 2026-11-13)
+
+The Advanced tab and Reanimated card now run under the guarded showcase
+launcher. Pointer clicks reach its spring/timing controls. Shared x advances
+on the UI runtime, but the flush-only candidate updates pixels at a subsequent
+React commit rather than each frame. The missing Fabric mount-completion
+notification is under test. These observations supersede the earlier statement
+that the cards could not be exercised. Pan/tap gestures and smooth intermediate
+pixels remain unqualified. See the [candidate receipt](validation/pr149-frame-mount-2026-11-13.md)
+for hashes, negative controls and outstanding checks.
+
+## Earlier device receipts (Pi 400, 2026-11-13)
 
 Same build and probe as [Worklets](worklets-qnx.md#device-receipts-pi-400-2026-11-13).
 

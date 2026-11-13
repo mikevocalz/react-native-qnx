@@ -155,7 +155,7 @@ const api = Object.freeze({
     return require('react-native/Libraries/EventEmitter/RCTDeviceEventEmitter').default;
   },
   get RefreshControl() {
-    return require('react-native/Libraries/Components/RefreshControl/RefreshControl');
+    return require('react-native/Libraries/Components/RefreshControl/RefreshControl').default;
   },
   get TouchableNativeFeedback() {
     return require('react-native/Libraries/Components/Touchable/TouchableNativeFeedback').default;

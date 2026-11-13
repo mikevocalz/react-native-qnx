@@ -77,6 +77,9 @@ class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
   using OwnerPoster = std::function<void(std::function<void()>)>;
   void setOwnerPoster(OwnerPoster poster);
 
+  using MountReporter = std::function<void(facebook::react::SurfaceId)>;
+  void setMountReporter(MountReporter reporter);
+
   /// Failures from the most recent mount, empty when everything applied.
   const std::vector<fabric::MutationFailure>& lastFailures() const;
 
@@ -128,6 +131,7 @@ class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
 
   const std::thread::id owner_{std::this_thread::get_id()};
   OwnerPoster ownerPoster_;
+  MountReporter mountReporter_;
   fabric::QtTouchDispatcher* touchDispatcher_{nullptr};
   std::vector<fabric::MutationFailure> lastFailures_;
   int mountedTransactionCount_{0};

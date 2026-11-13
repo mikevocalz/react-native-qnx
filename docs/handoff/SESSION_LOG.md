@@ -1,5 +1,10 @@
 # SESSION_LOG.md
 
+## PR 149 frame/mount continuation — 2026-11-13
+
+Fixed the nested frame worklet closure and RefreshControl export; migrated touched gallery state to Zustand. Measured two thirty-frame Pi runs. Isolated delayed animated pixels to absent mount completion; added the callback and native observer regression. Qualification is in progress.
+[Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
+
 ## 2026-11-10 — PR 105 committed handoff repair
 
 Inspected `c09a5b1`, its green hosted workflows, the unresolved handoff review,

@@ -1,5 +1,10 @@
 # BLOCKERS.md
 
+## PR 149 frame/mount continuation — 2026-11-13
+
+PR 149 stays draft: mount-completion candidate is not yet qualified, busy-JS delivery and gestures remain open. PR 161 must merge before PR 159, then PR 149.
+[Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
+
 ## PR 105 review state — 2026-11-10
 
 The mandatory handoff omission is addressed by this follow-up. Hosted checks

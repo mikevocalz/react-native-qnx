@@ -19,6 +19,7 @@
 
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/core/RawEvent.h>
+#include <react/renderer/uimanager/UIManagerMountHook.h>
 #include <react/renderer/element/ComponentBuilder.h>
 #include <react/renderer/element/Element.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
@@ -553,6 +554,44 @@ void surfaceCommitMountsThroughTheDelegate() {
   EXPECT(item->parentItem() == &fixture.root());
   EXPECT_NEAR(item->width(), 90.0);
   EXPECT_NEAR(item->height(), 45.0);
+}
+
+void mountHooksObserveAppliedNativeTree() {
+  Fixture fixture;
+  fixture.host().startEmptySurface(kSurfaceId, 800.0F, 600.0F);
+  struct Hook final : facebook::react::UIManagerMountHook {
+    QtQuickMountingLayer& layer;
+    std::vector<double> widths;
+    explicit Hook(QtQuickMountingLayer& value) : layer(value) {}
+    void shadowTreeDidMount(
+        const facebook::react::RootShadowNode::Shared&,
+        facebook::react::HighResTimeStamp) noexcept override {
+      const auto* item = layer.itemForTag(203);
+      widths.push_back(item == nullptr ? -1.0 : item->width());
+    }
+  } hook(fixture.layer());
+  auto manager = fixture.host().scheduler().getUIManager();
+  manager->registerMountHook(hook);
+  // Unregister before the hook or fixture is destroyed, including on failure.
+  struct Registration {
+    facebook::react::UIManager& manager;
+    facebook::react::UIManagerMountHook& hook;
+    ~Registration() { manager.unregisterMountHook(hook); }
+  } registration{*manager, hook};
+  for (float width : {50.0F, 140.0F}) {
+    auto element = Element<ViewShadowNode>().tag(203).props(
+        viewProps([width](ViewShadowNode::ConcreteProps& props) {
+          props.yogaStyle.setDimension(
+              facebook::yoga::Dimension::Width,
+              facebook::yoga::StyleSizeLength::points(width));
+        }));
+    EXPECT(fixture.host().commit(kSurfaceId,
+        std::vector<std::shared_ptr<const ShadowNode>>{
+            fixture.builder().build(element)}));
+    EXPECT(!hook.widths.empty());
+    EXPECT_NEAR(hook.widths.back(), width);
+  }
+  EXPECT(hook.widths.size() == 2);
 }
 
 void secondCommitUpdatesTheSameItem() {
@@ -2715,6 +2754,7 @@ int main(int argc, char** argv) {
       {"surfaceCommitMountsThroughTheDelegate",
        surfaceCommitMountsThroughTheDelegate},
       {"secondCommitUpdatesTheSameItem", secondCommitUpdatesTheSameItem},
+      {"mountHooksObserveAppliedNativeTree", mountHooksObserveAppliedNativeTree},
       {"stoppingASurfaceUnmountsItsItems", stoppingASurfaceUnmountsItsItems},
       {"commitToAnUnknownSurfaceIsReported", commitToAnUnknownSurfaceIsReported},
       {"componentPredicateAnswersForRegisteredNames",

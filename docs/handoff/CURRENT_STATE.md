@@ -1,5 +1,10 @@
 # Current state
 
+## PR 149 frame/mount continuation — 2026-11-13
+
+Worklets frame continuation is fixed and measured on the Pi. A missing Fabric mount-completion callback is being repaired; visible animation acceptance and exact-head CI remain pending.
+[Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
+
 Start with the [2026-11-13 handoff](HANDOFF_2026-11-13.md): it explains how to
 load and control the app on the Pi 400, what is merged, and what is open.
 The sections below keep their original dates.

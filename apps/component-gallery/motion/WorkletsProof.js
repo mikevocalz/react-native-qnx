@@ -7,6 +7,8 @@
 const React = require('react');
 const { View, Text, Pressable } = require('react-native');
 const { scheduleOnUI, scheduleOnRN } = require('react-native-worklets');
+const { useStore } = require('zustand');
+const { createStore } = require('zustand/vanilla');
 
 const h = React.createElement;
 const INK = '#e9f0f7';
@@ -26,8 +28,9 @@ function startFrameProbe(frames, report) {
   let count = 0;
   let last = 0;
   let worst = 0;
-  const tick = (timestamp) => {
-    'worklet';
+  // Created on the UI runtime: keep this closure local so its counter and
+  // recursive reference survive every frame without another serialization.
+  function tick(timestamp) {
     count += 1;
     if (last > 0 && timestamp - last > worst) worst = timestamp - last;
     last = timestamp;
@@ -42,7 +45,7 @@ function startFrameProbe(frames, report) {
         stats: globalThis.__rnqnxFrameStats(),
       });
     }
-  };
+  }
   requestAnimationFrame(tick);
 }
 
@@ -70,11 +73,21 @@ function jsBusyProbe(busyMs, jobs, report) {
 }
 
 function WorkletsProof() {
-  const [lines, setLines] = React.useState(['Not run yet.']);
-  const push = React.useCallback((line) => {
-    log(line);
-    setLines((previous) => (previous[0] === 'Not run yet.' ? [line] : [...previous, line]));
-  }, []);
+  const store = React.useMemo(() => createStore(() => ({ lines: ['Not run yet.'] })), []);
+  const lines = useStore(store, (state) => state.lines);
+  const setLines = React.useCallback(
+    (next) => {
+      store.setState((state) => ({ lines: typeof next === 'function' ? next(state.lines) : next }));
+    },
+    [store]
+  );
+  const push = React.useCallback(
+    (line) => {
+      log(line);
+      setLines((previous) => (previous[0] === 'Not run yet.' ? [line] : [...previous, line]));
+    },
+    [setLines]
+  );
 
   const runAll = React.useCallback(() => {
     setLines([]);
@@ -109,7 +122,7 @@ function WorkletsProof() {
         push('PROOF-COMPLETE');
       });
     });
-  }, [push]);
+  }, [push, setLines]);
 
   return h(
     View,

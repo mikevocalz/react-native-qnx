@@ -1,5 +1,10 @@
 # NEXT_ACTIONS.md
 
+## PR 149 frame/mount continuation — 2026-11-13
+
+Finish mount-hook native testing and QNX cross-build. Compare intermediate animation pixels with the same HBC, exercise gestures and shutdown, run independent review and exact-head CI. Preserve all remaining handoff gaps.
+[Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
+
 ## PR 105 continuation — 2026-11-10
 
 Review and publish the documentation follow-up to `c09a5b1`, inspect its

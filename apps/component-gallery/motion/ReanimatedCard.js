@@ -23,6 +23,8 @@ const {
   Extrapolation,
 } = require('react-native-reanimated');
 const { scheduleOnRN } = require('react-native-worklets');
+const { useStore } = require('zustand');
+const { createStore } = require('zustand/vanilla');
 
 const h = React.createElement;
 const INK = '#e9f0f7';
@@ -57,8 +59,14 @@ function ReanimatedCard() {
   const spin = useSharedValue(0);
   const pulse = useSharedValue(0);
   const frames = useSharedValue(0);
-  const [frameCount, setFrameCount] = React.useState(0);
-  const [done, setDone] = React.useState('idle');
+  const store = React.useMemo(() => createStore(() => ({ frameCount: 0, done: 'idle' })), []);
+  const frameCount = useStore(store, (state) => state.frameCount);
+  const done = useStore(store, (state) => state.done);
+  const setFrameCount = React.useCallback(
+    (value) => store.setState({ frameCount: value }),
+    [store]
+  );
+  const setDone = React.useCallback((value) => store.setState({ done: value }), [store]);
 
   useFrameCallback(() => {
     'worklet';
@@ -114,7 +122,14 @@ function ReanimatedCard() {
     );
   };
   const readFrames = () => {
-    log('reanimated UI frames: ' + frames.value);
+    log(
+      'reanimated UI frames: ' +
+        frames.value +
+        ', shared x: ' +
+        x.value +
+        ', runtime kind: ' +
+        globalThis.__RUNTIME_KIND
+    );
     setFrameCount(frames.value);
   };
 

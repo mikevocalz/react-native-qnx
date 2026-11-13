@@ -56,7 +56,27 @@ One line of `AsyncQueueImpl.cpp` is replaced in a generated copy
 (`pthread_setname_np(name)` is the Apple form; QNX takes the thread first).
 CMake fails the configure step if the line changes. Nothing else is modified.
 
-## Device receipts (Pi 400, 2026-11-13)
+## Committed frame-probe continuation, November 13
+
+The gallery frame probe now keeps its recursive callback inside the UI
+worklet. A second `worklet` directive on that callback made Babel serialize
+its own uninitialized binding and snapshot the mutable counters. The regression
+executes the actual transformed entry and completes 30 callbacks; restoring
+the old callback makes the test fail.
+
+On the physical Pi 400, the updated bundle with the existing experimental
+native binary completed twice: 30 callbacks in 465 ms (largest callback gap
+18 ms), then 30 in 472 ms (17 ms). Both reported `ui-worklet`; React Native
+reported `gui`. These are callback intervals, without presentation timing.
+The busy-JS subtest reported 0 of 40 jobs in its busy window; `scheduleOnUI`
+batches through JS microtasks, so this run does not establish execution of
+accepted UI jobs while JS is blocked. The source build used Worklets 0.13.1.
+
+[Raw output and screenshot](evidence/worklets-frame-2026-11-13/device-before-flush.txt)
+record the separate native/bundle hashes. This result does not qualify the
+pending Reanimated native flush change or the complete integration branch.
+
+## Earlier startup probes (Pi 400, 2026-11-13)
 
 Build: QNX SDP 8.0.5, full Hermes, `-O1`, Worklets 0.13.0 (the device runs predate the bump to 0.13.1; the C++ is the same
 line and has not been rerun). A startup probe in a
@@ -85,6 +105,6 @@ Not measured: frame pacing against the display, behavior while JS is busy.
   proves the source-unpacker path on full Hermes only.
 - `toggleSlowAnimationsOnUIRuntime` is a no-op that returns false.
 - JavaScript load blocks the GUI thread on this host, so while JS is busy the
-  screen cannot repaint and frame callbacks do not fire. Work already queued on
-  the UI thread still runs. See [Reanimated and Gesture Handler](reanimated-gesture-handler-qnx.md).
+  screen cannot repaint and frame callbacks do not fire. The current busy-JS probe has not established the queued-work case on the
+  device. See [Reanimated and Gesture Handler](reanimated-gesture-handler-qnx.md).
 - Networking inside worklet runtimes (Bundle Mode only) is not provided.

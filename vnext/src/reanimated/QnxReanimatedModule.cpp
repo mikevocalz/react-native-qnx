@@ -52,6 +52,12 @@ void QnxReanimatedModule::install(Runtime& rt) {
   auto methods = platformMethods();
   proxy_ = std::make_shared<::reanimated::ReanimatedModuleProxy>(
       uiRuntime_, uiScheduler, rt, platform_->jsCallInvoker(), methods, /*isReducedMotion=*/false);
+  // Reanimated's mapper finalizer calls this on the UI-worklet runtime after
+  // _updateProps. Flush the registry into Fabric while the proxy is alive;
+  // a no-op here leaves useAnimatedStyle updates pending indefinitely.
+  methods.maybeFlushUIUpdatesQueueFunction = [weak = std::weak_ptr<::reanimated::ReanimatedModuleProxy>(proxy_)]() {
+    if (auto proxy = weak.lock()) proxy->performOperations();
+  };
   proxy_->init(methods);
   proxy_->initializeFabric(host_.scheduler().getUIManager());
 
@@ -97,7 +103,6 @@ void QnxReanimatedModule::install(Runtime& rt) {
     return -1;
   };
   holder.unsubscribeFromKeyboardEvents = [](int) {};
-  holder.maybeFlushUIUpdatesQueueFunction = []() {};
   holder.attachPseudoSelector = [](facebook::react::Tag, PseudoSelector, std::function<void(bool)>) {};
   holder.detachPseudoSelector = [](facebook::react::Tag, PseudoSelector) {};
   return holder;
