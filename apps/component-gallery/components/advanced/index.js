@@ -1,5 +1,5 @@
 // The Advanced tab's cards. Each card is one file in this directory that
-// default-exports { id, title, detail, order, Component }. Metro's
+// default-exports { id, title, detail, order?, framed?, Component }. Metro's
 // require.context finds every *.card.js file here, so adding a card never
 // edits this file and parallel pull requests do not conflict. See
 // apps/component-gallery/README.md ("Adding an Advanced card").
@@ -14,6 +14,8 @@ function validate(file, card) {
   }
   if (typeof card.Component !== 'function')
     throw new Error(`${where}: Component must be a component`);
+  if (card.framed !== undefined && typeof card.framed !== 'boolean')
+    throw new Error(`${where}: framed must be a boolean`);
   if (card.order !== undefined && !Number.isFinite(card.order))
     throw new Error(`${where}: order must be a number`);
   return card;

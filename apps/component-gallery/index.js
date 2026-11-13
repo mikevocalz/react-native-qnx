@@ -332,17 +332,24 @@ function AdvancedPage() {
       h(
         View,
         {
-          style: {
-            width: inner > 0 ? cardWidth : '100%',
-            padding: 22,
-            marginBottom: GAP,
-            marginRight: index % columns === columns - 1 ? 0 : GAP,
-            minHeight: 236,
-            borderRadius: 14,
-            backgroundColor: PANEL,
-          },
+          // A card with `framed: false` draws its own frame and title.
+          style:
+            card.framed === false
+              ? {
+                  width: inner > 0 ? cardWidth : '100%',
+                  marginRight: index % columns === columns - 1 ? 0 : GAP,
+                }
+              : {
+                  width: inner > 0 ? cardWidth : '100%',
+                  padding: 22,
+                  marginBottom: GAP,
+                  marginRight: index % columns === columns - 1 ? 0 : GAP,
+                  minHeight: 236,
+                  borderRadius: 14,
+                  backgroundColor: PANEL,
+                },
         },
-        h(Heading, { title: card.title, detail: card.detail }),
+        card.framed !== false && h(Heading, { title: card.title, detail: card.detail }),
         h(card.Component)
       ),
   });
@@ -582,23 +589,6 @@ function LimitationsPage() {
         h(Label, null, scenario.expectation)
       )
     )
-  );
-}
-
-// Advanced widgets. The SVG cards live in ./svg (one file per card, listed in svg/cards.js); the module
-// is required here, not at the top, so a host without react-native-svg support
-// never evaluates it.
-function AdvancedPage() {
-  const { svgCards, svgAvailable, SvgUnavailable } = require('./svg/cards');
-  if (!svgAvailable()) return h(SvgUnavailable);
-  return h(
-    ScrollView,
-    { contentContainerStyle: { paddingBottom: 24 } },
-    h(Heading, {
-      title: 'Advanced widgets',
-      detail: 'react-native-svg 15.16.0 elements drawn by a Qt-backed renderer',
-    }),
-    ...svgCards.map((card) => h(card.Component, { key: card.id }))
   );
 }
 

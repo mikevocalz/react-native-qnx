@@ -33,8 +33,15 @@ export default {
   detail: '5,000 rows, virtualized', // one line under the title
   order: 50, // optional, default 100; lower comes first, ties sort by id
   Component: LongList, // rendered inside the card, no props
+  framed: true, // optional; false when Component draws its own frame and title
 };
 ```
+
+The react-native-svg cards are registered this way too:
+`components/advanced/svg-*.card.js` wrap the drawings in `svg/` through
+`svg/advancedCard.js`, which loads them on first render and shows a notice
+when the host was built without react-native-svg. `svg/cards.js` still lists
+them for the standalone `RNQnxSvgGallery` component.
 
 `components/advanced/index.js` collects the files with Metro's
 `require.context` (enabled in `metro.config.js`) into one `ADVANCED_CARDS`
