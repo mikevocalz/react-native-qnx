@@ -4,6 +4,7 @@
 // anything else in this directory so each of them can include it.
 
 #include <QColor>
+#include <QPointF>
 #include <QString>
 
 namespace rnqnx::views::rnsvg {
@@ -23,6 +24,18 @@ struct Brush {
   Type type{Type::None};
   QColor color;
   QString ref;
+};
+
+// One vertex of a path as its data wrote it (an arc is one vertex pair, not
+// the several cubics Qt stores). Directions are unit vectors in path space; a
+// zero vector means the direction is undefined there (a zero-length segment).
+struct PathVertex {
+  QPointF point;
+  QPointF inDirection;   // direction of travel arriving at the vertex
+  QPointF outDirection;  // direction of travel leaving it
+  bool subpathStart{false};
+  bool subpathEnd{false};
+  bool closesSubpath{false};  // `z` arrived at this vertex
 };
 
 }  // namespace rnqnx::views::rnsvg

@@ -150,7 +150,9 @@ QQuickItem* createItemForComponent(const QString& name, QQuickItem* parent) {
       {"RNSVGRadialGradient", Kind::RadialGradient}, {"RNSVGClipPath", Kind::ClipPath},
       {"RNSVGMask", Kind::Mask},       {"RNSVGText", Kind::Text},
       {"RNSVGTSpan", Kind::TSpan},     {"RNSVGUse", Kind::Use},
-      {"RNSVGImage", Kind::Image},
+      {"RNSVGImage", Kind::Image},       {"RNSVGPattern", Kind::Pattern},
+      {"RNSVGSymbol", Kind::Symbol},     {"RNSVGMarker", Kind::Marker},
+      {"RNSVGTextPath", Kind::TextPath}, {"RNSVGFilter", Kind::Filter},
   };
   for (const auto& row : rows) {
     if (name == QLatin1String(row.name)) return new RnsvgElementItem(row.kind, parent);

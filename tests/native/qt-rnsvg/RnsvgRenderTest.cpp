@@ -399,7 +399,7 @@ class RnsvgRenderTest final : public QObject {
     if (QFontDatabase::families().isEmpty()) QSKIP("no fonts available to the offscreen platform", SkipAll);
     Scene s(200, 60);
     ElementProps t = make(Kind::Text);
-    t.tx = {px(100)}; t.ty = {px(40)};
+    t.text.x = {px(100)}; t.text.y = {px(40)};
     t.fill = color(Qt::red);
     t.propList = {QStringLiteral("fill")};
     t.font.size = 32;

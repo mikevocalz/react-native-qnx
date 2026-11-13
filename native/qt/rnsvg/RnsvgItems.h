@@ -72,8 +72,7 @@ class RnsvgRootItem final : public QQuickPaintedItem {
 namespace rnsvg {
 // Creates the Qt item for a react-native-svg Fabric component name
 // ("RNSVGSvgView", "RNSVGPath", ...), or nullptr if the name is not one this
-// renderer mounts. Pattern, Symbol, Marker, TextPath, Filter, Fe* and
-// ForeignObject are not.
+// renderer mounts.
 QQuickItem* createItemForComponent(const QString& componentName, QQuickItem* parent);
 }  // namespace rnsvg
 
