@@ -26,7 +26,7 @@ try {
   }
   await symlink(path.join(root, 'node_modules'), path.join(temporary, 'node_modules'), 'dir');
   const baseline = await syncDocs(temporary);
-  assert.equal(baseline.components, 22);
+  assert.equal(baseline.components, 24);
   assert.equal(baseline.gates, 11);
   await assert.rejects(
     syncDocs(temporary, false, true),

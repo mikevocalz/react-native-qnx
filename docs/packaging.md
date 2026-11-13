@@ -167,6 +167,28 @@ No package has been produced yet. The public runtime currently exists only as
 a local build output and the board copies under the test user's home
 (`qt612-public` for the first build, `qt612-public-o2` for the `-O2` build).
 
+## Qt Multimedia add-on and FFmpeg (2026-11-13)
+
+`scripts/qt-media/` builds an optional add-on in its own directory
+(`/data/home/qnxuser/qt612-media`); the Qt core runtime is unchanged.
+
+| Component     | Version and source                                                                                             | SHA-256                                                            | Licence                                                                                                                                                                |
+| ------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Qt Multimedia | 6.12.0, `download.qt.io/official_releases/qt/6.12/6.12.0/submodules/qtmultimedia-everywhere-src-6.12.0.tar.xz` | `3143f53b64257ba2a0685c940f5dce476c75871ff86b516de45cfd54ea93a62d` | LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only (as Qt core, ADR-0013)                                                                                                   |
+| FFmpeg        | 8.0, `ffmpeg.org/releases/ffmpeg-8.0.tar.xz`                                                                   | `b2751fccb6cc4c77708113cd78b561059b6fa904b24162fa0be2d60273d27b8e` | LGPL-3.0-or-later with OpenSSL 3 (Apache-2.0) for https, built with `--enable-version3`; the first build without OpenSSL reported `License: LGPL version 2.1 or later` |
+
+FFmpeg is configured with `--disable-gpl --disable-nonfree --enable-version3
+--enable-openssl --disable-autodetect`, no external codec libraries (the SDP's
+OpenSSL 3 is linked for https), shared libraries only, and
+a fixed decoder list (H.264, VP8, VP9, MPEG-4, MJPEG, AAC, MP3, Opus, Vorbis,
+FLAC, PCM). The shared libraries are replaceable: an app that ships them must
+ship the FFmpeg and Qt Multimedia source references above, the LGPL texts, and
+the build scripts, so a user can rebuild and substitute them. Patent licences
+for H.264 and AAC are the shipper's concern and are not addressed here. The
+Pi image's own FFmpeg (GPL, `--enable-gpl --enable-version3`, no H.264 decoder)
+is not used. `libQt6Concurrent`, built from the existing Qt tree, ships in the
+same directory. Per-file hashes: `docs/evidence/media/SHA256SUMS.txt`.
+
 ## Pi 400 evaluation authorization (2026-11-06)
 
 The owner requested the free ten-day Qt evaluation. The signed-in commercial

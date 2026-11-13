@@ -46,6 +46,8 @@
     "nitro:platform:check": "node scripts/nitro-platform-codegen.mjs --check",
     "qt:svg:generate": "node scripts/qt-svg-codegen.mjs --write",
     "qt:svg:check": "node scripts/qt-svg-codegen.mjs --check",
+    "qt:video:generate": "node scripts/qt-video-codegen.mjs --write",
+    "qt:video:check": "node scripts/qt-video-codegen.mjs --check",
     "qt:rnsvg:generate": "node scripts/qt-rnsvg-codegen.mjs --write",
     "qt:rnsvg:check": "node scripts/qt-rnsvg-codegen.mjs --check",
     "qt:native-ui:generate": "node scripts/qt-native-ui-codegen.mjs --write",

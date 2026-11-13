@@ -9,6 +9,9 @@
 #include "react-native-qnx/fabric/QtImageBridge.h"
 #include "react-native-qnx/fabric/QtScrollBridge.h"
 #include "react-native-qnx/fabric/QtSwitchBridge.h"
+#if RNQNX_ENABLE_QT_VIDEO
+#include <QtVideoItem.h>
+#endif
 
 #include "react-native-qnx/fabric/QtExtraComponents.h"
 #if RNQNX_ENABLE_QT_RNSVG
@@ -1184,6 +1187,26 @@ MutationFailure ShadowViewMutationAdapter::dispatchCommand(
     const std::string& commandName,
     const folly::dynamic& args,
     const ShadowView* shadowView) {
+#if RNQNX_ENABLE_QT_VIDEO
+  if (commandName == "seek" || commandName == "play" || commandName == "pause") {
+    // Other components may define commands with these names; only act on a QtVideo.
+    if (auto* video = qobject_cast<views::QtVideoItem*>(layer_.itemForTag(tag))) {
+      if (commandName == "seek") {
+        if (!args.isArray() || args.size() != 1 || !args[0].isNumber()) {
+          return MutationFailure{.type = ShadowViewMutation::Type::Update, .tag = tag,
+              .error = MountError::IndexOutOfRange, .detail = QStringLiteral("seek expects [seconds]")};
+        }
+        video->seek(args[0].asDouble());
+      } else if (commandName == "play") {
+        video->play();
+      } else {
+        video->pause();
+      }
+      return MutationFailure{};
+    }
+  }
+#endif
+
   if (commandName == "scrollTo") {
     if (!args.isArray() || args.size() < 2) {
       return MutationFailure{

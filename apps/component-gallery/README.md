@@ -80,3 +80,15 @@ component in its own file if you want Fast Refresh to keep its state. Metro
 picks up a newly added card file on the next reload.
 
 The Advanced tab route (`app/(tabs)/advanced.js`) renders that array.
+
+## Video and Audio
+
+The Advanced tab has a Video card (`components/advanced/video.card.js`:
+`QtVideo` with the native control bar and a Bundled / Mac URL / Bad URL source
+switch) and an Audio card (`audio.card.js`: a bundled tone with play, pause and
+volume). The Media screen in the drawer shows the expo-image card, then both at
+full width. They need a host built with `RNQNX_ENABLE_QT_VIDEO=ON` and the Qt
+Multimedia add-on ([media guide](../../docs/getting-started/media.md)); without
+them the cards show a notice. Stage `assets/media/` next to the executable. The
+Mac URL source expects `python3 -m http.server 8765` in that directory on
+192.168.2.1.
