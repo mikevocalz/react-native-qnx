@@ -18,3 +18,9 @@ Animated formats: animated-gif-webp-expo-image.png shows the gallery's expo-imag
 Top row: Animated GIF at two moments (blue frame with a white bar, then a red frame). Bottom row: Animated WebP at two moments (the white bar has moved). Both decode through the qtimageformats plugins
 (libqwebp.so and libqgif.so) in the app's plugins/imageformats directory; the sources are
 apps/component-gallery/assets/anim.gif and anim.webp.
+
+Live resize with the merged injector (tools/qnx-input, `drag`), sizes read from the app log
+(`RNQNX_WINDOW_FRAME`): 1280x800 to 1180x800, to 589x800 (live-resized-589-wide-desktop.png: bottom
+tab bar, cards fill the width, right corners rounded), back to 1184x800
+(live-resized-back-wide-desktop.png: rail and two columns). The green button toggled maximise and
+restore twice (two `RNQNX_WINDOW_ACTION maximize` lines, both captures taken).
