@@ -1,5 +1,10 @@
 # NEXT_ACTIONS.md
 
+## PR 161 corpus continuation — 2026-11-13
+
+Inspect PR 161 exact-head renderer CI after publication. Verify all four corpus shards and retain their diff artifacts. Complete the handoff device checks before integrating #159 and #149.
+[Receipt](../validation/pr161-corpus-shards-2026-11-13.md).
+
 ## PR 105 continuation — 2026-11-10
 
 Review and publish the documentation follow-up to `c09a5b1`, inspect its

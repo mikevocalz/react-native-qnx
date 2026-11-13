@@ -88,9 +88,18 @@ function(rnqnx_add_qt_rnsvg_corpus_test)
     RNQNX_RNSVG_BUNDLE_PATH="${bundle}" RNQNX_RNSVG_CORPUS_BUNDLE_PATH="${bundle}"
     RNQNX_RNSVG_CORPUS_LAYOUT="${layout}" RNQNX_RNSVG_FIXTURE_DIR="${root}/tests/fixtures/rnsvg")
   rnqnx_enable_strict_warnings(rnqnx_qt_rnsvg_corpus_test)
-  add_test(NAME rnqnx_qt_rnsvg_corpus_test COMMAND rnqnx_qt_rnsvg_corpus_test -platform offscreen)
-  set_tests_properties(rnqnx_qt_rnsvg_corpus_test PROPERTIES TIMEOUT 300
-    ENVIRONMENT "QT_QUICK_BACKEND=software")
+  # Independent Hermes/Fabric lifetimes bound corpus memory and isolate slow
+  # scenes in Debug CI. Every batch belongs to exactly one of these four shards.
+  foreach(shard RANGE 0 3)
+    set(test_name rnqnx_qt_rnsvg_corpus_test)
+    if(shard GREATER 0)
+      string(APPEND test_name "_${shard}")
+    endif()
+    add_test(NAME ${test_name} COMMAND rnqnx_qt_rnsvg_corpus_test
+      -platform offscreen --shard-index ${shard} --shard-count 4)
+    set_tests_properties(${test_name} PROPERTIES TIMEOUT 300
+      ENVIRONMENT "QT_QUICK_BACKEND=software")
+  endforeach()
 endfunction()
 
 # Hostile numbers through the bridge's value converters (no JS runtime).

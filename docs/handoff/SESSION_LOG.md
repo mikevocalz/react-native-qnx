@@ -1,5 +1,10 @@
 # SESSION_LOG.md
 
+## PR 161 corpus continuation — 2026-11-13
+
+Read current PR 161 CI, reproduced the corpus in a separate Linux build, verified standalone Mac rendering, isolated large scenes and added required shard coverage. Kept the original reference images and recorded the Use-2 edge tolerance measurement.
+[Receipt](../validation/pr161-corpus-shards-2026-11-13.md).
+
 ## 2026-11-10 — PR 105 committed handoff repair
 
 Inspected `c09a5b1`, its green hosted workflows, the unresolved handoff review,

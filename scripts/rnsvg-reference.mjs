@@ -96,7 +96,8 @@ const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 const WINDOW_W = 1100,
   WINDOW_H = 1000,
   MARGIN = 6,
-  BATCH_SIZE = 12;
+  BATCH_SIZE = 12,
+  BATCH_NODE_LIMIT = 1000;
 /** @param {Array<Record<string, any>>} fixtures */
 function packBatches(fixtures) {
   /** @type {Array<Array<{ name: string, x: number, y: number, w: number, h: number }>>} */
@@ -105,17 +106,25 @@ function packBatches(fixtures) {
   let cells = [],
     x = MARGIN,
     y = MARGIN,
-    rowH = 0;
+    rowH = 0,
+    nodes = 0;
   const flush = () => {
     if (cells.length) batches.push(cells);
     cells = [];
     x = MARGIN;
     y = MARGIN;
     rowH = 0;
+    nodes = 0;
   };
   for (const fx of fixtures) {
     if (!fx.size) throw new Error(`${fx.name}: no size in the manifest; render the goldens first`);
     const [w, h] = fx.size;
+    const elements = (
+      fs.readFileSync(path.join(fixtureDir, fx.svg), 'utf8').match(/<[A-Za-z_]/g) || []
+    ).length;
+    // A small pixel cell can contain thousands of Fabric nodes. Keep those
+    // scenes in separate commits rather than mounting both large maps at once.
+    if (cells.length && nodes + elements > BATCH_NODE_LIMIT) flush();
     if (w + 2 * MARGIN > WINDOW_W || h + 2 * MARGIN > WINDOW_H)
       throw new Error(`${fx.name}: ${w}x${h} does not fit the ${WINDOW_W}x${WINDOW_H} window`);
     if (x + w + MARGIN > WINDOW_W) {
@@ -129,6 +138,8 @@ function packBatches(fixtures) {
     cells.push({ name: fx.name, x, y, w, h });
     x += w + MARGIN;
     rowH = Math.max(rowH, h);
+    nodes += elements;
+    if (elements > BATCH_NODE_LIMIT) flush();
   }
   flush();
   return batches;

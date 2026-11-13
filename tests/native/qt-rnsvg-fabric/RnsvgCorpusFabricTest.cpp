@@ -17,6 +17,7 @@
 #include "../qt-rnsvg/support/FixtureManifest.h"
 #include "../qt-rnsvg/support/ImageDiff.h"
 
+#include <QCommandLineParser>
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFontDatabase>
@@ -94,6 +95,14 @@ QImage cropCell(const QImage& window, const QRect& rect) {
 
 int main(int argc, char** argv) {
   QGuiApplication application(argc, argv);
+  QCommandLineParser options;
+  options.addHelpOption();
+  options.addOption({"shard-index", "Zero-based corpus shard", "index", "0"});
+  options.addOption({"shard-count", "Number of corpus shards", "count", "1"});
+  options.process(application);
+  bool indexOk = false, countOk = false;
+  const int shardIndex = options.value("shard-index").toInt(&indexOk);
+  const int shardCount = options.value("shard-count").toInt(&countOk);
   QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
   const bool failOnPending = qEnvironmentVariableIntValue("RNQNX_RNSVG_FAIL_ON_PENDING") != 0;
   // The goldens are resvg renders with the bundled DejaVu faces, so the test must not depend on host fonts.
@@ -109,6 +118,10 @@ int main(int argc, char** argv) {
   QGuiApplication::setFont(base);
   int passed = 0, pending = 0, failed = 0;
   try {
+    check(indexOk && countOk && shardCount >= 1 && shardCount <= 4 && shardIndex >= 0 && shardIndex < shardCount,
+          "shard index/count must select one of 1..4 shards");
+    const QDir diffs(QDir::current().filePath(QStringLiteral("evidence/rnsvg-corpus")));
+    check(QDir().mkpath(diffs.path()), "could not create corpus diff directory");
     QString error;
     const QString fixtureDir = QDir(QStringLiteral(RNQNX_RNSVG_FIXTURE_DIR)).canonicalPath();
     std::map<QString, Fixture> fixtures;
@@ -150,10 +163,11 @@ int main(int argc, char** argv) {
     const int batchCount = int(runtime.global().getProperty(runtime, "__rnsvgCorpusBatchCount").asNumber());
     check(batchCount == layout.object().value(QStringLiteral("batches")).toArray().size(), "bundle and layout disagree on the batch count");
 
-    for (int b = 0; b < batchCount; ++b) {
-      QElapsedTimer batchTimer;  // TEMP-PROGRESS
-      batchTimer.start();  // TEMP-PROGRESS
-      std::cerr << "TEMP batch " << b << " start\n";  // TEMP-PROGRESS
+    check(shardCount <= batchCount, "more shards than fixture batches");
+    for (int b = shardIndex; b < batchCount; b += shardCount) {
+      QElapsedTimer batchTimer;
+      batchTimer.start();
+      std::cerr << "rnsvg batch " << b << " start\n";
       std::vector<Cell> cells;
       for (const QJsonValue& v : layout.object().value(QStringLiteral("batches")).toArray().at(b).toArray()) {
         const QJsonObject o = v.toObject();
@@ -181,9 +195,9 @@ int main(int argc, char** argv) {
         host.pumpEvents();
         host.runtime().drainMicrotasks();
       }
-      std::cerr << "TEMP batch " << b << " mounted " << batchTimer.elapsed() << " ms\n";  // TEMP-PROGRESS
+      std::cerr << "rnsvg batch " << b << " mounted " << batchTimer.elapsed() << " ms\n";
       const QImage grabbed = window.grabWindow();
-      std::cerr << "TEMP batch " << b << " grabbed " << batchTimer.elapsed() << " ms\n";  // TEMP-PROGRESS
+      std::cerr << "rnsvg batch " << b << " grabbed " << batchTimer.elapsed() << " ms\n";
       check(!grabbed.isNull(), "window grab failed");
 
       for (const Cell& cell : cells) {
@@ -209,17 +223,18 @@ int main(int argc, char** argv) {
           continue;
         }
         ++failed;
-        actual.save(fx.name + QStringLiteral(".actual.png"));
+        const QString actualPath = diffs.filePath(fx.name + QStringLiteral(".actual.png"));
+        check(actual.save(actualPath), "could not save corpus actual image");
         const QImage diff = diffImage(actual, golden, fx.thresholds.channelThreshold);
-        if (!diff.isNull()) diff.save(fx.name + QStringLiteral(".diff.png"));
-        std::cerr << "FAIL " << fx.name.toStdString() << ": " << why.toStdString() << " (wrote " << fx.name.toStdString()
-                  << ".actual.png and .diff.png)\n";
+        const QString diffPath = diffs.filePath(fx.name + QStringLiteral(".diff.png"));
+        if (!diff.isNull()) check(diff.save(diffPath), "could not save corpus diff image");
+        std::cerr << "FAIL " << fx.name.toStdString() << ": " << why.toStdString() << " (wrote " << actualPath.toStdString() << " and " << diffPath.toStdString() << ")\n";
       }
     }
   } catch (const std::exception& e) {
     std::cerr << "rnsvg corpus test error: " << e.what() << "\n";
     return 2;
   }
-  std::cout << "rnsvg-corpus: " << passed << " passed, " << pending << " pending, " << failed << " failed\n";
+  std::cout << "rnsvg-corpus shard " << shardIndex << "/" << shardCount << ": " << passed << " passed, " << pending << " pending, " << failed << " failed\n";
   return failed == 0 ? 0 : 1;
 }

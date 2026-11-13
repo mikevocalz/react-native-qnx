@@ -1,5 +1,10 @@
 # TEST_STATUS.md
 
+## PR 161 corpus continuation — 2026-11-13
+
+Packing retains 149 fixtures in 16 batches; typecheck and overlay checks pass. The Mac standalone native graph passed 8/8. The Linux release reproducer has JPEG-plugin limits; no new Debug or device pass is claimed.
+[Receipt](../validation/pr161-corpus-shards-2026-11-13.md).
+
 ## 2026-11-10 — PR 105 generator validation
 
 At `c09a5b19800c2d7d79268c3466b618aa20430ba2`, the hosted SDK, full renderer,

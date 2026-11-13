@@ -1,5 +1,10 @@
 # BLOCKERS.md
 
+## PR 161 corpus continuation — 2026-11-13
+
+The new corpus runner needs exact-head Debug CI. Per-element device checks from the November 13 handoff remain open; a local standalone renderer pass does not close them.
+[Receipt](../validation/pr161-corpus-shards-2026-11-13.md).
+
 ## PR 105 review state — 2026-11-10
 
 The mandatory handoff omission is addressed by this follow-up. Hosted checks

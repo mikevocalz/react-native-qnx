@@ -1,5 +1,10 @@
 # Current state
 
+## PR 161 corpus continuation — 2026-11-13
+
+PR 161 now isolates large corpus scenes and requires four disjoint CTests. Local packing, type and standalone native checks pass; the new Debug CI result is pending.
+[Receipt](../validation/pr161-corpus-shards-2026-11-13.md).
+
 ## PR 105 review follow-up — 2026-11-10
 
 The constrained Nitro generator at `c09a5b1` rejects unsupported contracts and

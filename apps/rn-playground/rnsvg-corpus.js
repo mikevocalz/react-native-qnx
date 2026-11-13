@@ -8,7 +8,8 @@
 // test picks a batch with __rnsvgCorpusSetBatch(index), waits for the cells to
 // mount, grabs the window and diffs every cell against its resvg golden.
 const React = require('react');
-const { useState } = React;
+const { useStore } = require('zustand');
+const { createStore } = require('zustand/vanilla');
 const AppRegistry = require('react-native/Libraries/ReactNative/AppRegistry').AppRegistry;
 const View = require('react-native/Libraries/Components/View/View').default;
 const { SvgXml } = require('react-native-svg');
@@ -21,8 +22,9 @@ globalThis.__rnsvgCorpusBatchCount = data.batches.length;
 globalThis.__rnsvgCorpusRenders = 0;
 
 function Corpus() {
-  const [batch, setBatch] = useState(-1);
-  globalThis.__rnsvgCorpusSetBatch = (index) => setBatch(index);
+  const store = React.useMemo(() => createStore(() => ({ batch: -1 })), []);
+  const batch = useStore(store, (state) => state.batch);
+  globalThis.__rnsvgCorpusSetBatch = (index) => store.setState({ batch: index });
   globalThis.__rnsvgCorpusRenders++;
   const cells = batch >= 0 && batch < data.batches.length ? data.batches[batch] : [];
   return (

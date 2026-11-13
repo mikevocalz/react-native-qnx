@@ -37,6 +37,13 @@
       "receipt": "docs/validation/pr105-merge-readiness-2026-11-10.md",
       "hostedCi": "passed at the implementation commit; follow-up CI must be checked after publication",
       "targetExecution": "not run for this candidate; generated C++ unchanged"
+    },
+    "pr161Corpus": {
+      "reviewedAt": "2026-11-13",
+      "baseCommit": "4076e67",
+      "receipt": "docs/validation/pr161-corpus-shards-2026-11-13.md",
+      "hostedCi": "pending for the continuation head",
+      "targetExecution": "not run for the test-only continuation"
     }
   },
   "activeMilestone": "v1 preparation; release gates remain open",
