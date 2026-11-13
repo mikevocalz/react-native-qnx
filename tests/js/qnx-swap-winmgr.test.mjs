@@ -47,7 +47,7 @@ try {
   );
   await writeFile(
     p('bin/pidin'),
-    `#!/bin/sh\necho "     pid name"\nwhile read -r pid name; do kill -0 "$pid" 2>/dev/null && echo "$pid $name"; done < "${procs}"\n`,
+    `#!/bin/sh\necho "     pid name"\nwhile read -r pid name; do kill -0 "$pid" 2>/dev/null && echo "$pid usr/bin/$name"; done < "${procs}"\n`,
     { mode: 0o755 }
   );
   await writeFile(p('io-hid'), '');
