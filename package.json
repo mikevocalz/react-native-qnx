@@ -48,6 +48,8 @@
     "qt:svg:check": "node scripts/qt-svg-codegen.mjs --check",
     "qt:rnsvg:generate": "node scripts/qt-rnsvg-codegen.mjs --write",
     "qt:rnsvg:check": "node scripts/qt-rnsvg-codegen.mjs --check",
+    "qt:native-ui:generate": "node scripts/qt-native-ui-codegen.mjs --write",
+    "qt:native-ui:check": "node scripts/qt-native-ui-codegen.mjs --check",
     "qnx": "node packages/react-native-qnx-cli/src/bin.mjs",
     "qnx:device": "node packages/qnx-devtools/src/cli.mjs",
     "expo:qnx": "node packages/expo-qnx/src/cli.mjs",
@@ -77,7 +79,7 @@
     "@legendapp/motion": "2.5.3",
     "react-native-gesture-handler": "3.4.0",
     "react-native-reanimated": "4.7.1",
-    "react-native-worklets": "0.13.0",
+    "react-native-worklets": "0.13.1",
     "react-native-svg": "15.16.0"
   }
 }

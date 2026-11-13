@@ -191,6 +191,10 @@ or `Restore window`.
 ## Known gaps
 
 - The title-bar inset is not reported to JavaScript or `SafeAreaView`.
+  With the `default` style the React surface already starts below the bar, so
+  the native drawer (`RNQnxDrawer`) needs nothing; with `hidden`, set its
+  `topInset` to the bar height so the edge-swipe strip does not run under the
+  floating controls.
 - JavaScript runs on the Qt GUI thread, so a long JS call freezes the title
   bar along with the rest of the window.
 - With `hidden`, a press on a floating control also reaches the React view

@@ -18,9 +18,7 @@
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
-#if RNQNX_ENABLE_QT_RNSVG
-#include "react-native-qnx/fabric/QtRnsvgBridge.h"
-#endif
+#include "react-native-qnx/fabric/QtExtraComponents.h"
 #if RNQNX_ENABLE_QT_SVG
 #include <react/renderer/components/RnqnxQtSvg/ComponentDescriptors.h>
 #endif
@@ -317,9 +315,7 @@ std::vector<std::string> registeredBuiltinComponentNames() {
       std::string(facebook::react::ModalHostViewComponentDescriptor::
                       ConcreteShadowNode::Name()),
   };
-#if RNQNX_ENABLE_QT_RNSVG
-  for (auto& name : rnqnx::fabric::rnsvgComponentNames()) names.push_back(std::move(name));
-#endif
+  for (auto& name : rnqnx::fabric::extraComponentNames()) names.push_back(std::move(name));
   return names;
 }
 
@@ -344,9 +340,7 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
     providerRegistry->add(facebook::react::concreteComponentDescriptorProvider<
         facebook::react::QnxSvgDocumentComponentDescriptor>());
 #endif
-#if RNQNX_ENABLE_QT_RNSVG
-    rnqnx::fabric::addRnsvgComponentDescriptors(*providerRegistry);
-#endif
+    rnqnx::fabric::addExtraComponentDescriptors(*providerRegistry);
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<
             ViewComponentDescriptor>());

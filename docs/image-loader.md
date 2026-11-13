@@ -107,6 +107,20 @@ or cancellation-by-request-ID API is provided.
 - Invalid arguments reject Promises. Native completions use React Native's
   `AsyncPromise`/CallInvoker rather than retaining raw runtime pointers.
 
+## The ExpoImage view
+
+`expo-image` renders through the Fabric component `ViewManagerAdapter_ExpoImage`
+(`RNQNX_ENABLE_QT_EXPO_IMAGE`). Its QML item takes the first `uri` of the
+`source` array and resolves it with the same function as the Image component,
+`resolveImageUri`: a URI the decoded cache holds is served as
+`image://rnqnx/cache/<key>` and reports `cacheType: "memory"`, a base64 data URI
+is decoded by `QnxImageProvider`, and anything else goes to Qt Quick, which
+fetches it as for `Image`. The view adds no cache of its own. `Image.prefetch`
+from React Native fills the cache the view reads; `expo-image`'s own `prefetch`
+resolves `false`. `onProgress` reports a fraction out of 1000, because Qt gives
+no byte counts. The prop and limit table is in
+[`@rn-qnx/expo-image-qnx`](../packages/expo-image-qnx/README.md).
+
 ## Boundaries
 
 This is a process-memory decoded cache, not an HTTP revalidation cache. Entries
