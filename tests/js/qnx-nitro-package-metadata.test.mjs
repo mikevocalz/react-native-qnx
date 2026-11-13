@@ -284,7 +284,8 @@ try {
   for (const [field, pattern] of /** @type {[unknown, RegExp][]} */ ([
     [null, /must be an object/],
     [[], /must be an object/],
-    [{ nitro: base, expo: {} }, /expo is not a supported key/],
+    [{ nitro: base, swift: {} }, /swift is not a supported key/],
+    [{ expo: base }, /nitro must be an object/],
     [{ nitro: 'x' }, /nitro must be an object/],
     [{ nitro: { ...base, sources: [] } }, /sources is not supported/],
     [{ nitro: { ...base, platforms: [] } }, /nonempty array/],

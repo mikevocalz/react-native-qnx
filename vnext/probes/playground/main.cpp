@@ -33,6 +33,9 @@
 #include "react-native-qnx/runtime/QnxDevSupport.h"
 #endif
 
+#ifdef RNQNX_CONSUMER_EXPO_HEADER
+#include RNQNX_CONSUMER_EXPO_HEADER
+#endif
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
 #include "QnxNitroRuntime.hpp"
 #ifdef RNQNX_CONSUMER_NITRO_HEADER
@@ -782,6 +785,15 @@ int main(int argc, char** argv) {
       host.runtime(), std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue()));
 #else
   rnqnx::nitro::installQnxNitroRuntime(host.runtime());
+#endif
+#endif
+#ifdef RNQNX_CONSUMER_EXPO_HEADER
+  // Expo modules from the app's dependencies: globalThis.expo exists before
+  // the bundle runs, which is the native-startup path expo-modules-core takes.
+#if RNQNX_ENABLE_DEV_SUPPORT
+  rnqnx::consumer::installExpoModules(host.runtime(), true);
+#else
+  rnqnx::consumer::installExpoModules(host.runtime(), false);
 #endif
 #endif
   host.installTurboModuleBinding();

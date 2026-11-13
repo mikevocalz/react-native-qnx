@@ -53,6 +53,37 @@ QNX integration and keeps the exact Nitro v1 alpha pin. The constrained
 platform-info generator is not general Nitrogen QNX support. See
 [the Nitro policy](../platform-modernization/NITRO_V1_API_POLICY.md).
 
+## Expo native modules on QNX
+
+Expo modules run through the QNX Expo host in
+`packages/expo-modules-core-qnx`. The host installs `globalThis.expo` before
+the bundle runs. Metro swaps expo-modules-core's polyfill entry for
+`packages/react-native-qnx/expo/polyfill.js`, which supplies the JavaScript
+classes (`EventEmitter`, `NativeModule`, `SharedObject`, `SharedRef`) that iOS
+and Android define natively. A module reaches an app when a direct dependency
+declares `"react-native-qnx": {"expo": {...}}` in its package.json, the same
+shape as a Nitro module (docs/adr/0019). `project prepare-native` records it as
+`expoModules` in `native-app.json`, and `RnqnxConsumerApp.cmake` links it and
+calls its initializer before `globalThis.expo` is installed.
+
+| Package                        | QNX status    | Implementation or reason                                                                                                            |
+| ------------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `expo-modules-core` 58.1.0     | works         | QNX host: `modules`, `uuidv4`, `uuidv5`, `getViewConfig` (returns null), `expoModulesCoreVersion`; JS classes from the QNX polyfill |
+| `expo-constants` 58.0.16       | works         | `@rn-qnx/expo-constants-qnx`: embedded app config, `uname` device and system fields, `executionEnvironment: bare`                   |
+| `expo-application`             | not ported    | Needs install time, build identifiers and an install ID store on QNX; no implementation yet                                         |
+| `expo-updates`                 | not supported | Replaces the embedded bundle at run time; the QNX consumer build pins the bundle hash in CMake and has no update channel            |
+| `expo-dev-client`              | not supported | iOS/Android launcher UI; QNX has its own development client (RNQNX_ENABLE_DEV_SUPPORT, see dev-workflow.md)                         |
+| `expo-notifications`           | not supported | Needs APNs/FCM; QNX has no push service                                                                                             |
+| `expo-camera`                  | not supported | Needs a camera pipeline into Qt Quick; the Pi 400 image has no camera stack                                                         |
+| `expo-location`                | not supported | No location service on the QNX image                                                                                                |
+| `expo-sensors`                 | not supported | No sensor framework on the Pi 400 image                                                                                             |
+| `expo-secure-store`            | not supported | Needs a keychain or keystore; QNX has no equivalent service in this image                                                           |
+| `expo-web-browser`             | not supported | No system browser or WebView on QNX                                                                                                 |
+| `expo-glass-effect`            | not supported | iOS 26 Liquid Glass API only                                                                                                        |
+| `expo-reload`/`reloadAppAsync` | not supported | `globalThis.expo.reloadAppAsync` throws; reload from the development client's menu                                                  |
+
+Modules not in this table have not been checked on QNX.
+
 ## Target and toolchain
 
 | Target               | Requirement                                           | Evidence boundary                                                                      |
