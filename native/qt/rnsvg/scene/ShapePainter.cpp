@@ -17,8 +17,10 @@ Qt::PenCapStyle ShapePainter::capStyle(int cap) {
   return cap == 1 ? Qt::RoundCap : cap == 2 ? Qt::SquareCap : Qt::FlatCap;
 }
 
+// Qt::MiterJoin ignores the miter limit; Qt::SvgMiterJoin follows the SVG rule
+// (a join whose miter exceeds the limit becomes a bevel).
 Qt::PenJoinStyle ShapePainter::joinStyle(int join) {
-  return join == 1 ? Qt::RoundJoin : join == 2 ? Qt::BevelJoin : Qt::MiterJoin;
+  return join == 1 ? Qt::RoundJoin : join == 2 ? Qt::BevelJoin : Qt::SvgMiterJoin;
 }
 
 double ShapePainter::strokeWidth(const Style& st, const Units& u) {

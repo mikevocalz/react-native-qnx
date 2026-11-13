@@ -56,6 +56,8 @@ class RnsvgRootItem final : public QQuickPaintedItem {
   QList<RnsvgElementItem*> elementChildren() const;
   // Number of paints since construction; lets tests assert update coalescing.
   int paintCount() const { return paintCount_; }
+  // Layers allocated by the most recent paint.
+  const rnsvg::PaintStats& lastPaintStats() const { return stats_; }
 
   void paint(QPainter* painter) override;
 
@@ -67,6 +69,7 @@ class RnsvgRootItem final : public QQuickPaintedItem {
   void updateTextureSize();
   rnsvg::RootProps props_;
   int paintCount_{0};
+  rnsvg::PaintStats stats_;
 };
 
 namespace rnsvg {

@@ -98,7 +98,7 @@ void RnsvgRootItem::paint(QPainter* painter) {
   if (background.canConvert<QColor>() && background.value<QColor>().alpha() > 0) {
     painter->fillRect(QRectF(0, 0, width(), height()), background.value<QColor>());
   }
-  rnsvg::paintScene(*this, painter);
+  stats_ = rnsvg::paintScene(*this, painter);
   if (trace && (paintCount_ <= 5 || paintCount_ % 60 == 0)) {
     qInfo().nospace() << "RNQNX_RNSVG_PAINT n=" << paintCount_ << " ms="
                       << QString::number(timer.nsecsElapsed() / 1e6, 'f', 2) << " size=" << int(width()) << "x"

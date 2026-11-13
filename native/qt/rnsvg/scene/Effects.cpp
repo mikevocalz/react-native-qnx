@@ -89,6 +89,7 @@ void Effects::paint(const RnsvgElementItem& e, const Frame& f, const EffectBoxes
     return;
   }
   image.fill(Qt::transparent);
+  scene_.noteLayer(image.size());
   {
     QPainter layerPainter(&image);
     Scene::configure(layerPainter);

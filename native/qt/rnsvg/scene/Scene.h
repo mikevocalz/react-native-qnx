@@ -45,6 +45,13 @@ class Scene {
 
   void run();
   const RnsvgElementItem* hitTarget() const { return hitTarget_; }
+  const PaintStats& stats() const { return stats_; }
+  void noteLayer(const QSize& size) {
+    const qint64 pixels = qint64(size.width()) * size.height();
+    ++stats_.layers;
+    stats_.layerPixels += pixels;
+    stats_.largestLayerPixels = std::max(stats_.largestLayerPixels, pixels);
+  }
 
   // ---- surface for the collaborators --------------------------------------
   const RnsvgElementItem* byId(const QString& id) const;
@@ -134,6 +141,7 @@ class Scene {
   std::vector<const RnsvgElementItem*> active_;
   std::vector<ContextPaint> context_;
   int visits_{0};
+  PaintStats stats_;
   const RnsvgElementItem* hitTarget_{nullptr};
 
   Bounds bounds_;

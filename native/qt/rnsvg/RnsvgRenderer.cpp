@@ -19,9 +19,11 @@ QTransform viewTransform(const RootProps& props, const QSizeF& size) {
   return viewBoxTransform(box, size);
 }
 
-void paintScene(const RnsvgRootItem& root, QPainter* painter) {
+PaintStats paintScene(const RnsvgRootItem& root, QPainter* painter) {
   painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
-  Scene(root, painter, std::nullopt).run();
+  Scene scene(root, painter, std::nullopt);
+  scene.run();
+  return scene.stats();
 }
 
 const RnsvgElementItem* hitScene(const RnsvgRootItem& root, const QPointF& local) {

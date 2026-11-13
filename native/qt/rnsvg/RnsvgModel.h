@@ -65,6 +65,8 @@ struct FontSpec {
   QString variantLigatures;    // "", normal, none
   QString fontStretch;         // "", normal, condensed, ...
   QString fontFeatureSettings;
+  QString variant;             // fontVariant: "", normal, small-caps
+  QString variationSettings;   // fontVariationSettings: "wght" 700, ...
 };
 
 // viewBox plus preserveAspectRatio, as Pattern, Symbol and Marker carry them.
@@ -190,6 +192,13 @@ struct ElementProps {
 
   // FilterPrimitive: the parameters of one Fe* element.
   std::shared_ptr<const filter::Primitive> primitive;
+};
+
+// What one paint cost, for tests and for RNQNX_RNSVG_TRACE.
+struct PaintStats {
+  int layers{0};                // offscreen layers allocated (opacity, mask, filter)
+  qint64 layerPixels{0};        // total pixels across them
+  qint64 largestLayerPixels{0};
 };
 
 // The <Svg> root's own props.
