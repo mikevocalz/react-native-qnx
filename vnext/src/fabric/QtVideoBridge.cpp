@@ -86,7 +86,10 @@ bool applyVideoProps(QQuickItem* item, const facebook::react::ShadowView& view) 
   auto* video = qobject_cast<views::QtVideoItem*>(item);
   const auto* props = dynamic_cast<const facebook::react::QnxQtVideoProps*>(view.props.get());
   if (video == nullptr || props == nullptr) return false;
-  auto* bridge = video->findChild<QtVideoBridge*>(QString(), Qt::FindDirectChildrenOnly);
+  QtVideoBridge* bridge = nullptr;
+  for (QObject* child : video->children()) {
+    if ((bridge = dynamic_cast<QtVideoBridge*>(child)) != nullptr) break;
+  }
   if (bridge == nullptr) bridge = new QtVideoBridge(*video);
   bridge->apply(*props, std::dynamic_pointer_cast<const facebook::react::QnxQtVideoEventEmitter>(view.eventEmitter));
   return true;
