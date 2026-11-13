@@ -195,6 +195,8 @@ QQuickItem* createItemForComponent(const QString& name, QQuickItem* parent) {
   for (const auto& row : rows) {
     if (name == QLatin1String(row.name)) return new RnsvgElementItem(row.kind, parent);
   }
+  // Every RNSVGFe* component is a filter primitive; its props decide which.
+  if (name.startsWith(QStringLiteral("RNSVGFe"))) return new RnsvgElementItem(Kind::FilterPrimitive, parent);
   return nullptr;
 }
 

@@ -525,14 +525,8 @@ try {
 
   assert.equal(props('turbulenceHuge').numOctaves, 24);
   assert.equal(props('turbulenceNegative').numOctaves, 0);
-  assert.deepEqual(
-    [props('convolveHuge').orderX, props('convolveHuge').orderY],
-    [32, 0]
-  );
-  assert.deepEqual(
-    [props('convolveHuge').targetX, props('convolveHuge').targetY],
-    [32, -1]
-  );
+  assert.deepEqual([props('convolveHuge').orderX, props('convolveHuge').orderY], [32, 0]);
+  assert.deepEqual([props('convolveHuge').targetX, props('convolveHuge').targetY], [32, -1]);
 
   assert.deepEqual(props('tableJunk').funcR.tableValues, []);
   assert.deepEqual(props('radiusJunk'), { radiusX: 0, radiusY: 0 });

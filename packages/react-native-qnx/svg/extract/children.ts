@@ -28,6 +28,7 @@ export function elementsOf(children: ReactNode, out: ReactElement[] = []): React
 /** Whether `element` is one of `types`, by identity or displayName. */
 export function isElementOf(element: ReactElement, types: readonly { displayName?: string }[]) {
   return types.some(
-    (type) => element.type === type || (type.displayName && nameOf(element.type) === type.displayName)
+    (type) =>
+      element.type === type || (type.displayName && nameOf(element.type) === type.displayName)
   );
 }
