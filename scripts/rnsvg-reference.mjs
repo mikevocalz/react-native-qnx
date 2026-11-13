@@ -36,6 +36,7 @@ const RESVG = process.env.RESVG || '/opt/homebrew/bin/resvg';
 const args = process.argv.slice(2);
 const check = args.includes('--check');
 const checkMtime = args.includes('--mtime');
+/** @param {string} flag */
 const valueOf = (flag) => (args.includes(flag) ? args[args.indexOf(flag) + 1] : undefined);
 const corpusDir = valueOf('--corpus');
 const layoutFile = valueOf('--layout');
@@ -44,6 +45,11 @@ const only = args.filter(
 );
 
 // Arrays of scalars stay on one line so the manifest diffs readably.
+/**
+ * @param {any} value
+ * @param {number} [indent]
+ * @returns {string}
+ */
 function format(value, indent = 0) {
   const pad = '  '.repeat(indent);
   if (Array.isArray(value)) {
@@ -72,13 +78,16 @@ function resvgVersion() {
   return r.stdout.trim().split(/\s+/).pop();
 }
 
+/** @param {string} file */
 function pngSize(file) {
   const b = fs.readFileSync(file);
   return [b.readUInt32BE(16), b.readUInt32BE(20)];
 }
 
+/** @param {string} file */
 const sha256 = (file) => createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 
+/** @type {{ fixtures: Array<Record<string, any>>, [key: string]: any }} */
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
 // Cells of at most 12 fixtures per batch, packed in rows into a window of
@@ -88,8 +97,11 @@ const WINDOW_W = 1100,
   WINDOW_H = 1000,
   MARGIN = 6,
   BATCH_SIZE = 12;
+/** @param {Array<Record<string, any>>} fixtures */
 function packBatches(fixtures) {
+  /** @type {Array<Array<{ name: string, x: number, y: number, w: number, h: number }>>} */
   const batches = [];
+  /** @type {Array<{ name: string, x: number, y: number, w: number, h: number }>} */
   let cells = [],
     x = MARGIN,
     y = MARGIN,
@@ -129,11 +141,15 @@ if (corpusDir) {
   const byName = new Map(drawn.map((f) => [f.name, f]));
   fs.mkdirSync(corpusDir, { recursive: true });
   const data = batches.map((cells) =>
-    cells.map((c) => ({
-      ...c,
-      css: !!byName.get(c.name).css,
-      xml: fs.readFileSync(path.join(fixtureDir, byName.get(c.name).svg), 'utf8'),
-    }))
+    cells.map((c) => {
+      const fixture = byName.get(c.name);
+      if (!fixture) throw new Error(`${c.name}: laid out but not in the manifest`);
+      return {
+        ...c,
+        css: !!fixture.css,
+        xml: fs.readFileSync(path.join(fixtureDir, fixture.svg), 'utf8'),
+      };
+    })
   );
   fs.writeFileSync(
     path.join(corpusDir, 'rnsvg-corpus-data.js'),
