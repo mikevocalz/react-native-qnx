@@ -6,6 +6,7 @@
 
 namespace rnqnx::views {
 class RnsvgElementItem;
+class RnsvgRootItem;
 }
 
 namespace rnqnx::views::rnsvg {
@@ -28,6 +29,7 @@ class Bounds {
 
  private:
   QRectF compute(const RnsvgElementItem* e, const Frame& inherited, int depth, bool painted);
+  QRectF nestedBox(const RnsvgRootItem& nested, const Frame& f, int depth, bool painted);
   Scene& scene_;
 };
 

@@ -5,6 +5,7 @@
 #include "RnsvgForeignObjectItem.h"
 #include "RnsvgTestKit.h"
 
+#include <QElapsedTimer>
 #include <QPointer>
 
 #include <cmath>
@@ -665,6 +666,132 @@ class RnsvgSceneTest final : public QObject {
     const QRectF b = s.root.elementBounds(r);
     QCOMPARE(b, QRectF(30, 10, 40, 20));
     QVERIFY(s.root.elementBounds(group).contains(b));
+  }
+
+  void clipPathCyclesWithBranchingTerminateQuickly() {
+    Scene s;
+    auto* defs = add(&s.root, make(Kind::Defs));
+    ElementProps cd = definition(Kind::ClipPath, QStringLiteral("c"));
+    auto* clip = add(defs, cd);
+    for (int i = 0; i < 4; ++i) {
+      ElementProps r = rect(0, 0, 50, 50, Qt::black);
+      r.clipPath = QStringLiteral("c");   // each child is clipped by the clip path it is in
+      add(clip, r);
+    }
+    ElementProps g = definition(Kind::Group, QStringLiteral("g"));
+    auto* group = add(defs, g);
+    for (int i = 0; i < 3; ++i) {
+      ElementProps u = make(Kind::Use);
+      u.href = QStringLiteral("g");     // a group that uses itself three times
+      add(group, u);
+    }
+    ElementProps r = rect(0, 0, 100, 100, Qt::red);
+    r.clipPath = QStringLiteral("c");
+    r.opacity = 0.5;
+    add(&s.root, r);
+    ElementProps u = make(Kind::Use);
+    u.href = QStringLiteral("g");
+    u.opacity = 0.5;
+    add(&s.root, u);
+    QElapsedTimer timer;
+    timer.start();
+    render(s.root);
+    QVERIFY2(timer.elapsed() < 5000, qPrintable(QString::number(timer.elapsed())));
+  }
+
+  void markerThatUsesItselfTerminatesWhenMeasured() {
+    Scene s;
+    auto* defs = add(&s.root, make(Kind::Defs));
+    auto* marker = add(defs, markerDef(QStringLiteral("m"), 10, 10, 5, 5, QString(), false));
+    ElementProps inside = stroked(Kind::Path, Qt::black, 1);
+    std::vector<PathVertex> v;
+    inside.path = parseSvgPath(QStringLiteral("M0 0 L5 0 L5 5 L0 5 L0 0"), nullptr, &v);
+    inside.vertices = v;
+    inside.markerStart = inside.markerMid = inside.markerEnd = QStringLiteral("m");
+    add(marker, inside);
+    ElementProps g = make(Kind::Group);
+    g.opacity = 0.5;   // the group needs its painted box, which measures the markers
+    auto* group = add(&s.root, g);
+    ElementProps outer = inside;
+    outer.path = parseSvgPath(QStringLiteral("M20 20 L60 20 L60 60 L20 60 L20 20"), nullptr, &v);
+    outer.vertices = v;
+    add(group, outer);
+    QElapsedTimer timer;
+    timer.start();
+    render(s.root);
+    QVERIFY2(timer.elapsed() < 5000, qPrintable(QString::number(timer.elapsed())));
+  }
+
+  void useOfASymbolWithAViewBoxKeepsItsWholeLayer() {
+    Scene s;
+    auto* defs = add(&s.root, make(Kind::Defs));
+    ElementProps sd = definition(Kind::Symbol, QStringLiteral("s"));
+    sd.viewBox = ViewBox{true, 0, 0, 10, 10, QStringLiteral("xMidYMid"), 0};
+    add(add(defs, sd), rect(0, 0, 10, 10, Qt::red));
+    ElementProps u = make(Kind::Use);
+    u.href = QStringLiteral("s");
+    u.width = px(100); u.height = px(100);
+    u.opacity = 0.5;
+    add(&s.root, u);
+    const QImage img = render(s.root);
+    VERIFY_PX(img, 50, 50, QColor(255, 0, 0, 128));
+    VERIFY_PX(img, 95, 95, QColor(255, 0, 0, 128));
+  }
+
+  void groupWithNestedSvgKeepsItsContentWhenItNeedsALayer() {
+    Scene s(200, 100);
+    ElementProps g = make(Kind::Group);
+    g.opacity = 0.5;
+    auto* group = add(&s.root, g);
+    auto* nested = new RnsvgRootItem(group);
+    nested->setSize(QSizeF(60, 60));
+    RootProps rp;
+    rp.bbWidth = px(60); rp.bbHeight = px(60);
+    nested->setRootProps(rp);
+    add(nested, rect(0, 0, 60, 60, Qt::red));
+    const QImage img = render(s.root);
+    VERIFY_PX(img, 20, 20, QColor(255, 0, 0, 128));
+  }
+
+  void nestedSvgDirectlyUnderTheRootPaintsOnce() {
+    Scene s(200, 100);
+    auto* nested = new RnsvgRootItem(&s.root);
+    nested->setSize(QSizeF(60, 60));
+    RootProps rp;
+    rp.bbWidth = px(60); rp.bbHeight = px(60);
+    nested->setRootProps(rp);
+    add(nested, rect(0, 0, 60, 60, Qt::red));
+    QVERIFY(nested->isNested());
+    QVERIFY(!nested->isVisible());
+    const QImage img = render(s.root);
+    VERIFY_PX(img, 20, 20, Qt::red);
+  }
+
+  void foreignObjectInsideDefsIsNotPlaced() {
+    Scene s(100, 100);
+    auto* defs = add(&s.root, make(Kind::Defs));
+    auto* fo = new RnsvgForeignObjectItem(defs);
+    ElementProps p = make(Kind::ForeignObject);
+    p.width = px(10); p.height = px(10);
+    fo->setProps(p);
+    s.root.layoutScene();
+    QVERIFY(!fo->isPlaced());
+  }
+
+  void symbolViewportClipsTouches() {
+    Scene s;
+    auto* defs = add(&s.root, make(Kind::Defs));
+    ElementProps sd = definition(Kind::Symbol, QStringLiteral("s"));
+    auto* symbol = add(defs, sd);
+    ElementProps r = rect(0, 0, 80, 80, Qt::red);
+    r.responsible = true;
+    auto* inner = add(symbol, r);
+    ElementProps u = make(Kind::Use);
+    u.href = QStringLiteral("s");
+    u.width = px(40); u.height = px(40);
+    add(&s.root, u);
+    QCOMPARE(s.root.hitElement(QPointF(20, 20)), inner);
+    QCOMPARE(s.root.hitElement(QPointF(60, 60)), nullptr);  // inside the rect, outside the viewport
   }
 
   void useGroupOpacityIsApplied() {

@@ -24,6 +24,7 @@ export default function extractText(props: TextLengthProps, container: ExtractTe
   return {
     ...extracted,
     ...(textLength != null ? { textLength } : null),
-    ...(lengthAdjust ? { lengthAdjust } : null),
+    // The native prop is a free string; only the two SVG keywords mean anything.
+    ...(lengthAdjust === 'spacing' || lengthAdjust === 'spacingAndGlyphs' ? { lengthAdjust } : null),
   };
 }

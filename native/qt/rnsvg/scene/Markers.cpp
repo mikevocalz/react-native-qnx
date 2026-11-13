@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <unordered_map>
 
 namespace rnqnx::views::rnsvg {
 namespace {
@@ -140,6 +141,8 @@ QRectF Markers::bounds(const RnsvgElementItem* e, const Frame& f, int depth) {
     }
     return box;
   };
+  // The content of a marker does not depend on the vertex: measure it once.
+  std::unordered_map<const RnsvgElementItem*, QRectF> contents;
   QRectF box;
   for (size_t i = 0; i < vertices.size(); ++i) {
     const Position position = i == 0 ? Position::Start : i + 1 == vertices.size() ? Position::End : Position::Mid;
@@ -147,7 +150,9 @@ QRectF Markers::bounds(const RnsvgElementItem* e, const Frame& f, int depth) {
     if (!marker) continue;
     Placement placement;
     if (!place(marker->props(), f, strokeWidth, vertices[i], position, placement)) continue;
-    const QRectF content = contentBox(marker, placement);
+    auto found = contents.find(marker);
+    if (found == contents.end()) found = contents.emplace(marker, contentBox(marker, placement)).first;
+    const QRectF content = found->second;
     if (content.isNull()) continue;
     const QRectF r = placement.content.mapRect(content);
     box = box.isNull() ? r : box.united(r);

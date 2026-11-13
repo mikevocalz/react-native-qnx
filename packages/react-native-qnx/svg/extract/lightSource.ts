@@ -1,8 +1,8 @@
-import { Children, isValidElement } from 'react';
 import type { ReactNode } from 'react';
 import FeDistantLight from 'react-native-svg/src/elements/filters/FeDistantLight';
 import FePointLight from 'react-native-svg/src/elements/filters/FePointLight';
 import FeSpotLight from 'react-native-svg/src/elements/filters/FeSpotLight';
+import { elementsOf, isElementOf } from './children';
 import { toNumber } from './numbers';
 
 /** The `light` struct of RNSVGFeDiffuseLighting and RNSVGFeSpecularLighting. */
@@ -29,17 +29,16 @@ type LightProps = Record<string, unknown>;
  * can decide, rather than being given a made-up light here.
  */
 export function extractLightSource(children: ReactNode): LightStruct {
-  for (const child of Children.toArray(children)) {
-    if (!isValidElement(child)) continue;
+  for (const child of elementsOf(children)) {
     const props = child.props as LightProps;
-    if (child.type === FeDistantLight) {
+    if (isElementOf(child, [FeDistantLight])) {
       return {
         kind: 'distant',
         azimuth: toNumber(props.azimuth, 0),
         elevation: toNumber(props.elevation, 0),
       };
     }
-    if (child.type === FePointLight) {
+    if (isElementOf(child, [FePointLight])) {
       return {
         kind: 'point',
         x: toNumber(props.x, 0),
@@ -47,7 +46,7 @@ export function extractLightSource(children: ReactNode): LightStruct {
         z: toNumber(props.z, 0),
       };
     }
-    if (child.type === FeSpotLight) {
+    if (isElementOf(child, [FeSpotLight])) {
       const cone = toNumber(props.limitingConeAngle, NaN);
       return {
         kind: 'spot',

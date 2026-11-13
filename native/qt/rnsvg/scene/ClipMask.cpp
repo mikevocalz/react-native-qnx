@@ -13,6 +13,8 @@ namespace rnqnx::views::rnsvg {
 QPainterPath ClipMask::clipPath(const RnsvgElementItem& clip, int elementRule, const QSizeF& viewport, int depth) {
   QPainterPath result;
   if (depth > kMaxDepth) return result;
+  Scene::AnalysisScope scope(scene_, &clip);
+  if (!scope.ok()) return result;
   Style st;
   applyProps(st, clip.props());
   const Units units(viewport, 12.0);
@@ -34,6 +36,8 @@ QPainterPath ClipMask::clipPath(const RnsvgElementItem& clip, int elementRule, c
 QPainterPath ClipMask::clipChild(const RnsvgElementItem* c, const Style& inherited, const Units& units,
                                  int elementRule, int depth) {
   if (depth > kMaxDepth) return {};
+  Scene::AnalysisScope scope(scene_, c);
+  if (!scope.ok()) return {};
   const auto& p = c->props();
   if (p.displayNone) return {};
   Style st = inherited;

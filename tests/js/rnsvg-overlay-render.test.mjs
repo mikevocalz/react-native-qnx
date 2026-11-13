@@ -117,6 +117,34 @@ const R = (name, Component, props, children) => { results[name] = render(Compone
 R('textLength', mod.Text, { x: '0', y: '10', textLength: 120, lengthAdjust: 'spacingAndGlyphs' }, 'Hello');
 R('textPlain', mod.Text, { x: '0', y: '10' }, 'Hello');
 R('tspanLength', mod.TSpan, { textLength: '50%', lengthAdjust: 'spacing' }, 'Hi');
+R('textBogusAdjust', mod.Text, { lengthAdjust: 'bogus' }, 'Hello');
+R('textProtoAdjust', mod.Text, { lengthAdjust: 'constructor' }, 'Hello');
+// Names that exist on every object must not be read as table entries.
+R('imageProto', mod.FeImage, { href: '#a', preserveAspectRatio: 'constructor toString' });
+R('imageProto2', mod.FeImage, { href: '#a', preserveAspectRatio: '__proto__ __proto__' });
+R('linearProto', mod.LinearGradient, { id: 'g', spreadMethod: 'constructor' });
+R('linearProto2', mod.LinearGradient, { id: 'g', spreadMethod: '__proto__' });
+// Int32 props are clamped before they reach native.
+R('turbulenceHuge', mod.FeTurbulence, { numOctaves: 1e12 });
+R('turbulenceNegative', mod.FeTurbulence, { numOctaves: -5 });
+R('convolveHuge', mod.FeConvolveMatrix, { order: '1e12 -1e12', targetX: 1e12, targetY: -1e12 });
+// A junk entry makes the whole list unset instead of shifting the entries after it.
+R('tableJunk', mod.FeComponentTransfer, {}, [el(mod.FeFuncR, { type: 'table', tableValues: '0 x 1' })]);
+R('radiusJunk', mod.FeMorphology, { radius: 'x 3' });
+R('convolveJunk', mod.FeConvolveMatrix, { kernelMatrix: '1 2 x 4' });
+// Children are found through fragments, and by displayName.
+const FakeFuncG = function FakeFuncG() { return null; };
+FakeFuncG.displayName = 'FeFuncG';
+const FakeLight = function FakeLight() { return null; };
+FakeLight.displayName = 'FePointLight';
+R('transferFragment', mod.FeComponentTransfer, {}, [
+  React.createElement(React.Fragment, null,
+    el(mod.FeFuncR, { type: 'discrete', tableValues: '1 0' }),
+    React.createElement(React.Fragment, null, el(FakeFuncG, { type: 'linear', slope: 3 }))),
+]);
+R('lightFragment', mod.FeDiffuseLighting, {}, [
+  React.createElement(React.Fragment, null, el(FakeLight, { x: 7, y: 8, z: 9 })),
+]);
 R('morphology', mod.FeMorphology, { in: 'a', operator: 'dilate', radius: '2 3', result: 'm' });
 R('morphologyDefault', mod.FeMorphology, {});
 R('turbulence', mod.FeTurbulence, {
@@ -391,7 +419,7 @@ try {
   assert.deepEqual(props('convolveHostile'), {
     orderX: 3,
     orderY: 3,
-    kernelMatrix: [2],
+    kernelMatrix: [],
     divisor: 0,
     bias: 0,
     targetX: -1,
@@ -485,6 +513,35 @@ try {
   native('tspanLength', 'RNSVGTSpan');
   assert.equal(props('tspanLength').textLength, '50%');
   assert.equal(props('tspanLength').lengthAdjust, 'spacing');
+
+  native('textBogusAdjust', 'RNSVGText');
+  assert.equal(props('textBogusAdjust').lengthAdjust, undefined);
+  assert.equal(props('textProtoAdjust').lengthAdjust, undefined);
+
+  assert.deepEqual(props('imageProto'), { href: '#a', align: 'xMidYMid', meetOrSlice: 0 });
+  assert.deepEqual(props('imageProto2'), { href: '#a', align: 'xMidYMid', meetOrSlice: 0 });
+  assert.equal(props('linearProto').spreadMethod, 0);
+  assert.equal(props('linearProto2').spreadMethod, 0);
+
+  assert.equal(props('turbulenceHuge').numOctaves, 24);
+  assert.equal(props('turbulenceNegative').numOctaves, 0);
+  assert.deepEqual(
+    [props('convolveHuge').orderX, props('convolveHuge').orderY],
+    [32, 0]
+  );
+  assert.deepEqual(
+    [props('convolveHuge').targetX, props('convolveHuge').targetY],
+    [32, -1]
+  );
+
+  assert.deepEqual(props('tableJunk').funcR.tableValues, []);
+  assert.deepEqual(props('radiusJunk'), { radiusX: 0, radiusY: 0 });
+  assert.deepEqual(props('convolveJunk').kernelMatrix, []);
+
+  assert.deepEqual(props('transferFragment').funcR.tableValues, [1, 0]);
+  assert.equal(props('transferFragment').funcG.type, 'linear');
+  assert.equal(props('transferFragment').funcG.slope, 3);
+  assert.deepEqual(props('lightFragment').light, { kind: 'point', x: 7, y: 8, z: 9 });
 
   // spreadMethod.
   native('linearRepeat', 'RNSVGLinearGradient');

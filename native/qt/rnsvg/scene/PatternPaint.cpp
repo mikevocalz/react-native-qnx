@@ -60,11 +60,9 @@ bool PaintServers::pattern(const RnsvgElementItem& server, const QRectF& bbox, c
   if (p.viewBox.set) {
     content.ctm = viewBoxTransform(p.viewBox, tile.size());
     content.viewport = QSizeF(p.viewBox.width, p.viewBox.height);
-  } else if (!p.patternContentUserSpace && !user) {
+  } else if (!p.patternContentUserSpace) {
     // patternContentUnits=objectBoundingBox: content coordinates are fractions
     // of the filled element's box.
-    content.ctm = QTransform::fromScale(bbox.width(), bbox.height());
-  } else if (!p.patternContentUserSpace) {
     content.ctm = QTransform::fromScale(bbox.width(), bbox.height());
   }
 

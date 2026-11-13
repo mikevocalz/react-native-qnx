@@ -5,7 +5,7 @@ import { resolveAssetUri } from 'react-native-svg/src/lib/resolveAssetUri';
 import type { ReactNode } from 'react';
 import { extractLightSource } from './lightSource';
 import type { NumberArray, NumberProp } from './numbers';
-import { oneOf, toNumber, toNumberList, toPair } from './numbers';
+import { oneOf, own, toInt, toNumber, toNumberList, toPair } from './numbers';
 import { extractTransferFunctions } from './transferFunctions';
 
 // Props that arrive on the element. Each extractor returns the native props
@@ -65,7 +65,8 @@ export const extractTurbulence = (props: {
   return {
     baseFrequencyX,
     baseFrequencyY,
-    numOctaves: Math.trunc(toNumber(props.numOctaves, 1)),
+    // Native reads an Int32; past 24 octaves the added amplitude is below float precision.
+    numOctaves: toInt(props.numOctaves, 1, 0, 24),
     seed: toNumber(props.seed, 0),
     stitchTiles: oneOf(props.stitchTiles, ['stitch', 'noStitch'] as const),
     type: oneOf(props.type, ['fractalNoise', 'turbulence'] as const),
@@ -126,8 +127,8 @@ export const extractImage = (props: {
   const modes = props.preserveAspectRatio ? props.preserveAspectRatio.trim().split(spaces) : [];
   return {
     href,
-    align: alignEnum[modes[0]] || 'xMidYMid',
-    meetOrSlice: meetOrSliceTypes[modes[1]] || 0,
+    align: own(alignEnum, modes[0]) || 'xMidYMid',
+    meetOrSlice: own(meetOrSliceTypes, modes[1]) || 0,
   };
 };
 
@@ -143,13 +144,13 @@ export const extractConvolveMatrix = (props: {
 }) => {
   const [orderX, orderY] = toPair(props.order, 3);
   return {
-    orderX: Math.trunc(orderX),
-    orderY: Math.trunc(orderY),
+    orderX: toInt(orderX, 3, 0, 32),
+    orderY: toInt(orderY, 3, 0, 32),
     kernelMatrix: toNumberList(props.kernelMatrix),
     divisor: toNumber(props.divisor, 0),
     bias: toNumber(props.bias, 0),
-    targetX: Math.trunc(toNumber(props.targetX, -1)),
-    targetY: Math.trunc(toNumber(props.targetY, -1)),
+    targetX: toInt(props.targetX, -1, -1, 32),
+    targetY: toInt(props.targetY, -1, -1, 32),
     edgeMode: oneOf(props.edgeMode, edgeModes),
     preserveAlpha: props.preserveAlpha === true || props.preserveAlpha === 'true',
   };

@@ -122,11 +122,11 @@ for (const filePath of [
     '/app/node_modules/.pnpm/react-native-svg@15.16.0_react-native@0.88.1/node_modules/react-native-svg/src/xmlTags.ts';
   const windows = 'C:\\app\\node_modules\\react-native-svg\\src\\lib\\extract\\extractGradient.ts';
   assert.equal(
-    createSvgOverlayResolveRequest(returning(pnpm))(context, './xmlTags', 'qnx').filePath,
+    createSvgOverlayResolveRequest(returning(pnpm), { packageVersion: () => '15.16.0' })(context, './xmlTags', 'qnx').filePath,
     overlay.get('xmlTags')
   );
   assert.equal(
-    createSvgOverlayResolveRequest(returning(windows))(context, './x', 'qnx').filePath,
+    createSvgOverlayResolveRequest(returning(windows), { packageVersion: () => '15.16.0' })(context, './x', 'qnx').filePath,
     overlay.get('lib/extract/extractGradient')
   );
 }
@@ -164,12 +164,52 @@ for (const filePath of [
   assert.equal(own.filePath, path.join(svgRoot, 'src/lib/extract/extractGradient') + '.ts');
   assert.notEqual(own.filePath, overlay.get('lib/extract/extractGradient'), 'no recursion');
 
+  // The extractors and Fabric specs outside overlay/ import the package the same
+  // way, and are not redirected to overlay twins.
+  const svgDirectory = path.dirname(OVERLAY_ROOT);
+  for (const origin of [
+    path.join(svgDirectory, 'extract/filterExtras.ts'),
+    path.join(svgDirectory, 'fabric/FeMorphologyNativeComponent.ts'),
+  ]) {
+    const result = resolve({ originModulePath: origin }, 'react-native-svg/src/lib/extract/extractGradient', 'qnx');
+    assert.equal(asked.at(-1), path.join(svgRoot, 'src/lib/extract/extractGradient'), origin);
+    assert.equal(result.filePath, path.join(svgRoot, 'src/lib/extract/extractGradient') + '.ts');
+  }
+
   // Other modules an overlay file imports go to the fallback as written.
   resolve(fromOverlay, 'react', 'qnx');
   assert.equal(asked.at(-1), 'react');
   // On another platform the public-name rewrite does not run.
   resolve(fromOverlay, 'react-native-svg/src/xmlTags', 'ios');
   assert.equal(asked.at(-1), 'react-native-svg/src/xmlTags');
+}
+
+// The overlay replaces whole files, so it refuses another version and a second copy.
+{
+  const original = upstreamFile('xmlTags');
+  const wrongVersion = createSvgOverlayResolveRequest(returning(original), {
+    packageVersion: () => '15.15.0',
+  });
+  assert.throws(() => wrongVersion(context, './xmlTags', 'qnx'), /15\.16\.0.*15\.15\.0/s);
+  const unreadable = createSvgOverlayResolveRequest(returning(original), { packageVersion: () => null });
+  assert.throws(() => unreadable(context, './xmlTags', 'qnx'), /unreadable/);
+
+  let current = original;
+  const twoCopies = createSvgOverlayResolveRequest(() => ({ type: 'sourceFile', filePath: current }), {
+    packageVersion: () => '15.16.0',
+  });
+  twoCopies(context, './xmlTags', 'qnx');
+  current = '/other/node_modules/react-native-svg/src/xmlTags.ts';
+  assert.throws(() => twoCopies(context, './xmlTags', 'qnx'), /Two copies/);
+}
+
+// react-native-svg is an optional peer of the package that ships the overlay.
+{
+  const manifest = JSON.parse(
+    fs.readFileSync(path.join(root, 'packages/react-native-qnx/package.json'), 'utf8')
+  );
+  assert.equal(manifest.peerDependencies['react-native-svg'], '15.16.0');
+  assert.equal(manifest.peerDependenciesMeta['react-native-svg'].optional, true);
 }
 
 // getQnxMetroConfig installs the hook ahead of the package resolver, for qnx only.

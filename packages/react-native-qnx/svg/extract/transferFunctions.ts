@@ -1,4 +1,3 @@
-import { Children, isValidElement } from 'react';
 import type { ReactNode } from 'react';
 import {
   FeFuncA,
@@ -6,6 +5,7 @@ import {
   FeFuncG,
   FeFuncR,
 } from 'react-native-svg/src/elements/filters/FeComponentTransferFunction';
+import { elementsOf, isElementOf } from './children';
 import { oneOf, toNumber, toNumberList } from './numbers';
 
 const functionTypes = ['identity', 'table', 'discrete', 'linear', 'gamma'] as const;
@@ -28,12 +28,12 @@ export interface TransferFunctions {
   funcA?: TransferStruct;
 }
 
-const channelOf = new Map<unknown, keyof TransferFunctions>([
+const channels = [
   [FeFuncR, 'funcR'],
   [FeFuncG, 'funcG'],
   [FeFuncB, 'funcB'],
   [FeFuncA, 'funcA'],
-]);
+] as const;
 
 function toStruct(props: Record<string, unknown>): TransferStruct {
   return {
@@ -54,10 +54,9 @@ function toStruct(props: Record<string, unknown>): TransferStruct {
  */
 export function extractTransferFunctions(children: ReactNode): TransferFunctions {
   const out: TransferFunctions = {};
-  for (const child of Children.toArray(children)) {
-    if (!isValidElement(child)) continue;
-    const channel = channelOf.get(child.type);
-    if (channel) out[channel] = toStruct(child.props as Record<string, unknown>);
+  for (const child of elementsOf(children)) {
+    const channel = channels.find(([type]) => isElementOf(child, [type]));
+    if (channel) out[channel[1]] = toStruct(child.props as Record<string, unknown>);
   }
   return out;
 }

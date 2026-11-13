@@ -20,9 +20,18 @@ const RnsvgElementItem* lookup(const Scene& scene, const QString& id, Kind kind)
   return e && e->props().kind == kind ? e : nullptr;
 }
 
+// Device rectangles come from hostile numbers: NaN and huge values must not
+// reach the float-to-int conversion in toAlignedRect().
+constexpr double kMaxDeviceCoordinate = 1.0e7;
+
+bool finiteRect(const QRectF& r) {
+  return std::isfinite(r.x()) && std::isfinite(r.y()) && std::isfinite(r.width()) && std::isfinite(r.height());
+}
+
 QRect alignedOut(const QRectF& r) {
-  if (!r.isValid()) return {};
-  return r.adjusted(-1, -1, 1, 1).toAlignedRect();
+  if (!finiteRect(r) || !r.isValid()) return {};
+  const QRectF limit(-kMaxDeviceCoordinate, -kMaxDeviceCoordinate, 2 * kMaxDeviceCoordinate, 2 * kMaxDeviceCoordinate);
+  return r.adjusted(-1, -1, 1, 1).intersected(limit).toAlignedRect();
 }
 
 }  // namespace
@@ -45,7 +54,7 @@ void Effects::paint(const RnsvgElementItem& e, const Frame& f, const EffectBoxes
     painter->setClipPath(path, Qt::IntersectClip);
     inner.clip = outer.clip.intersected(toDevice.map(path).boundingRect());
   }
-  if (inner.clip.isEmpty()) {  // clipped away entirely
+  if (!finiteRect(inner.clip) || inner.clip.isEmpty()) {  // clipped away entirely
     painter->restore();
     return;
   }
@@ -82,8 +91,10 @@ void Effects::paint(const RnsvgElementItem& e, const Frame& f, const EffectBoxes
     return;
   }
 
-  QImage image(rect.size(), QImage::Format_ARGB32_Premultiplied);
-  if (image.isNull()) {  // out of memory: draw without the group effect
+  const qint64 pixels = qint64(rect.width()) * rect.height();
+  QImage image;
+  if (scene_.layerAffordable(pixels)) image = QImage(rect.size(), QImage::Format_ARGB32_Premultiplied);
+  if (image.isNull()) {  // over the layer budget or out of memory: draw without the group effect
     scene_.withTarget(inner, draw);
     painter->restore();
     return;
@@ -133,6 +144,10 @@ bool Effects::hitPasses(const RnsvgElementItem& e, const Frame& f, const EffectB
   if (mask) {
     // Sample the mask at the pixel under the point: paint it into a 1x1 image
     // whose origin is that pixel.
+    if (!std::isfinite(point->x()) || !std::isfinite(point->y()) || std::fabs(point->x()) > kMaxDeviceCoordinate ||
+        std::fabs(point->y()) > kMaxDeviceCoordinate) {
+      return false;
+    }
     const QRect pixel(int(std::floor(point->x())), int(std::floor(point->y())), 1, 1);
     const QImage m = scene_.clipMask().maskImage(*mask, boxes.objectBox(), f, pixel, depth);
     if (m.isNull() || qAlpha(m.pixel(0, 0)) == 0) return false;

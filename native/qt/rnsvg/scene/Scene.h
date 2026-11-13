@@ -14,6 +14,7 @@
 #include "TextRenderer.h"
 
 #include <QPainter>
+#include <algorithm>
 #include <functional>
 #include <optional>
 #include <unordered_map>
@@ -35,6 +36,13 @@ struct Target {
 // nesting of groups, <use> chains and mask recursion.
 inline constexpr int kMaxVisits = 200000;
 inline constexpr int kMaxDepth = 32;
+// Steps the analysis recursions (clip paths, bounds, markers) may take in one
+// paint or hit test. A reference cycle that fans out (a clip path whose two
+// children both use the clip path) would otherwise cost 2^depth.
+inline constexpr int kMaxAnalysisSteps = 2000000;
+// Pixels all effect layers of one paint may allocate together. Past it, an
+// element draws without its group effect instead of allocating another layer.
+inline constexpr qint64 kMaxLayerPixelsPerPaint = qint64{64} * 1024 * 1024;
 
 // One paint or hit test over a root's retained element tree. It owns the
 // traversal and the state that is shared across elements; each collaborator
@@ -47,6 +55,26 @@ class Scene {
   void run();
   const RnsvgElementItem* hitTarget() const { return hitTarget_; }
   const PaintStats& stats() const { return stats_; }
+  // False when another layer of `pixels` would pass the per-paint budget.
+  bool layerAffordable(qint64 pixels) const { return stats_.layerPixels + pixels <= kMaxLayerPixelsPerPaint; }
+
+  // Recursion guard for the analysis passes. `key` names what is being
+  // analysed; entering it again while it is active, or past the step budget,
+  // fails.
+  class AnalysisScope {
+   public:
+    AnalysisScope(Scene& scene, const void* key) : scene_(scene), ok_(scene.enterAnalysis(key)) {}
+    ~AnalysisScope() {
+      if (ok_) scene_.leaveAnalysis();
+    }
+    AnalysisScope(const AnalysisScope&) = delete;
+    AnalysisScope& operator=(const AnalysisScope&) = delete;
+    bool ok() const { return ok_; }
+
+   private:
+    Scene& scene_;
+    bool ok_;
+  };
   void noteLayer(const QSize& size) {
     const qint64 pixels = qint64(size.width()) * size.height();
     ++stats_.layers;
@@ -154,6 +182,15 @@ class Scene {
   std::vector<const RnsvgElementItem*> responsible_;
   std::vector<const RnsvgElementItem*> active_;
   std::vector<ContextPaint> context_;
+  bool enterAnalysis(const void* key) {
+    if (++analysisSteps_ > kMaxAnalysisSteps) return false;
+    if (std::find(analysisActive_.begin(), analysisActive_.end(), key) != analysisActive_.end()) return false;
+    analysisActive_.push_back(key);
+    return true;
+  }
+  void leaveAnalysis() { analysisActive_.pop_back(); }
+  std::vector<const void*> analysisActive_;
+  int analysisSteps_{0};
   int visits_{0};
   PaintStats stats_;
   const RnsvgElementItem* hitTarget_{nullptr};

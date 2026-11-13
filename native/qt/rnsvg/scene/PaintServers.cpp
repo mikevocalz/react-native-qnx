@@ -83,7 +83,7 @@ bool PaintServers::gradient(const ElementProps& g, const QRectF& bbox, const Fra
     const double dx = (fx - cx) / rx, dy = (fy - cy) / ry;
     if (std::hypot(dx, dy) > 1.0) {
       QRectF area = bbox;
-      if (user || !area.isValid()) area = QRectF(QPointF(-512, -512), QSizeF(2048, 2048));
+      if (user || !area.isValid()) area = QRectF(QPointF(0, 0), f.viewport);
       const QTransform gradientToShape = t;
       // Cover the shape's box and its stroke reach in texels at the device scale.
       const double deviceScale = std::hypot(scene_.target().base.m11(), scene_.target().base.m12()) *

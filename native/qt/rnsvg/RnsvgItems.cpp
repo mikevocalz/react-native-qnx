@@ -105,7 +105,7 @@ QRectF RnsvgRootItem::elementBounds(const RnsvgElementItem* element) const {
 
 bool RnsvgRootItem::isNested() const {
   for (QQuickItem* item = parentItem(); item; item = item->parentItem()) {
-    if (qobject_cast<RnsvgElementItem*>(item)) return true;
+    if (qobject_cast<RnsvgElementItem*>(item) || qobject_cast<RnsvgRootItem*>(item)) return true;
   }
   return false;
 }

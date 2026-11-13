@@ -150,6 +150,9 @@ const patches = [
   },
 ];
 
+/** Patches whose name pattern matched at least one spec. */
+const matchedPatches = new Set();
+
 /**
  * @param {string} name spec file name without extension
  * @param {string} source
@@ -160,6 +163,7 @@ function applyPatches(name, source) {
   let js = false;
   for (const patch of patches) {
     if (!patch.name.test(name)) continue;
+    matchedPatches.add(patch);
     const parts = text.split(patch.from);
     if (parts.length - 1 !== patch.count) {
       throw new Error(
@@ -219,6 +223,13 @@ try {
     }
     const schema = parser.parseFile(patchedFile);
     Object.assign(modules, schema.modules);
+  }
+  // A patch whose name pattern matches no spec applied to nothing: the package
+  // renamed its specs, or the pattern is wrong.
+  for (const patch of patches) {
+    if (!matchedPatches.has(patch)) {
+      throw new Error(`Patch for ${patch.name} matched no spec file. ${patch.why}`);
+    }
   }
   if (
     !generate(

@@ -33,9 +33,14 @@ QImage ImageRenderer::decodeLocal(const QString& href) {
     if (size.isValid() && (size.width() > kMaxImageSide || size.height() > kMaxImageSide)) return {};
     return reader.read();
   }
-  if (href.startsWith(QStringLiteral("file://"))) return QImage(QUrl(href).toLocalFile());
-  if (href.startsWith(QLatin1Char('/'))) return QImage(href);
-  return {};
+  QString path;
+  if (href.startsWith(QStringLiteral("file://"))) path = QUrl(href).toLocalFile();
+  else if (href.startsWith(QLatin1Char('/'))) path = href;
+  if (path.isEmpty()) return {};
+  QImageReader reader(path);
+  const QSize size = reader.size();
+  if (size.isValid() && (size.width() > kMaxImageSide || size.height() > kMaxImageSide)) return {};
+  return reader.read();
 }
 
 void ImageRenderer::draw(const RnsvgElementItem& e, const Frame& f, int depth) {

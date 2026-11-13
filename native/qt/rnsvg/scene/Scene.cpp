@@ -120,6 +120,11 @@ void Scene::renderNested(const RnsvgRootItem& nested, const Frame& f, int depth)
   QSizeF size;
   const Frame nf = nestedFrame(nested, f, size);
   if (!(size.width() > 0) || !(size.height() > 0)) return;
+  if (hit_) {  // the nested viewport clips its content, for touches as for paint
+    bool invertible = false;
+    const QTransform inverse = f.ctm.inverted(&invertible);
+    if (!invertible || !QRectF(QPointF(0, 0), size).contains(inverse.map(*hit_))) return;
+  }
   if (painter()) {
     painter()->save();
     painter()->setTransform(f.ctm * target_.base);
@@ -136,7 +141,7 @@ void Scene::walk(const QQuickItem* container, const Frame& parent, int depth, co
   for (QQuickItem* child : contentOf(container)) {
     if (const auto* e = qobject_cast<const RnsvgElementItem*>(child)) {
       const auto& p = e->props();
-      if (p.displayNone) continue;
+      if (p.displayNone || definitionOnly(p.kind)) continue;  // definitions draw only when referenced
       Frame own = parent;
       applyProps(own.style, p);
       if (p.matrix) own.ctm = *p.matrix * own.ctm;
@@ -240,9 +245,13 @@ void Scene::renderUse(const RnsvgElementItem* e, const Frame& f, const Frame& pa
   const auto& rp = ref->props();
   if (hitMode()) {
     if (rp.kind == Kind::Symbol) {
-      Frame sf = uf;
-      applyProps(sf.style, rp);
-      renderChildren(ref, symbolFrame(*ref, sf, units, p), depth);
+      // Content outside the symbol's viewport is clipped, so it is not a target.
+      const double w = units.resolve(p.width, Axis::X, uf.viewport.width());
+      const double h = units.resolve(p.height, Axis::Y, uf.viewport.height());
+      bool invertible = false;
+      const QTransform inverse = uf.ctm.inverted(&invertible);
+      if (!invertible || !hit_ || !QRectF(0, 0, w, h).contains(inverse.map(*hit_))) return;
+      renderChildren(ref, symbolFrame(*ref, uf, units, p), depth);
     } else {
       render(ref, uf, depth + 1);
     }

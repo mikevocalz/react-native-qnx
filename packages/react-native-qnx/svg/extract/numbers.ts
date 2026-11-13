@@ -14,7 +14,7 @@ export function toNumber(value: unknown, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-/** `"1 2 3"`, `[1, '2']` or `3` as numbers. Entries that are not numbers are dropped. */
+/** `"1 2 3"`, `[1, '2']` or `3` as numbers; empty when any entry is not a finite number. */
 export function toNumberList(value: NumberArray | undefined | null): number[] {
   if (value === undefined || value === null) return [];
   const items = Array.isArray(value)
@@ -25,7 +25,10 @@ export function toNumberList(value: NumberArray | undefined | null): number[] {
   const out: number[] = [];
   for (const item of items) {
     const parsed = typeof item === 'number' ? item : parseFloat(item);
-    if (Number.isFinite(parsed)) out.push(parsed);
+    // A junk entry would shift every later one into the wrong slot, so the
+    // whole list counts as unset.
+    if (!Number.isFinite(parsed)) return [];
+    out.push(parsed);
   }
   return out;
 }
@@ -45,4 +48,14 @@ export function oneOf<T extends string>(value: unknown, allowed: readonly T[]): 
   return typeof value === 'string' && (allowed as readonly string[]).includes(value)
     ? (value as T)
     : undefined;
+}
+
+/** An integer from `value`, clamped to [min, max]; `fallback` for anything that is not a number. */
+export function toInt(value: unknown, fallback: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, Math.trunc(toNumber(value, fallback))));
+}
+
+/** `table[key]` only when `key` is the table's own property ('constructor' is not). */
+export function own<T>(table: { [name: string]: T }, key: unknown): T | undefined {
+  return typeof key === 'string' && Object.hasOwn(table, key) ? table[key] : undefined;
 }

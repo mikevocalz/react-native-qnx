@@ -22,6 +22,8 @@ import upstreamExtractFeFlood, {
 } from 'react-native-svg/src/lib/extract/extractFilter';
 import { extractColorInterpolation, presentation } from '../../../extract/filterExtras';
 
+// A local export wins over the same name from `export *`, so the functions
+// below replace the package's while everything else passes through.
 export * from 'react-native-svg/src/lib/extract/extractFilter';
 
 const name = (value: unknown) => (value === undefined || value === null ? '' : String(value));
