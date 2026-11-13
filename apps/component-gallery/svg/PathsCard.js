@@ -13,7 +13,7 @@ function PathsCard() {
     >
       <Svg width="100%" height={150} viewBox="0 0 560 150">
         <G stroke="#79e8dc" strokeWidth={3} fill="none">
-          <Path d="M20 110 C 20 20, 110 20, 110 110 S 200 200, 200 110" />
+          <Path d="M20 110 C 20 30, 110 30, 110 110 S 200 140, 200 110" />
           <Path d="M230 110 A 40 40 0 0 1 310 110 A 40 40 0 0 1 230 110 Z" fill="#1b5b61" />
           <Path
             d="M340 20 L 400 20 L 370 80 Z M 350 30 L 390 30 L 370 66 Z"

@@ -56,6 +56,24 @@ const api = Object.freeze({
   get I18nManager() {
     return require('react-native/Libraries/ReactNative/I18nManager').default;
   },
+  // react-native-svg imports these at module load or in element render paths.
+  get processColor() {
+    return require('react-native/Libraries/StyleSheet/processColor').default;
+  },
+  get PanResponder() {
+    return require('react-native/Libraries/Interaction/PanResponder').default;
+  },
+  get Easing() {
+    return require('react-native/Libraries/Animated/Easing').default;
+  },
+  get TurboModuleRegistry() {
+    // Named exports only; the fallback keeps the lazy-load contract uniform.
+    const module = require('react-native/Libraries/TurboModule/TurboModuleRegistry');
+    return module.default ?? module;
+  },
+  get codegenNativeComponent() {
+    return require('react-native/Libraries/Utilities/codegenNativeComponent').default;
+  },
   get findNodeHandle() {
     return require('react-native/Libraries/ReactNative/RendererProxy').findNodeHandle;
   },

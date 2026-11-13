@@ -536,11 +536,11 @@ function LimitationsPage() {
   );
 }
 
-// Advanced widgets. The SVG cards live in ./svg (one file per card); the module
+// Advanced widgets. The SVG cards live in ./svg (one file per card, listed in svg/cards.js); the module
 // is required here, not at the top, so a host without react-native-svg support
 // never evaluates it.
 function AdvancedPage() {
-  const { svgCards, svgAvailable, SvgUnavailable } = require('./svg');
+  const { svgCards, svgAvailable, SvgUnavailable } = require('./svg/cards');
   if (!svgAvailable()) return h(SvgUnavailable);
   return h(
     ScrollView,

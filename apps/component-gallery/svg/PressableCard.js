@@ -65,6 +65,7 @@ function PressableCard() {
             onPressIn={() => setPressed(true)}
             onPressOut={() => setPressed(false)}
           />
+          <AnimatedCircle cx="150" cy="24" r={pulseRadius} fill="#f2c94c" />
           <G
             onPress={() => setGroupTaps((n) => n + 1)}
             transform={`translate(225 75) rotate(${angle})`}

@@ -1,6 +1,6 @@
 const React = require('react');
 const { View, ScrollView, Text } = require('react-native');
-const { svgCards, svgAvailable, SvgUnavailable } = require('./index');
+const { svgCards, svgAvailable, SvgUnavailable } = require('./cards');
 const { INK, MUTED } = require('./theme');
 
 // The SVG cards without the tab shell. Register it as the app's component
