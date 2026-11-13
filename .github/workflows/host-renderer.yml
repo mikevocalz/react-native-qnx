@@ -27,6 +27,8 @@ jobs:
       QT_QPA_PLATFORM: offscreen
       QT_QUICK_BACKEND: software
       QSG_RHI_BACKEND: software
+      # Qt Multimedia warns on stderr when PipeWire is missing; the consumer test parses stderr as JSON.
+      QT_LOGGING_RULES: qt.multimedia.symbolsresolver=false
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
