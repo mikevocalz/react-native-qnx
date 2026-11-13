@@ -8,10 +8,10 @@ the on-device proof. Base: `feat/expo-image-painted-view`, branch
 
 ## What the runtime and the app had
 
-| Location | Image plugins |
-| --- | --- |
-| `/data/home/qnxuser/qt612-public-o2/plugins` | none; only `platforms/libqqnx.so` (`find ... -path '*imageformats*'` prints nothing) |
-| `/data/home/qnxuser/rnqnx-tile-1/plugins/imageformats` | `libqgif.so`, `libqjpeg.so` |
+| Location                                               | Image plugins                                                                        |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `/data/home/qnxuser/qt612-public-o2/plugins`           | none; only `platforms/libqqnx.so` (`find ... -path '*imageformats*'` prints nothing) |
+| `/data/home/qnxuser/rnqnx-tile-1/plugins/imageformats` | `libqgif.so`, `libqjpeg.so`                                                          |
 
 The release launcher (`rnqnx-tile-1/run-app.sh`) sets
 `QT_PLUGIN_PATH=$APP_DIR/plugins:$QT_ROOT/plugins`, so the app directory is the
@@ -28,10 +28,10 @@ modified.
 `QImageReader::supportedImageFormats()` on the board, with the plugin
 directories above (`probe-run-pi400.txt`):
 
-| Plugins | Formats |
-| --- | --- |
-| A: app GIF + JPEG, runtime | `bmp gif jfif jpeg jpg pbm pgm png ppm xbm xpm` |
-| B: A + qtimageformats | `bmp gif icns jfif jpeg jpg pbm pgm png ppm tga tif tiff wbmp webp xbm xpm` |
+| Plugins                    | Formats                                                                     |
+| -------------------------- | --------------------------------------------------------------------------- |
+| A: app GIF + JPEG, runtime | `bmp gif jfif jpeg jpg pbm pgm png ppm xbm xpm`                             |
+| B: A + qtimageformats      | `bmp gif icns jfif jpeg jpg pbm pgm png ppm tga tif tiff wbmp webp xbm xpm` |
 
 So gif, png and jpeg work today; webp is missing in A. `svg` is in neither
 list: SVG decoding is `libqsvg.so` from the `qtsvg` module, which this Qt build
@@ -65,11 +65,11 @@ libtiff no`, `JasPer no`, `MNG no`. `libqwebp.so` needs only `libQt6Gui`,
 `libQt6Core`, `libGLESv2`, `libEGL`, `libc++`, `libm`, `libc` and `libgcc_s`,
 all already on the board.
 
-| File | SHA-256 |
-| --- | --- |
+| File          | SHA-256                                                            |
+| ------------- | ------------------------------------------------------------------ |
 | `libqwebp.so` | `98caf99ec812055ad0b12b3b38eac9d2d18f2da1478e9a0a7d311a0704d3eae1` |
 | `libqtiff.so` | `001af5139e281b9edd61857619edac643c3a66d2f453d190e42144637c11aa1d` |
-| `libqtga.so` | `abe209a1d6cd123df8490ac933d620df7d4edca52e64fbae42d208d1cc46198e` |
+| `libqtga.so`  | `abe209a1d6cd123df8490ac933d620df7d4edca52e64fbae42d208d1cc46198e` |
 | `libqicns.so` | `07929b560161d67e0475e0cc5edabfe3d9ceb95264ec95c42c40f5018c273807` |
 | `libqwbmp.so` | `4decee3cd40facc80c7975d6caba972b8f800759e33b133306140eeecc2ab45e` |
 

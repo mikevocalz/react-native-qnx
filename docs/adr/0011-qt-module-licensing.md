@@ -148,18 +148,18 @@ Sources:
 
 ### Tier 1 — component-backing, adopt only when the feature lands
 
-| Module              | macOS installed                              | Open-source license (per Qt 6.11 docs) | QNX build support  | Notes                                                           |
-| ------------------- | -------------------------------------------- | -------------------------------------- | ------------------ | --------------------------------------------------------------- |
-| Qt Quick Effects    | qtquickeffectmaker / `qtdeclarative` effects | LGPLv3 / GPLv2                         | presumed           | `filter`, blur, drop-shadow.                                    |
-| Qt SVG              | qtsvg                                        | LGPLv3 / GPLv2                         | presumed           | SVG file rendering.                                             |
-| Qt Quick Shapes     | in Qt Quick (qtdeclarative)                  | LGPLv3 / GPLv2                         | presumed           | vector paths.                                                   |
-| Qt Multimedia       | qtmultimedia                                 | LGPLv3 / GPLv2                         | verify QNX backend | video, audio, camera.                                           |
-| Qt Quick Dialogs    | qtquickdialogs                               | LGPLv3 / GPLv2                         | verify             | native file/color/dialogs.                                      |
+| Module              | macOS installed                              | Open-source license (per Qt 6.11 docs) | QNX build support  | Notes                                                                                   |
+| ------------------- | -------------------------------------------- | -------------------------------------- | ------------------ | --------------------------------------------------------------------------------------- |
+| Qt Quick Effects    | qtquickeffectmaker / `qtdeclarative` effects | LGPLv3 / GPLv2                         | presumed           | `filter`, blur, drop-shadow.                                                            |
+| Qt SVG              | qtsvg                                        | LGPLv3 / GPLv2                         | presumed           | SVG file rendering.                                                                     |
+| Qt Quick Shapes     | in Qt Quick (qtdeclarative)                  | LGPLv3 / GPLv2                         | presumed           | vector paths.                                                                           |
+| Qt Multimedia       | qtmultimedia                                 | LGPLv3 / GPLv2                         | verify QNX backend | video, audio, camera.                                                                   |
+| Qt Quick Dialogs    | qtquickdialogs                               | LGPLv3 / GPLv2                         | verify             | native file/color/dialogs.                                                              |
 | Qt Image Formats    | qtimageformats                               | LGPLv3 / GPLv2                         | built (6.12.0)     | WebP incl. animated, TIFF, TGA, ICNS, WBMP; bundled libwebp (BSD-3-Clause) and libtiff. |
-| Qt SQL              | qtsql (in qtbase)                            | LGPLv3 / GPLv2                         | verify             | local SQL.                                                      |
-| Qt Virtual Keyboard | qtvirtualkeyboard                            | **GPLv3**                              | —                  | **Excluded** from open-source build. Product decision required. |
-| Qt Qml Models       | qtdeclarative                                | LGPLv3 / GPLv2                         | presumed           | model/view helpers.                                             |
-| Qt Concurrent       | qtbase                                       | LGPLv3 / GPLv2                         | presumed           | off-thread work.                                                |
+| Qt SQL              | qtsql (in qtbase)                            | LGPLv3 / GPLv2                         | verify             | local SQL.                                                                              |
+| Qt Virtual Keyboard | qtvirtualkeyboard                            | **GPLv3**                              | —                  | **Excluded** from open-source build. Product decision required.                         |
+| Qt Qml Models       | qtdeclarative                                | LGPLv3 / GPLv2                         | presumed           | model/view helpers.                                                                     |
+| Qt Concurrent       | qtbase                                       | LGPLv3 / GPLv2                         | presumed           | off-thread work.                                                                        |
 
 ### Tier 2 — evaluate per concrete need
 
