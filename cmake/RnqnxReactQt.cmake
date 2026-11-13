@@ -17,6 +17,7 @@ option(RNQNX_CONSUMER_HOST_PREVIEW "Explicitly preview a QNX consumer on Linux (
 set(RNQNX_CONSUMER_CONFIG "" CACHE FILEPATH "Generated consumer native-app.json")
 if(RNQNX_BUILD_CONSUMER_APP)
   include(${CMAKE_CURRENT_LIST_DIR}/RnqnxConsumerApp.cmake)
+  rnqnx_consumer_add_module_packages()
   cmake_language(DEFER CALL rnqnx_add_consumer_app)
 endif()
 

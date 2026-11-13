@@ -19,6 +19,7 @@ const { create } = require('zustand');
 const { SCENARIOS, createDocumentRows } = require('./fixtures.js');
 const FastRefreshCard = require('./FastRefreshCard').default;
 const RemoteImageCard = require('./RemoteImageCard').default;
+const ExpoModulesCard = require('./ExpoModulesCard').default;
 const { ADVANCED_CARDS } = require('./components/advanced');
 
 const h = React.createElement;
@@ -203,6 +204,12 @@ function GalleryPage() {
           }),
           h(Label, { color: ACCENT, style: { flex: 1 } }, imageStatus)
         )
+      ),
+      card(
+        'expo-modules',
+        'Expo modules',
+        'expo-constants through the QNX Expo host',
+        h(ExpoModulesCard)
       ),
       card(
         'remote-image',

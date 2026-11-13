@@ -43,6 +43,12 @@ function createQnxResolveRequest(overridesRoot) {
   // `src/private` sits beside `Libraries` in both React Native and the platform
   // package.
   const privateRoot = path.join(path.dirname(overridesRoot), 'src', 'private');
+  // expo-modules-core's polyfill entry is a no-op outside the web because iOS
+  // and Android define globalThis.expo's JavaScript classes natively. QNX
+  // supplies them from the platform package instead (expo/polyfill.js).
+  const expoPolyfill = path.join(path.dirname(overridesRoot), 'expo', 'polyfill.js');
+  const expoPolyfillEntry =
+    /[\\/]expo-modules-core[\\/](?:build[\\/]polyfill[\\/]index\.js|src[\\/]polyfill[\\/]index\.ts)$/;
 
   return function resolveRequest(context, moduleName, platform) {
     // Metro's own resolver runs first; the override is decided by where that
@@ -65,6 +71,10 @@ function createQnxResolveRequest(overridesRoot) {
 
     if (platform !== QNX_PLATFORM || resolution?.type !== 'sourceFile') {
       return resolution;
+    }
+
+    if (expoPolyfillEntry.test(resolution.filePath)) {
+      return { type: 'sourceFile', filePath: expoPolyfill };
     }
 
     const marker = resolution.filePath.lastIndexOf(reactNativeLibraries);

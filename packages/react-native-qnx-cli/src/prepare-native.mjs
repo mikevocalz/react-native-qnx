@@ -26,7 +26,7 @@ import {
   verifyPreparedIdentity,
 } from './app-identity.mjs';
 import { loadExpoConfig } from './expo-config.mjs';
-import { discoverNitroModules } from './nitro-modules.mjs';
+import { discoverExpoModules, discoverNitroModules } from './nitro-modules.mjs';
 import { boundedFile, projectPath } from './project-path.mjs';
 
 const { resolveQnxWindow } = createRequire(import.meta.url)(
@@ -37,7 +37,7 @@ const { resolveQnxWindow } = createRequire(import.meta.url)(
 /** @typedef {import('./app-identity.mjs').LabelFit} LabelFit */
 /** @typedef {{controls: string, titleBarStyle: string, initialSize?: {width: number, height: number}}} NativeWindow */
 /** @typedef {import('./nitro-modules.mjs').NitroModule} NitroModule */
-/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string, window: NativeWindow, nitroModules?: NitroModule[]}} BaseConfiguration */
+/** @typedef {{schemaVersion: number, generatedBy: string, appId: string, displayName: string, componentName: string, platform: string, bundle: string, bundleSha256: string, window: NativeWindow, nitroModules?: NitroModule[], expoModules?: NitroModule[], expoConfig?: Record<string, unknown>}} BaseConfiguration */
 /** @typedef {BaseConfiguration & {shortName: string, icon: IconSet, labelFit: LabelFit}} NativeConfiguration */
 const help = `React Native QNX native consumer configuration
   project prepare-native --project <directory> [--platform qnx|marathon]
@@ -49,8 +49,10 @@ Resolves app.json or app.config.js/ts through @expo/config (config plugins
 included) and reads expo.name, expo.icon and
 expo.extra.rnqnx.{appId,componentName,window,icon,shortName}.
 Direct dependencies whose package.json declares "react-native-qnx": {"nitro":
-{...}} for the platform are recorded as nitroModules (docs/adr/0019). Only
-JSON is read for that; no package code runs.
+{...}} for the platform are recorded as nitroModules (docs/adr/0019), and those
+declaring {"expo": {...}} as expoModules together with the resolved expo config
+(read by the expo-constants port). Only JSON is read for that; no package code
+runs.
 Set the extra.rnqnx values through the @rn-qnx/expo-qnx-config-plugins entry
 in "plugins".
 The icon must be a square PNG of at least 1024x1024. With no icon set, the
@@ -131,6 +133,7 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
   const hash = createHash('sha256');
   for await (const chunk of createReadStream(bundle)) hash.update(chunk);
   const nitroModules = await discoverNitroModules(root, platform);
+  const expoModules = await discoverExpoModules(root, platform);
   /** @type {BaseConfiguration} */
   const configuration = {
     schemaVersion: 1,
@@ -143,8 +146,26 @@ export async function nativeConfiguration(project, platform = 'qnx', relativeBun
     // Omitted when empty, so descriptors from apps without Nitro modules stay
     // byte-identical to those written before this field existed.
     ...(nitroModules.length ? { nitroModules } : {}),
+    // The app config goes in only for apps with Expo modules, which read it at
+    // run time (Constants.expoConfig); other descriptors stay unchanged.
+    ...(expoModules.length ? { expoModules, expoConfig: embeddedExpoConfig(expoConfig.exp) } : {}),
   };
   return { root, configuration, expoConfig };
+}
+
+/** The resolved expo config that is compiled into the app for expo-constants.
+ * Keys starting with "_" (such as _internal, which holds host paths) are left
+ * out. Capped at 16 KiB of compact JSON: the descriptor is written indented
+ * and must stay under its 64 KiB limit.
+ * @param {Record<string, unknown>} exp */
+export function embeddedExpoConfig(exp) {
+  const embedded = Object.fromEntries(Object.entries(exp).filter(([key]) => !key.startsWith('_')));
+  const json = JSON.stringify(embedded);
+  if (Buffer.byteLength(json) > 16 * 1024)
+    throw new Error('The expo config is over 16 KiB; it cannot be embedded for expo-constants.');
+  if (json.includes(')rnqnx_cfg"'))
+    throw new Error('The expo config contains a sequence reserved by the native build.');
+  return embedded;
 }
 
 /** @param {string} root @param {import('./app-identity.mjs').ExpoConfig} expo

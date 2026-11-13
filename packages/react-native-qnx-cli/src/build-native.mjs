@@ -105,6 +105,7 @@ export async function planNativeBuild(
       : []),
     ...(preview ? ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'] : []),
     ...(nitroModules.length ? ['-DRNQNX_BUILD_NITRO_QNX=ON'] : []),
+    ...(configuration.expoModules?.length ? ['-DRNQNX_BUILD_EXPO_MODULES_QNX=ON'] : []),
     ...(platform === 'marathon' ? ['-DRNQNX_BUILD_MARATHON_HOST=ON'] : []),
     ...windowChromeCMakeFlags(window, windowChrome),
   ];
@@ -128,6 +129,7 @@ export async function planNativeBuild(
     appId: configuration.appId,
     window,
     nitroModules: nitroModules.map((module) => module.package),
+    expoModules: (configuration.expoModules ?? []).map((module) => module.package),
     descriptorPath,
     buildDir,
     output,

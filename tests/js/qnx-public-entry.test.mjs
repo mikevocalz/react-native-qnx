@@ -49,6 +49,8 @@ const expected = [
   'PixelRatio',
   'useWindowDimensions',
   'DevSettings',
+  'NativeModules',
+  'NativeEventEmitter',
 ];
 assert.deepEqual(Object.keys(api), expected);
 for (const name of expected) assert.equal(api[name], values);
