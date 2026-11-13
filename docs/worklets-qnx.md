@@ -56,6 +56,25 @@ One line of `AsyncQueueImpl.cpp` is replaced in a generated copy
 (`pthread_setname_np(name)` is the Apple form; QNX takes the thread first).
 CMake fails the configure step if the line changes. Nothing else is modified.
 
+## Device receipts (Pi 400, 2026-11-13)
+
+Build: QNX SDP 8.0.5, full Hermes, `-O1`, Worklets 0.13.0. A startup probe in a
+local copy of the gallery (not committed) logged from the app's stderr:
+
+- A worklet passed to `scheduleOnUI` reported its thread as `ui-worklet`; the
+  JS runtime reported `gui`.
+- A 20-callback `requestAnimationFrame` chain ran from Qt Quick
+  `afterAnimating`: 20 frames in 480 ms with the window visible (about 41 fps,
+  not tuned), 61 of 63 signalled frames delivered.
+- Teardown: a never-ending frame loop, 500 queued UI jobs and 2000 queued
+  UI-to-JS posts, then exit through `--screenshot`. Five of five runs exited
+  with status 0 and logged `RNQNX_WORKLETS_SHUTDOWN_OK`.
+- A worklet that throws (calling `scheduleOnRN` with a locally defined function)
+  reaches the host's fatal-error path and terminates the process, as a fatal
+  JS error does.
+
+Not measured: frame pacing against the display, behavior while JS is busy.
+
 ## Limits
 
 - Bundle Mode is not supported and reports so when used.

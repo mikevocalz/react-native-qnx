@@ -80,3 +80,18 @@ load pauses on screen and then catches up from UI-thread state. Making that
 smooth needs a dedicated JS thread with the GUI thread free to render, which is
 the host change [Plan 01](platform-modernization/01-runtime-baseline.md)
 describes and this work does not make.
+
+## Device receipts (Pi 400, 2026-11-13)
+
+Same build and probe as [Worklets](worklets-qnx.md#device-receipts-pi-400-2026-11-13).
+
+- Reanimated: `makeMutable` with `withSpring(100)` and `withTiming(50)` ran on
+  the UI thread; the completion callbacks reached JS with `finished=true` and
+  the final values 100 and 50. A mid-animation read from JS returned an
+  intermediate value (6.65 to 9.98 at 300 ms), so the UI runtime was advancing
+  it.
+- Not run on the device: `useAnimatedStyle` applied to a mounted item, the
+  Advanced-tab cards, Gesture Handler pan and tap, Legend Motion and Legend
+  List. The shared display was in use by other sessions, and injected pointer
+  events did not reach this app's window, so no pointer-driven check was
+  possible. Treat Gesture Handler and the cards as built and host-tested only.

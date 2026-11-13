@@ -4,13 +4,13 @@
 #include "react-native-qnx/runtime/QnxExceptionsManager.h"
 #include "react-native-qnx/runtime/QtRuntimeTaskQueue.h"
 
-#include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
 #include <react/renderer/scheduler/SurfaceHandler.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/utils/ContextContainer.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/TurboModule.h>
