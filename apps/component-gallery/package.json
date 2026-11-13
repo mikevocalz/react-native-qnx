@@ -2,10 +2,17 @@
   "name": "@rn-qnx/component-gallery",
   "version": "0.1.0",
   "private": true,
-  "description": "Tabbed React Native component gallery for QNX, run on the Pi 400",
+  "description": "Expo Router component gallery (drawer + tabs) for QNX, run on the Pi 400",
   "main": "index.js",
   "dependencies": {
+    "@expo/metro-runtime": "58.0.17",
     "@rn-qnx/expo-constants-qnx": "workspace:*",
-    "expo-constants": "58.0.16"
+    "@rn-qnx/expo-router-qnx": "workspace:*",
+    "expo-constants": "58.0.16",
+    "expo-linking": "58.0.17",
+    "expo-router": "58.0.31",
+    "expo-status-bar": "58.0.5",
+    "react-native-safe-area-context": "5.11.1",
+    "react-native-screens": "4.30.1"
   }
 }
