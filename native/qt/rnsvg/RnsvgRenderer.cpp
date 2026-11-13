@@ -16,6 +16,7 @@
 namespace rnqnx::views::rnsvg {
 namespace {
 
+constexpr int kMaxVisits = 200000;    // elements visited per paint or hit test
 constexpr int kMaxDepth = 32;           // nesting, <use> chains and mask recursion
 constexpr double kTextProbeSize = 100;  // glyph outlines are built at this size, then scaled
 
@@ -104,9 +105,10 @@ class Scene {
  private:
   enum class Axis { X, Y, Diag };
 
-  void collect(const RnsvgElementItem* e) {
+  void collect(const RnsvgElementItem* e, int depth = 0) {
+    if (depth > 256) return;
     if (!e->props().name.isEmpty()) ids_.emplace(e->props().name, e);
-    for (auto* c : e->elementChildren()) collect(c);
+    for (auto* c : e->elementChildren()) collect(c, depth + 1);
   }
 
   const RnsvgElementItem* byId(const QString& id) const {
@@ -188,13 +190,22 @@ class Scene {
     if (isShape(p.kind)) {
       box = shapePath(p, st).boundingRect();
     } else if (p.kind == Kind::Group || p.kind == Kind::Text || p.kind == Kind::TSpan) {
-      for (auto* c : e->elementChildren()) box = unionRect(box, bboxOf(c, st, depth + 1));
+      for (auto* c : e->elementChildren()) {
+        QRectF cb = bboxOf(c, st, depth + 1);
+        if (!cb.isNull() && c->props().matrix) cb = c->props().matrix->mapRect(cb);
+        box = unionRect(box, cb);
+      }
+    } else if (p.kind == Kind::Use) {
+      if (const auto* ref = byId(p.href)) {
+        QRectF rb = bboxOf(ref, st, depth + 1);
+        if (!rb.isNull() && ref->props().matrix) rb = ref->props().matrix->mapRect(rb);
+        if (!rb.isNull()) box = rb.translated(resolve(p.x, Axis::X, st), resolve(p.y, Axis::Y, st));
+      }
     } else if (p.kind == Kind::Image) {
       box = QRectF(resolve(p.x, Axis::X, st), resolve(p.y, Axis::Y, st),
                    resolve(p.width, Axis::X, st), resolve(p.height, Axis::Y, st));
     }
-    if (p.matrix && !box.isNull()) box = p.matrix->mapRect(box);
-    return box;
+    return box;  // in this element's own space, inside its own matrix
   }
 
   // ---- paint servers ----------------------------------------------------
@@ -374,7 +385,7 @@ class Scene {
         pattern.append(std::max(v, 0.0) / w);
         sum += std::max(v, 0.0);
       }
-      if (sum > 0) {
+      if (sum > 0 && sum >= 0.05 * std::max(w, 1.0)) {  // tiny dashes explode into geometry
         if (pattern.size() % 2) pattern += pattern;
         pen.setDashPattern(pattern);
         pen.setDashOffset(st.dashOffset / w);
@@ -405,7 +416,9 @@ class Scene {
     bool inside = false;
     if (st.fill.type != Brush::Type::None && path.contains(pt)) inside = true;
     const double w = resolve(st.strokeWidth, Axis::Diag, st, 1);
-    if (!inside && st.stroke.type != Brush::Type::None && w > 0) {
+    const double reach = w * std::max(st.miter, 1.0);
+    if (!inside && st.stroke.type != Brush::Type::None && w > 0 &&
+        path.boundingRect().adjusted(-reach, -reach, reach, reach).contains(pt)) {
       QPainterPathStroker stroker;
       stroker.setWidth(w);
       stroker.setCapStyle(st.cap == 1 ? Qt::RoundCap : st.cap == 2 ? Qt::SquareCap : Qt::FlatCap);
@@ -439,6 +452,11 @@ class Scene {
     QPaintDevice* dev = painter_->device();
     const QSize size(dev->width(), dev->height());
     QImage img(size, QImage::Format_ARGB32_Premultiplied);
+    if (img.isNull()) {  // out of memory: draw without the group effect
+      draw();
+      painter_->restore();
+      return;
+    }
     img.fill(Qt::transparent);
     {
       QPainter lp(&img);
@@ -467,7 +485,16 @@ class Scene {
   // ---- traversal --------------------------------------------------------
 
   void render(const RnsvgElementItem* e, const Frame& parent, int depth) {
-    if (depth > kMaxDepth) return;
+    if (depth > kMaxDepth || ++visits_ > kMaxVisits) return;
+    // A reference cycle (a <Use> or mask reaching its own ancestor) draws
+    // nothing for the repeat, which also bounds fan-out like two <Use>s of a
+    // group that contains them.
+    if (std::find(active_.begin(), active_.end(), e) != active_.end()) return;
+    struct ActiveGuard {
+      std::vector<const RnsvgElementItem*>& v;
+      ActiveGuard(std::vector<const RnsvgElementItem*>& vec, const RnsvgElementItem* e) : v(vec) { v.push_back(e); }
+      ~ActiveGuard() { v.pop_back(); }
+    } guard(active_, e);
     const auto& p = e->props();
     if (p.displayNone) return;
     switch (p.kind) {
@@ -640,6 +667,8 @@ class Scene {
   };
   std::unordered_map<QString, const RnsvgElementItem*, QStringHash> ids_;
   std::vector<const RnsvgElementItem*> responsible_;
+  std::vector<const RnsvgElementItem*> active_;
+  int visits_{0};
   const RnsvgElementItem* hitTarget_{nullptr};
   QPointF textPos_;
   bool inText_{false};

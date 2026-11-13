@@ -121,6 +121,8 @@ Smaller gaps inside supported elements:
 | `onLayout` on elements (`onSvgLayout`)                                                                                           | Not emitted                                                                                |
 | `toDataURL`, `getBBox` and the other native view commands                                                                        | Not implemented                                                                            |
 | Filters on `Image`, `context-fill`, `context-stroke`                                                                             | `context-*` paints draw nothing                                                            |
+| Group opacity and masks | Each draws into a layer the size of the whole `<Svg>` texture, so many of them in one `<Svg>` cost one full-texture clear and composite each |
+| Work bound | A paint or hit test stops after 200000 element visits; an element that reaches itself through `Use` or a mask is skipped |
 | Raster size                                                                                                                      | Capped at 4096 physical pixels per side, like `QtSvgDocument`; larger views look softer    |
 
 Gradient stops carry packed ARGB integers. React Native's 32-bit `Float` cannot

@@ -12,6 +12,7 @@
 
 #if RNQNX_ENABLE_QT_RNSVG
 #include "react-native-qnx/fabric/QtRnsvgBridge.h"
+#include <RnsvgItems.h>
 #endif
 #if RNQNX_ENABLE_QT_SVG
 #include "react-native-qnx/fabric/QtSvgBridge.h"
@@ -1074,6 +1075,13 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (error != MountError::None) {
         return error;
       }
+#if RNQNX_ENABLE_QT_RNSVG
+      // stackBefore() reorders siblings without any item-change notification,
+      // and paint order is the <Svg> children's order.
+      if (auto* svgChild = qobject_cast<views::RnsvgElementItem*>(layer_.itemForTag(mutation.newChildShadowView.tag))) {
+        if (auto* svgRoot = svgChild->root()) svgRoot->invalidate();
+      }
+#endif
       // Qt's Flickable does not derive its content size from its children, so
       // it is recomputed whenever they change.
       return layer_.updateScrollContentSize(mutation.parentTag);

@@ -81,6 +81,10 @@ const RnsvgElementItem* RnsvgRootItem::hitElement(const QPointF& local) const {
   return rnsvg::hitScene(*this, local);
 }
 
+// paint() reads the element items' props without locking. That is safe only
+// because QQuickPaintedItem::paint runs while Qt holds the GUI thread in the
+// scene-graph sync phase (both the Image and FramebufferObject targets), or on
+// the GUI thread itself in tests. Never call it from a worker or grab thread.
 void RnsvgRootItem::paint(QPainter* painter) {
   ++paintCount_;
   // RNQNX_RNSVG_TRACE=1 logs how long a full repaint takes: the first five,
@@ -112,6 +116,9 @@ void RnsvgRootItem::geometryChange(const QRectF& newGeometry, const QRectF& oldG
 void RnsvgRootItem::itemChange(ItemChange change, const ItemChangeData& data) {
   QQuickPaintedItem::itemChange(change, data);
   if (change == ItemDevicePixelRatioHasChanged || change == ItemSceneChange) updateTextureSize();
+  // A direct child leaving the tree has no other hook: the element it was is
+  // already detached by the time it could invalidate.
+  if (change == ItemChildAddedChange || change == ItemChildRemovedChange) update();
 }
 
 // Bound the raster the way the static SVG document item does: Qt multiplies

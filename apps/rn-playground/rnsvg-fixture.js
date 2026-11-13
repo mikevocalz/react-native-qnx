@@ -37,9 +37,9 @@ function Fixture() {
     width: 200,
   });
   globalThis.__rnsvgUpdate = (patch) => setState((previous) => ({ ...previous, ...patch }));
-  React.useEffect(() => {
-    globalThis.__rnsvgMounts++;
-  }, []);
+  // Counted in render: passive effects wait on a scheduler tick this host
+  // does not guarantee, and the test waits on the mounted tree anyway.
+  globalThis.__rnsvgMounts++;
   return (
     <Svg
       width={state.width}

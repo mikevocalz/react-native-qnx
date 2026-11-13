@@ -97,6 +97,7 @@ struct ElementProps {
   bool nonScalingStroke{false};
 
   // Geometry. Which fields apply depends on `kind`.
+  QString pathData;   // the `d` string `path` was parsed from
   QPainterPath path;  // `d`, parsed
   Length x, y, width, height, rx, ry, cx, cy, r, x1, y1, x2, y2;
   Length fx, fy;

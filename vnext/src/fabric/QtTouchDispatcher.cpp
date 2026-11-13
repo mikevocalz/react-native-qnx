@@ -183,7 +183,14 @@ Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
   // is under the point; otherwise the <Svg> view itself is the target.
   if (const auto* svg = qobject_cast<const views::RnsvgRootItem*>(target)) {
     if (const auto* element = svg->hitElement(svg->mapFromScene(windowPoint))) {
-      target = element;
+      // Only an element with a registered emitter can take the touch; if it
+      // has none, the <Svg> view keeps the press as before.
+      for (auto it = emitters_.constBegin(); it != emitters_.constEnd(); ++it) {
+        if (layer_.itemForTag(it.key()) == element) {
+          target = element;
+          break;
+        }
+      }
     }
   }
 #endif

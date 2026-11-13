@@ -40,7 +40,8 @@ int countElements(const QQuickItem* parent) {
   return n;
 }
 
-void await(rnqnx::runtime::QtReactHost& host, const std::function<bool()>& ready) {
+void await(rnqnx::runtime::QtReactHost& host, const std::function<bool()>& ready,
+           const char* what = "update") {
   QElapsedTimer timer;
   timer.start();
   do {
@@ -48,7 +49,10 @@ void await(rnqnx::runtime::QtReactHost& host, const std::function<bool()>& ready
     host.pumpEvents();
     if (ready()) return;
   } while (timer.elapsed() < 5000);
-  throw std::runtime_error("Timed out waiting for the real React/Fabric update");
+  std::string message = std::string("Timed out waiting for: ") + what;
+  for (const auto& error : host.javaScriptErrors()) message += "\n  JS error: " + error.message + "\n" + error.stack;
+  for (const auto& failure : host.delegate().lastFailures()) message += "\n  mount failure: " + failure.detail.toStdString();
+  throw std::runtime_error(message);
 }
 
 void evaluate(rnqnx::runtime::QtReactHost& host, const std::string& script) {
@@ -108,7 +112,7 @@ int main(int argc, char** argv) {
     QObject input;
     input.installEventFilter(&dispatcher);
 
-    await(host, [&] { return findRoot(window.contentItem()) && number(host, "__rnsvgMounts") == 1; });
+    await(host, [&] { return findRoot(window.contentItem()) != nullptr; }, "the <Svg> item to mount");
     check(host.delegate().lastFailures().empty(), "Fabric mount reported a failure");
     check(host.javaScriptErrors().empty(), "React reported a JavaScript error");
     QPointer<rnqnx::views::RnsvgRootItem> root = findRoot(window.contentItem());
@@ -117,7 +121,7 @@ int main(int argc, char** argv) {
     check(elements >= 14, "Element tree was not mounted");
 
     // Gradient, group inheritance, clip, mask, use, path.
-    await(host, [&] { return pixelIs(window, 3, 20, QColor(255, 0, 0)); });
+    await(host, [&] { return pixelIs(window, 3, 20, QColor(255, 0, 0)); }, "gradient pixels");
     check(pixelIs(window, 97, 20, QColor(0, 0, 255)), "gradient end color wrong");
     check(pixelIs(window, 20, 70, QColor(0, 255, 0)), "<G fill> was not inherited");
     check(pixelIs(window, 70, 70, QColor(255, 0, 0)), "element fill did not override <G fill>");

@@ -19,6 +19,8 @@
 #include <QByteArray>
 #include <QFile>
 #include <QImage>
+#include <QImageReader>
+#include <QIODevice>
 #include <QQmlEngine>
 #include <QUrl>
 
@@ -75,12 +77,20 @@ namespace rn = facebook::react;
 // ---- value conversion -----------------------------------------------------
 
 Length lengthFromString(const std::string& raw) {
-  const char* begin = raw.c_str();
-  while (*begin == ' ') ++begin;
-  char* end = nullptr;
-  const double v = std::strtod(begin, &end);
-  if (end == begin || !std::isfinite(v)) return {};
-  std::string_view unit(end);
+  const QString text = QString::fromStdString(raw).trimmed();
+  int n = 0;
+  if (n < text.size() && (text[n] == '+' || text[n] == '-')) ++n;
+  while (n < text.size() && (text[n].isDigit() || text[n] == '.')) ++n;
+  if (n < text.size() && (text[n] == 'e' || text[n] == 'E') && n + 1 < text.size() &&
+      (text[n + 1].isDigit() || text[n + 1] == '-' || text[n + 1] == '+')) {
+    n += 2;
+    while (n < text.size() && text[n].isDigit()) ++n;
+  }
+  bool numeric = false;
+  const double v = text.left(n).toDouble(&numeric);  // QString parsing is locale independent
+  if (!numeric || !std::isfinite(v)) return {};
+  const std::string unitText = text.mid(n).toStdString();
+  std::string_view unit(unitText);
   while (!unit.empty() && unit.front() == ' ') unit.remove_prefix(1);
   while (!unit.empty() && unit.back() == ' ') unit.remove_suffix(1);
   if (unit == "%") return Length{v, Length::Unit::Percent, true};
@@ -112,6 +122,7 @@ std::vector<Length> toLengths(const folly::dynamic& d) {
 
 QColor colorFromArgb(double packed) {
   // JavaScript hands over a signed 32-bit integer; reinterpret as ARGB.
+  if (!std::isfinite(packed)) return QColor(Qt::black);
   const auto bits = static_cast<std::uint32_t>(static_cast<std::int64_t>(packed));
   return QColor::fromRgba(bits);
 }
@@ -191,9 +202,18 @@ QImage loadImage(const std::string& uri) {
   if (u.startsWith(QStringLiteral("data:"))) {
     const int comma = u.indexOf(QLatin1Char(','));
     if (comma < 0) return {};
+    constexpr qsizetype kMaxDataUriBytes = 16 * 1024 * 1024;
+    if (u.size() > kMaxDataUriBytes) return {};
     const QByteArray payload = u.mid(comma + 1).toUtf8();
     const bool base64 = u.left(comma).contains(QStringLiteral(";base64"));
-    return QImage::fromData(base64 ? QByteArray::fromBase64(payload) : QByteArray::fromPercentEncoding(payload));
+    const QByteArray bytes = base64 ? QByteArray::fromBase64(payload) : QByteArray::fromPercentEncoding(payload);
+    QBuffer buffer;
+    buffer.setData(bytes);
+    buffer.open(QIODevice::ReadOnly);
+    QImageReader reader(&buffer);
+    const QSize size = reader.size();
+    if (size.isValid() && (size.width() > 8192 || size.height() > 8192)) return {};
+    return reader.read();
   }
   // Bundled assets and remote URLs go through the Image component's loader,
   // which this renderer does not call; local files are read directly.
@@ -242,7 +262,7 @@ void textCommon(ElementProps& e, const P& p) {
   // fontSize and fontWeight can also arrive as their own props.
   if (!p.fontSize.isNull()) {
     const Length l = toLength(p.fontSize);
-    if (l.set && l.unit != Length::Unit::Percent) e.font.size = l.value;
+    if (l.set && l.unit != Length::Unit::Percent) e.font.size = l.unit == Length::Unit::Em ? l.value * 12.0 : l.value;
   }
   if (!p.fontWeight.isNull()) {
     if (auto w = toWeight(p.fontWeight)) e.font.weight = *w;
@@ -254,8 +274,10 @@ void gradientCommon(ElementProps& e, const P& p) {
   nodeCommon(e, p);
   e.gradientUserSpace = p.gradientUnits == 1;
   if (p.gradientTransform.size() >= 6) e.gradientTransform = toTransform(p.gradientTransform);
+  double previous = 0;
   for (size_t i = 0; i + 1 < p.gradient.size(); i += 2) {
-    e.stops.push_back({p.gradient[i], colorFromArgb(p.gradient[i + 1])});
+    previous = std::max(previous, p.gradient[i]);  // SVG: offsets never decrease
+    e.stops.push_back({previous, colorFromArgb(p.gradient[i + 1])});
   }
 }
 
@@ -285,10 +307,11 @@ const std::unordered_map<std::string, Entry>& table() {
       {"RNSVGDefs", {Kind::Defs, [](const rn::Props& props, ElementProps& e, const ElementProps&) {
          return convert<rn::RNSVGDefsProps>(props, e, e, [](const auto& p, ElementProps& e, const ElementProps&) { nodeCommon(e, p); });
        }}},
-      {"RNSVGPath", {Kind::Path, [](const rn::Props& props, ElementProps& e, const ElementProps&) {
-         return convert<rn::RNSVGPathProps>(props, e, e, [](const auto& p, ElementProps& e, const ElementProps&) {
+      {"RNSVGPath", {Kind::Path, [](const rn::Props& props, ElementProps& e, const ElementProps& previous) {
+         return convert<rn::RNSVGPathProps>(props, e, previous, [](const auto& p, ElementProps& e, const ElementProps& previous) {
            renderable(e, p);
-           e.path = parseSvgPath(QString::fromStdString(p.d));
+           e.pathData = QString::fromStdString(p.d);
+           e.path = e.pathData == previous.pathData && previous.kind == Kind::Path ? previous.path : parseSvgPath(e.pathData);
          });
        }}},
       {"RNSVGCircle", {Kind::Circle, [](const rn::Props& props, ElementProps& e, const ElementProps&) {
@@ -373,7 +396,7 @@ const std::unordered_map<std::string, Entry>& table() {
            e.x = toLength(p.x); e.y = toLength(p.y); e.width = toLength(p.width); e.height = toLength(p.height);
            e.imageUri = QString::fromStdString(p.src.uri);
            // Decode once per source, not once per commit.
-           e.image = e.imageUri == previous.imageUri ? previous.image : loadImage(p.src.uri);
+           e.image = (e.imageUri == previous.imageUri && !previous.image.isNull()) ? previous.image : loadImage(p.src.uri);
            e.imageAlign = QString::fromStdString(p.align.empty() ? std::string("xMidYMid") : p.align);
            e.imageMeetOrSlice = p.meetOrSlice;
          });

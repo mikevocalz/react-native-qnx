@@ -533,6 +533,15 @@ class RnsvgRenderTest final : public QObject {
     u.name = QStringLiteral("self");
     u.href = QStringLiteral("self");
     add(&s.root, u);
+    // Two <Use>s of a group that contains them would fan out to 2^depth draws.
+    ElementProps g = make(Kind::Group);
+    g.name = QStringLiteral("fan");
+    auto* fan = add(&s.root, g);
+    ElementProps use = make(Kind::Use);
+    use.href = QStringLiteral("fan");
+    add(fan, use);
+    add(fan, use);
+    add(fan, rect(0, 0, 10, 10, Qt::red));
     QQuickItem* parent = &s.root;
     for (int i = 0; i < 200; ++i) parent = add(parent, make(Kind::Group));
     add(parent, rect(0, 0, 100, 100, Qt::red));
