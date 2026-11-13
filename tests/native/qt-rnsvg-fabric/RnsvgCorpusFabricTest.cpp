@@ -19,6 +19,7 @@
 
 #include <QDir>
 #include <QElapsedTimer>
+#include <QFontDatabase>
 #include <QGuiApplication>
 #include <QImage>
 #include <QJsonArray>
@@ -95,6 +96,17 @@ int main(int argc, char** argv) {
   QGuiApplication application(argc, argv);
   QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
   const bool failOnPending = qEnvironmentVariableIntValue("RNQNX_RNSVG_FAIL_ON_PENDING") != 0;
+  // The goldens are resvg renders with the bundled DejaVu faces, so the test must not depend on host fonts.
+  for (const char* font : {"DejaVuSans.ttf", "DejaVuSans-Bold.ttf", "DejaVuSansMono.ttf", "DejaVuSerif.ttf"}) {
+    const int id = QFontDatabase::addApplicationFont(QStringLiteral(RNQNX_RNSVG_FIXTURE_DIR "/../../native/qt-rnsvg/fonts/") + QLatin1String(font));
+    if (id < 0) {
+      std::cerr << "rnsvg corpus test error: cannot load font " << font << "\n";
+      return 2;
+    }
+  }
+  QFont base(QStringLiteral("DejaVu Sans"));
+  base.setPixelSize(12);
+  QGuiApplication::setFont(base);
   int passed = 0, pending = 0, failed = 0;
   try {
     QString error;
@@ -139,6 +151,9 @@ int main(int argc, char** argv) {
     check(batchCount == layout.object().value(QStringLiteral("batches")).toArray().size(), "bundle and layout disagree on the batch count");
 
     for (int b = 0; b < batchCount; ++b) {
+      QElapsedTimer batchTimer;  // TEMP-PROGRESS
+      batchTimer.start();  // TEMP-PROGRESS
+      std::cerr << "TEMP batch " << b << " start\n";  // TEMP-PROGRESS
       std::vector<Cell> cells;
       for (const QJsonValue& v : layout.object().value(QStringLiteral("batches")).toArray().at(b).toArray()) {
         const QJsonObject o = v.toObject();
@@ -166,7 +181,9 @@ int main(int argc, char** argv) {
         host.pumpEvents();
         host.runtime().drainMicrotasks();
       }
+      std::cerr << "TEMP batch " << b << " mounted " << batchTimer.elapsed() << " ms\n";  // TEMP-PROGRESS
       const QImage grabbed = window.grabWindow();
+      std::cerr << "TEMP batch " << b << " grabbed " << batchTimer.elapsed() << " ms\n";  // TEMP-PROGRESS
       check(!grabbed.isNull(), "window grab failed");
 
       for (const Cell& cell : cells) {
