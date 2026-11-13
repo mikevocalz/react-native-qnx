@@ -92,6 +92,15 @@ const api = Object.freeze({
   get DevSettings() {
     return require('react-native/Libraries/Utilities/DevSettings').default;
   },
+  // expo-modules-core and expo-constants import these (and
+  // TurboModuleRegistry, above) from 'react-native'. Expo modules themselves
+  // are found through globalThis.expo first.
+  get NativeModules() {
+    return require('react-native/Libraries/BatchedBridge/NativeModules').default;
+  },
+  get NativeEventEmitter() {
+    return require('react-native/Libraries/EventEmitter/NativeEventEmitter').default;
+  },
 });
 
 module.exports = new Proxy(api, {

@@ -1,6 +1,7 @@
-// Discovery of Nitro modules that declare a QNX native build in their own
-// package.json. The format is defined in docs/adr/0019. Discovery reads JSON
-// only: no package, config or CMake code runs here.
+// Discovery of Nitro modules and Expo modules that declare a QNX native build
+// in their own package.json. The format is defined in docs/adr/0019; Expo
+// modules use the same shape under "expo" instead of "nitro". Discovery reads
+// JSON only: no package, config or CMake code runs here.
 import { lstat, readFile, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { absent, boundedFile, projectPath } from './project-path.mjs';
@@ -11,6 +12,8 @@ export const NITRO_METADATA_FIELD = 'react-native-qnx';
  * in the consumer build yet, so it is rejected instead of silently ignored. */
 const SUPPORTED_PLATFORMS = ['qnx'];
 const MAX_MODULES = 64;
+/** The native module kinds a package may declare, each with the same shape. */
+const DECLARATION_KINDS = ['nitro', 'expo'];
 const MAX_MANIFEST_BYTES = 1024 * 1024;
 const PACKAGE_NAME = /^(?:@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/;
 const CMAKE_TARGET = /^[A-Za-z_][A-Za-z0-9_.+-]*$/;
@@ -25,31 +28,33 @@ function isObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
-/** Validate the `react-native-qnx.nitro` object of one package.
+/** Validate the `react-native-qnx.nitro` (or `.expo`) object of one package.
  * @param {string} name package name, used in error messages
  * @param {unknown} field the whole `react-native-qnx` value
+ * @param {'nitro' | 'expo'} [kind]
  * @returns {NitroDeclaration} */
-export function validateNitroDeclaration(name, field) {
+export function validateNitroDeclaration(name, field, kind = 'nitro') {
   const where = `${name}: package.json "${NITRO_METADATA_FIELD}"`;
   if (!isObject(field)) throw new Error(`${where} must be an object.`);
   for (const key of Object.keys(field))
-    if (key !== 'nitro') throw new Error(`${where}.${key} is not a supported key; use "nitro".`);
-  const nitro = field.nitro;
-  if (!isObject(nitro)) throw new Error(`${where}.nitro must be an object.`);
+    if (!DECLARATION_KINDS.includes(key))
+      throw new Error(`${where}.${key} is not a supported key; use "nitro" or "expo".`);
+  const nitro = field[kind];
+  if (!isObject(nitro)) throw new Error(`${where}.${kind} must be an object.`);
   const allowed = ['platforms', 'cmakeListsPath', 'target', 'initializer'];
   for (const key of Object.keys(nitro))
     if (!allowed.includes(key))
-      throw new Error(`${where}.nitro.${key} is not supported. Allowed: ${allowed.join(', ')}.`);
+      throw new Error(`${where}.${kind}.${key} is not supported. Allowed: ${allowed.join(', ')}.`);
   const { platforms, cmakeListsPath, target, initializer } = nitro;
   if (!Array.isArray(platforms) || platforms.length === 0)
-    throw new Error(`${where}.nitro.platforms must be a nonempty array, for example ["qnx"].`);
+    throw new Error(`${where}.${kind}.platforms must be a nonempty array, for example ["qnx"].`);
   for (const platform of platforms)
     if (typeof platform !== 'string' || !SUPPORTED_PLATFORMS.includes(platform))
       throw new Error(
-        `${where}.nitro.platforms contains ${JSON.stringify(platform)}; supported: ${SUPPORTED_PLATFORMS.join(', ')}.`
+        `${where}.${kind}.platforms contains ${JSON.stringify(platform)}; supported: ${SUPPORTED_PLATFORMS.join(', ')}.`
       );
   if (new Set(platforms).size !== platforms.length)
-    throw new Error(`${where}.nitro.platforms must not repeat a platform.`);
+    throw new Error(`${where}.${kind}.platforms must not repeat a platform.`);
   if (
     typeof cmakeListsPath !== 'string' ||
     !cmakeListsPath ||
@@ -60,19 +65,19 @@ export function validateNitroDeclaration(name, field) {
     path.posix.basename(cmakeListsPath) !== 'CMakeLists.txt'
   )
     throw new Error(
-      `${where}.nitro.cmakeListsPath must be a package-relative path to a CMakeLists.txt file, without "..", backslashes or CMake metacharacters.`
+      `${where}.${kind}.cmakeListsPath must be a package-relative path to a CMakeLists.txt file, without "..", backslashes or CMake metacharacters.`
     );
   if (typeof target !== 'string' || !CMAKE_TARGET.test(target) || target.length > 128)
-    throw new Error(`${where}.nitro.target must be a CMake target name of 1-128 characters.`);
+    throw new Error(`${where}.${kind}.target must be a CMake target name of 1-128 characters.`);
   if (/^rnqnx_/i.test(target))
-    throw new Error(`${where}.nitro.target must not use the reserved rnqnx_ prefix.`);
+    throw new Error(`${where}.${kind}.target must not use the reserved rnqnx_ prefix.`);
   if (
     typeof initializer !== 'string' ||
     !CXX_FUNCTION.test(initializer) ||
     initializer.length > 256
   )
     throw new Error(
-      `${where}.nitro.initializer must name a C++ function such as "margelo::nitro::battery::registerQnxHybridClasses".`
+      `${where}.${kind}.initializer must name a C++ function such as "margelo::nitro::battery::registerQnxHybridClasses".`
     );
   return { platforms: [...platforms], cmakeListsPath, target, initializer };
 }
@@ -104,14 +109,16 @@ async function locatePackage(root, name) {
   }
 }
 
-/** Discover the app's direct `dependencies` that declare a Nitro module for
- * the selected platform. Packages without the field, and dependencies not
+/** Discover the app's direct `dependencies` that declare a Nitro module (or,
+ * with kind "expo", an Expo module) for the selected platform. Packages
+ * without the field, and dependencies not
  * installed under node_modules, are skipped. A package
  * with a malformed field stops discovery with an error naming the package.
  * @param {string} root realpath of the consumer project
  * @param {string} platform
+ * @param {'nitro' | 'expo'} [kind]
  * @returns {Promise<NitroModule[]>} */
-export async function discoverNitroModules(root, platform) {
+export async function discoverNitroModules(root, platform, kind = 'nitro') {
   const manifest = await readManifest(path.join(root, 'package.json'));
   const dependencies = manifest.dependencies ?? {};
   if (!isObject(dependencies))
@@ -127,12 +134,13 @@ export async function discoverNitroModules(root, platform) {
     const packageRoot = await locatePackage(root, name);
     if (!packageRoot) continue;
     const metadata = await readManifest(path.join(packageRoot, 'package.json'));
-    if (metadata[NITRO_METADATA_FIELD] === undefined) continue;
+    const field = metadata[NITRO_METADATA_FIELD];
+    if (field === undefined || (isObject(field) && field[kind] === undefined)) continue;
     if (metadata.name !== name)
       throw new Error(`node_modules/${name} contains package ${JSON.stringify(metadata.name)}.`);
     if (typeof metadata.version !== 'string' || !metadata.version)
       throw new Error(`${name}: package.json must declare a version.`);
-    const declaration = validateNitroDeclaration(name, metadata[NITRO_METADATA_FIELD]);
+    const declaration = validateNitroDeclaration(name, field, kind);
     if (!declaration.platforms.includes(platform)) continue;
     if (CMAKE_UNSAFE.test(packageRoot))
       throw new Error(`${name}: installed path contains characters CMake cannot take.`);
@@ -154,17 +162,28 @@ export async function discoverNitroModules(root, platform) {
     });
   }
   if (modules.length > MAX_MODULES)
-    throw new Error(`At most ${MAX_MODULES} Nitro modules can be linked into one app.`);
+    throw new Error(`At most ${MAX_MODULES} ${label(kind)} modules can be linked into one app.`);
   for (const key of /** @type {const} */ (['target', 'initializer'])) {
     const seen = new Map();
     for (const module of modules) {
       const other = seen.get(module[key]);
       if (other)
         throw new Error(
-          `${other} and ${module.package} declare the same Nitro ${key} ${module[key]}.`
+          `${other} and ${module.package} declare the same ${label(kind)} ${key} ${module[key]}.`
         );
       seen.set(module[key], module.package);
     }
   }
   return modules;
+}
+
+/** @param {string} kind */
+function label(kind) {
+  return kind === 'expo' ? 'Expo' : 'Nitro';
+}
+
+/** Expo modules with a QNX native build: the same declaration under "expo".
+ * @param {string} root @param {string} platform @returns {Promise<NitroModule[]>} */
+export function discoverExpoModules(root, platform) {
+  return discoverNitroModules(root, platform, 'expo');
 }

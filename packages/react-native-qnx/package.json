@@ -7,6 +7,7 @@
   "files": [
     "index.js",
     "Libraries",
+    "expo",
     "src",
     "adaptive",
     "qt"

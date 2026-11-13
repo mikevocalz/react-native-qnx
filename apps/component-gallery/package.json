@@ -3,5 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "Tabbed React Native component gallery for QNX, run on the Pi 400",
-  "main": "index.js"
+  "main": "index.js",
+  "dependencies": {
+    "@rn-qnx/expo-constants-qnx": "workspace:*",
+    "expo-constants": "58.0.16"
+  }
 }

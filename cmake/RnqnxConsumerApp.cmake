@@ -69,6 +69,111 @@ function(rnqnx_consumer_window_chrome config output_dir out_header)
   set(${out_header} "${header}" PARENT_SCOPE)
 endfunction()
 
+# Shared by the nitroModules and expoModules arrays, which have the same entry
+# shape (docs/adr/0019): adds each package's CMakeLists.txt, checks it defines
+# the declared target and collects declarations and calls of each initializer.
+function(_rnqnx_consumer_declared_modules array label config count out_targets out_declarations out_calls)
+  string(TOLOWER "${label}" binary_dir)
+  set(targets "")
+  set(declarations "")
+  set(calls "")
+  math(EXPR last "${count} - 1")
+  foreach(index RANGE ${last})
+    string(JSON members ERROR_VARIABLE json_error LENGTH "${config}" ${array} ${index})
+    if(NOT json_error STREQUAL "NOTFOUND" OR NOT members EQUAL 6)
+      message(FATAL_ERROR "Consumer ${array} entry ${index} must have exactly package, version, root, cmakeLists, target and initializer")
+    endif()
+    foreach(key package version root cmakeLists target initializer)
+      string(JSON kind ERROR_VARIABLE json_error TYPE "${config}" ${array} ${index} ${key})
+      if(NOT json_error STREQUAL "NOTFOUND" OR NOT kind STREQUAL "STRING")
+        message(FATAL_ERROR "Consumer ${array} entry ${index} needs a string ${key}")
+      endif()
+      string(JSON nitro_${key} GET "${config}" ${array} ${index} ${key})
+    endforeach()
+    if(NOT nitro_package MATCHES "^(@[a-z0-9~-][a-z0-9._~-]*/)?[a-z0-9~-][a-z0-9._~-]*$")
+      message(FATAL_ERROR "Consumer ${array} entry ${index} has an invalid package name")
+    endif()
+    if(NOT nitro_target MATCHES "^[A-Za-z_][A-Za-z0-9_.+-]*$" OR nitro_target MATCHES "^[Rr][Nn][Qq][Nn][Xx]_")
+      message(FATAL_ERROR "${label} module ${nitro_package} declares an invalid CMake target")
+    endif()
+    if(NOT nitro_initializer MATCHES "^[A-Za-z_][A-Za-z0-9_]*(::[A-Za-z_][A-Za-z0-9_]*)*$")
+      message(FATAL_ERROR "${label} module ${nitro_package} declares an invalid C++ initializer")
+    endif()
+    string(FIND "${nitro_cmakeLists}" "${nitro_root}/" root_prefix)
+    get_filename_component(cmake_name "${nitro_cmakeLists}" NAME)
+    get_filename_component(module_dir "${nitro_cmakeLists}" DIRECTORY)
+    if(NOT IS_ABSOLUTE "${nitro_root}" OR NOT IS_DIRECTORY "${nitro_root}" OR IS_SYMLINK "${nitro_root}" OR
+        nitro_root MATCHES "[;\"$\n\r]" OR nitro_cmakeLists MATCHES "[;\"$\n\r]" OR
+        nitro_cmakeLists MATCHES "/\\.\\.?/" OR NOT root_prefix EQUAL 0 OR
+        NOT cmake_name STREQUAL "CMakeLists.txt" OR NOT EXISTS "${nitro_cmakeLists}" OR
+        IS_DIRECTORY "${nitro_cmakeLists}" OR IS_SYMLINK "${nitro_cmakeLists}")
+      message(FATAL_ERROR "${label} module ${nitro_package} must name a regular CMakeLists.txt inside its package root")
+    endif()
+    # rnqnx_consumer_add_module_packages may have added the package already:
+    # the consumer app itself is configured in a deferred call, where CMake
+    # does not allow add_subdirectory.
+    get_property(added GLOBAL PROPERTY RNQNX_CONSUMER_ADDED_MODULE_TARGETS)
+    if(NOT nitro_target IN_LIST added)
+      if(TARGET ${nitro_target})
+        message(FATAL_ERROR "${label} module ${nitro_package} target ${nitro_target} already exists")
+      endif()
+      add_subdirectory("${module_dir}" "${CMAKE_BINARY_DIR}/consumer-${binary_dir}/${index}")
+      set_property(GLOBAL APPEND PROPERTY RNQNX_CONSUMER_ADDED_MODULE_TARGETS ${nitro_target})
+    endif()
+    if(NOT TARGET ${nitro_target})
+      message(FATAL_ERROR "${label} module ${nitro_package} did not define target ${nitro_target}")
+    endif()
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${nitro_cmakeLists}")
+    message(STATUS "Consumer ${label} module: ${nitro_package}@${nitro_version} -> ${nitro_target}")
+    list(APPEND targets ${nitro_target})
+    string(FIND "${nitro_initializer}" "::" separator REVERSE)
+    if(separator EQUAL -1)
+      string(APPEND declarations "void ${nitro_initializer}();\n")
+    else()
+      string(SUBSTRING "${nitro_initializer}" 0 ${separator} namespace)
+      math(EXPR name_start "${separator} + 2")
+      string(SUBSTRING "${nitro_initializer}" ${name_start} -1 function)
+      string(APPEND declarations "namespace ${namespace} {\nvoid ${function}();\n}\n")
+    endif()
+    string(APPEND calls "  ::${nitro_initializer}(); // ${nitro_package}\n")
+  endforeach()
+  set(${out_targets} "${targets}" PARENT_SCOPE)
+  set(${out_declarations} "${declarations}" PARENT_SCOPE)
+  set(${out_calls} "${calls}" PARENT_SCOPE)
+endfunction()
+
+function(_rnqnx_consumer_add_expo_core)
+  if(NOT TARGET rnqnx_expo_modules_qnx)
+    add_subdirectory("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../packages/expo-modules-core-qnx"
+      "${CMAKE_BINARY_DIR}/consumer-expo-core")
+  endif()
+endfunction()
+
+# Adds the QNX Expo host and the CMake packages of the descriptor's
+# expoModules right away. RnqnxReactQt.cmake calls this before it defers
+# rnqnx_add_consumer_app, because add_subdirectory is not allowed in a deferred
+# call. The deferred call validates the same entries again and links the
+# targets added here. Expo packages only need rnqnx_expo_modules_qnx, which is
+# added first; Nitro packages keep their deferred path because they depend on
+# the Nitro runtime targets declared later in the top-level CMakeLists.txt.
+function(rnqnx_consumer_add_module_packages)
+  if(NOT IS_ABSOLUTE "${RNQNX_CONSUMER_CONFIG}" OR NOT EXISTS "${RNQNX_CONSUMER_CONFIG}" OR
+      IS_DIRECTORY "${RNQNX_CONSUMER_CONFIG}")
+    return()
+  endif()
+  file(READ "${RNQNX_CONSUMER_CONFIG}" config)
+  string(JSON kind ERROR_VARIABLE json_error TYPE "${config}" expoModules)
+  if(NOT json_error STREQUAL "NOTFOUND" OR NOT kind STREQUAL "ARRAY")
+    return()
+  endif()
+  string(JSON count LENGTH "${config}" expoModules)
+  if(count LESS 1 OR count GREATER 64)
+    return()
+  endif()
+  _rnqnx_consumer_add_expo_core()
+  _rnqnx_consumer_declared_modules(expoModules Expo "${config}" ${count} targets declarations calls)
+endfunction()
+
 # Reads the optional `nitroModules` array that prepare-native writes from each
 # dependency's package.json "react-native-qnx".nitro declaration (docs/adr/0019).
 # Adds each package's CMakeLists.txt, checks it defines the declared target and
@@ -88,62 +193,7 @@ function(rnqnx_consumer_nitro_modules config output_dir out_header out_targets)
   if(NOT TARGET rnqnx_nitro_qnx)
     message(FATAL_ERROR "Consumer nitroModules need the Nitro runtime; configure with RNQNX_BUILD_NITRO_QNX=ON")
   endif()
-  set(targets "")
-  set(declarations "")
-  set(calls "")
-  math(EXPR last "${count} - 1")
-  foreach(index RANGE ${last})
-    string(JSON members ERROR_VARIABLE json_error LENGTH "${config}" nitroModules ${index})
-    if(NOT json_error STREQUAL "NOTFOUND" OR NOT members EQUAL 6)
-      message(FATAL_ERROR "Consumer nitroModules entry ${index} must have exactly package, version, root, cmakeLists, target and initializer")
-    endif()
-    foreach(key package version root cmakeLists target initializer)
-      string(JSON kind ERROR_VARIABLE json_error TYPE "${config}" nitroModules ${index} ${key})
-      if(NOT json_error STREQUAL "NOTFOUND" OR NOT kind STREQUAL "STRING")
-        message(FATAL_ERROR "Consumer nitroModules entry ${index} needs a string ${key}")
-      endif()
-      string(JSON nitro_${key} GET "${config}" nitroModules ${index} ${key})
-    endforeach()
-    if(NOT nitro_package MATCHES "^(@[a-z0-9~-][a-z0-9._~-]*/)?[a-z0-9~-][a-z0-9._~-]*$")
-      message(FATAL_ERROR "Consumer nitroModules entry ${index} has an invalid package name")
-    endif()
-    if(NOT nitro_target MATCHES "^[A-Za-z_][A-Za-z0-9_.+-]*$" OR nitro_target MATCHES "^[Rr][Nn][Qq][Nn][Xx]_")
-      message(FATAL_ERROR "Nitro module ${nitro_package} declares an invalid CMake target")
-    endif()
-    if(NOT nitro_initializer MATCHES "^[A-Za-z_][A-Za-z0-9_]*(::[A-Za-z_][A-Za-z0-9_]*)*$")
-      message(FATAL_ERROR "Nitro module ${nitro_package} declares an invalid C++ initializer")
-    endif()
-    string(FIND "${nitro_cmakeLists}" "${nitro_root}/" root_prefix)
-    get_filename_component(cmake_name "${nitro_cmakeLists}" NAME)
-    get_filename_component(module_dir "${nitro_cmakeLists}" DIRECTORY)
-    if(NOT IS_ABSOLUTE "${nitro_root}" OR NOT IS_DIRECTORY "${nitro_root}" OR IS_SYMLINK "${nitro_root}" OR
-        nitro_root MATCHES "[;\"$\n\r]" OR nitro_cmakeLists MATCHES "[;\"$\n\r]" OR
-        nitro_cmakeLists MATCHES "/\\.\\.?/" OR NOT root_prefix EQUAL 0 OR
-        NOT cmake_name STREQUAL "CMakeLists.txt" OR NOT EXISTS "${nitro_cmakeLists}" OR
-        IS_DIRECTORY "${nitro_cmakeLists}" OR IS_SYMLINK "${nitro_cmakeLists}")
-      message(FATAL_ERROR "Nitro module ${nitro_package} must name a regular CMakeLists.txt inside its package root")
-    endif()
-    if(TARGET ${nitro_target})
-      message(FATAL_ERROR "Nitro module ${nitro_package} target ${nitro_target} already exists")
-    endif()
-    add_subdirectory("${module_dir}" "${CMAKE_BINARY_DIR}/consumer-nitro/${index}")
-    if(NOT TARGET ${nitro_target})
-      message(FATAL_ERROR "Nitro module ${nitro_package} did not define target ${nitro_target}")
-    endif()
-    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${nitro_cmakeLists}")
-    message(STATUS "Consumer Nitro module: ${nitro_package}@${nitro_version} -> ${nitro_target}")
-    list(APPEND targets ${nitro_target})
-    string(FIND "${nitro_initializer}" "::" separator REVERSE)
-    if(separator EQUAL -1)
-      string(APPEND declarations "void ${nitro_initializer}();\n")
-    else()
-      string(SUBSTRING "${nitro_initializer}" 0 ${separator} namespace)
-      math(EXPR name_start "${separator} + 2")
-      string(SUBSTRING "${nitro_initializer}" ${name_start} -1 function)
-      string(APPEND declarations "namespace ${namespace} {\nvoid ${function}();\n}\n")
-    endif()
-    string(APPEND calls "  ::${nitro_initializer}(); // ${nitro_package}\n")
-  endforeach()
+  _rnqnx_consumer_declared_modules(nitroModules Nitro "${config}" ${count} targets declarations calls)
   set(header "${output_dir}/NitroModules.generated.h")
   file(CONFIGURE OUTPUT "${header}" CONTENT
 "// Generated from native-app.json nitroModules by RnqnxConsumerApp.cmake. Do not edit.
@@ -157,6 +207,58 @@ ${calls}}
 " @ONLY)
   set(${out_header} "${header}" PARENT_SCOPE)
   set(${out_targets} "${targets}" PARENT_SCOPE)
+endfunction()
+
+# Reads the optional `expoModules` array (same entry shape, from each
+# dependency's "react-native-qnx".expo declaration) and the `expoConfig` object
+# prepare-native writes with it. Links the QNX Expo host
+# (packages/expo-modules-core-qnx) and each module, and generates a header
+# whose rnqnx::consumer::installExpoModules(runtime) registers every module,
+# hands the app config to the host and installs globalThis.expo. A descriptor
+# without the array links nothing.
+function(rnqnx_consumer_expo_modules config output_dir out_header out_targets)
+  set(${out_header} "" PARENT_SCOPE)
+  set(${out_targets} "" PARENT_SCOPE)
+  string(JSON expo_type ERROR_VARIABLE json_error TYPE "${config}" expoModules)
+  if(NOT json_error STREQUAL "NOTFOUND")
+    return()
+  endif()
+  string(JSON count ERROR_VARIABLE json_error LENGTH "${config}" expoModules)
+  if(NOT expo_type STREQUAL "ARRAY" OR count LESS 1 OR count GREATER 64)
+    message(FATAL_ERROR "Consumer expoModules must be an array of 1 to 64 entries")
+  endif()
+  string(JSON config_type ERROR_VARIABLE json_error TYPE "${config}" expoConfig)
+  if(NOT json_error STREQUAL "NOTFOUND" OR NOT config_type STREQUAL "OBJECT")
+    message(FATAL_ERROR "Consumer expoModules need the expoConfig object; run project prepare-native")
+  endif()
+  string(JSON expo_config GET "${config}" expoConfig)
+  string(FIND "${expo_config}" ")rnqnx_cfg\"" reserved)
+  if(NOT reserved EQUAL -1)
+    message(FATAL_ERROR "Consumer expoConfig contains a reserved sequence")
+  endif()
+  _rnqnx_consumer_add_expo_core()
+  _rnqnx_consumer_declared_modules(expoModules Expo "${config}" ${count} targets declarations calls)
+  # Written through configure_file(COPYONLY) so an unchanged header keeps its
+  # timestamp, and without @VAR@ substitution inside the embedded JSON.
+  set(header "${output_dir}/ExpoModules.generated.h")
+  file(WRITE "${header}.in"
+"// Generated from native-app.json expoModules by RnqnxConsumerApp.cmake. Do not edit.
+#pragma once
+
+#include \"ExpoQnxInstaller.hpp\"
+
+${declarations}
+namespace rnqnx::consumer {
+inline void installExpoModules(facebook::jsi::Runtime& runtime, bool debugBuild) {
+  ::rnqnx::expo::setAppManifestJson(R\"rnqnx_cfg(${expo_config})rnqnx_cfg\");
+  ::rnqnx::expo::setDebugBuild(debugBuild);
+${calls}  ::rnqnx::expo::installExpoModulesQnx(runtime);
+}
+} // namespace rnqnx::consumer
+")
+  configure_file("${header}.in" "${header}" COPYONLY)
+  set(${out_header} "${header}" PARENT_SCOPE)
+  set(${out_targets} rnqnx_expo_modules_qnx ${targets} PARENT_SCOPE)
 endfunction()
 
 # Reuse the existing renderer and native main. This is an opt-in source build,
@@ -315,6 +417,11 @@ function(rnqnx_add_consumer_app)
   if(nitro_header)
     target_link_libraries(rnqnx_consumer_app PRIVATE ${nitro_targets})
     target_compile_definitions(rnqnx_consumer_app PRIVATE RNQNX_CONSUMER_NITRO_HEADER="${nitro_header}")
+  endif()
+  rnqnx_consumer_expo_modules("${config}" "${output_dir}" expo_header expo_targets)
+  if(expo_header)
+    target_link_libraries(rnqnx_consumer_app PRIVATE ${expo_targets})
+    target_compile_definitions(rnqnx_consumer_app PRIVATE RNQNX_CONSUMER_EXPO_HEADER="${expo_header}")
   endif()
   set_target_properties(rnqnx_consumer_app PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${output_dir}" OUTPUT_NAME "${appId}")
   add_custom_command(TARGET rnqnx_consumer_app POST_BUILD
