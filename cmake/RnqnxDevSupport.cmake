@@ -21,7 +21,6 @@ function(rnqnx_configure_dev_support)
   find_package(Qt6 6.11.1 REQUIRED COMPONENTS Core Gui Network Qml Quick WebSockets)
   add_library(rnqnx_dev_support STATIC
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxDevSupport.cpp"
-    "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxDevSupportModules.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/runtime/QnxDevSupport.h")
   target_link_libraries(rnqnx_dev_support PUBLIC
     rnqnx_react_host Qt6::Core Qt6::Gui Qt6::Network Qt6::Qml Qt6::Quick Qt6::WebSockets)

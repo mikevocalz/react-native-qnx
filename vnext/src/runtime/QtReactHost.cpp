@@ -18,6 +18,9 @@
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#if RNQNX_ENABLE_QT_RNSVG
+#include "react-native-qnx/fabric/QtRnsvgBridge.h"
+#endif
 #if RNQNX_ENABLE_QT_SVG
 #include <react/renderer/components/RnqnxQtSvg/ComponentDescriptors.h>
 #endif
@@ -42,6 +45,7 @@
 #if RNQNX_ENABLE_APP_STATE
 #include "react-native-qnx/runtime/QnxAppStateModule.h"
 #endif
+#include "react-native-qnx/runtime/QnxDevSupportModules.h"
 #include "react-native-qnx/runtime/QnxImageLoader.h"
 #include "react-native-qnx/runtime/QnxSegmentFetcher.h"
 #include "react-native-qnx/runtime/QnxWebSocketModule.h"
@@ -285,7 +289,7 @@ std::vector<std::string> registeredComponentNames() {
 }
 
 std::vector<std::string> registeredBuiltinComponentNames() {
-  return {
+  std::vector<std::string> names = {
       std::string(RootComponentDescriptor::ConcreteShadowNode::Name()),
 #if RNQNX_ENABLE_QT_SVG
       std::string(facebook::react::QnxSvgDocumentComponentDescriptor::ConcreteShadowNode::Name()),
@@ -313,6 +317,10 @@ std::vector<std::string> registeredBuiltinComponentNames() {
       std::string(facebook::react::ModalHostViewComponentDescriptor::
                       ConcreteShadowNode::Name()),
   };
+#if RNQNX_ENABLE_QT_RNSVG
+  for (auto& name : rnqnx::fabric::rnsvgComponentNames()) names.push_back(std::move(name));
+#endif
+  return names;
 }
 
 facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
@@ -335,6 +343,9 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
 #if RNQNX_ENABLE_QT_SVG
     providerRegistry->add(facebook::react::concreteComponentDescriptorProvider<
         facebook::react::QnxSvgDocumentComponentDescriptor>());
+#endif
+#if RNQNX_ENABLE_QT_RNSVG
+    rnqnx::fabric::addRnsvgComponentDescriptors(*providerRegistry);
 #endif
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<
@@ -951,6 +962,15 @@ void QtReactHost::installTurboModuleBinding() {
           if (auto module = impl->turboModuleProvider(name, callInvoker)) {
             return module;
           }
+        }
+
+        // DevSettings.js imports NativeDevSettings, which calls
+        // getEnforcing('DevSettings') at module load in release bundles too
+        // (React Native's own RCTDevSettings exists in iOS release builds).
+        // Without a development client the module accepts every call and
+        // does nothing, which is what DevSettings promises in release.
+        if (name == "DevSettings") {
+          return makeDevSupportModule(name, callInvoker, {});
         }
 
         // Without this, every JavaScript error aborts the process: React

@@ -1,0 +1,42 @@
+diff --git a/src/dawn/native/opengl/BackendGL.cpp b/src/dawn/native/opengl/BackendGL.cpp
+index 06fcfb57e..830f4ef8c 100644
+--- a/src/dawn/native/opengl/BackendGL.cpp
++++ b/src/dawn/native/opengl/BackendGL.cpp
+@@ -36,6 +36,7 @@
+ #include "src/dawn/native/Instance.h"
+ #include "src/dawn/native/opengl/DisplayEGL.h"
+ #include "src/dawn/native/opengl/PhysicalDeviceGL.h"
++#include "src/utils/log.h"
+ 
+ namespace dawn::native::opengl {
+ 
+@@ -91,8 +92,12 @@ std::vector<Ref<PhysicalDeviceBase>> Backend::DiscoverPhysicalDevices(
+         Ref<DisplayEGL> display;
+         DAWN_TRY_ASSIGN(display, std::move(maybeDisplay));
+ 
++        // react-native-qnx: the Mesa 21.2 V3D EGL on the Raspberry Pi 400 does not expose
++        // EGL_EXT_create_context_robustness. Continue without it: Tint still bounds-checks
++        // shader memory accesses, but GPU resets are not reported by the driver.
+         if (!display->egl->HasExt(EGLExt::CreateContextRobustness)) {
+-            return DAWN_UNRECOVERABLE_ERROR("EGL_EXT_create_context_robustness is required.");
++            WarningLog() << "EGL_EXT_create_context_robustness is missing; the context will not "
++                            "request robust buffer access and GPU resets are not detected.";
+         }
+         if (!display->egl->HasExt(EGLExt::FenceSync) &&
+             !display->egl->HasExt(EGLExt::ReusableSync)) {
+diff --git a/src/dawn/native/opengl/PhysicalDeviceGL.cpp b/src/dawn/native/opengl/PhysicalDeviceGL.cpp
+index f45522e59..4cfba3c63 100644
+--- a/src/dawn/native/opengl/PhysicalDeviceGL.cpp
++++ b/src/dawn/native/opengl/PhysicalDeviceGL.cpp
+@@ -551,7 +551,10 @@ ResultOrError<Ref<DeviceBase>> PhysicalDevice::CreateDeviceImpl(
+         }
+     }
+ 
+-    bool useRobustness = !deviceToggles.IsEnabled(Toggle::DisableRobustness);
++    // react-native-qnx: only request context robustness when the EGL implementation has it.
++    // Shader-level robustness (Tint) is controlled separately by Toggle::DisableRobustness.
++    bool useRobustness = !deviceToggles.IsEnabled(Toggle::DisableRobustness) &&
++                         mDisplay->egl->HasExt(EGLExt::CreateContextRobustness);
+ 
+     // Workaround: Imagination EGL 1.5 drivers do not support the new robustness enum.
+     // Use the pre-1.5 extension enum instead.

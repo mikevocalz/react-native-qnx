@@ -13,11 +13,13 @@ const {
   Switch,
   ActivityIndicator,
   Modal,
+  DevSettings,
 } = require('react-native');
 const { create } = require('zustand');
 const { SCENARIOS, createDocumentRows } = require('./fixtures.js');
 const FastRefreshCard = require('./FastRefreshCard').default;
 const RemoteImageCard = require('./RemoteImageCard').default;
+const { ADVANCED_CARDS } = require('./components/advanced');
 
 const h = React.createElement;
 const ROWS = createDocumentRows();
@@ -306,6 +308,53 @@ function GalleryPage() {
   );
 }
 
+// Cards registered under components/advanced/ (one *.card.js file each). A
+// FlatList rather than a ScrollView, so a card may itself hold a vertical
+// VirtualizedList (React Native forbids those inside a plain ScrollView).
+function AdvancedPage() {
+  const width = useConformance((state) => state.width);
+  const inner = Math.max(0, width - 2 * 28);
+  const columns = gridColumns(inner);
+  const cardWidth = Math.floor((inner - GAP * (columns - 1)) / columns);
+  const count = ADVANCED_CARDS.length;
+  return h(FlatList, {
+    key: 'advanced-' + columns,
+    style: { flex: 1 },
+    contentContainerStyle: { paddingBottom: 24 },
+    data: ADVANCED_CARDS,
+    numColumns: columns,
+    keyExtractor: (card) => card.id,
+    ListHeaderComponent: h(Heading, {
+      title: 'Advanced',
+      detail: count + (count === 1 ? ' card' : ' cards') + ' from components/advanced/*.card.js',
+    }),
+    renderItem: ({ item: card, index }) =>
+      h(
+        View,
+        {
+          // A card with `framed: false` draws its own frame and title.
+          style:
+            card.framed === false
+              ? {
+                  width: inner > 0 ? cardWidth : '100%',
+                  marginRight: index % columns === columns - 1 ? 0 : GAP,
+                }
+              : {
+                  width: inner > 0 ? cardWidth : '100%',
+                  padding: 22,
+                  marginBottom: GAP,
+                  marginRight: index % columns === columns - 1 ? 0 : GAP,
+                  minHeight: 236,
+                  borderRadius: 14,
+                  backgroundColor: PANEL,
+                },
+        },
+        card.framed !== false && h(Heading, { title: card.title, detail: card.detail }),
+        h(card.Component)
+      ),
+  });
+}
+
 function SectionsPage() {
   const selected = useConformance((state) => state.row);
   const choose = useConformance((state) => state.chooseRow);
@@ -551,26 +600,33 @@ function ConformanceApp() {
   const compact = height > 0 && height < 440;
   const pages = [
     ['gallery', 'Components'],
+    ['advanced', 'Advanced'],
     ['list', 'Documents'],
     ['sections', 'Sections'],
     ['controls', 'Controls'],
     ['adaptive', 'Adaptive'],
-    ['advanced', 'Advanced'],
     ['limits', 'Limits'],
   ];
+  // Developer menu entries (F1 or Ctrl+D) that switch tabs from the keyboard,
+  // for runs where only keys can be injected. A no-op in release builds. The
+  // entries last until the next reload; this root mounts once per bundle.
+  React.useEffect(() => {
+    for (const [id, title] of pages) DevSettings.addMenuItem('Show ' + title, () => goTo(id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const content =
     page === 'gallery'
       ? h(GalleryPage)
-      : page === 'sections'
-        ? h(SectionsPage)
-        : page === 'list'
-          ? h(ListPage)
-          : page === 'controls'
-            ? h(ControlsPage)
-            : page === 'adaptive'
-              ? h(AdaptivePage)
-              : page === 'advanced'
-                ? h(require('./advanced/AdvancedPage.js').AdvancedPage)
+      : page === 'advanced'
+        ? h(AdvancedPage)
+        : page === 'sections'
+          ? h(SectionsPage)
+          : page === 'list'
+            ? h(ListPage)
+            : page === 'controls'
+              ? h(ControlsPage)
+              : page === 'adaptive'
+                ? h(AdaptivePage)
                 : h(LimitationsPage);
   const width = useConformance((state) => state.width);
   // Wide windows put the tabs beside the title; narrow ones stack them.
@@ -648,3 +704,5 @@ function ConformanceApp() {
 }
 
 AppRegistry.registerComponent('RNQnxPlayground', () => ConformanceApp);
+// The SVG cards alone, for the device screenshot check; see ./svg/standalone.js.
+AppRegistry.registerComponent('RNQnxSvgGallery', () => require('./svg/standalone').SvgGalleryApp);
