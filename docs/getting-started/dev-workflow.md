@@ -6,7 +6,7 @@ Metro on your computer, apply Fast Refresh updates as you save, reload on
 demand and show React Native's LogBox for errors. This page covers both halves:
 building the development client once, then the daily loop.
 
-Status: run on one Raspberry Pi 400 with QNX SDP 8.0.5, public-source Qt 6.12.0
+Status ([evidence](../evidence/pi400-dev-client-2026-11-13/README.md)): run on one Raspberry Pi 400 with QNX SDP 8.0.5, public-source Qt 6.12.0
 and the component gallery, over the USB Ethernet link to a Mac (board
 192.168.2.2, Mac 192.168.2.1), on 2026-11-13. Not covered: the Hermes debugger
 (CDP), React DevTools, Marathon.
