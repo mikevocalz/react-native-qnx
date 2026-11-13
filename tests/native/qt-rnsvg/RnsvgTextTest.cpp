@@ -537,16 +537,27 @@ class RnsvgTextTest final : public QObject {
   }
 
   void aBoldRequestWithoutABoldFaceThickensTheOutlines() {
-    // DejaVu Sans Mono ships no bold face here, so weight 700 falls back to
-    // thickened regular outlines; the advance stays that of the regular face.
+    // Whether the mono family has a bold face depends on the host's installed
+    // fonts (the bundled files carry none; many Linux systems add one). Both
+    // outcomes are checked: with a real bold face the engine uses it as is, and
+    // without one it thickens the regular outlines and keeps the regular advance.
+    const QStringList styles = QFontDatabase::styles(kMono);
+    const bool hasBoldFace = std::any_of(styles.begin(), styles.end(), [](const QString& s) {
+      return s.contains(QStringLiteral("Bold"), Qt::CaseInsensitive);
+    });
     Node n = node(1, QStringLiteral("l"), 40);
     n.font = fontOf(40, kMono);
     const Result regular = layout(n, QPointF(0, 50));
     n.font.weight = 700;
     const Result bold = layout(n, QPointF(0, 50));
     const double grow = out(bold, 1).glyphs.boundingRect().width() - out(regular, 1).glyphs.boundingRect().width();
-    QVERIFY2(grow > 1.2 && grow < 2.2, qPrintable(QString::number(grow)));  // em/24 is 1.67 at size 40
-    QVERIFY(std::abs(out(bold, 1).advanceBox.width() - out(regular, 1).advanceBox.width()) < 1e-6);
+    if (hasBoldFace) {
+      QVERIFY(std::abs(out(bold, 1).advanceBox.width() - advance(QStringLiteral("l"), 40, kMono, 700)) < 0.02);
+      QVERIFY2(grow >= -0.01, qPrintable(QString::number(grow)));
+    } else {
+      QVERIFY2(grow > 1.2 && grow < 2.2, qPrintable(QString::number(grow)));  // em/24 is 1.67 at size 40
+      QVERIFY(std::abs(out(bold, 1).advanceBox.width() - out(regular, 1).advanceBox.width()) < 1e-6);
+    }
     // A family with a real bold face is not thickened twice.
     Node sans = node(1, QStringLiteral("H"), 40);
     sans.font.weight = 700;
