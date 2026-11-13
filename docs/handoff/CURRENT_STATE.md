@@ -1,5 +1,9 @@
 # Current state
 
+Start with the [2026-11-13 handoff](HANDOFF_2026-11-13.md): it explains how to
+load and control the app on the Pi 400, what is merged, and what is open.
+The sections below keep their original dates.
+
 ## PR 161 corpus continuation — 2026-11-13
 
 PR 161 now isolates large corpus scenes and requires four disjoint CTests. Local packing, type and standalone native checks pass; the new Debug CI result is pending.
