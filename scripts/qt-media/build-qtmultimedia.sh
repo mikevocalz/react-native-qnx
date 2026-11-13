@@ -34,6 +34,6 @@ cmake -G Ninja -S ../qtmultimedia-everywhere-src-$QTMM_VERSION -B . \
   -DCMAKE_INSTALL_PREFIX="$MEDIA_PREFIX" \
   -DFFMPEG_DIR="$FF" -DFEATURE_ffmpeg=ON -DFEATURE_mmrenderer=OFF -DFEATURE_gstreamer=OFF \
   -DFEATURE_spatialaudio=OFF -DFEATURE_quick3d_spatialaudio=OFF \
-  -DFEATURE_doc_snippets=OFF -DFEATURE_widgets=OFF -DBUILD_WITH_PCH=OFF -DQT_BUILD_TESTS=OFF -DQT_BUILD_EXAMPLES=OFF
+  -DFEATURE_doc_snippets=OFF -DQT_FEATURE_doc_snippets=OFF -DQT_BUILD_DOC_SNIPPETS=OFF -DFEATURE_widgets=OFF -DBUILD_WITH_PCH=OFF -DQT_BUILD_TESTS=OFF -DQT_BUILD_EXAMPLES=OFF
 cmake --build . --parallel "${JOBS:-6}"
 DESTDIR="$MEDIA_ROOT/qtmm-stage" cmake --install .

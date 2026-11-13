@@ -1,0 +1,113 @@
+# Video and audio on QNX (Qt Multimedia)
+
+Status: work in progress. Nothing in this page has played on the Pi 400 yet.
+The sections marked "measured" are facts read from the board, the QNX SDP and
+the Qt sources on 2026-11-13. The component code is written but has not been
+compiled for QNX, and no frame or sound has been produced. The device results
+are listed under [Not yet run](#not-yet-run).
+
+## Backend choice
+
+Qt Multimedia 6.12.0 has two backends that can build for QNX: `qnx`
+(mm-renderer) and `ffmpeg`.
+
+| Backend    | Result | Why |
+| ---------- | ------ | --- |
+| `qnx` (mm-renderer) | Not used | `QQnxMediaPlayer` attaches the video output to a native Screen window (`mmr_output_attach(..., "video")` in `src/plugins/multimedia/qnx/mediaplayer/qqnxmediaplayer.cpp:391`, `screen_create_window` in `common/qqnxwindowgrabber.cpp:89`). That window sits beside the Qt Quick scene graph, so it cannot clip, round, fade or draw under sibling React views, the window chrome or the drawer. |
+| `ffmpeg` | Chosen | Decodes in software and hands `QVideoFrame`s to `VideoOutput`, which draws them as a scene-graph texture. |
+
+The Pi image's own FFmpeg (`libavcodec.so.62.11.100`, FFmpeg 8.0) cannot be
+used. Its configuration (read from `avutil_configuration` in
+`libavutil.so.60`) has `--enable-gpl --enable-version3`, `--enable-libxvid`,
+and `--disable-decoder='h264,hevc,vc1,prores_raw'`. It is a GPL build with no
+H.264 decoder. The add-on therefore builds its own FFmpeg.
+
+Audio uses the Multimedia library's QNX 8 `io-snd` backend
+(`QT_FEATURE_qnx_io_snd`, `src/multimedia/qnx-iosnd/`), which needs no extra
+plugin.
+
+## What the board has (measured)
+
+- `/dev/snd` does not exist. `io-snd` is installed (`/system/bin/io-snd`,
+  `audio_io-snd_be-800_B247`) but not running, and as `qnxuser` it exits with
+  "Driver init failed - Operation not permitted". It needs root.
+- `/etc/system/config/sound/io_snd.conf` configures one controller,
+  `bcm2711_pwm`: the on-board 3.5 mm headphone jack. The I2S section for the
+  Raspiaudio Mic Ultra+ is commented out.
+- The installed audio drivers are `sndrv-ctrl-bcm2711_pcm.so`,
+  `sndrv-ctrl-bcm2711_pwm.so`, `sndrv-ctrl-usb.so` and `sndrv-mixer-wm8960.so`.
+  There is no HDMI audio driver on this image, so sound over HDMI is not
+  available here. Output would go to the 3.5 mm jack or a USB audio device.
+- `aplay -l`: "no soundcards found".
+
+## Add-on build
+
+`scripts/qt-media/` builds, in the `qnx805-build` container, into
+`/data/home/qnxuser/qt612-media/` (never `qt612-public-o2`):
+
+1. `build-ffmpeg.sh`: FFmpeg 8.0 (`ffmpeg.org/releases/ffmpeg-8.0.tar.xz`,
+   SHA-256 `b2751fcc...27b8e`). configure reported `License: LGPL version 2.1
+   or later` with `--disable-gpl --disable-nonfree --disable-version3
+   --disable-autodetect`. Decoders: H.264, VP8, VP9, MPEG-4, MJPEG, AAC, MP3,
+   Opus, Vorbis, FLAC, PCM. Protocols: file, http, tcp, pipe, cache (no TLS, so
+   no `https://` streams). Assembly is off. It built and installed.
+2. `build-qtmultimedia.sh`: `qtmultimedia-everywhere-src-6.12.0.tar.xz`
+   (SHA-256 `3143f53b...a62d`, equal to the value published next to the archive
+   on download.qt.io). It needs `libQt6Concurrent`, which the existing Qt core
+   build tree had not built. `ninja Concurrent` in that tree adds the one
+   library (15 steps, nothing else rebuilt); it is deployed in the add-on
+   directory.
+
+`run-media-app.sh` starts an app with `LD_LIBRARY_PATH` and `QT_PLUGIN_PATH`
+pointing at the add-on first.
+
+## Components (written, not yet built for QNX)
+
+- `QtVideo` (`packages/react-native-qnx/qt`): Fabric component `QnxQtVideo`,
+  behind `RNQNX_ENABLE_QT_VIDEO` (default OFF). `native/qt/video/` holds
+  `QtVideoItem` (a `QQuickItem` owning `QnxVideo.qml`: `MediaPlayer`,
+  `AudioOutput`, `VideoOutput` and a control bar drawn with plain Items).
+  Props: `source`, `paused`, `muted`, `volume`, `rate`, `repeat`, `resizeMode`,
+  `poster`, `controls`, `fullscreen`. Events: `onLoad`, `onProgress`, `onEnd`,
+  `onError`, `onBuffer`, `onSeek`, `onFullscreen`. Ref: `seek`, `play`,
+  `pause`. Generated Fabric code is under `vnext/generated/.../RnqnxQtVideo`
+  (`pnpm qt:video:check`).
+- `react-native-video` API subset (`packages/react-native-qnx/video`):
+  `useVideoPlayer`, `useEvent`, `VideoPlayer`, `VideoView`. It is plain
+  JavaScript over `QtVideo`, not a Nitro module. See below.
+
+## react-native-video 7.0.0-beta.12 and react-native-audio-api
+
+`react-native-video` 7.0.0-beta.12 does not run unchanged on the pinned Nitro
+v1 runtime (`1.0.0-alpha.nightly.136`), from inspecting the published tarball:
+
+- `src/core/utils/playerFactory.ts:13` calls
+  `NitroModules.createHybridObject('VideoPlayerFactory')` at import time. The
+  pinned `NitroModulesProxy` has no `createHybridObject`, so importing the
+  package throws.
+- The specs are Nitro v0 `interface ... extends HybridObject<{ios:'swift';
+  android:'kotlin'}>`; the shipped C++ was generated by nitrogen 0.35.0
+  (`explicit HybridXSpec(): HybridObject(TAG)`, `loadHybridMethods()`), which
+  does not match the pinned runtime's `HybridObject` class.
+- The peer range `react-native-nitro-modules >=0.35.0` does not match a
+  `1.0.0-alpha` version under npm semver rules.
+- The native view is a separate legacy Fabric component, `RNCVideoView`, with a
+  `nitroId` handshake.
+- The native contract is 88 pure virtual methods across seven HybridObjects.
+
+So the gallery uses the JavaScript subset above. `@videojs/react` is only
+imported from `*.web.tsx` files and is not needed on QNX.
+
+`react-native-audio-api` 1.0.0 also needs work: its C++ core
+(`common/cpp/audioapi`) is portable, but it installs through an
+`AudioAPIModule` TurboModule and has audio players only for iOS (AVAudioEngine)
+and Android (Oboe). A QNX `AudioPlayer` on `QAudioSink` and a JSI installer are
+missing. Until then audio is `QtVideo` with an audio file (the gallery's Audio
+card).
+
+## Not yet run
+
+On the Pi 400: FFmpeg and Qt Multimedia libraries loading, the audio device
+opening (`io-snd` must be started as root), first video frame, playing video,
+seek, pause, end, bad-URL error, and sound at the 3.5 mm jack (the owner has to
+confirm by ear).
