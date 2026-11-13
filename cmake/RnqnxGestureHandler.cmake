@@ -69,5 +69,7 @@ function(rnqnx_add_gesture_handler_target)
   target_compile_definitions(rnqnx_gesture_handler PUBLIC RNQNX_ENABLE_GESTURE_HANDLER=1 PRIVATE RNGH_USE_WORKLETS=1)
   target_link_libraries(rnqnx_gesture_handler PUBLIC rnqnx_worklets rnqnx_react_host Qt6::Quick)
   rnqnx_enable_strict_warnings(rnqnx_gesture_handler)
+  # Generated Fabric headers use #pragma mark.
+  target_compile_options(rnqnx_gesture_handler PRIVATE -Wno-unknown-pragmas)
   message(STATUS "react-native-gesture-handler ${pkg_version} from ${pkg}")
 endfunction()

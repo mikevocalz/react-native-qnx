@@ -64,7 +64,9 @@ function(rnqnx_add_worklets_target)
   set_source_files_properties(${upstream_sources} "${patched}" PROPERTIES COMPILE_OPTIONS "-w")
   target_include_directories(rnqnx_worklets
     PUBLIC "${RNQNX_REACT_QT_ROOT}/vnext/include"
-    PRIVATE "${common}" "${platform_dir}")
+    # Reanimated and Gesture Handler include <worklets/Compat/...> from here.
+    PUBLIC "${common}"
+    PRIVATE "${platform_dir}")
   target_compile_definitions(rnqnx_worklets PUBLIC
     RNQNX_ENABLE_WORKLETS=1
     PRIVATE WORKLETS_VERSION=${pkg_version})
