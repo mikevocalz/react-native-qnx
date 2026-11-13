@@ -42,6 +42,8 @@
 
 #include <screen/screen.h>
 
+#include "appkey.h"
+
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <png.h>
@@ -93,6 +95,9 @@ typedef struct {
   bool minimized;
   bool hidden_by_app; /* the app itself set VISIBLE=0 */
   char tag[128];
+  char app[128]; /* app key (appkey.h): build variants of one app share it */
+  bool duplicate_warned;
+  unsigned post_seq; /* order the window was posted in; the app's first window is the lowest */
   char title[128];
   uint32_t* icon; /* ITEM_ICON x ITEM_ICON premultiplied BGRA, or NULL */
   uint32_t* tile_icon; /* TILE_ICON x TILE_ICON, for the switcher */
@@ -111,6 +116,7 @@ static int window_count;
 static screen_window_t stack[MAX_WINDOWS];
 static int stack_count;
 
+static unsigned post_counter;
 static char pending_tag[128];
 static time_t pending_tag_time;
 
@@ -301,6 +307,7 @@ static void describe_window(managed_t* m) {
   char name[128] = {0}, icon[256] = {0};
   char process[128];
   process_name(m->pid, process, sizeof process);
+  rnqnx_app_key(process, m->app, sizeof m->app);
   /* The launcher's tag names the entry it started; otherwise a desktop entry
    * named after the program (org.example.app.desktop) still gives the app's
    * own name and icon. */
@@ -413,15 +420,37 @@ static void draw_icon(uint32_t* px, int stride, int x, int y, const uint32_t* ic
     }
 }
 
-/* Entries shown in the dock: posted app windows the app has not hidden. */
+/* The first-posted app window of the same app as `m`, or NULL when `m` is it.
+ * One app never has two entries or two windows in front of the user. */
+static managed_t* first_window_of_app(const managed_t* m) {
+  if (!m->app[0]) return NULL;
+  managed_t* first = NULL;
+  for (int i = 0; i < window_count; ++i) {
+    managed_t* other = &windows[i];
+    if (other->launcher || !other->posted || other->hidden_by_app) continue;
+    if (!rnqnx_same_app(other->app, m->app)) continue;
+    if (!first || other->post_seq < first->post_seq) first = other;
+  }
+  return first == m ? NULL : first;
+}
+
+/* Entries shown in the dock: posted app windows the app has not hidden, one
+ * per app. Windows that share an app key collapse into the first. */
 static int dock_entries(managed_t** out) {
   int n = 0;
   for (int i = 0; i < window_count; ++i) {
     managed_t* m = &windows[i];
     if (m->launcher || !m->posted || m->hidden_by_app) continue;
+    if (first_window_of_app(m)) continue;
     out[n++] = m;
   }
   return n;
+}
+
+/* True when the dock entry `m` stands for the front window (its own or a
+ * duplicate of the same app). */
+static bool entry_is_front(const managed_t* m, const managed_t* front) {
+  return front && (m == front || rnqnx_same_app(m->app, front->app));
 }
 
 static void update_dock(void) {
@@ -487,7 +516,7 @@ static void update_dock(void) {
       m->dock_x = m->dock_w = 0;
       continue;
     }
-    uint32_t bg = m == front ? 0xff2f4258 : 0x00000000;
+    uint32_t bg = entry_is_front(m, front) ? 0xff2f4258 : 0x00000000;
     if (bg) fill_round_rect(px, stride, width, height, x, DOCK_PAD, w, height - 2 * DOCK_PAD, 10, bg);
     int iy = (height - ITEM_ICON) / 2;
     if (w < 8 + ITEM_ICON + 8) {
@@ -501,7 +530,7 @@ static void update_dock(void) {
     if (w > 8 + ITEM_ICON + 18)
       draw_text(px, stride, width, height, x + 8 + ITEM_ICON + 10, height / 2 + 6, m->title,
               w - (8 + ITEM_ICON + 10) - 8, m->minimized ? 0x8a96a3 : 0xf2f5f8);
-    if (m == front) fill_round_rect(px, stride, width, height, x + w / 2 - 10, height - 5, 20, 3, 1,
+    if (entry_is_front(m, front)) fill_round_rect(px, stride, width, height, x + w / 2 - 10, height - 5, 20, 3, 1,
                                     0xff4fc3f7);
     m->dock_x = dock_rect[0] + x;
     m->dock_w = w;
@@ -1161,6 +1190,7 @@ static void on_post(screen_window_t win) {
   managed_t* m = find(win);
   if (!m || m->posted) return;
   m->posted = true;
+  m->post_seq = ++post_counter;
   if (m->launcher) {
     int size[2] = {display_size[0], display_size[1]};
     int pos[2] = {0, 0};
@@ -1186,6 +1216,23 @@ static void on_post(screen_window_t win) {
       screen_set_window_property_iv(win, SCREEN_PROPERTY_POSITION, moved);
     stack_push_top(win);
     LOG("post pid=%d size=%dx%d at %d,%d", (int)m->pid, size[0], size[1], moved[0], moved[1]);
+    /* A second window of an app that already has one: nothing is killed (the
+     * app or the launcher script owns that), but the first window stays in
+     * front and the dock keeps one entry. */
+    managed_t* first = first_window_of_app(m);
+    if (first) {
+      if (!m->duplicate_warned) {
+        m->duplicate_warned = true;
+        WARN("second window of '%s' (pid %d); the first is pid %d and stays in front", m->app,
+             (int)m->pid, (int)first->pid);
+      }
+      /* The duplicate goes to the bottom, hidden, so it neither covers the
+       * first window nor shows up when that one closes; it is still reachable
+       * from Alt+Tab. */
+      minimize_window(m);
+      raise_window(first);
+      return;
+    }
   }
   apply_stack();
 }
@@ -1316,10 +1363,14 @@ static void on_dock_pointer(screen_event_t ev) {
   for (int i = 0; i < n; ++i) {
     managed_t* m = entries[i];
     if (pos[0] < m->dock_x || pos[0] >= m->dock_x + m->dock_w) continue;
-    if (m->minimized || front_window() != m)
-      raise_window(m);
+    /* The entry stands for the app; act on its front window if a duplicate
+     * is the one in front. */
+    managed_t* front = front_window();
+    managed_t* target = entry_is_front(m, front) ? front : m;
+    if (target->minimized || front != target)
+      raise_window(target);
     else
-      minimize_window(m);
+      minimize_window(target);
     return;
   }
 }

@@ -7,8 +7,10 @@ import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { launchStepDetail } from '../../packages/react-native-qnx-cli/src/run.mjs';
 import {
   launchCommand,
+  REPLACE_FLAG,
   addressTowards,
 } from '../../packages/react-native-qnx-cli/src/dev-server.mjs';
 
@@ -34,9 +36,17 @@ assert.deepEqual(args, [
   'UserKnownHostsFile=/keys/known_hosts',
   '--',
   'qnxuser@192.168.2.2',
-  'nohup /data/home/qnxuser/run-chrome-app-dev.sh --dev-server http://192.168.2.1:8081 </dev/null >/dev/null 2>&1 &',
+  'nohup /data/home/qnxuser/run-chrome-app-dev.sh --replace --dev-server http://192.168.2.1:8081 </dev/null >/dev/null 2>&1 &',
 ]);
 assert.ok(!args.some((arg) => /StrictHostKeyChecking/.test(arg)), 'host keys are never skipped');
+// Every CLI launch replaces the running copy; project run launches without a dev server.
+assert.equal(REPLACE_FLAG, '--replace');
+assert.equal(
+  launchCommand({ device: 'qnxuser@192.168.2.2', launcher: '/data/home/qnxuser/run-app.sh' }).at(
+    -1
+  ),
+  'nohup /data/home/qnxuser/run-app.sh --replace </dev/null >/dev/null 2>&1 &'
+);
 for (const bad of [
   { device: 'board', launcher: '/a.sh', url: 'http://1.2.3.4:8081' },
   { device: 'u@h;rm -rf /', launcher: '/a.sh', url: 'http://1.2.3.4:8081' },
@@ -47,6 +57,11 @@ for (const bad of [
 ]) {
   assert.throws(() => launchCommand(bad), Error, JSON.stringify(bad));
 }
+// project run names the same --replace launch.
+assert.match(
+  launchStepDetail({ device: 'qnxuser@192.168.2.2', launcher: '/data/home/qnxuser/run-app.sh' }),
+  /'nohup \/data\/home\/qnxuser\/run-app\.sh --replace <\/dev\/null >\/dev\/null 2>&1 &'$/
+);
 assert.equal(await addressTowards('127.0.0.1'), '127.0.0.1');
 
 // --- resolver fallback ---------------------------------------------------------

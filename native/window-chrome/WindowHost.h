@@ -27,6 +27,11 @@
 #include <QObject>
 #include <QPointer>
 #include <QString>
+#include <QStringList>
+
+#include <functional>
+#include <memory>
+#include <optional>
 
 class QLocalServer;
 class QWindow;
@@ -37,32 +42,102 @@ namespace rnqnx::window {
 // available area because a window manager sized it so.
 bool windowExpanded(const QWindow& window);
 
-// One running copy per app id and user. The first process listens on a local
-// socket; a second launch hands its request to the first and exits.
+// Build-variant suffixes an app id can carry (`org.example.app.dev`). The
+// instance key is the id without them, so a development client and the
+// release build of one app are the same app. This is the one list.
+const QStringList& buildVariantSuffixes();
+
+// The id with every trailing build-variant suffix removed.
+QString baseAppId(const QString& appId);
+
+// Release or development build, reported over the socket.
+enum class BuildKind { Release, Dev };
+QString buildKindName(BuildKind kind);
+
+// What a running instance says about itself.
+struct InstanceInfo {
+  qint64 pid{0};
+  QString kind;  // "release" or "dev"
+};
+
+// How a launch treats an instance that is already running.
+enum class ReplaceResult {
+  NoneRunning,  // nothing answered; start normally
+  Replaced,     // the old instance is gone; start normally
+  Failed,       // it would not go (quit and SIGTERM both failed); do not start
+};
+
+// One running copy per app, whatever its build kind. The key is the base app
+// id only: a single-user device, so no uid in the name, and a dev client and
+// the release build share it. The first process listens on a local socket
+// `rnqnx-<base id>`. A later launch either hands it a restore request and
+// exits, or (replace) asks it to quit, waits, escalates to SIGTERM, then
+// takes over. Socket commands, one per line:
+//   restore  show the window                -> "ok pid=<n> kind=<kind>"
+//   info     report only                    -> "ok pid=<n> kind=<kind>"
+//   quit     close the app gracefully       -> "ok pid=<n> kind=<kind>"
 class SingleInstance final : public QObject {
   Q_OBJECT
 
  public:
-  explicit SingleInstance(const QString& appId, QObject* parent = nullptr);
+  explicit SingleInstance(const QString& appId, BuildKind kind = BuildKind::Release,
+                          QObject* parent = nullptr);
   ~SingleInstance() override;
 
-  // True when another process with the same app id is running and took the
-  // restore request. The caller should then exit without creating a window.
+  // The socket path for an app id (variant suffixes are ignored). It is the
+  // same for every launcher: /tmp (created if missing, RNQNX_SOCKET_DIR
+  // overrides it), whatever TMPDIR a session has, and world-accessible, so
+  // another login can still restore or replace the instance.
+  static QString socketNameFor(const QString& appId);
+  // Paths an older build may be listening on (`rnqnx-<id>-<uid>`, with and
+  // without the `.dev` suffix). They understand `restore` only.
+  static QStringList legacySocketNamesFor(const QString& appId);
+  // Where this process looks for a running instance, in order.
+  QStringList candidateSockets() const;
+
+  // True when another process with the same app took the restore request.
+  // The caller should then exit without creating a window.
   bool forwardedToRunningInstance();
+  // What a running instance reports, if one answers.
+  std::optional<InstanceInfo> runningInstanceInfo();
+  // Asks the running instance to quit and waits up to `quitTimeoutMs` for its
+  // process to exit; then sends SIGTERM to the pid it reported and waits up
+  // to `termTimeoutMs`. Never sends SIGKILL.
+  ReplaceResult replaceRunningInstance(int quitTimeoutMs = 5000, int termTimeoutMs = 3000);
   // Starts listening. Returns false (and logs) when the socket cannot be made;
   // the app then runs without the relaunch-to-restore path.
   bool listen();
+  // After listen() returned false: the key belongs to a live instance or to a
+  // launch that is starting (as opposed to an environment that cannot make a
+  // socket at all). The caller must not start a second copy then.
+  bool failedBecauseOwned() const { return failedBecauseOwned_; }
   QString serverName() const { return serverName_; }
+
+  // Tests replace how a pid is checked and signalled.
+  void setProcessProbe(std::function<bool(qint64)> alive,
+                       std::function<void(qint64)> terminate);
 
  Q_SIGNALS:
   // A later launch of the same app asked this one to show its window.
   void restoreRequested();
+  // A later launch with --replace asked this one to quit.
+  void quitRequested();
 
  private:
   void acceptConnections();
+  std::optional<InstanceInfo> talk(const QString& socketName, const char* command);
+  bool waitForExit(qint64 pid, int timeoutMs);
 
+  bool failedBecauseOwned_{false};
+  QString baseId_;
+  BuildKind kind_;
   QString serverName_;
   QPointer<QLocalServer> server_;
+  // Held while this process owns the key, so two launches that start together
+  // (even as different users) cannot both pass the probe in listen().
+  std::shared_ptr<void> lock_;
+  std::function<bool(qint64)> alive_;
+  std::function<void(qint64)> terminate_;
 };
 
 // Asks the Screen window manager whether it keeps app windows at their own
