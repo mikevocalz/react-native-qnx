@@ -160,6 +160,19 @@ class NativeUiQuickTest : public QObject {
     QVERIFY(!panel->isVisible());
   }
 
+  // The mounting layer appends a child and then restacks it with stackBefore,
+  // so the panel can arrive after the content and still be child 0.
+  void drawerPanelInsertedBeforeContentKeepsItsRole() {
+    auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(drawer);
+    auto* main = mountChild(drawer.get(), QRectF(0, 0, 600, 400));
+    auto* panel = mountChild(drawer.get(), QRectF(0, 0, 280, 400));
+    panel->stackBefore(main);
+    QMetaObject::invokeMethod(drawer.get(), "syncPanels");
+    QCOMPARE(drawer->property("drawerPanel").value<QQuickItem*>(), panel);
+    QCOMPARE(drawer->property("mainPanel").value<QQuickItem*>(), main);
+  }
+
   void drawerStartsOpenWithoutAnimating() {
     auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
     QVERIFY(drawer);

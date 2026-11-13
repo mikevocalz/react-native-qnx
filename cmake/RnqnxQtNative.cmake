@@ -10,6 +10,9 @@ option(RNQNX_ENABLE_QT_RNSVG "Build react-native-svg element rendering on Qt Qui
 # The drawer, the tab bar and the ExpoImage view are on by default in a
 # consumer app build (the Pi 400 build) and off everywhere else, so the host
 # renderer graphs and the Marathon target build as before unless they ask.
+# Declared here as well as in RnqnxReactQt.cmake (which is included later) so
+# the default below sees the same switch whatever the include order.
+option(RNQNX_BUILD_CONSUMER_APP "Build an external configured consumer application" OFF)
 if(RNQNX_BUILD_CONSUMER_APP)
   set(_rnqnx_native_ui_default ON)
 else()

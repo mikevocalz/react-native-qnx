@@ -181,7 +181,13 @@ Item {
     Item {
         id: container
         anchors.fill: parent
-        onChildrenChanged: root.syncPanels()
+        // The mounting layer adds a child and then restacks it with stackBefore;
+        // Qt does not signal the restack, so sync again once the event loop runs
+        // (and the bridge calls syncPanels after every prop update).
+        onChildrenChanged: {
+            root.syncPanels();
+            Qt.callLater(root.syncPanels);
+        }
     }
 
     // Covers the main content while the drawer is open. It is the last child

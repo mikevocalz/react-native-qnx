@@ -143,6 +143,8 @@ bool applyDrawer(QQuickItem* item, const rn::ShadowView& view) {
   item->setProperty("edgeWidth", props->edgeWidth);
   item->setProperty("swipeExclusionLeft", props->swipeExclusionLeft);
   item->setProperty("topInset", props->topInset);
+  // Children may have been restacked since the last signal.
+  QMetaObject::invokeMethod(item, "syncPanels");
   // Last: the animation reads the width and side above.
   item->setProperty("open", props->open);
   return true;
@@ -289,10 +291,12 @@ class ExpoImageBridge final : public QObject {
     if (!emitter_) return;
     rn::ViewManagerAdapter_ExpoImageEventEmitter::OnLoad event{};
     event.cacheType = cacheType.toStdString();
-    event.source.url = url.toStdString();
+    // Report the app's own URI, not the resolved image-provider URL.
+    const QString& reported = shownUri.isEmpty() ? url : shownUri;
+    event.source.url = reported.toStdString();
     event.source.width = width;
     event.source.height = height;
-    event.source.mediaType = mediaTypeFor(url).toStdString();
+    event.source.mediaType = mediaTypeFor(reported).toStdString();
     event.source.isAnimated = false;
     emitter_->onLoad(std::move(event));
   }
