@@ -1226,7 +1226,12 @@ static void on_post(screen_window_t win) {
         WARN("second window of '%s' (pid %d); the first is pid %d and stays in front", m->app,
              (int)m->pid, (int)first->pid);
       }
+      /* The duplicate goes to the bottom, hidden, so it neither covers the
+       * first window nor shows up when that one closes; it is still reachable
+       * from Alt+Tab. */
+      minimize_window(m);
       raise_window(first);
+      return;
     }
   }
   apply_stack();

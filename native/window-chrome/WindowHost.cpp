@@ -260,7 +260,16 @@ std::shared_ptr<void> acquireKeyLock([[maybe_unused]] const QString& path, int t
             KeyLock::held().insert(key);
             return result;
           }
+          // Held by another process: wait. Any other error (a filesystem without
+          // record locks) leaves the socket alone to arbitrate.
+          const int error = errno;
           ::close(fd);
+          if (error != EAGAIN && error != EACCES) {
+            auto result = std::make_shared<KeyLock>();
+            result->key = key;
+            KeyLock::held().insert(key);
+            return result;
+          }
         } else {
           // The lock file cannot be made at all (read-only directory): the
           // socket alone has to arbitrate.
@@ -432,6 +441,7 @@ bool SingleInstance::listen() {
     }
     return false;
   };
+  failedBecauseOwned_ = true;
   if (liveOwner()) return false;
   // Probe, remove and listen are one step: another launch starting at the same
   // moment (any login) waits here, then finds this socket live. The lock goes
@@ -443,6 +453,7 @@ bool SingleInstance::listen() {
     return false;
   }
   if (liveOwner()) return false;
+  failedBecauseOwned_ = false;
   // Nobody answers: a socket file that is still there is stale (a crashed
   // process) and goes. If another login's stale file cannot be removed, this
   // user's own fallback path takes its place (candidateSockets() covers it).

@@ -107,6 +107,10 @@ class SingleInstance final : public QObject {
   // Starts listening. Returns false (and logs) when the socket cannot be made;
   // the app then runs without the relaunch-to-restore path.
   bool listen();
+  // After listen() returned false: the key belongs to a live instance or to a
+  // launch that is starting (as opposed to an environment that cannot make a
+  // socket at all). The caller must not start a second copy then.
+  bool failedBecauseOwned() const { return failedBecauseOwned_; }
   QString serverName() const { return serverName_; }
 
   // Tests replace how a pid is checked and signalled.
@@ -124,6 +128,7 @@ class SingleInstance final : public QObject {
   std::optional<InstanceInfo> talk(const QString& socketName, const char* command);
   bool waitForExit(qint64 pid, int timeoutMs);
 
+  bool failedBecauseOwned_{false};
   QString baseId_;
   BuildKind kind_;
   QString serverName_;

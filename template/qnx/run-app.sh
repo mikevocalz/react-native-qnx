@@ -45,9 +45,10 @@ BASE=$(base_id "$APP_ID")
 # user's when run as root (root sees them all and may stop them).
 running_pids() {
   me=${RNQNX_UID:-$(id -u)}
+  name_me=$(id -un 2>/dev/null)
   "$PIDIN" -F '%a %N %U' 2>/dev/null | while read -r pid name uid rest; do
     case $pid in '' | *[!0-9]*) continue ;; esac
-    [ "$me" = 0 ] || [ "$uid" = "$me" ] || continue
+    [ "$me" = 0 ] || [ "$uid" = "$me" ] || [ "$uid" = "$name_me" ] || continue
     name=${name##*/}
     [ "$(base_id "$name")" = "$BASE" ] || continue
     [ "$pid" = "$$" ] && continue

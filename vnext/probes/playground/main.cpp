@@ -62,6 +62,7 @@
 #include <QQuickWindow>
 #include <QScreen>
 #include <QString>
+#include <QThread>
 #include <QTimer>
 #include <functional>
 #include <memory>
@@ -501,10 +502,25 @@ int main(int argc, char** argv) {
     }
     // Two launches that start together can both miss the other's socket; the
     // one that cannot take it finds the owner now and restores it instead.
-    if (!singleInstance->listen() && singleInstance->forwardedToRunningInstance()) {
-      std::printf("RNQNX_SINGLE_INSTANCE restored the running %s\n",
-                  identity.appId.toUtf8().constData());
-      return 0;
+    // When the key is held and nobody has answered yet, give the owner a
+    // moment to start listening; a second window is never the fallback.
+    if (!singleInstance->listen()) {
+      bool restored = false;
+      const int attempts = singleInstance->failedBecauseOwned() ? 10 : 1;
+      for (int attempt = 0; attempt < attempts && !restored; ++attempt) {
+        restored = singleInstance->forwardedToRunningInstance();
+        if (!restored && attempt + 1 < attempts) QThread::msleep(300);
+      }
+      if (restored) {
+        std::printf("RNQNX_SINGLE_INSTANCE restored the running %s\n",
+                    identity.appId.toUtf8().constData());
+        return 0;
+      }
+      if (singleInstance->failedBecauseOwned()) {
+        std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_ERROR %s is owned by another launch that does not answer\n",
+                     identity.appId.toUtf8().constData());
+        return 75;
+      }
     }
   }
 #endif
@@ -812,7 +828,7 @@ int main(int argc, char** argv) {
     if (!fetched.ok) {
       dev->showError(fetched.errorTitle, fetched.errorMessage);
       if (parser.isSet(screenshotOption)) return 1;
-      result = runApplicationLoop();
+      result = quitByLaunch ? 0 : runApplicationLoop();
       if (reloadRequested && !quitByLaunch) continue;
       break;
     }
@@ -876,7 +892,7 @@ int main(int argc, char** argv) {
       // Keep the window: show the error and wait for a fix and a reload.
       dev->showError(QStringLiteral("The JavaScript bundle threw while loading"),
                      host.lastError());
-      return runApplicationLoop();
+      return quitByLaunch ? 0 : runApplicationLoop();
     }
 #endif
     return 1;
