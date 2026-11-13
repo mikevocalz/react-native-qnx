@@ -1,5 +1,9 @@
 # Current state
 
+Start with the [2026-11-13 handoff](HANDOFF_2026-11-13.md): it explains how to
+load and control the app on the Pi 400, what is merged, and what is open.
+The sections below keep their original dates.
+
 ## PR 105 review follow-up — 2026-11-10
 
 The constrained Nitro generator at `c09a5b1` rejects unsupported contracts and
