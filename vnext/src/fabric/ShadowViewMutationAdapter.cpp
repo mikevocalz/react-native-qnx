@@ -9,6 +9,7 @@
 #include "react-native-qnx/fabric/QtImageBridge.h"
 #include "react-native-qnx/fabric/QtScrollBridge.h"
 #include "react-native-qnx/fabric/QtSwitchBridge.h"
+#include "react-native-qnx/fabric/QtModalBridge.h"
 #if RNQNX_ENABLE_QT_VIDEO
 #include <QtVideoItem.h>
 #endif
@@ -395,6 +396,7 @@ LayoutFrame toLayoutFrame(const facebook::react::LayoutMetrics& metrics) {
 
 ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer)
     : layer_(layer) {
+  mapComponent(QStringLiteral("ModalHostView"), QStringLiteral("RNQnxModal"));
 #if RNQNX_ENABLE_QT_SVG
   mapComponent(QStringLiteral("QnxSvgDocument"), QStringLiteral("QnxSvgDocument"));
 #endif
@@ -597,6 +599,29 @@ void ShadowViewMutationAdapter::applySwitch(const ShadowView& view) {
   }
 
   layer_.updateSwitch(view.tag, style);
+}
+
+void ShadowViewMutationAdapter::connectModalEvents(const ShadowView& view) {
+  if (componentNameOf(view) != QStringLiteral("ModalHostView") ||
+      modalBridges_.contains(view.tag)) {
+    return;
+  }
+  const auto emitter =
+      std::dynamic_pointer_cast<const facebook::react::ModalHostViewEventEmitter>(
+          view.eventEmitter);
+  QQuickItem* item = layer_.itemForTag(view.tag);
+  // A host that maps ModalHostView to a plain View has no requestClose()
+  // signal; it keeps the old behaviour of a modal that only closes from JS.
+  if (emitter == nullptr || item == nullptr ||
+      item->metaObject()->indexOfSignal("requestClose()") < 0) {
+    return;
+  }
+  modalBridges_.insert(
+      view.tag,
+      new QtModalBridge(*item, [emitter] {
+        emitter->onRequestClose(
+            facebook::react::ModalHostViewEventEmitter::OnRequestClose{});
+      }));
 }
 
 MountError ShadowViewMutationAdapter::applyModal(const ShadowView& view) {
@@ -1034,6 +1059,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       connectTextInputEvents(view);
       connectSwitchEvents(view);
       connectImageEvents(view);
+      connectModalEvents(view);
       applyText(view);
       applyImage(view);
       const auto textInputError = applyTextInput(view);
@@ -1070,6 +1096,7 @@ MountError ShadowViewMutationAdapter::applyOne(
 #endif
       switchBridges_.remove(mutation.oldChildShadowView.tag);
       modalViews_.remove(mutation.oldChildShadowView.tag);
+      modalBridges_.remove(mutation.oldChildShadowView.tag);
       imageBridges_.remove(mutation.oldChildShadowView.tag);
       return layer_.destroy(mutation.oldChildShadowView.tag);
 
@@ -1123,6 +1150,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       connectTextInputEvents(view);
       connectSwitchEvents(view);
       connectImageEvents(view);
+      connectModalEvents(view);
       applyText(view);
       applyImage(view);
       const auto textInputError = applyTextInput(view);

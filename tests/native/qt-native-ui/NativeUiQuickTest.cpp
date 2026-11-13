@@ -834,6 +834,37 @@ class NativeUiQuickTest : public QObject {
     QCOMPARE(visibleTitles(), 0);
   }
 
+  // A held press has to stand out from a resting tab on the bar's own
+  // background, light or dark. The wash used to be fixed white, which a light
+  // bar hid completely.
+  void tabBarPressedStateShowsOnLightAndDarkBars() {
+    const struct {
+      QColor background;
+      QColor tint;
+    } bars[] = {{QColor(255, 255, 255), QColor(40, 48, 60)}, {QColor(0, 0, 0), QColor(220, 228, 240)}};
+    for (const auto& scheme : bars) {
+      auto bar = load(QStringLiteral("QtTabBar.qml"), QSize(600, 60));
+      QVERIFY(bar);
+      bar->setProperty("tabs", tabs());
+      bar->setProperty("activeKey", QStringLiteral("home"));
+      bar->setProperty("layout", QStringLiteral("bottom"));
+      bar->setProperty("backgroundColor", scheme.background);
+      bar->setProperty("tintInactive", scheme.tint);
+      QTest::qWait(50);
+      const QPoint second(300, 30);  // the middle tab, inactive
+      const QColor before = window_->grabWindow().pixelColor(second.x() - 40, 8);
+      QTest::mousePress(window_.get(), Qt::LeftButton, Qt::NoModifier, second);
+      QTest::qWait(1000);  // held, as a long finger or button press is
+      const QColor held = window_->grabWindow().pixelColor(second.x() - 40, 8);
+      const int delta = std::abs(held.red() - before.red()) + std::abs(held.green() - before.green()) +
+                        std::abs(held.blue() - before.blue());
+      QTest::mouseRelease(window_.get(), Qt::LeftButton, Qt::NoModifier, second);
+      QVERIFY2(delta >= 30, qPrintable(QStringLiteral("held tab differs by only %1 on %2")
+                                           .arg(delta)
+                                           .arg(scheme.background.name())));
+    }
+  }
+
   void tabBarPressedStateAndEscape() {
     auto bar = load(QStringLiteral("QtTabBar.qml"), QSize(600, 60));
     QVERIFY(bar);

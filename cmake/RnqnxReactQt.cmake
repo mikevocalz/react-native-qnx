@@ -26,6 +26,7 @@ function(rnqnx_add_qt_views_target)
   add_library(rnqnx_views_qt STATIC
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtQuickItemFactory.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtExtraItems.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtModalQml.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QnxImageProvider.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageDiskCache.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/QtImageFetcher.cpp"
@@ -110,6 +111,8 @@ function(rnqnx_add_fabric_adapter_target)
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtTouchDispatcher.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtScrollBridge.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtScrollBridge.h"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtModalBridge.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtModalBridge.h"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtSwitchBridge.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtSwitchBridge.h"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtImageBridge.cpp"

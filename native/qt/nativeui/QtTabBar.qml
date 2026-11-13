@@ -231,8 +231,12 @@ FocusScope {
                 anchors.fill: parent
                 anchors.margins: root.sideMode ? 6 : 4
                 radius: 10
-                color: tab.active ? Qt.rgba(root.tintActive.r, root.tintActive.g, root.tintActive.b, tap.pressed ? 0.28 : 0.16)
-                                  : (tap.pressed ? "#33ffffff" : (hover.hovered ? "#22ffffff" : "transparent"))
+                // The wash comes from the tab's own tint, which the app picks to
+                // read against its bar color. A fixed white wash vanished on a
+                // light bar.
+                color: Qt.rgba(tab.tint.r, tab.tint.g, tab.tint.b,
+                               tap.pressed ? (tab.active ? 0.30 : 0.24)
+                                           : (tab.active ? 0.16 : (hover.hovered ? 0.12 : 0)))
                 Behavior on color { ColorAnimation { duration: 120 } }
             }
 
@@ -249,6 +253,8 @@ FocusScope {
             Column {
                 anchors.centerIn: parent
                 spacing: 2
+                scale: tap.pressed ? 0.94 : 1
+                Behavior on scale { NumberAnimation { duration: 90 } }
 
                 Item {
                     id: iconBox
