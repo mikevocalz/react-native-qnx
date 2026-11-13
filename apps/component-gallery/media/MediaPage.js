@@ -12,10 +12,16 @@ function MediaPage({ width }) {
   return h(
     ScrollView,
     { contentContainerStyle: { paddingBottom: 24 } },
-    h(View, { style: { marginBottom: 12 } },
+    h(
+      View,
+      { style: { marginBottom: 12 } },
       h(Text, { style: { color: INK, fontSize: 21 } }, 'Media'),
-      h(Text, { style: { color: MUTED, fontSize: 14 } },
-        'Video and audio through Qt Multimedia (FFmpeg backend), bundled clip, Mac stream and error state')),
+      h(
+        Text,
+        { style: { color: MUTED, fontSize: 14 } },
+        'Video and audio through Qt Multimedia (FFmpeg backend), bundled clip, Mac stream and error state'
+      )
+    ),
     h(VideoCard, { width: cardWidth }),
     h(AudioCard, { width: cardWidth })
   );

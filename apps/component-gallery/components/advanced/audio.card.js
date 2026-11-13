@@ -6,8 +6,11 @@ const { Text } = require('react-native');
 function AudioAdvancedCard() {
   const { UIManager } = require('react-native');
   if (!UIManager.hasViewManagerConfig('QnxQtVideo')) {
-    return React.createElement(Text, { style: { color: '#9dafc2' } },
-      'Audio needs QtVideo, which is not in this build (RNQNX_ENABLE_QT_VIDEO=OFF).');
+    return React.createElement(
+      Text,
+      { style: { color: '#9dafc2' } },
+      'Audio needs QtVideo, which is not in this build (RNQNX_ENABLE_QT_VIDEO=OFF).'
+    );
   }
   const { AudioCard } = require('../../media/AudioCard.js');
   return React.createElement(AudioCard, { width: 600, bare: true });

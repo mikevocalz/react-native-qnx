@@ -10,11 +10,11 @@ it.
 Run inside the `qnx805-build` container, after `scripts/qt-public/` has
 produced the Qt build tree (`$QT_PUBLIC_BUILD/qnx-build`).
 
-| Step | Script | Output |
-| ---- | ------ | ------ |
-| 1 | `build-ffmpeg.sh` | `$MEDIA_ROOT/ff-stage` (headers, `libav*.so`) |
-| 2 | `build-qtmultimedia.sh` | `$MEDIA_ROOT/qtmm-stage` (`libQt6Multimedia*`, QML module, `ffmpeg` plugin) |
-| 3 | `stage-media-runtime.sh` | `$MEDIA_ROOT/runtime` + `SHA256SUMS`, ready to copy to the board |
+| Step | Script                   | Output                                                                      |
+| ---- | ------------------------ | --------------------------------------------------------------------------- |
+| 1    | `build-ffmpeg.sh`        | `$MEDIA_ROOT/ff-stage` (headers, `libav*.so`)                               |
+| 2    | `build-qtmultimedia.sh`  | `$MEDIA_ROOT/qtmm-stage` (`libQt6Multimedia*`, QML module, `ffmpeg` plugin) |
+| 3    | `stage-media-runtime.sh` | `$MEDIA_ROOT/runtime` + `SHA256SUMS`, ready to copy to the board            |
 
 Sources and hashes are listed in `../../docs/packaging.md` and
 `../../docs/evidence/media-2026-11-13.md`.

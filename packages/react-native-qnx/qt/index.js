@@ -40,7 +40,18 @@ const RESIZE_MODES = ['contain', 'cover', 'stretch'];
  * onFullscreen({fullscreen}). The ref exposes seek(seconds), play() and pause().
  */
 const QtVideo = React.forwardRef(function QtVideo(props, ref) {
-  const { source, resizeMode, onLoad, onProgress, onEnd, onError, onBuffer, onSeek, onFullscreen, ...rest } = props;
+  const {
+    source,
+    resizeMode,
+    onLoad,
+    onProgress,
+    onEnd,
+    onError,
+    onBuffer,
+    onSeek,
+    onFullscreen,
+    ...rest
+  } = props;
   if (source != null && typeof source !== 'string' && typeof source?.uri !== 'string') {
     throw new TypeError('QtVideo.source must be a string or { uri: string }.');
   }
@@ -51,11 +62,16 @@ const QtVideo = React.forwardRef(function QtVideo(props, ref) {
     throw new Error('QtVideo is unavailable. Build the QNX/Qt host with RNQNX_ENABLE_QT_VIDEO=ON.');
   }
   const nativeRef = React.useRef(null);
-  React.useImperativeHandle(ref, () => ({
-    seek: (seconds) => nativeRef.current && VideoCommands.seek(nativeRef.current, Number(seconds)),
-    play: () => nativeRef.current && VideoCommands.play(nativeRef.current),
-    pause: () => nativeRef.current && VideoCommands.pause(nativeRef.current),
-  }), []);
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      seek: (seconds) =>
+        nativeRef.current && VideoCommands.seek(nativeRef.current, Number(seconds)),
+      play: () => nativeRef.current && VideoCommands.play(nativeRef.current),
+      pause: () => nativeRef.current && VideoCommands.pause(nativeRef.current),
+    }),
+    []
+  );
   const uri = typeof source === 'string' ? source : source?.uri;
   const wrap = (handler) => (handler ? (event) => handler(event.nativeEvent) : undefined);
   return React.createElement(NativeVideo, {

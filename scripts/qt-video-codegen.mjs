@@ -59,7 +59,9 @@ try {
       }
     }
   }
-  console.log(`Qt Video Fabric codegen ${mode.slice(2)} passed (${version}, ${files.length} files)`);
+  console.log(
+    `Qt Video Fabric codegen ${mode.slice(2)} passed (${version}, ${files.length} files)`
+  );
 } finally {
   fs.rmSync(temporary, { recursive: true, force: true });
 }

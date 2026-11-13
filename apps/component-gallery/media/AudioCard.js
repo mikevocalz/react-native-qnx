@@ -10,9 +10,15 @@ function Button({ title, onPress }) {
   return h(
     Pressable,
     {
-      onPress, accessibilityRole: 'button', accessibilityLabel: title,
+      onPress,
+      accessibilityRole: 'button',
+      accessibilityLabel: title,
       style: ({ pressed }) => ({
-        minHeight: 40, paddingHorizontal: 18, justifyContent: 'center', borderRadius: 9, marginRight: 8,
+        minHeight: 40,
+        paddingHorizontal: 18,
+        justifyContent: 'center',
+        borderRadius: 9,
+        marginRight: 8,
         backgroundColor: pressed ? '#237a80' : SELECTED,
       }),
     },
@@ -32,23 +38,60 @@ function AudioCard({ width, bare = false }) {
   const ref = React.useRef(null);
   return h(
     View,
-    { style: bare ? { width: '100%' } : { width, backgroundColor: PANEL, borderRadius: 14, padding: 16, marginBottom: 20 } },
+    {
+      style: bare
+        ? { width: '100%' }
+        : { width, backgroundColor: PANEL, borderRadius: 14, padding: 16, marginBottom: 20 },
+    },
     !bare && h(Text, { style: { color: INK, fontSize: 17, marginBottom: 4 } }, 'Audio'),
-    !bare && h(Text, { style: { color: MUTED, fontSize: 13, marginBottom: 10 } },
-      'Qt AudioOutput through io-snd; plays a bundled 3 s tone'),
+    !bare &&
+      h(
+        Text,
+        { style: { color: MUTED, fontSize: 13, marginBottom: 10 } },
+        'Qt AudioOutput through io-snd; plays a bundled 3 s tone'
+      ),
     h(QtVideo, {
-      ref, source: BUNDLED_TONE, paused, volume, repeat: false, style: { width: 1, height: 1 },
+      ref,
+      source: BUNDLED_TONE,
+      paused,
+      volume,
+      repeat: false,
+      style: { width: 1, height: 1 },
       onLoad: (e) => setStatus(`loaded, ${e.duration.toFixed(1)} s`),
       onProgress: (e) => setStatus(`playing ${e.currentTime.toFixed(1)} s`),
-      onEnd: () => { setStatus('ended'); setPaused(true); },
+      onEnd: () => {
+        setStatus('ended');
+        setPaused(true);
+      },
       onError: (e) => setStatus(`error: ${e.message}`),
     }),
-    h(View, { style: { flexDirection: 'row', marginBottom: 8 } },
-      h(Button, { title: paused ? 'Play' : 'Pause', onPress: () => { if (paused && status === 'ended') ref.current.seek(0); setPaused(!paused); } }),
-      h(Button, { title: 'Volume -', onPress: () => setVolume(Math.max(0, +(volume - 0.1).toFixed(1))) }),
-      h(Button, { title: 'Volume +', onPress: () => setVolume(Math.min(1, +(volume + 0.1).toFixed(1))) })),
-    h(Text, { style: { color: status.startsWith('error') ? DANGER : ACCENT, fontSize: 13 }, accessibilityLabel: 'Audio status' },
-      `${status}  ·  volume ${Math.round(volume * 100)}%`)
+    h(
+      View,
+      { style: { flexDirection: 'row', marginBottom: 8 } },
+      h(Button, {
+        title: paused ? 'Play' : 'Pause',
+        onPress: () => {
+          if (paused && status === 'ended') ref.current.seek(0);
+          setPaused(!paused);
+        },
+      }),
+      h(Button, {
+        title: 'Volume -',
+        onPress: () => setVolume(Math.max(0, +(volume - 0.1).toFixed(1))),
+      }),
+      h(Button, {
+        title: 'Volume +',
+        onPress: () => setVolume(Math.min(1, +(volume + 0.1).toFixed(1))),
+      })
+    ),
+    h(
+      Text,
+      {
+        style: { color: status.startsWith('error') ? DANGER : ACCENT, fontSize: 13 },
+        accessibilityLabel: 'Audio status',
+      },
+      `${status}  ·  volume ${Math.round(volume * 100)}%`
+    )
   );
 }
 

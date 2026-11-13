@@ -8,8 +8,11 @@ const { Text } = require('react-native');
 function VideoAdvancedCard() {
   const { UIManager } = require('react-native');
   if (!UIManager.hasViewManagerConfig('QnxQtVideo')) {
-    return React.createElement(Text, { style: { color: '#9dafc2' } },
-      'QtVideo is not in this build (RNQNX_ENABLE_QT_VIDEO=OFF).');
+    return React.createElement(
+      Text,
+      { style: { color: '#9dafc2' } },
+      'QtVideo is not in this build (RNQNX_ENABLE_QT_VIDEO=OFF).'
+    );
   }
   const { VideoCard } = require('../../media/VideoCard.js');
   return React.createElement(VideoCard, { width: 600, bare: true });
