@@ -69,11 +69,16 @@ async function copySource(source, dest, budget) {
 async function packLocalPackages(output, marathon) {
   const names = ['react-native-qnx', 'metro-config-qnx'];
   if (marathon) names.push('react-native-marathon', 'metro-config-marathon');
+  else names.push('expo-router-qnx');
   const staging = await mkdtemp(path.join(output, '.pack-'));
   const vendor = path.join(output, 'vendor');
   await mkdir(vendor);
   /** @type {Record<string, string>} */
-  const expected = { ...CONSUMER_CONTRACT.packages, ...CONSUMER_CONTRACT.marathonPackages };
+  const expected = {
+    ...CONSUMER_CONTRACT.packages,
+    ...CONSUMER_CONTRACT.routerPackages,
+    ...CONSUMER_CONTRACT.marathonPackages,
+  };
   /** @type {Record<string, {version: string, file: string, sha256: string}>} */
   const artifacts = {};
   const manifests = new Map();
@@ -93,6 +98,9 @@ async function packLocalPackages(output, marathon) {
       const packageDir = path.join(staging, name);
       await mkdir(packageDir);
       const files = name.startsWith('react-native-') ? ['index.js', 'Libraries'] : ['src'];
+      if (name === 'expo-router-qnx') files.push('metro.js', 'README.md');
+      // expo-modules-core's polyfill entry resolves to expo/polyfill.js here.
+      if (name === 'react-native-qnx') files.push('expo');
       if (name === 'metro-config-qnx') files.push('public-entry.js', 'public-entry.d.ts');
       const budget = { files: 0, bytes: 0 };
       for (const file of files) {
@@ -167,6 +175,63 @@ async function packLocalPackages(output, marathon) {
   } finally {
     await rm(staging, { recursive: true, force: true });
   }
+}
+
+const routerStarterRoot = path.join(sourceRoot, 'template', 'qnx-router');
+
+/** The expo-router starter's Metro config: the QNX config plus the router resolver. */
+function routerMetroConfig() {
+  return [
+    "const path = require('node:path');",
+    "const { createRequire } = require('node:module');",
+    "const { getQnxMetroConfig } = require('@rn-qnx/metro-config-qnx');",
+    "const withPublicEntry = require('@rn-qnx/metro-config-qnx/public-entry');",
+    "const { withExpoRouterQnx } = require('@rn-qnx/expo-router-qnx/metro');",
+    "const rn = createRequire(require.resolve('react-native/package.json'));",
+    'module.exports = withExpoRouterQnx(',
+    '  withPublicEntry(getQnxMetroConfig(__dirname, {',
+    '    transformer: { unstable_allowRequireContext: true },',
+    "    resolver: { extraNodeModules: { '@babel/runtime': path.dirname(rn.resolve('@babel/runtime/package.json')) } },",
+    "  }), 'qnx'),",
+    "  { routerContext: path.join(__dirname, 'app-ctx.js') }",
+    ');',
+    '',
+  ].join('\n');
+}
+
+/**
+ * Writes template/qnx-router into the new project: a drawer around a tabs
+ * group, with the app name and component name filled in.
+ * @param {string} destination
+ * @param {{ displayName: string, componentName: string }} identity
+ */
+async function writeRouterStarter(destination, identity) {
+  const appNameLiteral = JSON.stringify(identity.displayName)
+    .replaceAll('\u2028', '\\u2028')
+    .replaceAll('\u2029', '\\u2029');
+  /** @param {string} directory @param {string} relative */
+  async function copyTree(directory, relative) {
+    for (const entry of await readdir(path.join(directory, relative), { withFileTypes: true })) {
+      const next = path.join(relative, entry.name);
+      if (entry.isSymbolicLink()) throw new Error('Starter template contains a symlink.');
+      if (entry.isDirectory()) {
+        await mkdir(path.join(destination, next), { recursive: true });
+        await copyTree(directory, next);
+      } else if (entry.isFile()) {
+        const source = await smallSource(path.join(directory, next));
+        await writeFile(
+          path.join(destination, next),
+          // __APP_NAME__ is a bare JS expression in the template; it becomes a
+          // JSON string literal, so the name stays exact whatever it contains.
+          // A replacer function keeps `$&` and friends in a name literal.
+          source
+            .replaceAll('__APP_NAME__', () => appNameLiteral)
+            .replaceAll('__COMPONENT_NAME__', () => identity.componentName)
+        );
+      }
+    }
+  }
+  await copyTree(routerStarterRoot, '');
 }
 
 /** @param {string[]} argv */
@@ -258,6 +323,13 @@ export async function createProjectMain(argv) {
         'react-native': versions['react-native'],
         expo: versions.expo,
         zustand: '5.1.0',
+        ...(marathon
+          ? {}
+          : Object.fromEntries(
+              Object.entries(CONSUMER_CONTRACT.routerPackages).filter(
+                ([name]) => name !== '@rn-qnx/expo-router-qnx'
+              )
+            )),
         ...Object.fromEntries(
           Object.entries(artifacts).map(([name, entry]) => [name, 'file:' + entry.file])
         ),
@@ -281,6 +353,7 @@ export async function createProjectMain(argv) {
             name: identity.displayName,
             slug: identity.appId.split('.').pop()?.toLowerCase(),
             icon: './assets/icon.png',
+            ...(marathon ? {} : { scheme: identity.appId.split('.').pop()?.toLowerCase() }),
             extra: {
               rnqnx: { appId: identity.appId, componentName: identity.componentName, platforms },
             },
@@ -325,26 +398,32 @@ export async function createProjectMain(argv) {
         await smallSource(path.join(sourceRoot, match[1]))
       );
     }
-    await writeFile(
-      path.join(destination, 'index.js'),
-      [
-        "import React from 'react';",
-        "import { AppRegistry, View, Text, Pressable, StyleSheet } from 'react-native';",
-        "import { create } from 'zustand';",
-        'const useStore = create(set => ({ count: 0, increment: () => set(s => ({ count: s.count + 1 })) }));',
-        'function App() {',
-        '  const count = useStore(s => s.count);',
-        '  const increment = useStore(s => s.increment);',
-        '  return React.createElement(View, { style: styles.root },',
-        "    React.createElement(Text, { style: styles.heading }, 'React Native QNX'),",
-        '    React.createElement(Pressable, { onPress: increment },',
-        "      React.createElement(Text, null, 'Tap: ' + count)));",
-        '}',
-        'const styles = StyleSheet.create({ root: { flex: 1, padding: 28 }, heading: { fontSize: 28 } });',
-        'AppRegistry.registerComponent(' + JSON.stringify(identity.componentName) + ', () => App);',
-        '',
-      ].join('\n')
-    );
+    if (marathon) {
+      await writeFile(
+        path.join(destination, 'index.js'),
+        [
+          "import React from 'react';",
+          "import { AppRegistry, View, Text, Pressable, StyleSheet } from 'react-native';",
+          "import { create } from 'zustand';",
+          'const useStore = create(set => ({ count: 0, increment: () => set(s => ({ count: s.count + 1 })) }));',
+          'function App() {',
+          '  const count = useStore(s => s.count);',
+          '  const increment = useStore(s => s.increment);',
+          '  return React.createElement(View, { style: styles.root },',
+          "    React.createElement(Text, { style: styles.heading }, 'React Native QNX'),",
+          '    React.createElement(Pressable, { onPress: increment },',
+          "      React.createElement(Text, null, 'Tap: ' + count)));",
+          '}',
+          'const styles = StyleSheet.create({ root: { flex: 1, padding: 28 }, heading: { fontSize: 28 } });',
+          'AppRegistry.registerComponent(' +
+            JSON.stringify(identity.componentName) +
+            ', () => App);',
+          '',
+        ].join('\n')
+      );
+    } else {
+      await writeRouterStarter(destination, identity);
+    }
     await writeFile(
       path.join(destination, 'babel.config.js'),
       "module.exports = { presets: ['babel-preset-expo'] };\n"
@@ -364,7 +443,10 @@ export async function createProjectMain(argv) {
         '',
       ].join('\n');
     };
-    await writeFile(path.join(destination, 'metro.config.js'), metroConfig('qnx'));
+    await writeFile(
+      path.join(destination, 'metro.config.js'),
+      marathon ? metroConfig('qnx') : routerMetroConfig()
+    );
     if (marathon) {
       await writeFile(path.join(destination, 'metro.marathon.config.js'), metroConfig('marathon'));
     }

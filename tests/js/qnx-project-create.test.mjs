@@ -47,11 +47,64 @@ try {
     await readFile(path.join(process.cwd(), 'template', 'qnx', 'assets', 'icon.png'))
   );
   const qnxArtifacts = JSON.parse(await readFile(path.join(qnx, 'platform-packages.json'), 'utf8'));
-  assert.equal(Object.keys(qnxArtifacts.artifacts).length, 2);
+  const qnxArtifacts0 = qnxArtifacts.artifacts;
+  assert.equal(Object.keys(qnxArtifacts.artifacts).length, 3);
+  assert.ok(qnxArtifacts.artifacts['@rn-qnx/expo-router-qnx']);
   for (const artifact of Object.values(qnxArtifacts.artifacts)) {
     const data = await readFile(path.join(qnx, artifact.file));
     assert.equal(createHash('sha256').update(data).digest('hex'), artifact.sha256);
   }
+  // The qnx-only project is the expo-router drawer and tabs starter.
+  assert.equal(qnxManifest.dependencies['expo-router'], '58.0.31');
+  assert.equal(qnxManifest.dependencies['react-native-screens'], '4.30.1');
+  const layout = await readFile(path.join(qnx, 'app', '_layout.js'), 'utf8');
+  assert.match(layout, /expo-router\/drawer/);
+  assert.match(layout, /header\("Notes"\)/);
+  assert.match(await readFile(path.join(qnx, 'app', '(tabs)', '_layout.js'), 'utf8'), /Tabs/);
+  assert.match(await readFile(path.join(qnx, 'index.js'), 'utf8'), /registerComponent\('main'/);
+  assert.match(await readFile(path.join(qnx, 'metro.config.js'), 'utf8'), /withExpoRouterQnx/);
+  assert.doesNotMatch(layout, /__APP_NAME__/);
+  assert.equal(JSON.parse(await readFile(path.join(qnx, 'app.json'), 'utf8')).expo.scheme, 'notes');
+  // The router archive carries its source, the Metro helper and the README, and
+  // the overrides point every platform archive at vendor/.
+  const routerArchive = qnxArtifacts0['@rn-qnx/expo-router-qnx'];
+  assert.ok(routerArchive.file.startsWith('vendor/'));
+  const listing = spawnSync('tar', ['-tzf', path.join(qnx, routerArchive.file)], {
+    encoding: 'utf8',
+  });
+  for (const entry of ['package/metro.js', 'package/README.md', 'package/src/resolver.js']) {
+    assert.ok(listing.stdout.includes(entry), entry);
+  }
+  const workspaceYaml = await readFile(path.join(qnx, 'pnpm-workspace.yaml'), 'utf8');
+  assert.match(workspaceYaml, /'@rn-qnx\/expo-router-qnx': 'file:vendor\//);
+  for (const name of [
+    'react-native-drawer-layout',
+    'react-dom',
+    'expo-linking',
+    '@expo/metro-runtime',
+  ]) {
+    assert.ok(qnxManifest.dependencies[name], name);
+  }
+  // A hostile display name stays exact inside the generated JavaScript.
+  const hostile = path.join(root, 'hostile-app');
+  const hostileName = 'O\'Brien "x" $& {y} \\';
+  const hostileRun = run(
+    '--project',
+    hostile,
+    '--app-id',
+    'org.example.hostile',
+    '--name',
+    hostileName,
+    '--component-name',
+    'Probe'
+  );
+  assert.equal(hostileRun.status, 0, hostileRun.stderr);
+  const hostileLayout = await readFile(path.join(hostile, 'app', '_layout.js'), 'utf8');
+  assert.ok(hostileLayout.includes('header(' + JSON.stringify(hostileName) + ')'));
+  assert.match(
+    await readFile(path.join(hostile, 'index.js'), 'utf8'),
+    /registerComponent\('Probe'/
+  );
   const before = await readFile(path.join(qnx, 'index.js'));
   const duplicate = run(...params);
   assert.notEqual(duplicate.status, 0);
