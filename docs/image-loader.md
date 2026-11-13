@@ -110,15 +110,14 @@ or cancellation-by-request-ID API is provided.
 ## The ExpoImage view
 
 `expo-image` renders through the Fabric component `ViewManagerAdapter_ExpoImage`
-(`RNQNX_ENABLE_QT_EXPO_IMAGE`). Its QML item takes the first `uri` of the
+(`RNQNX_ENABLE_QT_EXPO_IMAGE`). Its item (`ExpoImageItem`) picks a `uri` from the
 `source` array and resolves it with the same function as the Image component,
 `resolveImageUri`: a URI the decoded cache holds is served as
 `image://rnqnx/cache/<key>` and reports `cacheType: "memory"`, a base64 data URI
 is decoded by `QnxImageProvider`, and anything else goes to Qt Quick, which
 fetches it as for `Image`. The view adds no cache of its own. `Image.prefetch`
 from React Native fills the cache the view reads; `expo-image`'s own `prefetch`
-resolves `false`. `onProgress` reports a fraction out of 1000, because Qt gives
-no byte counts. The prop and limit table is in
+forwards to the loader, so it fills the cache the view reads. The prop and limit table is in
 [`@rn-qnx/expo-image-qnx`](../packages/expo-image-qnx/README.md).
 
 ## Boundaries
@@ -127,8 +126,10 @@ This is a process-memory decoded cache, not an HTTP revalidation cache. Entries
 remain until LRU eviction/process exit; changing resources should use versioned
 URLs. Qt Quick can also maintain its own image cache. A query is a snapshot;
 eviction can occur before a later image request. Request cancellation by ID,
-disk persistence, cross-process caching and source-header props on visual
-`Image` are not implemented by this change. The host currently runs JavaScript
+cross-process caching and source-header props on React Native's own visual
+`Image` are not implemented. The `ExpoImage` view and `expo-image`'s prefetch
+use a 128 MiB on-disk cache (`ImageDiskCache`, least recently used first) and
+key requests by URI plus headers. The host currently runs JavaScript
 on the Qt event-loop thread; the loader shares that thread-affinity contract.
 
 ## Deterministic host validation

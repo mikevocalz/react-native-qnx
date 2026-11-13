@@ -96,6 +96,8 @@ QString pointerEventsName(rn::PointerEventsMode mode) {
 /// Connects the item's signals to the emitter, which Fabric replaces on every
 /// update (so the bridge holds the latest one).
 class ExpoImageBridge final : public QObject {
+  Q_OBJECT
+
  public:
   explicit ExpoImageBridge(ExpoImageItem* item) : QObject(item) {
     QObject::connect(item, &ExpoImageItem::loadStarted, this, [this] {
@@ -198,3 +200,5 @@ bool applyExpoImageProps(QQuickItem* quickItem, const rn::ShadowView& view) {
 }
 
 }  // namespace rnqnx::fabric
+
+#include "QtExpoImageBridge.moc"
