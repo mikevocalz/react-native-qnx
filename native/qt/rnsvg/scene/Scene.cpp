@@ -43,16 +43,33 @@ Scene::Scene(const RnsvgRootItem& root, QPainter* painter, std::optional<QPointF
   view_ = viewTransform(rp, size);
   viewport_ = (rp.vbWidth > 0 && rp.vbHeight > 0) ? QSizeF(rp.vbWidth, rp.vbHeight) : size;
   rootColor_ = rp.color;
-  for (auto* child : root.elementChildren()) collect(child, 0);
+  collect(&root, 0);
   target_.painter = painter;
   if (painter) target_.base = painter->transform();
   target_.clip = target_.base.mapRect(QRectF(0, 0, size.width(), size.height()));
 }
 
-void Scene::collect(const RnsvgElementItem* e, int depth) {
+namespace {
+
+// Element and nested-root children of a root or an element, in paint order.
+QList<QQuickItem*> contentOf(const QQuickItem* container) {
+  QList<QQuickItem*> out;
+  for (auto* child : container->childItems()) {
+    if (qobject_cast<RnsvgElementItem*>(child) || qobject_cast<RnsvgRootItem*>(child)) out.append(child);
+  }
+  return out;
+}
+
+}  // namespace
+
+void Scene::collect(const QQuickItem* container, int depth) {
   if (depth > 256) return;
-  if (!e->props().name.isEmpty()) ids_.emplace(e->props().name, e);
-  for (auto* c : e->elementChildren()) collect(c, depth + 1);
+  for (auto* child : contentOf(container)) {
+    if (const auto* e = qobject_cast<const RnsvgElementItem*>(child)) {
+      if (!e->props().name.isEmpty()) ids_.emplace(e->props().name, e);
+    }
+    collect(child, depth + 1);
+  }
 }
 
 const RnsvgElementItem* Scene::byId(const QString& id) const {
@@ -60,21 +77,76 @@ const RnsvgElementItem* Scene::byId(const QString& id) const {
   return it == ids_.end() ? nullptr : it->second;
 }
 
-void Scene::run() {
+Frame Scene::rootFrame() const {
   Frame f;
   f.ctm = view_;
   f.style.color = rootColor_;
   f.viewport = viewport_;
+  return f;
+}
+
+void Scene::run() {
+  const Frame f = rootFrame();
   if (painter()) {
     painter()->save();
     painter()->setClipRect(QRectF(0, 0, root_.width(), root_.height()), Qt::IntersectClip);
   }
-  for (auto* child : root_.elementChildren()) render(child, f, 0);
+  renderChildren(&root_, f, -1);
   if (painter()) painter()->restore();
 }
 
-void Scene::renderChildren(const RnsvgElementItem* e, const Frame& f, int depth) {
-  for (auto* c : e->elementChildren()) render(c, f, depth + 1);
+void Scene::renderChildren(const QQuickItem* container, const Frame& f, int depth) {
+  for (QQuickItem* child : contentOf(container)) {
+    if (const auto* e = qobject_cast<const RnsvgElementItem*>(child)) {
+      render(e, f, depth + 1);
+    } else if (const auto* nested = qobject_cast<const RnsvgRootItem*>(child)) {
+      renderNested(*nested, f, depth + 1);
+    }
+  }
+}
+
+Frame Scene::nestedFrame(const RnsvgRootItem& nested, const Frame& f, QSizeF& size) const {
+  const RootProps& rp = nested.rootProps();
+  const Units units(f);
+  size = QSizeF(units.resolve(rp.bbWidth, Axis::X, nested.width()), units.resolve(rp.bbHeight, Axis::Y, nested.height()));
+  Frame nf = f;
+  nf.ctm = viewTransform(rp, size) * f.ctm;
+  nf.viewport = (rp.vbWidth > 0 && rp.vbHeight > 0) ? QSizeF(rp.vbWidth, rp.vbHeight) : size;
+  return nf;
+}
+
+void Scene::renderNested(const RnsvgRootItem& nested, const Frame& f, int depth) {
+  if (depth > kMaxDepth) return;
+  QSizeF size;
+  const Frame nf = nestedFrame(nested, f, size);
+  if (!(size.width() > 0) || !(size.height() > 0)) return;
+  if (painter()) {
+    painter()->save();
+    painter()->setTransform(f.ctm * target_.base);
+    painter()->setClipRect(QRectF(QPointF(0, 0), size), Qt::IntersectClip);
+  }
+  renderChildren(&nested, nf, depth);
+  if (painter()) painter()->restore();
+}
+
+void Scene::walkFrames(const FrameVisitor& visit) { walk(&root_, rootFrame(), 0, visit); }
+
+void Scene::walk(const QQuickItem* container, const Frame& parent, int depth, const FrameVisitor& visit) {
+  if (depth > kMaxDepth) return;
+  for (QQuickItem* child : contentOf(container)) {
+    if (const auto* e = qobject_cast<const RnsvgElementItem*>(child)) {
+      const auto& p = e->props();
+      if (p.displayNone) continue;
+      Frame own = parent;
+      applyProps(own.style, p);
+      if (p.matrix) own.ctm = *p.matrix * own.ctm;
+      if (visit(e, parent, own)) walk(e, own, depth + 1, visit);
+    } else if (const auto* nested = qobject_cast<const RnsvgRootItem*>(child)) {
+      QSizeF size;
+      const Frame nf = nestedFrame(*nested, parent, size);
+      walk(nested, nf, depth + 1, visit);
+    }
+  }
 }
 
 void Scene::render(const RnsvgElementItem* e, const Frame& parent, int depth) {

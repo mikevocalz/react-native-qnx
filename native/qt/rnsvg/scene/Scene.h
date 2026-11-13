@@ -14,6 +14,7 @@
 #include "TextRenderer.h"
 
 #include <QPainter>
+#include <functional>
 #include <optional>
 #include <unordered_map>
 
@@ -63,7 +64,17 @@ class Scene {
   QSizeF itemSize() const { return QSizeF(root_.width(), root_.height()); }
 
   void render(const RnsvgElementItem* e, const Frame& parent, int depth);
-  void renderChildren(const RnsvgElementItem* e, const Frame& f, int depth);
+  // Renders the element and nested <Svg> children of `container` (an element
+  // or a root) with the frame `f`.
+  void renderChildren(const QQuickItem* container, const Frame& f, int depth);
+  // A <Svg> inside this <Svg>: its viewport and viewBox applied, drawn inline.
+  void renderNested(const RnsvgRootItem& nested, const Frame& f, int depth);
+
+  // Visits every element reachable by containment (not through <use>) in
+  // document order with its parent frame and its own frame. `visit` returns
+  // false to skip the element's children. display:none subtrees are skipped.
+  using FrameVisitor = std::function<bool(const RnsvgElementItem*, const Frame& parent, const Frame& own)>;
+  void walkFrames(const FrameVisitor& visit);
   // Runs `fn` with `t` as the target, restoring the previous one after.
   template <class Fn>
   void withTarget(const Target& t, Fn&& fn) {
@@ -116,7 +127,10 @@ class Scene {
   }
 
  private:
-  void collect(const RnsvgElementItem* e, int depth);
+  void collect(const QQuickItem* container, int depth);
+  Frame rootFrame() const;
+  Frame nestedFrame(const RnsvgRootItem& nested, const Frame& f, QSizeF& size) const;
+  void walk(const QQuickItem* container, const Frame& parent, int depth, const FrameVisitor& visit);
   void renderShape(const RnsvgElementItem* e, const Frame& f, const Frame& parent, int depth);
   void renderGroup(const RnsvgElementItem* e, const Frame& f, const Frame& parent, int depth);
   void renderUse(const RnsvgElementItem* e, const Frame& f, const Frame& parent, int depth);

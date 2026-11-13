@@ -13,8 +13,10 @@ class RnsvgRootItem;
 
 // One react-native-svg element. It is a QQuickItem only so Fabric's ordinary
 // create/insert/remove/delete mutations can mount it in the tree; it draws
-// nothing and is never visible. The root paints the whole retained tree.
-class RnsvgElementItem final : public QQuickItem {
+// nothing. It stays visible (Qt hides the children of an invisible item, and a
+// <ForeignObject> nests live views under these) and the touch dispatcher looks
+// through it. The root paints the whole retained tree.
+class RnsvgElementItem : public QQuickItem {
   Q_OBJECT
 
  public:
@@ -27,6 +29,8 @@ class RnsvgElementItem final : public QQuickItem {
   void setProps(rnsvg::ElementProps props);
   // Element children in paint order.
   QList<RnsvgElementItem*> elementChildren() const;
+  // Element children and nested <Svg> roots, in paint order.
+  QList<QQuickItem*> contentChildren() const;
   RnsvgRootItem* root() const;
 
  protected:
@@ -50,6 +54,15 @@ class RnsvgRootItem final : public QQuickPaintedItem {
   void setRootProps(const rnsvg::RootProps& props);
   // Requests a repaint after any element change. Cheap and coalesced by Qt.
   void invalidate();
+  // Positions the live views of every <ForeignObject> and tells listeners the
+  // scene is laid out. Runs from updatePolish() (GUI thread, outside paint());
+  // tests call it directly.
+  void layoutScene();
+  // The painted extent of `element` in this root's coordinates, or an empty
+  // rect. Valid after layoutScene(); never call it from paint().
+  QRectF elementBounds(const RnsvgElementItem* element) const;
+  // A root inside another <Svg>: it paints through the outer root, not itself.
+  bool isNested() const;
   // Topmost element with `responsible` under `local` (root item coordinates),
   // or nullptr if the point should fall through to the <Svg> view itself.
   const RnsvgElementItem* hitElement(const QPointF& local) const;
@@ -61,7 +74,12 @@ class RnsvgRootItem final : public QQuickPaintedItem {
 
   void paint(QPainter* painter) override;
 
+ Q_SIGNALS:
+  // Emitted at the end of layoutScene().
+  void sceneLaidOut();
+
  protected:
+  void updatePolish() override;
   void geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) override;
   void itemChange(ItemChange change, const ItemChangeData& data) override;
 

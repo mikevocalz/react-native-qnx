@@ -43,8 +43,9 @@ bool PaintServers::pattern(const RnsvgElementItem& server, const QRectF& bbox, c
   const double sx = std::hypot(device.m11(), device.m12());
   const double sy = std::hypot(device.m21(), device.m22());
   if (!(sx > 0) || !(sy > 0) || !std::isfinite(sx) || !std::isfinite(sy)) return false;
-  const int w = std::clamp(int(std::ceil(tile.width() * sx)), 1, kMaxTilePixels);
-  const int h = std::clamp(int(std::ceil(tile.height() * sy)), 1, kMaxTilePixels);
+  // Clamp as doubles: a huge tile must not overflow the int conversion.
+  const int w = int(std::clamp(std::ceil(tile.width() * sx), 1.0, double(kMaxTilePixels)));
+  const int h = int(std::clamp(std::ceil(tile.height() * sy), 1.0, double(kMaxTilePixels)));
   const double kx = w / tile.width(), ky = h / tile.height();
 
   QImage image(w, h, QImage::Format_ARGB32_Premultiplied);
