@@ -21,7 +21,10 @@ The opt-in [v2 Qt APIs](v2/README.md) have their own
 [validation receipt](v2/validation.md). `QtSvgDocument` has Linux host
 React/Fabric rendering coverage; native motion and graphics expose C++ APIs.
 QNX/Marathon device coverage and full `react-native-svg`, Reanimated, Worklets
-and GPU-library compatibility remain separate gates.
+and GPU-library compatibility remain separate gates. A pinned Dawn WebGPU
+backend ran on the Pi 400 through OpenGL ES, in a native test app only
+([WebGPU on QNX](v2/webgpu-qnx.md)); no React Native WebGPU, TypeGPU, Three.js
+or Skia component is supported.
 
 ## Components
 
@@ -68,6 +71,27 @@ The v1 interaction scope is the existing Animated/native-driver, single-pointer
 and Pressable path, subject to device validation. Reanimated, Worklets and RNGH
 runtime integration remain [a separate gap](reanimated-gesture-handler-qnx-map.md).
 IME-backed text input and multi-touch are open gates.
+
+## `react-native-svg` elements (opt-in)
+
+Built with `RNQNX_ENABLE_QT_RNSVG=ON`; these are not React Native core
+components. Host status is the Linux fixture plus golden-pixel tests; device
+status is the scoped Pi 400 gallery run in the
+[validation receipt](v2/validation.md#react-native-svg). Details and the full gap
+list are in [the guide](v2/react-native-svg.md).
+
+| Element or prop                                                             | Host        | Pi 400 device | Notes                                                                                                |
+| --------------------------------------------------------------------------- | ----------- | ------------- | ---------------------------------------------------------------------------------------------------- |
+| `Svg`                                                                       | partial     | scoped        | `viewBox` and `preserveAspectRatio`, background color. No `toDataURL`, `getBBox`.                    |
+| `Path`, `Rect`, `Circle`, `Ellipse`, `Line`, `Polygon`, `Polyline`          | supported   | scoped        | Fill, stroke, dashes, caps, joins, fill rule, inheritance from `G`.                                  |
+| `G`, `Defs`, `Use`                                                          | partial     | scoped        | `Use` ignores `width`/`height`.                                                                      |
+| `LinearGradient`, `RadialGradient`, `Stop`                                  | supported   | scoped        | Both unit systems, `gradientTransform`, per-stop alpha.                                              |
+| `ClipPath`, `Mask`                                                          | partial     | scoped        | Clip is always nonzero; text inside a clip path contributes nothing. Luminance and alpha masks work. |
+| `Text`, `TSpan`                                                             | partial     | scoped        | First `x`/`y`/`dx`/`dy` only; no `textLength`, `textPath`, decoration or baseline shift.             |
+| `Image`                                                                     | partial     | unverified    | `data:` and local file sources only.                                                                 |
+| `onPress` and responder props on elements                                   | supported   | unverified    | Hit test uses fill and stroke geometry through transforms; it ignores clip and mask.                 |
+| Animated props                                                              | partial     | scoped        | JavaScript-driven updates repaint without remounting. No Reanimated or Worklets path.                |
+| `Pattern`, `Symbol`, `Marker`, `TextPath`, `Filter`, `Fe*`, `ForeignObject` | unsupported | n/a           | Not registered: rendering one raises React Native's unknown-component error.                         |
 
 ## `View` props
 

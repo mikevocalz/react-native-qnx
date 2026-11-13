@@ -22,7 +22,13 @@ eval_manifest = Path(os.environ.get('QT_EVAL_MANIFEST', '/work/qt612-runtime/man
 
 LIBS = ['Core', 'Gui', 'Network', 'OpenGL', 'Qml', 'QmlMeta', 'QmlModels',
         'QmlWorkerScript', 'Quick', 'QuickShapes']
-PLUGINS = ['plugins/platforms/libqqnx.so']
+# TLS backend: without it Qt Network has no HTTPS (remote <Image> URLs, Metro
+# over https). JPEG/GIF: without them Qt Quick decodes only PNG, so most remote
+# photos fail. Built by configure-qnx.sh.
+PLUGINS = ['plugins/platforms/libqqnx.so',
+           'plugins/tls/libqopensslbackend.so',
+           'plugins/imageformats/libqjpeg.so',
+           'plugins/imageformats/libqgif.so']
 QML = {
     'qml/QML': ['qmldir', 'plugins.qmltypes', 'jsroot.qmltypes'],
     'qml/QtQml': ['qmldir', 'plugins.qmltypes', 'libqmlplugin.so'],

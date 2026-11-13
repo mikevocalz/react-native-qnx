@@ -1,8 +1,44 @@
-# Image loader: host-verified implementation
+# Image loader: host-verified, device-verified on a Pi 400
 
 The core React Native `ImageLoader` adapter now performs real asynchronous
 HTTP(S) work through Qt Network. It is an upstream core-module adapter, not a
 new application TurboModule architecture.
+
+## On a QNX device
+
+Run on a Raspberry Pi 400 (QNX SDP 8.0.5, public Qt 6.12.0) on 2026-11-13,
+with the gallery's "Image from a URL" card (`apps/component-gallery/RemoteImageCard.js`).
+Each line is the card's own log output; the board reached the Mac over USB
+Ethernet and the internet through the Mac.
+
+| Source                                                         | Result on the Pi                                                                |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `https://images.unsplash.com/…?w=640` (public, JPEG)           | loaded in 338-688 ms; `Image.getSize` 640×427                                   |
+| `http://httpbin.org/image/jpeg` (public, plain HTTP)           | loaded in 68-161 ms; 239×178                                                    |
+| `http://192.168.2.1:8090/mac-served.jpg` (served from the Mac) | loaded in 72-82 ms; 640×360                                                     |
+| `https://192.168.2.1:8443/…` (Mac, self-signed certificate)    | rejected: `SSL handshake failed: The certificate is self-signed, and untrusted` |
+| `https://rnqnx-missing.invalid/photo.jpg`                      | rejected: `Host rnqnx-missing.invalid not found`                                |
+
+What the device needed, beyond the Linux-tested loader:
+
+- **Qt's TLS backend plugin.** Qt 6 loads TLS from `plugins/tls/`; the staged
+  runtime had none, so every `https://` request failed. The OpenSSL backend
+  (`libqopensslbackend.so`) is built from the public Qt source and loads the
+  board's OpenSSL 3 (`/usr/lib/libssl.so.3`) at run time. Certificates come
+  from the system store in `/etc/ssl/certs` (hashed), so public HTTPS works and
+  untrusted certificates are refused.
+- **Qt's JPEG and GIF image plugins.** Without `plugins/imageformats/` Qt Quick
+  decodes only PNG; most photos on the web are JPEG.
+- `scripts/qt-public/configure-qnx.sh` now builds all three and
+  `stage-runtime.py` stages them. An app can also carry them in its own
+  `plugins/` directory (`QT_PLUGIN_PATH=<app>/plugins:<runtime>/plugins`), which
+  is how the Pi build here ships them.
+- DNS: the board's `/etc/resolv.conf` points at the Mac (192.168.2.1), which
+  forwards to the internet through macOS Internet Sharing. Nothing in the app
+  is DNS-specific.
+- Error text: `onError` now carries `Could not load <url>` (QML's Image has no
+  error string), and the loader module reports Qt Network's reason instead of
+  `HTTP 0` (for example `Image request failed: Host … not found`).
 
 ## Use the public Image API
 

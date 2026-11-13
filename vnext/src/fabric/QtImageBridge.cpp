@@ -52,7 +52,14 @@ void QtImageBridge::notify() {
     onLoadEnd_();
 
     facebook::react::ImageErrorInfo error;
-    error.error = item_->property("errorString").toString().toStdString();
+    // QML's Image has no error text property (Qt prints the reason as a QML
+    // warning), so report which source failed rather than an empty string.
+    QString reason = item_->property("errorString").toString();
+    if (reason.isEmpty()) {
+      reason = QStringLiteral("Could not load %1")
+                   .arg(item_->property("source").toUrl().toString());
+    }
+    error.error = reason.toStdString();
     onError_(error);
   }
 }

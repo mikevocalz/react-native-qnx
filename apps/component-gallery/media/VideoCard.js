@@ -28,7 +28,7 @@ function Chip({ title, selected, onPress }) {
  * error state). `fullscreen` fills the window with an absolute-positioned
  * copy of the same view; the toggle is the native bar's own button.
  */
-function VideoCard({ width }) {
+function VideoCard({ width, bare = false }) {
   const [sourceId, setSourceId] = React.useState('bundled');
   const [status, setStatus] = React.useState('idle');
   const [info, setInfo] = React.useState('');
@@ -57,9 +57,9 @@ function VideoCard({ width }) {
   });
   return h(
     View,
-    { style: { width, backgroundColor: PANEL, borderRadius: 14, padding: 16, marginBottom: 20 } },
-    h(Text, { style: { color: INK, fontSize: 17, marginBottom: 4 } }, 'Video'),
-    h(Text, { style: { color: MUTED, fontSize: 13, marginBottom: 10 } },
+    { style: bare ? { width: '100%' } : { width, backgroundColor: PANEL, borderRadius: 14, padding: 16, marginBottom: 20 } },
+    !bare && h(Text, { style: { color: INK, fontSize: 17, marginBottom: 4 } }, 'Video'),
+    !bare && h(Text, { style: { color: MUTED, fontSize: 13, marginBottom: 10 } },
       'QtVideo: Qt Multimedia (FFmpeg) frames in the Qt Quick scene graph'),
     h(View, { style: { flexDirection: 'row', flexWrap: 'wrap' } },
       ...VIDEO_SOURCES.map((s) => h(Chip, {

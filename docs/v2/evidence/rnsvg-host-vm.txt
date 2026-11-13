@@ -1,0 +1,8 @@
+# Standalone renderer tests, Linux aarch64 VM (qnx805-build container), 2026-11-13
+# Qt 6.12.0 host build (offscreen, software), GCC 13.3.0, Debug, ASan + UBSan,
+# -Wall -Wextra -Wpedantic -Werror on the library and the test.
+# cmake -S tests/native/qt-rnsvg -B t-rnsvg -G Ninja -DRNQNX_ENABLE_QT_RNSVG=ON \
+#   -DCMAKE_BUILD_TYPE=Debug -DRNQNX_QT_RNSVG_SANITIZERS=ON
+# QT_QUICK_BACKEND=software QT_QPA_FONTDIR=/usr/share/fonts/truetype/dejavu \
+#   ./rnqnx_qt_rnsvg_test -platform offscreen
+Totals: 25 passed, 0 failed, 0 skipped, 0 blacklisted, 2384ms

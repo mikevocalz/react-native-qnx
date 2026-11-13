@@ -64,6 +64,7 @@ if (/^RNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON$/m.test(cache)) {
 const disabledQtTests = [];
 for (const [feature, tests] of [
   ['SVG', ['rnqnx_qt_svg_test', 'rnqnx_qt_svg_fabric_test']],
+  ['RNSVG', ['rnqnx_qt_rnsvg_test', 'rnqnx_qt_rnsvg_fabric_test']],
   ['MOTION', ['rnqnx_qt_motion_test']],
   ['GRAPHICS', ['rnqnx_qt_graphics', 'rnqnx_qt_graphics_null']],
 ]) {

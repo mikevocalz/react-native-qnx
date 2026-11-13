@@ -10,11 +10,17 @@
 #include "react-native-qnx/fabric/QtScrollBridge.h"
 #include "react-native-qnx/fabric/QtSwitchBridge.h"
 
+<<<<<<< HEAD
 #if RNQNX_ENABLE_QT_VIDEO
 #include "react-native-qnx/fabric/QtVideoBridge.h"
 #include <QtVideoItem.h>
 #include <react/renderer/components/RnqnxQtVideo/EventEmitters.h>
 #include <react/renderer/components/RnqnxQtVideo/Props.h>
+=======
+#if RNQNX_ENABLE_QT_RNSVG
+#include "react-native-qnx/fabric/QtRnsvgBridge.h"
+#include <RnsvgItems.h>
+>>>>>>> origin/main
 #endif
 #if RNQNX_ENABLE_QT_SVG
 #include "react-native-qnx/fabric/QtSvgBridge.h"
@@ -397,8 +403,16 @@ ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer
 #if RNQNX_ENABLE_QT_SVG
   mapComponent(QStringLiteral("QnxSvgDocument"), QStringLiteral("QnxSvgDocument"));
 #endif
+<<<<<<< HEAD
 #if RNQNX_ENABLE_QT_VIDEO
   mapComponent(QStringLiteral("QnxQtVideo"), QStringLiteral("QnxQtVideo"));
+=======
+#if RNQNX_ENABLE_QT_RNSVG
+  for (const auto& name : rnsvgComponentNames()) {
+    const auto qtName = QString::fromStdString(name);
+    mapComponent(qtName, qtName);
+  }
+>>>>>>> origin/main
 #endif
 }
 
@@ -537,6 +551,13 @@ MountError ShadowViewMutationAdapter::applyTextInput(const ShadowView& view) {
 
   style.placeholder = QString::fromStdString(props->placeholder);
   style.multiline = props->multiline;
+  // Yoga already subtracted padding and border from the content box; the
+  // field draws its text there, as RCTTextInput and ReactEditText do.
+  const auto& insets = view.layoutMetrics.contentInsets;
+  style.insetLeft = static_cast<float>(insets.left);
+  style.insetTop = static_cast<float>(insets.top);
+  style.insetRight = static_cast<float>(insets.right);
+  style.insetBottom = static_cast<float>(insets.bottom);
   if (facebook::react::isColorMeaningful(props->placeholderTextColor)) {
     style.hasPlaceholderTextColor = true;
     style.placeholderTextColor =
@@ -1049,8 +1070,15 @@ MountError ShadowViewMutationAdapter::applyOne(
 #if RNQNX_ENABLE_QT_SVG
       applySvgDocument(view);
 #endif
+<<<<<<< HEAD
 #if RNQNX_ENABLE_QT_VIDEO
       applyVideo(view);
+=======
+#if RNQNX_ENABLE_QT_RNSVG
+      if (view.componentName != nullptr && isRnsvgComponent(view.componentName)) {
+        applyRnsvgProps(layer_.itemForTag(view.tag), view);
+      }
+>>>>>>> origin/main
 #endif
       const auto styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) return styleError;
@@ -1090,6 +1118,13 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (error != MountError::None) {
         return error;
       }
+#if RNQNX_ENABLE_QT_RNSVG
+      // stackBefore() reorders siblings without any item-change notification,
+      // and paint order is the <Svg> children's order.
+      if (auto* svgChild = qobject_cast<views::RnsvgElementItem*>(layer_.itemForTag(mutation.newChildShadowView.tag))) {
+        if (auto* svgRoot = svgChild->root()) svgRoot->invalidate();
+      }
+#endif
       // Qt's Flickable does not derive its content size from its children, so
       // it is recomputed whenever they change.
       return layer_.updateScrollContentSize(mutation.parentTag);
@@ -1137,8 +1172,15 @@ MountError ShadowViewMutationAdapter::applyOne(
 #if RNQNX_ENABLE_QT_SVG
       applySvgDocument(view);
 #endif
+<<<<<<< HEAD
 #if RNQNX_ENABLE_QT_VIDEO
       applyVideo(view);
+=======
+#if RNQNX_ENABLE_QT_RNSVG
+      if (view.componentName != nullptr && isRnsvgComponent(view.componentName)) {
+        applyRnsvgProps(layer_.itemForTag(view.tag), view);
+      }
+>>>>>>> origin/main
 #endif
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) {

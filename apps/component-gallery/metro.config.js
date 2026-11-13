@@ -15,6 +15,9 @@ const babelRuntimeRoot = path.dirname(rnRequire.resolve('@babel/runtime/package.
 module.exports = withPublicEntry(
   getQnxMetroConfig(__dirname, {
     watchFolders: [workspaceRoot],
+    // components/advanced/index.js discovers its card files with
+    // require.context (expo-router needs the same switch).
+    transformer: { unstable_allowRequireContext: true },
     resolver: {
       extraNodeModules: { '@babel/runtime': babelRuntimeRoot },
       nodeModulesPaths: [

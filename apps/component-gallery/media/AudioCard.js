@@ -25,16 +25,16 @@ function Button({ title, onPress }) {
  * plays the bundled tone. There is no separate audio component; QtVideo with
  * an audio-only file decodes and plays through the same Qt AudioOutput.
  */
-function AudioCard({ width }) {
+function AudioCard({ width, bare = false }) {
   const [paused, setPaused] = React.useState(true);
   const [volume, setVolume] = React.useState(0.5);
   const [status, setStatus] = React.useState('idle');
   const ref = React.useRef(null);
   return h(
     View,
-    { style: { width, backgroundColor: PANEL, borderRadius: 14, padding: 16, marginBottom: 20 } },
-    h(Text, { style: { color: INK, fontSize: 17, marginBottom: 4 } }, 'Audio'),
-    h(Text, { style: { color: MUTED, fontSize: 13, marginBottom: 10 } },
+    { style: bare ? { width: '100%' } : { width, backgroundColor: PANEL, borderRadius: 14, padding: 16, marginBottom: 20 } },
+    !bare && h(Text, { style: { color: INK, fontSize: 17, marginBottom: 4 } }, 'Audio'),
+    !bare && h(Text, { style: { color: MUTED, fontSize: 13, marginBottom: 10 } },
       'Qt AudioOutput through io-snd; plays a bundled 3 s tone'),
     h(QtVideo, {
       ref, source: BUNDLED_TONE, paused, volume, repeat: false, style: { width: 1, height: 1 },
