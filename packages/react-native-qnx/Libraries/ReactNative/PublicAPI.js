@@ -145,7 +145,8 @@ const api = Object.freeze({
   },
   // expo-modules-core builds the view config of an Expo view with it.
   get NativeComponentRegistry() {
-    return require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+    const module = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+    return module.default ?? module;
   },
   get TouchableOpacity() {
     return require('react-native/Libraries/Components/Touchable/TouchableOpacity').default;
