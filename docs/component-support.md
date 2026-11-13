@@ -95,6 +95,27 @@ list are in [the guide](v2/react-native-svg.md).
 | Animated props                                                              | partial     | scoped        | JavaScript-driven updates repaint without remounting. No Reanimated or Worklets path.                |
 | `Pattern`, `Symbol`, `Marker`, `TextPath`, `Filter`, `Fe*`, `ForeignObject` | unsupported | n/a           | Not registered: rendering one raises React Native's unknown-component error.                         |
 
+## Qt native UI components (opt-in)
+
+`RNQnxDrawer`, `RNQnxTabBar` and the `ExpoImage` view are Fabric components
+this renderer adds, not React Native core components. They are built with
+`RNQNX_ENABLE_QT_NATIVE_UI` (drawer and tab bar) and `RNQNX_ENABLE_QT_EXPO_IMAGE`
+(the view `expo-image` renders), both on by default in a consumer app build and
+off in every other build. Host status is the Qt Quick pointer and key test in
+`tests/native/qt-native-ui` (Qt 6.12.0, offscreen, software renderer). Nothing
+here has run on a Pi 400 yet.
+
+| Component        | Host    | Pi 400     | Limits                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ---------------- | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `RNQnxDrawer`    | partial | unverified | Two children: the panel, then the content. Yoga lays both out, so JavaScript styles both absolute at the container's left edge and the panel `drawerWidth` wide; native only moves them. A right-hand drawer is positioned by a transform. A drag that starts in the edge strip (`edgeWidth`, default 24 px) is not delivered to React views under it. Release velocity is read from Qt's pointer events; the tests cannot check it against real input, so the fling threshold (500 px/s) is untuned. |
+| `RNQnxTabBar`    | partial | unverified | The `auto` layout compares `availableWidth`, or the parent view's width when it is 0, to `sideBreakpoint`; it does not compare its own width, because a rail would then switch back. Image icons are not tinted. The bar draws what its frame gives it; JavaScript sizes the frame from the size in `onLayoutMode`.                                                                                                                                                                                   |
+| `ExpoImage` view | partial | unverified | See [`@rn-qnx/expo-image-qnx`](../packages/expo-image-qnx/README.md): `contentPosition` honors only the named edge, `transition` is always a cross-dissolve, tint and blur need `QtQuick.Effects` (absent from the Qt 6.12.0 host build used for the tests), request `headers`, blurhash, thumbhash and animated images are ignored.                                                                                                                                                                  |
+
+Touch and hit testing: `QtTouchDispatcher` now orders siblings by `z` (stable,
+so equal `z` keeps sibling order) when it looks for the view under a pointer.
+The drawer needs it: the panel (`z` 2) must win over the content it overlaps,
+and the scrim, the last child of the content, must win over the buttons under it.
+
 ## `View` props
 
 | Prop                                                                                    | Status | Notes                                                                                                                                                                                                                                                                                                        |

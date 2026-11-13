@@ -9,15 +9,12 @@
 #include "react-native-qnx/fabric/QtImageBridge.h"
 #include "react-native-qnx/fabric/QtScrollBridge.h"
 #include "react-native-qnx/fabric/QtSwitchBridge.h"
-
 #if RNQNX_ENABLE_QT_VIDEO
-#include "react-native-qnx/fabric/QtVideoBridge.h"
 #include <QtVideoItem.h>
-#include <react/renderer/components/RnqnxQtVideo/EventEmitters.h>
-#include <react/renderer/components/RnqnxQtVideo/Props.h>
 #endif
+
+#include "react-native-qnx/fabric/QtExtraComponents.h"
 #if RNQNX_ENABLE_QT_RNSVG
-#include "react-native-qnx/fabric/QtRnsvgBridge.h"
 #include <RnsvgItems.h>
 #endif
 #if RNQNX_ENABLE_QT_SVG
@@ -401,31 +398,11 @@ ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer
 #if RNQNX_ENABLE_QT_SVG
   mapComponent(QStringLiteral("QnxSvgDocument"), QStringLiteral("QnxSvgDocument"));
 #endif
-#if RNQNX_ENABLE_QT_RNSVG
-  for (const auto& name : rnsvgComponentNames()) {
+  for (const auto& name : extraComponentNames()) {
     const auto qtName = QString::fromStdString(name);
     mapComponent(qtName, qtName);
   }
-#endif
-#if RNQNX_ENABLE_QT_VIDEO
-  mapComponent(QStringLiteral("QnxQtVideo"), QStringLiteral("QnxQtVideo"));
-#endif
 }
-
-#if RNQNX_ENABLE_QT_VIDEO
-void ShadowViewMutationAdapter::applyVideo(const ShadowView& view) {
-  const auto* props = dynamic_cast<const facebook::react::QnxQtVideoProps*>(view.props.get());
-  if (!props) return;
-  auto* item = qobject_cast<views::QtVideoItem*>(layer_.itemForTag(view.tag));
-  if (!item) return;
-  auto bridge = videoBridges_.value(view.tag);
-  if (!bridge) {
-    bridge = new QtVideoBridge(*item);
-    videoBridges_.insert(view.tag, bridge);
-  }
-  bridge->apply(*props, std::dynamic_pointer_cast<const facebook::react::QnxQtVideoEventEmitter>(view.eventEmitter));
-}
-#endif
 
 #if RNQNX_ENABLE_QT_SVG
 void ShadowViewMutationAdapter::applySvgDocument(const ShadowView& view) {
@@ -1066,14 +1043,7 @@ MountError ShadowViewMutationAdapter::applyOne(
 #if RNQNX_ENABLE_QT_SVG
       applySvgDocument(view);
 #endif
-#if RNQNX_ENABLE_QT_VIDEO
-      applyVideo(view);
-#endif
-#if RNQNX_ENABLE_QT_RNSVG
-      if (view.componentName != nullptr && isRnsvgComponent(view.componentName)) {
-        applyRnsvgProps(layer_.itemForTag(view.tag), view);
-      }
-#endif
+      applyExtraComponentProps(layer_.itemForTag(view.tag), view);
       const auto styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) return styleError;
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
@@ -1086,9 +1056,6 @@ MountError ShadowViewMutationAdapter::applyOne(
     case ShadowViewMutation::Type::Delete:
 #if RNQNX_ENABLE_QT_SVG
       svgBridges_.remove(mutation.oldChildShadowView.tag);
-#endif
-#if RNQNX_ENABLE_QT_VIDEO
-      videoBridges_.remove(mutation.oldChildShadowView.tag);
 #endif
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
       if (auto previous = accessibilityActivations_.take(mutation.oldChildShadowView.tag)) {
@@ -1166,14 +1133,7 @@ MountError ShadowViewMutationAdapter::applyOne(
 #if RNQNX_ENABLE_QT_SVG
       applySvgDocument(view);
 #endif
-#if RNQNX_ENABLE_QT_VIDEO
-      applyVideo(view);
-#endif
-#if RNQNX_ENABLE_QT_RNSVG
-      if (view.componentName != nullptr && isRnsvgComponent(view.componentName)) {
-        applyRnsvgProps(layer_.itemForTag(view.tag), view);
-      }
-#endif
+      applyExtraComponentProps(layer_.itemForTag(view.tag), view);
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) {
         return styleError;

@@ -4,6 +4,10 @@
 #include <react/renderer/components/RnqnxQtVideo/EventEmitters.h>
 #include <react/renderer/components/RnqnxQtVideo/Props.h>
 
+#include <react/renderer/components/RnqnxQtVideo/ComponentDescriptors.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
+#include <react/renderer/mounting/ShadowView.h>
+
 #include <utility>
 
 namespace rnqnx::fabric {
@@ -67,6 +71,25 @@ void QtVideoBridge::apply(
   last_ = Applied{props.source, props.poster, props.audioDevice, props.paused, props.muted, props.repeat,
                   props.controls, props.fullscreen, props.volume, props.rate,
                   static_cast<int>(props.resizeMode)};
+}
+
+std::vector<std::string> videoComponentNames() {
+  return {std::string(facebook::react::QnxQtVideoComponentDescriptor::ConcreteShadowNode::Name())};
+}
+
+void addVideoComponentDescriptors(facebook::react::ComponentDescriptorProviderRegistry& registry) {
+  registry.add(facebook::react::concreteComponentDescriptorProvider<
+               facebook::react::QnxQtVideoComponentDescriptor>());
+}
+
+bool applyVideoProps(QQuickItem* item, const facebook::react::ShadowView& view) {
+  auto* video = qobject_cast<views::QtVideoItem*>(item);
+  const auto* props = dynamic_cast<const facebook::react::QnxQtVideoProps*>(view.props.get());
+  if (video == nullptr || props == nullptr) return false;
+  auto* bridge = video->findChild<QtVideoBridge*>(QString(), Qt::FindDirectChildrenOnly);
+  if (bridge == nullptr) bridge = new QtVideoBridge(*video);
+  bridge->apply(*props, std::dynamic_pointer_cast<const facebook::react::QnxQtVideoEventEmitter>(view.eventEmitter));
+  return true;
 }
 
 } // namespace rnqnx::fabric

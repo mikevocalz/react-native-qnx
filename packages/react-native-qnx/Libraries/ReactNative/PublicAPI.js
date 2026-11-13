@@ -101,6 +101,62 @@ const api = Object.freeze({
   get NativeEventEmitter() {
     return require('react-native/Libraries/EventEmitter/NativeEventEmitter').default;
   },
+  // expo-router, its bundled react-navigation and @expo/log-box import these
+  // from 'react-native'. Each is the real React Native module; a module whose
+  // native half QNX lacks (Linking, Keyboard, AccessibilityInfo) degrades the
+  // way React Native itself does when its TurboModule is absent.
+  get LogBox() {
+    return require('react-native/Libraries/LogBox/LogBox').default;
+  },
+  get Linking() {
+    return require('react-native/Libraries/Linking/Linking').default;
+  },
+  get Keyboard() {
+    return require('react-native/Libraries/Components/Keyboard/Keyboard').default;
+  },
+  get KeyboardAvoidingView() {
+    return require('react-native/Libraries/Components/Keyboard/KeyboardAvoidingView').default;
+  },
+  get Appearance() {
+    // Named exports only; the fallback keeps the lazy-load contract uniform.
+    const module = require('react-native/Libraries/Utilities/Appearance');
+    return module.default ?? module;
+  },
+  get useColorScheme() {
+    return require('react-native/Libraries/Utilities/useColorScheme').default;
+  },
+  get AccessibilityInfo() {
+    return require('react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo').default;
+  },
+  get UIManager() {
+    return require('react-native/Libraries/ReactNative/UIManager').default;
+  },
+  get BackHandler() {
+    return require('react-native/Libraries/Utilities/BackHandler').default;
+  },
+  get StatusBar() {
+    return require('react-native/Libraries/Components/StatusBar/StatusBar').default;
+  },
+  get Alert() {
+    return require('react-native/Libraries/Alert/Alert').default;
+  },
+  get LayoutAnimation() {
+    return require('react-native/Libraries/LayoutAnimation/LayoutAnimation').default;
+  },
+  // expo-modules-core builds the view config of an Expo view with it.
+  get NativeComponentRegistry() {
+    const module = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+    return module.default ?? module;
+  },
+  get TouchableOpacity() {
+    return require('react-native/Libraries/Components/Touchable/TouchableOpacity').default;
+  },
+  get TouchableHighlight() {
+    return require('react-native/Libraries/Components/Touchable/TouchableHighlight').default;
+  },
+  get TouchableWithoutFeedback() {
+    return require('react-native/Libraries/Components/Touchable/TouchableWithoutFeedback').default;
+  },
 });
 
 module.exports = new Proxy(api, {

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { cp, mkdtemp, readFile, writeFile, symlink, rm } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, writeFile, symlink, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { syncDocs } from '../../scripts/lib/docs-model.mjs';
@@ -18,7 +18,10 @@ try {
     'CODE_OF_CONDUCT.md',
     'CONTRIBUTING.md',
     'TODO.md',
+    // Linked from the compatibility matrix.
+    'packages/expo-image-qnx/README.md',
   ]) {
+    await mkdir(path.dirname(path.join(temporary, file)), { recursive: true });
     await cp(path.join(root, file), path.join(temporary, file), { recursive: true });
   }
   await symlink(path.join(root, 'node_modules'), path.join(temporary, 'node_modules'), 'dir');

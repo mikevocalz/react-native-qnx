@@ -1,10 +1,31 @@
 # QNX component gallery
 
-The tabbed component gallery (Components, Documents, Sections, Controls,
-Adaptive, Limits) that ran on the Pi 400 on 2026-11-10, taken from `083c4bd`
-on `devin/1794282758-v1-integration`. It uses the public `react-native`
-entry through `@rn-qnx/metro-config-qnx/public-entry`. The leaner fixture in
+The component gallery, an expo-router app: a left drawer around five tabs
+(Components, Advanced, Documents, Controls, More). It started as the tabbed
+gallery that ran on the Pi 400 on 2026-11-10, taken from `083c4bd` on
+`devin/1794282758-v1-integration`. It uses the public `react-native` entry
+through `@rn-qnx/metro-config-qnx/public-entry`. The leaner fixture in
 `apps/component-conformance` is unchanged.
+
+```text
+app/_layout.js            Drawer (navigation only: Home, Components, Media, Settings, About)
+app/(tabs)/_layout.js     Tabs: bottom bar under 700 px, left rail from 700 px, live
+app/(tabs)/index.js       Components   (screens/ComponentsScreen.js)
+app/(tabs)/advanced.js    Advanced     (screens/AdvancedScreen.js, cards in components/advanced)
+app/(tabs)/documents.js   Documents
+app/(tabs)/controls.js    Controls
+app/(tabs)/more.js        More: Sections, Adaptive and Limits pages
+app/{components,media,settings,about}.js   drawer pages
+app-ctx.js                require.context of ./app (replaces expo-router/_ctx)
+index.js                  registers the root; keep it free of components so Fast Refresh works
+```
+
+The drawer lists destinations only. Cards belong in the tabs.
+[`@rn-qnx/expo-router-qnx`](../../packages/expo-router-qnx/README.md) explains how
+`Tabs` and `Drawer` run on QNX. With the host's native Qt drawer and tab bar the
+gallery uses them; without them it draws the same UI from React Native views.
+For a keyboard-only run, the developer menu (F1) has Toggle drawer and a
+Go to entry for every tab and page.
 
 ```bash
 node packages/react-native-qnx-cli/src/bin.mjs bundle-qnx --app component-gallery \
@@ -58,17 +79,16 @@ place, because card modules export objects, not components; put the
 component in its own file if you want Fast Refresh to keep its state. Metro
 picks up a newly added card file on the next reload.
 
-When the gallery moves to expo-router the same directory feeds the Advanced
-tab route, so cards written now keep working.
+The Advanced tab route (`app/(tabs)/advanced.js`) renders that array.
 
 ## Video and Audio
 
 The Advanced tab has a Video card (`components/advanced/video.card.js`:
-QtVideo with the native control bar and a Bundled / Mac URL / Bad URL source
-switch) and an Audio card (`audio.card.js`: a bundled tone with play, pause
-and volume). The Media tab holds both at full width. They need a host built
-with `RNQNX_ENABLE_QT_VIDEO=ON` and the Qt Multimedia add-on
-([media guide](../../docs/getting-started/media.md)); without it the cards
-show a notice. Stage `assets/media/` next to the executable as
-`assets/media/`. The Mac URL source expects `python3 -m http.server 8765` in
-that directory on 192.168.2.1. Status: not yet run on the Pi 400.
+`QtVideo` with the native control bar and a Bundled / Mac URL / Bad URL source
+switch) and an Audio card (`audio.card.js`: a bundled tone with play, pause and
+volume). The Media screen in the drawer shows the expo-image card, then both at
+full width. They need a host built with `RNQNX_ENABLE_QT_VIDEO=ON` and the Qt
+Multimedia add-on ([media guide](../../docs/getting-started/media.md)); without
+them the cards show a notice. Stage `assets/media/` next to the executable. The
+Mac URL source expects `python3 -m http.server 8765` in that directory on
+192.168.2.1.

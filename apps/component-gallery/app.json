@@ -17,6 +17,7 @@
           }
         }
       }
-    }
+    },
+    "scheme": "rnqnx-gallery"
   }
 }

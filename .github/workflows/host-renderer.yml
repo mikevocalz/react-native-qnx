@@ -57,6 +57,7 @@ jobs:
         run: |
           pnpm qt:svg:check
           pnpm qt:rnsvg:check
+          pnpm qt:native-ui:check
           pnpm qt:video:check
       - name: Build and run the required full renderer graph
         run: |
@@ -69,6 +70,8 @@ jobs:
             -DRNQNX_ENABLE_WINDOW_CHROME=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_SVG=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_RNSVG=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_QT_NATIVE_UI=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_QT_EXPO_IMAGE=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_MOTION=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_GRAPHICS=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_VIDEO=${{ matrix.input-lifecycle }}

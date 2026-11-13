@@ -26,7 +26,6 @@ class QtAccessibilityActivation;
 class QtImageBridge;
 class QtSwitchBridge;
 class QtSvgBridge;
-class QtVideoBridge;
 
 /// Translates a React Native mount transaction into QtQuickMountingLayer calls.
 ///
@@ -98,10 +97,6 @@ class ShadowViewMutationAdapter {
 #if RNQNX_ENABLE_QT_SVG
   void applySvgDocument(const facebook::react::ShadowView& view);
   QHash<Tag, QPointer<QtSvgBridge>> svgBridges_;
-#endif
-#if RNQNX_ENABLE_QT_VIDEO
-  void applyVideo(const facebook::react::ShadowView& view);
-  QHash<Tag, QPointer<QtVideoBridge>> videoBridges_;
 #endif
   void registerEventEmitter(const facebook::react::ShadowView& view);
 
