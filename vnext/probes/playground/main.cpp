@@ -15,6 +15,15 @@
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
+#if RNQNX_ENABLE_WORKLETS
+#include "react-native-qnx/worklets/QtWorkletsPlatform.h"
+#endif
+#if RNQNX_ENABLE_REANIMATED
+#include "react-native-qnx/reanimated/QtReanimatedPlatform.h"
+#endif
+#if RNQNX_ENABLE_GESTURE_HANDLER
+#include "react-native-qnx/gesture/QtGesturePlatform.h"
+#endif
 #include "react-native-qnx/runtime/ApplicationIdentity.h"
 #include "react-native-qnx/runtime/ApplicationIcon.h"
 #ifdef RNQNX_CONSUMER_APP_HEADER
@@ -635,6 +644,10 @@ int main(int argc, char** argv) {
   adapter.setTouchDispatcher(&touchDispatcher);
   window.installEventFilter(&touchDispatcher);
 #endif
+#if RNQNX_ENABLE_GESTURE_HANDLER
+  // Fabric descriptors must exist before the first host builds its registry.
+  rnqnx::gesture::registerComponents();
+#endif
 #if RNQNX_ENABLE_FRAME_TRACE
   std::shared_ptr<rnqnx::runtime::RuntimeTrace> trace;
   if (parser.isSet(traceOption)) trace = std::make_shared<rnqnx::runtime::RuntimeTrace>(16384);
@@ -659,6 +672,17 @@ int main(int argc, char** argv) {
       host.runtime(), std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue()));
 #else
   rnqnx::nitro::installQnxNitroRuntime(host.runtime());
+#endif
+#endif
+#if RNQNX_ENABLE_WORKLETS
+  // react-native-worklets: a UI-worklet thread, its frame callbacks and the
+  // WorkletsModule TurboModule. The host stops them before Hermes goes away.
+  const auto worklets = rnqnx::worklets::QtWorkletsPlatform::install(host, &window);
+#if RNQNX_ENABLE_REANIMATED
+  rnqnx::reanimated::installReanimated(host, worklets);
+#endif
+#if RNQNX_ENABLE_GESTURE_HANDLER
+  rnqnx::gesture::QtGesturePlatform::install(host, adapter, layer, window, worklets);
 #endif
 #endif
   host.installTurboModuleBinding();

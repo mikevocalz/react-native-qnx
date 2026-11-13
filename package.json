@@ -69,6 +69,12 @@
     "typescript": "7.0.2",
     "nitro-core": "1.0.0-alpha.nightly.136.gdb81de61bd32",
     "@typescript/typescript6": "6.0.2",
-    "zustand": "5.1.0"
+    "zustand": "5.1.0",
+    "@babel/core": "7.29.7",
+    "@legendapp/list": "3.7.2",
+    "@legendapp/motion": "2.5.3",
+    "react-native-gesture-handler": "3.4.0",
+    "react-native-reanimated": "4.7.1",
+    "react-native-worklets": "0.13.0"
   }
 }

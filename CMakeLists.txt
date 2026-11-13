@@ -129,6 +129,24 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX" OR BUILD_TESTING)
   endif()
 endif()
 
+# Gesture Handler recognizer registry: pure C++ with no Qt or React dependency,
+# so it is host-tested everywhere. Device behavior is a separate gate.
+if(BUILD_TESTING AND NOT CMAKE_SYSTEM_NAME STREQUAL "QNX")
+  add_executable(rnqnx_gesture_core_test
+    vnext/src/gesture/GestureHandlerCore.cpp
+    tests/native/gesture-handler/GestureHandlerCoreTest.cpp
+  )
+  target_include_directories(rnqnx_gesture_core_test PRIVATE vnext/include)
+  rnqnx_enable_strict_warnings(rnqnx_gesture_core_test)
+  set_target_properties(rnqnx_gesture_core_test PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+  )
+  add_test(NAME rnqnx_gesture_core_test
+    COMMAND $<TARGET_FILE:rnqnx_gesture_core_test>)
+  set_tests_properties(rnqnx_gesture_core_test PROPERTIES
+    PASS_REGULAR_EXPRESSION "RNQNX_GESTURE_CORE_OK")
+endif()
+
 if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
   message(STATUS "Configuring react-native-qnx for QNX")
 

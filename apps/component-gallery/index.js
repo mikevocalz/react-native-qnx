@@ -541,6 +541,7 @@ function ConformanceApp() {
     ['sections', 'Sections'],
     ['controls', 'Controls'],
     ['adaptive', 'Adaptive'],
+    ['advanced', 'Advanced'],
     ['limits', 'Limits'],
   ];
   const content =
@@ -554,7 +555,9 @@ function ConformanceApp() {
             ? h(ControlsPage)
             : page === 'adaptive'
               ? h(AdaptivePage)
-              : h(LimitationsPage);
+              : page === 'advanced'
+                ? h(require('./advanced/AdvancedPage.js').AdvancedPage)
+                : h(LimitationsPage);
   const width = useConformance((state) => state.width);
   // Wide windows put the tabs beside the title; narrow ones stack them.
   const wide = width >= 900;

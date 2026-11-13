@@ -47,7 +47,20 @@
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/mounting/ShadowView.h>
 
+#include "react-native-qnx/fabric/ViewObserver.h"
+
 namespace rnqnx::fabric {
+
+namespace {
+ViewObserver& observerStorage() {
+  static ViewObserver observer;
+  return observer;
+}
+}  // namespace
+
+void setViewObserver(ViewObserver observer) { observerStorage() = std::move(observer); }
+const ViewObserver& viewObserver() { return observerStorage(); }
+
 namespace {
 
 using facebook::react::ShadowView;
@@ -1012,6 +1025,7 @@ MountError ShadowViewMutationAdapter::applyOne(
         viewEmitter->onLayout(view.layoutMetrics);
       }
       registerEventEmitter(view);
+      if (const auto& observer = viewObserver()) observer(view, false);
       connectScrollEvents(view);
       connectTextInputEvents(view);
       connectSwitchEvents(view);
@@ -1043,6 +1057,7 @@ MountError ShadowViewMutationAdapter::applyOne(
         previous->invalidate(); delete previous.data();
       }
 #endif
+      if (const auto& observer = viewObserver()) observer(mutation.oldChildShadowView, true);
       if (touchDispatcher_ != nullptr) {
         touchDispatcher_->forgetTag(mutation.oldChildShadowView.tag);
       }
@@ -1084,6 +1099,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       }
 #endif
       registerEventEmitter(view);
+      if (const auto& observer = viewObserver()) observer(view, false);
       const MountError layoutError =
           layer_.updateLayout(view.tag, toLayoutFrame(view.layoutMetrics));
       if (layoutError != MountError::None) {
