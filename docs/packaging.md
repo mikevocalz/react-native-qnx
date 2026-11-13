@@ -91,9 +91,11 @@ with every runtime file's SHA-256 in
   `64afc468…`) do not qualify. The `-O2` rebuild, with both QNX plugin
   patches, is recorded in
   [the -O2 receipt](evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md): runtime
-  tarball `9ead47f44e7ba79ab9abc08ef59279d5d49a28693b03676988b82bd805ec0cc4`,
-  `SHA256SUMS` `17319f433075169e117e38980ab97d09429f6b76c7c948cf8af1cce44a2492f7`,
-  per-file hashes in
+  tarball `452bb9fb7e9c2e7b5520a620655fd9b14963a662498d0ab4f3c58c62be94189e`,
+  `SHA256SUMS` `edddf6bdfef37f33ae1c7f83ad667305276c67751d6322b6abbbdff163637185`,
+  rebuilt on 2026-11-13 because PR #141 changed `qtbase-qnx-resize-swap.patch`
+  (only `libqqnx.so` and `manifest.json` differ from the superseded
+  `9ead47f4…`/`17319f43…` runtime), per-file hashes in
   [its closure manifest](evidence/qt-public-runtime-closure-o2-2026-11-12-a79e16a.json).
   That is the runtime hash runners and packages build on. QtCore and QtGui
   compile at `-O3`, which Qt applies to those two modules whenever

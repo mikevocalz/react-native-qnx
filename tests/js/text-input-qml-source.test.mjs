@@ -33,10 +33,10 @@ try {
     assert.equal(result.status, 0);
     if (enabled === 0) {
       // Baseline updated 2026-11-13: clipping, view background and padding.
-      assert.equal(result.stdout.length, 3784);
+      assert.equal(result.stdout.length, 4064);
       assert.equal(
         createHash('sha256').update(result.stdout).digest('hex'),
-        'abb15de203c795e5f425997ed1e4942b14ffb6ca2d6593fdaa92907ed10ea206'
+        'cc3e0894b308924c8b5cb000e4ad7bfe5ec8d1cae1bcd140ee923108ac3601fb'
       );
     } else {
       assert.match(result.stdout.toString(), /contractEnabled/);

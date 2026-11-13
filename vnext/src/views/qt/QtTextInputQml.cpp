@@ -7,9 +7,11 @@ const char* textInputQml() {
 FocusScope {
   id: root
   visible: true
-  // A TextInput clips its text to its box on iOS and Android; without this a
-  // long value scrolled to the cursor spilled out over neighbouring views.
-  clip: true
+  // A single-line TextInput clips its text to its box on iOS and Android;
+  // without this a long value scrolled to the cursor spilled out over
+  // neighbouring views. Multi-line fields keep drawing past their box until
+  // TextEdit scrolls (it cannot yet), so typed lines never vanish.
+  clip: !multiline
 
   // View style (backgroundColor, borderRadius, border) and Yoga's content
   // insets (padding + border), set by the mounting layer.
@@ -66,6 +68,9 @@ FocusScope {
     anchors.rightMargin: root.paddingRight
     anchors.bottomMargin: root.paddingBottom
     verticalAlignment: TextInput.AlignVCenter
+    // Follow the cursor while editing; show the start of the value otherwise,
+    // as iOS and Android do.
+    autoScroll: activeFocus
     visible: !root.multiline
     focus: !root.multiline
     readOnly: root.readOnly
@@ -171,9 +176,11 @@ FocusScope {
 FocusScope {
   id: root
   visible: true
-  // A TextInput clips its text to its box on iOS and Android; without this a
-  // long value scrolled to the cursor spilled out over neighbouring views.
-  clip: true
+  // A single-line TextInput clips its text to its box on iOS and Android;
+  // without this a long value scrolled to the cursor spilled out over
+  // neighbouring views. Multi-line fields keep drawing past their box until
+  // TextEdit scrolls (it cannot yet), so typed lines never vanish.
+  clip: !multiline
 
   // View style (backgroundColor, borderRadius, border) and Yoga's content
   // insets (padding + border), set by the mounting layer.
@@ -229,6 +236,9 @@ FocusScope {
     anchors.rightMargin: root.paddingRight
     anchors.bottomMargin: root.paddingBottom
     verticalAlignment: TextInput.AlignVCenter
+    // Follow the cursor while editing; show the start of the value otherwise,
+    // as iOS and Android do.
+    autoScroll: activeFocus
     visible: !root.multiline
     focus: !root.multiline
     readOnly: root.readOnly
