@@ -40,6 +40,24 @@ int countElements(const QQuickItem* parent) {
   return n;
 }
 
+std::string g_diagnostics;  // filled by the test so a timeout explains itself
+
+std::string dumpTree(const QQuickItem* item, int depth = 0) {
+  std::string out;
+  if (const auto* e = qobject_cast<const rnqnx::views::RnsvgElementItem*>(item)) {
+    const auto& p = e->props();
+    out += std::string(depth * 2, ' ') + "kind=" + std::to_string(int(p.kind)) +
+           " fill=" + std::to_string(int(p.fill.type)) + ":" + p.fill.color.name(QColor::HexArgb).toStdString() +
+           " name=" + p.name.toStdString() + " w=" + std::to_string(p.width.value) +
+           " propList=" + std::to_string(p.propList.size()) + "\n";
+  } else if (const auto* r = qobject_cast<const rnqnx::views::RnsvgRootItem*>(item)) {
+    out += std::string(depth * 2, ' ') + "root " + std::to_string(r->width()) + "x" + std::to_string(r->height()) +
+           " paints=" + std::to_string(r->paintCount()) + "\n";
+  }
+  for (const auto* child : item->childItems()) out += dumpTree(child, depth + 1);
+  return out;
+}
+
 void await(rnqnx::runtime::QtReactHost& host, const std::function<bool()>& ready,
            const char* what = "update") {
   QElapsedTimer timer;
@@ -49,7 +67,7 @@ void await(rnqnx::runtime::QtReactHost& host, const std::function<bool()>& ready
     host.pumpEvents();
     if (ready()) return;
   } while (timer.elapsed() < 5000);
-  std::string message = std::string("Timed out waiting for: ") + what;
+  std::string message = std::string("Timed out waiting for: ") + what + "\n" + g_diagnostics;
   for (const auto& error : host.javaScriptErrors()) message += "\n  JS error: " + error.message + "\n" + error.stack;
   for (const auto& failure : host.delegate().lastFailures()) message += "\n  mount failure: " + failure.detail.toStdString();
   throw std::runtime_error(message);
@@ -121,7 +139,13 @@ int main(int argc, char** argv) {
     check(elements >= 14, "Element tree was not mounted");
 
     // Gradient, group inheritance, clip, mask, use, path.
-    await(host, [&] { return pixelIs(window, 3, 20, QColor(255, 0, 0)); }, "gradient pixels");
+    g_diagnostics = dumpTree(window.contentItem());
+    await(host, [&] {
+      g_diagnostics = dumpTree(window.contentItem()) + "pixel(3,20)=" +
+          window.grabWindow().pixelColor(3, 20).name(QColor::HexArgb).toStdString() + " pixel(20,70)=" +
+          window.grabWindow().pixelColor(20, 70).name(QColor::HexArgb).toStdString() + "\n";
+      return pixelIs(window, 3, 20, QColor(255, 0, 0));
+    }, "gradient pixels");
     check(pixelIs(window, 97, 20, QColor(0, 0, 255)), "gradient end color wrong");
     check(pixelIs(window, 20, 70, QColor(0, 255, 0)), "<G fill> was not inherited");
     check(pixelIs(window, 70, 70, QColor(255, 0, 0)), "element fill did not override <G fill>");
