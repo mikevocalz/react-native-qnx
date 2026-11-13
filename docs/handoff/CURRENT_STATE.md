@@ -1,5 +1,9 @@
 # Current state
 
+Start with the [2026-11-13 handoff](HANDOFF_2026-11-13.md): it explains how to
+load and control the app on the Pi 400, what is merged, and what is open.
+The sections below keep their original dates.
+
 ## PR 159 build repair — 2026-11-13
 
 The video component row now initializes its optional command handler. Local strict table compilation and JS checks pass; new-head CI and target checks remain pending.

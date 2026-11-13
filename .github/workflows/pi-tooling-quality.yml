@@ -44,7 +44,8 @@ jobs:
             scripts/deploy-qnx.sh \
             scripts/run-qnx.sh \
             scripts/log-qnx.sh \
-            scripts/qnx-sdk-container.sh
+            scripts/qnx-sdk-container.sh \
+            tools/qnx-winmgr/swap-winmgr.sh
 
       - name: ShellCheck
         run: |
@@ -56,4 +57,5 @@ jobs:
             scripts/deploy-qnx.sh \
             scripts/run-qnx.sh \
             scripts/log-qnx.sh \
-            scripts/qnx-sdk-container.sh
+            scripts/qnx-sdk-container.sh \
+            tools/qnx-winmgr/swap-winmgr.sh

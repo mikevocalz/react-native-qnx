@@ -430,6 +430,31 @@ and `tools/qnx-winmgr/install-boot.sh` into one directory on the Pi and run
 USB input, the graphics drivers, Screen, the launcher and its tiles start as
 before. `sh install-boot.sh --undo` puts the old `full_startup.sh` back.
 
+### Swapping the manager on a running board
+
+To put a new `rnqnx-winmgr` build on a board that already boots into it, without
+a reboot, stage the binary and run `tools/qnx-winmgr/swap-winmgr.sh` as root:
+
+```sh
+# on the Pi: binary and script in /data/home/qnxuser/rnqnx-wm/
+sudo sh /data/home/qnxuser/rnqnx-wm/swap-winmgr.sh --check   # show the plan, change nothing
+sudo sh /data/home/qnxuser/rnqnx-wm/swap-winmgr.sh           # swap
+sudo sh /data/home/qnxuser/rnqnx-wm/swap-winmgr.sh --undo    # back to the old binary
+```
+
+It keeps the current binary as `rnqnx-winmgr.before-single-instance` (first run
+only) and installs the new one with `cp` and `mv`. It stops the watcher that
+would start `fullscreen-winmgr` when the manager exits (found by `pidin` and
+`/proc/<pid>/cmdline`, so `rnqnx-desktop.sh` needs no change), sends the old
+manager SIGTERM (never SIGKILL), starts the new one with
+`-s demolauncher,st,gtk` and a watcher of its own, restarts `demolauncher`, and
+relaunches the tile app through its launcher with `--replace` so the new
+manager sees its window. Then it checks for one manager, one launcher, one tile
+app and the mouse node. A new manager that exits within 5 s is replaced by the
+backup automatically. Running it again with the binary already installed does
+nothing. Windows of other apps stay on screen unmanaged until their apps are
+launched again.
+
 Each press logs `RNQNX_WINDOW_ACTION close|minimize|maximize`.
 
 ## Mouse wheel
