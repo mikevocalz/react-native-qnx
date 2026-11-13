@@ -1,7 +1,7 @@
 # Worklets on QNX
 
-Stage 2 of the [v2 plan](v2/README.md). `react-native-worklets` 0.13.0 (the
-version Expo SDK 58 selects, and inside the 0.13.x line that supports React
+Stage 2 of the [v2 plan](v2/README.md). `react-native-worklets` 0.13.1 (the
+version main already resolves, inside the 0.13.x line that supports React
 Native 0.86 to 0.88) runs its UI Worklet Runtime on a dedicated thread of the Qt
 host. The upstream C++ is compiled from the installed npm package; nothing from
 it is vendored. The bootstrap exception is recorded in
@@ -58,7 +58,8 @@ CMake fails the configure step if the line changes. Nothing else is modified.
 
 ## Device receipts (Pi 400, 2026-11-13)
 
-Build: QNX SDP 8.0.5, full Hermes, `-O1`, Worklets 0.13.0. A startup probe in a
+Build: QNX SDP 8.0.5, full Hermes, `-O1`, Worklets 0.13.0 (the device runs predate the bump to 0.13.1; the C++ is the same
+line and has not been rerun). A startup probe in a
 local copy of the gallery (not committed) logged from the app's stderr:
 
 - A worklet passed to `scheduleOnUI` reported its thread as `ui-worklet`; the
