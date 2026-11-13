@@ -3,7 +3,7 @@
 // cache. Pick a source (bundled file or URL), a contentFit, and watch the
 // placeholder cross-dissolve into the image.
 import * as React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { DevSettings, Pressable, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 
 const INK = '#e9f0f7';
@@ -43,10 +43,35 @@ function Chip({ title, selected, onPress }) {
   );
 }
 
+// Developer-menu entries (F1) that pick the source and fit from the keyboard.
+// DevSettings has no remove, so they are added once and call the mounted card.
+const menuActions = { source: null, fit: null };
+let menuInstalled = false;
+function installMenu() {
+  if (menuInstalled || !__DEV__) return;
+  menuInstalled = true;
+  for (const candidate of SOURCES) {
+    DevSettings.addMenuItem('expo-image source: ' + candidate.label, () =>
+      menuActions.source?.(candidate.id)
+    );
+  }
+  for (const candidate of FITS) {
+    DevSettings.addMenuItem('expo-image fit: ' + candidate, () => menuActions.fit?.(candidate));
+  }
+}
+
 export default function ExpoImageCard() {
   const [sourceId, setSourceId] = React.useState('url');
   const [fit, setFit] = React.useState('cover');
   const [status, setStatus] = React.useState('Not loaded');
+  React.useEffect(() => {
+    installMenu();
+    menuActions.source = (id) => {
+      setStatus('Loading');
+      setSourceId(id);
+    };
+    menuActions.fit = setFit;
+  }, []);
   const current = SOURCES.find((candidate) => candidate.id === sourceId) ?? SOURCES[0];
   return (
     <View>
