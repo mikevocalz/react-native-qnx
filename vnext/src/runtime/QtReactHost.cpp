@@ -18,13 +18,11 @@
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
-<<<<<<< HEAD
 #if RNQNX_ENABLE_QT_VIDEO
 #include <react/renderer/components/RnqnxQtVideo/ComponentDescriptors.h>
-=======
+#endif
 #if RNQNX_ENABLE_QT_RNSVG
 #include "react-native-qnx/fabric/QtRnsvgBridge.h"
->>>>>>> origin/main
 #endif
 #if RNQNX_ENABLE_QT_SVG
 #include <react/renderer/components/RnqnxQtSvg/ComponentDescriptors.h>
@@ -238,9 +236,6 @@ std::vector<std::string> registeredComponentNames() {
 #if RNQNX_ENABLE_QT_SVG
       std::string(facebook::react::QnxSvgDocumentComponentDescriptor::ConcreteShadowNode::Name()),
 #endif
-#if RNQNX_ENABLE_QT_VIDEO
-      std::string(facebook::react::QnxQtVideoComponentDescriptor::ConcreteShadowNode::Name()),
-#endif
       std::string(ViewComponentDescriptor::ConcreteShadowNode::Name()),
       std::string(facebook::react::ParagraphComponentDescriptor::
                       ConcreteShadowNode::Name()),
@@ -267,6 +262,9 @@ std::vector<std::string> registeredComponentNames() {
 #if RNQNX_ENABLE_QT_RNSVG
   for (auto& name : rnqnx::fabric::rnsvgComponentNames()) names.push_back(std::move(name));
 #endif
+#if RNQNX_ENABLE_QT_VIDEO
+  names.push_back(std::string(facebook::react::QnxQtVideoComponentDescriptor::ConcreteShadowNode::Name()));
+#endif
   return names;
 }
 
@@ -291,14 +289,12 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
     providerRegistry->add(facebook::react::concreteComponentDescriptorProvider<
         facebook::react::QnxSvgDocumentComponentDescriptor>());
 #endif
-<<<<<<< HEAD
+#if RNQNX_ENABLE_QT_RNSVG
+    rnqnx::fabric::addRnsvgComponentDescriptors(*providerRegistry);
+#endif
 #if RNQNX_ENABLE_QT_VIDEO
     providerRegistry->add(facebook::react::concreteComponentDescriptorProvider<
         facebook::react::QnxQtVideoComponentDescriptor>());
-=======
-#if RNQNX_ENABLE_QT_RNSVG
-    rnqnx::fabric::addRnsvgComponentDescriptors(*providerRegistry);
->>>>>>> origin/main
 #endif
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<

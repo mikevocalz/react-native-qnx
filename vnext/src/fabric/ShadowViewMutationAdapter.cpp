@@ -10,17 +10,15 @@
 #include "react-native-qnx/fabric/QtScrollBridge.h"
 #include "react-native-qnx/fabric/QtSwitchBridge.h"
 
-<<<<<<< HEAD
 #if RNQNX_ENABLE_QT_VIDEO
 #include "react-native-qnx/fabric/QtVideoBridge.h"
 #include <QtVideoItem.h>
 #include <react/renderer/components/RnqnxQtVideo/EventEmitters.h>
 #include <react/renderer/components/RnqnxQtVideo/Props.h>
-=======
+#endif
 #if RNQNX_ENABLE_QT_RNSVG
 #include "react-native-qnx/fabric/QtRnsvgBridge.h"
 #include <RnsvgItems.h>
->>>>>>> origin/main
 #endif
 #if RNQNX_ENABLE_QT_SVG
 #include "react-native-qnx/fabric/QtSvgBridge.h"
@@ -403,16 +401,14 @@ ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer
 #if RNQNX_ENABLE_QT_SVG
   mapComponent(QStringLiteral("QnxSvgDocument"), QStringLiteral("QnxSvgDocument"));
 #endif
-<<<<<<< HEAD
-#if RNQNX_ENABLE_QT_VIDEO
-  mapComponent(QStringLiteral("QnxQtVideo"), QStringLiteral("QnxQtVideo"));
-=======
 #if RNQNX_ENABLE_QT_RNSVG
   for (const auto& name : rnsvgComponentNames()) {
     const auto qtName = QString::fromStdString(name);
     mapComponent(qtName, qtName);
   }
->>>>>>> origin/main
+#endif
+#if RNQNX_ENABLE_QT_VIDEO
+  mapComponent(QStringLiteral("QnxQtVideo"), QStringLiteral("QnxQtVideo"));
 #endif
 }
 
@@ -1070,15 +1066,13 @@ MountError ShadowViewMutationAdapter::applyOne(
 #if RNQNX_ENABLE_QT_SVG
       applySvgDocument(view);
 #endif
-<<<<<<< HEAD
 #if RNQNX_ENABLE_QT_VIDEO
       applyVideo(view);
-=======
+#endif
 #if RNQNX_ENABLE_QT_RNSVG
       if (view.componentName != nullptr && isRnsvgComponent(view.componentName)) {
         applyRnsvgProps(layer_.itemForTag(view.tag), view);
       }
->>>>>>> origin/main
 #endif
       const auto styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) return styleError;
@@ -1172,15 +1166,13 @@ MountError ShadowViewMutationAdapter::applyOne(
 #if RNQNX_ENABLE_QT_SVG
       applySvgDocument(view);
 #endif
-<<<<<<< HEAD
 #if RNQNX_ENABLE_QT_VIDEO
       applyVideo(view);
-=======
+#endif
 #if RNQNX_ENABLE_QT_RNSVG
       if (view.componentName != nullptr && isRnsvgComponent(view.componentName)) {
         applyRnsvgProps(layer_.itemForTag(view.tag), view);
       }
->>>>>>> origin/main
 #endif
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) {
