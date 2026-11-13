@@ -29,6 +29,18 @@ with `pnpm docs:sync`; check with `pnpm validate:docs`.
 
 <!-- generated:dependencies:end -->
 
+### Opt-in third-party packages
+
+These install from the workspace lockfile but only take effect when their
+default-OFF native switch is on. A row is not a support claim beyond the
+evidence it links.
+
+| Package            | Pinned version | Switch                     | Host (Linux CI)                                                            | Pi 400 device                                                                         | Not supported                                                                                                               |
+| ------------------ | -------------- | -------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `react-native-svg` | `15.16.0`      | `RNQNX_ENABLE_QT_RNSVG=ON` | Fabric fixture with the unmodified package and golden-pixel renderer tests | Scoped: gallery Advanced tab, see [the receipt](../v2/validation.md#react-native-svg) | Pattern, Symbol, Marker, TextPath, Filter/Fe\*, ForeignObject; see [the element table](../v2/react-native-svg.md#supported) |
+
+`15.16.0` is the version Expo SDK 58 lists in `bundledNativeModules.json`.
+
 ### Held: react 19.3.1
 
 `react` stays at `19.3.0` until the owner decides. React 19.3.1 is published,

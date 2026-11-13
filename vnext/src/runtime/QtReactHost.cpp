@@ -18,6 +18,9 @@
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#if RNQNX_ENABLE_QT_RNSVG
+#include "react-native-qnx/fabric/QtRnsvgBridge.h"
+#endif
 #if RNQNX_ENABLE_QT_SVG
 #include <react/renderer/components/RnqnxQtSvg/ComponentDescriptors.h>
 #endif
@@ -223,7 +226,7 @@ void QtSchedulerDelegate::schedulerDidClearPendingSnapshots() {}
 std::vector<std::string> registeredComponentNames() {
   // One list, used by both the registry factory and the JavaScript predicate,
   // so the two cannot drift apart.
-  return {
+  std::vector<std::string> names = {
       std::string(RootComponentDescriptor::ConcreteShadowNode::Name()),
 #if RNQNX_ENABLE_QT_SVG
       std::string(facebook::react::QnxSvgDocumentComponentDescriptor::ConcreteShadowNode::Name()),
@@ -251,6 +254,10 @@ std::vector<std::string> registeredComponentNames() {
       std::string(facebook::react::ModalHostViewComponentDescriptor::
                       ConcreteShadowNode::Name()),
   };
+#if RNQNX_ENABLE_QT_RNSVG
+  for (auto& name : rnqnx::fabric::rnsvgComponentNames()) names.push_back(std::move(name));
+#endif
+  return names;
 }
 
 facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
@@ -273,6 +280,9 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
 #if RNQNX_ENABLE_QT_SVG
     providerRegistry->add(facebook::react::concreteComponentDescriptorProvider<
         facebook::react::QnxSvgDocumentComponentDescriptor>());
+#endif
+#if RNQNX_ENABLE_QT_RNSVG
+    rnqnx::fabric::addRnsvgComponentDescriptors(*providerRegistry);
 #endif
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<

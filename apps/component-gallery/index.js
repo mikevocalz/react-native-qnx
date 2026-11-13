@@ -529,6 +529,23 @@ function LimitationsPage() {
   );
 }
 
+// Advanced widgets. The SVG cards live in ./svg (one file per card); the module
+// is required here, not at the top, so a host without react-native-svg support
+// never evaluates it.
+function AdvancedPage() {
+  const { svgCards, svgAvailable, SvgUnavailable } = require('./svg');
+  if (!svgAvailable()) return h(SvgUnavailable);
+  return h(
+    ScrollView,
+    { contentContainerStyle: { paddingBottom: 24 } },
+    h(Heading, {
+      title: 'Advanced widgets',
+      detail: 'react-native-svg 15.16.0 elements drawn by a Qt-backed renderer',
+    }),
+    ...svgCards.map((card) => h(card.Component, { key: card.id }))
+  );
+}
+
 function ConformanceApp() {
   const page = useConformance((state) => state.page);
   const goTo = useConformance((state) => state.goTo);
@@ -537,6 +554,7 @@ function ConformanceApp() {
   const compact = height > 0 && height < 440;
   const pages = [
     ['gallery', 'Components'],
+    ['advanced', 'Advanced'],
     ['list', 'Documents'],
     ['sections', 'Sections'],
     ['controls', 'Controls'],
@@ -546,15 +564,17 @@ function ConformanceApp() {
   const content =
     page === 'gallery'
       ? h(GalleryPage)
-      : page === 'sections'
-        ? h(SectionsPage)
-        : page === 'list'
-          ? h(ListPage)
-          : page === 'controls'
-            ? h(ControlsPage)
-            : page === 'adaptive'
-              ? h(AdaptivePage)
-              : h(LimitationsPage);
+      : page === 'advanced'
+        ? h(AdvancedPage)
+        : page === 'sections'
+          ? h(SectionsPage)
+          : page === 'list'
+            ? h(ListPage)
+            : page === 'controls'
+              ? h(ControlsPage)
+              : page === 'adaptive'
+                ? h(AdaptivePage)
+                : h(LimitationsPage);
   const width = useConformance((state) => state.width);
   // Wide windows put the tabs beside the title; narrow ones stack them.
   const wide = width >= 900;
@@ -629,3 +649,5 @@ function ConformanceApp() {
 }
 
 AppRegistry.registerComponent('RNQnxPlayground', () => ConformanceApp);
+// The SVG cards alone, for the device screenshot check; see ./svg/standalone.js.
+AppRegistry.registerComponent('RNQnxSvgGallery', () => require('./svg/standalone').SvgGalleryApp);

@@ -10,6 +10,9 @@
 #include "react-native-qnx/fabric/QtScrollBridge.h"
 #include "react-native-qnx/fabric/QtSwitchBridge.h"
 
+#if RNQNX_ENABLE_QT_RNSVG
+#include "react-native-qnx/fabric/QtRnsvgBridge.h"
+#endif
 #if RNQNX_ENABLE_QT_SVG
 #include "react-native-qnx/fabric/QtSvgBridge.h"
 #include <QtSvgItem.h>
@@ -390,6 +393,12 @@ ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer
     : layer_(layer) {
 #if RNQNX_ENABLE_QT_SVG
   mapComponent(QStringLiteral("QnxSvgDocument"), QStringLiteral("QnxSvgDocument"));
+#endif
+#if RNQNX_ENABLE_QT_RNSVG
+  for (const auto& name : rnsvgComponentNames()) {
+    const auto qtName = QString::fromStdString(name);
+    mapComponent(qtName, qtName);
+  }
 #endif
 }
 
@@ -1025,6 +1034,11 @@ MountError ShadowViewMutationAdapter::applyOne(
 #if RNQNX_ENABLE_QT_SVG
       applySvgDocument(view);
 #endif
+#if RNQNX_ENABLE_QT_RNSVG
+      if (view.componentName != nullptr && isRnsvgComponent(view.componentName)) {
+        applyRnsvgProps(layer_.itemForTag(view.tag), view);
+      }
+#endif
       const auto styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) return styleError;
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
@@ -1106,6 +1120,11 @@ MountError ShadowViewMutationAdapter::applyOne(
       applyModal(view);
 #if RNQNX_ENABLE_QT_SVG
       applySvgDocument(view);
+#endif
+#if RNQNX_ENABLE_QT_RNSVG
+      if (view.componentName != nullptr && isRnsvgComponent(view.componentName)) {
+        applyRnsvgProps(layer_.itemForTag(view.tag), view);
+      }
 #endif
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) {

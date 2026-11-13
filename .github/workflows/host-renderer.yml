@@ -53,7 +53,9 @@ jobs:
           cache: true
       - name: Verify reproducible SVG bindings
         if: matrix.input-lifecycle == 'ON'
-        run: pnpm qt:svg:check
+        run: |
+          pnpm qt:svg:check
+          pnpm qt:rnsvg:check
       - name: Build and run the required full renderer graph
         run: |
           mkdir -p build/linux-host-renderer/evidence
@@ -64,6 +66,7 @@ jobs:
             -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_WINDOW_CHROME=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_SVG=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_QT_RNSVG=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_MOTION=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_GRAPHICS=${{ matrix.input-lifecycle }}
           node scripts/validate-host-renderer.mjs

@@ -53,6 +53,11 @@ function(rnqnx_add_qt_views_target)
   if(RNQNX_ENABLE_QT_SVG)
     target_link_libraries(rnqnx_views_qt PUBLIC rnqnx_qt_svg)
   endif()
+  target_compile_definitions(rnqnx_views_qt PUBLIC
+    RNQNX_ENABLE_QT_RNSVG=$<BOOL:${RNQNX_ENABLE_QT_RNSVG}>)
+  if(RNQNX_ENABLE_QT_RNSVG)
+    target_link_libraries(rnqnx_views_qt PUBLIC rnqnx_qt_rnsvg)
+  endif()
 
   # Qt's keyword macros collide with React Native's EventEmitter::emit.
   target_compile_definitions(rnqnx_views_qt PUBLIC QT_NO_KEYWORDS)
@@ -103,6 +108,29 @@ function(rnqnx_add_fabric_adapter_target)
       "${svg_generated}/States.cpp" PROPERTIES COMPILE_OPTIONS
       "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas>")
   endif()
+  if(RNQNX_ENABLE_QT_RNSVG)
+    # Props and events are generated from the pinned react-native-svg specs
+    # (pnpm qt:rnsvg:check); shadow nodes and layout are that package's own C++.
+    set(rnsvg_package "${RNQNX_REACT_QT_ROOT}/node_modules/react-native-svg")
+    set(rnsvg_cpp "${rnsvg_package}/common/cpp/react/renderer/components/rnsvg")
+    if(NOT EXISTS "${rnsvg_cpp}/RNSVGLayoutableShadowNode.cpp")
+      message(FATAL_ERROR "RNQNX_ENABLE_QT_RNSVG needs react-native-svg 15.16.0 installed (pnpm install): ${rnsvg_cpp}")
+    endif()
+    set(rnsvg_generated "${RNQNX_REACT_QT_ROOT}/vnext/generated/react/renderer/components/rnsvg")
+    target_sources(rnqnx_fabric_adapter PRIVATE
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtRnsvgBridge.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtRnsvgBridge.h"
+      "${rnsvg_cpp}/RNSVGLayoutableShadowNode.cpp"
+      "${rnsvg_generated}/EventEmitters.cpp"
+      "${rnsvg_generated}/Props.cpp")
+    target_include_directories(rnqnx_fabric_adapter SYSTEM PUBLIC
+      "${RNQNX_REACT_QT_ROOT}/vnext/generated" "${rnsvg_cpp}")
+    set_source_files_properties(
+      "${rnsvg_cpp}/RNSVGLayoutableShadowNode.cpp"
+      "${rnsvg_generated}/EventEmitters.cpp" "${rnsvg_generated}/Props.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtRnsvgBridge.cpp" PROPERTIES COMPILE_OPTIONS
+      "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas;-Wno-deprecated-declarations;-Wno-sign-compare;-Wno-extra>")
+  endif()
   target_compile_definitions(rnqnx_fabric_adapter PUBLIC
     RNQNX_ENABLE_INPUT_LIFECYCLE=$<BOOL:${RNQNX_ENABLE_INPUT_LIFECYCLE}>)
   rnqnx_enable_strict_warnings(rnqnx_fabric_adapter)
@@ -147,6 +175,8 @@ function(rnqnx_add_react_host_target)
   rnqnx_configure_window_chrome()
   include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxQtSvgFabric.cmake)
   rnqnx_add_qt_svg_fabric_test()
+  include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxQtRnsvgFabric.cmake)
+  rnqnx_add_qt_rnsvg_fabric_test()
   rnqnx_enable_strict_warnings(rnqnx_react_host)
   if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE)
     include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxAccessibilityActions.cmake)
