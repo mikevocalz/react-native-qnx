@@ -396,7 +396,7 @@ class RnsvgRenderTest final : public QObject {
   }
 
   void textRendersAndAnchors() {
-    if (QFontDatabase::families().isEmpty()) QSKIP("no fonts available to the offscreen platform");
+    if (QFontDatabase::families().isEmpty()) QSKIP("no fonts available to the offscreen platform", SkipAll);
     Scene s(200, 60);
     ElementProps t = make(Kind::Text);
     t.tx = {px(100)}; t.ty = {px(40)};
