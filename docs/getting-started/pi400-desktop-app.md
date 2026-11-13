@@ -244,6 +244,51 @@ the launcher again. Its Alt+Tab bar shows a preview of each window and no
 title or icon; the manager ignores the `Title` message. Under `rnqnx-winmgr`
 a minimized app keeps its window and stays in the Alt+Tab list (below).
 
+## One instance per app
+
+There is never more than one copy of an app on the board. The rules:
+
+- The instance key is the app's base id: the app id without a build-variant
+  suffix (`.dev`, `.debug`, `.preview`; the list is `buildVariantSuffixes()` in
+  `native/window-chrome/WindowHost.cpp`). `org.rnqnx.showcase` and
+  `org.rnqnx.showcase.dev` are one app. The first process listens on the local
+  socket `/tmp/rnqnx-<base id>`: a fixed directory (created if missing, so a
+  session's `TMPDIR` does not matter; `RNQNX_SOCKET_DIR` overrides it), no uid
+  in the name, and world read/write, so any login (the desktop launcher, SSH,
+  root) reaches it.
+- Starting is one step under a lock any login can take (`<socket>.lock`, an
+  `fcntl` record lock that disappears with its process). Launches that start
+  together cannot both become the instance: the loser finds the owner and
+  restores it. A socket file with nobody behind it (the app was killed) is
+  removed; one that cannot be removed gets the per-user fallback path
+  `<socket>.<uid>`, which later launches also check.
+- A second launch restores the running window and exits. This is the default,
+  and what the tile does.
+- `--replace` (used by `rnqnx project dev` and `project run`) asks the running
+  copy to quit over the socket (`quit`), waits up to 5 s for its process to
+  exit, then sends SIGTERM to the pid it reported and waits 3 s more. It never
+  sends SIGKILL; if the old copy will not go, the launch fails and starts
+  nothing. A quit that arrives while the app fetches its bundle, shows the dev
+  error screen or reloads still ends the app.
+- The socket answers `restore`, `info` and `quit` with `ok pid=<n>
+kind=<dev|release>`, so a launcher can tell which build is running; anything
+  else gets `error unknown command`.
+- `--restore-only` shows the running copy and exits 75 without starting when
+  none answers. `--stop-running` quits it and exits.
+- `run-app.sh` checks `pidin` for the app's executable (any variant suffix)
+  before it starts the app. As a normal user it sees that user's processes; as
+  root it sees all. A copy it cannot reach over the socket is stopped with
+  SIGTERM before one new copy starts, so there is still exactly one.
+- `rnqnx-winmgr` collapses windows of one app into a single dock entry. If a
+  second window of an app appears anyway, the first window is raised and the
+  manager logs `second window of '<app>'` to `/tmp/rnqnx-winmgr.log`; it kills
+  nothing.
+
+Builds made before this change listen on `rnqnx-<id>-<uid>` and answer
+`restore` only. A new launch still restores them; `--replace` cannot quit
+them over the socket, and `run-app.sh` stops them by pid. Every app is rebuilt
+with this change, so this only matters while an old build is still running.
+
 ## Launcher tile
 
 `demolauncher` draws the desktop tiles from `/system/etc/desktop_files`:
@@ -255,23 +300,27 @@ generated icon set):
 ```bash
 node packages/react-native-qnx-cli/src/bin.mjs project desktop-entry \
   --project apps/component-gallery \
-  --exec /data/home/qnxuser/run-chrome-app.sh \
   --app-dir /data/home/qnxuser/launcher-tile \
   --run-as qnxuser
 ```
 
+Without `--exec` the tile runs `<app-dir>/run-app.sh`, the guarded launcher
+(below). Pass `--exec` only for a launcher script of your own, and make it do
+what `run-app.sh` does.
+
 It writes `build/qnx/desktop/`:
 
-| File                         | Contents                                                                                        |
-| ---------------------------- | ----------------------------------------------------------------------------------------------- |
-| `org.rnqnx.showcase.desktop` | `Name` (the tile label), `Exec`, `Icon=<app-dir>/icons/icon-128.png`, `Singleton=Y`             |
-| `launcher-tile.conf`         | The `[Launcher]` block: row 1 after Developer Desktop, Terminal and Readme, drawn with its name |
-| `install-tile.sh`            | Copies both into `/system/etc/desktop_files`, appending the block once                          |
+| File                         | Contents                                                                                                       |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `org.rnqnx.showcase.desktop` | `Name` (the tile label), `Exec`, `Icon=<app-dir>/icons/icon-128.png`, `Singleton=Y`                            |
+| `launcher-tile.conf`         | The `[Launcher]` block: row 1 after Developer Desktop, Terminal and Readme, drawn with its name                |
+| `run-app.sh`                 | The guarded launcher the tile runs: Qt environment, and the one-instance check                                 |
+| `install-tile.sh`            | Copies the tile and block into `/system/etc/desktop_files` (appending once), and `run-app.sh` into `--app-dir` |
 
 `--run-as qnxuser` matters on this image: `demolauncher` runs as root, so
 without it the app would run as root. `--row` and `--order` move the tile.
 
-On the board, copy the three files and `icons/icon-128.png` into
+On the board, copy the four files and `icons/icon-128.png` into
 `--app-dir`, then as root:
 
 ```sh
@@ -381,6 +430,31 @@ and `tools/qnx-winmgr/install-boot.sh` into one directory on the Pi and run
 USB input, the graphics drivers, Screen, the launcher and its tiles start as
 before. `sh install-boot.sh --undo` puts the old `full_startup.sh` back.
 
+### Swapping the manager on a running board
+
+To put a new `rnqnx-winmgr` build on a board that already boots into it, without
+a reboot, stage the binary and run `tools/qnx-winmgr/swap-winmgr.sh` as root:
+
+```sh
+# on the Pi: binary and script in /data/home/qnxuser/rnqnx-wm/
+sudo sh /data/home/qnxuser/rnqnx-wm/swap-winmgr.sh --check   # show the plan, change nothing
+sudo sh /data/home/qnxuser/rnqnx-wm/swap-winmgr.sh           # swap
+sudo sh /data/home/qnxuser/rnqnx-wm/swap-winmgr.sh --undo    # back to the old binary
+```
+
+It keeps the current binary as `rnqnx-winmgr.before-single-instance` (first run
+only) and installs the new one with `cp` and `mv`. It stops the watcher that
+would start `fullscreen-winmgr` when the manager exits (found by `pidin` and
+`/proc/<pid>/cmdline`, so `rnqnx-desktop.sh` needs no change), sends the old
+manager SIGTERM (never SIGKILL), starts the new one with
+`-s demolauncher,st,gtk` and a watcher of its own, restarts `demolauncher`, and
+relaunches the tile app through its launcher with `--replace` so the new
+manager sees its window. Then it checks for one manager, one launcher, one tile
+app and the mouse node. A new manager that exits within 5 s is replaced by the
+backup automatically. Running it again with the binary already installed does
+nothing. Windows of other apps stay on screen unmanaged until their apps are
+launched again.
+
 Each press logs `RNQNX_WINDOW_ACTION close|minimize|maximize`.
 
 ## Mouse wheel
@@ -392,6 +466,43 @@ so one notch used to move a page a few pixels. A scroll view at its edge
 passes the wheel on to the scroll view around it. Shift+wheel scrolls
 sideways.
 
+## Mouse input on a device you cannot touch
+
+`tools/qnx-input/rnqnx-inject` sends pointer and keyboard events through
+Screen the way a USB mouse does, so a script can drive the desktop over SSH.
+Build it with `tools/qnx-input/build.sh` (needs `qnxsdp-env.sh`), copy it to
+the Pi and run it as root:
+
+```sh
+sudo rnqnx-inject click 960 540
+sudo rnqnx-inject drag 900 160 1000 260 12      # title bar drag
+sudo rnqnx-inject move 900 600 wheel 3           # wheel, 3 notches down
+sudo rnqnx-inject dclick 960 22                  # double click
+sudo rnqnx-inject mods 4 keydown alt key tab sleep 800 mods 0 keyup alt
+```
+
+Coordinates are display pixels. Two details matter, and a first injector that
+missed them never reached an app window:
+
+- Screen reads the event position only when `SCREEN_FLAG_POSITION_VALID` is
+  set in `SCREEN_PROPERTY_FLAGS`. Without it the pointer sits at 0,0, and Qt
+  receives a position outside the window (for a window at 319,139 it saw
+  -319,-139) and drops it.
+- The event must name a pointer device created with
+  `screen_create_device_type()`. Screen then picks the window under the
+  pointer and converts to window coordinates, as it does for a real mouse.
+
+Screen leaves an injected event's timestamp at 0, so the injector sets one.
+Without it every pair of clicks was a double click, and the title bar toggled
+maximize.
+
+`pnpm pi:mouse-smoke` copies the injector to the Pi and checks title bar
+drag, right edge resize and double click restore against the
+`RNQNX_WINDOW_FRAME` lines the app logs. It needs password-less `sudo` on the
+Pi and a restored window; set `RNQNX_MOUSE_FRAME=WxH+X+Y` when the app has not
+logged a frame yet. The window manager's own `-v` log is the place to compare
+an injected event with a real one.
+
 ## Troubleshooting
 
 **Black window or black screen.** Check that both plugin paths point at the
@@ -401,6 +512,10 @@ fallback above. Confirm `/dev/drm/renderD128` is group 36 and mode 0660.
 **No mouse pointer, or clicks do nothing.** `ls -l /dev/io-hid/io-hid` must
 show owner 36. If the node is missing, `io-hid` did not start; check
 `/tmp/pi400-usb.log`. Re-plug the mouse after `io-hid` is running.
+
+**Two windows of one app.** Not possible with a build that has the guard;
+check `pidin -F "%a %N %U" | grep <app>` and the app's launcher. Start apps
+through `run-app.sh` (or the tile), not the binary, and use `--replace`.
 
 **The app will not close.** Press the red light or close the terminal it runs
 in. From SSH, `pidin -F "%a %N" | grep org.rnqnx` gives the pid, then

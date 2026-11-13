@@ -41,3 +41,4 @@ artifacts/g0/*
 
 # QNX
 *.core
+artifacts/pi-mouse-smoke/

@@ -71,7 +71,10 @@
 #include <QQuickWindow>
 #include <QScreen>
 #include <QString>
+#include <QThread>
 #include <QTimer>
+#include <functional>
+#include <memory>
 #include <QUrl>
 
 #include <cstdio>
@@ -373,6 +376,17 @@ int main(int argc, char** argv) {
 #endif
   parser.addOption(fullscreenOption);
 #if RNQNX_ENABLE_WINDOW_CHROME
+  // One instance per app (build variants share it). Default: a second launch
+  // restores the running window and exits.
+  const QCommandLineOption replaceOption(QStringLiteral("replace"),
+      QStringLiteral("Quit the running instance of this app (graceful, then SIGTERM) and start this one."));
+  const QCommandLineOption restoreOnlyOption(QStringLiteral("restore-only"),
+      QStringLiteral("Show the running instance and exit; exit 75 without starting when none answers."));
+  const QCommandLineOption stopRunningOption(QStringLiteral("stop-running"),
+      QStringLiteral("Quit the running instance of this app and exit without starting."));
+  parser.addOption(replaceOption);
+  parser.addOption(restoreOnlyOption);
+  parser.addOption(stopRunningOption);
   const QCommandLineOption windowControlsOption(QStringLiteral("window-controls"),
       QStringLiteral("Title bar control layout: macos or windows."), QStringLiteral("layout"));
   const QCommandLineOption titleBarStyleOption(QStringLiteral("title-bar-style"),
@@ -466,18 +480,57 @@ int main(int argc, char** argv) {
   // script) brings back the running copy, including after minimize, instead
   // of starting a second one. Screenshot runs are one-shot and skip this.
   std::unique_ptr<rnqnx::window::SingleInstance> singleInstance;
+  // Set when a later `--replace` launch asked this instance to quit.
+  bool quitByLaunch = false;
   if (identity.custom && !parser.isSet(screenshotOption)) {
-    // A development client is its own instance: it may run beside the
-    // installed release copy of the same app, and relaunching it brings the
-    // development window back instead of the release one.
+    // The key is the base app id: a development client and the installed
+    // release copy of one app are the same app, so they never run side by
+    // side. --replace swaps the running one for this launch.
     singleInstance = std::make_unique<rnqnx::window::SingleInstance>(
-        devMode ? identity.appId + QStringLiteral(".dev") : identity.appId);
-    if (singleInstance->forwardedToRunningInstance()) {
+        identity.appId,
+        devMode ? rnqnx::window::BuildKind::Dev : rnqnx::window::BuildKind::Release);
+    if (parser.isSet(replaceOption) || parser.isSet(stopRunningOption)) {
+      const auto result = singleInstance->replaceRunningInstance();
+      if (result == rnqnx::window::ReplaceResult::Failed) {
+        std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_ERROR the running %s did not stop\n",
+                     identity.appId.toUtf8().constData());
+        return 1;
+      }
+      if (parser.isSet(stopRunningOption)) {
+        std::printf("RNQNX_SINGLE_INSTANCE stopped %s\n", identity.appId.toUtf8().constData());
+        return 0;
+      }
+    } else if (singleInstance->forwardedToRunningInstance()) {
       std::printf("RNQNX_SINGLE_INSTANCE restored the running %s\n",
                   identity.appId.toUtf8().constData());
       return 0;
+    } else if (parser.isSet(restoreOnlyOption)) {
+      std::printf("RNQNX_SINGLE_INSTANCE no running %s answered\n",
+                  identity.appId.toUtf8().constData());
+      return 75;
     }
-    singleInstance->listen();
+    // Two launches that start together can both miss the other's socket; the
+    // one that cannot take it finds the owner now and restores it instead.
+    // When the key is held and nobody has answered yet, give the owner a
+    // moment to start listening; a second window is never the fallback.
+    if (!singleInstance->listen()) {
+      bool restored = false;
+      const int attempts = singleInstance->failedBecauseOwned() ? 10 : 1;
+      for (int attempt = 0; attempt < attempts && !restored; ++attempt) {
+        restored = singleInstance->forwardedToRunningInstance();
+        if (!restored && attempt + 1 < attempts) QThread::msleep(300);
+      }
+      if (restored) {
+        std::printf("RNQNX_SINGLE_INSTANCE restored the running %s\n",
+                    identity.appId.toUtf8().constData());
+        return 0;
+      }
+      if (singleInstance->failedBecauseOwned()) {
+        std::fprintf(stderr, "RNQNX_SINGLE_INSTANCE_ERROR %s is owned by another launch that does not answer\n",
+                     identity.appId.toUtf8().constData());
+        return 75;
+      }
+    }
   }
 #endif
 
@@ -750,18 +803,46 @@ int main(int argc, char** argv) {
   }
 #endif
   int result = 0;
+#if RNQNX_ENABLE_WINDOW_CHROME
+  // --replace from a later launch: leave the event loop, whatever state the
+  // app is in (fetching the bundle, showing the dev error screen, running).
+  // Connected once, here, so it holds across reloads. The launcher escalates
+  // to SIGTERM if this takes too long.
+  if (singleInstance) {
+    QObject::connect(singleInstance.get(), &rnqnx::window::SingleInstance::quitRequested, &app,
+        [&quitByLaunch
+#if RNQNX_ENABLE_DEV_SUPPORT
+         , &reloadRequested, &inApplicationLoop
+#endif
+        ]() {
+          std::printf("RNQNX_WINDOW_ACTION quit\n");
+          std::fflush(stdout);
+          quitByLaunch = true;
+#if RNQNX_ENABLE_DEV_SUPPORT
+          // Ends a bundle fetch in progress; the loops below then stop.
+          reloadRequested = true;
+          // Only exit() from inside the application loop: during a fetch it
+          // would end every later nested loop at once.
+          if (inApplicationLoop) QCoreApplication::exit(0);
+#else
+          QTimer::singleShot(0, QCoreApplication::instance(), []() { QCoreApplication::quit(); });
+#endif
+        });
+  }
+#endif
   for (;;) {
 #if RNQNX_ENABLE_DEV_SUPPORT
-  reloadRequested = false;
+  if (!quitByLaunch) reloadRequested = false;
   if (dev) {
     dev->resetForReload();
     const auto fetched = dev->fetchBundle();
+    if (quitByLaunch) break;
     if (fetched.superseded || reloadRequested) continue;
     if (!fetched.ok) {
       dev->showError(fetched.errorTitle, fetched.errorMessage);
       if (parser.isSet(screenshotOption)) return 1;
-      result = runApplicationLoop();
-      if (reloadRequested) continue;
+      result = quitByLaunch ? 0 : runApplicationLoop();
+      if (reloadRequested && !quitByLaunch) continue;
       break;
     }
     bundle = fetched.source;
@@ -835,7 +916,7 @@ int main(int argc, char** argv) {
       // Keep the window: show the error and wait for a fix and a reload.
       dev->showError(QStringLiteral("The JavaScript bundle threw while loading"),
                      host.lastError());
-      return runApplicationLoop();
+      return quitByLaunch ? 0 : runApplicationLoop();
     }
 #endif
     return 1;
@@ -996,7 +1077,8 @@ int main(int argc, char** argv) {
   drainTimer.start(16);
 
 #if RNQNX_ENABLE_DEV_SUPPORT
-  const int exitCode = runApplicationLoop();
+  // A quit that arrived while the host was starting has no loop to leave yet.
+  const int exitCode = quitByLaunch ? 0 : runApplicationLoop();
 #else
   const int exitCode = QGuiApplication::exec();
 #endif
@@ -1008,7 +1090,7 @@ int main(int argc, char** argv) {
   return exitCode;
   }();
 #if RNQNX_ENABLE_DEV_SUPPORT
-  if (reloadRequested) continue;
+  if (reloadRequested && !quitByLaunch) continue;
 #endif
   break;
   }

@@ -11,6 +11,9 @@
 #if RNQNX_ENABLE_QT_NATIVE_UI || RNQNX_ENABLE_QT_EXPO_IMAGE
 #include "react-native-qnx/fabric/QtNativeUiBridge.h"
 #endif
+#if RNQNX_ENABLE_QT_VIDEO
+#include "react-native-qnx/fabric/QtVideoBridge.h"
+#endif
 
 namespace rnqnx::fabric {
 namespace {
@@ -40,6 +43,10 @@ std::vector<ExtraComponentSet> buildSets() {
       &expoImageComponentNames,
       &addExpoImageComponentDescriptors,
       &applyExpoImageProps});
+#endif
+#if RNQNX_ENABLE_QT_VIDEO
+  sets.push_back(ExtraComponentSet{
+      "qt-video", &videoComponentNames, &addVideoComponentDescriptors, &applyVideoProps});
 #endif
   return sets;
 }

@@ -17,14 +17,30 @@
 #if RNQNX_ENABLE_QT_NATIVE_UI || RNQNX_ENABLE_QT_EXPO_IMAGE
 #include <QtNativeUiQml.h>
 #endif
+#if RNQNX_ENABLE_QT_VIDEO
+#include <QtVideoItem.h>
+#endif
 
 namespace rnqnx::views {
+
+namespace {
+QQmlEngine* g_extraItemEngine = nullptr;
+}  // namespace
+
+void setExtraItemEngine(QQmlEngine& engine) {
+  g_extraItemEngine = &engine;
+}
 
 QQuickItem* createExtraItem(const QString& componentName, QQuickItem* parent) {
   QQuickItem* item = nullptr;
 #if RNQNX_ENABLE_QT_SVG
   if (componentName == QStringLiteral("QnxSvgDocument")) {
     item = new QtSvgItem(parent);
+  }
+#endif
+#if RNQNX_ENABLE_QT_VIDEO
+  if (item == nullptr && componentName == QStringLiteral("QnxQtVideo") && g_extraItemEngine != nullptr) {
+    item = new QtVideoItem(*g_extraItemEngine, parent);
   }
 #endif
 #if RNQNX_ENABLE_QT_RNSVG

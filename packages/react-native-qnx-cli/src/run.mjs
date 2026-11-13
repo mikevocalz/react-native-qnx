@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { buildNativeMain } from './build-native.mjs';
+import { launchCommand } from './dev-server.mjs';
 import { loadExpoConfig } from './expo-config.mjs';
 import { nativeConfiguration, prepareNativeMain } from './prepare-native.mjs';
 
@@ -15,9 +16,12 @@ import { nativeConfiguration, prepareNativeMain } from './prepare-native.mjs';
 export const NEEDS_DEVICE_EXIT = 3;
 
 const help = `React Native QNX - build, deploy and launch an Expo app on QNX
-  project run --project <directory> [--platform qnx|marathon] [--device <host>]
+  project run --project <directory> [--platform qnx|marathon] [--device <user@host>]
+              [--launcher <remote script>] [--identity <ssh key>] [--known-hosts <file>]
 
 Steps: config -> bundle -> native-descriptor -> native-build -> deploy -> launch.
+The launch step runs <launcher> --replace on the board: the app quits any
+running copy of itself first, so a run never leaves two windows.
 Fast Refresh: build with RNQNX_ENABLE_DEV_SUPPORT=ON, then project dev (or project start).
 Exit 0 when every step ran, 3 when a step needs the board, the SDP or a
 bundle first (the output names the command), 1 on failure.
@@ -46,8 +50,16 @@ async function quietly(/** @type {() => Promise<number>} */ run) {
   }
 }
 
+/** What the launch step runs on the board: the launcher with --replace, so the
+ * app quits any running copy of itself first.
+ * @param {{device: string, launcher: string, identity?: string, knownHosts?: string}} options */
+export function launchStepDetail(options) {
+  const args = launchCommand(options).map((arg) => (/[\s<>&]/.test(arg) ? `'${arg}'` : arg));
+  return `The launch step will run: ssh ${args.join(' ')}`;
+}
+
 /**
- * @param {{project: string, platform?: string, device?: string, env?: NodeJS.ProcessEnv}} options
+ * @param {{project: string, platform?: string, device?: string, launcher?: string, identity?: string, knownHosts?: string, env?: NodeJS.ProcessEnv}} options
  * @returns {Promise<{steps: RunStep[], exitCode: number}>}
  */
 export async function runProject(options) {
@@ -157,10 +169,13 @@ export async function runProject(options) {
       status: 'needs device',
       detail: 'No --device given. Connect the board and pass --device <host>.',
     });
+  const launch = options.launcher
+    ? ` ${launchStepDetail({ ...options, device: options.device, launcher: options.launcher })}`
+    : '';
   return stop({
     step: 'deploy',
     status: 'needs device',
-    detail: `Deploying consumer apps to ${options.device} is not implemented in project run yet; nothing was copied or launched.`,
+    detail: `Deploying consumer apps to ${options.device} is not implemented in project run yet; nothing was copied or launched.${launch}`,
   });
 }
 
@@ -175,6 +190,9 @@ export async function runMain(argv) {
       project: { type: 'string' },
       platform: { type: 'string' },
       device: { type: 'string' },
+      launcher: { type: 'string' },
+      identity: { type: 'string' },
+      'known-hosts': { type: 'string' },
     },
   });
   if (values.help) {
@@ -186,6 +204,9 @@ export async function runMain(argv) {
     project: values.project ?? '.',
     platform: values.platform,
     device: values.device,
+    launcher: values.launcher,
+    identity: values.identity,
+    knownHosts: values['known-hosts'],
   });
   for (const { step, status, detail } of steps)
     console.log(`${step.padEnd(18)} ${status.padEnd(13)} ${detail}`);
