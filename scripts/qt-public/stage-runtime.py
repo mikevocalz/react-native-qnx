@@ -61,6 +61,19 @@ for lib in LIBS:
         entries[link] = {'symlink': target}
 for rel in PLUGINS:
     copy(rel, stage / rel)
+# QtSvg and its `qsvg` image-format plugin (build-svg-qnx.sh). Optional: without
+# them Qt decodes no SVG image, so an <Image> with an SVG source fails to load
+# (react-native-svg's <Image>); everything else is unaffected.
+svg_build = Path(os.environ.get('SVG_BUILD', stage.parent.parent / 'svg-qnx'))
+if (svg_build / 'lib/libQt6Svg.so.6.12.0').is_file():
+    copy('lib/libQt6Svg.so.6.12.0', svg_build / 'lib/libQt6Svg.so.6.12.0')
+    for link, target in (('lib/libQt6Svg.so.6', 'libQt6Svg.so.6.12.0'), ('lib/libQt6Svg.so', 'libQt6Svg.so.6')):
+        os.symlink(target, out / link)
+        entries[link] = {'symlink': target}
+    copy('plugins/imageformats/libqsvg.so', svg_build / 'plugins/imageformats/libqsvg.so')
+    MODULES = MODULES + ('qtsvg',)
+else:
+    print(f'note: no QtSvg build at {svg_build}; the runtime will not decode SVG images', file=sys.stderr)
 for d, names in QML.items():
     for n in names:
         copy(f'{d}/{n}', stage / d / n)

@@ -155,3 +155,15 @@ the class layout.
 `public-qt-env.sh` and the `run-public-*.sh` launchers expect the runtime at
 `/data/home/qnxuser/qt612-public` and the proof directory at
 `/data/home/qnxuser/qt612-public-proofs`. They do not touch boot files.
+
+## QtSvg for SVG images
+
+`build-svg-qnx.sh` builds qtsvg (`libQt6Svg.so`, `plugins/imageformats/libqsvg.so`)
+against the QNX qtbase with `qt-configure-module`, after `configure-qnx.sh`:
+
+```sh
+./build-svg-qnx.sh        # output in $QT_PUBLIC_BUILD/svg-qnx
+python3 stage-runtime.py  # stages both files when the build exists
+```
+
+Qt Quick and `QImageReader` find the plugin through `QT_PLUGIN_PATH`.
