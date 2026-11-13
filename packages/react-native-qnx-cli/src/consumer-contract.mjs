@@ -15,6 +15,18 @@ export const CONSUMER_CONTRACT = Object.freeze({
     '@rn-qnx/react-native-qnx': '0.1.0',
     '@rn-qnx/metro-config-qnx': '0.1.0',
   }),
+  // The drawer and tabs starter (qnx-only projects) adds these.
+  routerPackages: Object.freeze({
+    '@rn-qnx/expo-router-qnx': '0.1.0',
+    'expo-router': '58.0.31',
+    'expo-linking': '58.0.17',
+    '@expo/metro-runtime': '58.0.17',
+    'expo-status-bar': '58.0.5',
+    'react-native-safe-area-context': '5.11.1',
+    'react-native-screens': '4.30.1',
+    'react-native-drawer-layout': '4.2.12',
+    'react-dom': '19.3.0',
+  }),
   marathonPackages: Object.freeze({
     '@rn-qnx/react-native-marathon': '0.1.0',
     '@rn-qnx/metro-config-marathon': '0.1.0',

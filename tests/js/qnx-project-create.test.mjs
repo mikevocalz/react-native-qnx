@@ -47,11 +47,22 @@ try {
     await readFile(path.join(process.cwd(), 'template', 'qnx', 'assets', 'icon.png'))
   );
   const qnxArtifacts = JSON.parse(await readFile(path.join(qnx, 'platform-packages.json'), 'utf8'));
-  assert.equal(Object.keys(qnxArtifacts.artifacts).length, 2);
+  assert.equal(Object.keys(qnxArtifacts.artifacts).length, 3);
+  assert.ok(qnxArtifacts.artifacts['@rn-qnx/expo-router-qnx']);
   for (const artifact of Object.values(qnxArtifacts.artifacts)) {
     const data = await readFile(path.join(qnx, artifact.file));
     assert.equal(createHash('sha256').update(data).digest('hex'), artifact.sha256);
   }
+  // The qnx-only project is the expo-router drawer and tabs starter.
+  assert.equal(qnxManifest.dependencies['expo-router'], '58.0.31');
+  assert.equal(qnxManifest.dependencies['react-native-screens'], '4.30.1');
+  const layout = await readFile(path.join(qnx, 'app', '_layout.js'), 'utf8');
+  assert.match(layout, /expo-router\/drawer/);
+  assert.match(layout, /header\('Notes'\)/);
+  assert.match(await readFile(path.join(qnx, 'app', '(tabs)', '_layout.js'), 'utf8'), /Tabs/);
+  assert.match(await readFile(path.join(qnx, 'index.js'), 'utf8'), /registerComponent\('main'/);
+  assert.match(await readFile(path.join(qnx, 'metro.config.js'), 'utf8'), /withExpoRouterQnx/);
+  assert.doesNotMatch(layout, /__APP_NAME__/);
   const before = await readFile(path.join(qnx, 'index.js'));
   const duplicate = run(...params);
   assert.notEqual(duplicate.status, 0);
