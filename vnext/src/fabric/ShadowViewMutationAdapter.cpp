@@ -526,6 +526,13 @@ MountError ShadowViewMutationAdapter::applyTextInput(const ShadowView& view) {
 
   style.placeholder = QString::fromStdString(props->placeholder);
   style.multiline = props->multiline;
+  // Yoga already subtracted padding and border from the content box; the
+  // field draws its text there, as RCTTextInput and ReactEditText do.
+  const auto& insets = view.layoutMetrics.contentInsets;
+  style.insetLeft = static_cast<float>(insets.left);
+  style.insetTop = static_cast<float>(insets.top);
+  style.insetRight = static_cast<float>(insets.right);
+  style.insetBottom = static_cast<float>(insets.bottom);
   if (facebook::react::isColorMeaningful(props->placeholderTextColor)) {
     style.hasPlaceholderTextColor = true;
     style.placeholderTextColor =

@@ -56,7 +56,7 @@ Source-read guidance is applied to planning; installation and native execution a
 
 - [ ] Consumer uses versioned artifacts outside the monorepo; no hidden checkout paths.
 - [ ] One documented create/adopt/build/install/run workflow with QNX default.
-- [ ] Reload, real Fast Refresh scope, errors and source maps behave as documented.
+- [x] Reload, real Fast Refresh scope and errors behave as documented: the QNX development client ([dev workflow](../getting-started/dev-workflow.md)) on a Pi 400, 2026-11-13. Source maps: Metro serves them, but LogBox cannot symbolicate on device because `fetch` (RCTNetworking) is not implemented on QNX yet.
 - [ ] Actual debugger endpoint attach/breakpoint/resume/detach and security tests pass.
 - [ ] Native teardown/reconnect leaves no stale callbacks or orphan target processes.
 - [ ] Package contents, ABI, notices and SDK/premium exclusions are reviewed.

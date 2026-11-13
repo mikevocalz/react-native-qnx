@@ -16,6 +16,8 @@ const {
 } = require('react-native');
 const { create } = require('zustand');
 const { SCENARIOS, createDocumentRows } = require('./fixtures.js');
+const FastRefreshCard = require('./FastRefreshCard').default;
+const RemoteImageCard = require('./RemoteImageCard').default;
 
 const h = React.createElement;
 const ROWS = createDocumentRows();
@@ -161,6 +163,12 @@ function GalleryPage() {
       View,
       { style: { flexDirection: 'row', flexWrap: 'wrap' } },
       card(
+        'fast-refresh',
+        'Fast Refresh',
+        __DEV__ ? 'Live from Metro on your computer' : 'Bundled bytecode build',
+        h(FastRefreshCard)
+      ),
+      card(
         'layout',
         'View + Text',
         'Yoga layout → Qt Quick items and native text',
@@ -193,6 +201,12 @@ function GalleryPage() {
           }),
           h(Label, { color: ACCENT, style: { flex: 1 } }, imageStatus)
         )
+      ),
+      card(
+        'remote-image',
+        'Image from a URL',
+        'HTTP(S) through Qt Network on the device',
+        h(RemoteImageCard)
       ),
       card(
         'press',
@@ -626,7 +640,9 @@ function ConformanceApp() {
       h(
         Label,
         { size: 12, style: { marginTop: 10 } },
-        'Experimental component fixture · Fast Refresh is not enabled · Physical interaction requires observation.'
+        __DEV__
+          ? 'Development client · Fast Refresh on · Ctrl+R reload · Ctrl+D developer menu'
+          : 'Release build · bundled Hermes bytecode · Physical interaction requires observation.'
       )
   );
 }

@@ -134,6 +134,12 @@ struct TextInputStyle {
   int maxLength{0};
   QString placeholder;
   QString fontFamily;
+  /// Padding plus border from Yoga's content insets: where the text starts
+  /// inside the field.
+  float insetLeft{0.0F};
+  float insetTop{0.0F};
+  float insetRight{0.0F};
+  float insetBottom{0.0F};
 };
 
 /// The properties of an activity indicator this platform can apply.
@@ -287,6 +293,12 @@ class QtQuickMountingLayer {
   bool isGenericView(Tag tag) const;
 #endif
 
+  /// Registers the root item of another surface, such as the LogBox surface a
+  /// development build shows over the app. Like the constructor's root it is
+  /// borrowed: never deleted, sized but not moved by Yoga. Returns
+  /// MountError::None, or DuplicateTag when `rootTag` is already in use.
+  MountError addRoot(QQuickItem& item, Tag rootTag);
+
   /// Number of tags currently known, including the root.
   int mountedCount() const;
 
@@ -308,6 +320,8 @@ class QtQuickMountingLayer {
   views::QtQuickItemFactory& factory_;
   QQuickItem& rootItem_;
   Tag rootTag_;
+  /// Every borrowed surface root: rootItem_ plus any added with addRoot().
+  QSet<const QQuickItem*> roots_;
   QHash<Tag, MountedItem> items_;
   // Non-owning membership index, kept in step with the tag registry.
   QSet<QQuickItem*> mountedPointers_;

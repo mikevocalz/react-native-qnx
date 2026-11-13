@@ -17,7 +17,7 @@ build=$QT_PUBLIC_BUILD/qnx-build
 mkdir -p "$build"; cd "$build"
 "$src/configure" -developer-build -release -no-pch -nomake tests -nomake examples \
   -prefix /data/qt612-public -extprefix "$QT_PUBLIC_BUILD/qnx-stage" \
-  -opengl es2 -qt-host-path "$host" -submodules qtbase,qtshadertools,qtdeclarative -- \
+  -opengl es2 -openssl-runtime -qt-host-path "$host" -submodules qtbase,qtshadertools,qtdeclarative -- \
   -DCMAKE_TOOLCHAIN_FILE="$QT_PUBLIC_SCRIPTS/qt612-public-qnx-aarch64le.cmake" \
   -DCMAKE_SYSTEM_VERSION=800 -DFEATURE_no_prefix=OFF \
   -DFEATURE_widgets=OFF -DFEATURE_printsupport=OFF -DFEATURE_sql=OFF \
@@ -35,4 +35,5 @@ for lang in C CXX; do
 done
 cmake --build . --parallel "${JOBS:-3}" --target \
   Core Network Gui Qml Quick QuickShapes QQnxIntegrationPlugin \
-  qmlplugin modelsplugin workerscriptplugin qtquick2plugin qmlshapesplugin
+  qmlplugin modelsplugin workerscriptplugin qtquick2plugin qmlshapesplugin \
+  QTlsBackendOpenSSLPlugin QJpegPlugin QGifPlugin

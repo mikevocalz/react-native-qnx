@@ -75,9 +75,11 @@ Rerun all four on the candidate as usual.
 
 ## QNX cross-build checks
 
-Required, and missing. No workflow compiles for QNX. `websocket-host.yml`
-only confirms that the build refuses a QNX target with
-`host-only pending licensed SDP`. The gate cannot pass until a workflow builds
+Required, and missing. No workflow compiles for QNX. (`websocket-host.yml`
+used to confirm that the build refused WebSockets on QNX; since the QNX
+cross-build of Qt WebSockets in the [dev workflow](../getting-started/dev-workflow.md)
+it checks that the development client cannot be configured without the
+WebSocket backend.) The gate cannot pass until a workflow builds
 the runtime and a fixture app with the QNX SDP toolchain for the release
 board, on a self-hosted runner the owner authorizes to hold the licensed SDP.
 Hosted results do not stand in for it.

@@ -33,18 +33,24 @@ QtWebSocketTransport::~QtWebSocketTransport() {
 }
 
 void QtWebSocketTransport::connectSocket(
-    int id, const QUrl& url, const QStringList& protocols,
+    int id, const QUrl& requested, const QStringList& protocols,
     const QMap<QByteArray, QByteArray>& headers) {
   Q_ASSERT(QThread::currentThread() == thread());
   if (sockets_.contains(id)) {
     fail(id, QStringLiteral("Socket ID is already in use"));
     return;
   }
+  // http:// and https:// name the same endpoints as ws:// and wss://; the
+  // Android (OkHttp) and iOS (SocketRocket) backends accept them, and React
+  // Native's own HMRClient connects with `http://<metro>/hot`.
+  QUrl url = requested;
+  if (url.scheme() == QStringLiteral("http")) url.setScheme(QStringLiteral("ws"));
+  if (url.scheme() == QStringLiteral("https")) url.setScheme(QStringLiteral("wss"));
   if (!url.isValid() || url.host().isEmpty() || url.hasFragment() ||
       !url.userInfo().isEmpty() ||
       (url.scheme() != QStringLiteral("ws") &&
        url.scheme() != QStringLiteral("wss"))) {
-    fail(id, QStringLiteral("Expected a ws:// or wss:// URL without credentials or fragment"));
+    fail(id, QStringLiteral("Expected a ws://, wss://, http:// or https:// URL without credentials or fragment"));
     return;
   }
   QStringList seen;

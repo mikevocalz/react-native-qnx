@@ -47,6 +47,7 @@
 #include "react-native-qnx/runtime/QnxWebSocketModule.h"
 
 #include <folly/dynamic.h>
+#include <jsi/JSIDynamic.h>
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -688,6 +689,10 @@ class QtReactHost::Impl {
   std::unordered_map<std::string, facebook::jsi::Value> callableModules;
   std::unordered_map<std::string, QtReactHost::TurboModuleFactory> extraTurboModules;
   std::vector<std::function<void()>> teardownHooks;
+  /// Module objects from callableModules factories, resolved on first call.
+  std::unordered_map<std::string, facebook::jsi::Object> resolvedCallableModules;
+  /// Extra TurboModules supplied by the embedding application.
+  QtReactHost::TurboModuleProvider turboModuleProvider;
   std::unordered_map<int, std::unique_ptr<QTimer>> timers;
   /// Drives the NativeAnimated `onRender` callback while at least one animation
   /// is active. Created on first use and reused for later animations.
@@ -833,6 +838,81 @@ void QtReactHost::addTeardownHook(std::function<void()> hook) {
   impl_->teardownHooks.push_back(std::move(hook));
 }
 
+void QtReactHost::setTurboModuleProvider(TurboModuleProvider provider) {
+  impl_->turboModuleProvider = std::move(provider);
+}
+
+void QtReactHost::callFunctionOnModule(
+    const std::string& moduleName,
+    const std::string& methodName,
+    folly::dynamic args) {
+  auto* impl = impl_.get();
+  impl_->runtimeScheduler->scheduleWork(
+      [impl, moduleName, methodName, args = std::move(args)](
+          facebook::jsi::Runtime& runtime) {
+        auto resolved = impl->resolvedCallableModules.find(moduleName);
+        if (resolved == impl->resolvedCallableModules.end()) {
+          const auto registered = impl->callableModules.find(moduleName);
+          if (registered == impl->callableModules.end()) {
+            throw facebook::jsi::JSError(
+                runtime, "Callable module " + moduleName + " is not registered");
+          }
+          // registerCallableModule always stores a factory: either React
+          // Native's lazy `() => require(...)` or a wrapper returning the
+          // object it was given (registerCallableModule.js:20-29).
+          auto module = registered->second.asObject(runtime)
+                            .asFunction(runtime)
+                            .call(runtime)
+                            .asObject(runtime);
+          resolved = impl->resolvedCallableModules
+                         .emplace(moduleName, std::move(module))
+                         .first;
+        }
+        auto method = resolved->second.getProperty(runtime, methodName.c_str());
+        if (!method.isObject() || !method.asObject(runtime).isFunction(runtime)) {
+          throw facebook::jsi::JSError(
+              runtime, moduleName + "." + methodName + " is not a function");
+        }
+        std::vector<facebook::jsi::Value> values;
+        values.reserve(args.size());
+        for (const auto& arg : args) {
+          values.push_back(facebook::jsi::valueFromDynamic(runtime, arg));
+        }
+        method.asObject(runtime).asFunction(runtime).callWithThis(
+            runtime,
+            resolved->second,
+            static_cast<const facebook::jsi::Value*>(values.data()),
+            values.size());
+      });
+}
+
+void QtReactHost::installGlobalEvalWithSourceUrl() {
+  auto& runtime = *impl_->runtime;
+  runtime.global().setProperty(
+      runtime,
+      "globalEvalWithSourceUrl",
+      facebook::jsi::Function::createFromHostFunction(
+          runtime,
+          facebook::jsi::PropNameID::forAscii(runtime, "globalEvalWithSourceUrl"),
+          2,
+          [](facebook::jsi::Runtime& jsRuntime,
+             const facebook::jsi::Value& /*thisValue*/,
+             const facebook::jsi::Value* args,
+             size_t count) -> facebook::jsi::Value {
+            if (count < 1 || !args[0].isString()) {
+              throw facebook::jsi::JSError(
+                  jsRuntime, "globalEvalWithSourceUrl requires a source string");
+            }
+            const std::string url = count > 1 && args[1].isString()
+                ? args[1].asString(jsRuntime).utf8(jsRuntime)
+                : std::string();
+            return jsRuntime.evaluateJavaScript(
+                std::make_shared<facebook::jsi::StringBuffer>(
+                    args[0].asString(jsRuntime).utf8(jsRuntime)),
+                url);
+          }));
+}
+
 void QtReactHost::installTurboModuleBinding() {
   // RN 0.88 deprecates this invoker in favor of ReactInstance's buffered
   // executor. This standalone synchronous host does not own a ReactInstance
@@ -867,6 +947,12 @@ void QtReactHost::installTurboModuleBinding() {
             extra != impl->extraTurboModules.end()) {
           return extra->second(callInvoker);
         }
+        if (impl->turboModuleProvider) {
+          if (auto module = impl->turboModuleProvider(name, callInvoker)) {
+            return module;
+          }
+        }
+
         // Without this, every JavaScript error aborts the process: React
         // reaches for ExceptionsManager while reporting, getEnforcing throws,
         // and the throw escapes.

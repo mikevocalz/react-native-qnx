@@ -1,6 +1,12 @@
 # Experimental host WebSocket transport
 
-Status: **draft, host-verified only; not accepted for QNX**.
+Status: **draft; host-verified, and run on a Pi 400 (QNX 8.0.5) by the development
+client on 2026-11-13** ([dev workflow](getting-started/dev-workflow.md)). Not yet
+accepted for release apps on QNX.
+
+`http://` and `https://` URLs are accepted and opened as `ws://` and `wss://`,
+as the Android (OkHttp) and iOS (SocketRocket) modules do; React Native's
+`HMRClient` connects with `http://<metro>/hot`.
 
 `QnxWebSocketModule` can opt into a real Qt WebSockets backend. The default is
 `RNQNX_ENABLE_WEBSOCKETS=OFF`: no WebSockets or Network dependency is added, and
