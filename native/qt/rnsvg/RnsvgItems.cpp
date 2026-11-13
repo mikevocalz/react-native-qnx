@@ -3,6 +3,8 @@
 
 #include <QDebug>
 #include <QElapsedTimer>
+#include <QPaintDevice>
+#include <QPainter>
 #include <QQuickWindow>
 #include <algorithm>
 #include <cmath>
