@@ -1,0 +1,17 @@
+
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+Metro for qnx on port 8081 (component-gallery)
+  --dev-server http://192.168.1.173:8081
+  --dev-server http://169.254.169.166:8081
+  --dev-server http://192.168.2.1:8081
+Keys: r reload · d developer menu · Ctrl+C quit
+Launching /data/home/qnxuser/run-chrome-app-dev.sh on qnxuser@192.168.2.2 with --dev-server http://192.168.2.1:8081
+Launched. The app loads the bundle, then connects for Fast Refresh.
+development client connected (1 on /message)
+ BUNDLE  apps/component-gallery/index.js 
+ LOG  Running "RNQnxPlayground" with {"rootTag":1,"initialProps":{},"fabric":true}

@@ -18,7 +18,7 @@ const help = `React Native QNX - build, deploy and launch an Expo app on QNX
   project run --project <directory> [--platform qnx|marathon] [--device <host>]
 
 Steps: config -> bundle -> native-descriptor -> native-build -> deploy -> launch.
-Metro, logs and Fast Refresh belong to Expo CLI: run npx expo start alongside.
+Fast Refresh: build with RNQNX_ENABLE_DEV_SUPPORT=ON, then project dev (or project start).
 Exit 0 when every step ran, 3 when a step needs the board, the SDP or a
 bundle first (the output names the command), 1 on failure.
 `;

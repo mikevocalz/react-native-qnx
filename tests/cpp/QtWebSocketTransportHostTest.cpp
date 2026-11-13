@@ -118,7 +118,16 @@ int main(int argc, char** argv) {
   transport->closeSocket(4, 1006, {});
   check(count(4, Kind::Failed) == 2, "reserved close code rejected");
 
-  transport->connectSocket(5, QUrl(QStringLiteral("http://localhost")), {}, {});
+  // http:// maps to ws:// (HMRClient connects to http://<metro>/hot).
+  {
+    const auto before = count(24, Kind::Open);
+    transport->connectSocket(
+        24, QUrl(QStringLiteral("http://127.0.0.1:%1/echo").arg(server.serverPort())), {}, {});
+    until([&] { return count(24, Kind::Open) == before + 1; }, "http:// URL opens as ws://");
+    transport->closeSocket(24, 1000, {});
+    until([&] { return count(24, Kind::Closed) == 1; }, "http:// socket closes");
+  }
+  transport->connectSocket(5, QUrl(QStringLiteral("ftp://localhost")), {}, {});
   transport->connectSocket(6, url, {QStringLiteral("bad protocol")}, {});
   transport->connectSocket(7, url, {}, {{"x-header", "bad\r\nvalue"}});
   transport->connectSocket(8, url, {}, {{"Sec-WebSocket-Key", "injected"}});

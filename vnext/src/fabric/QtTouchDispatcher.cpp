@@ -116,11 +116,39 @@ int QtTouchDispatcher::dispatchedCount() const {
   return dispatchedCount_;
 }
 
+void QtTouchDispatcher::addRootItem(QQuickItem& rootItem) {
+  extraRoots_.append(QPointer<QQuickItem>(&rootItem));
+}
+
+void QtTouchDispatcher::addInputShield(QQuickItem& shield) {
+  shields_.append(QPointer<QQuickItem>(&shield));
+}
+
+namespace {
+bool visiblyContains(const QQuickItem* item, const QPointF& windowPoint) {
+  if (item == nullptr || !item->isVisible()) return false;
+  const QPointF local = item->mapFromScene(windowPoint);
+  return local.x() >= 0 && local.y() >= 0 && local.x() < item->width() &&
+         local.y() < item->height();
+}
+}  // namespace
+
 Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
+  for (const auto& shield : shields_) {
+    if (visiblyContains(shield.data(), windowPoint)) return -1;
+  }
+  // A surface added later (LogBox) is drawn above the app's.
+  const QQuickItem* root = &rootItem_;
+  for (auto it = extraRoots_.crbegin(); it != extraRoots_.crend(); ++it) {
+    if (visiblyContains(it->data(), windowPoint)) {
+      root = it->data();
+      break;
+    }
+  }
   // Walk down from the root taking the last (topmost) child that contains the
   // point, which matches Qt's own stacking order.
   const QQuickItem* target = nullptr;
-  const QQuickItem* current = &rootItem_;
+  const QQuickItem* current = root;
 
   while (true) {
     const QQuickItem* next = nullptr;
@@ -162,7 +190,7 @@ Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
 
   // Reverse-map the item to its tag. The registry is small — one entry per
   // mounted view — and this runs once per pointer event.
-  for (const QQuickItem* candidate = target; candidate != &rootItem_;
+  for (const QQuickItem* candidate = target; candidate != root;
        candidate = candidate->parentItem()) {
     if (candidate == nullptr) {
       break;

@@ -1,0 +1,52 @@
+RNQNX_DEV_SERVER http://192.168.2.1:8081
+RNQNX_DEV_BUNDLE_LOADED bytes=3873808 ms=150 url=http://192.168.2.1:8081/index.bundle?platform=qnx&dev=true&lazy=false&minify=false&modulesOnly=false&runModule=true&app=org.rnqnx.showcase
+Running "RNQnxPlayground" with {"rootTag":1,"initialProps":{},"fabric":true}
+RNQNX_DEV_PACKAGER connected
+RNQNX_DEV_MENU open
+RNQNX_DEV_MENU closed
+RNQNX_DEV_MENU_ITEM Fast Refresh card: add 1
+RNQNX_DEV_MENU open
+RNQNX_DEV_MENU closed
+RNQNX_DEV_MENU_ITEM Fast Refresh card: add 1
+RNQNX_DEV_MENU open
+RNQNX_DEV_MENU closed
+RNQNX_DEV_MENU_ITEM Fast Refresh card: add 1
+RNQNX_DEV_LOGBOX shown
+RNQNX_DEV_LOGBOX hidden
+RNQNX_DEV_PACKAGER connected
+RNQNX_DEV_RELOAD Metro connected
+RNQNX_DEV_BUNDLE_LOADED bytes=3874170 ms=3991 url=http://192.168.2.1:8081/index.bundle?platform=qnx&dev=true&lazy=false&minify=false&modulesOnly=false&runModule=true&app=org.rnqnx.showcase
+Running "RNQnxPlayground" with {"rootTag":1,"initialProps":{},"fabric":true}
+RNQNX_DEV_LOGBOX shown
+RNQNX_DEV_LOGBOX hidden
+RNQNX_DEV_SERVER http://192.168.2.1:8081
+RNQNX_DEV_PACKAGER connected
+RNQNX_DEV_BUNDLE_LOADED bytes=3874170 ms=248 url=http://192.168.2.1:8081/index.bundle?platform=qnx&dev=true&lazy=false&minify=false&modulesOnly=false&runModule=true&app=org.rnqnx.showcase
+Running "RNQnxPlayground" with {"rootTag":1,"initialProps":{},"fabric":true}
+RNQNX_DEV_MENU open
+RNQNX_DEV_MENU closed
+RNQNX_DEV_MENU_ITEM Fast Refresh card: add 1
+RNQNX_DEV_MENU open
+RNQNX_DEV_MENU closed
+RNQNX_DEV_MENU_ITEM Fast Refresh card: add 1
+RNQNX_DEV_MENU open
+RNQNX_DEV_MENU closed
+RNQNX_DEV_MENU_ITEM Fast Refresh card: add 1
+RNQNX_DEV_LOGBOX shown
+RNQNX_DEV_LOGBOX hidden
+RNQNX_DEV_LOGBOX shown
+RNQNX_DEV_LOGBOX hidden
+RNQNX_DEV_MENU open
+RNQNX_DEV_RELOAD Metro
+RNQNX_DEV_BUNDLE_LOADED bytes=3874170 ms=138 url=http://192.168.2.1:8081/index.bundle?platform=qnx&dev=true&lazy=false&minify=false&modulesOnly=false&runModule=true&app=org.rnqnx.showcase
+Running "RNQnxPlayground" with {"rootTag":1,"initialProps":{},"fabric":true}
+RNQNX_DEV_RELOAD keyboard
+RNQNX_DEV_BUNDLE_LOADED bytes=3874170 ms=110 url=http://192.168.2.1:8081/index.bundle?platform=qnx&dev=true&lazy=false&minify=false&modulesOnly=false&runModule=true&app=org.rnqnx.showcase
+Running "RNQnxPlayground" with {"rootTag":1,"initialProps":{},"fabric":true}
+RNQNX_DEV_PACKAGER connected
+RNQNX_DEV_RELOAD Metro connected
+RNQNX_DEV_BUNDLE_LOADED bytes=3874170 ms=249 url=http://192.168.2.1:8081/index.bundle?platform=qnx&dev=true&lazy=false&minify=false&modulesOnly=false&runModule=true&app=org.rnqnx.showcase
+Running "RNQnxPlayground" with {"rootTag":1,"initialProps":{},"fabric":true}
+RNQNX_DEV_RELOAD keyboard
+RNQNX_DEV_BUNDLE_FAILED Could not connect to Metro: Connection refused
+RNQNX_DEV_ERROR Could not connect to Metro

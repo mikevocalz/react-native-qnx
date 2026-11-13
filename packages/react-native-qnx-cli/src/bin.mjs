@@ -8,6 +8,7 @@ import { buildNativeMain } from './build-native.mjs';
 import { desktopEntryMain } from './desktop-entry.mjs';
 import { addQnxMain } from './add-qnx.mjs';
 import { runMain } from './run.mjs';
+import { devMain, startMain } from './dev-server.mjs';
 import { runnerMain } from './runner.mjs';
 import { marathonMain } from '../../qnx-devtools/src/marathon.mjs';
 
@@ -23,6 +24,10 @@ try {
     process.exitCode = await addQnxMain(args.slice(2));
   else if (args[0] === 'project' && args[1] === 'run')
     process.exitCode = await runMain(args.slice(2));
+  else if (args[0] === 'project' && args[1] === 'start')
+    process.exitCode = await startMain(args.slice(2));
+  else if (args[0] === 'project' && args[1] === 'dev')
+    process.exitCode = await devMain(args.slice(2));
   else if (args[0] === 'project' && args[1] === 'prepare-native')
     process.exitCode = await prepareNativeMain(args.slice(2));
   else if (args[0] === 'project' && args[1] === 'desktop-entry')
@@ -37,6 +42,12 @@ try {
     console.log('  pnpm qnx project create --help          Create a shared Expo app');
     console.log('  pnpm qnx project add-qnx --help         Add QNX to an existing Expo app');
     console.log('  pnpm qnx project run --help             Build, deploy and launch');
+    console.log(
+      '  pnpm qnx project start --help           Metro with Fast Refresh for a dev build'
+    );
+    console.log(
+      '  pnpm qnx project dev --help             Metro + launch the dev build on a board'
+    );
     console.log('  pnpm qnx project prepare-native --help  Configure a native application');
     console.log('  pnpm qnx project build-native --help    Build a native consumer application');
     console.log('  pnpm qnx project desktop-entry --help   Write the QNX desktop launcher tile');
