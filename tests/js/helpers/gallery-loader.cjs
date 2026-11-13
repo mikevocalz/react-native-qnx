@@ -192,6 +192,9 @@ function install() {
   const originalLoad = Module._load;
   Module._load = function load(request, parent, isMain) {
     if (Object.hasOwn(stubs, request)) return stubs[request];
+    // The Qt native components (video, svg document) are generated TypeScript specs.
+    if (request.endsWith('packages/react-native-qnx/qt'))
+      return { QtVideo: host('QtVideo'), QtSvgDocument: host('QtSvgDocument') };
     return originalLoad.call(this, request, parent, isMain);
   };
   const originalJs = Module._extensions['.js'];
@@ -213,9 +216,11 @@ function install() {
     });
     return module._compile(code, filename);
   };
-  Module._extensions['.png'] = (module) => {
-    module.exports = 1;
-  };
+  const assetExtensions = ['.png', '.gif', '.webp'];
+  for (const extension of assetExtensions)
+    Module._extensions[extension] = (module) => {
+      module.exports = 1;
+    };
   globalThis.__DEV__ = true;
   // Metro's require.context(dir, false, /\.card\.js$/) for one directory.
   globalThis.__requireContext = (
@@ -235,7 +240,7 @@ function install() {
   return () => {
     Module._load = originalLoad;
     Module._extensions['.js'] = originalJs;
-    delete Module._extensions['.png'];
+    for (const extension of assetExtensions) delete Module._extensions[extension];
     delete globalThis.__requireContext;
     for (const key of Object.keys(require.cache)) {
       if (key.startsWith(galleryRoot) || key.startsWith(routerSrc)) delete require.cache[key];

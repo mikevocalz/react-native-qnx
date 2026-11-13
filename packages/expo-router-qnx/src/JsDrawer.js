@@ -13,7 +13,13 @@ const DURATION = 220;
 
 function useExclusionLeft() {
   const [value, setValue] = React.useState(getSwipeExclusionLeft);
-  React.useEffect(() => subscribeSwipeExclusion(setValue), []);
+  React.useEffect(() => {
+    const unsubscribe = subscribeSwipeExclusion(setValue);
+    // The tab bar is a child of the drawer and has already set the rail width
+    // by the time this subscription starts: read it again.
+    setValue(getSwipeExclusionLeft());
+    return unsubscribe;
+  }, []);
   return value;
 }
 

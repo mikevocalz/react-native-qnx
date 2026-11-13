@@ -11,6 +11,7 @@ const { JsTabBar } = require('./JsTabBar');
 const {
   buildTabs,
   needsJsTabBar,
+  flatStyle,
   tintsFor,
   resolveTabBarLayout,
   resolveTabBarEdge,
@@ -22,9 +23,13 @@ const BOTTOM_HEIGHT = 60;
 const RAIL_WIDTH = 96;
 
 function getTabBarHeight({ state, descriptors, insets }) {
-  const { tabBarPosition } = descriptors[state.routes[state.index].key].options;
+  const options = descriptors[state.routes[state.index].key].options;
+  const { tabBarPosition } = options;
   if (tabBarPosition === 'left' || tabBarPosition === 'right') return 0;
-  return BOTTOM_HEIGHT + (tabBarPosition === 'top' ? 0 : (insets?.bottom ?? 0));
+  const style = flatStyle(options.tabBarStyle);
+  if (style.display === 'none' || options.qnxTabBarHidden) return 0;
+  const height = typeof style.height === 'number' ? style.height : BOTTOM_HEIGHT;
+  return height + (tabBarPosition === 'top' ? 0 : (insets?.bottom ?? 0));
 }
 
 function TabBarContent({ state, descriptors, emitter, navigateToTab, insets }) {
@@ -44,10 +49,10 @@ function TabBarContent({ state, descriptors, emitter, navigateToTab, insets }) {
   const tabs = React.useMemo(() => buildTabs(state, descriptors), [state, descriptors]);
   const tint = tintsFor(options);
   const showLabel = options.tabBarShowLabel !== false;
-  const barHeight =
-    typeof options.tabBarStyle?.height === 'number' ? options.tabBarStyle.height : BOTTOM_HEIGHT;
+  const barStyle = flatStyle(options.tabBarStyle);
+  const barHeight = typeof barStyle.height === 'number' ? barStyle.height : BOTTOM_HEIGHT;
 
-  const hidden = options.tabBarStyle?.display === 'none' || options.qnxTabBarHidden;
+  const hidden = barStyle.display === 'none' || options.qnxTabBarHidden;
   // A rail on the physical left keeps the drawer's edge swipe from starting on it.
   const railOnLeft = side && (edge === 'right') === rtl;
   const exclusion = railOnLeft && !hidden ? RAIL_WIDTH : 0;

@@ -47,7 +47,7 @@ const TestRenderer = require('react-test-renderer');
 const { act } = React;
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 const src = path.join(root, 'packages/expo-router-qnx/src');
-const { BottomTabBar } = require(path.join(src, 'BottomTabBar.js'));
+const { BottomTabBar, getTabBarHeight } = require(path.join(src, 'BottomTabBar.js'));
 
 /** @param {any} element */
 function render(element) {
@@ -318,6 +318,22 @@ nativeTabBar = false;
   const plain = render(bar([{ qnxIcon: 'A' }, { qnxIcon: 'B' }]).element);
   assert.equal(keyboardListeners.keyboardDidShow.size, 0);
   act(() => plain.unmount());
+}
+
+// getTabBarHeight follows tabBarStyle (object or array) and a hidden bar.
+{
+  const heightOf = (/** @type {any} */ options) =>
+    getTabBarHeight({
+      state: { index: 0, routes: [{ key: 'a' }] },
+      descriptors: { a: { options } },
+      insets: { bottom: 10 },
+    });
+  assert.equal(heightOf({}), 70, 'default 60 plus the inset');
+  assert.equal(heightOf({ tabBarStyle: { height: 80 } }), 90);
+  assert.equal(heightOf({ tabBarStyle: [{ height: 40 }, null] }), 50, 'array style height');
+  assert.equal(heightOf({ tabBarStyle: [{ display: 'none' }] }), 0, 'array style display none');
+  assert.equal(heightOf({ qnxTabBarHidden: true }), 0);
+  assert.equal(heightOf({ tabBarPosition: 'left' }), 0);
 }
 
 Module._load = originalLoad;

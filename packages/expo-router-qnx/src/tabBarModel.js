@@ -119,12 +119,8 @@ function needsJsTabBar(tabs, focusedOptions) {
 }
 
 function tintsFor(options) {
-  const style = Array.isArray(options.tabBarStyle)
-    ? Object.assign({}, ...options.tabBarStyle.filter(Boolean))
-    : (options.tabBarStyle ?? {});
-  const badge = Array.isArray(options.tabBarBadgeStyle)
-    ? Object.assign({}, ...options.tabBarBadgeStyle.filter(Boolean))
-    : (options.tabBarBadgeStyle ?? {});
+  const style = flatStyle(options.tabBarStyle);
+  const badge = flatStyle(options.tabBarBadgeStyle);
   return {
     active: options.tabBarActiveTintColor ?? DEFAULT_ACTIVE,
     inactive: options.tabBarInactiveTintColor ?? DEFAULT_INACTIVE,
