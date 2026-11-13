@@ -767,15 +767,17 @@ void QtReactHost::setTurboModuleProvider(TurboModuleProvider provider) {
 void QtReactHost::callFunctionOnModule(
     const std::string& moduleName,
     const std::string& methodName,
-    folly::dynamic args) {
+    folly::dynamic args,
+    bool ifRegistered) {
   auto* impl = impl_.get();
   impl_->runtimeScheduler->scheduleWork(
-      [impl, moduleName, methodName, args = std::move(args)](
+      [impl, moduleName, methodName, ifRegistered, args = std::move(args)](
           facebook::jsi::Runtime& runtime) {
         auto resolved = impl->resolvedCallableModules.find(moduleName);
         if (resolved == impl->resolvedCallableModules.end()) {
           const auto registered = impl->callableModules.find(moduleName);
           if (registered == impl->callableModules.end()) {
+            if (ifRegistered) return;
             throw facebook::jsi::JSError(
                 runtime, "Callable module " + moduleName + " is not registered");
           }
@@ -1216,7 +1218,8 @@ void QtReactHost::setWindowSize(float width, float height, float scale) {
       folly::dynamic::array(
           "didUpdateDimensions",
           folly::dynamic::object("window", metrics(width, height))(
-              "screen", metrics(screenWidth, screenHeight))));
+              "screen", metrics(screenWidth, screenHeight))),
+      /*ifRegistered=*/true);
 }
 
 void QtReactHost::stopSurface(SurfaceId surfaceId) {

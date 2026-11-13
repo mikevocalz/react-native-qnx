@@ -205,11 +205,14 @@ class QtReactHost {
   /// registerCallableModule (HMRClient, RCTDeviceEventEmitter, ...), the
   /// native-to-JavaScript direction ReactInstance::callFunctionOnModule covers
   /// on Android and iOS. Runs as a RuntimeScheduler task; an unknown module or
-  /// method is reported like any other task error.
+  /// method is reported like any other task error, unless `ifRegistered` is
+  /// set: then a module nobody registered means nobody listens, and the call
+  /// does nothing.
   void callFunctionOnModule(
       const std::string& moduleName,
       const std::string& methodName,
-      folly::dynamic args);
+      folly::dynamic args,
+      bool ifRegistered = false);
 
   /// Installs `globalThis.globalEvalWithSourceUrl(source, url)`. Metro's HMR
   /// client evaluates each hot update through it so stack traces name the
