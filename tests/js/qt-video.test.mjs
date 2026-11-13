@@ -1,3 +1,4 @@
+// @ts-nocheck: the module loader hook and React stub are deliberately untyped.
 // QtVideo JavaScript layer: argument checks of the wrapper, the command path
 // through the ref, and the react-native-video API subset. The native view is
 // replaced by a recording stub, so this checks the JS contract only; the
