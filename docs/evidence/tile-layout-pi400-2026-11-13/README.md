@@ -13,3 +13,8 @@ Window sizes captured with the app's `--window-size WxH --screenshot` flag:
 Single instance: `run-app.sh --replace` stops the running app over /tmp/rnqnx-org.rnqnx.showcase,
 which answered `replacing pid 176304161 (release)`. A second `run-app.sh` restored the
 running window and left one process.
+
+Animated formats: animated-gif-webp-expo-image.png shows the gallery's expo-image card on the Pi.
+Top row: Animated GIF at two moments (blue frame with a white bar, then a red frame). Bottom row: Animated WebP at two moments (the white bar has moved). Both decode through the qtimageformats plugins
+(libqwebp.so and libqgif.so) in the app's plugins/imageformats directory; the sources are
+apps/component-gallery/assets/anim.gif and anim.webp.
