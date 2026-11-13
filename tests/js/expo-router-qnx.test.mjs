@@ -97,4 +97,57 @@ off();
 assert.deepEqual(seen, [96, 0]);
 assert.equal(swipe.getSwipeExclusionLeft(), 0);
 
+// Deep imports get the same replacement.
+assert.match(
+  resolve({}, 'react-native-screens/lib/commonjs/index', 'qnx').filePath,
+  /screens\.js$/
+);
+assert.equal(resolve({}, 'react-native-screens-extra', 'qnx'), real);
+
+// The shims export every name expo-router's compiled code reads from the
+// packages they replace (skipped when expo-router is not installed).
+const { readdirSync, readFileSync, statSync, existsSync } = await import('node:fs');
+const routerBuild = path.join(root, 'apps/component-gallery/node_modules/expo-router/build');
+if (existsSync(routerBuild)) {
+  /** @param {string} dir @param {string[]} out */
+  const walk = (dir, out = []) => {
+    for (const entry of readdirSync(dir)) {
+      const full = path.join(dir, entry);
+      if (statSync(full).isDirectory()) walk(full, out);
+      else if (full.endsWith('.js')) out.push(full);
+    }
+    return out;
+  };
+  const source = walk(routerBuild)
+    .map((file) => readFileSync(file, 'utf8'))
+    .join('\n');
+  const vm = await import('node:vm');
+  /** @param {string} file */
+  const load = (file) => {
+    const mod = { exports: /** @type {any} */ ({}) };
+    const stub = new Proxy({}, { get: () => () => ({ Provider: {}, Consumer: {} }) });
+    vm.runInNewContext(readFileSync(path.join(root, file), 'utf8'), {
+      module: mod,
+      require: () => stub,
+    });
+    return mod.exports;
+  };
+  const shims = {
+    safeArea: [
+      load('packages/expo-router-qnx/src/shims/safe-area-context.js'),
+      /_reactnativesafeareacontext\(\)\.([A-Za-z]+)/g,
+    ],
+    screens: [
+      load('packages/expo-router-qnx/src/shims/screens.js'),
+      /_reactnativescreens\(\)\.([A-Za-z]+)/g,
+    ],
+  };
+  for (const [shim, pattern] of Object.values(shims)) {
+    for (const match of source.matchAll(pattern)) {
+      if (['Stack', 'Split', 'Tabs'].includes(match[1])) continue;
+      assert.ok(match[1] in shim, `shim is missing ${match[1]}`);
+    }
+  }
+}
+
 console.log('expo-router-qnx tests passed.');

@@ -66,4 +66,7 @@ module.exports = {
   withSafeAreaInsets,
   SafeAreaListener,
   initialWindowMetrics,
+  initialWindowSafeAreaInsets: ZERO_INSETS,
+  NativeSafeAreaProvider: SafeAreaProvider,
+  NativeSafeAreaView: SafeAreaView,
 };

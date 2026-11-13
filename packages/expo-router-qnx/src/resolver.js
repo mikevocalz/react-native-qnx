@@ -30,6 +30,15 @@ const BY_FILE = [
   [/[\\/]expo[\\/]build[\\/]winter[\\/]fetch[\\/]index\.js$/, 'expo-fetch.js'],
   [/[\\/]expo-linking[\\/]build[\\/]ExpoLinking\.js$/, 'expo-linking-native.js'],
 ];
+// Deep imports (react-native-screens/lib/commonjs/..., .../jest/mock) reach
+// the same native-backed code, so they get the same replacement.
+function bySubpath(moduleName) {
+  for (const [name, file] of BY_NAME) {
+    if (moduleName.startsWith(name + '/')) return file;
+  }
+  return undefined;
+}
+
 const BOTTOM_TAB_BAR =
   /[\\/]expo-router[\\/]build[\\/]react-navigation[\\/]bottom-tabs[\\/]views[\\/]BottomTabBar\.js$/;
 
@@ -43,7 +52,7 @@ const BOTTOM_TAB_BAR =
 function createExpoRouterResolveRequest(next, options = {}) {
   return function resolveRequest(context, moduleName, platform) {
     if (platform === QNX) {
-      const shim = BY_NAME.get(moduleName);
+      const shim = BY_NAME.get(moduleName) ?? bySubpath(moduleName);
       if (shim) return { type: 'sourceFile', filePath: shim };
       if (moduleName === 'expo-router/_ctx' && options.routerContext) {
         return { type: 'sourceFile', filePath: options.routerContext };
