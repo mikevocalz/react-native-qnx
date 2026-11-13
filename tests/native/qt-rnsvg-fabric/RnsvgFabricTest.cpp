@@ -89,9 +89,9 @@ bool near(const QColor& a, const QColor& b, int tolerance = 6) {
          std::abs(a.blue() - b.blue()) <= tolerance;
 }
 
-bool pixelIs(QQuickWindow& window, int x, int y, const QColor& color) {
+bool pixelIs(QQuickWindow& window, int x, int y, const QColor& color, int tolerance = 6) {
   const auto image = window.grabWindow();
-  return !image.isNull() && near(image.pixelColor(x, y), color);
+  return !image.isNull() && near(image.pixelColor(x, y), color, tolerance);
 }
 }  // namespace
 
@@ -144,9 +144,9 @@ int main(int argc, char** argv) {
       g_diagnostics = dumpTree(window.contentItem()) + "pixel(3,20)=" +
           window.grabWindow().pixelColor(3, 20).name(QColor::HexArgb).toStdString() + " pixel(20,70)=" +
           window.grabWindow().pixelColor(20, 70).name(QColor::HexArgb).toStdString() + "\n";
-      return pixelIs(window, 3, 20, QColor(255, 0, 0));
+      return pixelIs(window, 3, 20, QColor(255, 0, 0), 24);  // a few percent into the gradient
     }, "gradient pixels");
-    check(pixelIs(window, 97, 20, QColor(0, 0, 255)), "gradient end color wrong");
+    check(pixelIs(window, 97, 20, QColor(0, 0, 255), 24), "gradient end color wrong");
     check(pixelIs(window, 20, 70, QColor(0, 255, 0)), "<G fill> was not inherited");
     check(pixelIs(window, 70, 70, QColor(255, 0, 0)), "element fill did not override <G fill>");
     check(pixelIs(window, 150, 90, QColor(255, 0, 0)), "clipped rect missing inside the clip");
@@ -159,7 +159,7 @@ int main(int argc, char** argv) {
     // Prop updates repaint the same retained elements; nothing is remounted.
     evaluate(host, "__rnsvgUpdate({pathFill:'#ffff00', gradientEnd:'#00ff00'});");
     await(host, [&] { return pixelIs(window, 40, 135, QColor(255, 255, 0)); });
-    check(pixelIs(window, 97, 20, QColor(0, 255, 0)), "gradient stop update did not repaint");
+    check(pixelIs(window, 97, 20, QColor(0, 255, 0), 24), "gradient stop update did not repaint");
     check(findRoot(window.contentItem()) == root.data(), "<Svg> was remounted by a prop update");
     check(countElements(root) == elements, "Element count changed on a prop update");
 
