@@ -1,5 +1,10 @@
 # Current state
 
+## PR 159 build repair — 2026-11-13
+
+The video component row now initializes its optional command handler. Local strict table compilation and JS checks pass; new-head CI and target checks remain pending.
+[Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
+
 ## PR 105 review follow-up — 2026-11-10
 
 The constrained Nitro generator at `c09a5b1` rejects unsupported contracts and

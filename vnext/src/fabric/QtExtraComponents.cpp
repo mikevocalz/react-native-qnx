@@ -49,7 +49,7 @@ std::vector<ExtraComponentSet> buildSets() {
 #endif
 #if RNQNX_ENABLE_QT_VIDEO
   sets.push_back(ExtraComponentSet{
-      "qt-video", &videoComponentNames, &addVideoComponentDescriptors, &applyVideoProps});
+      "qt-video", &videoComponentNames, &addVideoComponentDescriptors, &applyVideoProps, nullptr});
 #endif
   return sets;
 }

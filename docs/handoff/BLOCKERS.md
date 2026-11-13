@@ -1,5 +1,10 @@
 # BLOCKERS.md
 
+## PR 159 build repair — 2026-11-13
+
+The missing command-handler initializer is fixed locally. Merge still requires the new head's required checks and review; the handoff's image-loader gaps remain open.
+[Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
+
 ## PR 105 review state — 2026-11-10
 
 The mandatory handoff omission is addressed by this follow-up. Hosted checks

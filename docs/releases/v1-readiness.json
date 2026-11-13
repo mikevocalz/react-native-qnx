@@ -15,6 +15,13 @@
       "receipt": "docs/validation/pr105-merge-readiness-2026-11-10.md",
       "hostedCi": "passed at the implementation commit; follow-up CI must be checked after publication",
       "targetExecution": "not run for this candidate; generated C++ unchanged"
+    },
+    "pr159BuildRepair": {
+      "reviewedAt": "2026-11-13",
+      "baseCommit": "7ae99da",
+      "receipt": "docs/validation/pr159-table-initializer-2026-11-13.md",
+      "hostedCi": "pending for the repair head",
+      "targetExecution": "not run for the repair"
     }
   },
   "gates": [

@@ -1,5 +1,10 @@
 # TEST_STATUS.md
 
+## PR 159 build repair — 2026-11-13
+
+Strict table syntax compilation, host-renderer orchestration, video JS, frozen installation and documentation checks passed. Full linked runtime and device checks were not run for this repair.
+[Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
+
 ## 2026-11-10 — PR 105 generator validation
 
 At `c09a5b19800c2d7d79268c3466b618aa20430ba2`, the hosted SDK, full renderer,

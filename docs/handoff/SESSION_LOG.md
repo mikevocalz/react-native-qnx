@@ -1,5 +1,10 @@
 # SESSION_LOG.md
 
+## PR 159 build repair — 2026-11-13
+
+Read the November 13 handoff and current failed CI. Fixed the missing video command-handler initializer and validated the bounded table/JS scope. No Pi app or boot change was made.
+[Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
+
 ## 2026-11-10 — PR 105 committed handoff repair
 
 Inspected `c09a5b1`, its green hosted workflows, the unresolved handoff review,

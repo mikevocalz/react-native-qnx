@@ -1,5 +1,10 @@
 # NEXT_ACTIONS.md
 
+## PR 159 build repair — 2026-11-13
+
+Inspect the pushed head's required renderer checks. Continue #161 before merging #159, then address the image-loader gaps in the November 13 handoff.
+[Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
+
 ## PR 105 continuation — 2026-11-10
 
 Review and publish the documentation follow-up to `c09a5b1`, inspect its
