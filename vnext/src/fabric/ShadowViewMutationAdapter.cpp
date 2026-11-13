@@ -1324,6 +1324,12 @@ MutationFailure ShadowViewMutationAdapter::dispatchCommand(
     return MutationFailure{};
   }
 
+  // Components from the extra sets (ExpoImage) own their commands.
+  if (shadowView != nullptr &&
+      dispatchExtraComponentCommand(layer_.itemForTag(tag), *shadowView, commandName)) {
+    return MutationFailure{};
+  }
+
   return MutationFailure{
       .type = ShadowViewMutation::Type::Update,
       .tag = tag,

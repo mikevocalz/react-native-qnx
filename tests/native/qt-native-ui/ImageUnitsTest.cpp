@@ -1,7 +1,10 @@
+#include "react-native-qnx/views/DecodedImageCache.h"
 #include "react-native-qnx/views/image/BlurHash.h"
 #include "react-native-qnx/views/image/ImageDiskCache.h"
 #include "react-native-qnx/views/image/ImageEffects.h"
 #include "react-native-qnx/views/image/ImageLayout.h"
+#include "react-native-qnx/views/image/ImageLoadedNotifier.h"
+#include "react-native-qnx/views/image/ImageRefRegistry.h"
 #include "react-native-qnx/views/image/QtImageFetcher.h"
 #include "react-native-qnx/views/image/ThumbHash.h"
 
@@ -37,6 +40,9 @@ class ImageUnitsTest : public QObject {
   void requestKeyFoldsHeadersAndHonoursCacheKey();
   void fetcherSendsHeadersAndHitsDiskCacheSecondTime();
   void fetcherCancelNeverCallsBack();
+  void decodedCacheHonorsCountAndCostLimits();
+  void imageRefRegistryNeverReusesIds();
+  void imageLoadedNotifierReachesListenersUntilUnsubscribed();
 };
 
 void ImageUnitsTest::fitCoverContainAndFill() {
@@ -304,6 +310,62 @@ void ImageUnitsTest::fetcherCancelNeverCallsBack() {
   fetcher.cancel(id);
   QTest::qWait(200);
   QVERIFY(!called);
+}
+
+void ImageUnitsTest::decodedCacheHonorsCountAndCostLimits() {
+  DecodedImageCache cache(1024);
+  QImage image(8, 8, QImage::Format_ARGB32);
+  image.fill(Qt::red);
+  cache.configure(0, 2);
+  cache.insert(QStringLiteral("a"), image);
+  cache.insert(QStringLiteral("b"), image);
+  cache.insert(QStringLiteral("c"), image);
+  QCOMPARE(cache.count(), 2);
+  QVERIFY(!cache.contains(QStringLiteral("a")));  // the oldest went first
+  QVERIFY(cache.contains(QStringLiteral("b")));
+  QVERIFY(cache.contains(QStringLiteral("c")));
+  cache.configure(0, 1);  // lowering the count trims at once
+  QCOMPARE(cache.count(), 1);
+  QVERIFY(cache.contains(QStringLiteral("c")));
+  cache.configure(0, 0);  // 0 is no limit
+  cache.insert(QStringLiteral("d"), image);
+  cache.insert(QStringLiteral("e"), image);
+  QCOMPARE(cache.count(), 3);
+  cache.configure(7, 0);
+  QCOMPARE(cache.maxCostKiB(), 7);
+  cache.configure(0, 0);  // 0 keeps the cost ceiling
+  QCOMPARE(cache.maxCostKiB(), 7);
+  QImage large(64, 64, QImage::Format_ARGB32);  // 16 KiB: over the 7 KiB ceiling
+  cache.insert(QStringLiteral("big"), large);
+  QVERIFY(!cache.contains(QStringLiteral("big")));
+}
+
+void ImageUnitsTest::imageRefRegistryNeverReusesIds() {
+  auto& registry = ImageRefRegistry::shared();
+  ImageRefEntry entry;
+  entry.image = QImage(2, 2, QImage::Format_ARGB32);
+  entry.mediaType = QStringLiteral("image/png");
+  const auto first = registry.add(entry);
+  QVERIFY(first != 0);
+  QCOMPARE(registry.find(first).image.size(), QSize(2, 2));
+  QCOMPARE(registry.find(first).mediaType, QStringLiteral("image/png"));
+  QVERIFY(registry.release(first));
+  QVERIFY(!registry.release(first));
+  QVERIFY(registry.find(first).image.isNull());
+  QVERIFY(registry.add(entry) != first);
+  QVERIFY(registry.find(0).image.isNull());
+}
+
+void ImageUnitsTest::imageLoadedNotifierReachesListenersUntilUnsubscribed() {
+  auto& notifier = ImageLoadedNotifier::shared();
+  QStringList urls;
+  const auto token = notifier.subscribe([&](const ImageLoadedEvent& event) {
+    urls.push_back(QStringLiteral("%1 %2x%3").arg(event.url).arg(event.width).arg(event.height));
+  });
+  notifier.notify({QStringLiteral("a.png"), 4, 3});
+  notifier.unsubscribe(token);
+  notifier.notify({QStringLiteral("b.png"), 1, 1});
+  QCOMPARE(urls, QStringList{QStringLiteral("a.png 4x3")});
 }
 
 int main(int argc, char** argv) {

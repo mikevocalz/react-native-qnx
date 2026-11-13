@@ -34,6 +34,8 @@ QString ImageRequest::storageKey() const {
 
 struct QtImageFetcher::Pending {
   QPointer<QNetworkReply> reply;
+  ImageFetchQueue::Id queued{0};
+  bool started{false};
   QByteArray bytes;
   QString failure;
   ImageRequest request;
@@ -41,8 +43,8 @@ struct QtImageFetcher::Pending {
   Done done;
 };
 
-QtImageFetcher::QtImageFetcher(int timeoutMs, ImageDiskCache* disk)
-    : disk_(disk), timeoutMs_(timeoutMs) {}
+QtImageFetcher::QtImageFetcher(int timeoutMs, ImageDiskCache* disk, ImageFetchQueue* queue, int maxConcurrent)
+    : disk_(disk), timeoutMs_(timeoutMs), ownQueue_(maxConcurrent), queue_(queue != nullptr ? queue : &ownQueue_) {}
 
 FetchResult QtImageFetcher::readLocal(const QString& uri) const {
   FetchResult result;
@@ -121,13 +123,6 @@ QtImageFetcher::Id QtImageFetcher::fetch(const ImageRequest& request, Progress p
     }
   }
 
-  QNetworkRequest net(url);
-  // Do not forward credentials or other caller headers across redirects.
-  net.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
-  net.setAttribute(QNetworkRequest::CookieLoadControlAttribute, QNetworkRequest::Manual);
-  net.setAttribute(QNetworkRequest::CookieSaveControlAttribute, QNetworkRequest::Manual);
-  net.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
-  net.setTransferTimeout(timeoutMs_);
   for (const auto& [name, value] : request.headers) {
     if (name.isEmpty() || name.contains('\r') || name.contains('\n') || name.contains(':') ||
         value.contains('\r') || value.contains('\n')) {
@@ -136,14 +131,37 @@ QtImageFetcher::Id QtImageFetcher::fetch(const ImageRequest& request, Progress p
       done(std::move(result));
       return id;
     }
-    net.setRawHeader(name, value);
   }
 
-  auto pending = std::make_shared<Pending>(Pending{{}, {}, {}, request, std::move(progress), std::move(done)});
+  auto pending = std::make_shared<Pending>(Pending{{}, 0, false, {}, {}, request, std::move(progress), std::move(done)});
+  pending_.emplace(id, pending);
+  // The queue may start the load before submit returns.
+  const auto queued = queue_->submit(request.priority, [this, id] { startHttp(id); });
+  if (!pending->started) pending->queued = queued;
+  return id;
+}
+
+void QtImageFetcher::startHttp(Id id) {
+  const auto found = pending_.find(id);
+  if (found == pending_.end()) {
+    queue_->release();
+    return;
+  }
+  const std::shared_ptr<Pending> pending = found->second;
+  pending->started = true;
+  ++started_;
+  QNetworkRequest net{QUrl(pending->request.uri)};
+  // Do not forward credentials or other caller headers across redirects.
+  net.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
+  net.setAttribute(QNetworkRequest::CookieLoadControlAttribute, QNetworkRequest::Manual);
+  net.setAttribute(QNetworkRequest::CookieSaveControlAttribute, QNetworkRequest::Manual);
+  net.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
+  net.setTransferTimeout(timeoutMs_);
+  for (const auto& [name, value] : pending->request.headers) net.setRawHeader(name, value);
+
   QNetworkReply* reply = network_.get(net);
   reply->setReadBufferSize(kMaxEncodedBytes + 1);
   pending->reply = reply;
-  pending_.emplace(id, pending);
 
   auto* deadline = new QTimer(reply);
   deadline->setSingleShot(true);
@@ -164,13 +182,16 @@ QtImageFetcher::Id QtImageFetcher::fetch(const ImageRequest& request, Progress p
                      if (pending->progress) pending->progress(received, total);
                    });
   QObject::connect(reply, &QNetworkReply::finished, this, [this, id] {
-    const auto found = pending_.find(id);
-    if (found == pending_.end()) return;
-    const std::shared_ptr<Pending> owned = found->second;
-    pending_.erase(found);
+    const auto done = pending_.find(id);
+    if (done == pending_.end()) return;
+    const std::shared_ptr<Pending> owned = done->second;
+    pending_.erase(done);
+    --started_;
+    // Free the slot first so the next waiting load starts while this one's
+    // callback runs.
+    queue_->release();
     finishHttp(id, *owned);
   });
-  return id;
 }
 
 void QtImageFetcher::finishHttp(Id, Pending& pending) {
@@ -210,6 +231,11 @@ void QtImageFetcher::cancel(Id id) {
   if (found == pending_.end()) return;
   const std::shared_ptr<Pending> owned = found->second;
   pending_.erase(found);
+  if (!owned->started) {
+    queue_->cancel(owned->queued);
+    return;
+  }
+  --started_;
   if (owned->reply) {
     // Drop every connection (the timer and read callbacks hold `owned`), then
     // abort: no callback can run after cancel returns.
@@ -217,9 +243,19 @@ void QtImageFetcher::cancel(Id id) {
     owned->reply->abort();
     owned->reply->deleteLater();
   }
+  queue_->release();
 }
 
 QtImageFetcher::~QtImageFetcher() {
+  // Waiting loads first, so freeing a running load's slot starts nothing.
+  for (auto it = pending_.begin(); it != pending_.end();) {
+    if (it->second->started) {
+      ++it;
+    } else {
+      queue_->cancel(it->second->queued);
+      it = pending_.erase(it);
+    }
+  }
   while (!pending_.empty()) cancel(pending_.begin()->first);
 }
 

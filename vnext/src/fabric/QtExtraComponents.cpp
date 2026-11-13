@@ -28,21 +28,24 @@ std::vector<ExtraComponentSet> buildSets() {
       &addRnsvgComponentDescriptors,
       [](QQuickItem* item, const facebook::react::ShadowView& view) {
         return applyRnsvgProps(item, view);
-      }});
+      },
+      nullptr});
 #endif
 #if RNQNX_ENABLE_QT_NATIVE_UI
   sets.push_back(ExtraComponentSet{
       "qt-native-ui",
       &nativeUiComponentNames,
       &addNativeUiComponentDescriptors,
-      &applyNativeUiProps});
+      &applyNativeUiProps,
+      nullptr});
 #endif
 #if RNQNX_ENABLE_QT_EXPO_IMAGE
   sets.push_back(ExtraComponentSet{
       "expo-image",
       &expoImageComponentNames,
       &addExpoImageComponentDescriptors,
-      &applyExpoImageProps});
+      &applyExpoImageProps,
+      &dispatchExpoImageCommand});
 #endif
 #if RNQNX_ENABLE_QT_VIDEO
   sets.push_back(ExtraComponentSet{
@@ -103,6 +106,16 @@ bool applyExtraComponentProps(QQuickItem* item, const facebook::react::ShadowVie
   }
   const auto owner = owners().find(view.componentName);
   return owner != owners().end() && owner->second->applyProps(item, view);
+}
+
+bool dispatchExtraComponentCommand(QQuickItem* item, const facebook::react::ShadowView& view,
+                                   const std::string& command) {
+  if (item == nullptr || view.componentName == nullptr) {
+    return false;
+  }
+  const auto owner = owners().find(view.componentName);
+  return owner != owners().end() && owner->second->dispatchCommand != nullptr &&
+         owner->second->dispatchCommand(item, command);
 }
 
 }  // namespace rnqnx::fabric

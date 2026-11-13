@@ -446,6 +446,9 @@ else()
           set_tests_properties(qt_react_host_host_test PROPERTIES
             ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0"
           )
+
+          include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxExpoImageHostTests.cmake)
+          rnqnx_add_expo_image_host_tests()
         endif()
 
         add_executable(rnqnx_rn_headers_probe

@@ -26,5 +26,8 @@ bool applyNativeUiProps(QQuickItem* item, const facebook::react::ShadowView& vie
 std::vector<std::string> expoImageComponentNames();
 void addExpoImageComponentDescriptors(facebook::react::ComponentDescriptorProviderRegistry& registry);
 bool applyExpoImageProps(QQuickItem* item, const facebook::react::ShadowView& view);
+/// `startAnimating`, `stopAnimating`, `lockResource`, `unlockResource` and
+/// `reload`, the commands of ExpoImageNativeComponent.ts.
+bool dispatchExpoImageCommand(QQuickItem* item, const std::string& command);
 
 }  // namespace rnqnx::fabric

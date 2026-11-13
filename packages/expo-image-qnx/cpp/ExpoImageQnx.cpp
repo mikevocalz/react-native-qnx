@@ -5,6 +5,7 @@
 // ViewManagerAdapter_ExpoImage (RNQNX_ENABLE_QT_EXPO_IMAGE), on the same Qt
 // image loader and decoded cache as React Native's own Image. The module's
 // cache functions forward to the renderer's ImageLoader module.
+#include "ExpoImageSupport.hpp"
 #include "ExpoQnxModuleRegistry.hpp"
 
 #include <jsi/jsi.h>
@@ -70,41 +71,11 @@ ExpoViewConfig viewConfig() {
   return config;
 }
 
-jsi::Value resolved(jsi::Runtime& runtime, jsi::Value value) {
-  auto promise = runtime.global().getPropertyAsFunction(runtime, "Promise");
-  return promise.getPropertyAsFunction(runtime, "resolve")
-      .callWithThis(runtime, promise, std::move(value));
-}
-
-jsi::Function function(jsi::Runtime& runtime, const char* name, unsigned int arguments,
-                       jsi::HostFunctionType body) {
-  return jsi::Function::createFromHostFunction(
-      runtime, jsi::PropNameID::forAscii(runtime, name), arguments, std::move(body));
-}
-
-// The renderer's ImageLoader TurboModule, or an error when this host has none.
-jsi::Object imageLoader(jsi::Runtime& runtime) {
-  auto proxy = runtime.global().getProperty(runtime, "__turboModuleProxy");
-  if (!proxy.isObject() || !proxy.asObject(runtime).isFunction(runtime)) {
-    throw jsi::JSError(runtime, "expo-image needs the ImageLoader module, which this host lacks");
-  }
-  auto loader = proxy.asObject(runtime).asFunction(runtime).call(
-      runtime, jsi::String::createFromAscii(runtime, "ImageLoader"));
-  if (!loader.isObject()) throw jsi::JSError(runtime, "ImageLoader module is unavailable");
-  return loader.asObject(runtime);
-}
-
-jsi::Value callImageLoader(jsi::Runtime& runtime, const char* method, std::vector<jsi::Value> args) {
-  auto loader = imageLoader(runtime);
-  auto function = loader.getPropertyAsFunction(runtime, method);
-  return function.callWithThis(runtime, loader, static_cast<const jsi::Value*>(args.data()), args.size());
-}
-
 // expo-image's prefetch(urls, cachePolicy, headers): true when every URL is
 // fetched, false when any fails (it never rejects).
 jsi::Value prefetchAll(jsi::Runtime& runtime, const jsi::Value* args, size_t count) {
   if (count < 1 || !args[0].isObject() || !args[0].asObject(runtime).isArray(runtime)) {
-    return resolved(runtime, jsi::Value(false));
+    return resolvedPromise(runtime, jsi::Value(false));
   }
   auto urls = args[0].asObject(runtime).asArray(runtime);
   jsi::Array pending(runtime, urls.size(runtime));
@@ -120,10 +91,10 @@ jsi::Value prefetchAll(jsi::Runtime& runtime, const jsi::Value* args, size_t cou
   auto promise = runtime.global().getPropertyAsFunction(runtime, "Promise");
   auto all = promise.getPropertyAsFunction(runtime, "all").callWithThis(runtime, promise, std::move(pending));
   auto then = all.asObject(runtime).getPropertyAsFunction(runtime, "then");
-  auto yes = function(runtime, "prefetched", 0, [](jsi::Runtime&, const jsi::Value&, const jsi::Value*, size_t) {
+  auto yes = hostFunction(runtime, "prefetched", 0, [](jsi::Runtime&, const jsi::Value&, const jsi::Value*, size_t) {
     return jsi::Value(true);
   });
-  auto no = function(runtime, "prefetchFailed", 0, [](jsi::Runtime&, const jsi::Value&, const jsi::Value*, size_t) {
+  auto no = hostFunction(runtime, "prefetchFailed", 0, [](jsi::Runtime&, const jsi::Value&, const jsi::Value*, size_t) {
     return jsi::Value(false);
   });
   return then.callWithThis(runtime, all.asObject(runtime), std::move(yes), std::move(no));
@@ -137,48 +108,35 @@ jsi::Object createModule(jsi::Runtime& runtime) {
   // disk cache; these forward to it through the TurboModule proxy, so they act
   // on exactly what the view reads.
   module.setProperty(runtime, "prefetch",
-      function(runtime, "prefetch", 3, [](jsi::Runtime& rt, const jsi::Value&, const jsi::Value* args, size_t count) {
+      hostFunction(runtime, "prefetch", 3, [](jsi::Runtime& rt, const jsi::Value&, const jsi::Value* args, size_t count) {
         return prefetchAll(rt, args, count);
       }));
   for (const char* name : {"clearMemoryCache", "clearDiskCache"}) {
     module.setProperty(runtime, name,
-        function(runtime, name, 0, [name](jsi::Runtime& rt, const jsi::Value&, const jsi::Value*, size_t) {
+        hostFunction(runtime, name, 0, [name](jsi::Runtime& rt, const jsi::Value&, const jsi::Value*, size_t) {
           return callImageLoader(rt, name, {});
         }));
   }
   module.setProperty(runtime, "getCachePathAsync",
-      function(runtime, "getCachePathAsync", 1, [](jsi::Runtime& rt, const jsi::Value&, const jsi::Value* args, size_t count) {
-        if (count < 1) return resolved(rt, jsi::Value::null());
+      hostFunction(runtime, "getCachePathAsync", 1, [](jsi::Runtime& rt, const jsi::Value&, const jsi::Value* args, size_t count) {
+        if (count < 1) return resolvedPromise(rt, jsi::Value::null());
         std::vector<jsi::Value> forwarded;
         forwarded.emplace_back(rt, args[0]);
         return callImageLoader(rt, "getCachePath", std::move(forwarded));
       }));
   module.setProperty(runtime, "configureCache",
-      function(runtime, "configureCache", 1, [](jsi::Runtime&, const jsi::Value&, const jsi::Value*, size_t) {
+      hostFunction(runtime, "configureCache", 1, [](jsi::Runtime& rt, const jsi::Value&, const jsi::Value* args, size_t count) {
+        std::vector<jsi::Value> forwarded;
+        forwarded.push_back(count > 0 ? jsi::Value(rt, args[0]) : jsi::Value::undefined());
+        callImageLoader(rt, "configureCache", std::move(forwarded));
         return jsi::Value::undefined();
       }));
-  // Blurhash, thumbhash, loadAsync and the cache read/write functions need
-  // native decoders and are absent: calling one fails with "is not a function"
-  // instead of returning invented data.
 
-  // Functions expo-image calls on the view ref. The view shows no animated
-  // images and holds no resource lock, so these have nothing to do.
-  jsi::Object prototypes(runtime);
-  jsi::Object imageView(runtime);
-  for (const char* name : {"startAnimating", "stopAnimating"}) {
-    imageView.setProperty(runtime, name,
-        function(runtime, name, 0, [](jsi::Runtime&, const jsi::Value&, const jsi::Value*, size_t) {
-          return jsi::Value::undefined();
-        }));
-  }
-  for (const char* name : {"lockResourceAsync", "unlockResourceAsync", "reloadAsync"}) {
-    imageView.setProperty(runtime, name,
-        function(runtime, name, 0, [](jsi::Runtime& rt, const jsi::Value&, const jsi::Value*, size_t) {
-          return resolved(rt, jsi::Value::undefined());
-        }));
-  }
-  prototypes.setProperty(runtime, "ExpoImage", std::move(imageView));
-  module.setProperty(runtime, "ViewPrototypes", std::move(prototypes));
+  // loadAsync, the hash generators, the cache read and write functions and the
+  // ImageRef class.
+  installImageRefs(runtime, module);
+  // startAnimating, stopAnimating and the resource functions of a view ref.
+  installViewPrototypes(runtime, module);
   return module;
 }
 

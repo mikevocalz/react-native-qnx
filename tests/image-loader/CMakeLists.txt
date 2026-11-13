@@ -8,6 +8,7 @@ add_executable(qnx_image_cache_test
   ../../vnext/src/runtime/QtImageCache.cpp
   ../../vnext/src/views/qt/image/ImageDiskCache.cpp
   ../../vnext/src/views/qt/image/QtImageFetcher.cpp
+  ../../vnext/src/views/qt/image/ImageFetchQueue.cpp
   ../../vnext/src/views/qt/QnxImageProvider.cpp
   ../../vnext/src/views/qt/QtQuickItemFactory.cpp
   ../../vnext/src/views/qt/QtExtraItems.cpp)

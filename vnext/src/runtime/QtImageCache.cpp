@@ -13,7 +13,7 @@ constexpr qint64 kMaxPixels = 16 * 1024 * 1024;
 
 QtImageCache::QtImageCache()
     : images_(views::DecodedImageCache::shared()),
-      fetcher_(30000, &views::ImageDiskCache::shared()) {}
+      fetcher_(30000, &views::ImageDiskCache::shared(), &views::ImageFetchQueue::shared()) {}
 
 QtImageCache::QtImageCache(int budgetKiB, int timeoutMs)
     : privateCache_(std::make_unique<views::DecodedImageCache>(budgetKiB)),

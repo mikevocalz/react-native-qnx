@@ -115,15 +115,27 @@ or cancellation-by-request-ID API is provided.
 ## The ExpoImage view
 
 `expo-image` renders through the Fabric component `ViewManagerAdapter_ExpoImage`
-(`RNQNX_ENABLE_QT_EXPO_IMAGE`). Its item (`ExpoImageItem`) picks a `uri` from the
-`source` array and resolves it with the same function as the Image component,
-`resolveImageUri`: a URI the decoded cache holds is served as
-`image://rnqnx/cache/<key>` and reports `cacheType: "memory"`, a base64 data URI
-is decoded by `QnxImageProvider`, and anything else goes to Qt Quick, which
-fetches it as for `Image`. The view adds no cache of its own. `Image.prefetch`
-from React Native fills the cache the view reads; `expo-image`'s own `prefetch`
-forwards to the loader, so it fills the cache the view reads. The prop and limit table is in
+(`RNQNX_ENABLE_QT_EXPO_IMAGE`). Its item, `ExpoImageItem`, picks a source from the
+`source` array and loads it itself: from the decoded memory cache
+(`DecodedImageCache`, `cacheType: "memory"`), the on-disk cache (`"disk"`), the
+network with the source's headers, or a file or base64 data URI. It decodes on a
+worker thread and paints with `QPainter`. It shares the decoded cache with
+`Image`, so `Image.prefetch` from React Native and `expo-image`'s own `prefetch`
+fill the cache the view reads. A `source` that is an `ImageRef` (from
+`Image.loadAsync`) skips loading: the picture is read from `ImageRefRegistry`.
+The prop and limit table is in
 [`@rn-qnx/expo-image-qnx`](../packages/expo-image-qnx/README.md).
+
+HTTP(S) loads from every view, `prefetch` and `loadAsync` go through one
+`ImageFetchQueue`: 6 at a time, and expo-image's `priority` (`low`, `normal`,
+`high`) decides which waiting load starts next. Cancelling a waiting load removes
+it; cancelling a running load frees its slot.
+
+The loader module serves the expo-image functions the same way: `loadImage`,
+`releaseImage`, `generateBlurhash`, `generateThumbhash`, `writeToCache`,
+`readFromCache` and `configureCache` are methods of `ImageLoader` next to
+`prefetchImageWithOptions`, `clearMemoryCache`, `clearDiskCache` and
+`getCachePath`. `@rn-qnx/expo-image-qnx` wraps them as the `ExpoImage` module.
 
 ## Boundaries
 
@@ -169,6 +181,17 @@ limits, timeouts, LRU eviction, private/no-store, local/base64 inputs and
 teardown while a request is pending. It also resolves and reads a prefetched
 entry through the real Qt Quick provider. CI runs this test with exact Qt
 6.11.1 and uploads its CTest evidence.
+
+The expo-image functions and the view run on real Hermes in two more host tests,
+`rnqnx_expo_image_module_host_test` (JavaScript calls the module: prefetch, cache
+functions, `loadAsync`, the hash generators, cache read and write,
+`configureCache`, the view-ref functions through Fabric commands) and
+`rnqnx_expo_image_fabric_host_test` (`opacity`, `transform`, `onLayout`, the image
+events as Fabric events, `ImageRef` sources, commands). The queue, the hash
+encoders against reference vectors and the view's lock and `ImageRef` handling are
+Qt tests in `tests/native/qt-native-ui`. The first-draft module forwarding used
+`__turboModuleProxy`, which this bridgeless host does not install; the module test
+is what found it, and the module now reads `nativeModuleProxy`.
 
 The full `QtReactHostHostTest` also contains `imageLoaderPromiseContract`, which
 uses the real bridgeless `nativeModuleProxy.ImageLoader` in Hermes after loading
