@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200" font-family="DejaVu Sans">
+  <defs><path id="p" d="M20,150 C100,20 300,20 380,150"/></defs>
+  <text font-size="28"><textPath href="#p" startOffset="10">Text along a curve</textPath></text>
+</svg>

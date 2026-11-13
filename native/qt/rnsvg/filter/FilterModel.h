@@ -174,6 +174,8 @@ struct Subregion {
   Length x, y, width, height;
 };
 
+// `params` decides which primitive this is; `type` is informational and the
+// engine does not read it.
 struct Primitive {
   PrimitiveType type{PrimitiveType::Offset};
   Subregion subregion;
