@@ -113,7 +113,8 @@ Deploy the build to its own directory, separate from the release app, with:
 - the executable, `app.bundle.js` and `icons/` from the build;
 - `libhermesvm.so` (instead of `libhermesvmlean.so`) and
   `libQt6WebSockets.so.6*`;
-- `plugins/tls/libqopensslbackend.so` and `plugins/imageformats/` (see
+- `plugins/tls/libqopensslbackend.so` and `plugins/imageformats/` with
+  `libqjpeg.so`, `libqgif.so` and `libqwebp.so` (see
   [image loader](../image-loader.md));
 - a launcher like [`run-chrome-app-dev.sh`](#launcher) that puts the app
   directory first on `LD_LIBRARY_PATH` and `QT_PLUGIN_PATH`.

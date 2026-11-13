@@ -45,6 +45,7 @@ python3 -I spdx-audit.py "$QT_PUBLIC_BUILD/qnx-build" "$QT_PUBLIC_SRC" \
   "$QT_PUBLIC_ROOT/runtime-spdx-audit.json" Core Network Gui OpenGL Qml QmlMeta \
   QmlModels QmlWorkerScript Quick QuickShapes QQnxIntegrationPlugin qmlplugin \
   modelsplugin workerscriptplugin qtquick2plugin qmlshapesplugin
+./build-imageformats-qnx.sh         # qtimageformats: WebP, TIFF, TGA, ICNS, WBMP plugins
 python3 -I stage-runtime.py "$QT_PUBLIC_ROOT/runtime" "$QT_PUBLIC_ROOT/runtime-spdx-audit.json"
 ```
 
@@ -69,6 +70,36 @@ existing source first (each patch script refuses to run twice), move
 355 MB, so no second tree is needed. Write the runtime tarball with
 `tar --no-xattrs --no-mac-metadata` on macOS, or it carries
 `LIBARCHIVE.xattr` headers that QNX `tar` warns about.
+
+## Image format plugins
+
+qtbase builds three image plugins for this target: `libqjpeg.so`,
+`libqgif.so` (`configure-qnx.sh`) and `libqico.so` (not built here). PNG and
+BMP are inside QtGui. WebP, TIFF, TGA, ICNS and WBMP live in the separate
+`qtimageformats` module, so a runtime built only from `qtbase`,
+`qtshadertools` and `qtdeclarative` has no WebP decoder, and an `expo-image`
+view cannot show a WebP (animated or still).
+
+[`build-imageformats-qnx.sh`](build-imageformats-qnx.sh) extracts
+`qtimageformats` from the same archive (hash-checked) and builds it against the
+existing QNX qtbase with `qt-configure-module`, in its own build tree
+(`IMAGEFORMATS_BUILD`, default `$QT_PUBLIC_BUILD/imageformats-qnx`). It uses the
+bundled libwebp and libtiff (`-DFEATURE_system_webp=OFF
+-DFEATURE_system_tiff=OFF`; the board has neither), skips JasPer and MNG, and
+stops unless the Release flags contain `-O2` (ADR-0017). Targets: `QWebpPlugin`,
+`QTiffPlugin`, `QTgaPlugin`, `QICNSPlugin`, `QWbmpPlugin`. With `JOBS=2` the
+201 build steps took about 4 minutes in `qnx805-build`.
+
+`stage-runtime.py` copies the five plugins into the staged runtime's
+`plugins/imageformats/` beside `libqjpeg.so` and `libqgif.so`, adds the
+`qtimageformats` license texts, and accepts a second SPDX audit file for the
+`imageformats-qnx` tree. An app carries the plugins in its own
+`plugins/imageformats/` and launches with
+`QT_PLUGIN_PATH=<app>/plugins:<runtime>/plugins` (the release launchers do
+this); nothing else in the repository copies plugins into an app directory.
+The result on the Pi 400, from a probe that decodes an animated GIF and an
+animated WebP, is in
+[the image formats receipt](../../docs/evidence/pi-image-formats-2026-11-13.md).
 
 ## QNX platform plugin patch
 

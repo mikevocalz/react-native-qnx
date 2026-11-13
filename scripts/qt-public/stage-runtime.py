@@ -2,10 +2,11 @@
 """Stage the public-source Qt 6.12.0 QNX runtime closure, verify its DT_NEEDED
 closure, and write sha256 manifests.
 
-Usage: stage-runtime.py [<out-dir> [<spdx-audit.json>]]
-With the audit file, also writes licenses/THIRD_PARTY_ATTRIBUTIONS.txt and
+Usage: stage-runtime.py [<out-dir> [<spdx-audit.json>...]]
+With audit files (one per build tree: qnx-build, then imageformats-qnx), also writes licenses/THIRD_PARTY_ATTRIBUTIONS.txt and
 copies the license files named by each qt_attribution.json the audit found.
-Paths come from layout.sh's QT_PUBLIC_ROOT and QT_PUBLIC_BUILD.
+Paths come from layout.sh's QT_PUBLIC_ROOT and QT_PUBLIC_BUILD; the
+qtimageformats plugins come from IMAGEFORMATS_BUILD (build-imageformats-qnx.sh).
 Run inside qnx805-build after sourcing qnxsdp-env.sh (needs ntoaarch64-readelf).
 The staged layout matches the private evaluation runtime minus its smoke binary.
 When the evaluation manifest is present, the file lists are compared; it is
@@ -18,17 +19,22 @@ root = Path(os.environ.get('QT_PUBLIC_ROOT', '/work/qt-6.12.0-public'))
 stage = Path(os.environ.get('QT_PUBLIC_BUILD', '/home/qnxbuild/qt-6.12.0-public')) / 'qnx-build/qtbase'
 src = root / 'src/qt-everywhere-src-6.12.0'
 out = Path(sys.argv[1] if len(sys.argv) > 1 else root / 'runtime')
+imageformats = Path(os.environ.get('IMAGEFORMATS_BUILD',
+                                   Path(os.environ.get('QT_PUBLIC_BUILD', '/home/qnxbuild/qt-6.12.0-public')) / 'imageformats-qnx'))
 eval_manifest = Path(os.environ.get('QT_EVAL_MANIFEST', '/work/qt612-runtime/manifest.json'))
 
 LIBS = ['Core', 'Gui', 'Network', 'OpenGL', 'Qml', 'QmlMeta', 'QmlModels',
         'QmlWorkerScript', 'Quick', 'QuickShapes']
 # TLS backend: without it Qt Network has no HTTPS (remote <Image> URLs, Metro
 # over https). JPEG/GIF: without them Qt Quick decodes only PNG, so most remote
-# photos fail. Built by configure-qnx.sh.
+# photos fail. Built by configure-qnx.sh. WebP (animated and still), TIFF, TGA,
+# ICNS and WBMP come from qtimageformats, built by build-imageformats-qnx.sh.
 PLUGINS = ['plugins/platforms/libqqnx.so',
            'plugins/tls/libqopensslbackend.so',
            'plugins/imageformats/libqjpeg.so',
            'plugins/imageformats/libqgif.so']
+IMAGEFORMATS_PLUGINS = ['plugins/imageformats/' + n for n in
+                        ('libqwebp.so', 'libqtiff.so', 'libqtga.so', 'libqicns.so', 'libqwbmp.so')]
 QML = {
     'qml/QML': ['qmldir', 'plugins.qmltypes', 'jsroot.qmltypes'],
     'qml/QtQml': ['qmldir', 'plugins.qmltypes', 'libqmlplugin.so'],
@@ -37,7 +43,7 @@ QML = {
     'qml/QtQuick': ['qmldir', 'plugins.qmltypes', 'libqtquick2plugin.so'],
     'qml/QtQuick/Shapes': ['qmldir', 'plugins.qmltypes', 'libqmlshapesplugin.so'],
 }
-MODULES = ('qtbase', 'qtdeclarative', 'qtshadertools')
+MODULES = ('qtbase', 'qtdeclarative', 'qtshadertools', 'qtimageformats')
 
 if out.exists():
     shutil.rmtree(out)
@@ -61,6 +67,8 @@ for lib in LIBS:
         entries[link] = {'symlink': target}
 for rel in PLUGINS:
     copy(rel, stage / rel)
+for rel in IMAGEFORMATS_PLUGINS:
+    copy(rel, imageformats / rel)
 for d, names in QML.items():
     for n in names:
         copy(f'{d}/{n}', stage / d / n)
@@ -80,12 +88,14 @@ for mod in MODULES:
 # own (emoji-segmenter, md4, md5, siphash, sha1, Unicode data); their
 # copyright line and SPDX id are written here, and the license text is the
 # module's LICENSES/<id>.txt copied above.
-audit = Path(sys.argv[2]) if len(sys.argv) > 2 else None
-if audit:
-    a = json.loads(audit.read_text())
-    items = [(d, e) for d, c in a['third_party_components'].items()
-             for e in (c['attribution'] or [])]
-    items += [(str(Path(e['attribution']).parent), e) for e in a['embedded_attributions']]
+audits = [Path(a) for a in sys.argv[2:]]
+if audits:
+    items = []
+    for audit in audits:
+        a = json.loads(audit.read_text())
+        items += [(d, e) for d, c in a['third_party_components'].items()
+                  for e in (c['attribution'] or [])]
+        items += [(str(Path(e['attribution']).parent), e) for e in a['embedded_attributions']]
     lines = ['Bundled third-party code compiled into this Qt 6.12.0 runtime.',
              'Generated from qt_attribution.json entries listed by the SPDX audit.', '']
     for d, e in items:

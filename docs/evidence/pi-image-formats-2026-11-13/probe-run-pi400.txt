@@ -1,0 +1,52 @@
+### A: tile-1 app plugins (copy) + runtime, as release launcher: QT_PLUGIN_PATH=app/plugins:QT_ROOT/plugins
+supportedImageFormats: bmp gif jfif jpeg jpg pbm pgm png ppm xbm xpm
+supportedMimeTypes: image/bmp image/gif image/jpeg image/png image/x-portable-bitmap image/x-portable-graymap image/x-portable-pixmap image/x-xbitmap image/x-xpixmap
+anim.gif: format=gif size=64x48 supportsAnimation=1 imageCount=4
+  QMovie valid=1 frameCount=4
+anim.webp: format= size=-1x-1 supportsAnimation=0 imageCount=-1
+  QMovie valid=0 frameCount=-1
+still.png: format=png size=64x48 supportsAnimation=0 imageCount=1
+  QMovie valid=1 frameCount=1
+still.jpg: format=jpeg size=64x48 supportsAnimation=0 imageCount=1
+  QMovie valid=1 frameCount=1
+still.webp: format= size=-1x-1 supportsAnimation=0 imageCount=-1
+  QMovie valid=0 frameCount=-1
+still.tiff: format= size=-1x-1 supportsAnimation=0 imageCount=-1
+  QMovie valid=0 frameCount=-1
+### B: with new plugins
+supportedImageFormats: bmp gif icns jfif jpeg jpg pbm pgm png ppm tga tif tiff wbmp webp xbm xpm
+supportedMimeTypes: image/bmp image/gif image/jpeg image/png image/tiff image/vnd.wap.wbmp image/webp image/x-icns image/x-portable-bitmap image/x-portable-graymap image/x-portable-pixmap image/x-tga image/x-xbitmap image/x-xpixmap
+anim.gif: format=gif size=64x48 supportsAnimation=1 imageCount=4
+  reader frame 0: 64x48 px(2,2)=ffff0000 delay=100ms
+  reader frame 1: 64x48 px(2,2)=ff00ff00 delay=100ms
+  reader frame 2: 64x48 px(2,2)=ff0000ff delay=100ms
+  reader frame 3: 64x48 px(2,2)=ffffff00 delay=100ms
+  QMovie valid=1 frameCount=4
+  frameChanged 0: null=0 px(2,2)=ffff0000
+  frameChanged 1: null=0 px(2,2)=ff00ff00
+  frameChanged 2: null=0 px(2,2)=ff0000ff
+  frameChanged 3: null=0 px(2,2)=ffffff00
+  frameChanged 0: null=0 px(2,2)=ffff0000
+anim.webp: format=webp size=64x48 supportsAnimation=1 imageCount=4
+  reader frame 0: 64x48 px(2,2)=ffff0000 delay=100ms
+  reader frame 1: 64x48 px(2,2)=ff00ff00 delay=100ms
+  reader frame 2: 64x48 px(2,2)=ff0000ff delay=100ms
+  reader frame 3: 64x48 px(2,2)=ffffff00 delay=100ms
+  QMovie valid=1 frameCount=4
+  frameChanged 0: null=0 px(2,2)=ffff0000
+  frameChanged 1: null=0 px(2,2)=ff00ff00
+  frameChanged 2: null=0 px(2,2)=ff0000ff
+  frameChanged 3: null=0 px(2,2)=ffffff00
+  frameChanged 0: null=0 px(2,2)=ffff0000
+still.png: format=png size=64x48 supportsAnimation=0 imageCount=1
+  reader frame 0: 64x48 px(2,2)=ffff0000 delay=0ms
+  QMovie valid=1 frameCount=1
+still.jpg: format=jpeg size=64x48 supportsAnimation=0 imageCount=1
+  reader frame 0: 64x48 px(2,2)=fffb0508 delay=0ms
+  QMovie valid=1 frameCount=1
+still.webp: format=webp size=64x48 supportsAnimation=0 imageCount=1
+  reader frame 0: 64x48 px(2,2)=fffb0003 delay=0ms
+  QMovie valid=1 frameCount=1
+still.tiff: format=tiff size=64x48 supportsAnimation=0 imageCount=1
+  reader frame 0: 64x48 px(2,2)=ffff0000 delay=0ms
+  QMovie valid=1 frameCount=1

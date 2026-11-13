@@ -29,6 +29,11 @@ What the device needed, beyond the Linux-tested loader:
   untrusted certificates are refused.
 - **Qt's JPEG and GIF image plugins.** Without `plugins/imageformats/` Qt Quick
   decodes only PNG; most photos on the web are JPEG.
+- **Qt's WebP plugin** (and TIFF, TGA, ICNS, WBMP) from the `qtimageformats`
+  module, built by `scripts/qt-public/build-imageformats-qnx.sh`. Without
+  `libqwebp.so`, `QImageReader` reports no `webp` format and an animated or
+  still WebP fails to load. An app carries `libqwebp.so` in
+  `plugins/imageformats/` like the JPEG and GIF plugins.
 - `scripts/qt-public/configure-qnx.sh` now builds all three and
   `stage-runtime.py` stages them. An app can also carry them in its own
   `plugins/` directory (`QT_PLUGIN_PATH=<app>/plugins:<runtime>/plugins`), which
