@@ -115,6 +115,7 @@ const SectionList = (
 
 const Image = host('Image');
 Image.getSize = () => {};
+Image.resolveAssetSource = () => ({ uri: 'file:///asset' });
 
 const named = {
   ...base,
@@ -216,7 +217,7 @@ function install() {
     });
     return module._compile(code, filename);
   };
-  const assetExtensions = ['.png', '.gif', '.webp'];
+  const assetExtensions = ['.png', '.gif', '.webp', '.mp4', '.wav', '.mp3', '.jpg', '.jpeg'];
   for (const extension of assetExtensions)
     Module._extensions[extension] = (module) => {
       module.exports = 1;

@@ -47,6 +47,7 @@ void boxPass(QImage& image, int radius, bool horizontal) {
 
 QImage blurImage(const QImage& source, int radius) {
   if (radius <= 0 || source.isNull()) return source;
+  radius = std::min(radius, 128);
   QImage image = source.convertToFormat(QImage::Format_ARGB32_Premultiplied);
   // Three passes of a box of about radius/3 approximate a Gaussian of that sigma.
   const int pass = std::max(1, radius / 2);

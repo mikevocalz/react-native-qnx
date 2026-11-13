@@ -603,7 +603,7 @@ void ShadowViewMutationAdapter::applySwitch(const ShadowView& view) {
 
 void ShadowViewMutationAdapter::connectModalEvents(const ShadowView& view) {
   if (componentNameOf(view) != QStringLiteral("ModalHostView") ||
-      modalBridges_.contains(view.tag)) {
+      !modalBridges_.value(view.tag).isNull()) {
     return;
   }
   const auto emitter =
@@ -618,10 +618,10 @@ void ShadowViewMutationAdapter::connectModalEvents(const ShadowView& view) {
   }
   modalBridges_.insert(
       view.tag,
-      new QtModalBridge(*item, [emitter] {
+      QPointer<QtModalBridge>(new QtModalBridge(*item, [emitter] {
         emitter->onRequestClose(
             facebook::react::ModalHostViewEventEmitter::OnRequestClose{});
-      }));
+      })));
 }
 
 MountError ShadowViewMutationAdapter::applyModal(const ShadowView& view) {

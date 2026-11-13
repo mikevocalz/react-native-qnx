@@ -99,6 +99,12 @@ void ImageUnitsTest::blurSpreadsAColorEdge() {
   QCOMPARE(qRed(blurred.pixel(0, 5)), 0);
   QCOMPARE(qRed(blurred.pixel(39, 5)), 255);
   QCOMPARE(blurImage(image, 0), image);
+  // A huge radius from JavaScript is capped: it returns a bounded result at once.
+  QElapsedTimer timer;
+  timer.start();
+  const QImage huge = blurImage(image, 1000000);
+  QVERIFY(timer.elapsed() < 2000);
+  QCOMPARE(huge.size(), image.size());
 }
 
 void ImageUnitsTest::tintKeepsAlphaAndReplacesColor() {

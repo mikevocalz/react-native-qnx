@@ -24,6 +24,10 @@ Q_LOGGING_CATEGORY(lcExpoImage, "rnqnx.expoimage")
 
 namespace rnqnx::views {
 namespace {
+// Blur radius is capped (in device pixels) so a large prop value cannot stall
+// the GUI thread; the paint layer is capped so a huge view cannot exhaust memory.
+constexpr qreal kMaxBlurRadius = 64;
+constexpr int kMaxLayerPixels = 8192;
 
 QVariantMap asMap(const QVariant& value) { return value.toMap(); }
 
@@ -134,6 +138,7 @@ void ExpoImageItem::setPlaceholder(const QVariantList& value) {
 }
 
 void ExpoImageItem::setContentFit(const QString& value) {
+  if (value == contentFitText_) return;
   contentFitText_ = value;
   fit_ = parseContentFit(value);
   invalidate();
@@ -146,12 +151,14 @@ void ExpoImageItem::setPlaceholderContentFit(const QString& value) {
 }
 
 void ExpoImageItem::setContentPosition(const QVariant& value) {
+  if (value == positionRaw_) return;
   positionRaw_ = value;
   position_ = parseContentPosition(value);
   invalidate();
 }
 
 void ExpoImageItem::setTransition(const QVariantMap& value) {
+  if (value == transitionRaw_) return;
   transitionRaw_ = value;
   transitionMs_ = std::max(0, value.value(QStringLiteral("duration")).toInt());
   const QVariant effect = value.value(QStringLiteral("effect"));
@@ -168,15 +175,19 @@ void ExpoImageItem::setTransition(const QVariantMap& value) {
 }
 
 void ExpoImageItem::setTintColor(const QColor& value) {
+  if (value == tint_) return;
   tint_ = value;
   invalidate();
 }
 void ExpoImageItem::setHasTint(bool value) {
+  if (value == hasTint_) return;
   hasTint_ = value;
   invalidate();
 }
 void ExpoImageItem::setBlurRadius(qreal value) {
-  blurRadius_ = std::max<qreal>(0, value);
+  const qreal radius = std::clamp<qreal>(value, 0, kMaxBlurRadius);
+  if (radius == blurRadius_) return;
+  blurRadius_ = radius;
   invalidate();
 }
 
@@ -199,6 +210,9 @@ void ExpoImageItem::setRecyclingKey(const QString& value) {
     transitionProgress_ = 1.0;
     setDisplayed(false);
     update();
+    // Bumps the generation and cancels a fetch for the previous owner, then
+    // loads the source for the new one (setSource ignores an unchanged source).
+    scheduleLoad();
   }
 }
 
@@ -308,7 +322,11 @@ void ExpoImageItem::unlockResource() {
 
 QSize ExpoImageItem::targetPixels() const {
   const qreal dpr = window() ? window()->devicePixelRatio() : 1.0;
-  return QSize(static_cast<int>(std::ceil(width() * dpr)), static_cast<int>(std::ceil(height() * dpr)));
+  const int w = static_cast<int>(std::ceil(width() * dpr));
+  const int h = static_cast<int>(std::ceil(height() * dpr));
+  // A view with no size yet (a hidden tab, before layout) has no target: the
+  // decoder keeps the full size instead of scaling to nothing.
+  return w > 0 && h > 0 ? QSize(w, h) : QSize();
 }
 
 ExpoImageItem::Choice ExpoImageItem::choose(const QVariantList& entries) const {
@@ -605,9 +623,10 @@ QImage ExpoImageItem::rendered(Layer& layer) const {
                           .arg(layer.movie ? layer.movie->currentFrameNumber() : -1);
   if (!layer.cache.isNull() && layer.cacheKey == key) return layer.cache;
 
-  const QSize pixels(std::max(1, static_cast<int>(std::ceil(width() * dpr))),
-                     std::max(1, static_cast<int>(std::ceil(height() * dpr))));
+  const QSize pixels(std::clamp(static_cast<int>(std::ceil(width() * dpr)), 1, kMaxLayerPixels),
+                     std::clamp(static_cast<int>(std::ceil(height() * dpr)), 1, kMaxLayerPixels));
   QImage out(pixels, QImage::Format_ARGB32_Premultiplied);
+  if (out.isNull()) return layer.cache;
   out.fill(Qt::transparent);
   const QRectF target = fittedRect(QSizeF(layer.original), QSizeF(width(), height()), fit, position_, 1.0);
   {
@@ -616,7 +635,7 @@ QImage ExpoImageItem::rendered(Layer& layer) const {
     painter.scale(dpr, dpr);
     painter.drawImage(target, frame);
   }
-  if (applyEffects && blurRadius_ > 0) out = blurImage(out, static_cast<int>(std::lround(blurRadius_ * dpr)));
+  if (applyEffects && blurRadius_ > 0) out = blurImage(out, static_cast<int>(std::lround(std::min<qreal>(blurRadius_ * dpr, kMaxBlurRadius))));
   if (applyEffects && hasTint_) out = tintImage(out, tint_);
   layer.cache = out;
   layer.cacheKey = key;

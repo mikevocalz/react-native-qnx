@@ -10,6 +10,8 @@
 #include <QSet>
 #include <QString>
 
+#include "react-native-qnx/fabric/QtModalBridge.h"
+
 #include <vector>
 
 namespace rnqnx::fabric {
@@ -25,7 +27,6 @@ struct MutationFailure {
 class QtAccessibilityActivation;
 class QtImageBridge;
 class QtSwitchBridge;
-class QtModalBridge;
 class QtSvgBridge;
 
 /// Translates a React Native mount transaction into QtQuickMountingLayer calls.
@@ -138,7 +139,7 @@ class ShadowViewMutationAdapter {
   // surface and sized through its state the way iOS and Android size it.
   QHash<Tag, facebook::react::ShadowView> modalViews_;
   /// Escape and focus bridges, owned by their modal items.
-  QHash<Tag, QtModalBridge*> modalBridges_;
+  QHash<Tag, QPointer<QtModalBridge>> modalBridges_;
 };
 
 /// Converts React Native's view props to the visual style the mounting layer
