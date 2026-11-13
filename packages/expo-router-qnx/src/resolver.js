@@ -49,7 +49,9 @@ function createExpoRouterResolveRequest(next, options = {}) {
         return { type: 'sourceFile', filePath: options.routerContext };
       }
     }
-    const resolution = next(context, moduleName, platform);
+    const resolution = next
+      ? next(context, moduleName, platform)
+      : context.resolveRequest(context, moduleName, platform);
     if (platform === QNX && resolution?.type === 'sourceFile') {
       for (const [pattern, shim] of BY_FILE) {
         if (pattern.test(resolution.filePath)) {

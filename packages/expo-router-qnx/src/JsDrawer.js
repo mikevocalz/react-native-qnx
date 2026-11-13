@@ -5,6 +5,7 @@
 // gesture-handler).
 const React = require('react');
 const { Animated, Easing, PanResponder, Pressable, StyleSheet, View } = require('react-native');
+const { DrawerProgressContext } = require('./drawerContexts');
 const { getSwipeExclusionLeft, subscribeSwipeExclusion } = require('./swipeExclusion');
 
 const DURATION = 220;
@@ -36,7 +37,9 @@ function JsDrawer({
 }) {
   const right = drawerPosition === 'right';
   const width =
-    drawerWidth ?? Math.min(320, Math.max(240, Math.round((layout?.width ?? 800) * 0.8)));
+    drawerWidth ??
+    StyleSheet.flatten(drawerStyle)?.width ??
+    Math.min(320, Math.max(240, Math.round((layout?.width ?? 800) * 0.8)));
   const progress = React.useRef(new Animated.Value(open ? 1 : 0)).current;
   const [visible, setVisible] = React.useState(open);
   const exclusion = useExclusionLeft();
@@ -44,10 +47,12 @@ function JsDrawer({
   const callbacks = React.useRef({});
   callbacks.current = { onOpen, onClose, onTransitionStart, onTransitionEnd };
 
+  const mounted = React.useRef(false);
   React.useEffect(() => {
     openRef.current = open;
     if (open) setVisible(true);
-    callbacks.current.onTransitionStart?.(!open);
+    // The first run only sets the resting position; no transition happens.
+    if (mounted.current) callbacks.current.onTransitionStart?.(!open);
     const animation = Animated.timing(progress, {
       toValue: open ? 1 : 0,
       duration: DURATION,
@@ -57,12 +62,24 @@ function JsDrawer({
     animation.start(({ finished }) => {
       if (!finished) return;
       if (!open) setVisible(false);
-      callbacks.current.onTransitionEnd?.(!open);
+      if (mounted.current) callbacks.current.onTransitionEnd?.(!open);
     });
+    mounted.current = true;
     return () => animation.stop();
   }, [open, progress]);
 
   const dragStart = React.useRef(0);
+  // Animate to wherever the `open` prop says, after a drag the parent did not
+  // confirm or a terminated gesture.
+  const snapBack = () => {
+    Animated.timing(progress, {
+      toValue: openRef.current ? 1 : 0,
+      duration: DURATION,
+      useNativeDriver: false,
+    }).start(({ finished }) => {
+      if (finished && !openRef.current) setVisible(false);
+    });
+  };
   const edgePan = React.useMemo(
     () =>
       PanResponder.create({
@@ -70,6 +87,7 @@ function JsDrawer({
           Math.abs(g.dx) > 6 && Math.abs(g.dx) > Math.abs(g.dy),
         onPanResponderGrant: () => {
           dragStart.current = openRef.current ? 1 : 0;
+          setVisible(true);
         },
         onPanResponderMove: (_e, g) => {
           const delta = (right ? -g.dx : g.dx) / width;
@@ -78,15 +96,13 @@ function JsDrawer({
         onPanResponderRelease: (_e, g) => {
           const delta = (right ? -g.dx : g.dx) / width;
           const target = dragStart.current + delta;
-          if (target > 0.4) callbacks.current.onOpen?.();
-          else callbacks.current.onClose?.();
-          // Snap back when the request does not change `open`.
-          Animated.timing(progress, {
-            toValue: openRef.current ? 1 : 0,
-            duration: DURATION,
-            useNativeDriver: false,
-          }).start();
+          // Past 40% of the width in the direction of travel flips the state.
+          const wantOpen = dragStart.current === 1 ? target >= 0.6 : target > 0.4;
+          if (wantOpen && !openRef.current) callbacks.current.onOpen?.();
+          else if (!wantOpen && openRef.current) callbacks.current.onClose?.();
+          snapBack();
         },
+        onPanResponderTerminate: () => snapBack(),
       }),
     [progress, right, width]
   );
@@ -109,48 +125,52 @@ function JsDrawer({
   const slide = drawerType === 'slide';
 
   return React.createElement(
-    View,
-    { style: [styles.fill, style] },
+    DrawerProgressContext.Provider,
+    { value: progress },
     React.createElement(
-      Animated.View,
-      { style: [styles.fill, slide && { transform: [{ translateX: pushed }] }] },
-      children
-    ),
-    visible &&
-      React.createElement(Animated.View, {
-        pointerEvents: 'box-none',
-        style: [StyleSheet.absoluteFill, { opacity: progress }],
-        children: React.createElement(Pressable, {
-          accessibilityLabel: overlayAccessibilityLabel ?? 'Close drawer',
-          accessibilityRole: 'button',
-          onPress: () => onClose?.(),
-          style: [StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)' }, overlayStyle],
+      View,
+      { style: [styles.fill, style] },
+      React.createElement(
+        Animated.View,
+        { style: [styles.fill, slide && { transform: [{ translateX: pushed }] }] },
+        children
+      ),
+      visible &&
+        React.createElement(Animated.View, {
+          pointerEvents: 'box-none',
+          style: [StyleSheet.absoluteFill, { opacity: progress }],
+          children: React.createElement(Pressable, {
+            accessibilityLabel: overlayAccessibilityLabel ?? 'Close drawer',
+            accessibilityRole: 'button',
+            onPress: () => onClose?.(),
+            style: [StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)' }, overlayStyle],
+          }),
         }),
-      }),
-    React.createElement(
-      Animated.View,
-      {
-        ...(open ? edgePan.panHandlers : {}),
-        pointerEvents: visible ? 'auto' : 'none',
-        style: [
-          styles.panel,
-          right ? { right: 0 } : { left: 0 },
-          { width, transform: [{ translateX: translate }] },
-          drawerStyle,
-        ],
-      },
-      visible ? renderDrawerContent() : null
-    ),
-    swipeEnabled &&
-      !open &&
-      React.createElement(View, {
-        ...edgePan.panHandlers,
-        style: [
-          styles.edge,
-          right ? { right: 0 } : { left: right ? 0 : exclusion },
-          { width: swipeEdgeWidth },
-        ],
-      })
+      React.createElement(
+        Animated.View,
+        {
+          ...(open && swipeEnabled ? edgePan.panHandlers : {}),
+          pointerEvents: visible ? 'auto' : 'none',
+          style: [
+            styles.panel,
+            right ? { right: 0 } : { left: 0 },
+            { width, transform: [{ translateX: translate }] },
+            drawerStyle,
+          ],
+        },
+        visible ? renderDrawerContent() : null
+      ),
+      swipeEnabled &&
+        !open &&
+        React.createElement(View, {
+          ...edgePan.panHandlers,
+          style: [
+            styles.edge,
+            right ? { right: 0 } : { left: right ? 0 : exclusion },
+            { width: swipeEdgeWidth },
+          ],
+        })
+    )
   );
 }
 

@@ -36,7 +36,7 @@ module.exports = withExpoRouterQnx(getQnxMetroConfig(__dirname, { ... }), {
 
 `app-ctx.js` exports `ctx = require.context('./app', true, <route pattern>, 'sync')`;
 `index.js` registers `App` from `expo-router/build/qualified-entry` under the host's
-component name. `rnqnx project create` writes all three.
+component name. A follow-up change makes `rnqnx project create` write all three; today copy them from `apps/component-gallery`.
 
 The Tabs layout turns the window width into a bar position:
 

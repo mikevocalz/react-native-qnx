@@ -35,12 +35,16 @@ function BottomTabBar({ state, descriptors, emitter, navigateToTab, insets }) {
   const tabs = React.useMemo(() => buildTabs(state, descriptors), [state, descriptors]);
   const tint = tintsFor(options);
 
+  const hidden = options.tabBarStyle?.display === 'none' || options.qnxTabBarHidden;
+  const exclusion = side && position !== 'right' && !hidden ? RAIL_WIDTH : 0;
+  // Set on change only; the unmount cleanup is a separate effect so a change
+  // from one width to another does not pass through 0.
   React.useEffect(() => {
-    setSwipeExclusionLeft(side && position !== 'right' ? RAIL_WIDTH : 0);
-    return () => setSwipeExclusionLeft(0);
-  }, [side, position]);
+    setSwipeExclusionLeft(exclusion);
+  }, [exclusion]);
+  React.useEffect(() => () => setSwipeExclusionLeft(0), []);
 
-  if (options.tabBarStyle?.display === 'none' || options.qnxTabBarHidden) return null;
+  if (hidden) return null;
 
   const onTabPress = (key) => {
     const event = emitter.emit({ type: 'tabPress', target: key, canPreventDefault: true });

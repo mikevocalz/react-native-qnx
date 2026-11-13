@@ -8,8 +8,7 @@ const React = require('react');
 const { hasNative } = require('./native');
 const { JsDrawer } = require('./JsDrawer');
 
-const DrawerProgressContext = React.createContext(undefined);
-const DrawerGestureContext = React.createContext(undefined);
+const { DrawerProgressContext, DrawerGestureContext } = require('./drawerContexts');
 
 function useDrawerProgress() {
   const progress = React.useContext(DrawerProgressContext);
