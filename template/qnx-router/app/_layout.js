@@ -20,7 +20,7 @@ export default function RootLayout() {
         drawerContent={(props) => <DrawerContent {...props} />}
         screenOptions={{ drawerType: 'front', sceneStyle: { backgroundColor: BACKGROUND } }}
       >
-        <Drawer.Screen name="(tabs)" options={{ title: 'Home', header: header('__APP_NAME__') }} />
+        <Drawer.Screen name="(tabs)" options={{ title: 'Home', header: header(__APP_NAME__) }} />
         <Drawer.Screen
           name="settings"
           options={{ title: 'Settings', header: header('Settings') }}

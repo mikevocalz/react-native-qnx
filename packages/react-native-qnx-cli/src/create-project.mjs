@@ -98,7 +98,9 @@ async function packLocalPackages(output, marathon) {
       const packageDir = path.join(staging, name);
       await mkdir(packageDir);
       const files = name.startsWith('react-native-') ? ['index.js', 'Libraries'] : ['src'];
-      if (name === 'expo-router-qnx') files.push('metro.js');
+      if (name === 'expo-router-qnx') files.push('metro.js', 'README.md');
+      // expo-modules-core's polyfill entry resolves to expo/polyfill.js here.
+      if (name === 'react-native-qnx') files.push('expo');
       if (name === 'metro-config-qnx') files.push('public-entry.js', 'public-entry.d.ts');
       const budget = { files: 0, bytes: 0 };
       for (const file of files) {
@@ -204,6 +206,9 @@ function routerMetroConfig() {
  * @param {{ displayName: string, componentName: string }} identity
  */
 async function writeRouterStarter(destination, identity) {
+  const appNameLiteral = JSON.stringify(identity.displayName)
+    .replaceAll('\u2028', '\\u2028')
+    .replaceAll('\u2029', '\\u2029');
   /** @param {string} directory @param {string} relative */
   async function copyTree(directory, relative) {
     for (const entry of await readdir(path.join(directory, relative), { withFileTypes: true })) {
@@ -216,9 +221,12 @@ async function writeRouterStarter(destination, identity) {
         const source = await smallSource(path.join(directory, next));
         await writeFile(
           path.join(destination, next),
+          // __APP_NAME__ is a bare JS expression in the template; it becomes a
+          // JSON string literal, so the name stays exact whatever it contains.
+          // A replacer function keeps `$&` and friends in a name literal.
           source
-            .replaceAll('__APP_NAME__', identity.displayName.replace(/[\\'`$<>{}]/g, ''))
-            .replaceAll('__COMPONENT_NAME__', identity.componentName)
+            .replaceAll('__APP_NAME__', () => appNameLiteral)
+            .replaceAll('__COMPONENT_NAME__', () => identity.componentName)
         );
       }
     }
@@ -345,6 +353,7 @@ export async function createProjectMain(argv) {
             name: identity.displayName,
             slug: identity.appId.split('.').pop()?.toLowerCase(),
             icon: './assets/icon.png',
+            ...(marathon ? {} : { scheme: identity.appId.split('.').pop()?.toLowerCase() }),
             extra: {
               rnqnx: { appId: identity.appId, componentName: identity.componentName, platforms },
             },

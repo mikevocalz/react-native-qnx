@@ -73,7 +73,7 @@ export default function DrawerContent({ navigation }) {
         >
           <Text style={{ color: '#f2ffff', fontSize: 22 }}>Q</Text>
         </View>
-        <Text style={{ color: INK, fontSize: 18, lineHeight: 24 }}>__APP_NAME__</Text>
+        <Text style={{ color: INK, fontSize: 18, lineHeight: 24 }}>{__APP_NAME__}</Text>
         <Text style={{ color: MUTED, fontSize: 13, lineHeight: 18 }}>
           Signed in as you@example.com
         </Text>
