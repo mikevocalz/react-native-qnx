@@ -73,6 +73,8 @@ void WebGpuFrameSource::stop() {
 }
 
 void WebGpuFrameSource::renderFrame() {
+  // Skip this tick while the GUI thread still holds the previous frame.
+  if (inFlight_.loadAcquire() != 0) return;
   const double phase = static_cast<double>(tick_++ % 90) / 90.0;
   renderer_.encode(gpu_->device(), gpu_->queue(), target_.CreateView(),
                    {0.05, 0.1 + 0.3 * phase, 0.4, 1.0}, true);
@@ -85,5 +87,6 @@ void WebGpuFrameSource::renderFrame() {
   }
   QImage frame(image.pixels.data(), width_, height_, width_ * 4, QImage::Format_RGBA8888);
   frames_.fetchAndAddRelaxed(1);
+  inFlight_.storeRelease(1);
   Q_EMIT frameReady(frame.copy());
 }

@@ -3,8 +3,7 @@
 Recorded on 2026-11-13. Stage 5 of the [v2 plan](README.md) asks for a pinned
 Dawn/Tint build, a native adapter, reported limits and features, a surface, and
 device-loss recovery, proven on the target with a clear, a draw, a readback and
-a resize/recreate. This page records what was built, what ran on the Raspberry
-Pi 400 and what did not. The [graphics backends page](graphics-backends.md)
+a resize/recreate. This page records the build, the Pi 400 results and the gaps. The [graphics backends page](graphics-backends.md)
 keeps the plan-level view.
 
 Nothing here turns on a v1 gate. The new code is outside the default build, and
@@ -17,18 +16,18 @@ image, QNX 8.0.0 kernel string `2026/06/05`, Mesa V3D 4.2 behind QNX Screen). It
 opened its own Screen window next to the gallery under `rnqnx-winmgr` and passed
 10 of 10 stages:
 
-| Stage                           | What it proves                                                                                                                |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `adapter-device`                | Dawn found a `V3D 4.2` OpenGL ES adapter and made a device                                                                    |
-| `offscreen-render-readback`     | A clear and a triangle rendered to a texture and read back: corner and centre pixels match the expected colours               |
-| `compute`                       | A WGSL compute pass doubled 4096 `u32` values and every value read back correctly                                             |
-| `window-and-surface-create`     | A Screen window plus a `wgpu::Surface` configured on it                                                                       |
-| `render-to-swapchain-texture`   | Clear and triangle rendered into the surface texture and read back before `Present()`                                         |
-| `resize`                        | 800x600, 480x360 and 640x480: Screen reports the new window and buffer size and the swap chain texture has the same size      |
-| `surface-recreate`              | The surface dropped and created again from the same window                                                                    |
-| `window-recreate`               | The Screen window destroyed and created again, with a new surface                                                             |
-| `device-loss-recovery-injected` | `Device::ForceLoss` reported through the loss callback, a new device from the same adapter, surface, render and compute again |
-| `no-uncaptured-errors`          | Dawn raised no uncaptured error outside the expected loss                                                                     |
+| Stage                           | What it proves                                                                                                                                                                                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `adapter-device`                | Dawn found a `V3D 4.2` OpenGL ES adapter and made a device                                                                                                                                                                                       |
+| `offscreen-render-readback`     | A clear and a triangle rendered to a texture and read back: corner and centre pixels match the expected colours                                                                                                                                  |
+| `compute`                       | A WGSL compute pass doubled 4096 `u32` values and every value read back correctly                                                                                                                                                                |
+| `window-and-surface-create`     | A Screen window plus a `wgpu::Surface` configured on it                                                                                                                                                                                          |
+| `render-to-swapchain-texture`   | Clear and triangle rendered into the surface texture and read back before `Present()`                                                                                                                                                            |
+| `resize`                        | 800x600, 480x360 and 640x480: each requested size was applied, Screen reports it for the window and its buffers, and the swap chain texture has the same size. Both Screen values are ones the app set; the stage does not query the EGL surface |
+| `surface-recreate`              | The surface dropped and created again from the same window                                                                                                                                                                                       |
+| `window-recreate`               | The Screen window destroyed and created again, with a new surface                                                                                                                                                                                |
+| `device-loss-recovery-injected` | `Device::ForceLoss` reported through the loss callback, a new device from the same adapter, surface, render and compute again                                                                                                                    |
+| `no-uncaptured-errors`          | Dawn raised no uncaptured error outside the expected loss                                                                                                                                                                                        |
 
 The final result line is `RNQNX_WEBGPU RESULT PASS stages=10 passed=10
 verified=1`. The raw log is
@@ -37,8 +36,9 @@ verified=1`. The raw log is
 The on-glass check is separate. The stock `screenshot` tool captured the whole
 1920x1080 display while the window was held on screen.
 [check-screenshot.py](../../scripts/webgpu/check-screenshot.py) reads that
-bitmap and found the triangle's red at the window centre and the animated blue
-clear colour just inside the window corner
+bitmap and found the triangle's red at the window centre and the blue clear
+colour just inside the window corner (one sample each, so it does not show the
+animation)
 ([screenshot-check.txt](../evidence/webgpu-qnx-2026-11-13/screenshot-check.txt)).
 The image below is a downscaled copy; the gallery window behind it belongs to
 another test session.
@@ -55,13 +55,16 @@ another test session.
 - **Nothing was measured for speed.** Every submission waits on `glFinish`
   (patch 0005). Frame times, upload costs and the cost of the readback copies
   are unknown.
-- **One run on one board.** The ten stages passed in each of the final runs on
-  one Pi 400. No soak, no repeated cold boots, no second board.
+- **One board, a few runs.** The committed log is one run of the final
+  binary. Earlier runs of the same code also passed (10 of 10 with the loss
+  stage, 9 of 9 without it), but their logs are not committed. No soak, no
+  repeated cold boots, no second board.
 - **Only 640x480-class windows ran.** A fullscreen 1920x1080 surface was not
-  tried.
-- **Qt Quick composition ran through a CPU copy**, not zero-copy, and it was
-  checked with `QQuickWindow::grabWindow()` (Qt's own render output), not with a
-  display screenshot.
+  tried, and the on-glass screenshot covers only the final 640x480 frame, not
+  the resized ones.
+- **Qt Quick composition ran through a CPU copy.** It was checked with
+  `QQuickWindow::grabWindow()`, Qt's own render output, and not with a display
+  screenshot.
 - **Vulkan did not run at all**; the reasons are below.
 
 ## What the board offers
@@ -130,44 +133,54 @@ Mismatches with those upstream closures, all of which stage 6 has to settle:
 [`patches/webgpu/dawn/`](../../patches/webgpu/dawn) holds the patches.
 `scripts/webgpu/fetch-dawn.sh` applies them to the pinned checkout.
 
-| Patch                                   | Change                                                                                                                                  | Risk                                                                                                       |
-| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| 0001 `qnx-platform-macro`               | `src/utils/platform.h` knows `__QNX__` and treats it as POSIX (not Linux)                                                               | Small                                                                                                      |
-| 0002 `qnx-screen-window-surface`        | `SurfaceSourceAndroidNativeWindow::window` carries a `screen_window_t` on QNX; the EGL swap chain passes it to `eglCreateWindowSurface` | Reuses an Android sType for another meaning. A dedicated sType would need a `dawn.json` change; deferred   |
-| 0003 `gles-optional-context-robustness` | `EGL_EXT_create_context_robustness` is optional: Dawn logs a warning and creates the context without robust access                      | Tint still bounds-checks shaders, but the driver reports no GPU reset, so real device loss is not detected |
-| 0004 `qnx-system-utils`                 | `GetExecutablePath`/`GetModulePath` for QNX (`/proc/self/exefile`, `dladdr`)                                                            | Small                                                                                                      |
-| 0005 `gles-fence-fallback`              | When `eglCreateSyncKHR` returns no sync, `Queue::SubmitFenceSync` calls `glFinish` and treats the serial as complete                    | Every submission blocks until the GPU is done. **Not root-caused**: see below                              |
+| Patch                                   | Change                                                                                                                                                                       | Risk                                                                                                                                                                                                |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0001 `qnx-platform-macro`               | `src/utils/platform.h` knows `__QNX__` and treats it as POSIX (not Linux)                                                                                                    | Small                                                                                                                                                                                               |
+| 0002 `qnx-screen-window-surface`        | `SurfaceSourceAndroidNativeWindow::window` carries a `screen_window_t` on QNX; the EGL swap chain passes it to `eglCreateWindowSurface`                                      | Reuses an Android sType for another meaning. A dedicated sType would need a `dawn.json` change; deferred                                                                                            |
+| 0003 `gles-optional-context-robustness` | `EGL_EXT_create_context_robustness` is optional: Dawn logs a warning and creates the context without robust access                                                           | Tint still bounds-checks shader memory, but the context lacks driver-level robust buffer access (for example vertex fetch) and the driver reports no GPU reset, so real device loss is not detected |
+| 0004 `qnx-system-utils`                 | `GetExecutablePath`/`GetModulePath` for QNX (`/proc/self/exefile`, `dladdr`)                                                                                                 | Small                                                                                                                                                                                               |
+| 0005 `gles-fence-fallback`              | When `eglCreateSyncKHR` returns no sync and no EGL error, `Queue::SubmitFenceSync` calls `glFinish` and treats the serial as complete; any other EGL error is still returned | Every submission blocks until the GPU is done. A future driver that returns no sync and no error for another reason would be masked. **Not root-caused**: see below                                 |
 
 About patch 0005. On the Pi, `eglCreateSyncKHR` succeeds in a plain EGL
-context (the probe tried fresh, idle, surfaceless and no-config contexts, with
-and without prior GL work) but returns `EGL_NO_SYNC` with `EGL_SUCCESS` inside
-Dawn's context, for both fence and reusable types, even after `glFlush`. The
-difference between the two contexts was not found. Without a fallback the first
-submit marks the device lost. The fallback is a workaround; correct completion
-tracking needs the real cause.
+context: the probe tried fresh, idle, surfaceless and no-config contexts, with
+and without prior GL work
+([gpu-probe-pi400.txt](../evidence/webgpu-qnx-2026-11-13/gpu-probe-pi400.txt),
+section D). Inside Dawn's context the same call returned `EGL_NO_SYNC` with
+`EGL_SUCCESS`, and the device was lost on the first submit. A temporary debug
+build of Dawn printed the state around that call
+([dawn-eglsync-debug.txt](../evidence/webgpu-qnx-2026-11-13/dawn-eglsync-debug.txt);
+the debug build is not committed): a context was current, the display matched,
+and the fence and reusable types both still failed after `glFlush` and
+`glFinish`. The difference between the two contexts was not found. The patch
+is a workaround; correct completion tracking needs the real cause.
 
 ## Build recipe
 
-Two compilers produce the same sources; the choice is about speed.
+The same sources build with two compilers. The container's gcc is the
+repository's toolchain; clang was faster here.
 
 1. `scripts/webgpu/fetch-dawn.sh <dir>` fetches the pinned commit and applies
    the patches.
 2. `scripts/webgpu/build-dawn.sh <dir> <build>` configures and builds Dawn with
    the repository's SDP gcc toolchain (`cmake/toolchains/qnx-8.0.cmake`). Run it
-   in the `qnx805-build` container; it needs network on first configure and about
-   20 GB, which the container has and the Mac does not. It compiled the first
-   hundred or so objects without source errors, but the SDP's gcc is an x86-64
-   binary running under Rosetta, and with the container shared with other builds
-   (load average above 30) it finished too few files per hour to complete.
-3. `cmake/toolchains/qnx-8.0-clang.cmake` builds the same tree with LLVM clang
-   against the SDP sysroot. **The device run used this path**: Homebrew LLVM 23.1
-   on the Mac, build tree on a 2 GB RAM disk because the Mac volume had about
-   3 GB free, objects archived by `llvm-ar`. That deviates from "build in the VM";
-   the VM could not finish the build in useful time. The clang toolchain needs
-   three workarounds, each in the file or in `native/webgpu/shim/LibcxxShim.cpp`:
-   the target triple has no QNX operating system (the file supplies the macros the
-   SDP's gcc predefines), `QNX_LIBM_BUILTINS` for libc++'s math wrappers, and a
-   shim for three libc++ members that the SDP's `libc++.so` does not export
+   in the `qnx805-build` container; it needs network on first configure and
+   about 20 GB, which the container has and the Mac does not. The SDP's gcc is
+   an x86-64 binary running under Rosetta. With the container shared with other
+   builds (load average above 30 while this ran), this build had completed
+   fewer than half of its steps after about two hours, so it was stopped. It hit
+   one source error before that (patch 0001), and it reported no other source
+   errors in the files it reached.
+3. `scripts/webgpu/build-dawn-clang.sh <dir> <build>` builds the same tree with
+   LLVM clang (`cmake/toolchains/qnx-8.0-clang.cmake`) against the SDP sysroot.
+   **The device run used this path**: Homebrew LLVM 23.1 on the Mac at `-O1`,
+   with the build tree on a 2 GB RAM disk because the Mac volume had about 3 GB
+   free, and objects archived by `llvm-ar`. The result was a 25.7 MB
+   `libwebgpu_dawn.a`. That departs from "build in the VM": the VM could not
+   finish the build in useful time. The clang toolchain needs three
+   workarounds, in the toolchain file and in `native/webgpu/shim/LibcxxShim.cpp`:
+   the target triple has no QNX operating system, so the file supplies the macros
+   the SDP's gcc predefines; `QNX_LIBM_BUILTINS` for libc++'s math wrappers; and
+   a shim for three libc++ members that the SDP's `libc++.so` does not export
    (`basic_ostringstream::str() const &`, `basic_stringstream::str() const &`,
    and an untagged alias for `basic_ifstream(const string&, openmode)`, which
    clang mangles without the ABI tag that gcc adds).
@@ -192,8 +205,8 @@ released the old EGL surface.
 
 ## The test app
 
-`native/webgpu/testapp` is a small C++20 program, not part of the gallery. It
-logs lines that start with `RNQNX_WEBGPU` and exits non-zero unless every stage
+`native/webgpu/testapp` is a small C++20 program that is separate from the
+gallery. It logs lines that start with `RNQNX_WEBGPU` and exits non-zero unless every stage
 passed. `--backend=null` runs against Dawn's null backend, which executes no
 GPU work: it validates the API calls and the WGSL, and the result line says
 `verified=0`.
@@ -218,17 +231,18 @@ Composition into the Qt Quick scene graph is a separate path.
 `native/webgpu/qt-compose` renders on a worker thread that owns the Dawn
 device (so Dawn never makes its EGL context current under Qt's), reads each
 frame back, and uploads it as a `QSGTexture` in a Qt Quick item.
-`QtGraphicsSurface` from stage 1 observes the window. It copies pixels through
-the CPU; a zero-copy path would import a Qt-owned texture into Dawn as an EGL
-image, which this stage did not attempt. That path ran on the Pi 400
+`QtGraphicsSurface` from stage 1 observes the window. The path copies pixels
+through the CPU. A zero-copy path would import a Qt-owned texture into Dawn as
+an EGL image, which this stage did not attempt. At most one frame is in flight
+between the worker and the GUI thread. The path ran on the Pi 400
 ([qt-compose-run.log](../evidence/webgpu-qnx-2026-11-13/qt-compose-run.log)):
 `QtGraphicsSurface` reported `Initialized` with backend `OpenGL` for the
-640x480 window, 249 frames were produced and uploaded in eight seconds, and a
+640x480 window, 259 frames were produced in eight seconds, and a
 `grabWindow()` of the scene showed the triangle's red at the item centre, a black
-window corner, and an item corner whose green channel moved from 53 to 83 between
+window corner, and an item corner whose green channel moved from 48 to 91 between
 two grabs, so new frames reach the scene graph. The result line is
-`RESULT PASS compose red_center=1 black_window_corner=1 animated=1`. Only this one
-run exists. Frame time, copy cost and CPU load were not measured.
+`RESULT PASS compose red_center=1 black_window_corner=1 animated=1`. An earlier run of
+the same test, before the one-frame limit, passed as well. Frame time, copy cost and CPU load were not measured.
 
 ## Device loss and recovery
 
@@ -243,10 +257,12 @@ Pi with an injected loss. It did not run with a real one.
 
 `.github/workflows/webgpu-host.yml` builds the pinned Dawn on Linux with only
 the null backend and runs the test app with `--backend=null --headless`. It is
-manual and weekly, not a pull request check: a Dawn build takes well over half
-an hour on a hosted runner. It was **not run** before this page was written, so
-no hosted result backs it. The null backend cannot confirm pixels or compute
-values; only the Pi run does.
+manual and weekly. It is not a pull request check, because a Dawn build takes
+well over half an hour on a hosted runner. It was **not run** before this page
+was written, so no hosted result backs it. It shows that the patches apply and
+that the null backend builds; the OpenGL ES files the patches touch are not
+compiled there. The null backend cannot confirm pixels or compute values; only
+the Pi run does.
 
 ## For stage 6
 

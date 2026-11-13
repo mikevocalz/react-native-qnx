@@ -1,5 +1,5 @@
 screenshot 1920x1080
 window centre (440,330) rgb=(255, 0, 0)
-window inner corner (126,96) rgb=(26, 83, 128)
+window inner corner (126,96) rgb=(26, 68, 128)
 triangle red at centre: True
 clear colour at inner corner: True

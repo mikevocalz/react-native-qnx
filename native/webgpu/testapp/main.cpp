@@ -257,7 +257,9 @@ bool windowStages(GpuContext& gpu, Report& report, const Options& options) {
       report.fail("the injected device loss was not reported");
     } else {
       report.note("loss reported: " + gpu.lossReason());
-      gpu.takeUncapturedErrors();  // anything raised by the loss itself
+      // Anything Dawn raised because of the loss itself is counted and logged, not failed.
+      const int lossErrors = gpu.takeUncapturedErrors();
+      logLine("DEVICE", "uncaptured_errors_during_loss=%d", lossErrors);
       if (!gpu.recreateDevice(error)) {
         report.fail(error);
       } else if (!presenter->create(error)) {
@@ -287,6 +289,7 @@ bool windowStages(GpuContext& gpu, Report& report, const Options& options) {
   }
   std::string writeError;
   writeBmp(options.outDir + "/final-surface.bmp", image, writeError);
+  bool holdOk = true;
   if (options.holdSeconds > 0 && report.allPassed()) {
     std::FILE* ready = std::fopen((options.outDir + "/ready").c_str(), "w");
     if (ready) std::fclose(ready);
@@ -302,9 +305,15 @@ bool windowStages(GpuContext& gpu, Report& report, const Options& options) {
       const double t = (frame++ % 120) / 120.0;
       if (!presenter->drawFrame({0.1, 0.2 + 0.3 * t, 0.5, 1.0}, true, image, error)) {
         logLine("HOLD", "frame failed: %s", error.c_str());
+        holdOk = false;
         break;
       }
     }
+  }
+  if (!holdOk) {
+    report.begin("hold-frames");
+    report.fail("a frame failed while the window was held for the screenshot");
+    report.end();
   }
   return true;
 }

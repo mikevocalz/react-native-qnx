@@ -24,6 +24,9 @@ class WebGpuFrameSource : public QObject {
   bool start(QString* error);
   void stop();
   quint64 framesProduced() const { return frames_.loadRelaxed(); }
+  // The GUI thread calls this once it has taken the latest frame. At most one
+  // frame is in flight, so a stalled GUI thread cannot make the queue grow.
+  void frameConsumed() { inFlight_.storeRelease(0); }
 
  Q_SIGNALS:
   void frameReady(QImage image);
@@ -40,6 +43,7 @@ class WebGpuFrameSource : public QObject {
   wgpu::Texture target_;
   rnqnx::webgpu::TriangleRenderer renderer_;
   QAtomicInteger<quint64> frames_{0};
+  QAtomicInt inFlight_{0};
   quint64 tick_ = 0;
   QString startError_;
   bool started_ = false;

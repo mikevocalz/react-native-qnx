@@ -71,8 +71,13 @@ int main(int argc, char** argv) {
                    [&swaps](rnqnx::graphics::GraphicsFrameSwap) { ++swaps; });
 
   WebGpuFrameSource source(512, 384);
-  QObject::connect(&source, &WebGpuFrameSource::frameReady, &item, &WebGpuItem::setFrame,
-                   Qt::QueuedConnection);
+  QObject::connect(
+      &source, &WebGpuFrameSource::frameReady, &item,
+      [&item, &source](QImage image) {
+        item.setFrame(std::move(image));
+        source.frameConsumed();
+      },
+      Qt::QueuedConnection);
   QString error;
   if (!source.start(&error)) {
     logLine("RESULT", "FAIL compose: %s", error.toStdString().c_str());

@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """Checks the on-glass screenshot of rnqnx_webgpu_test.
 
-The test window sits at (120, 90), 640x480, and animates its clear colour
-around (26, 51-128, 128) while a red triangle covers the middle. The Screen
+The test window sits at (120, 90), 640x480. It holds a red triangle over a
+blue clear colour whose green channel animates between 51 and 128. The Screen
 `screenshot` tool writes a BMP of the whole display. This reads that BMP with
 the standard library only, then checks that
 
   * the pixel at the window centre is the triangle's red, and
-  * a pixel just inside the window's top-left corner is the blue-ish clear
-    colour (blue clearly greater than red), so the window really shows the
-    WebGPU frame and not the desktop behind it.
+  * a pixel just inside the window's top-left corner is blue-ish (blue clearly
+    greater than red), so the window shows the WebGPU frame and not the desktop
+    behind it. One sample cannot show the animation; the Qt compose test
+    compares two grabs for that.
 
 Usage: check-screenshot.py <screen.bmp> [x y width height]
 Exit status 0 when both checks hold.

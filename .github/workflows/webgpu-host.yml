@@ -1,10 +1,11 @@
 name: WebGPU host smoke (Dawn null backend)
 # Manual and weekly only. Building Dawn and Tint takes well over half an hour
 # on a hosted runner, so this does not run on pull requests and is not a
-# required check. It proves the pinned Dawn commit plus the QNX patches
-# configure and build on Linux, and that the test app's WebGPU calls validate
-# against the null backend. The null backend executes no GPU work, so it
-# cannot confirm pixels or compute results; those need the Pi 400 run.
+# required check. It shows that the QNX patches apply to the pinned Dawn
+# commit, that Dawn builds with the null backend on Linux, and that the test
+# app's WebGPU calls validate against it. The OpenGL ES files the patches touch
+# are not compiled here, and the null backend executes no GPU work, so pixels
+# and compute results need the Pi 400 run.
 on:
   workflow_dispatch:
   schedule:

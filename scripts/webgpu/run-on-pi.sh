@@ -27,6 +27,6 @@ for a in "$@"; do args+=" $(printf '%q' "$a")"; done
 status=0
 ssh "${opts[@]}" "$target" "cd '$remote' && ./rnqnx-webgpu-launch.sh$args" || status=$?
 mkdir -p "$evidence"
-scp -q -r "${opts[@]}" "$target:$remote/run-*" "$evidence/"
+scp -q -r "${opts[@]}" "$target:$remote/run-*" "$evidence/" || echo "warning: could not copy the run directory back" >&2
 echo "evidence copied to $evidence (remote: $remote), launcher exit status: $status"
 exit "$status"

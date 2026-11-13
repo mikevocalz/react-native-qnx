@@ -1,8 +1,17 @@
 diff --git a/src/dawn/native/opengl/QueueGL.cpp b/src/dawn/native/opengl/QueueGL.cpp
-index 3de996098..d304fce8b 100644
+index 3de996098..0eb86c5a3 100644
 --- a/src/dawn/native/opengl/QueueGL.cpp
 +++ b/src/dawn/native/opengl/QueueGL.cpp
-@@ -43,6 +43,7 @@
+@@ -27,6 +27,8 @@
+ 
+ #include "src/dawn/native/opengl/QueueGL.h"
+ 
++#include <atomic>
++
+ #include <vector>
+ 
+ #include "dawn/platform/DawnPlatform.h"
+@@ -43,6 +45,7 @@
  #include "src/dawn/native/opengl/UtilsGL.h"
  #include "src/dawn/platform/tracing/TraceEvent.h"
  #include "src/utils/compiler.h"
@@ -10,7 +19,7 @@ index 3de996098..d304fce8b 100644
  #include "src/utils/numeric.h"
  #include "src/utils/span.h"
  
-@@ -238,9 +239,25 @@ MaybeError Queue::SubmitFenceSync() {
+@@ -238,9 +241,29 @@ MaybeError Queue::SubmitFenceSync() {
      Device* device = ToBackend(GetDevice());
      return device->EnqueueAndFlushGL(
          SubmitMode::Passive, [&](const OpenGLFunctions& gl) -> MaybeError {
@@ -19,16 +28,20 @@ index 3de996098..d304fce8b 100644
 -            DAWN_TRY_ASSIGN(sync, WrappedEGLSync::Create(display, gl, mEGLSyncType, {}));
 +            auto created = WrappedEGLSync::Create(display, gl, mEGLSyncType, {});
 +            if (created.IsError()) {
-+                // react-native-qnx: eglCreateSyncKHR returns EGL_NO_SYNC without an error on
-+                // the QNX Mesa 21.2 V3D EGL for Dawn's context. WaitForQueueSerialImpl treats a
-+                // serial without a fence as completed, so wait for the GPU here instead.
-+                static bool warned = false;
-+                if (!warned) {
-+                    warned = true;
-+                    WarningLog() << "eglCreateSync failed; submissions are completed with "
-+                                    "glFinish instead of an EGL fence.";
++                // react-native-qnx: eglCreateSyncKHR returns EGL_NO_SYNC without setting an
++                // error on the QNX Mesa 21.2 V3D EGL for Dawn's context (CheckEGL then reports
++                // EGL_SUCCESS). Only that case falls back: wait for the GPU here and treat the
++                // serial as complete, which WaitForQueueSerialImpl does for a serial without a
++                // fence. Any other EGL error is still returned.
++                auto error = created.AcquireError();
++                if (error->GetMessage().find("EGL_SUCCESS") == std::string::npos) {
++                    return std::move(error);
 +                }
-+                created.AcquireError();
++                static std::atomic<bool> warned{false};
++                if (!warned.exchange(true)) {
++                    WarningLog() << "eglCreateSync returned no sync and no error; submissions are "
++                                    "completed with glFinish instead of an EGL fence.";
++                }
 +                DAWN_GL_TRY(gl, Finish());
 +                IncrementLastSubmittedCommandSerial();
 +                mHasPendingUnsignaledCommands = false;
