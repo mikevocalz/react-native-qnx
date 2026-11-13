@@ -242,12 +242,12 @@ Stage 4: `react-native-svg` 15.16.0 elements on Qt Quick, behind
 `RNQNX_ENABLE_QT_RNSVG` (default OFF). Guide:
 [react-native-svg.md](react-native-svg.md).
 
-| Check                                                                             | Result                                                                                                           |
-| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `pnpm qt:rnsvg:check`                                                             | Generated props and events match the package's specs (codegen 0.88.1, package 15.16.0)                           |
-| `rnqnx_qt_rnsvg_test` (25 cases, golden pixels and hit tests)                      | 25/25 passed on a Linux aarch64 VM: Qt 6.12.0 offscreen software, GCC 13.3, ASan+UBSan, `-Werror` ([output](evidence/rnsvg-host-vm.txt)) |
-| `rnqnx_qt_rnsvg_fabric_test` (unmodified package through Metro, Hermes, Fabric)    | Runs in the `host-renderer` workflow, input-lifecycle ON leg; see the PR for the run                              |
-| QNX aarch64 cross-build of the consumer app with the switch ON                    | See "Pi 400 device" below                                                                                        |
+| Check                                                                           | Result                                                                                                                                   |
+| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm qt:rnsvg:check`                                                           | Generated props and events match the package's specs (codegen 0.88.1, package 15.16.0)                                                   |
+| `rnqnx_qt_rnsvg_test` (25 cases, golden pixels and hit tests)                   | 25/25 passed on a Linux aarch64 VM: Qt 6.12.0 offscreen software, GCC 13.3, ASan+UBSan, `-Werror` ([output](evidence/rnsvg-host-vm.txt)) |
+| `rnqnx_qt_rnsvg_fabric_test` (unmodified package through Metro, Hermes, Fabric) | Runs in the `host-renderer` workflow, input-lifecycle ON leg; see the PR for the run                                                     |
+| QNX aarch64 cross-build of the consumer app with the switch ON                  | See "Pi 400 device" below                                                                                                                |
 
 ### Pi 400 device
 
