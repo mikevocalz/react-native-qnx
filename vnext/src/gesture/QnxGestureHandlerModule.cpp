@@ -78,7 +78,8 @@ Value QnxGestureHandlerModule::attachGestureHandler(Runtime& rt, facebook::react
 }
 
 Value QnxGestureHandlerModule::setGestureHandlerConfig(Runtime& rt, facebook::react::TurboModule& tm, const Value* args, size_t count) {
-  self(tm).hooks_.setConfig(toInt(rt, args, count, 0, "handlerTag"), toConfig(rt, count > 1 ? args[1] : Value::undefined()));
+  const int tag = toInt(rt, args, count, 0, "handlerTag");
+  self(tm).hooks_.setConfig(tag, count > 1 ? toConfig(rt, args[1]) : Config{});
   return Value::undefined();
 }
 

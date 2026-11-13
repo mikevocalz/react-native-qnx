@@ -53,8 +53,12 @@ successful earlier stage does not mark a later one supported.
 | 7. Optional engine adapter     | A licensed Rust engine's C ABI feeding the shared Dawn/Skia renderer                                                       | Native buffers/commands, measured transfer costs, matching device ownership and no dependency from platform core to Forge                 |
 | 8. Optional Qt 3D              | Qt Quick 3D scene/camera/material/model/picking components                                                                 | Device rendering/input and module-specific distribution terms; no Three.js compatibility claim                                            |
 
-The existing `docs/platform-modernization/02-input-worklets.md` and
-`docs/reanimated-gesture-handler-qnx-audit.md` remain the input/runtime audit.
+The existing [input and Worklets plan](../platform-modernization/02-input-worklets.md)
+and [exact-source audit](../reanimated-gesture-handler-qnx-audit.md) remain the
+input/runtime audit. Stages 2 and 3 are implemented behind default-OFF switches
+in [Worklets](../worklets-qnx.md) and
+[Reanimated and Gesture Handler](../reanimated-gesture-handler-qnx.md); those
+pages say what ran on the device and what did not.
 This slice does not change the React Native, Hermes or Nitro versions, install
 the candidate third-party libraries, or turn the existing QTimer-based core
 Animated implementation into Reanimated.
