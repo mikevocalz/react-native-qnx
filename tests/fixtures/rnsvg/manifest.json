@@ -30,15 +30,31 @@
       "upstream": {
         "file": "apps/common/example/examples/Circle.tsx",
         "scene": "CircleExample",
-        "lines": [4,10]
+        "lines": [
+          4,
+          10
+        ]
       },
       "covers": "circle cx cy r percent",
-      "elements": ["circle","svg"],
-      "attributes": ["cx","cy","fill","height","r","width"],
+      "elements": [
+        "circle",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "r",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Circle-1.png",
       "sha256": "d5de603489225d81752813a7ee6076fdaff2c32c6f5fdaefab2d17ae8c5b378b",
-      "size": [140,100]
+      "size": [
+        140,
+        100
+      ]
     },
     {
       "name": "Circle-2",
@@ -47,15 +63,33 @@
       "upstream": {
         "file": "apps/common/example/examples/Circle.tsx",
         "scene": "StrokeCircle",
-        "lines": [14,27]
+        "lines": [
+          14,
+          27
+        ]
       },
       "covers": "circle stroke strokeWidth fill=none",
-      "elements": ["circle","svg"],
-      "attributes": ["cx","cy","fill","height","r","stroke","stroke-width","width"],
+      "elements": [
+        "circle",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "r",
+        "stroke",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Circle-2.png",
       "sha256": "7bb55da697f13f71eaed11065c6d32a8e23853b1a49888a4dee7eee88d9d3220",
-      "size": [100,100],
+      "size": [
+        100,
+        100
+      ],
       "thresholds": {
         "maxDiffPixelPercent": 3.2
       },
@@ -68,15 +102,34 @@
       "upstream": {
         "file": "apps/common/example/examples/Circle.tsx",
         "scene": "StrokeOpacityCircle",
-        "lines": [30,44]
+        "lines": [
+          30,
+          44
+        ]
       },
       "covers": "circle strokeOpacity",
-      "elements": ["circle","svg"],
-      "attributes": ["cx","cy","fill","height","r","stroke","stroke-opacity","stroke-width","width"],
+      "elements": [
+        "circle",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "r",
+        "stroke",
+        "stroke-opacity",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Circle-3.png",
       "sha256": "673fff91c27cb124662dbb88f955e6f9344bef6bdf7a92a588470a772bc946a7",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Circle-4",
@@ -85,15 +138,35 @@
       "upstream": {
         "file": "apps/common/example/examples/Circle.tsx",
         "scene": "PieCircle",
-        "lines": [47,64]
+        "lines": [
+          47,
+          64
+        ]
       },
       "covers": "circle strokeDasharray rotation origin",
-      "elements": ["circle","svg"],
-      "attributes": ["cx","cy","fill","height","r","stroke","stroke-dasharray","stroke-width","transform","width"],
+      "elements": [
+        "circle",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "r",
+        "stroke",
+        "stroke-dasharray",
+        "stroke-width",
+        "transform",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Circle-4.png",
       "sha256": "a787728a7b26bf933f5ecbd838be687e4b783bbb4ee402c63942a1f7569d99bf",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Ellipse-1",
@@ -102,15 +175,34 @@
       "upstream": {
         "file": "apps/common/example/examples/Ellipse.tsx",
         "scene": "EllipseExample",
-        "lines": [4,18]
+        "lines": [
+          4,
+          18
+        ]
       },
       "covers": "ellipse percent stroke",
-      "elements": ["ellipse","svg"],
-      "attributes": ["cx","cy","fill","height","rx","ry","stroke","stroke-width","width"],
+      "elements": [
+        "ellipse",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "rx",
+        "ry",
+        "stroke",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Ellipse-1.png",
       "sha256": "b757409c53fe7f523aa8433676e55c50250f601e4c71fda48a68f0c3decc9d0a",
-      "size": [200,100],
+      "size": [
+        200,
+        100
+      ],
       "thresholds": {
         "maxDiffPixelPercent": 2
       },
@@ -123,15 +215,32 @@
       "upstream": {
         "file": "apps/common/example/examples/Ellipse.tsx",
         "scene": "PileEllipses",
-        "lines": [21,29]
+        "lines": [
+          21,
+          29
+        ]
       },
       "covers": "ellipse paint order",
-      "elements": ["ellipse","svg"],
-      "attributes": ["cx","cy","fill","height","rx","ry","width"],
+      "elements": [
+        "ellipse",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "rx",
+        "ry",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Ellipse-2.png",
       "sha256": "6af62bf37d38a90715568caf0a1fc3623e8d4983a8e1491951694c52b49c4813",
-      "size": [200,120]
+      "size": [
+        200,
+        120
+      ]
     },
     {
       "name": "Ellipse-3",
@@ -140,15 +249,32 @@
       "upstream": {
         "file": "apps/common/example/examples/Ellipse.tsx",
         "scene": "CombinedEllipses",
-        "lines": [33,40]
+        "lines": [
+          33,
+          40
+        ]
       },
       "covers": "ellipse",
-      "elements": ["ellipse","svg"],
-      "attributes": ["cx","cy","fill","height","rx","ry","width"],
+      "elements": [
+        "ellipse",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "rx",
+        "ry",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Ellipse-3.png",
       "sha256": "cf48ee503aa264029739f7da78f4edcdc2aa211585935b2559feaa4f4b7a1973",
-      "size": [200,100]
+      "size": [
+        200,
+        100
+      ]
     },
     {
       "name": "Line-1",
@@ -157,15 +283,33 @@
       "upstream": {
         "file": "apps/common/example/examples/Line.tsx",
         "scene": "LineExample",
-        "lines": [4,10]
+        "lines": [
+          4,
+          10
+        ]
       },
       "covers": "line percent stroke",
-      "elements": ["line","svg"],
-      "attributes": ["height","stroke","stroke-width","width","x1","x2","y1","y2"],
+      "elements": [
+        "line",
+        "svg"
+      ],
+      "attributes": [
+        "height",
+        "stroke",
+        "stroke-width",
+        "width",
+        "x1",
+        "x2",
+        "y1",
+        "y2"
+      ],
       "status": "pass",
       "golden": "golden/Line-1.png",
       "sha256": "ceafcdff8d23728a574f2b848e0a8b3f47871e85454c53d854f4fa27626e1881",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Line-2",
@@ -174,15 +318,34 @@
       "upstream": {
         "file": "apps/common/example/examples/Line.tsx",
         "scene": "LineWithStrokeLinecap",
-        "lines": [13,45]
+        "lines": [
+          13,
+          45
+        ]
       },
       "covers": "line strokeLinecap",
-      "elements": ["line","svg"],
-      "attributes": ["height","stroke","stroke-linecap","stroke-width","width","x1","x2","y1","y2"],
+      "elements": [
+        "line",
+        "svg"
+      ],
+      "attributes": [
+        "height",
+        "stroke",
+        "stroke-linecap",
+        "stroke-width",
+        "width",
+        "x1",
+        "x2",
+        "y1",
+        "y2"
+      ],
       "status": "pass",
       "golden": "golden/Line-2.png",
       "sha256": "949cf0ec3b3cb62be4d85fbf341b5037afa048bb9876f3e82abf17b04654501a",
-      "size": [200,100]
+      "size": [
+        200,
+        100
+      ]
     },
     {
       "name": "Polygon-1",
@@ -191,15 +354,31 @@
       "upstream": {
         "file": "apps/common/example/examples/Polygon.tsx",
         "scene": "PolygonExample",
-        "lines": [4,15]
+        "lines": [
+          4,
+          15
+        ]
       },
       "covers": "polygon points",
-      "elements": ["polygon","svg"],
-      "attributes": ["fill","height","points","stroke","stroke-width","width"],
+      "elements": [
+        "polygon",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "points",
+        "stroke",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Polygon-1.png",
       "sha256": "8030c19ca069c25c6334669c9e2f9647797c11999205b410e5da5491b78e3634",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Polygon-2",
@@ -208,15 +387,31 @@
       "upstream": {
         "file": "apps/common/example/examples/Polygon.tsx",
         "scene": "FourSidePolygon",
-        "lines": [19,30]
+        "lines": [
+          19,
+          30
+        ]
       },
       "covers": "polygon space-separated points",
-      "elements": ["polygon","svg"],
-      "attributes": ["fill","height","points","stroke","stroke-width","width"],
+      "elements": [
+        "polygon",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "points",
+        "stroke",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Polygon-2.png",
       "sha256": "54a06bab7ce5b016294892abc93cae8d769534dd9f943d4bd4324a8ccc592181",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Polygon-3",
@@ -225,15 +420,33 @@
       "upstream": {
         "file": "apps/common/example/examples/Polygon.tsx",
         "scene": "StarPolygon",
-        "lines": [34,47]
+        "lines": [
+          34,
+          47
+        ]
       },
       "covers": "polygon g scale",
-      "elements": ["g","polygon","svg"],
-      "attributes": ["fill","height","points","stroke","stroke-width","transform","width"],
+      "elements": [
+        "g",
+        "polygon",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "points",
+        "stroke",
+        "stroke-width",
+        "transform",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Polygon-3.png",
       "sha256": "d285f8362ac4c02982bf9b1b1ba5559d27bb680ae4daade88682771b47954bbc",
-      "size": [105,105]
+      "size": [
+        105,
+        105
+      ]
     },
     {
       "name": "Polygon-4",
@@ -242,15 +455,36 @@
       "upstream": {
         "file": "apps/common/example/examples/Polygon.tsx",
         "scene": "EvenOddPolygon",
-        "lines": [50,69]
+        "lines": [
+          50,
+          69
+        ]
       },
       "covers": "polygon fillRule evenodd, inherited by a second group (the upstream inner Svg view, whose identity viewBox maps 1:1, is inlined)",
-      "elements": ["g","path","polygon","svg"],
-      "attributes": ["d","fill","fill-rule","height","points","stroke","stroke-width","transform","width"],
+      "elements": [
+        "g",
+        "path",
+        "polygon",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "fill-rule",
+        "height",
+        "points",
+        "stroke",
+        "stroke-width",
+        "transform",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Polygon-4.png",
       "sha256": "494e2b2248a0facd9d022cc691449889154ac6f4559cf15a914d7c546a3b5f41",
-      "size": [105,105]
+      "size": [
+        105,
+        105
+      ]
     },
     {
       "name": "Polyline-1",
@@ -259,15 +493,31 @@
       "upstream": {
         "file": "apps/common/example/examples/Polyline.tsx",
         "scene": "PolylineExample",
-        "lines": [4,15]
+        "lines": [
+          4,
+          15
+        ]
       },
       "covers": "polyline",
-      "elements": ["polyline","svg"],
-      "attributes": ["fill","height","points","stroke","stroke-width","width"],
+      "elements": [
+        "polyline",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "points",
+        "stroke",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Polyline-1.png",
       "sha256": "aa826cc56e072f83f1ca7e8f0a0e393834eb1b37f5568500bd06a4d17871db8b",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Polyline-2",
@@ -276,15 +526,31 @@
       "upstream": {
         "file": "apps/common/example/examples/Polyline.tsx",
         "scene": "StraightLines",
-        "lines": [19,30]
+        "lines": [
+          19,
+          30
+        ]
       },
       "covers": "polyline",
-      "elements": ["polyline","svg"],
-      "attributes": ["fill","height","points","stroke","stroke-width","width"],
+      "elements": [
+        "polyline",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "points",
+        "stroke",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Polyline-2.png",
       "sha256": "35148d09362c1ab854242c7615d9df377f81c07567fa3ba087f098536fdeb054",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Polyline-3",
@@ -293,15 +559,31 @@
       "upstream": {
         "file": "apps/common/example/examples/Polyline.tsx",
         "scene": "PolylineFill",
-        "lines": [33,44]
+        "lines": [
+          33,
+          44
+        ]
       },
       "covers": "polyline fill",
-      "elements": ["polyline","svg"],
-      "attributes": ["fill","height","points","stroke","stroke-width","width"],
+      "elements": [
+        "polyline",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "points",
+        "stroke",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Polyline-3.png",
       "sha256": "cd11b0db7fa0c8c8d28a1d0644f45cd2aac5fefb67899527c6399850d8deb3e4",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Polyline-4",
@@ -310,15 +592,33 @@
       "upstream": {
         "file": "apps/common/example/examples/Polyline.tsx",
         "scene": "PolylineFillStroke",
-        "lines": [47,60]
+        "lines": [
+          47,
+          60
+        ]
       },
       "covers": "polyline linecap linejoin",
-      "elements": ["polyline","svg"],
-      "attributes": ["fill","height","points","stroke","stroke-linecap","stroke-linejoin","stroke-width","width"],
+      "elements": [
+        "polyline",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "points",
+        "stroke",
+        "stroke-linecap",
+        "stroke-linejoin",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Polyline-4.png",
       "sha256": "4bc9cad5b601de622aa8848942c2cd97fc788e786a287b1c09bfe64b7ca1b211",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Path-1",
@@ -327,15 +627,29 @@
       "upstream": {
         "file": "apps/common/example/examples/Path.tsx",
         "scene": "PathExample",
-        "lines": [4,18]
+        "lines": [
+          4,
+          18
+        ]
       },
       "covers": "path d M L Z C S A q relative commands default fill",
-      "elements": ["path","svg"],
-      "attributes": ["d","fill","height","width"],
+      "elements": [
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "height",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Path-1.png",
       "sha256": "abdf4f726426d3561f8876075849203a541a9db14e857aea254ef8601db89ddd",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Path-2",
@@ -344,15 +658,31 @@
       "upstream": {
         "file": "apps/common/example/examples/Path.tsx",
         "scene": "UnclosedPath",
-        "lines": [21,32]
+        "lines": [
+          21,
+          32
+        ]
       },
       "covers": "path unclosed stroke",
-      "elements": ["path","svg"],
-      "attributes": ["d","fill","height","stroke","stroke-width","width"],
+      "elements": [
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "height",
+        "stroke",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Path-2.png",
       "sha256": "8d02c0ef98ed036e3dbe222ef723ecee3e0e3c5ee201d8a1cc2d2f41b86d43ab",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Path-3",
@@ -361,15 +691,45 @@
       "upstream": {
         "file": "apps/common/example/examples/Path.tsx",
         "scene": "BezierCurve",
-        "lines": [35,77]
+        "lines": [
+          35,
+          77
+        ]
       },
       "covers": "path q curve text-anchor group inheritance dx dy",
-      "elements": ["circle","g","path","svg","text"],
-      "attributes": ["cx","cy","d","dx","dy","fill","font-family","font-size","height","r","stroke","stroke-width","text-anchor","transform","width","x","y"],
+      "elements": [
+        "circle",
+        "g",
+        "path",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "d",
+        "dx",
+        "dy",
+        "fill",
+        "font-family",
+        "font-size",
+        "height",
+        "r",
+        "stroke",
+        "stroke-width",
+        "text-anchor",
+        "transform",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Path-3.png",
       "sha256": "69dc44c1a88dab924ce58e43d80112fd78a89a98a0681253f60b25d35c1c4f7d",
-      "size": [225,200]
+      "size": [
+        225,
+        200
+      ]
     },
     {
       "name": "Rect-1",
@@ -378,15 +738,33 @@
       "upstream": {
         "file": "apps/common/example/examples/Rect.tsx",
         "scene": "RectExample",
-        "lines": [5,22]
+        "lines": [
+          5,
+          22
+        ]
       },
       "covers": "rect percent strokeDasharray rgb()",
-      "elements": ["rect","svg"],
-      "attributes": ["fill","height","stroke","stroke-dasharray","stroke-width","width","x","y"],
+      "elements": [
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "stroke",
+        "stroke-dasharray",
+        "stroke-width",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Rect-1.png",
       "sha256": "7b7683dd3b9751300550f724dbe77bfcf8b58f8221f91288a5fcbace4840c4a6",
-      "size": [200,60]
+      "size": [
+        200,
+        60
+      ]
     },
     {
       "name": "Rect-2",
@@ -395,15 +773,34 @@
       "upstream": {
         "file": "apps/common/example/examples/Rect.tsx",
         "scene": "RectStrokeFill",
-        "lines": [25,41]
+        "lines": [
+          25,
+          41
+        ]
       },
       "covers": "rect fillOpacity strokeOpacity",
-      "elements": ["rect","svg"],
-      "attributes": ["fill","fill-opacity","height","stroke","stroke-opacity","stroke-width","width","x","y"],
+      "elements": [
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "fill-opacity",
+        "height",
+        "stroke",
+        "stroke-opacity",
+        "stroke-width",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Rect-2.png",
       "sha256": "57a58c59aba1824b8c209677fda5025c04463c2c2e9f1972e9ccc448f8954994",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Rect-3",
@@ -412,15 +809,34 @@
       "upstream": {
         "file": "apps/common/example/examples/Rect.tsx",
         "scene": "RoundedRect",
-        "lines": [44,60]
+        "lines": [
+          44,
+          60
+        ]
       },
       "covers": "rect rx ry",
-      "elements": ["rect","svg"],
-      "attributes": ["fill","height","rx","ry","stroke","stroke-width","width","x","y"],
+      "elements": [
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "rx",
+        "ry",
+        "stroke",
+        "stroke-width",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Rect-3.png",
       "sha256": "c8ed045a414ecb44f61ab48d08147452487cdb0ffa1d210f8e547d3e96308770",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Rect-4",
@@ -429,15 +845,34 @@
       "upstream": {
         "file": "apps/common/example/examples/Rect.tsx",
         "scene": "EllipseRect",
-        "lines": [63,79]
+        "lines": [
+          63,
+          79
+        ]
       },
       "covers": "rect rx>w/2 clamp",
-      "elements": ["rect","svg"],
-      "attributes": ["fill","height","rx","ry","stroke","stroke-width","width","x","y"],
+      "elements": [
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "rx",
+        "ry",
+        "stroke",
+        "stroke-width",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Rect-4.png",
       "sha256": "803877645472bf7f242573e3f15d3621a66958617faadf22959883267c153f74",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Rect-5",
@@ -446,15 +881,33 @@
       "upstream": {
         "file": "apps/common/example/examples/Rect.tsx",
         "scene": "RoundOverflowRect",
-        "lines": [82,97]
+        "lines": [
+          82,
+          97
+        ]
       },
       "covers": "rect ry only (rx auto)",
-      "elements": ["rect","svg"],
-      "attributes": ["fill","height","ry","stroke","stroke-width","width","x","y"],
+      "elements": [
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "ry",
+        "stroke",
+        "stroke-width",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Rect-5.png",
       "sha256": "974e0a7d2e0a28cb3ebc7c850a874550323a8d74f1489acac3b7776dfbc7e115",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "ClipPath-1",
@@ -463,16 +916,56 @@
       "upstream": {
         "file": "apps/common/example/examples/Clipping.tsx",
         "scene": "ClipPathElement",
-        "lines": [17,58]
+        "lines": [
+          17,
+          58
+        ]
       },
       "covers": "clipPath circle ellipse rect polygon text radialGradient",
-      "elements": ["circle","clipPath","defs","ellipse","polygon","radialGradient","rect","stop","svg","text"],
-      "attributes": ["clip-path","cx","cy","fill","font-family","font-size","font-weight","fx","fy","height","id","offset","points","r","rx","ry","stop-color","stop-opacity","text-anchor","transform","width","x","y"],
-      "status": "pending:clip-path-text-child",
+      "elements": [
+        "circle",
+        "clipPath",
+        "defs",
+        "ellipse",
+        "polygon",
+        "radialGradient",
+        "rect",
+        "stop",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "clip-path",
+        "cx",
+        "cy",
+        "fill",
+        "font-family",
+        "font-size",
+        "font-weight",
+        "fx",
+        "fy",
+        "height",
+        "id",
+        "offset",
+        "points",
+        "r",
+        "rx",
+        "ry",
+        "stop-color",
+        "stop-opacity",
+        "text-anchor",
+        "transform",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/ClipPath-1.png",
       "sha256": "27eb4e7262f8e04edb5f7dae30022cba5586b800225f9b17712ed1fd36a77371",
-      "size": [100,100],
-      "pendingNote": "a <text> inside <clipPath> adds nothing to the clip region: the Q glyph is missing from the clip; baseline metrics: pct=3.420 mean=4.301 block=342 stpct=1.940 stblock=194"
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "ClipPath-2",
@@ -481,16 +974,38 @@
       "upstream": {
         "file": "apps/common/example/examples/Clipping.tsx",
         "scene": "ClipRule",
-        "lines": [61,77]
+        "lines": [
+          61,
+          77
+        ]
       },
       "covers": "clipPath clipRule evenodd (on the clipped g as react-native-svg reads it, and on the clip path child as SVG reads it)",
-      "elements": ["clipPath","defs","g","path","rect","svg"],
-      "attributes": ["clip-path","clip-rule","d","fill","height","id","width","x","y"],
-      "status": "pending:clip-rule-evenodd",
+      "elements": [
+        "clipPath",
+        "defs",
+        "g",
+        "path",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "clip-path",
+        "clip-rule",
+        "d",
+        "fill",
+        "height",
+        "id",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/ClipPath-2.png",
       "sha256": "96e0a549711d6459e42e278ac50bc22e4e0ee1ecb6c886af667535ec81a5bba4",
-      "size": [100,100],
-      "pendingNote": "clipRule evenodd is ignored; the star clip keeps its centre filled (the bridge sets clipEvenOdd false for every clipRule); baseline metrics: pct=9.080 mean=13.764 block=908 stpct=7.680 stblock=768"
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "ClipPath-3",
@@ -499,16 +1014,44 @@
       "upstream": {
         "file": "apps/common/example/examples/Clipping.tsx",
         "scene": "TextClipping",
-        "lines": [80,112]
+        "lines": [
+          80,
+          112
+        ]
       },
       "covers": "clipPath on text",
-      "elements": ["circle","clipPath","defs","svg","text"],
-      "attributes": ["clip-path","cx","cy","fill","font-family","font-size","font-weight","height","id","r","stroke","stroke-width","text-anchor","width","x","y"],
-      "status": "pending:clip-path-on-text",
+      "elements": [
+        "circle",
+        "clipPath",
+        "defs",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "clip-path",
+        "cx",
+        "cy",
+        "fill",
+        "font-family",
+        "font-size",
+        "font-weight",
+        "height",
+        "id",
+        "r",
+        "stroke",
+        "stroke-width",
+        "text-anchor",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/ClipPath-3.png",
       "sha256": "040f1cc40c3aa3a065dae3af85c784caa0e0010353342d006bad9379d50cbeb3",
-      "size": [200,60],
-      "pendingNote": "clipPath on a <text> element is not applied: the text is drawn whole; baseline metrics: pct=5.117 mean=6.146 block=74 stpct=2.167 stblock=38"
+      "size": [
+        200,
+        60
+      ]
     },
     {
       "name": "G-1",
@@ -517,15 +1060,34 @@
       "upstream": {
         "file": "apps/common/example/examples/G.tsx",
         "scene": "GExample",
-        "lines": [4,33]
+        "lines": [
+          4,
+          33
+        ]
       },
       "covers": "g fill stroke strokeWidth inheritance",
-      "elements": ["circle","g","svg"],
-      "attributes": ["cx","cy","fill","height","r","stroke","stroke-width","width"],
+      "elements": [
+        "circle",
+        "g",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "r",
+        "stroke",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/G-1.png",
       "sha256": "7532427f13d90f61e294b497d47aff70075e1a74fe065e460b031b9909706e8d",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "G-2",
@@ -534,15 +1096,46 @@
       "upstream": {
         "file": "apps/common/example/examples/G.tsx",
         "scene": "GTransform",
-        "lines": [37,72]
+        "lines": [
+          37,
+          72
+        ]
       },
       "covers": "g rotation about an origin, use with translate rotate scale (x y folded into the transform), opacity",
-      "elements": ["g","line","rect","svg","text","use"],
-      "attributes": ["fill","font-family","height","href","id","opacity","stroke","stroke-width","text-anchor","transform","width","x","x1","x2","y","y1","y2"],
+      "elements": [
+        "g",
+        "line",
+        "rect",
+        "svg",
+        "text",
+        "use"
+      ],
+      "attributes": [
+        "fill",
+        "font-family",
+        "height",
+        "href",
+        "id",
+        "opacity",
+        "stroke",
+        "stroke-width",
+        "text-anchor",
+        "transform",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "y",
+        "y1",
+        "y2"
+      ],
       "status": "pass",
       "golden": "golden/G-2.png",
       "sha256": "20c508b71715a8acf8a82cca8b509bf4449c5904053eeee73f4b584f69b59ca3",
-      "size": [200,100]
+      "size": [
+        200,
+        100
+      ]
     },
     {
       "name": "LinearGradient-1",
@@ -551,15 +1144,44 @@
       "upstream": {
         "file": "apps/common/example/examples/Gradients.tsx",
         "scene": "LinearGradientHorizontal",
-        "lines": [15,33]
+        "lines": [
+          15,
+          33
+        ]
       },
       "covers": "linearGradient userSpaceOnUse",
-      "elements": ["defs","ellipse","linearGradient","stop","svg"],
-      "attributes": ["cx","cy","fill","gradientUnits","height","id","offset","rx","ry","stop-color","stop-opacity","width","x1","x2","y1","y2"],
+      "elements": [
+        "defs",
+        "ellipse",
+        "linearGradient",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "gradientUnits",
+        "height",
+        "id",
+        "offset",
+        "rx",
+        "ry",
+        "stop-color",
+        "stop-opacity",
+        "width",
+        "x1",
+        "x2",
+        "y1",
+        "y2"
+      ],
       "status": "pass",
       "golden": "golden/LinearGradient-1.png",
       "sha256": "1585bb433cc2559f18757fb5722099545f149a87b03ba862b1dd02e0564345f5",
-      "size": [300,150]
+      "size": [
+        300,
+        150
+      ]
     },
     {
       "name": "LinearGradient-2",
@@ -568,16 +1190,44 @@
       "upstream": {
         "file": "apps/common/example/examples/Gradients.tsx",
         "scene": "LinearGradientHorizontalBug",
-        "lines": [37,55]
+        "lines": [
+          37,
+          55
+        ]
       },
       "covers": "linearGradient stopOpacity 0",
-      "elements": ["defs","ellipse","linearGradient","stop","svg"],
-      "attributes": ["cx","cy","fill","gradientUnits","height","id","offset","rx","ry","stop-color","stop-opacity","width","x1","x2","y1","y2"],
-      "status": "pending:gradient-premultiplied-interpolation",
+      "elements": [
+        "defs",
+        "ellipse",
+        "linearGradient",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "gradientUnits",
+        "height",
+        "id",
+        "offset",
+        "rx",
+        "ry",
+        "stop-color",
+        "stop-opacity",
+        "width",
+        "x1",
+        "x2",
+        "y1",
+        "y2"
+      ],
+      "status": "pass",
       "golden": "golden/LinearGradient-2.png",
       "sha256": "6876f196f737f23dc433180a742d49f0fdf0d6b20dae4953f30f06ba7a84c81a",
-      "size": [300,150],
-      "pendingNote": "Qt interpolates stop colors premultiplied; SVG interpolates non-premultiplied. Measured: yellow alpha 0 to red alpha 1 gives (255,126,126) at the midpoint over white, SVG gives (255,191,127); baseline metrics: pct=28.922 mean=5.248 block=13009 stpct=28.069 stblock=12630"
+      "size": [
+        300,
+        150
+      ]
     },
     {
       "name": "LinearGradient-3",
@@ -586,16 +1236,43 @@
       "upstream": {
         "file": "apps/common/example/examples/Gradients.tsx",
         "scene": "LinearGradientRotated",
-        "lines": [59,71]
+        "lines": [
+          59,
+          71
+        ]
       },
       "covers": "linearGradient vertical objectBoundingBox",
-      "elements": ["defs","ellipse","linearGradient","stop","svg"],
-      "attributes": ["cx","cy","fill","height","id","offset","rx","ry","stop-color","stop-opacity","width","x1","x2","y1","y2"],
-      "status": "pending:gradient-premultiplied-interpolation",
+      "elements": [
+        "defs",
+        "ellipse",
+        "linearGradient",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "id",
+        "offset",
+        "rx",
+        "ry",
+        "stop-color",
+        "stop-opacity",
+        "width",
+        "x1",
+        "x2",
+        "y1",
+        "y2"
+      ],
+      "status": "pass",
       "golden": "golden/LinearGradient-3.png",
       "sha256": "6a4021e06c76de2216aaee7800bfa75442d8d0f8bc03c81472aab43953190c7f",
-      "size": [300,150],
-      "pendingNote": "same cause as LinearGradient-2 (yellow alpha 0 to red); baseline metrics: pct=29.216 mean=5.255 block=13143 stpct=27.873 stblock=12541"
+      "size": [
+        300,
+        150
+      ]
     },
     {
       "name": "LinearGradient-4",
@@ -604,15 +1281,46 @@
       "upstream": {
         "file": "apps/common/example/examples/Gradients.tsx",
         "scene": "GradientUnits",
-        "lines": [75,126]
+        "lines": [
+          75,
+          126
+        ]
       },
       "covers": "gradientUnits objectBoundingBox vs userSpaceOnUse, the two upstream Svg views placed side by side as translated groups",
-      "elements": ["defs","g","linearGradient","rect","stop","svg"],
-      "attributes": ["fill","gradientUnits","height","id","offset","rx","ry","stop-color","stop-opacity","transform","width","x","x1","x2","y","y1","y2"],
+      "elements": [
+        "defs",
+        "g",
+        "linearGradient",
+        "rect",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "gradientUnits",
+        "height",
+        "id",
+        "offset",
+        "rx",
+        "ry",
+        "stop-color",
+        "stop-opacity",
+        "transform",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "y",
+        "y1",
+        "y2"
+      ],
       "status": "pass",
       "golden": "golden/LinearGradient-4.png",
       "sha256": "3b096275041e448ebc6150c0f8f0adc6b4d18b43e6ff02a5047e93af126c1a23",
-      "size": [300,150]
+      "size": [
+        300,
+        150
+      ]
     },
     {
       "name": "LinearGradient-5",
@@ -621,16 +1329,47 @@
       "upstream": {
         "file": "apps/common/example/examples/Gradients.tsx",
         "scene": "LinearGradientPercent",
-        "lines": [129,147]
+        "lines": [
+          129,
+          147
+        ]
       },
       "covers": "linearGradient percent, text",
-      "elements": ["defs","ellipse","linearGradient","stop","svg","text"],
-      "attributes": ["cx","cy","fill","font-family","height","id","offset","rx","ry","stop-color","stop-opacity","width","x","x1","x2","y","y1","y2"],
-      "status": "pending:gradient-premultiplied-interpolation",
+      "elements": [
+        "defs",
+        "ellipse",
+        "linearGradient",
+        "stop",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "font-family",
+        "height",
+        "id",
+        "offset",
+        "rx",
+        "ry",
+        "stop-color",
+        "stop-opacity",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "y",
+        "y1",
+        "y2"
+      ],
+      "status": "pass",
       "golden": "golden/LinearGradient-5.png",
       "sha256": "bec6be02ea283e4bd62c9c253e48f2511c6679436b924a0459b2873bcb8f2630",
-      "size": [300,150],
-      "pendingNote": "same cause as LinearGradient-2 (yellow alpha 0 to red); baseline metrics: pct=28.944 mean=5.327 block=13009 stpct=28.084 stblock=12630"
+      "size": [
+        300,
+        150
+      ]
     },
     {
       "name": "RadialGradient-1",
@@ -639,15 +1378,43 @@
       "upstream": {
         "file": "apps/common/example/examples/Gradients.tsx",
         "scene": "RadialGradientExample",
-        "lines": [150,171]
+        "lines": [
+          150,
+          171
+        ]
       },
       "covers": "radialGradient userSpaceOnUse four stops",
-      "elements": ["defs","ellipse","radialGradient","stop","svg"],
-      "attributes": ["cx","cy","fill","fx","fy","gradientUnits","height","id","offset","r","rx","ry","stop-color","stop-opacity","width"],
+      "elements": [
+        "defs",
+        "ellipse",
+        "radialGradient",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fx",
+        "fy",
+        "gradientUnits",
+        "height",
+        "id",
+        "offset",
+        "r",
+        "rx",
+        "ry",
+        "stop-color",
+        "stop-opacity",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/RadialGradient-1.png",
       "sha256": "71ca1034de5b140dce68ff184f461fb5e28ae82d23b42f0e85f4bbc7cb91785a",
-      "size": [300,150]
+      "size": [
+        300,
+        150
+      ]
     },
     {
       "name": "RadialGradient-2",
@@ -656,15 +1423,42 @@
       "upstream": {
         "file": "apps/common/example/examples/Gradients.tsx",
         "scene": "RadialGradientPercent",
-        "lines": [175,194]
+        "lines": [
+          175,
+          194
+        ]
       },
       "covers": "radialGradient rx=ry percent (r=50%)",
-      "elements": ["defs","ellipse","radialGradient","stop","svg"],
-      "attributes": ["cx","cy","fill","fx","fy","height","id","offset","r","rx","ry","stop-color","stop-opacity","width"],
+      "elements": [
+        "defs",
+        "ellipse",
+        "radialGradient",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fx",
+        "fy",
+        "height",
+        "id",
+        "offset",
+        "r",
+        "rx",
+        "ry",
+        "stop-color",
+        "stop-opacity",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/RadialGradient-2.png",
       "sha256": "c350a86ca5b350ad7970784639e11e8d540459d9739df4e608ad28493d758bb5",
-      "size": [300,150]
+      "size": [
+        300,
+        150
+      ]
     },
     {
       "name": "RadialGradient-3",
@@ -673,16 +1467,42 @@
       "upstream": {
         "file": "apps/common/example/examples/Gradients.tsx",
         "scene": "RadialGradientPart",
-        "lines": [197,209]
+        "lines": [
+          197,
+          209
+        ]
       },
       "covers": "radialGradient focal point outside circle, stopOpacity",
-      "elements": ["defs","ellipse","radialGradient","stop","svg"],
-      "attributes": ["cx","cy","fill","fx","fy","height","id","offset","r","rx","ry","stop-color","stop-opacity","width"],
-      "status": "pending:radial-gradient-focal-outside-circle",
+      "elements": [
+        "defs",
+        "ellipse",
+        "radialGradient",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fx",
+        "fy",
+        "height",
+        "id",
+        "offset",
+        "r",
+        "rx",
+        "ry",
+        "stop-color",
+        "stop-opacity",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/RadialGradient-3.png",
       "sha256": "9b7593fdf0acabef6e283e3ee56c89dd68284613b13a50c100efcecc70f1860f",
-      "size": [300,150],
-      "pendingNote": "focal point outside the circle: resvg draws the SVG 2 cone (nothing outside it); Qt clamps the focal point and fills the whole ellipse. The first stop also has alpha 0, so the premultiplied interpolation gap applies as well; baseline metrics: pct=30.900 mean=44.418 block=13903 stpct=29.144 stblock=9771"
+      "size": [
+        300,
+        150
+      ]
     },
     {
       "name": "RadialGradient-4",
@@ -691,15 +1511,43 @@
       "upstream": {
         "file": "apps/common/example/examples/Gradients.tsx",
         "scene": "FillGradientWithOpacity",
-        "lines": [213,232]
+        "lines": [
+          213,
+          232
+        ]
       },
       "covers": "gradient fillOpacity",
-      "elements": ["defs","ellipse","radialGradient","stop","svg"],
-      "attributes": ["cx","cy","fill","fill-opacity","fx","fy","height","id","offset","r","rx","ry","stop-color","stop-opacity","width"],
+      "elements": [
+        "defs",
+        "ellipse",
+        "radialGradient",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fill-opacity",
+        "fx",
+        "fy",
+        "height",
+        "id",
+        "offset",
+        "r",
+        "rx",
+        "ry",
+        "stop-color",
+        "stop-opacity",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/RadialGradient-4.png",
       "sha256": "12e27900b69289174b0ad4be96fad1cc1fe4f2b2a837358595e703299ae09478",
-      "size": [300,150]
+      "size": [
+        300,
+        150
+      ]
     },
     {
       "name": "RadialGradient-5",
@@ -708,15 +1556,44 @@
       "upstream": {
         "file": "apps/common/example/examples/Gradients.tsx",
         "scene": "FillGradientInRect",
-        "lines": [235,255]
+        "lines": [
+          235,
+          255
+        ]
       },
       "covers": "radialGradient in rect with stroke",
-      "elements": ["defs","radialGradient","rect","stop","svg"],
-      "attributes": ["cx","cy","fill","fx","fy","height","id","offset","r","stop-color","stop-opacity","stroke","stroke-width","width","x","y"],
+      "elements": [
+        "defs",
+        "radialGradient",
+        "rect",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fx",
+        "fy",
+        "height",
+        "id",
+        "offset",
+        "r",
+        "stop-color",
+        "stop-opacity",
+        "stroke",
+        "stroke-width",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/RadialGradient-5.png",
       "sha256": "dc3e5a19cd81863f4a461366f001459f071b8010c136c0ea231ac14fe7c54e35",
-      "size": [300,150]
+      "size": [
+        300,
+        150
+      ]
     },
     {
       "name": "Image-1",
@@ -725,15 +1602,47 @@
       "upstream": {
         "file": "apps/common/example/examples/Image.tsx",
         "scene": "ImageExample",
-        "lines": [5,36]
+        "lines": [
+          5,
+          36
+        ]
       },
       "covers": "image slice opacity clipPath text",
-      "elements": ["circle","clipPath","defs","image","rect","svg","text"],
-      "attributes": ["clip-path","cx","cy","fill","font-family","font-size","font-weight","height","href","id","opacity","preserveAspectRatio","r","text-anchor","width","x","y"],
+      "elements": [
+        "circle",
+        "clipPath",
+        "defs",
+        "image",
+        "rect",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "clip-path",
+        "cx",
+        "cy",
+        "fill",
+        "font-family",
+        "font-size",
+        "font-weight",
+        "height",
+        "href",
+        "id",
+        "opacity",
+        "preserveAspectRatio",
+        "r",
+        "text-anchor",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Image-1.png",
       "sha256": "3cc90a39a2bfca199e24358ac3aa4d23209fad858f9b2fa4a5401bc4309b2f5f",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Image-2",
@@ -742,15 +1651,45 @@
       "upstream": {
         "file": "apps/common/example/examples/Image.tsx",
         "scene": "ClipImage",
-        "lines": [39,68]
+        "lines": [
+          39,
+          68
+        ]
       },
       "covers": "image clipPath meet",
-      "elements": ["circle","clipPath","defs","image","svg","text"],
-      "attributes": ["clip-path","cx","cy","fill","font-family","font-size","font-weight","height","href","id","opacity","r","text-anchor","width","x","y"],
+      "elements": [
+        "circle",
+        "clipPath",
+        "defs",
+        "image",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "clip-path",
+        "cx",
+        "cy",
+        "fill",
+        "font-family",
+        "font-size",
+        "font-weight",
+        "height",
+        "href",
+        "id",
+        "opacity",
+        "r",
+        "text-anchor",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Image-2.png",
       "sha256": "31723ad721db9c0370576def101eaac2f117bd2f816759a7af1bfb74d3de15fe",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Image-3",
@@ -759,15 +1698,31 @@
       "upstream": {
         "file": "apps/common/example/examples/Image.tsx",
         "scene": "DataURI",
-        "lines": [71,84]
+        "lines": [
+          71,
+          84
+        ]
       },
       "covers": "image data URI opacity",
-      "elements": ["image","svg"],
-      "attributes": ["height","href","opacity","width","x","y"],
+      "elements": [
+        "image",
+        "svg"
+      ],
+      "attributes": [
+        "height",
+        "href",
+        "opacity",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Image-3.png",
       "sha256": "3d8950f762cfc8a714691ab56ed1e3ded02c7a82c9c683801081671c62c4b7ed",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Marker-1",
@@ -776,16 +1731,48 @@
       "upstream": {
         "file": "apps/common/example/examples/Markers.tsx",
         "scene": "EllipseExample",
-        "lines": [14,46]
+        "lines": [
+          14,
+          46
+        ]
       },
       "covers": "marker userSpaceOnUse, ellipse (rx 30%, ry 10%) written as a path because resvg draws markers on path-like shapes only",
-      "elements": ["circle","defs","marker","path","svg"],
-      "attributes": ["cx","cy","d","fill","height","id","marker-end","marker-mid","marker-start","markerHeight","markerUnits","markerWidth","orient","overflow","r","refX","refY","stroke","stroke-width","width"],
-      "status": "pending:marker",
+      "elements": [
+        "circle",
+        "defs",
+        "marker",
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "d",
+        "fill",
+        "height",
+        "id",
+        "marker-end",
+        "marker-mid",
+        "marker-start",
+        "markerHeight",
+        "markerUnits",
+        "markerWidth",
+        "orient",
+        "overflow",
+        "r",
+        "refX",
+        "refY",
+        "stroke",
+        "stroke-width",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/Marker-1.png",
       "sha256": "63d81612fe6a085ec1fa6485b116763c4bb740fda5e9210b470188354eef88e3",
-      "size": [400,300],
-      "pendingNote": "the element is not in the baseline model (marker element); baseline metrics: pct=0.552 mean=0.442 block=96 stpct=0.240 stblock=56"
+      "size": [
+        400,
+        300
+      ]
     },
     {
       "name": "Marker-2",
@@ -794,16 +1781,49 @@
       "upstream": {
         "file": "apps/common/example/examples/Markers.tsx",
         "scene": "LineExample",
-        "lines": [49,78]
+        "lines": [
+          49,
+          78
+        ]
       },
       "covers": "marker orient auto on line",
-      "elements": ["defs","line","marker","polygon","svg"],
-      "attributes": ["fill","height","id","marker-end","marker-mid","marker-start","markerHeight","markerUnits","markerWidth","orient","overflow","points","refX","refY","stroke","stroke-width","width","x1","x2","y1","y2"],
-      "status": "pending:marker",
+      "elements": [
+        "defs",
+        "line",
+        "marker",
+        "polygon",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "id",
+        "marker-end",
+        "marker-mid",
+        "marker-start",
+        "markerHeight",
+        "markerUnits",
+        "markerWidth",
+        "orient",
+        "overflow",
+        "points",
+        "refX",
+        "refY",
+        "stroke",
+        "stroke-width",
+        "width",
+        "x1",
+        "x2",
+        "y1",
+        "y2"
+      ],
+      "status": "pass",
       "golden": "golden/Marker-2.png",
       "sha256": "58feb86b8b851d693e55438075f9e8dbf75d49249286596f21fd7113b2f4720f",
-      "size": [200,200],
-      "pendingNote": "the element is not in the baseline model (marker element); baseline metrics: pct=1.215 mean=1.818 block=243 stpct=0.750 stblock=147; with the working-tree renderer: markers are drawn clipped to the marker viewport (markerWidth by markerHeight); the fixture sets overflow=\"visible\" because react-native-svg does not clip markers"
+      "size": [
+        200,
+        200
+      ]
     },
     {
       "name": "Marker-3",
@@ -812,16 +1832,48 @@
       "upstream": {
         "file": "apps/common/example/examples/Markers.tsx",
         "scene": "CircleExample",
-        "lines": [81,106]
+        "lines": [
+          81,
+          106
+        ]
       },
       "covers": "marker on a circle (r 30%) written as a path",
-      "elements": ["defs","marker","path","rect","svg"],
-      "attributes": ["d","fill","height","id","marker-end","marker-mid","marker-start","markerHeight","markerUnits","markerWidth","orient","overflow","refX","refY","stroke","stroke-opacity","stroke-width","width","x","y"],
-      "status": "pending:marker",
+      "elements": [
+        "defs",
+        "marker",
+        "path",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "height",
+        "id",
+        "marker-end",
+        "marker-mid",
+        "marker-start",
+        "markerHeight",
+        "markerUnits",
+        "markerWidth",
+        "orient",
+        "overflow",
+        "refX",
+        "refY",
+        "stroke",
+        "stroke-opacity",
+        "stroke-width",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/Marker-3.png",
       "sha256": "716d0a8344aa5bb77d5c0d1f7aae8167f20533de3223fb6edb1e08f170817ec3",
-      "size": [200,150],
-      "pendingNote": "the element is not in the baseline model (marker element); baseline metrics: pct=3.783 mean=5.347 block=370 stpct=2.670 stblock=282; with the working-tree renderer: same marker clipping as Marker-2"
+      "size": [
+        200,
+        150
+      ]
     },
     {
       "name": "Marker-4",
@@ -830,16 +1882,50 @@
       "upstream": {
         "file": "apps/common/example/examples/Markers.tsx",
         "scene": "RectExample",
-        "lines": [109,142]
+        "lines": [
+          109,
+          142
+        ]
       },
       "covers": "marker markerUnits strokeWidth, rect written as a path, viewBox 100x100",
-      "elements": ["defs","ellipse","marker","path","svg"],
-      "attributes": ["cx","cy","d","fill","height","id","marker-end","marker-mid","marker-start","markerHeight","markerUnits","markerWidth","orient","overflow","refX","refY","rx","ry","stroke","stroke-width","viewBox","width"],
-      "status": "pending:marker",
+      "elements": [
+        "defs",
+        "ellipse",
+        "marker",
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "d",
+        "fill",
+        "height",
+        "id",
+        "marker-end",
+        "marker-mid",
+        "marker-start",
+        "markerHeight",
+        "markerUnits",
+        "markerWidth",
+        "orient",
+        "overflow",
+        "refX",
+        "refY",
+        "rx",
+        "ry",
+        "stroke",
+        "stroke-width",
+        "viewBox",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/Marker-4.png",
       "sha256": "fd3ce56483614b4344cb4ec2a2738f2998e9da4f9391d45f5943bd5d49f95e2d",
-      "size": [400,200],
-      "pendingNote": "the element is not in the baseline model (marker element); baseline metrics: pct=2.394 mean=2.445 block=498 stpct=1.795 stblock=352; with the working-tree renderer: same marker clipping as Marker-2"
+      "size": [
+        400,
+        200
+      ]
     },
     {
       "name": "Marker-5",
@@ -848,16 +1934,46 @@
       "upstream": {
         "file": "apps/common/example/examples/Markers.tsx",
         "scene": "PathExample",
-        "lines": [145,172]
+        "lines": [
+          145,
+          172
+        ]
       },
       "covers": "marker markerEnd refX refY markerWidth markerHeight, viewBox",
-      "elements": ["defs","line","marker","path","svg"],
-      "attributes": ["d","fill","height","id","marker-end","markerHeight","markerWidth","overflow","refX","refY","stroke","stroke-width","viewBox","width","x1","x2","y1","y2"],
-      "status": "pending:marker",
+      "elements": [
+        "defs",
+        "line",
+        "marker",
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "height",
+        "id",
+        "marker-end",
+        "markerHeight",
+        "markerWidth",
+        "overflow",
+        "refX",
+        "refY",
+        "stroke",
+        "stroke-width",
+        "viewBox",
+        "width",
+        "x1",
+        "x2",
+        "y1",
+        "y2"
+      ],
+      "status": "pass",
       "golden": "golden/Marker-5.png",
       "sha256": "3b92a367b428996c6100e541c056f10dd9a87d6aa737579ef239a0c76794e911",
-      "size": [400,200],
-      "pendingNote": "the element is not in the baseline model (marker element); baseline metrics: pct=1.052 mean=1.632 block=840 stpct=0.865 stblock=692; with the working-tree renderer: the arrow is drawn smaller than the reference (clipped to a 6 by 6 viewport scaled by the stroke width)"
+      "size": [
+        400,
+        200
+      ]
     },
     {
       "name": "Mask-1",
@@ -866,15 +1982,45 @@
       "upstream": {
         "file": "apps/common/example/examples/Mask.tsx",
         "scene": "SimpleMask",
-        "lines": [24,41]
+        "lines": [
+          24,
+          41
+        ]
       },
       "covers": "mask luminance path heart, viewBox",
-      "elements": ["circle","defs","g","mask","path","polygon","rect","svg"],
-      "attributes": ["cx","cy","d","fill","height","id","mask","maskUnits","points","r","viewBox","width","x","y"],
+      "elements": [
+        "circle",
+        "defs",
+        "g",
+        "mask",
+        "path",
+        "polygon",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "d",
+        "fill",
+        "height",
+        "id",
+        "mask",
+        "maskUnits",
+        "points",
+        "r",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Mask-1.png",
       "sha256": "545104f833d53aec5da5a789538761bce9e180a2c10a63d6354da276df3cc21a",
-      "size": [200,100]
+      "size": [
+        200,
+        100
+      ]
     },
     {
       "name": "Mask-2",
@@ -883,15 +2029,36 @@
       "upstream": {
         "file": "apps/common/example/examples/Mask.tsx",
         "scene": "AnotherMask",
-        "lines": [44,80]
+        "lines": [
+          44,
+          80
+        ]
       },
       "covers": "mask x y width height userSpaceOnUse",
-      "elements": ["defs","mask","rect","svg"],
-      "attributes": ["fill","height","id","mask","maskUnits","stroke","width","x","y"],
+      "elements": [
+        "defs",
+        "mask",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "id",
+        "mask",
+        "maskUnits",
+        "stroke",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Mask-2.png",
       "sha256": "ce0287a0f0dea8406a6fbf6f65d8d05538acd8492257d160a37168f744afb64d",
-      "size": [500,120]
+      "size": [
+        500,
+        120
+      ]
     },
     {
       "name": "Mask-3",
@@ -900,15 +2067,47 @@
       "upstream": {
         "file": "apps/common/example/examples/Mask.tsx",
         "scene": "MaskWithText",
-        "lines": [83,118]
+        "lines": [
+          83,
+          118
+        ]
       },
       "covers": "mask with gradient content, text",
-      "elements": ["defs","linearGradient","mask","rect","stop","svg","text"],
-      "attributes": ["fill","font-family","height","id","mask","maskUnits","offset","stop-color","stop-opacity","stroke","width","x","x1","x2","y","y1","y2"],
+      "elements": [
+        "defs",
+        "linearGradient",
+        "mask",
+        "rect",
+        "stop",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "fill",
+        "font-family",
+        "height",
+        "id",
+        "mask",
+        "maskUnits",
+        "offset",
+        "stop-color",
+        "stop-opacity",
+        "stroke",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "y",
+        "y1",
+        "y2"
+      ],
       "status": "pass",
       "golden": "golden/Mask-3.png",
       "sha256": "e9a430db84dcb9d3a5fb64027ef66996a0a27f2e852129c5f6eeea443c397199",
-      "size": [500,120]
+      "size": [
+        500,
+        120
+      ]
     },
     {
       "name": "Use-1",
@@ -917,15 +2116,39 @@
       "upstream": {
         "file": "apps/common/example/examples/Reusable.tsx",
         "scene": "UseExample",
-        "lines": [17,31]
+        "lines": [
+          17,
+          31
+        ]
       },
       "covers": "use defs g x y",
-      "elements": ["circle","defs","g","rect","svg","use"],
-      "attributes": ["cx","cy","fill","height","href","id","r","width","x","y"],
+      "elements": [
+        "circle",
+        "defs",
+        "g",
+        "rect",
+        "svg",
+        "use"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "href",
+        "id",
+        "r",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Use-1.png",
       "sha256": "ea7a759032423526cc6ab6a73622ccb132dbbbf02b92cc228adddc8fca0023d0",
-      "size": [300,100]
+      "size": [
+        300,
+        100
+      ]
     },
     {
       "name": "Use-2",
@@ -934,15 +2157,37 @@
       "upstream": {
         "file": "apps/common/example/examples/Reusable.tsx",
         "scene": "UseShapes",
-        "lines": [34,60]
+        "lines": [
+          34,
+          60
+        ]
       },
       "covers": "use of a non-defs g, fill override, use rotation about an origin",
-      "elements": ["g","rect","svg","use"],
-      "attributes": ["fill","height","href","id","stroke","stroke-width","transform","width","x","y"],
+      "elements": [
+        "g",
+        "rect",
+        "svg",
+        "use"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "href",
+        "id",
+        "stroke",
+        "stroke-width",
+        "transform",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Use-2.png",
       "sha256": "4a0c0229d63046027ca8697f3b10e9e77738f5adae7763d72550cd435e9d5a98",
-      "size": [200,110],
+      "size": [
+        200,
+        110
+      ],
       "thresholds": {
         "maxShiftTolerantPercent": 1,
         "maxShiftTolerantBlock": 130,
@@ -957,15 +2202,58 @@
       "upstream": {
         "file": "apps/common/example/examples/Reusable.tsx",
         "scene": "DefsExample",
-        "lines": [63,105]
+        "lines": [
+          63,
+          105
+        ]
       },
       "covers": "use g opacity clipPath gradients defs fill inheritance",
-      "elements": ["circle","clipPath","defs","g","linearGradient","path","radialGradient","stop","svg","use"],
-      "attributes": ["clip-path","cx","cy","d","fill","fill-opacity","fx","fy","height","href","id","offset","opacity","r","stop-color","stroke","stroke-width","transform","width","x","x1","x2","y","y1","y2"],
+      "elements": [
+        "circle",
+        "clipPath",
+        "defs",
+        "g",
+        "linearGradient",
+        "path",
+        "radialGradient",
+        "stop",
+        "svg",
+        "use"
+      ],
+      "attributes": [
+        "clip-path",
+        "cx",
+        "cy",
+        "d",
+        "fill",
+        "fill-opacity",
+        "fx",
+        "fy",
+        "height",
+        "href",
+        "id",
+        "offset",
+        "opacity",
+        "r",
+        "stop-color",
+        "stroke",
+        "stroke-width",
+        "transform",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "y",
+        "y1",
+        "y2"
+      ],
       "status": "pass",
       "golden": "golden/Use-3.png",
       "sha256": "57ff70c0469570f1030cd754291b13edd249b01fe16157fd81f129de157aac63",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Symbol-1",
@@ -974,16 +2262,40 @@
       "upstream": {
         "file": "apps/common/example/examples/Reusable.tsx",
         "scene": "SymbolExample",
-        "lines": [108,134]
+        "lines": [
+          108,
+          134
+        ]
       },
       "covers": "symbol viewBox use width height",
-      "elements": ["circle","svg","symbol","use"],
-      "attributes": ["cx","cy","fill","height","href","id","r","stroke","stroke-width","viewBox","width","x","y"],
-      "status": "pending:symbol",
+      "elements": [
+        "circle",
+        "svg",
+        "symbol",
+        "use"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "href",
+        "id",
+        "r",
+        "stroke",
+        "stroke-width",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/Symbol-1.png",
       "sha256": "e6dd1f8b9dc964c018b357939faa7e152845f5b61b75efb7d1daa301a7ef63df",
-      "size": [110,150],
-      "pendingNote": "the element is not in the baseline model (symbol element); baseline metrics: pct=13.958 mean=23.263 block=1238 stpct=9.352 stblock=900"
+      "size": [
+        110,
+        150
+      ]
     },
     {
       "name": "Stroke-1",
@@ -992,15 +2304,31 @@
       "upstream": {
         "file": "apps/common/example/examples/Stroking.tsx",
         "scene": "StrokeExample",
-        "lines": [16,26]
+        "lines": [
+          16,
+          26
+        ]
       },
       "covers": "stroke colors",
-      "elements": ["g","path","svg"],
-      "attributes": ["d","height","stroke","stroke-width","width"],
+      "elements": [
+        "g",
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "height",
+        "stroke",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Stroke-1.png",
       "sha256": "8e5e0d64bda1321df30c65ae4013f0595630afc73732b9dac9f0503dd0963df2",
-      "size": [225,80]
+      "size": [
+        225,
+        80
+      ]
     },
     {
       "name": "Stroke-2",
@@ -1009,15 +2337,32 @@
       "upstream": {
         "file": "apps/common/example/examples/Stroking.tsx",
         "scene": "StrokeLinecap",
-        "lines": [30,40]
+        "lines": [
+          30,
+          40
+        ]
       },
       "covers": "strokeLinecap",
-      "elements": ["g","path","svg"],
-      "attributes": ["d","height","stroke","stroke-linecap","stroke-width","width"],
+      "elements": [
+        "g",
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "height",
+        "stroke",
+        "stroke-linecap",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Stroke-2.png",
       "sha256": "ebad6de2bb1ad01d54348ec8ed8eede8030975c186ba25028696b93e4caa09cd",
-      "size": [225,80]
+      "size": [
+        225,
+        80
+      ]
     },
     {
       "name": "Stroke-3",
@@ -1026,15 +2371,33 @@
       "upstream": {
         "file": "apps/common/example/examples/Stroking.tsx",
         "scene": "StrokeDasharray",
-        "lines": [44,54]
+        "lines": [
+          44,
+          54
+        ]
       },
       "covers": "strokeDasharray lists",
-      "elements": ["g","path","svg"],
-      "attributes": ["d","fill","height","stroke","stroke-dasharray","stroke-width","width"],
+      "elements": [
+        "g",
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "height",
+        "stroke",
+        "stroke-dasharray",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Stroke-3.png",
       "sha256": "6ea6bf6027ff9ce69e1a8e4ddf75e13eede361d02578a409b4537fafa9ff8f1f",
-      "size": [225,80]
+      "size": [
+        225,
+        80
+      ]
     },
     {
       "name": "Stroke-4",
@@ -1043,15 +2406,42 @@
       "upstream": {
         "file": "apps/common/example/examples/Stroking.tsx",
         "scene": "StrokeDashoffset",
-        "lines": [57,85]
+        "lines": [
+          57,
+          85
+        ]
       },
       "covers": "strokeDashoffset on circle and text",
-      "elements": ["circle","svg","text"],
-      "attributes": ["cx","cy","fill","font-family","font-size","font-weight","height","r","stroke","stroke-dasharray","stroke-dashoffset","stroke-width","text-anchor","width","x","y"],
+      "elements": [
+        "circle",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "font-family",
+        "font-size",
+        "font-weight",
+        "height",
+        "r",
+        "stroke",
+        "stroke-dasharray",
+        "stroke-dashoffset",
+        "stroke-width",
+        "text-anchor",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Stroke-4.png",
       "sha256": "d12334af855fda60960484d2f90627801e59361c2f14f8da67e06d275947d8e2",
-      "size": [200,80]
+      "size": [
+        200,
+        80
+      ]
     },
     {
       "name": "Stroke-5",
@@ -1060,16 +2450,51 @@
       "upstream": {
         "file": "apps/common/example/examples/Stroking.tsx",
         "scene": "StrokePattern",
-        "lines": [89,129]
+        "lines": [
+          89,
+          129
+        ]
       },
       "covers": "gradient stroke, dash, clipPath, polyline",
-      "elements": ["circle","clipPath","defs","polyline","radialGradient","rect","stop","svg"],
-      "attributes": ["clip-path","cx","cy","fill","fx","fy","height","id","offset","points","r","stop-color","stop-opacity","stroke","stroke-dasharray","stroke-linecap","stroke-width","width","x","y"],
-      "status": "pending:stroke-gradient-paint",
+      "elements": [
+        "circle",
+        "clipPath",
+        "defs",
+        "polyline",
+        "radialGradient",
+        "rect",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "clip-path",
+        "cx",
+        "cy",
+        "fill",
+        "fx",
+        "fy",
+        "height",
+        "id",
+        "offset",
+        "points",
+        "r",
+        "stop-color",
+        "stop-opacity",
+        "stroke",
+        "stroke-dasharray",
+        "stroke-linecap",
+        "stroke-width",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/Stroke-5.png",
       "sha256": "59e174fb55962e0c0cbe198f53b7dd224732134ac92d485820b5db16b743bfdf",
-      "size": [200,80],
-      "pendingNote": "gradient used as a stroke paint (stop alpha 0.5 to 1) differs from the reference along every dash; cause not isolated: a fill gradient with the same stops (Text-4) passes, so the stroke path (bounding box for objectBoundingBox units, or interpolation) is the suspect; baseline metrics: pct=5.081 mean=1.580 block=72 stpct=1.356 stblock=20"
+      "size": [
+        200,
+        80
+      ]
     },
     {
       "name": "Stroke-6",
@@ -1078,15 +2503,34 @@
       "upstream": {
         "file": "apps/common/example/examples/Stroking.tsx",
         "scene": "icon",
-        "lines": [132,144]
+        "lines": [
+          132,
+          144
+        ]
       },
       "covers": "strokeDasharray in viewBox icon",
-      "elements": ["g","path","svg"],
-      "attributes": ["d","fill","height","stroke","stroke-dasharray","stroke-width","viewBox","width"],
+      "elements": [
+        "g",
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "height",
+        "stroke",
+        "stroke-dasharray",
+        "stroke-width",
+        "viewBox",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Stroke-6.png",
       "sha256": "75f29b396c3f26b3bf9a90d1b694f669d8ea3fd7e4211a67f5c5e4269201eb87",
-      "size": [30,30]
+      "size": [
+        30,
+        30
+      ]
     },
     {
       "name": "Stroke-7",
@@ -1095,15 +2539,34 @@
       "upstream": {
         "file": "apps/common/example/examples/Stroking.tsx",
         "scene": "(added: linejoin and miterlimit, listed in the brief)",
-        "lines": [132,144]
+        "lines": [
+          132,
+          144
+        ]
       },
       "covers": "strokeLinejoin miter round bevel strokeMiterlimit",
-      "elements": ["g","polyline","svg"],
-      "attributes": ["fill","height","points","stroke","stroke-linejoin","stroke-miterlimit","stroke-width","width"],
+      "elements": [
+        "g",
+        "polyline",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "points",
+        "stroke",
+        "stroke-linejoin",
+        "stroke-miterlimit",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Stroke-7.png",
       "sha256": "1fcc4f3ee49f36253235514835cfea3b293def736ee0ba561b7cfab50b51817d",
-      "size": [200,100]
+      "size": [
+        200,
+        100
+      ]
     },
     {
       "name": "Svg-1",
@@ -1112,15 +2575,36 @@
       "upstream": {
         "file": "apps/common/example/examples/Svg.tsx",
         "scene": "SvgExample",
-        "lines": [17,39]
+        "lines": [
+          17,
+          39
+        ]
       },
       "covers": "svg circle rect",
-      "elements": ["circle","rect","svg"],
-      "attributes": ["cx","cy","fill","height","r","stroke","stroke-width","width","x","y"],
+      "elements": [
+        "circle",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "r",
+        "stroke",
+        "stroke-width",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Svg-1.png",
       "sha256": "f6fa2afdd282e33b4799f57d2fbf46eb6a7a1cc53c53e13cab06983d81f59c9d",
-      "size": [100,100],
+      "size": [
+        100,
+        100
+      ],
       "thresholds": {
         "maxDiffPixelPercent": 2.4
       },
@@ -1133,15 +2617,37 @@
       "upstream": {
         "file": "apps/common/example/examples/Svg.tsx",
         "scene": "SvgOpacity",
-        "lines": [42,64]
+        "lines": [
+          42,
+          64
+        ]
       },
       "covers": "svg root opacity",
-      "elements": ["circle","rect","svg"],
-      "attributes": ["cx","cy","fill","height","opacity","r","stroke","stroke-width","width","x","y"],
+      "elements": [
+        "circle",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "opacity",
+        "r",
+        "stroke",
+        "stroke-width",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Svg-2.png",
       "sha256": "21c55dc00e8d5da5c4ab456d7e80ed4357d08bbea37db9e55c19c4d1b751eb1e",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Svg-3",
@@ -1150,15 +2656,39 @@
       "upstream": {
         "file": "apps/common/example/examples/Svg.tsx",
         "scene": "SvgViewbox",
-        "lines": [67,81]
+        "lines": [
+          67,
+          81
+        ]
       },
       "covers": "viewBox preserveAspectRatio=none",
-      "elements": ["circle","path","rect","svg"],
-      "attributes": ["cx","cy","d","fill","height","preserveAspectRatio","r","stroke","viewBox","width","x","y"],
+      "elements": [
+        "circle",
+        "path",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "d",
+        "fill",
+        "height",
+        "preserveAspectRatio",
+        "r",
+        "stroke",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Svg-3.png",
       "sha256": "cc0406f0832c85bf6c77ef3a98efaeb5595077bca0b4e7070bfdf7e183a71ce3",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Svg-4",
@@ -1167,15 +2697,37 @@
       "upstream": {
         "file": "apps/common/example/examples/Svg.tsx",
         "scene": "SvgLayout",
-        "lines": [85,117]
+        "lines": [
+          85,
+          117
+        ]
       },
       "covers": "percent lengths against a 200x100 viewport",
-      "elements": ["line","rect","svg"],
-      "attributes": ["fill","height","stroke","stroke-width","width","x","x1","x2","y","y1","y2"],
+      "elements": [
+        "line",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "stroke",
+        "stroke-width",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "y",
+        "y1",
+        "y2"
+      ],
       "status": "pass",
       "golden": "golden/Svg-4.png",
       "sha256": "9357dcdb9b5e8f22201cc51f16facacbd3d85d80660fea31bec60d3711ec1711",
-      "size": [200,100]
+      "size": [
+        200,
+        100
+      ]
     },
     {
       "name": "Svg-5",
@@ -1184,15 +2736,35 @@
       "upstream": {
         "file": "apps/common/example/examples/Svg.tsx",
         "scene": "SvgNativeMethods",
-        "lines": [120,160]
+        "lines": [
+          120,
+          160
+        ]
       },
       "covers": "g x translate, path (the toDataURL, isPointInFill, getBBox and getCTM calls are listed as non-visual)",
-      "elements": ["circle","g","path","svg"],
-      "attributes": ["cx","cy","d","fill","height","r","transform","width"],
+      "elements": [
+        "circle",
+        "g",
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "d",
+        "fill",
+        "height",
+        "r",
+        "transform",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Svg-5.png",
       "sha256": "9681236351ab61864de3352dea2f0985a1e394e641695f554e90f2f94c0dc885",
-      "size": [150,100]
+      "size": [
+        150,
+        100
+      ]
     },
     {
       "name": "Text-1",
@@ -1201,16 +2773,33 @@
       "upstream": {
         "file": "apps/common/example/examples/Text.tsx",
         "scene": "TextExample",
-        "lines": [15,26]
+        "lines": [
+          15,
+          26
+        ]
       },
       "covers": "text x y fill textAnchor middle",
-      "elements": ["svg","text"],
-      "attributes": ["fill","font-family","height","text-anchor","width","x","y"],
+      "elements": [
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "fill",
+        "font-family",
+        "height",
+        "text-anchor",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Text-1.png",
       "text": true,
       "sha256": "9be7c23f72a90c29120bf930e3cb256160f6bd5176d50c46b4dfeed08a5323d9",
-      "size": [100,30]
+      "size": [
+        100,
+        30
+      ]
     },
     {
       "name": "Text-2",
@@ -1219,17 +2808,34 @@
       "upstream": {
         "file": "apps/common/example/examples/Text.tsx",
         "scene": "TextRotate",
-        "lines": [29,43]
+        "lines": [
+          29,
+          43
+        ]
       },
       "covers": "text rotate list, text transform scale about origin",
-      "elements": ["svg","text"],
-      "attributes": ["fill","font-family","height","rotate","transform","width","x","y"],
-      "status": "pending:text-rotate-list",
+      "elements": [
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "fill",
+        "font-family",
+        "height",
+        "rotate",
+        "transform",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/Text-2.png",
       "text": true,
       "sha256": "835dda86ed2fe0aad94477c4dc0c3a05c6d8daa86a34bd9132e7d01b615ae462",
-      "size": [200,60],
-      "pendingNote": "per-character rotate list is not applied: the glyphs are drawn upright; baseline metrics: pct=11.467 mean=10.412 block=190 stpct=0.383 stblock=10"
+      "size": [
+        200,
+        60
+      ]
     },
     {
       "name": "Text-3",
@@ -1238,17 +2844,49 @@
       "upstream": {
         "file": "apps/common/example/examples/Text.tsx",
         "scene": "TextStroke",
-        "lines": [46,67]
+        "lines": [
+          46,
+          67
+        ]
       },
       "covers": "text gradient stroke, tspan textAnchor",
-      "elements": ["defs","linearGradient","stop","svg","text","tspan"],
-      "attributes": ["fill","font-family","font-size","font-weight","height","id","offset","stop-color","stop-opacity","stroke","stroke-width","text-anchor","width","x","x1","x2","y","y1","y2"],
-      "status": "pending:stroke-gradient-paint",
+      "elements": [
+        "defs",
+        "linearGradient",
+        "stop",
+        "svg",
+        "text",
+        "tspan"
+      ],
+      "attributes": [
+        "fill",
+        "font-family",
+        "font-size",
+        "font-weight",
+        "height",
+        "id",
+        "offset",
+        "stop-color",
+        "stop-opacity",
+        "stroke",
+        "stroke-width",
+        "text-anchor",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "y",
+        "y1",
+        "y2"
+      ],
+      "status": "pass",
       "golden": "golden/Text-3.png",
       "text": true,
       "sha256": "ff7fd4356da9cafa9dbbce533df9252365c480b92a2055678c171619b6b70984",
-      "size": [200,60],
-      "pendingNote": "gradient stroke on text differs from the reference over the whole glyph outline; Text-4 (the same stops as a fill) passes, so the stroke path is the suspect; cause not isolated; baseline metrics: pct=6.025 mean=2.301 block=304 stpct=5.183 stblock=195"
+      "size": [
+        200,
+        60
+      ]
     },
     {
       "name": "Text-4",
@@ -1257,16 +2895,48 @@
       "upstream": {
         "file": "apps/common/example/examples/Text.tsx",
         "scene": "TextFill",
-        "lines": [70,93]
+        "lines": [
+          70,
+          93
+        ]
       },
       "covers": "text gradient fill bold",
-      "elements": ["defs","linearGradient","stop","svg","text"],
-      "attributes": ["fill","font-family","font-size","font-weight","height","id","offset","stop-color","stop-opacity","stroke","stroke-width","text-anchor","width","x","x1","x2","y","y1","y2"],
+      "elements": [
+        "defs",
+        "linearGradient",
+        "stop",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "fill",
+        "font-family",
+        "font-size",
+        "font-weight",
+        "height",
+        "id",
+        "offset",
+        "stop-color",
+        "stop-opacity",
+        "stroke",
+        "stroke-width",
+        "text-anchor",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "y",
+        "y1",
+        "y2"
+      ],
       "status": "pass",
       "golden": "golden/Text-4.png",
       "text": true,
       "sha256": "9185b21b58d89059bbb56ae786340e5e137152480d51199c357debf074372134",
-      "size": [200,60]
+      "size": [
+        200,
+        60
+      ]
     },
     {
       "name": "TextPath-1",
@@ -1275,17 +2945,48 @@
       "upstream": {
         "file": "apps/common/example/examples/Text.tsx",
         "scene": "TextPathExample",
-        "lines": [102,121]
+        "lines": [
+          102,
+          121
+        ]
       },
       "covers": "textPath href startOffset negative percent, tspan dy list",
-      "elements": ["defs","g","path","svg","text","textPath","tspan"],
-      "attributes": ["d","dy","fill","font-family","height","href","id","startOffset","stroke","stroke-width","transform","width"],
-      "status": "pending:textPath",
+      "elements": [
+        "defs",
+        "g",
+        "path",
+        "svg",
+        "text",
+        "textPath",
+        "tspan"
+      ],
+      "attributes": [
+        "d",
+        "dy",
+        "fill",
+        "font-family",
+        "height",
+        "href",
+        "id",
+        "startOffset",
+        "stroke",
+        "stroke-width",
+        "transform",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/TextPath-1.png",
       "text": true,
       "sha256": "89bf122b4428e2cb85408875f3a2e4534871937305d93c8ff92a59265e745efa",
-      "size": [200,100],
-      "pendingNote": "the element is not in the baseline model (textPath element); baseline metrics: pct=3.715 mean=3.367 block=115 stpct=0.275 stblock=14; with the working-tree renderer: text on a path is drawn on a straight baseline"
+      "size": [
+        200,
+        100
+      ],
+      "thresholds": {
+        "maxDiffPixelPercent": 2.6,
+        "meanAbsDiff": 2.4
+      },
+      "thresholdReason": "glyph outlines: anti-aliasing of curved edges (Qt rasterises 4x4 samples, resvg 4 sub-scanlines); geometry is covered by RnsvgTextTest"
     },
     {
       "name": "TSpan-1",
@@ -1294,17 +2995,42 @@
       "upstream": {
         "file": "apps/common/example/examples/Text.tsx",
         "scene": "TSpanExample",
-        "lines": [124,151]
+        "lines": [
+          124,
+          151
+        ]
       },
       "covers": "tspan x dx dy lists, nested tspan, font override",
-      "elements": ["svg","text","tspan"],
-      "attributes": ["dx","dy","fill","font-family","font-size","font-weight","height","width","x","y"],
-      "status": "pending:text-dx-dy-lists",
+      "elements": [
+        "svg",
+        "text",
+        "tspan"
+      ],
+      "attributes": [
+        "dx",
+        "dy",
+        "fill",
+        "font-family",
+        "font-size",
+        "font-weight",
+        "height",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/TSpan-1.png",
       "text": true,
       "sha256": "c72e6a5639d6daf1171fe3c4eb54d66887189dc1cbba140336298a891f2b0293",
-      "size": [200,160],
-      "pendingNote": "per-character dx and dy lists on tspan and text are not applied (characters sit on one line without the offsets); baseline metrics: pct=5.869 mean=7.344 block=145 stpct=0.406 stblock=15"
+      "size": [
+        200,
+        160
+      ],
+      "thresholds": {
+        "maxDiffPixelPercent": 2.6,
+        "meanAbsDiff": 2.4
+      },
+      "thresholdReason": "glyph outlines: anti-aliasing of curved edges (Qt rasterises 4x4 samples, resvg 4 sub-scanlines); geometry is covered by RnsvgTextTest"
     },
     {
       "name": "Text-5",
@@ -1313,11 +3039,25 @@
       "upstream": {
         "file": "apps/common/example/examples/Text.tsx",
         "scene": "icon",
-        "lines": [154,160]
+        "lines": [
+          154,
+          160
+        ]
       },
       "covers": "text CJK glyph",
-      "elements": ["svg","text"],
-      "attributes": ["fill","font-size","height","viewBox","width","x","y"],
+      "elements": [
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "fill",
+        "font-size",
+        "height",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "reference-none",
       "reason": "The test font directory carries no CJK glyphs, so no reference rendering exists that does not depend on system fonts.",
       "text": true,
@@ -1330,16 +3070,38 @@
       "upstream": {
         "file": "apps/common/example/examples/Transforms.tsx",
         "scene": "patternXml (SvgXml)",
-        "lines": [15,87]
+        "lines": [
+          15,
+          87
+        ]
       },
       "covers": "pattern patternTransform rotate skewX scale, objectBoundingBox tile",
-      "elements": ["circle","pattern","rect","svg"],
-      "attributes": ["cx","cy","fill","height","id","patternTransform","r","viewBox","width","x","y"],
-      "status": "pending:pattern",
+      "elements": [
+        "circle",
+        "pattern",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "id",
+        "patternTransform",
+        "r",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/Pattern-1.png",
       "sha256": "b10361e0274dd5e08ea88233b487049ad906234fe213eefc3b25fdd108862485",
-      "size": [100,100],
-      "pendingNote": "the element is not in the baseline model (pattern element); baseline metrics: pct=55.640 mean=127.232 block=5564 stpct=42.190 stblock=4219"
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Pattern-2",
@@ -1348,16 +3110,39 @@
       "upstream": {
         "file": "apps/common/example/examples/Transforms.tsx",
         "scene": "PatternTransformExample",
-        "lines": [32,87]
+        "lines": [
+          32,
+          87
+        ]
       },
       "covers": "pattern in viewBox, rect transform translate",
-      "elements": ["circle","pattern","rect","svg"],
-      "attributes": ["cx","cy","fill","height","id","patternTransform","r","transform","viewBox","width","x","y"],
-      "status": "pending:pattern",
+      "elements": [
+        "circle",
+        "pattern",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "id",
+        "patternTransform",
+        "r",
+        "transform",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/Pattern-2.png",
       "sha256": "f85d254043e8b4629bf24d2703df82265b86c6c83e96d80f8c44774f0938f90b",
-      "size": [300,100],
-      "pendingNote": "the element is not in the baseline model (pattern element); baseline metrics: pct=37.093 mean=84.822 block=5564 stpct=28.127 stblock=4219"
+      "size": [
+        300,
+        100
+      ]
     },
     {
       "name": "Pattern-3",
@@ -1366,16 +3151,39 @@
       "upstream": {
         "file": "apps/common/example/examples/Transforms.tsx",
         "scene": "PatternTransformExample",
-        "lines": [32,87]
+        "lines": [
+          32,
+          87
+        ]
       },
       "covers": "pattern userSpaceOnUse rotate(45), g matrix flip",
-      "elements": ["defs","g","pattern","rect","svg"],
-      "attributes": ["fill","height","id","patternContentUnits","patternTransform","patternUnits","transform","viewBox","width","x","y"],
-      "status": "pending:pattern",
+      "elements": [
+        "defs",
+        "g",
+        "pattern",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "id",
+        "patternContentUnits",
+        "patternTransform",
+        "patternUnits",
+        "transform",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/Pattern-3.png",
       "sha256": "23ccad632147fd9d847695effe5cfb9eab2de9733de3378821accc91fca9fa7e",
-      "size": [100,100],
-      "pendingNote": "the element is not in the baseline model (pattern element); baseline metrics: pct=36.530 mean=76.324 block=420 stpct=15.270 stblock=178"
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Pattern-4",
@@ -1384,16 +3192,41 @@
       "upstream": {
         "file": "apps/common/example/examples/Transforms.tsx",
         "scene": "(added: pattern viewBox and objectBoundingBox content units)",
-        "lines": [133,144]
+        "lines": [
+          133,
+          144
+        ]
       },
       "covers": "pattern viewBox, patternContentUnits objectBoundingBox",
-      "elements": ["circle","defs","pattern","rect","svg"],
-      "attributes": ["cx","cy","fill","height","id","patternContentUnits","preserveAspectRatio","r","stroke","viewBox","width","x","y"],
-      "status": "pending:pattern",
+      "elements": [
+        "circle",
+        "defs",
+        "pattern",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "id",
+        "patternContentUnits",
+        "preserveAspectRatio",
+        "r",
+        "stroke",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/Pattern-4.png",
       "sha256": "649b50ba09b326545251ecf48d51ab09a01d9603180925a5d75cf30e7ba1bbb2",
-      "size": [200,100],
-      "pendingNote": "the element is not in the baseline model (pattern element); baseline metrics: pct=32.920 mean=48.589 block=1186 stpct=26.540 stblock=909"
+      "size": [
+        200,
+        100
+      ]
     },
     {
       "name": "Pattern-5",
@@ -1402,16 +3235,38 @@
       "upstream": {
         "file": "apps/common/example/examples/Transforms.tsx",
         "scene": "icon",
-        "lines": [133,144]
+        "lines": [
+          133,
+          144
+        ]
       },
       "covers": "pattern small viewBox icon",
-      "elements": ["circle","pattern","rect","svg"],
-      "attributes": ["cx","cy","fill","height","id","patternTransform","r","viewBox","width","x","y"],
-      "status": "pending:pattern",
+      "elements": [
+        "circle",
+        "pattern",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "id",
+        "patternTransform",
+        "r",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/Pattern-5.png",
       "sha256": "7f35d664b014e108bfed9cadc00eb9de0b5b0a734835a529feb3ef4372c051ae",
-      "size": [30,30],
-      "pendingNote": "the element is not in the baseline model (pattern element); baseline metrics: pct=64.000 mean=129.291 block=576 stpct=53.778 stblock=484; with the working-tree renderer: within the thresholds listed here",
+      "size": [
+        30,
+        30
+      ],
       "thresholds": {
         "maxDiffPixelPercent": 3,
         "meanAbsDiff": 5.5
@@ -1425,15 +3280,44 @@
       "upstream": {
         "file": "apps/common/example/examples/Transforms.tsx",
         "scene": "GradientTransformExample",
-        "lines": [90,130]
+        "lines": [
+          90,
+          130
+        ]
       },
       "covers": "gradientTransform skewX translate, radial userSpaceOnUse",
-      "elements": ["radialGradient","rect","stop","svg"],
-      "attributes": ["cx","cy","fill","fx","fy","gradientTransform","gradientUnits","height","id","offset","r","stop-color","transform","viewBox","width","x","y"],
+      "elements": [
+        "radialGradient",
+        "rect",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fx",
+        "fy",
+        "gradientTransform",
+        "gradientUnits",
+        "height",
+        "id",
+        "offset",
+        "r",
+        "stop-color",
+        "transform",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/GradientTransform-1.png",
       "sha256": "55ce43aeff70ec6138e18db30727728bed8efa423ecbcdc6c0c856276803626e",
-      "size": [300,200],
+      "size": [
+        300,
+        200
+      ],
       "thresholds": {
         "maxBlockPixels": 160,
         "maxShiftTolerantBlock": 160
@@ -1447,16 +3331,42 @@
       "upstream": {
         "file": "apps/common/example/examples/Transforms.tsx",
         "scene": "(added: spreadMethod and linear gradientTransform)",
-        "lines": [133,144]
+        "lines": [
+          133,
+          144
+        ]
       },
       "covers": "spreadMethod reflect repeat, gradientTransform with objectBoundingBox",
-      "elements": ["defs","linearGradient","rect","stop","svg"],
-      "attributes": ["fill","gradientTransform","height","id","offset","spreadMethod","stop-color","width","x","x1","x2","y","y1","y2"],
-      "status": "pending:gradient-spreadMethod",
+      "elements": [
+        "defs",
+        "linearGradient",
+        "rect",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "gradientTransform",
+        "height",
+        "id",
+        "offset",
+        "spreadMethod",
+        "stop-color",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "y",
+        "y1",
+        "y2"
+      ],
+      "status": "pass",
       "golden": "golden/GradientTransform-2.png",
       "sha256": "923828e0acc9c1f8ae9d4bf668cdb87f1d870a3607950e863c5120511697395c",
-      "size": [300,100],
-      "pendingNote": "spreadMethod reflect and repeat: the baseline model has no spreadMethod, Qt pads; baseline metrics: pct=44.060 mean=40.176 block=3330 stpct=41.927 stblock=3240"
+      "size": [
+        300,
+        100
+      ]
     },
     {
       "name": "FeBlend-1",
@@ -1465,11 +3375,46 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeBlend.tsx",
         "scene": "W3Blend",
-        "lines": [123,140]
+        "lines": [
+          123,
+          140
+        ]
       },
       "covers": "feBlend modes with in2=BackgroundImage",
-      "elements": ["feBlend","filter","g","linearGradient","rect","stop","svg","text"],
-      "attributes": ["fill","fill-opacity","filter","font-family","font-size","gradientUnits","height","id","in","in2","mode","offset","stop-color","stroke","viewBox","width","x","x1","x2","y","y1","y2"],
+      "elements": [
+        "feBlend",
+        "filter",
+        "g",
+        "linearGradient",
+        "rect",
+        "stop",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "fill",
+        "fill-opacity",
+        "filter",
+        "font-family",
+        "font-size",
+        "gradientUnits",
+        "height",
+        "id",
+        "in",
+        "in2",
+        "mode",
+        "offset",
+        "stop-color",
+        "stroke",
+        "viewBox",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "y",
+        "y1",
+        "y2"
+      ],
       "status": "reference-none",
       "reason": "resvg 0.50.0 does not implement BackgroundImage; FeBlend-1b covers the five modes with a drawable in2.",
       "filter": "FeBlend",
@@ -1482,18 +3427,57 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeBlend.tsx",
         "scene": "W3Blend (in2 from feImage-free flood)",
-        "lines": [123,140]
+        "lines": [
+          123,
+          140
+        ]
       },
       "covers": "feBlend normal multiply screen darken lighten on text, flood as in2",
-      "elements": ["feBlend","feFlood","filter","g","linearGradient","rect","stop","svg","text"],
-      "attributes": ["fill","fill-opacity","filter","flood-color","font-family","font-size","gradientUnits","height","id","in","in2","mode","offset","result","stop-color","viewBox","width","x","x1","x2","y","y1","y2"],
-      "status": "pending:filter",
+      "elements": [
+        "feBlend",
+        "feFlood",
+        "filter",
+        "g",
+        "linearGradient",
+        "rect",
+        "stop",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "fill",
+        "fill-opacity",
+        "filter",
+        "flood-color",
+        "font-family",
+        "font-size",
+        "gradientUnits",
+        "height",
+        "id",
+        "in",
+        "in2",
+        "mode",
+        "offset",
+        "result",
+        "stop-color",
+        "viewBox",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "y",
+        "y1",
+        "y2"
+      ],
+      "status": "pass",
       "golden": "golden/FeBlend-1b.png",
       "text": true,
       "filter": "FeBlend",
       "sha256": "0c0e31bf6cdea67030a011f3f369739f62a7ba064776b35056764f20acdf2904",
-      "size": [350,350],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=48.841 mean=45.422 block=12896 stpct=46.894 stblock=12360; with the working-tree renderer: a filter on a <text> element is not applied (the text is drawn unfiltered)"
+      "size": [
+        350,
+        350
+      ]
     },
     {
       "name": "FeBlend-2",
@@ -1502,17 +3486,45 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeBlend.tsx",
         "scene": "SimpleExample",
-        "lines": [74,93]
+        "lines": [
+          74,
+          93
+        ]
       },
       "covers": "feFlood feBlend multiply",
-      "elements": ["circle","feBlend","feFlood","filter","svg"],
-      "attributes": ["cx","cy","fill","filter","flood-color","flood-opacity","height","id","in","in2","mode","r","result","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feBlend",
+        "feFlood",
+        "filter",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "filter",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "id",
+        "in",
+        "in2",
+        "mode",
+        "r",
+        "result",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeBlend-2.png",
       "filter": "FeBlend",
       "sha256": "fc8c2cf417c79ee8aa9385c13e352a126445f7f28f1f9259f5faddef45ef7f00",
-      "size": [200,200],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=92.160 mean=131.690 block=36864 stpct=90.250 stblock=36100"
+      "size": [
+        200,
+        200
+      ]
     },
     {
       "name": "FeBlend-3",
@@ -1521,17 +3533,42 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeBlend.tsx",
         "scene": "MDNExample",
-        "lines": [96,121]
+        "lines": [
+          96,
+          121
+        ]
       },
       "covers": "feBlend on an image (the upstream example loads a remote PNG; the example asset image.jpg stands in)",
-      "elements": ["feBlend","feFlood","filter","image","svg"],
-      "attributes": ["filter","flood-color","flood-opacity","height","href","id","in","in2","mode","result","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feBlend",
+        "feFlood",
+        "filter",
+        "image",
+        "svg"
+      ],
+      "attributes": [
+        "filter",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "href",
+        "id",
+        "in",
+        "in2",
+        "mode",
+        "result",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeBlend-3.png",
       "filter": "FeBlend",
       "sha256": "1cd51a2e1176e5a2fa55dbaec9fb935a6da9b4a07f5ed90c73405b3da29d20af",
-      "size": [200,200],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=83.680 mean=130.787 block=33446 stpct=77.248 stblock=30823"
+      "size": [
+        200,
+        200
+      ]
     },
     {
       "name": "FeColorMatrix-1",
@@ -1540,15 +3577,32 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeColorMatrix.tsx",
         "scene": "ReferenceExample",
-        "lines": [4,12]
+        "lines": [
+          4,
+          12
+        ]
       },
       "covers": "feColorMatrix",
-      "elements": ["circle","svg"],
-      "attributes": ["cx","cy","fill","fill-opacity","height","r","width"],
+      "elements": [
+        "circle",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fill-opacity",
+        "height",
+        "r",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/FeColorMatrix-1.png",
       "sha256": "a095c7018de6792cf3f18fa86d3b0e169080d45a18acace0d45b64ca2fcef72c",
-      "size": [150,150]
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "FeColorMatrix-2",
@@ -1557,16 +3611,38 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeColorMatrix.tsx",
         "scene": "IdentityExample",
-        "lines": [15,28]
+        "lines": [
+          15,
+          28
+        ]
       },
       "covers": "feColorMatrix",
-      "elements": ["circle","feColorMatrix","filter","g","svg"],
-      "attributes": ["cx","cy","fill","fill-opacity","filter","height","id","r","values","width"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feColorMatrix",
+        "filter",
+        "g",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "height",
+        "id",
+        "r",
+        "values",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/FeColorMatrix-2.png",
       "sha256": "0d4d5542e513d008351d3b7a6a145e86d1862eaaab28f4a873663c545b8b5828",
-      "size": [150,150],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=0.000 mean=0.165 block=0 stpct=0.000 stblock=0"
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "FeColorMatrix-3",
@@ -1575,16 +3651,38 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeColorMatrix.tsx",
         "scene": "RgbToGreenExample",
-        "lines": [31,49]
+        "lines": [
+          31,
+          49
+        ]
       },
       "covers": "feColorMatrix",
-      "elements": ["circle","feColorMatrix","filter","g","svg"],
-      "attributes": ["cx","cy","fill","fill-opacity","filter","height","id","r","values","width"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feColorMatrix",
+        "filter",
+        "g",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "height",
+        "id",
+        "r",
+        "values",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/FeColorMatrix-3.png",
       "sha256": "13842ac25d0f537b2eb83b574f3882bb6af5b32057dd54af79c8f995a497bab0",
-      "size": [150,150],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=47.916 mean=35.877 block=10781 stpct=47.898 stblock=10777"
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "FeColorMatrix-4",
@@ -1593,16 +3691,39 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeColorMatrix.tsx",
         "scene": "SaturateExample",
-        "lines": [52,65]
+        "lines": [
+          52,
+          65
+        ]
       },
       "covers": "feColorMatrix",
-      "elements": ["circle","feColorMatrix","filter","g","svg"],
-      "attributes": ["cx","cy","fill","fill-opacity","filter","height","id","r","type","values","width"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feColorMatrix",
+        "filter",
+        "g",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "height",
+        "id",
+        "r",
+        "type",
+        "values",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/FeColorMatrix-4.png",
       "sha256": "139a13ddfae8508c0b8c58d493cf0a043190ca8a1d6e06e83578d2c29e9b8ea1",
-      "size": [150,150],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=47.716 mean=19.271 block=10736 stpct=47.120 stblock=10602"
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "FeColorMatrix-5",
@@ -1611,16 +3732,39 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeColorMatrix.tsx",
         "scene": "HueRotateExample",
-        "lines": [68,81]
+        "lines": [
+          68,
+          81
+        ]
       },
       "covers": "feColorMatrix",
-      "elements": ["circle","feColorMatrix","filter","g","svg"],
-      "attributes": ["cx","cy","fill","fill-opacity","filter","height","id","r","type","values","width"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feColorMatrix",
+        "filter",
+        "g",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "height",
+        "id",
+        "r",
+        "type",
+        "values",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/FeColorMatrix-5.png",
       "sha256": "bd7bac1656bc6606af5461dcf0d8d74c25b2638acb55aa0412cf0511c23fb7b7",
-      "size": [150,150],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=48.027 mean=36.617 block=10806 stpct=47.893 stblock=10776"
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "FeColorMatrix-6",
@@ -1629,16 +3773,38 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeColorMatrix.tsx",
         "scene": "LuminanceToAlphaExample",
-        "lines": [84,97]
+        "lines": [
+          84,
+          97
+        ]
       },
       "covers": "feColorMatrix",
-      "elements": ["circle","feColorMatrix","filter","g","svg"],
-      "attributes": ["cx","cy","fill","fill-opacity","filter","height","id","r","type","width"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feColorMatrix",
+        "filter",
+        "g",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "height",
+        "id",
+        "r",
+        "type",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/FeColorMatrix-6.png",
       "sha256": "b620f2410d6ccd7083e358724534c6962f0297cbd753c7d6ca334049f90ac410",
-      "size": [150,150],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=48.107 mean=42.024 block=10824 stpct=46.693 stblock=10506"
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "FeColorMatrix-7",
@@ -1647,16 +3813,34 @@
       "upstream": {
         "file": "apps/common/test/Test2366.tsx",
         "scene": "Test2366",
-        "lines": [1,31]
+        "lines": [
+          1,
+          31
+        ]
       },
       "covers": "two chained feColorMatrix, multi-line values, comma separators",
-      "elements": ["feColorMatrix","filter","rect","svg"],
-      "attributes": ["fill","filter","height","id","type","values","width"],
-      "status": "pending:filter",
+      "elements": [
+        "feColorMatrix",
+        "filter",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "filter",
+        "height",
+        "id",
+        "type",
+        "values",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/FeColorMatrix-7.png",
       "sha256": "468daef6998489b98d35ba9bf6f248d5c5b92e1585b8d69a005e22cba68344a5",
-      "size": [200,200],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=100.000 mean=127.333 block=40000 stpct=100.000 stblock=40000"
+      "size": [
+        200,
+        200
+      ]
     },
     {
       "name": "FeDropShadow-1",
@@ -1665,36 +3849,87 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeDropShadow.tsx",
         "scene": "BasicMDN",
-        "lines": [5,28]
+        "lines": [
+          5,
+          28
+        ]
       },
       "covers": "feDropShadow dx dy stdDeviation floodColor floodOpacity",
-      "elements": ["circle","feDropShadow","filter","svg"],
-      "attributes": ["cx","cy","dx","dy","fill","filter","flood-color","flood-opacity","height","id","r","stdDeviation","viewBox","width"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feDropShadow",
+        "filter",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "dx",
+        "dy",
+        "fill",
+        "filter",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "id",
+        "r",
+        "stdDeviation",
+        "viewBox",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/FeDropShadow-1.png",
       "filter": "FeDropShadow",
       "sha256": "89c73e5525528aa8ad9a4fc968656ae32ba3e4ee2cd744b7707dc86c8831e5ca",
-      "size": [300,100],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=5.373 mean=4.607 block=840 stpct=3.577 stblock=559"
+      "size": [
+        300,
+        100
+      ]
     },
     {
       "name": "FeDropShadow-2",
       "svg": "svg/FeDropShadow-2.svg",
-      "reference": "resvg",
+      "reference": "none",
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeDropShadow.tsx",
         "scene": "icon",
-        "lines": [30,43]
+        "lines": [
+          30,
+          43
+        ]
       },
       "covers": "feDropShadow filter region x y width height",
-      "elements": ["circle","feDropShadow","filter","svg"],
-      "attributes": ["cx","cy","dx","dy","fill","filter","flood-opacity","height","id","r","stdDeviation","viewBox","width","x","y"],
-      "status": "pending:filter",
-      "golden": "golden/FeDropShadow-2.png",
+      "elements": [
+        "circle",
+        "feDropShadow",
+        "filter",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "dx",
+        "dy",
+        "fill",
+        "filter",
+        "flood-opacity",
+        "height",
+        "id",
+        "r",
+        "stdDeviation",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "reference-none",
       "filter": "FeDropShadow",
       "sha256": "e0135e16ede3562b2fc1de76c3581d266ce4c5df5bf56a43ba5b18899944623b",
-      "size": [30,30],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=3.111 mean=2.135 block=2 stpct=0.000 stblock=0; with the working-tree renderer: the drop shadow of a 30 px icon differs (4.7% of pixels, the shadow is placed or blurred differently at this scale); FeDropShadow-1 passes"
+      "size": [
+        30,
+        30
+      ],
+      "reason": "resvg 0.50 renders this 30 px icon with a much fainter shadow than the Gaussian the filter defines: at (24,15) it gives gray 232 where a supersampled Gaussian (sigma 0.6 px, offset 0.9 px, opacity 0.7) gives 130. The engine gives 114. The same primitive agrees with resvg at 1x in RnsvgFilterTest (drop_shadow goldens)."
     },
     {
       "name": "FeFlood-1",
@@ -1703,17 +3938,37 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeFlood.tsx",
         "scene": "BasicFlood",
-        "lines": [15,31]
+        "lines": [
+          15,
+          31
+        ]
       },
       "covers": "feFlood subregion, filterUnits userSpaceOnUse",
-      "elements": ["feFlood","filter","rect","svg"],
-      "attributes": ["filter","filterUnits","flood-color","flood-opacity","height","id","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feFlood",
+        "filter",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "filter",
+        "filterUnits",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "id",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeFlood-1.png",
       "filter": "FeFlood",
       "sha256": "d5b18d24a72e2b62cf11219f58b2cd019d971feca115920f0b3a5d5f7aa87018",
-      "size": [200,200],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=25.003 mean=26.673 block=10000 stpct=24.010 stblock=9604"
+      "size": [
+        200,
+        200
+      ]
     },
     {
       "name": "FeFlood-2",
@@ -1722,17 +3977,42 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeFlood.tsx",
         "scene": "TestCase1",
-        "lines": [112,131]
+        "lines": [
+          112,
+          131
+        ]
       },
       "covers": "feFlood default region (-10% 120%)",
-      "elements": ["circle","feFlood","filter","rect","svg"],
-      "attributes": ["cx","cy","fill","filter","flood-color","flood-opacity","height","id","r","viewBox","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feFlood",
+        "filter",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "filter",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "id",
+        "r",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeFlood-2.png",
       "filter": "FeFlood",
       "sha256": "a553d182662dc22146252195a2a7f401f0b28c464e216f420ae71c71c295f5e9",
-      "size": [200,200],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=23.040 mean=29.329 block=9216 stpct=22.090 stblock=8836"
+      "size": [
+        200,
+        200
+      ]
     },
     {
       "name": "FeFlood-3",
@@ -1741,17 +4021,55 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeFlood.tsx",
         "scene": "TestCase2",
-        "lines": [112,131]
+        "lines": [
+          112,
+          131
+        ]
       },
       "covers": "primitiveUnits objectBoundingBox, feFlood and feMerge subregions in percent",
-      "elements": ["circle","feFlood","feMerge","feMergeNode","filter","g","line","rect","svg"],
-      "attributes": ["cx","cy","fill","fill-opacity","filter","flood-color","flood-opacity","height","id","in","primitiveUnits","r","stroke","stroke-width","transform","width","x","x1","x2","y","y1","y2"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feFlood",
+        "feMerge",
+        "feMergeNode",
+        "filter",
+        "g",
+        "line",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "id",
+        "in",
+        "primitiveUnits",
+        "r",
+        "stroke",
+        "stroke-width",
+        "transform",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "y",
+        "y1",
+        "y2"
+      ],
+      "status": "pass",
       "golden": "golden/FeFlood-3.png",
       "filter": "FeFlood",
       "sha256": "036d9dcede4b3b3fa719afd8a8886cee5a9d6e051db883f4b7795450b543bcf1",
-      "size": [200,400],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=43.780 mean=68.336 block=17532 stpct=41.990 stblock=16816"
+      "size": [
+        200,
+        400
+      ]
     },
     {
       "name": "FeFlood-4",
@@ -1760,17 +4078,44 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeFlood.tsx",
         "scene": "icon",
-        "lines": [112,131]
+        "lines": [
+          112,
+          131
+        ]
       },
       "covers": "filter x percent with userSpaceOnUse units",
-      "elements": ["circle","feFlood","filter","rect","svg"],
-      "attributes": ["cx","cy","fill","filter","filterUnits","flood-color","flood-opacity","height","id","primitiveUnits","r","viewBox","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feFlood",
+        "filter",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "filter",
+        "filterUnits",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "id",
+        "primitiveUnits",
+        "r",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeFlood-4.png",
       "filter": "FeFlood",
       "sha256": "a314c3eae8eb8533e340ae22f6cf1b136e8978f64a1b42950d98260b0c03d2a8",
-      "size": [30,30],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=29.444 mean=25.199 block=265 stpct=21.667 stblock=195"
+      "size": [
+        30,
+        30
+      ]
     },
     {
       "name": "FeGaussianBlur-1",
@@ -1779,17 +4124,39 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeGaussianBlur.tsx",
         "scene": "StdDeviation3Example",
-        "lines": [67,78]
+        "lines": [
+          67,
+          78
+        ]
       },
       "covers": "feGaussianBlur stdDeviation=\"3\"",
-      "elements": ["circle","feGaussianBlur","filter","g","svg"],
-      "attributes": ["cx","cy","fill","fill-opacity","filter","height","id","r","stdDeviation","width"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feGaussianBlur",
+        "filter",
+        "g",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "height",
+        "id",
+        "r",
+        "stdDeviation",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/FeGaussianBlur-1.png",
       "filter": "FeGaussianBlur",
       "sha256": "02efe0b7f602c7643c362b766d47dc301bfc7320d301b99cf87dbf5ed855f764",
-      "size": [150,150],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=15.089 mean=5.902 block=3246 stpct=4.373 stblock=371"
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "FeGaussianBlur-2",
@@ -1798,17 +4165,39 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeGaussianBlur.tsx",
         "scene": "StdDeviation7Example",
-        "lines": [67,78]
+        "lines": [
+          67,
+          78
+        ]
       },
       "covers": "feGaussianBlur stdDeviation=\"7\"",
-      "elements": ["circle","feGaussianBlur","filter","g","svg"],
-      "attributes": ["cx","cy","fill","fill-opacity","filter","height","id","r","stdDeviation","width"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feGaussianBlur",
+        "filter",
+        "g",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "height",
+        "id",
+        "r",
+        "stdDeviation",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/FeGaussianBlur-2.png",
       "filter": "FeGaussianBlur",
       "sha256": "7834d5ea5336fce682090f39f433591e7962a4ae3dfe24bc4de1766794249880",
-      "size": [150,150],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=34.427 mean=12.886 block=7733 stpct=23.942 stblock=5311"
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "FeGaussianBlur-3",
@@ -1817,17 +4206,39 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeGaussianBlur.tsx",
         "scene": "StdDeviation150Example",
-        "lines": [67,78]
+        "lines": [
+          67,
+          78
+        ]
       },
       "covers": "feGaussianBlur stdDeviation=\"15 0\"",
-      "elements": ["circle","feGaussianBlur","filter","g","svg"],
-      "attributes": ["cx","cy","fill","fill-opacity","filter","height","id","r","stdDeviation","width"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feGaussianBlur",
+        "filter",
+        "g",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "height",
+        "id",
+        "r",
+        "stdDeviation",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/FeGaussianBlur-3.png",
       "filter": "FeGaussianBlur",
       "sha256": "5d3c59058e1608261fee445b736d67d36d31ccdd1dffa3223b5578a86278565d",
-      "size": [150,150],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=46.631 mean=16.091 block=10491 stpct=37.907 stblock=8508"
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "FeGaussianBlur-4",
@@ -1836,17 +4247,39 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeGaussianBlur.tsx",
         "scene": "StdDeviation025Example",
-        "lines": [67,78]
+        "lines": [
+          67,
+          78
+        ]
       },
       "covers": "feGaussianBlur stdDeviation=\"0 25\"",
-      "elements": ["circle","feGaussianBlur","filter","g","svg"],
-      "attributes": ["cx","cy","fill","fill-opacity","filter","height","id","r","stdDeviation","width"],
-      "status": "pending:filter",
+      "elements": [
+        "circle",
+        "feGaussianBlur",
+        "filter",
+        "g",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "height",
+        "id",
+        "r",
+        "stdDeviation",
+        "width"
+      ],
+      "status": "pass",
       "golden": "golden/FeGaussianBlur-4.png",
       "filter": "FeGaussianBlur",
       "sha256": "cafb0926ff1e3ed03a1941df50a952c23a686e53831fd3e9b167f1f960000ee8",
-      "size": [150,150],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=64.453 mean=23.456 block=14502 stpct=59.671 stblock=13422"
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "FeMerge-1",
@@ -1855,17 +4288,42 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeMerge.tsx",
         "scene": "WithOffsetsExample",
-        "lines": [12,35]
+        "lines": [
+          12,
+          35
+        ]
       },
       "covers": "feMerge feMergeNode named results, filter width height as userSpace numbers",
-      "elements": ["feMerge","feMergeNode","feOffset","filter","rect","svg"],
-      "attributes": ["dx","dy","fill","filter","height","id","in","result","stroke","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feMerge",
+        "feMergeNode",
+        "feOffset",
+        "filter",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "dx",
+        "dy",
+        "fill",
+        "filter",
+        "height",
+        "id",
+        "in",
+        "result",
+        "stroke",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeMerge-1.png",
       "filter": "FeMerge",
       "sha256": "4d3e89050a8ecc99253f456f0846df79ae5cf5e511954a6ce8cc276796c4205d",
-      "size": [200,200],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=38.980 mean=65.538 block=15592 stpct=37.487 stblock=14995; with the working-tree renderer: same oversized objectBoundingBox filter region as FeOffset-1; FeMerge-3 passes"
+      "size": [
+        200,
+        200
+      ]
     },
     {
       "name": "FeMerge-2",
@@ -1874,17 +4332,44 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeMerge.tsx",
         "scene": "WithHueRotateExample",
-        "lines": [38,60]
+        "lines": [
+          38,
+          60
+        ]
       },
       "covers": "feMerge with implicit previous result, chained primitives",
-      "elements": ["feColorMatrix","feMerge","feMergeNode","feOffset","filter","rect","svg"],
-      "attributes": ["dx","dy","fill","filter","height","id","in","stroke","type","values","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feColorMatrix",
+        "feMerge",
+        "feMergeNode",
+        "feOffset",
+        "filter",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "dx",
+        "dy",
+        "fill",
+        "filter",
+        "height",
+        "id",
+        "in",
+        "stroke",
+        "type",
+        "values",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeMerge-2.png",
       "filter": "FeMerge",
       "sha256": "e27cfeec466f07f809d68022b051897beca9ffe67c2e9cbd9e11e4240672dbda",
-      "size": [150,150],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=33.778 mean=43.020 block=7600 stpct=33.324 stblock=7498; with the working-tree renderer: same oversized objectBoundingBox filter region as FeOffset-1; FeMerge-4 passes"
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "FeOffset-2",
@@ -1893,17 +4378,39 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeOffset.tsx",
         "scene": "ReferenceExample (userSpaceOnUse region)",
-        "lines": [4,24]
+        "lines": [
+          4,
+          24
+        ]
       },
       "covers": "feOffset with a filter region in user units (the upstream example gives plain numbers under the default objectBoundingBox units, which SVG reads as multiples of the bounding box)",
-      "elements": ["feOffset","filter","rect","svg"],
-      "attributes": ["dx","dy","fill","filter","filterUnits","height","id","stroke","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feOffset",
+        "filter",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "dx",
+        "dy",
+        "fill",
+        "filter",
+        "filterUnits",
+        "height",
+        "id",
+        "stroke",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeOffset-2.png",
       "filter": "FeOffset",
       "sha256": "ba167cd88b53d9bb9f197388be4945f14b29ac3720e9f026db42fefac9f36d88",
-      "size": [200,200],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=38.737 mean=64.019 block=15495 stpct=37.500 stblock=15000; with the working-tree renderer: within thresholds except the 1 px outline clip noted in thresholdReason",
+      "size": [
+        200,
+        200
+      ],
       "thresholds": {
         "maxBlockPixels": 110,
         "maxShiftTolerantBlock": 110
@@ -1917,17 +4424,43 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeMerge.tsx",
         "scene": "WithOffsetsExample (userSpaceOnUse region)",
-        "lines": [12,35]
+        "lines": [
+          12,
+          35
+        ]
       },
       "covers": "feMerge with named results, region in user units",
-      "elements": ["feMerge","feMergeNode","feOffset","filter","rect","svg"],
-      "attributes": ["dx","dy","fill","filter","filterUnits","height","id","in","result","stroke","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feMerge",
+        "feMergeNode",
+        "feOffset",
+        "filter",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "dx",
+        "dy",
+        "fill",
+        "filter",
+        "filterUnits",
+        "height",
+        "id",
+        "in",
+        "result",
+        "stroke",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeMerge-3.png",
       "filter": "FeMerge",
       "sha256": "3bc3cf9cdbd9c45d9544456fbcbf4c58471313b4e08cedc7e49e3879fdc29504",
-      "size": [200,200],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=29.488 mean=49.393 block=11695 stpct=27.948 stblock=11083",
+      "size": [
+        200,
+        200
+      ],
       "thresholds": {
         "maxBlockPixels": 110,
         "maxShiftTolerantBlock": 110
@@ -1941,17 +4474,45 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeMerge.tsx",
         "scene": "WithHueRotateExample (userSpaceOnUse region)",
-        "lines": [38,60]
+        "lines": [
+          38,
+          60
+        ]
       },
       "covers": "feMerge with an implicit previous result, region in user units",
-      "elements": ["feColorMatrix","feMerge","feMergeNode","feOffset","filter","rect","svg"],
-      "attributes": ["dx","dy","fill","filter","filterUnits","height","id","in","stroke","type","values","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feColorMatrix",
+        "feMerge",
+        "feMergeNode",
+        "feOffset",
+        "filter",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "dx",
+        "dy",
+        "fill",
+        "filter",
+        "filterUnits",
+        "height",
+        "id",
+        "in",
+        "stroke",
+        "type",
+        "values",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeMerge-4.png",
       "filter": "FeMerge",
       "sha256": "f8f57ccc15a4356901d72cc6fe9029ad1ccc591456ac2083c29a45f089ae83b9",
-      "size": [150,150],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=33.778 mean=42.624 block=7500 stpct=33.316 stblock=7400",
+      "size": [
+        150,
+        150
+      ],
       "thresholds": {
         "maxBlockPixels": 110,
         "maxShiftTolerantBlock": 110
@@ -1965,17 +4526,38 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeOffset.tsx",
         "scene": "ReferenceExample",
-        "lines": [4,24]
+        "lines": [
+          4,
+          24
+        ]
       },
       "covers": "feOffset",
-      "elements": ["feOffset","filter","rect","svg"],
-      "attributes": ["dx","dy","fill","filter","height","id","stroke","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feOffset",
+        "filter",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "dx",
+        "dy",
+        "fill",
+        "filter",
+        "height",
+        "id",
+        "stroke",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeOffset-1.png",
       "filter": "FeOffset",
       "sha256": "cfc6dadb6bdf2dfec88c25f11cb3b974591416c0a900dab2873a36a74755a12b",
-      "size": [200,200],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=38.975 mean=64.172 block=7895 stpct=37.722 stblock=7594; with the working-tree renderer: a filter whose width and height are plain numbers under the default objectBoundingBox units (180 times the bounding box) drops the filtered element; FeOffset-2 states the region in user units and passes"
+      "size": [
+        200,
+        200
+      ]
     },
     {
       "name": "FeComposite-1",
@@ -1984,11 +4566,30 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeComposite.tsx",
         "scene": "QuickTestExample",
-        "lines": [20,37]
+        "lines": [
+          20,
+          37
+        ]
       },
       "covers": "feComposite in with in2=BackgroundImage",
-      "elements": ["feComposite","filter","rect","svg"],
-      "attributes": ["fill","filter","height","id","in","in2","operator","width","x","y"],
+      "elements": [
+        "feComposite",
+        "filter",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "filter",
+        "height",
+        "id",
+        "in",
+        "in2",
+        "operator",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "reference-none",
       "reason": "resvg 0.50.0 does not implement BackgroundImage; FeComposite-2 to -7 cover every operator with a drawable in2.",
       "filter": "FeComposite",
@@ -2001,11 +4602,56 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeComposite.tsx",
         "scene": "ReferenceExample",
-        "lines": [40,401]
+        "lines": [
+          40,
+          401
+        ]
       },
       "covers": "the W3 feComposite grid: every operator with in2=BackgroundImage, with and without an feFlood backing",
-      "elements": ["defs","feComposite","feFlood","feMerge","feMergeNode","filter","g","path","rect","svg","text","use"],
-      "attributes": ["d","enable-background","fill","fill-opacity","filter","filterUnits","flood-color","flood-opacity","font-family","font-size","height","href","id","in","in2","k1","k2","k3","k4","operator","result","shape-rendering","stroke","transform","viewBox","width","x","y"],
+      "elements": [
+        "defs",
+        "feComposite",
+        "feFlood",
+        "feMerge",
+        "feMergeNode",
+        "filter",
+        "g",
+        "path",
+        "rect",
+        "svg",
+        "text",
+        "use"
+      ],
+      "attributes": [
+        "d",
+        "enable-background",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "filterUnits",
+        "flood-color",
+        "flood-opacity",
+        "font-family",
+        "font-size",
+        "height",
+        "href",
+        "id",
+        "in",
+        "in2",
+        "k1",
+        "k2",
+        "k3",
+        "k4",
+        "operator",
+        "result",
+        "shape-rendering",
+        "stroke",
+        "transform",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "reference-none",
       "reason": "resvg 0.50.0 does not implement BackgroundImage, which every filter in this grid uses; FeComposite-2 to FeComposite-7 draw each operator with a drawable in2.",
       "text": true,
@@ -2019,17 +4665,50 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeComposite.tsx",
         "scene": "ReferenceExample (operator over, in2 from feFlood)",
-        "lines": [40,401]
+        "lines": [
+          40,
+          401
+        ]
       },
       "covers": "feComposite operator=over, use inside filtered g",
-      "elements": ["defs","feComposite","feFlood","filter","g","path","svg","use"],
-      "attributes": ["d","fill","fill-opacity","filter","filterUnits","flood-color","flood-opacity","height","href","id","in","in2","operator","result","transform","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "defs",
+        "feComposite",
+        "feFlood",
+        "filter",
+        "g",
+        "path",
+        "svg",
+        "use"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "filterUnits",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "href",
+        "id",
+        "in",
+        "in2",
+        "operator",
+        "result",
+        "transform",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeComposite-2.png",
       "filter": "FeComposite",
       "sha256": "770686f99a2ba52fa18503e49518f4b22750abc45628988c97dd5d654bfdc1a8",
-      "size": [260,130],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=18.713 mean=10.955 block=5000 stpct=17.988 stblock=4852"
+      "size": [
+        260,
+        130
+      ]
     },
     {
       "name": "FeComposite-3",
@@ -2038,17 +4717,50 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeComposite.tsx",
         "scene": "ReferenceExample (operator in, in2 from feFlood)",
-        "lines": [40,401]
+        "lines": [
+          40,
+          401
+        ]
       },
       "covers": "feComposite operator=in, use inside filtered g",
-      "elements": ["defs","feComposite","feFlood","filter","g","path","svg","use"],
-      "attributes": ["d","fill","fill-opacity","filter","filterUnits","flood-color","flood-opacity","height","href","id","in","in2","operator","result","transform","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "defs",
+        "feComposite",
+        "feFlood",
+        "filter",
+        "g",
+        "path",
+        "svg",
+        "use"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "filterUnits",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "href",
+        "id",
+        "in",
+        "in2",
+        "operator",
+        "result",
+        "transform",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeComposite-3.png",
       "filter": "FeComposite",
       "sha256": "e03c2ff82d0a5a51ea46c696e280325a4869b64384daea621672fe906fe59395",
-      "size": [260,130],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=7.692 mean=4.745 block=1275 stpct=6.544 stblock=1081"
+      "size": [
+        260,
+        130
+      ]
     },
     {
       "name": "FeComposite-4",
@@ -2057,17 +4769,50 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeComposite.tsx",
         "scene": "ReferenceExample (operator out, in2 from feFlood)",
-        "lines": [40,401]
+        "lines": [
+          40,
+          401
+        ]
       },
       "covers": "feComposite operator=out, use inside filtered g",
-      "elements": ["defs","feComposite","feFlood","filter","g","path","svg","use"],
-      "attributes": ["d","fill","fill-opacity","filter","filterUnits","flood-color","flood-opacity","height","href","id","in","in2","operator","result","transform","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "defs",
+        "feComposite",
+        "feFlood",
+        "filter",
+        "g",
+        "path",
+        "svg",
+        "use"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "filterUnits",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "href",
+        "id",
+        "in",
+        "in2",
+        "operator",
+        "result",
+        "transform",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeComposite-4.png",
       "filter": "FeComposite",
       "sha256": "359c9473bdf9a106ce17834414f4fa4b08ebea7ac6e09f5075bf563714073b14",
-      "size": [260,130],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=22.485 mean=14.188 block=3776 stpct=20.740 stblock=3480"
+      "size": [
+        260,
+        130
+      ]
     },
     {
       "name": "FeComposite-5",
@@ -2076,17 +4821,50 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeComposite.tsx",
         "scene": "ReferenceExample (operator atop, in2 from feFlood)",
-        "lines": [40,401]
+        "lines": [
+          40,
+          401
+        ]
       },
       "covers": "feComposite operator=atop, use inside filtered g",
-      "elements": ["defs","feComposite","feFlood","filter","g","path","svg","use"],
-      "attributes": ["d","fill","fill-opacity","filter","filterUnits","flood-color","flood-opacity","height","href","id","in","in2","operator","result","transform","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "defs",
+        "feComposite",
+        "feFlood",
+        "filter",
+        "g",
+        "path",
+        "svg",
+        "use"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "filterUnits",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "href",
+        "id",
+        "in",
+        "in2",
+        "operator",
+        "result",
+        "transform",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeComposite-5.png",
       "filter": "FeComposite",
       "sha256": "92cd5a327e1d9966406af28c0a641ad3373f46ba6fcc4577f8d9cb337d0568cb",
-      "size": [260,130],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=26.109 mean=15.653 block=6275 stpct=24.527 stblock=6031"
+      "size": [
+        260,
+        130
+      ]
     },
     {
       "name": "FeComposite-6",
@@ -2095,17 +4873,50 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeComposite.tsx",
         "scene": "ReferenceExample (operator xor, in2 from feFlood)",
-        "lines": [40,401]
+        "lines": [
+          40,
+          401
+        ]
       },
       "covers": "feComposite operator=xor, use inside filtered g",
-      "elements": ["defs","feComposite","feFlood","filter","g","path","svg","use"],
-      "attributes": ["d","fill","fill-opacity","filter","filterUnits","flood-color","flood-opacity","height","href","id","in","in2","operator","result","transform","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "defs",
+        "feComposite",
+        "feFlood",
+        "filter",
+        "g",
+        "path",
+        "svg",
+        "use"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "filterUnits",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "href",
+        "id",
+        "in",
+        "in2",
+        "operator",
+        "result",
+        "transform",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeComposite-6.png",
       "filter": "FeComposite",
       "sha256": "2bde4316a4bf5633ea4065a9bcf1f5bfafe130f1c3139e79194c842f03d7c996",
-      "size": [260,130],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=29.734 mean=25.148 block=5001 stpct=28.145 stblock=4852"
+      "size": [
+        260,
+        130
+      ]
     },
     {
       "name": "FeComposite-7",
@@ -2114,17 +4925,54 @@
       "upstream": {
         "file": "apps/common/example/examples/Filters/FeComposite.tsx",
         "scene": "ReferenceExample (operator arithmetic, in2 from feFlood)",
-        "lines": [40,401]
+        "lines": [
+          40,
+          401
+        ]
       },
       "covers": "feComposite operator=arithmetic, use inside filtered g",
-      "elements": ["defs","feComposite","feFlood","filter","g","path","svg","use"],
-      "attributes": ["d","fill","fill-opacity","filter","filterUnits","flood-color","flood-opacity","height","href","id","in","in2","k1","k2","k3","k4","operator","result","transform","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "defs",
+        "feComposite",
+        "feFlood",
+        "filter",
+        "g",
+        "path",
+        "svg",
+        "use"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "fill-opacity",
+        "filter",
+        "filterUnits",
+        "flood-color",
+        "flood-opacity",
+        "height",
+        "href",
+        "id",
+        "in",
+        "in2",
+        "k1",
+        "k2",
+        "k3",
+        "k4",
+        "operator",
+        "result",
+        "transform",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FeComposite-7.png",
       "filter": "FeComposite",
       "sha256": "ec949c7faabebd660d33972d0cd3411e256e6c95bbd75e3c9cd3e04c85b57d85",
-      "size": [260,130],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=37.130 mean=20.474 block=6275 stpct=35.402 stblock=6128"
+      "size": [
+        260,
+        130
+      ]
     },
     {
       "name": "Test1374-1",
@@ -2133,11 +4981,30 @@
       "upstream": {
         "file": "apps/common/test/Test1374.tsx",
         "scene": "svgXmlWithTransform",
-        "lines": [6,41]
+        "lines": [
+          6,
+          41
+        ]
       },
       "covers": "svg root transform scale(1 -1) with width and viewBox",
-      "elements": ["circle","svg"],
-      "attributes": ["cx","cy","data-name","fill","height","id","r","stroke","stroke-width","transform","viewBox","width"],
+      "elements": [
+        "circle",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "data-name",
+        "fill",
+        "height",
+        "id",
+        "r",
+        "stroke",
+        "stroke-width",
+        "transform",
+        "viewBox",
+        "width"
+      ],
       "status": "reference-none",
       "reason": "resvg ignores a transform attribute on the root svg element.",
       "sha256": "ec8e484ecaae06cb737941b09c4f251804c8f791c5b74dd8fc101d8b3ac3fdd8"
@@ -2149,15 +5016,37 @@
       "upstream": {
         "file": "apps/common/test/Test1374.tsx",
         "scene": "svgXmlWithEmptyStyle",
-        "lines": [9,41]
+        "lines": [
+          9,
+          41
+        ]
       },
       "covers": "empty style attribute (style=\" \")",
-      "elements": ["circle","svg"],
-      "attributes": ["cx","cy","data-name","fill","height","id","r","stroke","stroke-width","style","viewBox","width"],
+      "elements": [
+        "circle",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "data-name",
+        "fill",
+        "height",
+        "id",
+        "r",
+        "stroke",
+        "stroke-width",
+        "style",
+        "viewBox",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Test1374-2.png",
       "sha256": "acc5bf3c63fb42bb0a817d3e8fcef07ae72b127a1876d3f54c85ffb1191079fb",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Test1374-3",
@@ -2166,15 +5055,30 @@
       "upstream": {
         "file": "apps/common/test/Test1374.tsx",
         "scene": "svgg",
-        "lines": [13,41]
+        "lines": [
+          13,
+          41
+        ]
       },
       "covers": "polygon transform with comma between functions",
-      "elements": ["polygon","svg"],
-      "attributes": ["fill","height","points","transform","width"],
+      "elements": [
+        "polygon",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "points",
+        "transform",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Test1374-3.png",
       "sha256": "11e5ea5a6f192fb01c607d0318380176247c79bd18ea21ef028554abf3ab7a63",
-      "size": [400,200]
+      "size": [
+        400,
+        200
+      ]
     },
     {
       "name": "Test1790-1",
@@ -2183,15 +5087,44 @@
       "upstream": {
         "file": "apps/common/test/Test1790.tsx",
         "scene": "svg",
-        "lines": [5,35]
+        "lines": [
+          5,
+          35
+        ]
       },
       "covers": "clip-path on g, mask-type alpha, mask userSpaceOnUse, fill none on root",
-      "elements": ["circle","clipPath","defs","g","mask","rect","svg"],
-      "attributes": ["clip-path","cx","cy","fill","height","id","mask","maskUnits","r","style","viewBox","width","x","y"],
+      "elements": [
+        "circle",
+        "clipPath",
+        "defs",
+        "g",
+        "mask",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "clip-path",
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "id",
+        "mask",
+        "maskUnits",
+        "r",
+        "style",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Test1790-1.png",
       "sha256": "1cdb8463421204d313debacb566745534b0aa78950f93fe58e10ea195b413748",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Test1813-1",
@@ -2200,11 +5133,36 @@
       "upstream": {
         "file": "apps/common/test/Test1813.tsx",
         "scene": "xml",
-        "lines": [16,89]
+        "lines": [
+          16,
+          89
+        ]
       },
       "covers": "path fill-rule evenodd, gradient with the kebab-case gradient-units spelling (react-native-svg camel-cases it to gradientUnits)",
-      "elements": ["defs","linearGradient","path","stop","svg"],
-      "attributes": ["clip-rule","d","fill","fill-rule","gradient-units","height","id","offset","stop-color","viewBox","width","x1","x2","y1","y2"],
+      "elements": [
+        "defs",
+        "linearGradient",
+        "path",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "clip-rule",
+        "d",
+        "fill",
+        "fill-rule",
+        "gradient-units",
+        "height",
+        "id",
+        "offset",
+        "stop-color",
+        "viewBox",
+        "width",
+        "x1",
+        "x2",
+        "y1",
+        "y2"
+      ],
       "status": "reference-none",
       "reason": "react-native-svg camel-cases gradient-units to gradientUnits and applies userSpaceOnUse; resvg ignores the unknown attribute. Test1813-1b spells the attribute as SVG does.",
       "sha256": "c7bd57f1c2eb7c8337e8dea3365254b35dd81f6ac94afd7e52d76ed4d1a0a527"
@@ -2216,15 +5174,43 @@
       "upstream": {
         "file": "apps/common/test/Test1813.tsx",
         "scene": "xml (gradientUnits spelled as SVG)",
-        "lines": [16,89]
+        "lines": [
+          16,
+          89
+        ]
       },
       "covers": "path fill-rule evenodd, userSpaceOnUse gradient on a path",
-      "elements": ["defs","linearGradient","path","stop","svg"],
-      "attributes": ["clip-rule","d","fill","fill-rule","gradientUnits","height","id","offset","stop-color","viewBox","width","x1","x2","y1","y2"],
+      "elements": [
+        "defs",
+        "linearGradient",
+        "path",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "clip-rule",
+        "d",
+        "fill",
+        "fill-rule",
+        "gradientUnits",
+        "height",
+        "id",
+        "offset",
+        "stop-color",
+        "viewBox",
+        "width",
+        "x1",
+        "x2",
+        "y1",
+        "y2"
+      ],
       "status": "pass",
       "golden": "golden/Test1813-1b.png",
       "sha256": "67a4f89208a5d745ab7a17d00764ea69028625439659eff65f33eac9a28c9e2d",
-      "size": [32,32]
+      "size": [
+        32,
+        32
+      ]
     },
     {
       "name": "Test1813-2",
@@ -2233,16 +5219,33 @@
       "upstream": {
         "file": "apps/common/test/Test1813.tsx",
         "scene": "css",
-        "lines": [39,89]
+        "lines": [
+          39,
+          89
+        ]
       },
       "covers": "<style> class rule (SvgCss only)",
-      "elements": ["rect","style","svg"],
-      "attributes": ["class","height","viewBox","width","x","y"],
+      "elements": [
+        "rect",
+        "style",
+        "svg"
+      ],
+      "attributes": [
+        "class",
+        "height",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Test1813-2.png",
       "css": true,
       "sha256": "f5398ba66fd8aca0c79617b914bad296dd91d6f4333141a80635f2139ed83a36",
-      "size": [32,32]
+      "size": [
+        32,
+        32
+      ]
     },
     {
       "name": "Test2170-1",
@@ -2251,16 +5254,40 @@
       "upstream": {
         "file": "apps/common/test/Test2170.tsx",
         "scene": "xml",
-        "lines": [13,65]
+        "lines": [
+          13,
+          65
+        ]
       },
       "covers": "radialGradient r=0 / 50% / 100%, circle r=0",
-      "elements": ["circle","radialGradient","rect","stop","svg"],
-      "attributes": ["cx","cy","fill","height","id","offset","r","stop-color","viewBox","width","x","y"],
-      "status": "pending:radial-gradient-zero-radius",
+      "elements": [
+        "circle",
+        "radialGradient",
+        "rect",
+        "stop",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "id",
+        "offset",
+        "r",
+        "stop-color",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/Test2170-1.png",
       "sha256": "57411936321c2768d231c21825f954e35382b8d90b1ae52b4beb64a731b4bee9",
-      "size": [300,200],
-      "pendingNote": "radialGradient r=0 must paint the last stop color; nothing is painted; baseline metrics: pct=6.017 mean=15.361 block=3600 stpct=5.607 stblock=3364"
+      "size": [
+        300,
+        200
+      ]
     },
     {
       "name": "Test2276-1",
@@ -2269,16 +5296,33 @@
       "upstream": {
         "file": "apps/common/test/Test2276.tsx",
         "scene": "xml",
-        "lines": [5,20]
+        "lines": [
+          5,
+          20
+        ]
       },
       "covers": "text inside svg without x y list beyond first",
-      "elements": ["rect","sample","svg","text"],
-      "attributes": ["fill","height","width","x","y"],
+      "elements": [
+        "rect",
+        "sample",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Test2276-1.png",
       "text": true,
       "sha256": "fe5511437a23b9c0f0fdb54806cdb22d28f971681031903b3f167fcd5ca720ee",
-      "size": [200,200]
+      "size": [
+        200,
+        200
+      ]
     },
     {
       "name": "Test2363-1",
@@ -2287,15 +5331,40 @@
       "upstream": {
         "file": "apps/common/test/Test2363.tsx",
         "scene": "svgXmlWithRGB",
-        "lines": [5,104]
+        "lines": [
+          5,
+          104
+        ]
       },
       "covers": "style attribute with fill rgb(percent), nested g clip-path (root size restated in px, see ptToPx)",
-      "elements": ["clipPath","defs","g","path","svg"],
-      "attributes": ["clip-path","clip-rule","d","encoding","height","id","style","transform","version","viewBox","width","xmlns:xlink"],
+      "elements": [
+        "clipPath",
+        "defs",
+        "g",
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "clip-path",
+        "clip-rule",
+        "d",
+        "encoding",
+        "height",
+        "id",
+        "style",
+        "transform",
+        "version",
+        "viewBox",
+        "width",
+        "xmlns:xlink"
+      ],
       "status": "pass",
       "golden": "golden/Test2363-1.png",
       "sha256": "3fc83f3bbc6ef0c700ae859bf0b7e580ccb4bf9ebbb9b5e4d9e94532e458ec67",
-      "size": [131,95],
+      "size": [
+        131,
+        95
+      ],
       "thresholds": {
         "maxDiffPixelPercent": 1.7,
         "maxShiftTolerantPercent": 1,
@@ -2310,15 +5379,40 @@
       "upstream": {
         "file": "apps/common/test/Test2363.tsx",
         "scene": "svgXmlWithRGBA",
-        "lines": [48,104]
+        "lines": [
+          48,
+          104
+        ]
       },
       "covers": "style attribute with fill rgba(percent, alpha)",
-      "elements": ["clipPath","defs","g","path","svg"],
-      "attributes": ["clip-path","clip-rule","d","encoding","height","id","style","transform","version","viewBox","width","xmlns:xlink"],
+      "elements": [
+        "clipPath",
+        "defs",
+        "g",
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "clip-path",
+        "clip-rule",
+        "d",
+        "encoding",
+        "height",
+        "id",
+        "style",
+        "transform",
+        "version",
+        "viewBox",
+        "width",
+        "xmlns:xlink"
+      ],
       "status": "pass",
       "golden": "golden/Test2363-2.png",
       "sha256": "29794e16edb39b66eb47da416554d038adaca02aee2ca6b25e4a7ce2d62cc11b",
-      "size": [131,95],
+      "size": [
+        131,
+        95
+      ],
       "thresholds": {
         "maxDiffPixelPercent": 1.7,
         "maxShiftTolerantPercent": 1,
@@ -2333,11 +5427,51 @@
       "upstream": {
         "file": "apps/common/test/Test2380.tsx",
         "scene": "xml",
-        "lines": [5,58]
+        "lines": [
+          5,
+          58
+        ]
       },
       "covers": "CSS custom properties (var()) in a <style> block, filter via style attribute",
-      "elements": ["circle","defs","feBlend","feFlood","filter","image","linearGradient","rect","stop","style","svg","text"],
-      "attributes": ["cx","cy","fill","flood-color","flood-opacity","font-size","height","href","id","in","in2","mode","offset","r","result","stop-color","stroke","stroke-width","style","viewBox","width","x","y"],
+      "elements": [
+        "circle",
+        "defs",
+        "feBlend",
+        "feFlood",
+        "filter",
+        "image",
+        "linearGradient",
+        "rect",
+        "stop",
+        "style",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "flood-color",
+        "flood-opacity",
+        "font-size",
+        "height",
+        "href",
+        "id",
+        "in",
+        "in2",
+        "mode",
+        "offset",
+        "r",
+        "result",
+        "stop-color",
+        "stroke",
+        "stroke-width",
+        "style",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "reference-none",
       "reason": "resvg 0.50.0 does not resolve var() in presentation attributes.",
       "css": true,
@@ -2350,15 +5484,35 @@
       "upstream": {
         "file": "apps/common/test/Test2080.tsx",
         "scene": "App",
-        "lines": [5,32]
+        "lines": [
+          5,
+          32
+        ]
       },
       "covers": "currentColor from root color, element opacity vs fillOpacity",
-      "elements": ["rect","svg"],
-      "attributes": ["color","fill","fill-opacity","height","opacity","rx","viewBox","width","x","y"],
+      "elements": [
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "color",
+        "fill",
+        "fill-opacity",
+        "height",
+        "opacity",
+        "rx",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Test2080-1.png",
       "sha256": "cec5d83688fa990752c47a9a88874b6e73ee566452c13999f5d237eb66ac49ff",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Test2266-1",
@@ -2367,15 +5521,33 @@
       "upstream": {
         "file": "apps/common/test/Test2266.tsx",
         "scene": "default",
-        "lines": [1,28]
+        "lines": [
+          1,
+          28
+        ]
       },
       "covers": "strokeWidth default, number, percent",
-      "elements": ["circle","svg"],
-      "attributes": ["cx","cy","height","r","stroke","stroke-width","viewBox","width"],
+      "elements": [
+        "circle",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "height",
+        "r",
+        "stroke",
+        "stroke-width",
+        "viewBox",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Test2266-1.png",
       "sha256": "c76d904a04d047e2f59bf9c06ad0c3cd53664d9377430313e6ea71f2b539434d",
-      "size": [400,200],
+      "size": [
+        400,
+        200
+      ],
       "thresholds": {
         "maxDiffPixelPercent": 1.8
       },
@@ -2388,15 +5560,33 @@
       "upstream": {
         "file": "apps/common/test/Test2417.tsx",
         "scene": "App (g opacity)",
-        "lines": [4,20]
+        "lines": [
+          4,
+          20
+        ]
       },
       "covers": "group opacity composites children together",
-      "elements": ["g","rect","svg"],
-      "attributes": ["fill","height","opacity","viewBox","width","x","y"],
+      "elements": [
+        "g",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "opacity",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Test2417-1.png",
       "sha256": "a7e1ac1fe1b701481c2f3977a5a1046be0f0bc8bfe674158651d28e4fa712b21",
-      "size": [150,150]
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "Test2417-2",
@@ -2405,15 +5595,32 @@
       "upstream": {
         "file": "apps/common/test/Test2417.tsx",
         "scene": "App (svg opacity)",
-        "lines": [4,20]
+        "lines": [
+          4,
+          20
+        ]
       },
       "covers": "svg root opacity composites children together",
-      "elements": ["rect","svg"],
-      "attributes": ["fill","height","opacity","viewBox","width","x","y"],
+      "elements": [
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "opacity",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Test2417-2.png",
       "sha256": "b080344329408d651dedf50e354afc3df34f5aa26a4bd3c43a3ac6285683c618",
-      "size": [150,150]
+      "size": [
+        150,
+        150
+      ]
     },
     {
       "name": "Test2455-1",
@@ -2422,15 +5629,39 @@
       "upstream": {
         "file": "apps/common/test/Test2455.tsx",
         "scene": "color",
-        "lines": [1,48]
+        "lines": [
+          1,
+          48
+        ]
       },
       "covers": "currentColor on a path from the root color, nesting through g color",
-      "elements": ["circle","g","path","rect","svg"],
-      "attributes": ["color","cx","cy","d","fill","height","r","viewBox","width","x","y"],
+      "elements": [
+        "circle",
+        "g",
+        "path",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "color",
+        "cx",
+        "cy",
+        "d",
+        "fill",
+        "height",
+        "r",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Test2455-1.png",
       "sha256": "c28d384c10151e41c68779a41debc87fe2180b775b15c8acb020787f3fc90f3c",
-      "size": [60,60]
+      "size": [
+        60,
+        60
+      ]
     },
     {
       "name": "Test2520-1",
@@ -2439,15 +5670,38 @@
       "upstream": {
         "file": "apps/common/test/Test2520.tsx",
         "scene": "App",
-        "lines": [1,33]
+        "lines": [
+          1,
+          33
+        ]
       },
       "covers": "currentColor resolved through use",
-      "elements": ["defs","g","rect","svg","use"],
-      "attributes": ["color","fill","height","href","id","transform","viewBox","width","x","y"],
+      "elements": [
+        "defs",
+        "g",
+        "rect",
+        "svg",
+        "use"
+      ],
+      "attributes": [
+        "color",
+        "fill",
+        "height",
+        "href",
+        "id",
+        "transform",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Test2520-1.png",
       "sha256": "8369a2b2fea3dd843cc071d5fc079528fe41fa9441a26274dab13b22224a8069",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Test2923-1",
@@ -2456,15 +5710,37 @@
       "upstream": {
         "file": "apps/common/test/Test2923.tsx",
         "scene": "App",
-        "lines": [1,132]
+        "lines": [
+          1,
+          132
+        ]
       },
       "covers": "currentColor with fillOpacity strokeOpacity grid",
-      "elements": ["g","rect","svg"],
-      "attributes": ["color","fill","fill-opacity","height","stroke","stroke-opacity","stroke-width","viewBox","width","x","y"],
+      "elements": [
+        "g",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "color",
+        "fill",
+        "fill-opacity",
+        "height",
+        "stroke",
+        "stroke-opacity",
+        "stroke-width",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Test2923-1.png",
       "sha256": "8e691e6649650d86f546762db33fc9ddd49378c6d96b27351eeeb6697fa203dc",
-      "size": [200,200]
+      "size": [
+        200,
+        200
+      ]
     },
     {
       "name": "Test2086-1",
@@ -2473,15 +5749,30 @@
       "upstream": {
         "file": "apps/common/test/Test2086.tsx",
         "scene": "MySVG (toggle false)",
-        "lines": [18,35]
+        "lines": [
+          18,
+          35
+        ]
       },
       "covers": "arc flags packed with commas",
-      "elements": ["path","svg"],
-      "attributes": ["d","height","stroke","viewBox","width"],
+      "elements": [
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "height",
+        "stroke",
+        "viewBox",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Test2086-1.png",
       "sha256": "985a35af045a6f05e9197c7ccd40234196a7b97db03a760337b7a127b61a6e52",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Test2086-2",
@@ -2490,11 +5781,23 @@
       "upstream": {
         "file": "apps/common/test/Test2086.tsx",
         "scene": "MySVG (toggle true)",
-        "lines": [18,35]
+        "lines": [
+          18,
+          35
+        ]
       },
       "covers": "malformed arc: path is kept up to the first bad token",
-      "elements": ["path","svg"],
-      "attributes": ["d","height","stroke","viewBox","width"],
+      "elements": [
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "height",
+        "stroke",
+        "viewBox",
+        "width"
+      ],
       "status": "reference-none",
       "reason": "Error recovery for the bad arc differs by renderer (resvg keeps the prefix, react-native-svg iOS drops the path); asserted in RnsvgRenderTest.",
       "sha256": "de1c5ebe8dd9d18165b3fa63af7999851b0cf6b568bc95170d6487445c8488f6"
@@ -2506,15 +5809,35 @@
       "upstream": {
         "file": "apps/common/test/Test2248.tsx",
         "scene": "Test2248 (frame at 50%)",
-        "lines": [1,60]
+        "lines": [
+          1,
+          60
+        ]
       },
       "covers": "round-cap dashed arc path, dash frame at 50% of the animation",
-      "elements": ["path","svg"],
-      "attributes": ["d","fill","height","stroke","stroke-dasharray","stroke-linecap","stroke-linejoin","stroke-width","viewBox","width"],
+      "elements": [
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "height",
+        "stroke",
+        "stroke-dasharray",
+        "stroke-linecap",
+        "stroke-linejoin",
+        "stroke-width",
+        "viewBox",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Test2248-1.png",
       "sha256": "a7a9a3e143e187a73f9c87a9bac3f1eddddd56a11577c4a5a2194b8b2c4d31f8",
-      "size": [150,120]
+      "size": [
+        150,
+        120
+      ]
     },
     {
       "name": "Test2403-1",
@@ -2523,15 +5846,41 @@
       "upstream": {
         "file": "apps/common/test/Test2403.tsx",
         "scene": "Playground",
-        "lines": [17,95]
+        "lines": [
+          17,
+          95
+        ]
       },
       "covers": "mask with default units over a circle, other shapes outside the mask",
-      "elements": ["circle","mask","path","rect","svg"],
-      "attributes": ["cx","cy","d","fill","height","id","mask","maskUnits","r","viewBox","width","x","y"],
+      "elements": [
+        "circle",
+        "mask",
+        "path",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "d",
+        "fill",
+        "height",
+        "id",
+        "mask",
+        "maskUnits",
+        "r",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Test2403-1.png",
       "sha256": "597e5958f81d4455b419512316c17db8b009a1ca9a5328636eef403861866316",
-      "size": [200,200]
+      "size": [
+        200,
+        200
+      ]
     },
     {
       "name": "Test1451-1",
@@ -2540,15 +5889,42 @@
       "upstream": {
         "file": "apps/common/test/Test1451.tsx",
         "scene": "zoom=1 frame",
-        "lines": [1,52]
+        "lines": [
+          1,
+          52
+        ]
       },
       "covers": "mask on an element with a matrix transform (zoom 2)",
-      "elements": ["circle","mask","path","rect","svg"],
-      "attributes": ["cx","cy","d","fill","height","id","mask","maskUnits","r","transform","viewBox","width","x","y"],
+      "elements": [
+        "circle",
+        "mask",
+        "path",
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "d",
+        "fill",
+        "height",
+        "id",
+        "mask",
+        "maskUnits",
+        "r",
+        "transform",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Test1451-1.png",
       "sha256": "c8f8bba98d170965d2c61d2f4bef01b9dbd7199b727703e6f9683bd12eab9a50",
-      "size": [400,400]
+      "size": [
+        400,
+        400
+      ]
     },
     {
       "name": "Test2670-1",
@@ -2557,15 +5933,28 @@
       "upstream": {
         "file": "apps/common/test/Test2670.tsx",
         "scene": "PathChangingFillFromValueToUndefined",
-        "lines": [5,31]
+        "lines": [
+          5,
+          31
+        ]
       },
       "covers": "path without fill: default black",
-      "elements": ["path","svg"],
-      "attributes": ["d","height","width"],
+      "elements": [
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "height",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Test2670-1.png",
       "sha256": "02f199fc27cc6c434626ee9711dcd2c211add0a262be9f9cf9dc3cb4e79bff7f",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Test2670-2",
@@ -2574,15 +5963,29 @@
       "upstream": {
         "file": "apps/common/test/Test2670.tsx",
         "scene": "PathChangingFillFromValueToFillNone",
-        "lines": [33,61]
+        "lines": [
+          33,
+          61
+        ]
       },
       "covers": "path fill none draws nothing",
-      "elements": ["path","svg"],
-      "attributes": ["d","fill","height","width"],
+      "elements": [
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "height",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Test2670-2.png",
       "sha256": "ec6138843c49a950e0e0e6bdbf8f71b58bc046756e31385ee90c0e4d5c5cbabf",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Test2089-1",
@@ -2591,15 +5994,35 @@
       "upstream": {
         "file": "apps/common/test/Test2089.tsx",
         "scene": "AnimatedCircle (first frame)",
-        "lines": [1,67]
+        "lines": [
+          1,
+          67
+        ]
       },
       "covers": "strokeDasharray with decimals, round caps",
-      "elements": ["circle","svg"],
-      "attributes": ["cx","cy","fill","height","r","stroke","stroke-dasharray","stroke-linecap","stroke-width","width"],
+      "elements": [
+        "circle",
+        "svg"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "fill",
+        "height",
+        "r",
+        "stroke",
+        "stroke-dasharray",
+        "stroke-linecap",
+        "stroke-width",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Test2089-1.png",
       "sha256": "6168fd3e60c6f1019065afd4c4fe81ad4c44cfd76ea7a570d75020d21ad38304",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Test2407-1",
@@ -2608,15 +6031,31 @@
       "upstream": {
         "file": "apps/common/test/Test2407.tsx",
         "scene": "hitSlop",
-        "lines": [1,35]
+        "lines": [
+          1,
+          35
+        ]
       },
       "covers": "rect (hitSlop is non-visual)",
-      "elements": ["rect","svg"],
-      "attributes": ["fill","height","viewBox","width","x","y"],
+      "elements": [
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Test2407-1.png",
       "sha256": "9273f203f999502ca47a814b291e3e6a34b2066f7adc1b176eb66707d299a4ca",
-      "size": [200,200]
+      "size": [
+        200,
+        200
+      ]
     },
     {
       "name": "Test2142-1",
@@ -2625,15 +6064,28 @@
       "upstream": {
         "file": "apps/common/test/Test2142.tsx",
         "scene": "SvgUri data URI #1",
-        "lines": [7,22]
+        "lines": [
+          7,
+          22
+        ]
       },
       "covers": "svg document decoded from the data URI the test passes to SvgUri",
-      "elements": ["rect","svg"],
-      "attributes": ["fill","height","width"],
+      "elements": [
+        "rect",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Test2142-1.png",
       "sha256": "ea3bb5a49283b37025ec7128296d77896d6dbf4d1226a31f577b7a3d897dec25",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Test2142-2",
@@ -2642,15 +6094,33 @@
       "upstream": {
         "file": "apps/common/test/Test2142.tsx",
         "scene": "SvgUri data URI #2",
-        "lines": [10,22]
+        "lines": [
+          10,
+          22
+        ]
       },
       "covers": "svg document decoded from the data URI the test passes to SvgUri",
-      "elements": ["circle","svg","title"],
-      "attributes": ["cx","cy","height","r","style","viewBox","width"],
+      "elements": [
+        "circle",
+        "svg",
+        "title"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "height",
+        "r",
+        "style",
+        "viewBox",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Test2142-2.png",
       "sha256": "ce5160a9366ab0877f73f7209559a8ad2cbce2b7b4b2917940ac3a6263910f85",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Test2142-3",
@@ -2659,15 +6129,30 @@
       "upstream": {
         "file": "apps/common/test/Test2142.tsx",
         "scene": "SvgUri data URI #3",
-        "lines": [13,22]
+        "lines": [
+          13,
+          22
+        ]
       },
       "covers": "svg document decoded from the data URI the test passes to SvgUri",
-      "elements": ["polygon","svg"],
-      "attributes": ["height","points","style","viewBox","width"],
+      "elements": [
+        "polygon",
+        "svg"
+      ],
+      "attributes": [
+        "height",
+        "points",
+        "style",
+        "viewBox",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Test2142-3.png",
       "sha256": "debdca4f1374a480eec5589c0a2e600b96063c997e5909931e32af837ec9e9d8",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "FilterImage-1",
@@ -2676,17 +6161,38 @@
       "upstream": {
         "file": "apps/common/example/examples/FilterImage/FilterPicker.tsx",
         "scene": "losAngeles",
-        "lines": [15,109]
+        "lines": [
+          15,
+          109
+        ]
       },
       "covers": "image with a feColorMatrix filter list (FilterImage component, expressed as a filter on an image)",
-      "elements": ["feColorMatrix","filter","image","svg"],
-      "attributes": ["filter","height","href","id","preserveAspectRatio","type","values","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feColorMatrix",
+        "filter",
+        "image",
+        "svg"
+      ],
+      "attributes": [
+        "filter",
+        "height",
+        "href",
+        "id",
+        "preserveAspectRatio",
+        "type",
+        "values",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FilterImage-1.png",
       "filter": "FeColorMatrix",
       "sha256": "02d60e72163200dc73d13833bb05e538f532b01b8f48728d31a57b7fc18bc48f",
-      "size": [160,120],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=48.771 mean=13.283 block=6655 stpct=15.615 stblock=159"
+      "size": [
+        160,
+        120
+      ]
     },
     {
       "name": "FilterImage-2",
@@ -2695,17 +6201,38 @@
       "upstream": {
         "file": "apps/common/example/examples/FilterImage/FilterPicker.tsx",
         "scene": "lagos",
-        "lines": [22,109]
+        "lines": [
+          22,
+          109
+        ]
       },
       "covers": "image with a feColorMatrix filter list (FilterImage component, expressed as a filter on an image)",
-      "elements": ["feColorMatrix","filter","image","svg"],
-      "attributes": ["filter","height","href","id","preserveAspectRatio","type","values","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feColorMatrix",
+        "filter",
+        "image",
+        "svg"
+      ],
+      "attributes": [
+        "filter",
+        "height",
+        "href",
+        "id",
+        "preserveAspectRatio",
+        "type",
+        "values",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FilterImage-2.png",
       "filter": "FeColorMatrix",
       "sha256": "604471cfe6d4ecbea6cabc730328144256b9303818726ca9eb3cf8cb979fe839",
-      "size": [160,120],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=75.292 mean=22.426 block=14448 stpct=11.818 stblock=110"
+      "size": [
+        160,
+        120
+      ]
     },
     {
       "name": "FilterImage-3",
@@ -2714,17 +6241,38 @@
       "upstream": {
         "file": "apps/common/example/examples/FilterImage/FilterPicker.tsx",
         "scene": "tokyo",
-        "lines": [31,109]
+        "lines": [
+          31,
+          109
+        ]
       },
       "covers": "image with a feColorMatrix filter list (FilterImage component, expressed as a filter on an image)",
-      "elements": ["feColorMatrix","filter","image","svg"],
-      "attributes": ["filter","height","href","id","preserveAspectRatio","type","values","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feColorMatrix",
+        "filter",
+        "image",
+        "svg"
+      ],
+      "attributes": [
+        "filter",
+        "height",
+        "href",
+        "id",
+        "preserveAspectRatio",
+        "type",
+        "values",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FilterImage-3.png",
       "filter": "FeColorMatrix",
       "sha256": "2581f9d295438e60b6902e64a6a15defe0053b686285ac4991ff22d371bc6ead",
-      "size": [160,120],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=86.745 mean=38.436 block=16596 stpct=70.740 stblock=12486; with the working-tree renderer: within the thresholds listed here",
+      "size": [
+        160,
+        120
+      ],
       "thresholds": {
         "meanAbsDiff": 3.5
       },
@@ -2737,17 +6285,38 @@
       "upstream": {
         "file": "apps/common/example/examples/FilterImage/FilterPicker.tsx",
         "scene": "saturated",
-        "lines": [42,109]
+        "lines": [
+          42,
+          109
+        ]
       },
       "covers": "image with a feColorMatrix filter list (FilterImage component, expressed as a filter on an image)",
-      "elements": ["feColorMatrix","filter","image","svg"],
-      "attributes": ["filter","height","href","id","preserveAspectRatio","type","values","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feColorMatrix",
+        "filter",
+        "image",
+        "svg"
+      ],
+      "attributes": [
+        "filter",
+        "height",
+        "href",
+        "id",
+        "preserveAspectRatio",
+        "type",
+        "values",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FilterImage-4.png",
       "filter": "FeColorMatrix",
-      "sha256": "a3813a86c9c57b31522b38d2c9914444afe034177dcce7e374133471a0fa4a81",
-      "size": [160,120],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=0.000 mean=1.839 block=0 stpct=0.000 stblock=0; with the working-tree renderer: feColorMatrix saturate 1.5 changes the image far from the reference (values above 1 are probably clamped); FilterImage-3 (saturate 1.5 then a matrix) is 1 level over its mean limit for the same reason"
+      "sha256": "162577dce3579f3db0b27722f44a83386d179b1f920cd30bceb5a991474f42e5",
+      "size": [
+        160,
+        120
+      ]
     },
     {
       "name": "FilterImage-5",
@@ -2756,17 +6325,38 @@
       "upstream": {
         "file": "apps/common/example/examples/FilterImage/FilterPicker.tsx",
         "scene": "boring",
-        "lines": [45,109]
+        "lines": [
+          45,
+          109
+        ]
       },
       "covers": "image with a feColorMatrix filter list (FilterImage component, expressed as a filter on an image)",
-      "elements": ["feColorMatrix","filter","image","svg"],
-      "attributes": ["filter","height","href","id","preserveAspectRatio","type","values","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feColorMatrix",
+        "filter",
+        "image",
+        "svg"
+      ],
+      "attributes": [
+        "filter",
+        "height",
+        "href",
+        "id",
+        "preserveAspectRatio",
+        "type",
+        "values",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FilterImage-5.png",
       "filter": "FeColorMatrix",
       "sha256": "174d2efd64c04bec77e3ea832e768b7334aae78a37b7a605ef1c9b82944a490e",
-      "size": [160,120],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=43.969 mean=12.414 block=5869 stpct=28.490 stblock=1133"
+      "size": [
+        160,
+        120
+      ]
     },
     {
       "name": "FilterImage-6",
@@ -2775,17 +6365,38 @@
       "upstream": {
         "file": "apps/common/example/examples/FilterImage/LocalImage.tsx",
         "scene": "saturate-half",
-        "lines": [42,49]
+        "lines": [
+          42,
+          49
+        ]
       },
       "covers": "image with a feColorMatrix filter list (FilterImage component, expressed as a filter on an image)",
-      "elements": ["feColorMatrix","filter","image","svg"],
-      "attributes": ["filter","height","href","id","preserveAspectRatio","type","values","width","x","y"],
-      "status": "pending:filter",
+      "elements": [
+        "feColorMatrix",
+        "filter",
+        "image",
+        "svg"
+      ],
+      "attributes": [
+        "filter",
+        "height",
+        "href",
+        "id",
+        "preserveAspectRatio",
+        "type",
+        "values",
+        "width",
+        "x",
+        "y"
+      ],
+      "status": "pass",
       "golden": "golden/FilterImage-6.png",
       "filter": "FeColorMatrix",
       "sha256": "162577dce3579f3db0b27722f44a83386d179b1f920cd30bceb5a991474f42e5",
-      "size": [160,120],
-      "pendingNote": "the element is not in the baseline model (filter element and Fe* primitives); baseline metrics: pct=44.286 mean=11.968 block=5966 stpct=33.115 stblock=3297"
+      "size": [
+        160,
+        120
+      ]
     },
     {
       "name": "Test1442-1",
@@ -2794,15 +6405,29 @@
       "upstream": {
         "file": "apps/common/test/Test1442.tsx",
         "scene": "PNGImageFromFile",
-        "lines": [69,83]
+        "lines": [
+          69,
+          83
+        ]
       },
       "covers": "image PNG from a local file (assets/arrow.png inlined)",
-      "elements": ["image","svg"],
-      "attributes": ["height","href","opacity","width"],
+      "elements": [
+        "image",
+        "svg"
+      ],
+      "attributes": [
+        "height",
+        "href",
+        "opacity",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Test1442-1.png",
       "sha256": "e3c9f1f36f20ac9527ac4f819a3700afef87cc3585fe7b2713be188265a01a58",
-      "size": [120,120]
+      "size": [
+        120,
+        120
+      ]
     },
     {
       "name": "Test1813-3",
@@ -2811,15 +6436,29 @@
       "upstream": {
         "file": "apps/common/test/Test1813.tsx",
         "scene": "asset ruby.svg",
-        "lines": [1,90]
+        "lines": [
+          1,
+          90
+        ]
       },
       "covers": "ruby.svg test asset verbatim",
-      "elements": ["path","svg"],
-      "attributes": ["d","fill","fill-rule","viewBox"],
+      "elements": [
+        "path",
+        "svg"
+      ],
+      "attributes": [
+        "d",
+        "fill",
+        "fill-rule",
+        "viewBox"
+      ],
       "status": "pass",
       "golden": "golden/Test1813-3.png",
       "sha256": "e377ec225ceeee47a29c0c3592ad50584d5e6847d869f9a5fe1b464779ac6bc1",
-      "size": [100,100]
+      "size": [
+        100,
+        100
+      ]
     },
     {
       "name": "Complex-1",
@@ -2828,15 +6467,29 @@
       "upstream": {
         "file": "apps/common/example/examples/complex/PolygonBunny.tsx",
         "scene": "default export",
-        "lines": [1,14707]
+        "lines": [
+          1,
+          14707
+        ]
       },
       "covers": "about 3,600 polygons with rgb() fills",
-      "elements": ["polygon","svg"],
-      "attributes": ["fill","height","points","width"],
+      "elements": [
+        "polygon",
+        "svg"
+      ],
+      "attributes": [
+        "fill",
+        "height",
+        "points",
+        "width"
+      ],
       "status": "pass",
       "golden": "golden/Complex-1.png",
       "sha256": "4cedf1b2a560a2dc21a429f20b07279107709462b14dc7883c7d4a196615308b",
-      "size": [512,412]
+      "size": [
+        512,
+        412
+      ]
     },
     {
       "name": "Complex-2",
@@ -2845,16 +6498,47 @@
       "upstream": {
         "file": "apps/common/example/examples/complex/WorldMap.tsx",
         "scene": "default export",
-        "lines": [1,29741]
+        "lines": [
+          1,
+          29741
+        ]
       },
       "covers": "about 3,900 paths, 356 groups, 239 text elements, 88 circles, viewBox",
-      "elements": ["circle","g","path","rect","svg","text"],
-      "attributes": ["cx","cy","d","display","fill","fill-opacity","font-size","height","id","r","stroke","stroke-miterlimit","stroke-width","viewBox","width","x","y"],
+      "elements": [
+        "circle",
+        "g",
+        "path",
+        "rect",
+        "svg",
+        "text"
+      ],
+      "attributes": [
+        "cx",
+        "cy",
+        "d",
+        "display",
+        "fill",
+        "fill-opacity",
+        "font-size",
+        "height",
+        "id",
+        "r",
+        "stroke",
+        "stroke-miterlimit",
+        "stroke-width",
+        "viewBox",
+        "width",
+        "x",
+        "y"
+      ],
       "status": "pass",
       "golden": "golden/Complex-2.png",
       "text": true,
       "sha256": "436ba0f5d71029453ae297f44717dcabd7014b3b8c6f647ae848fede4b4974cc",
-      "size": [300,300]
+      "size": [
+        300,
+        300
+      ]
     },
     {
       "name": "Empty-1",
@@ -2864,14 +6548,25 @@
       "upstream": {
         "file": "apps/common/example/examples/Empty.tsx",
         "scene": "EmptyExample",
-        "lines": [4,6]
+        "lines": [
+          4,
+          6
+        ]
       },
       "covers": "empty svg element",
-      "elements": ["svg"],
-      "attributes": ["height","width"],
+      "elements": [
+        "svg"
+      ],
+      "attributes": [
+        "height",
+        "width"
+      ],
       "status": "pass",
       "sha256": "50aec87459b2066817d5c0f4244d1cfbdc34f1a445e91b5a32a9716909f3805e",
-      "size": [400,400]
+      "size": [
+        400,
+        400
+      ]
     }
   ],
   "nonVisual": [

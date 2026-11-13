@@ -2,6 +2,8 @@
 
 #include "Scene.h"
 
+#include "ConicalGradient.h"
+
 #include <QLinearGradient>
 #include <QRadialGradient>
 
@@ -59,6 +61,7 @@ bool PaintServers::gradient(const ElementProps& g, const QRectF& bbox, const Fra
                          u.resolveUnits(g.y2, user, Axis::Y, 0));
     grad.setStops(stops);
     grad.setSpread(spread);
+    grad.setInterpolationMode(QGradient::ComponentInterpolation);
     QBrush brush(grad);
     brush.setTransform(t);
     out = {brush, 1};
@@ -68,13 +71,34 @@ bool PaintServers::gradient(const ElementProps& g, const QRectF& bbox, const Fra
   const double cy = u.resolveUnits(g.cy, user, Axis::Y, user ? vp.height() / 2 : 0.5);
   const double rx = u.resolveUnits(g.rx, user, Axis::X, user ? vp.width() / 2 : 0.5);
   const double ry = u.resolveUnits(g.ry, user, Axis::Y, user ? vp.height() / 2 : 0.5);
-  if (!(rx > 0) || !(ry > 0)) return false;
-  const double fx = u.resolveUnits(g.fx, user, Axis::X, cx);
-  const double fy = u.resolveUnits(g.fy, user, Axis::Y, cy);
+  if (!(rx > 0) || !(ry > 0)) {
+    // SVG: a zero radius paints the area with the last stop's color.
+    out = {QBrush(stops.last().second), 1};
+    return true;
+  }
+  double fx = u.resolveUnits(g.fx, user, Axis::X, cx);
+  double fy = u.resolveUnits(g.fy, user, Axis::Y, cy);
+  // A focal point outside the circle is a cone in SVG 2; Qt would move it.
+  {
+    const double dx = (fx - cx) / rx, dy = (fy - cy) / ry;
+    if (std::hypot(dx, dy) > 1.0) {
+      QRectF area = bbox;
+      if (user || !area.isValid()) area = QRectF(QPointF(-512, -512), QSizeF(2048, 2048));
+      const QTransform gradientToShape = t;
+      // Cover the shape's box and its stroke reach in texels at the device scale.
+      const double deviceScale = std::hypot(scene_.target().base.m11(), scene_.target().base.m12()) *
+                                 std::hypot(f.ctm.m11(), f.ctm.m12());
+      out = {makeConicalGradientBrush(stops, QPointF(cx, cy), rx, ry, QPointF(fx, fy), gradientToShape,
+                                      area.adjusted(-64, -64, 64, 64), deviceScale > 0 ? deviceScale : 1.0),
+             1};
+      return true;
+    }
+  }
   // An elliptical gradient is a circular one scaled about its center.
   QRadialGradient grad(QPointF(cx, cy), rx, QPointF(fx, cy + (fy - cy) * rx / ry));
   grad.setStops(stops);
   grad.setSpread(spread);
+  grad.setInterpolationMode(QGradient::ComponentInterpolation);
   QBrush brush(grad);
   brush.setTransform(QTransform::fromTranslate(0, cy).scale(1, ry / rx).translate(0, -cy) * t);
   out = {brush, 1};

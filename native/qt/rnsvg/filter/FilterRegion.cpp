@@ -122,7 +122,13 @@ std::optional<Env> makeEnv(const Definition& definition, const Context& context)
   env.userRegion = QRectF(x, y, w, h);
   env.region = toDeviceRect(env.userRegion, env.toDevice);
   if (env.region.isEmpty()) return std::nullopt;
-  if (static_cast<qint64>(env.region.width()) * env.region.height() > kMaxRegionPixels) return std::nullopt;
+  if (static_cast<qint64>(env.region.width()) * env.region.height() > kMaxRegionPixels) {
+    if (context.workArea.isNull()) return std::nullopt;
+    env.region = env.region.intersected(context.workArea);
+    if (env.region.isEmpty() || static_cast<qint64>(env.region.width()) * env.region.height() > kMaxRegionPixels) {
+      return std::nullopt;
+    }
+  }
   return env;
 }
 

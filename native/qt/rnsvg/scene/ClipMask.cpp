@@ -41,8 +41,10 @@ QPainterPath ClipMask::clipChild(const RnsvgElementItem* c, const Style& inherit
   QPainterPath path;
   if (isShape(p.kind)) {
     path = shapePath(p, Units(units.viewport(), st.font.size.value_or(12.0)));
+    // Unset (-1) is evenodd: react-native-svg's iOS and Android views both
+    // default clipRule to evenodd, so the same JSX clips the same shape here.
     const int rule = st.clipRule >= 0 ? st.clipRule : elementRule;
-    path.setFillRule(rule == 0 ? Qt::OddEvenFill : Qt::WindingFill);
+    path.setFillRule(rule == 1 ? Qt::WindingFill : Qt::OddEvenFill);
   } else if (p.kind == Kind::Group) {
     for (auto* g : c->elementChildren()) {
       QPainterPath sub = clipChild(g, st, units, elementRule, depth + 1);

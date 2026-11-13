@@ -123,10 +123,12 @@ struct ElementProps {
   double fillOpacity{1.0};
   double strokeOpacity{1.0};
   bool fillEvenOdd{false};
-  // clipRule: -1 unset (SVG default, nonzero), 0 evenodd, 1 nonzero. The
-  // package's generated default is 0, which cannot tell "unset" from
-  // "evenodd"; scripts/qt-rnsvg-codegen.mjs regenerates the prop with -1 as
-  // its default so the two differ.
+  // clipRule: -1 unset, 0 evenodd, 1 nonzero. Unset clips as evenodd, which
+  // is what react-native-svg's native views do (their default is evenodd even
+  // though SVG's is nonzero). The package's generated default is 0, which
+  // cannot tell "unset" from "evenodd"; scripts/qt-rnsvg-codegen.mjs
+  // regenerates the prop with -1 as its default so a shape's own explicit rule
+  // can still win over an inherited one.
   int clipRule{-1};
   Length strokeWidth;
   int strokeLinecap{0};   // 0 butt, 1 round, 2 square

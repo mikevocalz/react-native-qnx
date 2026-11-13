@@ -27,6 +27,11 @@ class TextRenderer {
   // including its own props.
   QPainterPath outline(const RnsvgElementItem* e, const Frame& f, int depth);
 
+  // The union of the em boxes of the characters: the text's object bounding
+  // box for gradients, masks and filters (SVG measures text by its cells, not
+  // by its ink).
+  QRectF cellBox(const RnsvgElementItem* e, const Frame& f, int depth);
+
  private:
   Scene& scene_;
 };

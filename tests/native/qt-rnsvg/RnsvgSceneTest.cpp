@@ -6,6 +6,9 @@
 
 #include <QPointer>
 
+#include <cmath>
+#include <limits>
+
 using namespace rnqnx::views;
 using namespace rnqnx::views::rnsvg;
 using namespace rnqnx::views::rnsvg::testkit;
@@ -53,11 +56,19 @@ class RnsvgSceneTest final : public QObject {
     QCOMPARE(v[1].outDirection, QPointF(0, 1));
     QVERIFY(v[3].closesSubpath);
     QCOMPARE(v[3].point, QPointF(0, 0));
-    // The first vertex of a closed subpath also receives the closing segment.
-    QVERIFY(qAbs(v[0].inDirection.x() + 0.7071) < 0.001 && qAbs(v[0].inDirection.y() + 0.7071) < 0.001);
-    // An arc is one segment: two vertices, not one per cubic.
+    // The closing segment is a vertex of its own; the first vertex keeps no
+    // incoming direction (neither renderer bisects a closed start).
+    QCOMPARE(v[0].inDirection, QPointF());
+    QVERIFY(v[3].inDirection.x() < 0);
+    // A path that already ends at its start adds no vertex; the zero-length
+    // closing segment leaves the last vertex along (1, 0), as resvg does.
+    parseSvgPath(QStringLiteral("M0 0 L10 0 L10 10 L0 0 Z"), nullptr, &v);
+    QCOMPARE(int(v.size()), 4);
+    QCOMPARE(v[3].outDirection, QPointF(1, 0));
+    // An arc is one vertex per cubic it becomes, as react-native-svg's own
+    // path parser does: a half circle is two quarter cubics.
     parseSvgPath(QStringLiteral("M0 0 A10 10 0 1 1 20 0"), nullptr, &v);
-    QCOMPARE(int(v.size()), 2);
+    QCOMPARE(int(v.size()), 3);
     // A curve's direction at its ends comes from its control points.
     parseSvgPath(QStringLiteral("M0 0 C0 10 10 20 20 20"), nullptr, &v);
     QCOMPARE(v[0].outDirection, QPointF(0, 1));
@@ -78,10 +89,10 @@ class RnsvgSceneTest final : public QObject {
       add(&s.root, r);
       const QImage img = render(s.root);
       VERIFY_PX(img, 50, 10 + 0, Qt::red);  // a tip of the star
-      if (rule == 0) {
-        VERIFY_TRANSPARENT(img, 50, 50);  // the middle pentagon is a hole
+      if (rule == 1) {
+        VERIFY_PX(img, 50, 50, Qt::red);  // nonzero fills the middle pentagon
       } else {
-        VERIFY_PX(img, 50, 50, Qt::red);  // unset and nonzero fill it
+        VERIFY_TRANSPARENT(img, 50, 50);  // unset clips as evenodd, like upstream: a hole
       }
     }
   }
@@ -505,6 +516,79 @@ class RnsvgSceneTest final : public QObject {
         VERIFY_PX(img, 50, 46, Qt::black);  // twenty item pixels wide
       }
     }
+  }
+
+  void selfReferencingPaintServersAndMarkersTerminate() {
+    Scene s;
+    auto* defs = add(&s.root, make(Kind::Defs));
+    // A pattern whose content is filled by the pattern itself.
+    ElementProps pd = definition(Kind::Pattern, QStringLiteral("p"));
+    pd.patternUserSpace = true;
+    pd.x = px(0); pd.y = px(0); pd.width = px(10); pd.height = px(10);
+    auto* pattern = add(defs, pd);
+    ElementProps inner = rect(0, 0, 10, 10, Qt::red);
+    inner.fill = ref(QStringLiteral("p"));
+    add(pattern, inner);
+    // A marker whose content is a path that names the marker.
+    auto* marker = add(defs, markerDef(QStringLiteral("m"), 10, 10, 5, 5, QString(), false));
+    ElementProps mp = stroked(Kind::Line, Qt::black, 1);
+    mp.x1 = px(0); mp.y1 = px(0); mp.x2 = px(10); mp.y2 = px(10);
+    mp.markerStart = mp.markerEnd = QStringLiteral("m");
+    add(marker, mp);
+    // A clip path clipped by itself, and a mask masked by itself.
+    ElementProps cd = definition(Kind::ClipPath, QStringLiteral("c"));
+    cd.clipPath = QStringLiteral("c");
+    add(add(defs, cd), rect(0, 0, 50, 50, Qt::black));
+    ElementProps md = definition(Kind::Mask, QStringLiteral("k"));
+    md.mask = QStringLiteral("k");
+    add(add(defs, md), rect(0, 0, 50, 50, Qt::white));
+    ElementProps r = rect(0, 0, 100, 100, Qt::black);
+    r.fill = ref(QStringLiteral("p"));
+    r.clipPath = QStringLiteral("c");
+    r.mask = QStringLiteral("k");
+    add(&s.root, r);
+    ElementProps l = line(10, 10, 90, 90, Qt::black, 1);
+    l.markerStart = l.markerMid = l.markerEnd = QStringLiteral("m");
+    add(&s.root, l);
+    render(s.root);  // terminating is the assertion
+    QVERIFY(true);
+  }
+
+  void degenerateValuesDoNotCrash() {
+    Scene s;
+    const double nan = std::numeric_limits<double>::quiet_NaN();
+    const double inf = std::numeric_limits<double>::infinity();
+    auto* defs = add(&s.root, make(Kind::Defs));
+    ElementProps pd = definition(Kind::Pattern, QStringLiteral("p"));
+    pd.patternUserSpace = true;
+    pd.x = px(0); pd.y = px(0); pd.width = px(1e12); pd.height = px(1e-9);
+    auto* pattern = add(defs, pd);
+    add(pattern, rect(0, 0, 1, 1, Qt::red));
+    ElementProps pd2 = definition(Kind::Pattern, QStringLiteral("q"));
+    pd2.patternUserSpace = true;
+    pd2.width = px(nan); pd2.height = px(5);
+    add(defs, pd2);
+    for (const char* id : {"p", "q"}) {
+      ElementProps r = rect(0, 0, 100, 100, Qt::black);
+      r.fill = ref(QString::fromLatin1(id));
+      add(&s.root, r);
+    }
+    ElementProps bad = rect(nan, inf, -inf, nan, Qt::red);
+    add(&s.root, bad);
+    ElementProps dashed = line(0, 0, 100, 100, Qt::black, 1);
+    dashed.strokeDasharray = {px(1e-12), px(1e-12)};
+    dashed.propList.insert(QStringLiteral("strokeDasharray"));
+    add(&s.root, dashed);
+    ElementProps g = make(Kind::Group);
+    g.opacity = 0.5;
+    g.matrix = QTransform(1e30, 0, 0, 1e30, 0, 0);
+    add(add(&s.root, g), rect(0, 0, 1e30, 1e30, Qt::red));
+    ElementProps m = make(Kind::Group);
+    m.matrix = QTransform(0, 0, 0, 0, 0, 0);
+    m.opacity = 0.5;
+    add(add(&s.root, m), rect(0, 0, 10, 10, Qt::red));
+    render(s.root);
+    QVERIFY(true);
   }
 
   void useGroupOpacityIsApplied() {

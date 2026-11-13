@@ -61,7 +61,7 @@ QRectF Bounds::compute(const RnsvgElementItem* e, const Frame& inherited, int de
       box = unionRect(box, cb);
     }
   } else if (p.kind == Kind::Text || p.kind == Kind::TSpan) {
-    box = scene_.text().outline(e, f, depth).boundingRect();
+    box = painted ? scene_.text().outline(e, f, depth).boundingRect() : scene_.text().cellBox(e, f, depth);
     if (painted && !box.isNull()) {
       const double w = ShapePainter::strokeWidth(f.style, units);
       if (f.style.stroke.type != Brush::Type::None && w > 0) {

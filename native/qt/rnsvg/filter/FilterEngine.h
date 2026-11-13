@@ -76,6 +76,13 @@ struct Context {
   std::function<QImage(const QString& id, const QTransform& userToDevice, const QRect& deviceRect)> renderElement;
   // feImage with a URL (data:, file:, bundled asset): decoded image, or null.
   std::function<QImage(const QString& href)> loadImage;
+
+  // Device pixels the caller can show, with margin. A region larger than
+  // kMaxRegionPixels (width="180" in objectBoundingBox units is 180 boxes
+  // wide) is cut to this rectangle instead of being invalid; the primitives
+  // still resolve against the full region. Null: no cut, such a region is
+  // invalid.
+  QRect workArea;
 };
 
 // The filter region in device pixels: the origin is floored and the size

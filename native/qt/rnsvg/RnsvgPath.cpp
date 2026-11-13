@@ -3,6 +3,7 @@
 #include <QPointF>
 #include <algorithm>
 #include <cmath>
+#include <functional>
 
 namespace rnqnx::views::rnsvg {
 namespace {
@@ -62,14 +63,20 @@ class Scanner {
 };
 
 // SVG implementation notes F.6: endpoint to center parameterization.
+// `segment(end, startDirection, endDirection)` is called once per cubic the arc
+// becomes. react-native-svg's own path parser also turns an arc into cubics
+// and places markers at each cubic's end, so the vertices match it (the SVG
+// text would put one at the arc's end only).
+using SegmentSink = std::function<void(QPointF end, QPointF startDirection, QPointF endDirection)>;
+
 bool arcTo(QPainterPath& path, QPointF p0, double rx, double ry, double xAxisRotation,
-           bool largeArc, bool sweep, QPointF p1, QPointF* startDirection, QPointF* endDirection) {
+           bool largeArc, bool sweep, QPointF p1, const SegmentSink& segment) {
   if (p0 == p1) return false;
   rx = std::abs(rx);
   ry = std::abs(ry);
   if (rx == 0 || ry == 0) {
     path.lineTo(p1);
-    *startDirection = *endDirection = p1 - p0;
+    segment(p1, p1 - p0, p1 - p0);
     return true;
   }
   const double phi = xAxisRotation * kPi / 180.0;
@@ -103,6 +110,7 @@ bool arcTo(QPainterPath& path, QPointF p0, double rx, double ry, double xAxisRot
   const double step = delta / segments;
   const double t = 4.0 / 3.0 * std::tan(step / 4.0);
   double a = theta1;
+  QPointF segStart = p0;
   for (int i = 0; i < segments; ++i) {
     const double cosA = std::cos(a), sinA = std::sin(a);
     const double cosB = std::cos(a + step), sinB = std::sin(a + step);
@@ -113,9 +121,10 @@ bool arcTo(QPainterPath& path, QPointF p0, double rx, double ry, double xAxisRot
       const double x = rx * q.x(), y = ry * q.y();
       return QPointF(cosPhi * x - sinPhi * y + cx, sinPhi * x + cosPhi * y + cy);
     };
-    if (i == 0) *startDirection = map(e1) - p0;
-    if (i == segments - 1) *endDirection = p1 - map(e2);
-    path.cubicTo(map(e1), map(e2), i == segments - 1 ? p1 : map(e3));
+    const QPointF end = i == segments - 1 ? p1 : map(e3);
+    path.cubicTo(map(e1), map(e2), end);
+    segment(end, map(e1) - segStart, end - map(e2));
+    segStart = end;
     a += step;
   }
   return true;
@@ -162,18 +171,22 @@ class VertexRecorder {
     out_->push_back(v);
   }
 
+  // `z` from a point other than the subpath start adds the closing segment
+  // and its vertex. When the path already ended at the start no vertex is
+  // added; the closing segment has zero length, and resvg (the reference
+  // renderer) gives such a segment the direction (1, 0). The first vertex of
+  // a closed subpath keeps no incoming direction: neither renderer bisects a
+  // closed subpath's start with its closing segment.
   void close(QPointF current, QPointF subpathStart) {
     if (!out_ || out_->empty()) return;
     if (current != subpathStart) {
       const QPointF d = subpathStart - current;
       segment(subpathStart, d, d);
+    } else {
+      out_->back().outDirection = QPointF(1, 0);
     }
-    PathVertex& end = out_->back();
-    end.closesSubpath = true;
-    end.subpathEnd = true;
-    // The first vertex of a closed subpath is also where the closing segment
-    // arrives, so its marker bisects the two.
-    (*out_)[start_].inDirection = end.inDirection;
+    out_->back().closesSubpath = true;
+    out_->back().subpathEnd = true;
     closed_ = true;
   }
 
@@ -311,10 +324,10 @@ QPainterPath parseSvgPath(const QString& data, bool* okOut, std::vector<PathVert
           break;
         }
         const QPointF e = (rel ? cur : QPointF()) + QPointF(ex, ey);
-        QPointF startDirection, endDirection;
-        if (arcTo(path, cur, rxv, ryv, rot, large, sweep, e, &startDirection, &endDirection)) {
-          rec.segment(e, startDirection, endDirection);
-        }
+        arcTo(path, cur, rxv, ryv, rot, large, sweep, e,
+              [&](QPointF end, QPointF startDirection, QPointF endDirection) {
+                rec.segment(end, startDirection, endDirection);
+              });
         cur = e;
         break;
       }

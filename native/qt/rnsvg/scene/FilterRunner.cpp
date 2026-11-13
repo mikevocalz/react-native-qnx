@@ -9,6 +9,11 @@
 namespace rnqnx::views::rnsvg {
 namespace {
 
+// How far past the visible area a filter may need pixels (blur radius, offset).
+constexpr int kWorkMargin = 1024;
+
+QRect workAreaOf(const Target& t) { return t.clip.adjusted(-kWorkMargin, -kWorkMargin, kWorkMargin, kWorkMargin).toAlignedRect(); }
+
 filter::Definition definitionOf(const RnsvgElementItem& filterElement) {
   const ElementProps& p = filterElement.props();
   filter::Definition def;
@@ -34,6 +39,7 @@ QRect FilterRunner::region(const RnsvgElementItem& filterElement, const ElementP
   ctx.objectBoundingBox = boxes.objectBox();
   ctx.viewport = f.viewport;
   ctx.fontSize = f.style.font.size.value_or(12.0);
+  ctx.workArea = workAreaOf(scene_.target());
   return filter::regionInDevice(definitionOf(filterElement), ctx);
 }
 
@@ -67,6 +73,7 @@ void FilterRunner::run(const RnsvgElementItem& filterElement, const ElementProps
   ctx.viewport = f.viewport;
   ctx.fontSize = f.style.font.size.value_or(12.0);
   ctx.currentColor = f.style.color;
+  ctx.workArea = workAreaOf(scene_.target());
   if (f.style.fill.type == Brush::Type::Color) ctx.fillPaint = withAlpha(f.style.fill.color, f.style.fillOpacity);
   if (f.style.stroke.type == Brush::Type::Color) ctx.strokePaint = withAlpha(f.style.stroke.color, f.style.strokeOpacity);
   ctx.loadImage = [](const QString& href) { return ImageRenderer::decodeLocal(href); };

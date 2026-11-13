@@ -93,7 +93,6 @@ void Markers::draw(const RnsvgElementItem& e, const Frame& f, const QRectF& bbox
   if (vertices.empty() || vertices.size() > kMaxMarkedVertices) return;
   const double strokeWidth = std::max(0.0, units.resolve(st.strokeWidth, Axis::Diag, 1));
 
-  QPainter* painter = scene_.painter();
   scene_.pushContext({st.fill, st.stroke, bbox, f});
   for (size_t i = 0; i < vertices.size(); ++i) {
     const Position position = i == 0 ? Position::Start : i + 1 == vertices.size() ? Position::End : Position::Mid;
@@ -109,18 +108,15 @@ void Markers::draw(const RnsvgElementItem& e, const Frame& f, const QRectF& bbox
     applyProps(mf.style, mp);
     mf.ctm = placement.content * f.ctm;
     mf.viewport = placement.contentViewport;
-    painter->save();
-    painter->setTransform(placement.toUser * f.ctm * scene_.target().base);
-    painter->setClipRect(placement.viewport, Qt::IntersectClip);
+    // No clip to the marker viewport: react-native-svg's native marker does not
+    // clip either, and the package has no `overflow` prop to ask for it.
     scene_.renderChildren(marker, mf, depth + 1);
-    painter->restore();
   }
   scene_.popContext();
 }
 
 QRectF Markers::bounds(const RnsvgElementItem* e, const Frame& f, int depth) {
-  Q_UNUSED(depth);
-  const auto& st = f.style;
+    const auto& st = f.style;
   const auto* start = markerFor(scene_, st.markerStart);
   const auto* mid = markerFor(scene_, st.markerMid);
   const auto* end = markerFor(scene_, st.markerEnd);
@@ -129,6 +125,21 @@ QRectF Markers::bounds(const RnsvgElementItem* e, const Frame& f, int depth) {
   const std::vector<PathVertex> vertices = shapeVertices(e->props(), units);
   if (vertices.empty() || vertices.size() > kMaxMarkedVertices) return {};
   const double strokeWidth = std::max(0.0, units.resolve(st.strokeWidth, Axis::Diag, 1));
+  // What each marker paints, in its own content space.
+  auto contentBox = [&](const RnsvgElementItem* marker, const Placement& placement) {
+    Frame mf;
+    mf.style = Style();
+    mf.style.color = f.style.color;
+    applyProps(mf.style, marker->props());
+    mf.viewport = placement.contentViewport;
+    QRectF box;
+    for (const auto* c : marker->elementChildren()) {
+      QRectF cb = scene_.bounds().paint(c, mf, depth + 1);
+      if (!cb.isNull() && c->props().matrix) cb = c->props().matrix->mapRect(cb);
+      if (!cb.isNull()) box = box.isNull() ? cb : box.united(cb);
+    }
+    return box;
+  };
   QRectF box;
   for (size_t i = 0; i < vertices.size(); ++i) {
     const Position position = i == 0 ? Position::Start : i + 1 == vertices.size() ? Position::End : Position::Mid;
@@ -136,7 +147,9 @@ QRectF Markers::bounds(const RnsvgElementItem* e, const Frame& f, int depth) {
     if (!marker) continue;
     Placement placement;
     if (!place(marker->props(), f, strokeWidth, vertices[i], position, placement)) continue;
-    const QRectF r = placement.toUser.mapRect(placement.viewport);
+    const QRectF content = contentBox(marker, placement);
+    if (content.isNull()) continue;
+    const QRectF r = placement.content.mapRect(content);
     box = box.isNull() ? r : box.united(r);
   }
   return box;
