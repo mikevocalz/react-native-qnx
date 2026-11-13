@@ -16,6 +16,7 @@ const {
 const FastRefreshCard = require('../FastRefreshCard').default;
 const RemoteImageCard = require('../RemoteImageCard').default;
 const ExpoModulesCard = require('../ExpoModulesCard').default;
+const ExpoImageCard = require('../ExpoImageCard').default;
 const ui = require('../ui');
 const {
   h,
@@ -125,6 +126,12 @@ function GalleryPage() {
         'Expo modules',
         'expo-constants through the QNX Expo host',
         h(ExpoModulesCard)
+      ),
+      card(
+        'expo-image',
+        'expo-image',
+        'Native ExpoImage view on the Qt image loader',
+        h(ExpoImageCard)
       ),
       card(
         'remote-image',

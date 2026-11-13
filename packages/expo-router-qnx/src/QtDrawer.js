@@ -80,12 +80,19 @@ function QtDrawer({
       onRequestChange: (event) => (event.nativeEvent.open ? onOpen?.() : onClose?.()),
       onTransitionEnd: (event) => onTransitionEnd?.(!event.nativeEvent.open),
     },
+    // Yoga lays both children out; the native item only moves them. Child 0 is
+    // the panel, child 1 the content, both pinned to the left edge. The native
+    // item moves the panel to the right edge for side 'right'.
     React.createElement(
       View,
-      { style: StyleSheet.absoluteFill, collapsable: false },
+      { style: { position: 'absolute', top: 0, bottom: 0, left: 0, width }, collapsable: false },
       renderDrawerContent()
     ),
-    React.createElement(View, { style: StyleSheet.absoluteFill, collapsable: false }, children)
+    React.createElement(
+      View,
+      { style: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }, collapsable: false },
+      children
+    )
   );
 }
 

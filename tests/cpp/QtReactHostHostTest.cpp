@@ -643,6 +643,19 @@ void componentPredicateAnswersForRegisteredNames() {
 #else
   EXPECT(!fixture.host().hasComponent("QnxSvgDocument"));
 #endif
+  // The extra-component hook: what UIManager.hasViewManagerConfig reports.
+#if RNQNX_ENABLE_QT_NATIVE_UI
+  EXPECT(fixture.host().hasComponent("RNQnxDrawer"));
+  EXPECT(fixture.host().hasComponent("RNQnxTabBar"));
+#else
+  EXPECT(!fixture.host().hasComponent("RNQnxDrawer"));
+  EXPECT(!fixture.host().hasComponent("RNQnxTabBar"));
+#endif
+#if RNQNX_ENABLE_QT_EXPO_IMAGE
+  EXPECT(fixture.host().hasComponent("ViewManagerAdapter_ExpoImage"));
+#else
+  EXPECT(!fixture.host().hasComponent("ViewManagerAdapter_ExpoImage"));
+#endif
 }
 
 void javaScriptBuildsTheTreeThroughFabricUIManager() {

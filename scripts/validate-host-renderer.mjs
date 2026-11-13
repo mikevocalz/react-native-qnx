@@ -65,6 +65,7 @@ const disabledQtTests = [];
 for (const [feature, tests] of [
   ['SVG', ['rnqnx_qt_svg_test', 'rnqnx_qt_svg_fabric_test']],
   ['RNSVG', ['rnqnx_qt_rnsvg_test', 'rnqnx_qt_rnsvg_fabric_test']],
+  ['NATIVE_UI', ['rnqnx_qt_native_ui_test']],
   ['MOTION', ['rnqnx_qt_motion_test']],
   ['GRAPHICS', ['rnqnx_qt_graphics', 'rnqnx_qt_graphics_null']],
 ]) {

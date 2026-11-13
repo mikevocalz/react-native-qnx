@@ -1,0 +1,7 @@
+#pragma once
+// Generated from native/qt/nativeui/*.qml. Do not edit.
+namespace rnqnx::nativeui {
+inline constexpr char kDrawerQml[] = R"rnqnxqml(@RNQNX_NATIVE_UI_DRAWER_QML@)rnqnxqml";
+inline constexpr char kTabBarQml[] = R"rnqnxqml(@RNQNX_NATIVE_UI_TAB_BAR_QML@)rnqnxqml";
+inline constexpr char kExpoImageQml[] = R"rnqnxqml(@RNQNX_NATIVE_UI_EXPO_IMAGE_QML@)rnqnxqml";
+}  // namespace rnqnx::nativeui
