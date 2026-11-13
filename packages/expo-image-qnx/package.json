@@ -1,0 +1,21 @@
+{
+  "name": "@rn-qnx/expo-image-qnx",
+  "version": "0.1.0",
+  "description": "QNX registration of the ExpoImage native module and view config for expo-image",
+  "license": "MIT",
+  "files": [
+    "cpp",
+    "CMakeLists.txt",
+    "README.md"
+  ],
+  "react-native-qnx": {
+    "expo": {
+      "platforms": [
+        "qnx"
+      ],
+      "cmakeListsPath": "CMakeLists.txt",
+      "target": "expo_image_qnx",
+      "initializer": "rnqnx::expo::image::registerModule"
+    }
+  }
+}

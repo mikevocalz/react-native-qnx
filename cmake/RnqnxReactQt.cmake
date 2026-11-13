@@ -25,6 +25,7 @@ function(rnqnx_add_qt_views_target)
 
   add_library(rnqnx_views_qt STATIC
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtQuickItemFactory.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtExtraItems.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QnxImageProvider.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtQuickMountingLayer.cpp"
   )
@@ -60,6 +61,12 @@ function(rnqnx_add_qt_views_target)
   if(RNQNX_ENABLE_QT_RNSVG)
     target_link_libraries(rnqnx_views_qt PUBLIC rnqnx_qt_rnsvg)
   endif()
+  target_compile_definitions(rnqnx_views_qt PUBLIC
+    RNQNX_ENABLE_QT_NATIVE_UI=$<BOOL:${RNQNX_ENABLE_QT_NATIVE_UI}>
+    RNQNX_ENABLE_QT_EXPO_IMAGE=$<BOOL:${RNQNX_ENABLE_QT_EXPO_IMAGE}>)
+  if(RNQNX_ENABLE_QT_NATIVE_UI OR RNQNX_ENABLE_QT_EXPO_IMAGE)
+    target_link_libraries(rnqnx_views_qt PUBLIC rnqnx_qt_nativeui)
+  endif()
 
   # Qt's keyword macros collide with React Native's EventEmitter::emit.
   target_compile_definitions(rnqnx_views_qt PUBLIC QT_NO_KEYWORDS)
@@ -86,6 +93,8 @@ function(rnqnx_add_fabric_adapter_target)
     "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtSwitchBridge.h"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtImageBridge.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtImageBridge.h"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtExtraComponents.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtExtraComponents.h"
   )
   target_link_libraries(rnqnx_fabric_adapter PUBLIC
     rnqnx_react_native_renderer
@@ -132,6 +141,40 @@ function(rnqnx_add_fabric_adapter_target)
       "${rnsvg_generated}/EventEmitters.cpp" "${rnsvg_generated}/Props.cpp"
       "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtRnsvgBridge.cpp" PROPERTIES COMPILE_OPTIONS
       "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas;-Wno-deprecated-declarations;-Wno-sign-compare;-Wno-extra>")
+  endif()
+  if(RNQNX_ENABLE_QT_NATIVE_UI OR RNQNX_ENABLE_QT_EXPO_IMAGE)
+    # Props, events, shadow nodes and descriptors are generated from the specs
+    # in packages/react-native-qnx/qt (pnpm qt:native-ui:check). QtNativeUiBridge
+    # turns them into Qt Quick item properties and routes the item's events back.
+    set(native_ui_generated_root "${RNQNX_REACT_QT_ROOT}/vnext/generated/react/renderer/components")
+    set(native_ui_libraries "")
+    if(RNQNX_ENABLE_QT_NATIVE_UI)
+      list(APPEND native_ui_libraries RnqnxQtDrawer RnqnxQtTabBar)
+    endif()
+    if(RNQNX_ENABLE_QT_EXPO_IMAGE)
+      list(APPEND native_ui_libraries RnqnxExpoImage)
+    endif()
+    target_sources(rnqnx_fabric_adapter PRIVATE
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtNativeUiBridge.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtNativeUiBridge.h")
+    foreach(library IN LISTS native_ui_libraries)
+      set(native_ui_generated "${native_ui_generated_root}/${library}")
+      set(native_ui_sources
+        "${native_ui_generated}/ComponentDescriptors.cpp"
+        "${native_ui_generated}/EventEmitters.cpp"
+        "${native_ui_generated}/Props.cpp"
+        "${native_ui_generated}/ShadowNodes.cpp"
+        "${native_ui_generated}/States.cpp")
+      target_sources(rnqnx_fabric_adapter PRIVATE ${native_ui_sources})
+      # Upstream generated sources contain warning patterns outside our control.
+      set_source_files_properties(${native_ui_sources} PROPERTIES COMPILE_OPTIONS
+        "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas>")
+    endforeach()
+    target_include_directories(rnqnx_fabric_adapter SYSTEM PUBLIC
+      "${RNQNX_REACT_QT_ROOT}/vnext/generated")
+    set_source_files_properties("${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtNativeUiBridge.cpp"
+      PROPERTIES COMPILE_OPTIONS
+      "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas>")
   endif()
   target_compile_definitions(rnqnx_fabric_adapter PUBLIC
     RNQNX_ENABLE_INPUT_LIFECYCLE=$<BOOL:${RNQNX_ENABLE_INPUT_LIFECYCLE}>)

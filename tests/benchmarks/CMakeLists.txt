@@ -12,6 +12,7 @@ add_executable(rnqnx_mounting_benchmark
   QtQuickMountingLayerBenchmark.cpp
   "${RNQNX_MOUNTING_SOURCE}"
   "${RNQNX_REPO_ROOT}/vnext/src/views/qt/QtQuickItemFactory.cpp"
+  "${RNQNX_REPO_ROOT}/vnext/src/views/qt/QtExtraItems.cpp"
   "${RNQNX_REPO_ROOT}/vnext/src/views/qt/QnxImageProvider.cpp")
 target_include_directories(rnqnx_mounting_benchmark PRIVATE
   "${RNQNX_REPO_ROOT}/vnext/include")

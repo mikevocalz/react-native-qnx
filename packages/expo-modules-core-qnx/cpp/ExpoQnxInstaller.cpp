@@ -112,14 +112,45 @@ void installExpoModulesQnx(jsi::Runtime& runtime) {
             }
             return jsi::Value(rt, jsi::String::createFromAscii(rt, *result));
           }));
-  // Expo views declare their props through getViewConfig on iOS and Android.
-  // No QNX Expo view exists yet, so this reports none. requireNativeView
-  // then warns and builds a view config without validAttributes or
-  // directEventTypes; the first QNX Expo view has to return its config here.
+  // Expo views declare their props through getViewConfig on iOS and Android:
+  // requireNativeView builds the host component from the result. A view
+  // registers its config with ExpoQnxModuleRegistry::registerViewConfig; an
+  // unregistered view yields null, and requireNativeView then warns and builds
+  // a config without validAttributes or directEventTypes.
   expo.setProperty(runtime, "getViewConfig",
       hostFunction(runtime, "getViewConfig", 2,
-          [](jsi::Runtime&, const jsi::Value&, const jsi::Value*, size_t) {
-            return jsi::Value::null();
+          [](jsi::Runtime& rt, const jsi::Value&, const jsi::Value* args, size_t count) -> jsi::Value {
+            if (count < 1 || !args[0].isString()) {
+              throw jsi::JSError(rt, "getViewConfig(moduleName, viewName?) needs a module name");
+            }
+            const std::string moduleName = args[0].getString(rt).utf8(rt);
+            std::string viewName;
+            if (count > 1 && args[1].isString()) {
+              viewName = args[1].getString(rt).utf8(rt);
+            }
+            ExpoViewConfig config;
+            if (!ExpoQnxModuleRegistry::instance().findViewConfig(moduleName, viewName, config)) {
+              return jsi::Value::null();
+            }
+            jsi::Object validAttributes(rt);
+            for (const auto& prop : config.props) {
+              validAttributes.setProperty(rt, prop.c_str(), true);
+            }
+            jsi::Object directEventTypes(rt);
+            for (const auto& handler : config.events) {
+              // Codegen'd view configs list the handler as a valid attribute too.
+              validAttributes.setProperty(rt, handler.c_str(), true);
+              if (handler.size() < 3 || handler.compare(0, 2, "on") != 0) {
+                throw jsi::JSError(rt, "Expo view event handler must start with 'on': " + handler);
+              }
+              jsi::Object type(rt);
+              type.setProperty(rt, "registrationName", jsi::String::createFromUtf8(rt, handler));
+              directEventTypes.setProperty(rt, ("top" + handler.substr(2)).c_str(), std::move(type));
+            }
+            jsi::Object result(rt);
+            result.setProperty(rt, "validAttributes", std::move(validAttributes));
+            result.setProperty(rt, "directEventTypes", std::move(directEventTypes));
+            return jsi::Value(std::move(result));
           }));
   expo.setProperty(runtime, "reloadAppAsync",
       hostFunction(runtime, "reloadAppAsync", 1,
