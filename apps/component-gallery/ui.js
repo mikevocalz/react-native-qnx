@@ -92,7 +92,9 @@ function Screen({ children }) {
     const width = Math.round(event.nativeEvent.layout.width);
     const height = Math.round(event.nativeEvent.layout.height);
     if (!(width > 0 && height > 0)) return;
-    setSize((previous) => (previous.width === width && previous.height === height ? previous : { width, height }));
+    setSize((previous) =>
+      previous.width === width && previous.height === height ? previous : { width, height }
+    );
   }, []);
   return h(
     View,

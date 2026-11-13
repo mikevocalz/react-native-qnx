@@ -147,21 +147,44 @@ const drawerProps = {
   children: h('Content'),
 };
 const closed = render(h(JsDrawer, { ...drawerProps, open: false, onClose() {}, onOpen() {} }));
-assert.equal(findAll(closed, (n) => n.type === 'DrawerBody').length, 0, 'a closed drawer mounts no panel content');
-assert.equal(findAll(closed, (n) => n.props && n.props.accessibilityLabel === 'Close drawer').length, 0);
+assert.equal(
+  findAll(closed, (n) => n.type === 'DrawerBody').length,
+  0,
+  'a closed drawer mounts no panel content'
+);
+assert.equal(
+  findAll(closed, (n) => n.props && n.props.accessibilityLabel === 'Close drawer').length,
+  0
+);
 const opened = render(h(JsDrawer, { ...drawerProps, open: true, onClose() {}, onOpen() {} }));
 assert.equal(findAll(opened, (n) => n.type === 'DrawerBody').length, 1);
-const scrim = findAll(opened, (n) => n.type === 'Pressable' && n.props.accessibilityLabel === 'Close drawer');
+const scrim = findAll(
+  opened,
+  (n) => n.type === 'Pressable' && n.props.accessibilityLabel === 'Close drawer'
+);
 assert.equal(scrim.length, 1);
 let closedBy = 0;
-const closable = render(h(JsDrawer, { ...drawerProps, open: true, onClose: () => closedBy++, onOpen() {} }));
+const closable = render(
+  h(JsDrawer, { ...drawerProps, open: true, onClose: () => closedBy++, onOpen() {} })
+);
 act(() => findAll(closable, (n) => n.type === 'Pressable')[0].props.onPress());
 assert.equal(closedBy, 1, 'pressing the scrim closes the drawer');
 const permanent = render(
-  h(JsDrawer, { ...drawerProps, open: false, drawerType: 'permanent', drawerPosition: 'right', onClose() {}, onOpen() {} })
+  h(JsDrawer, {
+    ...drawerProps,
+    open: false,
+    drawerType: 'permanent',
+    drawerPosition: 'right',
+    onClose() {},
+    onOpen() {},
+  })
 );
 const permanentRow = findAll(permanent, (n) => n.type === 'View')[0];
-assert.equal(permanentRow.props.style[1].flexDirection, 'row-reverse', 'a permanent right drawer sits on the right');
+assert.equal(
+  permanentRow.props.style[1].flexDirection,
+  'row-reverse',
+  'a permanent right drawer sits on the right'
+);
 assert.equal(findAll(permanent, (n) => n.type === 'DrawerBody').length, 1);
 
 Module._load = originalLoad;

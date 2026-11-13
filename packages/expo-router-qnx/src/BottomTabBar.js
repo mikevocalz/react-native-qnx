@@ -8,7 +8,13 @@ const React = require('react');
 const { I18nManager, useWindowDimensions } = require('react-native');
 const { hasNative } = require('./native');
 const { JsTabBar } = require('./JsTabBar');
-const { buildTabs, tintsFor, resolveTabBarLayout, resolveTabBarEdge, isRail } = require('./tabBarModel');
+const {
+  buildTabs,
+  tintsFor,
+  resolveTabBarLayout,
+  resolveTabBarEdge,
+  isRail,
+} = require('./tabBarModel');
 const { setSwipeExclusionLeft } = require('./swipeExclusion');
 
 const BOTTOM_HEIGHT = 60;
@@ -37,7 +43,8 @@ function BottomTabBar({ state, descriptors, emitter, navigateToTab, insets }) {
   const tabs = React.useMemo(() => buildTabs(state, descriptors), [state, descriptors]);
   const tint = tintsFor(options);
   const showLabel = options.tabBarShowLabel !== false;
-  const barHeight = typeof options.tabBarStyle?.height === 'number' ? options.tabBarStyle.height : BOTTOM_HEIGHT;
+  const barHeight =
+    typeof options.tabBarStyle?.height === 'number' ? options.tabBarStyle.height : BOTTOM_HEIGHT;
 
   const hidden = options.tabBarStyle?.display === 'none' || options.qnxTabBarHidden;
   // A rail on the physical left keeps the drawer's edge swipe from starting on it.
@@ -66,7 +73,9 @@ function BottomTabBar({ state, descriptors, emitter, navigateToTab, insets }) {
   // tabBarIcon is a React element factory and cannot cross to a native bar.
   // A tab that has one and no qnxIcon is drawn by the React tab bar, which
   // calls it with { focused, color, size } like every other platform.
-  const needsReactIcons = tabs.some((tab) => typeof tab.options.tabBarIcon === 'function' && !tab.icon);
+  const needsReactIcons = tabs.some(
+    (tab) => typeof tab.options.tabBarIcon === 'function' && !tab.icon
+  );
 
   if (hasNative('RNQnxTabBar') && !needsReactIcons) {
     const { QtTabBar } = require('./QtTabBar');

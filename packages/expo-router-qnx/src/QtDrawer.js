@@ -69,7 +69,12 @@ function QtDrawer({
   if (drawerType === 'permanent') {
     return React.createElement(
       View,
-      { style: [{ flex: 1, flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row' }, style] },
+      {
+        style: [
+          { flex: 1, flexDirection: drawerPosition === 'right' ? 'row-reverse' : 'row' },
+          style,
+        ],
+      },
       React.createElement(View, { style: [{ width }, drawerStyle] }, renderDrawerContent()),
       React.createElement(View, { style: { flex: 1 } }, children)
     );
