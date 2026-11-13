@@ -21,8 +21,6 @@ const SOURCES = [
   },
   { id: 'http', label: 'HTTP', uri: 'http://httpbin.org/image/jpeg' },
   { id: 'broken', label: 'Broken', uri: 'https://rnqnx-missing.invalid/photo.jpg' },
-  { id: 'mac-http', label: 'Mac HTTP', uri: 'http://192.168.2.1:8090/mac-served.jpg' },
-  { id: 'mac-https', label: 'Mac HTTPS', uri: 'https://192.168.2.1:8443/mac-served.jpg' },
 ];
 
 const INK = '#e9f0f7';
