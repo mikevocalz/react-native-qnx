@@ -47,8 +47,9 @@ bool applyRoot(QQuickItem* item, const rn::ShadowView& view) {
   rp.minY = p->minY;
   rp.vbWidth = p->vbWidth;
   rp.vbHeight = p->vbHeight;
+  if (!rp.hasViewBox()) rp.minX = rp.minY = rp.vbWidth = rp.vbHeight = 0;  // react-native-svg sends none
   if (!p->align.empty()) rp.align = QString::fromStdString(p->align);
-  rp.meetOrSlice = p->meetOrSlice;
+  rp.meetOrSlice = p->meetOrSlice >= 0 && p->meetOrSlice <= 2 ? static_cast<int>(p->meetOrSlice) : 0;
   if (rn::isColorMeaningful(p->color)) rp.color = colorFrom(p->color);
   root->setRootProps(rp);
   return true;

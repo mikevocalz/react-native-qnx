@@ -9,7 +9,7 @@ namespace rnqnx::views::rnsvg {
 
 QTransform viewTransform(const RootProps& props, const QSizeF& size) {
   ViewBox box;
-  box.set = true;
+  box.set = props.hasViewBox();
   box.minX = props.minX;
   box.minY = props.minY;
   box.width = props.vbWidth;

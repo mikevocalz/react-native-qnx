@@ -78,6 +78,7 @@ for (const [feature, tests] of [
       'rnqnx_qt_rnsvg_fabric_test',
       'rnqnx_qt_rnsvg_image_fabric_test',
       'rnqnx_qt_rnsvg_corpus_test',
+      'rnqnx_qt_rnsvg_values_test',
     ],
   ],
   ['NATIVE_UI', ['rnqnx_qt_native_ui_test']],

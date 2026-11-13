@@ -41,7 +41,7 @@ Scene::Scene(const RnsvgRootItem& root, QPainter* painter, std::optional<QPointF
   const QSizeF size(root.width(), root.height());
   const auto& rp = root.rootProps();
   view_ = viewTransform(rp, size);
-  viewport_ = (rp.vbWidth > 0 && rp.vbHeight > 0) ? QSizeF(rp.vbWidth, rp.vbHeight) : size;
+  viewport_ = rp.hasViewBox() ? QSizeF(rp.vbWidth, rp.vbHeight) : size;
   rootColor_ = rp.color;
   collect(&root, 0);
   target_.painter = painter;
@@ -111,7 +111,7 @@ Frame Scene::nestedFrame(const RnsvgRootItem& nested, const Frame& f, QSizeF& si
   size = QSizeF(units.resolve(rp.bbWidth, Axis::X, nested.width()), units.resolve(rp.bbHeight, Axis::Y, nested.height()));
   Frame nf = f;
   nf.ctm = viewTransform(rp, size) * f.ctm;
-  nf.viewport = (rp.vbWidth > 0 && rp.vbHeight > 0) ? QSizeF(rp.vbWidth, rp.vbHeight) : size;
+  nf.viewport = rp.hasViewBox() ? QSizeF(rp.vbWidth, rp.vbHeight) : size;
   return nf;
 }
 

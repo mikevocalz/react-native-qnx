@@ -92,3 +92,17 @@ function(rnqnx_add_qt_rnsvg_corpus_test)
   set_tests_properties(rnqnx_qt_rnsvg_corpus_test PROPERTIES TIMEOUT 300
     ENVIRONMENT "QT_QUICK_BACKEND=software")
 endfunction()
+
+# Hostile numbers through the bridge's value converters (no JS runtime).
+function(rnqnx_add_qt_rnsvg_values_test)
+  if(NOT RNQNX_ENABLE_QT_RNSVG OR NOT BUILD_TESTING OR CMAKE_CROSSCOMPILING)
+    return()
+  endif()
+  set(root "${RNQNX_REACT_QT_ROOT}")
+  add_executable(rnqnx_qt_rnsvg_values_test "${root}/tests/native/qt-rnsvg-fabric/RnsvgBridgeValuesTest.cpp")
+  target_link_libraries(rnqnx_qt_rnsvg_values_test PRIVATE rnqnx_fabric_adapter)
+  target_include_directories(rnqnx_qt_rnsvg_values_test PRIVATE "${root}/vnext/src/fabric" "${root}/native/qt/rnsvg")
+  rnqnx_enable_strict_warnings(rnqnx_qt_rnsvg_values_test)
+  add_test(NAME rnqnx_qt_rnsvg_values_test COMMAND rnqnx_qt_rnsvg_values_test)
+  set_tests_properties(rnqnx_qt_rnsvg_values_test PROPERTIES TIMEOUT 60)
+endfunction()

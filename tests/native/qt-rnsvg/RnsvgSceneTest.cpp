@@ -4,6 +4,7 @@
 // tree directly, paint, probe pixels well inside or outside edges.
 #include "RnsvgForeignObjectItem.h"
 #include "RnsvgTestKit.h"
+#include "scene/SceneLayout.h"
 
 #include <QElapsedTimer>
 #include <QPointer>
@@ -668,6 +669,39 @@ class RnsvgSceneTest final : public QObject {
     QVERIFY(s.root.elementBounds(group).contains(b));
   }
 
+  void boundsOfManyElementsTakeOneTraversal() {
+    Scene s(400, 400);
+    RootProps rp;
+    rp.vbWidth = 100; rp.vbHeight = 100;
+    s.root.setRootProps(rp);
+    constexpr int kGroups = 40, kPerGroup = 49;  // 40 groups + 1960 rects = 2000
+    QSet<const RnsvgElementItem*> all;
+    QList<RnsvgElementItem*> sample;
+    for (int g = 0; g < kGroups; ++g) {
+      ElementProps gp = make(Kind::Group);
+      gp.matrix = QTransform::fromTranslate(g, 0);
+      auto* group = add(&s.root, gp);
+      all.insert(group);
+      for (int i = 0; i < kPerGroup; ++i) {
+        auto* r = add(group, rect(i % 7, i / 7, 3, 2, Qt::red));
+        all.insert(r);
+        if ((g * kPerGroup + i) % 97 == 0) sample.append(r);
+      }
+      sample.append(group);
+    }
+    const int n = int(all.size());
+    QCOMPARE(n, 2000);
+    int visits = 0;
+    const auto bounds = boundsOfElements(s.root, all, &visits);
+    QVERIFY2(visits <= 3 * n, qPrintable(QStringLiteral("visits=%1 for %2 elements").arg(visits).arg(n)));
+    QCOMPARE(int(bounds.size()), n);
+    for (const auto* e : sample) QCOMPARE(bounds.value(e), s.root.elementBounds(e));
+    // The root's own pass fills the same cache its reporters read.
+    for (const auto* e : all) s.root.watchBounds(e);
+    s.root.layoutScene();
+    for (const auto* e : sample) QCOMPARE(s.root.reportedBounds(e), s.root.elementBounds(e));
+  }
+
   void clipPathCyclesWithBranchingTerminateQuickly() {
     Scene s;
     auto* defs = add(&s.root, make(Kind::Defs));
@@ -792,6 +826,40 @@ class RnsvgSceneTest final : public QObject {
     add(&s.root, u);
     QCOMPARE(s.root.hitElement(QPointF(20, 20)), inner);
     QCOMPARE(s.root.hitElement(QPointF(60, 60)), nullptr);  // inside the rect, outside the viewport
+  }
+
+  void invalidViewBoxIsIgnored() {
+    Scene s(100, 100);
+    RootProps rp;
+    rp.bbWidth = px(100); rp.bbHeight = px(100);
+    rp.vbWidth = std::nan(""); rp.vbHeight = 10;
+    s.root.setRootProps(rp);
+    add(&s.root, rect(0, 0, 50, 50, Qt::red));
+    const QImage img = render(s.root);
+    VERIFY_PX(img, 25, 25, Qt::red);   // drawn at scale 1, as with no viewBox
+    VERIFY_PX(img, 75, 75, QColor(0, 0, 0, 0));
+    rp.vbWidth = -10; rp.vbHeight = std::numeric_limits<double>::infinity();
+    QVERIFY(!rp.hasViewBox());
+  }
+
+  void pointerEventsNoneShieldsLiveChildren() {
+    Scene s;
+    ElementProps gp = make(Kind::Group);
+    auto* group = add(&s.root, gp);
+    QVERIFY(group->passesTouchesToChildren());
+    gp.pointerEvents = QStringLiteral("none");
+    group->setProps(gp);
+    QVERIFY(!group->passesTouchesToChildren());
+    gp.pointerEvents = QStringLiteral("box-only");
+    group->setProps(gp);
+    QVERIFY(!group->passesTouchesToChildren());
+    gp.pointerEvents = QStringLiteral("box-none");
+    group->setProps(gp);
+    QVERIFY(group->passesTouchesToChildren());
+    gp.pointerEvents.clear();
+    gp.displayNone = true;
+    group->setProps(gp);
+    QVERIFY(!group->passesTouchesToChildren());
   }
 
   void useGroupOpacityIsApplied() {

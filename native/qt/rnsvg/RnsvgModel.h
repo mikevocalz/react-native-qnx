@@ -11,6 +11,7 @@
 #include "filter/FilterModel.h"
 
 #include <QColor>
+#include <cmath>
 #include <QImage>
 #include <QPainterPath>
 #include <QSet>
@@ -210,6 +211,13 @@ struct RootProps {
   QString align{QStringLiteral("xMidYMid")};
   int meetOrSlice{0};  // 0 meet, 1 slice, 2 none
   QColor color{Qt::black};
+
+  // A viewBox needs finite origin and finite positive extents. Anything else
+  // (NaN, infinity, zero, negative) means the root has none.
+  bool hasViewBox() const {
+    return std::isfinite(minX) && std::isfinite(minY) && std::isfinite(vbWidth) && std::isfinite(vbHeight) &&
+           vbWidth > 0 && vbHeight > 0;
+  }
 };
 
 }  // namespace rnqnx::views::rnsvg

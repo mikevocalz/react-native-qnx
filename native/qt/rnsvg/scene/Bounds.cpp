@@ -35,7 +35,7 @@ QRectF Bounds::nestedBox(const RnsvgRootItem& nested, const Frame& f, int depth,
   const QSizeF size(units.resolve(rp.bbWidth, Axis::X, nested.width()), units.resolve(rp.bbHeight, Axis::Y, nested.height()));
   if (!(size.width() > 0) || !(size.height() > 0)) return {};
   Frame nf = f;
-  nf.viewport = (rp.vbWidth > 0 && rp.vbHeight > 0) ? QSizeF(rp.vbWidth, rp.vbHeight) : size;
+  nf.viewport = rp.hasViewBox() ? QSizeF(rp.vbWidth, rp.vbHeight) : size;
   const QTransform view = viewTransform(rp, size);
   QRectF box;
   for (QQuickItem* child : nested.childItems()) {

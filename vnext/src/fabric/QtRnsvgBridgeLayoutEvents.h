@@ -4,7 +4,8 @@
 //
 // Upstream's native element reports its client rect to JS when that rect
 // changes. Here the rect comes from the <Svg> root's scene
-// (RnsvgRootItem::elementBounds), which is valid only after the root has laid
+// (RnsvgRootItem::reportedBounds, measured for all reporters of a root in one
+// traversal per layout pass), which is valid only after the root has laid
 // its tree out. A reporter therefore waits for the root's sceneLaidOut()
 // signal, once per layout pass and never inside paint(), and sends an event
 // only when the integer rect differs from the last one it sent.
@@ -39,6 +40,8 @@ class SvgLayoutReporter final : public QObject {
   // int cast. An enormous value is clamped and a non-finite one reads as 0, so
   // a hostile box cannot overflow the int.
   static Rect toRect(const QRectF& bounds);
+
+  ~SvgLayoutReporter() override;
 
  private Q_SLOTS:
   void rebind();

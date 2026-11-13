@@ -1,6 +1,7 @@
 #include "RnsvgItems.h"
 #include "RnsvgForeignObjectItem.h"
 #include "RnsvgRenderer.h"
+#include "scene/HitTester.h"
 #include "scene/SceneLayout.h"
 
 #include <QDebug>
@@ -46,6 +47,10 @@ QList<QQuickItem*> RnsvgElementItem::contentChildren() const {
   return out;
 }
 
+bool RnsvgElementItem::passesTouchesToChildren() const {
+  return !props_.displayNone && rnsvg::PointerMode::parse(props_.pointerEvents).descend;
+}
+
 RnsvgRootItem* RnsvgElementItem::root() const {
   for (QQuickItem* item = parentItem(); item; item = item->parentItem()) {
     if (auto* r = qobject_cast<RnsvgRootItem*>(item)) return r;
@@ -85,8 +90,13 @@ void RnsvgRootItem::setRootProps(const rnsvg::RootProps& props) {
 }
 
 void RnsvgRootItem::invalidate() {
-  update();
-  polish();
+  // A nested root is hidden and painted into the outermost root's texture.
+  RnsvgRootItem* painting = this;
+  for (QQuickItem* item = parentItem(); item; item = item->parentItem()) {
+    if (auto* r = qobject_cast<RnsvgRootItem*>(item)) painting = r;
+  }
+  painting->update();
+  painting->polish();
 }
 
 void RnsvgRootItem::updatePolish() {
@@ -96,7 +106,15 @@ void RnsvgRootItem::updatePolish() {
 
 void RnsvgRootItem::layoutScene() {
   rnsvg::placeForeignObjects(*this);
+  reported_ = rnsvg::boundsOfElements(*this, watched_);
   Q_EMIT sceneLaidOut();
+}
+
+void RnsvgRootItem::watchBounds(const RnsvgElementItem* element) { watched_.insert(element); }
+
+void RnsvgRootItem::unwatchBounds(const RnsvgElementItem* element) {
+  watched_.remove(element);
+  reported_.remove(element);
 }
 
 QRectF RnsvgRootItem::elementBounds(const RnsvgElementItem* element) const {

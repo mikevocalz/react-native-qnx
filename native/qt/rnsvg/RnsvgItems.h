@@ -2,10 +2,12 @@
 
 #include "RnsvgModel.h"
 
+#include <QHash>
 #include <QList>
 #include <QPointF>
 #include <QQuickItem>
 #include <QQuickPaintedItem>
+#include <QSet>
 
 namespace rnqnx::views {
 
@@ -31,6 +33,9 @@ class RnsvgElementItem : public QQuickItem {
   QList<RnsvgElementItem*> elementChildren() const;
   // Element children and nested <Svg> roots, in paint order.
   QList<QQuickItem*> contentChildren() const;
+  // False when `pointerEvents` (none, box-only) or display:none keeps touches
+  // from reaching the live views under this element.
+  bool passesTouchesToChildren() const;
   RnsvgRootItem* root() const;
 
  protected:
@@ -61,6 +66,14 @@ class RnsvgRootItem final : public QQuickPaintedItem {
   // The painted extent of `element` in this root's coordinates, or an empty
   // rect. Valid after layoutScene(); never call it from paint().
   QRectF elementBounds(const RnsvgElementItem* element) const;
+  // Elements whose bounds the owner wants after each layout pass (onSvgLayout
+  // reporters). layoutScene() measures all of them in one traversal;
+  // reportedBounds() reads that result. Unregistered or unseen: empty rect.
+  void watchBounds(const RnsvgElementItem* element);
+  void unwatchBounds(const RnsvgElementItem* element);
+  QRectF reportedBounds(const RnsvgElementItem* element) const { return reported_.value(element); }
+  // Schedules a layout pass (one polish, however many callers) without repainting.
+  void requestLayout() { polish(); }
   // A root inside another <Svg>: it paints through the outer root, not itself.
   bool isNested() const;
   // Topmost element with `responsible` under `local` (root item coordinates),
@@ -88,6 +101,8 @@ class RnsvgRootItem final : public QQuickPaintedItem {
   rnsvg::RootProps props_;
   int paintCount_{0};
   rnsvg::PaintStats stats_;
+  QSet<const RnsvgElementItem*> watched_;
+  QHash<const RnsvgElementItem*, QRectF> reported_;
 };
 
 namespace rnsvg {

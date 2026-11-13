@@ -88,8 +88,14 @@ function(rnqnx_add_fabric_adapter_target)
 
   rnqnx_add_qt_views_target()
 
+  find_package(Qt6 6.11.1 REQUIRED COMPONENTS Network)
+
   add_library(rnqnx_fabric_adapter STATIC
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/ShadowViewMutationAdapter.cpp"
+    # QtRnsvgImageProvider (globbed below) constructs a QtImageCache, so the
+    # cache is defined here, once, and rnqnx_react_host reaches it through
+    # this target. Host tests that link only the adapter then resolve it too.
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtImageCache.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtTouchDispatcher.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtScrollBridge.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtScrollBridge.h"
@@ -103,6 +109,7 @@ function(rnqnx_add_fabric_adapter_target)
   target_link_libraries(rnqnx_fabric_adapter PUBLIC
     rnqnx_react_native_renderer
     rnqnx_views_qt
+    Qt6::Network
   )
   set_target_properties(rnqnx_fabric_adapter PROPERTIES AUTOMOC ON)
   if(RNQNX_ENABLE_QT_VIDEO)
@@ -163,11 +170,16 @@ function(rnqnx_add_fabric_adapter_target)
       "${rnsvg_generated}/Props.cpp")
     target_include_directories(rnqnx_fabric_adapter SYSTEM PUBLIC
       "${RNQNX_REACT_QT_ROOT}/vnext/generated" "${rnsvg_cpp}")
+    # Only the three third-party translation units are relaxed: the react-native-svg
+    # package's RNSVGLayoutableShadowNode.cpp and the codegen output of its specs
+    # (unused parameters, unknown pragmas, deprecated React Native calls, signed
+    # comparisons). The QtRnsvg* bridge sources are ours and build with the full
+    # strict warning set.
     set_source_files_properties(
       "${rnsvg_cpp}/RNSVGLayoutableShadowNode.cpp"
       "${rnsvg_generated}/EventEmitters.cpp" "${rnsvg_generated}/Props.cpp"
-      ${rnsvg_bridge_sources} PROPERTIES COMPILE_OPTIONS
-      "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas;-Wno-deprecated-declarations;-Wno-sign-compare;-Wno-extra>")
+      PROPERTIES COMPILE_OPTIONS
+      "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas;-Wno-deprecated-declarations;-Wno-sign-compare>")
   endif()
   if(RNQNX_ENABLE_QT_NATIVE_UI OR RNQNX_ENABLE_QT_EXPO_IMAGE)
     # Props, events, shadow nodes and descriptors are generated from the specs
@@ -226,7 +238,6 @@ function(rnqnx_add_react_host_target)
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxExceptionsManager.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxFileReaderModule.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxImageLoader.cpp"
-    "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtImageCache.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxSegmentFetcher.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxWebSocketModule.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxDevSupportModules.cpp"
@@ -253,6 +264,7 @@ function(rnqnx_add_react_host_target)
   rnqnx_add_qt_rnsvg_fabric_test()
   rnqnx_add_qt_rnsvg_image_fabric_test()
   rnqnx_add_qt_rnsvg_corpus_test()
+  rnqnx_add_qt_rnsvg_values_test()
   rnqnx_enable_strict_warnings(rnqnx_react_host)
   if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE)
     include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxAccessibilityActions.cmake)

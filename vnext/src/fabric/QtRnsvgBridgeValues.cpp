@@ -2,6 +2,7 @@
 
 #include <QStringList>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <string_view>
@@ -12,6 +13,13 @@ namespace {
 constexpr double kDefaultFontSize = 12.0;  // react-native-svg's default
 
 bool isFiniteNumber(const folly::dynamic& d) { return d.isNumber() && std::isfinite(d.asDouble()); }
+
+// A double narrowed to an int is undefined behaviour when it is out of range
+// and meaningless when it is NaN. JavaScript can send either.
+int clampedInt(double v, int lo, int hi) {
+  if (!std::isfinite(v)) return v > 0 ? hi : lo;
+  return static_cast<int>(std::clamp(std::trunc(v), static_cast<double>(lo), static_cast<double>(hi)));
+}
 
 // em against the element's own font size. A size inherited from an ancestor
 // is not known here, so an element that sets only an em length and inherits its
@@ -110,7 +118,8 @@ std::vector<double> toNumbers(const folly::dynamic& d) {
 QColor colorFromArgb(double packed) {
   // JavaScript hands over a signed 32-bit integer; reinterpret as ARGB.
   if (!std::isfinite(packed)) return QColor(Qt::black);
-  const auto bits = static_cast<std::uint32_t>(static_cast<std::int64_t>(packed));
+  constexpr double kLow = -2147483648.0, kHigh = 4294967295.0;
+  const auto bits = static_cast<std::uint32_t>(static_cast<std::int64_t>(std::clamp(std::trunc(packed), kLow, kHigh)));
   return QColor::fromRgba(bits);
 }
 
@@ -127,7 +136,7 @@ Brush toBrush(const folly::dynamic& d) {
   }
   if (!d.isObject()) return b;  // null: `none`
   int kind = -1;
-  if (const auto* v = d.get_ptr("type"); v && v->isNumber()) kind = static_cast<int>(v->asInt());
+  if (const auto* v = d.get_ptr("type"); v && v->isNumber()) kind = clampedInt(v->asDouble(), -1, 1000);
   switch (kind) {
     case 0: {
       b.type = Brush::Type::Color;
@@ -148,7 +157,7 @@ Brush toBrush(const folly::dynamic& d) {
 }
 
 std::optional<int> toWeight(const folly::dynamic& d) {
-  if (d.isNumber()) return isFiniteNumber(d) ? std::optional<int>(static_cast<int>(d.asDouble())) : std::nullopt;
+  if (d.isNumber()) return isFiniteNumber(d) ? std::optional<int>(clampedInt(d.asDouble(), 1, 1000)) : std::nullopt;
   if (!d.isString()) return std::nullopt;
   const auto& s = d.getString();
   if (s == "bold" || s == "bolder") return 700;
@@ -156,7 +165,7 @@ std::optional<int> toWeight(const folly::dynamic& d) {
   if (s == "lighter") return 300;
   bool numeric = false;
   const double v = QString::fromStdString(s).trimmed().toDouble(&numeric);
-  if (numeric && std::isfinite(v)) return static_cast<int>(v);
+  if (numeric && std::isfinite(v)) return clampedInt(v, 1, 1000);
   return std::nullopt;
 }
 

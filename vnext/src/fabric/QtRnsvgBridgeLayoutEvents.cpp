@@ -25,6 +25,10 @@ SvgLayoutReporter::Rect SvgLayoutReporter::toRect(const QRectF& bounds) {
 
 SvgLayoutReporter::SvgLayoutReporter(views::RnsvgElementItem* element) : QObject(element), element_(element) {}
 
+SvgLayoutReporter::~SvgLayoutReporter() {
+  if (root_) root_->unwatchBounds(element_);
+}
+
 void SvgLayoutReporter::attach(views::RnsvgElementItem* element,
                                std::shared_ptr<const facebook::react::EventEmitter> emitter) {
   if (element == nullptr) return;
@@ -48,20 +52,24 @@ void SvgLayoutReporter::rebind() {
     if (root != nullptr) break;
   }
   if (root == root_.data()) {
-    if (root != nullptr) root->invalidate();  // new emitter: report the current box
+    if (root != nullptr) root->requestLayout();  // new emitter: report the current box
     return;
   }
-  if (root_) disconnect(root_.data(), &views::RnsvgRootItem::sceneLaidOut, this, &SvgLayoutReporter::evaluate);
+  if (root_) {
+    disconnect(root_.data(), &views::RnsvgRootItem::sceneLaidOut, this, &SvgLayoutReporter::evaluate);
+    root_->unwatchBounds(element_);
+  }
   root_ = root;
   if (root_) {
     connect(root_.data(), &views::RnsvgRootItem::sceneLaidOut, this, &SvgLayoutReporter::evaluate);
-    root_->invalidate();  // schedules a layout pass that ends in sceneLaidOut()
+    root_->watchBounds(element_);
+    root_->requestLayout();  // one polish per commit; the pass ends in sceneLaidOut()
   }
 }
 
 void SvgLayoutReporter::evaluate() {
   if (!root_ || !emitter_) return;
-  const Rect next = toRect(root_->elementBounds(element_));
+  const Rect next = toRect(root_->reportedBounds(element_));
   if (next == last_) return;
   last_ = next;
   folly::dynamic layout = folly::dynamic::object("x", next.x)("y", next.y)("width", next.width)("height", next.height);

@@ -150,7 +150,10 @@ const QQuickItem* deepestItemAt(const QQuickItem* current, const QPointF& window
     // <Svg> resolves its own elements. They stay in the tree so live views
     // under a <ForeignObject> can be reached through them, but a point that
     // lands on no such view must not stop on an element item.
-    if (qobject_cast<const views::RnsvgElementItem*>(child) != nullptr) {
+    if (const auto* element = qobject_cast<const views::RnsvgElementItem*>(child)) {
+      // pointerEvents none or box-only, and display:none, shield the live
+      // views below this element (and so on up through ancestor groups).
+      if (!element->passesTouchesToChildren()) continue;
       if (const QQuickItem* inner = deepestItemAt(child, windowPoint)) return inner;
       continue;
     }

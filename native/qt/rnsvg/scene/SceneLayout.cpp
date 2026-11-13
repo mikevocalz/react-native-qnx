@@ -61,4 +61,24 @@ QRectF boundsOfElement(const RnsvgRootItem& root, const RnsvgElementItem* elemen
   return result;
 }
 
+QHash<const RnsvgElementItem*, QRectF> boundsOfElements(const RnsvgRootItem& root,
+                                                        const QSet<const RnsvgElementItem*>& wanted,
+                                                        int* visits) {
+  QHash<const RnsvgElementItem*, QRectF> result;
+  int count = 0;
+  if (!wanted.isEmpty()) {
+    Scene scene(root, nullptr, std::nullopt);
+    scene.walkFrames([&](const RnsvgElementItem* e, const Frame& parent, const Frame& own) {
+      ++count;
+      if (wanted.contains(e)) {
+        const QRectF box = scene.bounds().paint(e, parent, 0);
+        if (!box.isNull()) result.insert(e, own.ctm.mapRect(box));
+      }
+      return true;
+    });
+  }
+  if (visits != nullptr) *visits = count;
+  return result;
+}
+
 }  // namespace rnqnx::views::rnsvg
