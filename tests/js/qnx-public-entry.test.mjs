@@ -44,9 +44,16 @@ const expected = [
   'PixelRatio',
   'useWindowDimensions',
   'DevSettings',
+  'NativeModules',
+  'TurboModuleRegistry',
+  'NativeEventEmitter',
 ];
 assert.deepEqual(Object.keys(api), expected);
-for (const name of expected) assert.equal(api[name], values);
+// TurboModuleRegistry is a module of named functions (get, getEnforcing), so
+// the entry returns the module itself rather than its default export.
+for (const name of expected)
+  if (name === 'TurboModuleRegistry') assert.equal(api[name].default, values);
+  else assert.equal(api[name], values);
 assert.equal(loaded.length, expected.length);
 for (const name of ['Alert', 'BackHandler', 'NonexistentExport']) {
   assert.throws(() => api[name], /not implemented/);
