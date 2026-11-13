@@ -29,6 +29,9 @@
 #endif
 #endif
 #include "react-native-qnx/views/QtQuickItemFactory.h"
+#if RNQNX_ENABLE_DEV_SUPPORT
+#include "react-native-qnx/runtime/QnxDevSupport.h"
+#endif
 
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
 #include "QnxNitroRuntime.hpp"
@@ -61,12 +64,17 @@
 
 #include <cstdio>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 
 namespace {
 
 constexpr facebook::react::SurfaceId kSurfaceId = 1;
+#if RNQNX_ENABLE_DEV_SUPPORT
+// React Native numbers surfaces 1, 11, 21...; the LogBox surface is the second.
+constexpr facebook::react::SurfaceId kLogBoxSurfaceId = 11;
+#endif
 constexpr const char* kViewSource =
     "import QtQuick\n"
     "import QtQuick.Shapes\n"
@@ -174,6 +182,9 @@ constexpr const char* kScrollViewSource =
     "  visible: true\n"
     "  clip: true\n"
     "  boundsBehavior: Flickable.StopAtBounds\n"
+    // A ScrollView's own backgroundColor; drawn behind the scrolled content.
+    "  property color backgroundColor: 'transparent'\n"
+    "  Rectangle { parent: root; anchors.fill: parent; z: -1; color: root.backgroundColor }\n"
     "  property real wheelStep: 100\n"
     "  readonly property real notchUnits: Qt.platform.os === 'qnx' ? 10 : 120\n"
     "  property real wheelTargetX: 0\n"
@@ -369,6 +380,21 @@ int main(int argc, char** argv) {
 #endif
   parser.addOption(bundleOption);
   parser.addOption(screenshotOption);
+#if RNQNX_ENABLE_DEV_SUPPORT
+  // Development client: `--dev-server http://<computer>:8081` (or
+  // RNQNX_DEV_SERVER in the launcher's environment) loads the bundle from
+  // Metro with Fast Refresh, reload and LogBox. Without it this build runs the
+  // staged bundle exactly like a release build.
+  const QCommandLineOption devServerOption(QStringLiteral("dev-server"),
+      QStringLiteral("Load the JavaScript bundle from this Metro server (http://host:port) "
+                     "with Fast Refresh, reload (Ctrl+R) and the developer menu (Ctrl+D)."),
+      QStringLiteral("url"));
+  const QCommandLineOption devEntryOption(QStringLiteral("dev-entry"),
+      QStringLiteral("Bundle entry on the dev server, without .bundle (default: index)."),
+      QStringLiteral("name"));
+  parser.addOption(devServerOption);
+  parser.addOption(devEntryOption);
+#endif
   parser.process(app);
 
   rnqnx::runtime::ApplicationIdentity identity;
@@ -402,13 +428,38 @@ int main(int argc, char** argv) {
     return 0;
   }
 
+#if RNQNX_ENABLE_DEV_SUPPORT
+  std::optional<QUrl> devServer;
+  {
+    const QString requested = parser.isSet(devServerOption)
+        ? parser.value(devServerOption)
+        : qEnvironmentVariable("RNQNX_DEV_SERVER");
+    if (!requested.isEmpty()) {
+      QString why;
+      devServer = rnqnx::runtime::QnxDevSupport::parseServer(requested, &why);
+      if (!devServer) {
+        std::fprintf(stderr, "RNQNX_DEV_SERVER_ERROR %s: %s\n",
+                     requested.toUtf8().constData(), why.toUtf8().constData());
+        return 2;
+      }
+    }
+  }
+  const bool devMode = devServer.has_value();
+#else
+  constexpr bool devMode = false;
+#endif
+
 #if RNQNX_ENABLE_WINDOW_CHROME
   // One window per app: launching it again (from a launcher tile or its run
   // script) brings back the running copy, including after minimize, instead
   // of starting a second one. Screenshot runs are one-shot and skip this.
   std::unique_ptr<rnqnx::window::SingleInstance> singleInstance;
   if (identity.custom && !parser.isSet(screenshotOption)) {
-    singleInstance = std::make_unique<rnqnx::window::SingleInstance>(identity.appId);
+    // A development client is its own instance: it may run beside the
+    // installed release copy of the same app, and relaunching it brings the
+    // development window back instead of the release one.
+    singleInstance = std::make_unique<rnqnx::window::SingleInstance>(
+        devMode ? identity.appId + QStringLiteral(".dev") : identity.appId);
     if (singleInstance->forwardedToRunningInstance()) {
       std::printf("RNQNX_SINGLE_INSTANCE restored the running %s\n",
                   identity.appId.toUtf8().constData());
@@ -418,7 +469,7 @@ int main(int argc, char** argv) {
   }
 #endif
 
-  const QString bundlePath = parser.isSet(bundleOption)
+  QString bundlePath = parser.isSet(bundleOption)
       ? parser.value(bundleOption)
 #ifdef RNQNX_CONSUMER_APP_HEADER
       : QCoreApplication::applicationDirPath() + QStringLiteral("/app.bundle.js");
@@ -426,15 +477,19 @@ int main(int argc, char** argv) {
       : QStringLiteral(RNQNX_PLAYGROUND_BUNDLE_PATH);
 #endif
 
-  QFile bundleFile(bundlePath);
-  if (!bundleFile.open(QIODevice::ReadOnly)) {
-    std::fprintf(
-        stderr,
-        "Could not read the bundle at %s\n",
-        bundlePath.toUtf8().constData());
-    return 1;
+
+  QByteArray bundle;
+  if (!devMode) {
+    QFile bundleFile(bundlePath);
+    if (!bundleFile.open(QIODevice::ReadOnly)) {
+      std::fprintf(
+          stderr,
+          "Could not read the bundle at %s\n",
+          bundlePath.toUtf8().constData());
+      return 1;
+    }
+    bundle = bundleFile.readAll();
   }
-  const QByteArray bundle = bundleFile.readAll();
 
 #if RNQNX_ENABLE_WINDOW_CHROME
   // The playground keeps its original chromeless window unless asked; a
@@ -639,7 +694,65 @@ int main(int argc, char** argv) {
   std::shared_ptr<rnqnx::runtime::RuntimeTrace> trace;
   if (parser.isSet(traceOption)) trace = std::make_shared<rnqnx::runtime::RuntimeTrace>(16384);
 #endif
-  const int result = [&]() {
+#if RNQNX_ENABLE_DEV_SUPPORT
+  // Kept across reloads: each reload builds a new React host underneath it.
+  std::unique_ptr<rnqnx::runtime::QnxDevSupport> dev;
+  bool reloadRequested = false;
+  // Only quit the application loop from inside it: an exit() while
+  // fetchBundle's own loop runs would also make every later nested loop
+  // return at once. fetchBundle ends itself on reloadRequested.
+  bool inApplicationLoop = false;
+  const auto runApplicationLoop = [&inApplicationLoop]() {
+    inApplicationLoop = true;
+    const int code = QGuiApplication::exec();
+    inApplicationLoop = false;
+    return code;
+  };
+  if (devMode) {
+    rnqnx::runtime::QnxDevSupport::Options devOptions;
+    devOptions.server = *devServer;
+    if (parser.isSet(devEntryOption)) devOptions.entry = parser.value(devEntryOption);
+    devOptions.appId = identity.appId;
+    dev = std::make_unique<rnqnx::runtime::QnxDevSupport>(devOptions, window, engine, *mountRoot);
+    layer.addRoot(dev->logBoxRoot(), kLogBoxSurfaceId);
+#if RNQNX_ENABLE_INPUT_LIFECYCLE
+    touchDispatcher.addRootItem(dev->logBoxRoot());
+    touchDispatcher.addInputShield(dev->inputShield());
+#endif
+    QObject::connect(dev.get(), &rnqnx::runtime::QnxDevSupport::reloadRequested, &app,
+        [&reloadRequested, &inApplicationLoop](const QString&) {
+          reloadRequested = true;
+          if (inApplicationLoop) QCoreApplication::exit(0);
+        });
+    // The bundle comes over the network, so show the window (and its loading
+    // banner) first.
+    if (parser.isSet(fullscreenOption)) {
+      window.showFullScreen();
+    } else {
+      window.show();
+    }
+  }
+#endif
+  int result = 0;
+  for (;;) {
+#if RNQNX_ENABLE_DEV_SUPPORT
+  reloadRequested = false;
+  if (dev) {
+    dev->resetForReload();
+    const auto fetched = dev->fetchBundle();
+    if (fetched.superseded || reloadRequested) continue;
+    if (!fetched.ok) {
+      dev->showError(fetched.errorTitle, fetched.errorMessage);
+      if (parser.isSet(screenshotOption)) return 1;
+      result = runApplicationLoop();
+      if (reloadRequested) continue;
+      break;
+    }
+    bundle = fetched.source;
+    bundlePath = fetched.url;
+  }
+#endif
+  result = [&]() {
 #if RNQNX_ENABLE_FRAME_TRACE
   rnqnx::runtime::QtReactHost host(adapter, trace);
 #else
@@ -647,6 +760,16 @@ int main(int argc, char** argv) {
 #endif
 #if RNQNX_ENABLE_INPUT_LIFECYCLE
   host.delegate().setTouchDispatcher(&touchDispatcher);
+#endif
+#if RNQNX_ENABLE_DEV_SUPPORT
+  if (dev) {
+    host.setTurboModuleProvider(
+        [delegate = dev->delegate()](const std::string& name,
+                                     const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker) {
+          return rnqnx::runtime::makeDevSupportModule(name, jsInvoker, delegate);
+        });
+    host.installGlobalEvalWithSourceUrl();
+  }
 #endif
 #ifdef RNQNX_PLAYGROUND_NITRO_QNX
 #ifdef RNQNX_CONSUMER_NITRO_HEADER
@@ -671,6 +794,14 @@ int main(int argc, char** argv) {
         stderr,
         "Bundle failed to evaluate: %s\n",
         host.lastError().toUtf8().constData());
+#if RNQNX_ENABLE_DEV_SUPPORT
+    if (dev && !parser.isSet(screenshotOption)) {
+      // Keep the window: show the error and wait for a fix and a reload.
+      dev->showError(QStringLiteral("The JavaScript bundle threw while loading"),
+                     host.lastError());
+      return runApplicationLoop();
+    }
+#endif
     return 1;
   }
 
@@ -689,6 +820,62 @@ int main(int argc, char** argv) {
       identity.componentName.toStdString(),
       static_cast<float>(surfaceSize.width()),
       static_cast<float>(surfaceSize.height()));
+
+#if RNQNX_ENABLE_DEV_SUPPORT
+  // Fast Refresh: what AppDelegate/ReactHost do on iOS and Android after the
+  // bundle runs. HMRClient opens ws://<server>/hot and applies Metro's updates.
+  // Signals are bound to `devScope` so they end with this host.
+  QObject devScope;
+  bool logBoxRunning = false;
+  const auto stopLogBox = [&]() {
+    if (!logBoxRunning) return;
+    host.stopSurface(kLogBoxSurfaceId);
+    dev->logBoxRoot().setVisible(false);
+    logBoxRunning = false;
+  };
+  if (dev) {
+    host.callFunctionOnModule("HMRClient", "setup",
+        folly::dynamic::array(dev->platform().toStdString(), dev->bundleEntry().toStdString(),
+                              dev->host().toStdString(), dev->port(), dev->hotLoadingEnabled(),
+                              dev->scheme().toStdString()));
+    QObject::connect(dev.get(), &rnqnx::runtime::QnxDevSupport::showLogBoxRequested, &devScope,
+        [&]() {
+          if (logBoxRunning) return;
+          QQuickItem& root = dev->logBoxRoot();
+          root.setVisible(true);
+          host.startSurface(kLogBoxSurfaceId, "LogBox", static_cast<float>(root.width()),
+                            static_cast<float>(root.height()));
+          logBoxRunning = true;
+          std::printf("RNQNX_DEV_LOGBOX shown\n");
+          std::fflush(stdout);
+        });
+    QObject::connect(dev.get(), &rnqnx::runtime::QnxDevSupport::hideLogBoxRequested, &devScope,
+        [&]() {
+          stopLogBox();
+          std::printf("RNQNX_DEV_LOGBOX hidden\n");
+          std::fflush(stdout);
+        });
+    const auto resizeLogBox = [&]() {
+      if (logBoxRunning) {
+        host.resizeSurface(kLogBoxSurfaceId, static_cast<float>(dev->logBoxRoot().width()),
+                           static_cast<float>(dev->logBoxRoot().height()));
+      }
+    };
+    QObject::connect(&dev->logBoxRoot(), &QQuickItem::widthChanged, &devScope, resizeLogBox);
+    QObject::connect(&dev->logBoxRoot(), &QQuickItem::heightChanged, &devScope, resizeLogBox);
+    QObject::connect(dev.get(), &rnqnx::runtime::QnxDevSupport::menuItemSelected, &devScope,
+        [&](const QString& title) {
+          host.callFunctionOnModule("RCTDeviceEventEmitter", "emit",
+              folly::dynamic::array("didPressMenuItem",
+                                    folly::dynamic::object("title", title.toStdString())));
+        });
+    QObject::connect(dev.get(), &rnqnx::runtime::QnxDevSupport::hotLoadingToggled, &devScope,
+        [&](bool enabled) {
+          host.callFunctionOnModule("HMRClient", enabled ? "enable" : "disable",
+                                    folly::dynamic::array());
+        });
+  }
+#endif
 
   // The React surface follows the window: a resize, maximize or restore lays
   // the app out again at the new size. Coalesced so a burst of width and
@@ -772,8 +959,23 @@ int main(int argc, char** argv) {
   });
   drainTimer.start(16);
 
-  return QGuiApplication::exec();
+#if RNQNX_ENABLE_DEV_SUPPORT
+  const int exitCode = runApplicationLoop();
+#else
+  const int exitCode = QGuiApplication::exec();
+#endif
+#if RNQNX_ENABLE_DEV_SUPPORT
+  // A reload tears this host down; stop LogBox first so its surface does not
+  // outlive the runtime that renders it.
+  if (dev) stopLogBox();
+#endif
+  return exitCode;
   }();
+#if RNQNX_ENABLE_DEV_SUPPORT
+  if (reloadRequested) continue;
+#endif
+  break;
+  }
 #if RNQNX_ENABLE_FRAME_TRACE
   if (trace) {
     try {

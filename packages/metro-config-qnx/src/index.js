@@ -39,11 +39,29 @@ const QNX_PLATFORM = 'qnx';
  */
 function createQnxResolveRequest(overridesRoot) {
   const reactNativeLibraries = `${path.sep}react-native${path.sep}Libraries${path.sep}`;
+  const reactNativeRoot = `${path.sep}react-native${path.sep}`;
+  // `src/private` sits beside `Libraries` in both React Native and the platform
+  // package.
+  const privateRoot = path.join(path.dirname(overridesRoot), 'src', 'private');
 
   return function resolveRequest(context, moduleName, platform) {
     // Metro's own resolver runs first; the override is decided by where that
     // landed, which is what makes relative imports such as `./Platform` work.
-    const resolution = context.resolveRequest(context, moduleName, platform);
+    let resolution;
+    try {
+      resolution = context.resolveRequest(context, moduleName, platform);
+    } catch (error) {
+      // Some React Native development modules exist only as `.ios.js` and
+      // `.android.js` (src/private/devsupport/rndevtools/ReactDevToolsSettingsManager
+      // in 0.88). A relative import of one from inside React Native fails for
+      // any other platform; the platform package supplies the QNX file.
+      const fallback =
+        platform === QNX_PLATFORM && moduleName.startsWith('.')
+          ? privateOverride(context.originModulePath, moduleName, reactNativeRoot, privateRoot)
+          : null;
+      if (fallback) return { type: 'sourceFile', filePath: fallback };
+      throw error;
+    }
 
     if (platform !== QNX_PLATFORM || resolution?.type !== 'sourceFile') {
       return resolution;
@@ -62,6 +80,26 @@ function createQnxResolveRequest(overridesRoot) {
 
     return resolution;
   };
+}
+
+/**
+ * The platform package's copy of a React Native `src/private` module that
+ * Metro could not resolve, or null.
+ *
+ * @param {string} origin Absolute path of the importing module.
+ * @param {string} moduleName Relative import as written.
+ * @param {string} reactNativeRoot `/react-native/` with platform separators.
+ * @param {string} privateRoot The platform package's `src/private` directory.
+ */
+function privateOverride(origin, moduleName, reactNativeRoot, privateRoot) {
+  const target = path.resolve(path.dirname(origin), moduleName);
+  const marker = target.lastIndexOf(reactNativeRoot);
+  if (marker === -1) return null;
+  const relative = target.slice(marker + reactNativeRoot.length);
+  const prefix = `src${path.sep}private${path.sep}`;
+  if (!relative.startsWith(prefix)) return null;
+  const candidate = path.join(privateRoot, `${relative.slice(prefix.length)}.js`);
+  return fs.existsSync(candidate) ? candidate : null;
 }
 
 /**

@@ -11,11 +11,15 @@
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/utils/ContextContainer.h>
 
+#include <ReactCommon/CallInvoker.h>
+#include <ReactCommon/TurboModule.h>
+#include <folly/dynamic.h>
 #include <jsi/jsi.h>
 
 #include <QObject>
 #include <QString>
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -186,6 +190,32 @@ class QtReactHost {
   /// returns nullptr so `getEnforcing` fails with the module's name, which
   /// ADR-0004 requires over empty TurboModules that silence the error.
   void installTurboModuleBinding();
+
+  /// Supplies extra TurboModules, asked before the platform's own. Returning
+  /// nullptr falls through to the built-in modules. Set it before
+  /// installTurboModuleBinding(); the development client uses it for
+  /// DevSettings, DevLoadingView and LogBox.
+  using TurboModuleProvider =
+      std::function<std::shared_ptr<facebook::react::TurboModule>(
+          const std::string& name,
+          const std::shared_ptr<facebook::react::CallInvoker>& jsInvoker)>;
+  void setTurboModuleProvider(TurboModuleProvider provider);
+
+  /// Calls `method` on a module JavaScript registered with
+  /// registerCallableModule (HMRClient, RCTDeviceEventEmitter, ...), the
+  /// native-to-JavaScript direction ReactInstance::callFunctionOnModule covers
+  /// on Android and iOS. Runs as a RuntimeScheduler task; an unknown module or
+  /// method is reported like any other task error.
+  void callFunctionOnModule(
+      const std::string& moduleName,
+      const std::string& methodName,
+      folly::dynamic args);
+
+  /// Installs `globalThis.globalEvalWithSourceUrl(source, url)`. Metro's HMR
+  /// client evaluates each hot update through it so stack traces name the
+  /// edited file. Needs a Hermes build that can compile source (not the lean
+  /// VM); development builds only.
+  void installGlobalEvalWithSourceUrl();
 
   /// Errors JavaScript has reported through ExceptionsManager, oldest first.
   const std::vector<JavaScriptError>& javaScriptErrors() const;
