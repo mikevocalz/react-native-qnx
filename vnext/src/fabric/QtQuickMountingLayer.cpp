@@ -546,10 +546,6 @@ MountError QtQuickMountingLayer::updateTextInput(
       style.multiline ? "qnx-text-edit" : "qnx-text-input");
   if (textField && textField->property("text").toString() != style.text) {
     textField->setProperty("text", style.text);
-    // Qt leaves the cursor at the end of text set from outside, which scrolls
-    // a long value to its tail. An unfocused field shows the beginning, as on
-    // iOS and Android.
-    if (!textField->hasActiveFocus()) textField->setProperty("cursorPosition", 0);
   }
 #endif
 

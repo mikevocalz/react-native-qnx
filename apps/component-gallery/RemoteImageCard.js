@@ -63,18 +63,25 @@ export default function RemoteImageCard() {
     setAttempt((value) => value + 1);
   }, []);
 
-  // Keyboard path in development builds (Ctrl+D): step through the sources.
+  // The URI on screen, for callbacks that outlive a render (menu item, getSize).
+  const current = React.useRef(uri);
+  current.current = uri;
+  const mounted = React.useRef(true);
   React.useEffect(() => {
-    DevSettings.addMenuItem('Image from a URL: next source', () =>
-      setUri((current) => {
-        const index = SOURCES.findIndex((source) => source.uri === current);
-        const next = SOURCES[(index + 1) % SOURCES.length].uri;
-        setDraft(next);
-        setAttempt((value) => value + 1);
-        return next;
-      })
-    );
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
   }, []);
+
+  // Keyboard path in development builds (Ctrl+D): step through the sources.
+  // DevSettings replaces an item registered again under the same title.
+  React.useEffect(() => {
+    DevSettings.addMenuItem('Image from a URL: next source', () => {
+      const index = SOURCES.findIndex((source) => source.uri === current.current);
+      load(SOURCES[(index + 1) % SOURCES.length].uri);
+    });
+  }, [load]);
 
   React.useEffect(() => {
     startedAt.current = Date.now();
@@ -85,8 +92,10 @@ export default function RemoteImageCard() {
     const ms = Date.now() - startedAt.current;
     console.log('[RemoteImageCard] loaded ' + uri + ' in ' + ms + ' ms');
     setState({ phase: 'loaded', ms });
-    Image.getSize(uri)
+    const requested = uri;
+    Image.getSize(requested)
       .then(({ width, height }) => {
+        if (!mounted.current || current.current !== requested) return;
         console.log('[RemoteImageCard] Image.getSize ' + uri + ' = ' + width + 'x' + height);
         setState((current) =>
           current.phase === 'loaded' ? { ...current, width, height } : current
@@ -99,7 +108,9 @@ export default function RemoteImageCard() {
     console.log('[RemoteImageCard] failed ' + uri + ': ' + message);
     setState({ phase: 'error', message: String(message) });
     // The loader module reports Qt Network's reason (DNS, TLS, HTTP status).
-    Image.getSize(uri).catch((error) => {
+    const requested = uri;
+    Image.getSize(requested).catch((error) => {
+      if (!mounted.current || current.current !== requested) return;
       const reason = error && error.message ? error.message : String(error);
       console.log('[RemoteImageCard] reason ' + uri + ': ' + reason);
       setState((current) =>
