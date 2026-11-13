@@ -19,3 +19,30 @@ The app opens as a 1280 x 800 window (`extra.rnqnx.window.initialSize`) with
 the macOS-style title bar. The Components page lays its cards out in one, two
 or three columns from the measured window width. Building and running it on
 the Pi 400 is in [the Pi 400 desktop guide](../../docs/getting-started/pi400-desktop-app.md).
+
+## Adding an Advanced card
+
+The Advanced tab shows every card in `components/advanced/`. A card is one
+file named `<id>.card.js` that default-exports:
+
+```js
+export default {
+  id: 'long-list', // unique; also the React key
+  title: 'Long FlatList',
+  detail: '5,000 rows, virtualized', // one line under the title
+  order: 50, // optional, default 100; lower comes first, ties sort by id
+  Component: LongList, // rendered inside the card, no props
+};
+```
+
+`components/advanced/index.js` collects the files with Metro's
+`require.context` (enabled in `metro.config.js`) into one `ADVANCED_CARDS`
+array, so adding a card adds one file and edits nothing else. Two pull
+requests that each add a card therefore cannot conflict. A card that needs a
+native module or a new dependency brings that change in the same pull
+request; keep the card file itself free of side effects at import time, since
+every card module loads when the gallery starts. The index throws at startup
+if a card is missing `id`, `title`, `detail` or `Component`, or reuses an id.
+
+When the gallery moves to expo-router the same directory feeds the Advanced
+tab route, so cards written now keep working.
