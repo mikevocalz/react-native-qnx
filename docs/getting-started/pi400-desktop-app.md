@@ -392,6 +392,43 @@ so one notch used to move a page a few pixels. A scroll view at its edge
 passes the wheel on to the scroll view around it. Shift+wheel scrolls
 sideways.
 
+## Mouse input on a device you cannot touch
+
+`tools/qnx-input/rnqnx-inject` sends pointer and keyboard events through
+Screen the way a USB mouse does, so a script can drive the desktop over SSH.
+Build it with `tools/qnx-input/build.sh` (needs `qnxsdp-env.sh`), copy it to
+the Pi and run it as root:
+
+```sh
+sudo rnqnx-inject click 960 540
+sudo rnqnx-inject drag 900 160 1000 260 12      # title bar drag
+sudo rnqnx-inject move 900 600 wheel 3           # wheel, 3 notches down
+sudo rnqnx-inject dclick 960 22                  # double click
+sudo rnqnx-inject mods 4 keydown alt key tab sleep 800 mods 0 keyup alt
+```
+
+Coordinates are display pixels. Two details matter, and a first injector that
+missed them never reached an app window:
+
+- Screen reads the event position only when `SCREEN_FLAG_POSITION_VALID` is
+  set in `SCREEN_PROPERTY_FLAGS`. Without it the pointer sits at 0,0, and Qt
+  receives a position outside the window (for a window at 319,139 it saw
+  -319,-139) and drops it.
+- The event must name a pointer device created with
+  `screen_create_device_type()`. Screen then picks the window under the
+  pointer and converts to window coordinates, as it does for a real mouse.
+
+Screen leaves an injected event's timestamp at 0, so the injector sets one.
+Without it every pair of clicks was a double click, and the title bar toggled
+maximize.
+
+`pnpm pi:mouse-smoke` copies the injector to the Pi and checks title bar
+drag, right edge resize and double click restore against the
+`RNQNX_WINDOW_FRAME` lines the app logs. It needs password-less `sudo` on the
+Pi and a restored window; set `RNQNX_MOUSE_FRAME=WxH+X+Y` when the app has not
+logged a frame yet. The window manager's own `-v` log is the place to compare
+an injected event with a real one.
+
 ## Troubleshooting
 
 **Black window or black screen.** Check that both plugin paths point at the

@@ -31,6 +31,7 @@
     "validate:architecture": "node scripts/validate-architecture.mjs",
     "pi:preflight": "bash scripts/pi-preflight.sh",
     "pi:install": "bash scripts/install-pi.sh",
+    "pi:mouse-smoke": "bash scripts/pi-mouse-smoke.sh",
     "qnx:validate:805": "bash scripts/validate-qnx-805-cross.sh",
     "hermes:qnx:prepare": "bash scripts/prepare-hermes-qnx.sh",
     "hermes:qnx:configure": "bash scripts/configure-hermes-qnx.sh",
