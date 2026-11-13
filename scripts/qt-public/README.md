@@ -57,7 +57,18 @@ Qt is compiled at `-O2` ([ADR-0017](../../docs/adr/0017-qt-qnx-optimization-leve
 `FEATURE_optimize_size` and `FEATURE_optimize_full` off, and exits after
 configure unless `CMAKE_C_FLAGS_RELEASE` and `CMAKE_CXX_FLAGS_RELEASE` contain
 `-O2`. The 2026-11-12 runtime in the receipt predates this and was compiled
-with no `-O` level.
+with no `-O` level. QtCore and QtGui still compile at `-O3`: Qt applies
+`qt_internal_add_optimize_full_flags()` to those two modules whenever
+`optimize_size` is off. The first `-O2` build is in
+[the -O2 receipt](../../docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md).
+
+To rebuild an existing `qnx-build` tree in place, apply the patches to the
+existing source first (each patch script refuses to run twice), move
+`qnx-build/CMakeCache.txt` aside and run `configure-qnx.sh` again. The
+2026-11-12 `-O2` rebuild did this; the tree went from 897 MB at `-O0` to
+355 MB, so no second tree is needed. Write the runtime tarball with
+`tar --no-xattrs --no-mac-metadata` on macOS, or it carries
+`LIBARCHIVE.xattr` headers that QNX `tar` warns about.
 
 ## QNX platform plugin patch
 

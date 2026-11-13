@@ -87,7 +87,19 @@ with every runtime file's SHA-256 in
   no `-O` flag at all, so its libraries are unoptimised. `configure-qnx.sh`
   now drops that option and fails unless the Release flags contain `-O2`. The
   qualified runtime hash, and every runner or package that includes Qt, must
-  come from a build made with `-O2`; the 2026-11-12 hashes do not qualify.
+  come from a build made with `-O2`; the first 2026-11-12 hashes (tarball
+  `64afc468…`) do not qualify. The `-O2` rebuild, with both QNX plugin
+  patches, is recorded in
+  [the -O2 receipt](evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md): runtime
+  tarball `9ead47f44e7ba79ab9abc08ef59279d5d49a28693b03676988b82bd805ec0cc4`,
+  `SHA256SUMS` `17319f433075169e117e38980ab97d09429f6b76c7c948cf8af1cce44a2492f7`,
+  per-file hashes in
+  [its closure manifest](evidence/qt-public-runtime-closure-o2-2026-11-12-a79e16a.json).
+  That is the runtime hash runners and packages build on. QtCore and QtGui
+  compile at `-O3`, which Qt applies to those two modules whenever
+  `optimize_size` is off. On the Pi 400 only the component gallery app has run
+  on it; the first receipt's hello world, Nitro and Pressable runs have not
+  been repeated, and no release gate depends on this hash yet.
 - **Recipes:** [`scripts/qt-public/`](../scripts/qt-public/) holds the
   extract, patch, host-tool and QNX configure scripts, the toolchain file,
   the runtime staging script that checks the `DT_NEEDED` closure, the SPDX
@@ -150,7 +162,8 @@ reading of those terms. [ADR-0018](adr/0018-runner-hosting-and-sdp-boundary.md)
 records how `rnqnx runner fetch` enforces this.
 
 No package has been produced yet. The public runtime currently exists only as
-a local build output and the board copy under the test user's home.
+a local build output and the board copies under the test user's home
+(`qt612-public` for the first build, `qt612-public-o2` for the `-O2` build).
 
 ## Pi 400 evaluation authorization (2026-11-06)
 

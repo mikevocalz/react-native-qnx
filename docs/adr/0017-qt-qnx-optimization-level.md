@@ -2,8 +2,11 @@
 
 ## Status
 
-Accepted, 2026-11-12. The owner delegated this decision. The script change is
-made; no Qt build with the new flags has run yet.
+Accepted, 2026-11-12. The owner delegated this decision. The first build with
+the new flags ran the same day; see
+[the -O2 receipt](../evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md)
+(runtime tarball
+`9ead47f44e7ba79ab9abc08ef59279d5d49a28693b03676988b82bd805ec0cc4`).
 
 ## Context
 
@@ -67,11 +70,14 @@ to 0, because fortification needs optimisation.
 - Every Qt library hash in the closure manifest changes on the next build. The
   receipt's Pi 400 runs (hello world, Nitro/Qt, pressable) must be repeated on
   the rebuilt runtime before its hashes are recorded as qualified.
-- `_FORTIFY_SOURCE` can take effect in Qt code once `-O2` is present. Whether
-  it does depends on the toolchain defaults; the next build log will show
-  whether the warning is gone.
-- Library size will change. It was never measured for the `-O0` build either,
-  so there is no size budget to compare against.
+- `_FORTIFY_SOURCE` can take effect in Qt code once `-O2` is present. The
+  `-O2` build log has no `_FORTIFY_SOURCE` warning; the `-O0` log had 2248.
+- With `optimize_size` off, Qt's own `qt_internal_add_optimize_full_flags()`
+  compiles QtCore and QtGui at `-O3` (647 of 2992 compile lines in the `-O2`
+  build); every other module is at `-O2`. This is upstream behaviour and was
+  kept.
+- Library size changed: the 16 ELF files went from 122.8 MB to 51.3 MB in
+  total. There was no size budget to compare against.
 - The RN executables and Hermes are separate CMake builds with their own build
   types and are not affected by this ADR.
 
