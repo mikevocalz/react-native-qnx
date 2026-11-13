@@ -11,6 +11,9 @@
 #if RNQNX_ENABLE_QT_SVG
 #include <QtSvgItem.h>
 #endif
+#if RNQNX_ENABLE_QT_VIDEO
+#include <QtVideoItem.h>
+#endif
 
 namespace rnqnx::views {
 namespace {
@@ -93,6 +96,14 @@ QQmlComponent* QtQuickItemFactory::componentFor(const QString& componentName) {
 QQuickItem* QtQuickItemFactory::create(
     const QString& componentName,
     QQuickItem* parent) {
+#if RNQNX_ENABLE_QT_VIDEO
+  if (componentName == QStringLiteral("QnxQtVideo")) {
+    auto* item = new QtVideoItem(engine_, parent);
+    QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
+    lastError_ = item->isReady() ? QString() : item->errorString();
+    return item;
+  }
+#endif
 #if RNQNX_ENABLE_QT_SVG
   if (componentName == QStringLiteral("QnxSvgDocument")) {
     auto* item = new QtSvgItem(parent);

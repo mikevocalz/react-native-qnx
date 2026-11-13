@@ -18,6 +18,9 @@
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#if RNQNX_ENABLE_QT_VIDEO
+#include <react/renderer/components/RnqnxQtVideo/ComponentDescriptors.h>
+#endif
 #if RNQNX_ENABLE_QT_SVG
 #include <react/renderer/components/RnqnxQtSvg/ComponentDescriptors.h>
 #endif
@@ -228,6 +231,9 @@ std::vector<std::string> registeredComponentNames() {
 #if RNQNX_ENABLE_QT_SVG
       std::string(facebook::react::QnxSvgDocumentComponentDescriptor::ConcreteShadowNode::Name()),
 #endif
+#if RNQNX_ENABLE_QT_VIDEO
+      std::string(facebook::react::QnxQtVideoComponentDescriptor::ConcreteShadowNode::Name()),
+#endif
       std::string(ViewComponentDescriptor::ConcreteShadowNode::Name()),
       std::string(facebook::react::ParagraphComponentDescriptor::
                       ConcreteShadowNode::Name()),
@@ -273,6 +279,10 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
 #if RNQNX_ENABLE_QT_SVG
     providerRegistry->add(facebook::react::concreteComponentDescriptorProvider<
         facebook::react::QnxSvgDocumentComponentDescriptor>());
+#endif
+#if RNQNX_ENABLE_QT_VIDEO
+    providerRegistry->add(facebook::react::concreteComponentDescriptorProvider<
+        facebook::react::QnxQtVideoComponentDescriptor>());
 #endif
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<

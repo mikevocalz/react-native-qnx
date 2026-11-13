@@ -10,6 +10,12 @@
 #include "react-native-qnx/fabric/QtScrollBridge.h"
 #include "react-native-qnx/fabric/QtSwitchBridge.h"
 
+#if RNQNX_ENABLE_QT_VIDEO
+#include "react-native-qnx/fabric/QtVideoBridge.h"
+#include <QtVideoItem.h>
+#include <react/renderer/components/RnqnxQtVideo/EventEmitters.h>
+#include <react/renderer/components/RnqnxQtVideo/Props.h>
+#endif
 #if RNQNX_ENABLE_QT_SVG
 #include "react-native-qnx/fabric/QtSvgBridge.h"
 #include <QtSvgItem.h>
@@ -391,7 +397,25 @@ ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer
 #if RNQNX_ENABLE_QT_SVG
   mapComponent(QStringLiteral("QnxSvgDocument"), QStringLiteral("QnxSvgDocument"));
 #endif
+#if RNQNX_ENABLE_QT_VIDEO
+  mapComponent(QStringLiteral("QnxQtVideo"), QStringLiteral("QnxQtVideo"));
+#endif
 }
+
+#if RNQNX_ENABLE_QT_VIDEO
+void ShadowViewMutationAdapter::applyVideo(const ShadowView& view) {
+  const auto* props = dynamic_cast<const facebook::react::QnxQtVideoProps*>(view.props.get());
+  if (!props) return;
+  auto* item = qobject_cast<views::QtVideoItem*>(layer_.itemForTag(view.tag));
+  if (!item) return;
+  auto bridge = videoBridges_.value(view.tag);
+  if (!bridge) {
+    bridge = new QtVideoBridge(*item);
+    videoBridges_.insert(view.tag, bridge);
+  }
+  bridge->apply(*props, std::dynamic_pointer_cast<const facebook::react::QnxQtVideoEventEmitter>(view.eventEmitter));
+}
+#endif
 
 #if RNQNX_ENABLE_QT_SVG
 void ShadowViewMutationAdapter::applySvgDocument(const ShadowView& view) {
@@ -1025,6 +1049,9 @@ MountError ShadowViewMutationAdapter::applyOne(
 #if RNQNX_ENABLE_QT_SVG
       applySvgDocument(view);
 #endif
+#if RNQNX_ENABLE_QT_VIDEO
+      applyVideo(view);
+#endif
       const auto styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) return styleError;
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
@@ -1037,6 +1064,9 @@ MountError ShadowViewMutationAdapter::applyOne(
     case ShadowViewMutation::Type::Delete:
 #if RNQNX_ENABLE_QT_SVG
       svgBridges_.remove(mutation.oldChildShadowView.tag);
+#endif
+#if RNQNX_ENABLE_QT_VIDEO
+      videoBridges_.remove(mutation.oldChildShadowView.tag);
 #endif
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
       if (auto previous = accessibilityActivations_.take(mutation.oldChildShadowView.tag)) {
@@ -1107,6 +1137,9 @@ MountError ShadowViewMutationAdapter::applyOne(
 #if RNQNX_ENABLE_QT_SVG
       applySvgDocument(view);
 #endif
+#if RNQNX_ENABLE_QT_VIDEO
+      applyVideo(view);
+#endif
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) {
         return styleError;
@@ -1160,6 +1193,29 @@ MutationFailure ShadowViewMutationAdapter::dispatchCommand(
     const std::string& commandName,
     const folly::dynamic& args,
     const ShadowView* shadowView) {
+#if RNQNX_ENABLE_QT_VIDEO
+  if (commandName == "seek" || commandName == "play" || commandName == "pause") {
+    auto* video = qobject_cast<views::QtVideoItem*>(layer_.itemForTag(tag));
+    if (video == nullptr) {
+      return MutationFailure{.type = ShadowViewMutation::Type::Update, .tag = tag,
+          .error = MountError::UnknownTag,
+          .detail = QStringLiteral("%1 sent to a view that is not a QtVideo").arg(QString::fromStdString(commandName))};
+    }
+    if (commandName == "seek") {
+      if (!args.isArray() || args.size() != 1 || !args[0].isNumber()) {
+        return MutationFailure{.type = ShadowViewMutation::Type::Update, .tag = tag,
+            .error = MountError::IndexOutOfRange, .detail = QStringLiteral("seek expects [seconds]")};
+      }
+      video->seek(args[0].asDouble());
+    } else if (commandName == "play") {
+      video->play();
+    } else {
+      video->pause();
+    }
+    return MutationFailure{};
+  }
+#endif
+
   if (commandName == "scrollTo") {
     if (!args.isArray() || args.size() < 2) {
       return MutationFailure{

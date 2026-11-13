@@ -49,7 +49,11 @@ function(rnqnx_add_qt_views_target)
   )
   target_link_libraries(rnqnx_views_qt PUBLIC Qt6::Quick Qt6::Qml Qt6::Gui)
   target_compile_definitions(rnqnx_views_qt PUBLIC
-    RNQNX_ENABLE_QT_SVG=$<BOOL:${RNQNX_ENABLE_QT_SVG}>)
+    RNQNX_ENABLE_QT_SVG=$<BOOL:${RNQNX_ENABLE_QT_SVG}>
+    RNQNX_ENABLE_QT_VIDEO=$<BOOL:${RNQNX_ENABLE_QT_VIDEO}>)
+  if(RNQNX_ENABLE_QT_VIDEO)
+    target_link_libraries(rnqnx_views_qt PUBLIC rnqnx_qt_video)
+  endif()
   if(RNQNX_ENABLE_QT_SVG)
     target_link_libraries(rnqnx_views_qt PUBLIC rnqnx_qt_svg)
   endif()
@@ -85,6 +89,23 @@ function(rnqnx_add_fabric_adapter_target)
     rnqnx_views_qt
   )
   set_target_properties(rnqnx_fabric_adapter PROPERTIES AUTOMOC ON)
+  if(RNQNX_ENABLE_QT_VIDEO)
+    set(video_generated "${RNQNX_REACT_QT_ROOT}/vnext/generated/react/renderer/components/RnqnxQtVideo")
+    target_sources(rnqnx_fabric_adapter PRIVATE
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtVideoBridge.cpp"
+      "${video_generated}/ComponentDescriptors.cpp"
+      "${video_generated}/EventEmitters.cpp"
+      "${video_generated}/Props.cpp"
+      "${video_generated}/ShadowNodes.cpp"
+      "${video_generated}/States.cpp")
+    target_include_directories(rnqnx_fabric_adapter SYSTEM PUBLIC
+      "${RNQNX_REACT_QT_ROOT}/vnext/generated")
+    set_source_files_properties(
+      "${video_generated}/ComponentDescriptors.cpp" "${video_generated}/EventEmitters.cpp"
+      "${video_generated}/Props.cpp" "${video_generated}/ShadowNodes.cpp"
+      "${video_generated}/States.cpp" PROPERTIES COMPILE_OPTIONS
+      "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas>")
+  endif()
   if(RNQNX_ENABLE_QT_SVG)
     set(svg_generated "${RNQNX_REACT_QT_ROOT}/vnext/generated/react/renderer/components/RnqnxQtSvg")
     target_sources(rnqnx_fabric_adapter PRIVATE
