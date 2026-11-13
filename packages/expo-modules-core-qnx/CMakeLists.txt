@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.31.9)
+# 3.20 rather than the repository's 3.31.9: the top-level build enforces its
+# own minimum, and the host test compiles this package on CI runners with 3.31.6.
+cmake_minimum_required(VERSION 3.20)
 
 if(TARGET rnqnx_expo_modules_qnx)
   return()

@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.31.9)
+# 3.20 rather than the repository's 3.31.9: the top-level build enforces its
+# own minimum, and the host test compiles this package on CI runners with 3.31.6.
+cmake_minimum_required(VERSION 3.20)
 
 # Registers ExponentConstants with the QNX Expo host. Added to an app by
 # RnqnxConsumerApp.cmake when the app depends on this package (expoModules in
