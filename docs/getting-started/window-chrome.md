@@ -202,8 +202,10 @@ or `Restore window`.
 - On QNX the window is a frame inside a display-sized native window, so the
   Alt+Tab preview shows the whole display and there is nothing behind the
   frame but the desktop colour.
-- A minimized QNX app is not in the Alt+Tab list; it comes back from its
-  launcher tile (`project desktop-entry`) or by running its script again.
+- Under `fullscreen-winmgr`, a minimized QNX app is not in the Alt+Tab
+  list; it comes back from its launcher tile (`project desktop-entry`) or by
+  running its script again. Under `rnqnx-winmgr` it stays in the dock and the
+  Alt+Tab list.
 - Wayland, including Marathon, gets close only, and the chrome build is
   rejected for Marathon until its shell's behaviour is defined.
 - No runtime layout change or close guard yet. Edge resize exists only for
