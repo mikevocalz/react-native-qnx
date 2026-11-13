@@ -155,7 +155,7 @@ int main(int argc, char** argv) {
   screen_get_context_property_iv(ctx, SCREEN_PROPERTY_DISPLAY_COUNT, &count);
   if (count < 1) return fprintf(stderr, "no display\n"), 1;
   screen_display_t displays[8];
-  if (count > 8) count = 8;
+  if (count > 8) return fprintf(stderr, "more than 8 displays\n"), 1;
   screen_get_context_property_pv(ctx, SCREEN_PROPERTY_DISPLAYS, (void**)displays);
   display = displays[0];
   if (screen_create_device_type(&pointerDevice, ctx, SCREEN_EVENT_POINTER) ||
@@ -193,7 +193,7 @@ int main(int argc, char** argv) {
     } else if (!strcmp(c, "drag") && left >= 4) {
       int x0 = atoi(argv[i]), y0 = atoi(argv[i + 1]), x1 = atoi(argv[i + 2]), y1 = atoi(argv[i + 3]);
       i += 4;
-      int steps = left > 4 ? atoi(argv[i++]) : 12;
+      int steps = (left > 4 && argv[i][0] >= '0' && argv[i][0] <= '9') ? atoi(argv[i++]) : 12;
       if (steps < 1) steps = 1;
       rc = move_to(x0, y0);
       pause_ms(80);
@@ -216,8 +216,7 @@ int main(int argc, char** argv) {
       curMods = (int)strtol(argv[i++], NULL, 16);
     } else if (!strcmp(c, "key") && left >= 1) {
       int sym = key_sym(argv[i++]);
-      if (left >= 2 && !is_button(argv[i]) && strtol(argv[i], NULL, 16) >= 0 && argv[i][0] >= '0' &&
-          argv[i][0] <= '9')
+      if (left >= 2 && argv[i][0] >= '0' && argv[i][0] <= '9')
         curMods = (int)strtol(argv[i++], NULL, 16);
       rc = send_key(sym, 1);
       pause_ms(60);
@@ -234,7 +233,8 @@ int main(int argc, char** argv) {
         pause_ms(30);
       }
     } else if (!strcmp(c, "sleep") && left >= 1) {
-      pause_ms(atoi(argv[i++]));
+      int ms = atoi(argv[i++]);
+      pause_ms(ms > 0 ? ms : 0);
     } else {
       fprintf(stderr, "bad command or arguments: %s\n", c);
       usage(argv[0]);

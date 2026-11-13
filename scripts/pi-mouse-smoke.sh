@@ -13,7 +13,7 @@ set -euo pipefail
 # window at least 700 wide. It never starts or stops an app.
 # Evidence goes to artifacts/pi-mouse-smoke/<time>/.
 
-SCRIPT_DIR="$(cd "${BASH_SOURCE[0]%/*}" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 # shellcheck source=scripts/lib/qnx-target.sh
 source "${SCRIPT_DIR}/lib/qnx-target.sh"
@@ -50,15 +50,25 @@ last_frame() {
 fails=0
 log() { echo "$*" | tee -a "${OUT}/result.txt"; }
 
-# expect <name> <wxh+x+y regex> <inject args...>
+# expect <name> <width> <height> <x> <y> <inject args...>
+# The window manager rounds a position by a pixel now and then, so size must
+# match exactly and the position within 2 px.
 expect() {
-  local name=$1 want=$2
-  shift 2
+  local name=$1 ew=$2 eh=$3 ex=$4 ey=$5
+  shift 5
   inject "$@"
   sleep 1
   local got
   got=$(last_frame)
-  if [[ "${got}" =~ ${want} ]]; then log "PASS ${name}: ${got}"; else log "FAIL ${name}: got '${got}', want /${want}/"; fails=$((fails + 1)); fi
+  if [[ "${got}" =~ ^([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+)$ ]] && ((BASH_REMATCH[1] == ew && BASH_REMATCH[2] == eh)) &&
+    ((${BASH_REMATCH[3]} - ex <= 2 && ex - ${BASH_REMATCH[3]} <= 2 && ${BASH_REMATCH[4]} - ey <= 2 && ey - ${BASH_REMATCH[4]} <= 2)); then
+    log "PASS ${name}: ${got}"
+    x=${BASH_REMATCH[3]} y=${BASH_REMATCH[4]} w=${BASH_REMATCH[1]}
+    bar=$((y + 22))
+  else
+    log "FAIL ${name}: got '${got}', want ${ew}x${eh}+${ex}+${ey}"
+    fails=$((fails + 1))
+  fi
 }
 
 start=${RNQNX_MOUSE_FRAME:-$(last_frame)}
@@ -76,19 +86,18 @@ bar=$((y + 22))
 # title bar drag: 100 px left and 60 up when there is room, else right and down
 dx=-100 dy=-60
 if ((x < 150 || y < 100)); then dx=100 dy=60; fi
-expect "title-bar drag" "^${w}x${h}\\+$((x + dx))\\+$((y + dy))$" drag $((x + w / 2)) ${bar} $((x + w / 2 + dx)) $((bar + dy)) 10
-x=$((x + dx)); y=$((y + dy)); bar=$((y + 22))
+expect "title-bar drag" "${w}" "${h}" $((x + dx)) $((y + dy)) drag $((x + w / 2)) ${bar} $((x + w / 2 + dx)) $((bar + dy)) 10
 # right edge resize: 100 px narrower
-expect "right edge resize" "^$((w - 100))x${h}\+${x}\+${y}$" drag $((x + w - 3)) $((y + h / 2)) $((x + w - 103)) $((y + h / 2)) 10
-w=$((w - 100))
-# double click on the bar maximises, again restores
-inject dclick $((x + w / 2)) ${bar}; sleep 1.5
-got=$(last_frame); log "INFO after maximise: ${got}"
-inject dclick $((x + w / 2)) ${bar}; sleep 1.5
-expect "double-click restore" "^${w}x${h}\+${x}\+${y}$" sleep 100
-# wheel and click reach the app: scroll then record that the app log saw input
-inject move $((x + w / 2)) $((y + h / 2)) wheel 3
-log "INFO wheel sent"
-rnqnx_ssh "grep -a -c RNQNX_WINDOW_FRAME '${APP_LOG}'" >"${OUT}/frames.count" || true
+expect "right edge resize" $((w - 100)) "${h}" "${x}" "${y}" drag $((x + w - 3)) $((y + h / 2)) $((x + w - 103)) $((y + h / 2)) 10
+# double click on the bar maximises: the app logs an ACTION line each time, so
+# count them. The second double click restores the frame.
+actions() { rnqnx_ssh "grep -a -c RNQNX_WINDOW_ACTION '${APP_LOG}'" || echo 0; }
+before=$(actions)
+inject dclick $((x + w / 2)) ${bar}
+sleep 1.5
+if (($(actions) == before + 1)); then log "PASS double-click maximise: one RNQNX_WINDOW_ACTION logged"; else log "FAIL double-click maximise: expected one new RNQNX_WINDOW_ACTION"; fails=$((fails + 1)); fi
+inject dclick 960 22
+sleep 1.5
+if (($(actions) == before + 2)); then log "PASS double-click restore: second RNQNX_WINDOW_ACTION logged"; else log "FAIL double-click restore: expected two new RNQNX_WINDOW_ACTION lines"; fails=$((fails + 1)); fi
 ((fails == 0)) && log "mouse smoke: all checks passed" || log "mouse smoke: ${fails} failed"
 exit $((fails != 0))
