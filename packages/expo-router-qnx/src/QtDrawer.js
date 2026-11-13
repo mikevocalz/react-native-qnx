@@ -96,7 +96,9 @@ function QtDrawer({
     // item moves the panel to the right edge for side 'right'.
     React.createElement(
       View,
-      { style: { position: 'absolute', top: 0, bottom: 0, left: 0, width }, collapsable: false },
+      // drawerStyle (background, border, radius, shadow) first; the placement
+      // and width Yoga needs for the native item come last and always win.
+      { style: [drawerStyle, { position: 'absolute', top: 0, bottom: 0, left: 0, width }], collapsable: false },
       renderDrawerContent()
     ),
     React.createElement(
