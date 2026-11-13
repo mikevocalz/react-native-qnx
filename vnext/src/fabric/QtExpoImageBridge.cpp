@@ -4,6 +4,7 @@
 #include "react-native-qnx/fabric/QtNativeUiBridge.h"
 
 #include "react-native-qnx/views/image/ExpoImageItem.h"
+#include "react-native-qnx/views/image/ImageLoadedNotifier.h"
 
 #include <folly/dynamic.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
@@ -58,7 +59,12 @@ QVariant toVariant(const folly::dynamic& value) {
   }
 }
 
+/// `source` and `placeholder`: an array of image sources, or the numeric id of
+/// an ImageRef (expo-modules-core unwraps a shared object to its id).
 QVariantList toList(const folly::dynamic& value) {
+  if (value.isNumber()) {
+    return {QVariantMap{{QStringLiteral("imageRef"), static_cast<qulonglong>(value.asInt())}}};
+  }
   const QVariant converted = toVariant(value);
   if (converted.typeId() == QMetaType::QVariantList) return converted.toList();
   if (converted.typeId() == QMetaType::QVariantMap) return {converted};
@@ -111,6 +117,9 @@ class ExpoImageBridge final : public QObject {
     QObject::connect(item, &ExpoImageItem::loaded, this,
                      [this](const QString& url, double width, double height, const QString& cacheType,
                             const QString& mediaType, bool animated) {
+      // expo-image's module-level `imageLoaded` event, for expo-observe.
+      views::ImageLoadedNotifier::shared().notify(
+          {url, static_cast<int>(width), static_cast<int>(height)});
       if (!emitter_) return;
       rn::ViewManagerAdapter_ExpoImageEventEmitter::OnLoad event{};
       event.cacheType = cacheType.toStdString();
@@ -196,6 +205,18 @@ bool applyExpoImageProps(QQuickItem* quickItem, const rn::ShadowView& view) {
   item->setPlaceholder(toList(props->placeholder));
   // Last: loading reads everything above.
   item->setSource(toList(props->source));
+  return true;
+}
+
+bool dispatchExpoImageCommand(QQuickItem* quickItem, const std::string& command) {
+  auto* item = qobject_cast<ExpoImageItem*>(quickItem);
+  if (item == nullptr) return false;
+  if (command == "startAnimating") item->startAnimating();
+  else if (command == "stopAnimating") item->stopAnimating();
+  else if (command == "lockResource") item->lockResource();
+  else if (command == "unlockResource") item->unlockResource();
+  else if (command == "reload") item->reload();
+  else return false;
   return true;
 }
 

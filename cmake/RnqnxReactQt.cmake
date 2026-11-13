@@ -29,6 +29,17 @@ function(rnqnx_add_qt_views_target)
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QnxImageProvider.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageDiskCache.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/QtImageFetcher.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageFetchQueue.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageRefRegistry.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageLoadedNotifier.cpp"
+    # The image loader module decodes, encodes and holds ImageRefs for every
+    # app, not only those that mount the ExpoImage view.
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageDecode.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/BlurHash.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ThumbHash.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/BlurHashEncoder.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ThumbHashEncoder.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageEffects.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtQuickMountingLayer.cpp"
   )
   find_package(Qt6 6.11.1 REQUIRED COMPONENTS Network)
@@ -77,11 +88,7 @@ function(rnqnx_add_qt_views_target)
     target_sources(rnqnx_views_qt PRIVATE
       "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/views/image/ExpoImageItem.h"
       "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ExpoImageItem.cpp"
-      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageDecode.cpp"
-      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageEffects.cpp"
-      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageLayout.cpp"
-      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/BlurHash.cpp"
-      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ThumbHash.cpp")
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageLayout.cpp")
     set_target_properties(rnqnx_views_qt PROPERTIES AUTOMOC ON)
   endif()
 
@@ -221,6 +228,7 @@ function(rnqnx_add_react_host_target)
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxExceptionsManager.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxFileReaderModule.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxImageLoader.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxImageLoaderRefs.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtImageCache.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxSegmentFetcher.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxWebSocketModule.cpp"

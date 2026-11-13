@@ -4,6 +4,7 @@
 #include "react-native-qnx/views/DecodedImageCache.h"
 #include "react-native-qnx/views/image/ExpoImageItem.h"
 #include "react-native-qnx/views/image/ImageDiskCache.h"
+#include "react-native-qnx/views/image/ImageRefRegistry.h"
 
 #include <QBuffer>
 #include <QGuiApplication>
@@ -68,6 +69,7 @@ class ExpoImageItemTest : public QObject {
   }
   void init() {
     DecodedImageCache::shared().clear();
+    ImageDiskCache::shared().clear();
     item_.reset();
   }
 
@@ -91,6 +93,9 @@ class ExpoImageItemTest : public QObject {
   void animatedGifPlaysAndAutoplayFalsePauses();
   void hitSlopExtendsAndPointerEventsNoneIgnoresTouches();
   void downscalingKeepsReportedSize();
+  void freshViewReadsTheDiskCacheWhenMemoryIsCleared();
+  void imageRefSourceShowsTheDecodedPicture();
+  void lockedViewKeepsItsPictureUntilUnlockedOrReloaded();
 };
 
 void ExpoImageItemTest::borderRadiusRoundsThePicture() {
@@ -343,6 +348,84 @@ void ExpoImageItemTest::headersReachTheServerAndKeyTheCache() {
   QSignalSpy bareFailed(bare.get(), &ExpoImageItem::failed);
   bare->setSource({QVariantMap{{QStringLiteral("uri"), server.url()}}});
   QTRY_COMPARE_WITH_TIMEOUT(bareFailed.count(), 1, 5000);
+}
+
+void ExpoImageItemTest::freshViewReadsTheDiskCacheWhenMemoryIsCleared() {
+  PictureServer server(Qt::red);
+  const QVariantList source{QVariantMap{
+      {QStringLiteral("uri"), server.url()},
+      {QStringLiteral("headers"), QVariantMap{{QStringLiteral("Authorization"), QStringLiteral("Bearer good")}}}}};
+  make();
+  QSignalSpy first(item_.get(), &ExpoImageItem::loaded);
+  loadAndWait(source);
+  QCOMPARE(first.first().at(3).toString(), QStringLiteral("none"));
+  QCOMPARE(server.requests.size(), 1);
+  DecodedImageCache::shared().clear();
+  auto fresh = std::make_unique<ExpoImageItem>(window_.contentItem());
+  fresh->setSize(QSizeF(40, 40));
+  QSignalSpy loaded(fresh.get(), &ExpoImageItem::loaded);
+  fresh->setSource(source);
+  QTRY_COMPARE_WITH_TIMEOUT(loaded.count(), 1, 3000);
+  QCOMPARE(loaded.first().at(3).toString(), QStringLiteral("disk"));
+  QCOMPARE(server.requests.size(), 1);  // no second request
+  // cachePolicy none bypasses both.
+  DecodedImageCache::shared().clear();
+  auto uncached = std::make_unique<ExpoImageItem>(window_.contentItem());
+  uncached->setSize(QSizeF(40, 40));
+  uncached->setCachePolicy(QStringLiteral("none"));
+  QSignalSpy uncachedLoaded(uncached.get(), &ExpoImageItem::loaded);
+  uncached->setSource(source);
+  QTRY_COMPARE_WITH_TIMEOUT(uncachedLoaded.count(), 1, 3000);
+  QCOMPARE(uncachedLoaded.first().at(3).toString(), QStringLiteral("none"));
+  QCOMPARE(server.requests.size(), 2);
+}
+
+void ExpoImageItemTest::imageRefSourceShowsTheDecodedPicture() {
+  QImage picture(8, 8, QImage::Format_ARGB32);
+  picture.fill(QColor(0, 200, 0));
+  ImageRefEntry entry;
+  entry.image = picture;
+  entry.mediaType = QStringLiteral("image/png");
+  const auto id = ImageRefRegistry::shared().add(entry);
+  make();
+  QSignalSpy loaded(item_.get(), &ExpoImageItem::loaded);
+  loadAndWait({QVariantMap{{QStringLiteral("imageRef"), id}}});
+  QCOMPARE(loaded.first().at(2).toDouble(), 8.0);
+  QCOMPARE(loaded.first().at(4).toString(), QStringLiteral("image/png"));
+  QVERIFY(near(at(item_->grabImage(), 20, 20), QColor(0, 200, 0)));
+  // A released ref fails with a message instead of showing a stale picture.
+  ImageRefRegistry::shared().release(id);
+  QSignalSpy failed(item_.get(), &ExpoImageItem::failed);
+  item_->reload();
+  QTRY_COMPARE_WITH_TIMEOUT(failed.count(), 1, 3000);
+  // As a placeholder it paints until the real source arrives.
+  const auto placeholderId = ImageRefRegistry::shared().add(entry);
+  auto withPlaceholder = std::make_unique<ExpoImageItem>(window_.contentItem());
+  withPlaceholder->setSize(QSizeF(40, 40));
+  withPlaceholder->setPlaceholder({QVariantMap{{QStringLiteral("imageRef"), placeholderId}}});
+  withPlaceholder->setSource({QVariantMap{{QStringLiteral("uri"), QStringLiteral("http://127.0.0.1:1/never.png")}}});
+  QTRY_VERIFY_WITH_TIMEOUT(near(at(withPlaceholder->grabImage(), 20, 20), QColor(0, 200, 0)), 3000);
+}
+
+void ExpoImageItemTest::lockedViewKeepsItsPictureUntilUnlockedOrReloaded() {
+  const QString red = writePng(dir_, "lock-red.png", QSize(20, 20), Qt::red);
+  const QString blue = writePng(dir_, "lock-blue.png", QSize(20, 20), Qt::blue);
+  make();
+  loadAndWait(sourceOf(red));
+  item_->lockResource();
+  QVERIFY(item_->resourceLocked());
+  item_->setSource(sourceOf(blue));
+  QTest::qWait(300);
+  QVERIFY(near(at(item_->grabImage(), 20, 20), Qt::red));  // still the first picture
+  QVERIFY(item_->shownUri().endsWith(QStringLiteral("lock-red.png")));
+  item_->unlockResource();
+  QTRY_VERIFY_WITH_TIMEOUT(near(at(item_->grabImage(), 20, 20), Qt::blue), 3000);
+  // reload ignores the lock.
+  item_->lockResource();
+  QSignalSpy loaded(item_.get(), &ExpoImageItem::loaded);
+  item_->reload();
+  QTRY_COMPARE_WITH_TIMEOUT(loaded.count(), 1, 3000);
+  item_->unlockResource();
 }
 
 void ExpoImageItemTest::failedLoadReportsTheError() {

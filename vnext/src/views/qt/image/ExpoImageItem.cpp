@@ -4,6 +4,7 @@
 #include "react-native-qnx/views/image/BlurHash.h"
 #include "react-native-qnx/views/image/ImageDiskCache.h"
 #include "react-native-qnx/views/image/ImageEffects.h"
+#include "react-native-qnx/views/image/ImageRefRegistry.h"
 #include "react-native-qnx/views/image/ThumbHash.h"
 
 #include <QBuffer>
@@ -68,14 +69,17 @@ struct ExpoImageItem::Layer {
 };
 
 struct ExpoImageItem::Choice {
-  enum class Kind { None, Uri, Hash } kind{Kind::None};
+  enum class Kind { None, Uri, Hash, Ref } kind{Kind::None};
   QString uri;
+  quint32 refId{0};
   ImageHeaders headers;
   QString cacheKey;
   QVariantMap entry;
 };
 
-ExpoImageItem::ExpoImageItem(QQuickItem* parent) : QQuickPaintedItem(parent) {
+ExpoImageItem::ExpoImageItem(QQuickItem* parent)
+    : QQuickPaintedItem(parent),
+      fetcher_(30000, &ImageDiskCache::shared(), &ImageFetchQueue::shared()) {
   setRenderTarget(QQuickPaintedItem::Image);
   setAntialiasing(true);
   setFlag(ItemHasContents, true);
@@ -274,7 +278,11 @@ void ExpoImageItem::itemChange(ItemChange change, const ItemChangeData& data) {
   if (change == ItemDevicePixelRatioHasChanged) invalidate();
 }
 
-void ExpoImageItem::scheduleLoad() {
+void ExpoImageItem::scheduleLoad(bool ignoreLock) {
+  if (locked_ && !ignoreLock) {
+    loadDeferred_ = true;
+    return;
+  }
   if (loadPending_) return;
   loadPending_ = true;
   // Props and layout arrive in one mount transaction; loading after it lets
@@ -284,7 +292,18 @@ void ExpoImageItem::scheduleLoad() {
 
 void ExpoImageItem::reload() {
   bypassMemory_ = true;
-  scheduleLoad();
+  loadDeferred_ = false;
+  scheduleLoad(/*ignoreLock=*/true);
+}
+
+void ExpoImageItem::lockResource() { locked_ = true; }
+
+void ExpoImageItem::unlockResource() {
+  locked_ = false;
+  if (loadDeferred_) {
+    loadDeferred_ = false;
+    scheduleLoad();
+  }
 }
 
 QSize ExpoImageItem::targetPixels() const {
@@ -299,6 +318,12 @@ ExpoImageItem::Choice ExpoImageItem::choose(const QVariantList& entries) const {
   bool bestFits = false;
   for (const QVariant& raw : entries) {
     const QVariantMap entry = asMap(raw);
+    if (entry.contains(QStringLiteral("imageRef"))) {
+      // An ImageRef from Image.loadAsync: the picture is already decoded.
+      choice.kind = Choice::Kind::Ref;
+      choice.refId = entry.value(QStringLiteral("imageRef")).toUInt();
+      return choice;
+    }
     const QString uri = entry.value(QStringLiteral("uri")).toString();
     if (uri.isEmpty()) {
       if (choice.kind == Choice::Kind::None &&
@@ -357,11 +382,26 @@ void ExpoImageItem::startLoad() {
     return;
   }
 
+  if (choice.kind == Choice::Kind::Ref) {
+    const ImageRefEntry entry = ImageRefRegistry::shared().find(choice.refId);
+    if (entry.image.isNull()) {
+      Q_EMIT failed(QStringLiteral("The ImageRef was released"));
+      return;
+    }
+    auto layer = std::make_unique<Layer>();
+    layer->image = entry.image;
+    layer->original = entry.image.size();
+    mediaType_ = entry.mediaType;
+    show(std::move(layer), QStringLiteral("memory"), QString());
+    return;
+  }
+
   ImageRequest request;
   request.uri = choice.uri;
   request.headers = choice.headers;
   request.cacheKey = choice.cacheKey;
   request.policy = policy_;
+  request.priority = parseImagePriority(priority_);
   const QString key = request.storageKey();
 
   if (!bypass && usesMemory(policy_)) {
@@ -417,8 +457,10 @@ void ExpoImageItem::loadPlaceholder() {
     placeholderLayer_.reset();
     return;
   }
-  if (choice.kind == Choice::Kind::Hash) {
-    const QImage image = hashImage(choice.entry);
+  if (choice.kind == Choice::Kind::Hash || choice.kind == Choice::Kind::Ref) {
+    const QImage image = choice.kind == Choice::Kind::Hash
+                             ? hashImage(choice.entry)
+                             : ImageRefRegistry::shared().find(choice.refId).image;
     if (image.isNull()) return;
     auto layer = std::make_unique<Layer>();
     layer->image = image;

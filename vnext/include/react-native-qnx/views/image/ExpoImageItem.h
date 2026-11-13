@@ -166,8 +166,13 @@ class ExpoImageItem : public QQuickPaintedItem {
   /// Animated images (GIF, WebP): start or stop playback.
   Q_INVOKABLE void startAnimating();
   Q_INVOKABLE void stopAnimating();
-  /// Loads the current source again, bypassing the memory cache.
+  /// Loads the current source again, bypassing the memory cache and any lock.
   Q_INVOKABLE void reload();
+  /// While locked, a changed `source` is remembered but not loaded; unlocking
+  /// loads the latest one. expo-image's lockResourceAsync / unlockResourceAsync.
+  Q_INVOKABLE void lockResource();
+  Q_INVOKABLE void unlockResource();
+  bool resourceLocked() const { return locked_; }
   /// The painted result at the item's size, for tests and screenshots.
   Q_INVOKABLE QImage grabImage();
 
@@ -199,7 +204,7 @@ class ExpoImageItem : public QQuickPaintedItem {
   }
   void setCorner(int index, qreal value);
   void invalidate();
-  void scheduleLoad();
+  void scheduleLoad(bool ignoreLock = false);
   void startLoad();
   void loadPlaceholder();
   Choice choose(const QVariantList& entries) const;
@@ -255,6 +260,8 @@ class ExpoImageItem : public QQuickPaintedItem {
   bool displayed_{false};
   bool loadPending_{false};
   bool bypassMemory_{false};
+  bool locked_{false};
+  bool loadDeferred_{false};
   quint64 generation_{0};
 
   std::unique_ptr<Layer> current_;

@@ -3,15 +3,32 @@
 #include <react/bridging/Dynamic.h>
 #include <react/bridging/Promise.h>
 
+#include "react-native-qnx/views/DecodedImageCache.h"
 #include "react-native-qnx/views/image/ImageDiskCache.h"
 
+#include <algorithm>
+#include <cstdint>
+
 namespace rnqnx::runtime {
+
+namespace {
+// "No limit" for the disk cache: far beyond any disk this runs on.
+constexpr std::int64_t kUnlimitedDiskBytes = std::int64_t{1} << 50;
+}  // namespace
 
 QnxImageLoader::QnxImageLoader(
     std::shared_ptr<facebook::react::CallInvoker> jsInvoker)
     : facebook::react::TurboModule(kModuleName, std::move(jsInvoker)) {
   registerMethods();
+  // Forward every picture that loads to expo-image's `imageLoaded` module
+  // event. The listener holds the invoker, not this module.
+  loadedSubscription_ = views::ImageLoadedNotifier::shared().subscribe(
+      [invoker = jsInvoker_](const views::ImageLoadedEvent& event) {
+        invoker->invokeAsync([event](facebook::jsi::Runtime& rt) { emitImageLoaded(rt, event); });
+      });
 }
+
+QnxImageLoader::~QnxImageLoader() { views::ImageLoadedNotifier::shared().unsubscribe(loadedSubscription_); }
 
 void QnxImageLoader::registerMethods() {
   methodMap_["getConstants"] = {0, &QnxImageLoader::getConstants};
@@ -24,6 +41,13 @@ void QnxImageLoader::registerMethods() {
   methodMap_["clearMemoryCache"] = {0, &QnxImageLoader::clearMemoryCache};
   methodMap_["clearDiskCache"] = {0, &QnxImageLoader::clearDiskCache};
   methodMap_["getCachePath"] = {1, &QnxImageLoader::getCachePath};
+  methodMap_["configureCache"] = {1, &QnxImageLoader::configureCache};
+  methodMap_["loadImage"] = {2, &QnxImageLoader::loadImage};
+  methodMap_["releaseImage"] = {1, &QnxImageLoader::releaseImage};
+  methodMap_["generateBlurhash"] = {3, &QnxImageLoader::generateBlurhash};
+  methodMap_["generateThumbhash"] = {1, &QnxImageLoader::generateThumbhash};
+  methodMap_["writeToCache"] = {2, &QnxImageLoader::writeToCache};
+  methodMap_["readFromCache"] = {1, &QnxImageLoader::readFromCache};
 }
 
 facebook::jsi::Value QnxImageLoader::load(
@@ -219,6 +243,33 @@ facebook::jsi::Value QnxImageLoader::getCachePath(
   }
   promise.resolve(folly::dynamic(nullptr));
   return result;
+}
+
+// expo-image's configureCache({ maxDiskSize, maxMemoryCost, maxMemoryCount }):
+// bytes for the disk cache, bytes of decoded pictures for the memory cache and
+// a picture count. Zero (the documented default) means no limit for the disk
+// and count and leaves the memory ceiling alone.
+facebook::jsi::Value QnxImageLoader::configureCache(
+    facebook::jsi::Runtime& rt, facebook::react::TurboModule&,
+    const facebook::jsi::Value* args, size_t count) {
+  if (count < 1 || !args[0].isObject()) {
+    throw facebook::jsi::JSError(rt, "configureCache requires a config object");
+  }
+  const auto config = args[0].asObject(rt);
+  const auto number = [&](const char* name) {
+    const auto value = config.getProperty(rt, name);
+    return value.isNumber() ? value.getNumber() : 0.0;
+  };
+  if (config.hasProperty(rt, "maxDiskSize")) {
+    const double bytes = number("maxDiskSize");
+    views::ImageDiskCache::shared().setBudgetBytes(
+        bytes > 0 ? static_cast<std::int64_t>(bytes) : kUnlimitedDiskBytes);
+  }
+  const double memoryBytes = number("maxMemoryCost");
+  views::DecodedImageCache::shared().configure(
+      memoryBytes > 0 ? static_cast<int>(std::min(memoryBytes / 1024.0, 2.0e9)) : 0,
+      static_cast<int>(std::min(number("maxMemoryCount"), 2.0e9)));
+  return facebook::jsi::Value::undefined();
 }
 
 facebook::jsi::Value QnxImageLoader::getConstants(

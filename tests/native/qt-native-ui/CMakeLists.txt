@@ -23,7 +23,12 @@ add_library(rnqnx_expo_image_under_test OBJECT
   "${RNQNX_VNEXT}/src/views/qt/image/ImageLayout.cpp"
   "${RNQNX_VNEXT}/src/views/qt/image/BlurHash.cpp"
   "${RNQNX_VNEXT}/src/views/qt/image/ThumbHash.cpp"
-  "${RNQNX_VNEXT}/src/views/qt/image/QtImageFetcher.cpp")
+  "${RNQNX_VNEXT}/src/views/qt/image/QtImageFetcher.cpp"
+  "${RNQNX_VNEXT}/src/views/qt/image/ImageFetchQueue.cpp"
+  "${RNQNX_VNEXT}/src/views/qt/image/ImageRefRegistry.cpp"
+  "${RNQNX_VNEXT}/src/views/qt/image/ImageLoadedNotifier.cpp"
+  "${RNQNX_VNEXT}/src/views/qt/image/BlurHashEncoder.cpp"
+  "${RNQNX_VNEXT}/src/views/qt/image/ThumbHashEncoder.cpp")
 set_target_properties(rnqnx_expo_image_under_test PROPERTIES AUTOMOC ON POSITION_INDEPENDENT_CODE ON)
 target_compile_features(rnqnx_expo_image_under_test PUBLIC cxx_std_20)
 target_include_directories(rnqnx_expo_image_under_test PUBLIC "${RNQNX_VNEXT}/include")
@@ -53,3 +58,11 @@ endfunction()
 rnqnx_native_ui_test(rnqnx_qt_native_ui_test NativeUiQuickTest.cpp)
 rnqnx_native_ui_test(rnqnx_image_units_test ImageUnitsTest.cpp)
 rnqnx_native_ui_test(rnqnx_expo_image_item_test ExpoImageItemTest.cpp)
+rnqnx_native_ui_test(rnqnx_image_fetch_queue_test ImageFetchQueueTest.cpp)
+
+# BlurHash and ThumbHash against the reference implementations. The vectors in
+# tests/fixtures/image-hashes were produced by blurhash@2.0.5 and thumbhash@0.1.1
+# from npm (see "producedBy" in the file).
+rnqnx_native_ui_test(rnqnx_image_hash_vectors_test ImageHashVectorsTest.cpp)
+target_compile_definitions(rnqnx_image_hash_vectors_test PRIVATE
+  RNQNX_HASH_VECTORS="${CMAKE_CURRENT_LIST_DIR}/../../fixtures/image-hashes/reference-vectors.json")
