@@ -57,23 +57,26 @@ done < "${state}/pids"
   );
   // Asynchronous: the fake processes are children of this test, and only the
   // event loop reaps one after it is killed (a zombie still answers kill -0).
+  /** @param {string[]} args @param {Record<string, string>} [env] */
   const run = (args, env = {}) =>
-    new Promise((resolve) => {
-      const child = spawn('sh', [path.join(app, 'run-app.sh'), ...args], {
-        env: {
-          ...process.env,
-          RNQNX_PIDIN: path.join(dir, 'pidin'),
-          RNQNX_LOG: path.join(dir, 'app.log'),
-          RNQNX_TERM_WAIT: '2',
-          ...env,
-        },
-        stdio: ['ignore', 'pipe', 'pipe'],
-      });
-      let stderr = '';
-      child.stderr.on('data', (chunk) => (stderr += chunk));
-      child.stdout.resume();
-      child.on('exit', (status) => resolve({ status, stderr }));
-    });
+    /** @type {Promise<{status: number | null, stderr: string}>} */ (
+      new Promise((resolve) => {
+        const child = spawn('sh', [path.join(app, 'run-app.sh'), ...args], {
+          env: {
+            ...process.env,
+            RNQNX_PIDIN: path.join(dir, 'pidin'),
+            RNQNX_LOG: path.join(dir, 'app.log'),
+            RNQNX_TERM_WAIT: '2',
+            ...env,
+          },
+          stdio: ['ignore', 'pipe', 'pipe'],
+        });
+        let stderr = '';
+        child.stderr.on('data', (chunk) => (stderr += chunk));
+        child.stdout.resume();
+        child.on('exit', (status) => resolve({ status, stderr }));
+      })
+    );
   const calls = async () =>
     existsSync(path.join(state, 'calls'))
       ? (await readFile(path.join(state, 'calls'), 'utf8')).trim().split('\n')
@@ -83,15 +86,21 @@ done < "${state}/pids"
       await rm(path.join(state, f), { force: true });
   };
   /** A process that stays until signalled; `name` is what pidin reports. */
+  /** @param {string} name @param {string} [owner] */
   const fake = async (name, owner = uid) => {
     const child = spawn('sleep', ['60'], { stdio: 'ignore' });
     children.push(child);
     await writeFile(path.join(state, 'pids'), `${child.pid} ${name} ${owner}\n`, { flag: 'a' });
     return child;
   };
+  /** @param {import('node:child_process').ChildProcess} child */
   const exited = (child) =>
-    new Promise((resolve) =>
-      child.exitCode !== null || child.signalCode ? resolve() : child.once('exit', resolve)
+    /** @type {Promise<void>} */ (
+      new Promise((resolve) =>
+        child.exitCode !== null || child.signalCode
+          ? resolve()
+          : child.once('exit', () => resolve())
+      )
     );
 
   // 1. Nothing running: the app is started with the arguments as given.
