@@ -143,6 +143,10 @@ const api = Object.freeze({
   get LayoutAnimation() {
     return require('react-native/Libraries/LayoutAnimation/LayoutAnimation').default;
   },
+  // expo-modules-core builds the view config of an Expo view with it.
+  get NativeComponentRegistry() {
+    return require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+  },
   get TouchableOpacity() {
     return require('react-native/Libraries/Components/Touchable/TouchableOpacity').default;
   },

@@ -78,7 +78,7 @@ export default function ExpoImageCard() {
         source={current.source}
         contentFit={fit}
         transition={300}
-        placeholder={{ uri: 'https://rnqnx-placeholder.invalid/p.png' }}
+        placeholder={require('./assets/icon.png')}
         accessibilityLabel={'expo-image ' + current.label}
         onLoadStart={() => setStatus('Loading')}
         onLoad={(event) =>
