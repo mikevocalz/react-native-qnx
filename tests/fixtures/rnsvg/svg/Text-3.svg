@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60">
+<defs>
+<linearGradient id="text-stroke-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" stop-color="blue" stop-opacity="0.5"/>
+<stop offset="100%" stop-color="red" stop-opacity="1"/>
+</linearGradient>
+</defs>
+<text stroke="url(#text-stroke-grad)" stroke-width="2" fill="none" font-size="30" font-weight="bold" x="100" y="20" font-family="DejaVu Sans">
+<tspan text-anchor="middle">STROKE TEXT</tspan>
+</text>
+</svg>
