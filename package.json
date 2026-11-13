@@ -59,21 +59,26 @@
     "validate:v1": "node scripts/validate-docs.mjs --release"
   },
   "devDependencies": {
+    "@babel/core": "7.29.7",
+    "@babel/plugin-transform-modules-commonjs": "7.29.7",
+    "@babel/plugin-transform-react-jsx": "7.29.7",
     "@react-native/metro-config": "0.88.1",
     "@types/node": "26.6.6",
     "@types/react": "19.3.0",
+    "@typescript/typescript6": "6.0.2",
     "babel-preset-expo": "58.0.25",
     "expo": "58.0.24",
     "metro": "0.87.1",
+    "nitro-core": "1.0.0-alpha.nightly.136.gdb81de61bd32",
     "nitrogen": "1.0.0-alpha.nightly.136.gdb81de61bd32",
     "prettier": "3.9.10",
     "react": "19.3.0",
     "react-native": "0.88.1",
     "react-native-nitro-modules": "1.0.0-alpha.nightly.136.gdb81de61bd32",
+    "react-native-svg": "15.16.0",
+    "react-test-renderer": "19.3.0",
     "typescript": "7.0.2",
-    "nitro-core": "1.0.0-alpha.nightly.136.gdb81de61bd32",
-    "@typescript/typescript6": "6.0.2",
-    "zustand": "5.1.0",
-    "react-native-svg": "15.16.0"
+    "yoga-layout": "3.2.1",
+    "zustand": "5.1.0"
   }
 }
