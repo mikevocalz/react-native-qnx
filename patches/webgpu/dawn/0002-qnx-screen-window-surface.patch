@@ -1,0 +1,43 @@
+diff --git a/src/dawn/native/Surface.cpp b/src/dawn/native/Surface.cpp
+index 81252baed..9085c52ef 100644
+--- a/src/dawn/native/Surface.cpp
++++ b/src/dawn/native/Surface.cpp
+@@ -118,14 +118,16 @@ ResultOrValError<UnpackedPtr<SurfaceDescriptor>> ValidateSurfaceDescriptor(
+                   Branch<SurfaceDescriptorFromWindowsWinUISwapChainPanel>,
+                   Branch<SurfaceSourceXlibWindow>, Branch<SurfaceSourceWaylandSurface>>()));
+     switch (type) {
+-#if DAWN_PLATFORM_IS(ANDROID)
++// react-native-qnx: on QNX the SurfaceSourceAndroidNativeWindow::window member carries a
++// screen_window_t (the EGLNativeWindowType of the QNX EGL implementation).
++#if DAWN_PLATFORM_IS(ANDROID) || defined(__QNX__)
+         case wgpu::SType::SurfaceSourceAndroidNativeWindow: {
+             auto* subDesc = descriptor.Get<SurfaceSourceAndroidNativeWindow>();
+             DAWN_ASSERT(subDesc != nullptr);
+-            DAWN_INVALID_IF(subDesc->window == nullptr, "Android window is not set.");
++            DAWN_INVALID_IF(subDesc->window == nullptr, "Native window is not set.");
+             return descriptor;
+         }
+-#endif  // DAWN_PLATFORM_IS(ANDROID)
++#endif  // DAWN_PLATFORM_IS(ANDROID) || defined(__QNX__)
+ #if defined(DAWN_ENABLE_BACKEND_METAL)
+         case wgpu::SType::SurfaceSourceMetalLayer: {
+             auto* subDesc = descriptor.Get<SurfaceSourceMetalLayer>();
+diff --git a/src/dawn/native/opengl/SwapChainEGL.cpp b/src/dawn/native/opengl/SwapChainEGL.cpp
+index fa1528fe7..9e69b2e25 100644
+--- a/src/dawn/native/opengl/SwapChainEGL.cpp
++++ b/src/dawn/native/opengl/SwapChainEGL.cpp
+@@ -205,6 +205,14 @@ MaybeError SwapChainEGL::CreateEGLSurface(const DisplayEGL* display) {
+                     eglDisplay, config,
+                     static_cast<ANativeWindow*>(surface->GetAndroidNativeWindow()), attribs.data());
+                 return {};
++#elif defined(__QNX__)
++            // react-native-qnx: the window handle is a screen_window_t.
++            case Surface::Type::AndroidWindow:
++                mEGLSurface = egl.CreateWindowSurface(
++                    eglDisplay, config,
++                    reinterpret_cast<EGLNativeWindowType>(surface->GetAndroidNativeWindow()),
++                    attribs.data());
++                return {};
+ #endif  // DAWN_PLATFORM_IS(ANDROID)
+ #if defined(DAWN_ENABLE_BACKEND_METAL)
+             case Surface::Type::MetalLayer:

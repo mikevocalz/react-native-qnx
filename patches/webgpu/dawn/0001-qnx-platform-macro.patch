@@ -1,0 +1,15 @@
+diff --git a/src/utils/platform.h b/src/utils/platform.h
+index 4dd58a487..b133303f4 100644
+--- a/src/utils/platform.h
++++ b/src/utils/platform.h
+@@ -86,6 +86,10 @@
+ #error "Unsupported Apple platform."
+ #endif
+ 
++#elif defined(__QNX__)
++// QNX Neutrino (react-native-qnx): POSIX only, not Linux.
++#define DAWN_PLATFORM_IS_POSIX 1
++
+ #elif defined(__Fuchsia__)
+ #define DAWN_PLATFORM_IS_FUCHSIA 1
+ #define DAWN_PLATFORM_IS_POSIX 1

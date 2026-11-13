@@ -1,0 +1,41 @@
+diff --git a/src/dawn/common/SystemUtils.cpp b/src/dawn/common/SystemUtils.cpp
+index 79b728d3d..8155e5a33 100644
+--- a/src/dawn/common/SystemUtils.cpp
++++ b/src/dawn/common/SystemUtils.cpp
+@@ -36,7 +36,7 @@
+ #include "src/utils/windows_with_undefs.h"
+ 
+ #include <vector>
+-#elif DAWN_PLATFORM_IS(LINUX)
++#elif DAWN_PLATFORM_IS(LINUX) || defined(__QNX__)
+ #include <dlfcn.h>
+ #include <limits.h>
+ #include <unistd.h>
+@@ -131,6 +131,18 @@ std::optional<std::string> GetExecutablePath() {
+     path[sign_cast(result)] = '\0';
+     return path.data();
+ }
++#elif defined(__QNX__)
++// react-native-qnx: QNX Neutrino exposes the running executable as /proc/self/exefile.
++std::optional<std::string> GetExecutablePath() {
++    std::array<char, PATH_MAX> path = {};
++    ssize_t result = readlink("/proc/self/exefile", path.data(), PATH_MAX - 1);
++    if (result < 0 || static_cast<size_t>(result) >= PATH_MAX - 1) {
++        return {};
++    }
++
++    path[sign_cast(result)] = '\0';
++    return path.data();
++}
+ #elif DAWN_PLATFORM_IS(MACOS) || DAWN_PLATFORM_IS(IOS)
+ std::optional<std::string> GetExecutablePath() {
+     uint32_t size = 0;
+@@ -169,7 +181,7 @@ std::optional<std::string> GetExecutableDirectory() {
+     return exePath->substr(0, lastPathSepLoc + 1);
+ }
+ 
+-#if DAWN_PLATFORM_IS(LINUX) || DAWN_PLATFORM_IS(MACOS) || DAWN_PLATFORM_IS(IOS)
++#if DAWN_PLATFORM_IS(LINUX) || DAWN_PLATFORM_IS(MACOS) || DAWN_PLATFORM_IS(IOS) || defined(__QNX__)
+ std::optional<std::string> GetModulePath() {
+     static int placeholderSymbol = 0;
+     Dl_info dlInfo;

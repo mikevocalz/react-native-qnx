@@ -1,0 +1,15 @@
+Output of a temporary debug build of Dawn (not committed): UtilsEGL.cpp printed the
+state around the failing eglCreateSyncKHR call, then retried it, on the Pi 400.
+Copied from the terminal of the session that ran it; the debug build itself is not in
+the repository.
+
+DBG stored=48a80199d0 fresh=48a80199d0 viaFresh=0
+DBG afterFlush=0 afterFinish=0 reusable=0 glErr=0x0
+DBG curDisplay=48a82d0690 curDraw=0 curRead=0 glErr=0x0 second(sync with {NONE})=0 err=0x3000
+DBG CreateSyncKHR type=0x30f9 attribs=0 ctx=310b86a150 errBefore=0x3000 sync=0 errAfter=0x3000 display=48a82d0690
+
+Reading: the function pointer is the same one a fresh eglGetProcAddress returns; a context is
+current on a surfaceless draw/read; the display matches; the GL error is 0; fence type
+0x30f9 fails, the retried call with an empty attribute list fails, and after glFlush and
+glFinish both the fence type and the reusable type (0x30fa) still fail. eglGetError reports
+EGL_SUCCESS (0x3000) every time.
