@@ -35,4 +35,5 @@ for lang in C CXX; do
 done
 cmake --build . --parallel "${JOBS:-3}" --target \
   Core Network Gui Qml Quick QuickShapes QQnxIntegrationPlugin \
-  qmlplugin modelsplugin workerscriptplugin qtquick2plugin qmlshapesplugin
+  qmlplugin modelsplugin workerscriptplugin qtquick2plugin qmlshapesplugin \
+  QTlsBackendOpenSSLPlugin QJpegPlugin QGifPlugin

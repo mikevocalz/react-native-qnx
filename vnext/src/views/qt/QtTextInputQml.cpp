@@ -7,7 +7,29 @@ const char* textInputQml() {
 FocusScope {
   id: root
   visible: true
-  clip: false
+  // A TextInput clips its text to its box on iOS and Android; without this a
+  // long value scrolled to the cursor spilled out over neighbouring views.
+  clip: true
+
+  // View style (backgroundColor, borderRadius, border) and Yoga's content
+  // insets (padding + border), set by the mounting layer.
+  property color backgroundColor: "transparent"
+  property real radius: 0
+  property real borderWidth: 0
+  property color borderColor: "transparent"
+  property real paddingLeft: 0
+  property real paddingTop: 0
+  property real paddingRight: 0
+  property real paddingBottom: 0
+
+  Rectangle {
+    anchors.fill: parent
+    z: -2
+    color: root.backgroundColor
+    radius: root.radius
+    border.width: root.borderWidth
+    border.color: root.borderColor
+  }
 
   property bool contractEnabled: false
   property string text: ""
@@ -39,6 +61,11 @@ FocusScope {
     id: input
     objectName: "qnx-text-input"
     anchors.fill: parent
+    anchors.leftMargin: root.paddingLeft
+    anchors.topMargin: root.paddingTop
+    anchors.rightMargin: root.paddingRight
+    anchors.bottomMargin: root.paddingBottom
+    verticalAlignment: TextInput.AlignVCenter
     visible: !root.multiline
     focus: !root.multiline
     readOnly: root.readOnly
@@ -81,6 +108,10 @@ FocusScope {
     id: edit
     objectName: "qnx-text-edit"
     anchors.fill: parent
+    anchors.leftMargin: root.paddingLeft
+    anchors.topMargin: root.paddingTop
+    anchors.rightMargin: root.paddingRight
+    anchors.bottomMargin: root.paddingBottom
     visible: root.multiline
     focus: root.multiline
     readOnly: root.readOnly
@@ -120,6 +151,12 @@ FocusScope {
   Text {
     id: placeholder
     anchors.fill: parent
+    anchors.leftMargin: root.paddingLeft
+    anchors.topMargin: root.paddingTop
+    anchors.rightMargin: root.paddingRight
+    anchors.bottomMargin: root.paddingBottom
+    verticalAlignment: root.multiline ? Text.AlignTop : Text.AlignVCenter
+    elide: Text.ElideRight
     text: root.placeholderText
     color: root.placeholderTextColor
     font: root.font
@@ -134,7 +171,29 @@ FocusScope {
 FocusScope {
   id: root
   visible: true
-  clip: false
+  // A TextInput clips its text to its box on iOS and Android; without this a
+  // long value scrolled to the cursor spilled out over neighbouring views.
+  clip: true
+
+  // View style (backgroundColor, borderRadius, border) and Yoga's content
+  // insets (padding + border), set by the mounting layer.
+  property color backgroundColor: "transparent"
+  property real radius: 0
+  property real borderWidth: 0
+  property color borderColor: "transparent"
+  property real paddingLeft: 0
+  property real paddingTop: 0
+  property real paddingRight: 0
+  property real paddingBottom: 0
+
+  Rectangle {
+    anchors.fill: parent
+    z: -2
+    color: root.backgroundColor
+    radius: root.radius
+    border.width: root.borderWidth
+    border.color: root.borderColor
+  }
 
   property string text: ""
   property string placeholderText: ""
@@ -165,6 +224,11 @@ FocusScope {
     id: input
     objectName: "qnx-text-input"
     anchors.fill: parent
+    anchors.leftMargin: root.paddingLeft
+    anchors.topMargin: root.paddingTop
+    anchors.rightMargin: root.paddingRight
+    anchors.bottomMargin: root.paddingBottom
+    verticalAlignment: TextInput.AlignVCenter
     visible: !root.multiline
     focus: !root.multiline
     readOnly: root.readOnly
@@ -193,6 +257,10 @@ FocusScope {
     id: edit
     objectName: "qnx-text-edit"
     anchors.fill: parent
+    anchors.leftMargin: root.paddingLeft
+    anchors.topMargin: root.paddingTop
+    anchors.rightMargin: root.paddingRight
+    anchors.bottomMargin: root.paddingBottom
     visible: root.multiline
     focus: root.multiline
     readOnly: root.readOnly
@@ -218,6 +286,12 @@ FocusScope {
   Text {
     id: placeholder
     anchors.fill: parent
+    anchors.leftMargin: root.paddingLeft
+    anchors.topMargin: root.paddingTop
+    anchors.rightMargin: root.paddingRight
+    anchors.bottomMargin: root.paddingBottom
+    verticalAlignment: root.multiline ? Text.AlignTop : Text.AlignVCenter
+    elide: Text.ElideRight
     text: root.placeholderText
     color: root.placeholderTextColor
     font: root.font

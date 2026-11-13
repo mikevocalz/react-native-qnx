@@ -17,6 +17,7 @@ const {
 const { create } = require('zustand');
 const { SCENARIOS, createDocumentRows } = require('./fixtures.js');
 const FastRefreshCard = require('./FastRefreshCard').default;
+const RemoteImageCard = require('./RemoteImageCard').default;
 
 const h = React.createElement;
 const ROWS = createDocumentRows();
@@ -200,6 +201,12 @@ function GalleryPage() {
           }),
           h(Label, { color: ACCENT, style: { flex: 1 } }, imageStatus)
         )
+      ),
+      card(
+        'remote-image',
+        'Image from a URL',
+        'HTTP(S) through Qt Network on the device',
+        h(RemoteImageCard)
       ),
       card(
         'press',

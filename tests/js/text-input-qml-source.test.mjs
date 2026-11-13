@@ -32,10 +32,11 @@ try {
     const result = spawnSync(binary, [], { timeout: 5000 });
     assert.equal(result.status, 0);
     if (enabled === 0) {
-      assert.equal(result.stdout.length, 2390);
+      // Baseline updated 2026-11-13: clipping, view background and padding.
+      assert.equal(result.stdout.length, 3784);
       assert.equal(
         createHash('sha256').update(result.stdout).digest('hex'),
-        'beaa92207ce63f6ea346df93669cadb63fe3ba48e3b26304798c4a807edf2ff2'
+        'abb15de203c795e5f425997ed1e4942b14ffb6ca2d6593fdaa92907ed10ea206'
       );
     } else {
       assert.match(result.stdout.toString(), /contractEnabled/);
