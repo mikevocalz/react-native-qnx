@@ -1079,9 +1079,10 @@ static void on_keyboard(screen_event_t ev) {
     /* After a modifier key's release the event's modifiers say whether the
      * other one (left or right) is still held. */
     if ((is_mod && !down && !held) || (!held && !is_mod)) {
-      /* Modifier released: switch, and let the app see the release. */
-      activate_switcher();
+      /* Modifier released. The release goes to the app that saw the press,
+       * which still has focus (the switcher never takes it); then switch. */
       forward_key(ev);
+      activate_switcher();
       return;
     }
     if (is_mod || !down) {
