@@ -89,7 +89,7 @@ list are in [the guide](v2/react-native-svg.md).
 | `ClipPath`, `Mask`                                                          | partial     | scoped        | Clip is always nonzero; text inside a clip path contributes nothing. Luminance and alpha masks work. |
 | `Text`, `TSpan`                                                             | partial     | scoped        | First `x`/`y`/`dx`/`dy` only; no `textLength`, `textPath`, decoration or baseline shift.             |
 | `Image`                                                                     | partial     | unverified    | `data:` and local file sources only.                                                                 |
-| `onPress` and responder props on elements                                   | supported   | scoped        | Hit test uses fill and stroke geometry through transforms; it ignores clip and mask.                 |
+| `onPress` and responder props on elements                                   | supported   | unverified    | Hit test uses fill and stroke geometry through transforms; it ignores clip and mask.                 |
 | Animated props                                                              | partial     | scoped        | JavaScript-driven updates repaint without remounting. No Reanimated or Worklets path.                |
 | `Pattern`, `Symbol`, `Marker`, `TextPath`, `Filter`, `Fe*`, `ForeignObject` | unsupported | n/a           | Not registered: rendering one raises React Native's unknown-component error.                         |
 

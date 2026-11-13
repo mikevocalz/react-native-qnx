@@ -153,8 +153,10 @@ express against what this package sends and on a measurement, not on preference.
 | Qt Quick Shapes                   | Fills and strokes of paths only. No luminance masks, no clip by arbitrary shape inside a group, no text outlines, no per-element opacity layers, and a software or GL-curve-renderer dependency per element item |
 | `QPainter` in `QQuickPaintedItem` | Everything above, with one texture per `<Svg>`. Costs a CPU repaint of the whole `<Svg>` when anything in it changes                                                                                             |
 
-The repaint cost is measured on the Pi 400, see
-[Validation](#validation).
+The measured repaint cost on the Pi 400 is about 2 ms for a six-element `<Svg>`
+with two props changing per frame (see [validation](validation.md#react-native-svg)).
+The QPainter raster is CPU work on the GUI thread's paint pass, so it scales with
+the pixel area and element count of the one `<Svg>` that changed.
 
 ## Validation
 

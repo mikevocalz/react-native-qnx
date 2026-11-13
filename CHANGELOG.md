@@ -12,7 +12,9 @@ when package manifests and independent release units are created.
   mount as retained element items painted by one `QQuickPaintedItem` per
   `<Svg>`, with inheritance, gradients, clip, mask, `Use`, text, per-element
   `onPress` hit testing and prop updates without remounting. Unsupported
-  elements are listed in `docs/v2/react-native-svg.md`.
+  elements are listed in `docs/v2/react-native-svg.md`. The public
+  `react-native` entry now also exports `processColor`, `PanResponder`, `Easing`,
+  `TurboModuleRegistry` and `codegenNativeComponent`.
 - Repository contribution and handoff rules, including the architecture locks
   and gate order.
 - A compatible-current React Native/React/Expo/Metro/Nitro workspace lock and
