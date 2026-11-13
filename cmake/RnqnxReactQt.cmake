@@ -131,6 +131,7 @@ function(rnqnx_add_react_host_target)
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtImageCache.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxSegmentFetcher.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxWebSocketModule.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxDevSupportModules.cpp"
   )
   target_link_libraries(rnqnx_react_host PUBLIC
     rnqnx_fabric_adapter
