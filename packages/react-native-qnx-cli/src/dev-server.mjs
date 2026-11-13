@@ -81,7 +81,7 @@ export function localAddresses() {
  * @param {string} host */
 export function addressTowards(host) {
   return new Promise((resolve, reject) => {
-    const socket = dgram.createSocket('udp4');
+    const socket = dgram.createSocket(host.includes(':') ? 'udp6' : 'udp4');
     socket.on('error', (error) => {
       socket.close();
       reject(error);
@@ -280,19 +280,20 @@ export async function startMain(argv) {
  * @param {{device: string, launcher: string, url: string, identity?: string, knownHosts?: string}} options
  */
 export function launchCommand(options) {
-  if (!/^[A-Za-z0-9._-]+@[A-Za-z0-9.:_-]+$/.test(options.device))
+  // No leading '-': ssh would read the value as an option.
+  if (!/^[A-Za-z0-9_][A-Za-z0-9._-]*@[A-Za-z0-9_[][A-Za-z0-9.:_[\]-]*$/.test(options.device))
     throw new Error('--device must be user@host.');
   if (!/^\/[A-Za-z0-9._/-]+$/.test(options.launcher))
     throw new Error('--launcher must be an absolute path on the board (letters, digits, . _ - /).');
   if (!/^https?:\/\/[A-Za-z0-9.:[\]-]+:\d+$/.test(options.url))
     throw new Error(`Unexpected dev server URL ${options.url}.`);
-  const args = ['-o', 'BatchMode=yes'];
+  const args = ['-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10'];
   if (options.identity) args.push('-i', options.identity);
   if (options.knownHosts) args.push('-o', `UserKnownHostsFile=${options.knownHosts}`);
   // Detach on the board so the app outlives this SSH session; its own
   // launcher decides where output goes.
   const remote = `nohup ${options.launcher} --dev-server ${options.url} </dev/null >/dev/null 2>&1 &`;
-  args.push(options.device, remote);
+  args.push('--', options.device, remote);
   return args;
 }
 
@@ -332,7 +333,7 @@ export async function devMain(argv) {
   if (!values.device || !values.launcher)
     throw new Error('project dev needs --device and --launcher.');
   const port = parsePort(values.port);
-  const boardHost = values.device.split('@')[1];
+  const boardHost = values.device.split('@')[1].replace(/^\[|\]$/g, '');
   const hostAddress = values['host-address'] ?? (await addressTowards(boardHost));
   const url = `http://${hostAddress}:${port}`;
   const sshArgs = launchCommand({

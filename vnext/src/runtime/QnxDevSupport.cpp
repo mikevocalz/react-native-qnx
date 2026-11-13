@@ -484,8 +484,18 @@ DevServerBundle QnxDevSupport::fetchBundle(int timeoutMs) {
   });
   ticker.start();
   connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
+  // A reload asked for while this fetch waits (Ctrl+R, Metro `r`, Metro
+  // reconnecting) ends the fetch; the caller starts over.
+  connect(this, &QnxDevSupport::reloadRequested, &loop, &QEventLoop::quit);
   loop.exec();
   ticker.stop();
+  if (!reply->isFinished()) {
+    reply->abort();
+    reply->deleteLater();
+    result.superseded = true;
+    result.errorTitle = QStringLiteral("Reload requested while loading");
+    return result;
+  }
 
   const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
   const QByteArray body = reply->readAll();

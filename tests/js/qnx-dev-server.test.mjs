@@ -26,10 +26,13 @@ const args = launchCommand({
 assert.deepEqual(args, [
   '-o',
   'BatchMode=yes',
+  '-o',
+  'ConnectTimeout=10',
   '-i',
   '/keys/id_ed25519',
   '-o',
   'UserKnownHostsFile=/keys/known_hosts',
+  '--',
   'qnxuser@192.168.2.2',
   'nohup /data/home/qnxuser/run-chrome-app-dev.sh --dev-server http://192.168.2.1:8081 </dev/null >/dev/null 2>&1 &',
 ]);
@@ -37,6 +40,7 @@ assert.ok(!args.some((arg) => /StrictHostKeyChecking/.test(arg)), 'host keys are
 for (const bad of [
   { device: 'board', launcher: '/a.sh', url: 'http://1.2.3.4:8081' },
   { device: 'u@h;rm -rf /', launcher: '/a.sh', url: 'http://1.2.3.4:8081' },
+  { device: '-oProxyCommand@h', launcher: '/a.sh', url: 'http://1.2.3.4:8081' },
   { device: 'u@h', launcher: 'relative.sh', url: 'http://1.2.3.4:8081' },
   { device: 'u@h', launcher: '/a.sh; reboot', url: 'http://1.2.3.4:8081' },
   { device: 'u@h', launcher: '/a.sh', url: 'http://1.2.3.4:8081/$(id)' },
@@ -116,18 +120,26 @@ if (metroAvailable) {
     await symlink(metroDir, path.join(app, 'node_modules', 'metro'));
     /** @type {string[]} */
     const lines = [];
+    // A free port: let the OS pick one, then hand it to Metro.
+    const net = await import('node:net');
+    const port = await new Promise((resolve) => {
+      const probe = net.createServer().listen(0, '127.0.0.1', () => {
+        const { port: free } = /** @type {import('node:net').AddressInfo} */ (probe.address());
+        probe.close(() => resolve(free));
+      });
+    });
     const server = await startDevServer({
       project: app,
-      port: 0 + 18981,
+      port,
       host: '127.0.0.1',
       log: (l) => lines.push(l),
     });
     try {
-      const status = await (await fetch('http://127.0.0.1:18981/status')).text();
+      const status = await (await fetch(`http://127.0.0.1:${port}/status`)).text();
       assert.equal(status, 'packager-status:running');
       const wsRequire = createRequire(path.join(metroDir, 'package.json'));
       const WebSocket = wsRequire('ws');
-      const socket = new WebSocket('ws://127.0.0.1:18981/message');
+      const socket = new WebSocket(`ws://127.0.0.1:${port}/message`);
       await new Promise((resolve, reject) => {
         socket.once('open', resolve);
         socket.once('error', reject);
@@ -145,7 +157,7 @@ if (metroAvailable) {
       server.devMenu();
       assert.equal((await menu).method, 'devMenu');
       socket.close();
-      assert.ok(lines.some((l) => l.includes('--dev-server http://127.0.0.1:18981')));
+      assert.ok(lines.some((l) => l.includes(`--dev-server http://127.0.0.1:${port}`)));
     } finally {
       await server.close();
     }

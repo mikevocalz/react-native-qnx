@@ -113,16 +113,16 @@ int QtTouchDispatcher::dispatchedCount() const {
 }
 
 void QtTouchDispatcher::addRootItem(QQuickItem& rootItem) {
-  if (!extraRoots_.contains(&rootItem)) extraRoots_.append(&rootItem);
+  extraRoots_.append(QPointer<QQuickItem>(&rootItem));
 }
 
 void QtTouchDispatcher::addInputShield(QQuickItem& shield) {
-  if (!shields_.contains(&shield)) shields_.append(&shield);
+  shields_.append(QPointer<QQuickItem>(&shield));
 }
 
 namespace {
 bool visiblyContains(const QQuickItem* item, const QPointF& windowPoint) {
-  if (!item->isVisible()) return false;
+  if (item == nullptr || !item->isVisible()) return false;
   const QPointF local = item->mapFromScene(windowPoint);
   return local.x() >= 0 && local.y() >= 0 && local.x() < item->width() &&
          local.y() < item->height();
@@ -130,14 +130,14 @@ bool visiblyContains(const QQuickItem* item, const QPointF& windowPoint) {
 }  // namespace
 
 Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
-  for (const QQuickItem* shield : shields_) {
-    if (visiblyContains(shield, windowPoint)) return -1;
+  for (const auto& shield : shields_) {
+    if (visiblyContains(shield.data(), windowPoint)) return -1;
   }
   // A surface added later (LogBox) is drawn above the app's.
   const QQuickItem* root = &rootItem_;
   for (auto it = extraRoots_.crbegin(); it != extraRoots_.crend(); ++it) {
-    if (visiblyContains(*it, windowPoint)) {
-      root = *it;
+    if (visiblyContains(it->data(), windowPoint)) {
+      root = it->data();
       break;
     }
   }

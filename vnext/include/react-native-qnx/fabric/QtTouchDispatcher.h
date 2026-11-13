@@ -7,6 +7,7 @@
 #include <QHash>
 #include <QList>
 #include <QObject>
+#include <QPointer>
 
 #include <react/renderer/components/view/TouchEvent.h>
 
@@ -86,8 +87,9 @@ class QtTouchDispatcher final : public QObject {
 
   QtQuickMountingLayer& layer_;
   QQuickItem& rootItem_;
-  QList<QQuickItem*> extraRoots_;
-  QList<QQuickItem*> shields_;
+  // Guarded: the development client that owns these may go first at exit.
+  QList<QPointer<QQuickItem>> extraRoots_;
+  QList<QPointer<QQuickItem>> shields_;
   QHash<Tag, std::shared_ptr<const facebook::react::TouchEventEmitter>>
       emitters_;
   QHash<int, facebook::react::Touch> activeTouches_;

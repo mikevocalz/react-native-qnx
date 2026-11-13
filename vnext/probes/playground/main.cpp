@@ -698,6 +698,16 @@ int main(int argc, char** argv) {
   // Kept across reloads: each reload builds a new React host underneath it.
   std::unique_ptr<rnqnx::runtime::QnxDevSupport> dev;
   bool reloadRequested = false;
+  // Only quit the application loop from inside it: an exit() while
+  // fetchBundle's own loop runs would also make every later nested loop
+  // return at once. fetchBundle ends itself on reloadRequested.
+  bool inApplicationLoop = false;
+  const auto runApplicationLoop = [&inApplicationLoop]() {
+    inApplicationLoop = true;
+    const int code = QGuiApplication::exec();
+    inApplicationLoop = false;
+    return code;
+  };
   if (devMode) {
     rnqnx::runtime::QnxDevSupport::Options devOptions;
     devOptions.server = *devServer;
@@ -710,9 +720,9 @@ int main(int argc, char** argv) {
     touchDispatcher.addInputShield(dev->inputShield());
 #endif
     QObject::connect(dev.get(), &rnqnx::runtime::QnxDevSupport::reloadRequested, &app,
-        [&reloadRequested](const QString&) {
+        [&reloadRequested, &inApplicationLoop](const QString&) {
           reloadRequested = true;
-          QCoreApplication::exit(0);
+          if (inApplicationLoop) QCoreApplication::exit(0);
         });
     // The bundle comes over the network, so show the window (and its loading
     // banner) first.
@@ -730,10 +740,11 @@ int main(int argc, char** argv) {
   if (dev) {
     dev->resetForReload();
     const auto fetched = dev->fetchBundle();
+    if (fetched.superseded || reloadRequested) continue;
     if (!fetched.ok) {
       dev->showError(fetched.errorTitle, fetched.errorMessage);
       if (parser.isSet(screenshotOption)) return 1;
-      result = QGuiApplication::exec();
+      result = runApplicationLoop();
       if (reloadRequested) continue;
       break;
     }
@@ -788,7 +799,7 @@ int main(int argc, char** argv) {
       // Keep the window: show the error and wait for a fix and a reload.
       dev->showError(QStringLiteral("The JavaScript bundle threw while loading"),
                      host.lastError());
-      return QGuiApplication::exec();
+      return runApplicationLoop();
     }
 #endif
     return 1;
@@ -948,7 +959,11 @@ int main(int argc, char** argv) {
   });
   drainTimer.start(16);
 
+#if RNQNX_ENABLE_DEV_SUPPORT
+  const int exitCode = runApplicationLoop();
+#else
   const int exitCode = QGuiApplication::exec();
+#endif
 #if RNQNX_ENABLE_DEV_SUPPORT
   // A reload tears this host down; stop LogBox first so its surface does not
   // outlive the runtime that renders it.

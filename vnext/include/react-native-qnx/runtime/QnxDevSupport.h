@@ -32,6 +32,8 @@ struct DevServerBundle {
   QString url;
   QString errorTitle;
   QString errorMessage;
+  /// A reload was requested before the fetch finished; fetch again.
+  bool superseded{false};
 };
 
 /// The development client: loads the bundle from Metro instead of the staged
