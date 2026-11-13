@@ -28,9 +28,11 @@ const devHelp = `React Native QNX - start Metro and launch the development clien
               [--reset-cache]
 
 Starts Metro (as project start does), then runs
-  <launcher> --dev-server http://<host-address>:<port>
+  <launcher> --replace --dev-server http://<host-address>:<port>
 on the board over SSH. The launcher is the script that starts a build made
-with RNQNX_ENABLE_DEV_SUPPORT=ON and passes its arguments through. SSH uses
+with RNQNX_ENABLE_DEV_SUPPORT=ON and passes its arguments through. --replace
+makes the app quit the running copy of the same app (a release build or an
+older dev run) before it starts, so one app never has two windows. SSH uses
 BatchMode and your known_hosts (or --known-hosts); host keys are never skipped.
 `;
 
@@ -275,9 +277,15 @@ export async function startMain(argv) {
   return 0;
 }
 
+/** Every launch from the CLI replaces the running copy of the app: one
+ * instance per app, so a dev run never leaves a second window. The app asks
+ * the running copy to quit, waits, then sends SIGTERM (never SIGKILL). */
+export const REPLACE_FLAG = '--replace';
+
 /**
- * The ssh arguments for launching the development client.
- * @param {{device: string, launcher: string, url: string, identity?: string, knownHosts?: string}} options
+ * The ssh arguments for launching an app on the board with --replace. `url`
+ * adds --dev-server for the development client.
+ * @param {{device: string, launcher: string, url?: string, identity?: string, knownHosts?: string}} options
  */
 export function launchCommand(options) {
   // No leading '-': ssh would read the value as an option.
@@ -285,14 +293,15 @@ export function launchCommand(options) {
     throw new Error('--device must be user@host.');
   if (!/^\/[A-Za-z0-9._/-]+$/.test(options.launcher))
     throw new Error('--launcher must be an absolute path on the board (letters, digits, . _ - /).');
-  if (!/^https?:\/\/[A-Za-z0-9.:[\]-]+:\d+$/.test(options.url))
+  if (options.url !== undefined && !/^https?:\/\/[A-Za-z0-9.:[\]-]+:\d+$/.test(options.url))
     throw new Error(`Unexpected dev server URL ${options.url}.`);
   const args = ['-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10'];
   if (options.identity) args.push('-i', options.identity);
   if (options.knownHosts) args.push('-o', `UserKnownHostsFile=${options.knownHosts}`);
   // Detach on the board so the app outlives this SSH session; its own
   // launcher decides where output goes.
-  const remote = `nohup ${options.launcher} --dev-server ${options.url} </dev/null >/dev/null 2>&1 &`;
+  const server = options.url === undefined ? '' : ` --dev-server ${options.url}`;
+  const remote = `nohup ${options.launcher} ${REPLACE_FLAG}${server} </dev/null >/dev/null 2>&1 &`;
   args.push('--', options.device, remote);
   return args;
 }

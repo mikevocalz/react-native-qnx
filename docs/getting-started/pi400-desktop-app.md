@@ -244,6 +244,51 @@ the launcher again. Its Alt+Tab bar shows a preview of each window and no
 title or icon; the manager ignores the `Title` message. Under `rnqnx-winmgr`
 a minimized app keeps its window and stays in the Alt+Tab list (below).
 
+## One instance per app
+
+There is never more than one copy of an app on the board. The rules:
+
+- The instance key is the app's base id: the app id without a build-variant
+  suffix (`.dev`, `.debug`, `.preview`; the list is `buildVariantSuffixes()` in
+  `native/window-chrome/WindowHost.cpp`). `org.rnqnx.showcase` and
+  `org.rnqnx.showcase.dev` are one app. The first process listens on the local
+  socket `/tmp/rnqnx-<base id>`: a fixed directory (created if missing, so a
+  session's `TMPDIR` does not matter; `RNQNX_SOCKET_DIR` overrides it), no uid
+  in the name, and world read/write, so any login (the desktop launcher, SSH,
+  root) reaches it.
+- Starting is one step under a lock any login can take (`<socket>.lock`, an
+  `fcntl` record lock that disappears with its process). Launches that start
+  together cannot both become the instance: the loser finds the owner and
+  restores it. A socket file with nobody behind it (the app was killed) is
+  removed; one that cannot be removed gets the per-user fallback path
+  `<socket>.<uid>`, which later launches also check.
+- A second launch restores the running window and exits. This is the default,
+  and what the tile does.
+- `--replace` (used by `rnqnx project dev` and `project run`) asks the running
+  copy to quit over the socket (`quit`), waits up to 5 s for its process to
+  exit, then sends SIGTERM to the pid it reported and waits 3 s more. It never
+  sends SIGKILL; if the old copy will not go, the launch fails and starts
+  nothing. A quit that arrives while the app fetches its bundle, shows the dev
+  error screen or reloads still ends the app.
+- The socket answers `restore`, `info` and `quit` with `ok pid=<n>
+kind=<dev|release>`, so a launcher can tell which build is running; anything
+  else gets `error unknown command`.
+- `--restore-only` shows the running copy and exits 75 without starting when
+  none answers. `--stop-running` quits it and exits.
+- `run-app.sh` checks `pidin` for the app's executable (any variant suffix)
+  before it starts the app. As a normal user it sees that user's processes; as
+  root it sees all. A copy it cannot reach over the socket is stopped with
+  SIGTERM before one new copy starts, so there is still exactly one.
+- `rnqnx-winmgr` collapses windows of one app into a single dock entry. If a
+  second window of an app appears anyway, the first window is raised and the
+  manager logs `second window of '<app>'` to `/tmp/rnqnx-winmgr.log`; it kills
+  nothing.
+
+Builds made before this change listen on `rnqnx-<id>-<uid>` and answer
+`restore` only. A new launch still restores them; `--replace` cannot quit
+them over the socket, and `run-app.sh` stops them by pid. Every app is rebuilt
+with this change, so this only matters while an old build is still running.
+
 ## Launcher tile
 
 `demolauncher` draws the desktop tiles from `/system/etc/desktop_files`:
@@ -255,23 +300,27 @@ generated icon set):
 ```bash
 node packages/react-native-qnx-cli/src/bin.mjs project desktop-entry \
   --project apps/component-gallery \
-  --exec /data/home/qnxuser/run-chrome-app.sh \
   --app-dir /data/home/qnxuser/launcher-tile \
   --run-as qnxuser
 ```
 
+Without `--exec` the tile runs `<app-dir>/run-app.sh`, the guarded launcher
+(below). Pass `--exec` only for a launcher script of your own, and make it do
+what `run-app.sh` does.
+
 It writes `build/qnx/desktop/`:
 
-| File                         | Contents                                                                                        |
-| ---------------------------- | ----------------------------------------------------------------------------------------------- |
-| `org.rnqnx.showcase.desktop` | `Name` (the tile label), `Exec`, `Icon=<app-dir>/icons/icon-128.png`, `Singleton=Y`             |
-| `launcher-tile.conf`         | The `[Launcher]` block: row 1 after Developer Desktop, Terminal and Readme, drawn with its name |
-| `install-tile.sh`            | Copies both into `/system/etc/desktop_files`, appending the block once                          |
+| File                         | Contents                                                                                                       |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `org.rnqnx.showcase.desktop` | `Name` (the tile label), `Exec`, `Icon=<app-dir>/icons/icon-128.png`, `Singleton=Y`                            |
+| `launcher-tile.conf`         | The `[Launcher]` block: row 1 after Developer Desktop, Terminal and Readme, drawn with its name                |
+| `run-app.sh`                 | The guarded launcher the tile runs: Qt environment, and the one-instance check                                 |
+| `install-tile.sh`            | Copies the tile and block into `/system/etc/desktop_files` (appending once), and `run-app.sh` into `--app-dir` |
 
 `--run-as qnxuser` matters on this image: `demolauncher` runs as root, so
 without it the app would run as root. `--row` and `--order` move the tile.
 
-On the board, copy the three files and `icons/icon-128.png` into
+On the board, copy the four files and `icons/icon-128.png` into
 `--app-dir`, then as root:
 
 ```sh
@@ -401,6 +450,10 @@ fallback above. Confirm `/dev/drm/renderD128` is group 36 and mode 0660.
 **No mouse pointer, or clicks do nothing.** `ls -l /dev/io-hid/io-hid` must
 show owner 36. If the node is missing, `io-hid` did not start; check
 `/tmp/pi400-usb.log`. Re-plug the mouse after `io-hid` is running.
+
+**Two windows of one app.** Not possible with a build that has the guard;
+check `pidin -F "%a %N %U" | grep <app>` and the app's launcher. Start apps
+through `run-app.sh` (or the tile), not the binary, and use `--replace`.
 
 **The app will not close.** Press the red light or close the terminal it runs
 in. From SSH, `pidin -F "%a %N" | grep org.rnqnx` gives the pid, then
