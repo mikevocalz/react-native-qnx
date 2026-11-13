@@ -574,6 +574,10 @@ MountError QtQuickMountingLayer::updateTextInput(
     item->setProperty("maximumLength", style.maxLength);
   }
   item->setProperty("multiline", style.multiline);
+  item->setProperty("paddingLeft", static_cast<qreal>(style.insetLeft));
+  item->setProperty("paddingTop", static_cast<qreal>(style.insetTop));
+  item->setProperty("paddingRight", static_cast<qreal>(style.insetRight));
+  item->setProperty("paddingBottom", static_cast<qreal>(style.insetBottom));
 #if RNQNX_ENABLE_TEXT_INPUT_CONTRACT
   if (!item || !bridge) return failWith(MountError::UnknownTag, QStringLiteral("TextInput target removed during update"));
 #endif

@@ -134,6 +134,12 @@ struct TextInputStyle {
   int maxLength{0};
   QString placeholder;
   QString fontFamily;
+  /// Padding plus border from Yoga's content insets: where the text starts
+  /// inside the field.
+  float insetLeft{0.0F};
+  float insetTop{0.0F};
+  float insetRight{0.0F};
+  float insetBottom{0.0F};
 };
 
 /// The properties of an activity indicator this platform can apply.
