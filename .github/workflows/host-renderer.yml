@@ -27,6 +27,8 @@ jobs:
       QT_QPA_PLATFORM: offscreen
       QT_QUICK_BACKEND: software
       QSG_RHI_BACKEND: software
+      # Qt Multimedia warns on stderr when PipeWire is missing; the consumer test parses stderr as JSON.
+      QT_LOGGING_RULES: qt.multimedia.symbolsresolver=false
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
@@ -50,6 +52,7 @@ jobs:
           host: linux
           target: desktop
           arch: linux_gcc_64
+          modules: qtmultimedia
           cache: true
       - name: Verify reproducible SVG bindings
         if: matrix.input-lifecycle == 'ON'
@@ -57,6 +60,7 @@ jobs:
           pnpm qt:svg:check
           pnpm qt:rnsvg:check
           pnpm qt:native-ui:check
+          pnpm qt:video:check
       - name: Build and run the required full renderer graph
         run: |
           mkdir -p build/linux-host-renderer/evidence
@@ -71,7 +75,8 @@ jobs:
             -DRNQNX_ENABLE_QT_NATIVE_UI=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_EXPO_IMAGE=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_MOTION=${{ matrix.input-lifecycle }} \
-            -DRNQNX_ENABLE_QT_GRAPHICS=${{ matrix.input-lifecycle }}
+            -DRNQNX_ENABLE_QT_GRAPHICS=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_QT_VIDEO=${{ matrix.input-lifecycle }}
           node scripts/validate-host-renderer.mjs
       - name: react-native-svg renderer, filters, text and images under ASan and UBSan (ON leg)
         if: matrix.input-lifecycle == 'ON'
