@@ -1,3 +1,4 @@
+// @ts-nocheck: test double plumbing (Module._load) and untyped react-test-renderer.
 // Renders the router package's JavaScript fallbacks and the gallery's page
 // measurement with react-test-renderer, against tests/js/helpers/mock-react-native.cjs.
 import assert from 'node:assert/strict';
