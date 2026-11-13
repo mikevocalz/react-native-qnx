@@ -46,6 +46,8 @@
     "nitro:platform:check": "node scripts/nitro-platform-codegen.mjs --check",
     "qt:svg:generate": "node scripts/qt-svg-codegen.mjs --write",
     "qt:svg:check": "node scripts/qt-svg-codegen.mjs --check",
+    "qt:rnsvg:generate": "node scripts/qt-rnsvg-codegen.mjs --write",
+    "qt:rnsvg:check": "node scripts/qt-rnsvg-codegen.mjs --check",
     "qnx": "node packages/react-native-qnx-cli/src/bin.mjs",
     "qnx:device": "node packages/qnx-devtools/src/cli.mjs",
     "expo:qnx": "node packages/expo-qnx/src/cli.mjs",
@@ -69,6 +71,7 @@
     "typescript": "7.0.2",
     "nitro-core": "1.0.0-alpha.nightly.136.gdb81de61bd32",
     "@typescript/typescript6": "6.0.2",
-    "zustand": "5.1.0"
+    "zustand": "5.1.0",
+    "react-native-svg": "15.16.0"
   }
 }

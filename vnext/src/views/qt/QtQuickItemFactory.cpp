@@ -11,6 +11,9 @@
 #if RNQNX_ENABLE_QT_SVG
 #include <QtSvgItem.h>
 #endif
+#if RNQNX_ENABLE_QT_RNSVG
+#include <RnsvgItems.h>
+#endif
 
 namespace rnqnx::views {
 namespace {
@@ -99,6 +102,15 @@ QQuickItem* QtQuickItemFactory::create(
     QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
     lastError_.clear();
     return item;
+  }
+#endif
+#if RNQNX_ENABLE_QT_RNSVG
+  if (componentName.startsWith(QStringLiteral("RNSVG"))) {
+    if (auto* item = rnsvg::createItemForComponent(componentName, parent)) {
+      QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
+      lastError_.clear();
+      return item;
+    }
   }
 #endif
   auto* component = componentFor(componentName);
