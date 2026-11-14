@@ -15,7 +15,13 @@ const DURATION = 220;
 
 function useDrawerState(open) {
   const store = React.useMemo(
-    () => createStore(() => ({ visible: open, exclusion: getSwipeExclusionLeft() })),
+    () =>
+      createStore(() => ({
+        visible: open,
+        exclusion: getSwipeExclusionLeft(),
+        dragStart: 0,
+        dragStartedOpen: open,
+      })),
     []
   );
   React.useEffect(() => {
@@ -27,7 +33,7 @@ function useDrawerState(open) {
   const visible = useStore(store, (state) => state.visible);
   const exclusion = useStore(store, (state) => state.exclusion);
   const setVisible = React.useCallback((visible) => store.setState({ visible }), [store]);
-  return { visible, exclusion, setVisible };
+  return { store, visible, exclusion, setVisible };
 }
 
 function JsDrawer({
@@ -64,7 +70,7 @@ function JsDrawer({
   const progressRef = React.useRef(null);
   if (progressRef.current === null) progressRef.current = new Animated.Value(open ? 1 : 0);
   const progress = progressRef.current;
-  const { visible, exclusion, setVisible } = useDrawerState(open);
+  const { store: drawerStore, visible, exclusion, setVisible } = useDrawerState(open);
   const pendingTimer = React.useRef(null);
   const settlement = React.useRef(null);
   const openRef = React.useRef(open);
@@ -111,7 +117,6 @@ function JsDrawer({
     []
   );
 
-  const dragStart = React.useRef(0);
   // Animate to wherever the `open` prop says, after a drag the parent did not
   // confirm or a terminated gesture.
   const settle = (next) => {
@@ -137,8 +142,9 @@ function JsDrawer({
           clearTimeout(pendingTimer.current);
           pendingTimer.current = null;
           settlement.current?.stop();
+          drawerStore.setState({ dragStartedOpen: openRef.current });
           progress.stopAnimation((value) => {
-            dragStart.current = value;
+            drawerStore.setState({ dragStart: value });
           });
           setVisible(true);
           dismissKeyboardOnDrag(callbacks.current.keyboardDismissMode);
@@ -146,20 +152,16 @@ function JsDrawer({
         },
         onPanResponderMove: (_e, g) => {
           const delta = (right ? -g.dx : g.dx) / width;
-          progress.setValue(Math.max(0, Math.min(1, dragStart.current + delta)));
+          progress.setValue(Math.max(0, Math.min(1, drawerStore.getState().dragStart + delta)));
         },
         onPanResponderRelease: (_e, g) => {
           const delta = (right ? -g.dx : g.dx) / width;
-          const target = dragStart.current + delta;
           callbacks.current.onGestureEnd?.();
           // Past 40% of the width in the direction of travel flips the state,
           // and so does a drag of at least swipeMinDistance px if it is not shorter.
           const farEnough = Math.abs(delta) * width >= swipeMinDistance;
-          const wantOpen = !farEnough
-            ? dragStart.current === 1
-            : dragStart.current === 1
-              ? target >= 0.6
-              : target > 0.4;
+          const startedOpen = drawerStore.getState().dragStartedOpen;
+          const wantOpen = !farEnough ? startedOpen : startedOpen ? delta >= -0.4 : delta > 0.4;
           if (wantOpen === openRef.current) {
             snapBack();
             return;
@@ -181,7 +183,7 @@ function JsDrawer({
           snapBack();
         },
       }),
-    [progress, right, width, swipeMinDistance, setVisible]
+    [progress, right, width, swipeMinDistance, setVisible, drawerStore]
   );
 
   if (drawerType === 'permanent') {

@@ -11,10 +11,17 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 const mock = require('../helpers/mock-react-native.cjs');
 const targets = [];
 const panResponders = [];
+const animatedValues = [];
 const native = {
   ...mock,
   Animated: {
     ...mock.Animated,
+    Value: class extends mock.Animated.Value {
+      constructor(value) {
+        super(value);
+        animatedValues.push(this);
+      }
+    },
     timing(value, config) {
       targets.push(config.toValue);
       return mock.Animated.timing(value, config);
@@ -113,6 +120,31 @@ try {
   assert.equal(targets.at(-1), 1);
   assert.ok(hasPanel(), 'a rejected close restores panel content and input');
   act(() => renderer.unmount());
+
+  for (const [open, progress, dx, minDistance] of [
+    [true, 0.65, -20, 80],
+    [true, 0.2, -20, 0],
+    [false, 0.8, 20, 0],
+  ]) {
+    let changes = 0;
+    const interrupted = mount({
+      open,
+      swipeMinDistance: minDistance,
+      onOpen: () => changes++,
+      onClose: () => changes++,
+    });
+    animatedValues.at(-1).setValue(progress);
+    targets.length = 0;
+    drag(interrupted, dx);
+    assert.equal(
+      changes,
+      0,
+      'a short swipe preserves logical state during an interrupted animation'
+    );
+    assert.equal(targets.at(-1), open ? 1 : 0);
+    assert.equal(timers.size, 0);
+    act(() => renderer.unmount());
+  }
 
   const cancelled = mount({ open: false, onOpen: () => opens++ });
   const before = opens;

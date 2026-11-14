@@ -198,9 +198,11 @@ ViewStyle toViewStyle(const ShadowView& view) {
 
   style.opacity = static_cast<float>(viewProps->opacity);
 
-  if (facebook::react::isColorMeaningful(viewProps->backgroundColor)) {
+  // Transparent and removed fills are updates too. A generic React View
+  // defaults to transparent; native controls keep their own unset defaults.
+  if (viewProps->backgroundColor || componentNameOf(view) == QStringLiteral("View")) {
     style.hasBackgroundColor = true;
-    style.backgroundColor = packColor(viewProps->backgroundColor);
+    style.backgroundColor = viewProps->backgroundColor ? packColor(viewProps->backgroundColor) : 0;
   }
 
   // React Native resolves the border cascade itself, including percentage radii
