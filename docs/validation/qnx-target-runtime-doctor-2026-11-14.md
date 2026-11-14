@@ -1,6 +1,6 @@
 # QNX offline runtime diagnostics, 2026-11-14
 
-This slice addresses F5 and H27 of the v1 hardening request under the `expo`
+This slice addresses F5 and H27 of the v1 hardening request under the `distribution`
 and `device-parity` gates. It adds a separate CLI mode for supplied QNX runtime
 observations. It leaves the existing static project doctor and the Linux/Wayland
 workflow in place. Both gates remain pending: no target collection or device
