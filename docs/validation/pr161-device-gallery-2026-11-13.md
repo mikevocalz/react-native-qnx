@@ -40,9 +40,14 @@ No production native renderer code changes in this follow-up.
 ## QNX build and deployment
 
 The source-corrected consumer cross-build completed with QNX SDP 8.0.5,
-AArch64, public-source Qt 6.12.0, Release/O2, two build jobs, sanitizers OFF.
-This inherited cross graph has warnings-as-errors OFF; hosted strict checks
-remain separate. RNSVG, native UI, window chrome and input lifecycle are ON;
+AArch64, public-source Qt 6.12.0, Release/O1, two build jobs, sanitizers OFF.
+The inherited native recipe uses strict warnings with selected GCC
+warning-as-error exceptions. Qt runtime libraries are O2. An inherited compile
+launcher reused upstream objects from the earlier Worklets tree; project
+vnext/native/test sources were recompiled. The launcher checks source equality
+but does not independently verify flags or header closure. These device bytes
+are scoped compatibility evidence; a clean final build without that launcher
+is required for combined qualification. Hosted strict checks remain separate. RNSVG, native UI, window chrome and input lifecycle are ON;
 Worklets/Reanimated/Forge remain OFF. The final link uses the real lean Hermes
 artifact and its ELF names `libhermesvmlean.so`. Older full-VM alias experiments
 were retained as historical artifacts and are not this candidate.
@@ -110,7 +115,8 @@ DRI: current integration agent, acting in the roster's Qt Quick/Fabric,
 Metro/Expo developer-tools and QNX regression roles. Ownership is the changed
 gallery/test/evidence paths; no other app audit is claimed. Human review is
 unassigned. The earlier CodeRabbit review covered the corpus repair with zero
-findings; independent review of this gallery follow-up remains pending.
+findings; CodeRabbit reviewed this gallery/test/evidence follow-up against a52ffff0
+with zero findings. Human review remains unassigned.
 
 | Skill/source                                       | Exact source                                                                        | Applied decision                                                          |
 | -------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |

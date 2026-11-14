@@ -1,5 +1,14 @@
 # NEXT_ACTIONS.md
 
+## PR 161 cross-build recipe correction — 2026-11-13
+
+The native consumer used inherited Release/O1 flags with selected GCC warning
+exceptions; public Qt libraries were O2. Its launcher reused upstream objects
+without independently checking flags/header closure, while project sources
+were recompiled. Device behavior and hashes stand as scoped evidence. Use a
+fresh build without that launcher for final combined qualification.
+[Corrected receipt](../validation/pr161-device-gallery-2026-11-13.md).
+
 ## PR 161 gallery and target continuation — 2026-11-13
 
 Required checks passed at a52ffff. The current-source Pi run then exposed the

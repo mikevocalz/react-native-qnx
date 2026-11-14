@@ -27,6 +27,11 @@
       "reviewedAt": "2026-11-13",
       "receipt": "docs/validation/pr161-device-gallery-2026-11-13.md",
       "status": "base required CI passed; Pi gallery/images/input and restored native tests passed; follow-up head CI/review pending"
+    },
+    "pr161BuildRecipe": {
+      "reviewedAt": "2026-11-13",
+      "receipt": "docs/validation/pr161-device-gallery-2026-11-13.md",
+      "status": "native O1 with selected strict-warning exceptions; Qt O2; inherited upstream object reuse has no independent flag/header audit; clean combined build required"
     }
   },
   "gates": [
