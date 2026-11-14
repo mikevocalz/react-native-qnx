@@ -63,6 +63,32 @@ resize checks remain pending. Other image-loader/navigation gaps stay open.
 Inspect the pushed head's required renderer checks. Continue #161 before merging #159, then address the image-loader gaps in the November 13 handoff.
 [Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
 
+## PR 161 cross-build recipe correction — 2026-11-13
+
+The native consumer used inherited Release/O1 flags with selected GCC warning
+exceptions; public Qt libraries were O2. Its launcher reused upstream objects
+without independently checking flags/header closure, while project sources
+were recompiled. Device behavior and hashes stand as scoped evidence. Use a
+fresh build without that launcher for final combined qualification.
+[Corrected receipt](../validation/pr161-device-gallery-2026-11-13.md).
+
+## PR 161 gallery and target continuation — 2026-11-13
+
+Required checks passed at a52ffff. The current-source Pi run then exposed the
+SvgCss root import; it now uses the pinned CSS subpackage and has a failing/
+passing Metro regression. The twelve-card gallery renders on the real lean
+VM/public QtSvg runtime, including bundled/SVG/HTTPS images and live
+ForeignObject input blocking. Circle/group counters and rotation pause pass.
+The added nested-invalidation control fails without outward forwarding; all
+eight restored native host CTests pass. Prior review threads are resolved.
+This follow-up still needs its exact-head checks and independent review.
+[Artifacts, element table and rollback](../validation/pr161-device-gallery-2026-11-13.md).
+
+## PR 161 corpus continuation — 2026-11-13
+
+Inspect PR 161 exact-head renderer CI after publication. Verify all four corpus shards and retain their diff artifacts. Complete the handoff device checks before integrating #159 and #149.
+[Receipt](../validation/pr161-corpus-shards-2026-11-13.md).
+
 ## PR 105 continuation — 2026-11-10
 
 Review and publish the documentation follow-up to `c09a5b1`, inspect its

@@ -76,6 +76,23 @@
       "implementationCommit": "cf43271",
       "receipt": "docs/validation/pr159-drawer-selection-2026-11-13.md",
       "status": "stale transparent fill and interrupted gesture state fixed; negative controls, eight isolated adapter cases, ordered JS tests, typecheck and Pi single-selection proof pass; review clean; exact-head CI and clean combined build pending"
+    },
+    "pr161Corpus": {
+      "reviewedAt": "2026-11-13",
+      "baseCommit": "4076e67",
+      "receipt": "docs/validation/pr161-corpus-shards-2026-11-13.md",
+      "hostedCi": "pending for the continuation head",
+      "targetExecution": "not run for the test-only continuation"
+    },
+    "pr161Target": {
+      "reviewedAt": "2026-11-13",
+      "receipt": "docs/validation/pr161-device-gallery-2026-11-13.md",
+      "status": "base required CI passed; Pi gallery/images/input and restored native tests passed; follow-up head CI/review pending"
+    },
+    "pr161BuildRecipe": {
+      "reviewedAt": "2026-11-13",
+      "receipt": "docs/validation/pr161-device-gallery-2026-11-13.md",
+      "status": "native O1 with selected strict-warning exceptions; Qt O2; inherited upstream object reuse has no independent flag/header audit; clean combined build required"
     }
   },
   "activeMilestone": "v1 preparation; release gates remain open",

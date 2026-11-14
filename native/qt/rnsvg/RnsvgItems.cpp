@@ -1,5 +1,8 @@
 #include "RnsvgItems.h"
+#include "RnsvgForeignObjectItem.h"
 #include "RnsvgRenderer.h"
+#include "scene/HitTester.h"
+#include "scene/SceneLayout.h"
 
 #include <QDebug>
 #include <QElapsedTimer>
@@ -24,7 +27,6 @@ QList<RnsvgElementItem*> elementsOf(const QQuickItem* parent) {
 
 RnsvgElementItem::RnsvgElementItem(rnsvg::Kind kind, QQuickItem* parent) : QQuickItem(parent) {
   props_.kind = kind;
-  setVisible(false);  // draws nothing; keeps generic geometry hit testing off it
 }
 
 RnsvgElementItem::~RnsvgElementItem() = default;
@@ -36,6 +38,18 @@ void RnsvgElementItem::setProps(rnsvg::ElementProps props) {
 }
 
 QList<RnsvgElementItem*> RnsvgElementItem::elementChildren() const { return elementsOf(this); }
+
+QList<QQuickItem*> RnsvgElementItem::contentChildren() const {
+  QList<QQuickItem*> out;
+  for (auto* child : childItems()) {
+    if (qobject_cast<RnsvgElementItem*>(child) || qobject_cast<RnsvgRootItem*>(child)) out.append(child);
+  }
+  return out;
+}
+
+bool RnsvgElementItem::passesTouchesToChildren() const {
+  return !props_.displayNone && rnsvg::PointerMode::parse(props_.pointerEvents).descend;
+}
 
 RnsvgRootItem* RnsvgElementItem::root() const {
   for (QQuickItem* item = parentItem(); item; item = item->parentItem()) {
@@ -64,6 +78,8 @@ RnsvgRootItem::RnsvgRootItem(QQuickItem* parent) : QQuickPaintedItem(parent) {
   if (target == "fbo") setRenderTarget(QQuickPaintedItem::FramebufferObject);
   else if (target == "image") setRenderTarget(QQuickPaintedItem::Image);
   else setRenderTarget(QQuickPaintedItem::Image);
+  // Created with its parent: itemChange() does not run for that, so decide here.
+  setVisible(!isNested());
 }
 
 RnsvgRootItem::~RnsvgRootItem() = default;
@@ -73,7 +89,44 @@ void RnsvgRootItem::setRootProps(const rnsvg::RootProps& props) {
   invalidate();
 }
 
-void RnsvgRootItem::invalidate() { update(); }
+void RnsvgRootItem::invalidate() {
+  // A nested root is hidden and painted into the outermost root's texture.
+  RnsvgRootItem* painting = this;
+  for (QQuickItem* item = parentItem(); item; item = item->parentItem()) {
+    if (auto* r = qobject_cast<RnsvgRootItem*>(item)) painting = r;
+  }
+  painting->update();
+  painting->polish();
+}
+
+void RnsvgRootItem::updatePolish() {
+  QQuickPaintedItem::updatePolish();
+  layoutScene();
+}
+
+void RnsvgRootItem::layoutScene() {
+  rnsvg::placeForeignObjects(*this);
+  reported_ = rnsvg::boundsOfElements(*this, watched_);
+  Q_EMIT sceneLaidOut();
+}
+
+void RnsvgRootItem::watchBounds(const RnsvgElementItem* element) { watched_.insert(element); }
+
+void RnsvgRootItem::unwatchBounds(const RnsvgElementItem* element) {
+  watched_.remove(element);
+  reported_.remove(element);
+}
+
+QRectF RnsvgRootItem::elementBounds(const RnsvgElementItem* element) const {
+  return rnsvg::boundsOfElement(*this, element);
+}
+
+bool RnsvgRootItem::isNested() const {
+  for (QQuickItem* item = parentItem(); item; item = item->parentItem()) {
+    if (qobject_cast<RnsvgElementItem*>(item) || qobject_cast<RnsvgRootItem*>(item)) return true;
+  }
+  return false;
+}
 
 QList<RnsvgElementItem*> RnsvgRootItem::elementChildren() const { return elementsOf(this); }
 
@@ -98,7 +151,7 @@ void RnsvgRootItem::paint(QPainter* painter) {
   if (background.canConvert<QColor>() && background.value<QColor>().alpha() > 0) {
     painter->fillRect(QRectF(0, 0, width(), height()), background.value<QColor>());
   }
-  rnsvg::paintScene(*this, painter);
+  stats_ = rnsvg::paintScene(*this, painter);
   if (trace && (paintCount_ <= 5 || paintCount_ % 60 == 0)) {
     qInfo().nospace() << "RNQNX_RNSVG_PAINT n=" << paintCount_ << " ms="
                       << QString::number(timer.nsecsElapsed() / 1e6, 'f', 2) << " size=" << int(width()) << "x"
@@ -119,6 +172,8 @@ void RnsvgRootItem::itemChange(ItemChange change, const ItemChangeData& data) {
   // A direct child leaving the tree has no other hook: the element it was is
   // already detached by the time it could invalidate.
   if (change == ItemChildAddedChange || change == ItemChildRemovedChange) update();
+  // A nested <Svg> is painted by the outer root (rnsvg::Scene), never by its own item.
+  if (change == ItemParentHasChanged) setVisible(!isNested());
 }
 
 // Bound the raster the way the static SVG document item does: Qt multiplies
@@ -141,6 +196,7 @@ namespace rnsvg {
 
 QQuickItem* createItemForComponent(const QString& name, QQuickItem* parent) {
   if (name == QStringLiteral("RNSVGSvgView")) return new RnsvgRootItem(parent);
+  if (name == QStringLiteral("RNSVGForeignObject")) return new RnsvgForeignObjectItem(parent);
   struct Row { const char* name; Kind kind; };
   static const Row rows[] = {
       {"RNSVGGroup", Kind::Group},     {"RNSVGDefs", Kind::Defs},
@@ -150,11 +206,15 @@ QQuickItem* createItemForComponent(const QString& name, QQuickItem* parent) {
       {"RNSVGRadialGradient", Kind::RadialGradient}, {"RNSVGClipPath", Kind::ClipPath},
       {"RNSVGMask", Kind::Mask},       {"RNSVGText", Kind::Text},
       {"RNSVGTSpan", Kind::TSpan},     {"RNSVGUse", Kind::Use},
-      {"RNSVGImage", Kind::Image},
+      {"RNSVGImage", Kind::Image},       {"RNSVGPattern", Kind::Pattern},
+      {"RNSVGSymbol", Kind::Symbol},     {"RNSVGMarker", Kind::Marker},
+      {"RNSVGTextPath", Kind::TextPath}, {"RNSVGFilter", Kind::Filter},
   };
   for (const auto& row : rows) {
     if (name == QLatin1String(row.name)) return new RnsvgElementItem(row.kind, parent);
   }
+  // Every RNSVGFe* component is a filter primitive; its props decide which.
+  if (name.startsWith(QStringLiteral("RNSVGFe"))) return new RnsvgElementItem(Kind::FilterPrimitive, parent);
   return nullptr;
 }
 
