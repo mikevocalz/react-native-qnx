@@ -33,9 +33,7 @@
         "turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection",
         "windowDeactivationCancelsTouchStream"
       ],
-      "failed_cases": [
-        "imageLoadedForwardingDoesNotRequireLoaderLookup"
-      ],
+      "failed_cases": ["imageLoadedForwardingDoesNotRequireLoaderLookup"],
       "runner_failed_total": null,
       "runner_passed_total": null,
       "executable": {
