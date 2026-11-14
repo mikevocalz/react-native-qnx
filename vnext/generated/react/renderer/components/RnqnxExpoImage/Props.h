@@ -25,6 +25,8 @@ class ViewManagerAdapter_ExpoImageProps final : public ViewProps {
 
   folly::dynamic source{};
   folly::dynamic placeholder{};
+  std::string placeholderContentFit{};
+  std::string responsivePolicy{};
   std::string contentFit{};
   folly::dynamic contentPosition{};
   folly::dynamic transition{};

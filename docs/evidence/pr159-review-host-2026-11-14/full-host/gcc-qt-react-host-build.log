@@ -1,0 +1,146 @@
+[0/2] Re-checking globbed directories...
+[1/550] Automatic MOC for target rnqnx_qt_svg
+[2/550] Automatic MOC for target rnqnx_qt_video
+[3/550] Running rcc for resource rnqnx_qt_video_qml
+[4/550] Building CXX object CMakeFiles/rnqnx_glog.dir/_deps/rnqnx_glog-src/src/demangle.cc.o
+[5/550] Automatic MOC for target rnqnx_qt_rnsvg
+[6/550] Building CXX object CMakeFiles/rnqnx_glog.dir/_deps/rnqnx_glog-src/src/raw_logging.cc.o
+[7/550] Building CXX object CMakeFiles/rnqnx_glog.dir/_deps/rnqnx_glog-src/src/logging.cc.o
+[8/550] Building CXX object CMakeFiles/rnqnx_glog.dir/_deps/rnqnx_glog-src/src/signalhandler.cc.o
+[9/550] Building CXX object CMakeFiles/rnqnx_glog.dir/_deps/rnqnx_glog-src/src/symbolize.cc.o
+[10/550] Building CXX object CMakeFiles/rnqnx_glog.dir/_deps/rnqnx_glog-src/src/utilities.cc.o
+[11/550] Building CXX object CMakeFiles/rnqnx_glog.dir/_deps/rnqnx_glog-src/src/vlog_is_on.cc.o
+[12/550] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/bignum.cc.o
+[13/550] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/bignum-dtoa.cc.o
+[14/550] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/cached-powers.cc.o
+[15/550] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/diy-fp.cc.o
+[16/550] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/double-conversion.cc.o
+[17/550] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/fast-dtoa.cc.o
+[18/550] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/fixed-dtoa.cc.o
+[19/550] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/strtod.cc.o
+[20/550] Building CXX object CMakeFiles/rnqnx_fmt.dir/_deps/rnqnx_fmt-src/src/format.cc.o
+[21/550] Building CXX object qt-native/svg/CMakeFiles/rnqnx_qt_svg.dir/rnqnx_qt_svg_autogen/mocs_compilation.cpp.o
+[22/550] Building CXX object qt-native/svg/CMakeFiles/rnqnx_qt_svg.dir/QtSvgItem.cpp.o
+[23/550] Building CXX object qt-native/svg/CMakeFiles/rnqnx_qt_svg.dir/SvgDocumentValidation.cpp.o
+[24/550] Building CXX object qt-native/svg/CMakeFiles/rnqnx_qt_svg.dir/SvgPathValidation.cpp.o
+[25/550] Building CXX object qt-native/svg/CMakeFiles/rnqnx_qt_svg.dir/SvgTransformValidation.cpp.o
+[26/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/rnqnx_qt_rnsvg_autogen/mocs_compilation.cpp.o
+[27/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgForeignObjectItem.cpp.o
+[28/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgItems.cpp.o
+[29/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgPath.cpp.o
+[30/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgRenderer.cpp.o
+[31/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeBlend.cpp.o
+[32/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeComponentTransfer.cpp.o
+[33/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeColorMatrix.cpp.o
+[34/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeConvolveMatrix.cpp.o
+[35/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeComposite.cpp.o
+[36/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeDropShadow.cpp.o
+[37/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeDisplacementMap.cpp.o
+[38/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeFlood.cpp.o
+[39/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeGaussianBlur.cpp.o
+[40/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeLighting.cpp.o
+[41/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeImage.cpp.o
+[42/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeMerge.cpp.o
+[43/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeMorphology.cpp.o
+[44/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeOffset.cpp.o
+[45/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeTile.cpp.o
+[46/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeTurbulence.cpp.o
+[47/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FilterColorSpace.cpp.o
+[48/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FilterEngine.cpp.o
+[49/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FilterRegion.cpp.o
+[50/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/GaussianBlur.cpp.o
+[51/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/image/ImageBinding.cpp.o
+[52/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/image/ImageDecoding.cpp.o
+[53/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/image/ImageElementProps.cpp.o
+[54/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/image/ImageLoader.cpp.o
+[55/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Bounds.cpp.o
+[56/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/ClipMask.cpp.o
+[57/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/ConicalGradient.cpp.o
+[58/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Effects.cpp.o
+[59/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/FilterRunner.cpp.o
+[60/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Geometry.cpp.o
+[61/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/HitTester.cpp.o
+[62/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/ImageRenderer.cpp.o
+[63/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Markers.cpp.o
+[64/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/PaintServers.cpp.o
+[65/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/PatternPaint.cpp.o
+[66/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Scene.cpp.o
+[67/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/SceneLayout.cpp.o
+[68/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/ShapePainter.cpp.o
+[69/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Style.cpp.o
+[70/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/Baseline.cpp.o
+[71/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/TextRenderer.cpp.o
+[72/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/CharAttrs.cpp.o
+[73/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/Decoration.cpp.o
+[74/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/FlatTree.cpp.o
+[75/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/GlyphEmit.cpp.o
+[76/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/FontProbe.cpp.o
+[77/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/InlineSize.cpp.o
+[78/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/PathGlyphs.cpp.o
+[79/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/PathMeasure.cpp.o
+[80/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/Placement.cpp.o
+[81/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/TextLayout.cpp.o
+[82/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/Shaper.cpp.o
+[83/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/TextLength.cpp.o
+[84/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/TextParse.cpp.o
+[85/550] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/UnitBuilder.cpp.o
+[86/550] Building CXX object qt-native/video/CMakeFiles/rnqnx_qt_video.dir/rnqnx_qt_video_autogen/mocs_compilation.cpp.o
+[87/550] Building CXX object qt-native/video/CMakeFiles/rnqnx_qt_video.dir/.qt/rcc/qrc_rnqnx_qt_video_qml.cpp.o
+[88/550] Linking CXX static library librnqnx_glog.a
+[89/550] Linking CXX static library librnqnx_fmt.a
+[90/550] Linking CXX static library librnqnx_double_conversion.a
+[91/550] Building CXX object qt-native/video/CMakeFiles/rnqnx_qt_video.dir/QtVideoItem.cpp.o
+[92/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/Conv.cpp.o
+[93/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/Demangle.cpp.o
+[94/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/FileUtil.cpp.o
+[95/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/ScopeGuard.cpp.o
+[96/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/Format.cpp.o
+[97/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/String.cpp.o
+[98/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/SharedMutex.cpp.o
+[99/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/Unicode.cpp.o
+[100/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/concurrency/CacheLocality.cpp.o
+[101/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/detail/FileUtilDetail.cpp.o
+[102/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/container/detail/F14Table.cpp.o
+[103/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/detail/Futex.cpp.o
+[104/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/detail/UniqueInstance.cpp.o
+[105/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/hash/SpookyHashV2.cpp.o
+[106/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/detail/SplitStringSimd.cpp.o
+[107/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/json/json_pointer.cpp.o
+[108/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/json/dynamic.cpp.o
+[109/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/lang/CString.cpp.o
+[110/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/lang/Exception.cpp.o
+[111/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/lang/SafeAssert.cpp.o
+[112/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/lang/ToAscii.cpp.o
+[113/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/memory/detail/MallocImpl.cpp.o
+[114/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/net/NetOps.cpp.o
+[115/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/json/json.cpp.o
+[116/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/synchronization/SanitizeThread.cpp.o
+[117/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/synchronization/ParkingLot.cpp.o
+[118/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/portability/SysUio.cpp.o
+[119/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/system/ThreadId.cpp.o
+[120/550] Linking CXX static library qt-native/svg/librnqnx_qt_svg.a
+[121/550] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/_deps/rnqnx_folly-src/folly/system/AtFork.cpp.o
+[122/550] Linking CXX static library qt-native/video/librnqnx_qt_video.a
+[123/550] Linking CXX static library librnqnx_folly_runtime.a
+[124/550] Linking CXX static library qt-native/rnsvg/librnqnx_qt_rnsvg.a
+[125/550] Building CXX object react-native/jserrorhandler/CMakeFiles/jserrorhandler.dir/ErrorUtils.cpp.o
+[126/550] Automatic MOC for target rnqnx_views_qt
+[127/550] Building CXX object react-native/jserrorhandler/CMakeFiles/jserrorhandler.dir/JsErrorHandler.cpp.o
+[128/550] Building CXX object react-native/react/debug/CMakeFiles/react_debug.dir/react_native_assert.cpp.o
+[129/550] Building CXX object react-native/jserrorhandler/CMakeFiles/jserrorhandler.dir/StackTraceParser.cpp.o
+[130/550] Building CXX object react-native/react/debug/CMakeFiles/react_debug.dir/redbox/AnsiParser.cpp.o
+[131/550] Building CXX object react-native/react/debug/CMakeFiles/react_debug.dir/redbox/JscSafeUrl.cpp.o
+[132/550] Building CXX object react-native/react/utils/CMakeFiles/react_utils.dir/RunLoopObserver.cpp.o
+[133/550] Building CXX object react-native/react/utils/CMakeFiles/react_utils.dir/Uuid.cpp.o
+[134/550] Building CXX object react-native/react/debug/CMakeFiles/react_debug.dir/redbox/RedBoxErrorParser.cpp.o
+[135/550] Building CXX object react-native/react/utils/CMakeFiles/react_utils.dir/jsi-utils.cpp.o
+[136/550] Building CXX object react-native/react/featureflags/CMakeFiles/react_featureflags.dir/ReactNativeFeatureFlags.cpp.o
+FAILED: [code=1] react-native/react/featureflags/CMakeFiles/react_featureflags.dir/ReactNativeFeatureFlags.cpp.o
+/usr/bin/g++ -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_HAVE_PTHREAD=1 -DFOLLY_MOBILE=1 -DFOLLY_NO_CONFIG=1 -DFOLLY_USE_LIBCPP=1 -DHERMES_V1_ENABLED=1 -I/workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/React -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/jsi -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/callinvoker -isystem /workspace/scratch/853552216e74/pr159/build/host-review159/_deps/rnqnx_folly-src -isystem /workspace/scratch/853552216e74/pr159/build/host-review159/glog-exported -isystem /workspace/scratch/853552216e74/pr159/build/host-review159/_deps/rnqnx_fmt-src/include -isystem /workspace/scratch/853552216e74/pr159/build/host-review159/_deps/rnqnx_fast_float-src/include -isystem /workspace/scratch/853552216e74/pr159/build/host-review159/double-conversion-staged -isystem /workspace/scratch/853552216e74/pr159/build/host-review159/_deps/rnqnx_boost-src -isystem /workspace/scratch/853552216e74/pr159/build/host-review159/_deps/rnqnx_boost_config-src/include -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/react/renderer/components/modal/platform/cxx -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/react/renderer/components/scrollview/platform/cxx -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/react/renderer/components/text/platform/cxx -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/react/renderer/components/view/platform/cxx -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/react/renderer/graphics/platform/cxx -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/react/renderer/imagemanager/platform/cxx -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/cxx -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/react/utils/platform/cxx -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/runtimeexecutor/platform/cxx -isystem /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/react/nativemodule/core -g -std=c++20 -Wall -Werror -fexceptions -frtti -std=c++20 -DFOLLY_NO_CONFIG=1 -DLOG_TAG=\"ReactNative\" -Wpedantic -MD -MT react-native/react/featureflags/CMakeFiles/react_featureflags.dir/ReactNativeFeatureFlags.cpp.o -MF react-native/react/featureflags/CMakeFiles/react_featureflags.dir/ReactNativeFeatureFlags.cpp.o.d -o react-native/react/featureflags/CMakeFiles/react_featureflags.dir/ReactNativeFeatureFlags.cpp.o -c /workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlags.cpp
+/workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlags.cpp:25:32: error: unknown option after ‘#pragma GCC diagnostic’ kind [-Werror=pragmas]
+   25 | #pragma GCC diagnostic ignored "-Wglobal-constructors"
+      |                                ^~~~~~~~~~~~~~~~~~~~~~~
+/workspace/scratch/853552216e74/pr159/node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlags.cpp:25:32: note: did you mean ‘-felide-constructors’?
+cc1plus: all warnings being treated as errors
+[137/550] Building CXX object react-native/react/featureflags/CMakeFiles/react_featureflags.dir/ReactNativeFeatureFlagsAccessor.cpp.o
+ninja: build stopped: subcommand failed.

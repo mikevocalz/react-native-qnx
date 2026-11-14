@@ -135,6 +135,26 @@ if (process.platform === 'linux') {
     // tests. A successful baseline-only inventory is not v2 runtime proof.
     const qtFeatures = [
       ['SVG', ['rnqnx_qt_svg_test', 'rnqnx_qt_svg_fabric_test']],
+      [
+        'RNSVG',
+        [
+          'rnqnx_qt_rnsvg_test',
+          'rnqnx_qt_rnsvg_scene_test',
+          'rnqnx_qt_rnsvg_filter_test',
+          'rnqnx_qt_rnsvg_text_test',
+          'rnqnx_qt_rnsvg_image_test',
+          'rnqnx_qt_rnsvg_foreignobject_test',
+          'rnqnx_qt_rnsvg_loader_test',
+          'rnqnx_qt_rnsvg_fixtures_test',
+          'rnqnx_qt_rnsvg_fabric_test',
+          'rnqnx_qt_rnsvg_image_fabric_test',
+          'rnqnx_qt_rnsvg_corpus_test',
+          'rnqnx_qt_rnsvg_corpus_test_1',
+          'rnqnx_qt_rnsvg_corpus_test_2',
+          'rnqnx_qt_rnsvg_corpus_test_3',
+          'rnqnx_qt_rnsvg_values_test',
+        ],
+      ],
       ['MOTION', ['rnqnx_qt_motion_test']],
       ['GRAPHICS', ['rnqnx_qt_graphics', 'rnqnx_qt_graphics_null']],
     ];

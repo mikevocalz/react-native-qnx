@@ -13,8 +13,8 @@ top=qt-everywhere-src-6.12.0
 tar -xJf "$archive" -C "$dest" \
   --exclude="$top/qtbase/tests" --exclude="$top/qtbase/examples" \
   --exclude="$top/qtdeclarative/tests" --exclude="$top/qtdeclarative/examples" \
-  --exclude="$top/qtshadertools/tests" \
+  --exclude="$top/qtshadertools/tests" --exclude="$top/qtimageformats/tests" \
   --wildcards "$top/.*" "$top/*.*" "$top/configure" "$top/LICENSES" "$top/cmake" "$top/coin" \
-  "$top/qtbase" "$top/qtdeclarative" "$top/qtshadertools"
+  "$top/qtbase" "$top/qtdeclarative" "$top/qtshadertools" "$top/qtimageformats"
 cat "$dest/$top/.tag" 2>/dev/null; echo
 ls "$dest/$top"

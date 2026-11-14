@@ -1,0 +1,1 @@
+Gallery drawer: active navigator destination survives child tabs, route changes and reopen.

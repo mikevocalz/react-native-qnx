@@ -1,0 +1,14 @@
+[1/6] Building CXX object CMakeFiles/qnx_image_cache_test.dir/QtImageCacheTest.cpp.o
+[2/6] Building CXX object CMakeFiles/qnx_image_cache_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/runtime/QtImageCache.cpp.o
+[3/6] Building CXX object CMakeFiles/qnx_image_cache_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/QnxImageProvider.cpp.o
+[4/6] Building CXX object CMakeFiles/qnx_image_cache_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/QtQuickItemFactory.cpp.o
+[5/6] Building CXX object CMakeFiles/qnx_image_cache_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/QtExtraItems.cpp.o
+[6/6] Linking CXX executable qnx_image_cache_test
+Internal ctest changing into directory: /workspace/scratch/853552216e74/pr159/build/pr159-image-loader
+Test project /workspace/scratch/853552216e74/pr159/build/pr159-image-loader
+    Start 1: qnx_image_cache_test
+1/1 Test #1: qnx_image_cache_test .............   Passed    0.31 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.31 sec

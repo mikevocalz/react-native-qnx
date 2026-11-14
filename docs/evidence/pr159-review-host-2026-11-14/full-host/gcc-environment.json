@@ -1,0 +1,17 @@
+{
+  "source_commit": "252b128d0bbb93357dd87f840ea81d31a08c5ef1",
+  "source_tree": "3a19dc66775917c333a61d219400cd73ecb8bc5b",
+  "source_status": "M docs/validation/pr159-review-followup-2026-11-14.md\n?? docs/evidence/pr159-review-host-2026-11-14/image-sanitizers/\n?? docs/evidence/pr159-review-host-2026-11-14/tested-source.json",
+  "node": "v26.13.1",
+  "pnpm": "12.18.0",
+  "cmake": "cmake version 3.31.10",
+  "ninja": "1.13.2.git.kitware.jobserver-pipe-1",
+  "compiler": "g++ (Debian 14.2.0-19) 14.2.0",
+  "qt": "6.11.1",
+  "hermes_commit": "9a115f15785851f4ff2747ebb090ddd066fc8ad2",
+  "configuration": "linux-host-renderer preset, GCC compiler overrides, all existing input and Qt feature switches ON",
+  "native_parallelism": 2,
+  "metro_max_workers": 2,
+  "icu_headers": "/workspace/scratch/853552216e74/qnx-icu-dev/usr/include",
+  "icu_libraries": "system ICU 76.1"
+}

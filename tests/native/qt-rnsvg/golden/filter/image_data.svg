@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="0 0 200 200">
+<rect width="200" height="200" fill="#ffffff"/>
+<filter id="f" ><feImage xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAAA5ZDbSAAABi0lEQVR4nO3dPWpCURRG0edPaXnrTMwpOByn4AxtxaDYKA8rRdmuBRISIUg2n3BCIIsxxnkia/npF8B7CRwncNz68QvH4+5a/fJY3T7OPTw3feXP5W+zfx7YplsE/rnAl82TYcFxAscJXPPwe0mBa073nwpcI/BvcSbFeYuOEzhO4DiB4wSOEzjOmRRnwXECxwkcJ3CcwHECxzmT4iw4TuA4geMEjhM4TuA4Z1KcBccJHCdwnMBxAscJHOdMirPgOIHjBI4TOE7gOIHjnElxpQVvX/z9DlNAKTAzBI4TOE7gOIHjnElxFhwncJzAcQLHCRwncJwzKc6C4wSOEzhO4DiB4wSOK51Jib+hejULjhM4TuA4geMEjhM4rnQmMcOC4wSOEzhO4DiB4wSOcybFWXCcwHECxwkcJ3CcwHHOpDgLjhM4TuA4geMEjhM4zpkUZ8FxAscJHCdwnMBxAsc5k+IsOE7gOIHjBI4TOE7gOGdSnAXHCRwncNxijHH+9Ivgffy/7ziB4wSe2v4BXBIN0dieyjMAAAAASUVORK5CYII=" x="40" y="40" width="120" height="120"/></filter>
+<g filter="url(#f)"><rect x="40" y="40" width="120" height="120" fill="#e03020"/></g>
+</svg>

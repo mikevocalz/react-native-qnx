@@ -24,6 +24,9 @@ RNQnxTabBarProps::RNQnxTabBarProps(
     activeKey(convertRawProp(context, rawProps, "activeKey", sourceProps.activeKey, {})),
     layout(convertRawProp(context, rawProps, "layout", sourceProps.layout, {RNQnxTabBarLayout::Auto})),
     sideBreakpoint(convertRawProp(context, rawProps, "sideBreakpoint", sourceProps.sideBreakpoint, {700.0})),
+    position(convertRawProp(context, rawProps, "position", sourceProps.position, {})),
+    showLabel(convertRawProp(context, rawProps, "showLabel", sourceProps.showLabel, {true})),
+    rtl(convertRawProp(context, rawProps, "rtl", sourceProps.rtl, {false})),
     railWidth(convertRawProp(context, rawProps, "railWidth", sourceProps.railWidth, {88.0})),
     barHeight(convertRawProp(context, rawProps, "barHeight", sourceProps.barHeight, {60.0})),
     availableWidth(convertRawProp(context, rawProps, "availableWidth", sourceProps.availableWidth, {0.0})),
@@ -64,6 +67,18 @@ folly::dynamic RNQnxTabBarProps::getDiffProps(
 
   if ((sideBreakpoint != oldProps->sideBreakpoint) && !(std::isnan(sideBreakpoint) && std::isnan(oldProps->sideBreakpoint))) {
     result["sideBreakpoint"] = sideBreakpoint;
+  }
+
+  if (position != oldProps->position) {
+    result["position"] = position;
+  }
+
+  if (showLabel != oldProps->showLabel) {
+    result["showLabel"] = showLabel;
+  }
+
+  if (rtl != oldProps->rtl) {
+    result["rtl"] = rtl;
   }
 
   if ((railWidth != oldProps->railWidth) && !(std::isnan(railWidth) && std::isnan(oldProps->railWidth))) {

@@ -117,6 +117,7 @@ Copy into that directory:
 - `icons/`
 - `libhermesvmlean.so` from the QNX Hermes build
 - `assets/icon.png` as `assets/assets/icon.png` (the gallery's Image card)
+- `assets/anim.gif` and `assets/anim.webp` under `assets/assets/` (the Expo Image card)
 
 ## Launch
 

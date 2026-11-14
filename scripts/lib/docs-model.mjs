@@ -1,4 +1,5 @@
 import { readFile, access, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { format } from 'prettier';
@@ -8,13 +9,35 @@ async function json(file) {
   return JSON.parse(await readFile(file, 'utf8'));
 }
 
+/**
+ * Resolves `<name>/package.json`. A few packages (@legendapp/list) publish an
+ * `exports` map that does not list it, so `require.resolve` throws
+ * ERR_PACKAGE_PATH_NOT_EXPORTED; those are found by directory instead.
+ * @param {NodeJS.Require} require
+ * @param {string} name
+ */
+function resolvePackageJson(require, name) {
+  try {
+    return require.resolve(`${name}/package.json`);
+  } catch (error) {
+    if (/** @type {NodeJS.ErrnoException} */ (error).code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
+      throw error;
+    }
+    for (const directory of require.resolve.paths(name) ?? []) {
+      const candidate = path.join(directory, name, 'package.json');
+      if (existsSync(candidate)) return candidate;
+    }
+    throw error;
+  }
+}
+
 /** @param {string} root */
 export async function dependencyBaseline(root) {
   const manifest = await json(path.join(root, 'package.json'));
   const require = createRequire(path.join(root, 'package.json'));
   const direct = manifest.devDependencies;
   for (const [name, version] of Object.entries(direct)) {
-    const installed = await json(require.resolve(`${name}/package.json`));
+    const installed = await json(resolvePackageJson(require, name));
     if (installed.version !== version) {
       throw new Error(
         `${name}: installed ${installed.version} disagrees with package.json ${version}`

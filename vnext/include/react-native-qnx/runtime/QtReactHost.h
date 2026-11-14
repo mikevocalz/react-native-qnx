@@ -10,6 +10,7 @@
 #include <react/renderer/scheduler/SurfaceHandler.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/utils/ContextContainer.h>
+#include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/TurboModule.h>
@@ -22,6 +23,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <thread>
 #include <vector>
 
 namespace rnqnx::runtime {
@@ -66,6 +68,17 @@ class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
   /// every transaction, including the empty-tree commit that stopping a surface
   /// produces during teardown.
   void setTouchDispatcher(fabric::QtTouchDispatcher* dispatcher);
+
+  /// Hands work to the owner thread. Library code that commits to the shadow
+  /// tree from another thread (the UI-worklet thread) triggers mounting and
+  /// synchronous prop updates there; Qt items may only change on the owner
+  /// thread, so those callbacks are re-posted through this function. Unset
+  /// (the default), a callback from a foreign thread is a programming error.
+  using OwnerPoster = std::function<void(std::function<void()>)>;
+  void setOwnerPoster(OwnerPoster poster);
+
+  using MountReporter = std::function<void(facebook::react::SurfaceId)>;
+  void setMountReporter(MountReporter reporter);
 
   /// Failures from the most recent mount, empty when everything applied.
   const std::vector<fabric::MutationFailure>& lastFailures() const;
@@ -112,6 +125,13 @@ class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
 
  private:
   fabric::ShadowViewMutationAdapter& adapter_;
+  /// True when called on the owner thread. Otherwise `work` has been posted to
+  /// the owner and the caller must return.
+  bool onOwnerOrPost(std::function<void()> work);
+
+  const std::thread::id owner_{std::this_thread::get_id()};
+  OwnerPoster ownerPoster_;
+  MountReporter mountReporter_;
   fabric::QtTouchDispatcher* touchDispatcher_{nullptr};
   std::vector<fabric::MutationFailure> lastFailures_;
   int mountedTransactionCount_{0};
@@ -191,6 +211,35 @@ class QtReactHost {
   /// ADR-0004 requires over empty TurboModules that silence the error.
   void installTurboModuleBinding();
 
+  /// Factory for a TurboModule that a platform library (not React Native core)
+  /// needs under a fixed name, such as react-native-worklets' `WorkletsModule`.
+  /// The argument is the host's CallInvoker for the module's JS-side calls.
+  using TurboModuleFactory =
+      std::function<std::shared_ptr<facebook::react::TurboModule>(
+          std::shared_ptr<facebook::react::CallInvoker>)>;
+
+  /// Adds a Fabric component descriptor (and the component's name) to the set
+  /// every host creates. Process-wide, because React Native keeps its provider
+  /// registry in a function-local static; call before the first QtReactHost is
+  /// constructed. Duplicate names throw. Mapping the component to a Qt Quick
+  /// type is separate (`ShadowViewMutationAdapter::mapComponent`).
+  static void addComponentDescriptorProvider(
+      std::string name, facebook::react::ComponentDescriptorProvider provider);
+
+  /// Registers `factory` for `name`. Must be called before
+  /// `installTurboModuleBinding()`. Registered names win over the built-in
+  /// table, so a library cannot be shadowed by a stub; a duplicate name throws.
+  void registerTurboModule(std::string name, TurboModuleFactory factory);
+
+  /// Runs `hook` once, on the owner thread, while Hermes and the scheduler are
+  /// still alive: after every surface has stopped and before the JavaScript
+  /// task queue closes. Hooks run in reverse registration order. Libraries that
+  /// own threads or runtimes use this to stop them before the host's runtime
+  /// is destroyed.
+  void addTeardownHook(std::function<void()> hook);
+
+  /// See `QtSchedulerDelegate::setOwnerPoster`.
+  void setOwnerPoster(QtSchedulerDelegate::OwnerPoster poster);
   /// Supplies extra TurboModules, asked before the platform's own. Returning
   /// nullptr falls through to the built-in modules. Set it before
   /// installTurboModuleBinding(); the development client uses it for
@@ -205,11 +254,14 @@ class QtReactHost {
   /// registerCallableModule (HMRClient, RCTDeviceEventEmitter, ...), the
   /// native-to-JavaScript direction ReactInstance::callFunctionOnModule covers
   /// on Android and iOS. Runs as a RuntimeScheduler task; an unknown module or
-  /// method is reported like any other task error.
+  /// method is reported like any other task error, unless `ifRegistered` is
+  /// set: then a module nobody registered means nobody listens, and the call
+  /// does nothing.
   void callFunctionOnModule(
       const std::string& moduleName,
       const std::string& methodName,
-      folly::dynamic args);
+      folly::dynamic args,
+      bool ifRegistered = false);
 
   /// Installs `globalThis.globalEvalWithSourceUrl(source, url)`. Metro's HMR
   /// client evaluates each hot update through it so stack traces name the
@@ -272,6 +324,14 @@ class QtReactHost {
   /// maximized or restored. React sees it as a new layout of the root view
   /// (onLayout fires); nothing remounts. Unknown surfaces are ignored.
   void resizeSurface(facebook::react::SurfaceId surfaceId, float width, float height);
+
+  /// Tells JavaScript the size of the app's window, the way React Native's own
+  /// hosts do: `Dimensions` and `useWindowDimensions` read it, and react-navigation
+  /// sizes headers and drawers from it. DeviceInfo's constants hold only the
+  /// screen, so without this call a window that is smaller than the screen, or
+  /// resized later, reports the screen's size forever. Call it once the
+  /// surface exists and again on every resize; a repeated size is not re-sent.
+  void setWindowSize(float width, float height, float scale);
 
   /// Commits `children` as the surface root's children through the UIManager's
   /// shadow tree, which is the same path a React commit takes.

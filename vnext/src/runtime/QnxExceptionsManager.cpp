@@ -118,6 +118,10 @@ QnxSourceCode::QnxSourceCode(
     : NativeSourceCodeCxxSpec(std::move(jsInvoker)),
       scriptUrl_(std::move(scriptUrl)) {}
 
+void QnxSourceCode::setScriptUrl(std::string scriptUrl) {
+  scriptUrl_ = std::move(scriptUrl);
+}
+
 facebook::jsi::Object QnxSourceCode::getConstants(
     facebook::jsi::Runtime& runtime) {
   auto constants = facebook::jsi::Object(runtime);

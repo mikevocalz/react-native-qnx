@@ -15,6 +15,15 @@
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
+#if RNQNX_ENABLE_WORKLETS
+#include "react-native-qnx/worklets/QtWorkletsPlatform.h"
+#endif
+#if RNQNX_ENABLE_REANIMATED
+#include "react-native-qnx/reanimated/QtReanimatedPlatform.h"
+#endif
+#if RNQNX_ENABLE_GESTURE_HANDLER
+#include "react-native-qnx/gesture/QtGesturePlatform.h"
+#endif
 #include "react-native-qnx/runtime/ApplicationIdentity.h"
 #include "react-native-qnx/runtime/ApplicationIcon.h"
 #ifdef RNQNX_CONSUMER_APP_HEADER
@@ -737,14 +746,16 @@ int main(int argc, char** argv) {
       QStringLiteral("Switch"), QStringLiteral("Switch"));
   adapter.mapComponent(
       QStringLiteral("SafeAreaView"), QStringLiteral("View"));
-  adapter.mapComponent(
-      QStringLiteral("ModalHostView"), QStringLiteral("View"));
 
 #if RNQNX_ENABLE_INPUT_LIFECYCLE
   // Outlive the host: stopping its surface can still remove captured targets.
   rnqnx::fabric::QtTouchDispatcher touchDispatcher(layer, *mountRoot);
   adapter.setTouchDispatcher(&touchDispatcher);
   window.installEventFilter(&touchDispatcher);
+#endif
+#if RNQNX_ENABLE_GESTURE_HANDLER
+  // Fabric descriptors must exist before the first host builds its registry.
+  rnqnx::gesture::registerComponents();
 #endif
 #if RNQNX_ENABLE_FRAME_TRACE
   std::shared_ptr<rnqnx::runtime::RuntimeTrace> trace;
@@ -877,6 +888,17 @@ int main(int argc, char** argv) {
   rnqnx::consumer::installExpoModules(host.runtime(), false);
 #endif
 #endif
+#if RNQNX_ENABLE_WORKLETS
+  // react-native-worklets: a UI-worklet thread, its frame callbacks and the
+  // WorkletsModule TurboModule. The host stops them before Hermes goes away.
+  const auto worklets = rnqnx::worklets::QtWorkletsPlatform::install(host, &window);
+#if RNQNX_ENABLE_REANIMATED
+  rnqnx::reanimated::installReanimated(host, worklets);
+#endif
+#if RNQNX_ENABLE_GESTURE_HANDLER
+  rnqnx::gesture::QtGesturePlatform::install(host, adapter, layer, window, worklets);
+#endif
+#endif
   host.installTurboModuleBinding();
   host.installComponentProvider();
   host.installPlatformConstants();
@@ -913,6 +935,8 @@ int main(int argc, char** argv) {
       identity.componentName.toStdString(),
       static_cast<float>(surfaceSize.width()),
       static_cast<float>(surfaceSize.height()));
+  host.setWindowSize(static_cast<float>(surfaceSize.width()), static_cast<float>(surfaceSize.height()),
+                     static_cast<float>(window.devicePixelRatio()));
 
 #if RNQNX_ENABLE_DEV_SUPPORT
   // Fast Refresh: what AppDelegate/ReactHost do on iOS and Android after the
@@ -980,6 +1004,8 @@ int main(int argc, char** argv) {
   QObject::connect(&surfaceResize, &QTimer::timeout, [&host, &adapter, surfaceRoot, &window]() {
     const QSizeF size = surfaceRoot == window.contentItem() ? QSizeF(window.size()) : surfaceRoot->size();
     host.resizeSurface(kSurfaceId, static_cast<float>(size.width()), static_cast<float>(size.height()));
+    host.setWindowSize(static_cast<float>(size.width()), static_cast<float>(size.height()),
+                       static_cast<float>(window.devicePixelRatio()));
     adapter.surfaceResized();
   });
   const auto scheduleResize = [&surfaceResize]() { surfaceResize.start(); };

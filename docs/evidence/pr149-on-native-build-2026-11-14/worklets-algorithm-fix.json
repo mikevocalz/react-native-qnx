@@ -1,0 +1,45 @@
+{
+  "base_commit": "2f3f208e2d925b42ec8b3ce2e60f7db725bd67c0",
+  "failed_build_exit_code": 1,
+  "failure_log": "/workspace/scratch/853552216e74/pr159/build/host-review149-on-evidence/build.log",
+  "cause": "Pinned Worklets0.13.1 EventLoop.cpp calls std::remove_if and std::upper_bound without including <algorithm>; libstdc++14 does not transitively expose those algorithms.",
+  "adapter_fix": "Append -include algorithm only to EventLoop.cpp, JSISerializer.cpp, WorkletsJSIUtils.cpp source compile options; append -include iterator only to WorkletsJSIUtils.cpp; keep upstream package bytes and warning policy unchanged.",
+  "upstream_sha256": {
+    "node_modules/react-native-worklets/package.json": "78788d9567e340a35dad1e7fd3a45b23a3d683ba2e87f1e9a384b412b1472a2b",
+    "node_modules/react-native-worklets/Common/cpp/worklets/RunLoop/EventLoop.cpp": "c4cdb443bb524b367ba1c34a9d67170342f9c8a9e81881e22f24811ab9352f32",
+    "node_modules/react-native-worklets/Common/cpp/worklets/RunLoop/EventLoop.h": "9fca46ea88247660c8c5afcda35f53c2499df78768f581982cf9990952228a64",
+    "node_modules/react-native-worklets/Common/cpp/worklets/Tools/JSISerializer.cpp": "57266fecbc01c931da06c4fccfbc1371ee0700c1c6f865f1c2debb7ff4dcab52",
+    "node_modules/react-native-worklets/Common/cpp/worklets/Tools/JSISerializer.h": "c8bcdb8603f1abbce6d291179cde88455d09acecd4ef5532014995acba1bb642",
+    "node_modules/react-native-worklets/Common/cpp/worklets/Tools/WorkletsJSIUtils.cpp": "edcbe0fb145b90ecb2b38b14b80bf59eb7e299ba543583aa9df691ac620de70c",
+    "node_modules/react-native-worklets/Common/cpp/worklets/Tools/WorkletsJSIUtils.h": "0512925cd51a3d20dc8b8c17a2a59f989604d8a042b9ad35039ea16c35701b29"
+  },
+  "cmake_candidate_sha256": "1520e142ec8d590110569d90c7dba4acdf90fa9b8e5c9804524686f27679e353",
+  "second_failure_log": "/workspace/scratch/853552216e74/pr159/build/host-review149-on-evidence/build-worklets-algorithm.log",
+  "second_failure_exit_code": 1,
+  "second_cause": "Tools/JSISerializer.cpp calls std::find at line78 without including <algorithm>.",
+  "third_failure_log": "/workspace/scratch/853552216e74/pr159/build/host-review149-on-evidence/build-worklets-algorithms.log",
+  "third_failure_exit_code": 1,
+  "third_cause": "Tools/WorkletsJSIUtils.cpp uses std::istream_iterator without <iterator>; read-only scan also confirms std::copy without <algorithm>.",
+  "algorithm_scan": [
+    {
+      "path": "Networking/TextDecoding.cpp",
+      "direct_algorithm_include": true
+    },
+    {
+      "path": "RunLoop/EventLoop.cpp",
+      "direct_algorithm_include": false
+    },
+    {
+      "path": "SharedItems/Serializable/SerializableWorklet.cpp",
+      "direct_algorithm_include": true
+    },
+    {
+      "path": "Tools/JSISerializer.cpp",
+      "direct_algorithm_include": false
+    },
+    {
+      "path": "Tools/WorkletsJSIUtils.cpp",
+      "direct_algorithm_include": false
+    }
+  ]
+}

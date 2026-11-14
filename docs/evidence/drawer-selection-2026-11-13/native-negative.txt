@@ -1,0 +1,13 @@
+Detected locale "C" with character encoding "ANSI_X3.4-1968", which is not UTF-8.
+Qt depends on a UTF-8 locale, and has switched to "C.UTF-8" instead.
+If this causes problems, reconfigure your locale. See the locale(1) manual
+for more information.
+[PASS] createInsertMountsAndPositions
+[PASS] insertOrderFollowsMutationIndex
+[PASS] updateAppliesNewFrame
+[FAIL] transparentAndRemovedBackgroundClearThePreviousFill: <isolated-host-source>/tests/cpp/ShadowViewMutationAdapterHostTest.cpp:211: check failed: item->property("backgroundColor").value<QColor>().alpha() == 0
+[PASS] removeThenDeleteUnmountsAndFrees
+[PASS] nestedTransactionBuildsATree
+[PASS] unmappedComponentIsReportedNotSkipped
+[PASS] insertIntoMissingParentIsReported
+1 ShadowViewMutationAdapter host test(s) failed.

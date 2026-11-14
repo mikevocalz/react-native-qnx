@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100">
+<g fill="none" stroke="black" stroke-width="10">
+<polyline points="10,80 40,20 70,80" stroke-linejoin="miter"/>
+<polyline points="80,80 110,20 140,80" stroke-linejoin="round"/>
+<polyline points="150,80 180,20 195,80" stroke-linejoin="bevel"/>
+</g>
+<polyline points="10,95 14,92 18,95" stroke="red" stroke-width="2" fill="none" stroke-miterlimit="1.2"/>
+</svg>

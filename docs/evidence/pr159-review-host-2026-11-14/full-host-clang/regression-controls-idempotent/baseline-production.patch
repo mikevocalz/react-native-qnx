@@ -1,0 +1,130 @@
+diff --git a/vnext/include/react-native-qnx/runtime/QnxExceptionsManager.h b/vnext/include/react-native-qnx/runtime/QnxExceptionsManager.h
+index d26378f..8ea50c2 100644
+--- a/vnext/include/react-native-qnx/runtime/QnxExceptionsManager.h
++++ b/vnext/include/react-native-qnx/runtime/QnxExceptionsManager.h
+@@ -76,9 +76,6 @@ class QnxSourceCode
+   /// through the templated constants struct.
+   facebook::jsi::Object getConstants(facebook::jsi::Runtime& runtime);
+
+-  /// Refresh the retained module before the host evaluates another bundle.
+-  void setScriptUrl(std::string scriptUrl);
+-
+  private:
+   std::string scriptUrl_;
+ };
+diff --git a/vnext/include/react-native-qnx/runtime/QnxImageLoader.h b/vnext/include/react-native-qnx/runtime/QnxImageLoader.h
+index 2f3bb48..e3a4218 100644
+--- a/vnext/include/react-native-qnx/runtime/QnxImageLoader.h
++++ b/vnext/include/react-native-qnx/runtime/QnxImageLoader.h
+@@ -27,6 +27,7 @@ class QnxImageLoader final : public facebook::react::TurboModule {
+  private:
+   QtImageCache cache_;
+   views::QtImageFetcher fetcher_{30000, &views::ImageDiskCache::shared(), &views::ImageFetchQueue::shared()};
++  views::ImageLoadedNotifier::Token loadedSubscription_{0};
+   void registerMethods();
+   static facebook::jsi::Value load(
+       facebook::jsi::Runtime& rt, facebook::react::TurboModule& tm,
+diff --git a/vnext/src/runtime/QnxExceptionsManager.cpp b/vnext/src/runtime/QnxExceptionsManager.cpp
+index b0884a9..059b1c9 100644
+--- a/vnext/src/runtime/QnxExceptionsManager.cpp
++++ b/vnext/src/runtime/QnxExceptionsManager.cpp
+@@ -118,10 +118,6 @@ QnxSourceCode::QnxSourceCode(
+     : NativeSourceCodeCxxSpec(std::move(jsInvoker)),
+       scriptUrl_(std::move(scriptUrl)) {}
+
+-void QnxSourceCode::setScriptUrl(std::string scriptUrl) {
+-  scriptUrl_ = std::move(scriptUrl);
+-}
+-
+ facebook::jsi::Object QnxSourceCode::getConstants(
+     facebook::jsi::Runtime& runtime) {
+   auto constants = facebook::jsi::Object(runtime);
+diff --git a/vnext/src/runtime/QnxImageLoader.cpp b/vnext/src/runtime/QnxImageLoader.cpp
+index c378984..6b6e52f 100644
+--- a/vnext/src/runtime/QnxImageLoader.cpp
++++ b/vnext/src/runtime/QnxImageLoader.cpp
+@@ -20,9 +20,15 @@ QnxImageLoader::QnxImageLoader(
+     std::shared_ptr<facebook::react::CallInvoker> jsInvoker)
+     : facebook::react::TurboModule(kModuleName, std::move(jsInvoker)) {
+   registerMethods();
++  // Forward every picture that loads to expo-image's `imageLoaded` module
++  // event. The listener holds the invoker, not this module.
++  loadedSubscription_ = views::ImageLoadedNotifier::shared().subscribe(
++      [invoker = jsInvoker_](const views::ImageLoadedEvent& event) {
++        invoker->invokeAsync([event](facebook::jsi::Runtime& rt) { emitImageLoaded(rt, event); });
++      });
+ }
+
+-QnxImageLoader::~QnxImageLoader() = default;
++QnxImageLoader::~QnxImageLoader() { views::ImageLoadedNotifier::shared().unsubscribe(loadedSubscription_); }
+
+ void QnxImageLoader::registerMethods() {
+   methodMap_["getConstants"] = {0, &QnxImageLoader::getConstants};
+diff --git a/vnext/src/runtime/QtReactHost.cpp b/vnext/src/runtime/QtReactHost.cpp
+index e066b7d..f5c1d63 100644
+--- a/vnext/src/runtime/QtReactHost.cpp
++++ b/vnext/src/runtime/QtReactHost.cpp
+@@ -583,7 +583,6 @@ class QtReactHost::Impl {
+     if (runtimeExecutionDepth != 0) {
+       std::terminate();
+     }
+-    views::ImageLoadedNotifier::shared().unsubscribe(imageLoadedSubscription);
+     for (auto& [surfaceId, handler] : surfaces) {
+ #if RNQNX_ENABLE_FRAME_TRACE
+       const auto generation = surfaceGenerations.find(surfaceId);
+@@ -636,8 +635,6 @@ class QtReactHost::Impl {
+   // Native modules own asynchronous operations beyond a temporary JS lookup.
+   // Cache one instance per host, as the platform TurboModuleManager does.
+   std::unordered_map<std::string, std::shared_ptr<facebook::react::TurboModule>> turboModules;
+-  bool turboModuleBindingInstalled{false};
+-  views::ImageLoadedNotifier::Token imageLoadedSubscription{0};
+   std::unordered_map<int, std::unique_ptr<QTimer>> timers;
+   /// Drives the NativeAnimated `onRender` callback while at least one animation
+   /// is active. Created on first use and reused for later animations.
+@@ -714,11 +711,6 @@ bool QtReactHost::evaluate(
+         : QUrl::fromLocalFile(QFileInfo(sourceLocation).absoluteFilePath())
+               .toString(QUrl::FullyEncoded)
+               .toStdString();
+-    if (const auto found = impl_->turboModules.find(std::string(QnxSourceCode::kModuleName));
+-        found != impl_->turboModules.end()) {
+-      if (auto source = std::dynamic_pointer_cast<QnxSourceCode>(found->second))
+-        source->setScriptUrl(impl_->scriptUrl);
+-    }
+   }
+   try {
+     std::exception_ptr evaluationError;
+@@ -849,10 +841,6 @@ void QtReactHost::installGlobalEvalWithSourceUrl() {
+ }
+
+ void QtReactHost::installTurboModuleBinding() {
+-  // RN defines nativeModuleProxy as a read-only global for this runtime.
+-  // Keep the binding, module cache, and image observer across repeated requests.
+-  if (impl_->turboModuleBindingInstalled) return;
+-
+   // RN 0.88 deprecates this invoker in favor of ReactInstance's buffered
+   // executor. This standalone synchronous host does not own a ReactInstance
+   // or its callable-module queue. Keep RN's compatibility path, just as
+@@ -876,15 +864,6 @@ void QtReactHost::installTurboModuleBinding() {
+ #endif
+   auto* impl = impl_.get();
+
+-  // View events must be forwarded even when JavaScript never looks up
+-  // ImageLoader. One host-owned subscription also avoids duplicate forwarding
+-  // when installation is requested again or the loader is created later.
+-  views::ImageLoadedNotifier::shared().unsubscribe(impl->imageLoadedSubscription);
+-  impl->imageLoadedSubscription = views::ImageLoadedNotifier::shared().subscribe(
+-      [callInvoker](const views::ImageLoadedEvent& event) {
+-        callInvoker->invokeAsync([event](facebook::jsi::Runtime& rt) { emitImageLoaded(rt, event); });
+-      });
+-
+   auto createModule = [callInvoker, impl](
+           facebook::jsi::Runtime& /*jsRuntime*/,
+           const std::string& name)
+@@ -1006,7 +985,6 @@ void QtReactHost::installTurboModuleBinding() {
+         if (module) impl->turboModules.emplace(name, module);
+         return module;
+       });
+-  impl_->turboModuleBindingInstalled = true;
+ }
+
+ void QtReactHost::installPlatformConstants() {

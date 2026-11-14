@@ -14,7 +14,91 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTViewManagerAdapter_ExpoImageViewProtocol <NSObject>
-
+- (void)startAnimating;
+- (void)stopAnimating;
+- (void)lockResource;
+- (void)unlockResource;
+- (void)reload;
 @end
+
+RCT_EXTERN inline void RCTViewManagerAdapter_ExpoImageHandleCommand(
+  id<RCTViewManagerAdapter_ExpoImageViewProtocol> componentView,
+  NSString const *commandName,
+  NSArray const *args)
+{
+  if ([commandName isEqualToString:@"startAnimating"]) {
+#if RCT_DEBUG
+  if ([args count] != 0) {
+    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"ViewManagerAdapter_ExpoImage", commandName, (int)[args count], 0);
+    return;
+  }
+#endif
+
+
+
+  [componentView startAnimating];
+  return;
+}
+
+if ([commandName isEqualToString:@"stopAnimating"]) {
+#if RCT_DEBUG
+  if ([args count] != 0) {
+    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"ViewManagerAdapter_ExpoImage", commandName, (int)[args count], 0);
+    return;
+  }
+#endif
+
+
+
+  [componentView stopAnimating];
+  return;
+}
+
+if ([commandName isEqualToString:@"lockResource"]) {
+#if RCT_DEBUG
+  if ([args count] != 0) {
+    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"ViewManagerAdapter_ExpoImage", commandName, (int)[args count], 0);
+    return;
+  }
+#endif
+
+
+
+  [componentView lockResource];
+  return;
+}
+
+if ([commandName isEqualToString:@"unlockResource"]) {
+#if RCT_DEBUG
+  if ([args count] != 0) {
+    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"ViewManagerAdapter_ExpoImage", commandName, (int)[args count], 0);
+    return;
+  }
+#endif
+
+
+
+  [componentView unlockResource];
+  return;
+}
+
+if ([commandName isEqualToString:@"reload"]) {
+#if RCT_DEBUG
+  if ([args count] != 0) {
+    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"ViewManagerAdapter_ExpoImage", commandName, (int)[args count], 0);
+    return;
+  }
+#endif
+
+
+
+  [componentView reload];
+  return;
+}
+
+#if RCT_DEBUG
+  RCTLogError(@"%@ received command %@, which is not a supported command.", @"ViewManagerAdapter_ExpoImage", commandName);
+#endif
+}
 
 NS_ASSUME_NONNULL_END
