@@ -1,5 +1,16 @@
 # BLOCKERS.md
 
+## PR 159 drawer route and pointer correction — 2026-11-13
+
+The drawer now selects its navigator destination across all Home child tabs.
+Native hover/focus decoration no longer obscures the row's input target.
+Commit 1f809ce has failing old-source controls, passing JS/type/layout/bundle
+checks, 34 QML cases, the native input regression and zero review findings.
+Nine physical Pi captures show one selected row across five destinations and
+all five Home tabs. The transplanted full host retains two separate failures;
+exact-head CI, the clean combined build and owner-tile promotion remain open.
+[Evidence, provenance and rollback](../validation/pr159-drawer-route-2026-11-13.md).
+
 ## PR 159 drawer selection correction — 2026-11-13
 
 SVG d38097f is stacked into PR 159 with both source/evidence sets preserved.

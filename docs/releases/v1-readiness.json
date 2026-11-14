@@ -71,6 +71,12 @@
       "reviewedAt": "2026-11-13",
       "receipt": "docs/validation/pr161-device-gallery-2026-11-13.md",
       "status": "native O1 with selected strict-warning exceptions; Qt O2; inherited upstream object reuse has no independent flag/header audit; clean combined build required"
+    },
+    "pr159DrawerRoute": {
+      "reviewedAt": "2026-11-13",
+      "implementationCommit": "1f809ce",
+      "receipt": "docs/validation/pr159-drawer-route-2026-11-13.md",
+      "status": "navigator destination and native decoration input fixes; JS negative/restored, 34 QML cases, native target regression, layout/type/bundle, independent review and nine Pi route/tab captures pass; broader transplanted host retains two failures; exact-head CI and clean combined qualification pending"
     }
   },
   "gates": [

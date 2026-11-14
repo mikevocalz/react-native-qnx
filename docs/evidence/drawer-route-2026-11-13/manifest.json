@@ -1,0 +1,53 @@
+{
+  "implementationCommit": "1f809ce622649bcc445d267e7589d17d3c39fdb4",
+  "nativeSha256": "ba817a8b1685a3cac87cb297dea773ad88ef1701c2b4aa04760aca79742f4459",
+  "hbcSha256": "59460927f65c26732edabcd985f08d12bf5cb3a73f587c4e47bc9a4353988c12",
+  "lockSha256": "edf0327a216c8963c0ffea2300c37f0b7e29d05510e7f3fb5a3a2a4ad9feea49",
+  "sourceSha256": {
+    "apps/component-gallery/components/DrawerContent.js": "7be441c2794dd75965a91eb73812e93d31760c481e364c6c07b0b460acc7c3e8",
+    "native/qt/nativeui/QtDrawer.qml": "4d5646a00ce2aeacc7885859ef42c62db88706c61748b3be553ed4662d7eff27",
+    "tests/cpp/QtReactHostHostTest.cpp": "da1b3105be45f00d6ed9fe72cb44708a896606533c49b6c27a7d74fdab230982",
+    "tests/js/helpers/gallery-loader.cjs": "90b03c1ecd6622a58fd038d69ae6a536a557df1547eab7089b47c90fe31270c9",
+    "tests/js/qnx-gallery-drawer-selection.test.mjs": "5f9564c148fe1ee680f6d4de7ca92d7b0ac44c25a17d5cee19fc2477b34c8fee",
+    "tests/native/qt-native-ui/NativeUiQuickTest.cpp": "9e129b67c034d41ed32edfb08eb7030f97b6f554c53eb2b8b5da116f5ef7bdee",
+    "vnext/src/fabric/QtTouchDispatcher.cpp": "3daf03183fb6c102b67754779d5f72d38d0d33423ce39684b3e80f75692b8185"
+  },
+  "captures": {
+    "method": "QNX window crop 1280x800, BMP to PNG without resize",
+    "expectedSelection": {
+      "media": "media",
+      "settings": "settings",
+      "about": "about",
+      "components": "components",
+      "home": "home",
+      "advanced": "home",
+      "documents": "home",
+      "more": "home",
+      "controls": "home"
+    }
+  },
+  "limits": "Custom-image Pi400. Inherited O1 upstream-object-reuse consumer with public Qt O2. No fresh clean combined build, stock QSTI, Marathon, QNX VM, timing or memory qualification.",
+  "nativeSourceMatchesContainer": true,
+  "artifacts": {
+    "gallery-layout.txt": "c2bfaee6acd40fad39ae2dbd855750b9e09301226d79c6e1063fa8bd971eb6fe",
+    "review.jsonl": "509b0ed69fd713520cdbeda97c904eb66b12a6aac8d7bf9e941cc2ce88de3ff9",
+    "drawer-input-build.txt": "e66cf46af633e3bdd95a36e68110044bf1655334e41b5cd496f29f7342fe6a90",
+    "js-negative.txt": "a48b27509e4750c15c3d705c685ae12f0faf4876930b494c4286e8fc03235344",
+    "settings.png": "b54bad688bfdc7eeed44c5bc198aadcb16d3a1322e38961fe9a27e2b7a64d390",
+    "home.png": "d6c3b0659e68376ae79581c777203a50bc17d7661dfec1aa6540b64dc424cfe8",
+    "documents.png": "783109c5b8c2629f327bc435a17f5d6cbbcbab642f6eae40e6c3b30dd45558bf",
+    "components.png": "3721b084f388285f18a564cc226351f57c3c88a75c8f3ff656e8645c8ff3fd36",
+    "qml-release.txt": "44d33243903b21689a69c02674035840c39bb9dfd08641cd21435d3373f4a64f",
+    "before-no-selection.png": "5a0a49a69b9a10d586fd6c7caf16d8f2c87eae641e70f46ad57d2ca8a00a92f1",
+    "js-restored.txt": "ecaf70f9658aefa84499041b535cd7f9602e8902fdef4c6e1a4fa004559d1949",
+    "drawer-input-negative-test.txt": "c36aea04e0809813f642b50720ef880015febced2911ebbdd72cc2f9421325c6",
+    "controls.png": "771ad6e274ce366aeeb5cb7704ffec8233db9cdc04d569a2bc53655df408b777",
+    "advanced.png": "288a12399fa7f35945580562445800b9f89ee0100a45532dd929a6e60e2e46a2",
+    "typecheck.txt": "e8559e7b3c6cdca9587d95c0fac233831059243d898878f4281cfd816c3b97f2",
+    "about.png": "78a4f9ce363d7bb303d82748bf0bed520d33188db2816516d45a3a4341759165",
+    "more.png": "aae64c1a1d1f4cbfc05ad1075ce12f4c603af8365afa1a16f687f85ad82f9372",
+    "drawer-input-host-test.txt": "02ae7418d5d4e069d4fdc2a7f3ba99515a31953f898486b8ceab282d40b8aceb",
+    "media.png": "14a64e5767e7d26f3bbe8ad5698b12baa8384d74fa10e70eb832ceceea2a30ff",
+    "drawer-input-restored-build.txt": "4960a5b6cfd0aeab583f7a1fc3ffe9c1112224c4bd2a19dff58d15ebed33bc25"
+  }
+}
