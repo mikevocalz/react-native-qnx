@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" color="red">
+<defs color="blue">
+<g color="green">
+<rect id="a" x="0" y="0" width="50" height="50" fill="currentColor"/>
+</g>
+</defs>
+<g color="pink">
+<use href="#a"/>
+</g>
+<use href="#a" transform="translate(25 25)"/>
+<g color="green">
+<use href="#a" transform="translate(50 50)"/>
+</g>
+</svg>

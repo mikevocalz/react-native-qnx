@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="0 0 200 200">
+<rect width="200" height="200" fill="#ffffff"/>
+<filter id="f" ><feOffset in="SourceGraphic" dx="10" dy="10" x="50" y="50" width="40" height="40" result="t"/><feTile in="t"/></filter>
+<g filter="url(#f)"><rect x="40" y="40" width="90" height="90" fill="#e03020"/><circle cx="120" cy="120" r="45" fill="#2060d0"/></g>
+</svg>

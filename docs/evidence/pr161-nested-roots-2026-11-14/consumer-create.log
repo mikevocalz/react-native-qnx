@@ -1,0 +1,22 @@
+{
+  "action": "created",
+  "destination": "/workspace/scratch/853552216e74/pr161-created-dual",
+  "identity": {
+    "appId": "org.example.svgconsumer",
+    "displayName": "SVG Consumer",
+    "componentName": "main"
+  },
+  "platforms": [
+    "qnx",
+    "marathon"
+  ],
+  "archives": [
+    "@rn-qnx/react-native-qnx",
+    "@rn-qnx/metro-config-qnx",
+    "@rn-qnx/react-native-marathon",
+    "@rn-qnx/metro-config-marathon"
+  ],
+  "dependenciesInstalled": false,
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}

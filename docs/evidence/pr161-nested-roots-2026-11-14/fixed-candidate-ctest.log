@@ -1,0 +1,22 @@
+Internal ctest changing into directory: /workspace/scratch/853552216e74/pr161-native/build/rnsvg-sanitized
+Test project /workspace/scratch/853552216e74/pr161-native/build/rnsvg-sanitized
+    Start 1: rnqnx_qt_rnsvg_filter_test
+1/8 Test #1: rnqnx_qt_rnsvg_filter_test ..........   Passed    8.51 sec
+    Start 2: rnqnx_qt_rnsvg_fixtures_test
+2/8 Test #2: rnqnx_qt_rnsvg_fixtures_test ........   Passed   10.78 sec
+    Start 3: rnqnx_qt_rnsvg_foreignobject_test
+3/8 Test #3: rnqnx_qt_rnsvg_foreignobject_test ...   Passed    0.15 sec
+    Start 4: rnqnx_qt_rnsvg_image_test
+4/8 Test #4: rnqnx_qt_rnsvg_image_test ...........   Passed    0.48 sec
+    Start 5: rnqnx_qt_rnsvg_loader_test
+5/8 Test #5: rnqnx_qt_rnsvg_loader_test ..........   Passed    4.26 sec
+    Start 6: rnqnx_qt_rnsvg_test
+6/8 Test #6: rnqnx_qt_rnsvg_test .................   Passed    0.34 sec
+    Start 7: rnqnx_qt_rnsvg_scene_test
+7/8 Test #7: rnqnx_qt_rnsvg_scene_test ...........   Passed    3.10 sec
+    Start 8: rnqnx_qt_rnsvg_text_test
+8/8 Test #8: rnqnx_qt_rnsvg_text_test ............   Passed    7.23 sec
+
+100% tests passed, 0 tests failed out of 8
+
+Total Test time (real) =  34.86 sec

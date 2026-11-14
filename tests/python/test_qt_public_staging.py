@@ -32,6 +32,7 @@ class StagingTest(unittest.TestCase):
         self.root = self.base / 'public'
         self.build = self.base / 'build'
         self.stage = self.build / 'qnx-build/qtbase'
+        self.svg = self.build / 'svg-qnx'
         self.src = self.root / 'src/qt-everywhere-src-6.12.0'
         self.out = self.base / 'runtime'
         self.out.mkdir()
@@ -57,6 +58,7 @@ class StagingTest(unittest.TestCase):
         tool.chmod(0o755)
         self.env = {**os.environ, 'QT_PUBLIC_ROOT': str(self.root),
                     'QT_PUBLIC_BUILD': str(self.build),
+                    'SVG_BUILD': str(self.svg),
                     'QT_EVAL_MANIFEST': str(self.base / 'absent-evaluation.json'),
                     'PATH': str(tool.parent) + os.pathsep + os.environ['PATH']}
 
@@ -70,6 +72,11 @@ class StagingTest(unittest.TestCase):
         return {str(p.relative_to(folder)): ('link', os.readlink(p)) if p.is_symlink()
                 else ('file', p.read_bytes())
                 for p in folder.rglob('*') if p.is_file() or p.is_symlink()}
+
+    def add_svg(self):
+        self.write(self.svg / 'lib/libQt6Svg.so.6.12.0', 'Svg library fixture')
+        self.write(self.svg / 'plugins/imageformats/libqsvg.so', 'Svg plugin fixture')
+        self.write(self.src / 'qtsvg/LICENSES/LGPL-3.0-only.txt', 'Svg license fixture')
 
     def run_stage(self, output=None):
         return subprocess.run([sys.executable, '-I', str(SCRIPT), str(output or self.out),
@@ -103,6 +110,44 @@ class StagingTest(unittest.TestCase):
     def test_missing_qt_dependency_preserves_previous_runtime(self):
         self.env['READELF_NEEDED'] = 'libQt6NotStaged.so.6'
         self.assert_preserved_failure('not staged')
+
+    def test_svg_addon_is_staged_with_notices_and_dependency_closure(self):
+        self.add_svg()
+        self.env['READELF_NEEDED'] = 'libQt6Svg.so.6'
+        result = self.run_stage()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        entries = json.loads((self.out / 'manifest.json').read_text())
+        for name in ('lib/libQt6Svg.so.6.12.0', 'plugins/imageformats/libqsvg.so',
+                     'licenses/qtsvg/LGPL-3.0-only.txt'):
+            self.assertEqual(entries[name]['sha256'],
+                             hashlib.sha256((self.out / name).read_bytes()).hexdigest())
+        self.assertEqual(os.readlink(self.out / 'lib/libQt6Svg.so.6'), 'libQt6Svg.so.6.12.0')
+        needed = json.loads((self.out / 'needed.json').read_text())['needed']
+        self.assertEqual(needed['plugins/imageformats/libqsvg.so'], ['libQt6Svg.so.6'])
+
+    def test_missing_svg_plugin_preserves_previous_runtime(self):
+        self.add_svg()
+        (self.svg / 'plugins/imageformats/libqsvg.so').unlink()
+        self.assert_preserved_failure('missing in public build')
+
+    def test_svg_source_symlink_escape_preserves_previous_runtime(self):
+        self.add_svg()
+        plugin = self.svg / 'plugins/imageformats/libqsvg.so'
+        plugin.unlink()
+        external = self.base / 'outside-svg'
+        external.write_text('not in the selected Svg build')
+        plugin.symlink_to(external)
+        self.assert_preserved_failure('source path escapes')
+
+    def test_svg_build_output_collision_is_rejected(self):
+        self.add_svg()
+        before = self.snapshot(self.svg)
+        for path in (self.svg, self.svg / 'nested'):
+            with self.subTest(path=path):
+                result = self.run_stage(path)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('source/build tree', result.stderr)
+        self.assertEqual(self.snapshot(self.svg), before)
 
     def test_source_symlink_escape_preserves_previous_runtime(self):
         lib = self.stage / 'lib/libQt6Core.so.6.12.0'

@@ -18,6 +18,7 @@ from pathlib import Path
 root = Path(os.environ.get('QT_PUBLIC_ROOT', '/work/qt-6.12.0-public'))
 stage = Path(os.environ.get('QT_PUBLIC_BUILD', '/home/qnxbuild/qt-6.12.0-public')) / 'qnx-build/qtbase'
 src = root / 'src/qt-everywhere-src-6.12.0'
+svg_build = Path(os.environ.get('SVG_BUILD', stage.parent.parent / 'svg-qnx'))
 out = Path(sys.argv[1] if len(sys.argv) > 1 else root / 'runtime')
 eval_manifest = Path(os.environ.get('QT_EVAL_MANIFEST', '/work/qt612-runtime/manifest.json'))
 
@@ -47,10 +48,11 @@ def staging_destination(destination):
     if destination.is_symlink():
         raise ValueError(f'output must not be a symlink: {destination}')
     destination = destination.resolve()
-    protected = [root.resolve(), stage.resolve(), src.resolve(), Path(__file__).resolve().parents[2]]
+    input_roots = (stage.resolve(), src.resolve(), svg_build.resolve())
+    protected = [root.resolve(), *input_roots, Path(__file__).resolve().parents[2]]
     if any(destination == p or destination in p.parents for p in protected):
         raise ValueError(f'output contains a source/build tree: {destination}')
-    if any(destination.is_relative_to(p) for p in (stage.resolve(), src.resolve())):
+    if any(destination.is_relative_to(p) for p in input_roots):
         raise ValueError(f'output is inside a source/build tree: {destination}')
     if destination.exists() and not destination.is_dir():
         raise ValueError(f'output must be a directory: {destination}')
@@ -103,12 +105,12 @@ def staging_destination(destination):
 with staging_destination(out) as out:
     entries = {}
 
-    def copy(rel, source):
+    def copy(rel, source, *, source_roots=(stage, src)):
         destination = (out / rel).resolve()
         if not destination.is_relative_to(out) or destination == out:
             raise ValueError(f'output path escapes staging directory: {rel}')
         resolved = source.resolve()
-        if not any(resolved.is_relative_to(p.resolve()) for p in (stage, src)):
+        if not any(resolved.is_relative_to(p.resolve()) for p in source_roots):
             raise ValueError(f'source path escapes public source/build trees: {source}')
         if not source.is_file():
             sys.exit(f'missing in public build: {rel} ({source})')
@@ -127,6 +129,20 @@ with staging_destination(out) as out:
             entries[link] = {'symlink': target}
     for rel in PLUGINS:
         copy(rel, stage / rel)
+    # QtSvg is built separately by build-svg-qnx.sh. Keep its artifacts inside
+    # this transaction and constrain only these copies to the selected tree.
+    if (svg_build / 'lib/libQt6Svg.so.6.12.0').is_file():
+        copy('lib/libQt6Svg.so.6.12.0', svg_build / 'lib/libQt6Svg.so.6.12.0',
+             source_roots=(svg_build,))
+        for link, target in (('lib/libQt6Svg.so.6', 'libQt6Svg.so.6.12.0'),
+                             ('lib/libQt6Svg.so', 'libQt6Svg.so.6')):
+            os.symlink(target, out / link)
+            entries[link] = {'symlink': target}
+        copy('plugins/imageformats/libqsvg.so', svg_build / 'plugins/imageformats/libqsvg.so',
+             source_roots=(svg_build,))
+        MODULES = MODULES + ('qtsvg',)
+    else:
+        print(f'note: no QtSvg build at {svg_build}; the runtime will not decode SVG images', file=sys.stderr)
     for d, names in QML.items():
         for n in names:
             copy(f'{d}/{n}', stage / d / n)

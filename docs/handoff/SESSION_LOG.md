@@ -1,5 +1,68 @@
 # SESSION_LOG.md
 
+## PR 161 nested SVG, staging and consumer integration (2026-11-14)
+
+Codex inspected the current PR, prior review threads and failing corpus logs;
+kept timeouts and tolerances unchanged; and corrected two missed nested-root
+cases. New scene tests fail for the intended reasons against the original
+source and pass on published native source `3324e7c`. The coordinating agent
+reviewed those changes. Main merge `446d28f` preserves PR 163's transactional
+staging while bounding optional SVG sources; a separate reviewer found no
+blocker and independently passed all 17 fixtures.
+
+The exact Qt 6.11.1 Linux Debug ASan/UBSan run exposed a GCC test construction
+bug, fixed by reading kernel size before moving the vector. All original pixel
+assertions remain, and the final standalone suite passes 8/8. Typecheck,
+documentation validation and 47 target-doctor host scenarios pass. Recorded
+raw failures/successes, build flags, source hashes and remaining qualification
+in the [receipt](../validation/pr161-nested-roots-2026-11-14.md), updated this
+handoff set and the canonical readiness evidence, and regenerated project
+state. No current QNX or device result is claimed; keep the native PR draft
+pending the documented target work. External CodeRabbit authentication was
+unavailable; the receipt identifies agent reviews separately.
+
+Observed all nine workflows green at `13a0e49`; downloaded the ON job log and
+recorded its 49/49 integrated passes, four passing corpus shards, 8/8 standalone
+SVG sanitizer passes and 1/1 HTTP sanitizer pass. Existing review threads are
+resolved. The successful run does not identify the earlier timeout cause.
+
+Found the standalone CLI's package staging list omitted the SVG resolver and
+other manifest-listed public entry files. Ported only the reviewed CLI list
+and actual-archive regression from published PR 159 `f49e61e`. The test fails
+at the missing resolver with original source and passes with the port. An
+independent reviewer verified both complete blobs match PR 159 and found no
+blocker. Created a fresh external dual consumer, installed its 445-package
+graph and produced QNX and Marathon Metro bundles with two workers, all exit 0. Recorded archive/source/bundle hashes and raw command logs. No native code,
+dependency pin or repository lockfile changed; no native build or execution
+was repeated for this slice. Updated the receipt, handoff set and readiness
+evidence and regenerated project state; follow-up CI and target gates remain.
+
+## PR 161 cross-build recipe correction — 2026-11-13
+
+The native consumer used inherited Release/O1 flags with selected GCC warning
+exceptions; public Qt libraries were O2. Its launcher reused upstream objects
+without independently checking flags/header closure, while project sources
+were recompiled. Device behavior and hashes stand as scoped evidence. Use a
+fresh build without that launcher for final combined qualification.
+[Corrected receipt](../validation/pr161-device-gallery-2026-11-13.md).
+
+## PR 161 gallery and target continuation — 2026-11-13
+
+Required checks passed at a52ffff. The current-source Pi run then exposed the
+SvgCss root import; it now uses the pinned CSS subpackage and has a failing/
+passing Metro regression. The twelve-card gallery renders on the real lean
+VM/public QtSvg runtime, including bundled/SVG/HTTPS images and live
+ForeignObject input blocking. Circle/group counters and rotation pause pass.
+The added nested-invalidation control fails without outward forwarding; all
+eight restored native host CTests pass. Prior review threads are resolved.
+This follow-up still needs its exact-head checks and independent review.
+[Artifacts, element table and rollback](../validation/pr161-device-gallery-2026-11-13.md).
+
+## PR 161 corpus continuation — 2026-11-13
+
+Read current PR 161 CI, reproduced the corpus in a separate Linux build, verified standalone Mac rendering, isolated large scenes and added required shard coverage. Kept the original reference images and recorded the Use-2 edge tolerance measurement.
+[Receipt](../validation/pr161-corpus-shards-2026-11-13.md).
+
 ## 2026-11-10 — PR 105 committed handoff repair
 
 Inspected `c09a5b1`, its green hosted workflows, the unresolved handoff review,

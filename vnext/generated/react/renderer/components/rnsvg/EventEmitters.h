@@ -354,4 +354,74 @@ class RNSVGUseEventEmitter : public ViewEventEmitter {
     };
   void onSvgLayout(OnSvgLayout value) const;
 };
+class RNSVGFeComponentTransferEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+
+
+};
+class RNSVGFeConvolveMatrixEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+
+
+};
+class RNSVGFeDiffuseLightingEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+
+
+};
+class RNSVGFeDisplacementMapEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+
+
+};
+class RNSVGFeDropShadowEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+
+
+};
+class RNSVGFeImageEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+
+
+};
+class RNSVGFeMorphologyEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+
+
+};
+class RNSVGFeSpecularLightingEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+
+
+};
+class RNSVGFeTileEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+
+
+};
+class RNSVGFeTurbulenceEventEmitter : public ViewEventEmitter {
+ public:
+  using ViewEventEmitter::ViewEventEmitter;
+
+
+
+};
 } // namespace facebook::react

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200" font-family="DejaVu Sans">
+  <text x="20" y="50" font-size="32" font-family="DejaVu Serif">Serif text</text>
+  <text x="20" y="100" font-size="32" font-family="DejaVu Sans Mono">Mono text</text>
+  <text x="20" y="150" font-size="32" font-weight="bold">Bold text</text>
+</svg>

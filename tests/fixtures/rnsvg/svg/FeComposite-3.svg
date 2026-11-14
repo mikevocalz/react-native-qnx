@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="130">
+<defs>
+<filter id="c" x="-5%" y="-5%" width="110%" height="110%" filterUnits="objectBoundingBox">
+<feFlood x="0" y="0" width="50" height="100" flood-color="#00ffff" flood-opacity="1" result="b"/>
+<feComposite in="SourceGraphic" in2="b" operator="in" result="comp"/>
+</filter>
+<path id="Red100" d="M 0 0 L 0 100 L 100 0 z" fill="#ff00ff"/>
+<path id="Red50" d="M 0 0 L 0 100 L 100 0 z" fill="#ff00ff" fill-opacity=".5"/>
+</defs>
+<g transform="translate(10 15)" filter="url(#c)"><use href="#Red100"/></g>
+<g transform="translate(140 15)" filter="url(#c)"><use href="#Red50"/></g>
+</svg>

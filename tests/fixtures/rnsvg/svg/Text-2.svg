@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60">
+<text x="0" y="15" fill="red" rotate="30" font-family="DejaVu Sans">I love SVG</text>
+<text x="95" y="47" fill="blue" rotate="-25" font-family="DejaVu Sans">I love SVG</text>
+<text x="126" y="5" fill="#f60" rotate="106" transform="translate(140 0) scale(1.36) translate(-140 0)" font-family="DejaVu Sans">I love SVG</text>
+</svg>

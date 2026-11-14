@@ -108,7 +108,7 @@ RNSVGCircleProps::RNSVGCircleProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -282,7 +282,7 @@ RNSVGClipPathProps::RNSVGClipPathProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -456,7 +456,7 @@ RNSVGDefsProps::RNSVGDefsProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})) {}
@@ -540,7 +540,7 @@ RNSVGEllipseProps::RNSVGEllipseProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -716,6 +716,7 @@ RNSVGFeBlendProps::RNSVGFeBlendProps(
     width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
     result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeBlendColorInterpolationFilters::Auto})),
     in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})),
     in2(convertRawProp(context, rawProps, "in2", sourceProps.in2, {})),
     mode(convertRawProp(context, rawProps, "mode", sourceProps.mode, {RNSVGFeBlendMode::Normal})) {}
@@ -756,6 +757,10 @@ folly::dynamic RNSVGFeBlendProps::getDiffProps(
     result["result"] = result;
   }
 
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
   if (in1 != oldProps->in1) {
     result["in1"] = in1;
   }
@@ -780,6 +785,7 @@ RNSVGFeColorMatrixProps::RNSVGFeColorMatrixProps(
     width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
     result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeColorMatrixColorInterpolationFilters::Auto})),
     in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})),
     type(convertRawProp(context, rawProps, "type", sourceProps.type, {RNSVGFeColorMatrixType::Matrix})),
     values(convertRawProp(context, rawProps, "values", sourceProps.values, {})) {}
@@ -820,6 +826,10 @@ folly::dynamic RNSVGFeColorMatrixProps::getDiffProps(
     result["result"] = result;
   }
 
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
   if (in1 != oldProps->in1) {
     result["in1"] = in1;
   }
@@ -844,6 +854,7 @@ RNSVGFeCompositeProps::RNSVGFeCompositeProps(
     width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
     result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeCompositeColorInterpolationFilters::Auto})),
     in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})),
     in2(convertRawProp(context, rawProps, "in2", sourceProps.in2, {})),
     operator1(convertRawProp(context, rawProps, "operator1", sourceProps.operator1, {RNSVGFeCompositeOperator1::Over})),
@@ -888,6 +899,10 @@ folly::dynamic RNSVGFeCompositeProps::getDiffProps(
     result["result"] = result;
   }
 
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
   if (in1 != oldProps->in1) {
     result["in1"] = in1;
   }
@@ -928,6 +943,7 @@ RNSVGFeFloodProps::RNSVGFeFloodProps(
     width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
     result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeFloodColorInterpolationFilters::Auto})),
     floodColor(convertRawProp(context, rawProps, "floodColor", sourceProps.floodColor, {})),
     floodOpacity(convertRawProp(context, rawProps, "floodOpacity", sourceProps.floodOpacity, {1.0})) {}
 
@@ -967,6 +983,10 @@ folly::dynamic RNSVGFeFloodProps::getDiffProps(
     result["result"] = result;
   }
 
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
   if (floodColor != oldProps->floodColor) {
     result["floodColor"] = floodColor;
   }
@@ -987,6 +1007,7 @@ RNSVGFeGaussianBlurProps::RNSVGFeGaussianBlurProps(
     width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
     result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeGaussianBlurColorInterpolationFilters::Auto})),
     in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})),
     stdDeviationX(convertRawProp(context, rawProps, "stdDeviationX", sourceProps.stdDeviationX, {0.0})),
     stdDeviationY(convertRawProp(context, rawProps, "stdDeviationY", sourceProps.stdDeviationY, {0.0})),
@@ -1028,6 +1049,10 @@ folly::dynamic RNSVGFeGaussianBlurProps::getDiffProps(
     result["result"] = result;
   }
 
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
   if (in1 != oldProps->in1) {
     result["in1"] = in1;
   }
@@ -1056,6 +1081,7 @@ RNSVGFeMergeProps::RNSVGFeMergeProps(
     width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
     result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeMergeColorInterpolationFilters::Auto})),
     nodes(convertRawProp(context, rawProps, "nodes", sourceProps.nodes, {})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
@@ -1094,6 +1120,10 @@ folly::dynamic RNSVGFeMergeProps::getDiffProps(
     result["result"] = result;
   }
 
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
   if (nodes != oldProps->nodes) {
     result["nodes"] = toDynamic(nodes);
   }
@@ -1110,6 +1140,7 @@ RNSVGFeOffsetProps::RNSVGFeOffsetProps(
     width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
     result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeOffsetColorInterpolationFilters::Auto})),
     in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})),
     dx(convertRawProp(context, rawProps, "dx", sourceProps.dx, {})),
     dy(convertRawProp(context, rawProps, "dy", sourceProps.dy, {})) {}
@@ -1148,6 +1179,10 @@ folly::dynamic RNSVGFeOffsetProps::getDiffProps(
 
   if (result != oldProps->result) {
     result["result"] = result;
+  }
+
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
   }
 
   if (in1 != oldProps->in1) {
@@ -1236,7 +1271,7 @@ RNSVGForeignObjectProps::RNSVGForeignObjectProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -1430,7 +1465,7 @@ RNSVGGroupProps::RNSVGGroupProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -1604,7 +1639,7 @@ RNSVGImageProps::RNSVGImageProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -1798,7 +1833,7 @@ RNSVGLinearGradientProps::RNSVGLinearGradientProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -1808,7 +1843,8 @@ RNSVGLinearGradientProps::RNSVGLinearGradientProps(
     y2(convertRawProp(context, rawProps, "y2", sourceProps.y2, {})),
     gradient(convertRawProp(context, rawProps, "gradient", sourceProps.gradient, {})),
     gradientUnits(convertRawProp(context, rawProps, "gradientUnits", sourceProps.gradientUnits, {0})),
-    gradientTransform(convertRawProp(context, rawProps, "gradientTransform", sourceProps.gradientTransform, {})) {}
+    gradientTransform(convertRawProp(context, rawProps, "gradientTransform", sourceProps.gradientTransform, {})),
+    spreadMethod(convertRawProp(context, rawProps, "spreadMethod", sourceProps.spreadMethod, {0})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGLinearGradientProps::getDiffPropsImplementationTarget() const {
@@ -1901,6 +1937,10 @@ folly::dynamic RNSVGLinearGradientProps::getDiffProps(
   if (gradientTransform != oldProps->gradientTransform) {
     result["gradientTransform"] = toDynamic(gradientTransform);
   }
+
+  if (spreadMethod != oldProps->spreadMethod) {
+    result["spreadMethod"] = spreadMethod;
+  }
   return result;
 }
 #endif
@@ -1917,7 +1957,7 @@ RNSVGLineProps::RNSVGLineProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -2096,7 +2136,7 @@ RNSVGMarkerProps::RNSVGMarkerProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -2330,7 +2370,7 @@ RNSVGMaskProps::RNSVGMaskProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -2539,7 +2579,7 @@ RNSVGPathProps::RNSVGPathProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -2703,7 +2743,7 @@ RNSVGPatternProps::RNSVGPatternProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -2942,7 +2982,7 @@ RNSVGRadialGradientProps::RNSVGRadialGradientProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -2954,7 +2994,8 @@ RNSVGRadialGradientProps::RNSVGRadialGradientProps(
     ry(convertRawProp(context, rawProps, "ry", sourceProps.ry, {})),
     gradient(convertRawProp(context, rawProps, "gradient", sourceProps.gradient, {})),
     gradientUnits(convertRawProp(context, rawProps, "gradientUnits", sourceProps.gradientUnits, {0})),
-    gradientTransform(convertRawProp(context, rawProps, "gradientTransform", sourceProps.gradientTransform, {})) {}
+    gradientTransform(convertRawProp(context, rawProps, "gradientTransform", sourceProps.gradientTransform, {})),
+    spreadMethod(convertRawProp(context, rawProps, "spreadMethod", sourceProps.spreadMethod, {0})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGRadialGradientProps::getDiffPropsImplementationTarget() const {
@@ -3055,6 +3096,10 @@ folly::dynamic RNSVGRadialGradientProps::getDiffProps(
   if (gradientTransform != oldProps->gradientTransform) {
     result["gradientTransform"] = toDynamic(gradientTransform);
   }
+
+  if (spreadMethod != oldProps->spreadMethod) {
+    result["spreadMethod"] = spreadMethod;
+  }
   return result;
 }
 #endif
@@ -3071,7 +3116,7 @@ RNSVGRectProps::RNSVGRectProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -3260,7 +3305,7 @@ RNSVGSymbolProps::RNSVGSymbolProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -3464,7 +3509,7 @@ RNSVGTextProps::RNSVGTextProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -3693,7 +3738,7 @@ RNSVGTextPathProps::RNSVGTextPathProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -3952,7 +3997,7 @@ RNSVGTSpanProps::RNSVGTSpanProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -4186,7 +4231,7 @@ RNSVGUseProps::RNSVGUseProps(
     markerMid(convertRawProp(context, rawProps, "markerMid", sourceProps.markerMid, {})),
     markerEnd(convertRawProp(context, rawProps, "markerEnd", sourceProps.markerEnd, {})),
     clipPath(convertRawProp(context, rawProps, "clipPath", sourceProps.clipPath, {})),
-    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {0})),
+    clipRule(convertRawProp(context, rawProps, "clipRule", sourceProps.clipRule, {-1})),
     responsible(convertRawProp(context, rawProps, "responsible", sourceProps.responsible, {false})),
     display(convertRawProp(context, rawProps, "display", sourceProps.display, {})),
     pointerEvents(convertRawProp(context, rawProps, "pointerEvents", sourceProps.pointerEvents, {})),
@@ -4353,6 +4398,806 @@ folly::dynamic RNSVGUseProps::getDiffProps(
 
   if (width != oldProps->width) {
     result["width"] = width;
+  }
+  return result;
+}
+#endif
+RNSVGFeComponentTransferProps::RNSVGFeComponentTransferProps(
+    const PropsParserContext &context,
+    const RNSVGFeComponentTransferProps &sourceProps,
+    const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
+
+    x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
+    y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
+    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+    height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+    result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeComponentTransferColorInterpolationFilters::Auto})),
+    in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})),
+    funcR(convertRawProp(context, rawProps, "funcR", sourceProps.funcR, {})),
+    funcG(convertRawProp(context, rawProps, "funcG", sourceProps.funcG, {})),
+    funcB(convertRawProp(context, rawProps, "funcB", sourceProps.funcB, {})),
+    funcA(convertRawProp(context, rawProps, "funcA", sourceProps.funcA, {})) {}
+
+#ifdef RN_SERIALIZABLE_STATE
+ComponentName RNSVGFeComponentTransferProps::getDiffPropsImplementationTarget() const {
+  return "RNSVGFeComponentTransfer";
+}
+
+folly::dynamic RNSVGFeComponentTransferProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = RNSVGFeComponentTransferProps();
+  const RNSVGFeComponentTransferProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const RNSVGFeComponentTransferProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+
+  if (x != oldProps->x) {
+    result["x"] = x;
+  }
+
+  if (y != oldProps->y) {
+    result["y"] = y;
+  }
+
+  if (width != oldProps->width) {
+    result["width"] = width;
+  }
+
+  if (height != oldProps->height) {
+    result["height"] = height;
+  }
+
+  if (result != oldProps->result) {
+    result["result"] = result;
+  }
+
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
+  if (in1 != oldProps->in1) {
+    result["in1"] = in1;
+  }
+
+  if (funcR != oldProps->funcR) {
+    result["funcR"] = toDynamic(funcR);
+  }
+
+  if (funcG != oldProps->funcG) {
+    result["funcG"] = toDynamic(funcG);
+  }
+
+  if (funcB != oldProps->funcB) {
+    result["funcB"] = toDynamic(funcB);
+  }
+
+  if (funcA != oldProps->funcA) {
+    result["funcA"] = toDynamic(funcA);
+  }
+  return result;
+}
+#endif
+RNSVGFeConvolveMatrixProps::RNSVGFeConvolveMatrixProps(
+    const PropsParserContext &context,
+    const RNSVGFeConvolveMatrixProps &sourceProps,
+    const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
+
+    x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
+    y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
+    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+    height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+    result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeConvolveMatrixColorInterpolationFilters::Auto})),
+    in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})),
+    orderX(convertRawProp(context, rawProps, "orderX", sourceProps.orderX, {3})),
+    orderY(convertRawProp(context, rawProps, "orderY", sourceProps.orderY, {3})),
+    kernelMatrix(convertRawProp(context, rawProps, "kernelMatrix", sourceProps.kernelMatrix, {})),
+    divisor(convertRawProp(context, rawProps, "divisor", sourceProps.divisor, {0.0})),
+    bias(convertRawProp(context, rawProps, "bias", sourceProps.bias, {0.0})),
+    targetX(convertRawProp(context, rawProps, "targetX", sourceProps.targetX, {-1})),
+    targetY(convertRawProp(context, rawProps, "targetY", sourceProps.targetY, {-1})),
+    edgeMode(convertRawProp(context, rawProps, "edgeMode", sourceProps.edgeMode, {RNSVGFeConvolveMatrixEdgeMode::Duplicate})),
+    preserveAlpha(convertRawProp(context, rawProps, "preserveAlpha", sourceProps.preserveAlpha, {false})) {}
+
+#ifdef RN_SERIALIZABLE_STATE
+ComponentName RNSVGFeConvolveMatrixProps::getDiffPropsImplementationTarget() const {
+  return "RNSVGFeConvolveMatrix";
+}
+
+folly::dynamic RNSVGFeConvolveMatrixProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = RNSVGFeConvolveMatrixProps();
+  const RNSVGFeConvolveMatrixProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const RNSVGFeConvolveMatrixProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+
+  if (x != oldProps->x) {
+    result["x"] = x;
+  }
+
+  if (y != oldProps->y) {
+    result["y"] = y;
+  }
+
+  if (width != oldProps->width) {
+    result["width"] = width;
+  }
+
+  if (height != oldProps->height) {
+    result["height"] = height;
+  }
+
+  if (result != oldProps->result) {
+    result["result"] = result;
+  }
+
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
+  if (in1 != oldProps->in1) {
+    result["in1"] = in1;
+  }
+
+  if (orderX != oldProps->orderX) {
+    result["orderX"] = orderX;
+  }
+
+  if (orderY != oldProps->orderY) {
+    result["orderY"] = orderY;
+  }
+
+  if (kernelMatrix != oldProps->kernelMatrix) {
+    result["kernelMatrix"] = toDynamic(kernelMatrix);
+  }
+
+  if ((divisor != oldProps->divisor) && !(std::isnan(divisor) && std::isnan(oldProps->divisor))) {
+    result["divisor"] = divisor;
+  }
+
+  if ((bias != oldProps->bias) && !(std::isnan(bias) && std::isnan(oldProps->bias))) {
+    result["bias"] = bias;
+  }
+
+  if (targetX != oldProps->targetX) {
+    result["targetX"] = targetX;
+  }
+
+  if (targetY != oldProps->targetY) {
+    result["targetY"] = targetY;
+  }
+
+  if (edgeMode != oldProps->edgeMode) {
+    result["edgeMode"] = toDynamic(edgeMode);
+  }
+
+  if (preserveAlpha != oldProps->preserveAlpha) {
+    result["preserveAlpha"] = preserveAlpha;
+  }
+  return result;
+}
+#endif
+RNSVGFeDiffuseLightingProps::RNSVGFeDiffuseLightingProps(
+    const PropsParserContext &context,
+    const RNSVGFeDiffuseLightingProps &sourceProps,
+    const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
+
+    x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
+    y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
+    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+    height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+    result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeDiffuseLightingColorInterpolationFilters::Auto})),
+    in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})),
+    surfaceScale(convertRawProp(context, rawProps, "surfaceScale", sourceProps.surfaceScale, {1.0})),
+    diffuseConstant(convertRawProp(context, rawProps, "diffuseConstant", sourceProps.diffuseConstant, {1.0})),
+    lightingColor(convertRawProp(context, rawProps, "lightingColor", sourceProps.lightingColor, {})),
+    light(convertRawProp(context, rawProps, "light", sourceProps.light, {})) {}
+
+#ifdef RN_SERIALIZABLE_STATE
+ComponentName RNSVGFeDiffuseLightingProps::getDiffPropsImplementationTarget() const {
+  return "RNSVGFeDiffuseLighting";
+}
+
+folly::dynamic RNSVGFeDiffuseLightingProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = RNSVGFeDiffuseLightingProps();
+  const RNSVGFeDiffuseLightingProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const RNSVGFeDiffuseLightingProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+
+  if (x != oldProps->x) {
+    result["x"] = x;
+  }
+
+  if (y != oldProps->y) {
+    result["y"] = y;
+  }
+
+  if (width != oldProps->width) {
+    result["width"] = width;
+  }
+
+  if (height != oldProps->height) {
+    result["height"] = height;
+  }
+
+  if (result != oldProps->result) {
+    result["result"] = result;
+  }
+
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
+  if (in1 != oldProps->in1) {
+    result["in1"] = in1;
+  }
+
+  if ((surfaceScale != oldProps->surfaceScale) && !(std::isnan(surfaceScale) && std::isnan(oldProps->surfaceScale))) {
+    result["surfaceScale"] = surfaceScale;
+  }
+
+  if ((diffuseConstant != oldProps->diffuseConstant) && !(std::isnan(diffuseConstant) && std::isnan(oldProps->diffuseConstant))) {
+    result["diffuseConstant"] = diffuseConstant;
+  }
+
+  if (lightingColor != oldProps->lightingColor) {
+    result["lightingColor"] = lightingColor;
+  }
+
+  if (light != oldProps->light) {
+    result["light"] = toDynamic(light);
+  }
+  return result;
+}
+#endif
+RNSVGFeDisplacementMapProps::RNSVGFeDisplacementMapProps(
+    const PropsParserContext &context,
+    const RNSVGFeDisplacementMapProps &sourceProps,
+    const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
+
+    x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
+    y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
+    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+    height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+    result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeDisplacementMapColorInterpolationFilters::Auto})),
+    in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})),
+    in2(convertRawProp(context, rawProps, "in2", sourceProps.in2, {})),
+    scale(convertRawProp(context, rawProps, "scale", sourceProps.scale, {0.0})),
+    xChannelSelector(convertRawProp(context, rawProps, "xChannelSelector", sourceProps.xChannelSelector, {RNSVGFeDisplacementMapXChannelSelector::A})),
+    yChannelSelector(convertRawProp(context, rawProps, "yChannelSelector", sourceProps.yChannelSelector, {RNSVGFeDisplacementMapYChannelSelector::A})) {}
+
+#ifdef RN_SERIALIZABLE_STATE
+ComponentName RNSVGFeDisplacementMapProps::getDiffPropsImplementationTarget() const {
+  return "RNSVGFeDisplacementMap";
+}
+
+folly::dynamic RNSVGFeDisplacementMapProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = RNSVGFeDisplacementMapProps();
+  const RNSVGFeDisplacementMapProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const RNSVGFeDisplacementMapProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+
+  if (x != oldProps->x) {
+    result["x"] = x;
+  }
+
+  if (y != oldProps->y) {
+    result["y"] = y;
+  }
+
+  if (width != oldProps->width) {
+    result["width"] = width;
+  }
+
+  if (height != oldProps->height) {
+    result["height"] = height;
+  }
+
+  if (result != oldProps->result) {
+    result["result"] = result;
+  }
+
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
+  if (in1 != oldProps->in1) {
+    result["in1"] = in1;
+  }
+
+  if (in2 != oldProps->in2) {
+    result["in2"] = in2;
+  }
+
+  if ((scale != oldProps->scale) && !(std::isnan(scale) && std::isnan(oldProps->scale))) {
+    result["scale"] = scale;
+  }
+
+  if (xChannelSelector != oldProps->xChannelSelector) {
+    result["xChannelSelector"] = toDynamic(xChannelSelector);
+  }
+
+  if (yChannelSelector != oldProps->yChannelSelector) {
+    result["yChannelSelector"] = toDynamic(yChannelSelector);
+  }
+  return result;
+}
+#endif
+RNSVGFeDropShadowProps::RNSVGFeDropShadowProps(
+    const PropsParserContext &context,
+    const RNSVGFeDropShadowProps &sourceProps,
+    const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
+
+    x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
+    y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
+    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+    height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+    result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeDropShadowColorInterpolationFilters::Auto})),
+    in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})),
+    dx(convertRawProp(context, rawProps, "dx", sourceProps.dx, {})),
+    dy(convertRawProp(context, rawProps, "dy", sourceProps.dy, {})),
+    stdDeviationX(convertRawProp(context, rawProps, "stdDeviationX", sourceProps.stdDeviationX, {2.0})),
+    stdDeviationY(convertRawProp(context, rawProps, "stdDeviationY", sourceProps.stdDeviationY, {2.0})),
+    floodColor(convertRawProp(context, rawProps, "floodColor", sourceProps.floodColor, {})),
+    floodOpacity(convertRawProp(context, rawProps, "floodOpacity", sourceProps.floodOpacity, {1.0})) {}
+
+#ifdef RN_SERIALIZABLE_STATE
+ComponentName RNSVGFeDropShadowProps::getDiffPropsImplementationTarget() const {
+  return "RNSVGFeDropShadow";
+}
+
+folly::dynamic RNSVGFeDropShadowProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = RNSVGFeDropShadowProps();
+  const RNSVGFeDropShadowProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const RNSVGFeDropShadowProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+
+  if (x != oldProps->x) {
+    result["x"] = x;
+  }
+
+  if (y != oldProps->y) {
+    result["y"] = y;
+  }
+
+  if (width != oldProps->width) {
+    result["width"] = width;
+  }
+
+  if (height != oldProps->height) {
+    result["height"] = height;
+  }
+
+  if (result != oldProps->result) {
+    result["result"] = result;
+  }
+
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
+  if (in1 != oldProps->in1) {
+    result["in1"] = in1;
+  }
+
+  if (dx != oldProps->dx) {
+    result["dx"] = dx;
+  }
+
+  if (dy != oldProps->dy) {
+    result["dy"] = dy;
+  }
+
+  if ((stdDeviationX != oldProps->stdDeviationX) && !(std::isnan(stdDeviationX) && std::isnan(oldProps->stdDeviationX))) {
+    result["stdDeviationX"] = stdDeviationX;
+  }
+
+  if ((stdDeviationY != oldProps->stdDeviationY) && !(std::isnan(stdDeviationY) && std::isnan(oldProps->stdDeviationY))) {
+    result["stdDeviationY"] = stdDeviationY;
+  }
+
+  if (floodColor != oldProps->floodColor) {
+    result["floodColor"] = floodColor;
+  }
+
+  if ((floodOpacity != oldProps->floodOpacity) && !(std::isnan(floodOpacity) && std::isnan(oldProps->floodOpacity))) {
+    result["floodOpacity"] = floodOpacity;
+  }
+  return result;
+}
+#endif
+RNSVGFeImageProps::RNSVGFeImageProps(
+    const PropsParserContext &context,
+    const RNSVGFeImageProps &sourceProps,
+    const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
+
+    x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
+    y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
+    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+    height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+    result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeImageColorInterpolationFilters::Auto})),
+    href(convertRawProp(context, rawProps, "href", sourceProps.href, {})),
+    align(convertRawProp(context, rawProps, "align", sourceProps.align, {})),
+    meetOrSlice(convertRawProp(context, rawProps, "meetOrSlice", sourceProps.meetOrSlice, {0})) {}
+
+#ifdef RN_SERIALIZABLE_STATE
+ComponentName RNSVGFeImageProps::getDiffPropsImplementationTarget() const {
+  return "RNSVGFeImage";
+}
+
+folly::dynamic RNSVGFeImageProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = RNSVGFeImageProps();
+  const RNSVGFeImageProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const RNSVGFeImageProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+
+  if (x != oldProps->x) {
+    result["x"] = x;
+  }
+
+  if (y != oldProps->y) {
+    result["y"] = y;
+  }
+
+  if (width != oldProps->width) {
+    result["width"] = width;
+  }
+
+  if (height != oldProps->height) {
+    result["height"] = height;
+  }
+
+  if (result != oldProps->result) {
+    result["result"] = result;
+  }
+
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
+  if (href != oldProps->href) {
+    result["href"] = href;
+  }
+
+  if (align != oldProps->align) {
+    result["align"] = align;
+  }
+
+  if (meetOrSlice != oldProps->meetOrSlice) {
+    result["meetOrSlice"] = meetOrSlice;
+  }
+  return result;
+}
+#endif
+RNSVGFeMorphologyProps::RNSVGFeMorphologyProps(
+    const PropsParserContext &context,
+    const RNSVGFeMorphologyProps &sourceProps,
+    const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
+
+    x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
+    y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
+    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+    height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+    result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeMorphologyColorInterpolationFilters::Auto})),
+    in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})),
+    operator1(convertRawProp(context, rawProps, "operator1", sourceProps.operator1, {RNSVGFeMorphologyOperator1::Erode})),
+    radiusX(convertRawProp(context, rawProps, "radiusX", sourceProps.radiusX, {})),
+    radiusY(convertRawProp(context, rawProps, "radiusY", sourceProps.radiusY, {})) {}
+
+#ifdef RN_SERIALIZABLE_STATE
+ComponentName RNSVGFeMorphologyProps::getDiffPropsImplementationTarget() const {
+  return "RNSVGFeMorphology";
+}
+
+folly::dynamic RNSVGFeMorphologyProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = RNSVGFeMorphologyProps();
+  const RNSVGFeMorphologyProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const RNSVGFeMorphologyProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+
+  if (x != oldProps->x) {
+    result["x"] = x;
+  }
+
+  if (y != oldProps->y) {
+    result["y"] = y;
+  }
+
+  if (width != oldProps->width) {
+    result["width"] = width;
+  }
+
+  if (height != oldProps->height) {
+    result["height"] = height;
+  }
+
+  if (result != oldProps->result) {
+    result["result"] = result;
+  }
+
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
+  if (in1 != oldProps->in1) {
+    result["in1"] = in1;
+  }
+
+  if (operator1 != oldProps->operator1) {
+    result["operator1"] = toDynamic(operator1);
+  }
+
+  if (radiusX != oldProps->radiusX) {
+    result["radiusX"] = radiusX;
+  }
+
+  if (radiusY != oldProps->radiusY) {
+    result["radiusY"] = radiusY;
+  }
+  return result;
+}
+#endif
+RNSVGFeSpecularLightingProps::RNSVGFeSpecularLightingProps(
+    const PropsParserContext &context,
+    const RNSVGFeSpecularLightingProps &sourceProps,
+    const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
+
+    x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
+    y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
+    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+    height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+    result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeSpecularLightingColorInterpolationFilters::Auto})),
+    in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})),
+    surfaceScale(convertRawProp(context, rawProps, "surfaceScale", sourceProps.surfaceScale, {1.0})),
+    specularConstant(convertRawProp(context, rawProps, "specularConstant", sourceProps.specularConstant, {1.0})),
+    specularExponent(convertRawProp(context, rawProps, "specularExponent", sourceProps.specularExponent, {1.0})),
+    lightingColor(convertRawProp(context, rawProps, "lightingColor", sourceProps.lightingColor, {})),
+    light(convertRawProp(context, rawProps, "light", sourceProps.light, {})) {}
+
+#ifdef RN_SERIALIZABLE_STATE
+ComponentName RNSVGFeSpecularLightingProps::getDiffPropsImplementationTarget() const {
+  return "RNSVGFeSpecularLighting";
+}
+
+folly::dynamic RNSVGFeSpecularLightingProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = RNSVGFeSpecularLightingProps();
+  const RNSVGFeSpecularLightingProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const RNSVGFeSpecularLightingProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+
+  if (x != oldProps->x) {
+    result["x"] = x;
+  }
+
+  if (y != oldProps->y) {
+    result["y"] = y;
+  }
+
+  if (width != oldProps->width) {
+    result["width"] = width;
+  }
+
+  if (height != oldProps->height) {
+    result["height"] = height;
+  }
+
+  if (result != oldProps->result) {
+    result["result"] = result;
+  }
+
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
+  if (in1 != oldProps->in1) {
+    result["in1"] = in1;
+  }
+
+  if ((surfaceScale != oldProps->surfaceScale) && !(std::isnan(surfaceScale) && std::isnan(oldProps->surfaceScale))) {
+    result["surfaceScale"] = surfaceScale;
+  }
+
+  if ((specularConstant != oldProps->specularConstant) && !(std::isnan(specularConstant) && std::isnan(oldProps->specularConstant))) {
+    result["specularConstant"] = specularConstant;
+  }
+
+  if ((specularExponent != oldProps->specularExponent) && !(std::isnan(specularExponent) && std::isnan(oldProps->specularExponent))) {
+    result["specularExponent"] = specularExponent;
+  }
+
+  if (lightingColor != oldProps->lightingColor) {
+    result["lightingColor"] = lightingColor;
+  }
+
+  if (light != oldProps->light) {
+    result["light"] = toDynamic(light);
+  }
+  return result;
+}
+#endif
+RNSVGFeTileProps::RNSVGFeTileProps(
+    const PropsParserContext &context,
+    const RNSVGFeTileProps &sourceProps,
+    const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
+
+    x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
+    y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
+    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+    height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+    result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeTileColorInterpolationFilters::Auto})),
+    in1(convertRawProp(context, rawProps, "in1", sourceProps.in1, {})) {}
+
+#ifdef RN_SERIALIZABLE_STATE
+ComponentName RNSVGFeTileProps::getDiffPropsImplementationTarget() const {
+  return "RNSVGFeTile";
+}
+
+folly::dynamic RNSVGFeTileProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = RNSVGFeTileProps();
+  const RNSVGFeTileProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const RNSVGFeTileProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+
+  if (x != oldProps->x) {
+    result["x"] = x;
+  }
+
+  if (y != oldProps->y) {
+    result["y"] = y;
+  }
+
+  if (width != oldProps->width) {
+    result["width"] = width;
+  }
+
+  if (height != oldProps->height) {
+    result["height"] = height;
+  }
+
+  if (result != oldProps->result) {
+    result["result"] = result;
+  }
+
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
+  if (in1 != oldProps->in1) {
+    result["in1"] = in1;
+  }
+  return result;
+}
+#endif
+RNSVGFeTurbulenceProps::RNSVGFeTurbulenceProps(
+    const PropsParserContext &context,
+    const RNSVGFeTurbulenceProps &sourceProps,
+    const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
+
+    x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
+    y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
+    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+    height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+    result(convertRawProp(context, rawProps, "result", sourceProps.result, {})),
+    colorInterpolationFilters(convertRawProp(context, rawProps, "colorInterpolationFilters", sourceProps.colorInterpolationFilters, {RNSVGFeTurbulenceColorInterpolationFilters::Auto})),
+    baseFrequencyX(convertRawProp(context, rawProps, "baseFrequencyX", sourceProps.baseFrequencyX, {0.0})),
+    baseFrequencyY(convertRawProp(context, rawProps, "baseFrequencyY", sourceProps.baseFrequencyY, {0.0})),
+    numOctaves(convertRawProp(context, rawProps, "numOctaves", sourceProps.numOctaves, {1})),
+    seed(convertRawProp(context, rawProps, "seed", sourceProps.seed, {0.0})),
+    stitchTiles(convertRawProp(context, rawProps, "stitchTiles", sourceProps.stitchTiles, {RNSVGFeTurbulenceStitchTiles::NoStitch})),
+    type(convertRawProp(context, rawProps, "type", sourceProps.type, {RNSVGFeTurbulenceType::Turbulence})) {}
+
+#ifdef RN_SERIALIZABLE_STATE
+ComponentName RNSVGFeTurbulenceProps::getDiffPropsImplementationTarget() const {
+  return "RNSVGFeTurbulence";
+}
+
+folly::dynamic RNSVGFeTurbulenceProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = RNSVGFeTurbulenceProps();
+  const RNSVGFeTurbulenceProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const RNSVGFeTurbulenceProps*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+
+  if (x != oldProps->x) {
+    result["x"] = x;
+  }
+
+  if (y != oldProps->y) {
+    result["y"] = y;
+  }
+
+  if (width != oldProps->width) {
+    result["width"] = width;
+  }
+
+  if (height != oldProps->height) {
+    result["height"] = height;
+  }
+
+  if (result != oldProps->result) {
+    result["result"] = result;
+  }
+
+  if (colorInterpolationFilters != oldProps->colorInterpolationFilters) {
+    result["colorInterpolationFilters"] = toDynamic(colorInterpolationFilters);
+  }
+
+  if ((baseFrequencyX != oldProps->baseFrequencyX) && !(std::isnan(baseFrequencyX) && std::isnan(oldProps->baseFrequencyX))) {
+    result["baseFrequencyX"] = baseFrequencyX;
+  }
+
+  if ((baseFrequencyY != oldProps->baseFrequencyY) && !(std::isnan(baseFrequencyY) && std::isnan(oldProps->baseFrequencyY))) {
+    result["baseFrequencyY"] = baseFrequencyY;
+  }
+
+  if (numOctaves != oldProps->numOctaves) {
+    result["numOctaves"] = numOctaves;
+  }
+
+  if ((seed != oldProps->seed) && !(std::isnan(seed) && std::isnan(oldProps->seed))) {
+    result["seed"] = seed;
+  }
+
+  if (stitchTiles != oldProps->stitchTiles) {
+    result["stitchTiles"] = toDynamic(stitchTiles);
+  }
+
+  if (type != oldProps->type) {
+    result["type"] = toDynamic(type);
   }
   return result;
 }
