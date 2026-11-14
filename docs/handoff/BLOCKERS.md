@@ -1,5 +1,23 @@
 # BLOCKERS.md
 
+## PR 161 current native candidate (2026-11-14)
+
+Local software blockers are corrected: nested child removal and nested-root
+bounds have failing/passing controls, the GCC convolution fixture is
+deterministic, and the main merge preserves transactional QtSvg staging.
+The standalone host graph passes 8/8; all 17 staging fixtures pass.
+
+Acceptance still needs final-head required hosted checks, including all four
+corpus shards with the existing timeouts. The original head timed out while
+mounting batches 13/14; these correctness fixes do not establish its timing
+cause. A fresh combined candidate build with licensed QNX SDP 8.0.5 and the
+selected public Qt closure, followed by the actual target SVG cases, is also
+required. This Cloud environment has neither that SDP nor a connected target.
+An operator with access to the existing build host and authorized target must
+capture the evidence. Keep this native PR draft until that requirement is
+met; prior Pi 400 receipts remain scoped to their original source and recipe.
+[Evidence and limits](../validation/pr161-nested-roots-2026-11-14.md).
+
 ## PR 161 cross-build recipe correction — 2026-11-13
 
 The native consumer used inherited Release/O1 flags with selected GCC warning

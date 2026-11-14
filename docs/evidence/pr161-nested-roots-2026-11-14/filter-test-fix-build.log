@@ -1,0 +1,4 @@
+[0/2] Re-checking globbed directories...
+[1/5] Automatic MOC for target rnqnx_qt_rnsvg_filter_test
+[2/4] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_filter_test.dir/RnsvgFilterTest.cpp.o
+[3/4] Linking CXX executable rnqnx_qt_rnsvg_filter_test

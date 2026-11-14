@@ -32,6 +32,16 @@
       "reviewedAt": "2026-11-13",
       "receipt": "docs/validation/pr161-device-gallery-2026-11-13.md",
       "status": "native O1 with selected strict-warning exceptions; Qt O2; inherited upstream object reuse has no independent flag/header audit; clean combined build required"
+    },
+    "pr161NestedRoots": {
+      "reviewedAt": "2026-11-14",
+      "runtimeCommit": "3324e7c5acdfef0a7046e5a1520f8a981c4900ef",
+      "mainIntegrationCommit": "446d28ff47131a5032fb476987ada08c751cd697",
+      "receipt": "docs/validation/pr161-nested-roots-2026-11-14.md",
+      "nativeHost": "Original-source negative controls and candidate scene passes; 8/8 standalone Qt 6.11.1/GCC 14.2 Debug ASan/UBSan CTests after deterministic test-kernel construction; Qt libraries uninstrumented and leak detection disabled",
+      "stagingHost": "17 transactional staging fixtures pass, including bounded SVG copies and rollback; independent agent source review and repeated fixture pass",
+      "hostedCi": "Exact final-head required checks pending; original corpus timeouts are not explained by the nested-root fixes",
+      "targetExecution": "Not run for the new native correction; fresh combined SDP 8.0.5 build and current target SVG acceptance required; keep PR draft and all release gates pending"
     }
   },
   "gates": [

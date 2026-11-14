@@ -124,7 +124,8 @@ inline void convolveMatrixSemantics() {
   auto convolve = [&](EdgeMode edge, std::vector<double> k = {1, 0, 0}, double divisor = 1, bool preserve = false) {
     Fixture f;
     exactRegion(f, 8, 1);
-    detail::convolve(f, static_cast<int>(k.size()), 1, std::move(k), divisor, edge, preserve);
+    const int orderX = static_cast<int>(k.size());
+    detail::convolve(f, orderX, 1, std::move(k), divisor, edge, preserve);
     return run(f, src);
   };
   Result r = convolve(EdgeMode::None);

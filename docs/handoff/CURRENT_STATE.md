@@ -1,5 +1,22 @@
 # Current state
 
+## PR 161 nested SVG and main integration (2026-11-14)
+
+Published native correction `3324e7c` forwards nested child removal to the
+visible root and includes roots nested directly inside other roots in group
+bounds. Both new regressions fail against the original source and pass with
+the correction. Main integration `446d28f` retains PR 163's transactional
+staging and bounded optional QtSvg copies. All 17 staging fixtures pass.
+
+The Linux Qt 6.11.1/GCC 14.2 Debug ASan/UBSan standalone SVG graph passes all
+eight CTests after a test-only kernel-size-before-move correction. The
+follow-up contains that fixture correction and its evidence/handoff records;
+no additional uncommitted runtime changes are required. Exact final-head CI,
+a fresh combined QNX build and current-device validation remain pending.
+Keep PR 161 draft until its required target evidence is available. Historical
+Pi receipts below do not validate these new native changes. All release gates
+remain pending. [Receipt and logs](../validation/pr161-nested-roots-2026-11-14.md).
+
 ## PR 161 cross-build recipe correction — 2026-11-13
 
 The native consumer used inherited Release/O1 flags with selected GCC warning

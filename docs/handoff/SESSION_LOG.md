@@ -1,5 +1,26 @@
 # SESSION_LOG.md
 
+## PR 161 nested SVG and staging integration (2026-11-14)
+
+Codex inspected the current PR, prior review threads and failing corpus logs;
+kept timeouts and tolerances unchanged; and corrected two missed nested-root
+cases. New scene tests fail for the intended reasons against the original
+source and pass on published native source `3324e7c`. The coordinating agent
+reviewed those changes. Main merge `446d28f` preserves PR 163's transactional
+staging while bounding optional SVG sources; a separate reviewer found no
+blocker and independently passed all 17 fixtures.
+
+The exact Qt 6.11.1 Linux Debug ASan/UBSan run exposed a GCC test construction
+bug, fixed by reading kernel size before moving the vector. All original pixel
+assertions remain, and the final standalone suite passes 8/8. Typecheck,
+documentation validation and 47 target-doctor host scenarios pass. Recorded
+raw failures/successes, build flags, source hashes and remaining qualification
+in the [receipt](../validation/pr161-nested-roots-2026-11-14.md), updated this
+handoff set and the canonical readiness evidence, and regenerated project
+state. No current QNX or device result is claimed; keep the native PR draft
+pending the documented target work. External CodeRabbit authentication was
+unavailable; the receipt identifies agent reviews separately.
+
 ## PR 161 cross-build recipe correction — 2026-11-13
 
 The native consumer used inherited Release/O1 flags with selected GCC warning
