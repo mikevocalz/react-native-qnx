@@ -1,0 +1,41 @@
+{
+  "scope": "host tooling; no cross-build or device result",
+  "commands": [
+    {
+      "command": "/tmp/rnqnx-tools/pnpm install --frozen-lockfile",
+      "exitCode": 0,
+      "note": "pnpm 12.18.0; lockfile unchanged"
+    },
+    {
+      "command": "node tests/js/qnx-public-runtime-staging.test.mjs",
+      "exitCode": 0,
+      "log": "staging-validation.log"
+    },
+    {
+      "command": "node scripts/validate-docs.mjs",
+      "exitCode": 0,
+      "log": "docs-validation.log"
+    },
+    {
+      "command": "node scripts/validate-dependencies.mjs",
+      "exitCode": 0,
+      "log": "dependencies-validation.log"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exitCode": 0,
+      "log": "typecheck-validation.log"
+    },
+    {
+      "command": "node tests/js/qnx-runner-manifest.test.mjs",
+      "exitCode": 0,
+      "log": "runner-manifest.log",
+      "note": "Loopback server required execution outside sandbox."
+    },
+    {
+      "command": "node tests/js/marathon-metro-platform.test.mjs",
+      "exitCode": 0,
+      "log": "marathon-metro.log"
+    }
+  ]
+}

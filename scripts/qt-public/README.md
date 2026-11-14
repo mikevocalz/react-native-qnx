@@ -52,6 +52,43 @@ python3 -I stage-runtime.py "$QT_PUBLIC_ROOT/runtime" "$QT_PUBLIC_ROOT/runtime-s
 `needed.json`; the receipt's `SHA256SUMS` was then written with
 `shasum -a 256` over every staged file.
 
+### Staging failures and recovery
+
+Staging builds a candidate in a sibling temporary directory. Missing inputs,
+invalid audit JSON, dependency-check failures and failed promotion preserve the
+previous output. An output symlink, source/build directory or ancestor is
+rejected. Copies must remain within the public source/build trees and the
+candidate output. A per-output `.NAME.stage-lock` directory prevents concurrent
+staging; it does not lock native app builds.
+
+Publication uses two directory renames. A process or power interruption between
+them can leave the output path absent. This is not a crash-atomic directory
+exchange. The lock's `transaction.json` records the PID and exact destination,
+candidate, previous-runtime and work paths before copying begins. Never remove a
+lock merely because another staging attempt reports it.
+
+To recover an interrupted run on the same build host:
+
+1. Read `transaction.json` and confirm the recorded process has exited. If its
+   identity is uncertain, stop and inspect it; do not signal another build.
+2. Check that `work` is a real sibling directory named `.NAME.stage-*`, and that
+   `previous` and `candidate` are exactly its `previous` and `candidate`
+   children. Refuse symlinks or paths outside that directory.
+3. If the destination is absent and `previous` exists, rename `previous` back
+   to the recorded destination. Verify the restored manifest and hashes.
+   If both exist, retain both and inspect them before discarding either.
+4. Once the intended output is verified, remove only the recorded temporary
+   work directory and this output's lock, then rerun staging. If the journal
+   was never written, inspect the lock and any candidate directory before
+   cleanup. Do not guess a previous-runtime path from another run.
+
+The host regression command is
+`node tests/js/qnx-public-runtime-staging.test.mjs`. It uses synthetic public
+build files and a fake `readelf`, including process termination between the
+renames and recovery of the previous runtime. It does not cross-build Qt,
+verify target libraries or establish QNX device compatibility. A power-loss
+test and filesystem durability guarantee remain outside this receipt.
+
 Qt is compiled at `-O2` ([ADR-0017](../../docs/adr/0017-qt-qnx-optimization-level.md)).
 `configure-qnx.sh` no longer passes `-optimize-size`, sets
 `FEATURE_optimize_size` and `FEATURE_optimize_full` off, and exits after
