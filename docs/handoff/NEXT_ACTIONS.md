@@ -3,6 +3,9 @@
 ## PR 149 frame/mount continuation — 2026-11-13
 
 Complete teardown checks, review the native slice, inspect exact-head CI, and keep the draft until its acceptance gates pass. Finish the remaining image and SVG handoff gaps separately.
+The Hermes importer now selects the real compiler VM for opt-in Worklets;
+configuration/error regressions, real-root cross-build and a lean-file-free
+Pi frame probe passed. The importer review reported zero findings.
 [Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
 
 ## PR 105 continuation — 2026-11-10

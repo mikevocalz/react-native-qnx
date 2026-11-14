@@ -7,6 +7,17 @@ host. The upstream C++ is compiled from the installed npm package; nothing from
 it is vendored. The bootstrap exception is recorded in
 [ADR-0020](adr/0020-worklets-reanimated-gesture-handler-bootstrap.md).
 
+## QNX Hermes selection
+
+Worklets evaluates serialized function source on its secondary runtime, even
+when the app bundle is bytecode. Its opt-in flag therefore selects the real
+`libhermesvm.so` compiler VM from `RNQNX_HERMES_QNX_DIR`. Build `hermesvm jsi`
+in that exact Hermes tree. Ordinary release apps without Worklets retain
+`libhermesvmlean.so`; development clients also select the compiler VM.
+A missing full VM stops configuration. Do not rename or alias a full VM as
+the lean library. The importer regression tests release/development/Worklets
+selection and rejects missing full artifacts; it does not prove target ABI.
+
 ## Enable
 
 ```sh

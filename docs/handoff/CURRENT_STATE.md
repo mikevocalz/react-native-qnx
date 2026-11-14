@@ -2,7 +2,10 @@
 
 ## PR 149 frame/mount continuation — 2026-11-13
 
-The Pi now completes the Worklets frame probe and paints intermediate timing pixels. Gesture attachment/routing is repaired; pan moves and springs back on release. Single tap and exclusive double tap now pass on the device. Exact-head CI and independent native review remain open.
+The Pi now completes the Worklets frame probe and paints intermediate timing pixels. Gesture attachment/routing is repaired; pan moves and springs back on release. Single tap and exclusive double tap now pass on the device. Exact-head CI and review of the later Hermes import remain open.
+The Hermes importer now selects the real compiler VM for opt-in Worklets;
+configuration/error regressions, real-root cross-build and a lean-file-free
+Pi frame probe passed. The importer review reported zero findings.
 [Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
 
 ## PR 105 review follow-up — 2026-11-10

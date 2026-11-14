@@ -3,6 +3,9 @@
 ## PR 149 frame/mount continuation — 2026-11-13
 
 Transformed Worklets output, public exports, typecheck and sixteen recognizer/binding cases under ASan/UBSan pass. The new mount-hook observer passes and fails with reporting disabled. QNX cross-build and scoped Pi timing/spring/pan checks passed. The transplanted full-host executable still has one pixel failure; no full-host green claim.
+The Hermes importer now selects the real compiler VM for opt-in Worklets;
+configuration/error regressions, real-root cross-build and a lean-file-free
+Pi frame probe passed. The importer review reported zero findings.
 [Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
 
 ## 2026-11-10 — PR 105 generator validation

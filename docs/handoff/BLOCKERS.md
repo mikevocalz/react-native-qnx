@@ -2,7 +2,10 @@
 
 ## PR 149 frame/mount continuation — 2026-11-13
 
-PR 149 stays draft. Busy-JS delivery, remaining recognizers, exact-head hosted gates and independent review remain open. CodeRabbit hit its quota on the new native slice. PR 161 must merge before PR 159, then PR 149.
+PR 149 stays draft. Busy-JS delivery, remaining recognizers, exact-head hosted gates and independent review remain open. The combined native slice was independently reviewed; its stale documentation link is fixed. PR 161 must merge before PR 159, then PR 149.
+The Hermes importer now selects the real compiler VM for opt-in Worklets;
+configuration/error regressions, real-root cross-build and a lean-file-free
+Pi frame probe passed. The importer review reported zero findings.
 [Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
 
 ## PR 105 review state — 2026-11-10

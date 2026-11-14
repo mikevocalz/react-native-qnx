@@ -97,7 +97,7 @@ for hashes, negative controls and outstanding checks.
 
 ## Earlier device receipts (Pi 400, 2026-11-13)
 
-Same build and probe as [Worklets](worklets-qnx.md#device-receipts-pi-400-2026-11-13).
+Same build and probe as [Worklets](worklets-qnx.md#earlier-startup-probes-pi-400-2026-11-13).
 
 - Reanimated: `makeMutable` with `withSpring(100)` and `withTiming(50)` ran on
   the UI thread; the completion callbacks reached JS with `finished=true` and

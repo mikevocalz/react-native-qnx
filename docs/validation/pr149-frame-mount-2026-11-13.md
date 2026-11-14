@@ -67,9 +67,11 @@ animation values remain in Reanimated.
 ## Skills, ownership and rollback
 
 DRI: current integration agent for the listed runtime, test and gallery paths.
-Independent review: CodeRabbit reviewed the earlier tracked frame/export slice
-with zero findings. The completed native slice review hit its free quota
-(wait reported: 18 minutes); it is not independently approved. Keep PR 149 draft.
+Independent review: CodeRabbit CLI 0.7.6 reviewed the combined committed slice
+`8154cae..0ecdaf7`, including native mount and gesture code, tests and receipts.
+It found one stale documentation fragment; that link is corrected. No native
+code finding was reported. The later Hermes importer change needs its own
+review. Keep PR 149 draft while the remaining acceptance gates are open.
 Repository qnx-native-api and qnx-platform-validation were read and applied.
 Margelo api-design, build-nitro-modules and cpp snapshots at
 `1e9e17be6f41c838db472d6a4b943fc26355a3be` were read in that order and verified
@@ -127,3 +129,23 @@ functional updater was serialized across the worklet boundary. Its state now
 uses a per-instance Zustand store; a plain RN callback increments taps locally.
 The gesture-candidate source inventories cover 331 native/config files and
 252 app/package files, including the new binding helper.
+
+## Hermes import continuation
+
+The physical trials above used the historical experiment's full VM behind a
+lean-named build-tree alias. Their runtime observations remain valid for those
+hashed artifacts, but that alias is not the install contract. The production
+QNX importer now selects the real compiler VM when Worklets is enabled, as it
+already does for development clients. The existing Worklets flag stays OFF by
+default; ordinary release apps still select lean. The CMake fixture passes all
+four flag combinations and rejects a missing full VM. Restoring the earlier
+condition fails Worklets release selection. These are synthetic configuration
+fixtures, not executable library or ABI tests. The real full-root cross-build passed, and the ELF names `libhermesvm.so`
+as a required library. With the lean-named file removed from the test package,
+the Pi completed the probe: thirty UI callbacks in 482 ms, worst interval
+24 ms, distinct `gui`/`ui-worklet` roles. The busy-JS result remains 0/40.
+Native SHA-256: `9303d1493c71a8e92c5c1db4928769c58accac46ce3551cec9bff791f18e857a`.
+Full VM SHA-256: `a48934c6560d8da5adeb7fadb7469e4c02b9dd925846fdbb69bf36f78f96f62f`.
+The bundle remains the final Zustand-card HBC recorded above. The owner tile
+was restored through its guarded launcher after this trial. CodeRabbit reviewed
+the importer, regression and accompanying records with zero findings.

@@ -3,6 +3,9 @@
 ## PR 149 frame/mount continuation — 2026-11-13
 
 Repaired the recursive frame closure, RefreshControl export and native mount completion. Measured two thirty-frame Pi runs and comparative timing pixels. Fixed detector attachment/routing and measured pan release at 80,15 with spring return; single/exclusive double tap also passed. The tap default-delay regression failed before its repair and passes under sanitizers.
+The Hermes importer now selects the real compiler VM for opt-in Worklets;
+configuration/error regressions, real-root cross-build and a lean-file-free
+Pi frame probe passed. The importer review reported zero findings.
 [Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
 
 ## 2026-11-10 — PR 105 committed handoff repair
