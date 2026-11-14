@@ -13,6 +13,9 @@
 #include <QMovie>
 #include <QQuickWindow>
 #include <QSignalSpy>
+#include <QScopeGuard>
+#include <QSemaphore>
+#include <QThreadPool>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QTemporaryDir>
@@ -93,6 +96,11 @@ class ExpoImageItemTest : public QObject {
   void animatedGifPlaysAndAutoplayFalsePauses();
   void hitSlopExtendsAndPointerEventsNoneIgnoresTouches();
   void downscalingKeepsReportedSize();
+  void growingADownscaledViewDecodesEnoughPixels();
+  void lockedGrowthDefersDecodeUntilUnlock();
+  void upgradingDecodeOptions_data();
+  void upgradingDecodeOptions();
+  void growthDuringInitialDecodeIsRechecked();
   void freshViewReadsTheDiskCacheWhenMemoryIsCleared();
   void imageRefSourceShowsTheDecodedPicture();
   void lockedViewKeepsItsPictureUntilUnlockedOrReloaded();
@@ -510,6 +518,84 @@ void ExpoImageItemTest::downscalingKeepsReportedSize() {
   QVERIFY(near(at(item_->grabImage(), 10, 10), Qt::red));
   // A downscaled decode must not enter the shared cache at reduced size.
   QVERIFY(!DecodedImageCache::shared().contains(QUrl::fromLocalFile(dir_.filePath("huge.png")).toString()));
+}
+
+void ExpoImageItemTest::growingADownscaledViewDecodesEnoughPixels() {
+  make(QSizeF(20, 20));
+  const QString file = writePng(dir_, "grow.png", QSize(400, 400), Qt::red);
+  const QString uri = QUrl::fromLocalFile(file).toString();
+  QSignalSpy loaded(item_.get(), &ExpoImageItem::loaded);
+  loadAndWait(sourceOf(file));
+  QCOMPARE(loaded.count(), 1);
+  QVERIFY(!DecodedImageCache::shared().contains(uri));
+  item_->setSize(QSizeF(240, 240));
+  QTRY_COMPARE_WITH_TIMEOUT(loaded.count(), 2, 5000);
+  QCOMPARE(DecodedImageCache::shared().image(DecodedImageCache::key(uri)).size(), QSize(400, 400));
+  QCOMPARE(loaded.last().at(1).toDouble(), 400.0);
+  item_->setSize(QSizeF(30, 30));
+  QTest::qWait(50);
+  QCOMPARE(loaded.count(), 2);
+}
+
+void ExpoImageItemTest::lockedGrowthDefersDecodeUntilUnlock() {
+  make(QSizeF(20, 20));
+  QSignalSpy loaded(item_.get(), &ExpoImageItem::loaded);
+  loadAndWait(sourceOf(writePng(dir_, "locked-grow.png", QSize(400, 400), Qt::blue)));
+  item_->lockResource();
+  item_->setSize(QSizeF(240, 240));
+  QTest::qWait(50);
+  QCOMPARE(loaded.count(), 1);
+  item_->unlockResource();
+  QTRY_COMPARE_WITH_TIMEOUT(loaded.count(), 2, 5000);
+}
+
+void ExpoImageItemTest::upgradingDecodeOptions_data() {
+  QTest::addColumn<bool>("naturalFit");
+  QTest::newRow("disable-downscaling") << false;
+  QTest::newRow("natural-size-fit") << true;
+}
+
+void ExpoImageItemTest::upgradingDecodeOptions() {
+  QFETCH(bool, naturalFit);
+  make(QSizeF(20, 20));
+  const QString file = writePng(dir_, "options.png", QSize(400, 400), Qt::green);
+  const QString uri = QUrl::fromLocalFile(file).toString();
+  QSignalSpy loaded(item_.get(), &ExpoImageItem::loaded);
+  loadAndWait(sourceOf(file));
+  QVERIFY(!DecodedImageCache::shared().contains(uri));
+  if (naturalFit) item_->setContentFit(QStringLiteral("none"));
+  else item_->setAllowDownscaling(false);
+  QTRY_COMPARE_WITH_TIMEOUT(loaded.count(), 2, 5000);
+  QCOMPARE(DecodedImageCache::shared().image(DecodedImageCache::key(uri)).size(), QSize(400, 400));
+}
+
+void ExpoImageItemTest::growthDuringInitialDecodeIsRechecked() {
+  auto* pool = QThreadPool::globalInstance();
+  pool->waitForDone();
+  const int previousThreads = pool->maxThreadCount();
+  pool->setMaxThreadCount(1);
+  QSemaphore started;
+  QSemaphore gate;
+  const auto cleanup = qScopeGuard([&] {
+    gate.release();
+    pool->waitForDone();
+    pool->setMaxThreadCount(previousThreads);
+  });
+  pool->start([&] { started.release(); gate.acquire(); });
+  QVERIFY(started.tryAcquire(1, 1000));
+  make(QSizeF(20, 20));
+  const QString file = writePng(dir_, "inflight-grow.png", QSize(400, 400), Qt::yellow);
+  const QString uri = QUrl::fromLocalFile(file).toString();
+  QSignalSpy loading(item_.get(), &ExpoImageItem::loadStarted);
+  QSignalSpy loaded(item_.get(), &ExpoImageItem::loaded);
+  item_->setSource(sourceOf(file));
+  QTRY_COMPARE_WITH_TIMEOUT(loading.count(), 1, 1000);
+  // The queued decode has captured 20x20; no current layer exists yet.
+  QVERIFY(!item_->displayed());
+  item_->setSize(QSizeF(240, 240));
+  gate.release();
+  QTRY_COMPARE_WITH_TIMEOUT(loaded.count(), 2, 5000);
+  QCOMPARE(DecodedImageCache::shared().image(DecodedImageCache::key(uri)).size(), QSize(400, 400));
 }
 
 int main(int argc, char** argv) {

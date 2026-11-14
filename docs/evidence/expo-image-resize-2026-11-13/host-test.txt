@@ -1,0 +1,52 @@
+Start testing: Nov 13 19:23 EST
+----------------------------------------------------------
+3/6 Testing: rnqnx_expo_image_item_test
+3/6 Test: rnqnx_expo_image_item_test
+Command: "<host-build>/rnqnx_expo_image_item_test" "-platform" "offscreen"
+Directory: <host-build>
+"rnqnx_expo_image_item_test" start time: Nov 13 19:23 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ExpoImageItemTest *********
+Config: Using QtTest library 6.12.0, Qt 6.12.0 (arm64-little_endian-lp64 shared (dynamic) release build; by Apple LLVM 21.0.0 (clang-2100.3.34.2)), macos 27.0.0
+PASS   : ExpoImageItemTest::initTestCase()
+PASS   : ExpoImageItemTest::borderRadiusRoundsThePicture()
+PASS   : ExpoImageItemTest::perCornerRadiiRoundOnlyThoseCorners()
+PASS   : ExpoImageItemTest::tintReplacesColorAndKeepsShape()
+PASS   : ExpoImageItemTest::blurSoftensAHardEdge()
+PASS   : ExpoImageItemTest::contentFitNoneDrawsNaturalSizeCentered()
+PASS   : ExpoImageItemTest::contentPositionMovesTheImage()
+PASS   : ExpoImageItemTest::blurhashPlaceholderShowsUntilTheImageArrives()
+PASS   : ExpoImageItemTest::thumbhashSourceDrawsWithoutNetwork()
+PASS   : ExpoImageItemTest::crossDissolveBlendsOldAndNew()
+PASS   : ExpoImageItemTest::flipEffectsPassThroughAnEdgeOnMidpoint()
+PASS   : ExpoImageItemTest::curlFallsBackToCrossDissolve()
+PASS   : ExpoImageItemTest::multipleSourcesPickTheSmallestThatCovers()
+PASS   : ExpoImageItemTest::onLoadReportsSizeCacheTypeAndMediaType()
+PASS   : ExpoImageItemTest::secondViewReadsFromTheSharedMemoryCache()
+PASS   : ExpoImageItemTest::headersReachTheServerAndKeyTheCache()
+PASS   : ExpoImageItemTest::failedLoadReportsTheError()
+PASS   : ExpoImageItemTest::recyclingKeyClearsThePreviousPicture()
+PASS   : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses()
+PASS   : ExpoImageItemTest::hitSlopExtendsAndPointerEventsNoneIgnoresTouches()
+PASS   : ExpoImageItemTest::downscalingKeepsReportedSize()
+PASS   : ExpoImageItemTest::growingADownscaledViewDecodesEnoughPixels()
+PASS   : ExpoImageItemTest::lockedGrowthDefersDecodeUntilUnlock()
+PASS   : ExpoImageItemTest::upgradingDecodeOptions(disable-downscaling)
+PASS   : ExpoImageItemTest::upgradingDecodeOptions(natural-size-fit)
+PASS   : ExpoImageItemTest::growthDuringInitialDecodeIsRechecked()
+PASS   : ExpoImageItemTest::freshViewReadsTheDiskCacheWhenMemoryIsCleared()
+PASS   : ExpoImageItemTest::imageRefSourceShowsTheDecodedPicture()
+PASS   : ExpoImageItemTest::lockedViewKeepsItsPictureUntilUnlockedOrReloaded()
+PASS   : ExpoImageItemTest::cleanupTestCase()
+Totals: 30 passed, 0 failed, 0 skipped, 0 blacklisted, 7574ms
+********* Finished testing of ExpoImageItemTest *********
+<end of output>
+Test time =   7.67 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_expo_image_item_test" end time: Nov 13 19:23 EST
+"rnqnx_expo_image_item_test" time elapsed: 00:00:07
+----------------------------------------------------------
+
+End testing: Nov 13 19:23 EST

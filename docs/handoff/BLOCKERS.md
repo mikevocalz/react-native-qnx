@@ -1,5 +1,14 @@
 # BLOCKERS.md
 
+## PR 159 image resolution continuation — 2026-11-13
+
+Growing a downscaled still image now schedules an adequate decode, respecting
+resource locks and decode options. All 30 native image-item host cases pass;
+the growth and initial-decode race controls fail as expected. The review
+finding is fixed; new-head CI and target
+resize checks remain pending. Other image-loader/navigation gaps stay open.
+[Receipt and rollback](../validation/pr159-image-resize-2026-11-13.md).
+
 ## PR 159 build repair — 2026-11-13
 
 The missing command-handler initializer is fixed locally. Merge still requires the new head's required checks and review; the handoff's image-loader gaps remain open.

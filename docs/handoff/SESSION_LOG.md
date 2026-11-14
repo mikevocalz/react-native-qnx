@@ -1,5 +1,14 @@
 # SESSION_LOG.md
 
+## PR 159 image resolution continuation — 2026-11-13
+
+Growing a downscaled still image now schedules an adequate decode, respecting
+resource locks and decode options. All 30 native image-item host cases pass;
+the growth and initial-decode race controls fail as expected. The review
+finding is fixed; new-head CI and target
+resize checks remain pending. Other image-loader/navigation gaps stay open.
+[Receipt and rollback](../validation/pr159-image-resize-2026-11-13.md).
+
 ## PR 159 build repair — 2026-11-13
 
 Read the November 13 handoff and current failed CI. Fixed the missing video command-handler initializer and validated the bounded table/JS scope. No Pi app or boot change was made.

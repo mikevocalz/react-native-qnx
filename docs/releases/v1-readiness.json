@@ -22,6 +22,11 @@
       "receipt": "docs/validation/pr159-table-initializer-2026-11-13.md",
       "hostedCi": "pending for the repair head",
       "targetExecution": "not run for the repair"
+    },
+    "pr159ImageResize": {
+      "reviewedAt": "2026-11-13",
+      "receipt": "docs/validation/pr159-image-resize-2026-11-13.md",
+      "status": "30 native host cases passed; growth and initial-decode negative controls fail; review finding fixed; exact-head CI and target pending"
     }
   },
   "gates": [

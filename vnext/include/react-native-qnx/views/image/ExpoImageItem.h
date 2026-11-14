@@ -107,7 +107,7 @@ class ExpoImageItem : public QQuickPaintedItem {
   QString recyclingKey() const { return recyclingKey_; }
   void setRecyclingKey(const QString& value);
   bool allowDownscaling() const { return allowDownscaling_; }
-  void setAllowDownscaling(bool value) { allowDownscaling_ = value; }
+  void setAllowDownscaling(bool value);
   bool autoplay() const { return autoplay_; }
   void setAutoplay(bool value);
 
@@ -205,6 +205,7 @@ class ExpoImageItem : public QQuickPaintedItem {
   void setCorner(int index, qreal value);
   void invalidate();
   void scheduleLoad(bool ignoreLock = false);
+  void ensureResolution();
   void startLoad();
   void loadPlaceholder();
   Choice choose(const QVariantList& entries) const;

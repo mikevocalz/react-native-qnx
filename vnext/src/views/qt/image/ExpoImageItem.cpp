@@ -142,6 +142,13 @@ void ExpoImageItem::setContentFit(const QString& value) {
   contentFitText_ = value;
   fit_ = parseContentFit(value);
   invalidate();
+  ensureResolution();
+}
+
+void ExpoImageItem::setAllowDownscaling(bool value) {
+  if (value == allowDownscaling_) return;
+  allowDownscaling_ = value;
+  ensureResolution();
 }
 
 void ExpoImageItem::setPlaceholderContentFit(const QString& value) {
@@ -284,12 +291,35 @@ void ExpoImageItem::invalidate() {
 
 void ExpoImageItem::geometryChange(const QRectF& next, const QRectF& previous) {
   QQuickPaintedItem::geometryChange(next, previous);
-  if (next.size() != previous.size()) invalidate();
+  if (next.size() != previous.size()) {
+    invalidate();
+    ensureResolution();
+  }
 }
 
 void ExpoImageItem::itemChange(ItemChange change, const ItemChangeData& data) {
   QQuickPaintedItem::itemChange(change, data);
-  if (change == ItemDevicePixelRatioHasChanged) invalidate();
+  if (change == ItemDevicePixelRatioHasChanged) {
+    invalidate();
+    ensureResolution();
+  }
+}
+
+void ExpoImageItem::ensureResolution() {
+  if (!current_ || current_->placeholder || current_->animated) return;
+  const Choice choice = choose(source_);
+  if (choice.kind != Choice::Kind::Uri) return;
+  const QSize decoded = current_->image.size();
+  const QSize original = current_->original;
+  const QSize target = targetPixels();
+  const bool reduced = decoded.width() < original.width() || decoded.height() < original.height();
+  const bool needsOriginal = !allowDownscaling_ || fit_ == ContentFit::None || fit_ == ContentFit::Fill;
+  const bool grew = target.width() > decoded.width() || target.height() > decoded.height();
+  if (choice.uri != shownUri_ || (reduced && (needsOriginal || grew))) {
+    // Coalesce layout changes and respect lockResource. Keep the current layer
+    // visible while the selected source is fetched/decoded at its new size.
+    scheduleLoad();
+  }
 }
 
 void ExpoImageItem::scheduleLoad(bool ignoreLock) {
@@ -568,6 +598,9 @@ void ExpoImageItem::show(std::unique_ptr<Layer> layer, const QString& cacheType,
   if (animated && autoplay_) current_->movie->start();
   Q_EMIT loaded(url, size.width(), size.height(), cacheType, mediaType_, animated);
   beginTransition(std::move(previous));
+  // Geometry/options may have changed while the worker decoded its snapshot,
+  // including before the first layer existed. Recheck against the live props.
+  ensureResolution();
 }
 
 void ExpoImageItem::beginTransition(std::unique_ptr<Layer> previous) {
