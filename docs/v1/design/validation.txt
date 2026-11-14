@@ -1,0 +1,41 @@
+QNX G design documentation validation, 2026-11-14; base f87c742
+Host source inspection only; no native build or device execution.
+sRGB relative luminance command: sum(linear(rgb)*[.2126,.7152,.0722]); ratio=(max+.05)/(min+.05)
+dark active title #e6edf3 #13202f 13.935474211
+dark inactive title #7d8a99 #172433 4.464636213
+light inactive title #86868b #f6f6f6 3.352292818
+focus ring on dark active #0a64d6 #13202f 2.984912602
+focus ring on dark inactive #0a64d6 #172433 2.848139945
+focus ring on light #0a64d6 #ececec 4.669555035
+proposed focus on dark #79e8dc #13202f 11.282544916
+proposed inactive light title #595963 #f6f6f6 6.404856063
+error body #fde8e8 #7f1d1d 8.533076454
+dev button text #f3f6fa #2b3a4f 10.639943372
+JSON parsing: passed
+Static English strings within specified budgets: 29
+Canonical Mobbin screen links: 15
+Local Markdown link targets: passed
+Source excerpts: native/window-chrome/WindowChrome.qml
+16:     readonly property color barColor: light ? (chrome.active ? "#ececec" : "#f6f6f6")
+19:     readonly property color titleColor: light ? (chrome.active ? "#1d1d1f" : "#86868b")
+60:         font.pixelSize: 22
+69:         color: root.barColor
+125:                 color: root.titleColor
+126:                 font.pixelSize: 14
+169:             // macOS layout: 14 px round glyph centred in the 44 px target.
+190:                     font.pixelSize: 11
+301:                 border.color: "#0a64d6"
+Source excerpts: native/window-chrome/WindowChrome.h
+18: // Lives on the Qt GUI thread with the window and never calls into JavaScript.
+19: // QtReactHost currently runs JavaScript on that same thread, so a blocked JS
+46:   Q_PROPERTY(QString controlsLayout READ controlsLayout CONSTANT)
+100:   QString controlsLayout() const { return nameOf(config_.controls); }
+Source excerpts: vnext/src/runtime/QnxDevSupport.cpp
+56:   readonly property string sans: "DejaVu Sans"
+57:   readonly property string mono: "DejaVu Sans Mono"
+70:     Behavior on y { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+71:     Behavior on opacity { NumberAnimation { duration: 160 } }
+101:     implicitHeight: 42
+No gate or implemented-status record changed.
+Checking formatting...
+All matched files use Prettier code style!

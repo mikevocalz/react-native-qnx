@@ -116,3 +116,87 @@ Items 1 to 4 need an app code change and a device check. They belong with the
 | Conformance eyebrow   | `RNQNX / CONFORMANCE LAB`                | `Conformance lab`                            | All caps reads slower and adds no meaning |
 | Switch label          | `Switch ON` / `Switch OFF`               | `Sample setting` plus the switch's own state | State belongs to the control              |
 | Performance-lab title | `RNQNX performance workload / list-1000` | keep                                         | Matches the workload name in receipts     |
+
+## QNX native runner surfaces, 2026-11-14
+
+This additive handoff covers workstream G's five native surfaces. It preserves
+the earlier three-app audit above. The design documents describe proposed
+implementation work; no UI/native source changed and no device gate passed in
+this slice. Start with [references](design/references.md), the
+[system audit](design/system-audit.md), [direction](design/direction.md),
+[strings](design/strings.md), [accessibility findings](design/accessibility-audit.md)
+and [author critique](design/critique.md). The
+[research plan](design/research-plan.md) must be run by someone who did not
+write the guide. [Skill records](design/skills.json) identify the local bodies
+read, and [contrast calculations](design/contrast.json) record source-color
+results separately from device evidence.
+
+### Geometry and tokens
+
+Preserve the established outer window dimensions and orientation. The native
+default-style title bar remains 44 logical px tall and the Fabric content root
+starts below it. Hidden-style controls need exclusion from Fabric input plus
+the documented inset contract; none-style has no on-screen controls. Do not
+advertise those input/inset gaps as resolved. Controls have at least 44 × 44
+targets. Title icon stays 20 logical px with its generated source; never add
+corner masks to the source icon.
+
+macOS layout places close/minimize/maximize on the left and centers the
+icon/title within its remaining rectangle. Windows layout places
+minimize/maximize/close on the right with leading identity. Elide the title
+within its reserved width, preserving the complete accessible name. Unsupported
+actions follow verified QPA capability; no visually enabled action may silently
+do nothing. Runtime layout switching is future windows-API work and must retain
+the currently focused action.
+
+Use `chrome.surface.active.dark`, `chrome.text.primary.dark` and theme-specific
+focus tokens from the system audit. New runner panels use the shipped DejaVu
+Sans family; diagnostics use DejaVu Sans Mono. Start with 24 px bold panel
+headings, 16/24 body text and 14 px wrapping diagnostics. Insets are 24 px;
+inter-control spacing is 16 px. Below 560 logical px of content width, stack
+panel actions and module status under names; this content breakpoint changes
+neither the app's window contract nor the title-bar control order.
+
+### State and ownership contract
+
+| Surface                | States and behavior                                                                                                                       | Edge cases                                                                                                                                                                          |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| macOS and Windows bars | Active/inactive, hover, press, keyboard focus, normal/maximized, supported minimize/restore; future guarded close pending/cancel/proceed. | Long/RTL titles, hidden/none styles, absent icon decode, resize with focus, unavailable target action. App state changes and close events occur once.                               |
+| Tile                   | Native launcher default/focus/press/running states; repeated launch restores the owned process.                                           | Label measurement fails before packaging on overflow; after successful fit, runtime elision is defensive. A longer label never changes tile size.                                   |
+| Preflight              | Check metadata, compatible, missing modules, changed modules, malformed metadata. Only compatible permits evaluation.                     | Hundreds of names scroll inside bounded details; full identifiers remain selectable; absent clipboard shows a selectable host-build command. Escape never bypasses incompatibility. |
+| Dev states             | Connecting, loading, connected, reconnecting, connection failure, bundle build/evaluation failure.                                        | Retain usable content when safe; distinguish retry from reload; incompatible native state stops session-owned app under A/B rules. Do not report success after a failed command.    |
+
+Keep window identity, root identity and process identity separate. H7's newer
+secondary-window plan uses extra named Fabric roots in one runtime/process,
+shared native modules, and per-root component state. Any React root state uses
+a per-instance Zustand store; native resources remain imperative handles.
+Close-guard subscriptions, launch events and accepted callbacks belong to one
+window generation and must detach on close. The existing single-window default
+and singleton process guard remain unchanged by these documents. Secondary
+windows need a separately reviewed native API and implementation contract.
+
+### Motion, focus and acceptance
+
+| Transition                           | Timing                                                  | Rule                                                                                             |
+| ------------------------------------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Control hover/press/focus            | Immediate                                               | Do not delay activation or focus feedback.                                                       |
+| Existing connection banner y/opacity | 160 ms, existing source uses OutCubic for y             | Proposed reduced-motion behavior is immediate; implementation still required.                    |
+| Preflight failure presentation       | Immediate after failed native check                     | Never animate or evaluate an incompatible bundle behind it.                                      |
+| Reconnect state                      | Immediate state text; no invented timeout or percentage | Actual networking layer owns retry cadence; show real results.                                   |
+| Close-guard result                   | Native ownership event, no artificial delay             | Pending guard keeps a reachable native escape/recovery path; bound behavior in the API contract. |
+
+Tab and Backtab follow physical control order; Enter/Space activates. Focus
+must remain visible after resize, theme and layout changes. Native panels
+expose heading, module-list/status and named-button semantics; error detail
+focus returns to the prior control when dismissed. Keep icon-only decoration
+out of the tab chain. Announce meaningful connection changes once, not every
+retry tick. Test enlarged text, RTL and all hover/pressed adjacent contrast
+pairs. Screen-reader behavior stays unverified until run on an actual provider.
+
+Required receipts remain separate: host layout/keyboard/native-failure tests;
+QNX cross-build; QEMU where available; Pi 400 custom-image screenshots/input;
+and stock Pi 4 QSTI proof. The release image must show both layouts, equal tile
+geometry, named incompatibilities, connection recovery, close cancel/proceed,
+and chrome operation with deliberately blocked JS. The current shared GUI/JS
+thread cannot satisfy that last requirement. No new dimensions, Qt behavioral
+patches, device boot changes or release approval are authorized by this handoff.
