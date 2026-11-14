@@ -2,11 +2,9 @@
 
 ## PR 159 review follow-up — 2026-11-14
 
-Run the full Hermes graph plus required ON/OFF hosted checks on the integrated main/PR 161 candidate. Resolve only findings supported by the actual integrated source and evidence. Perform current-target image/input/teardown qualification with the full command/status/artifact receipt; retain device gates while it is unavailable.
-[Source, commands, limits and rollback](../validation/pr159-review-followup-2026-11-14.md).
-Main/SVG integration includes PR 161 follow-up `13a0e49`; both evidence sets are retained. Transactional imageformat staging reads the selected `IMAGEFORMATS_SRC` notices and all attribution inputs; 25 host staging fixtures pass with a failing old-source control. The final code source is `252b128`; its complete source-tree identities and 55 SHA-256 entries are recorded in the receipt.
+Publish the final integrated source/evidence tree and inspect its required hosted ON/OFF checks. Resolve the two host findings using the actual candidate/control/restoration evidence; retain the three artifact/device evidence requests. Run current-target image/input/teardown and release-app checks with host, image, source/artifact hashes, full commands and exit statuses. Do not infer target completion from host tests.
 
-Independent review corrected the initially blank paused animation, with failing direct and deleted-source prefetch controls. Fresh image Debug ASan/UBSan passes 3/3 CTests and 73 QtTest entries. Reconciliation found a stale generated Release MOC that omitted the new disk-clear HTTP slot; after refreshing only those build artifacts, all 6/6 Release CTests and 126 entries pass. Prior 125-entry logs remain qualified and preserved. Pinned Hermes and Metro builds succeeded, but GCC stopped on a Clang-specific upstream React Native pragma before linking the host test; the supported Clang retry and both new host regressions remain pending. Exact-head CI and current-target gates remain open.
+[Source, commands, hashes, limitations and rollback](../validation/pr159-review-followup-2026-11-14.md). Image results retain source 252b128; full-host results name b6bf7eb and a separate 55-file source inventory. Initial and restored host binaries share SHA-256 55af47f994614c2ca0110e3dd77004822b0c479772631c7afe4fbb2355712cd1. The consumer merge changes no tested source-tree identity. Prior 125-entry Release logs remain preserved with their stale-MOC omission; the corrected 126-entry run executes that disk-clear regression. Host ASan scope and uninstrumented dependencies are stated explicitly.
 
 ## PR 159 drawer route and pointer correction — 2026-11-13
 
@@ -89,8 +87,10 @@ Inspect the pushed head's required renderer checks. Continue #161 before merging
 
 ## PR 161 continuation (2026-11-14)
 
-1. Inspect the published follow-up's exact head and required checks. Require
-   both renderer lanes and all four corpus shards at their existing limits.
+1. Inspect the published packaging follow-up's exact head and required checks.
+   The preceding `13a0e49` head passes all nine workflows, both renderer lanes
+   and all four corpus shards. Preserve that evidence and require the new
+   head's checks at their existing limits.
    Retain any failed-job logs; do not infer the original timeout cause from
    the new nested-scene correctness results.
 2. On the licensed QNX SDP 8.0.5 host, configure a fresh combined candidate

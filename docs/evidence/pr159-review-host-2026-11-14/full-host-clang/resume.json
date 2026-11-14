@@ -1,0 +1,10 @@
+{
+  "previous_log": "build.log",
+  "previous_exit_code": 130,
+  "reason": "Parent-authorized graceful interruption to resume at parallel 4 after all other heavy builds finished",
+  "continued_log": "build-parallel4.log",
+  "native_parallelism": 4,
+  "autogen_parallelism": 2,
+  "source_code_commit": "252b128d0bbb93357dd87f840ea81d31a08c5ef1",
+  "utc_time": "2026-11-14T17:24:00.015042+00:00"
+}

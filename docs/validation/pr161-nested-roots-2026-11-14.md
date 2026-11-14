@@ -49,23 +49,96 @@ Local environment: Debian 13 x86-64, Node 26.13.1, pnpm 12.18.0,
 GCC 14.2.0, CMake 3.31.10, Ninja 1.13 and Qt 6.11.1.
 Selected command output is in [local-checks.txt](../evidence/pr161-nested-roots-2026-11-14/local-checks.txt).
 
-| Command or check                               | Result  | Scope                                                                  |
-| ---------------------------------------------- | ------- | ---------------------------------------------------------------------- |
-| `pnpm install --frozen-lockfile`               | passed  | Exact 522-package graph; no lockfile edit.                             |
-| `pnpm validate:dependencies`                   | passed  | Manifest pins and installed source contracts.                          |
-| `pnpm typecheck`                               | passed  | Root and adaptive TypeScript projects.                                 |
-| `node tests/js/rnsvg-corpus-packing.test.mjs`  | passed  | All 149 fixtures, 16 batches, four nonempty shards.                    |
-| `node tests/js/rnsvg-overlay-render.test.mjs`  | passed  | Actual Metro render: 57 QNX probes and 57 unchanged iOS probes.        |
-| `git diff --check`                             | passed  | Changed source and tests.                                              |
-| Native scene baseline negative controls        | passed  | Both regressions fail on the original two native source files, exit 2. |
-| Native scene candidate regressions             | passed  | Both pass on the restored `3324e7c` native source, exit 0.             |
-| Convolution fixture after size-before-move fix | passed  | Same pixel assertions and tolerances; focused test passes in 5 ms.     |
-| Standalone SVG ASan/UBSan suite                | passed  | All eight CTests pass in 34.86 s after the test construction fix.      |
-| Python transactional staging fixtures          | passed  | All 17 pass, including the four added SVG integration cases.           |
-| Target doctor observation fixtures             | passed  | 47 scenarios plus file/CLI boundaries; host fixtures only.             |
-| Typecheck and docs after main integration      | passed  | Root/adaptive types; 24 components and 11 release-gate documents.      |
-| QNX cross-build and physical-device execution  | not run | No licensed SDP or connected target in this Cloud environment.         |
-| Marathon/Wayland execution                     | not run | No target-specific implementation change; no target evidence promoted. |
+| Command or check                                    | Result  | Scope                                                                                                      |
+| --------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
+| `pnpm install --frozen-lockfile`                    | passed  | Exact 522-package graph; no lockfile edit.                                                                 |
+| `pnpm validate:dependencies`                        | passed  | Manifest pins and installed source contracts.                                                              |
+| `pnpm typecheck`                                    | passed  | Root and adaptive TypeScript projects.                                                                     |
+| `node tests/js/rnsvg-corpus-packing.test.mjs`       | passed  | All 149 fixtures, 16 batches, four nonempty shards.                                                        |
+| `node tests/js/rnsvg-overlay-render.test.mjs`       | passed  | Actual Metro render: 57 QNX probes and 57 unchanged iOS probes.                                            |
+| `git diff --check`                                  | passed  | Changed source and tests.                                                                                  |
+| Native scene baseline negative controls             | passed  | Both regressions fail on the original two native source files, exit 2.                                     |
+| Native scene candidate regressions                  | passed  | Both pass on the restored `3324e7c` native source, exit 0.                                                 |
+| Convolution fixture after size-before-move fix      | passed  | Same pixel assertions and tolerances; focused test passes in 5 ms.                                         |
+| Standalone SVG ASan/UBSan suite                     | passed  | All eight CTests pass in 34.86 s after the test construction fix.                                          |
+| Python transactional staging fixtures               | passed  | All 17 pass, including the four added SVG integration cases.                                               |
+| Target doctor observation fixtures                  | passed  | 47 scenarios plus file/CLI boundaries; host fixtures only.                                                 |
+| Typecheck and docs after main integration           | passed  | Root/adaptive types; 24 components and 11 release-gate documents.                                          |
+| Project-create archive regression, original source  | passed  | Expected exit 1: generated package lacks `package/svg/resolver.js`.                                        |
+| Project-create archive regression, corrected source | passed  | Actual package contains SVG, Qt and adaptive public entry files; existing creation/refusal checks pass.    |
+| Fresh dual consumer install and Metro bundles       | passed  | 445 packages installed; QNX and Marathon production bundles each exit 0 with two workers.                  |
+| Hosted workflows at `13a0e49`                       | passed  | All nine workflows; ON full graph 49/49, all four corpus shards, SVG sanitizer 8/8 and HTTP sanitizer 1/1. |
+| QNX cross-build and physical-device execution       | not run | No licensed SDP or connected target in this Cloud environment.                                             |
+| Marathon/Wayland execution                          | not run | No target-specific implementation change; no target evidence promoted.                                     |
+
+### Standalone consumer packaging continuation
+
+The published native head `13a0e49ae7ea6b16faa23840926d3976866f6646`
+still staged only `index.js`, `Libraries` and `expo` for the locally packed
+`@rn-qnx/react-native-qnx` package. Its Metro configuration requires
+`@rn-qnx/react-native-qnx/svg/resolver`, so a new external consumer could not
+load that configuration. The package manifest already included the intended
+source and public entry directories; the CLI's separate staging list omitted
+them.
+
+This follow-up ports only the reviewed copy-list correction and archive
+regression from PR 159 commit
+`f49e61eeadaf72ebc4b44060f94d1b97d75418f9`. The CLI now copies `src`,
+`adaptive`, `qt` and `svg` through the existing bounded-copy helper. The test
+inspects the actual generated archive and requires the SVG resolver plus
+the Qt and adaptive entry files. The two complete file blobs match the
+published PR 159 files exactly:
+
+| File                                                   | Git blob                                   |
+| ------------------------------------------------------ | ------------------------------------------ |
+| `packages/react-native-qnx-cli/src/create-project.mjs` | `cd36b50135a005915f4d1d68f53da82e2c19da33` |
+| `tests/js/qnx-project-create.test.mjs`                 | `88ce636f364330a1e30a0b7eb0bae5d51eb8f539` |
+
+With the new test and original CLI source, `node
+tests/js/qnx-project-create.test.mjs` exits 1 at the missing
+`package/svg/resolver.js` assertion. After the copy-list correction the same
+test passes, including its existing real-archive, hash, identity, refusal and
+no-overwrite checks. The independent Expo integration reviewer compared only
+these two files with the published source and found no blocker; bounded
+copying, manifest/version pins and source behavior are preserved.
+
+A new directory outside the checkout was created with the corrected CLI:
+
+```sh
+node packages/react-native-qnx-cli/src/bin.mjs project create \
+  --project /workspace/scratch/853552216e74/pr161-created-dual \
+  --app-id org.example.svgconsumer --name 'SVG Consumer' --with-marathon
+cd /workspace/scratch/853552216e74/pr161-created-dual
+pnpm install
+pnpm exec metro build index.js --config metro.config.js --platform qnx \
+  --dev false --max-workers 2 --out build/qnx/app.bundle.js
+pnpm exec metro build index.js --config metro.marathon.config.js --platform marathon \
+  --dev false --max-workers 2 --out build/marathon/app.bundle.js
+```
+
+Creation and install succeed, with 445 consumer packages installed using
+Node 26.13.1 and pnpm 12.18.0. Both Metro commands exit 0. The QNX bundle is
+716,848 bytes; the Marathon bundle is 716,874 bytes. All four local archive
+hashes match `platform-packages.json`, and the platform archive contains all
+three asserted entries plus `src`. This uses the generated dual-target
+public-import starter. It does not claim the Expo Router starter ran, that
+either bundle executed in a native host, or that a clean licensed developer
+workflow is qualified. The repository dependency lock remains unchanged.
+No native source or native test is changed or rerun for this packaging slice.
+
+| Evidence                                                                                                                                                                                                           | Observation                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| [Original CLI with new archive assertion](../evidence/pr161-nested-roots-2026-11-14/consumer-negative-project-create.log)                                                                                          | Expected missing-resolver assertion, exit 1.                                    |
+| [Corrected project-create regression](../evidence/pr161-nested-roots-2026-11-14/consumer-project-create.log)                                                                                                       | Real archive and existing creation/refusal checks pass.                         |
+| [Create](../evidence/pr161-nested-roots-2026-11-14/consumer-create.log), [install](../evidence/pr161-nested-roots-2026-11-14/consumer-install.log)                                                                 | New external dual consumer with four local platform archives; install succeeds. |
+| [QNX bundle](../evidence/pr161-nested-roots-2026-11-14/consumer-qnx-bundle.log), [Marathon bundle](../evidence/pr161-nested-roots-2026-11-14/consumer-marathon-bundle.log)                                         | Both production Metro bundles succeed with two workers.                         |
+| [Source/archive/bundle inventory](../evidence/pr161-nested-roots-2026-11-14/consumer-validation.json), [platform archive listing](../evidence/pr161-nested-roots-2026-11-14/consumer-platform-archive-listing.txt) | Exact source blobs, SHA-256 hashes, commands, exit codes and output sizes.      |
+
+Follow-up [typecheck, documentation and formatting output](../evidence/pr161-nested-roots-2026-11-14/consumer-checks.txt)
+records successful checks with the repository lock and all 11 release gates
+unchanged. Consumer Metro logs have trailing whitespace normalized; originals remain in
+the validation workspace. The packaging follow-up still needs its own
+published-head required CI. Its host results do not change the target gate.
 
 ### Native evidence and reproduction
 
@@ -135,6 +208,19 @@ rerun is separate evidence; this fix does not claim to explain or repair the
 corpus timing. No timeout, fixture, pixel tolerance or required gate changes.
 The original failure's [log excerpt](../evidence/pr161-nested-roots-2026-11-14/original-ci-excerpt.txt)
 retains its timestamps and job identity.
+
+At `13a0e49ae7ea6b16faa23840926d3976866f6646`, all nine hosted workflows
+completed successfully, observed at 17:36:28 UTC on 2026-11-14. The
+[full renderer run 43616638798](https://github.com/mikevocalz/react-native-qnx/actions/runs/43616638798)
+passes both OFF and ON configurations. The ON job passes 49/49 integrated
+CTests; its four corpus shards take 4.50, 197.26, 197.85 and 5.32 seconds,
+within the unchanged limits. Its separate SVG ASan/UBSan step passes 8/8,
+and the HTTP sanitizer step passes 1/1. The
+[workflow snapshot](../evidence/pr161-nested-roots-2026-11-14/published-head-ci.json)
+and [timestamped ON job excerpt](../evidence/pr161-nested-roots-2026-11-14/published-renderer-on-excerpt.txt)
+identify the exact head and results. All three existing review threads remain
+resolved. This successful run does not establish the cause of the earlier
+corpus timeouts, and it predates the packaging-only follow-up described above.
 
 ## Skills and review
 

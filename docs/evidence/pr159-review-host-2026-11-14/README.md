@@ -17,10 +17,15 @@ stale generated MOC was found to omit one test; the original 125-entry logs
 remain intact with that limitation explained in the receipt.
 
 `full-host/` preserves the successful Hermes dependency/Metro steps and the
-failed GCC full-host attempt. A Clang retry is pending; this directory does
-not contain a passing full Hermes host test result.
+failed GCC full-host attempt. The subsequent
+`full-host-clang/` directory contains the corrected candidate/control/restored
+59-case host evidence, including the failed intermediate attempts. The
+full-host source is b6bf7eb, recorded in `full-host-tested-source.json`; its
+image checks remain scoped separately to 252b128.
 
-The newly archived `full-host/`, `image-sanitizers/` and
+The newly archived `full-host/`, `full-host-clang/`, `image-sanitizers/` and
 `release-moc-refresh/` log copies have trailing horizontal whitespace
 trimmed for repository formatting. No diagnostic, test line or result was
 removed; original command outputs remain in the recorded build directories.
+
+The archived CMake cache also omits its final empty line.

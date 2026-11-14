@@ -1,0 +1,71 @@
+{
+  "candidate_source": "70c170c1bed83c3cbbb8ae6f5bcae48cacea218e",
+  "baseline_source": "d862625e79d6b1dd8a589eaf767e3311757c449a",
+  "phases": [
+    {
+      "phase": "candidate-test",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/workspace/scratch/853552216e74/pr159/build/host-review159-clang",
+        "-R",
+        "^qt_react_host_host_test$",
+        "--no-tests=error",
+        "--timeout",
+        "180",
+        "--output-on-failure",
+        "-V"
+      ],
+      "exit_code": 8,
+      "log": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/regression-controls/candidate-test.log",
+      "passed_cases": [
+        "decoratedViewTargetsNearestRegisteredAncestor",
+        "forgettingTouchTargetCancelsAndClearsResponder",
+        "inputLifecycleOptOutPreservesExistingDispatch",
+        "inputTransparentDecorationPreservesTouchTarget",
+        "javaScriptErrorsAreReportedNotSwallowed",
+        "mouseCaptureCancellationDoesNotCreateHoverTouches",
+        "mouseReleaseClearsCaptureBeforeNativeListeners",
+        "retainedSourceCodeTracksSubsequentEvaluations",
+        "runtimeEvaluatesJavaScript",
+        "touchCancelEndsEveryContactAndAllowsIdReuse",
+        "touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact",
+        "turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection",
+        "windowDeactivationCancelsTouchStream"
+      ],
+      "failed_cases": [
+        "imageLoadedForwardingDoesNotRequireLoaderLookup"
+      ],
+      "runner_failed_total": null,
+      "runner_passed_total": null,
+      "executable": {
+        "path": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/bin/qt_react_host_host_test",
+        "bytes": 146402464,
+        "sha256": "d94f6e919ea10bbbe6e13b4fdec0be3ae35bf77e0a580216a2ab4f17039821e8"
+      },
+      "metro_bundle": {
+        "path": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/rnqnx-playground.bundle.js",
+        "bytes": 784360,
+        "sha256": "761ef40b9100ae5eec2a9ee830e4a24a33d45554bf7a9784673c27cc5b6ea817"
+      }
+    }
+  ],
+  "production_paths": [
+    "vnext/src/runtime/QtReactHost.cpp",
+    "vnext/include/react-native-qnx/runtime/QnxImageLoader.h",
+    "vnext/src/runtime/QnxImageLoader.cpp",
+    "vnext/include/react-native-qnx/runtime/QnxExceptionsManager.h",
+    "vnext/src/runtime/QnxExceptionsManager.cpp"
+  ],
+  "tests_changed": false,
+  "baseline_started": false,
+  "restored": false,
+  "test_source_sha256": "1c52a62c0243445f553bc216c63636b48f5a9639974489e54adbbea2f8462f18",
+  "candidate_file_sha256": {
+    "vnext/src/runtime/QtReactHost.cpp": "285215e778fd661c610d8ff7787bb53c405adf7a56c3c01493fd2407bfc76548",
+    "vnext/include/react-native-qnx/runtime/QnxImageLoader.h": "5c94114ef0c7dcf461099d03de5d8071ba2299fd4651ce074bdfa2c45b86b26b",
+    "vnext/src/runtime/QnxImageLoader.cpp": "c91ca7f7f68b4e0494d065c14724b651385b14cfc4de86c158f98742ca03af0b",
+    "vnext/include/react-native-qnx/runtime/QnxExceptionsManager.h": "ef9178e76f2d388e01d0411384e7d97cb4a2e10c87df5bbd60672c24cbb10e65",
+    "vnext/src/runtime/QnxExceptionsManager.cpp": "8994b5da5b7a05e093eb593f0156c906510c4315c969fb38d1774ebe6ef47da2"
+  }
+}
