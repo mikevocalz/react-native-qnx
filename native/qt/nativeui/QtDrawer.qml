@@ -84,10 +84,17 @@ Item {
     function clamp01(v) { return Math.max(0, Math.min(1, v)); }
 
     // ---- nav items, focus and states --------------------------------------
+    function itemValue(item, name) {
+        // Fabric supplies QObject dynamic properties, which QML's dot lookup
+        // does not expose. The native bridge reads those through QObject.
+        return bridge && typeof bridge.itemProperty === "function"
+               ? bridge.itemProperty(item, name) : item[name];
+    }
+
     function isNavItem(item) {
-        return item.visible && item.enabled && item.accessible === true
-               && navRoles.indexOf(item.accessibilityRole) >= 0
-               && item.accessibilityStateDisabled !== true;
+        return item.visible && item.enabled && itemValue(item, "accessible") === true
+               && navRoles.indexOf(itemValue(item, "accessibilityRole")) >= 0
+               && itemValue(item, "accessibilityStateDisabled") !== true;
     }
 
     function collectNavItems() {
@@ -183,6 +190,8 @@ Item {
         var items = collectNavItems();
         if (focusedIndex < 0 || focusedIndex >= items.length)
             return false;
+        if (bridge && typeof bridge.activateItem === "function")
+            return bridge.activateItem(items[focusedIndex]);
         items[focusedIndex].Accessible.pressAction();
         return true;
     }
@@ -196,7 +205,7 @@ Item {
         var items = collectNavItems();
         focusedIndex = -1;
         for (var i = 0; i < items.length; i++) {
-            if (items[i].accessibilityStateSelected === true) {
+            if (itemValue(items[i], "accessibilityStateSelected") === true) {
                 focusedIndex = i;
                 break;
             }

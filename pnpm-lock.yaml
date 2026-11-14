@@ -359,6 +359,9 @@ importers:
       react-native-screens:
         specifier: 4.30.1
         version: 4.30.1(react-native@0.88.1(patch_hash=93cb95dac314df9c65228d9bd5affcc6131434f488158ebaadaa0dd8618b79a5)(@babel/core@7.29.7(supports-color@8.1.1))(@react-native/metro-config@0.88.1(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(react@19.3.0)
+      zustand:
+        specifier: 5.1.0
+        version: 5.1.0(@types/react@19.3.0)(react@19.3.0)
 
   packages/metro-config-marathon:
     dependencies:

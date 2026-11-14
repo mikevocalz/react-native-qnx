@@ -4,6 +4,8 @@
 // Escape to close. Animated with the JavaScript driver (no Reanimated or
 // gesture-handler).
 const React = require('react');
+const { useStore } = require('zustand');
+const { createStore } = require('zustand/vanilla');
 const { Animated, Easing, PanResponder, Pressable, StyleSheet, View } = require('react-native');
 const { DrawerProgressContext } = require('./drawerContexts');
 const { getSwipeExclusionLeft, subscribeSwipeExclusion } = require('./swipeExclusion');
@@ -11,16 +13,21 @@ const { dismissKeyboardOnDrag, warnUnsupportedDrawerProps } = require('./drawerO
 
 const DURATION = 220;
 
-function useExclusionLeft() {
-  const [value, setValue] = React.useState(getSwipeExclusionLeft);
+function useDrawerState(open) {
+  const store = React.useMemo(
+    () => createStore(() => ({ visible: open, exclusion: getSwipeExclusionLeft() })),
+    []
+  );
   React.useEffect(() => {
-    const unsubscribe = subscribeSwipeExclusion(setValue);
-    // The tab bar is a child of the drawer and has already set the rail width
-    // by the time this subscription starts: read it again.
-    setValue(getSwipeExclusionLeft());
+    const update = (exclusion) => store.setState({ exclusion });
+    const unsubscribe = subscribeSwipeExclusion(update);
+    update(getSwipeExclusionLeft());
     return unsubscribe;
-  }, []);
-  return value;
+  }, [store]);
+  const visible = useStore(store, (state) => state.visible);
+  const exclusion = useStore(store, (state) => state.exclusion);
+  const setVisible = React.useCallback((visible) => store.setState({ visible }), [store]);
+  return { visible, exclusion, setVisible };
 }
 
 function JsDrawer({
@@ -54,9 +61,12 @@ function JsDrawer({
     drawerWidth ??
     StyleSheet.flatten(drawerStyle)?.width ??
     Math.min(320, Math.max(240, Math.round((layout?.width ?? 800) * 0.8)));
-  const progress = React.useRef(new Animated.Value(open ? 1 : 0)).current;
-  const [visible, setVisible] = React.useState(open);
-  const exclusion = useExclusionLeft();
+  const progressRef = React.useRef(null);
+  if (progressRef.current === null) progressRef.current = new Animated.Value(open ? 1 : 0);
+  const progress = progressRef.current;
+  const { visible, exclusion, setVisible } = useDrawerState(open);
+  const pendingTimer = React.useRef(null);
+  const settlement = React.useRef(null);
   const openRef = React.useRef(open);
   const callbacks = React.useRef({});
   callbacks.current = {
@@ -73,6 +83,9 @@ function JsDrawer({
   const mounted = React.useRef(false);
   React.useEffect(() => {
     openRef.current = open;
+    clearTimeout(pendingTimer.current);
+    pendingTimer.current = null;
+    settlement.current?.stop();
     if (open) setVisible(true);
     // The first run only sets the resting position; no transition happens.
     if (mounted.current) callbacks.current.onTransitionStart?.(!open);
@@ -89,27 +102,44 @@ function JsDrawer({
     });
     mounted.current = true;
     return () => animation.stop();
-  }, [open, progress]);
+  }, [open, progress, setVisible]);
+  React.useEffect(
+    () => () => {
+      clearTimeout(pendingTimer.current);
+      settlement.current?.stop();
+    },
+    []
+  );
 
   const dragStart = React.useRef(0);
   // Animate to wherever the `open` prop says, after a drag the parent did not
   // confirm or a terminated gesture.
-  const snapBack = () => {
-    Animated.timing(progress, {
-      toValue: openRef.current ? 1 : 0,
+  const settle = (next) => {
+    if (next) setVisible(true);
+    settlement.current?.stop();
+    const animation = Animated.timing(progress, {
+      toValue: next ? 1 : 0,
       duration: DURATION,
       useNativeDriver: false,
-    }).start(({ finished }) => {
-      if (finished && !openRef.current) setVisible(false);
+    });
+    settlement.current = animation;
+    animation.start(({ finished }) => {
+      if (finished && !next) setVisible(false);
     });
   };
+  const snapBack = () => settle(openRef.current);
   const edgePan = React.useMemo(
     () =>
       PanResponder.create({
         onMoveShouldSetPanResponder: (_e, g) =>
           Math.abs(g.dx) > 6 && Math.abs(g.dx) > Math.abs(g.dy),
         onPanResponderGrant: () => {
-          dragStart.current = openRef.current ? 1 : 0;
+          clearTimeout(pendingTimer.current);
+          pendingTimer.current = null;
+          settlement.current?.stop();
+          progress.stopAnimation((value) => {
+            dragStart.current = value;
+          });
           setVisible(true);
           dismissKeyboardOnDrag(callbacks.current.keyboardDismissMode);
           callbacks.current.onGestureStart?.();
@@ -130,16 +160,28 @@ function JsDrawer({
             : dragStart.current === 1
               ? target >= 0.6
               : target > 0.4;
-          if (wantOpen && !openRef.current) callbacks.current.onOpen?.();
-          else if (!wantOpen && openRef.current) callbacks.current.onClose?.();
-          snapBack();
+          if (wantOpen === openRef.current) {
+            snapBack();
+            return;
+          }
+          // Settle toward the requested state while the controlled parent
+          // confirms it. Revert only if it stays unconfirmed, like QtDrawer.
+          settle(wantOpen);
+          pendingTimer.current = setTimeout(() => {
+            pendingTimer.current = null;
+            snapBack();
+          }, 400);
+          if (wantOpen) callbacks.current.onOpen?.();
+          else callbacks.current.onClose?.();
         },
         onPanResponderTerminate: () => {
+          clearTimeout(pendingTimer.current);
+          pendingTimer.current = null;
           callbacks.current.onGestureCancel?.();
           snapBack();
         },
       }),
-    [progress, right, width, swipeMinDistance]
+    [progress, right, width, swipeMinDistance, setVisible]
   );
 
   if (drawerType === 'permanent') {

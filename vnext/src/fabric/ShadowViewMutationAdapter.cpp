@@ -1,3 +1,4 @@
+#include "react-native-qnx/fabric/QtNativeUiBridge.h"
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
 #include "react-native-qnx/fabric/QtAccessibilityActivation.h"
 #endif
@@ -1006,6 +1007,24 @@ MountError ShadowViewMutationAdapter::applyAccessibilityActions(const ShadowView
 #endif
 
 void ShadowViewMutationAdapter::registerEventEmitter(const ShadowView& view) {
+#if RNQNX_ENABLE_QT_NATIVE_UI
+  if (componentNameOf(view) == QStringLiteral("View")) {
+    const auto props = std::dynamic_pointer_cast<const facebook::react::ViewProps>(view.props);
+    const auto emitter = std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(view.eventEmitter);
+    std::function<void()> click;
+    if (props && props->accessible && emitter &&
+        props->events[facebook::react::ViewEvents::Offset::Click]) {
+      click = [emitter, tag = view.tag] {
+        // Pressability ignores PointerEvents to avoid duplicate onPress. A
+        // keyboard/accessibility click deliberately has no pointerType field.
+        emitter->dispatchEvent("click", folly::dynamic::object("target", tag),
+                               facebook::react::RawEvent::Category::Discrete);
+      };
+    }
+    setNativeUiPressCallback(layer_.itemForTag(view.tag), std::move(click));
+  }
+#endif
+
   if (touchDispatcher_ == nullptr) {
     return;
   }

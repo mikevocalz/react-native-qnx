@@ -22,6 +22,9 @@ class Value {
   setValue(next) {
     this.value = next;
   }
+  stopAnimation(callback) {
+    callback?.(this.value);
+  }
   interpolate(config) {
     return { interpolatedFrom: this, config };
   }

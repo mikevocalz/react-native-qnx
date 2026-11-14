@@ -16,6 +16,7 @@
 #include <QQuickWindow>
 #include <QStringList>
 #include <QTemporaryDir>
+#include <QScopeGuard>
 #include <QtTest>
 
 #include "react-native-qnx/views/QtCssColor.h"
@@ -48,6 +49,9 @@ class Recorder final : public QObject {
     calls << QStringLiteral("layoutMode:%1:%2").arg(mode).arg(size);
   }
   Q_INVOKABLE QString resolveImage(const QString& uri) { return uri; }
+  Q_INVOKABLE QVariant itemProperty(QObject* item, const QString& name) {
+    return item ? item->property(name.toUtf8().constData()) : QVariant();
+  }
 
   int count(const QString& prefix) const {
     int n = 0;
@@ -394,6 +398,36 @@ class NativeUiQuickTest : public QObject {
     QCOMPARE(main->mapToItem(drawer.get(), QPointF(0, 0)).x(), 0.0);
   }
 
+
+  void drawerReadsDynamicMountMetadata() {
+    const auto resetPointer = qScopeGuard([&] {
+      QTest::mouseMove(window_.get(), QPoint(790, 490));
+      QCoreApplication::processEvents();
+    });
+    auto drawer = load(QStringLiteral("QtDrawer.qml"), QSize(600, 400));
+    QVERIFY(drawer);
+    Recorder recorder;
+    drawer->setProperty("bridge", QVariant::fromValue(static_cast<QObject*>(&recorder)));
+    auto* panel = mountChild(drawer.get(), QRectF(0, 0, 280, 400));
+    mountChild(drawer.get(), QRectF(0, 0, 600, 400));
+    // Real generic Fabric items receive QObject dynamic properties. Unlike the
+    // older fixture these are not declared QML properties.
+    auto* nav = mountChild(panel, QRectF(10, 20, 260, 40));
+    nav->setProperty("accessible", true);
+    nav->setProperty("accessibilityRole", QStringLiteral("button"));
+    nav->setProperty("accessibilityStateSelected", true);
+    QVERIFY(QTest::qWaitFor([&] { return drawer->property("ready").toBool(); }));
+    drawer->setProperty("open", true);
+    QVERIFY(QTest::qWaitFor([&] { return settled(drawer.get(), 1.0); }, 2000));
+    QCOMPARE(drawer->property("focusedIndex").toInt(), 0);
+    QTest::mouseMove(window_.get(), centerOf(nav));
+    QVERIFY(QTest::qWaitFor([&] { return layer(drawer.get(), "rnqnxDrawerItemState")->isVisible(); }));
+    QTest::keyClick(window_.get(), Qt::Key_Down);
+    QVERIFY(layer(drawer.get(), "rnqnxDrawerFocusRing")->isVisible());
+    nav->setProperty("accessibilityStateDisabled", true);
+    QMetaObject::invokeMethod(drawer.get(), "collectNavItems");
+    QCOMPARE(drawer->property("focusedIndex").toInt(), -1);
+  }
 
   void drawerItemsShowHoverAndPressedStates() {
     DrawerFixture fx;

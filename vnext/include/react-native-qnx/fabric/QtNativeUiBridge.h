@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <functional>
 #include <vector>
 
 class QQuickItem;
@@ -20,6 +21,8 @@ namespace rnqnx::fabric {
 std::vector<std::string> nativeUiComponentNames();
 void addNativeUiComponentDescriptors(facebook::react::ComponentDescriptorProviderRegistry& registry);
 bool applyNativeUiProps(QQuickItem* item, const facebook::react::ShadowView& view);
+/// Owner-thread non-pointer click activation for accessible mounted React views.
+void setNativeUiPressCallback(QQuickItem* item, std::function<void()> callback);
 
 /// ViewManagerAdapter_ExpoImage, the view expo-image's requireNativeView
 /// resolves (RNQNX_ENABLE_QT_EXPO_IMAGE).

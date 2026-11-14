@@ -86,6 +86,24 @@ Bridge* bridgeFor(QQuickItem* item) {
 
 // ---- RNQnxDrawer -----------------------------------------------------------
 
+class PressBridge final : public QObject {
+  Q_OBJECT
+ public:
+  PressBridge(QQuickItem* item, std::function<void()> callback)
+      : QObject(item), item_(item), callback_(std::move(callback)) {}
+  bool activate() {
+    if (!item_->isVisible() || !item_->isEnabled() ||
+        !item_->property("accessible").toBool() ||
+        item_->property("accessibilityStateDisabled").toBool() || !callback_) return false;
+    const auto callback = callback_;
+    callback();
+    return true;
+  }
+ private:
+  QQuickItem* item_;
+  std::function<void()> callback_;
+};
+
 class DrawerBridge final : public QObject {
   Q_OBJECT
 
@@ -94,6 +112,20 @@ class DrawerBridge final : public QObject {
 
   void setEmitter(std::shared_ptr<const rn::RNQnxDrawerEventEmitter> emitter) {
     emitter_ = std::move(emitter);
+  }
+  Q_INVOKABLE QVariant itemProperty(QObject* item, const QString& name) const {
+    return item ? item->property(name.toUtf8().constData()) : QVariant();
+  }
+  Q_INVOKABLE bool activateItem(QObject* object) {
+    auto* item = qobject_cast<QQuickItem*>(object);
+    if (!item) return false;
+    bool descendant = false;
+    for (auto* ancestor = item->parentItem(); ancestor; ancestor = ancestor->parentItem()) {
+      if (ancestor == parent()) { descendant = true; break; }
+    }
+    if (!descendant) return false;
+    auto* action = item->findChild<PressBridge*>(QString(), Qt::FindDirectChildrenOnly);
+    return action && action->activate();
   }
 
   /// A change the user asked for (edge or panel drag, scrim tap, Escape).
@@ -229,6 +261,12 @@ bool applyTabBar(QQuickItem* item, const rn::ShadowView& view) {
 }  // namespace
 
 #if RNQNX_ENABLE_QT_NATIVE_UI
+
+void setNativeUiPressCallback(QQuickItem* item, std::function<void()> callback) {
+  if (!item) return;
+  if (auto* old = item->findChild<PressBridge*>(QString(), Qt::FindDirectChildrenOnly)) delete old;
+  if (callback) new PressBridge(item, std::move(callback));
+}
 
 std::vector<std::string> nativeUiComponentNames() {
   return {std::string(rn::RNQnxDrawerComponentDescriptor::ConcreteShadowNode::Name()),
