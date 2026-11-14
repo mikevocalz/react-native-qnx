@@ -39,10 +39,13 @@ QRectF Bounds::nestedBox(const RnsvgRootItem& nested, const Frame& f, int depth,
   const QTransform view = viewTransform(rp, size);
   QRectF box;
   for (QQuickItem* child : nested.childItems()) {
-    const auto* c = qobject_cast<const RnsvgElementItem*>(child);
-    if (!c) continue;
-    QRectF cb = compute(c, nf, depth + 1, painted);
-    if (!cb.isNull() && c->props().matrix) cb = c->props().matrix->mapRect(cb);
+    QRectF cb;
+    if (const auto* c = qobject_cast<const RnsvgElementItem*>(child)) {
+      cb = compute(c, nf, depth + 1, painted);
+      if (!cb.isNull() && c->props().matrix) cb = c->props().matrix->mapRect(cb);
+    } else if (const auto* inner = qobject_cast<const RnsvgRootItem*>(child)) {
+      cb = nestedBox(*inner, nf, depth + 1, painted);
+    }
     if (!cb.isNull()) box = unionRect(box, view.mapRect(cb));
   }
   // The nested viewport clips its content.

@@ -1,0 +1,13 @@
+Source: GitHub Actions run 43542289743, job 132285449955
+Head: d38097f38d5a1ebb560627649e95c84d04d32f02
+Selected original log lines, retrieved 2026-11-14; this is not the continuation's result.
+
+2026-11-14T02:20:36.6958108Z  8/49 Test  #8: rnqnx_qt_rnsvg_corpus_test_1 ........................***Timeout 300.13 sec
+2026-11-14T02:20:36.6972144Z rnsvg batch 13 start
+2026-11-14T02:25:36.8255507Z  9/49 Test  #9: rnqnx_qt_rnsvg_corpus_test_2 ........................***Timeout 300.13 sec
+2026-11-14T02:25:36.8267383Z rnsvg batch 14 start
+2026-11-14T02:27:45.6241070Z 96% tests passed, 2 tests failed out of 49
+2026-11-14T02:27:45.6241727Z Total Test time (real) = 749.90 sec
+2026-11-14T02:27:45.6242268Z The following tests FAILED:
+2026-11-14T02:27:45.6242830Z 	  8 - rnqnx_qt_rnsvg_corpus_test_1 (Timeout)
+2026-11-14T02:27:45.6243446Z 	  9 - rnqnx_qt_rnsvg_corpus_test_2 (Timeout)
