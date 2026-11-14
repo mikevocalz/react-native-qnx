@@ -170,7 +170,11 @@ class ModalQuickTest : public QObject {
   }
 
   void aModalClosedBelowAnotherLeavesTheUpperModalFocused() {
+    QQuickItem* app = appItem();
+    app->forceActiveFocus();
     QQuickItem* lower = openModal(&closes_);
+    QQuickItem* field = create(kFieldQml, lower);
+    field->forceActiveFocus();
     int upperCloses = 0;
     QQuickItem* upper = openModal(&upperCloses);
 
@@ -180,6 +184,49 @@ class ModalQuickTest : public QObject {
     QTest::keyClick(window_.get(), Qt::Key_Escape);
     QCOMPARE(upperCloses, 1);
     delete upper;
+    QVERIFY(app->hasActiveFocus());
+    delete app;
+  }
+
+  void onlyTheTopModalReclaimsFocusFromTheCoveredApp() {
+    QQuickItem* app = appItem();
+    app->forceActiveFocus();
+    int lowerCloses = 0;
+    QQuickItem* lower = openModal(&lowerCloses);
+    int upperCloses = 0;
+    QQuickItem* upper = openModal(&upperCloses);
+
+    app->forceActiveFocus();
+
+    QVERIFY(upper->hasActiveFocus());
+    QVERIFY(!lower->hasActiveFocus());
+    QTest::keyClick(window_.get(), Qt::Key_Escape);
+    QCOMPARE(upperCloses, 1);
+    QCOMPARE(lowerCloses, 0);
+    QCOMPARE(app->property("escapes").toInt(), 0);
+    delete upper;
+    delete lower;
+    delete app;
+  }
+
+  void aFieldInACoveredModalCannotTakeFocusFromTheTopModal() {
+    int lowerCloses = 0;
+    QQuickItem* lower = openModal(&lowerCloses);
+    QQuickItem* field = create(kFieldQml, lower);
+    field->forceActiveFocus();
+    int upperCloses = 0;
+    QQuickItem* upper = openModal(&upperCloses);
+
+    field->forceActiveFocus();
+
+    QVERIFY(upper->hasActiveFocus());
+    QVERIFY(!field->hasActiveFocus());
+    QTest::keyClick(window_.get(), Qt::Key_Escape);
+    QCOMPARE(upperCloses, 1);
+    QCOMPARE(lowerCloses, 0);
+    delete upper;
+    QVERIFY(field->hasActiveFocus());
+    delete lower;
   }
 };
 

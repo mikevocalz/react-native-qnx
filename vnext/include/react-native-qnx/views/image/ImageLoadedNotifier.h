@@ -16,7 +16,7 @@ struct ImageLoadedEvent {
   int height{0};
 };
 
-/// Fans an ImageLoadedEvent out to whoever listens: the ImageLoader module
+/// Fans an ImageLoadedEvent out to whoever listens: the host's installed binding
 /// forwards it to expo-image's `imageLoaded` module event (what expo-observe
 /// subscribes to). Single-threaded: subscribe and notify on the Qt/JS thread.
 class ImageLoadedNotifier final {

@@ -1,5 +1,13 @@
 # Current state
 
+## PR 159 review follow-up — 2026-11-14
+
+PR 159 review follow-ups correct external package staging, the standalone SVG HTTP link, drawer scrim/fling and badge behavior, image metadata/animation/authenticated cache keys, disk-clear generations, host event forwarding and retained source URLs. Keyboard/modal fixes are integrated. Seven targeted JS suites, their shared-process router order, six Qt native executables, real image HTTP/cache and fresh QNX/Marathon consumer bundles pass. Full JS stops on an environment EPERM for its Wayland fixture socket. Full Hermes graph, exact-head CI and current-target qualification remain open.
+[Source, commands, limits and rollback](../validation/pr159-review-followup-2026-11-14.md).
+Main/SVG integration includes PR 161 follow-up `13a0e49`; both evidence sets are retained. Transactional imageformat staging reads the selected `IMAGEFORMATS_SRC` notices and all attribution inputs; 25 host staging fixtures pass with a failing old-source control. The final code source is `252b128`; its complete source-tree identities and 55 SHA-256 entries are recorded in the receipt.
+
+Independent review corrected the initially blank paused animation, with failing direct and deleted-source prefetch controls. Fresh image Debug ASan/UBSan passes 3/3 CTests and 73 QtTest entries. Reconciliation found a stale generated Release MOC that omitted the new disk-clear HTTP slot; after refreshing only those build artifacts, all 6/6 Release CTests and 126 entries pass. Prior 125-entry logs remain qualified and preserved. Pinned Hermes and Metro builds succeeded, but GCC stopped on a Clang-specific upstream React Native pragma before linking the host test; the supported Clang retry and both new host regressions remain pending. Exact-head CI and current-target gates remain open.
+
 ## PR 159 drawer route and pointer correction — 2026-11-13
 
 The drawer now selects its navigator destination across all Home child tabs.
@@ -73,6 +81,23 @@ the growth and initial-decode race controls fail as expected. The review
 finding is fixed; new-head CI and target
 resize checks remain pending. Other image-loader/navigation gaps stay open.
 [Receipt and rollback](../validation/pr159-image-resize-2026-11-13.md).
+
+## PR 161 nested SVG and main integration (2026-11-14)
+
+Published native correction `3324e7c` forwards nested child removal to the
+visible root and includes roots nested directly inside other roots in group
+bounds. Both new regressions fail against the original source and pass with
+the correction. Main integration `446d28f` retains PR 163's transactional
+staging and bounded optional QtSvg copies. All 17 staging fixtures pass.
+
+The Linux Qt 6.11.1/GCC 14.2 Debug ASan/UBSan standalone SVG graph passes all
+eight CTests after a test-only kernel-size-before-move correction. The
+follow-up contains that fixture correction and its evidence/handoff records;
+no additional uncommitted runtime changes are required. Exact final-head CI,
+a fresh combined QNX build and current-device validation remain pending.
+Keep PR 161 draft until its required target evidence is available. Historical
+Pi receipts below do not validate these new native changes. All release gates
+remain pending. [Receipt and logs](../validation/pr161-nested-roots-2026-11-14.md).
 
 ## PR 161 cross-build recipe correction — 2026-11-13
 

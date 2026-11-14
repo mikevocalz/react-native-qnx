@@ -1,6 +1,7 @@
 // The image fetch queue and the fetcher that uses it: ordering by expo-image's
 // `priority` and the bound on loads in flight, against a real local HTTP server.
 #include "react-native-qnx/views/image/ExpoImageItem.h"
+#include "react-native-qnx/views/image/ImageDiskCache.h"
 #include "react-native-qnx/views/image/ImageFetchQueue.h"
 #include "react-native-qnx/views/image/QtImageFetcher.h"
 
@@ -9,6 +10,7 @@
 #include <QSignalSpy>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QTemporaryDir>
 #include <QtTest>
 
 #include <algorithm>
@@ -182,6 +184,35 @@ class ImageFetchQueueTest : public QObject {
     const QStringList expected{QStringLiteral("/occupies"), QStringLiteral("/high"), QStringLiteral("/normal"),
                                QStringLiteral("/low")};
     QCOMPARE(server.arrived(), expected);
+  }
+
+  void clearingDiskCacheDoesNotRestoreAnInFlightResponse() {
+    QTemporaryDir directory;
+    QVERIFY(directory.isValid());
+    ImageDiskCache disk(directory.path(), 1024 * 1024);
+    HoldingServer server;
+    QtImageFetcher fetcher(5000, &disk);
+    auto request = requestFor(server.url(QStringLiteral("/cleared")), ImagePriority::Normal);
+    request.policy = ImageCachePolicy::Disk;
+    int finished = 0;
+    const auto done = [&](FetchResult result) {
+      QVERIFY(result.error.isEmpty());
+      QVERIFY(!result.bytes.isEmpty());
+      ++finished;
+    };
+    fetcher.fetch(request, {}, done);
+    QTRY_COMPARE_WITH_TIMEOUT(server.heldCount(), 1, 5000);
+    disk.clear();
+    server.answerOne();
+    QTRY_COMPARE_WITH_TIMEOUT(finished, 1, 5000);
+    QVERIFY(!disk.contains(request.storageKey()));
+
+    // A request admitted after the clear belongs to the new cache generation.
+    fetcher.fetch(request, {}, done);
+    QTRY_COMPARE_WITH_TIMEOUT(server.heldCount(), 1, 5000);
+    server.answerOne();
+    QTRY_COMPARE_WITH_TIMEOUT(finished, 2, 5000);
+    QVERIFY(disk.contains(request.storageKey()));
   }
 
   // expo-image's `priority` prop orders loads across views, because every view

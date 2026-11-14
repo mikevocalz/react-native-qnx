@@ -1,5 +1,13 @@
 # BLOCKERS.md
 
+## PR 159 review follow-up — 2026-11-14
+
+Merge qualification still needs exact-head required hosted checks, full Hermes tests for retained SourceCode and view-event forwarding, and current-target evidence. The full local JS runner cannot open its Wayland fixture Unix socket (EPERM). CodeRabbit CLI is signed out. Historical screenshot-only input observations are explicitly incomplete receipts; no host, revision or exit status has been invented.
+[Source, commands, limits and rollback](../validation/pr159-review-followup-2026-11-14.md).
+Main/SVG integration includes PR 161 follow-up `13a0e49`; both evidence sets are retained. Transactional imageformat staging reads the selected `IMAGEFORMATS_SRC` notices and all attribution inputs; 25 host staging fixtures pass with a failing old-source control. The final code source is `252b128`; its complete source-tree identities and 55 SHA-256 entries are recorded in the receipt.
+
+Independent review corrected the initially blank paused animation, with failing direct and deleted-source prefetch controls. Fresh image Debug ASan/UBSan passes 3/3 CTests and 73 QtTest entries. Reconciliation found a stale generated Release MOC that omitted the new disk-clear HTTP slot; after refreshing only those build artifacts, all 6/6 Release CTests and 126 entries pass. Prior 125-entry logs remain qualified and preserved. Pinned Hermes and Metro builds succeeded, but GCC stopped on a Clang-specific upstream React Native pragma before linking the host test; the supported Clang retry and both new host regressions remain pending. Exact-head CI and current-target gates remain open.
+
 ## PR 159 drawer route and pointer correction — 2026-11-13
 
 The drawer now selects its navigator destination across all Home child tabs.
@@ -78,6 +86,24 @@ resize checks remain pending. Other image-loader/navigation gaps stay open.
 
 The missing command-handler initializer is fixed locally. Merge still requires the new head's required checks and review; the handoff's image-loader gaps remain open.
 [Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
+
+## PR 161 current native candidate (2026-11-14)
+
+Local software blockers are corrected: nested child removal and nested-root
+bounds have failing/passing controls, the GCC convolution fixture is
+deterministic, and the main merge preserves transactional QtSvg staging.
+The standalone host graph passes 8/8; all 17 staging fixtures pass.
+
+Acceptance still needs final-head required hosted checks, including all four
+corpus shards with the existing timeouts. The original head timed out while
+mounting batches 13/14; these correctness fixes do not establish its timing
+cause. A fresh combined candidate build with licensed QNX SDP 8.0.5 and the
+selected public Qt closure, followed by the actual target SVG cases, is also
+required. This Cloud environment has neither that SDP nor a connected target.
+An operator with access to the existing build host and authorized target must
+capture the evidence. Keep this native PR draft until that requirement is
+met; prior Pi 400 receipts remain scoped to their original source and recipe.
+[Evidence and limits](../validation/pr161-nested-roots-2026-11-14.md).
 
 ## PR 161 cross-build recipe correction — 2026-11-13
 

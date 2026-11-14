@@ -1,0 +1,65 @@
+{
+  "method": "WCAG sRGB relative luminance; solid source colors only, no rendered-pixel or device claim.",
+  "pairs": [
+    {
+      "name": "dark active title",
+      "foreground": "#e6edf3",
+      "background": "#13202f",
+      "ratio": 13.935
+    },
+    {
+      "name": "dark inactive title",
+      "foreground": "#7d8a99",
+      "background": "#172433",
+      "ratio": 4.465
+    },
+    {
+      "name": "light inactive title",
+      "foreground": "#86868b",
+      "background": "#f6f6f6",
+      "ratio": 3.352
+    },
+    {
+      "name": "focus ring on dark active",
+      "foreground": "#0a64d6",
+      "background": "#13202f",
+      "ratio": 2.985
+    },
+    {
+      "name": "focus ring on dark inactive",
+      "foreground": "#0a64d6",
+      "background": "#172433",
+      "ratio": 2.848
+    },
+    {
+      "name": "focus ring on light",
+      "foreground": "#0a64d6",
+      "background": "#ececec",
+      "ratio": 4.67
+    },
+    {
+      "name": "proposed focus on dark",
+      "foreground": "#79e8dc",
+      "background": "#13202f",
+      "ratio": 11.283
+    },
+    {
+      "name": "proposed inactive light title",
+      "foreground": "#595963",
+      "background": "#f6f6f6",
+      "ratio": 6.405
+    },
+    {
+      "name": "error body",
+      "foreground": "#fde8e8",
+      "background": "#7f1d1d",
+      "ratio": 8.533
+    },
+    {
+      "name": "dev button text",
+      "foreground": "#f3f6fa",
+      "background": "#2b3a4f",
+      "ratio": 10.64
+    }
+  ]
+}

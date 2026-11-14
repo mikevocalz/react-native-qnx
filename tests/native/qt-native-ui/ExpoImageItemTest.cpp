@@ -2,6 +2,7 @@
 // and an HTTP server in an offscreen QQuickWindow, and the assertions read
 // pixels from the painted result.
 #include "react-native-qnx/views/DecodedImageCache.h"
+#include "react-native-qnx/runtime/QtImageCache.h"
 #include "react-native-qnx/views/image/ExpoImageItem.h"
 #include "react-native-qnx/views/image/ImageDiskCache.h"
 #include "react-native-qnx/views/image/ImageRefRegistry.h"
@@ -93,6 +94,7 @@ class ExpoImageItemTest : public QObject {
   void headersReachTheServerAndKeyTheCache();
   void failedLoadReportsTheError();
   void recyclingKeyClearsThePreviousPicture();
+  void animatedGifPlaysAndAutoplayFalsePauses_data();
   void animatedGifPlaysAndAutoplayFalsePauses();
   void hitSlopExtendsAndPointerEventsNoneIgnoresTouches();
   void downscalingKeepsReportedSize();
@@ -289,9 +291,16 @@ void ExpoImageItemTest::secondViewReadsFromTheSharedMemoryCache() {
   auto second = std::make_unique<ExpoImageItem>(window_.contentItem());
   second->setSize(QSizeF(40, 40));
   QSignalSpy loaded(second.get(), &ExpoImageItem::loaded);
+  QSignalSpy started(second.get(), &ExpoImageItem::loadStarted);
+  QStringList events;
+  QObject::connect(second.get(), &ExpoImageItem::loadStarted, second.get(), [&] { events.append("start"); });
+  QObject::connect(second.get(), &ExpoImageItem::loaded, second.get(), [&] { events.append("load"); });
   second->setSource(sourceOf(path));
   QTRY_COMPARE_WITH_TIMEOUT(loaded.count(), 1, 3000);
   QCOMPARE(loaded.first().at(3).toString(), QStringLiteral("memory"));
+  QCOMPARE(loaded.first().at(4).toString(), QStringLiteral("image/png"));
+  QCOMPARE(started.count(), 1);
+  QCOMPARE(events, QStringList({"start", "load"}));
 }
 
 namespace {
@@ -455,7 +464,14 @@ void ExpoImageItemTest::recyclingKeyClearsThePreviousPicture() {
   QVERIFY(!item_->displayed());
 }
 
+void ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses_data() {
+  QTest::addColumn<bool>("prefetched");
+  QTest::newRow("direct") << false;
+  QTest::newRow("prefetched-memory") << true;
+}
+
 void ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses() {
+  QFETCH(bool, prefetched);
   const QString path = dir_.filePath("anim.gif");
   {
     // Two-frame GIF written with QMovie-compatible encoder is unavailable in Qt;
@@ -471,10 +487,50 @@ void ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses() {
   }
   QMovie probe(path);
   if (!probe.isValid() || probe.frameCount() < 2) QSKIP("the Qt build has no animated GIF support");
+  if (prefetched) {
+    rnqnx::runtime::QtImageCache prefetcher;
+    bool finished = false;
+    prefetcher.load(QUrl::fromLocalFile(path).toString(), {}, [&](QSize size, QString error) {
+      QVERIFY(error.isEmpty());
+      QCOMPARE(size, QSize(1, 1));
+      finished = true;
+    });
+    QTRY_VERIFY_WITH_TIMEOUT(finished, 3000);
+    // Memory-only prefetch must retain playback without reopening the source.
+    QVERIFY(QFile::remove(path));
+  }
+  // A never-started movie must display its decoded first frame. Exercise the
+  // direct decode as well as a prefetched entry whose source was removed.
+  auto paused = std::make_unique<ExpoImageItem>(window_.contentItem());
+  paused->setSize(QSizeF(40, 40));
+  paused->setAutoplay(false);
+  QSignalSpy pausedLoaded(paused.get(), &ExpoImageItem::loaded);
+  paused->setSource(sourceOf(path));
+  QTRY_VERIFY_WITH_TIMEOUT(paused->displayed(), 3000);
+  QCOMPARE(pausedLoaded.count(), 1);
+  QCOMPARE(pausedLoaded.first().at(3).toString(),
+           prefetched ? QStringLiteral("memory") : QStringLiteral("none"));
+  QVERIFY(!paused->animating());
+  QCOMPARE(paused->grabImage().pixelColor(20, 20), QColor(Qt::red));
+  QTest::qWait(50);
+  QCOMPARE(paused->grabImage().pixelColor(20, 20), QColor(Qt::red));
+  QVERIFY(!paused->animating());
+  paused->startAnimating();
+  QVERIFY(paused->animating());
+  QTRY_COMPARE_WITH_TIMEOUT(paused->grabImage().pixelColor(20, 20), QColor(Qt::blue), 2000);
+  paused->stopAnimating();
+  const QImage stopped = paused->grabImage();
+  QTest::qWait(50);
+  QCOMPARE(paused->grabImage(), stopped);
+  paused.reset();
+  if (!prefetched) DecodedImageCache::shared().clear();
+
   make();
   item_->setContentFit(QStringLiteral("fill"));
   QSignalSpy loaded(item_.get(), &ExpoImageItem::loaded);
   loadAndWait(sourceOf(path));
+  if (prefetched) QCOMPARE(loaded.first().at(3).toString(), QStringLiteral("memory"));
+  QCOMPARE(loaded.first().at(4).toString(), QStringLiteral("image/gif"));
   QCOMPARE(loaded.first().at(5).toBool(), true);
   QTRY_VERIFY_WITH_TIMEOUT(item_->animating(), 2000);
   QSet<QRgb> seen;
@@ -487,15 +543,6 @@ void ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses() {
   QVERIFY2(seen.size() >= 2, "the frame changed while playing");
   item_->stopAnimating();
   QVERIFY(!item_->animating());
-  // autoplay false: loads paused until startAnimating.
-  auto paused = std::make_unique<ExpoImageItem>(window_.contentItem());
-  paused->setSize(QSizeF(40, 40));
-  paused->setAutoplay(false);
-  paused->setSource(sourceOf(path));
-  QTRY_VERIFY_WITH_TIMEOUT(paused->displayed(), 3000);
-  QVERIFY(!paused->animating());
-  paused->startAnimating();
-  QVERIFY(paused->animating());
 }
 
 void ExpoImageItemTest::hitSlopExtendsAndPointerEventsNoneIgnoresTouches() {

@@ -1,8 +1,19 @@
 #include "react-native-qnx/fabric/QtModalBridge.h"
 
+#include <algorithm>
 #include <utility>
+#include <vector>
 
 namespace rnqnx::fabric {
+
+namespace {
+// Non-owning registration, used only on the Qt GUI owner thread. Filtering by
+// window keeps independent surfaces separate; QPointers tolerate item teardown.
+std::vector<QPointer<QtModalBridge>>& activeModals() {
+  static std::vector<QPointer<QtModalBridge>> bridges;
+  return bridges;
+}
+}  // namespace
 
 QString QtModalBridge::modalObjectName() {
   return QStringLiteral("rnqnxModal");
@@ -17,18 +28,23 @@ QtModalBridge::QtModalBridge(QQuickItem& modal, std::function<void()> onRequestC
   }
 }
 
-bool QtModalBridge::insideAnyModal(const QQuickItem* item) {
-  for (; item != nullptr; item = item->parentItem()) {
-    if (item->objectName() == modalObjectName()) {
-      return true;
-    }
-  }
-  return false;
+QtModalBridge::~QtModalBridge() {
+  leave();
 }
 
-bool QtModalBridge::insideOtherModal(const QQuickItem* item) const {
-  for (; item != nullptr && item != &modal_; item = item->parentItem()) {
-    if (item->objectName() == modalObjectName()) {
+QtModalBridge* QtModalBridge::topModal(QQuickWindow* window) {
+  const auto& bridges = activeModals();
+  for (auto it = bridges.rbegin(); it != bridges.rend(); ++it) {
+    if (*it != nullptr && (*it)->window_ == window) {
+      return it->data();
+    }
+  }
+  return nullptr;
+}
+
+bool QtModalBridge::contains(const QQuickItem* item) const {
+  for (; item != nullptr; item = item->parentItem()) {
+    if (item == &modal_) {
       return true;
     }
   }
@@ -45,33 +61,52 @@ void QtModalBridge::windowChanged(QQuickWindow* window) {
 void QtModalBridge::enter(QQuickWindow& window) {
   window_ = &window;
   previousFocus_ = window.activeFocusItem();
-  modal_.forceActiveFocus();
+  // Register before changing focus so lower modals cannot reclaim it.
+  activeModals().emplace_back(this);
   connect(&window, &QQuickWindow::activeFocusItemChanged, this, &QtModalBridge::activeFocusChanged);
+  modal_.forceActiveFocus();
 }
 
 void QtModalBridge::leave() {
-  if (window_ == nullptr) {
-    return;
-  }
   QQuickWindow* window = window_;
+  const bool wasTop = window != nullptr && topModal(window) == this;
+  auto previousFocus = previousFocus_;
+  auto& bridges = activeModals();
+  // If a covered modal closes first, its successor must inherit the original
+  // restoration target rather than retain a pointer to a disappearing item.
+  if (window != nullptr) {
+    for (const auto& bridge : bridges) {
+      if (bridge != nullptr && bridge != this && bridge->window_ == window &&
+          contains(bridge->previousFocus_)) {
+        bridge->previousFocus_ = previousFocus;
+      }
+    }
+  }
+  std::erase_if(bridges, [this](const auto& bridge) { return bridge == nullptr || bridge == this; });
   window_.clear();
-  disconnect(window, &QQuickWindow::activeFocusItemChanged, this, &QtModalBridge::activeFocusChanged);
-  // A modal opened above this one owns the keyboard now; leave focus alone.
-  if (insideOtherModal(window->activeFocusItem())) {
+  previousFocus_.clear();
+  if (window == nullptr) {
     return;
   }
-  if (previousFocus_ != nullptr && previousFocus_->window() == window) {
-    previousFocus_->forceActiveFocus();
+  disconnect(window, &QQuickWindow::activeFocusItemChanged, this, &QtModalBridge::activeFocusChanged);
+  if (!wasTop) {
+    return;
   }
-  previousFocus_.clear();
+  auto* next = topModal(window);
+  if (previousFocus != nullptr && previousFocus->window() == window &&
+      (next == nullptr || next->contains(previousFocus))) {
+    previousFocus->forceActiveFocus();
+  } else if (next != nullptr) {
+    next->modal_.forceActiveFocus();
+  }
 }
 
 void QtModalBridge::activeFocusChanged() {
-  if (reclaiming_ || window_ == nullptr) {
+  if (reclaiming_ || window_ == nullptr || topModal(window_) != this) {
     return;
   }
   QQuickItem* focused = window_->activeFocusItem();
-  if (focused == nullptr || insideAnyModal(focused)) {
+  if (focused == nullptr || contains(focused)) {
     return;
   }
   reclaiming_ = true;
@@ -80,7 +115,7 @@ void QtModalBridge::activeFocusChanged() {
 }
 
 void QtModalBridge::requestClose() {
-  if (onRequestClose_) {
+  if (window_ != nullptr && topModal(window_) == this && onRequestClose_) {
     onRequestClose_();
   }
 }

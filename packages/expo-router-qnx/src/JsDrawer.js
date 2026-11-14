@@ -157,11 +157,19 @@ function JsDrawer({
         onPanResponderRelease: (_e, g) => {
           const delta = (right ? -g.dx : g.dx) / width;
           callbacks.current.onGestureEnd?.();
-          // Past 40% of the width in the direction of travel flips the state,
-          // and so does a drag of at least swipeMinDistance px if it is not shorter.
+          // PanResponder reports px/ms; QtDrawer's 500 px/s fling threshold
+          // takes precedence over swipeMinDistance on both drawer sides.
+          const velocity = (right ? -1 : 1) * (g.vx ?? 0);
           const farEnough = Math.abs(delta) * width >= swipeMinDistance;
           const startedOpen = drawerStore.getState().dragStartedOpen;
-          const wantOpen = !farEnough ? startedOpen : startedOpen ? delta >= -0.4 : delta > 0.4;
+          const wantOpen =
+            Math.abs(velocity) > 0.5
+              ? velocity > 0
+              : !farEnough
+                ? startedOpen
+                : startedOpen
+                  ? delta >= -0.4
+                  : delta > 0.4;
           if (wantOpen === openRef.current) {
             snapBack();
             return;
@@ -218,6 +226,18 @@ function JsDrawer({
     },
     visible ? renderDrawerContent() : null
   );
+  const scrim =
+    visible &&
+    React.createElement(Animated.View, {
+      pointerEvents: 'box-none',
+      style: [StyleSheet.absoluteFill, { opacity: progress }],
+      children: React.createElement(Pressable, {
+        accessibilityLabel: overlayAccessibilityLabel ?? 'Close drawer',
+        accessibilityRole: 'button',
+        onPress: () => onClose?.(),
+        style: [StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)' }, overlayStyle],
+      }),
+    });
 
   return React.createElement(
     DrawerProgressContext.Provider,
@@ -229,19 +249,10 @@ function JsDrawer({
       React.createElement(
         Animated.View,
         { style: [styles.fill, slide && { transform: [{ translateX: pushed }] }] },
-        children
+        children,
+        back && scrim
       ),
-      visible &&
-        React.createElement(Animated.View, {
-          pointerEvents: 'box-none',
-          style: [StyleSheet.absoluteFill, { opacity: progress }],
-          children: React.createElement(Pressable, {
-            accessibilityLabel: overlayAccessibilityLabel ?? 'Close drawer',
-            accessibilityRole: 'button',
-            onPress: () => onClose?.(),
-            style: [StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)' }, overlayStyle],
-          }),
-        }),
+      !back && scrim,
       !back && panel,
       swipeEnabled &&
         !open &&

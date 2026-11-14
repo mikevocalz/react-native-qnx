@@ -31,9 +31,9 @@ inline bool usesDisk(ImageCachePolicy policy) {
 
 using ImageHeaders = std::map<QByteArray, QByteArray>;
 
-/// One image to fetch. The cache key is the caller's `cacheKey` when it gave
-/// one; otherwise the URI, with the headers folded in so the same URI fetched
-/// with different headers is cached separately.
+/// One image to fetch. Public requests may use a caller cacheKey. Requests
+/// carrying headers also scope that alias by URI and headers, so credentials
+/// from separate sources cannot share cached content.
 struct ImageRequest {
   QString uri;
   ImageHeaders headers;

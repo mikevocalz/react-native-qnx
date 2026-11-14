@@ -46,6 +46,7 @@ struct Picture {
   QImage image;
   QString mediaType;
   QByteArray encoded;
+  bool animated{false};
   QString error;
 };
 
@@ -146,6 +147,7 @@ void obtainPicture(views::QtImageFetcher& fetcher, const SourceSpec& spec, Pictu
     Picture picture;
     picture.image = std::move(decoded.first);
     picture.mediaType = decoded.mediaType;
+    picture.animated = decoded.animated;
     picture.encoded = std::move(result.bytes);
     done(std::move(picture));
   });
@@ -343,7 +345,8 @@ jsi::Value QnxImageLoader::writeToCache(jsi::Runtime& rt, facebook::react::Turbo
       promise.reject("The image is larger than the disk cache");
       return;
     }
-    views::DecodedImageCache::shared().insert(key, picture.image);
+    views::DecodedImageCache::shared().insert(key, picture.image, picture.mediaType,
+        picture.animated ? picture.encoded : QByteArray{});
     promise.resolve(folly::dynamic(nullptr));
   });
   return result;
@@ -365,7 +368,9 @@ jsi::Value QnxImageLoader::readFromCache(jsi::Runtime& rt, facebook::react::Turb
   auto& disk = views::ImageDiskCache::shared();
   for (const QString& key : {keyed(given), given}) {
     Picture picture;
-    picture.image = memory.image(views::DecodedImageCache::key(key));
+    const auto cached = memory.entry(views::DecodedImageCache::key(key));
+    picture.image = cached.image;
+    picture.mediaType = cached.mediaType;
     if (picture.image.isNull()) {
       const QByteArray bytes = disk.read(key);
       if (bytes.isEmpty()) continue;

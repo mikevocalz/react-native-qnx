@@ -89,7 +89,7 @@ QString encodeBlurHash(const QImage& image, int componentsX, int componentsY) {
   if (factors.size() > 1) {
     double peak = 0;
     for (size_t i = 1; i < factors.size(); ++i) {
-      for (double channel : factors[i]) peak = std::max(peak, channel);
+      for (double channel : factors[i]) peak = std::max(peak, std::fabs(channel));
     }
     const int quantised = static_cast<int>(std::clamp(std::floor(peak * 166 - 0.5), 0.0, 82.0));
     maximum = (quantised + 1) / 166.0;

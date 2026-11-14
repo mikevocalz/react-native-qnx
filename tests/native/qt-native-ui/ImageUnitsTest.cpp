@@ -41,6 +41,7 @@ class ImageUnitsTest : public QObject {
   void thumbHashRejectsShortInput();
   void diskCacheEvictsLeastRecentlyUsedWithinBudget();
   void diskCacheRefusesOversizeAndClears();
+  void diskCacheClearInvalidatesPendingWrites();
   void requestKeyFoldsHeadersAndHonoursCacheKey();
   void fetcherSendsHeadersAndHitsDiskCacheSecondTime();
   void fetcherCancelNeverCallsBack();
@@ -222,7 +223,27 @@ void ImageUnitsTest::requestKeyFoldsHeadersAndHonoursCacheKey() {
   keyed.cacheKey = QStringLiteral("stable");
   ImageRequest keyedOther = two;
   keyedOther.cacheKey = QStringLiteral("stable");
+  QVERIFY(keyed.storageKey() != keyedOther.storageKey());
+  keyedOther.headers = keyed.headers;
   QCOMPARE(keyed.storageKey(), keyedOther.storageKey());
+  keyedOther.uri = QStringLiteral("https://another.example/x.png");
+  QVERIFY(keyed.storageKey() != keyedOther.storageKey());
+  keyed.headers.clear();
+  keyedOther.headers.clear();
+  QCOMPARE(keyed.storageKey(), keyedOther.storageKey());
+}
+
+void ImageUnitsTest::diskCacheClearInvalidatesPendingWrites() {
+  QTemporaryDir dir;
+  ImageDiskCache cache(dir.path(), 1024);
+  ImageDiskCache worker = cache;
+  const auto beforeClear = worker.generation();
+  QVERIFY(worker.write(QStringLiteral("old"), "bytes", beforeClear));
+  cache.clear();
+  QVERIFY(!worker.write(QStringLiteral("old"), "bytes", beforeClear));
+  QVERIFY(!cache.contains(QStringLiteral("old")));
+  QVERIFY(worker.write(QStringLiteral("new"), "bytes", worker.generation()));
+  QVERIFY(cache.contains(QStringLiteral("new")));
 }
 
 namespace {
@@ -549,6 +570,23 @@ void ImageUnitsTest::decodedCacheHonorsCountAndCostLimits() {
   QImage large(64, 64, QImage::Format_ARGB32);  // 16 KiB: over the 7 KiB ceiling
   cache.insert(QStringLiteral("big"), large);
   QVERIFY(!cache.contains(QStringLiteral("big")));
+
+  DecodedImageCache animatedCache(1);
+  QImage frame(1, 1, QImage::Format_ARGB32);
+  frame.fill(Qt::red);
+  animatedCache.insert(QStringLiteral("too-big"), frame, QStringLiteral("image/gif"), QByteArray(1024, 'x'));
+  QVERIFY(!animatedCache.contains(QStringLiteral("too-big")));  // image plus encoded bytes exceeds 1 KiB
+  animatedCache.insert(QStringLiteral("fits"), frame, QStringLiteral("image/gif"), QByteArray(1020, 'x'));
+  const auto key = DecodedImageCache::key(QStringLiteral("fits"));
+  const auto saved = animatedCache.entry(key);
+  QCOMPARE(saved.image.size(), QSize(1, 1));
+  QCOMPARE(saved.animationBytes.size(), 1020);
+  QCOMPARE(saved.mediaType, QStringLiteral("image/gif"));
+  animatedCache.clear();
+  const auto cleared = animatedCache.entry(key);
+  QVERIFY(cleared.image.isNull());
+  QVERIFY(cleared.animationBytes.isEmpty());
+  QVERIFY(cleared.mediaType.isEmpty());
 }
 
 void ImageUnitsTest::imageRefRegistryNeverReusesIds() {

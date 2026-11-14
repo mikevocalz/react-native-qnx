@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QByteArray>
 #include <QCache>
 #include <QCryptographicHash>
 #include <QImage>
@@ -9,6 +10,7 @@
 
 #include <algorithm>
 #include <deque>
+#include <utility>
 
 namespace rnqnx::views {
 
@@ -17,6 +19,12 @@ namespace rnqnx::views {
 // from Qt's image-loading thread. The process cache is bounded and memory-only.
 class DecodedImageCache {
  public:
+  struct Entry {
+    QImage image;
+    QString mediaType;
+    // A decoded first frame alone cannot restore playback in an Expo view.
+    QByteArray animationBytes;
+  };
   explicit DecodedImageCache(int budgetKiB = 32 * 1024) : images_(budgetKiB) {}
   static DecodedImageCache& shared() {
     static DecodedImageCache cache;
@@ -26,11 +34,12 @@ class DecodedImageCache {
     return QString::fromLatin1(QCryptographicHash::hash(
         uri.toUtf8(), QCryptographicHash::Sha256).toHex());
   }
-  QImage image(const QString& key) {
+  Entry entry(const QString& key) {
     QMutexLocker lock(&mutex_);
     const auto* found = images_.object(key);
-    return found ? *found : QImage{};
+    return found ? *found : Entry{};
   }
+  QImage image(const QString& key) { return entry(key).image; }
   /// Drops every decoded image.
   void clear() {
     QMutexLocker lock(&mutex_);
@@ -42,12 +51,14 @@ class DecodedImageCache {
     QMutexLocker lock(&mutex_);
     return images_.contains(key(uri));
   }
-  void insert(const QString& uri, QImage image) {
-    const auto cost = (image.sizeInBytes() + 1023) / 1024;
+  void insert(const QString& uri, QImage image, QString mediaType = {},
+              QByteArray animationBytes = {}) {
+    const auto cost = (image.sizeInBytes() + animationBytes.size() + 1023) / 1024;
     QMutexLocker lock(&mutex_);
     if (cost <= images_.maxCost()) {
       const QString hashed = key(uri);
-      images_.insert(hashed, new QImage(std::move(image)), static_cast<int>(cost));
+      images_.insert(hashed, new Entry{std::move(image), std::move(mediaType), std::move(animationBytes)},
+                     static_cast<int>(cost));
       noteInsertLocked(hashed);
       trimToCountLocked();
     }
@@ -96,7 +107,7 @@ class DecodedImageCache {
   }
 
   QMutex mutex_;
-  QCache<QString, QImage> images_;
+  QCache<QString, Entry> images_;
   std::deque<QString> order_;
   int maxCount_{0};
 };

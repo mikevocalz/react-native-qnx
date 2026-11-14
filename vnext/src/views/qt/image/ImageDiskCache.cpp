@@ -32,6 +32,7 @@ struct ImageDiskCache::State {
   const QString directory;
   std::atomic<std::int64_t> budget;
   QMutex mutex;
+  std::uint64_t generation{0};
 };
 
 ImageDiskCache::ImageDiskCache(QString directory, std::int64_t budgetBytes)
@@ -86,7 +87,18 @@ void ImageDiskCache::remove(const QString& key) {
 }
 
 bool ImageDiskCache::write(const QString& key, const QByteArray& bytes) {
+  return write(key, bytes, generation());
+}
+
+std::uint64_t ImageDiskCache::generation() const {
   QMutexLocker lock(&state_->mutex);
+  return state_->generation;
+}
+
+bool ImageDiskCache::write(const QString& key, const QByteArray& bytes,
+                           std::uint64_t generation) {
+  QMutexLocker lock(&state_->mutex);
+  if (generation != state_->generation) return false;
   if (bytes.isEmpty() || bytes.size() > state_->budget) return false;
   if (!QDir().mkpath(state_->directory)) return false;
   QSaveFile file(pathFor(key));
@@ -104,6 +116,7 @@ bool ImageDiskCache::contains(const QString& key) const {
 
 void ImageDiskCache::clear() {
   QMutexLocker lock(&state_->mutex);
+  ++state_->generation;
   QDirIterator it(state_->directory, {QStringLiteral("*") + QLatin1String(kSuffix)}, QDir::Files);
   while (it.hasNext()) QFile::remove(it.next());
 }

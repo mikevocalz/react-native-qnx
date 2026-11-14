@@ -29,13 +29,19 @@ ImageCachePolicy parseCachePolicy(const QString& text) {
 }
 
 QString ImageRequest::storageKey() const {
-  if (!cacheKey.isEmpty()) return QStringLiteral("key:") + cacheKey;
-  if (headers.empty()) return uri;
-  QByteArray folded = uri.toUtf8();
+  const QString base = cacheKey.isEmpty() ? uri : QStringLiteral("key:") + cacheKey;
+  if (headers.empty()) return base;
+  QByteArray folded;
+  const auto append = [&folded](const QByteArray& value) {
+    folded.append(QByteArray::number(value.size())).append(':').append(value);
+  };
+  append(uri.toUtf8());
   for (const auto& [name, value] : headers) {  // std::map: already sorted
-    folded.append('\n').append(name.toLower()).append(':').append(value);
+    append(name.toLower());
+    append(value);
   }
-  return uri + QLatin1Char('#') +
+  // A caller's alias must never collapse different authenticated sources.
+  return base + QLatin1Char('#') +
          QString::fromLatin1(QCryptographicHash::hash(folded, QCryptographicHash::Sha256).toHex());
 }
 
@@ -63,6 +69,7 @@ struct QtImageFetcher::Pending {
   ImageHeaders forwardedHeaders;
   int redirects{0};
   bool cacheable{true};
+  std::uint64_t diskGeneration{0};
   QElapsedTimer elapsed;
   std::shared_ptr<std::atomic_bool> cancelled{std::make_shared<std::atomic_bool>(false)};
   Progress progress;
@@ -142,6 +149,7 @@ QtImageFetcher::Id QtImageFetcher::fetch(const ImageRequest& request, Progress p
 
   auto pending = std::make_shared<Pending>();
   pending->request = request;
+  if (disk_) pending->diskGeneration = disk_->generation();
   pending->currentUrl = url;
   pending->forwardedHeaders = request.headers;
   pending->progress = std::move(progress);
@@ -319,8 +327,12 @@ void QtImageFetcher::finishHttp(Id id) {
   result.error = pending.failure;
   if (result.error.isEmpty()) result.bytes = std::move(pending.bytes);
   if (result.error.isEmpty() && disk_ && usesDisk(pending.request.policy) && result.cacheable) {
-    work(id, [disk = disk_, key = pending.request.storageKey(), result = std::move(result)] {
-      disk->write(key, result.bytes);
+    work(id, [disk = disk_, key = pending.request.storageKey(),
+              generation = pending.diskGeneration, result = std::move(result)] {
+      // Never retain malformed responses, or restore an entry cleared after
+      // this request began. Generation validation and commit share the lock.
+      if (decodeImage(result.bytes, QSize(1, 1), true, ContentFit::Cover).error.isEmpty())
+        disk->write(key, result.bytes, generation);
       return result;
     });
   } else complete(id, std::move(result));

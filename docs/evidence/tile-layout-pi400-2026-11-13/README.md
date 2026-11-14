@@ -1,7 +1,16 @@
 # Component gallery layout on the Pi 400, 2026-11-13
 
+Evidence status, reviewed 2026-11-14: these are historical screenshot artifacts
+and the original session's observations. This folder does not record the host
+identity, exact deployed commit/bundle hash, full commands, or command exit
+statuses. It is therefore incomplete device-run evidence and cannot qualify
+the current PR head. A fresh bounded run must record those fields before any
+current-candidate device gate is marked passed; no run was reconstructed or
+performed during this review.
+
 Build: feat/expo-image-painted-view (merged with main #157), release consumer
-app org.rnqnx.showcase, deployed to /data/home/qnxuser/rnqnx-tile-1.
+app org.rnqnx.showcase, originally reported as deployed to
+/data/home/qnxuser/rnqnx-tile-1. The exact revision is unrecorded.
 
 Window sizes captured with the app's `--window-size WxH --screenshot` flag:
 
@@ -25,9 +34,10 @@ tab bar, cards fill the width, right corners rounded), back to 1184x800
 (live-resized-back-wide-desktop.png: rail and two columns). The green button toggled maximise and
 restore twice (two `RNQNX_WINDOW_ACTION maximize` lines, both captures taken).
 
-Keyboard and pressed state, run from the final build of this PR (injector: `key f01b` is Escape on
-QNX, `down` holds the button):
+Keyboard and pressed-state screenshots (the original notes name injector
+arguments `key f01b` and `down`, but no complete command/exit receipt or exact
+build identity was retained):
 
-- modal-escape-before-after.png: the gallery's Modal open (left), then closed after `key f01b` (right). Escape reaches `onRequestClose` through `RNQnxModal`. `key Escape` and `key ff1b` do nothing because QNX Screen's Escape is 0xf01b (the injector's `esc` name).
-- drawer-escape-before-after.png: the drawer open (left), closed after the same key (right).
-- tab-pressed-advanced.png: `down` held on the Advanced tab of the rail: the tab shows its pressed wash and shrunken content.
+- modal-escape-before-after.png: the gallery's Modal appears open on the left and closed on the right. The notes attribute the change to `key f01b`; the image alone does not prove the input dispatch or `onRequestClose` callback.
+- drawer-escape-before-after.png: the drawer appears open on the left and closed on the right. The same input attribution lacks a command receipt.
+- tab-pressed-advanced.png: the Advanced tab shows a pressed wash and shrunken content. The original notes attribute it to a held `down`; its command status is unknown.

@@ -20,15 +20,9 @@ QnxImageLoader::QnxImageLoader(
     std::shared_ptr<facebook::react::CallInvoker> jsInvoker)
     : facebook::react::TurboModule(kModuleName, std::move(jsInvoker)) {
   registerMethods();
-  // Forward every picture that loads to expo-image's `imageLoaded` module
-  // event. The listener holds the invoker, not this module.
-  loadedSubscription_ = views::ImageLoadedNotifier::shared().subscribe(
-      [invoker = jsInvoker_](const views::ImageLoadedEvent& event) {
-        invoker->invokeAsync([event](facebook::jsi::Runtime& rt) { emitImageLoaded(rt, event); });
-      });
 }
 
-QnxImageLoader::~QnxImageLoader() { views::ImageLoadedNotifier::shared().unsubscribe(loadedSubscription_); }
+QnxImageLoader::~QnxImageLoader() = default;
 
 void QnxImageLoader::registerMethods() {
   methodMap_["getConstants"] = {0, &QnxImageLoader::getConstants};

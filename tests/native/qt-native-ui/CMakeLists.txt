@@ -16,6 +16,7 @@ cmake_path(NORMAL_PATH RNQNX_VNEXT)
 # The ExpoImage view and its loader pieces, built once for every test target.
 add_library(rnqnx_expo_image_under_test OBJECT
   "${RNQNX_VNEXT}/include/react-native-qnx/views/image/ExpoImageItem.h"
+  "${RNQNX_VNEXT}/src/runtime/QtImageCache.cpp"
   "${RNQNX_VNEXT}/src/views/qt/image/ExpoImageItem.cpp"
   "${RNQNX_VNEXT}/src/views/qt/image/ImageDecode.cpp"
   "${RNQNX_VNEXT}/src/views/qt/image/ImageDiskCache.cpp"
@@ -81,8 +82,8 @@ endif()
 rnqnx_native_ui_test(rnqnx_image_fetch_queue_test ImageFetchQueueTest.cpp)
 
 # BlurHash and ThumbHash against the reference implementations. The vectors in
-# tests/fixtures/image-hashes were produced by blurhash@2.0.5 and thumbhash@0.1.1
-# from npm (see "producedBy" in the file).
+# tests/fixtures/image-hashes were produced by the woltapp/blurhash C encoder,
+# blurhash@2.0.5 decoder and thumbhash@0.1.1 (see provenance in the file).
 rnqnx_native_ui_test(rnqnx_image_hash_vectors_test ImageHashVectorsTest.cpp)
 target_compile_definitions(rnqnx_image_hash_vectors_test PRIVATE
   RNQNX_HASH_VECTORS="${CMAKE_CURRENT_LIST_DIR}/../../fixtures/image-hashes/reference-vectors.json")

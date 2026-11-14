@@ -114,6 +114,13 @@ function needsJsTabBar(tabs, focusedOptions) {
     if (tab.activeTint !== bar.tabBarActiveTintColor) return true;
     if (tab.inactiveTint !== bar.tabBarInactiveTintColor) return true;
     const badge = flatStyle(tab.options.tabBarBadgeStyle);
+    const focusedBadge = flatStyle(bar.tabBarBadgeStyle);
+    if (
+      (badge.backgroundColor ?? DEFAULT_BADGE) !== (focusedBadge.backgroundColor ?? DEFAULT_BADGE)
+    )
+      return true;
+    if ((badge.color ?? DEFAULT_BADGE_TEXT) !== (focusedBadge.color ?? DEFAULT_BADGE_TEXT))
+      return true;
     return Object.keys(badge).some((key) => !NATIVE_BADGE_STYLE_KEYS.has(key));
   });
 }

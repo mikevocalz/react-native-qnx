@@ -32,6 +32,9 @@ class ImageDiskCache {
   /// Stores \a bytes, then evicts the oldest entries until the budget holds.
   /// An entry larger than the whole budget is not stored (returns false).
   bool write(const QString& key, const QByteArray& bytes);
+  /// A pending write may commit only in the generation where it began.
+  bool write(const QString& key, const QByteArray& bytes, std::uint64_t generation);
+  std::uint64_t generation() const;
   bool contains(const QString& key) const;
   /// The file that holds \a key (it may not exist).
   QString pathFor(const QString& key) const;

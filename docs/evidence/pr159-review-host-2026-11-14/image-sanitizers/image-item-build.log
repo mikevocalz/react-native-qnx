@@ -1,0 +1,20 @@
+[1/20] Automatic MOC for target rnqnx_expo_image_under_test
+[2/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/rnqnx_expo_image_under_test_autogen/mocs_compilation.cpp.o
+[3/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/runtime/QtImageCache.cpp.o
+[4/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/ImageDecode.cpp.o
+[5/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/ImageDiskCache.cpp.o
+[6/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/ImageEffects.cpp.o
+[7/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/ExpoImageItem.cpp.o
+[8/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/BlurHash.cpp.o
+[9/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/ThumbHash.cpp.o
+[10/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/ImageLayout.cpp.o
+[11/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/ImageFetchQueue.cpp.o
+[12/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/ImageRefRegistry.cpp.o
+[13/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/QtImageFetcher.cpp.o
+[14/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/ImageLoadedNotifier.cpp.o
+[15/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/BlurHashEncoder.cpp.o
+[16/20] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/ThumbHashEncoder.cpp.o
+[17/20] Automatic MOC for target rnqnx_expo_image_item_test
+[18/20] Building CXX object CMakeFiles/rnqnx_expo_image_item_test.dir/rnqnx_expo_image_item_test_autogen/mocs_compilation.cpp.o
+[19/20] Building CXX object CMakeFiles/rnqnx_expo_image_item_test.dir/ExpoImageItemTest.cpp.o
+[20/20] Linking CXX executable rnqnx_expo_image_item_test

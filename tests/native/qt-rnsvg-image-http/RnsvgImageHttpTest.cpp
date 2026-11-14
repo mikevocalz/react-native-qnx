@@ -111,8 +111,14 @@ class Server final : public QTcpServer {
       respond(socket, "200 OK", "not an image", "image/png");
     } else if (route == QStringLiteral("/redirect.png")) {
       respond(socket, "302 Found", {}, "text/plain", "Location: /ok.png\r\n");
+    } else if (route == QStringLiteral("/redirect-unsafe.png")) {
+      respond(socket, "302 Found", {}, "text/plain", "Location: ftp://example.invalid/image.png\r\n");
     } else if (route == QStringLiteral("/logo.svg")) {
       respond(socket, "200 OK", kSvg, "image/svg+xml");
+    } else if (route == QStringLiteral("/anim.gif")) {
+      respond(socket, "200 OK", QByteArray::fromBase64(
+          "R0lGODlhAQABAKEAAP8AAAAA/wAAAAAAACH5BAQBAAAALAAAAAABAAEAAAICRAEAIfkEBAEAAQAsAAAAAAEAAQAAAgJMAQA7"),
+          "image/gif");
     } else if (route == QStringLiteral("/small.png")) {
       respond(socket, "200 OK", png3x3, "image/png");
     } else {  // /ok.png and the dev-server style /assets/... paths
@@ -218,6 +224,24 @@ class RnsvgImageHttpTest final : public QObject {
     QCOMPARE(element.imageSize(), QSize(7, 5));
   }
 
+  void anAnimatedPrefetchStillProvidesSvgWithItsFirstFrame() {
+    const QString uri = server_->url(QStringLiteral("/anim.gif"));
+    QtImageCache prefetcher;
+    bool done = false;
+    prefetcher.load(uri, {}, [&](QSize size, QString error) {
+      QVERIFY(error.isEmpty());
+      QCOMPARE(size, QSize(1, 1));
+      done = true;
+    });
+    QTRY_VERIFY_WITH_TIMEOUT(done, kWaitMs);
+    Element element(QtRnsvgImageProvider::shared());
+    element.commit(uri);
+    QCOMPARE(element.state(), ImageState::Loaded);
+    QCOMPARE(element.imageSize(), QSize(1, 1));
+    QCOMPARE(element.item->props().image.pixelColor(0, 0), QColor(Qt::red));
+    QCOMPARE(server_->requests(QStringLiteral("/anim.gif")), 1);
+  }
+
   void aBundledAssetBesideTheBundleLoadsFromAFileUrl() {
     // What it returns for a bundle read from disk: file://<bundle dir>/assets/<path>@2x.png
     QTemporaryDir dir;
@@ -232,14 +256,26 @@ class RnsvgImageHttpTest final : public QObject {
     Element url(QtRnsvgImageProvider::shared()), plain(QtRnsvgImageProvider::shared());
     url.commit(QUrl::fromLocalFile(path).toString());
     plain.commit(path);
-    QCOMPARE(url.state(), ImageState::Loaded);  // file reads finish inside the call
+    QTRY_COMPARE_WITH_TIMEOUT(url.state(), ImageState::Loaded, kWaitMs);
     QCOMPARE(url.imageSize(), QSize(7, 5));
-    QCOMPARE(plain.state(), ImageState::Loaded);
+    QTRY_COMPARE_WITH_TIMEOUT(plain.state(), ImageState::Loaded, kWaitMs);
+    QCOMPARE(plain.imageSize(), QSize(7, 5));
+  }
+
+  void aSafeSameOriginRedirectLoadsItsImage() {
+    Element element(QtRnsvgImageProvider::shared());
+    const int targetRequests = server_->requests(QStringLiteral("/ok.png"));
+    element.commit(server_->url(QStringLiteral("/redirect.png")));
+    QTRY_COMPARE_WITH_TIMEOUT(element.state(), ImageState::Loaded, kWaitMs);
+    QCOMPARE(element.imageSize(), QSize(7, 5));
+    QCOMPARE(element.loadedEvents, 1);
+    QCOMPARE(server_->requests(QStringLiteral("/redirect.png")), 1);
+    QCOMPARE(server_->requests(QStringLiteral("/ok.png")), targetRequests + 1);
   }
 
   void httpAndFileFailuresReportAReasonAndAreNotRetried() {
     auto& provider = QtRnsvgImageProvider::shared();
-    for (const char* name : {"/missing.png", "/broken.png", "/redirect.png"}) {
+    for (const char* name : {"/missing.png", "/broken.png", "/redirect-unsafe.png"}) {
       const QString path = QString::fromLatin1(name);
       Element element(provider);
       element.commit(server_->url(path));
@@ -252,10 +288,10 @@ class RnsvgImageHttpTest final : public QObject {
     }
     Element missingFile(provider);
     missingFile.commit(QStringLiteral("/nonexistent/dir/image.png"));
-    QCOMPARE(missingFile.state(), ImageState::Failed);
+    QTRY_COMPARE_WITH_TIMEOUT(missingFile.state(), ImageState::Failed, kWaitMs);
     Element badScheme(provider);
     badScheme.commit(QStringLiteral("ftp://example.invalid/a.png"));
-    QCOMPARE(badScheme.state(), ImageState::Failed);
+    QTRY_COMPARE_WITH_TIMEOUT(badScheme.state(), ImageState::Failed, kWaitMs);
   }
 
   void aHrefChangeMidFlightShowsTheNewImageNotTheLateOne() {

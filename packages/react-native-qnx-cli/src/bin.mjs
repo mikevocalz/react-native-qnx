@@ -12,9 +12,17 @@ import { devMain, startMain } from './dev-server.mjs';
 import { runnerMain } from './runner.mjs';
 import { marathonMain } from '../../qnx-devtools/src/marathon.mjs';
 
+// Preserve the existing root environment doctor unless this mode is explicit.
+const targetRuntimeDoctor =
+  process.argv[2] === 'doctor' &&
+  process.argv
+    .slice(3)
+    .some((arg) => arg === '--target-runtime-report' || arg.startsWith('--target-runtime-report='));
+
 try {
   const args = process.argv.slice(2);
-  if (args[0] === 'project' && args[1] === 'doctor')
+  if (targetRuntimeDoctor) process.exitCode = await doctorMain(args.slice(1));
+  else if (args[0] === 'project' && args[1] === 'doctor')
     process.exitCode = await doctorMain(args.slice(2));
   else if (args[0] === 'project' && args[1] === 'build-native')
     process.exitCode = await buildNativeMain(args.slice(2));
@@ -52,10 +60,14 @@ try {
     console.log('  pnpm qnx project build-native --help    Build a native consumer application');
     console.log('  pnpm qnx project desktop-entry --help   Write the QNX desktop launcher tile');
     console.log('  pnpm qnx project doctor --help          Check a consumer project');
+    console.log(
+      '  pnpm qnx doctor --target-runtime-report <file> [--verbose]  Check supplied QNX observations'
+    );
     console.log('  pnpm qnx marathon --help                Marathon development client');
     console.log('  pnpm qnx runner --help                  Download a prebuilt development runner');
   }
 } catch (error) {
   console.error(`rnqnx: ${error instanceof Error ? error.message : error}`);
-  process.exitCode = process.argv[2] === 'project' && process.argv[3] === 'doctor' ? 2 : 1;
+  process.exitCode =
+    targetRuntimeDoctor || (process.argv[2] === 'project' && process.argv[3] === 'doctor') ? 2 : 1;
 }

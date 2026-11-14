@@ -76,6 +76,9 @@ class QnxSourceCode
   /// through the templated constants struct.
   facebook::jsi::Object getConstants(facebook::jsi::Runtime& runtime);
 
+  /// Refresh the retained module before the host evaluates another bundle.
+  void setScriptUrl(std::string scriptUrl);
+
  private:
   std::string scriptUrl_;
 };

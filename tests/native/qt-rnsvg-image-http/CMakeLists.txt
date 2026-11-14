@@ -16,6 +16,10 @@ add_subdirectory("${RNQNX_ROOT}/native/qt/rnsvg" "${CMAKE_CURRENT_BINARY_DIR}/rn
 add_executable(rnqnx_qt_rnsvg_image_http_test
   RnsvgImageHttpTest.cpp
   "${RNQNX_ROOT}/vnext/src/runtime/QtImageCache.cpp"
+  "${RNQNX_ROOT}/vnext/src/views/qt/image/QtImageFetcher.cpp"
+  "${RNQNX_ROOT}/vnext/src/views/qt/image/ImageDiskCache.cpp"
+  "${RNQNX_ROOT}/vnext/src/views/qt/image/ImageDecode.cpp"
+  "${RNQNX_ROOT}/vnext/src/views/qt/image/ImageFetchQueue.cpp"
   "${RNQNX_ROOT}/vnext/src/fabric/QtRnsvgImageProvider.cpp")
 set_target_properties(rnqnx_qt_rnsvg_image_http_test PROPERTIES AUTOMOC ON)
 target_include_directories(rnqnx_qt_rnsvg_image_http_test PRIVATE "${RNQNX_ROOT}/vnext/include")

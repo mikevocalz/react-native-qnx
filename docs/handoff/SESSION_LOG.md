@@ -1,5 +1,13 @@
 # SESSION_LOG.md
 
+## PR 159 review follow-up — 2026-11-14
+
+Reviewed the actual d862625 source and open findings, reproduced both CI failures, and implemented narrow image/router/consumer fixes with failing old-source controls. Independently reviewed and integrated the keyboard/modal corrections. Host Qt and affected JS tests pass; a real generated external app bundles for both targets. Full-JS socket restrictions, pending full-host checks and absent current-target evidence are recorded without promoting a release gate.
+[Source, commands, limits and rollback](../validation/pr159-review-followup-2026-11-14.md).
+Main/SVG integration includes PR 161 follow-up `13a0e49`; both evidence sets are retained. Transactional imageformat staging reads the selected `IMAGEFORMATS_SRC` notices and all attribution inputs; 25 host staging fixtures pass with a failing old-source control. The final code source is `252b128`; its complete source-tree identities and 55 SHA-256 entries are recorded in the receipt.
+
+Independent review corrected the initially blank paused animation, with failing direct and deleted-source prefetch controls. Fresh image Debug ASan/UBSan passes 3/3 CTests and 73 QtTest entries. Reconciliation found a stale generated Release MOC that omitted the new disk-clear HTTP slot; after refreshing only those build artifacts, all 6/6 Release CTests and 126 entries pass. Prior 125-entry logs remain qualified and preserved. Pinned Hermes and Metro builds succeeded, but GCC stopped on a Clang-specific upstream React Native pragma before linking the host test; the supported Clang retry and both new host regressions remain pending. Exact-head CI and current-target gates remain open.
+
 ## PR 159 drawer route and pointer correction — 2026-11-13
 
 The drawer now selects its navigator destination across all Home child tabs.
@@ -78,6 +86,27 @@ resize checks remain pending. Other image-loader/navigation gaps stay open.
 
 Read the November 13 handoff and current failed CI. Fixed the missing video command-handler initializer and validated the bounded table/JS scope. No Pi app or boot change was made.
 [Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
+
+## PR 161 nested SVG and staging integration (2026-11-14)
+
+Codex inspected the current PR, prior review threads and failing corpus logs;
+kept timeouts and tolerances unchanged; and corrected two missed nested-root
+cases. New scene tests fail for the intended reasons against the original
+source and pass on published native source `3324e7c`. The coordinating agent
+reviewed those changes. Main merge `446d28f` preserves PR 163's transactional
+staging while bounding optional SVG sources; a separate reviewer found no
+blocker and independently passed all 17 fixtures.
+
+The exact Qt 6.11.1 Linux Debug ASan/UBSan run exposed a GCC test construction
+bug, fixed by reading kernel size before moving the vector. All original pixel
+assertions remain, and the final standalone suite passes 8/8. Typecheck,
+documentation validation and 47 target-doctor host scenarios pass. Recorded
+raw failures/successes, build flags, source hashes and remaining qualification
+in the [receipt](../validation/pr161-nested-roots-2026-11-14.md), updated this
+handoff set and the canonical readiness evidence, and regenerated project
+state. No current QNX or device result is claimed; keep the native PR draft
+pending the documented target work. External CodeRabbit authentication was
+unavailable; the receipt identifies agent reviews separately.
 
 ## PR 161 cross-build recipe correction — 2026-11-13
 

@@ -1,5 +1,13 @@
 # NEXT_ACTIONS.md
 
+## PR 159 review follow-up — 2026-11-14
+
+Run the full Hermes graph plus required ON/OFF hosted checks on the integrated main/PR 161 candidate. Resolve only findings supported by the actual integrated source and evidence. Perform current-target image/input/teardown qualification with the full command/status/artifact receipt; retain device gates while it is unavailable.
+[Source, commands, limits and rollback](../validation/pr159-review-followup-2026-11-14.md).
+Main/SVG integration includes PR 161 follow-up `13a0e49`; both evidence sets are retained. Transactional imageformat staging reads the selected `IMAGEFORMATS_SRC` notices and all attribution inputs; 25 host staging fixtures pass with a failing old-source control. The final code source is `252b128`; its complete source-tree identities and 55 SHA-256 entries are recorded in the receipt.
+
+Independent review corrected the initially blank paused animation, with failing direct and deleted-source prefetch controls. Fresh image Debug ASan/UBSan passes 3/3 CTests and 73 QtTest entries. Reconciliation found a stale generated Release MOC that omitted the new disk-clear HTTP slot; after refreshing only those build artifacts, all 6/6 Release CTests and 126 entries pass. Prior 125-entry logs remain qualified and preserved. Pinned Hermes and Metro builds succeeded, but GCC stopped on a Clang-specific upstream React Native pragma before linking the host test; the supported Clang retry and both new host regressions remain pending. Exact-head CI and current-target gates remain open.
+
 ## PR 159 drawer route and pointer correction — 2026-11-13
 
 The drawer now selects its navigator destination across all Home child tabs.
@@ -78,6 +86,32 @@ resize checks remain pending. Other image-loader/navigation gaps stay open.
 
 Inspect the pushed head's required renderer checks. Continue #161 before merging #159, then address the image-loader gaps in the November 13 handoff.
 [Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
+
+## PR 161 continuation (2026-11-14)
+
+1. Inspect the published follow-up's exact head and required checks. Require
+   both renderer lanes and all four corpus shards at their existing limits.
+   Retain any failed-job logs; do not infer the original timeout cause from
+   the new nested-scene correctness results.
+2. On the licensed QNX SDP 8.0.5 host, configure a fresh combined candidate
+   using the pinned React Native/Hermes graph and selected public Qt runtime,
+   with SVG enabled. Use two build jobs and no inherited object-reuse compiler
+   launcher. Record the compiler/optimization flags, installed-header closure,
+   QtSvg library/plugin closure and executable/bundle/runtime hashes, following
+   the [corrected build receipt](../validation/pr161-device-gallery-2026-11-13.md).
+3. Follow the [Pi 400 run/control procedure](HANDOFF_2026-11-13.md) for a single
+   guarded SVG gallery instance. Exercise nested-child removal and two nested
+   viewBoxes under group opacity, plus the existing per-element/attribute,
+   image, ForeignObject input and interaction cases. Capture actual Screen
+   output, logs, readback hashes and the exact board/runtime identity. Restore
+   the owner's app afterward; keep boot, window and input policy unchanged.
+4. Record target results and independent target review before marking the PR
+   ready. Qualify the final combined PR 161/159/149 candidate separately;
+   stock-QSTI and Marathon evidence remain separate from the historical custom
+   Pi 400 result. All v1 gates remain pending.
+
+Local completed checks and source hashes are in the
+[2026-11-14 receipt](../validation/pr161-nested-roots-2026-11-14.md).
 
 ## PR 161 cross-build recipe correction — 2026-11-13
 

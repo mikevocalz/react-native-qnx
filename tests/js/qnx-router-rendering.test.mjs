@@ -188,5 +188,23 @@ assert.equal(
 );
 assert.equal(findAll(permanent, (n) => n.type === 'DrawerBody').length, 1);
 
+for (const drawerPosition of ['left', 'right']) {
+  const backDrawer = render(
+    h(JsDrawer, { ...drawerProps, open: true, drawerType: 'back', drawerPosition })
+  );
+  const movingContent = findAll(
+    backDrawer,
+    (n) => n.type === 'Animated.View' && n.findAllByType('Content').length === 1
+  )[0];
+  assert.ok(movingContent);
+  assert.equal(
+    movingContent.findAllByType('Pressable').length,
+    1,
+    'the back drawer scrim moves with content, leaving the exposed panel tappable'
+  );
+  assert.equal(movingContent.findAllByType('DrawerBody').length, 0);
+  act(() => backDrawer.unmount());
+}
+
 Module._load = originalLoad;
 console.log('qnx-router-rendering: ok');

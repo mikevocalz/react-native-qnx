@@ -16,6 +16,7 @@
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
+#include "react-native-qnx/views/image/ImageLoadedNotifier.h"
 
 #include <jsi/instrumentation.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
@@ -407,6 +408,43 @@ void turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection() {
     EXPECT(creations == 1);
   }
   EXPECT(retained.expired());
+}
+
+void retainedSourceCodeTracksSubsequentEvaluations() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (nativeModuleProxy.SourceCode.getConstants().scriptURL !== 'file:///first/app.hbc')
+      throw new Error('initial source URL');
+  )JS", "file:///first/app.hbc"));
+  fixture.host().runtime().instrumentation().collectGarbage("source code lookup");
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (nativeModuleProxy.SourceCode.getConstants().scriptURL !== 'file:///second/app.hbc')
+      throw new Error('stale retained source URL');
+  )JS", "file:///second/app.hbc"));
+}
+
+void imageLoadedForwardingDoesNotRequireLoaderLookup() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  EXPECT(fixture.host().evaluate(R"JS(
+    globalThis.imageEvents = [];
+    globalThis.expo = {modules: {ExpoImage: {
+      listenerCount() { return 1; },
+      emit(name, event) { imageEvents.push([name, event]); }
+    }}};
+  )JS", "image-events.js"));
+  const auto verifyEventCount = [&](int count) {
+    auto& rt = fixture.host().runtime();
+    for (int i = 0; i < 20; ++i) fixture.host().pumpEvents();
+    EXPECT(rt.global().getPropertyAsObject(rt, "imageEvents").asArray(rt).size(rt) == static_cast<size_t>(count));
+  };
+  rnqnx::views::ImageLoadedNotifier::shared().notify({QStringLiteral("file:///image.png"), 7, 5});
+  verifyEventCount(1);
+  EXPECT(fixture.host().evaluate("void nativeModuleProxy.ImageLoader;", "image-loader.js"));
+  fixture.host().installTurboModuleBinding();
+  rnqnx::views::ImageLoadedNotifier::shared().notify({QStringLiteral("file:///second.png"), 7, 5});
+  verifyEventCount(2);
 }
 
 /// Invoke the actual core TurboModule in Hermes, including short argument arrays.
@@ -2757,6 +2795,8 @@ int main(int argc, char** argv) {
        javaScriptErrorsAreReportedNotSwallowed},
       {"turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection",
        turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection},
+      {"retainedSourceCodeTracksSubsequentEvaluations", retainedSourceCodeTracksSubsequentEvaluations},
+      {"imageLoadedForwardingDoesNotRequireLoaderLookup", imageLoadedForwardingDoesNotRequireLoaderLookup},
       {"segmentFetcherValidatesCallbackBoundary",
        segmentFetcherValidatesCallbackBoundary},
       {"evaluateRejectsReentrantJavaScript", evaluateRejectsReentrantJavaScript},

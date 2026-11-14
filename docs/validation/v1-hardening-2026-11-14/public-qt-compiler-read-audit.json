@@ -1,0 +1,665 @@
+{
+  "targets": [
+    "Core",
+    "Network",
+    "Gui",
+    "OpenGL",
+    "Qml",
+    "QmlMeta",
+    "QmlModels",
+    "QmlWorkerScript",
+    "Quick",
+    "QuickShapes",
+    "QQnxIntegrationPlugin",
+    "qmlplugin",
+    "modelsplugin",
+    "workerscriptplugin",
+    "qtquick2plugin",
+    "qmlshapesplugin",
+    "QTlsBackendOpenSSLPlugin",
+    "QGifPlugin",
+    "QJpegPlugin"
+  ],
+  "objects": 1455,
+  "translation_units": 1455,
+  "translation_units_without_deps_entry": [],
+  "files_read_total": 7044,
+  "qt_files_by_expression": {
+    "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only": 2698,
+    "CC0-1.0": 1,
+    "Unicode-3.0": 8,
+    "(none in first 40 lines)": 2,
+    "FTL OR GPL-2.0-only": 1,
+    "BSD-2-Clause AND Imlib2": 1
+  },
+  "qt_files_without_lgpl_option": [
+    {
+      "file": "qtbase/src/corelib/global/qexpected_p.h",
+      "spdx": "CC0-1.0"
+    },
+    {
+      "file": "qtbase/src/corelib/text/qlocale_data_p.h",
+      "spdx": "Unicode-3.0"
+    },
+    {
+      "file": "qtbase/src/corelib/text/qunicodetables.cpp",
+      "spdx": "Unicode-3.0"
+    },
+    {
+      "file": "qtbase/src/corelib/text/qunicodetables_p.h",
+      "spdx": "Unicode-3.0"
+    },
+    {
+      "file": "qtbase/src/corelib/time/qhijricalendar_data_p.h",
+      "spdx": "Unicode-3.0"
+    },
+    {
+      "file": "qtbase/src/corelib/time/qjalalicalendar_data_p.h",
+      "spdx": "Unicode-3.0"
+    },
+    {
+      "file": "qtbase/src/corelib/time/qromancalendar_data_p.h",
+      "spdx": "Unicode-3.0"
+    },
+    {
+      "file": "qtbase/src/corelib/time/qtimezonelocale_data_p.h",
+      "spdx": "Unicode-3.0"
+    },
+    {
+      "file": "qtbase/src/corelib/time/qtimezoneprivate_data_p.h",
+      "spdx": "Unicode-3.0"
+    },
+    {
+      "file": "qtbase/src/gui/opengl/qopengles2ext.h",
+      "spdx": null
+    },
+    {
+      "file": "qtbase/src/gui/painting/qgrayraster.c",
+      "spdx": "FTL OR GPL-2.0-only"
+    },
+    {
+      "file": "qtbase/src/gui/painting/qimagescale.cpp",
+      "spdx": "BSD-2-Clause AND Imlib2"
+    },
+    {
+      "file": "qtbase/src/gui/text/qfontsubset_agl.cpp",
+      "spdx": null
+    }
+  ],
+  "third_party_components": {
+    "qtbase/src/3rdparty/blake2": {
+      "attribution": [
+        {
+          "name": "BLAKE2 (reference implementation)",
+          "version": "ed1974ea83433eba7b2d95c5dcd9ac33cb847913",
+          "license": "CC0-1.0 OR Apache-2.0",
+          "copyright": "Copyright 2012, Samuel Neves <sneves@dei.uc.pt>",
+          "license_files": "COPYING"
+        }
+      ],
+      "files_read": 4,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtbase/src/3rdparty/blake2/COPYING"]
+    },
+    "qtbase/src/3rdparty/double-conversion": {
+      "attribution": [
+        {
+          "name": "Efficient Binary-Decimal and Decimal-Binary Conversion Routines for IEEE Doubles",
+          "version": "3.4.0",
+          "license": "BSD-3-Clause",
+          "copyright": "Copyright 2006-2012, the V8 project authors",
+          "license_files": "LICENSE"
+        }
+      ],
+      "files_read": 20,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtbase/src/3rdparty/double-conversion/LICENSE"]
+    },
+    "qtbase/src/3rdparty/easing": {
+      "attribution": [
+        {
+          "name": "Easing Equations by Robert Penner",
+          "version": null,
+          "license": "BSD-3-Clause",
+          "copyright": "Copyright (c) 2001 Robert Penner",
+          "license_files": "LICENSE"
+        }
+      ],
+      "files_read": 1,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtbase/src/3rdparty/easing/LICENSE"]
+    },
+    "qtbase/src/3rdparty/emoji-segmenter": {
+      "attribution": [
+        {
+          "name": "Emoji Segmenter",
+          "version": "0.4.0",
+          "license": "Apache-2.0",
+          "copyright": "Copyright 2019 Google LLC",
+          "license_files": null
+        }
+      ],
+      "files_read": 1,
+      "spdx_in_files": [],
+      "license_files_in_dir": []
+    },
+    "qtbase/src/3rdparty/forkfd": {
+      "attribution": [
+        {
+          "name": "forkfd",
+          "version": null,
+          "license": "MIT",
+          "copyright": "Copyright (C) 2016 Intel Corporation\nCopyright (C) 2015 Klar\u00e4lvdalens Datakonsult AB, a KDAB Group company, info@kdab.com",
+          "license_files": "LICENSE"
+        }
+      ],
+      "files_read": 4,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtbase/src/3rdparty/forkfd/LICENSE"]
+    },
+    "qtbase/src/3rdparty/freetype": {
+      "attribution": [
+        {
+          "name": "Freetype 2",
+          "version": "2.14.3",
+          "license": "FTL OR GPL-2.0-only",
+          "copyright": [
+            "Copyright (c) 2007-2014 Adobe Systems Incorporated",
+            "Copyright (c) 2004-2026 Albert Chin-A-Young",
+            "Copyright (c) 2018-2026 Armin Hasitzka, David Turner, Robert Wilhelm, and Werner Lemberg",
+            "Copyright (c) 2000 Computing Research Labs, New Mexico State University",
+            "Copyright (c) 1996-2026 David Turner, Robert Wilhelm, Dominik R\u00f6ttsches, and Werner Lemberg",
+            "Copyright (c) 2004-2026 David Turner, Robert Wilhelm, Werner Lemberg and George Williams",
+            "Copyright (c) 2022-2026 David Turner, Robert Wilhelm, Werner Lemberg, and Moazin Khatti",
+            "Copyright (c) 2008-2026 David Turner, Robert Wilhelm, Werner Lemberg, and suzuki toshiya",
+            "Copyright (c) 2003-2026 David Turner, Robert Wilhelm, and Werner Lemberg",
+            "Copyright (c) 2005-2026 David Turner",
+            "Copyright (c) 2007-2026 Derek Clegg and Michael Toftdal",
+            "Copyright (c) 2007 Dmitry Timoshkov for Codeweavers",
+            "Copyright (c) 2001-2015 Francesco Zappa Nardelli",
+            "Copyright (c) 2005, 2007, 2008, 2013 George Williams",
+            "Copyright (c) 2013-2026 Google, Inc. Google Author(s) Behdad Esfahbod and Stuart Gill",
+            "Copyright (c) 2013-2022 Google, Inc.",
+            "Copyright (c) 2003 Huw D M Davies for Codeweavers",
+            "Copyright (c) 2010-2026 Joel Klinghed",
+            "Copyright (c) 1996-2026 Just van Rossum, David Turner, Robert Wilhelm, and Werner Lemberg",
+            "Copyright (c) 2003-2026 Masatake YAMATO and Redhat K.K.",
+            "Copyright (c) 2004-2026 Masatake YAMATO, Redhat K.K, David Turner, Robert Wilhelm, and Werner Lemberg",
+            "Copyright (c) 2019-2026 Nikhil Ramakrishnan, David Turner, Robert Wilhelm, and Werner Lemberg",
+            "Copyright (c) 2009-2026 Oran Agra and Mickey Gabel",
+            "Copyright (c) 2007-2026 Rahul Bhalerao <rahul.bhalerao@redhat.com>",
+            "Copyright (c) 2002-2026 Roberto Alameda",
+            "Copyright (c) 2015-2026 Werner Lemberg",
+            "Copyright (c) 2004-2026 suzuki toshiya, Masatake YAMATO, Red Hat K.K., David Turner, Robert Wilhelm, and Werner Lemberg",
+            "Copyright (c) 2019 nyorain",
+            "Copyright (c) 2022-2026 David Turner, Robert Wilhelm, Werner Lemberg, George Williams, and Dominik R\u00f6ttsches",
+            "Copyright (C) 2009, 2023  Red Hat, Inc."
+          ],
+          "license_files": "LICENSE.txt"
+        },
+        {
+          "name": "Freetype 2 - zlib",
+          "version": null,
+          "license": "Zlib",
+          "copyright": "Copyright (C) 1995-2024 Jean-loup Gailly and Mark Adler",
+          "license_files": "ZLIB-LICENSE.txt"
+        },
+        {
+          "name": "Freetype 2 - Bitmap Distribution Format (BDF) support",
+          "version": null,
+          "license": "MIT",
+          "copyright": [
+            "Copyright (c) 2000 Computing Research Labs, New Mexico State University",
+            "Copyright (c) 2001-2014 Francesco Zappa Nardelli"
+          ],
+          "license_files": "BDF-LICENSE.txt"
+        },
+        {
+          "name": "Freetype 2 - Portable Compiled Format (PCF) support",
+          "version": null,
+          "license": "MIT AND MIT-open-group",
+          "copyright": [
+            "Copyright (c) 2001, 2012 David Turner, Robert Wilhelm, and Werner Lemberg",
+            "Copyright (c) 2000-2014 Francesco Zappa Nardelli",
+            "Copyright (c) 1990, 1994, 1998 The Open Group"
+          ],
+          "license_files": "PCF-LICENSE.txt"
+        }
+      ],
+      "files_read": 408,
+      "spdx_in_files": [],
+      "license_files_in_dir": [
+        "qtbase/src/3rdparty/freetype/BDF-LICENSE.txt",
+        "qtbase/src/3rdparty/freetype/LICENSE.txt",
+        "qtbase/src/3rdparty/freetype/PCF-LICENSE.txt",
+        "qtbase/src/3rdparty/freetype/ZLIB-LICENSE.txt",
+        "qtbase/src/3rdparty/freetype/docs/FTL.TXT"
+      ]
+    },
+    "qtbase/src/3rdparty/harfbuzz-ng": {
+      "attribution": [
+        {
+          "name": "HarfBuzz-NG",
+          "version": "14.5.0",
+          "license": "MIT",
+          "copyright": [
+            "Copyright \u00a9 2010-2022  Google, Inc.",
+            "Copyright \u00a9 2015-2020  Ebrahim Byagowi",
+            "Copyright \u00a9 2019,2020  Facebook, Inc.",
+            "Copyright \u00a9 2012,2015  Mozilla Foundation",
+            "Copyright \u00a9 2011  Codethink Limited",
+            "Copyright \u00a9 2008,2010  Nokia Corporation and/or its subsidiary(-ies)",
+            "Copyright \u00a9 2009  Keith Stribley",
+            "Copyright \u00a9 2011  Martin Hosken and SIL International",
+            "Copyright \u00a9 2007  Chris Wilson",
+            "Copyright \u00a9 2005,2006,2020,2021,2022,2023  Behdad Esfahbod",
+            "Copyright \u00a9 2004,2007,2008,2009,2010,2013,2021,2022,2023  Red Hat, Inc.",
+            "Copyright \u00a9 1998-2005  David Turner and Werner Lemberg",
+            "Copyright \u00a9 2016  Igalia S.L.",
+            "Copyright \u00a9 2022  Matthias Clasen",
+            "Copyright \u00a9 2018,2021  Khaled Hosny",
+            "Copyright \u00a9 2018,2019,2020  Adobe, Inc",
+            "Copyright \u00a9 2013-2015  Alexei Podtelezhnikov"
+          ],
+          "license_files": "COPYING"
+        }
+      ],
+      "files_read": 358,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtbase/src/3rdparty/harfbuzz-ng/COPYING"]
+    },
+    "qtbase/src/3rdparty/libjpeg": {
+      "attribution": [
+        {
+          "name": "LibJPEG-turbo",
+          "version": "3.2.0",
+          "license": "IJG AND BSD-3-Clause",
+          "copyright": null,
+          "license_files": ["LICENSE", "ijg-license.txt"]
+        }
+      ],
+      "files_read": 28,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtbase/src/3rdparty/libjpeg/LICENSE"]
+    },
+    "qtbase/src/3rdparty/libpng": {
+      "attribution": [
+        {
+          "name": "LibPNG",
+          "version": "1.6.58",
+          "license": "Libpng AND libpng-2.0",
+          "copyright": [
+            "Copyright (c) 1995-2026 The PNG Reference Library Authors",
+            "Copyright (c) 2000-2026 Cosmin Truta",
+            "Copyright (c) 1998-2018 Glenn Randers-Pehrson",
+            "Copyright (c) 1996-1997 Andreas Dilger",
+            "Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.",
+            "Copyright (c) 2000-2017 Simon-Pierre Cadieux",
+            "Copyright (c) 2000-2017 Eric S. Raymond",
+            "Copyright (c) 2000-2017 Mans Rullgard",
+            "Copyright (c) 2000-2017 Gilles Vollant",
+            "Copyright (c) 2000-2017 James Yu",
+            "Copyright (c) 2000-2017 Mandar Sahastrabuddhe",
+            "Copyright (c) 1998-2000 Tom Lane",
+            "Copyright (c) 1998-2000 Willem van Schaik",
+            "Copyright (c) 1996-1997 John Bowler",
+            "Copyright (c) 1996-1997 Kevin Bracey",
+            "Copyright (c) 1996-1997 Sam Bushell",
+            "Copyright (c) 1996-1997 Magnus Holmgren",
+            "Copyright (c) 1996-1997 Greg Roelofs",
+            "Copyright (c) 1996-1997 Tom Tanner",
+            "Copyright (c) 1995-1996 Dave Martindale",
+            "Copyright (c) 1995-1996 Paul Schmidt",
+            "Copyright (c) 1995-1996 Tim Wegner"
+          ],
+          "license_files": "LICENSE"
+        }
+      ],
+      "files_read": 22,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtbase/src/3rdparty/libpng/LICENSE"]
+    },
+    "qtbase/src/3rdparty/libpsl": {
+      "attribution": [
+        {
+          "name": "The Public Suffix List",
+          "version": "2026-05-14_08-35-31_UTC",
+          "license": "MPL-2.0",
+          "copyright": "The list was originally provided by Jo Hermans <jo.hermans@gmail.com>.\nIt is now maintained on github (https://github.com/publicsuffix/list).",
+          "license_files": "PSL-LICENSE.txt"
+        },
+        {
+          "name": "libpsl - C library to handle the Public Suffix List",
+          "version": "664f3dc85259ec65e30248a61fa1c45b7b0e4c3f",
+          "license": "BSD-3-Clause",
+          "copyright": "Copyright 2014-2016 The Chromium Authors. All rights reserved.",
+          "license_files": "src/LICENSE.chromium"
+        }
+      ],
+      "files_read": 2,
+      "spdx_in_files": [],
+      "license_files_in_dir": [
+        "qtbase/src/3rdparty/libpsl/PSL-LICENSE.txt",
+        "qtbase/src/3rdparty/libpsl/src/LICENSE.chromium"
+      ]
+    },
+    "qtbase/src/3rdparty/md4": {
+      "attribution": [
+        {
+          "name": "MD4",
+          "version": null,
+          "license": "CC0-1.0",
+          "copyright": "Written by Alexander Peslyak - better known as Solar Designer <solar@openwall.com> - in 2001, and placed in the public domain. There's absolutely no warranty.",
+          "license_files": null
+        }
+      ],
+      "files_read": 2,
+      "spdx_in_files": [],
+      "license_files_in_dir": []
+    },
+    "qtbase/src/3rdparty/md4c": {
+      "attribution": [
+        {
+          "name": "MD4C",
+          "version": "0.5.3",
+          "license": "MIT",
+          "copyright": "Copyright \u00a9 2016-2024 Martin Mit\u00e1\u0161",
+          "license_files": "LICENSE.md"
+        }
+      ],
+      "files_read": 2,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtbase/src/3rdparty/md4c/LICENSE.md"]
+    },
+    "qtbase/src/3rdparty/md5": {
+      "attribution": [
+        {
+          "name": "MD5",
+          "version": null,
+          "license": "CC0-1.0",
+          "copyright": "Written by Colin Plumb in 1993, no copyright is claimed. Ian Jackson <ian@chiark.greenend.org.uk>.",
+          "license_files": null
+        }
+      ],
+      "files_read": 2,
+      "spdx_in_files": [],
+      "license_files_in_dir": []
+    },
+    "qtbase/src/3rdparty/pcre2": {
+      "attribution": [
+        {
+          "name": "PCRE2",
+          "version": "10.48",
+          "license": "LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception",
+          "copyright": [
+            "Copyright (c) 1997-2007 University of Cambridge",
+            "Copyright (c) 2007-2024 Philip Hazel",
+            "Copyright (c) 2010-2024 Zoltan Herczeg"
+          ],
+          "license_files": "LICENCE.md"
+        },
+        {
+          "name": "PCRE2 - Stack-less Just-In-Time Compiler",
+          "version": "10.48",
+          "license": "BSD-2-Clause",
+          "copyright": "Copyright Zoltan Herczeg",
+          "license_files": "LICENSE-SLJIT"
+        }
+      ],
+      "files_read": 40,
+      "spdx_in_files": [],
+      "license_files_in_dir": [
+        "qtbase/src/3rdparty/pcre2/LICENCE.md",
+        "qtbase/src/3rdparty/pcre2/LICENSE-SLJIT"
+      ]
+    },
+    "qtbase/src/3rdparty/rfc6234": {
+      "attribution": [
+        {
+          "name": "Secure Hash Algorithms SHA-384 and SHA-512",
+          "version": null,
+          "license": "BSD-3-Clause",
+          "copyright": "Copyright (c) 2011 IETF Trust and the persons identified as authors of the code.",
+          "license_files": "LICENSE"
+        }
+      ],
+      "files_read": 4,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtbase/src/3rdparty/rfc6234/LICENSE"]
+    },
+    "qtbase/src/3rdparty/sha1": {
+      "attribution": [
+        {
+          "name": "Secure Hash Algorithm SHA-1",
+          "version": null,
+          "license": "LicenseRef-SHA1-Public-Domain",
+          "copyright": [
+            "Copyright (C) Dominik Reichl <dominik.reichl@t-online.de>",
+            "Copyright (C) 2016 The Qt Company Ltd"
+          ],
+          "license_files": null
+        }
+      ],
+      "files_read": 1,
+      "spdx_in_files": ["LicenseRef-SHA1-Public-Domain"],
+      "license_files_in_dir": []
+    },
+    "qtbase/src/3rdparty/sha3": {
+      "attribution": [
+        {
+          "name": "Secure Hash Algorithm SHA-3 - brg_endian",
+          "version": "1.0.0",
+          "license": "BSD-2-Clause",
+          "copyright": "Copyright (c) 1998-2013, Brian Gladman, Worcester, UK. All rights reserved.",
+          "license_files": "BRG_ENDIAN_LICENSE"
+        },
+        {
+          "name": "Secure Hash Algorithm SHA-3 - Keccak",
+          "version": "3.2",
+          "license": "CC0-1.0",
+          "copyright": "Guido Bertoni, Joan Daemen, Micha\u00ebl Peeters and Gilles Van Assche.\nTo the extent possible under law, the implementers have waived all copyright\nand related or neighboring rights to the source code in this file.",
+          "license_files": "CC0_LICENSE"
+        }
+      ],
+      "files_read": 10,
+      "spdx_in_files": [],
+      "license_files_in_dir": [
+        "qtbase/src/3rdparty/sha3/BRG_ENDIAN_LICENSE",
+        "qtbase/src/3rdparty/sha3/CC0_LICENSE"
+      ]
+    },
+    "qtbase/src/3rdparty/siphash": {
+      "attribution": [
+        {
+          "name": "SipHash Algorithm",
+          "version": null,
+          "license": "CC0-1.0",
+          "copyright": [
+            "Copyright (C) 2012-2014 Jean-Philippe Aumasson",
+            "Copyright (C) 2012-2014 Daniel J. Bernstein <djb@cr.yp.to>",
+            "Copyright (C) 2016 Intel Corporation"
+          ],
+          "license_files": null
+        }
+      ],
+      "files_read": 1,
+      "spdx_in_files": ["CC0-1.0"],
+      "license_files_in_dir": []
+    },
+    "qtbase/src/3rdparty/tinycbor": {
+      "attribution": [
+        {
+          "name": "TinyCBOR",
+          "version": "7.0",
+          "license": "MIT",
+          "copyright": "Copyright (C) 2015-2025 Intel Corporation",
+          "license_files": "LICENSE"
+        }
+      ],
+      "files_read": 14,
+      "spdx_in_files": [
+        "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only"
+      ],
+      "license_files_in_dir": ["qtbase/src/3rdparty/tinycbor/LICENSE"]
+    },
+    "qtbase/src/3rdparty/zlib": {
+      "attribution": [
+        {
+          "name": "Data Compression Library (zlib)",
+          "version": "1.3.2",
+          "license": "Zlib",
+          "copyright": "(C) 1995-2026 Jean-loup Gailly and Mark Adler",
+          "license_files": "LICENSE"
+        }
+      ],
+      "files_read": 26,
+      "spdx_in_files": [],
+      "license_files_in_dir": ["qtbase/src/3rdparty/zlib/LICENSE"]
+    },
+    "qtdeclarative/src/3rdparty/masm": {
+      "attribution": [
+        {
+          "name": "JavaScriptCore Macro Assembler",
+          "version": null,
+          "license": "BSD-2-Clause",
+          "copyright": [
+            "Copyright (C) 2003-2018 Apple Inc. All rights reserved.",
+            "Copyright (C) 2007 Justin Haygood (jhaygood@reaktix.com)",
+            "Copyright (C) 2007-2009 Torch Mobile, Inc. All rights reserved. (http://www.torchmobile.com/)",
+            "Copyright (C) 2009, 2010 University of Szeged",
+            "Copyright (C) 2009-2011 STMicroelectronics. All rights reserved.",
+            "Copyright (C) 2010 MIPS Technologies, Inc. All rights reserved.",
+            "Copyright (C) 2010 Peter Varga (pvarga@inf.u-szeged.hu), University of Szeged",
+            "Copyright (C) 2010 MIPS Technologies, Inc. All rights reserved.",
+            "Copyright (C) 2010, 2011 Research In Motion Limited. All rights reserved.",
+            "Copyright (C) 2011 Google Inc. All rights reserved.",
+            "Copyright (C) 2013 Samsung Electronics. All rights reserved.",
+            "Copyright (C) 2015 Cisco Systems, Inc. All rights reserved.",
+            "Copyright (c) 2002-2009 Vivek Thampi"
+          ],
+          "license_files": "LICENSE"
+        }
+      ],
+      "files_read": 94,
+      "spdx_in_files": [
+        "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only"
+      ],
+      "license_files_in_dir": ["qtdeclarative/src/3rdparty/masm/LICENSE"]
+    }
+  },
+  "embedded_attributions": [
+    {
+      "attribution": "qtbase/src/corelib/global/qt_attribution.json",
+      "name": "tl::expected",
+      "license": "CC0-1.0",
+      "copyright": "To the extent possible under law, Sy Brand has waived all copyright and related or neighboring rights to the expected library. This work is published from: United Kingdom.",
+      "license_files": null,
+      "files_read": ["qexpected_p.h"]
+    },
+    {
+      "attribution": "qtbase/src/corelib/text/qt_attribution.json",
+      "name": "Unicode Character Database (UCD)",
+      "license": "Unicode-3.0",
+      "copyright": "Copyright (C) 1991-2025 Unicode, Inc.",
+      "license_files": null,
+      "files_read": ["qunicodetables_p.h", "qunicodetables.cpp"]
+    },
+    {
+      "attribution": "qtbase/src/corelib/text/qt_attribution.json",
+      "name": "Unicode Common Locale Data Repository (CLDR)",
+      "license": "Unicode-3.0",
+      "copyright": "Copyright (C) 2004-2025 Unicode, Inc.",
+      "license_files": null,
+      "files_read": [
+        "qlocale_data_p.h",
+        "../time/qtimezoneprivate_data_p.h",
+        "../time/qtimezonelocale_data_p.h",
+        "../time/qhijricalendar_data_p.h",
+        "../time/qjalalicalendar_data_p.h",
+        "../time/qromancalendar_data_p.h"
+      ]
+    },
+    {
+      "attribution": "qtbase/src/gui/opengl/qt_attribution.json",
+      "name": "OpenGL ES 2 Headers",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2013-2014 The Khronos Group Inc.",
+      "license_files": "LICENSE.KHRONOS.txt",
+      "files_read": ["qopengles2ext.h"]
+    },
+    {
+      "attribution": "qtbase/src/gui/painting/qt_attribution.json",
+      "name": "Anti-aliasing rasterizer from FreeType 2",
+      "license": "FTL OR GPL-2.0-only",
+      "copyright": "Copyright 2000-2016 by David Turner, Robert Wilhelm, and Werner Lemberg.",
+      "license_files": "../../3rdparty/freetype/LICENSE.txt",
+      "files_read": ["qgrayraster.c"]
+    },
+    {
+      "attribution": "qtbase/src/gui/painting/qt_attribution.json",
+      "name": "Smooth Scaling Algorithm",
+      "license": "BSD-2-Clause AND Imlib2",
+      "copyright": [
+        "Copyright (C) 2004, 2005 Daniel M. Duley.",
+        "(C) Carsten Haitzler and various contributors.",
+        "(C) Willem Monsuwe <willem@stack.nl>"
+      ],
+      "license_files": "LICENSE.QIMAGETRANSFORM.txt",
+      "files_read": ["qimagescale.cpp"]
+    },
+    {
+      "attribution": "qtbase/src/gui/painting/qt_attribution.json",
+      "name": "X Server helper",
+      "license": "X11 AND HPND",
+      "copyright": [
+        "Copyright (c) 1987, 1988 X Consortium",
+        "Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts."
+      ],
+      "license_files": "LICENSE.XCONSORTIUM.txt",
+      "files_read": ["qregion.cpp"]
+    },
+    {
+      "attribution": "qtbase/src/gui/text/qt_attribution.json",
+      "name": "Adobe Glyph List For New Fonts",
+      "license": "BSD-3-Clause",
+      "copyright": "Copyright 2002, 2003, 2005, 2006, 2008, 2010, 2015 Adobe Systems",
+      "license_files": "LICENSE.AGLFN.txt",
+      "files_read": ["qfontsubset_agl.cpp"]
+    },
+    {
+      "attribution": "qtbase/src/gui/util/qt_attribution.json",
+      "name": "XSVG",
+      "license": "HPND-sell-variant",
+      "copyright": "Copyright 2002 USC/Information Sciences Institute",
+      "license_files": "LICENSE.XSVG.txt",
+      "files_read": ["qguisvg.cpp"]
+    }
+  ],
+  "generated_files_by_dir": {
+    "qtbase/include/QtCore": 485,
+    "qtbase/include/QtGui": 338,
+    "qtbase/include/QtNetwork": 104,
+    "qtbase/include/QtOpenGL": 34,
+    "qtbase/include/QtQml": 279,
+    "qtbase/include/QtQmlIntegration": 1,
+    "qtbase/include/QtQmlMeta": 6,
+    "qtbase/include/QtQmlModels": 44,
+    "qtbase/include/QtQmlWorkerScript": 5,
+    "qtbase/include/QtQuick": 233,
+    "qtbase/include/QtQuickShapes": 4,
+    "qtbase/include/QtZlib": 2,
+    "qtbase/src/3rdparty": 101,
+    "qtbase/src/corelib": 83,
+    "qtbase/src/gui": 90,
+    "qtbase/src/network": 56,
+    "qtbase/src/opengl": 9,
+    "qtbase/src/plugins": 15,
+    "qtdeclarative/src/qml": 44,
+    "qtdeclarative/src/qmlmeta": 11,
+    "qtdeclarative/src/qmlmodels": 42,
+    "qtdeclarative/src/qmlworkerscript": 8,
+    "qtdeclarative/src/quick": 178,
+    "qtdeclarative/src/quickshapes": 9
+  },
+  "toolchain_and_sysroot_files": 1108
+}

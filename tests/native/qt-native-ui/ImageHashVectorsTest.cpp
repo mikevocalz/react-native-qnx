@@ -1,6 +1,6 @@
 // BlurHash and ThumbHash against the reference implementations. The vectors
-// come from blurhash@2.0.5 (woltapp/blurhash) and thumbhash@0.1.1
-// (evanw/thumbhash), run over fixed images; see "producedBy" in
+// come from the woltapp/blurhash C encoder, blurhash@2.0.5 decoder,
+// and thumbhash@0.1.1 (evanw/thumbhash), run over fixed images; see the provenance in
 // tests/fixtures/image-hashes/reference-vectors.json.
 #include "react-native-qnx/views/image/BlurHash.h"
 #include "react-native-qnx/views/image/BlurHashEncoder.h"
@@ -66,10 +66,10 @@ class ImageHashVectorsTest : public QObject {
     QVERIFY(vectors_.value(QStringLiteral("producedBy")).toString().contains(QStringLiteral("blurhash@2.0.5")));
   }
 
-  void blurhashEncodeMatchesTheReference() {
+  void blurhashEncodeMatchesTheCReference() {
     const QJsonObject images = vectors_.value(QStringLiteral("images")).toObject();
-    const QJsonArray cases = vectors_.value(QStringLiteral("blurhashEncode")).toArray();
-    QVERIFY(cases.size() >= 16);
+    const QJsonArray cases = vectors_.value(QStringLiteral("blurhashEncodeC")).toArray();
+    QVERIFY(cases.size() >= 17);
     for (const QJsonValue& value : cases) {
       const QJsonObject entry = value.toObject();
       const QString name = entry.value(QStringLiteral("image")).toString();

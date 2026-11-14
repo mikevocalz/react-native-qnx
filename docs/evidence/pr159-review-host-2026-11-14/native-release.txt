@@ -1,0 +1,18 @@
+Internal ctest changing into directory: /workspace/scratch/853552216e74/pr159/build/pr159-native-ui
+Test project /workspace/scratch/853552216e74/pr159/build/pr159-native-ui
+    Start 1: rnqnx_qt_native_ui_test
+1/6 Test #1: rnqnx_qt_native_ui_test ..........   Passed   19.56 sec
+    Start 2: rnqnx_image_units_test
+2/6 Test #2: rnqnx_image_units_test ...........   Passed    1.21 sec
+    Start 3: rnqnx_expo_image_item_test
+3/6 Test #3: rnqnx_expo_image_item_test .......   Passed    8.06 sec
+    Start 4: rnqnx_modal_quick_test
+4/6 Test #4: rnqnx_modal_quick_test ...........   Passed    0.07 sec
+    Start 5: rnqnx_image_fetch_queue_test
+5/6 Test #5: rnqnx_image_fetch_queue_test .....   Passed    1.42 sec
+    Start 6: rnqnx_image_hash_vectors_test
+6/6 Test #6: rnqnx_image_hash_vectors_test ....   Passed    0.08 sec
+
+100% tests passed, 0 tests failed out of 6
+
+Total Test time (real) =  30.40 sec

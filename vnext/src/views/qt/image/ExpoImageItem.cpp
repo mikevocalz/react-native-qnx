@@ -69,7 +69,15 @@ struct ExpoImageItem::Layer {
   mutable QImage cache;
   mutable QString cacheKey;
 
-  QImage frame() const { return movie ? movie->currentImage() : image; }
+  QImage frame() const {
+    if (movie) {
+      const QImage current = movie->currentImage();
+      if (!current.isNull()) return current;
+    }
+    // An autoplay=false movie has no current frame before its first start.
+    // Reuse the worker-decoded image without seeking/decoding on the UI thread.
+    return image;
+  }
 };
 
 struct ExpoImageItem::Choice {
@@ -407,6 +415,7 @@ void ExpoImageItem::startLoad() {
   const quint64 generation = ++generation_;
   const Choice choice = choose(source_);
   shownUri_ = choice.uri;
+  mediaType_.clear();
   Q_EMIT sourceChanged();
   setDisplayed(false);
 
@@ -417,6 +426,7 @@ void ExpoImageItem::startLoad() {
     update();
     return;
   }
+  Q_EMIT loadStarted();
   if (choice.kind == Choice::Kind::Hash) {
     const QImage image = hashImage(choice.entry);
     if (image.isNull()) {
@@ -453,17 +463,19 @@ void ExpoImageItem::startLoad() {
   const QString key = request.storageKey();
 
   if (!bypass && usesMemory(policy_)) {
-    const QImage cached = DecodedImageCache::shared().image(DecodedImageCache::key(key));
-    if (!cached.isNull()) {
+    const auto cached = DecodedImageCache::shared().entry(DecodedImageCache::key(key));
+    if (!cached.image.isNull()) {
       auto layer = std::make_unique<Layer>();
-      layer->image = cached;
-      layer->original = cached.size();
+      layer->image = cached.image;
+      layer->original = cached.image.size();
+      layer->animated = !cached.animationBytes.isEmpty();
+      if (layer->animated) adoptMovie(*layer, cached.animationBytes);
+      mediaType_ = cached.mediaType;
       show(std::move(layer), QStringLiteral("memory"), choice.uri);
       return;
     }
   }
 
-  Q_EMIT loadStarted();
   loadPlaceholder();
   mainFetch_ = fetcher_.fetch(
       request,
@@ -556,8 +568,8 @@ void ExpoImageItem::onDecoded() {
   }
   const QString mediaType = decoded.mediaType;
   const bool animated = decoded.animated;
-  if (pendingStore_ && !decoded.animated && !decoded.downscaled) {
-    DecodedImageCache::shared().insert(pendingKey_, decoded.first);
+  if (pendingStore_ && !decoded.downscaled) {
+    DecodedImageCache::shared().insert(pendingKey_, decoded.first, decoded.mediaType, decoded.bytes);
   }
   auto layer = std::make_unique<Layer>();
   layer->image = std::move(decoded.first);

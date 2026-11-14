@@ -1,15 +1,11 @@
 #include "react-native-qnx/runtime/QtImageCache.h"
+#include "react-native-qnx/views/image/ImageDecode.h"
 
-#include <QBuffer>
-#include <QImageReader>
 #include <QThread>
 
 #include <memory>
 
 namespace rnqnx::runtime {
-namespace {
-constexpr qint64 kMaxPixels = 16 * 1024 * 1024;
-}
 
 QtImageCache::QtImageCache()
     : images_(views::DecodedImageCache::shared()),
@@ -26,23 +22,16 @@ bool QtImageCache::contains(const QString& uri) const {
 
 void QtImageCache::decode(const QString& key, const QByteArray& bytes,
                           bool cache, Completion complete) {
-  QBuffer buffer;
-  buffer.setData(bytes);
-  buffer.open(QIODevice::ReadOnly);
-  QImageReader reader(&buffer);
-  const QSize dimensions = reader.size();
-  if (!dimensions.isValid() ||
-      static_cast<qint64>(dimensions.width()) * dimensions.height() > kMaxPixels) {
-    complete({}, QStringLiteral("Invalid image or image exceeds pixel limit"));
+  auto decoded = views::decodeImage(bytes, {}, false, views::ContentFit::Cover);
+  if (!decoded.error.isEmpty()) {
+    complete({}, decoded.error);
     return;
   }
-  QImage image = reader.read();
-  if (image.isNull()) {
-    complete({}, QStringLiteral("Could not decode image"));
-    return;
-  }
-  const auto size = image.size();
-  if (cache) images_.insert(key, std::move(image));
+  const auto size = decoded.originalSize;
+  // Static consumers such as SVG keep their first-frame lookup; Expo views
+  // also retain enough encoded data to create their own QMovie on a cache hit.
+  if (cache)
+    images_.insert(key, std::move(decoded.first), std::move(decoded.mediaType), std::move(decoded.bytes));
   complete(size, {});
 }
 

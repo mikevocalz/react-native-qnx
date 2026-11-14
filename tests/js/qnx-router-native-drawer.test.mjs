@@ -305,7 +305,7 @@ for (const position of ['left', 'right']) {
   const events = [];
   /** @type {string[]} */
   const calls = [];
-  render(
+  const drawer = render(
     React.createElement(JsDrawer, {
       ...base,
       drawerWidth: 200,
@@ -327,6 +327,35 @@ for (const position of ['left', 'right']) {
   assert.deepEqual(calls, ['open']);
   act(() => captured.onPanResponderTerminate());
   assert.deepEqual(events, ['start', 'end', 'start', 'end', 'cancel']);
+  act(() => drawer.unmount());
+  for (const drawerPosition of ['left', 'right']) {
+    for (const open of [false, true]) {
+      const changes = [];
+      const sign = (drawerPosition === 'right' ? -1 : 1) * (open ? -1 : 1);
+      const flingDrawer = render(
+        React.createElement(JsDrawer, {
+          ...base,
+          drawerPosition,
+          drawerWidth: 200,
+          swipeMinDistance: 100,
+          open,
+          onOpen: () => changes.push('open'),
+          onClose: () => changes.push('close'),
+        })
+      );
+      act(() => captured.onPanResponderGrant());
+      act(() => captured.onPanResponderRelease({}, { dx: sign * 60, vx: sign * 0.5 }));
+      assert.deepEqual(changes, [], 'exactly 500 px/s still obeys minimum distance');
+      act(() => captured.onPanResponderGrant());
+      act(() => captured.onPanResponderRelease({}, { dx: sign * 60, vx: sign * 0.6 }));
+      assert.deepEqual(
+        changes,
+        [open ? 'close' : 'open'],
+        `${drawerPosition} short fling changes state`
+      );
+      act(() => flingDrawer.unmount());
+    }
+  }
   rn.PanResponder.create = originalCreate;
 }
 

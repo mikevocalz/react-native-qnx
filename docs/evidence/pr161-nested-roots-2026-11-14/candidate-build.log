@@ -1,0 +1,13 @@
+[0/2] Re-checking globbed directories...
+[1/14] Automatic MOC for target rnqnx_qt_rnsvg
+[2/13] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Bounds.cpp.o
+[3/13] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgItems.cpp.o
+[4/13] Linking CXX static library rnsvg/librnqnx_qt_rnsvg.a
+[5/13] Linking CXX executable rnqnx_qt_rnsvg_filter_test
+[6/13] Linking CXX executable rnqnx_qt_rnsvg_fixtures_test
+[7/13] Linking CXX executable rnqnx_qt_rnsvg_foreignobject_test
+[8/13] Linking CXX executable rnqnx_qt_rnsvg_image_test
+[9/13] Linking CXX executable rnqnx_qt_rnsvg_loader_test
+[10/13] Linking CXX executable rnqnx_qt_rnsvg_scene_test
+[11/13] Linking CXX executable rnqnx_qt_rnsvg_test
+[12/13] Linking CXX executable rnqnx_qt_rnsvg_text_test

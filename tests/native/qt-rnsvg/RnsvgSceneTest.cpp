@@ -656,6 +656,55 @@ class RnsvgSceneTest final : public QObject {
     QCOMPARE(s.root.hitElement(QPointF(90, 90)), nullptr);
   }
 
+  void removingNestedSvgChildRepaintsVisibleRoot() {
+    QQuickWindow window;
+    window.setColor(Qt::white);
+    window.resize(100, 100);
+    Scene s(100, 100);
+    s.root.setParentItem(window.contentItem());
+    auto* nested = new RnsvgRootItem(&s.root);
+    nested->setSize(QSizeF(60, 60));
+    RootProps rp;
+    rp.bbWidth = px(60); rp.bbHeight = px(60);
+    nested->setRootProps(rp);
+    auto* child = add(nested, rect(0, 0, 40, 40, Qt::red));
+    window.show();
+    QTRY_VERIFY_WITH_TIMEOUT(s.root.paintCount() > 0, 2000);
+    QCOMPARE(window.grabWindow().pixelColor(20, 20), QColor(Qt::red));
+    const int before = s.root.paintCount();
+    // Fabric removes the item before deleting it. Its old root must invalidate
+    // the texture even though the child's parentChanged now sees no parent.
+    child->setParentItem(nullptr);
+    delete child;
+    QTRY_VERIFY_WITH_TIMEOUT(s.root.paintCount() > before, 2000);
+    QCOMPARE(window.grabWindow().pixelColor(20, 20), QColor(Qt::white));
+  }
+
+  void nestedRootsWithinNestedRootsContributeToGroupBounds() {
+    Scene s(200, 200);
+    ElementProps g = make(Kind::Group);
+    g.opacity = 0.5;
+    auto* group = add(&s.root, g);
+    auto* nested = new RnsvgRootItem(group);
+    nested->setSize(QSizeF(100, 100));
+    RootProps rp;
+    rp.bbWidth = px(100); rp.bbHeight = px(100);
+    rp.vbWidth = 50; rp.vbHeight = 50;
+    nested->setRootProps(rp);
+    auto* inner = new RnsvgRootItem(nested);
+    inner->setSize(QSizeF(40, 40));
+    RootProps ip;
+    ip.bbWidth = px(40); ip.bbHeight = px(40);
+    ip.vbWidth = 20; ip.vbHeight = 20;
+    inner->setRootProps(ip);
+    add(inner, rect(5, 5, 30, 30, Qt::red));
+    // Both viewBox scales apply, and the inner viewport clips at outer x/y=80.
+    QCOMPARE(s.root.elementBounds(group), QRectF(20, 20, 60, 60));
+    const QImage img = render(s.root);
+    VERIFY_PX(img, 30, 30, QColor(255, 0, 0, 128));
+    VERIFY_TRANSPARENT(img, 85, 85);
+  }
+
   void foreignObjectIsPlacedThroughEveryAncestorTransform() {
     Scene s(200, 200);
     RootProps rp;

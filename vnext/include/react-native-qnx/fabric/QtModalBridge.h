@@ -11,8 +11,8 @@ namespace rnqnx::fabric {
 
 /// Gives a React Native Modal its keyboard behaviour on a Qt Quick surface.
 ///
-/// While the modal item is in a window it holds the active focus and keeps it:
-/// focus that moves to an item outside every modal returns to the modal, so
+/// The most recently opened modal in a window owns its keyboard focus. Focus
+/// outside that modal returns to it, including focus in a covered modal, so
 /// Tab and clicks on the covered app cannot take the keyboard. The item that
 /// had focus before the modal opened gets it back when the modal leaves the
 /// window. The item's `requestClose()` signal (Escape, from its Qt Quick Keys
@@ -26,6 +26,7 @@ class QtModalBridge final : public QObject {
   /// `modal` must declare a `requestClose()` signal and the object name
   /// returned by `modalObjectName()`.
   QtModalBridge(QQuickItem& modal, std::function<void()> onRequestClose);
+  ~QtModalBridge() override;
 
   static QString modalObjectName();
 
@@ -37,8 +38,8 @@ class QtModalBridge final : public QObject {
  private:
   void enter(QQuickWindow& window);
   void leave();
-  static bool insideAnyModal(const QQuickItem* item);
-  bool insideOtherModal(const QQuickItem* item) const;
+  static QtModalBridge* topModal(QQuickWindow* window);
+  bool contains(const QQuickItem* item) const;
 
   QQuickItem& modal_;
   std::function<void()> onRequestClose_;

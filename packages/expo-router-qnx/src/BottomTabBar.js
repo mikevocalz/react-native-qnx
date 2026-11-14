@@ -6,6 +6,9 @@
 // QnxTabs layout helper sets that from the window width.
 const React = require('react');
 const { Animated, I18nManager, Keyboard, useWindowDimensions } = require('react-native');
+const {
+  BottomTabBarHeightCallbackContext,
+} = require('expo-router/build/react-navigation/bottom-tabs/utils/BottomTabBarHeightCallbackContext');
 const { hasNative } = require('./native');
 const { JsTabBar } = require('./JsTabBar');
 const {
@@ -119,13 +122,18 @@ function TabBarContent({ state, descriptors, emitter, navigateToTab, insets }) {
 // Keyboard module that emits (QNX has no on-screen keyboard unless one is
 // installed, so the bar then stays).
 function useKeyboardShown(enabled) {
-  const [shown, setShown] = React.useState(false);
+  const [shown, setShown] = React.useState(() => enabled && Keyboard?.isVisible?.() === true);
   React.useEffect(() => {
-    if (!enabled || typeof Keyboard?.addListener !== 'function') return undefined;
+    if (!enabled || typeof Keyboard?.addListener !== 'function') {
+      setShown(false);
+      return undefined;
+    }
     const subscriptions = [
       Keyboard.addListener('keyboardDidShow', () => setShown(true)),
       Keyboard.addListener('keyboardDidHide', () => setShown(false)),
     ];
+    // The option can be enabled after the keyboard's show event has fired.
+    setShown(Keyboard?.isVisible?.() === true);
     return () => subscriptions.forEach((subscription) => subscription?.remove?.());
   }, [enabled]);
   return enabled && shown;
@@ -133,10 +141,17 @@ function useKeyboardShown(enabled) {
 
 // tabBarHideOnKeyboard with tabBarVisibilityAnimationConfig ({ show, hide }:
 // { animation: 'timing' | 'spring', config }).
-function VisibilityGate({ hideOnKeyboard, config, children }) {
+function VisibilityGate({ hideOnKeyboard, config, height, children }) {
   const hide = useKeyboardShown(hideOnKeyboard);
-  const opacity = React.useRef(new Animated.Value(1)).current;
-  const [gone, setGone] = React.useState(false);
+  const opacity = React.useRef(new Animated.Value(hide ? 0 : 1)).current;
+  const [gone, setGone] = React.useState(hide);
+  const onHeightChange = React.useContext(BottomTabBarHeightCallbackContext);
+  const reservedHeight = gone && hide ? 0 : height;
+  // BottomTabView owns the height context used by scene padding. Report the
+  // settled occupied size even when the bar has no host item to emit onLayout.
+  React.useLayoutEffect(() => {
+    onHeightChange?.(reservedHeight);
+  }, [onHeightChange, reservedHeight]);
   const first = React.useRef(true);
   React.useEffect(() => {
     if (first.current) {
@@ -169,6 +184,7 @@ function BottomTabBar(props) {
     {
       hideOnKeyboard: options.tabBarHideOnKeyboard === true,
       config: options.tabBarVisibilityAnimationConfig,
+      height: getTabBarHeight(props),
     },
     React.createElement(TabBarContent, props)
   );

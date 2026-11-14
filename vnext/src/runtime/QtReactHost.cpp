@@ -583,6 +583,7 @@ class QtReactHost::Impl {
     if (runtimeExecutionDepth != 0) {
       std::terminate();
     }
+    views::ImageLoadedNotifier::shared().unsubscribe(imageLoadedSubscription);
     for (auto& [surfaceId, handler] : surfaces) {
 #if RNQNX_ENABLE_FRAME_TRACE
       const auto generation = surfaceGenerations.find(surfaceId);
@@ -635,6 +636,7 @@ class QtReactHost::Impl {
   // Native modules own asynchronous operations beyond a temporary JS lookup.
   // Cache one instance per host, as the platform TurboModuleManager does.
   std::unordered_map<std::string, std::shared_ptr<facebook::react::TurboModule>> turboModules;
+  views::ImageLoadedNotifier::Token imageLoadedSubscription{0};
   std::unordered_map<int, std::unique_ptr<QTimer>> timers;
   /// Drives the NativeAnimated `onRender` callback while at least one animation
   /// is active. Created on first use and reused for later animations.
@@ -711,6 +713,11 @@ bool QtReactHost::evaluate(
         : QUrl::fromLocalFile(QFileInfo(sourceLocation).absoluteFilePath())
               .toString(QUrl::FullyEncoded)
               .toStdString();
+    if (const auto found = impl_->turboModules.find(QnxSourceCode::kModuleName);
+        found != impl_->turboModules.end()) {
+      if (auto source = std::dynamic_pointer_cast<QnxSourceCode>(found->second))
+        source->setScriptUrl(impl_->scriptUrl);
+    }
   }
   try {
     std::exception_ptr evaluationError;
@@ -863,6 +870,15 @@ void QtReactHost::installTurboModuleBinding() {
 #pragma GCC diagnostic pop
 #endif
   auto* impl = impl_.get();
+
+  // View events must be forwarded even when JavaScript never looks up
+  // ImageLoader. One host-owned subscription also avoids duplicate forwarding
+  // when the binding is reinstalled or the loader is created later.
+  views::ImageLoadedNotifier::shared().unsubscribe(impl->imageLoadedSubscription);
+  impl->imageLoadedSubscription = views::ImageLoadedNotifier::shared().subscribe(
+      [callInvoker](const views::ImageLoadedEvent& event) {
+        callInvoker->invokeAsync([event](facebook::jsi::Runtime& rt) { emitImageLoaded(rt, event); });
+      });
 
   auto createModule = [callInvoker, impl](
           facebook::jsi::Runtime& /*jsRuntime*/,

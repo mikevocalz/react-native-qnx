@@ -171,7 +171,7 @@ void RnsvgRootItem::itemChange(ItemChange change, const ItemChangeData& data) {
   if (change == ItemDevicePixelRatioHasChanged || change == ItemSceneChange) updateTextureSize();
   // A direct child leaving the tree has no other hook: the element it was is
   // already detached by the time it could invalidate.
-  if (change == ItemChildAddedChange || change == ItemChildRemovedChange) update();
+  if (change == ItemChildAddedChange || change == ItemChildRemovedChange) invalidate();
   // A nested <Svg> is painted by the outer root (rnsvg::Scene), never by its own item.
   if (change == ItemParentHasChanged) setVisible(!isNested());
 }

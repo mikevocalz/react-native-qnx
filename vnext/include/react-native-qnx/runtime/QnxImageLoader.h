@@ -27,7 +27,6 @@ class QnxImageLoader final : public facebook::react::TurboModule {
  private:
   QtImageCache cache_;
   views::QtImageFetcher fetcher_{30000, &views::ImageDiskCache::shared(), &views::ImageFetchQueue::shared()};
-  views::ImageLoadedNotifier::Token loadedSubscription_{0};
   void registerMethods();
   static facebook::jsi::Value load(
       facebook::jsi::Runtime& rt, facebook::react::TurboModule& tm,

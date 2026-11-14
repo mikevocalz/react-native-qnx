@@ -93,6 +93,9 @@ int main(int argc, char** argv) {
     auto first = load(cache, server.url("/ok"));
     check(first.error.isEmpty() && first.size == QSize(7, 5), "HTTP dimensions failed");
     check(cache.contains(server.url("/ok")), "successful load not cached");
+    check(rnqnx::views::DecodedImageCache::shared().entry(
+              rnqnx::views::DecodedImageCache::key(server.url("/ok"))).mediaType == QStringLiteral("image/png"),
+          "prefetch discarded media type");
     QQmlEngine engine;
     rnqnx::views::QtQuickItemFactory factory(engine);
     const auto source = factory.resolveImageSource(server.url("/ok"));
@@ -125,6 +128,13 @@ int main(int argc, char** argv) {
           "bounded LRU cache failed");
     const auto data = QStringLiteral("data:image/png;base64,") + QString::fromLatin1(server.png.toBase64());
     check(load(cache, data).size == QSize(7, 5) && cache.contains(data), "data URI failed");
+    const auto gif = QStringLiteral("data:image/gif;base64,R0lGODlhAQABAKEAAP8AAAAA/wAAAAAAACH5BAQBAAAALAAAAAABAAEAAAICRAEAIfkEBAEAAQAsAAAAAAEAAQAAAgJMAQA7");
+    check(load(cache, gif).size == QSize(1, 1), "animated prefetch failed");
+    const auto animated = rnqnx::views::DecodedImageCache::shared().entry(
+        rnqnx::views::DecodedImageCache::key(gif));
+    check(!animated.image.isNull() && !animated.animationBytes.isEmpty(),
+          "animated prefetch lost its first frame or playback bytes");
+    check(animated.mediaType == QStringLiteral("image/gif"), "animated prefetch lost its media type");
     check(!load(cache, "data:image/png;base64,!!!!").error.isEmpty(), "invalid base64 accepted");
     check(!load(cache, "data:image/png,abc").error.isEmpty(), "unsupported data URI accepted");
     check(!load(cache, "ftp://example.invalid/image").error.isEmpty(), "unsupported scheme accepted");

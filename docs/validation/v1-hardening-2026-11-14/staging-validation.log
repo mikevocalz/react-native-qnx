@@ -1,0 +1,18 @@
+test_attribution_output_escape_preserves_previous_runtime (__main__.StagingTest.test_attribution_output_escape_preserves_previous_runtime) ... ok
+test_existing_lock_refuses_concurrent_staging (__main__.StagingTest.test_existing_lock_refuses_concurrent_staging) ... ok
+test_failed_promotion_restores_previous_runtime (__main__.StagingTest.test_failed_promotion_restores_previous_runtime) ... ok
+test_malformed_audit_preserves_previous_runtime (__main__.StagingTest.test_malformed_audit_preserves_previous_runtime) ... ok
+test_missing_library_preserves_previous_runtime (__main__.StagingTest.test_missing_library_preserves_previous_runtime) ... ok
+test_missing_plugin_preserves_previous_runtime (__main__.StagingTest.test_missing_plugin_preserves_previous_runtime) ... ok
+test_missing_qt_dependency_preserves_previous_runtime (__main__.StagingTest.test_missing_qt_dependency_preserves_previous_runtime) ... ok
+test_output_symlink_is_rejected (__main__.StagingTest.test_output_symlink_is_rejected) ... ok
+test_protected_output_is_rejected (__main__.StagingTest.test_protected_output_is_rejected) ... ok
+test_readelf_failure_preserves_previous_runtime (__main__.StagingTest.test_readelf_failure_preserves_previous_runtime) ... ok
+test_source_symlink_escape_preserves_previous_runtime (__main__.StagingTest.test_source_symlink_escape_preserves_previous_runtime) ... ok
+test_success_replaces_runtime_and_hashes_actual_files (__main__.StagingTest.test_success_replaces_runtime_and_hashes_actual_files) ... ok
+test_terminated_publication_retains_recoverable_previous_runtime (__main__.StagingTest.test_terminated_publication_retains_recoverable_previous_runtime) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 3.648s
+
+OK

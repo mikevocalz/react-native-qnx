@@ -1,5 +1,13 @@
 # TEST_STATUS.md
 
+## PR 159 review follow-up — 2026-11-14
+
+Linux Qt 6.11.1 strict Release native UI: 6/6 executables passed; standalone HTTP/cache: 1/1 passed. Seven targeted JS and seven ordered shared-process router suites passed; four original-source controls failed at their intended assertions. Type/dependency/manifest/architecture/codegen checks and fresh QNX/Marathon Metro bundles passed. Full JS exited 1 on Wayland-fixture Unix socket listen EPERM. Full Hermes and current-target gates are not claimed; standalone SVG HTTP ASan/UBSan passes 15/15 with Qt libraries uninstrumented and leak checks disabled.
+[Source, commands, limits and rollback](../validation/pr159-review-followup-2026-11-14.md).
+Main/SVG integration includes PR 161 follow-up `13a0e49`; both evidence sets are retained. Transactional imageformat staging reads the selected `IMAGEFORMATS_SRC` notices and all attribution inputs; 25 host staging fixtures pass with a failing old-source control. The final code source is `252b128`; its complete source-tree identities and 55 SHA-256 entries are recorded in the receipt.
+
+Independent review corrected the initially blank paused animation, with failing direct and deleted-source prefetch controls. Fresh image Debug ASan/UBSan passes 3/3 CTests and 73 QtTest entries. Reconciliation found a stale generated Release MOC that omitted the new disk-clear HTTP slot; after refreshing only those build artifacts, all 6/6 Release CTests and 126 entries pass. Prior 125-entry logs remain qualified and preserved. Pinned Hermes and Metro builds succeeded, but GCC stopped on a Clang-specific upstream React Native pragma before linking the host test; the supported Clang retry and both new host regressions remain pending. Exact-head CI and current-target gates remain open.
+
 ## PR 159 drawer route and pointer correction — 2026-11-13
 
 The drawer now selects its navigator destination across all Home child tabs.
@@ -78,6 +86,32 @@ resize checks remain pending. Other image-loader/navigation gaps stay open.
 
 Strict table syntax compilation, host-renderer orchestration, video JS, frozen installation and documentation checks passed. Full linked runtime and device checks were not run for this repair.
 [Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
+
+## PR 161 nested SVG and main integration (2026-11-14)
+
+Host: Debian 13 x86-64, Node 26.13.1, pnpm 12.18.0, GCC 14.2.0,
+Qt 6.11.1, CMake 3.31.10 and Ninja 1.13. Standalone native sources are
+`3324e7c`; main merge `446d28f` does not change that native graph. The only
+subsequent native-suite edit captures the test kernel size before moving it.
+
+| Command/check                                                                                                                                                                                                                               | Exit and result                                                                                         |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `cmake -S tests/native/qt-rnsvg -B build/rnsvg-sanitized -G Ninja -DRNQNX_ENABLE_QT_RNSVG=ON -DRNQNX_QT_RNSVG_SANITIZERS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=/usr/bin/g++`; `cmake --build build/rnsvg-sanitized --parallel 2` | 0; renderer and all eight standalone tests build.                                                       |
+| Two new scene tests against the original two native files                                                                                                                                                                                   | 2 as expected; repaint and bounds assertions each fail.                                                 |
+| Same scene tests after restoring `3324e7c` native files                                                                                                                                                                                     | 0; both pass in 15 ms.                                                                                  |
+| `ctest --test-dir build/rnsvg-sanitized --output-on-failure` before fixture correction                                                                                                                                                      | 8; seven of eight pass, convolution fixture asserts because the kernel size may be read after its move. |
+| Same CTest command after fixture correction                                                                                                                                                                                                 | 0; eight of eight pass in 34.86 s, no ASan/UBSan report.                                                |
+| `python3 tests/python/test_qt_public_staging.py -v`                                                                                                                                                                                         | 0; all 17 pass, including four added SVG integration cases. Independent reviewer also passes all 17.    |
+| `node tests/js/qnx-target-runtime-doctor.test.mjs`                                                                                                                                                                                          | 0; 47 host observation scenarios plus file/CLI boundaries.                                              |
+| `pnpm typecheck`; `pnpm validate:docs`                                                                                                                                                                                                      | 0; root/adaptive projects, 24 components and 11 gate records.                                           |
+
+Qt shared libraries are uninstrumented; leak detection remains disabled by
+the existing test configuration. One direct filter invocation lacked the
+offscreen platform and failed before tests; the corrected offscreen run
+passes unchanged pixel assertions. Raw test results, build flags and source
+hashes are in the [receipt](../validation/pr161-nested-roots-2026-11-14.md).
+Full hosted renderer CI at the final head, QNX cross-build, physical-device
+and Marathon execution are pending; no release gate changes.
 
 ## PR 161 cross-build recipe correction — 2026-11-13
 

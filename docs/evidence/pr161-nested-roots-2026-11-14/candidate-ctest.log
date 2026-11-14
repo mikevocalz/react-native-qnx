@@ -1,0 +1,145 @@
+Internal ctest changing into directory: /workspace/scratch/853552216e74/pr161-native/build/rnsvg-sanitized
+Test project /workspace/scratch/853552216e74/pr161-native/build/rnsvg-sanitized
+    Start 1: rnqnx_qt_rnsvg_filter_test
+1/8 Test #1: rnqnx_qt_rnsvg_filter_test ..........***Failed    9.60 sec
+********* Start testing of RnsvgFilterTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgFilterTest::initTestCase()
+PASS   : RnsvgFilterTest::regionDefaultsAroundBoundingBox()
+PASS   : RnsvgFilterTest::regionInUserSpaceUnits()
+PASS   : RnsvgFilterTest::regionSnapsOriginDownAndSizeUp()
+PASS   : RnsvgFilterTest::regionFollowsScaleAndRotation()
+PASS   : RnsvgFilterTest::degenerateRegionsAreInvalid()
+PASS   : RnsvgFilterTest::regionCapIsExact()
+PASS   : RnsvgFilterTest::subregionDefaultsToFilterRegion()
+PASS   : RnsvgFilterTest::subregionExplicitAndPartial()
+PASS   : RnsvgFilterTest::subregionPercentAndBoundingBoxUnits()
+PASS   : RnsvgFilterTest::subregionWithNoAreaIsTransparent()
+PASS   : RnsvgFilterTest::resultIsClippedToSubregion()
+PASS   : RnsvgFilterTest::standardInputs()
+PASS   : RnsvgFilterTest::namedAndImplicitInputs()
+PASS   : RnsvgFilterTest::badReferencesFallBack()
+PASS   : RnsvgFilterTest::emptyAndNullPrimitiveLists()
+PASS   : RnsvgFilterTest::colorInterpolationFilters()
+PASS   : RnsvgFilterTest::offsetKeepsColorsExact()
+PASS   : RnsvgFilterTest::lightingColorIsConvertedToWorkingSpace()
+PASS   : RnsvgFilterTest::blurScalesWithTransform()
+PASS   : RnsvgFilterTest::offsetFollowsTransform()
+PASS   : RnsvgFilterTest::rotatedAndFlippedTransforms()
+PASS   : RnsvgFilterTest::gaussianBlurEdgeModesAndAxes()
+PASS   : RnsvgFilterTest::boxBlurMatchesDirectComputation()
+PASS   : RnsvgFilterTest::colorMatrixValues()
+PASS   : RnsvgFilterTest::componentTransferFunctions()
+PASS   : RnsvgFilterTest::compositeOperators()
+PASS   : RnsvgFilterTest::blendModes()
+PASS   : RnsvgFilterTest::mergeAndFloodArithmetic()
+PASS   : RnsvgFilterTest::morphologyRadii()
+PASS   : RnsvgFilterTest::dropShadowArithmetic()
+PASS   : RnsvgFilterTest::tileRepeatsTheInputSubregion()
+PASS   : RnsvgFilterTest::imagePlacement()
+FAIL!  : RnsvgFilterTest::convolveMatrixSemantics() 'filtertest::close(got_, (255), (255), (255), (255), (1))' returned FALSE. (pixel (4,0) is (0,0,0,a=0), expected (255,255,255,a=255) +-1)
+   Loc: [/workspace/scratch/853552216e74/pr161-native/tests/native/qt-rnsvg/golden/filter/unit/SpatialPrimitiveTests.h(131)]
+PASS   : RnsvgFilterTest::displacementMapChannels()
+PASS   : RnsvgFilterTest::lightingOnFlatSurface()
+PASS   : RnsvgFilterTest::turbulenceProperties()
+PASS   : RnsvgFilterTest::invalidParametersFollowTheirRules()
+PASS   : RnsvgFilterTest::hostileParametersStayBounded()
+PASS   : RnsvgFilterTest::hostileSourcesAndRegions()
+QINFO  : RnsvgFilterTest::blurCostIsIndependentOfRadius() BLUR 256x256: sigma 2.5 64.75 ms, sigma 60 81.87 ms, sigma 5000 74.09 ms
+PASS   : RnsvgFilterTest::blurCostIsIndependentOfRadius()
+PASS   : RnsvgFilterTest::applyNeverModifiesItsInput()
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blur_box_5                 max= 15 mean= 0.852 over= 0.090%  31.07 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blur_kernel_1              max= 17 mean= 0.622 over= 1.190%  44.14 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blur_xy                    max= 12 mean= 0.689 over= 0.000%  35.93 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blur_axis_zero             max=  6 mean= 0.354 over= 0.000%  21.78 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blur_srgb                  max=  7 mean= 0.469 over= 0.000%  34.15 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blur_negative              max=  0 mean= 0.000 over= 0.000%   0.54 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN offset                     max=  0 mean= 0.000 over= 0.000%   0.66 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN flood_subregion            max=  0 mean= 0.000 over= 0.000%   2.21 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN flood_merge                max= 14 mean= 0.015 over= 0.025%   7.12 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN flood_srgb                 max=  0 mean= 0.000 over= 0.000%   1.56 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN drop_shadow_merge          max= 30 mean= 0.358 over= 0.085%  57.73 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN glow                       max=  6 mean= 0.208 over= 0.000%  40.31 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN colormatrix_saturate       max= 13 mean= 0.208 over= 0.010%   7.96 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN colormatrix_hue            max= 29 mean= 0.395 over= 0.055%   8.36 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN colormatrix_l2a            max= 55 mean= 0.188 over= 0.070%   5.85 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN colormatrix_matrix         max= 16 mean= 0.024 over= 0.042%   9.91 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_over             max= 16 mean= 0.019 over= 0.033%   5.23 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_in               max= 16 mean= 0.023 over= 0.042%   5.70 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_out              max= 10 mean= 0.004 over= 0.000%   7.60 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_atop             max= 16 mean= 0.018 over= 0.033%   6.61 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_xor              max= 19 mean= 0.021 over= 0.020%   6.16 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_arithmetic       max= 11 mean= 0.221 over= 0.000%   9.75 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_arithmetic_k4    max= 15 mean= 0.198 over= 0.025%   8.35 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_normal               max= 15 mean= 0.019 over= 0.030%   6.78 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_multiply             max= 28 mean= 0.018 over= 0.033%  11.37 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_screen               max=  9 mean= 0.008 over= 0.000%  10.70 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_darken               max= 15 mean= 0.016 over= 0.020%  15.03 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_lighten              max= 14 mean= 0.053 over= 0.020%  12.52 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_overlay              max= 19 mean= 0.108 over= 0.033%  11.76 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_color_dodge          max= 21 mean= 0.011 over= 0.020%  12.01 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_color_burn           max= 27 mean= 0.019 over= 0.033%  13.43 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_hard_light           max= 19 mean= 0.019 over= 0.042%   9.35 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_soft_light           max= 10 mean= 0.011 over= 0.000%  11.29 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_difference           max= 28 mean= 0.011 over= 0.025%  11.72 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_exclusion            max=  6 mean= 0.006 over= 0.000%  10.02 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_hue                  max=  7 mean= 0.006 over= 0.000%  30.90 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_saturation           max= 35 mean= 0.380 over= 0.055%  30.55 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_color                max= 11 mean= 0.011 over= 0.000%  20.01 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_luminosity           max= 24 mean= 0.648 over= 0.055%  21.10 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN morph_erode_5              max=  2 mean= 0.403 over= 0.000%  51.52 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN morph_dilate_4             max= 18 mean= 0.339 over= 0.040%  56.37 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN morph_erode_xy             max=  2 mean= 0.402 over= 0.000%  48.58 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN turbulence                 max=  1 mean= 0.002 over= 0.000%  98.74 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN fractal_noise              max=  1 mean= 0.002 over= 0.000%  102.85 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN turbulence_srgb            max=  1 mean= 0.000 over= 0.000%  55.60 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN displacement_turbulence    max= 18 mean= 0.314 over= 0.042%  65.01 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN displacement_alpha         max= 18 mean= 0.296 over= 0.037%  139.44 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN ct_mixed                   max= 19 mean= 0.072 over= 0.055%   9.74 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN ct_gamma                   max= 19 mean= 0.118 over= 0.050%   8.24 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN ct_alpha                   max=  9 mean= 0.306 over= 0.000%   6.76 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN ct_srgb                    max= 20 mean= 0.076 over= 0.040%   4.43 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN drop_shadow                max= 15 mean= 0.052 over= 0.020%  75.64 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN drop_shadow_noblur         max= 51 mean= 0.037 over= 0.092%   6.86 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN image_data                 max=  0 mean= 0.000 over= 0.000%   1.57 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN image_element              max=  0 mean= 0.000 over= 0.000%   0.66 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN image_element_xy           max=  0 mean= 0.000 over= 0.000%   0.63 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN conv_edge                  max= 59 mean= 0.041 over= 0.160%  22.33 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN conv_box                   max=  9 mean= 0.018 over= 0.000%  26.96 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN conv_sharpen_preserve      max=122 mean= 0.075 over= 0.328%  16.94 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN conv_order5                max= 10 mean= 0.018 over= 0.000%  36.83 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN conv_target                max= 16 mean= 0.024 over= 0.042%  17.97 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN tile                       max=  0 mean= 0.000 over= 0.000%   5.44 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN diffuse_distant            max= 13 mean= 0.302 over= 0.013%  21.46 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN diffuse_point              max= 12 mean= 0.403 over= 0.000%  19.64 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN diffuse_spot               max= 46 mean= 0.417 over= 0.367%  42.86 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN specular_distant           max= 32 mean= 0.432 over= 1.470%  35.68 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN specular_point             max= 15 mean= 0.244 over= 0.007%  36.25 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN specular_spot              max= 11 mean= 0.143 over= 0.000%  39.42 ms
+PASS   : RnsvgFilterTest::goldens()
+PASS   : RnsvgFilterTest::cleanupTestCase()
+Totals: 43 passed, 1 failed, 0 skipped, 0 blacklisted, 9474ms
+********* Finished testing of RnsvgFilterTest *********
+
+    Start 2: rnqnx_qt_rnsvg_fixtures_test
+2/8 Test #2: rnqnx_qt_rnsvg_fixtures_test ........   Passed   12.34 sec
+    Start 3: rnqnx_qt_rnsvg_foreignobject_test
+3/8 Test #3: rnqnx_qt_rnsvg_foreignobject_test ...   Passed    0.08 sec
+    Start 4: rnqnx_qt_rnsvg_image_test
+4/8 Test #4: rnqnx_qt_rnsvg_image_test ...........   Passed    0.29 sec
+    Start 5: rnqnx_qt_rnsvg_loader_test
+5/8 Test #5: rnqnx_qt_rnsvg_loader_test ..........   Passed    4.47 sec
+    Start 6: rnqnx_qt_rnsvg_test
+6/8 Test #6: rnqnx_qt_rnsvg_test .................   Passed    0.21 sec
+    Start 7: rnqnx_qt_rnsvg_scene_test
+7/8 Test #7: rnqnx_qt_rnsvg_scene_test ...........   Passed    3.24 sec
+    Start 8: rnqnx_qt_rnsvg_text_test
+8/8 Test #8: rnqnx_qt_rnsvg_text_test ............   Passed    7.71 sec
+
+88% tests passed, 1 tests failed out of 8
+
+Total Test time (real) =  37.97 sec
+
+The following tests FAILED:
+	  1 - rnqnx_qt_rnsvg_filter_test (Failed)
+Errors while running CTest
