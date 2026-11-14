@@ -1,0 +1,36 @@
+{
+  "objects": 1455,
+  "translation_units": 1455,
+  "files_read_total": 7044,
+  "qt_files_by_expression": {
+    "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only": 2698,
+    "CC0-1.0": 1,
+    "Unicode-3.0": 8,
+    "(none in first 40 lines)": 2,
+    "FTL OR GPL-2.0-only": 1,
+    "BSD-2-Clause AND Imlib2": 1
+  },
+  "toolchain_and_sysroot_files": 1108
+}
+qt files without LGPL option: 13
+qtbase/src/3rdparty/blake2: 4 files; ['CC0-1.0 OR Apache-2.0']; spdx []
+qtbase/src/3rdparty/double-conversion: 20 files; ['BSD-3-Clause']; spdx []
+qtbase/src/3rdparty/easing: 1 files; ['BSD-3-Clause']; spdx []
+qtbase/src/3rdparty/emoji-segmenter: 1 files; ['Apache-2.0']; spdx []
+qtbase/src/3rdparty/forkfd: 4 files; ['MIT']; spdx []
+qtbase/src/3rdparty/freetype: 408 files; ['FTL OR GPL-2.0-only', 'Zlib', 'MIT', 'MIT AND MIT-open-group']; spdx []
+qtbase/src/3rdparty/harfbuzz-ng: 358 files; ['MIT']; spdx []
+qtbase/src/3rdparty/libjpeg: 28 files; ['IJG AND BSD-3-Clause']; spdx []
+qtbase/src/3rdparty/libpng: 22 files; ['Libpng AND libpng-2.0']; spdx []
+qtbase/src/3rdparty/libpsl: 2 files; ['MPL-2.0', 'BSD-3-Clause']; spdx []
+qtbase/src/3rdparty/md4: 2 files; ['CC0-1.0']; spdx []
+qtbase/src/3rdparty/md4c: 2 files; ['MIT']; spdx []
+qtbase/src/3rdparty/md5: 2 files; ['CC0-1.0']; spdx []
+qtbase/src/3rdparty/pcre2: 40 files; ['LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception', 'BSD-2-Clause']; spdx []
+qtbase/src/3rdparty/rfc6234: 4 files; ['BSD-3-Clause']; spdx []
+qtbase/src/3rdparty/sha1: 1 files; ['LicenseRef-SHA1-Public-Domain']; spdx ['LicenseRef-SHA1-Public-Domain']
+qtbase/src/3rdparty/sha3: 10 files; ['BSD-2-Clause', 'CC0-1.0']; spdx []
+qtbase/src/3rdparty/siphash: 1 files; ['CC0-1.0']; spdx ['CC0-1.0']
+qtbase/src/3rdparty/tinycbor: 14 files; ['MIT']; spdx ['LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only']
+qtbase/src/3rdparty/zlib: 26 files; ['Zlib']; spdx []
+qtdeclarative/src/3rdparty/masm: 94 files; ['BSD-2-Clause']; spdx ['LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only']

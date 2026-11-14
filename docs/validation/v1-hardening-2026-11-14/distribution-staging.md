@@ -69,8 +69,7 @@ subprocess test; re-review reports no further blocking finding. The reviewer
 ran the host fixtures independently. No vendor participation is implied.
 
 Host native builds, ASan, QEMU, QNX cross-build, Pi 400, stock Pi 4 QSTI,
-performance and power-loss tests were not run for this tooling slice. Colima
-was stopped when inspected. No target was launched, stopped or reconfigured.
+performance and power-loss tests were not run for this tooling slice. A sandboxed Colima status call reported unavailable; a subsequent direct check confirmed the existing QNX build VM was running. The read-only compiler-source audit below uses that existing graph. No target was launched, stopped or reconfigured.
 No scheduling, window dimensions, input, boot, renderer or app state changed.
 Frozen installation with pnpm 12.18.0, dependency validation, typechecking,
 documentation validation, the existing runner-manifest fixtures and the
@@ -98,10 +97,34 @@ lock while its process is running. A reverted script again has the data-loss
 behavior reproduced by the negative control, so preserve a separate verified
 runtime before using it.
 
-Next distribution work: audit the newly indexed
-`CVE-2026-105943-qtbase-6.12.diff` and its applicability, complete selected
-add-on notices/staging and source/replacement materials, then create an archive
-for validation. Its presence in the
-[public Qt index](https://download.qt.io/official_releases/qt/6.12/)
-does not establish that the current binary is affected or that a patch has been
-applied. No v1 gate is promoted by this receipt.
+Next distribution work: complete selected add-on notices/staging and source/replacement materials, then create an archive for validation. No v1 gate is promoted by this receipt.
+
+## Subsequent real-artifact and source checks
+
+The historical public Qt archive with SHA-256
+`5803d25396f6ed17cb179f66241a209a396e2986fcef07d7a08683f95aa793be`
+was re-staged successfully with this script. The selected core profile still
+omits Svg/WebSockets/QtImageFormats add-ons. The ELF parser was the installed
+macOS LLVM readelf, aliased to the script's expected tool name. This is host
+re-staging of retained QNX artifacts, not a new cross-build or device run.
+[Raw output](real-artifact-staging.log) records the actual closure summary.
+
+The unchanged `spdx-audit.py` was run against the existing licensed QNX build
+graph with Core/Network/Gui/OpenGL/Qml/QmlMeta/QmlModels/QmlWorkerScript/Quick/
+QuickShapes, the QNX/QML plugins, and explicit TLS/GIF/JPEG plugin targets.
+The [audit JSON](public-qt-compiler-read-audit.json) and
+[raw output](public-qt-compiler-read-audit.log) record its findings. Compiler
+dependency metadata can be stale; this is not proof that every staged binary
+was rebuilt from those source files. Permissive and unattributed exceptions
+remain visible for manual review. No licensing-compliance gate is passed.
+
+The newly indexed Qt patch was fetched from the official URL and hashed to
+`dd22629ce948cf0a900421323cca331907180242a9b51c3fd75b25c75f068099`.
+Its changes are inside `QT_CONFIG(sspi)` in `qauthenticator.cpp`;
+`qtbase/src/network/configure.cmake` enables that feature only for WIN32. The
+existing QNX build's `qtnetwork-config.h` records `QT_FEATURE_sspi -1`. These
+source/configuration checks identify a Windows-only change, rather than a QNX
+patch to apply. They do not establish the absence of other security issues.
+No Qt behavioral change was made. [Raw source/configuration output](security-source-check.log)
+records the hash, guard and feature value; the patch URL is in the
+[public Qt index](https://download.qt.io/official_releases/qt/6.12/).

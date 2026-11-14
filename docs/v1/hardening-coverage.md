@@ -14,12 +14,10 @@ runtime when input validation or closure verification fails. Its implementation 
 `distribution` gate remains pending.
 
 No QNX cross-build, QEMU run, Pi 400 run or stock Pi 4 QSTI run was performed for
-this hardening slice. Colima was stopped when checked. Explore F observed
+this hardening slice. The sandboxed Colima check reported unavailable; a later direct check confirmed the existing QNX build VM was running. The owner confirmed that only the Pi 400 is available; stock Pi 4 QSTI receipts remain blocked by hardware availability. Explore F observed
 `CVE-2026-105943-qtbase-6.12.diff`, dated November 13 at 15:07, in the
 [official Qt 6.12 download index](https://download.qt.io/official_releases/qt/6.12/).
-It is absent from the current patch script. Its body and applicability still
-need an exact-source audit; the index entry alone establishes no vulnerable
-candidate conclusion.
+It is absent from the current patch script. A subsequent source check identifies Windows SSPI-only hunks, and the existing QNX build header records `QT_FEATURE_sspi -1`. The patch is not applied here; the index entry alone does not establish an affected QNX candidate.
 The existing public-source Qt receipts retain their original revisions and
 scope. The Linux/Wayland target is outside this implementation scope.
 
@@ -155,7 +153,7 @@ this record does not promote the existing media experiment to general support.
 ## G. Design surfaces
 
 All G rows map to `window-chrome`, `app-identity` or `expo`; implementation PR
-URLs are pending. Each screen needs the ordered Mobbin/design/research/copy/
+URLs are pending. [PR #164](https://github.com/mikevocalz/react-native-qnx/pull/164) supplies the design documents, with UI behavior and device receipts still pending. Each screen needs the ordered Mobbin/design/research/copy/
 accessibility/critique/handoff workflow from the request. Chrome must remain
 operable while JS is blocked; the current shared GUI/JS thread prevents that
 acceptance claim.
