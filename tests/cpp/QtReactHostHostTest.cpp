@@ -843,6 +843,35 @@ void touchCancelEndsEveryContactAndAllowsIdReuse() {
   )JS", "touch-reuse-check.js"));
 }
 
+// Hover/focus decoration may cover a drawer row without owning its input.
+void inputTransparentDecorationPreservesTouchTarget() {
+  Fixture fixture(true);
+  mountTouchFixture(fixture);
+  QQuickItem decoration(&fixture.root());
+  decoration.setSize(QSizeF(160, 80));
+  decoration.setZ(99991);
+  decoration.setProperty("rnqnxInputTransparent", true);
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {20, 10})});
+  sendTouch(fixture, QEvent::TouchEnd, {
+      QEventPoint(7, QEventPoint::Released, {20, 10}, {20, 10})});
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (touchEvents.length !== 2 || touchEvents.some(e =>
+        e.payload.changedTouches[0].target !== 501))
+      throw new Error('decoration obscured the mounted input target');
+    touchEvents.length = 0;
+  )JS", "decoration-target.js"));
+  // An ordinary native overlay still shields the content under it.
+  decoration.setProperty("rnqnxInputTransparent", false);
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(8, QEventPoint::Pressed, {20, 10}, {20, 10})});
+  sendTouch(fixture, QEvent::TouchEnd, {
+      QEventPoint(8, QEventPoint::Released, {20, 10}, {20, 10})});
+  EXPECT(fixture.host().evaluate(
+      "if (touchEvents.length) throw new Error('native overlay lost input shielding');",
+      "decoration-shield.js"));
+}
+
 void touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact() {
   Fixture fixture(true);
   mountTouchFixture(fixture);
@@ -2713,6 +2742,7 @@ int main(int argc, char** argv) {
   const std::vector<TestCase> tests{
       {"inputLifecycleOptOutPreservesExistingDispatch", inputLifecycleOptOutPreservesExistingDispatch},
       {"touchCancelEndsEveryContactAndAllowsIdReuse", touchCancelEndsEveryContactAndAllowsIdReuse},
+      {"inputTransparentDecorationPreservesTouchTarget", inputTransparentDecorationPreservesTouchTarget},
       {"touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact", touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact},
       {"forgettingTouchTargetCancelsAndClearsResponder", forgettingTouchTargetCancelsAndClearsResponder},
       {"windowDeactivationCancelsTouchStream", windowDeactivationCancelsTouchStream},

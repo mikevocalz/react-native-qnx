@@ -415,6 +415,7 @@ Item {
     // the panel, above everything React drew there.
     Rectangle {
         id: stateLayer
+        property bool rnqnxInputTransparent: true
         objectName: "rnqnxDrawerItemState"
         parent: root.drawerPanel
         z: 99990
@@ -424,6 +425,7 @@ Item {
     }
     Rectangle {
         id: focusRing
+        property bool rnqnxInputTransparent: true
         objectName: "rnqnxDrawerFocusRing"
         parent: root.drawerPanel
         z: 99991

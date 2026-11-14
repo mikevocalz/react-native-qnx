@@ -435,6 +435,8 @@ class NativeUiQuickTest : public QObject {
     if (QTest::currentTestFailed()) return;
     auto* state = layer(fx.drawer.get(), "rnqnxDrawerItemState");
     QVERIFY(state);
+    QVERIFY(state->property("rnqnxInputTransparent").toBool());
+    QVERIFY(layer(fx.drawer.get(), "rnqnxDrawerFocusRing")->property("rnqnxInputTransparent").toBool());
     QVERIFY(!state->isVisible());
 
     QTest::mouseMove(window_.get(), centerOf(fx.items[1]));

@@ -144,7 +144,9 @@ const QQuickItem* deepestItemAt(const QQuickItem* current, const QPointF& window
                    [](const QQuickItem* a, const QQuickItem* b) { return a->z() < b->z(); });
   for (auto iterator = children.crbegin(); iterator != children.crend(); ++iterator) {
     QQuickItem* child = *iterator;
-    if (!visiblyContains(child, windowPoint)) continue;
+    // Native decoration layers must not obscure React input targets.
+    if (child->property("rnqnxInputTransparent").toBool() ||
+        !visiblyContains(child, windowPoint)) continue;
 #if RNQNX_ENABLE_QT_RNSVG
     // The element items of an <Svg> are structural: they draw nothing and the
     // <Svg> resolves its own elements. They stay in the tree so live views

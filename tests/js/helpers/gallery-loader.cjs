@@ -160,16 +160,50 @@ const svgNames = [
   'Mask',
   'RadialGradient',
   'Use',
+  'Pattern',
+  'Symbol',
+  'Marker',
+  'Filter',
+  'FeGaussianBlur',
+  'FeOffset',
+  'FeMerge',
+  'FeMergeNode',
+  'FeColorMatrix',
+  'FeFlood',
+  'FeComposite',
+  'FeBlend',
+  'FeMorphology',
+  'FeTurbulence',
+  'FeDisplacementMap',
+  'FeComponentTransfer',
+  'FeFuncR',
+  'FeFuncG',
+  'FeFuncB',
+  'FeDropShadow',
+  'FeConvolveMatrix',
+  'FeTile',
+  'FeDiffuseLighting',
+  'FeSpecularLighting',
+  'FeDistantLight',
+  'FePointLight',
+  'ForeignObject',
+  'Image',
+  'TextPath',
+  'SvgXml',
+  'SvgAst',
 ];
 const svg = Object.fromEntries(
   svgNames.map((name) => [name, host(name === 'Text' ? 'SvgText' : name)])
 );
 svg.default = svg.Svg;
+// Layout-only stand-in; SVG parsing/rendering is exercised by native corpus tests.
+svg.parse = () => ({});
 
 const stubs = {
   'react-native': named,
   'react-native/Libraries/ReactNative/UIManager': { default: { hasViewManagerConfig: () => true } },
   'react-native-svg': { __esModule: true, ...svg },
+  'react-native-svg/css': { SvgCss: host('SvgCss') },
   'expo-image': { __esModule: true, Image },
   'expo-constants': {
     __esModule: true,
