@@ -2,6 +2,11 @@
 
 ## PR 159 drawer selection correction — 2026-11-13
 
+SVG d38097f is stacked into PR 159 with both source/evidence sets preserved.
+Dependency/type/docs checks pass; the full local JS runner stops at its Linux-only
+consumer-preview test on macOS. PR 161 renderer ON has two complex-corpus timeouts;
+merge and clean combined target qualification remain pending.
+
 The owner caught two teal rows after Components → Home. The renderer skipped
 transparent background updates, leaving the old selection painted. Commit
 cf43271 clears transparent/removed generic View fills; its regression fails

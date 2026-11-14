@@ -60,3 +60,15 @@ change is introduced. Performance deltas are unmeasured.
 Rollback: revert cf43271 and rebuild the native consumer/HBC together using
 the guarded launcher. Retain the failing capture and regression evidence;
 reverting restores the stale-fill behavior.
+
+## Combined source check
+
+The SVG branch at d38097f is stacked into PR 159 in 80dd0ec. Both sides'
+source lists, image-format staging, evidence entries and handoff sections are
+preserved. Dependency validation, typecheck, documentation generation and
+Python staging-script syntax pass. The local full JS runner reaches the
+existing Linux-only consumer-preview configuration test and fails on macOS's
+unsupported host guard; it is not a complete JS-suite pass. Ordered drawer
+regressions pass separately. PR 161's d38097f renderer ON check failed with
+two 300-second complex-corpus timeouts; its other three required checks pass.
+The source stack does not qualify either PR for merge.
