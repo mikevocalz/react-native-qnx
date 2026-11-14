@@ -1,5 +1,17 @@
 # SESSION_LOG.md
 
+## PR 159 drawer selection correction — 2026-11-13
+
+The owner caught two teal rows after Components → Home. The renderer skipped
+transparent background updates, leaving the old selection painted. Commit
+cf43271 clears transparent/removed generic View fills; its regression fails
+before the fix and all eight adapter cases pass with the isolated delta.
+Pi captures now show one teal row for each route, including the final binary/
+HBC pair. The independent review's interrupted-swipe issue is also fixed with
+Zustand gesture state and three regressions. Final four-file review has zero
+findings. Exact-head CI and clean combined qualification remain pending.
+[Evidence and rollback](../validation/pr159-drawer-selection-2026-11-13.md).
+
 ## PR 159 drawer and module lifetime continuation — 2026-11-13
 
 Committed d257b5a retains one TurboModule per successful host lookup; its forced

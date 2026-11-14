@@ -71,9 +71,9 @@ Host checks:
   It is a targeted lifetime regression result, not a green full-host suite.
 
 Evidence is under `docs/evidence/drawer-runtime-2026-11-13/`. Exact-head hosted
-checks and independent review are required after publication. The CodeRabbit
-CLI quota currently prevents another review; no completed review is claimed
-for this continuation.
+checks and independent review are required after publication. CodeRabbit reviewed the continuation against b969cd2 and found one
+interrupted-swipe issue. The selection follow-up fixes it and records the
+clean final four-file review. Human review remains unassigned.
 
 ## Shared-runner isolation follow-up
 
