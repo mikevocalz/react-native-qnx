@@ -1,5 +1,10 @@
 # BLOCKERS.md
 
+## PR 149 shutdown follow-up — 2026-11-14
+
+PR 149 stays draft. QNX SDP/device validation of the shutdown patch is unavailable here. Busy-JS delivery is still 0/40 in the historical trial; dedicated React JS scheduling and remaining recognizers/animation features remain open. Independent source review of the shutdown slice found no blocker. A fresh CodeRabbit service review is unavailable because CLI agent login requires authentication unsupported in this environment.
+[Receipt, commands and limits](../validation/pr149-shutdown-2026-11-14.md).
+
 ## PR 149 frame/mount continuation — 2026-11-13
 
 PR 149 stays draft. Busy-JS delivery, remaining recognizers, exact-head hosted gates and independent review remain open. The combined native slice was independently reviewed; its stale documentation link is fixed. PR 161 must merge before PR 159, then PR 149.

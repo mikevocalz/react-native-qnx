@@ -1,5 +1,10 @@
 # TEST_STATUS.md
 
+## PR 149 shutdown follow-up — 2026-11-14
+
+Debian 13, GCC 14.2.0, Qt 6.11.1: the strict Debug standalone Worklets suite passes six lifecycle cases under ASan/UBSan (8 QtTest entries including init/cleanup). Frozen install, typecheck, Hermes selection, transformed-frame and public-entry regressions pass. The baseline/candidate logs and exact sanitizer scope are in the receipt. Current-head full-renderer CI follows publication; target checks are not run.
+[Receipt, commands and limits](../validation/pr149-shutdown-2026-11-14.md).
+
 ## PR 149 frame/mount continuation — 2026-11-13
 
 Transformed Worklets output, public exports, typecheck and sixteen recognizer/binding cases under ASan/UBSan pass. The new mount-hook observer passes and fails with reporting disabled. QNX cross-build and scoped Pi timing/spring/pan checks passed. The transplanted full-host executable still has one pixel failure; no full-host green claim.

@@ -29,11 +29,14 @@ QtUiThread::~QtUiThread() {
 }
 
 bool QtUiThread::post(std::function<void()> job) {
+  std::lock_guard lock(admissionMutex_);
   if (!accepting_.load(std::memory_order_acquire)) {
     return false;
   }
   return QMetaObject::invokeMethod(
-      context_.get(), [job = std::move(job)]() { job(); }, Qt::QueuedConnection);
+      context_.get(), [this, job = std::move(job)]() {
+        if (accepting_.load(std::memory_order_acquire)) job();
+      }, Qt::QueuedConnection);
 }
 
 bool QtUiThread::isCurrent() const noexcept {
@@ -44,13 +47,19 @@ void QtUiThread::stop() {
   if (isCurrent()) {
     throw std::logic_error("QtUiThread::stop called from the UI thread");
   }
-  if (!accepting_.exchange(false)) {
-    return;
-  }
-  thread_->quit();
-  thread_->wait();
-  // Pending posted events die with the context object, never running.
-  context_.reset();
+  std::call_once(stopped_, [this]() {
+    {
+      // A poster that obtained the receiver finishes enqueueing before closure.
+      // Later posters return without reading it, including during destruction.
+      std::lock_guard lock(admissionMutex_);
+      accepting_.store(false, std::memory_order_release);
+    }
+    // A running job may post again, so never join while holding admission.
+    thread_->quit();
+    thread_->wait();
+    // Pending posted events die with the context object, never running.
+    context_.reset();
+  });
 }
 
 }  // namespace rnqnx::worklets

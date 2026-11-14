@@ -1,0 +1,39 @@
+Internal ctest changing into directory: /workspace/scratch/853552216e74/react-native-qnx/build/worklets-lifecycle
+UpdateCTestConfiguration  from :/workspace/scratch/853552216e74/react-native-qnx/build/worklets-lifecycle/DartConfiguration.tcl
+Parse Config file:/workspace/scratch/853552216e74/react-native-qnx/build/worklets-lifecycle/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/workspace/scratch/853552216e74/react-native-qnx/build/worklets-lifecycle/DartConfiguration.tcl
+Parse Config file:/workspace/scratch/853552216e74/react-native-qnx/build/worklets-lifecycle/DartConfiguration.tcl
+Test project /workspace/scratch/853552216e74/react-native-qnx/build/worklets-lifecycle
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 1
+    Start 1: rnqnx_worklets_lifecycle_test
+
+1: Test command: /workspace/scratch/853552216e74/react-native-qnx/build/worklets-lifecycle/rnqnx_worklets_lifecycle_test "-platform" "offscreen"
+1: Working Directory: /workspace/scratch/853552216e74/react-native-qnx/build/worklets-lifecycle
+1: Environment variables:
+1:  QT_QUICK_BACKEND=software
+1:  ASAN_OPTIONS=detect_leaks=0:halt_on_error=1
+1:  UBSAN_OPTIONS=halt_on_error=1
+1: Test timeout computed to be: 30
+1: ********* Start testing of QtWorkletsLifecycleTest *********
+1: Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+1: PASS   : QtWorkletsLifecycleTest::initTestCase()
+1: PASS   : QtWorkletsLifecycleTest::queuedFrameIsDroppedAfterShutdown()
+1: PASS   : QtWorkletsLifecycleTest::guiPostsAreDiscardedAtShutdown()
+1: PASS   : QtWorkletsLifecycleTest::shutdownDropsRemainingCallbacksInRunningBatch()
+1: PASS   : QtWorkletsLifecycleTest::concurrentStopsWaitForRunningJobAndDiscardQueuedWork()
+1: PASS   : QtWorkletsLifecycleTest::stopRacesWithPostsAndRejectsLateWork()
+1: PASS   : QtWorkletsLifecycleTest::shutdownRacesWithGuiPosts()
+1: PASS   : QtWorkletsLifecycleTest::cleanupTestCase()
+1: Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 804ms
+1: ********* Finished testing of QtWorkletsLifecycleTest *********
+1/1 Test #1: rnqnx_worklets_lifecycle_test ....   Passed    0.90 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.90 sec

@@ -1,5 +1,10 @@
 # NEXT_ACTIONS.md
 
+## PR 149 shutdown follow-up — 2026-11-14
+
+Integrate the reviewed SVG/Expo stack and current main, publish the shutdown slice, and inspect required checks on the final head. Then cross-build with the pinned SDP/Qt closure and run bounded target shutdown/reload trials. Keep the draft until its runtime/target acceptance is recorded; preserve all release gates as pending.
+[Receipt, commands and limits](../validation/pr149-shutdown-2026-11-14.md).
+
 ## PR 149 frame/mount continuation — 2026-11-13
 
 Complete teardown checks, review the native slice, inspect exact-head CI, and keep the draft until its acceptance gates pass. Finish the remaining image and SVG handoff gaps separately.

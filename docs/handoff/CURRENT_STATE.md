@@ -1,5 +1,10 @@
 # Current state
 
+## PR 149 shutdown follow-up — 2026-11-14
+
+Worklets shutdown now serializes queue admission with receiver disposal and waits for a single completed UI-thread join. Six real-Qt lifecycle cases pass under ASan/UBSan on the Linux host. The earlier Pi frame/pan/tap receipts remain historical; this native patch has no new QNX cross-build or device run.
+[Receipt, commands and limits](../validation/pr149-shutdown-2026-11-14.md).
+
 ## PR 149 frame/mount continuation — 2026-11-13
 
 The Pi now completes the Worklets frame probe and paints intermediate timing pixels. Gesture attachment/routing is repaired; pan moves and springs back on release. Single tap and exclusive double tap now pass on the device. Exact-head CI and review of the later Hermes import remain open.

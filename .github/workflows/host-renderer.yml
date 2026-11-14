@@ -74,10 +74,20 @@ jobs:
             -DRNQNX_ENABLE_QT_RNSVG=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_NATIVE_UI=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_EXPO_IMAGE=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_WORKLETS=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_REANIMATED=${{ matrix.input-lifecycle }} \
+            -DRNQNX_ENABLE_GESTURE_HANDLER=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_MOTION=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_GRAPHICS=${{ matrix.input-lifecycle }} \
             -DRNQNX_ENABLE_QT_VIDEO=${{ matrix.input-lifecycle }}
           node scripts/validate-host-renderer.mjs
+      - name: Worklet queue and frame shutdown under ASan and UBSan (ON leg)
+        if: matrix.input-lifecycle == 'ON'
+        run: |
+          cmake -S tests/native/worklets -B build/worklets-lifecycle -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug -DRNQNX_WORKLETS_SANITIZERS=ON
+          cmake --build build/worklets-lifecycle --parallel 2
+          ctest --test-dir build/worklets-lifecycle --output-on-failure
       - name: Render the conformance app (Linux host only)
         run: |
           set -euo pipefail
@@ -143,5 +153,6 @@ jobs:
             build/linux-host-renderer/Testing/Temporary/
             build/linux-host-renderer/CMakeCache.txt
             build/linux-host-renderer/CMakeFiles/CMakeConfigureLog.yaml
+            build/worklets-lifecycle/Testing/Temporary/
             build/clean-app-evidence.*/
           if-no-files-found: warn

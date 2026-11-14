@@ -5,6 +5,7 @@
 #include <atomic>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <vector>
 
 class QObject;
@@ -48,6 +49,8 @@ class QtFrameBridge final {
   void postToGui(std::function<void()> job);
 
   /// GUI thread. Stops delivery; callbacks not yet run are dropped. Idempotent.
+  /// A callback already running may finish. Keep this bridge alive until the
+  /// UI thread has joined, as QtWorkletsPlatform::shutdown does.
   void shutdown();
 
   std::uint64_t framesDelivered() const noexcept { return delivered_.load(); }
@@ -58,7 +61,8 @@ class QtFrameBridge final {
 
   QPointer<QQuickWindow> window_;
   QtUiThread& uiThread_;
-  std::atomic<QObject*> guiContext_{nullptr};
+  // Pins the receiver through queued invocation; never guards job execution.
+  std::mutex guiAdmissionMutex_;
   std::unique_ptr<QObject> guiContextOwner_;
   // UI thread only.
   std::vector<FrameCallback> pending_;

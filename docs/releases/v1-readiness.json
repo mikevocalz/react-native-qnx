@@ -21,6 +21,14 @@
       "receipt": "docs/validation/pr149-frame-mount-2026-11-13.md",
       "status": "in-progress; Pi timing, spring, pan, single/exclusive double tap observed; 16 sanitizer cases pass; review and CI pending",
       "hermesImport": "configuration/error regressions, real-root QNX link and Pi frame probe passed without lean-named file; independent review zero findings"
+    },
+    "pr149Shutdown": {
+      "reviewedAt": "2026-11-14",
+      "baseCommit": "2db4dd8d1a895acc8e1e382f22c474084a316a9b",
+      "receipt": "docs/validation/pr149-shutdown-2026-11-14.md",
+      "hostValidation": "six real-Qt lifecycle cases pass under scoped ASan/UBSan; frozen install, typecheck and focused JS regressions pass",
+      "review": "independent source review completed without blocking findings; fresh CodeRabbit service review unavailable",
+      "status": "draft; current-head full-renderer workflow pending publication, new QNX cross-build/device shutdown not run; busy-JS and remaining feature acceptance open"
     }
   },
   "gates": [
@@ -77,7 +85,7 @@
       "id": "app-identity",
       "title": "App identity: icon and name",
       "status": "pending",
-      "acceptance": "Read the Expo icon field (optional extra.rnqnx.icon override), reject any source that is not a square PNG of at least 1024\u00d71024 in prepare-native and doctor, generate the size set each target needs at build time, listed in the docs, and hash it into native-app.json, and apply it to the launcher tile, title bar, task switcher and QGuiApplication::setWindowIcon (Marathon: app manifest). Ship a default template icon and use it, with a one-line notice naming expo.icon, when no icon is configured; every prepared app gets a generated icon set, prepare-native builds the host identity tool when it is missing and fails on hosts where it cannot be built, and no path ships the platform's blank default icon; never bake corner masks. Enforce tile-name fit by measured rendered width in the launcher font, where the tile label is extra.rnqnx.shortName when set and expo.name otherwise, and expo.name stays the title bar and About name; record the measured label box (width, font, size, line count) for each target launcher; fail with the measured overflow instead of truncating; keep the label single-line with elision. Tests cover longest fitting name, one glyph over, wide glyphs, CJK, emoji and RTL. Host and device receipts show the custom icon in every location and a tile grid where a maximum-length name and a short name produce identical tile sizes.",
+      "acceptance": "Read the Expo icon field (optional extra.rnqnx.icon override), reject any source that is not a square PNG of at least 1024×1024 in prepare-native and doctor, generate the size set each target needs at build time, listed in the docs, and hash it into native-app.json, and apply it to the launcher tile, title bar, task switcher and QGuiApplication::setWindowIcon (Marathon: app manifest). Ship a default template icon and use it, with a one-line notice naming expo.icon, when no icon is configured; every prepared app gets a generated icon set, prepare-native builds the host identity tool when it is missing and fails on hosts where it cannot be built, and no path ships the platform's blank default icon; never bake corner masks. Enforce tile-name fit by measured rendered width in the launcher font, where the tile label is extra.rnqnx.shortName when set and expo.name otherwise, and expo.name stays the title bar and About name; record the measured label box (width, font, size, line count) for each target launcher; fail with the measured overflow instead of truncating; keep the label single-line with elision. Tests cover longest fitting name, one glyph over, wide glyphs, CJK, emoji and RTL. Host and device receipts show the custom icon in every location and a tile grid where a maximum-length name and a short name produce identical tile sizes.",
       "evidence": []
     },
     {

@@ -5,6 +5,7 @@
 #include <atomic>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <thread>
 
 class QObject;
@@ -40,6 +41,9 @@ class QtUiThread final {
  private:
   std::unique_ptr<QThread> thread_;
   std::unique_ptr<QObject> context_;
+  // Serializes receiver access with closing admission; jobs never run here.
+  std::mutex admissionMutex_;
+  std::once_flag stopped_;
   std::atomic<bool> accepting_{true};
   std::atomic<std::thread::id> id_{};
 };

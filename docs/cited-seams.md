@@ -613,3 +613,22 @@ React Native 0.88.0-rc.3 package, before implementing these calls:
   existing contract; it does not introduce application TurboModules.
 
 Network module target measurements are pending in `docs/build-qt-modules.md`.
+
+## Worklets queue and frame shutdown (2026-11-14)
+
+Inspected installed Qt 6.11.1 Linux headers under the official desktop prefix:
+
+| Header                           | Public symbols used                                                                          | SHA-256                                                            |
+| -------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `include/QtCore/qobjectdefs.h`   | `QMetaObject::invokeMethod(QObject*, Functor, Qt::ConnectionType)`; explicit queued delivery | `68c7065f0a09d621977a14bd11b6afe5bc9deac6c09f55707d7cfdc27e946724` |
+| `include/QtCore/qthread.h`       | `QThread::quit`, `QThread::wait`                                                             | `857d3c4190c9e43da0286a71399589246ee583c5eba77f8882448680c6802a2a` |
+| `include/QtQuick/qquickwindow.h` | `QQuickWindow::afterAnimating`, `QQuickWindow::update`                                       | `5ec33fa8024def05b546a611e648f594b870d69ece9252c08d9e31c8b72fd88a` |
+
+The existing `QtWorkletsPlatform::shutdown` closes the frame bridge before
+joining the UI thread and destroying the bridge. Admission mutexes pin each
+receiver through enqueueing; they do not guard callback execution, QObject
+destruction or join. A closed receiver discards queued calls, and explicit
+shutdown checks prevent unstarted frame callbacks from entering the runtime.
+The standalone real-Qt tests exercise those behaviors under scoped ASan/UBSan.
+This is installed-header/host evidence only; QNX target validation of this
+follow-up is not run. See [the receipt](validation/pr149-shutdown-2026-11-14.md).

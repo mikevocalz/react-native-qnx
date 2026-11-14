@@ -1,5 +1,10 @@
 # SESSION_LOG.md
 
+## PR 149 shutdown follow-up — 2026-11-14
+
+Found and fixed receiver lifetime races in UI/GUI queue posting and post-shutdown frame delivery. Added real-Qt gated regressions, exercised the original source as a negative control, and reviewed the fix independently. Added sanitizer coverage to the ON renderer lane and explicit compilation of Worklets/Reanimated/Gesture Handler in that lane; defaults remain OFF. Recorded current host evidence separately from prior device observations.
+[Receipt, commands and limits](../validation/pr149-shutdown-2026-11-14.md).
+
 ## PR 149 frame/mount continuation — 2026-11-13
 
 Repaired the recursive frame closure, RefreshControl export and native mount completion. Measured two thirty-frame Pi runs and comparative timing pixels. Fixed detector attachment/routing and measured pan release at 80,15 with spring return; single/exclusive double tap also passed. The tap default-delay regression failed before its repair and passes under sanitizers.

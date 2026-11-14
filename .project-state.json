@@ -43,6 +43,14 @@
       "receipt": "docs/validation/pr149-frame-mount-2026-11-13.md",
       "status": "in-progress; Pi timing, spring, pan, single/exclusive double tap observed; 16 sanitizer cases pass; review and CI pending",
       "hermesImport": "configuration/error regressions, real-root QNX link and Pi frame probe passed without lean-named file; independent review zero findings"
+    },
+    "pr149Shutdown": {
+      "reviewedAt": "2026-11-14",
+      "baseCommit": "2db4dd8d1a895acc8e1e382f22c474084a316a9b",
+      "receipt": "docs/validation/pr149-shutdown-2026-11-14.md",
+      "hostValidation": "six real-Qt lifecycle cases pass under scoped ASan/UBSan; frozen install, typecheck and focused JS regressions pass",
+      "review": "independent source review completed without blocking findings; fresh CodeRabbit service review unavailable",
+      "status": "draft; current-head full-renderer workflow pending publication, new QNX cross-build/device shutdown not run; busy-JS and remaining feature acceptance open"
     }
   },
   "activeMilestone": "v1 preparation; release gates remain open",

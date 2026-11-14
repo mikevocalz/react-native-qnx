@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 3.24)
+project(RnqnxWorkletsLifecycleTests LANGUAGES CXX)
+include(CTest)
+find_package(Qt6 6.11.1 REQUIRED COMPONENTS Core Gui Quick Test)
+option(RNQNX_WORKLETS_SANITIZERS "Instrument the worklet queue and frame lifecycle test" OFF)
+set(root "${CMAKE_CURRENT_LIST_DIR}/../../..")
+add_executable(rnqnx_worklets_lifecycle_test
+  QtWorkletsLifecycleTest.cpp
+  "${root}/vnext/src/worklets/QtUiThread.cpp"
+  "${root}/vnext/src/worklets/QtFrameBridge.cpp")
+set_target_properties(rnqnx_worklets_lifecycle_test PROPERTIES AUTOMOC ON)
+target_compile_features(rnqnx_worklets_lifecycle_test PRIVATE cxx_std_17)
+target_include_directories(rnqnx_worklets_lifecycle_test PRIVATE "${root}/vnext/include")
+target_link_libraries(rnqnx_worklets_lifecycle_test PRIVATE Qt6::Quick Qt6::Test)
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+  target_compile_options(rnqnx_worklets_lifecycle_test PRIVATE -Wall -Wextra -Wpedantic -Werror)
+  if(RNQNX_WORKLETS_SANITIZERS AND NOT CMAKE_CROSSCOMPILING)
+    target_compile_options(rnqnx_worklets_lifecycle_test PRIVATE -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer)
+    target_link_options(rnqnx_worklets_lifecycle_test PRIVATE -fsanitize=address,undefined)
+  endif()
+endif()
+if(BUILD_TESTING AND NOT CMAKE_CROSSCOMPILING)
+  add_test(NAME rnqnx_worklets_lifecycle_test COMMAND rnqnx_worklets_lifecycle_test -platform offscreen)
+  set_tests_properties(rnqnx_worklets_lifecycle_test PROPERTIES TIMEOUT 30 ENVIRONMENT
+    "QT_QUICK_BACKEND=software;ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1")
+endif()
