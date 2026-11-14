@@ -1,6 +1,6 @@
 # SESSION_LOG.md
 
-## PR 161 nested SVG and staging integration (2026-11-14)
+## PR 161 nested SVG, staging and consumer integration (2026-11-14)
 
 Codex inspected the current PR, prior review threads and failing corpus logs;
 kept timeouts and tolerances unchanged; and corrected two missed nested-root
@@ -20,6 +20,22 @@ handoff set and the canonical readiness evidence, and regenerated project
 state. No current QNX or device result is claimed; keep the native PR draft
 pending the documented target work. External CodeRabbit authentication was
 unavailable; the receipt identifies agent reviews separately.
+
+Observed all nine workflows green at `13a0e49`; downloaded the ON job log and
+recorded its 49/49 integrated passes, four passing corpus shards, 8/8 standalone
+SVG sanitizer passes and 1/1 HTTP sanitizer pass. Existing review threads are
+resolved. The successful run does not identify the earlier timeout cause.
+
+Found the standalone CLI's package staging list omitted the SVG resolver and
+other manifest-listed public entry files. Ported only the reviewed CLI list
+and actual-archive regression from published PR 159 `f49e61e`. The test fails
+at the missing resolver with original source and passes with the port. An
+independent reviewer verified both complete blobs match PR 159 and found no
+blocker. Created a fresh external dual consumer, installed its 445-package
+graph and produced QNX and Marathon Metro bundles with two workers, all exit 0. Recorded archive/source/bundle hashes and raw command logs. No native code,
+dependency pin or repository lockfile changed; no native build or execution
+was repeated for this slice. Updated the receipt, handoff set and readiness
+evidence and regenerated project state; follow-up CI and target gates remain.
 
 ## PR 161 cross-build recipe correction — 2026-11-13
 

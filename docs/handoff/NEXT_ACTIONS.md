@@ -2,8 +2,10 @@
 
 ## PR 161 continuation (2026-11-14)
 
-1. Inspect the published follow-up's exact head and required checks. Require
-   both renderer lanes and all four corpus shards at their existing limits.
+1. Inspect the published packaging follow-up's exact head and required checks.
+   The preceding `13a0e49` head passes all nine workflows, both renderer lanes
+   and all four corpus shards. Preserve that evidence and require the new
+   head's checks at their existing limits.
    Retain any failed-job logs; do not infer the original timeout cause from
    the new nested-scene correctness results.
 2. On the licensed QNX SDP 8.0.5 host, configure a fresh combined candidate

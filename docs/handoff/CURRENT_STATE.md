@@ -1,6 +1,6 @@
 # Current state
 
-## PR 161 nested SVG and main integration (2026-11-14)
+## PR 161 nested SVG and standalone consumer (2026-11-14)
 
 Published native correction `3324e7c` forwards nested child removal to the
 visible root and includes roots nested directly inside other roots in group
@@ -10,9 +10,17 @@ staging and bounded optional QtSvg copies. All 17 staging fixtures pass.
 
 The Linux Qt 6.11.1/GCC 14.2 Debug ASan/UBSan standalone SVG graph passes all
 eight CTests after a test-only kernel-size-before-move correction. The
-follow-up contains that fixture correction and its evidence/handoff records;
-no additional uncommitted runtime changes are required. Exact final-head CI,
-a fresh combined QNX build and current-device validation remain pending.
+published `13a0e49` head passes all nine hosted workflows, including both full
+renderer lanes, 49/49 ON integrated tests and all four corpus shards.
+
+A narrow follow-up ports PR 159's reviewed CLI package copy list and archive
+regression so this PR independently ships its SVG resolver and public entry
+files in new consumer archives. The original-source assertion fails as
+expected; the corrected regression and fresh dual consumer install, QNX
+bundle and Marathon bundle pass. The two files match published `f49e61e`
+exactly, with independent review. No native source or dependency changes.
+The packaging follow-up's exact-head CI, a fresh combined QNX build and
+current-device validation remain pending.
 Keep PR 161 draft until its required target evidence is available. Historical
 Pi receipts below do not validate these new native changes. All release gates
 remain pending. [Receipt and logs](../validation/pr161-nested-roots-2026-11-14.md).

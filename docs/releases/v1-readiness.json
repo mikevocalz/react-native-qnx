@@ -40,7 +40,8 @@
       "receipt": "docs/validation/pr161-nested-roots-2026-11-14.md",
       "nativeHost": "Original-source negative controls and candidate scene passes; 8/8 standalone Qt 6.11.1/GCC 14.2 Debug ASan/UBSan CTests after deterministic test-kernel construction; Qt libraries uninstrumented and leak detection disabled",
       "stagingHost": "17 transactional staging fixtures pass, including bounded SVG copies and rollback; independent agent source review and repeated fixture pass",
-      "hostedCi": "Exact final-head required checks pending; original corpus timeouts are not explained by the nested-root fixes",
+      "consumerHost": "Exact reviewed PR 159 f49e61e CLI copy-list and archive regression port: original source fails the missing SVG resolver assertion, corrected test passes; fresh external dual consumer installs and bundles for QNX and Marathon; no native execution or dependency changes",
+      "hostedCi": "All nine workflows pass at 13a0e49ae7ea6b16faa23840926d3976866f6646, including both renderer lanes, 49/49 ON tests and all four corpus shards; packaging-only follow-up exact-head CI pending; original timeout cause remains unestablished",
       "targetExecution": "Not run for the new native correction; fresh combined SDP 8.0.5 build and current target SVG acceptance required; keep PR draft and all release gates pending"
     }
   },

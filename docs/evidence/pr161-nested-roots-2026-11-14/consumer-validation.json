@@ -1,0 +1,153 @@
+{
+  "baseCommit": "13a0e49ae7ea6b16faa23840926d3976866f6646",
+  "portOrigin": "f49e61eeadaf72ebc4b44060f94d1b97d75418f9",
+  "source": {
+    "packages/react-native-qnx-cli/src/create-project.mjs": {
+      "sha256": "de08b2d5d7ba764c42e39b430f8b87b0b2d8b36bbe823902cdd94e82ff97ed3c",
+      "blob": "cd36b50135a005915f4d1d68f53da82e2c19da33"
+    },
+    "tests/js/qnx-project-create.test.mjs": {
+      "sha256": "c12c93ac0ba412f7e1a671ebe337755b600e4a19e860f7d9809d48bcd24313d6",
+      "blob": "88ce636f364330a1e30a0b7eb0bae5d51eb8f539"
+    },
+    "pnpm-lock.yaml": {
+      "sha256": "4198fb84cd0abd9e8da568af4741a12c2318280827d3b823727e92ed98b2b565",
+      "blob": "628bc8b64a4056a3f825adc273a90c29f4a7c1a8"
+    }
+  },
+  "consumer": "/workspace/scratch/853552216e74/pr161-created-dual",
+  "starter": "--with-marathon dual-target public-import starter; not the Expo Router starter",
+  "archives": [
+    {
+      "package": "@rn-qnx/react-native-qnx",
+      "file": "vendor/rn-qnx-react-native-qnx-0.1.0.tgz",
+      "bytes": 35947,
+      "sha256": "9574d61b69bf381ebcdd8100238490c01dbc2c0c9db3d1be4eeaace0edbbea7f"
+    },
+    {
+      "package": "@rn-qnx/metro-config-qnx",
+      "file": "vendor/rn-qnx-metro-config-qnx-0.1.0.tgz",
+      "bytes": 4137,
+      "sha256": "22a836fd8079522b3bbd8b64914739c4422088f7a276df472b837ac98577650a"
+    },
+    {
+      "package": "@rn-qnx/react-native-marathon",
+      "file": "vendor/rn-qnx-react-native-marathon-0.1.0.tgz",
+      "bytes": 1927,
+      "sha256": "dab69257fea2aab355466934a597c1d0e696660e60f6b8a74f157d215209cfdb"
+    },
+    {
+      "package": "@rn-qnx/metro-config-marathon",
+      "file": "vendor/rn-qnx-metro-config-marathon-0.1.0.tgz",
+      "bytes": 2503,
+      "sha256": "854bbef4400e73a402a0ed2b0bf0211ae0eb31f3cdee633c1d21318128c311fd"
+    }
+  ],
+  "bundles": [
+    {
+      "platform": "qnx",
+      "file": "build/qnx/app.bundle.js",
+      "bytes": 716848,
+      "sha256": "7d2120b67257758ae298fbf9343174cd7a481547d3a3453f02a992edf9aeb31e"
+    },
+    {
+      "platform": "marathon",
+      "file": "build/marathon/app.bundle.js",
+      "bytes": 716874,
+      "sha256": "36ad95e9bd728ad4b0556472ad888adaa456f14f3437a2fcff773f66771519ba"
+    }
+  ],
+  "consumerLockSha256": "94a1526539e30df5fa6ad45d5fd7a27a8b00bb6964f64a79e60e1273de9f86ac",
+  "commands": [
+    {
+      "platform": "qnx",
+      "command": [
+        "pnpm",
+        "exec",
+        "metro",
+        "build",
+        "index.js",
+        "--config",
+        "metro.config.js",
+        "--platform",
+        "qnx",
+        "--dev",
+        "false",
+        "--max-workers",
+        "2",
+        "--out",
+        "build/qnx/app.bundle.js"
+      ],
+      "exit": 0,
+      "startedAt": "2026-11-14T17:36:23.347681+00:00",
+      "completedAt": "2026-11-14T17:36:38.291737+00:00"
+    },
+    {
+      "platform": "marathon",
+      "command": [
+        "pnpm",
+        "exec",
+        "metro",
+        "build",
+        "index.js",
+        "--config",
+        "metro.marathon.config.js",
+        "--platform",
+        "marathon",
+        "--dev",
+        "false",
+        "--max-workers",
+        "2",
+        "--out",
+        "build/marathon/app.bundle.js"
+      ],
+      "exit": 0,
+      "startedAt": "2026-11-14T17:36:38.294277+00:00",
+      "completedAt": "2026-11-14T17:36:54.909164+00:00"
+    }
+  ],
+  "nativeBuildVerified": false,
+  "runtimeVerified": false,
+  "environment": {
+    "node": "26.13.1",
+    "pnpm": "12.18.0",
+    "host": "Debian 13 x86-64"
+  },
+  "negativeControl": {
+    "baseCommit": "13a0e49ae7ea6b16faa23840926d3976866f6646",
+    "originalCliBlob": "0ccccd3aeef12b4df6bfadd5d28e8bb3b67f9ff0",
+    "newTestBlob": "88ce636f364330a1e30a0b7eb0bae5d51eb8f539",
+    "command": ["node", "tests/js/qnx-project-create.test.mjs"],
+    "exit": 1,
+    "expectedFailure": "AssertionError: package/svg/resolver.js"
+  },
+  "candidateRegression": {
+    "command": ["node", "tests/js/qnx-project-create.test.mjs"],
+    "exit": 0,
+    "startedAt": "2026-11-14T17:39:47.819987+00:00",
+    "completedAt": "2026-11-14T17:39:55.060483+00:00"
+  },
+  "creation": {
+    "command": [
+      "node",
+      "packages/react-native-qnx-cli/src/bin.mjs",
+      "project",
+      "create",
+      "--project",
+      "/workspace/scratch/853552216e74/pr161-created-dual",
+      "--app-id",
+      "org.example.svgconsumer",
+      "--name",
+      "SVG Consumer",
+      "--with-marathon"
+    ],
+    "exit": 0
+  },
+  "installation": {
+    "command": ["pnpm", "install"],
+    "exit": 0,
+    "packages": 445,
+    "firstConsumerInstall": true,
+    "repositoryLockChanged": false
+  }
+}
