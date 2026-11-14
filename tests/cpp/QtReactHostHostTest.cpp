@@ -17,6 +17,7 @@
 #include "react-native-qnx/runtime/QtReactHost.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
+#include <jsi/instrumentation.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/core/RawEvent.h>
 #include <react/renderer/element/ComponentBuilder.h>
@@ -383,6 +384,29 @@ void javaScriptErrorsAreReportedNotSwallowed() {
   Fixture fixture;
   EXPECT(!fixture.host().evaluate("throw new Error('deliberate');", "test.js"));
   EXPECT(fixture.host().lastError().contains(QStringLiteral("deliberate")));
+}
+
+void turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection() {
+  int creations = 0;
+  std::weak_ptr<facebook::react::TurboModule> retained;
+  {
+    Fixture fixture;
+    fixture.host().setTurboModuleProvider(
+        [&](const std::string& name, std::shared_ptr<facebook::react::CallInvoker> invoker) {
+          if (name != "LifetimeProbe") return std::shared_ptr<facebook::react::TurboModule>{};
+          ++creations;
+          auto module = std::make_shared<facebook::react::TurboModule>(name, std::move(invoker));
+          retained = module;
+          return module;
+        });
+    fixture.host().installTurboModuleBinding();
+    EXPECT(fixture.host().evaluate("void nativeModuleProxy.LifetimeProbe;", "lookup.js"));
+    fixture.host().runtime().instrumentation().collectGarbage("temporary module lookup test");
+    EXPECT(!retained.expired());
+    EXPECT(fixture.host().evaluate("void nativeModuleProxy.LifetimeProbe;", "lookup-again.js"));
+    EXPECT(creations == 1);
+  }
+  EXPECT(retained.expired());
 }
 
 /// Invoke the actual core TurboModule in Hermes, including short argument arrays.
@@ -2701,6 +2725,8 @@ int main(int argc, char** argv) {
       {"runtimeEvaluatesJavaScript", runtimeEvaluatesJavaScript},
       {"javaScriptErrorsAreReportedNotSwallowed",
        javaScriptErrorsAreReportedNotSwallowed},
+      {"turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection",
+       turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection},
       {"segmentFetcherValidatesCallbackBoundary",
        segmentFetcherValidatesCallbackBoundary},
       {"evaluateRejectsReentrantJavaScript", evaluateRejectsReentrantJavaScript},

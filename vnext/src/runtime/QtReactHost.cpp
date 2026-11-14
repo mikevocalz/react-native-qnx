@@ -632,6 +632,9 @@ class QtReactHost::Impl {
   float windowScale{0};
   /// Extra TurboModules supplied by the embedding application.
   QtReactHost::TurboModuleProvider turboModuleProvider;
+  // Native modules own asynchronous operations beyond a temporary JS lookup.
+  // Cache one instance per host, as the platform TurboModuleManager does.
+  std::unordered_map<std::string, std::shared_ptr<facebook::react::TurboModule>> turboModules;
   std::unordered_map<int, std::unique_ptr<QTimer>> timers;
   /// Drives the NativeAnimated `onRender` callback while at least one animation
   /// is active. Created on first use and reused for later animations.
@@ -861,9 +864,7 @@ void QtReactHost::installTurboModuleBinding() {
 #endif
   auto* impl = impl_.get();
 
-  facebook::react::TurboModuleBinding::install(
-      *impl_->runtime,
-      [callInvoker, impl](
+  auto createModule = [callInvoker, impl](
           facebook::jsi::Runtime& /*jsRuntime*/,
           const std::string& name)
           -> std::shared_ptr<facebook::react::TurboModule> {
@@ -973,6 +974,16 @@ void QtReactHost::installTurboModuleBinding() {
         // idle callbacks, both backed by the RuntimeScheduler.
         return facebook::react::DefaultTurboModules::getTurboModule(
             name, callInvoker);
+      };
+  facebook::react::TurboModuleBinding::install(
+      *impl_->runtime,
+      [impl, createModule = std::move(createModule)](
+          facebook::jsi::Runtime& runtime, const std::string& name) {
+        if (const auto found = impl->turboModules.find(name); found != impl->turboModules.end())
+          return found->second;
+        auto module = createModule(runtime, name);
+        if (module) impl->turboModules.emplace(name, module);
+        return module;
       });
 }
 
