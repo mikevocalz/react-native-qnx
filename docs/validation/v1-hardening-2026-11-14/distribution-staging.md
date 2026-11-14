@@ -72,7 +72,13 @@ Host native builds, ASan, QEMU, QNX cross-build, Pi 400, stock Pi 4 QSTI,
 performance and power-loss tests were not run for this tooling slice. Colima
 was stopped when inspected. No target was launched, stopped or reconfigured.
 No scheduling, window dimensions, input, boot, renderer or app state changed.
-Hosted CI belongs to the published head and must be checked separately.
+Frozen installation with pnpm 12.18.0, dependency validation, typechecking,
+documentation validation, the existing runner-manifest fixtures and the
+Marathon Metro platform regression passed locally. Command exit statuses and
+raw outputs are in [command-results.json](command-results.json). The runner
+fixtures use a local loopback server and synthetic archives; they do not
+qualify a real runner. Hosted CI belongs to the published head and must be
+checked separately.
 
 ## Release checklist and rollback
 
