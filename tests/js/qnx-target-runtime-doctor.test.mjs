@@ -237,10 +237,11 @@ assert.deepEqual(inspectTargetRuntimeText('{}', { platform: 'marathon' }), {
 const temporary = await mkdtemp(path.join(tmpdir(), 'rnqnx-target-doctor-'));
 const file = path.join(temporary, 'observations.json');
 const cli = path.resolve('packages/react-native-qnx-cli/src/bin.mjs');
-/** @param {string[]} args */
-function run(args) {
-  const child = spawnSync(process.execPath, [cli, 'project', 'doctor', ...args], {
-    cwd: temporary,
+/** @param {string[]} args @param {'project'|'root'} [mode] @param {string} [cwd] */
+function run(args, mode = 'project', cwd = temporary) {
+  const prefix = mode === 'root' ? ['doctor'] : ['project', 'doctor'];
+  const child = spawnSync(process.execPath, [cli, ...prefix, ...args], {
+    cwd,
     encoding: 'utf8',
     timeout: 10000,
   });
@@ -256,6 +257,36 @@ try {
   assert.equal(JSON.parse(good.stdout).runtimeVerified, false);
   assert.equal(JSON.parse(good.stdout).debugEnvironment.LD_DEBUG, '1');
   assert.equal(await readFile(file, 'utf8'), text);
+  const rootGood = run(['--target-runtime-report', file, '--json', '--verbose'], 'root');
+  assert.equal(rootGood.status, 0, rootGood.stderr);
+  assert.deepEqual(JSON.parse(rootGood.stdout), JSON.parse(good.stdout));
+  const rootEquals = run([`--target-runtime-report=${file}`, '--json'], 'root');
+  assert.equal(rootEquals.status, 0, rootEquals.stderr);
+  assert.equal(JSON.parse(rootEquals.stdout).reportedPrerequisitesSatisfied, true);
+  const rootMissing = run(
+    ['--target-runtime-report', path.join(temporary, 'missing'), '--json'],
+    'root'
+  );
+  assert.equal(rootMissing.status, 2);
+  assert.equal(JSON.parse(rootMissing.stdout).step, 'read-report');
+  const rootMarathon = run(
+    [
+      '--target-runtime-report',
+      path.join(temporary, 'missing'),
+      '--platform',
+      'marathon',
+      '--json',
+    ],
+    'root'
+  );
+  assert.equal(rootMarathon.status, 2);
+  assert.equal(JSON.parse(rootMarathon.stdout).step, 'platform');
+  assert.equal(run(['--target-runtime-report'], 'root').status, 2);
+  assert.equal(run(['--target-runtime-report', file, '--help'], 'root').status, 0);
+  const ordinaryRoot = run(['--dry-run'], 'root', path.resolve('.'));
+  assert.equal(ordinaryRoot.status, 0, ordinaryRoot.stderr);
+  assert.match(JSON.parse(ordinaryRoot.stdout).args[0], /scripts\/doctor\.sh$/);
+  assert.equal(JSON.parse(ordinaryRoot.stdout).args.length, 1);
   const human = run(['--target-runtime-report', file, '--verbose']);
   assert.equal(human.status, 0, human.stderr);
   assert.match(human.stdout, /offline, not device verification/);

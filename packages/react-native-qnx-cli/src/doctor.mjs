@@ -20,6 +20,7 @@ import { discoverNitroModules } from './nitro-modules.mjs';
 const help = `React Native QNX consumer project diagnostics
   rnqnx project doctor --project <directory> [--platform qnx|marathon]
                        [--entry index.js] [--identity-tool <path>] [--json]
+  rnqnx doctor --target-runtime-report <observations.json> [--verbose] [--json]
   rnqnx project doctor --target-runtime-report <observations.json> [--verbose] [--json]
 
 Read-only metadata checks. QNX is default. No config/package JavaScript,

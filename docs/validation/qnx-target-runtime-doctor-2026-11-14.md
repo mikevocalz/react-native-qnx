@@ -14,7 +14,8 @@ through a temporary dependency symlink; no fresh frozen installation is claimed.
 
 ## Behavior and ownership
 
-`project doctor --target-runtime-report <file>` validates one regular JSON file
+`doctor --target-runtime-report <file>` (also available as
+`project doctor --target-runtime-report <file>`) validates one regular JSON file
 of at most 64 KiB and checks reported Screen, logging, temporary directory,
 random device, IPv6, runtime paths, fonts, display configuration and physical
 size. `--verbose` suggests first-start debug variables without setting them.
@@ -75,6 +76,10 @@ The typecheck emits no output on success.
 No hosted CI, native build, QNX cross-build, QEMU, Pi 400, stock QSTI, cold boot,
 frame capture, startup or RSS measurement ran. The parser's 64 KiB limit is an
 input bound, not a measured performance budget. No performance claim is made.
+Independent reviewer `review_doctor` also approved the explicit root alias follow-up and re-ran the target/environment suites. Its CLI tests
+cover the same positive report, a missing file/argument and Marathon rejection
+before file access. Ordinary root environment doctor remains on its prior route.
+
 F5 remains partial until a collector and actual target observations are
 qualified; F6's exact SDP/library compatibility remains separate.
 

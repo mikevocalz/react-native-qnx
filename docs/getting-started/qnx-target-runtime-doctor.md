@@ -6,9 +6,13 @@ It never connects to the target, runs commands from the report, reads target
 paths on the host, changes environment variables or starts an application.
 
 ```sh
-pnpm qnx project doctor --target-runtime-report observations.json --verbose
+pnpm qnx doctor --target-runtime-report observations.json --verbose
 pnpm qnx project doctor --target-runtime-report observations.json --json
 ```
+
+The root spelling is an alias only when `--target-runtime-report` is supplied.
+Ordinary `qnx doctor` keeps its existing environment/toolchain checks. Both
+spellings accept the same observation options.
 
 This mode is separate from `project doctor --project <directory>`, which keeps
 its static project checks. Do not combine `--project`, `--entry` or
