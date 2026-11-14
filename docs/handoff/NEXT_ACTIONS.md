@@ -1,5 +1,19 @@
 # NEXT_ACTIONS.md
 
+## PR 159 drawer and module lifetime continuation — 2026-11-13
+
+Committed d257b5a retains one TurboModule per successful host lookup; its forced
+GC regression fails without retention and passes after restoration. The same
+optimized device bundle now completes its image API sequence. Commit 874ea81
+fixes JS drawer swipe reversal with Zustand state and native drawer dynamic
+metadata/click transport. Pi captures show hover, keyboard focus and Enter
+navigation; the final binary/HBC repeat navigation and image APIs. All 34
+standalone QML cases pass in Release and ASan/UBSan. The transplanted Linux host
+suite retains two separate failures, so only its lifetime case is qualified.
+Inherited cross-build flags/object reuse are corrected in the receipts. A fresh
+combined build and exact-head CI/review remain required before final promotion.
+[Sources, artifacts, limits and rollback](../validation/pr159-drawer-runtime-2026-11-13.md).
+
 ## PR 159 fetch worker continuation — 2026-11-13
 
 File/data and disk-cache fetch I/O now run on bounded workers with owner-thread

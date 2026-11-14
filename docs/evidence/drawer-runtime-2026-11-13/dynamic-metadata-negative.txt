@@ -1,0 +1,10 @@
+********* Start testing of NativeUiQuickTest *********
+Config: Using QtTest library 6.12.0, Qt 6.12.0 (arm64-little_endian-lp64 shared (dynamic) release build; by Apple LLVM 21.0.0 (clang-2100.3.34.2)), macos 27.0.0
+PASS   : NativeUiQuickTest::initTestCase()
+FAIL!  : NativeUiQuickTest::drawerReadsDynamicMountMetadata() Compared values are not the same
+   Actual   (drawer->property("focusedIndex").toInt()): -1
+   Expected (0)                                       : 0
+   Loc: [<source>/tests/native/qt-native-ui/NativeUiQuickTest.cpp(417)]
+PASS   : NativeUiQuickTest::cleanupTestCase()
+Totals: 2 passed, 1 failed, 0 skipped, 0 blacklisted, 309ms
+********* Finished testing of NativeUiQuickTest *********

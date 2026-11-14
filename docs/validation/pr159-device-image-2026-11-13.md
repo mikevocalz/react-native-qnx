@@ -15,8 +15,12 @@ pending API results.
 
 ## Target and artifacts
 
-QNX SDP 8.0.5 AArch64 cross-build, public-source Qt 6.12.0, Release/O2, two
-jobs. This inherited cross graph has warnings-as-errors and sanitizers OFF.
+QNX SDP 8.0.5 AArch64 cross-build, public-source Qt 6.12.0, Release/O1, two
+jobs. The inherited native recipe has strict warnings with selected GCC warning
+exceptions and sanitizers OFF. Public Qt libraries are O2. Upstream objects
+were reused through a source-equality launcher without an independent flag/
+header-closure audit; project sources were compiled. A fresh final combined
+build without that launcher remains required.
 Expo Image and native UI are enabled; SVG, Worklets and Reanimated are OFF.
 The ELF requires `libhermesvmlean.so`. The test uses the previously staged
 public Qt runtime with image-format/TLS plugins, not an evaluation build.
@@ -29,7 +33,10 @@ public Qt runtime with image-format/TLS plugins, not an evaluation build.
 `prepare-native` recorded this HBC hash, app ID `org.rnqnx.showcase`, component
 `RNQnxPlayground`, and the unchanged 1280x800 window. The first deployment
 loaded the copied owner's older `app.bundle.js` by default; that run is excluded
-from the new-driver results. Relaunching with explicit `--bundle .../app.hbc`
+from the new-driver results. The Linux source folder also retained SVG gallery
+metadata from the earlier SVG build; those extra cards are outside this image
+check. A fresh Mac Metro bundle is used in the later drawer/module-lifetime
+continuation. The image/API screenshots here remain attached to their HBC hash. Relaunching with explicit `--bundle .../app.hbc`
 selected the recorded candidate. The guarded launcher replaced the existing
 instance; no boot, window manager or USB input configuration changed.
 

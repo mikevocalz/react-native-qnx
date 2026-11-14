@@ -61,6 +61,14 @@
       "receipt": "docs/validation/pr159-image-io-2026-11-13.md",
       "status": "six Release and three ASan/UBSan executables pass; QNX cross-build and Pi 400 successful-consumption check pass; explicit cache API/ImageRef worker conversion and exact-head hosted CI pending",
       "standaloneGraph": "632a3c9 CI failed to link decodeImage; standalone source list corrected and clean local loopback/cache test passed; new-head CI pending"
+    },
+    "pr159DrawerRuntime": {
+      "reviewedAt": "2026-11-13",
+      "moduleRetentionCommit": "d257b5a",
+      "drawerCommit": "874ea81",
+      "receipt": "docs/validation/pr159-drawer-runtime-2026-11-13.md",
+      "status": "bounded Pi 400 navigation/API and host regression proof; two unrelated transplanted-host failures remain; clean combined build, exact-head CI and review pending",
+      "crossBuild": "native O1 with selected strict-warning exceptions; Qt O2; inherited upstream object reuse has no independent flag/header-closure audit"
     }
   },
   "activeMilestone": "v1 preparation; release gates remain open",
