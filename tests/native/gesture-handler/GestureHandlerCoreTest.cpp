@@ -1,6 +1,7 @@
 // Host test for the Gesture Handler recognizer registry. No Qt, no React Native:
 // pointer input in, state transitions out, with a fake clock.
 #include "react-native-qnx/gesture/GestureHandlerCore.h"
+#include "react-native-qnx/gesture/GestureHandlerBindings.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -39,6 +40,56 @@ struct Rig {
     return n;
   }
 };
+
+void detectorBindingsHandlePassiveEffectOrdering() {
+  for (bool mountFirst : {false, true}) {
+    Rig r;
+    DetectorBindings bindings(r.reg);
+    if (mountFirst) bindings.observe(1, {7});
+    bindings.create("PanGestureHandler", 7, {});
+    if (!mountFirst) bindings.observe(1, {7});
+    bindings.configure(7, {{"minDist", 5}, {"dispatchesReanimatedEvents", 1}});
+    r.reg.pointerDown(0, 50, 50, 0);
+    r.reg.pointerMove(0, 70, 50, 16);
+    CHECK(r.count(7, State::Active) == 1);
+    CHECK(!r.log.empty() && r.log.back().actionType == 1);
+    r.reg.pointerUp(0, 70, 50, 32);
+    bindings.configure(7, {{"dispatchesReanimatedEvents", 0}});
+    r.reg.pointerDown(0, 50, 50, 40);
+    CHECK(!r.log.empty() && r.log.back().actionType == 4);
+    r.reg.pointerCancel(0, 45);
+    bindings.removeView(1);
+    const auto count = r.log.size();
+    r.reg.pointerDown(0, 50, 50, 50);
+    CHECK(r.log.size() == count);
+    r.reg.pointerUp(0, 50, 50, 60);
+    bindings.drop(7);
+    bindings.create("PanGestureHandler", 7, {});
+    r.reg.pointerDown(0, 50, 50, 70);
+    CHECK(r.log.size() == count);
+    r.reg.pointerUp(0, 50, 50, 80);
+  }
+}
+
+void defaultExclusiveTapWaitsPastItsOwnDuration() {
+  Rig r;
+  r.reg.create("TapGestureHandler", 1, {});
+  r.reg.create("TapGestureHandler", 2, {{"numberOfTaps", 2}});
+  r.reg.attach(1, 1, 1);
+  r.reg.attach(2, 1, 1);
+  r.reg.setRelations(1, {{}, {2}, {}});
+  for (double start : {0.0, 1000.0}) {
+    r.reg.pointerDown(0, 10, 10, start);
+    r.reg.pointerUp(0, 10, 10, start + 60);
+    r.reg.advance(start + 501);
+    CHECK(r.reg.stateOf(1) == State::Began);
+    r.reg.advance(start + 561);
+    CHECK(r.reg.stateOf(1) == State::Undetermined);
+    CHECK(r.reg.stateOf(2) == State::Undetermined);
+  }
+  CHECK(r.count(1, State::End) == 2);
+  CHECK(r.count(2, State::Active) == 0);
+}
 
 void panActivatesAfterMinDistance() {
   Rig r;
@@ -241,6 +292,8 @@ void unsupportedHandlersFailAndAreListed() {
 }  // namespace
 
 int main() {
+  detectorBindingsHandlePassiveEffectOrdering();
+  defaultExclusiveTapWaitsPastItsOwnDuration();
   panActivatesAfterMinDistance();
   panFailsOnFailOffset();
   tapCompletes();

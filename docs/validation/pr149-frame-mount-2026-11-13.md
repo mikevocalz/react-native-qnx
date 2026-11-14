@@ -83,5 +83,47 @@ Security/licensing: no new dependency, permission, premium payload or licensing
 change. Performance budget is unqualified; these frame observations are bounded
 samples, not latency percentiles. Roll back this slice's callbacks, tests and
 gallery changes together; retain the original draft feature switches OFF.
-Next: prove intermediate pixels without a React commit, then gesture input and
-failure/teardown behavior before promoting this draft.
+Next: finish gesture input and failure/teardown checks, then exact-head hosted
+validation and independent review before promoting this draft.
+
+## Gesture attachment continuation
+
+Source inspected: RNGH 3.4.0 `v3/hooks/useGesture.ts` creates a handler with
+empty config in a passive effect, then sends its full native config. Its
+`configUtils.ts` sends `dispatchesReanimatedEvents`, filtering out
+`shouldUseReanimatedDetector`. The platform had read the filtered property
+only at creation and attached mounted detectors before handlers existed.
+
+`DetectorBindings` retains detector and handler identities, accepts either
+creation order, and refreshes the event route from the later native config.
+It removes bindings when detectors disappear or handlers are dropped.
+The real recognizer regression covers both orders, worklet/JS routing,
+removal and tag reuse under Apple Clang ASan/UBSan; it passed together with
+the fourteen existing recognizer cases. QNX adapter cross-build passed;
+The Pi card now moves and, on release, reports translation 80,15 and springs
+back. The first split-process release probe used a different injected device;
+the complete drag in one injector invocation provides the valid release trial.
+Single tap now shows count 1; the following double tap reports `double tap`
+without incrementing the count. Independent review remains pending for this
+continuation.
+Native candidate SHA-256:
+`5bfcdeeee1491293e627ecc56484b6c70a89e6e227141b2088319059cd8909c1`.
+The HBC remains the readback candidate above.
+
+The tap trace confirmed correct detector hit/routing, then both tap handlers
+failed. A completed single tap retained its contact-duration deadline while
+waiting for a double tap's delay; deadline failure also left idle handlers in a
+terminal state until another pointer cycle. The regression using default timing
+failed five checks before the fix. Clearing the satisfied duration deadline
+and resetting idle handlers after timer processing passes all sixteen cases
+under ASan/UBSan. Opt-in `RNQNX_GESTURE_TRACE` records hit geometry and routing;
+leave it unset for normal use. The corrected tap device trial passed: count 1 after a single click, then
+`double tap` with count still 1. Native hash:
+`5a7cd77d8fc4b2c9ec7f4c2a0f0f7c033d10ff663bbb8990a3cd8a09ce9b7080`;
+final Zustand-card HBC hash:
+`eebd83c28838c572691b4b1dd8b919deaf48bb976e1e981bd2c8f8db8428f82a`.
+The earlier card passed recognition but displayed an object because its React
+functional updater was serialized across the worklet boundary. Its state now
+uses a per-instance Zustand store; a plain RN callback increments taps locally.
+The gesture-candidate source inventories cover 331 native/config files and
+252 app/package files, including the new binding helper.

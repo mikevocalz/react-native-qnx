@@ -275,6 +275,9 @@ struct Registry::Impl {
       }
       h.taps += 1;
       if (h.taps >= static_cast<int>(get(h.cfg, "numberOfTaps", 1))) {
+        // Contact duration is satisfied. A completed tap waiting for an
+        // exclusive predecessor must not expire before that handler's delay.
+        h.deadline = -1;
         if (tryActivate(h)) finishOnActivate(h);
       } else {
         h.lastUpMs = now;
@@ -466,6 +469,7 @@ void Registry::advance(double nowMs) {
       impl_->fail(h);
     }
   }
+  impl_->resetIfIdle();
 }
 
 std::optional<double> Registry::nextDeadlineMs() const {

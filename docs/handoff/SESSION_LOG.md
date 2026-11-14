@@ -2,7 +2,7 @@
 
 ## PR 149 frame/mount continuation — 2026-11-13
 
-Fixed the nested frame worklet closure and RefreshControl export; migrated touched gallery state to Zustand. Measured two thirty-frame Pi runs. Isolated delayed animated pixels to absent mount completion; added the callback and native observer regression. Qualification is in progress.
+Repaired the recursive frame closure, RefreshControl export and native mount completion. Measured two thirty-frame Pi runs and comparative timing pixels. Fixed detector attachment/routing and measured pan release at 80,15 with spring return; single/exclusive double tap also passed. The tap default-delay regression failed before its repair and passes under sanitizers.
 [Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
 
 ## 2026-11-10 — PR 105 committed handoff repair

@@ -2,7 +2,7 @@
 
 ## PR 149 frame/mount continuation — 2026-11-13
 
-Transformed frame regression, public exports and typecheck pass. Pi frame continuation completed twice. Native mount-hook, corrected animation pixels and exact-head CI are pending; the macOS full JS lane stopped at a Linux-only test.
+Transformed Worklets output, public exports, typecheck and sixteen recognizer/binding cases under ASan/UBSan pass. The new mount-hook observer passes and fails with reporting disabled. QNX cross-build and scoped Pi timing/spring/pan checks passed. The transplanted full-host executable still has one pixel failure; no full-host green claim.
 [Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
 
 ## 2026-11-10 — PR 105 generator validation

@@ -2,7 +2,7 @@
 
 ## PR 149 frame/mount continuation — 2026-11-13
 
-PR 149 stays draft: mount-completion candidate is not yet qualified, busy-JS delivery and gestures remain open. PR 161 must merge before PR 159, then PR 149.
+PR 149 stays draft. Busy-JS delivery, remaining recognizers, exact-head hosted gates and independent review remain open. CodeRabbit hit its quota on the new native slice. PR 161 must merge before PR 159, then PR 149.
 [Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
 
 ## PR 105 review state — 2026-11-10

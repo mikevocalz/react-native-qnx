@@ -1,0 +1,6 @@
+FAIL tests/native/gesture-handler/GestureHandlerCoreTest.cpp:85 r.reg.stateOf(1) == State::Began
+FAIL tests/native/gesture-handler/GestureHandlerCoreTest.cpp:87 r.reg.stateOf(1) == State::Undetermined
+FAIL tests/native/gesture-handler/GestureHandlerCoreTest.cpp:88 r.reg.stateOf(2) == State::Undetermined
+FAIL tests/native/gesture-handler/GestureHandlerCoreTest.cpp:85 r.reg.stateOf(1) == State::Began
+FAIL tests/native/gesture-handler/GestureHandlerCoreTest.cpp:90 r.count(1, State::End) == 2
+5 check(s) failed

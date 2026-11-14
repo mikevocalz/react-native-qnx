@@ -23,6 +23,8 @@ const {
   useExclusiveGestures,
 } = require('react-native-gesture-handler');
 const { scheduleOnRN } = require('react-native-worklets');
+const { useStore } = require('zustand');
+const { createStore } = require('zustand/vanilla');
 
 const h = React.createElement;
 const INK = '#e9f0f7';
@@ -40,8 +42,14 @@ function SpringCard() {
   const startX = useSharedValue(0);
   const startY = useSharedValue(0);
   const lift = useSharedValue(0);
-  const [status, setStatus] = React.useState('drag the card');
-  const [taps, setTaps] = React.useState(0);
+  const store = React.useMemo(() => createStore(() => ({ status: 'drag the card', taps: 0 })), []);
+  const status = useStore(store, (state) => state.status);
+  const taps = useStore(store, (state) => state.taps);
+  const setStatus = React.useCallback((value) => store.setState({ status: value }), [store]);
+  const incrementTaps = React.useCallback(
+    () => store.setState((state) => ({ taps: state.taps + 1 })),
+    [store]
+  );
 
   const pan = usePanGesture({
     onBegin: () => {
@@ -85,7 +93,7 @@ function SpringCard() {
   const singleTap = useTapGesture({
     onDeactivate: () => {
       'worklet';
-      scheduleOnRN(setTaps, (value) => value + 1);
+      scheduleOnRN(incrementTaps);
     },
   });
   // Single tap waits for the double tap to fail; the pan competes with both.

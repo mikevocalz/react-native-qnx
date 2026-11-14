@@ -2,7 +2,7 @@
 
 ## PR 149 frame/mount continuation — 2026-11-13
 
-Finish mount-hook native testing and QNX cross-build. Compare intermediate animation pixels with the same HBC, exercise gestures and shutdown, run independent review and exact-head CI. Preserve all remaining handoff gaps.
+Complete teardown checks, review the native slice, inspect exact-head CI, and keep the draft until its acceptance gates pass. Finish the remaining image and SVG handoff gaps separately.
 [Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
 
 ## PR 105 continuation — 2026-11-10

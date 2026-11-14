@@ -88,8 +88,11 @@ launcher. Pointer clicks reach its spring/timing controls. Shared x advances
 on the UI runtime, but the flush-only candidate updates pixels at a subsequent
 React commit rather than each frame. The missing Fabric mount-completion
 notification is under test. These observations supersede the earlier statement
-that the cards could not be exercised. Pan/tap gestures and smooth intermediate
-pixels remain unqualified. See the [candidate receipt](validation/pr149-frame-mount-2026-11-13.md)
+that the cards could not be exercised. The corrected candidate paints intermediate timing pixels and completes springs.
+Pan moves and returns on release (80,15); single tap increments to 1 and the
+following double tap reports separately without increasing that count.
+These are bounded device trials; busy-JS rendering and broader conformance
+remain unqualified. See the [candidate receipt](validation/pr149-frame-mount-2026-11-13.md)
 for hashes, negative controls and outstanding checks.
 
 ## Earlier device receipts (Pi 400, 2026-11-13)
