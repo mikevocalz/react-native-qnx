@@ -24,6 +24,15 @@ interface NativeProps extends ViewProps {
   activeKey?: string;
   layout?: CodegenTypes.WithDefault<'auto' | 'bottom' | 'side', 'auto'>;
   sideBreakpoint?: CodegenTypes.WithDefault<CodegenTypes.Double, 700>;
+  /**
+   * Which edge the bar sits on: `bottom`, `top`, `left` (the start side) or
+   * `right` (the end side). Empty follows `layout`.
+   */
+  position?: string;
+  /** Draw each tab's title under its icon. */
+  showLabel?: CodegenTypes.WithDefault<boolean, true>;
+  /** Right-to-left: tabs run right to left and `left` is the physical right. */
+  rtl?: CodegenTypes.WithDefault<boolean, false>;
   /** Width in px of the rail in `side` mode, reported in onLayoutMode. */
   railWidth?: CodegenTypes.WithDefault<CodegenTypes.Double, 88>;
   /** Height in px of the bar in `bottom` mode, reported in onLayoutMode. */

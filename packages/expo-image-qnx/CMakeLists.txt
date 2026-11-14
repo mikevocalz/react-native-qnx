@@ -6,7 +6,11 @@ cmake_minimum_required(VERSION 3.20)
 # Expo host. The view itself is the Fabric component ViewManagerAdapter_ExpoImage
 # built by RNQNX_ENABLE_QT_EXPO_IMAGE in the renderer; this package only tells
 # expo-image's JavaScript what that view accepts.
-add_library(expo_image_qnx STATIC cpp/ExpoImageQnx.cpp)
+add_library(expo_image_qnx STATIC
+  cpp/ExpoImageQnx.cpp
+  cpp/ExpoImageRefs.cpp
+  cpp/ExpoImageSupport.cpp
+  cpp/ExpoImageViewCommands.cpp)
 target_link_libraries(expo_image_qnx PUBLIC rnqnx_expo_modules_qnx)
 target_compile_features(expo_image_qnx PUBLIC cxx_std_20)
 if(COMMAND rnqnx_enable_strict_warnings)

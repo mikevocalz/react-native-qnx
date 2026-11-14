@@ -13,6 +13,145 @@ configuration/error regressions, real-root cross-build and a lean-file-free
 Pi frame probe passed. The importer review reported zero findings.
 [Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
 
+## PR 159 review follow-up — 2026-11-14
+
+Run the full Hermes graph plus required ON/OFF hosted checks on the integrated main/PR 161 candidate. Resolve only findings supported by the actual integrated source and evidence. Perform current-target image/input/teardown qualification with the full command/status/artifact receipt; retain device gates while it is unavailable.
+[Source, commands, limits and rollback](../validation/pr159-review-followup-2026-11-14.md).
+Main/SVG integration includes PR 161 follow-up `13a0e49`; both evidence sets are retained. Transactional imageformat staging reads the selected `IMAGEFORMATS_SRC` notices and all attribution inputs; 25 host staging fixtures pass with a failing old-source control. The final code source is `252b128`; its complete source-tree identities and 55 SHA-256 entries are recorded in the receipt.
+
+Independent review corrected the initially blank paused animation, with failing direct and deleted-source prefetch controls. Fresh image Debug ASan/UBSan passes 3/3 CTests and 73 QtTest entries. Reconciliation found a stale generated Release MOC that omitted the new disk-clear HTTP slot; after refreshing only those build artifacts, all 6/6 Release CTests and 126 entries pass. Prior 125-entry logs remain qualified and preserved. Pinned Hermes and Metro builds succeeded, but GCC stopped on a Clang-specific upstream React Native pragma before linking the host test; the supported Clang retry and both new host regressions remain pending. Exact-head CI and current-target gates remain open.
+
+## PR 159 drawer route and pointer correction — 2026-11-13
+
+The drawer now selects its navigator destination across all Home child tabs.
+Native hover/focus decoration no longer obscures the row's input target.
+Commit 1f809ce has failing old-source controls, passing JS/type/layout/bundle
+checks, 34 QML cases, the native input regression and zero review findings.
+Nine physical Pi captures show one selected row across five destinations and
+all five Home tabs. The transplanted full host retains two separate failures;
+exact-head CI, the clean combined build and owner-tile promotion remain open.
+[Evidence, provenance and rollback](../validation/pr159-drawer-route-2026-11-13.md).
+
+## PR 159 drawer selection correction — 2026-11-13
+
+SVG d38097f is stacked into PR 159 with both source/evidence sets preserved.
+Dependency/type/docs checks pass; the full local JS runner stops at its Linux-only
+consumer-preview test on macOS. PR 161 renderer ON has two complex-corpus timeouts;
+merge and clean combined target qualification remain pending.
+
+The owner caught two teal rows after Components → Home. The renderer skipped
+transparent background updates, leaving the old selection painted. Commit
+cf43271 clears transparent/removed generic View fills; its regression fails
+before the fix and all eight adapter cases pass with the isolated delta.
+Pi captures now show one teal row for each route, including the final binary/
+HBC pair. The independent review's interrupted-swipe issue is also fixed with
+Zustand gesture state and three regressions. Final four-file review has zero
+findings. Exact-head CI and clean combined qualification remain pending.
+[Evidence and rollback](../validation/pr159-drawer-selection-2026-11-13.md).
+
+## PR 159 drawer and module lifetime continuation — 2026-11-13
+
+Committed d257b5a retains one TurboModule per successful host lookup; its forced
+GC regression fails without retention and passes after restoration. The same
+optimized device bundle now completes its image API sequence. Commit 874ea81
+fixes JS drawer swipe reversal with Zustand state and native drawer dynamic
+metadata/click transport. Pi captures show hover, keyboard focus and Enter
+navigation; the final binary/HBC repeat navigation and image APIs. All 34
+standalone QML cases pass in Release and ASan/UBSan. The transplanted Linux host
+suite retains two separate failures, so only its lifetime case is qualified.
+Inherited cross-build flags/object reuse are corrected in the receipts. CI found cross-test mock caching; the settlement case now runs in a child
+process and the four router tests pass in shared-runner order. A fresh
+combined build and exact-head CI/review remain required before final promotion.
+[Sources, artifacts, limits and rollback](../validation/pr159-drawer-runtime-2026-11-13.md).
+
+## PR 159 fetch worker continuation — 2026-11-13
+
+File/data and disk-cache fetch I/O now run on bounded workers with owner-thread
+completion. Fetchers share a network manager; corrupt/oversized cache recovery
+and safe bounded redirects have regressions. Six Release native executables
+and three ASan/UBSan image executables pass, as does the QNX cross-build and
+Pi 400 resize/cache/ImageRef/blurhash check. The initial slice's independent
+review has zero findings. Exact-head hosted checks remain required. The standalone image-cache link exposed a missing ImageDecode.cpp source;
+that graph is corrected and its clean local loopback test passes. Explicit
+cache API and ImageRef decode/hash/encode worker conversion remains open.
+[Commands, evidence and rollback](../validation/pr159-image-io-2026-11-13.md).
+
+## PR 159 image device continuation — 2026-11-13
+
+The c2badc4 implementation head passed all hosted checks. On the custom-image
+Pi 400, the new Zustand gallery driver shows a second image load after growth
+from 20 to 240 pixels, successful cache/ImageRef/blurhash APIs, GIF frame
+changes after start and stable pixels after stop. Window size remains 1280x800.
+The loader I/O, cache recovery, redirects, navigation and wider conformance
+work remains open. This driver needs its own CI and review.
+[Evidence and rollback](../validation/pr159-device-image-2026-11-13.md).
+
+## PR 159 image resolution continuation — 2026-11-13
+
+Growing a downscaled still image now schedules an adequate decode, respecting
+resource locks and decode options. All 30 native image-item host cases pass;
+the growth and initial-decode race controls fail as expected. The review
+finding is fixed; new-head CI and target
+resize checks remain pending. Other image-loader/navigation gaps stay open.
+[Receipt and rollback](../validation/pr159-image-resize-2026-11-13.md).
+
+## PR 159 build repair — 2026-11-13
+
+Inspect the pushed head's required renderer checks. Continue #161 before merging #159, then address the image-loader gaps in the November 13 handoff.
+[Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
+
+## PR 161 continuation (2026-11-14)
+
+1. Inspect the published follow-up's exact head and required checks. Require
+   both renderer lanes and all four corpus shards at their existing limits.
+   Retain any failed-job logs; do not infer the original timeout cause from
+   the new nested-scene correctness results.
+2. On the licensed QNX SDP 8.0.5 host, configure a fresh combined candidate
+   using the pinned React Native/Hermes graph and selected public Qt runtime,
+   with SVG enabled. Use two build jobs and no inherited object-reuse compiler
+   launcher. Record the compiler/optimization flags, installed-header closure,
+   QtSvg library/plugin closure and executable/bundle/runtime hashes, following
+   the [corrected build receipt](../validation/pr161-device-gallery-2026-11-13.md).
+3. Follow the [Pi 400 run/control procedure](HANDOFF_2026-11-13.md) for a single
+   guarded SVG gallery instance. Exercise nested-child removal and two nested
+   viewBoxes under group opacity, plus the existing per-element/attribute,
+   image, ForeignObject input and interaction cases. Capture actual Screen
+   output, logs, readback hashes and the exact board/runtime identity. Restore
+   the owner's app afterward; keep boot, window and input policy unchanged.
+4. Record target results and independent target review before marking the PR
+   ready. Qualify the final combined PR 161/159/149 candidate separately;
+   stock-QSTI and Marathon evidence remain separate from the historical custom
+   Pi 400 result. All v1 gates remain pending.
+
+Local completed checks and source hashes are in the
+[2026-11-14 receipt](../validation/pr161-nested-roots-2026-11-14.md).
+
+## PR 161 cross-build recipe correction — 2026-11-13
+
+The native consumer used inherited Release/O1 flags with selected GCC warning
+exceptions; public Qt libraries were O2. Its launcher reused upstream objects
+without independently checking flags/header closure, while project sources
+were recompiled. Device behavior and hashes stand as scoped evidence. Use a
+fresh build without that launcher for final combined qualification.
+[Corrected receipt](../validation/pr161-device-gallery-2026-11-13.md).
+
+## PR 161 gallery and target continuation — 2026-11-13
+
+Required checks passed at a52ffff. The current-source Pi run then exposed the
+SvgCss root import; it now uses the pinned CSS subpackage and has a failing/
+passing Metro regression. The twelve-card gallery renders on the real lean
+VM/public QtSvg runtime, including bundled/SVG/HTTPS images and live
+ForeignObject input blocking. Circle/group counters and rotation pause pass.
+The added nested-invalidation control fails without outward forwarding; all
+eight restored native host CTests pass. Prior review threads are resolved.
+This follow-up still needs its exact-head checks and independent review.
+[Artifacts, element table and rollback](../validation/pr161-device-gallery-2026-11-13.md).
+
+## PR 161 corpus continuation — 2026-11-13
+
+Inspect PR 161 exact-head renderer CI after publication. Verify all four corpus shards and retain their diff artifacts. Complete the handoff device checks before integrating #159 and #149.
+[Receipt](../validation/pr161-corpus-shards-2026-11-13.md).
+
 ## PR 105 continuation — 2026-11-10
 
 Review and publish the documentation follow-up to `c09a5b1`, inspect its

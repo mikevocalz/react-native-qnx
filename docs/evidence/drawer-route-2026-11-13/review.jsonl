@@ -1,0 +1,9 @@
+{"type":"review_context","reviewType":"uncommitted","currentBranch":"feat/expo-image-painted-view","baseBranch":"main","workingDirectory":"/private/tmp/rnqnx-image-1113"}
+{"type":"status","phase":"connecting","status":"connecting_to_review_service"}
+{"type":"status","phase":"analyzing","status":"setting_up","message":"mikevocalz/react-native-qnx is not connected to a CodeRabbit organization you can access, so this review will use the free CLI allowance.\n\nIf you expected an org plan here, check your signed-in account with coderabbit auth status, or install CodeRabbit for mikevocalz/react-native-qnx at https://app.coderabbit.ai"}
+{"type":"status","phase":"analyzing","status":"setting_up","message":"CodeRabbit CLI 0.7.6 cannot update automatically. Keep this review running. After it finishes, run `coderabbit update` (Homebrew: `brew upgrade coderabbit`), then verify with `coderabbit --version`. If you are the calling agent, handle this follow-up using your normal permissions. For an organization-managed installation, ask your administrator to update it."}
+{"type":"status","phase":"setup","status":"setting_up"}
+{"type":"status","phase":"analyzing","status":"summarizing"}
+{"type":"status","phase":"analyzing","status":"reviewing"}
+{"type":"heartbeat","status":"reviewing"}
+{"type":"complete","status":"review_completed","findings":0,"reviewedFiles":["apps/component-gallery/components/DrawerContent.js","native/qt/nativeui/QtDrawer.qml","tests/cpp/QtReactHostHostTest.cpp","tests/js/helpers/gallery-loader.cjs","tests/native/qt-native-ui/NativeUiQuickTest.cpp","vnext/src/fabric/QtTouchDispatcher.cpp","tests/js/qnx-gallery-drawer-selection.test.mjs"]}

@@ -1,0 +1,18 @@
+dd22629ce948cf0a900421323cca331907180242a9b51c3fd75b25c75f068099  /tmp/rnqnx-CVE-2026-105943-qtbase-6.12.diff
+Source/configuration check only; no Qt patch applied.
+qtbase/src/network/configure.cmake, feature condition:
+qt_feature("sspi" PUBLIC
+    SECTION "Networking"
+    LABEL "SSPI"
+    PURPOSE "Enable NTLM/SPNEGO authentication through SSPI"
+    CONDITION WIN32
+)
+qt_feature_definition("sspi" "QT_NO_SSPI" NEGATE VALUE "1")
+qtbase/src/network/kernel/qauthenticator.cpp, SSPI region opening:
+#if QT_CONFIG(sspi) // SSPI
+// ---------------------------- SSPI code ----------------------------------------------
+// See http://davenport.sourceforge.net/ntlm.html
+// and libcurl http_ntlm.c
+40:#define QT_FEATURE_sspi -1
+CMAKE_CXX_FLAGS_RELEASE:STRING=-DNDEBUG   -DNDEBUG -O2
+CMAKE_C_FLAGS_RELEASE:STRING=-DNDEBUG   -DNDEBUG -O2

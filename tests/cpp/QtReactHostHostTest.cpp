@@ -16,7 +16,9 @@
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
 #include "react-native-qnx/views/QtQuickItemFactory.h"
+#include "react-native-qnx/views/image/ImageLoadedNotifier.h"
 
+#include <jsi/instrumentation.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/core/RawEvent.h>
 #include <react/renderer/uimanager/UIManagerMountHook.h>
@@ -285,8 +287,6 @@ class Fixture {
         QStringLiteral("Switch"), QStringLiteral("Switch"));
     adapter_.mapComponent(
         QStringLiteral("SafeAreaView"), QStringLiteral("View"));
-    adapter_.mapComponent(
-        QStringLiteral("ModalHostView"), QStringLiteral("View"));
     adapter_.mapComponent(QStringLiteral("Image"), QStringLiteral("Image"));
     adapter_.mapComponent(QStringLiteral("Paragraph"), QStringLiteral("Text"));
   }
@@ -386,6 +386,66 @@ void javaScriptErrorsAreReportedNotSwallowed() {
   Fixture fixture;
   EXPECT(!fixture.host().evaluate("throw new Error('deliberate');", "test.js"));
   EXPECT(fixture.host().lastError().contains(QStringLiteral("deliberate")));
+}
+
+void turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection() {
+  int creations = 0;
+  std::weak_ptr<facebook::react::TurboModule> retained;
+  {
+    Fixture fixture;
+    fixture.host().setTurboModuleProvider(
+        [&](const std::string& name, std::shared_ptr<facebook::react::CallInvoker> invoker) {
+          if (name != "LifetimeProbe") return std::shared_ptr<facebook::react::TurboModule>{};
+          ++creations;
+          auto module = std::make_shared<facebook::react::TurboModule>(name, std::move(invoker));
+          retained = module;
+          return module;
+        });
+    fixture.host().installTurboModuleBinding();
+    EXPECT(fixture.host().evaluate("void nativeModuleProxy.LifetimeProbe;", "lookup.js"));
+    fixture.host().runtime().instrumentation().collectGarbage("temporary module lookup test");
+    EXPECT(!retained.expired());
+    EXPECT(fixture.host().evaluate("void nativeModuleProxy.LifetimeProbe;", "lookup-again.js"));
+    EXPECT(creations == 1);
+  }
+  EXPECT(retained.expired());
+}
+
+void retainedSourceCodeTracksSubsequentEvaluations() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (nativeModuleProxy.SourceCode.getConstants().scriptURL !== 'file:///first/app.hbc')
+      throw new Error('initial source URL');
+  )JS", "file:///first/app.hbc"));
+  fixture.host().runtime().instrumentation().collectGarbage("source code lookup");
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (nativeModuleProxy.SourceCode.getConstants().scriptURL !== 'file:///second/app.hbc')
+      throw new Error('stale retained source URL');
+  )JS", "file:///second/app.hbc"));
+}
+
+void imageLoadedForwardingDoesNotRequireLoaderLookup() {
+  Fixture fixture;
+  fixture.host().installTurboModuleBinding();
+  EXPECT(fixture.host().evaluate(R"JS(
+    globalThis.imageEvents = [];
+    globalThis.expo = {modules: {ExpoImage: {
+      listenerCount() { return 1; },
+      emit(name, event) { imageEvents.push([name, event]); }
+    }}};
+  )JS", "image-events.js"));
+  const auto verifyEventCount = [&](int count) {
+    auto& rt = fixture.host().runtime();
+    for (int i = 0; i < 20; ++i) fixture.host().pumpEvents();
+    EXPECT(rt.global().getPropertyAsObject(rt, "imageEvents").asArray(rt).size(rt) == static_cast<size_t>(count));
+  };
+  rnqnx::views::ImageLoadedNotifier::shared().notify({QStringLiteral("file:///image.png"), 7, 5});
+  verifyEventCount(1);
+  EXPECT(fixture.host().evaluate("void nativeModuleProxy.ImageLoader;", "image-loader.js"));
+  fixture.host().installTurboModuleBinding();
+  rnqnx::views::ImageLoadedNotifier::shared().notify({QStringLiteral("file:///second.png"), 7, 5});
+  verifyEventCount(2);
 }
 
 /// Invoke the actual core TurboModule in Hermes, including short argument arrays.
@@ -858,6 +918,35 @@ void touchCancelEndsEveryContactAndAllowsIdReuse() {
         touchEvents.filter(e => e.type === 'topTouchEnd').length !== 1)
       throw new Error('contact ID could not be reused after cancellation');
   )JS", "touch-reuse-check.js"));
+}
+
+// Hover/focus decoration may cover a drawer row without owning its input.
+void inputTransparentDecorationPreservesTouchTarget() {
+  Fixture fixture(true);
+  mountTouchFixture(fixture);
+  QQuickItem decoration(&fixture.root());
+  decoration.setSize(QSizeF(160, 80));
+  decoration.setZ(99991);
+  decoration.setProperty("rnqnxInputTransparent", true);
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(7, QEventPoint::Pressed, {20, 10}, {20, 10})});
+  sendTouch(fixture, QEvent::TouchEnd, {
+      QEventPoint(7, QEventPoint::Released, {20, 10}, {20, 10})});
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (touchEvents.length !== 2 || touchEvents.some(e =>
+        e.payload.changedTouches[0].target !== 501))
+      throw new Error('decoration obscured the mounted input target');
+    touchEvents.length = 0;
+  )JS", "decoration-target.js"));
+  // An ordinary native overlay still shields the content under it.
+  decoration.setProperty("rnqnxInputTransparent", false);
+  sendTouch(fixture, QEvent::TouchBegin, {
+      QEventPoint(8, QEventPoint::Pressed, {20, 10}, {20, 10})});
+  sendTouch(fixture, QEvent::TouchEnd, {
+      QEventPoint(8, QEventPoint::Released, {20, 10}, {20, 10})});
+  EXPECT(fixture.host().evaluate(
+      "if (touchEvents.length) throw new Error('native overlay lost input shielding');",
+      "decoration-shield.js"));
 }
 
 void touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact() {
@@ -2447,8 +2536,9 @@ void modalMounts() {
   EXPECT(placeholders == 1);
   EXPECT(modal != nullptr);
   EXPECT(modal->width() == 640.0 && modal->height() == 480.0);
-  EXPECT(modal->childItems().size() == 1);
-  QQuickItem* content = modal->childItems().at(0);
+  // The modal's own background rectangle sits under the one React child.
+  EXPECT(modal->childItems().size() == 2);
+  QQuickItem* content = modal->childItems().last();
   EXPECT(content->property("color").value<QColor>() ==
          QColor(QStringLiteral("#336699")));
 }
@@ -2729,6 +2819,7 @@ int main(int argc, char** argv) {
   const std::vector<TestCase> tests{
       {"inputLifecycleOptOutPreservesExistingDispatch", inputLifecycleOptOutPreservesExistingDispatch},
       {"touchCancelEndsEveryContactAndAllowsIdReuse", touchCancelEndsEveryContactAndAllowsIdReuse},
+      {"inputTransparentDecorationPreservesTouchTarget", inputTransparentDecorationPreservesTouchTarget},
       {"touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact", touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact},
       {"forgettingTouchTargetCancelsAndClearsResponder", forgettingTouchTargetCancelsAndClearsResponder},
       {"windowDeactivationCancelsTouchStream", windowDeactivationCancelsTouchStream},
@@ -2741,6 +2832,10 @@ int main(int argc, char** argv) {
       {"runtimeEvaluatesJavaScript", runtimeEvaluatesJavaScript},
       {"javaScriptErrorsAreReportedNotSwallowed",
        javaScriptErrorsAreReportedNotSwallowed},
+      {"turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection",
+       turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection},
+      {"retainedSourceCodeTracksSubsequentEvaluations", retainedSourceCodeTracksSubsequentEvaluations},
+      {"imageLoadedForwardingDoesNotRequireLoaderLookup", imageLoadedForwardingDoesNotRequireLoaderLookup},
       {"segmentFetcherValidatesCallbackBoundary",
        segmentFetcherValidatesCallbackBoundary},
       {"evaluateRejectsReentrantJavaScript", evaluateRejectsReentrantJavaScript},

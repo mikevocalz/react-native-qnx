@@ -1,3 +1,4 @@
+#include "react-native-qnx/fabric/QtNativeUiBridge.h"
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
 #include "react-native-qnx/fabric/QtAccessibilityActivation.h"
 #endif
@@ -9,6 +10,7 @@
 #include "react-native-qnx/fabric/QtImageBridge.h"
 #include "react-native-qnx/fabric/QtScrollBridge.h"
 #include "react-native-qnx/fabric/QtSwitchBridge.h"
+#include "react-native-qnx/fabric/QtModalBridge.h"
 #if RNQNX_ENABLE_QT_VIDEO
 #include <QtVideoItem.h>
 #endif
@@ -209,9 +211,11 @@ ViewStyle toViewStyle(const ShadowView& view) {
 
   style.opacity = static_cast<float>(viewProps->opacity);
 
-  if (facebook::react::isColorMeaningful(viewProps->backgroundColor)) {
+  // Transparent and removed fills are updates too. A generic React View
+  // defaults to transparent; native controls keep their own unset defaults.
+  if (viewProps->backgroundColor || componentNameOf(view) == QStringLiteral("View")) {
     style.hasBackgroundColor = true;
-    style.backgroundColor = packColor(viewProps->backgroundColor);
+    style.backgroundColor = viewProps->backgroundColor ? packColor(viewProps->backgroundColor) : 0;
   }
 
   // React Native resolves the border cascade itself, including percentage radii
@@ -408,6 +412,7 @@ LayoutFrame toLayoutFrame(const facebook::react::LayoutMetrics& metrics) {
 
 ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer)
     : layer_(layer) {
+  mapComponent(QStringLiteral("ModalHostView"), QStringLiteral("RNQnxModal"));
 #if RNQNX_ENABLE_QT_SVG
   mapComponent(QStringLiteral("QnxSvgDocument"), QStringLiteral("QnxSvgDocument"));
 #endif
@@ -610,6 +615,29 @@ void ShadowViewMutationAdapter::applySwitch(const ShadowView& view) {
   }
 
   layer_.updateSwitch(view.tag, style);
+}
+
+void ShadowViewMutationAdapter::connectModalEvents(const ShadowView& view) {
+  if (componentNameOf(view) != QStringLiteral("ModalHostView") ||
+      !modalBridges_.value(view.tag).isNull()) {
+    return;
+  }
+  const auto emitter =
+      std::dynamic_pointer_cast<const facebook::react::ModalHostViewEventEmitter>(
+          view.eventEmitter);
+  QQuickItem* item = layer_.itemForTag(view.tag);
+  // A host that maps ModalHostView to a plain View has no requestClose()
+  // signal; it keeps the old behaviour of a modal that only closes from JS.
+  if (emitter == nullptr || item == nullptr ||
+      item->metaObject()->indexOfSignal("requestClose()") < 0) {
+    return;
+  }
+  modalBridges_.insert(
+      view.tag,
+      QPointer<QtModalBridge>(new QtModalBridge(*item, [emitter] {
+        emitter->onRequestClose(
+            facebook::react::ModalHostViewEventEmitter::OnRequestClose{});
+      })));
 }
 
 MountError ShadowViewMutationAdapter::applyModal(const ShadowView& view) {
@@ -994,6 +1022,24 @@ MountError ShadowViewMutationAdapter::applyAccessibilityActions(const ShadowView
 #endif
 
 void ShadowViewMutationAdapter::registerEventEmitter(const ShadowView& view) {
+#if RNQNX_ENABLE_QT_NATIVE_UI
+  if (componentNameOf(view) == QStringLiteral("View")) {
+    const auto props = std::dynamic_pointer_cast<const facebook::react::ViewProps>(view.props);
+    const auto emitter = std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(view.eventEmitter);
+    std::function<void()> click;
+    if (props && props->accessible && emitter &&
+        props->events[facebook::react::ViewEvents::Offset::Click]) {
+      click = [emitter, tag = view.tag] {
+        // Pressability ignores PointerEvents to avoid duplicate onPress. A
+        // keyboard/accessibility click deliberately has no pointerType field.
+        emitter->dispatchEvent("click", folly::dynamic::object("target", tag),
+                               facebook::react::RawEvent::Category::Discrete);
+      };
+    }
+    setNativeUiPressCallback(layer_.itemForTag(view.tag), std::move(click));
+  }
+#endif
+
   if (touchDispatcher_ == nullptr) {
     return;
   }
@@ -1048,6 +1094,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       connectTextInputEvents(view);
       connectSwitchEvents(view);
       connectImageEvents(view);
+      connectModalEvents(view);
       applyText(view);
       applyImage(view);
       const auto textInputError = applyTextInput(view);
@@ -1085,6 +1132,7 @@ MountError ShadowViewMutationAdapter::applyOne(
 #endif
       switchBridges_.remove(mutation.oldChildShadowView.tag);
       modalViews_.remove(mutation.oldChildShadowView.tag);
+      modalBridges_.remove(mutation.oldChildShadowView.tag);
       imageBridges_.remove(mutation.oldChildShadowView.tag);
       return layer_.destroy(mutation.oldChildShadowView.tag);
 
@@ -1139,6 +1187,7 @@ MountError ShadowViewMutationAdapter::applyOne(
       connectTextInputEvents(view);
       connectSwitchEvents(view);
       connectImageEvents(view);
+      connectModalEvents(view);
       applyText(view);
       applyImage(view);
       const auto textInputError = applyTextInput(view);
@@ -1309,6 +1358,12 @@ MutationFailure ShadowViewMutationAdapter::dispatchCommand(
           .error = error,
           .detail = layer_.lastError()};
     }
+    return MutationFailure{};
+  }
+
+  // Components from the extra sets (ExpoImage) own their commands.
+  if (shadowView != nullptr &&
+      dispatchExtraComponentCommand(layer_.itemForTag(tag), *shadowView, commandName)) {
     return MutationFailure{};
   }
 

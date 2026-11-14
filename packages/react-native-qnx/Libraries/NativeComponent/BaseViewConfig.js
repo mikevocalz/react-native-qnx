@@ -17,6 +17,9 @@ const ReactNativeStyleAttributes =
   require('react-native/Libraries/Components/View/ReactNativeStyleAttributes').default;
 
 const bubblingEventTypes = {
+  topClick: {
+    phasedRegistrationNames: { bubbled: 'onClick', captured: 'onClickCapture' },
+  },
   topPress: {
     phasedRegistrationNames: { bubbled: 'onPress', captured: 'onPressCapture' },
   },
@@ -89,6 +92,8 @@ module.exports = {
   directEventTypes,
   validAttributes: {
     ...responderEventProps,
+    onClick: true,
+    onClickCapture: true,
     ...ReactNativeStyleAttributes,
     style: ReactNativeStyleAttributes,
     collapsable: true,

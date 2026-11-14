@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-14",
+  "implementationBase": "f87c742",
+  "scope": "Design documents only; local body inspection does not prove upstream package authenticity or runtime implementation.",
+  "orderedDesignSequence": [
+    "Mobbin references",
+    "user-research",
+    "design-system",
+    "frontend-design",
+    "ux-copy",
+    "accessibility-review",
+    "design-critique",
+    "design-handoff"
+  ],
+  "skills": [
+    {
+      "name": "documentation",
+      "version": "1.2.0",
+      "cachePath": "knowledge-work-plugins/engineering/1.2.0/skills/documentation/SKILL.md",
+      "sha256": "1d469418f786a05be83d2a05f04d68788aeed584d13863a650f5ad73c6c4cf50",
+      "bytes": 1507,
+      "bodyRead": true
+    },
+    {
+      "name": "user-research",
+      "version": "1.2.0",
+      "cachePath": "knowledge-work-plugins/design/1.2.0/skills/user-research/SKILL.md",
+      "sha256": "fa18fc13d0f44aa869102962ef9466417ade726d659465195a40fbcf08cee156",
+      "bytes": 1751,
+      "bodyRead": true
+    },
+    {
+      "name": "design-system",
+      "version": "1.2.0",
+      "cachePath": "knowledge-work-plugins/design/1.2.0/skills/design-system/SKILL.md",
+      "sha256": "fb31bd0144c43955106f01927126ae9fd2d4148be44c8d5887b3391f40c31445",
+      "bytes": 5600,
+      "bodyRead": true
+    },
+    {
+      "name": "frontend-design",
+      "version": "1.1.1",
+      "cachePath": "claude-plugins-official/frontend-design/1.1.1/skills/frontend-design/SKILL.md",
+      "sha256": "d91970639e9f5c37682ac7ab60094d35f1c7c1f38d731bd56396563aee10c1d3",
+      "bytes": 9390,
+      "bodyRead": true
+    },
+    {
+      "name": "ux-copy",
+      "version": "1.2.0",
+      "cachePath": "knowledge-work-plugins/design/1.2.0/skills/ux-copy/SKILL.md",
+      "sha256": "d46a00a62ec637e9ca9d5f7823ea3e0a4ec26dffc53bb5035f59b48ebfcdcde7",
+      "bytes": 3436,
+      "bodyRead": true
+    },
+    {
+      "name": "accessibility-review",
+      "version": "1.2.0",
+      "cachePath": "knowledge-work-plugins/design/1.2.0/skills/accessibility-review/SKILL.md",
+      "sha256": "ef42982af0d51238dda2ab16d08626712891bdd41864876c32d1e7b13fb3124f",
+      "bytes": 4278,
+      "bodyRead": true
+    },
+    {
+      "name": "design-critique",
+      "version": "1.2.0",
+      "cachePath": "knowledge-work-plugins/design/1.2.0/skills/design-critique/SKILL.md",
+      "sha256": "3a4f260eb9f60b431782bf6d90f22afb480c0c67860267a032df58a3e1bd19cd",
+      "bytes": 3923,
+      "bodyRead": true
+    },
+    {
+      "name": "design-handoff",
+      "version": "1.2.0",
+      "cachePath": "knowledge-work-plugins/design/1.2.0/skills/design-handoff/SKILL.md",
+      "sha256": "38f1efc807928030654218443ad07f6a37ac82de6b4d627a03113a3568d787b7",
+      "bytes": 3953,
+      "bodyRead": true
+    },
+    {
+      "name": "no-ai-slop",
+      "version": "unversioned-local",
+      "sha256": "992b365f51a2f62cf4c1c5ed22049a9ee551dfea677550c1a72b371c0ceadd62",
+      "bytes": 10853,
+      "bodyRead": true
+    }
+  ],
+  "cacheRoot": "~/.claude/plugins/cache/"
+}

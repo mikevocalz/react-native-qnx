@@ -1,0 +1,18 @@
+Source: 252b128d0bbb93357dd87f840ea81d31a08c5ef1
+Working directory: /workspace/scratch/853552216e74/pr159
+Production/test source changes: none
+Environment: source /workspace/scratch/853552216e74/qnx-env.sh
+
+The earlier Release ImageFetchQueueTest MOC omitted clearingDiskCacheDoesNotRestoreAnInFlightResponse.
+Only the two generated build artifacts below were removed; their prior source remained unchanged.
+
+$ cmake -E rm build/pr159-native-ui/rnqnx_image_fetch_queue_test_autogen/include/ImageFetchQueueTest.moc build/pr159-native-ui/rnqnx_image_fetch_queue_test_autogen/timestamp
+exit: 0
+$ cmake --build build/pr159-native-ui --target rnqnx_image_fetch_queue_test --parallel 2
+exit: 0; build.log
+$ QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software ctest --test-dir build/pr159-native-ui --output-on-failure
+exit: 0; ctest.log
+
+Full CTest output copied from build/pr159-native-ui/Testing/Temporary/LastTest.log to native-cases.log.
+Six CTests pass in 29.75s. All 126 QtTest entries pass, zero failures/skips.
+The fetch-queue executable now registers and executes all 13 entries including the disk-clear HTTP regression.

@@ -1,0 +1,23 @@
+Historical public Qt input archive SHA-256: 5803d25396f6ed17cb179f66241a209a396e2986fcef07d7a08683f95aa793be
+Input inventory reconstructed from that archive; not a fresh cross-build.
+Audit: compiler-read QNX build graph including TLS/GIF/JPEG plugin targets, rerun 2026-11-14.
+ELF parser: /opt/homebrew/opt/llvm/bin/llvm-readelf aliased as ntoaarch64-readelf.
+{
+  "entries": 182,
+  "elf": 19,
+  "non_qt_system_libraries": [
+    "libEGL.so.1",
+    "libGLESv2.so.1",
+    "libc++.so.2",
+    "libc.so.6",
+    "libeventfd.so.1",
+    "libfsnotify.so.1",
+    "libgcc_s.so.1",
+    "libm.so.3",
+    "libscreen.so.1",
+    "libslog2.so.1",
+    "libsocket.so.4",
+    "libzstd.so.1"
+  ]
+}
+Exit code: 0

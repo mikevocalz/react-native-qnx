@@ -45,12 +45,59 @@ python3 -I spdx-audit.py "$QT_PUBLIC_BUILD/qnx-build" "$QT_PUBLIC_SRC" \
   "$QT_PUBLIC_ROOT/runtime-spdx-audit.json" Core Network Gui OpenGL Qml QmlMeta \
   QmlModels QmlWorkerScript Quick QuickShapes QQnxIntegrationPlugin qmlplugin \
   modelsplugin workerscriptplugin qtquick2plugin qmlshapesplugin
-python3 -I stage-runtime.py "$QT_PUBLIC_ROOT/runtime" "$QT_PUBLIC_ROOT/runtime-spdx-audit.json"
+./build-imageformats-qnx.sh         # qtimageformats: WebP, TIFF, TGA, ICNS, WBMP plugins
+python3 -I spdx-audit.py "${IMAGEFORMATS_BUILD:-$QT_PUBLIC_BUILD/imageformats-qnx}" \
+  "${IMAGEFORMATS_SRC:-$QT_PUBLIC_ROOT/src}/qt-everywhere-src-6.12.0" \
+  "$QT_PUBLIC_ROOT/imageformats-spdx-audit.json" \
+  QWebpPlugin QTiffPlugin QTgaPlugin QICNSPlugin QWbmpPlugin
+python3 -I stage-runtime.py "$QT_PUBLIC_ROOT/runtime" \
+  "$QT_PUBLIC_ROOT/runtime-spdx-audit.json" "$QT_PUBLIC_ROOT/imageformats-spdx-audit.json"
 ```
 
 `stage-runtime.py` writes `manifest.json` and
 `needed.json`; the receipt's `SHA256SUMS` was then written with
 `shasum -a 256` over every staged file.
+
+Inspect `licenses/THIRD_PARTY_ATTRIBUTIONS.txt` after staging: it must contain
+the bundled libwebp and libtiff component notices and license texts from the
+image-format audit. A qtbase-only audit does not cover those plugin binaries.
+
+### Staging failures and recovery
+
+Staging builds a candidate in a sibling temporary directory. Missing inputs,
+invalid audit JSON, dependency-check failures and failed promotion preserve the
+previous output. An output symlink, source/build directory or ancestor is
+rejected. Copies must remain within the public source/build trees and the
+candidate output. A per-output `.NAME.stage-lock` directory prevents concurrent
+staging; it does not lock native app builds.
+
+Publication uses two directory renames. A process or power interruption between
+them can leave the output path absent. This is not a crash-atomic directory
+exchange. The lock's `transaction.json` records the PID and exact destination,
+candidate, previous-runtime and work paths before copying begins. Never remove a
+lock merely because another staging attempt reports it.
+
+To recover an interrupted run on the same build host:
+
+1. Read `transaction.json` and confirm the recorded process has exited. If its
+   identity is uncertain, stop and inspect it; do not signal another build.
+2. Check that `work` is a real sibling directory named `.NAME.stage-*`, and that
+   `previous` and `candidate` are exactly its `previous` and `candidate`
+   children. Refuse symlinks or paths outside that directory.
+3. If the destination is absent and `previous` exists, rename `previous` back
+   to the recorded destination. Verify the restored manifest and hashes.
+   If both exist, retain both and inspect them before discarding either.
+4. Once the intended output is verified, remove only the recorded temporary
+   work directory and this output's lock, then rerun staging. If the journal
+   was never written, inspect the lock and any candidate directory before
+   cleanup. Do not guess a previous-runtime path from another run.
+
+The host regression command is
+`node tests/js/qnx-public-runtime-staging.test.mjs`. It uses synthetic public
+build files and a fake `readelf`, including process termination between the
+renames and recovery of the previous runtime. It does not cross-build Qt,
+verify target libraries or establish QNX device compatibility. A power-loss
+test and filesystem durability guarantee remain outside this receipt.
 
 Qt is compiled at `-O2` ([ADR-0017](../../docs/adr/0017-qt-qnx-optimization-level.md)).
 `configure-qnx.sh` no longer passes `-optimize-size`, sets
@@ -69,6 +116,39 @@ existing source first (each patch script refuses to run twice), move
 355 MB, so no second tree is needed. Write the runtime tarball with
 `tar --no-xattrs --no-mac-metadata` on macOS, or it carries
 `LIBARCHIVE.xattr` headers that QNX `tar` warns about.
+
+## Image format plugins
+
+qtbase builds three image plugins for this target: `libqjpeg.so`,
+`libqgif.so` (`configure-qnx.sh`) and `libqico.so` (not built here). PNG and
+BMP are inside QtGui. WebP, TIFF, TGA, ICNS and WBMP live in the separate
+`qtimageformats` module, so a runtime built only from `qtbase`,
+`qtshadertools` and `qtdeclarative` has no WebP decoder, and an `expo-image`
+view cannot show a WebP (animated or still).
+
+[`build-imageformats-qnx.sh`](build-imageformats-qnx.sh) extracts
+`qtimageformats` from the same archive (hash-checked) and builds it against the
+existing QNX qtbase with `qt-configure-module`, in its own build tree
+(`IMAGEFORMATS_BUILD`, default `$QT_PUBLIC_BUILD/imageformats-qnx`). It uses the
+bundled libwebp and libtiff (`-DFEATURE_system_webp=OFF
+-DFEATURE_system_tiff=OFF`; the board has neither), skips JasPer and MNG, and
+stops unless the Release flags contain `-O2` (ADR-0017). Targets: `QWebpPlugin`,
+`QTiffPlugin`, `QTgaPlugin`, `QICNSPlugin`, `QWbmpPlugin`. With `JOBS=2` the
+201 build steps took about 4 minutes in `qnx805-build`.
+
+`stage-runtime.py` copies the five plugins into the staged runtime's
+`plugins/imageformats/` beside `libqjpeg.so` and `libqgif.so`, adds the
+`qtimageformats` license texts, and accepts a second SPDX audit file for the
+`imageformats-qnx` tree. Both the builder and stager take the extraction parent
+from `IMAGEFORMATS_SRC` (default `$QT_PUBLIC_ROOT/src`); the stager reads this
+module's licenses and attribution files from its
+`qt-everywhere-src-6.12.0/qtimageformats` child. An app carries the plugins in its own
+`plugins/imageformats/` and launches with
+`QT_PLUGIN_PATH=<app>/plugins:<runtime>/plugins` (the release launchers do
+this); nothing else in the repository copies plugins into an app directory.
+The result on the Pi 400, from a probe that decodes an animated GIF and an
+animated WebP, is in
+[the image formats receipt](../../docs/evidence/pi-image-formats-2026-11-13.md).
 
 ## QNX platform plugin patch
 
@@ -155,3 +235,15 @@ the class layout.
 `public-qt-env.sh` and the `run-public-*.sh` launchers expect the runtime at
 `/data/home/qnxuser/qt612-public` and the proof directory at
 `/data/home/qnxuser/qt612-public-proofs`. They do not touch boot files.
+
+## QtSvg for SVG images
+
+`build-svg-qnx.sh` builds qtsvg (`libQt6Svg.so`, `plugins/imageformats/libqsvg.so`)
+against the QNX qtbase with `qt-configure-module`, after `configure-qnx.sh`:
+
+```sh
+./build-svg-qnx.sh        # output in $QT_PUBLIC_BUILD/svg-qnx
+python3 stage-runtime.py  # stages both files when the build exists
+```
+
+Qt Quick and `QImageReader` find the plugin through `QT_PLUGIN_PATH`.

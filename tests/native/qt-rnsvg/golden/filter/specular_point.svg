@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="0 0 200 200">
+<rect width="200" height="200" fill="#ffffff"/>
+<filter id="f" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="4" result="bump"/><feSpecularLighting in="bump" surfaceScale="5" specularConstant="1.2" specularExponent="10" lighting-color="#40a0ff"><fePointLight x="60" y="40" z="60"/></feSpecularLighting></filter>
+<g filter="url(#f)"><circle cx="100" cy="100" r="50" fill="#888888"/></g>
+</svg>

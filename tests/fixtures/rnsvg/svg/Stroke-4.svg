@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="80">
+<circle cx="100" cy="40" r="35" stroke-width="5" stroke="red" fill="none" stroke-dasharray="100" stroke-dashoffset="100"/>
+<text stroke="blue" stroke-width="1" fill="none" font-size="20" font-weight="bold" x="100" y="40" text-anchor="middle" stroke-dasharray="100" stroke-dashoffset="60" font-family="DejaVu Sans">STROKE</text>
+</svg>

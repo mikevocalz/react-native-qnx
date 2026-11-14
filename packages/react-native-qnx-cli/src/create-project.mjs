@@ -100,7 +100,7 @@ async function packLocalPackages(output, marathon) {
       const files = name.startsWith('react-native-') ? ['index.js', 'Libraries'] : ['src'];
       if (name === 'expo-router-qnx') files.push('metro.js', 'README.md');
       // expo-modules-core's polyfill entry resolves to expo/polyfill.js here.
-      if (name === 'react-native-qnx') files.push('expo');
+      if (name === 'react-native-qnx') files.push('expo', 'src', 'adaptive', 'qt', 'svg');
       if (name === 'metro-config-qnx') files.push('public-entry.js', 'public-entry.d.ts');
       const budget = { files: 0, bytes: 0 };
       for (const file of files) {

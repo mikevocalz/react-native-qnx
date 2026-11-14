@@ -632,3 +632,42 @@ shutdown checks prevent unstarted frame callbacks from entering the runtime.
 The standalone real-Qt tests exercise those behaviors under scoped ASan/UBSan.
 This is installed-header/host evidence only; QNX target validation of this
 follow-up is not run. See [the receipt](validation/pr149-shutdown-2026-11-14.md).
+
+## Image worker dispatch and completion (2026-11-14)
+
+Inspected the installed official Linux Qt 6.11.1 headers under
+`$QT_HOST_PREFIX/include/QtCore/` (`qconfig.h:67` identifies `6.11.1`). These
+entries cover the worker pipeline already used by `QtImageFetcher`, including
+the disk-cache generation guard added during PR 159 review.
+
+| Symbols                                                          | Installed authority                   | Evidence and boundary                                                                                                                                                                                |
+| ---------------------------------------------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `QThreadPool::globalInstance`, callable `start`                  | `qthreadpool.h:35,50-51,89-93`        | Installed-header verified; the callable becomes a `QRunnable`. The fetch queue bounds admission; worker captures contain values and shared cache state, no QObject or JSI values.                    |
+| `QPromise<T>::future`, `addResult`, `start`, `finish`            | `qpromise.h:49,60-64,75-76`           | Installed-header verified; each worker publishes one result and finishes its promise.                                                                                                                |
+| `QFutureWatcher<T>(QObject*)`, `finished`, `result`, `setFuture` | `qfuturewatcher.h:52,103-114,176-184` | Installed-header verified; the watcher is parented to the fetcher and its completion is connected with the fetcher as context. Owner-thread completion still checks that the pending request exists. |
+| Context-bound `QObject::connect`, `deleteLater`                  | `qobject.h:228,233-279,359`           | Installed-header verified; owner destruction disconnects completion, and a completed watcher is disposed through the event loop.                                                                     |
+
+Host compile/runtime results are recorded separately in
+[the review receipt](validation/pr159-review-followup-2026-11-14.md). These header
+citations establish no QNX SDP, target Qt ABI, device, or performance result.
+
+The animated memory-hit path reuses the view's existing movie ownership code.
+Installed Qt 6.11.1 `QtGui/qmovie.h:47,71,88,95,98,101,103` declares the
+`QMovie(QIODevice*)` constructor, `isValid`, `setCacheMode`, `stateChanged`,
+`frameChanged`, `start` and `setPaused`. The view owns its QBuffer and QMovie on
+the GUI thread; cache entries contain only shared QImage/QByteArray values.
+
+## BlurHash maximum coefficient (2026-11-14)
+
+The independently compiled `woltapp/blurhash` C reference computes the AC scale
+from `fmaxf(fabsf(ac[i]), actualMaximumValue)` in `C/encode.c`
+(Git blob `c7a39da2a583231e45b7c22526ca688655a0c923`). `C/encode.h` and
+`C/common.h` blobs are recorded beside the resulting vectors in
+`tests/fixtures/image-hashes/reference-vectors.json`. The C encoder outputs
+cover all 16 original images/component combinations and a four-pixel gradient
+with a dominant negative coefficient. The historical `blurhash@2.0.5` npm
+outputs remain in the fixture: that TypeScript encoder uses signed maxima and
+differs on three noise-image cases. Current encoding conformance uses the C
+reference; decoder and ThumbHash reference coverage is unchanged.
+
+Source: [official C encoder](https://github.com/woltapp/blurhash/blob/master/C/encode.c).

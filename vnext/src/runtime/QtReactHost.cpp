@@ -52,6 +52,8 @@
 #include <jsi/JSIDynamic.h>
 
 #include <QCoreApplication>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QDebug>
 #include <QFileInfo>
 #include <QSysInfo>
@@ -669,6 +671,7 @@ class QtReactHost::Impl {
     if (runtimeExecutionDepth != 0) {
       std::terminate();
     }
+    views::ImageLoadedNotifier::shared().unsubscribe(imageLoadedSubscription);
     for (auto& [surfaceId, handler] : surfaces) {
 #if RNQNX_ENABLE_FRAME_TRACE
       const auto generation = surfaceGenerations.find(surfaceId);
@@ -719,8 +722,16 @@ class QtReactHost::Impl {
   std::vector<std::function<void()>> teardownHooks;
   /// Module objects from callableModules factories, resolved on first call.
   std::unordered_map<std::string, facebook::jsi::Object> resolvedCallableModules;
+  // The window size last sent to JavaScript (setWindowSize).
+  float windowWidth{0};
+  float windowHeight{0};
+  float windowScale{0};
   /// Extra TurboModules supplied by the embedding application.
   QtReactHost::TurboModuleProvider turboModuleProvider;
+  // Native modules own asynchronous operations beyond a temporary JS lookup.
+  // Cache one instance per host, as the platform TurboModuleManager does.
+  std::unordered_map<std::string, std::shared_ptr<facebook::react::TurboModule>> turboModules;
+  views::ImageLoadedNotifier::Token imageLoadedSubscription{0};
   std::unordered_map<int, std::unique_ptr<QTimer>> timers;
   /// Drives the NativeAnimated `onRender` callback while at least one animation
   /// is active. Created on first use and reused for later animations.
@@ -797,6 +808,11 @@ bool QtReactHost::evaluate(
         : QUrl::fromLocalFile(QFileInfo(sourceLocation).absoluteFilePath())
               .toString(QUrl::FullyEncoded)
               .toStdString();
+    if (const auto found = impl_->turboModules.find(QnxSourceCode::kModuleName);
+        found != impl_->turboModules.end()) {
+      if (auto source = std::dynamic_pointer_cast<QnxSourceCode>(found->second))
+        source->setScriptUrl(impl_->scriptUrl);
+    }
   }
   try {
     std::exception_ptr evaluationError;
@@ -873,15 +889,17 @@ void QtReactHost::setTurboModuleProvider(TurboModuleProvider provider) {
 void QtReactHost::callFunctionOnModule(
     const std::string& moduleName,
     const std::string& methodName,
-    folly::dynamic args) {
+    folly::dynamic args,
+    bool ifRegistered) {
   auto* impl = impl_.get();
   impl_->runtimeScheduler->scheduleWork(
-      [impl, moduleName, methodName, args = std::move(args)](
+      [impl, moduleName, methodName, ifRegistered, args = std::move(args)](
           facebook::jsi::Runtime& runtime) {
         auto resolved = impl->resolvedCallableModules.find(moduleName);
         if (resolved == impl->resolvedCallableModules.end()) {
           const auto registered = impl->callableModules.find(moduleName);
           if (registered == impl->callableModules.end()) {
+            if (ifRegistered) return;
             throw facebook::jsi::JSError(
                 runtime, "Callable module " + moduleName + " is not registered");
           }
@@ -965,9 +983,16 @@ void QtReactHost::installTurboModuleBinding() {
 #endif
   auto* impl = impl_.get();
 
-  facebook::react::TurboModuleBinding::install(
-      *impl_->runtime,
-      [callInvoker, impl](
+  // View events must be forwarded even when JavaScript never looks up
+  // ImageLoader. One host-owned subscription also avoids duplicate forwarding
+  // when the binding is reinstalled or the loader is created later.
+  views::ImageLoadedNotifier::shared().unsubscribe(impl->imageLoadedSubscription);
+  impl->imageLoadedSubscription = views::ImageLoadedNotifier::shared().subscribe(
+      [callInvoker](const views::ImageLoadedEvent& event) {
+        callInvoker->invokeAsync([event](facebook::jsi::Runtime& rt) { emitImageLoaded(rt, event); });
+      });
+
+  auto createModule = [callInvoker, impl](
           facebook::jsi::Runtime& /*jsRuntime*/,
           const std::string& name)
           -> std::shared_ptr<facebook::react::TurboModule> {
@@ -1081,6 +1106,16 @@ void QtReactHost::installTurboModuleBinding() {
         // idle callbacks, both backed by the RuntimeScheduler.
         return facebook::react::DefaultTurboModules::getTurboModule(
             name, callInvoker);
+      };
+  facebook::react::TurboModuleBinding::install(
+      *impl_->runtime,
+      [impl, createModule = std::move(createModule)](
+          facebook::jsi::Runtime& runtime, const std::string& name) {
+        if (const auto found = impl->turboModules.find(name); found != impl->turboModules.end())
+          return found->second;
+        auto module = createModule(runtime, name);
+        if (module) impl->turboModules.emplace(name, module);
+        return module;
       });
 }
 
@@ -1300,6 +1335,34 @@ void QtReactHost::resizeSurface(SurfaceId surfaceId, float width, float height) 
   }
   found->second->constraintLayout(
       makeLayoutConstraints(width, height), facebook::react::LayoutContext{});
+}
+
+void QtReactHost::setWindowSize(float width, float height, float scale) {
+  if (width <= 0 || height <= 0) return;
+  if (impl_->windowWidth == width && impl_->windowHeight == height && impl_->windowScale == scale) {
+    return;
+  }
+  impl_->windowWidth = width;
+  impl_->windowHeight = height;
+  impl_->windowScale = scale;
+  // The shape Dimensions.set reads: { window, screen }, each with width,
+  // height, scale and fontScale. The screen keeps the device's size.
+  const auto metrics = [scale](double w, double h) {
+    return folly::dynamic::object("width", w)("height", h)("scale", scale)("fontScale", 1.0);
+  };
+  double screenWidth = width;
+  double screenHeight = height;
+  if (const auto* screen = QGuiApplication::primaryScreen()) {
+    screenWidth = screen->geometry().width();
+    screenHeight = screen->geometry().height();
+  }
+  callFunctionOnModule(
+      "RCTDeviceEventEmitter", "emit",
+      folly::dynamic::array(
+          "didUpdateDimensions",
+          folly::dynamic::object("window", metrics(width, height))(
+              "screen", metrics(screenWidth, screenHeight))),
+      /*ifRegistered=*/true);
 }
 
 void QtReactHost::stopSurface(SurfaceId surfaceId) {

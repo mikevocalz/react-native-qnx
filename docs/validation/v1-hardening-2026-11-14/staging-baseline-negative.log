@@ -1,0 +1,20 @@
+test_missing_library_preserves_previous_runtime (stage_tests.StagingTest.test_missing_library_preserves_previous_runtime) ... FAIL
+
+======================================================================
+FAIL: test_missing_library_preserves_previous_runtime (stage_tests.StagingTest.test_missing_library_preserves_previous_runtime)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/rnqnx-v1-hardening-1114/tests/python/test_qt_public_staging.py", line 89, in test_missing_library_preserves_previous_runtime
+    self.assert_preserved_failure('missing in public build')
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/rnqnx-v1-hardening-1114/tests/python/test_qt_public_staging.py", line 84, in assert_preserved_failure
+    self.assertEqual(self.snapshot(), before)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {} != {'link': ('link', 'known-good'), 'known-good': ('file', b'previous runtime')}
+- {}
++ {'known-good': ('file', b'previous runtime'), 'link': ('link', 'known-good')}
+
+----------------------------------------------------------------------
+Ran 1 test in 0.076s
+
+FAILED (failures=1)

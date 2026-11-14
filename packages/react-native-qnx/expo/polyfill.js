@@ -71,6 +71,24 @@ class SharedRef extends SharedObject {
   nativeRefType = 'unknown';
 }
 
+/**
+ * Runs a Fabric view command on the host view behind an Expo view component,
+ * for the functions an Expo module puts on a view's prototype (ref.startAnimating()
+ * and the like). `component` is the `this` of such a function: the
+ * requireNativeView wrapper, whose getNativeRef() is the host view's public
+ * instance. React Native's dispatchCommand turns that into
+ * UIManager::dispatchCommand, which reaches the mounting layer.
+ */
+function dispatchViewCommand(component, command, args) {
+  const ref = typeof component.getNativeRef === 'function' ? component.getNativeRef() : component;
+  if (ref == null) {
+    // The view is not mounted; a command has nothing to act on.
+    return;
+  }
+  const { dispatchCommand } = require('react-native/Libraries/ReactNative/RendererProxy');
+  dispatchCommand(ref, command, args ?? []);
+}
+
 function install() {
   const expo = globalThis.expo ?? (globalThis.expo = { modules: {} });
   expo.modules ??= {};
@@ -78,6 +96,7 @@ function install() {
   expo.NativeModule ??= NativeModule;
   expo.SharedObject ??= SharedObject;
   expo.SharedRef ??= SharedRef;
+  expo.dispatchViewCommand ??= dispatchViewCommand;
   // Native modules are plain JSI objects; give each the NativeModule
   // prototype so the event API exists on them, as on iOS and Android.
   for (const name of Object.keys(expo.modules)) {
@@ -91,4 +110,4 @@ function install() {
 
 install();
 
-module.exports = { EventEmitter, NativeModule, SharedObject, SharedRef };
+module.exports = { EventEmitter, NativeModule, SharedObject, SharedRef, dispatchViewCommand };

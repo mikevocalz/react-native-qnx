@@ -38,12 +38,13 @@ static inline folly::dynamic toDynamic(const RNQnxDrawerSide &value) {
   return toString(value);
 }
 #endif
-enum class RNQnxDrawerDrawerType { Front, Slide };
+enum class RNQnxDrawerDrawerType { Front, Slide, Back };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNQnxDrawerDrawerType &result) {
   auto string = (std::string)value;
   if (string == "front") { result = RNQnxDrawerDrawerType::Front; return; }
   if (string == "slide") { result = RNQnxDrawerDrawerType::Slide; return; }
+  if (string == "back") { result = RNQnxDrawerDrawerType::Back; return; }
   abort();
 }
 
@@ -51,6 +52,7 @@ static inline std::string toString(const RNQnxDrawerDrawerType &value) {
   switch (value) {
     case RNQnxDrawerDrawerType::Front: return "front";
     case RNQnxDrawerDrawerType::Slide: return "slide";
+    case RNQnxDrawerDrawerType::Back: return "back";
     default:
       abort();
   }
@@ -78,6 +80,7 @@ class RNQnxDrawerProps final : public ViewProps {
   double edgeWidth{24.0};
   double swipeExclusionLeft{0.0};
   double topInset{0.0};
+  double swipeMinDistance{0.0};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;

@@ -1,0 +1,71 @@
+{
+  "localValidationCommit": "265210ad63ddaed215ce4f42aee9ad408f65f7e4",
+  "gitTree": "1a985fe3e1ecd489a3094e01362c954cf61782c2",
+  "upstreamSvg": "13a0e49ae7ea6b16faa23840926d3976866f6646",
+  "localExpoValidationCommit": "252b128d0bbb93357dd87f840ea81d31a08c5ef1",
+  "files": {
+    ".github/workflows/host-renderer.yml": {
+      "sha256": "d0d77786d90419ba10f49b5465da3889ad1fe836f34c94d1a4969cefe98f98d6",
+      "bytes": 9098
+    },
+    "CMakeLists.txt": {
+      "sha256": "490cb542e105f300db9c887c8f2c1dea47fcc2400894b47fd2eefad876064c22",
+      "bytes": 26939
+    },
+    "cmake/RnqnxReactQt.cmake": {
+      "sha256": "eae60899185074e618c603b7497dd33ad95bc74d567c68f16828bcbe26151ba5",
+      "bytes": 17105
+    },
+    "package.json": {
+      "sha256": "567e7e127cd7aef0771af806f623b35fa25691ec44190851123f829f343481e2",
+      "bytes": 4430
+    },
+    "pnpm-lock.yaml": {
+      "sha256": "fa8abf8d922adf67b264971f37de533355cb976b12a4480c0a6c219ffdee0f0b",
+      "bytes": 305042
+    },
+    "scripts/lib/docs-model.mjs": {
+      "sha256": "5f77f31b0e5a99805fadcb11c49809a019dd0464dd276fb3fe24424d4475ef34",
+      "bytes": 10798
+    },
+    "tests/cpp/QtReactHostHostTest.cpp": {
+      "sha256": "ea7ffafd8ea98d4549d6c1db8701df81ed43bcb7792e92b6708303a9dfef7ca1",
+      "bytes": 117543
+    },
+    "tests/native/worklets/CMakeLists.txt": {
+      "sha256": "b3df474284ef3579f0a8fb545fd072acf09480200b6644c527032307eee64199",
+      "bytes": 1620
+    },
+    "tests/native/worklets/QtWorkletsLifecycleTest.cpp": {
+      "sha256": "9b0f036459caba93adfec6d6b7481d611a7a14ade9a83b88c0dfc29f27d8f26a",
+      "bytes": 6192
+    },
+    "vnext/src/runtime/QtReactHost.cpp": {
+      "sha256": "ba3e7fae5badf9ed4bdadd86b0756b5e0475181dd3b1b4f6b6bf2280b7c11100",
+      "bytes": 59980
+    },
+    "vnext/src/worklets/QtFrameBridge.cpp": {
+      "sha256": "1eea60e525dba6c54d981140700842ea233df9b92a019f6f730ea784b39d2171",
+      "bytes": 2701
+    },
+    "vnext/src/worklets/QtUiThread.cpp": {
+      "sha256": "88aff432fc5eb8cbd260c141116cca0397f3f7abd002021fd71e937a53e8dfaf",
+      "bytes": 2007
+    },
+    "vnext/include/react-native-qnx/worklets/QtFrameBridge.h": {
+      "sha256": "c153f1ebc5974efc298069bef3767823e6870997ef6048107b56695ff7a30203",
+      "bytes": 2588
+    },
+    "vnext/include/react-native-qnx/worklets/QtUiThread.h": {
+      "sha256": "5f081cc4d55a71a7220a0c6e862adbd23049725310eb0e7f0f1c3459080735cf",
+      "bytes": 1453
+    }
+  },
+  "galleryBundle": {
+    "command": "pnpm qnx bundle-qnx --app component-gallery --out build/pr149-integrated-gallery.bundle.js",
+    "exit": 0,
+    "sha256": "0d337d4e780e377d9e4fc3d9549d163d2f74cdd5573fdc02501dc616a7d77137",
+    "bytes": 3402286,
+    "boundary": "Production Metro JavaScript bundle; no target execution or frame measurement"
+  }
+}

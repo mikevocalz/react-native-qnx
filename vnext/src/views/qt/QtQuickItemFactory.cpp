@@ -1,6 +1,7 @@
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 #include "react-native-qnx/views/DecodedImageCache.h"
 #include "react-native-qnx/views/QtExtraItems.h"
+#include "react-native-qnx/views/QtModalQml.h"
 
 #include <QQmlComponent>
 #include <QQmlEngine>
@@ -27,6 +28,7 @@ QtQuickItemFactory::QtQuickItemFactory(QQmlEngine& engine) : engine_(engine) {
   engine_.addImageProvider(
       QLatin1String(QnxImageProvider::providerId()), imageProvider_);
   setExtraItemEngine(engine_);
+  registerType(QStringLiteral("RNQnxModal"), QByteArray(modalQml()));
   registerExtraQmlTypes(*this);
 }
 

@@ -74,6 +74,16 @@ excluded. The evaluation does not accept this ADR's broader module matrix or
 authorize release packaging. The expiry applies to these evaluation artifacts; it does not expire
 independently obtained open-source Qt.
 
+**QtSvg (added 2026-11-13).** The qtsvg module from the same archive is built
+for QNX by `scripts/qt-public/build-svg-qnx.sh` against the existing qtbase and
+staged by `stage-runtime.py` when present. It supplies `libQt6Svg` and the
+`qsvg` image-format plugin, which let `QImageReader` decode an SVG document for
+an `<Image>` in `react-native-svg`. The module offers `LGPL-3.0-only`, as the
+other staged modules do; its `LICENSES/` directory is copied beside theirs. The
+renderer does not link `Qt6::Svg`: the plugin is found at run time through
+`QT_PLUGIN_PATH`, and a runtime without it still renders everything but SVG
+`<Image>` sources.
+
 Sources: [Qt account licenses](https://account.qt.io/s/),
 [Device Creation tiers](https://www.qt.io/development/qt-framework/target-devices),
 [Qt for QNX](https://doc.qt.io/qt-6/qnx.html).
@@ -148,18 +158,18 @@ Sources:
 
 ### Tier 1 — component-backing, adopt only when the feature lands
 
-| Module              | macOS installed                              | Open-source license (per Qt 6.11 docs) | QNX build support  | Notes                                                           |
-| ------------------- | -------------------------------------------- | -------------------------------------- | ------------------ | --------------------------------------------------------------- |
-| Qt Quick Effects    | qtquickeffectmaker / `qtdeclarative` effects | LGPLv3 / GPLv2                         | presumed           | `filter`, blur, drop-shadow.                                    |
-| Qt SVG              | qtsvg                                        | LGPLv3 / GPLv2                         | presumed           | SVG file rendering.                                             |
-| Qt Quick Shapes     | in Qt Quick (qtdeclarative)                  | LGPLv3 / GPLv2                         | presumed           | vector paths.                                                   |
-| Qt Multimedia       | qtmultimedia                                 | LGPLv3 / GPLv2                         | verify QNX backend | video, audio, camera.                                           |
-| Qt Quick Dialogs    | qtquickdialogs                               | LGPLv3 / GPLv2                         | verify             | native file/color/dialogs.                                      |
-| Qt Image Formats    | qtimageformats                               | LGPLv3 / GPLv2                         | presumed           | extra image codecs.                                             |
-| Qt SQL              | qtsql (in qtbase)                            | LGPLv3 / GPLv2                         | verify             | local SQL.                                                      |
-| Qt Virtual Keyboard | qtvirtualkeyboard                            | **GPLv3**                              | —                  | **Excluded** from open-source build. Product decision required. |
-| Qt Qml Models       | qtdeclarative                                | LGPLv3 / GPLv2                         | presumed           | model/view helpers.                                             |
-| Qt Concurrent       | qtbase                                       | LGPLv3 / GPLv2                         | presumed           | off-thread work.                                                |
+| Module              | macOS installed                              | Open-source license (per Qt 6.11 docs) | QNX build support  | Notes                                                                                   |
+| ------------------- | -------------------------------------------- | -------------------------------------- | ------------------ | --------------------------------------------------------------------------------------- |
+| Qt Quick Effects    | qtquickeffectmaker / `qtdeclarative` effects | LGPLv3 / GPLv2                         | presumed           | `filter`, blur, drop-shadow.                                                            |
+| Qt SVG              | qtsvg                                        | LGPLv3 / GPLv2                         | presumed           | SVG file rendering.                                                                     |
+| Qt Quick Shapes     | in Qt Quick (qtdeclarative)                  | LGPLv3 / GPLv2                         | presumed           | vector paths.                                                                           |
+| Qt Multimedia       | qtmultimedia                                 | LGPLv3 / GPLv2                         | verify QNX backend | video, audio, camera.                                                                   |
+| Qt Quick Dialogs    | qtquickdialogs                               | LGPLv3 / GPLv2                         | verify             | native file/color/dialogs.                                                              |
+| Qt Image Formats    | qtimageformats                               | LGPLv3 / GPLv2                         | built (6.12.0)     | WebP incl. animated, TIFF, TGA, ICNS, WBMP; bundled libwebp (BSD-3-Clause) and libtiff. |
+| Qt SQL              | qtsql (in qtbase)                            | LGPLv3 / GPLv2                         | verify             | local SQL.                                                                              |
+| Qt Virtual Keyboard | qtvirtualkeyboard                            | **GPLv3**                              | —                  | **Excluded** from open-source build. Product decision required.                         |
+| Qt Qml Models       | qtdeclarative                                | LGPLv3 / GPLv2                         | presumed           | model/view helpers.                                                                     |
+| Qt Concurrent       | qtbase                                       | LGPLv3 / GPLv2                         | presumed           | off-thread work.                                                                        |
 
 ### Tier 2 — evaluate per concrete need
 
