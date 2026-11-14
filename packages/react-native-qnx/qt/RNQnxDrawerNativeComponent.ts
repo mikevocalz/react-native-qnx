@@ -8,6 +8,10 @@ type RequestChangeEvent = Readonly<{
   reason: string;
 }>;
 type TransitionEndEvent = Readonly<{ open: boolean }>;
+type GestureEvent = Readonly<{
+  /** The state the drawer is in when the event is sent. */
+  open: boolean;
+}>;
 
 interface NativeProps extends ViewProps {
   /** Controlled state. The native view animates to it. */
@@ -15,8 +19,12 @@ interface NativeProps extends ViewProps {
   /** Width in px of the drawer panel (child 0). Style the panel with the same width. */
   drawerWidth?: CodegenTypes.WithDefault<CodegenTypes.Double, 280>;
   side?: CodegenTypes.WithDefault<'left' | 'right', 'left'>;
-  /** `front` draws the panel over the content; `slide` also moves the content. */
-  drawerType?: CodegenTypes.WithDefault<'front' | 'slide', 'front'>;
+  /**
+   * `front` draws the panel over the content; `slide` moves the content along
+   * with it; `back` keeps the panel in place and slides the content away from
+   * it. (`permanent` is a plain row layout in JavaScript; it has no native view.)
+   */
+  drawerType?: CodegenTypes.WithDefault<'front' | 'slide' | 'back', 'front'>;
   swipeEnabled?: CodegenTypes.WithDefault<boolean, true>;
   /** A CSS color string (including rgba()) or a processed color number. */
   scrimColor?: CodegenTypes.UnsafeMixed;
@@ -26,6 +34,17 @@ interface NativeProps extends ViewProps {
   swipeExclusionLeft?: CodegenTypes.WithDefault<CodegenTypes.Double, 0>;
   /** Top px the edge strip leaves free, for window controls drawn over the content. */
   topInset?: CodegenTypes.WithDefault<CodegenTypes.Double, 0>;
+  /**
+   * Px a drag must travel before it counts, unless it is a fling. A shorter
+   * drag settles back without asking JavaScript. 0 keeps the 40% rule alone.
+   */
+  swipeMinDistance?: CodegenTypes.WithDefault<CodegenTypes.Double, 0>;
+  /** An edge or panel drag began. */
+  onGestureStart?: CodegenTypes.DirectEventHandler<GestureEvent>;
+  /** An edge or panel drag ended, whatever it decided. */
+  onGestureEnd?: CodegenTypes.DirectEventHandler<GestureEvent>;
+  /** The system took the drag away (window deactivated, grab lost). */
+  onGestureCancel?: CodegenTypes.DirectEventHandler<GestureEvent>;
   /** Only for a change the user asked for; JavaScript then sets `open`. */
   onRequestChange?: CodegenTypes.DirectEventHandler<RequestChangeEvent>;
   /** The drawer reached the open or closed state, for any reason. */

@@ -1,0 +1,22 @@
+Consumer follow-up on base 13a0e49ae7ea6b16faa23840926d3976866f6646.
+Source/test identities are recorded in consumer-validation.json.
+All commands below completed with exit 0; no native tests rerun.
+
+pnpm typecheck
+$ tsc --noEmit && tsc --noEmit -p tests/types/adaptive.tsconfig.json
+
+pnpm docs:sync
+$ node scripts/validate-docs.mjs --write
+Documentation updated: 24 components, 11 release gates.
+
+pnpm validate:docs
+$ node scripts/validate-docs.mjs
+Documentation validated: 24 components, 11 release gates.
+
+pnpm exec prettier --check <changed source/test/receipt/handoff/readiness files>
+Checking formatting...
+All matched files use Prettier code style!
+
+git diff --check: exit 0.
+All 11 release gates are unchanged and pending.
+No native source, native test or repository lockfile changes.

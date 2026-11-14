@@ -15,6 +15,100 @@
       "receipt": "docs/validation/pr105-merge-readiness-2026-11-10.md",
       "hostedCi": "passed at the implementation commit; follow-up CI must be checked after publication",
       "targetExecution": "not run for this candidate; generated C++ unchanged"
+    },
+    "pr161Corpus": {
+      "reviewedAt": "2026-11-13",
+      "baseCommit": "4076e67",
+      "receipt": "docs/validation/pr161-corpus-shards-2026-11-13.md",
+      "hostedCi": "pending for the continuation head",
+      "targetExecution": "not run for the test-only continuation"
+    },
+    "pr161Target": {
+      "reviewedAt": "2026-11-13",
+      "receipt": "docs/validation/pr161-device-gallery-2026-11-13.md",
+      "status": "base required CI passed; Pi gallery/images/input and restored native tests passed; follow-up head CI/review pending"
+    },
+    "pr161BuildRecipe": {
+      "reviewedAt": "2026-11-13",
+      "receipt": "docs/validation/pr161-device-gallery-2026-11-13.md",
+      "status": "native O1 with selected strict-warning exceptions; Qt O2; inherited upstream object reuse has no independent flag/header audit; clean combined build required"
+    },
+    "pr159BuildRepair": {
+      "reviewedAt": "2026-11-13",
+      "baseCommit": "7ae99da",
+      "receipt": "docs/validation/pr159-table-initializer-2026-11-13.md",
+      "hostedCi": "pending for the repair head",
+      "targetExecution": "not run for the repair"
+    },
+    "pr159ImageResize": {
+      "reviewedAt": "2026-11-13",
+      "receipt": "docs/validation/pr159-image-resize-2026-11-13.md",
+      "status": "30 native host cases and exact c2badc4 hosted checks passed; Pi 400 resize/cache/ImageRef/blurhash/GIF start-stop passed; driver CI and wider loader/navigation work pending"
+    },
+    "pr159ImageDevice": {
+      "reviewedAt": "2026-11-13",
+      "implementationCommit": "c2badc4",
+      "receipt": "docs/validation/pr159-device-image-2026-11-13.md",
+      "status": "scoped Pi 400 custom-image proof; no stock QSTI/Marathon/performance claim"
+    },
+    "pr159ImageIo": {
+      "reviewedAt": "2026-11-13",
+      "receipt": "docs/validation/pr159-image-io-2026-11-13.md",
+      "status": "six Release and three ASan/UBSan executables pass; QNX cross-build and Pi 400 successful-consumption check pass; explicit cache API/ImageRef worker conversion and exact-head hosted CI pending",
+      "standaloneGraph": "632a3c9 CI failed to link decodeImage; standalone source list corrected and clean local loopback/cache test passed; new-head CI pending"
+    },
+    "pr159DrawerRuntime": {
+      "reviewedAt": "2026-11-13",
+      "moduleRetentionCommit": "d257b5a",
+      "drawerCommit": "874ea81",
+      "receipt": "docs/validation/pr159-drawer-runtime-2026-11-13.md",
+      "status": "bounded Pi 400 navigation/API and host regression proof; two unrelated transplanted-host failures remain; clean combined build, exact-head CI and review pending",
+      "crossBuild": "native O1 with selected strict-warning exceptions; Qt O2; inherited upstream object reuse has no independent flag/header-closure audit",
+      "testIsolation": "2675a9d validate failed on cross-test mock caching; child-process settlement case fixes ordered router import sequence; new-head CI pending"
+    },
+    "pr159DrawerSelection": {
+      "reviewedAt": "2026-11-13",
+      "implementationCommit": "cf43271",
+      "receipt": "docs/validation/pr159-drawer-selection-2026-11-13.md",
+      "status": "stale transparent fill and interrupted gesture state fixed; negative controls, eight isolated adapter cases, ordered JS tests, typecheck and Pi single-selection proof pass; review clean; exact-head CI and clean combined build pending"
+    },
+    "pr159DrawerRoute": {
+      "reviewedAt": "2026-11-13",
+      "implementationCommit": "1f809ce",
+      "receipt": "docs/validation/pr159-drawer-route-2026-11-13.md",
+      "status": "navigator destination and native decoration input fixes; JS negative/restored, 34 QML cases, native target regression, layout/type/bundle, independent review and nine Pi route/tab captures pass; broader transplanted host retains two failures; exact-head CI and clean combined qualification pending"
+    },
+    "pr159ReviewFollowup": {
+      "reviewedAt": "2026-11-14",
+      "baseCommit": "d862625e79d6b1dd8a589eaf767e3311757c449a",
+      "receipt": "docs/validation/pr159-review-followup-2026-11-14.md",
+      "status": "Image source 252b128: corrected Release 126 entries and fresh image ASan/UBSan 73 entries pass; corrected host source b6bf7eb: 59 candidate, 57+2 intended baseline failures, 59 restored; full JS AF_UNIX EPERM, exact-head hosted CI and current-target/artifact qualification remain pending",
+      "integrationCommit": "3b24f5c2fd3733dbf1ebe77729f7014242db7db3",
+      "integrationStatus": "Standalone SVG CLI/test blobs are identical to 159; local merge d923127 preserves all six tested source-tree identities and both handoff/readiness records; 25 staging fixtures pass; hosted CI and target qualification remain pending",
+      "pausedAnimationReview": "Independent review found initially blank autoplay=false QMovie; decoded-image fallback fixed it; direct and deleted-source prefetched original-code pixel controls fail and corrected pixel tests pass",
+      "validationCommit": "252b128d0bbb93357dd87f840ea81d31a08c5ef1",
+      "validationTree": "3a19dc66775917c333a61d219400cd73ecb8bc5b",
+      "sourceInventory": "docs/evidence/pr159-review-host-2026-11-14/tested-source.json",
+      "finalImageSanitizers": "Fresh Qt 6.11.1/GCC 14.2 Debug ASan+UBSan image view/units/fetch queue: 3/3 CTests, 73 QtTest entries, zero failures/skips or sanitizer diagnostic; Qt libraries uninstrumented and leak checks disabled",
+      "releaseRegistrationCorrection": "Prior incremental Release MOC omitted new disk-clear HTTP slot (125 executed entries); regenerated only that target MOC/timestamp and rebuilt; all six CTests pass in 29.75 s with 126 entries including the missing case; prior logs retained with limitation",
+      "fullHermesHost": "Clang 19.1.7/Qt6.11.1 linked host target: 59 enabled cases pass, five original production files cause only SourceCode refresh and lazy imageLoaded failures (57 pass/2 fail), restored candidate 59 pass; unchanged test SHA and identical initial/restored binary; host test executable ASan only, dependencies not all instrumented, leak checks disabled; other CTests and target runtime not claimed",
+      "fullHermesValidationCommit": "b6bf7eb6b37827a592a4547fb4ac7137557f463f",
+      "fullHermesValidationTree": "d2f56c2d54de785744c76d8f1a69a87e14d53edf",
+      "fullHermesSourceInventory": "docs/evidence/pr159-review-host-2026-11-14/full-host-tested-source.json",
+      "fullHermesExecutableSha256": "55af47f994614c2ca0110e3dd77004822b0c479772631c7afe4fbb2355712cd1",
+      "fullHermesTestSha256": "1c52a62c0243445f553bc216c63636b48f5a9639974489e54adbbea2f8462f18",
+      "hostCorrections": "Local 70c170c: explicit std::string map key; local b6bf7eb: per-host successful-install guard; GCC failure, interrupted Clang resume, pre-fix string_view compile error and initial 70c runtime abort all preserved"
+    },
+    "pr161NestedRoots": {
+      "reviewedAt": "2026-11-14",
+      "runtimeCommit": "3324e7c5acdfef0a7046e5a1520f8a981c4900ef",
+      "mainIntegrationCommit": "446d28ff47131a5032fb476987ada08c751cd697",
+      "receipt": "docs/validation/pr161-nested-roots-2026-11-14.md",
+      "nativeHost": "Original-source negative controls and candidate scene passes; 8/8 standalone Qt 6.11.1/GCC 14.2 Debug ASan/UBSan CTests after deterministic test-kernel construction; Qt libraries uninstrumented and leak detection disabled",
+      "stagingHost": "17 transactional staging fixtures pass, including bounded SVG copies and rollback; independent agent source review and repeated fixture pass",
+      "consumerHost": "Exact reviewed PR 159 f49e61e CLI copy-list and archive regression port: original source fails the missing SVG resolver assertion, corrected test passes; fresh external dual consumer installs and bundles for QNX and Marathon; no native execution or dependency changes",
+      "hostedCi": "All nine workflows pass at 13a0e49ae7ea6b16faa23840926d3976866f6646, including both renderer lanes, 49/49 ON tests and all four corpus shards; packaging-only follow-up exact-head CI pending; original timeout cause remains unestablished",
+      "targetExecution": "Not run for the new native correction; fresh combined SDP 8.0.5 build and current target SVG acceptance required; keep PR draft and all release gates pending"
     }
   },
   "gates": [

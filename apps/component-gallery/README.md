@@ -33,8 +33,10 @@ node packages/react-native-qnx-cli/src/bin.mjs bundle-qnx --app component-galler
 "$RNQNX_HOST_HERMESC" -O -emit-binary -out build/gallery/app.hbc build/gallery/app.bundle.js
 ```
 
-Stage `assets/icon.png` as `assets/assets/icon.png` next to the bundle; the
-Image card loads it from there.
+Stage `assets/icon.png`, `assets/anim.gif` and `assets/anim.webp` under
+`assets/assets/` next to the bundle. The Image and Expo Image cards load
+those files; Metro's JavaScript bundle does not embed them. Animated WebP
+also requires the staged Qt image-format plugin.
 
 The app opens as a 1280 x 800 window (`extra.rnqnx.window.initialSize`) with
 the macOS-style title bar. The Components page lays its cards out in one, two

@@ -1,0 +1,249 @@
+Preset CMake variables:
+
+  BUILD_TESTING="ON"
+  CMAKE_BUILD_TYPE="Debug"
+  CMAKE_CXX_SCAN_FOR_MODULES="OFF"
+  RNQNX_BUILD_HERMES="ON"
+  RNQNX_ENABLE_HOST_SANITIZERS="ON"
+  RNQNX_FETCH_REACT_NATIVE_DEPS="ON"
+  RNQNX_REQUIRE_FULL_HOST_RENDERER="ON"
+
+-- The C compiler identification is Clang 19.1.7
+-- The CXX compiler identification is Clang 19.1.7
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /workspace/scratch/853552216e74/qnx-clang19/usr/lib/llvm-19/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /workspace/scratch/853552216e74/qnx-clang19/usr/lib/llvm-19/bin/clang++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE
+-- Found OpenGL: /workspace/scratch/853552216e74/qnx-system-deps/usr/lib/x86_64-linux-gnu/libOpenGL.so
+-- Found WrapOpenGL: TRUE
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Configuring react-native-qnx for host development
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Qt 6.11.1 found; building Qt Quick host targets (minimum 6.11.1)
+-- Performing Test CXX_SUPPORTS_MISSING_FIELD_INITIALIZERS_FLAG
+-- Performing Test CXX_SUPPORTS_MISSING_FIELD_INITIALIZERS_FLAG - Success
+-- Performing Test DEPRECATED_COPY_FLAG
+-- Performing Test DEPRECATED_COPY_FLAG - Success
+-- Performing Test CXX_SUPPORTS_CLASS_MEMACCESS_FLAG
+-- Performing Test CXX_SUPPORTS_CLASS_MEMACCESS_FLAG - Failed
+-- Performing Test CXX_SUPPORTS_NOEXCEPT_TYPE_FLAG
+-- Performing Test CXX_SUPPORTS_NOEXCEPT_TYPE_FLAG - Success
+-- Performing Test CXX_WONT_WARN_ON_FINAL_NONVIRTUALDTOR
+-- Performing Test CXX_WONT_WARN_ON_FINAL_NONVIRTUALDTOR - Success
+-- Performing Test C_SUPPORTS_DELETE_NON_VIRTUAL_DTOR_FLAG
+-- Performing Test C_SUPPORTS_DELETE_NON_VIRTUAL_DTOR_FLAG - Success
+-- Performing Test CXX_SUPPORTS_DELETE_NON_VIRTUAL_DTOR_FLAG
+-- Performing Test CXX_SUPPORTS_DELETE_NON_VIRTUAL_DTOR_FLAG - Success
+-- Performing Test C_SUPPORTS_FP_CONTRACT_FLAG
+-- Performing Test C_SUPPORTS_FP_CONTRACT_FLAG - Success
+-- Performing Test CXX_SUPPORTS_FP_CONTRACT_FLAG
+-- Performing Test CXX_SUPPORTS_FP_CONTRACT_FLAG - Success
+-- Performing Test RANGE_ANALYSIS_FLAG
+-- Performing Test RANGE_ANALYSIS_FLAG - Success
+-- Found Python: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12 (found version "3.12.14") found components: Interpreter
+-- Performing Test HAVE_COMPUTED_GOTO
+-- Performing Test HAVE_COMPUTED_GOTO - Success
+-- Performing Test HAVE_GC_SECTIONS
+-- Performing Test HAVE_GC_SECTIONS - Success
+-- Performing Test HAVE_ICF
+-- Performing Test HAVE_ICF - Failed
+-- Performing Test C_SUPPORTS_FUNCTION_SECTIONS
+-- Performing Test C_SUPPORTS_FUNCTION_SECTIONS - Success
+-- Performing Test CXX_SUPPORTS_FUNCTION_SECTIONS
+-- Performing Test CXX_SUPPORTS_FUNCTION_SECTIONS - Success
+-- Performing Test C_SUPPORTS_DATA_SECTIONS
+-- Performing Test C_SUPPORTS_DATA_SECTIONS - Success
+-- Performing Test CXX_SUPPORTS_DATA_SECTIONS
+-- Performing Test CXX_SUPPORTS_DATA_SECTIONS - Success
+-- Found ICU: /workspace/scratch/853552216e74/qnx-icu-dev/usr/include (found suitable version "76.1", minimum required is "52") found components: uc i18n data uc
+icu dir: /usr/lib/x86_64-linux-gnu
+-- Performing Test LLVM_NO_OLD_LIBSTDCXX
+-- Performing Test LLVM_NO_OLD_LIBSTDCXX - Success
+-- Looking for dlfcn.h
+-- Looking for dlfcn.h - found
+-- Looking for errno.h
+-- Looking for errno.h - found
+-- Looking for fcntl.h
+-- Looking for fcntl.h - found
+-- Looking for link.h
+-- Looking for link.h - found
+-- Looking for malloc.h
+-- Looking for malloc.h - found
+-- Looking for malloc/malloc.h
+-- Looking for malloc/malloc.h - not found
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Looking for signal.h
+-- Looking for signal.h - found
+-- Looking for sys/ioctl.h
+-- Looking for sys/ioctl.h - found
+-- Looking for sys/mman.h
+-- Looking for sys/mman.h - found
+-- Looking for sys/param.h
+-- Looking for sys/param.h - found
+-- Looking for sys/resource.h
+-- Looking for sys/resource.h - found
+-- Looking for sys/stat.h
+-- Looking for sys/stat.h - found
+-- Looking for sys/time.h
+-- Looking for sys/time.h - found
+-- Looking for sys/types.h
+-- Looking for sys/types.h - found
+-- Looking for termios.h
+-- Looking for termios.h - found
+-- Looking for unistd.h
+-- Looking for unistd.h - found
+-- Looking for valgrind/valgrind.h
+-- Looking for valgrind/valgrind.h - not found
+-- Looking for zlib.h
+-- Looking for zlib.h - found
+-- Looking for fenv.h
+-- Looking for fenv.h - found
+-- Looking for FE_ALL_EXCEPT
+-- Looking for FE_ALL_EXCEPT - found
+-- Looking for FE_INEXACT
+-- Looking for FE_INEXACT - found
+-- Looking for mach/mach.h
+-- Looking for mach/mach.h - not found
+-- Looking for histedit.h
+-- Looking for histedit.h - not found
+-- Looking for CrashReporterClient.h
+-- Looking for CrashReporterClient.h - not found
+-- Looking for linux/magic.h
+-- Looking for linux/magic.h - found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Looking for pthread_getspecific in pthread
+-- Looking for pthread_getspecific in pthread - found
+-- Looking for pthread_rwlock_init in pthread
+-- Looking for pthread_rwlock_init in pthread - found
+-- Looking for pthread_mutex_lock in pthread
+-- Looking for pthread_mutex_lock in pthread - found
+-- Looking for dlopen in dl
+-- Looking for dlopen in dl - found
+-- Looking for clock_gettime in rt
+-- Looking for clock_gettime in rt - found
+-- Looking for xar_open in xar
+-- Looking for xar_open in xar - not found
+-- Looking for arc4random
+-- Looking for arc4random - found
+-- Looking for backtrace
+-- Looking for backtrace - found
+-- backtrace facility detected in default set of libraries
+-- Found Backtrace: /usr/include
+-- Performing Test C_SUPPORTS_WERROR_UNGUARDED_AVAILABILITY_NEW
+-- Performing Test C_SUPPORTS_WERROR_UNGUARDED_AVAILABILITY_NEW - Success
+-- Looking for _Unwind_Backtrace
+-- Looking for _Unwind_Backtrace - found
+-- Looking for getpagesize
+-- Looking for getpagesize - found
+-- Looking for sysconf
+-- Looking for sysconf - found
+-- Looking for getrusage
+-- Looking for getrusage - found
+-- Looking for setrlimit
+-- Looking for setrlimit - found
+-- Looking for isatty
+-- Looking for isatty - found
+-- Looking for futimens
+-- Looking for futimens - found
+-- Looking for futimes
+-- Looking for futimes - found
+-- Looking for posix_fallocate
+-- Looking for posix_fallocate - found
+-- Looking for sigaltstack
+-- Looking for sigaltstack - found
+-- Looking for lseek64
+-- Looking for lseek64 - found
+-- Looking for mallctl
+-- Looking for mallctl - not found
+-- Looking for mallinfo
+-- Looking for mallinfo - found
+-- Looking for malloc_zone_statistics
+-- Looking for malloc_zone_statistics - not found
+-- Looking for getrlimit
+-- Looking for getrlimit - found
+-- Looking for posix_spawn
+-- Looking for posix_spawn - found
+-- Looking for pread
+-- Looking for pread - found
+-- Looking for realpath
+-- Looking for realpath - found
+-- Looking for sbrk
+-- Looking for sbrk - found
+-- Looking for strerror
+-- Looking for strerror - found
+-- Looking for strerror_r
+-- Looking for strerror_r - found
+-- Looking for strerror_s
+-- Looking for strerror_s - not found
+-- Looking for setenv
+-- Looking for setenv - found
+-- Looking for dlopen
+-- Looking for dlopen - found
+-- Looking for dladdr
+-- Looking for dladdr - not found
+-- Looking for __GLIBC__
+-- Looking for __GLIBC__ - found
+-- Looking for sched_getaffinity
+-- Looking for sched_getaffinity - found
+-- Looking for CPU_COUNT
+-- Looking for CPU_COUNT - found
+-- Looking for pthread_getname_np
+-- Looking for pthread_getname_np - found
+-- Looking for pthread_setname_np
+-- Looking for pthread_setname_np - found
+-- Performing Test HAVE_CXX_ATOMICS_WITHOUT_LIB
+-- Performing Test HAVE_CXX_ATOMICS_WITHOUT_LIB - Success
+-- Performing Test HAVE_CXX_ATOMICS64_WITHOUT_LIB
+-- Performing Test HAVE_CXX_ATOMICS64_WITHOUT_LIB - Success
+-- Performing Test LLVM_HAS_ATOMICS
+-- Performing Test LLVM_HAS_ATOMICS - Success
+-- Performing Test SUPPORTS_NO_PIE_FLAG
+-- Performing Test SUPPORTS_NO_PIE_FLAG - Success
+-- Performing Test SUPPORTS_VARIADIC_MACROS_FLAG
+-- Performing Test SUPPORTS_VARIADIC_MACROS_FLAG - Success
+-- Performing Test SUPPORTS_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS_FLAG
+-- Performing Test SUPPORTS_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS_FLAG - Success
+-- Threads enabled.
+-- Doxygen disabled.
+-- Go bindings disabled.
+-- Found Python module pygments
+-- Found Python module pygments.lexers.c_cpp
+-- Found Python module yaml
+-- Boost.Context: architecture x86_64, binary format elf, ABI sysv, assembler gas, suffix .S, implementation fcontext
+-- The ASM compiler identification is Clang with GNU-like command-line
+-- Found assembler: /workspace/scratch/853552216e74/qnx-clang19/usr/lib/llvm-19/bin/clang
+-- Configuring done (21.3s)
+-- Generating done (2.1s)
+-- Build files have been written to: /workspace/scratch/853552216e74/pr159/build/host-review159-clang

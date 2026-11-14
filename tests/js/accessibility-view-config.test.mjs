@@ -46,6 +46,8 @@ for (const prop of [
   'accessibilityState',
   'accessibilityActions',
   'onAccessibilityAction',
+  'onClick',
+  'onClickCapture',
 ]) {
   assert.equal(config.validAttributes[prop], true, `Fabric must admit ${prop}`);
 }
@@ -53,6 +55,8 @@ assert.equal(
   config.directEventTypes.topAccessibilityAction.registrationName,
   'onAccessibilityAction'
 );
+assert.equal(config.bubblingEventTypes.topClick.phasedRegistrationNames.bubbled, 'onClick');
+assert.equal(config.bubblingEventTypes.topClick.phasedRegistrationNames.captured, 'onClickCapture');
 assert.equal(config.validAttributes.style, styles);
 assert.equal(config.validAttributes.onResponderGrant, true);
 assert.equal(config.directEventTypes.topLayout.registrationName, 'onLayout');
@@ -62,6 +66,7 @@ assert.equal(config.validAttributes.accessibilityValue, undefined);
 // or serializer. Native adapters still gate interpretation/delivery separately.
 const props = {
   accessible: true,
+  onClick: () => {},
   accessibilityLabel: 'Synthetic label',
   accessibilityHint: 'Synthetic hint',
   accessibilityRole: 'button',

@@ -1,0 +1,8 @@
+********* Start testing of ExpoImageItemTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ExpoImageItemTest::initTestCase()
+PASS   : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses(direct)
+PASS   : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses(prefetched-memory)
+PASS   : ExpoImageItemTest::cleanupTestCase()
+Totals: 4 passed, 0 failed, 0 skipped, 0 blacklisted, 878ms
+********* Finished testing of ExpoImageItemTest *********

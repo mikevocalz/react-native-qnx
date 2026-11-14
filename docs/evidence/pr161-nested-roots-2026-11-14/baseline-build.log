@@ -1,0 +1,121 @@
+[0/2] Re-checking globbed directories...
+[1/121] Automatic MOC for target rnqnx_qt_rnsvg
+[2/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgForeignObjectItem.cpp.o
+[3/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/rnqnx_qt_rnsvg_autogen/mocs_compilation.cpp.o
+[4/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgPath.cpp.o
+[5/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgItems.cpp.o
+[6/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgRenderer.cpp.o
+[7/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeBlend.cpp.o
+[8/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeColorMatrix.cpp.o
+[9/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeComponentTransfer.cpp.o
+[10/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeComposite.cpp.o
+[11/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeDisplacementMap.cpp.o
+[12/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeConvolveMatrix.cpp.o
+[13/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeDropShadow.cpp.o
+[14/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeFlood.cpp.o
+[15/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeGaussianBlur.cpp.o
+[16/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeImage.cpp.o
+[17/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeLighting.cpp.o
+[18/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeMerge.cpp.o
+[19/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeMorphology.cpp.o
+[20/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeOffset.cpp.o
+[21/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeTile.cpp.o
+[22/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FilterColorSpace.cpp.o
+[23/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeTurbulence.cpp.o
+[24/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FilterRegion.cpp.o
+[25/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FilterEngine.cpp.o
+[26/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/GaussianBlur.cpp.o
+[27/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/image/ImageDecoding.cpp.o
+[28/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/image/ImageBinding.cpp.o
+[29/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/image/ImageElementProps.cpp.o
+[30/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/image/ImageLoader.cpp.o
+[31/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Bounds.cpp.o
+[32/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/ConicalGradient.cpp.o
+[33/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/ClipMask.cpp.o
+[34/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Effects.cpp.o
+[35/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/FilterRunner.cpp.o
+[36/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Geometry.cpp.o
+[37/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/HitTester.cpp.o
+[38/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/ImageRenderer.cpp.o
+[39/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Markers.cpp.o
+[40/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/PaintServers.cpp.o
+[41/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/PatternPaint.cpp.o
+[42/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Scene.cpp.o
+[43/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/SceneLayout.cpp.o
+[44/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/ShapePainter.cpp.o
+[45/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Style.cpp.o
+[46/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/Baseline.cpp.o
+[47/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/CharAttrs.cpp.o
+[48/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/TextRenderer.cpp.o
+[49/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/Decoration.cpp.o
+[50/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/FlatTree.cpp.o
+[51/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/FontProbe.cpp.o
+[52/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/InlineSize.cpp.o
+[53/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/GlyphEmit.cpp.o
+[54/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/PathGlyphs.cpp.o
+[55/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/PathMeasure.cpp.o
+[56/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/Placement.cpp.o
+[57/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/TextLayout.cpp.o
+[58/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/Shaper.cpp.o
+[59/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/TextLength.cpp.o
+[60/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/TextParse.cpp.o
+[61/121] Building CXX object rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/UnitBuilder.cpp.o
+[62/121] Linking CXX static library rnsvg/librnqnx_qt_rnsvg.a
+[63/121] Automatic MOC for target rnqnx_qt_rnsvg_fixtures_test
+[64/121] Automatic MOC for target rnqnx_qt_rnsvg_filter_test
+[65/121] Automatic MOC for target rnqnx_qt_rnsvg_image_test
+[66/121] Automatic MOC for target rnqnx_qt_rnsvg_foreignobject_test
+[67/121] Automatic MOC for target rnqnx_qt_rnsvg_loader_test
+[68/121] Automatic MOC for target rnqnx_qt_rnsvg_test
+[69/121] Automatic MOC for target rnqnx_qt_rnsvg_text_test
+[70/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_filter_test.dir/rnqnx_qt_rnsvg_filter_test_autogen/mocs_compilation.cpp.o
+[71/121] Automatic MOC for target rnqnx_qt_rnsvg_scene_test
+[72/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/rnqnx_qt_rnsvg_fixtures_test_autogen/mocs_compilation.cpp.o
+[73/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/RnsvgFixturesTest.cpp.o
+[74/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/FixtureManifest.cpp.o
+[75/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/ImageDiff.cpp.o
+[76/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/ModelAdapter.cpp.o
+[77/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgCommonProps.cpp.o
+[78/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_filter_test.dir/RnsvgFilterTest.cpp.o
+[79/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgCss.cpp.o
+[80/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgDocumentLoader.cpp.o
+[81/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgElementBuilders.cpp.o
+[82/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgGradient.cpp.o
+[83/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgFilters.cpp.o
+[84/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgImageSource.cpp.o
+[85/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgText.cpp.o
+[86/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgValues.cpp.o
+[87/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_foreignobject_test.dir/rnqnx_qt_rnsvg_foreignobject_test_autogen/mocs_compilation.cpp.o
+[88/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/XmlDocument.cpp.o
+[89/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_image_test.dir/rnqnx_qt_rnsvg_image_test_autogen/mocs_compilation.cpp.o
+[90/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_foreignobject_test.dir/RnsvgForeignObjectTest.cpp.o
+[91/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/rnqnx_qt_rnsvg_loader_test_autogen/mocs_compilation.cpp.o
+[92/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_image_test.dir/RnsvgImageTest.cpp.o
+[93/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/RnsvgLoaderTest.cpp.o
+[94/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/FixtureManifest.cpp.o
+[95/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/ImageDiff.cpp.o
+[96/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/ModelAdapter.cpp.o
+[97/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgCommonProps.cpp.o
+[98/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgCss.cpp.o
+[99/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgDocumentLoader.cpp.o
+[100/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgElementBuilders.cpp.o
+[101/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgGradient.cpp.o
+[102/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgFilters.cpp.o
+[103/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgImageSource.cpp.o
+[104/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgText.cpp.o
+[105/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/XmlDocument.cpp.o
+[106/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_test.dir/rnqnx_qt_rnsvg_test_autogen/mocs_compilation.cpp.o
+[107/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgValues.cpp.o
+[108/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_scene_test.dir/rnqnx_qt_rnsvg_scene_test_autogen/mocs_compilation.cpp.o
+[109/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_test.dir/RnsvgRenderTest.cpp.o
+[110/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_text_test.dir/rnqnx_qt_rnsvg_text_test_autogen/mocs_compilation.cpp.o
+[111/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_scene_test.dir/RnsvgSceneTest.cpp.o
+[112/121] Linking CXX executable rnqnx_qt_rnsvg_filter_test
+[113/121] Linking CXX executable rnqnx_qt_rnsvg_fixtures_test
+[114/121] Linking CXX executable rnqnx_qt_rnsvg_foreignobject_test
+[115/121] Linking CXX executable rnqnx_qt_rnsvg_image_test
+[116/121] Linking CXX executable rnqnx_qt_rnsvg_loader_test
+[117/121] Linking CXX executable rnqnx_qt_rnsvg_test
+[118/121] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_text_test.dir/RnsvgTextTest.cpp.o
+[119/121] Linking CXX executable rnqnx_qt_rnsvg_text_test
+[120/121] Linking CXX executable rnqnx_qt_rnsvg_scene_test

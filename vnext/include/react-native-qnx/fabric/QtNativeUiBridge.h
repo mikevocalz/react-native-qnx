@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <functional>
 #include <vector>
 
 class QQuickItem;
@@ -20,11 +21,16 @@ namespace rnqnx::fabric {
 std::vector<std::string> nativeUiComponentNames();
 void addNativeUiComponentDescriptors(facebook::react::ComponentDescriptorProviderRegistry& registry);
 bool applyNativeUiProps(QQuickItem* item, const facebook::react::ShadowView& view);
+/// Owner-thread non-pointer click activation for accessible mounted React views.
+void setNativeUiPressCallback(QQuickItem* item, std::function<void()> callback);
 
 /// ViewManagerAdapter_ExpoImage, the view expo-image's requireNativeView
 /// resolves (RNQNX_ENABLE_QT_EXPO_IMAGE).
 std::vector<std::string> expoImageComponentNames();
 void addExpoImageComponentDescriptors(facebook::react::ComponentDescriptorProviderRegistry& registry);
 bool applyExpoImageProps(QQuickItem* item, const facebook::react::ShadowView& view);
+/// `startAnimating`, `stopAnimating`, `lockResource`, `unlockResource` and
+/// `reload`, the commands of ExpoImageNativeComponent.ts.
+bool dispatchExpoImageCommand(QQuickItem* item, const std::string& command);
 
 }  // namespace rnqnx::fabric

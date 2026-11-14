@@ -1,5 +1,148 @@
 # TEST_STATUS.md
 
+## PR 159 review follow-up — 2026-11-14
+
+Image source 252b128 passes corrected Release 6/6 CTests with 126 QtTest entries and fresh image ASan/UBSan 3/3 with 73 entries. Full-host source b6bf7eb passes 59 cases, the five-file original-source control passes 57 and fails 2 as intended, and restored source passes 59 again with an identical executable hash. Seven targeted/ordered JS suites, fresh dual consumer bundles, standalone HTTP/cache and 25 staging fixtures pass at their recorded source scopes. Full JS remains blocked by the environment AF_UNIX EPERM; hosted ON/OFF and target gates remain pending.
+
+[Source, commands, hashes, limitations and rollback](../validation/pr159-review-followup-2026-11-14.md). Image results retain source 252b128; full-host results name b6bf7eb and a separate 55-file source inventory. Initial and restored host binaries share SHA-256 55af47f994614c2ca0110e3dd77004822b0c479772631c7afe4fbb2355712cd1. The consumer merge changes no tested source-tree identity. Prior 125-entry Release logs remain preserved with their stale-MOC omission; the corrected 126-entry run executes that disk-clear regression. Host ASan scope and uninstrumented dependencies are stated explicitly.
+
+## PR 159 drawer route and pointer correction — 2026-11-13
+
+The drawer now selects its navigator destination across all Home child tabs.
+Native hover/focus decoration no longer obscures the row's input target.
+Commit 1f809ce has failing old-source controls, passing JS/type/layout/bundle
+checks, 34 QML cases, the native input regression and zero review findings.
+Nine physical Pi captures show one selected row across five destinations and
+all five Home tabs. The transplanted full host retains two separate failures;
+exact-head CI, the clean combined build and owner-tile promotion remain open.
+[Evidence, provenance and rollback](../validation/pr159-drawer-route-2026-11-13.md).
+
+## PR 159 drawer selection correction — 2026-11-13
+
+SVG d38097f is stacked into PR 159 with both source/evidence sets preserved.
+Dependency/type/docs checks pass; the full local JS runner stops at its Linux-only
+consumer-preview test on macOS. PR 161 renderer ON has two complex-corpus timeouts;
+merge and clean combined target qualification remain pending.
+
+The owner caught two teal rows after Components → Home. The renderer skipped
+transparent background updates, leaving the old selection painted. Commit
+cf43271 clears transparent/removed generic View fills; its regression fails
+before the fix and all eight adapter cases pass with the isolated delta.
+Pi captures now show one teal row for each route, including the final binary/
+HBC pair. The independent review's interrupted-swipe issue is also fixed with
+Zustand gesture state and three regressions. Final four-file review has zero
+findings. Exact-head CI and clean combined qualification remain pending.
+[Evidence and rollback](../validation/pr159-drawer-selection-2026-11-13.md).
+
+## PR 159 drawer and module lifetime continuation — 2026-11-13
+
+Committed d257b5a retains one TurboModule per successful host lookup; its forced
+GC regression fails without retention and passes after restoration. The same
+optimized device bundle now completes its image API sequence. Commit 874ea81
+fixes JS drawer swipe reversal with Zustand state and native drawer dynamic
+metadata/click transport. Pi captures show hover, keyboard focus and Enter
+navigation; the final binary/HBC repeat navigation and image APIs. All 34
+standalone QML cases pass in Release and ASan/UBSan. The transplanted Linux host
+suite retains two separate failures, so only its lifetime case is qualified.
+Inherited cross-build flags/object reuse are corrected in the receipts. CI found cross-test mock caching; the settlement case now runs in a child
+process and the four router tests pass in shared-runner order. A fresh
+combined build and exact-head CI/review remain required before final promotion.
+[Sources, artifacts, limits and rollback](../validation/pr159-drawer-runtime-2026-11-13.md).
+
+## PR 159 fetch worker continuation — 2026-11-13
+
+File/data and disk-cache fetch I/O now run on bounded workers with owner-thread
+completion. Fetchers share a network manager; corrupt/oversized cache recovery
+and safe bounded redirects have regressions. Six Release native executables
+and three ASan/UBSan image executables pass, as does the QNX cross-build and
+Pi 400 resize/cache/ImageRef/blurhash check. The initial slice's independent
+review has zero findings. Exact-head hosted checks remain required. The standalone image-cache link exposed a missing ImageDecode.cpp source;
+that graph is corrected and its clean local loopback test passes. Explicit
+cache API and ImageRef decode/hash/encode worker conversion remains open.
+[Commands, evidence and rollback](../validation/pr159-image-io-2026-11-13.md).
+
+## PR 159 image device continuation — 2026-11-13
+
+The c2badc4 implementation head passed all hosted checks. On the custom-image
+Pi 400, the new Zustand gallery driver shows a second image load after growth
+from 20 to 240 pixels, successful cache/ImageRef/blurhash APIs, GIF frame
+changes after start and stable pixels after stop. Window size remains 1280x800.
+The loader I/O, cache recovery, redirects, navigation and wider conformance
+work remains open. This driver needs its own CI and review.
+[Evidence and rollback](../validation/pr159-device-image-2026-11-13.md).
+
+## PR 159 image resolution continuation — 2026-11-13
+
+Growing a downscaled still image now schedules an adequate decode, respecting
+resource locks and decode options. All 30 native image-item host cases pass;
+the growth and initial-decode race controls fail as expected. The review
+finding is fixed; new-head CI and target
+resize checks remain pending. Other image-loader/navigation gaps stay open.
+[Receipt and rollback](../validation/pr159-image-resize-2026-11-13.md).
+
+## PR 159 build repair — 2026-11-13
+
+Strict table syntax compilation, host-renderer orchestration, video JS, frozen installation and documentation checks passed. Full linked runtime and device checks were not run for this repair.
+[Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
+
+## PR 161 nested SVG and standalone consumer (2026-11-14)
+
+Host: Debian 13 x86-64, Node 26.13.1, pnpm 12.18.0, GCC 14.2.0,
+Qt 6.11.1, CMake 3.31.10 and Ninja 1.13. Standalone native sources are
+`3324e7c`; main merge `446d28f` does not change that native graph. The only
+subsequent native-suite edit captures the test kernel size before moving it.
+
+| Command/check                                                                                                                                                                                                                               | Exit and result                                                                                                                              |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cmake -S tests/native/qt-rnsvg -B build/rnsvg-sanitized -G Ninja -DRNQNX_ENABLE_QT_RNSVG=ON -DRNQNX_QT_RNSVG_SANITIZERS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=/usr/bin/g++`; `cmake --build build/rnsvg-sanitized --parallel 2` | 0; renderer and all eight standalone tests build.                                                                                            |
+| Two new scene tests against the original two native files                                                                                                                                                                                   | 2 as expected; repaint and bounds assertions each fail.                                                                                      |
+| Same scene tests after restoring `3324e7c` native files                                                                                                                                                                                     | 0; both pass in 15 ms.                                                                                                                       |
+| `ctest --test-dir build/rnsvg-sanitized --output-on-failure` before fixture correction                                                                                                                                                      | 8; seven of eight pass, convolution fixture asserts because the kernel size may be read after its move.                                      |
+| Same CTest command after fixture correction                                                                                                                                                                                                 | 0; eight of eight pass in 34.86 s, no ASan/UBSan report.                                                                                     |
+| `python3 tests/python/test_qt_public_staging.py -v`                                                                                                                                                                                         | 0; all 17 pass, including four added SVG integration cases. Independent reviewer also passes all 17.                                         |
+| `node tests/js/qnx-target-runtime-doctor.test.mjs`                                                                                                                                                                                          | 0; 47 host observation scenarios plus file/CLI boundaries.                                                                                   |
+| `pnpm typecheck`; `pnpm validate:docs`                                                                                                                                                                                                      | 0; root/adaptive projects, 24 components and 11 gate records.                                                                                |
+| Hosted checks at `13a0e49`                                                                                                                                                                                                                  | All nine workflows succeed; OFF and ON full renderer pass; ON integrated 49/49, corpus shards 4/4, SVG sanitizer 8/8 and HTTP sanitizer 1/1. |
+| Project-create regression with new archive assertions and original CLI source                                                                                                                                                               | 1 as expected; `package/svg/resolver.js` is absent.                                                                                          |
+| Project-create regression after reviewed `f49e61e` copy-list port                                                                                                                                                                           | 0; actual archive includes SVG resolver and Qt/adaptive entries; existing creation/refusal checks pass.                                      |
+| Fresh external dual consumer create/install; QNX and Marathon Metro production bundles                                                                                                                                                      | 0 for each; 445 packages installed, QNX 716,848-byte bundle and Marathon 716,874-byte bundle, two workers each.                              |
+
+Qt shared libraries are uninstrumented; leak detection remains disabled by
+the existing test configuration. One direct filter invocation lacked the
+offscreen platform and failed before tests; the corrected offscreen run
+passes unchanged pixel assertions. Raw test results, build flags and source
+hashes are in the [receipt](../validation/pr161-nested-roots-2026-11-14.md).
+The packaging slice changes no native source and reruns no native tests.
+Its two edited files exactly match published PR 159, with independent review.
+Required hosted CI for the packaging follow-up, QNX cross-build,
+physical-device and Marathon execution remain pending; no release gate changes.
+
+## PR 161 cross-build recipe correction — 2026-11-13
+
+The native consumer used inherited Release/O1 flags with selected GCC warning
+exceptions; public Qt libraries were O2. Its launcher reused upstream objects
+without independently checking flags/header closure, while project sources
+were recompiled. Device behavior and hashes stand as scoped evidence. Use a
+fresh build without that launcher for final combined qualification.
+[Corrected receipt](../validation/pr161-device-gallery-2026-11-13.md).
+
+## PR 161 gallery and target continuation — 2026-11-13
+
+Required checks passed at a52ffff. The current-source Pi run then exposed the
+SvgCss root import; it now uses the pinned CSS subpackage and has a failing/
+passing Metro regression. The twelve-card gallery renders on the real lean
+VM/public QtSvg runtime, including bundled/SVG/HTTPS images and live
+ForeignObject input blocking. Circle/group counters and rotation pause pass.
+The added nested-invalidation control fails without outward forwarding; all
+eight restored native host CTests pass. Prior review threads are resolved.
+This follow-up still needs its exact-head checks and independent review.
+[Artifacts, element table and rollback](../validation/pr161-device-gallery-2026-11-13.md).
+
+## PR 161 corpus continuation — 2026-11-13
+
+Packing retains 149 fixtures in 16 batches; typecheck and overlay checks pass. The Mac standalone native graph passed 8/8. The Linux release reproducer has JPEG-plugin limits; no new Debug or device pass is claimed.
+[Receipt](../validation/pr161-corpus-shards-2026-11-13.md).
+
 ## 2026-11-10 — PR 105 generator validation
 
 At `c09a5b19800c2d7d79268c3466b618aa20430ba2`, the hosted SDK, full renderer,

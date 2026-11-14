@@ -1,0 +1,31 @@
+test_attribution_output_escape_preserves_previous_runtime (__main__.StagingTest.test_attribution_output_escape_preserves_previous_runtime) ... ok
+test_existing_lock_refuses_concurrent_staging (__main__.StagingTest.test_existing_lock_refuses_concurrent_staging) ... ok
+test_failed_promotion_restores_previous_runtime (__main__.StagingTest.test_failed_promotion_restores_previous_runtime) ... note: no QtSvg build at /tmp/rnqnx-stage-test-j_n8x3s9/build/svg-qnx; the runtime will not decode SVG images
+ok
+test_imageformat_plugins_and_multiple_audit_notices_are_staged (__main__.StagingTest.test_imageformat_plugins_and_multiple_audit_notices_are_staged) ... ok
+test_imageformat_source_symlink_escape_preserves_previous_runtime (__main__.StagingTest.test_imageformat_source_symlink_escape_preserves_previous_runtime) ... ok
+test_imageformats_build_output_collision_is_rejected (__main__.StagingTest.test_imageformats_build_output_collision_is_rejected) ... ok
+test_malformed_audit_preserves_previous_runtime (__main__.StagingTest.test_malformed_audit_preserves_previous_runtime) ... ok
+test_malformed_second_audit_preserves_previous_runtime (__main__.StagingTest.test_malformed_second_audit_preserves_previous_runtime) ... ok
+test_missing_imageformat_plugin_preserves_previous_runtime (__main__.StagingTest.test_missing_imageformat_plugin_preserves_previous_runtime) ... ok
+test_missing_library_preserves_previous_runtime (__main__.StagingTest.test_missing_library_preserves_previous_runtime) ... ok
+test_missing_plugin_preserves_previous_runtime (__main__.StagingTest.test_missing_plugin_preserves_previous_runtime) ... ok
+test_missing_qt_dependency_preserves_previous_runtime (__main__.StagingTest.test_missing_qt_dependency_preserves_previous_runtime) ... ok
+test_missing_svg_plugin_preserves_previous_runtime (__main__.StagingTest.test_missing_svg_plugin_preserves_previous_runtime) ... ok
+test_output_symlink_is_rejected (__main__.StagingTest.test_output_symlink_is_rejected) ... ok
+test_protected_output_is_rejected (__main__.StagingTest.test_protected_output_is_rejected) ... ok
+test_readelf_failure_preserves_previous_runtime (__main__.StagingTest.test_readelf_failure_preserves_previous_runtime) ... ok
+test_separate_imageformats_notice_escape_preserves_previous_runtime (__main__.StagingTest.test_separate_imageformats_notice_escape_preserves_previous_runtime) ... ok
+test_separate_imageformats_source_notices_are_staged (__main__.StagingTest.test_separate_imageformats_source_notices_are_staged) ... ok
+test_separate_imageformats_source_output_collision_is_rejected (__main__.StagingTest.test_separate_imageformats_source_output_collision_is_rejected) ... ok
+test_source_symlink_escape_preserves_previous_runtime (__main__.StagingTest.test_source_symlink_escape_preserves_previous_runtime) ... ok
+test_success_replaces_runtime_and_hashes_actual_files (__main__.StagingTest.test_success_replaces_runtime_and_hashes_actual_files) ... ok
+test_svg_addon_is_staged_with_notices_and_dependency_closure (__main__.StagingTest.test_svg_addon_is_staged_with_notices_and_dependency_closure) ... ok
+test_svg_build_output_collision_is_rejected (__main__.StagingTest.test_svg_build_output_collision_is_rejected) ... ok
+test_svg_source_symlink_escape_preserves_previous_runtime (__main__.StagingTest.test_svg_source_symlink_escape_preserves_previous_runtime) ... ok
+test_terminated_publication_retains_recoverable_previous_runtime (__main__.StagingTest.test_terminated_publication_retains_recoverable_previous_runtime) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 7.156s
+
+OK

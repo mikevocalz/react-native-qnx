@@ -26,9 +26,25 @@ function(rnqnx_add_qt_views_target)
   add_library(rnqnx_views_qt STATIC
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtQuickItemFactory.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtExtraItems.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtModalQml.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QnxImageProvider.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageDiskCache.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/QtImageFetcher.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageFetchQueue.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageRefRegistry.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageLoadedNotifier.cpp"
+    # The image loader module decodes, encodes and holds ImageRefs for every
+    # app, not only those that mount the ExpoImage view.
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageDecode.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/BlurHash.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ThumbHash.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/BlurHashEncoder.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ThumbHashEncoder.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageEffects.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtQuickMountingLayer.cpp"
   )
+  find_package(Qt6 6.11.1 REQUIRED COMPONENTS Network)
+  target_link_libraries(rnqnx_views_qt PUBLIC Qt6::Network)
   target_sources(rnqnx_views_qt PRIVATE "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/QtTextInputQml.cpp")
   target_compile_definitions(rnqnx_views_qt PUBLIC RNQNX_ENABLE_TEXT_INPUT_CONTRACT=$<BOOL:${RNQNX_ENABLE_TEXT_INPUT_CONTRACT}>)
   if(RNQNX_ENABLE_TEXT_INPUT_CONTRACT)
@@ -71,6 +87,15 @@ function(rnqnx_add_qt_views_target)
   if(RNQNX_ENABLE_QT_NATIVE_UI OR RNQNX_ENABLE_QT_EXPO_IMAGE)
     target_link_libraries(rnqnx_views_qt PUBLIC rnqnx_qt_nativeui)
   endif()
+  if(RNQNX_ENABLE_QT_EXPO_IMAGE)
+    # The painted ExpoImage view: it draws with QPainter, so it needs no Qt
+    # module beyond Quick. The header is listed so AUTOMOC runs on it.
+    target_sources(rnqnx_views_qt PRIVATE
+      "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/views/image/ExpoImageItem.h"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ExpoImageItem.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/views/qt/image/ImageLayout.cpp")
+    set_target_properties(rnqnx_views_qt PROPERTIES AUTOMOC ON)
+  endif()
 
   # Qt's keyword macros collide with React Native's EventEmitter::emit.
   target_compile_definitions(rnqnx_views_qt PUBLIC QT_NO_KEYWORDS)
@@ -88,11 +113,19 @@ function(rnqnx_add_fabric_adapter_target)
 
   rnqnx_add_qt_views_target()
 
+  find_package(Qt6 6.11.1 REQUIRED COMPONENTS Network)
+
   add_library(rnqnx_fabric_adapter STATIC
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/ShadowViewMutationAdapter.cpp"
+    # QtRnsvgImageProvider (globbed below) constructs a QtImageCache, so the
+    # cache is defined here, once, and rnqnx_react_host reaches it through
+    # this target. Host tests that link only the adapter then resolve it too.
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtImageCache.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtTouchDispatcher.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtScrollBridge.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtScrollBridge.h"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtModalBridge.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtModalBridge.h"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtSwitchBridge.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtSwitchBridge.h"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtImageBridge.cpp"
@@ -103,6 +136,7 @@ function(rnqnx_add_fabric_adapter_target)
   target_link_libraries(rnqnx_fabric_adapter PUBLIC
     rnqnx_react_native_renderer
     rnqnx_views_qt
+    Qt6::Network
   )
   set_target_properties(rnqnx_fabric_adapter PROPERTIES AUTOMOC ON)
   if(RNQNX_ENABLE_QT_VIDEO)
@@ -149,19 +183,30 @@ function(rnqnx_add_fabric_adapter_target)
       message(FATAL_ERROR "RNQNX_ENABLE_QT_RNSVG needs react-native-svg 15.16.0 installed (pnpm install): ${rnsvg_cpp}")
     endif()
     set(rnsvg_generated "${RNQNX_REACT_QT_ROOT}/vnext/generated/react/renderer/components/rnsvg")
+    # The bridge is one file per kind of work (values, shapes, defs, text,
+    # shadow nodes, layout events, filters, images); the list is a glob so a
+    # new one needs no edit here.
+    file(GLOB rnsvg_bridge_sources CONFIGURE_DEPENDS
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtRnsvg*.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtRnsvg*.h"
+      "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtRnsvg*.h")
     target_sources(rnqnx_fabric_adapter PRIVATE
-      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtRnsvgBridge.cpp"
-      "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtRnsvgBridge.h"
+      ${rnsvg_bridge_sources}
       "${rnsvg_cpp}/RNSVGLayoutableShadowNode.cpp"
       "${rnsvg_generated}/EventEmitters.cpp"
       "${rnsvg_generated}/Props.cpp")
     target_include_directories(rnqnx_fabric_adapter SYSTEM PUBLIC
       "${RNQNX_REACT_QT_ROOT}/vnext/generated" "${rnsvg_cpp}")
+    # Only the three third-party translation units are relaxed: the react-native-svg
+    # package's RNSVGLayoutableShadowNode.cpp and the codegen output of its specs
+    # (unused parameters, unknown pragmas, deprecated React Native calls, signed
+    # comparisons). The QtRnsvg* bridge sources are ours and build with the full
+    # strict warning set.
     set_source_files_properties(
       "${rnsvg_cpp}/RNSVGLayoutableShadowNode.cpp"
       "${rnsvg_generated}/EventEmitters.cpp" "${rnsvg_generated}/Props.cpp"
-      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtRnsvgBridge.cpp" PROPERTIES COMPILE_OPTIONS
-      "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas;-Wno-deprecated-declarations;-Wno-sign-compare;-Wno-extra>")
+      PROPERTIES COMPILE_OPTIONS
+      "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas;-Wno-deprecated-declarations;-Wno-sign-compare>")
   endif()
   if(RNQNX_ENABLE_QT_NATIVE_UI OR RNQNX_ENABLE_QT_EXPO_IMAGE)
     # Props, events, shadow nodes and descriptors are generated from the specs
@@ -178,6 +223,10 @@ function(rnqnx_add_fabric_adapter_target)
     target_sources(rnqnx_fabric_adapter PRIVATE
       "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtNativeUiBridge.cpp"
       "${RNQNX_REACT_QT_ROOT}/vnext/include/react-native-qnx/fabric/QtNativeUiBridge.h")
+    if(RNQNX_ENABLE_QT_EXPO_IMAGE)
+      target_sources(rnqnx_fabric_adapter PRIVATE
+        "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtExpoImageBridge.cpp")
+    endif()
     foreach(library IN LISTS native_ui_libraries)
       set(native_ui_generated "${native_ui_generated_root}/${library}")
       set(native_ui_sources
@@ -194,6 +243,7 @@ function(rnqnx_add_fabric_adapter_target)
     target_include_directories(rnqnx_fabric_adapter SYSTEM PUBLIC
       "${RNQNX_REACT_QT_ROOT}/vnext/generated")
     set_source_files_properties("${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtNativeUiBridge.cpp"
+      "${RNQNX_REACT_QT_ROOT}/vnext/src/fabric/QtExpoImageBridge.cpp"
       PROPERTIES COMPILE_OPTIONS
       "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-Wno-unused-parameter;-Wno-unknown-pragmas>")
   endif()
@@ -220,6 +270,7 @@ function(rnqnx_add_react_host_target)
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxExceptionsManager.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxFileReaderModule.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxImageLoader.cpp"
+    "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxImageLoaderRefs.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QtImageCache.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxSegmentFetcher.cpp"
     "${RNQNX_REACT_QT_ROOT}/vnext/src/runtime/QnxWebSocketModule.cpp"
@@ -245,6 +296,9 @@ function(rnqnx_add_react_host_target)
   rnqnx_add_qt_svg_fabric_test()
   include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxQtRnsvgFabric.cmake)
   rnqnx_add_qt_rnsvg_fabric_test()
+  rnqnx_add_qt_rnsvg_image_fabric_test()
+  rnqnx_add_qt_rnsvg_corpus_test()
+  rnqnx_add_qt_rnsvg_values_test()
   rnqnx_enable_strict_warnings(rnqnx_react_host)
   if(RNQNX_ENABLE_ACCESSIBILITY_BRIDGE)
     include(${RNQNX_REACT_QT_ROOT}/cmake/RnqnxAccessibilityActions.cmake)

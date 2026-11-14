@@ -17,6 +17,18 @@ class RNQnxDrawerEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
+  struct OnGestureStart {
+      bool open;
+    };
+
+  struct OnGestureEnd {
+      bool open;
+    };
+
+  struct OnGestureCancel {
+      bool open;
+    };
+
   struct OnRequestChange {
       bool open;
     std::string reason;
@@ -25,6 +37,12 @@ class RNQnxDrawerEventEmitter : public ViewEventEmitter {
   struct OnTransitionEnd {
       bool open;
     };
+  void onGestureStart(OnGestureStart value) const;
+
+  void onGestureEnd(OnGestureEnd value) const;
+
+  void onGestureCancel(OnGestureCancel value) const;
+
   void onRequestChange(OnRequestChange value) const;
 
   void onTransitionEnd(OnTransitionEnd value) const;
