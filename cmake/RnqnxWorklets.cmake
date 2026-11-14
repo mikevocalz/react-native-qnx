@@ -62,6 +62,16 @@ function(rnqnx_add_worklets_target)
   )
   # Upstream stays exactly as published; only our platform files get strict flags.
   set_source_files_properties(${upstream_sources} "${patched}" PROPERTIES COMPILE_OPTIONS "-w")
+  # Worklets 0.13.1 uses standard algorithms in these files without including
+  # <algorithm>. Supply the header only to the affected upstream sources.
+  set_property(SOURCE
+    "${common}/worklets/RunLoop/EventLoop.cpp"
+    "${common}/worklets/Tools/JSISerializer.cpp"
+    "${common}/worklets/Tools/WorkletsJSIUtils.cpp"
+    APPEND PROPERTY COMPILE_OPTIONS "-include" "algorithm")
+  # Its string conversion also uses istream_iterator without <iterator>.
+  set_property(SOURCE "${common}/worklets/Tools/WorkletsJSIUtils.cpp"
+    APPEND PROPERTY COMPILE_OPTIONS "-include" "iterator")
   target_include_directories(rnqnx_worklets
     PUBLIC "${RNQNX_REACT_QT_ROOT}/vnext/include"
     # Reanimated and Gesture Handler include <worklets/Compat/...> from here.

@@ -1,0 +1,46 @@
+{
+  "clang": "Debian clang version 19.1.7 (3+b1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /workspace/scratch/853552216e74/qnx-clang19/usr/lib/llvm-19/bin",
+  "cmake": "cmake version 3.31.10",
+  "ninja": "1.13.2.git.kitware.jobserver-pipe-1",
+  "node": "v26.13.1",
+  "pnpm": "12.18.0",
+  "qt": "6.11.1",
+  "compiler_packages": [
+    {
+      "package": "clang-19",
+      "file": "/workspace/scratch/853552216e74/qnx-clang19/clang-19_19.1.7-3+b1_amd64.deb",
+      "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/clang-19_19.1.7-3+b1_amd64.deb",
+      "bytes": 116584,
+      "sha256": "bbb74458d782b7792b61b0eed92746df5e6d033778c045cf8c2b3835b7c4efc4"
+    },
+    {
+      "package": "libclang-cpp19",
+      "file": "/workspace/scratch/853552216e74/qnx-clang19/libclang-cpp19_19.1.7-3+b1_amd64.deb",
+      "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/libclang-cpp19_19.1.7-3+b1_amd64.deb",
+      "bytes": 13191148,
+      "sha256": "a7d2b6df51050834f6ea5c0d5e34869c2298b0bcdaa91eff17ba3db2cd545c47"
+    },
+    {
+      "package": "libllvm19",
+      "file": "/workspace/scratch/853552216e74/qnx-clang19/libllvm19_19.1.7-3+b1_amd64.deb",
+      "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/libllvm19_19.1.7-3+b1_amd64.deb",
+      "bytes": 25978316,
+      "sha256": "db0d614d61345ca710fb73e75105f1ec6e38898fa7b3aa99fa7eb7d8b0a11d57"
+    },
+    {
+      "package": "libclang-common-19-dev",
+      "file": "/workspace/scratch/853552216e74/qnx-clang19/libclang-common-19-dev_19.1.7-3+b1_amd64.deb",
+      "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/libclang-common-19-dev_19.1.7-3+b1_amd64.deb",
+      "bytes": 739932,
+      "sha256": "4018e40e2d4144fe38c45822e68cca63c1bf6c7872c3073ebb262ad4b2f9b8bc"
+    },
+    {
+      "package": "libclang-rt-19-dev",
+      "file": "/workspace/scratch/853552216e74/qnx-clang19/libclang-rt-19-dev_19.1.7-3+b1_amd64.deb",
+      "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/libclang-rt-19-dev_19.1.7-3+b1_amd64.deb",
+      "bytes": 3690176,
+      "sha256": "0c03a0a8fa37228e2de6c36d02ff0806643885c515a8137d1bcd22e248497cd6"
+    }
+  ],
+  "compiler_provenance": "Same locally extracted official Debian Clang19 toolchain as the archived159 host graph; no compiler switch during149 validation."
+}

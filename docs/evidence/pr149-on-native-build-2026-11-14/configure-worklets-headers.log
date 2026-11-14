@@ -1,0 +1,37 @@
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Configuring react-native-qnx for host development
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Qt 6.11.1 found; building Qt Quick host targets (minimum 6.11.1)
+icu dir: /usr/lib/x86_64-linux-gnu
+-- Threads enabled.
+-- Doxygen disabled.
+-- Go bindings disabled.
+-- Found Python module pygments
+-- Found Python module pygments.lexers.c_cpp
+-- Found Python module yaml
+-- Boost.Context: architecture x86_64, binary format elf, ABI sysv, assembler gas, suffix .S, implementation fcontext
+-- react-native-worklets 0.13.1 from /workspace/scratch/853552216e74/pr159/node_modules/.pnpm/react-native-worklets@0.13.1_@babel+core@7.29.7_supports-color@8.1.1__@react-native+met_bea2153ec027bcc085d4ac7d8422a7d2/node_modules/react-native-worklets
+-- react-native-reanimated 4.7.1 from /workspace/scratch/853552216e74/pr159/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated
+rngesturehandler_codegen: 11 files in /workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/gesture-handler/fabric/react/renderer/components/rngesturehandler_codegen
+-- react-native-gesture-handler 3.4.0 from /workspace/scratch/853552216e74/pr159/node_modules/.pnpm/react-native-gesture-handler@3.4.0_react-native@0.88.1_patch_hash=93cb95dac314df9c65228_b093831d6a6894fd0849950c78db78b1/node_modules/react-native-gesture-handler
+-- Configuring done (5.4s)
+-- Generating done (2.0s)
+-- Build files have been written to: /workspace/scratch/853552216e74/pr159/build/host-review159-clang

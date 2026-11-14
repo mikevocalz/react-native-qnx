@@ -45,6 +45,15 @@ function(rnqnx_add_reanimated_target)
   string(REPLACE "${holder_from}" "#else\nusing SynchronouslyUpdateUIPropsFunction" holder "${holder}")
   file(WRITE "${patched}/reanimated/Tools/PlatformDepMethodsHolder.h" "${holder}")
 
+  # These 4.7.1 enum headers use uint8_t without including its definition.
+  # Prefix generated copies so every consumer sees the missing standard header.
+  foreach(enum_header IN ITEMS
+      "CSS/common/filters/FilterOp.h" "CSS/common/transforms/TransformOp.h")
+    file(READ "${common}/reanimated/${enum_header}" enum_header_source)
+    file(WRITE "${patched}/reanimated/${enum_header}"
+      "#include <cstdint>\n\n${enum_header_source}")
+  endforeach()
+
   file(READ "${common}/reanimated/NativeModules/ReanimatedModuleProxy.cpp" proxy)
   set(proxy_from "#if __APPLE__\n  for (const auto &[shadowNodeFamily, props] : synchronousUpdatesBatch) {")
   string(FIND "${proxy}" "${proxy_from}" proxy_at)
@@ -82,6 +91,13 @@ function(rnqnx_add_reanimated_target)
   set_source_files_properties(
     ${upstream_sources} "${patched}/reanimated/NativeModules/ReanimatedModuleProxy.cpp" ${generated_sources}
     PROPERTIES COMPILE_OPTIONS "-w")
+  # The enum parsers and vector math also omit their own standard headers.
+  set_property(SOURCE
+    "${common}/reanimated/CSS/common/filters/FilterOp.cpp"
+    "${common}/reanimated/CSS/common/transforms/TransformOp.cpp"
+    APPEND PROPERTY COMPILE_OPTIONS "-include" "stdexcept")
+  set_property(SOURCE "${common}/reanimated/CSS/common/transforms/vectors.cpp"
+    APPEND PROPERTY COMPILE_OPTIONS "-include" "cmath")
   # The patched directory first, so its PlatformDepMethodsHolder.h wins.
   target_include_directories(rnqnx_reanimated
     PUBLIC "${RNQNX_REACT_QT_ROOT}/vnext/include"

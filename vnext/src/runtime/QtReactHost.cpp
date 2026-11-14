@@ -731,6 +731,7 @@ class QtReactHost::Impl {
   // Native modules own asynchronous operations beyond a temporary JS lookup.
   // Cache one instance per host, as the platform TurboModuleManager does.
   std::unordered_map<std::string, std::shared_ptr<facebook::react::TurboModule>> turboModules;
+  bool turboModuleBindingInstalled{false};
   views::ImageLoadedNotifier::Token imageLoadedSubscription{0};
   std::unordered_map<int, std::unique_ptr<QTimer>> timers;
   /// Drives the NativeAnimated `onRender` callback while at least one animation
@@ -808,7 +809,7 @@ bool QtReactHost::evaluate(
         : QUrl::fromLocalFile(QFileInfo(sourceLocation).absoluteFilePath())
               .toString(QUrl::FullyEncoded)
               .toStdString();
-    if (const auto found = impl_->turboModules.find(QnxSourceCode::kModuleName);
+    if (const auto found = impl_->turboModules.find(std::string(QnxSourceCode::kModuleName));
         found != impl_->turboModules.end()) {
       if (auto source = std::dynamic_pointer_cast<QnxSourceCode>(found->second))
         source->setScriptUrl(impl_->scriptUrl);
@@ -960,6 +961,10 @@ void QtReactHost::installGlobalEvalWithSourceUrl() {
 }
 
 void QtReactHost::installTurboModuleBinding() {
+  // RN defines nativeModuleProxy as a read-only global for this runtime.
+  // Keep the binding, module cache, and image observer across repeated requests.
+  if (impl_->turboModuleBindingInstalled) return;
+
   // RN 0.88 deprecates this invoker in favor of ReactInstance's buffered
   // executor. This standalone synchronous host does not own a ReactInstance
   // or its callable-module queue. Keep RN's compatibility path, just as
@@ -985,7 +990,7 @@ void QtReactHost::installTurboModuleBinding() {
 
   // View events must be forwarded even when JavaScript never looks up
   // ImageLoader. One host-owned subscription also avoids duplicate forwarding
-  // when the binding is reinstalled or the loader is created later.
+  // when installation is requested again or the loader is created later.
   views::ImageLoadedNotifier::shared().unsubscribe(impl->imageLoadedSubscription);
   impl->imageLoadedSubscription = views::ImageLoadedNotifier::shared().subscribe(
       [callInvoker](const views::ImageLoadedEvent& event) {
@@ -1117,6 +1122,7 @@ void QtReactHost::installTurboModuleBinding() {
         if (module) impl->turboModules.emplace(name, module);
         return module;
       });
+  impl_->turboModuleBindingInstalled = true;
 }
 
 void QtReactHost::installPlatformConstants() {

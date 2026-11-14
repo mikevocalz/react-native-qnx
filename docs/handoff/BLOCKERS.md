@@ -2,8 +2,8 @@
 
 ## PR 149 shutdown follow-up — 2026-11-14
 
-PR 149 stays draft. QNX SDP/device validation of the shutdown patch is unavailable here. Busy-JS delivery is still 0/40 in the historical trial; dedicated React JS scheduling and remaining recognizers/animation features remain open. Independent source review of the shutdown slice found no blocker. A fresh CodeRabbit service review is unavailable because CLI agent login requires authentication unsupported in this environment.
-[Receipt, commands and limits](../validation/pr149-shutdown-2026-11-14.md).
+PR 149 stays draft. Current-patch QNX SDP/device qualification is unavailable here. Historical busy-JS delivery was 0/40; dedicated React JS scheduling, remaining recognizers, layout animations and scroll handlers remain open. The local native ON result establishes static-library compilation and integrated host tests; the playground host does not link all three integration libraries, so it does not establish a Worklets application runtime. Final-head required hosted checks must pass. The full local JavaScript runner is blocked by this environment's AF_UNIX socket restriction; focused suites passed without changing that gate. Independent source reviews found no remaining blocker in the reviewed changes. A fresh CodeRabbit service review remains unavailable because its CLI agent login is unsupported here.
+[Shutdown and integration receipt](../validation/pr149-shutdown-2026-11-14.md); [native ON build receipt](../validation/pr149-on-native-build-2026-11-14.md).
 
 ## PR 149 frame/mount continuation — 2026-11-13
 
@@ -15,11 +15,9 @@ Pi frame probe passed. The importer review reported zero findings.
 
 ## PR 159 review follow-up — 2026-11-14
 
-Merge qualification still needs exact-head required hosted checks, full Hermes tests for retained SourceCode and view-event forwarding, and current-target evidence. The full local JS runner cannot open its Wayland fixture Unix socket (EPERM). CodeRabbit CLI is signed out. Historical screenshot-only input observations are explicitly incomplete receipts; no host, revision or exit status has been invented.
-[Source, commands, limits and rollback](../validation/pr159-review-followup-2026-11-14.md).
-Main/SVG integration includes PR 161 follow-up `13a0e49`; both evidence sets are retained. Transactional imageformat staging reads the selected `IMAGEFORMATS_SRC` notices and all attribution inputs; 25 host staging fixtures pass with a failing old-source control. The final code source is `252b128`; its complete source-tree identities and 55 SHA-256 entries are recorded in the receipt.
+Remaining acceptance work is exact-head required hosted CI plus current-target and release-artifact evidence. Local SourceCode and image-event host regressions are now proven by candidate/control/restoration runs. Codec attribution output, release-app animation and reproducible device-run receipts are still missing. The full local JS runner is blocked by AF_UNIX EPERM; CodeRabbit CLI remains signed out. All 11 release gates remain pending.
 
-Independent review corrected the initially blank paused animation, with failing direct and deleted-source prefetch controls. Fresh image Debug ASan/UBSan passes 3/3 CTests and 73 QtTest entries. Reconciliation found a stale generated Release MOC that omitted the new disk-clear HTTP slot; after refreshing only those build artifacts, all 6/6 Release CTests and 126 entries pass. Prior 125-entry logs remain qualified and preserved. Pinned Hermes and Metro builds succeeded, but GCC stopped on a Clang-specific upstream React Native pragma before linking the host test; the supported Clang retry and both new host regressions remain pending. Exact-head CI and current-target gates remain open.
+[Source, commands, hashes, limitations and rollback](../validation/pr159-review-followup-2026-11-14.md). Image results retain source 252b128; full-host results name b6bf7eb and a separate 55-file source inventory. Initial and restored host binaries share SHA-256 55af47f994614c2ca0110e3dd77004822b0c479772631c7afe4fbb2355712cd1. The consumer merge changes no tested source-tree identity. Prior 125-entry Release logs remain preserved with their stale-MOC omission; the corrected 126-entry run executes that disk-clear regression. Host ASan scope and uninstrumented dependencies are stated explicitly.
 
 ## PR 159 drawer route and pointer correction — 2026-11-13
 
@@ -100,17 +98,21 @@ resize checks remain pending. Other image-loader/navigation gaps stay open.
 The missing command-handler initializer is fixed locally. Merge still requires the new head's required checks and review; the handoff's image-loader gaps remain open.
 [Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
 
-## PR 161 current native candidate (2026-11-14)
+## PR 161 current native and consumer candidate (2026-11-14)
 
 Local software blockers are corrected: nested child removal and nested-root
 bounds have failing/passing controls, the GCC convolution fixture is
 deterministic, and the main merge preserves transactional QtSvg staging.
 The standalone host graph passes 8/8; all 17 staging fixtures pass.
 
-Acceptance still needs final-head required hosted checks, including all four
-corpus shards with the existing timeouts. The original head timed out while
-mounting batches 13/14; these correctness fixes do not establish its timing
-cause. A fresh combined candidate build with licensed QNX SDP 8.0.5 and the
+All nine hosted workflows now pass at `13a0e49`, including both renderer lanes
+and all four corpus shards at the original limits. The earlier timeout cause
+remains unestablished. The standalone consumer packaging omission is corrected
+with the exact reviewed PR 159 port; original-source failure control and a
+fresh dual consumer install plus both Metro bundles pass. The packaging
+follow-up still requires its own published-head hosted checks.
+
+A fresh combined candidate build with licensed QNX SDP 8.0.5 and the
 selected public Qt closure, followed by the actual target SVG cases, is also
 required. This Cloud environment has neither that SDP nor a connected target.
 An operator with access to the existing build host and authorized target must

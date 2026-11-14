@@ -2,8 +2,8 @@
 
 ## PR 149 shutdown follow-up — 2026-11-14
 
-Found and fixed receiver lifetime races in UI/GUI queue posting and post-shutdown frame delivery. Added real-Qt gated regressions, exercised the original source as a negative control, and reviewed the fix independently. Added sanitizer coverage to the ON renderer lane and explicit compilation of Worklets/Reanimated/Gesture Handler in that lane; defaults remain OFF. Recorded current host evidence separately from prior device observations.
-[Receipt, commands and limits](../validation/pr149-shutdown-2026-11-14.md).
+Fixed receiver lifetime races and post-shutdown callback delivery, with deterministic original-source controls and independent review. Integrated the reviewed SVG/Expo heads while preserving owner-thread dispatch, mount reporting, retained modules, imageLoaded forwarding and reverse teardown. Real full-host compilation exposed the SourceCode map-key conversion and repeated TurboModule-binding installation defects; both corrections and the Expo regressions are retained. Diagnosed all ten failed workflows on `11ff6f2`: six shared the nullable TurboModuleRegistry omission in the gallery layout fixture, and four stopped at the already-corrected SourceCode lookup. Added a two-line layout fixture correction, then passed its original-source control and ten ordered shared-process suites. The ON native build exposed missing standard headers in pinned upstream packages; 26 CMake adapter lines supply them without altering installed package bytes, pins or warning policy. Compiled all three optional libraries, passed all 60 QtReactHost cases, refreshed stale header consumers and verified the tested executable hash stayed unchanged. Recorded commands, failures, final artifact hashes and evidence limits separately from historical device receipts.
+[Shutdown and integration receipt](../validation/pr149-shutdown-2026-11-14.md); [native ON build receipt](../validation/pr149-on-native-build-2026-11-14.md).
 
 ## PR 149 frame/mount continuation — 2026-11-13
 
@@ -15,11 +15,9 @@ Pi frame probe passed. The importer review reported zero findings.
 
 ## PR 159 review follow-up — 2026-11-14
 
-Reviewed the actual d862625 source and open findings, reproduced both CI failures, and implemented narrow image/router/consumer fixes with failing old-source controls. Independently reviewed and integrated the keyboard/modal corrections. Host Qt and affected JS tests pass; a real generated external app bundles for both targets. Full-JS socket restrictions, pending full-host checks and absent current-target evidence are recorded without promoting a release gate.
-[Source, commands, limits and rollback](../validation/pr159-review-followup-2026-11-14.md).
-Main/SVG integration includes PR 161 follow-up `13a0e49`; both evidence sets are retained. Transactional imageformat staging reads the selected `IMAGEFORMATS_SRC` notices and all attribution inputs; 25 host staging fixtures pass with a failing old-source control. The final code source is `252b128`; its complete source-tree identities and 55 SHA-256 entries are recorded in the receipt.
+Preserved the GCC toolchain failure and initial Clang source/runtime failures. Corrected the SourceCode map key conversion and made repeated TurboModule binding installation preserve the existing binding/cache/observer. Independent review found no remaining issue in those narrow fixes. The unchanged 59-case host runner passes on b6bf7eb, fails only the two new regressions with five original source files, then passes after exact restoration. Merged the independently reviewed identical standalone SVG CLI port 3b24f5c and retained both evidence sets.
 
-Independent review corrected the initially blank paused animation, with failing direct and deleted-source prefetch controls. Fresh image Debug ASan/UBSan passes 3/3 CTests and 73 QtTest entries. Reconciliation found a stale generated Release MOC that omitted the new disk-clear HTTP slot; after refreshing only those build artifacts, all 6/6 Release CTests and 126 entries pass. Prior 125-entry logs remain qualified and preserved. Pinned Hermes and Metro builds succeeded, but GCC stopped on a Clang-specific upstream React Native pragma before linking the host test; the supported Clang retry and both new host regressions remain pending. Exact-head CI and current-target gates remain open.
+[Source, commands, hashes, limitations and rollback](../validation/pr159-review-followup-2026-11-14.md). Image results retain source 252b128; full-host results name b6bf7eb and a separate 55-file source inventory. Initial and restored host binaries share SHA-256 55af47f994614c2ca0110e3dd77004822b0c479772631c7afe4fbb2355712cd1. The consumer merge changes no tested source-tree identity. Prior 125-entry Release logs remain preserved with their stale-MOC omission; the corrected 126-entry run executes that disk-clear regression. Host ASan scope and uninstrumented dependencies are stated explicitly.
 
 ## PR 159 drawer route and pointer correction — 2026-11-13
 
@@ -100,7 +98,7 @@ resize checks remain pending. Other image-loader/navigation gaps stay open.
 Read the November 13 handoff and current failed CI. Fixed the missing video command-handler initializer and validated the bounded table/JS scope. No Pi app or boot change was made.
 [Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
 
-## PR 161 nested SVG and staging integration (2026-11-14)
+## PR 161 nested SVG, staging and consumer integration (2026-11-14)
 
 Codex inspected the current PR, prior review threads and failing corpus logs;
 kept timeouts and tolerances unchanged; and corrected two missed nested-root
@@ -120,6 +118,22 @@ handoff set and the canonical readiness evidence, and regenerated project
 state. No current QNX or device result is claimed; keep the native PR draft
 pending the documented target work. External CodeRabbit authentication was
 unavailable; the receipt identifies agent reviews separately.
+
+Observed all nine workflows green at `13a0e49`; downloaded the ON job log and
+recorded its 49/49 integrated passes, four passing corpus shards, 8/8 standalone
+SVG sanitizer passes and 1/1 HTTP sanitizer pass. Existing review threads are
+resolved. The successful run does not identify the earlier timeout cause.
+
+Found the standalone CLI's package staging list omitted the SVG resolver and
+other manifest-listed public entry files. Ported only the reviewed CLI list
+and actual-archive regression from published PR 159 `f49e61e`. The test fails
+at the missing resolver with original source and passes with the port. An
+independent reviewer verified both complete blobs match PR 159 and found no
+blocker. Created a fresh external dual consumer, installed its 445-package
+graph and produced QNX and Marathon Metro bundles with two workers, all exit 0. Recorded archive/source/bundle hashes and raw command logs. No native code,
+dependency pin or repository lockfile changed; no native build or execution
+was repeated for this slice. Updated the receipt, handoff set and readiness
+evidence and regenerated project state; follow-up CI and target gates remain.
 
 ## PR 161 cross-build recipe correction — 2026-11-13
 

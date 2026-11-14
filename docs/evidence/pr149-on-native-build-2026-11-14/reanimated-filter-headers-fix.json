@@ -1,0 +1,31 @@
+{
+  "base_commit": "2f3f208e2d925b42ec8b3ce2e60f7db725bd67c0",
+  "failed_build_exit_code": 1,
+  "failure_log": "/workspace/scratch/853552216e74/pr159/build/host-review149-on-evidence/build-worklets-headers.log",
+  "cause": "Pinned Reanimated4.7.1 FilterOp.h uses uint8_t without <cstdint>, and FilterOp.cpp throws std::invalid_argument without <stdexcept>.",
+  "adapter_fix": "Generated copies prepend <cstdint> to FilterOp.h and TransformOp.h at the existing override include prefix; source-specific stdexcept for their two parser cpp files, cmath for vectors.cpp; upstream package bytes, pins and warning policy unchanged.",
+  "upstream_sha256": {
+    "node_modules/react-native-reanimated/package.json": "48f6747c1b290642a1391402d2b8f342ee2c141840a9c7a12afe0f72e55c170c",
+    "node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/filters/FilterOp.cpp": "431cf27c0bba392c821ef13e15c83386bef5a9be10785dc12a93b47c70825f48",
+    "node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/filters/FilterOp.h": "8ab82da0b7e22f5e1ab0f3e50c0c391f2f565ff2c7eba3cdfe902075db00c3af",
+    "node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/transforms/TransformOp.cpp": "67b65bedaec7225b40bb278101fde501dad18d15fff0621717d6716c6578713c",
+    "node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/transforms/TransformOp.h": "e929e7664ad6a8a5554d1a7c1aaf6f442df03fe097485dcffa61dfeb74840795",
+    "node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/transforms/vectors.cpp": "7aa9e90b2da403e3967269ed2d0c7679c26fbd1a7870bcd7f19b7403cf288fde",
+    "node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/transforms/vectors.h": "0ff5bc150dc2f9635866afbf5ec879afc3bf99deb79c24e88534df28440dd63e"
+  },
+  "cmake_candidate_sha256": "22f01cdbd5e8195da6fec0cf32617b5eaade2a311cfa13d956445eeb3dffac52",
+  "keep_going_log": "/workspace/scratch/853552216e74/pr159/build/host-review149-on-evidence/build-upstream-headers.log",
+  "keep_going_exit_code": 1,
+  "generated_headers": {
+    "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/filters/FilterOp.h": {
+      "bytes": 384,
+      "sha256": "048638ae40ffc60c190c924d7b1719b982c3e8fcc0a88c2b92800584bf688a52",
+      "original_text_preserved_after_prefix": true
+    },
+    "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h": {
+      "bytes": 427,
+      "sha256": "0df38913809edad65c70d84bcfde629fc0c418bfa2a87da2a95b9f5f33434b9c",
+      "original_text_preserved_after_prefix": true
+    }
+  }
+}

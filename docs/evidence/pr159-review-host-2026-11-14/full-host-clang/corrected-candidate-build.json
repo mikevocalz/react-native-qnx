@@ -1,0 +1,18 @@
+{
+  "source_commit": "70c170c1bed83c3cbbb8ae6f5bcae48cacea218e",
+  "source_tree": "7768437834aa482d4f7df60df3d99b75e09b4f6a",
+  "build_exit_code": 0,
+  "build_log": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/build-sourcecode-fix.log",
+  "parallel": 4,
+  "autogen_parallel": 2,
+  "executable": {
+    "path": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/bin/qt_react_host_host_test",
+    "bytes": 146402464,
+    "sha256": "d94f6e919ea10bbbe6e13b4fdec0be3ae35bf77e0a580216a2ab4f17039821e8"
+  },
+  "metro_bundle": {
+    "path": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/rnqnx-playground.bundle.js",
+    "bytes": 784360,
+    "sha256": "761ef40b9100ae5eec2a9ee830e4a24a33d45554bf7a9784673c27cc5b6ea817"
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "reason": "Regenerate only previously compiled Reanimated objects whose recorded dependencies used the original enum headers, so the new higher-priority generated header copies are re-resolved in this reused cache.",
+  "objects_removed_for_recompile": []
+}
