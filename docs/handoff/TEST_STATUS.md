@@ -10,7 +10,8 @@ metadata/click transport. Pi captures show hover, keyboard focus and Enter
 navigation; the final binary/HBC repeat navigation and image APIs. All 34
 standalone QML cases pass in Release and ASan/UBSan. The transplanted Linux host
 suite retains two separate failures, so only its lifetime case is qualified.
-Inherited cross-build flags/object reuse are corrected in the receipts. A fresh
+Inherited cross-build flags/object reuse are corrected in the receipts. CI found cross-test mock caching; the settlement case now runs in a child
+process and the four router tests pass in shared-runner order. A fresh
 combined build and exact-head CI/review remain required before final promotion.
 [Sources, artifacts, limits and rollback](../validation/pr159-drawer-runtime-2026-11-13.md).
 

@@ -75,6 +75,16 @@ checks and independent review are required after publication. The CodeRabbit
 CLI quota currently prevents another review; no completed review is claimed
 for this continuation.
 
+## Shared-runner isolation follow-up
+
+Validation at 2675a9d exposed an import-order failure: the settlement test's
+Module._load mock left drawerOptions cached with a different Keyboard object,
+so the following native drawer test saw zero dismissals. The settlement body
+now runs in a child process; the wrapper leaves the shared module cache alone.
+Settlement, native drawer, rendering and tab-options tests pass when imported
+in the CI runner's order in one parent process. Typecheck passes. This changes
+only test isolation and does not change the recorded device binary/HBC.
+
 ## Pi 400 results and provenance
 
 The QNX SDP 8.0.5 AArch64 build passes. The inherited consumer is Release/O1

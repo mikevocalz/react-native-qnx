@@ -46,7 +46,8 @@
       "drawerCommit": "874ea81",
       "receipt": "docs/validation/pr159-drawer-runtime-2026-11-13.md",
       "status": "bounded Pi 400 navigation/API and host regression proof; two unrelated transplanted-host failures remain; clean combined build, exact-head CI and review pending",
-      "crossBuild": "native O1 with selected strict-warning exceptions; Qt O2; inherited upstream object reuse has no independent flag/header-closure audit"
+      "crossBuild": "native O1 with selected strict-warning exceptions; Qt O2; inherited upstream object reuse has no independent flag/header-closure audit",
+      "testIsolation": "2675a9d validate failed on cross-test mock caching; child-process settlement case fixes ordered router import sequence; new-head CI pending"
     }
   },
   "gates": [
