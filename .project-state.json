@@ -48,7 +48,13 @@
     "pr159ImageResize": {
       "reviewedAt": "2026-11-13",
       "receipt": "docs/validation/pr159-image-resize-2026-11-13.md",
-      "status": "30 native host cases passed; growth and initial-decode negative controls fail; review finding fixed; exact-head CI and target pending"
+      "status": "30 native host cases and exact c2badc4 hosted checks passed; Pi 400 resize/cache/ImageRef/blurhash/GIF start-stop passed; driver CI and wider loader/navigation work pending"
+    },
+    "pr159ImageDevice": {
+      "reviewedAt": "2026-11-13",
+      "implementationCommit": "c2badc4",
+      "receipt": "docs/validation/pr159-device-image-2026-11-13.md",
+      "status": "scoped Pi 400 custom-image proof; no stock QSTI/Marathon/performance claim"
     }
   },
   "activeMilestone": "v1 preparation; release gates remain open",

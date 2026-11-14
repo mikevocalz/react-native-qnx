@@ -1,5 +1,15 @@
 # NEXT_ACTIONS.md
 
+## PR 159 image device continuation — 2026-11-13
+
+The c2badc4 implementation head passed all hosted checks. On the custom-image
+Pi 400, the new Zustand gallery driver shows a second image load after growth
+from 20 to 240 pixels, successful cache/ImageRef/blurhash APIs, GIF frame
+changes after start and stable pixels after stop. Window size remains 1280x800.
+The loader I/O, cache recovery, redirects, navigation and wider conformance
+work remains open. This driver needs its own CI and review.
+[Evidence and rollback](../validation/pr159-device-image-2026-11-13.md).
+
 ## PR 159 image resolution continuation — 2026-11-13
 
 Growing a downscaled still image now schedules an adequate decode, respecting
