@@ -1,5 +1,17 @@
 # Current state
 
+## PR 161 gallery and target continuation — 2026-11-13
+
+Required checks passed at a52ffff. The current-source Pi run then exposed the
+SvgCss root import; it now uses the pinned CSS subpackage and has a failing/
+passing Metro regression. The twelve-card gallery renders on the real lean
+VM/public QtSvg runtime, including bundled/SVG/HTTPS images and live
+ForeignObject input blocking. Circle/group counters and rotation pause pass.
+The added nested-invalidation control fails without outward forwarding; all
+eight restored native host CTests pass. Prior review threads are resolved.
+This follow-up still needs its exact-head checks and independent review.
+[Artifacts, element table and rollback](../validation/pr161-device-gallery-2026-11-13.md).
+
 Start with the [2026-11-13 handoff](HANDOFF_2026-11-13.md): it explains how to
 load and control the app on the Pi 400, what is merged, and what is open.
 The sections below keep their original dates.

@@ -8,6 +8,8 @@
 
 #include <QElapsedTimer>
 #include <QPointer>
+#include <QQuickWindow>
+#include <QSignalSpy>
 
 #include <cmath>
 #include <limits>
@@ -613,6 +615,31 @@ class RnsvgSceneTest final : public QObject {
     VERIFY_PX(img, 110, 10, Qt::green);
     QVERIFY(nested->isNested());
     QVERIFY(!nested->isVisible());     // it paints through the outer root only
+  }
+
+  void nestedPropChangesScheduleTheVisiblePaintingRoot() {
+    QQuickWindow window;
+    window.resize(100, 100);
+    Scene s(100, 100);
+    s.root.setParentItem(window.contentItem());
+    auto* nested = new RnsvgRootItem(&s.root);
+    nested->setSize(QSizeF(60, 60));
+    RootProps rp;
+    rp.bbWidth = px(60); rp.bbHeight = px(60);
+    nested->setRootProps(rp);
+    auto* child = add(nested, rect(0, 0, 40, 40, Qt::red));
+    QSignalSpy layouts(&s.root, &RnsvgRootItem::sceneLaidOut);
+    window.show();
+    QTRY_VERIFY_WITH_TIMEOUT(layouts.count() > 0, 2000);
+    QTRY_VERIFY_WITH_TIMEOUT(!window.grabWindow().isNull(), 2000);
+    layouts.clear();
+    child->setProps(rect(0, 0, 40, 40, Qt::blue));
+    // No direct render()/layoutScene(): a retained descendant prop update must
+    // schedule the outer window's actual painting root, not the hidden root.
+    QTRY_VERIFY_WITH_TIMEOUT(layouts.count() > 0, 2000);
+    const QImage frame = window.grabWindow();
+    QVERIFY(!frame.isNull());
+    QCOMPARE(frame.pixelColor(20, 20), QColor(Qt::blue));
   }
 
   void nestedSvgElementsTakeTouches() {

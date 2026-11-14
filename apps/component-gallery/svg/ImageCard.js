@@ -1,11 +1,12 @@
 const React = require('react');
 const Svg = require('react-native-svg').default;
-const { Defs, ClipPath, Circle, Image, Rect } = require('react-native-svg');
+const { Defs, ClipPath, Circle, Image, Rect, Text } = require('react-native-svg');
 const { SvgCardFrame } = require('./SvgCardFrame');
 
 // A 2x2 PNG (red, green, blue, white) as a data: URI.
 const PIXELS =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEklEQVR4nGP4z8DwHwyBNBgAAEnICff5q7YNAAAAAElFTkSuQmCC';
+const REMOTE = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80';
 const BADGE =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(
@@ -18,9 +19,9 @@ function ImageCard() {
   return (
     <SvgCardFrame
       title="Image"
-      detail="Image href from a data URI, a bundled asset and an SVG document; preserveAspectRatio; clipPath; opacity"
+      detail="Image href from data, bundled PNG, SVG document and HTTPS JPEG; preserveAspectRatio; clipPath; opacity"
     >
-      <Svg width="100%" height={150} viewBox="0 0 560 150">
+      <Svg width="100%" height={220} viewBox="0 0 560 220">
         <Defs>
           <ClipPath id="round">
             <Circle cx="75" cy="75" r="55" />
@@ -69,6 +70,17 @@ function ImageCard() {
           clipPath="url(#round)"
         />
         <Image x="290" y="85" width="50" height="50" href={{ uri: BADGE }} />
+        <Text x="430" y="140" fontSize="11" fill="#9dafc2">
+          HTTPS JPEG
+        </Text>
+        <Image
+          x="430"
+          y="150"
+          width="120"
+          height="60"
+          href={{ uri: REMOTE }}
+          preserveAspectRatio="xMidYMid slice"
+        />
       </Svg>
     </SvgCardFrame>
   );

@@ -1,6 +1,7 @@
 const React = require('react');
 const { View } = require('react-native');
-const { SvgXml, SvgCss, SvgAst, parse } = require('react-native-svg');
+const { SvgXml, SvgAst, parse } = require('react-native-svg');
+const { SvgCss } = require('react-native-svg/css');
 const { SvgCardFrame } = require('./SvgCardFrame');
 
 const XML = `<svg width="120" height="80" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">

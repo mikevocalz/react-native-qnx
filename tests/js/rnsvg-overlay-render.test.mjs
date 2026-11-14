@@ -61,6 +61,8 @@ module.exports = {
 // One literal require per module: Metro resolves them statically.
 const entryCode = `
 const React = require('react');
+const XmlGalleryCard = require(${JSON.stringify(path.join(root, 'apps/component-gallery/svg/XmlCard.js'))}).Component;
+const CssComponent = require('react-native-svg/css').SvgCss;
 const mod = {
   tags: require('react-native-svg/src/xmlTags').tags,
   xml: require('react-native-svg/src/xml'),
@@ -112,6 +114,11 @@ function render(Component, props, givenChildren) {
 const el = (type, props) => React.createElement(type, props);
 
 const results = {};
+function containsCss(node) {
+  if (!React.isValidElement(node)) return false;
+  return node.type === CssComponent || React.Children.toArray(node.props.children).some(containsCss);
+}
+results.galleryCss = containsCss(XmlGalleryCard());
 const R = (name, Component, props, children) => { results[name] = render(Component, props, children); };
 
 R('textLength', mod.Text, { x: '0', y: '10', textLength: 120, lengthAdjust: 'spacingAndGlyphs' }, 'Hello');
@@ -312,6 +319,8 @@ try {
   };
   const native = (/** @type {string} */ name, /** @type {string} */ type) =>
     assert.equal(qnx[name]?.type, type, `${name} renders ${type}`);
+
+  assert.equal(qnx.galleryCss, true, 'The XML gallery uses the CSS subpackage component');
 
   // Primitives the package never rendered.
   native('morphology', 'RNSVGFeMorphology');

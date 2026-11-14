@@ -16,6 +16,7 @@ const svgCards = [
   require('./FiltersCard'),
   require('./ImageCard'),
   require('./XmlCard'),
+  require('./ForeignObjectCard'),
   require('./PressableCard'),
 ];
 
