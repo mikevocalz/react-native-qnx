@@ -78,6 +78,10 @@ A child process failure stays a nonzero CLI result. The CLI forwards SIGINT and
 SIGTERM to its direct child; the existing script owns any remote process.
 `log-qnx` also reports SSH failures instead of returning a false success.
 
+For supplied target-runtime observations, use the separate
+[offline runtime doctor](qnx-target-runtime-doctor.md). It checks a bounded JSON
+report without connecting to or qualifying a device.
+
 ## Verify a captured Pi Screen probe
 
 After collecting evidence with the Pi installation workflow, verify its files and write a SHA-256 manifest:

@@ -12,6 +12,7 @@ import {
   unsupportedIdentityHost,
   validateIconSource,
 } from './app-identity.mjs';
+import { inspectTargetRuntimeFile } from './target-runtime-doctor.mjs';
 import { CONSUMER_CONTRACT } from './consumer-contract.mjs';
 import { EXPO_CONFIG_FILES } from './expo-config.mjs';
 import { discoverNitroModules } from './nitro-modules.mjs';
@@ -19,6 +20,7 @@ import { discoverNitroModules } from './nitro-modules.mjs';
 const help = `React Native QNX consumer project diagnostics
   rnqnx project doctor --project <directory> [--platform qnx|marathon]
                        [--entry index.js] [--identity-tool <path>] [--json]
+  rnqnx project doctor --target-runtime-report <observations.json> [--verbose] [--json]
 
 Read-only metadata checks. QNX is default. No config/package JavaScript,
 package-manager process, compiler, network request or device command runs,
@@ -30,6 +32,11 @@ reports whether prepare-native has rnqnx_identity_tool or will build it; it
 never builds it.
 Exit 0: inspected metadata matches; 1: failed check; 2: invalid invocation.
 A compatible report is not a native build, security audit or runtime proof.
+
+--target-runtime-report is a separate offline QNX observation check. It does
+not inspect project metadata, connect to a device, run commands or verify a
+runtime. --verbose prints first-start debug environment suggestions only.
+See docs/getting-started/qnx-target-runtime-doctor.md for the report format.
 `;
 
 /** @typedef {{id: string, status: 'passed'|'failed'|'not-checked',
@@ -395,6 +402,8 @@ export async function doctorMain(argv) {
       entry: { type: 'string' },
       'identity-tool': { type: 'string' },
       json: { type: 'boolean' },
+      'target-runtime-report': { type: 'string' },
+      verbose: { type: 'boolean' },
     },
   });
   const seen = new Set();
@@ -408,6 +417,51 @@ export async function doctorMain(argv) {
     return 0;
   }
   if (positionals.length) throw new Error('doctor accepts named options only.');
+  if (values['target-runtime-report'] !== undefined) {
+    if (
+      values.project !== undefined ||
+      values.entry !== undefined ||
+      values['identity-tool'] !== undefined
+    ) {
+      const failure = {
+        ok: false,
+        step: 'options',
+        message:
+          'Target observation checks cannot be combined with project, entry or identity-tool options.',
+      };
+      if (values.json) console.log(JSON.stringify(failure, null, 2));
+      else console.error(failure.message);
+      return 2;
+    }
+    const result = await inspectTargetRuntimeFile(values['target-runtime-report'], {
+      platform: values.platform,
+      verbose: values.verbose,
+    });
+    if (!result.ok) {
+      if (values.json) console.log(JSON.stringify(result, null, 2));
+      else console.error(`${result.step}: ${result.message}`);
+      return 2;
+    }
+    if (values.json) console.log(JSON.stringify(result.report, null, 2));
+    else {
+      console.log('QNX target runtime observations (offline, not device verification)');
+      for (const item of result.report.checks)
+        console.log(`${item.status}: ${item.id} — ${item.message}`);
+      if (result.report.debugEnvironment) {
+        console.log('First-start debug suggestions (not applied):');
+        for (const [name, value] of Object.entries(result.report.debugEnvironment))
+          console.log(`${name}=${value}`);
+      }
+      console.log(
+        'Only supplied observations were checked; native compatibility and runtime behavior remain unverified.'
+      );
+    }
+    return result.report.reportedPrerequisitesSatisfied ? 0 : 1;
+  }
+  if (values.verbose) {
+    console.error('--verbose requires --target-runtime-report.');
+    return 2;
+  }
   const report = await inspectConsumer(values.project ?? '.', {
     platform: values.platform,
     entry: values.entry,
