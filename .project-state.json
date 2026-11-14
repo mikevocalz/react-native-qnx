@@ -42,7 +42,7 @@
       "reviewedAt": "2026-11-13",
       "receipt": "docs/validation/pr149-frame-mount-2026-11-13.md",
       "status": "in-progress; Pi timing, spring, pan, single/exclusive double tap observed; 16 sanitizer cases pass; review and CI pending",
-      "hermesImport": "Worklets compiler-VM selection and missing-artifact regression pass; real-root cross-build pending"
+      "hermesImport": "configuration/error regressions, real-root QNX link and Pi frame probe passed without lean-named file; independent review zero findings"
     }
   },
   "activeMilestone": "v1 preparation; release gates remain open",
