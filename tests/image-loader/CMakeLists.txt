@@ -6,6 +6,7 @@ find_package(Qt6 6.11.1 REQUIRED COMPONENTS Core Gui Network Qml Quick)
 add_executable(qnx_image_cache_test
   QtImageCacheTest.cpp
   ../../vnext/src/runtime/QtImageCache.cpp
+  ../../vnext/src/views/qt/image/ImageDecode.cpp
   ../../vnext/src/views/qt/image/ImageDiskCache.cpp
   ../../vnext/src/views/qt/image/QtImageFetcher.cpp
   ../../vnext/src/views/qt/image/ImageFetchQueue.cpp

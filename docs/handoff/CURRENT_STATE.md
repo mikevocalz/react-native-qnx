@@ -7,7 +7,8 @@ completion. Fetchers share a network manager; corrupt/oversized cache recovery
 and safe bounded redirects have regressions. Six Release native executables
 and three ASan/UBSan image executables pass, as does the QNX cross-build and
 Pi 400 resize/cache/ImageRef/blurhash check. The initial slice's independent
-review has zero findings. Exact-head hosted checks remain required. Explicit
+review has zero findings. Exact-head hosted checks remain required. The standalone image-cache link exposed a missing ImageDecode.cpp source;
+that graph is corrected and its clean local loopback test passes. Explicit
 cache API and ImageRef decode/hash/encode worker conversion remains open.
 [Commands, evidence and rollback](../validation/pr159-image-io-2026-11-13.md).
 

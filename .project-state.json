@@ -59,7 +59,8 @@
     "pr159ImageIo": {
       "reviewedAt": "2026-11-13",
       "receipt": "docs/validation/pr159-image-io-2026-11-13.md",
-      "status": "six Release and three ASan/UBSan executables pass; QNX cross-build and Pi 400 successful-consumption check pass; explicit cache API/ImageRef worker conversion and exact-head hosted CI pending"
+      "status": "six Release and three ASan/UBSan executables pass; QNX cross-build and Pi 400 successful-consumption check pass; explicit cache API/ImageRef worker conversion and exact-head hosted CI pending",
+      "standaloneGraph": "632a3c9 CI failed to link decodeImage; standalone source list corrected and clean local loopback/cache test passed; new-head CI pending"
     }
   },
   "activeMilestone": "v1 preparation; release gates remain open",
