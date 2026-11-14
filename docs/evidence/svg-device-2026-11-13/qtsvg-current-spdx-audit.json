@@ -1,8 +1,5 @@
 {
-  "targets": [
-    "Svg",
-    "QSvgPlugin"
-  ],
+  "targets": ["Svg", "QSvgPlugin"],
   "objects": 27,
   "translation_units": 27,
   "translation_units_without_deps_entry": [],
@@ -24,9 +21,7 @@
       ],
       "files_read": 2,
       "spdx_in_files": [],
-      "license_files_in_dir": [
-        "qtbase/src/3rdparty/zlib/LICENSE"
-      ]
+      "license_files_in_dir": ["qtbase/src/3rdparty/zlib/LICENSE"]
     }
   },
   "embedded_attributions": [],
