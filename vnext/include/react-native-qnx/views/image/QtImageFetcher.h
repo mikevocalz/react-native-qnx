@@ -12,6 +12,7 @@
 #include <map>
 #include <cstddef>
 #include <memory>
+#include <QThreadPool>
 
 namespace rnqnx::views {
 
@@ -55,9 +56,10 @@ struct FetchResult {
 };
 
 /// Gets the encoded bytes of an image: from the disk cache, over HTTP(S) with
-/// the request's headers, or from a file, qrc or base64 data URI. It owns the
-/// network manager and every in-flight request, so destroying it (or calling
-/// cancel) abandons the work and never calls back afterwards. HTTP loads run
+/// the request's headers, or from a file, qrc or base64 data URI. Fetchers share
+/// a network manager on their owner thread. Destroying a fetcher or cancelling
+/// a request abandons its work and prevents later completion callbacks.
+/// Local/disk I/O runs on workers. All loads run
 /// through an ImageFetchQueue: at most that queue's limit at once, the rest
 /// wait in priority order. Fetchers given the same queue (the views and the
 /// ImageLoader share ImageFetchQueue::shared()) order their loads together.
@@ -68,11 +70,13 @@ class QtImageFetcher final : public QObject {
   using Done = std::function<void(FetchResult)>;
   using Id = std::uint64_t;
 
-  /// \a queue orders this fetcher's HTTP loads; null gives the fetcher a queue
-  /// of its own with \a maxConcurrent slots.
+  /// \a queue orders this fetcher's loads; null gives the fetcher a queue
+  /// of its own with \a maxConcurrent slots. An optional worker pool must
+  /// outlive the fetcher and its submitted tasks; null uses the global pool.
   explicit QtImageFetcher(int timeoutMs = 30000, ImageDiskCache* disk = nullptr,
                           ImageFetchQueue* queue = nullptr,
-                          int maxConcurrent = ImageFetchQueue::kSharedConcurrency);
+                          int maxConcurrent = ImageFetchQueue::kSharedConcurrency,
+                          QThreadPool* pool = nullptr);
   ~QtImageFetcher() override;
 
   /// Starts \a request. \a done runs exactly once, unless the fetch is
@@ -80,7 +84,7 @@ class QtImageFetcher final : public QObject {
   Id fetch(const ImageRequest& request, Progress progress, Done done);
   void cancel(Id id);
 
-  /// HTTP loads on the wire, and loads waiting for a free slot.
+  /// Active loads (I/O or network), and loads waiting for a free slot.
   int activeRequests() const { return static_cast<int>(started_); }
   int queuedRequests() const { return static_cast<int>(pending_.size() - started_); }
 
@@ -88,12 +92,16 @@ class QtImageFetcher final : public QObject {
 
  private:
   struct Pending;
+  void startLoad(Id id);
   void startHttp(Id id);
-  void finishHttp(Id id, Pending& pending);
-  FetchResult readLocal(const QString& uri) const;
+  void finishHttp(Id id);
+  void complete(Id id, FetchResult result);
+  void work(Id id, std::function<FetchResult()> task, bool networkOnMiss = false);
+  static FetchResult readLocal(const QString& uri);
 
-  QNetworkAccessManager network_;
-  ImageDiskCache* disk_;
+  QNetworkAccessManager* network_;
+  std::shared_ptr<ImageDiskCache> disk_;
+  QThreadPool* pool_;
   int timeoutMs_;
   ImageFetchQueue ownQueue_;
   ImageFetchQueue* queue_;

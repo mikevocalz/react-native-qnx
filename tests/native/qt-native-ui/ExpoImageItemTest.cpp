@@ -574,14 +574,14 @@ void ExpoImageItemTest::growthDuringInitialDecodeIsRechecked() {
   pool->waitForDone();
   const int previousThreads = pool->maxThreadCount();
   pool->setMaxThreadCount(1);
-  QSemaphore started;
-  QSemaphore gate;
+  QSemaphore started, ioGate, decodeStarted, decodeGate;
   const auto cleanup = qScopeGuard([&] {
-    gate.release();
+    ioGate.release();
+    decodeGate.release();
     pool->waitForDone();
     pool->setMaxThreadCount(previousThreads);
   });
-  pool->start([&] { started.release(); gate.acquire(); });
+  pool->start([&] { started.release(); ioGate.acquire(); });
   QVERIFY(started.tryAcquire(1, 1000));
   make(QSizeF(20, 20));
   const QString file = writePng(dir_, "inflight-grow.png", QSize(400, 400), Qt::yellow);
@@ -590,10 +590,15 @@ void ExpoImageItemTest::growthDuringInitialDecodeIsRechecked() {
   QSignalSpy loaded(item_.get(), &ExpoImageItem::loaded);
   item_->setSource(sourceOf(file));
   QTRY_COMPARE_WITH_TIMEOUT(loading.count(), 1, 1000);
-  // The queued decode has captured 20x20; no current layer exists yet.
+  // FIFO worker ordering: allow the asynchronous file read, then hold the
+  // decoder while the owner-thread fetch completion captures the 20x20 target.
+  pool->start([&] { decodeStarted.release(); decodeGate.acquire(); });
+  ioGate.release();
+  QVERIFY(decodeStarted.tryAcquire(1, 1000));
+  QCoreApplication::processEvents();
   QVERIFY(!item_->displayed());
   item_->setSize(QSizeF(240, 240));
-  gate.release();
+  decodeGate.release();
   QTRY_COMPARE_WITH_TIMEOUT(loaded.count(), 2, 5000);
   QCOMPARE(DecodedImageCache::shared().image(DecodedImageCache::key(uri)).size(), QSize(400, 400));
 }

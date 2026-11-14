@@ -1,5 +1,16 @@
 # NEXT_ACTIONS.md
 
+## PR 159 fetch worker continuation — 2026-11-13
+
+File/data and disk-cache fetch I/O now run on bounded workers with owner-thread
+completion. Fetchers share a network manager; corrupt/oversized cache recovery
+and safe bounded redirects have regressions. Six Release native executables
+and three ASan/UBSan image executables pass, as does the QNX cross-build and
+Pi 400 resize/cache/ImageRef/blurhash check. The initial slice's independent
+review has zero findings. Exact-head hosted checks remain required. Explicit
+cache API and ImageRef decode/hash/encode worker conversion remains open.
+[Commands, evidence and rollback](../validation/pr159-image-io-2026-11-13.md).
+
 ## PR 159 image device continuation — 2026-11-13
 
 The c2badc4 implementation head passed all hosted checks. On the custom-image

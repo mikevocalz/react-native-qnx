@@ -33,6 +33,11 @@
       "implementationCommit": "c2badc4",
       "receipt": "docs/validation/pr159-device-image-2026-11-13.md",
       "status": "scoped Pi 400 custom-image proof; no stock QSTI/Marathon/performance claim"
+    },
+    "pr159ImageIo": {
+      "reviewedAt": "2026-11-13",
+      "receipt": "docs/validation/pr159-image-io-2026-11-13.md",
+      "status": "six Release and three ASan/UBSan executables pass; QNX cross-build and Pi 400 successful-consumption check pass; explicit cache API/ImageRef worker conversion and exact-head hosted CI pending"
     }
   },
   "gates": [

@@ -126,10 +126,16 @@ fill the cache the view reads. A `source` that is an `ImageRef` (from
 The prop and limit table is in
 [`@rn-qnx/expo-image-qnx`](../packages/expo-image-qnx/README.md).
 
-HTTP(S) loads from every view, `prefetch` and `loadAsync` go through one
+Fetches from every Expo Image view, `prefetch` and `loadAsync` go through one
 `ImageFetchQueue`: 6 at a time, and expo-image's `priority` (`low`, `normal`,
 `high`) decides which waiting load starts next. Cancelling a waiting load removes
-it; cancelling a running load frees its slot.
+it; cancelling a running load frees its slot. File/data and disk-cache I/O run
+on workers, while network and completion callbacks stay on the owner thread.
+Fetchers share that thread's network manager with automatic cookies and
+authentication reuse disabled. Corrupt/oversized disk entries are evicted before
+one network fallback. Redirects allow at most five hops under one deadline,
+reject unsafe targets and drop caller headers when the origin changes.
+[Tests and limits](validation/pr159-image-io-2026-11-13.md).
 
 The loader module serves the expo-image functions the same way: `loadImage`,
 `releaseImage`, `generateBlurhash`, `generateThumbhash`, `writeToCache`,

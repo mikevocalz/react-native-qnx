@@ -27,7 +27,7 @@ class ImageFetchQueue final {
   explicit ImageFetchQueue(int maxConcurrent);
 
   /// The queue every ExpoImage view and the ImageLoader share, so `priority`
-  /// orders loads across the whole app: at most kSharedConcurrency HTTP loads
+  /// orders loads across the whole app: at most kSharedConcurrency fetches
   /// at once.
   static ImageFetchQueue& shared();
   static constexpr int kSharedConcurrency = 6;

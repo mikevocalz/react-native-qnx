@@ -1,0 +1,14 @@
+********* Start testing of ImageUnitsTest *********
+Config: Using QtTest library 6.12.0, Qt 6.12.0 (arm64-little_endian-lp64 shared (dynamic) release build; by Apple LLVM 21.0.0 (clang-2100.3.34.2)), macos 27.0.0
+PASS   : ImageUnitsTest::initTestCase()
+FAIL!  : ImageUnitsTest::fetcherReadsFilesOnWorkerAndCompletesOnOwner() '!done' returned FALSE. ()
+   Loc: [<source>/tests/native/qt-native-ui/ImageUnitsTest.cpp(355)]
+FAIL!  : ImageUnitsTest::fetcherRecoversCorruptAndOversizedCache() Compared values are not the same
+   Actual   (result.origin)       : 1
+   Expected (ImageOrigin::Network): 0
+   Loc: [<source>/tests/native/qt-native-ui/ImageUnitsTest.cpp(428)]
+FAIL!  : ImageUnitsTest::fetcherFollowsRelativeRedirectAndStripsCrossOriginHeaders() 'result.error.isEmpty()' returned FALSE. (Image request failed (HTTP 302))
+   Loc: [<source>/tests/native/qt-native-ui/ImageUnitsTest.cpp(458)]
+PASS   : ImageUnitsTest::cleanupTestCase()
+Totals: 2 passed, 3 failed, 0 skipped, 0 blacklisted, 43ms
+********* Finished testing of ImageUnitsTest *********

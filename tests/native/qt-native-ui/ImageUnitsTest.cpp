@@ -15,6 +15,10 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QTemporaryDir>
+#include <QScopeGuard>
+#include <QSemaphore>
+#include <QTimer>
+#include <QThread>
 #include <QtTest>
 
 #include <memory>
@@ -40,6 +44,14 @@ class ImageUnitsTest : public QObject {
   void requestKeyFoldsHeadersAndHonoursCacheKey();
   void fetcherSendsHeadersAndHitsDiskCacheSecondTime();
   void fetcherCancelNeverCallsBack();
+  void fetcherReadsFilesOnWorkerAndCompletesOnOwner();
+  void fetcherCancelsAndDestroysBlockedIo();
+  void fetcherRetainsCacheStateDuringIo();
+  void fetcherRecoversCorruptAndOversizedCache();
+  void fetcherFollowsRelativeRedirectAndStripsCrossOriginHeaders();
+  void fetcherBoundsRedirectsAndRejectsUnsafeTargets();
+  void sharedNetworkDoesNotReuseCookies();
+  void redirectsShareOneDeadline();
   void decodedCacheHonorsCountAndCostLimits();
   void imageRefRegistryNeverReusesIds();
   void imageLoadedNotifierReachesListenersUntilUnsubscribed();
@@ -230,6 +242,8 @@ class HeaderServer : public QTcpServer {
   QByteArray png{pngBytes()};
   int requests{0};
   QByteArray lastRequest;
+  std::function<QByteArray(const QByteArray&)> respond;
+  int responseDelayMs{0};
   HeaderServer() {
     listen(QHostAddress::LocalHost, 0);
     QObject::connect(this, &QTcpServer::newConnection, this, [this] {
@@ -241,9 +255,13 @@ class HeaderServer : public QTcpServer {
           if (!input->contains("\r\n\r\n")) return;
           ++requests;
           lastRequest = *input;
-          socket->write("HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nContent-Length: " +
-                        QByteArray::number(png.size()) + "\r\nConnection: close\r\n\r\n" + png);
-          socket->disconnectFromHost();
+          const QByteArray response = respond ? respond(*input) :
+              "HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nContent-Length: " +
+              QByteArray::number(png.size()) + "\r\nConnection: close\r\n\r\n" + png;
+          QTimer::singleShot(responseDelayMs, socket, [socket, response] {
+            socket->write(response);
+            socket->disconnectFromHost();
+          });
         });
       }
     });
@@ -254,14 +272,14 @@ class HeaderServer : public QTcpServer {
 FetchResult await(QtImageFetcher& fetcher, const ImageRequest& request) {
   FetchResult out;
   bool done = false;
-  fetcher.fetch(request, {}, [&](FetchResult result) {
+  const auto id = fetcher.fetch(request, {}, [&](FetchResult result) {
     out = std::move(result);
     done = true;
   });
   QElapsedTimer clock;
   clock.start();
   while (!done && clock.elapsed() < 5000) QTest::qWait(5);
-  if (!done) out.error = QStringLiteral("timed out");
+  if (!done) { fetcher.cancel(id); out.error = QStringLiteral("timed out"); }
   return out;
 }
 
@@ -316,6 +334,193 @@ void ImageUnitsTest::fetcherCancelNeverCallsBack() {
   fetcher.cancel(id);
   QTest::qWait(200);
   QVERIFY(!called);
+}
+
+void ImageUnitsTest::fetcherReadsFilesOnWorkerAndCompletesOnOwner() {
+  QTemporaryDir dir;
+  const QString path = dir.filePath(QStringLiteral("image.png"));
+  QThreadPool pool;
+  pool.setMaxThreadCount(1);
+  QSemaphore entered, release;
+  pool.start([&] { entered.release(); release.acquire(); });
+  auto cleanup = qScopeGuard([&] { release.release(); pool.waitForDone(); });
+  QVERIFY(entered.tryAcquire(1, 1000));
+  QtImageFetcher fetcher(5000, nullptr, nullptr, 1, &pool);
+  ImageRequest request;
+  request.uri = path;
+  bool done = false;
+  FetchResult result;
+  QThread* callbackThread = nullptr;
+  fetcher.fetch(request, {}, [&](FetchResult value) {
+    result = std::move(value); done = true; callbackThread = QThread::currentThread();
+  });
+  bool ticked = false;
+  QTimer::singleShot(0, [&] { ticked = true; });
+  QTRY_VERIFY(ticked);
+  QVERIFY(!done);
+  // The file did not exist at fetch time. It is read only after the worker gate.
+  QFile file(path);
+  QVERIFY(file.open(QIODevice::WriteOnly));
+  const auto png = pngBytes();
+  QCOMPARE(file.write(png), png.size());
+  file.close();
+  release.release();
+  QTRY_VERIFY(done);
+  QVERIFY2(result.error.isEmpty(), qPrintable(result.error));
+  QCOMPARE(result.bytes, png);
+  QCOMPARE(callbackThread, QThread::currentThread());
+}
+
+void ImageUnitsTest::fetcherCancelsAndDestroysBlockedIo() {
+  QThreadPool pool;
+  pool.setMaxThreadCount(1);
+  QSemaphore entered, release;
+  pool.start([&] { entered.release(); release.acquire(); });
+  auto cleanup = qScopeGuard([&] { release.release(); pool.waitForDone(); });
+  QVERIFY(entered.tryAcquire(1, 1000));
+  ImageRequest request;
+  request.uri = QStringLiteral("data:image/png;base64,") + QString::fromLatin1(pngBytes().toBase64());
+  ImageFetchQueue queue(1);
+  auto fetcher = std::make_unique<QtImageFetcher>(5000, nullptr, &queue, 1, &pool);
+  int callbacks = 0;
+  const auto id = fetcher->fetch(request, {}, [&](FetchResult) { ++callbacks; });
+  fetcher->cancel(id);
+  QCOMPARE(queue.running(), 0);
+  fetcher->fetch(request, {}, [&](FetchResult) { ++callbacks; });
+  fetcher->fetch(request, {}, [&](FetchResult) { ++callbacks; });
+  fetcher.reset();
+  QCOMPARE(queue.running(), 0);
+  QCOMPARE(queue.waiting(), 0);
+  release.release();
+  pool.waitForDone();
+  QTest::qWait(50);
+  QCOMPARE(callbacks, 0);
+}
+
+void ImageUnitsTest::fetcherRetainsCacheStateDuringIo() {
+  QTemporaryDir dir;
+  auto disk = std::make_unique<ImageDiskCache>(dir.path(), 1 << 20);
+  ImageRequest request;
+  request.uri = QStringLiteral("http://127.0.0.1:1/cached.png");
+  QVERIFY(disk->write(request.storageKey(), pngBytes()));
+  QThreadPool pool;
+  pool.setMaxThreadCount(1);
+  QSemaphore entered, release;
+  pool.start([&] { entered.release(); release.acquire(); });
+  auto cleanup = qScopeGuard([&] { release.release(); pool.waitForDone(); });
+  QVERIFY(entered.tryAcquire(1, 1000));
+  QtImageFetcher fetcher(5000, disk.get(), nullptr, 1, &pool);
+  bool done = false;
+  FetchResult result;
+  fetcher.fetch(request, {}, [&](FetchResult value) { result = std::move(value); done = true; });
+  disk.reset();
+  release.release();
+  QTRY_VERIFY(done);
+  QCOMPARE(result.origin, ImageOrigin::Disk);
+  QCOMPARE(result.bytes, pngBytes());
+}
+
+void ImageUnitsTest::fetcherRecoversCorruptAndOversizedCache() {
+  HeaderServer server;
+  QTemporaryDir dir;
+  ImageDiskCache disk(dir.path(), 32 << 20);
+  QtImageFetcher fetcher(5000, &disk);
+  ImageRequest request;
+  request.uri = server.url();
+  QVERIFY(disk.write(request.storageKey(), QByteArray("broken PNG")));
+  auto result = await(fetcher, request);
+  QVERIFY2(result.error.isEmpty(), qPrintable(result.error));
+  QCOMPARE(result.origin, ImageOrigin::Network);
+  QCOMPARE(result.bytes, server.png);
+  QCOMPARE(disk.read(request.storageKey()), server.png);
+  QCOMPARE(server.requests, 1);
+  QVERIFY(disk.write(request.storageKey(), QByteArray(QtImageFetcher::kMaxEncodedBytes + 1, 'x')));
+  result = await(fetcher, request);
+  QCOMPARE(result.origin, ImageOrigin::Network);
+  QCOMPARE(result.bytes, server.png);
+  QCOMPARE(server.requests, 2);
+  QCOMPARE(await(fetcher, request).origin, ImageOrigin::Disk);
+}
+
+void ImageUnitsTest::fetcherFollowsRelativeRedirectAndStripsCrossOriginHeaders() {
+  HeaderServer first, second;
+  first.respond = [&](const QByteArray& request) {
+    if (request.startsWith("GET /pic.png "))
+      return QByteArray("HTTP/1.1 302 Found\r\nLocation: /next\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
+    // Same-origin headers survive the first hop.
+    if (!request.toLower().contains("x-token: private") || !request.toLower().contains("authorization: bearer secret"))
+      return QByteArray("HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
+    return QByteArray("HTTP/1.1 307 Temporary Redirect\r\nLocation: ") + second.url().toUtf8() +
+        "\r\nCache-Control: no-store\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+  };
+  QTemporaryDir dir;
+  ImageDiskCache disk(dir.path(), 1 << 20);
+  QtImageFetcher fetcher(5000, &disk);
+  ImageRequest request;
+  request.uri = first.url();
+  request.headers = {{"Authorization", "Bearer secret"}, {"X-Token", "private"}};
+  const auto result = await(fetcher, request);
+  QVERIFY2(result.error.isEmpty(), qPrintable(result.error));
+  QCOMPARE(result.bytes, second.png);
+  QCOMPARE(first.requests, 2);
+  QCOMPARE(second.requests, 1);
+  QVERIFY(!second.lastRequest.toLower().contains("authorization:"));
+  QVERIFY(!second.lastRequest.toLower().contains("x-token:"));
+  QVERIFY(!result.cacheable);
+  QVERIFY(!disk.contains(request.storageKey()));
+}
+
+void ImageUnitsTest::fetcherBoundsRedirectsAndRejectsUnsafeTargets() {
+  HeaderServer server;
+  QByteArray target("/pic.png");
+  server.respond = [&](const QByteArray&) {
+    return QByteArray("HTTP/1.1 302 Found\r\nLocation: ") + target +
+        "\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+  };
+  QtImageFetcher fetcher;
+  ImageRequest request;
+  request.uri = server.url();
+  request.policy = ImageCachePolicy::None;
+  QVERIFY(await(fetcher, request).error.contains(QStringLiteral("redirect limit")));
+  QCOMPARE(server.requests, 6);
+  target = "file:///etc/passwd";
+  QVERIFY(await(fetcher, request).error.contains(QStringLiteral("Unsafe")));
+  QCOMPARE(server.requests, 7);
+  target = "http://user:password@127.0.0.1/secret";
+  QVERIFY(await(fetcher, request).error.contains(QStringLiteral("Unsafe")));
+  QCOMPARE(server.requests, 8);
+  QCOMPARE(fetcher.activeRequests(), 0);
+}
+
+void ImageUnitsTest::sharedNetworkDoesNotReuseCookies() {
+  HeaderServer server;
+  server.respond = [&](const QByteArray&) {
+    return QByteArray("HTTP/1.1 200 OK\r\nSet-Cookie: private=secret; Path=/\r\nContent-Length: ") +
+        QByteArray::number(server.png.size()) + "\r\nConnection: close\r\n\r\n" + server.png;
+  };
+  ImageRequest request;
+  request.uri = server.url();
+  request.policy = ImageCachePolicy::None;
+  { QtImageFetcher first; QVERIFY(await(first, request).error.isEmpty()); }
+  QtImageFetcher second;
+  QVERIFY(await(second, request).error.isEmpty());
+  QVERIFY(!server.lastRequest.toLower().contains("cookie:"));
+}
+
+void ImageUnitsTest::redirectsShareOneDeadline() {
+  HeaderServer server;
+  server.responseDelayMs = 100;
+  server.respond = [](const QByteArray&) {
+    return QByteArray("HTTP/1.1 302 Found\r\nLocation: /pic.png\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
+  };
+  QtImageFetcher fetcher(150);
+  ImageRequest request;
+  request.uri = server.url();
+  request.policy = ImageCachePolicy::None;
+  const auto result = await(fetcher, request);
+  QVERIFY2(result.error.contains(QStringLiteral("timed out")), qPrintable(result.error));
+  QVERIFY(server.requests <= 2);
+  QCOMPARE(fetcher.activeRequests(), 0);
 }
 
 void ImageUnitsTest::decodedCacheHonorsCountAndCostLimits() {
