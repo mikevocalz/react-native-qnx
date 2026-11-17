@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "binary_sha256": "e4c6d38fc8ba5ef964d45eb93758379ba3281bf9bd85e42f15bb07ca3746976d",
+  "source_commit": "0cf65e6bcb5462d14b7cafa3e2a9c360ca6168ef",
+  "snapshot": "completed first recovery, unchanged source during sequential dependency rebuild"
+}

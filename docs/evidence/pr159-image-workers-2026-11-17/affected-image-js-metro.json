@@ -1,0 +1,10 @@
+{
+  "files": [
+    "qnx-expo-host-polyfill.test.mjs",
+    "qnx-expo-module-registration.test.mjs",
+    "qnx-public-entry-metro.test.mjs",
+    "qnx-public-entry.test.mjs",
+    "qt-package-exports.test.mjs"
+  ],
+  "exit": 0
+}

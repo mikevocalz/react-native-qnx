@@ -1,0 +1,5 @@
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:24:05.591467 3067109952 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000004810).
+W1116 22:24:05.592245 2728261312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000133d0).
+W1116 22:24:05.592348 2728261312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004850).
+ImageRef operations wait for the worker, not the owner thread

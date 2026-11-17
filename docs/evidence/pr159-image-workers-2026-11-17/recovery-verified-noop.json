@@ -1,0 +1,9 @@
+{
+  "exit": 0,
+  "ninja_deps_sha256": "2d724ab7e769c7a206c37f3cab8405142a1cc0be109aba2ed432eff62d622d6e",
+  "path_records": 6041,
+  "dependency_records": 854,
+  "valid_bytes": 2407868,
+  "no_op": true,
+  "premature_warning": false
+}

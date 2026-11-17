@@ -1,0 +1,8 @@
+{
+  "source_commit": "e032a5b2c946c0de4b899daebed73bafed94108d",
+  "production_file": "vnext/src/runtime/QnxImageLoaderRefs.cpp",
+  "production_git_blob": "d35c9bf975f3ed0be8aed4ce9c88c95b7339b492",
+  "test_commit": "0cf65e6bcb5462d14b7cafa3e2a9c360ca6168ef",
+  "binary_sha256": "7f9daeec36f1b5143b74f016e779b8bb1d503a7e82228c94c557398ff25a3184",
+  "exit_code": 1
+}

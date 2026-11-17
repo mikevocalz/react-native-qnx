@@ -1,0 +1,27 @@
+{
+  "local_source_head": "4e2518c9debdd8864dae64475e279abb004135c3",
+  "baseline": "e032a5b2c946c0de4b899daebed73bafed94108d",
+  "scope": "host validation; full renderer test executables ASan-enabled, standalone production sources ASan/UBSan-instrumented",
+  "sources": {
+    "vnext/include/react-native-qnx/runtime/QnxImageLoader.h": "1ce4482026be37ee4404ee41241cf3bf13f8afb82fc6c986e6d6fbba2af3bdd9",
+    "vnext/src/runtime/QnxImageLoader.cpp": "cbe45a16339a65d798862630e414fb7cb2e113b60d7804a177d9500887ba5c4b",
+    "vnext/src/runtime/QnxImageLoaderRefs.cpp": "93e3c6911a33e060252e4ee36b088fac370da8bbfcaf0cf32c950dc362178f37",
+    "vnext/include/react-native-qnx/runtime/QtImageCache.h": "09f4bab98793d89343fb1d8b918561495303dbc923948c263db1c3abed51f9d4",
+    "vnext/src/runtime/QtImageCache.cpp": "d0fd2040dfcc8c5a57f6c2042da41737738836b7b362121d887e014409895c1a",
+    "vnext/include/react-native-qnx/views/DecodedImageCache.h": "ac4e000f5e9d83d9ad0150088587ebad53ecde34ec5c3ddffeb0ba317316d8e7",
+    "vnext/include/react-native-qnx/views/image/ImageTaskQueue.h": "5bb0813547863d7a06edf0a0dbc3efb717992df390217b76af1d810d7e77d331",
+    "vnext/include/react-native-qnx/views/image/ImageDiskCache.h": "8d0f0aa482098f2fd0afc58f634f6f36659a609e7755cb74e545284780862f9c",
+    "vnext/src/views/qt/image/ImageDiskCache.cpp": "3b3cba0648c389e76dab3963aed18ae52afb7ec963ca0a2d68384b069a567352",
+    "vnext/include/react-native-qnx/views/image/QtImageFetcher.h": "cc70ad76afac86d5574da974b4dbbf173fad03c85d10bd25010d491570120694",
+    "vnext/src/views/qt/image/QtImageFetcher.cpp": "2f5ff6bcdecbb88299431f825920639eae01a3285cbc7b505040c1087596a88b",
+    "vnext/include/react-native-qnx/views/image/ExpoImageItem.h": "ff3e9eafd9df84f7ad3a18151bca2b87cefff70faf70895fd67287c2d54f88f0",
+    "vnext/src/views/qt/image/ExpoImageItem.cpp": "15e097bb28ffe216e50aa44dee7e24375b8dd0e9b459ea8be60934232888f205",
+    "vnext/include/react-native-qnx/fabric/QtRnsvgImageProvider.h": "7234d25a96d0f7415697dadff0c68a4bb734cb26989fc999f725ac04930596b1",
+    "vnext/src/fabric/QtRnsvgImageProvider.cpp": "f9b1a9482289e99c0b7b9cae061ee88259b9ee315878abb1cce658c8f169bfc9",
+    "tests/cpp/ExpoImageModuleHostTest.cpp": "03474b9a9b1ae1d1658d5b904dc882549ee02d92bda0189fdb14eca50a2a8426",
+    "tests/native/qt-native-ui/ImageUnitsTest.cpp": "b1ed07d171729b1d464e3db4a9715ac82df2f2d5c23b97db756044e5c38dc526",
+    "tests/native/qt-native-ui/ExpoImageItemTest.cpp": "5e839c9a296f16ee703be3536e4972d9b9dca1ef315d64fbe4a8f5baeb46c932",
+    "tests/image-loader/QtImageCacheTest.cpp": "a57ab2f17ee9d119c5c85a15eef9192c349f25f74e17d41396837f323ca4d1e5",
+    "tests/native/qt-rnsvg-image-http/RnsvgImageHttpTest.cpp": "3fa81cd74c103a9421be1be0e48f03277e5da7ed5ad1d3bc22e8211565d74573"
+  }
+}

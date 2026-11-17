@@ -1,0 +1,29 @@
+{
+  "typecheck": {
+    "exit": 0,
+    "scope": "both TypeScript configurations"
+  },
+  "javascript_suite": {
+    "exit": 1,
+    "status": "environment blocked",
+    "stopped_at": "marathon-development-launcher.test.mjs",
+    "error": "listen EPERM on the real temporary Unix-domain Wayland fixture socket"
+  },
+  "affected_image_and_public_entry": {
+    "exit": 0,
+    "files": 5,
+    "metro_platforms": ["qnx", "marathon"]
+  },
+  "existing_router_suites": {
+    "exit": 0,
+    "files": 7
+  },
+  "format_check": {
+    "exit": 0
+  },
+  "documentation_validation": {
+    "exit": 0,
+    "components": 24,
+    "release_gates": 11
+  }
+}

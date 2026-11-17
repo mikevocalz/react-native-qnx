@@ -1,0 +1,7 @@
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:28:31.683179 4097991232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1116 22:28:31.683844 3973011136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000012f50).
+W1116 22:28:31.683897 3973011136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004250).
+cache clear before owner completion:
+the cleared commit rejects before publishing its alias
+the cleared commit has no decoded alias
