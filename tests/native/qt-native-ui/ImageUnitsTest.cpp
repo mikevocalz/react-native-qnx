@@ -25,6 +25,11 @@
 #include <atomic>
 #include <memory>
 #include <stdexcept>
+#if defined(Q_OS_UNIX)
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 
 using namespace rnqnx::views;
 
@@ -55,6 +60,11 @@ class ImageUnitsTest : public QObject {
   void imageTasksReportWorkerExceptionsOnOwner();
   void imageTasksDropCompletionBeforeStartingSuccessor();
   void fetcherCancelsAndDestroysBlockedIo();
+  void fetcherRetainsPrivateQueueUntilWorkerFinishes();
+  void fetcherCompletesBeforeStartingReentrantQueuedCallback();
+#if defined(Q_OS_UNIX)
+  void cancelledFileReadsHoldSharedAdmissionUntilFinished();
+#endif
   void fetcherRetainsCacheStateDuringIo();
   void fetcherRecoversCorruptAndOversizedCache();
   void fetcherFollowsRelativeRedirectAndStripsCrossOriginHeaders();
@@ -573,28 +583,146 @@ void ImageUnitsTest::imageTasksReportWorkerExceptionsOnOwner() {
 void ImageUnitsTest::fetcherCancelsAndDestroysBlockedIo() {
   QThreadPool pool;
   pool.setMaxThreadCount(1);
+  ImageFetchQueue queue(1);
   QSemaphore entered, release;
   pool.start([&] { entered.release(); release.acquire(); });
-  auto cleanup = qScopeGuard([&] { release.release(); pool.waitForDone(); });
+  auto cleanup = qScopeGuard([&] {
+    release.release();
+    pool.waitForDone();
+    QCoreApplication::processEvents();
+  });
   QVERIFY(entered.tryAcquire(1, 1000));
   ImageRequest request;
   request.uri = QStringLiteral("data:image/png;base64,") + QString::fromLatin1(pngBytes().toBase64());
-  ImageFetchQueue queue(1);
   auto fetcher = std::make_unique<QtImageFetcher>(5000, nullptr, &queue, 1, &pool);
   int callbacks = 0;
   const auto id = fetcher->fetch(request, {}, [&](FetchResult) { ++callbacks; });
   fetcher->cancel(id);
-  QCOMPARE(queue.running(), 0);
+  QCOMPARE(queue.running(), 1);
   fetcher->fetch(request, {}, [&](FetchResult) { ++callbacks; });
   fetcher->fetch(request, {}, [&](FetchResult) { ++callbacks; });
   fetcher.reset();
-  QCOMPARE(queue.running(), 0);
+  QCOMPARE(queue.running(), 1);
   QCOMPARE(queue.waiting(), 0);
   release.release();
   pool.waitForDone();
-  QTest::qWait(50);
+  QTRY_COMPARE(queue.running(), 0);
   QCOMPARE(callbacks, 0);
 }
+
+void ImageUnitsTest::fetcherRetainsPrivateQueueUntilWorkerFinishes() {
+  QThreadPool pool;
+  pool.setMaxThreadCount(1);
+  QSemaphore entered, release;
+  pool.start([&] { entered.release(); release.acquire(); });
+  auto cleanup = qScopeGuard([&] {
+    release.release();
+    pool.waitForDone();
+    QCoreApplication::processEvents();
+  });
+  QVERIFY(entered.tryAcquire(1, 1000));
+  int callbacks = 0;
+  QThread* destroyedOn = nullptr;
+  auto state = std::shared_ptr<int>(new int(0), [&](int* value) {
+    destroyedOn = QThread::currentThread();
+    delete value;
+  });
+  std::weak_ptr<int> weakState = state;
+  auto fetcher = std::make_unique<QtImageFetcher>(5000, nullptr, nullptr, 1, &pool);
+  ImageRequest request;
+  request.uri = QStringLiteral("data:image/png;base64,") + QString::fromLatin1(pngBytes().toBase64());
+  fetcher->fetch(request, {}, [&, state](FetchResult) { ++callbacks; });
+  state.reset();
+  fetcher.reset();
+  QVERIFY(weakState.expired());
+  QCOMPARE(destroyedOn, QThread::currentThread());
+  release.release();
+  QVERIFY(pool.waitForDone(1000));
+  QCoreApplication::processEvents();
+  QCOMPARE(callbacks, 0);
+}
+
+void ImageUnitsTest::fetcherCompletesBeforeStartingReentrantQueuedCallback() {
+  ImageFetchQueue queue(1);
+  auto fetcher = std::make_unique<QtImageFetcher>(0, nullptr, &queue);
+  bool firstCompleted = false;
+  bool firstHadOwner = false;
+  bool secondCompleted = false;
+  ImageRequest local;
+  local.uri = QStringLiteral("data:image/png;base64,") + QString::fromLatin1(pngBytes().toBase64());
+  fetcher->fetch(local, {}, [&](FetchResult result) {
+    QCOMPARE(result.bytes, pngBytes());
+    firstHadOwner = fetcher != nullptr;
+    firstCompleted = true;
+  });
+  ImageRequest expired;
+  expired.uri = QStringLiteral("https://example.invalid/expired.png");
+  fetcher->fetch(expired, {}, [&](FetchResult result) {
+    QVERIFY(result.error.contains(QStringLiteral("timed out")));
+    secondCompleted = true;
+    fetcher.reset();
+  });
+  QTRY_VERIFY(firstCompleted && secondCompleted);
+  QVERIFY2(firstHadOwner, "A queued callback destroyed the owner before the completed callback ran");
+  QCOMPARE(queue.running(), 0);
+}
+
+#if defined(Q_OS_UNIX)
+void ImageUnitsTest::cancelledFileReadsHoldSharedAdmissionUntilFinished() {
+  QTemporaryDir dir;
+  QThreadPool pool;
+  pool.setMaxThreadCount(3);
+  ImageFetchQueue queue(2);
+  int writers[2] = {-1, -1};
+  auto cleanup = qScopeGuard([&] {
+    for (int& writer : writers) {
+      if (writer >= 0) ::close(writer);
+      writer = -1;
+    }
+    pool.waitForDone();
+    QCoreApplication::processEvents();
+  });
+  auto fetcher = std::make_unique<QtImageFetcher>(5000, nullptr, &queue, 2, &pool);
+  int cancelledCallbacks = 0;
+  for (int i = 0; i < 2; ++i) {
+    const QByteArray path = QFile::encodeName(dir.filePath(QString::number(i)));
+    QVERIFY(::mkfifo(path.constData(), 0600) == 0);
+    ImageRequest request;
+    request.uri = QString::fromLocal8Bit(path);
+    fetcher->fetch(request, {}, [&](FetchResult) { ++cancelledCallbacks; });
+    // A nonblocking writer can open only after the real read worker has
+    // entered the FIFO. Keep it empty so that worker remains in read().
+    const auto connectWriter = [&] {
+      if (writers[i] < 0) writers[i] = ::open(path.constData(), O_WRONLY | O_NONBLOCK);
+      return writers[i] >= 0;
+    };
+    QTRY_VERIFY_WITH_TIMEOUT(connectWriter(), 1000);
+  }
+  fetcher.reset();
+  QtImageFetcher successor(5000, nullptr, &queue, 2, &pool);
+  ImageRequest request;
+  request.uri = QStringLiteral("data:image/png;base64,") + QString::fromLatin1(pngBytes().toBase64());
+  bool completed = false;
+  successor.fetch(request, {}, [&](FetchResult result) {
+    QCOMPARE(result.bytes, pngBytes());
+    completed = true;
+  });
+  // A pool barrier follows any wrongly admitted third worker. With both
+  // FIFO readers still blocked, that third image must not have executed.
+  QSemaphore barrier;
+  pool.start([&] { barrier.release(); });
+  QVERIFY(barrier.tryAcquire(1, 1000));
+  QCoreApplication::processEvents();
+  QVERIFY2(!completed, "A third image ran while two cancelled physical reads were still blocked");
+  QCOMPARE(queue.running(), 2);
+  QCOMPARE(queue.waiting(), 1);
+  ::close(writers[0]);
+  writers[0] = -1;
+  QTRY_VERIFY(completed);
+  QCOMPARE(queue.running(), 1);
+  QCOMPARE(cancelledCallbacks, 0);
+}
+#endif
 
 void ImageUnitsTest::fetcherRetainsCacheStateDuringIo() {
   QTemporaryDir dir;

@@ -1,0 +1,15 @@
+********* Start testing of ImageUnitsTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageUnitsTest::initTestCase()
+FAIL!  : ImageUnitsTest::fetcherCancelsAndDestroysBlockedIo() Compared values are not the same
+   Actual   (queue.running()): 0
+   Expected (1)              : 1
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-fetcher159/tests/native/qt-native-ui/ImageUnitsTest.cpp(423)]
+PASS   : ImageUnitsTest::fetcherRetainsPrivateQueueUntilWorkerFinishes()
+FAIL!  : ImageUnitsTest::fetcherCompletesBeforeStartingReentrantQueuedCallback() 'firstHadOwner' returned FALSE. (A queued callback destroyed the owner before the completed callback ran)
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-fetcher159/tests/native/qt-native-ui/ImageUnitsTest.cpp(488)]
+FAIL!  : ImageUnitsTest::cancelledFileReadsHoldSharedAdmissionUntilFinished() '!completed' returned FALSE. (A third image ran while two cancelled physical reads were still blocked)
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-fetcher159/tests/native/qt-native-ui/ImageUnitsTest.cpp(538)]
+PASS   : ImageUnitsTest::cleanupTestCase()
+Totals: 3 passed, 3 failed, 0 skipped, 0 blacklisted, 176ms
+********* Finished testing of ImageUnitsTest *********

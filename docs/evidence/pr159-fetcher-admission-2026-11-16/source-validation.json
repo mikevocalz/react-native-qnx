@@ -1,0 +1,75 @@
+{
+  "recordedAtUtc": "2026-11-17T02:24:19.560248+00:00",
+  "basePublicCommit": "e032a5b2c946c0de4b899daebed73bafed94108d",
+  "localBaseCommit": "0cf65e6bcb5462d14b7cafa3e2a9c360ca6168ef",
+  "sources": [
+    {
+      "path": "vnext/src/views/qt/image/QtImageFetcher.cpp",
+      "original_git_blob": "3af0e3f06a556e3524d909eb770e83cd23cad58e",
+      "original_sha256": "26fff06216f41eabcd15585e12a7f593a92270a60063c6ff2181f99c41a953e7",
+      "candidate_git_blob": "0899eb36eb11dcbca864ced61c313de7679e9f5f",
+      "candidate_sha256": "33b7cf8018693fe2c2d48bad239635163076c5b8ab58eb1e2c35dba2bcff5c10"
+    },
+    {
+      "path": "vnext/include/react-native-qnx/views/image/QtImageFetcher.h",
+      "original_git_blob": "47c5f7bbdb8f61ed3bd106bceafe4eddfa8b0ef4",
+      "original_sha256": "b18e483a167f7a9b18462c5ab2094f4a303943b5015aac232e41df8dcdbed0a4",
+      "candidate_git_blob": "1e07777f10e0f94c2ba438779cfc1327f021a942",
+      "candidate_sha256": "cc70ad76afac86d5574da974b4dbbf173fad03c85d10bd25010d491570120694"
+    },
+    {
+      "path": "tests/native/qt-native-ui/ImageUnitsTest.cpp",
+      "original_git_blob": "aeed7e49c7cca29f0b52c9719bd206fce99a6148",
+      "original_sha256": "08ee4078050d8e905949b145a907670567df7de779dd2d92bb1e6f54cbd30a96",
+      "candidate_git_blob": "6f56703c2a5ef394b477a69a2581eed4d1e7bd2c",
+      "candidate_sha256": "cc98e68787c4ae42aca209418beee912b8936bce72e5719e0a117dc2d1cde167"
+    }
+  ],
+  "lockfileSha256": "edf0327a216c8963c0ffea2300c37f0b7e29d05510e7f3fb5a3a2a4ad9feea49",
+  "environment": {
+    "os": "Debian13 x86_64",
+    "qt": "6.11.1 prebuilt, uninstrumented",
+    "clang": "19.1.7",
+    "cmake": "3.31.10",
+    "sanitizers": ["address", "undefined"],
+    "leakDetection": false,
+    "display": "offscreen/software"
+  },
+  "commands": {
+    "configure": "cmake -S tests/native/qt-native-ui -B build/fetcher-asan -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=\"$CXX\" '-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer' '-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined'",
+    "build": "cmake --build build/fetcher-asan --target rnqnx_image_units_test rnqnx_image_fetch_queue_test rnqnx_expo_image_item_test --parallel 2",
+    "focused": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 build/fetcher-asan/rnqnx_image_units_test fetcherCancelsAndDestroysBlockedIo fetcherRetainsPrivateQueueUntilWorkerFinishes fetcherCompletesBeforeStartingReentrantQueuedCallback cancelledFileReadsHoldSharedAdmissionUntilFinished -platform offscreen",
+    "suite": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 ctest --test-dir build/fetcher-asan -R '^(rnqnx_image_units_test|rnqnx_image_fetch_queue_test|rnqnx_expo_image_item_test)$' --output-on-failure"
+  },
+  "results": {
+    "baselineExit": 3,
+    "baselineFailedRegressions": 3,
+    "candidateFocusedExit": 0,
+    "candidateFocusedRegressions": 4,
+    "suiteExit": 0,
+    "suiteCTestsPassed": 3,
+    "suiteQtTestEntriesPassed": 76,
+    "suiteFailures": 0,
+    "suiteSkips": 0,
+    "suiteSeconds": 11.59,
+    "candidateFocusedMilliseconds": 219
+  },
+  "qnxCrossBuild": "not run",
+  "physicalDevice": "not run",
+  "binaries": {
+    "rnqnx_image_units_test": "aa9fd8c52d163381f3d107ea00100df6c73518530a0357c8b463b24f388f6383",
+    "rnqnx_image_fetch_queue_test": "2a200448cd5a5374e022cd77a59807aecf50fc2c87452cd52919ee9be0848bda",
+    "rnqnx_expo_image_item_test": "0b689a711d248d07f5cf38f753741c10de6428b8d27d16c195acfc6664e531d7"
+  },
+  "negativeControl": {
+    "productionSourceCommit": "e032a5b2c946c0de4b899daebed73bafed94108d",
+    "testGitBlob": "6f56703c2a5ef394b477a69a2581eed4d1e7bd2c",
+    "sameTestsForCandidate": true
+  },
+  "independentReview": {
+    "reviewer": "separate SVG workstream agent",
+    "outcome": "no remaining source blocker",
+    "initialFinding": "external queue must outlive failed-test cleanup and completion drain",
+    "findingResolved": true
+  }
+}
