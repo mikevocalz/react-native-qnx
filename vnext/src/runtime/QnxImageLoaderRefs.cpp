@@ -327,7 +327,10 @@ jsi::Value QnxImageLoader::writeToCache(jsi::Runtime& rt, facebook::react::Turbo
     return result;
   }
   const QString key = keyed(QString::fromStdString(args[1].asString(rt).utf8(rt)));
-  obtainPicture(self.fetcher_, spec, [promise, key](Picture picture) mutable {
+  // A cache clear invalidates writes already admitted, including the time
+  // spent fetching and decoding the source before the explicit alias write.
+  const auto generation = views::ImageDiskCache::shared().generation();
+  obtainPicture(self.fetcher_, spec, [promise, key, generation](Picture picture) mutable {
     if (!picture.error.isEmpty()) {
       promise.reject(picture.error.toStdString());
       return;
@@ -341,8 +344,11 @@ jsi::Value QnxImageLoader::writeToCache(jsi::Runtime& rt, facebook::react::Turbo
         return;
       }
     }
-    if (!views::ImageDiskCache::shared().write(key, bytes)) {
-      promise.reject("The image is larger than the disk cache");
+    auto& disk = views::ImageDiskCache::shared();
+    if (!disk.write(key, bytes, generation)) {
+      promise.reject(disk.generation() != generation
+          ? "The image cache was cleared before the write completed"
+          : "The image could not be written to the disk cache");
       return;
     }
     views::DecodedImageCache::shared().insert(key, picture.image, picture.mediaType,

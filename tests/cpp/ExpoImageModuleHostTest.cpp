@@ -343,6 +343,29 @@ int main(int argc, char** argv) {
     check(failures.empty(), "cache read and write:\n" + failures);
     check(QFile::exists(disk.pathFor(QStringLiteral("key:file-key"))), "the disk cache file for the key exists");
 
+    // An explicit write admitted before clearDiskCache must not restore its
+    // alias when its asynchronous source finishes. Local fetch completion is
+    // queued on the owner thread, so both calls below precede that completion.
+    rig.eval(R"JS(
+      globalThis.__clearedWrite = expo.modules.ExpoImage.writeToCacheAsync(
+        ')JS" + dataUri(png) + R"JS(', 'cleared-write-key'
+      ).then(() => ({ resolved: true }), (error) => ({ error }));
+      globalThis.__diskClear = expo.modules.ExpoImage.clearDiskCache();
+    )JS");
+    failures = rig.runAsync(R"JS(
+      const mod = expo.modules.ExpoImage;
+      expect(await __diskClear === true, 'the disk clear completes');
+      const outcome = await __clearedWrite;
+      expect(outcome.error instanceof Error, 'the invalidated explicit write rejects with an Error');
+      expect(await mod.getCachePathAsync('cleared-write-key') === null, 'the old write does not restore disk data');
+      expect(await mod.readFromCacheAsync('cleared-write-key') === null, 'the old write does not publish a decoded alias');
+      await mod.writeToCacheAsync(')JS" + dataUri(png) + R"JS(', 'cleared-write-key');
+      const current = await mod.readFromCacheAsync('cleared-write-key');
+      expect(current && current.width === 10 && current.height === 6, 'a new write after the clear succeeds');
+      if (current) current.release();
+    )JS");
+    check(failures.empty(), "cache clear during explicit write:\n" + failures);
+
     // ---- configureCache -----------------------------------------------------
     failures = rig.runAsync(R"JS(
       const mod = expo.modules.ExpoImage;
