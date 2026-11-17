@@ -1,5 +1,76 @@
 # Current state
 
+## PR 149 native SVG subscription integration (2026-11-17)
+
+The Worklets branch now incorporates actual published Expo `12cae678`, including
+SVG `6f40a8d5`. Its optional Reanimated hook supplies the synchronized SVG-interest
+seam with the real tag-specific event registry and clears it before proxy reset.
+The linked fixture covers late native registration, removal, re-registration,
+actual geometry and UI-worklet payloads across three hosts, followed by teardown
+with a materialized handler and an admitted pending frame. The original-module
+control fails at the expected missing event; its separate direct-run
+LeakSanitizer ptrace limitation remains recorded.
+
+All 26 source hashes, three pin/build-input hashes and 25 configuration values
+match the provisional candidate. The actual public-parent rebuild passes, then
+the two configured Worklets CTests pass in 20.10 seconds. The earlier provisional
+pair and original-module control retain their own provenance. Independent source,
+metadata and final-parent reviews passed. [Receipt and raw evidence](../validation/pr149-svg-native-interest-2026-11-17.md).
+
+The previous published PR 149 head's successful hosted graph remains separate;
+the new head needs its own workflows. General animated SVG props, broader hook
+compositions, dedicated JS-thread work, remaining recognizers/layout/scroll and
+current combined QNX/device acceptance remain open. Keep all feature defaults
+OFF, all eleven release gates pending and the PR draft. The dated sections below
+preserve their original scope.
+
+## PR 159 SVG subscription restack (2026-11-17)
+
+PR 159 now incorporates actual published SVG head `6f40a8d5`, including its
+native subscription marker, QNX prop transport and optional native-interest
+seam. The merge preserves the existing modal behavior, image workers and both
+workstreams' evidence. The source and conflict resolutions received independent
+review. [Restack receipt](../validation/pr159-svg-interest-restack-2026-11-17.md).
+
+The two affected Expo module/Fabric executables rebuild and pass, with Expo
+Image enabled and SVG disabled in this existing Debug graph. The real transport
+test, pinned codegen and both TypeScript configurations pass. The prerequisite's
+SVG-enabled 49-test graph and 149 pixel comparisons retain their separate
+receipt; final merged-head hosted renderer ON/OFF results remain required.
+
+Previous published image head `d50e34d9` completed all 15 workflows and 17 jobs,
+including the full hosted JavaScript suites. Its direct and synthetic-merge
+checkouts were verified against the same source tree. That result belongs to
+the previous head; the successor requires its own workflows. Current QNX
+cross-build/runtime attribution, release animation assets and exact-device
+acceptance remain missing. Keep the PR draft and all eleven release gates
+pending. Dated sections below preserve their original validation scope.
+
+## PR 161 SVG layout subscriptions (2026-11-17)
+
+The native SVG generator retains the existing onSvgLayout subscription marker,
+and QNX BaseViewConfig transports it through the real React prop pipeline.
+Reporters preserve bounds tracking and only dispatch to React or native
+subscribers. Late native registration, removal and callback teardown retain
+explicit behavioral coverage. The optional native-interest seam is empty by
+default; PR 149 supplies its real Reanimated registry integration.
+
+The reviewed candidate, built in a fresh graph rooted at the published
+PR 161 parent, passes **49/49 CTests in 445.87 seconds**, including all 57 QtReactHost cases and all 149 SVG
+pixel comparisons. Corpus shards take 5.33, 166.98, 163.61 and 6.21 seconds
+under unchanged 300-second limits. The original local heavy-shard comparison
+is 199.36 seconds. Source, test object, bundle, original-source controls and
+separate lifetime mutation evidence are recorded in the
+[subscription receipt](../validation/pr161-svg-layout-interest-2026-11-17.md).
+
+The published parent d3eacc75 passed ten of eleven workflows; its renderer-ON
+lane timed out two corpus shards. That failed result is preserved. Follow the
+successor's exact hosted checks on [PR 161](https://github.com/mikevocalz/react-native-qnx/pull/161);
+local passes do not qualify hosted CI or current QNX execution. A fresh clean
+combined QNX build and current-device acceptance remain required. Keep the PR
+draft and all eleven release gates pending. The dated sections below retain
+their original scope.
+
 ## PR 149 final SVG and Expo host integration (2026-11-16; 2026-11-17 UTC)
 
 The Worklets continuation now incorporates published Expo `d50e34d9`, including

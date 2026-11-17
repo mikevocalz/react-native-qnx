@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-clang++"
+	tests="2"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="31d30cd8ad50"
+	time="20"
+	timestamp="2026-11-17T01:30:20"
+	>
+	<testcase name="rnqnx_worklets_integration_host_test" classname="rnqnx_worklets_integration_host_test" time="17.8451" status="run">
+		<properties/>
+		<system-out>Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=22 framesDelivered=21 uiJobs=0 jsPosts=11
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1117 01:30:27.000329 1960235584 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1117 01:30:27.002609 1790965440 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000015350).
+Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=21 framesDelivered=20 uiJobs=0 jsPosts=11
+W1117 01:30:32.617161 1960235584 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000087890).
+W1117 01:30:32.620263 1849685696 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002128d0).
+Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=11 framesDelivered=10 uiJobs=0 jsPosts=8
+W1117 01:30:38.016100 1960235584 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_worklets_rejects_missing_bootstrap" classname="rnqnx_worklets_rejects_missing_bootstrap" time="2.24878" status="run">
+		<properties/>
+		<system-out>WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1117 01:30:38.296320 3400520256 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1117 01:30:38.296820 3300914880 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000015350).
+W1117 01:30:38.296877 3300914880 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+TypeError: Cannot read property 'loadUnpackersWithCode' of undefined
+[js fatal] TypeError: Cannot read property 'loadUnpackersWithCode' of undefined 
+   at k (worklets-integration.bundle.js:664)
+  at t (worklets-integration.bundle.js:664)
+  at anonymous (worklets-integration.bundle.js:664)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at h (worklets-integration.bundle.js:671)
+  at f (worklets-integration.bundle.js:671)
+  at anonymous (worklets-integration.bundle.js:671)
+  at k (worklets-integration.bundle.js:67...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+</testsuite>

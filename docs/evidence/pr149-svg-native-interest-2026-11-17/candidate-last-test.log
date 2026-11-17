@@ -1,0 +1,96 @@
+Start testing: Nov 17 00:43 EST
+----------------------------------------------------------
+36/61 Testing: rnqnx_worklets_integration_host_test
+36/61 Test: rnqnx_worklets_integration_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_worklets_integration_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_worklets_integration_host_test" start time: Nov 17 00:43 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=23 framesDelivered=22 uiJobs=0 jsPosts=11
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1117 00:43:48.178912 1795465792 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1117 00:43:48.188169 1628620480 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000015350).
+Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=21 framesDelivered=20 uiJobs=0 jsPosts=11
+W1117 00:43:53.498700 1795465792 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000884d0).
+W1117 00:43:53.502327 1690302144 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000214550).
+Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=11 framesDelivered=10 uiJobs=0 jsPosts=8
+W1117 00:43:58.253022 1795465792 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000006790).
+W1117 00:43:58.254941 1628620480 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200015a3d0).
+RNQNX_SVG_NATIVE_INTEREST_GEOMETRY width=20
+RNQNX_SVG_NATIVE_INTEREST_OK late remove readd
+RNQNX_SVG_NATIVE_INTEREST_GEOMETRY width=20
+RNQNX_SVG_NATIVE_INTEREST_OK late remove readd
+RNQNX_SVG_NATIVE_INTEREST_GEOMETRY width=20
+RNQNX_SVG_NATIVE_INTEREST_OK late remove readd
+RNQNX_WORKLETS_INTEGRATION_OK frames timing pixels pan reload teardown svg-native-interest
+<end of output>
+Test time =  16.60 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_worklets_integration_host_test" end time: Nov 17 00:43 EST
+"rnqnx_worklets_integration_host_test" time elapsed: 00:00:16
+----------------------------------------------------------
+
+37/61 Testing: rnqnx_worklets_rejects_missing_bootstrap
+37/61 Test: rnqnx_worklets_rejects_missing_bootstrap
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_worklets_integration_host_test" "--omit-worklets" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_worklets_rejects_missing_bootstrap" start time: Nov 17 00:43 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1117 00:43:58.505887 1337938496 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1117 00:43:58.506382 1237317312 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000015350).
+W1117 00:43:58.506421 1237317312 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+TypeError: Cannot read property 'loadUnpackersWithCode' of undefined
+[js fatal] TypeError: Cannot read property 'loadUnpackersWithCode' of undefined 
+   at k (worklets-integration.bundle.js:664)
+  at t (worklets-integration.bundle.js:664)
+  at anonymous (worklets-integration.bundle.js:664)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at h (worklets-integration.bundle.js:671)
+  at f (worklets-integration.bundle.js:671)
+  at anonymous (worklets-integration.bundle.js:671)
+  at k (worklets-integration.bundle.js:671)
+  at f (worklets-integration.bundle.js:671)
+  at u (worklets-integration.bundle.js:671)
+  at S (worklets-integration.bundle.js:671)
+  at anonymous (worklets-integration.bundle.js:671)
+  at A (worklets-integration.bundle.js:671)
+  at f (worklets-integration.bundle.js:671)
+  at anonymous (worklets-integration.bundle.js:661)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at l (worklets-integration.bundle.js:678)
+  at b (worklets-integration.bundle.js:662)
+  at anonymous (worklets-integration.bundle.js:662)
+  at anonymous (worklets-integration.bundle.js:659)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at anonymous (worklets-integration.bundle.js:5)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at global (worklets-integration.bundle.js:1129)
+
+W1117 00:44:00.458611 1337938496 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000006790).
+W1117 00:44:00.459286 1278072512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000253d0).
+W1117 00:44:00.459402 1278072512 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000005c50).
+RNQNX_WORKLETS_MISSING_BOOTSTRAP_REJECTED
+<end of output>
+Test time =   2.13 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_worklets_rejects_missing_bootstrap" end time: Nov 17 00:44 EST
+"rnqnx_worklets_rejects_missing_bootstrap" time elapsed: 00:00:02
+----------------------------------------------------------
+
+End testing: Nov 17 00:44 EST

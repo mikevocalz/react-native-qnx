@@ -1,0 +1,44 @@
+Internal ctest changing into directory: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer
+Test project /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer
+    Start  5: rnqnx_qt_rnsvg_fabric_test
+1/2 Test  #5: rnqnx_qt_rnsvg_fabric_test .......***Failed   10.02 sec
+Running "RnqnxRnsvgFixture"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:23:18.835211 4026180160 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+W1117 00:23:24.436093 4026180160 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1117 00:23:24.440826 3887175360 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014bd0).
+W1117 00:23:24.441048 3887175360 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+Timed out waiting for: onSvgLayout
+  root 200.000000x150.000000 paints=1
+    kind=0 fill=1:#ff000000 name= w=0.000000 propList=0
+      kind=1 fill=0:#ff000000 name= w=0.000000 propList=0
+        kind=7 fill=0:#ff000000 name=grad w=0.000000 propList=0
+        kind=8 fill=0:#ff000000 name=rad w=0.000000 propList=0
+        kind=9 fill=1:#ff000000 name=clip w=0.000000 propList=0
+          kind=3 fill=1:#ff000000 name= w=0.000000 propList=0
+        kind=10 fill=1:#ff000000 name=mask w=200.000000 propList=0
+          kind=5 fill=1:#ffffffff name= w=100.000000 propList=1
+        kind=5 fill=1:#ffff8000 name=box w=20.000000 propList=1
+      kind=5 fill=2:#ff000000 name= w=100.000000 propList=1
+      kind=0 fill=1:#ff00ff00 name= w=0.000000 propList=1
+        kind=5 fill=1:#ff000000 name= w=40.000000 propList=0
+        kind=5 fill=1:#ffff0000 name= w=40.000000 propList=1
+      kind=5 fill=1:#ffff0000 name= w=100.000000 propList=1
+      kind=5 fill=1:#ff0000ff name= w=200.000000 propList=1
+      kind=17 fill=1:#ff000000 name= w=0.000000 propList=0
+      kind=3 fill=1:#ff800080 name= w=0.000000 propList=1
+      kind=0 fill=1:#ff000000 name= w=0.000000 propList=0
+        kind=2 fill=1:#ff00ff00 name= w=0.000000 propList=1
+pixel(3,20)=#fff60009 pixel(20,70)=#ff00ff00
+
+
+    Start 11: rnqnx_qt_rnsvg_values_test
+2/2 Test #11: rnqnx_qt_rnsvg_values_test .......   Passed    0.05 sec
+
+50% tests passed, 1 tests failed out of 2
+
+Total Test time (real) =  10.08 sec
+
+The following tests FAILED:
+	  5 - rnqnx_qt_rnsvg_fabric_test (Failed)
+Errors while running CTest

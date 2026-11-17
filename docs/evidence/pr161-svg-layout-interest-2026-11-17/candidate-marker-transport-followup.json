@@ -1,0 +1,9 @@
+{
+  "sha256": "5ae48fc51bf92ecb99f19e0f5ce3099b71238260d6464cc938c248912f22cd97",
+  "files": {
+    "packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js": "d7315012356fe1211683e00c359fdce9ef531454e77c3c38aeb96fa60af435b6",
+    "scripts/qt-rnsvg-codegen.mjs": "31f6b05341bfe0272d155075be87834bec46ac6640ce807e5854e2335537cbe3",
+    "tests/js/rnsvg-layout-transport.test.mjs": "72db22eb8dbc459cdae8e0d4b69c57c1c00a1cb0600dfd9ea28c671d4f0f4b41"
+  },
+  "base": "Reviewed20-file native candidate; apply after 802fd7d69... and 8584890b86... patches."
+}

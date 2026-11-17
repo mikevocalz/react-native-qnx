@@ -1,0 +1,36 @@
+docs/validation/pr161-svg-layout-interest-2026-11-17.md 182ms
+docs/handoff/CURRENT_STATE.md 57ms (unchanged)
+docs/releases/v1-readiness.json 59ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/README.md 132ms
+docs/evidence/pr161-svg-layout-interest-2026-11-17/baseline-heavy-shard.json 3ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/baseline-public-regression.json 4ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/baseline-setup-configure-command.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/baseline-setup-ctest-inventory.json 1715ms
+docs/evidence/pr161-svg-layout-interest-2026-11-17/baseline-setup-dependency-source-proof.json 128ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/baseline-setup-setup-result.json 5ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/baseline-source-and-build.json 4ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/candidate-complete-source-manifest.json 5ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/candidate-marker-transport-final.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/candidate-marker-transport-followup.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/candidate-native-interest.json 2ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/candidate-public-regression.json 3ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/candidate-source-manifest.json 4ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/final-artifact-identities.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/final-candidate-build.json 3ms
+docs/evidence/pr161-svg-layout-interest-2026-11-17/final-candidate-configuration.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/final-candidate-ctest-inventory.json 42ms
+docs/evidence/pr161-svg-layout-interest-2026-11-17/final-candidate-full.json 3ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/final-candidate-source-before.json 2ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/final-reviewed-source-patch.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/initial-freshness-check-result.json 1ms
+docs/evidence/pr161-svg-layout-interest-2026-11-17/lifetime-mutation-source.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/lifetime-mutation.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/native-marker-without-transport.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/published-d3-ci-summary.json 3ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/transitive-bundle-refresh-after.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/transitive-bundle-refresh-before.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/transitive-bundle-refresh-direct.json 2ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/transitive-bundle-refresh-initial-stale.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/transitive-bundle-refresh-plan.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/transport-candidate.json 1ms (unchanged)
+docs/evidence/pr161-svg-layout-interest-2026-11-17/transport-original-negative.json 1ms (unchanged)

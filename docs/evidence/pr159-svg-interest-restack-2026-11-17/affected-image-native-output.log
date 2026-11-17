@@ -1,0 +1,43 @@
+Start testing: Nov 17 01:14 EST
+----------------------------------------------------------
+10/22 Testing: rnqnx_expo_image_module_host_test
+10/22 Test: rnqnx_expo_image_module_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr159/build/linux-host-renderer/bin/rnqnx_expo_image_module_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr159/build/linux-host-renderer
+"rnqnx_expo_image_module_host_test" start time: Nov 17 01:14 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1117 01:14:05.665216 1830060608 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003a10).
+W1117 01:14:05.665808 1692317376 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000013250).
+W1117 01:14:05.665867 1692317376 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004450).
+RNQNX_EXPO_IMAGE_MODULE_OK surface prefetch caches loadAsync hashes cache-io configure view-commands
+<end of output>
+Test time =   0.78 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_expo_image_module_host_test" end time: Nov 17 01:14 EST
+"rnqnx_expo_image_module_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+11/22 Testing: rnqnx_expo_image_fabric_host_test
+11/22 Test: rnqnx_expo_image_fabric_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr159/build/linux-host-renderer/bin/rnqnx_expo_image_fabric_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr159/build/linux-host-renderer
+"rnqnx_expo_image_fabric_host_test" start time: Nov 17 01:14 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1117 01:14:06.281322 652554816 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1117 01:14:06.282469 310171328 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000012950).
+W1117 01:14:06.282588 310171328 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004450).
+RNQNX_EXPO_IMAGE_FABRIC_OK opacity transform onLayout events imageRef commands
+<end of output>
+Test time =   0.62 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_expo_image_fabric_host_test" end time: Nov 17 01:14 EST
+"rnqnx_expo_image_fabric_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 17 01:14 EST

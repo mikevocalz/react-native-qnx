@@ -1,0 +1,312 @@
+diff --git a/apps/rn-playground/worklets-integration.js b/apps/rn-playground/worklets-integration.js
+index 61edcb6..9ee03f3 100644
+--- a/apps/rn-playground/worklets-integration.js
++++ b/apps/rn-playground/worklets-integration.js
+@@ -4,7 +4,7 @@ const React = require('react');
+ const { AppRegistry, View, findNodeHandle } = require('react-native');
+ const Animated = require('react-native-reanimated').default;
+ const { useSharedValue, useAnimatedStyle, withTiming } = require('react-native-reanimated');
+-const { scheduleOnUI, scheduleOnRN } = require('react-native-worklets');
++const { createSerializable, scheduleOnUI, scheduleOnRN } = require('react-native-worklets');
+ const {
+   GestureHandlerRootView,
+   GestureDetector,
+@@ -12,7 +12,8 @@ const {
+ } = require('react-native-gesture-handler');
+ 
+ const h = React.createElement;
+-globalThis.__rnqnxIntegration = {};
++const svg = globalThis.__rnqnxSvgInterestEnabled ? require('react-native-svg') : null;
++globalThis.__rnqnxIntegration = { svgLayouts: [] };
+ 
+ function record(name, value) {
+   globalThis.__rnqnxIntegration[name] = value;
+@@ -44,12 +45,26 @@ function queuePendingFrame(admission) {
+   admission.value = 99;
+ }
+ 
++function recordSvgLayout(value) {
++  globalThis.__rnqnxIntegration.svgLayouts.push(value);
++}
++
++function svgLayoutWorklet(_timestamp, event) {
++  'worklet';
++  scheduleOnRN(recordSvgLayout, {
++    layout: event.layout,
++    role: globalThis.__rnqnxThreadRole(),
++  });
++}
++
+ function WorkletsIntegration() {
+   const timing = useSharedValue(0);
+   const translation = useSharedValue(0);
+   const admission = useSharedValue(0);
+   const timingRef = React.useRef(null);
+   const gestureRef = React.useRef(null);
++  const svgRef = React.useRef(null);
++  const [svgWidth, setSvgWidth] = React.useState(10);
+   const timingStyle = useAnimatedStyle(() => ({ transform: [{ translateX: timing.value }] }));
+   const gestureStyle = useAnimatedStyle(() => ({ transform: [{ translateX: translation.value }] }));
+   const pan = usePanGesture({
+@@ -66,6 +81,29 @@ function WorkletsIntegration() {
+   });
+ 
+   React.useEffect(() => {
++    let svgRegistration = null;
++    const unregisterSvg = () => {
++      if (svgRegistration !== null) {
++        globalThis.__reanimatedModuleProxy.unregisterEventHandler(svgRegistration);
++        svgRegistration = null;
++      }
++    };
++    if (svg) {
++      const tag = findNodeHandle(svgRef.current);
++      record('svgTag', tag);
++      globalThis.__rnqnxSetSvgWidth = setSvgWidth;
++      // Exercise the actual tag-specific native registry after mount, without
++      // a React onLayout/onSvgLayout prop or an animated component wrapper.
++      globalThis.__rnqnxRegisterSvgLayout = () => {
++        unregisterSvg();
++        svgRegistration = globalThis.__reanimatedModuleProxy.registerEventHandler(
++          createSerializable(svgLayoutWorklet),
++          'onSvgLayout',
++          tag
++        );
++      };
++      globalThis.__rnqnxUnregisterSvgLayout = unregisterSvg;
++    }
+     globalThis.__rnqnxStartTiming = () => {
+       timing.value = withTiming(60, { duration: 80 }, (finished) => {
+         'worklet';
+@@ -79,10 +117,14 @@ function WorkletsIntegration() {
+     record('ready', true);
+     scheduleOnUI(probeFrames, 42);
+     return () => {
++      unregisterSvg();
+       record('unmounted', true);
+       delete globalThis.__rnqnxStartTiming;
+       delete globalThis.__rnqnxQueueBeforeTeardown;
+       delete globalThis.__rnqnxTeardownAdmission;
++      delete globalThis.__rnqnxSetSvgWidth;
++      delete globalThis.__rnqnxRegisterSvgLayout;
++      delete globalThis.__rnqnxUnregisterSvgLayout;
+     };
+   }, [timing, admission]);
+ 
+@@ -125,7 +167,13 @@ function WorkletsIntegration() {
+             gestureStyle,
+           ],
+         })
+-      )
++      ),
++      svg &&
++        h(
++          svg.default,
++          { width: 80, height: 30, style: { position: 'absolute', left: 150, top: 20 } },
++          h(svg.Rect, { ref: svgRef, x: 0, y: 0, width: svgWidth, height: 20, fill: '#00ff00' })
++        )
+     )
+   );
+ }
+diff --git a/tests/cpp/WorkletsIntegrationHostTest.cpp b/tests/cpp/WorkletsIntegrationHostTest.cpp
+index 7d2f106..1a4afb6 100644
+--- a/tests/cpp/WorkletsIntegrationHostTest.cpp
++++ b/tests/cpp/WorkletsIntegrationHostTest.cpp
+@@ -8,6 +8,8 @@
+ #include "react-native-qnx/views/QtQuickItemFactory.h"
+ #include "react-native-qnx/worklets/QtWorkletsPlatform.h"
+ 
++#include <react/renderer/core/EventListener.h>
++
+ #include <QColor>
+ #include <QDir>
+ #include <QElapsedTimer>
+@@ -18,6 +20,7 @@
+ #include <QQuickItem>
+ #include <QQuickWindow>
+ 
++#include <atomic>
+ #include <cmath>
+ #include <chrono>
+ #include <fstream>
+@@ -66,6 +69,14 @@ class Fixture {
+     host_.installComponentProvider();
+     host_.installPlatformConstants();
+     host_.installTimers();
++#if RNQNX_ENABLE_QT_RNSVG
++    host_.runtime().global().setProperty(host_.runtime(), "__rnqnxSvgInterestEnabled", true);
++    host_.scheduler().addEventListener(std::make_shared<const facebook::react::EventListener>(
++        [this](const facebook::react::RawEvent& event) {
++          if (event.type == "topSvgLayout") ++svgDispatches_;
++          return false;
++        }));
++#endif
+   }
+ 
+   ~Fixture() { host_.stopSurface(kSurfaceId); }
+@@ -204,6 +215,10 @@ class Fixture {
+       return end.isNumber() && std::abs(end.asNumber() - 40) < 0.1;
+     });
+ 
++#if RNQNX_ENABLE_QT_RNSVG
++    exerciseSvgInterest();
++#endif
++
+     host_.stopSurface(kSurfaceId);
+     waitFor("React unmount", [&] { return flag("unmounted"); });
+     require(window_.contentItem()->childItems().empty(), "surface teardown left mounted views");
+@@ -211,17 +226,15 @@ class Fixture {
+ 
+   void queueBeforeDestruction() {
+     waitFor("initial frame probe before teardown", [&] { return value("frames").isObject(); });
++#if RNQNX_ENABLE_QT_RNSVG
++    // Leave a handler that has delivered real events installed for teardown.
++    exerciseSvgInterest();
++#endif
+     evaluate("globalThis.__rnqnxQueueBeforeTeardown();");
+-    host_.runtime().drainMicrotasks();
+     // FIFO UI barrier after scheduleOnUI's microtask. Do not pump the GUI: the
+     // admitted worklet must request a frame that cannot be delivered before
+     // destruction. A no-op scheduleOnUI therefore fails this trial.
+-    const auto barrier = std::make_shared<std::promise<void>>();
+-    auto completed = barrier->get_future();
+-    require(worklets_->postToUi([barrier] { barrier->set_value(); }), "UI barrier admission failed");
+-    require(completed.wait_for(std::chrono::seconds(2)) == std::future_status::ready,
+-            "UI barrier did not complete before teardown");
+-    completed.get();
++    waitForUiQueue("pending frame before teardown");
+     // Frame requests may coalesce with a request already in the library's
+     // batch. Read the shared value through Reanimated's public RN getter:
+     // 99 proves the worklet ran and enqueued its callback; 100 would mean the
+@@ -240,6 +253,86 @@ class Fixture {
+   }
+ 
+  private:
++  void waitForUiQueue(const std::string& operation) {
++    host_.runtime().drainMicrotasks();
++    const auto barrier = std::make_shared<std::promise<void>>();
++    auto completed = barrier->get_future();
++    require(worklets_->postToUi([barrier] { barrier->set_value(); }), operation + ": UI barrier admission failed");
++    require(completed.wait_for(std::chrono::seconds(2)) == std::future_status::ready,
++            operation + ": UI barrier did not complete");
++    completed.get();
++  }
++
++#if RNQNX_ENABLE_QT_RNSVG
++  void flushWorkletQueues(const std::string& operation) {
++    // Registry mutations and raw event delivery use the UI FIFO. Only post the
++    // RN barrier after that FIFO finishes, so callbacks it scheduled precede it.
++    waitForUiQueue(operation);
++    const auto completed = std::make_shared<std::atomic<bool>>(false);
++    worklets_->jsCallInvoker()->invokeAsync([completed] { completed->store(true); });
++    waitFor(operation, [&] { return completed->load(); });
++  }
++
++  size_t svgCallbackCount() {
++    auto& runtime = host_.runtime();
++    return value("svgLayouts").asObject(runtime).asArray(runtime).size(runtime);
++  }
++
++  void requireSvgCallbacks(size_t count, double width) {
++    auto& runtime = host_.runtime();
++    auto callbacks = value("svgLayouts").asObject(runtime).asArray(runtime);
++    require(callbacks.size(runtime) == count, "unexpected SVG worklet callback count");
++    require(svgDispatches_.load() == static_cast<int>(count), "unexpected native SVG dispatch count");
++    if (count == 0) return;
++    auto report = callbacks.getValueAtIndex(runtime, count - 1).asObject(runtime);
++    require(report.getProperty(runtime, "role").asString(runtime).utf8(runtime) == "ui-worklet",
++            "SVG event handler ran on the wrong thread");
++    auto layout = report.getPropertyAsObject(runtime, "layout");
++    require(layout.getProperty(runtime, "x").asNumber() == 0 &&
++                layout.getProperty(runtime, "y").asNumber() == 0 &&
++                layout.getProperty(runtime, "width").asNumber() == width &&
++                layout.getProperty(runtime, "height").asNumber() == 20,
++            "SVG worklet received incorrect layout bounds");
++  }
++
++  void exerciseSvgInterest() {
++    require(layer_.itemForTag(static_cast<int>(number("svgTag"))) != nullptr,
++            "SVG Rect was not mounted by Fabric");
++    waitFor("SVG initial pixels", [&] {
++      return pixel(155, 25, QColor(Qt::green)) && pixel(165, 25, QColor(Qt::white));
++    });
++    flushWorkletQueues("unobserved SVG geometry");
++    requireSvgCallbacks(0, 0);
++
++    evaluate("globalThis.__rnqnxRegisterSvgLayout();");
++    flushWorkletQueues("late SVG registration");
++    requireSvgCallbacks(0, 0);  // Registration does not replay unchanged bounds.
++    evaluate("globalThis.__rnqnxSetSvgWidth(20);");
++    waitFor("late SVG rendered geometry", [&] { return pixel(165, 25, QColor(Qt::green)); });
++    std::cout << "RNQNX_SVG_NATIVE_INTEREST_GEOMETRY width=20\n";
++    waitFor("late SVG native subscriber", [&] { return svgCallbackCount() == 1; });
++    requireSvgCallbacks(1, 20);
++
++    evaluate("globalThis.__rnqnxUnregisterSvgLayout();");
++    flushWorkletQueues("SVG unregistration");
++    evaluate("globalThis.__rnqnxSetSvgWidth(30);");
++    waitFor("unobserved SVG pixels", [&] { return pixel(175, 25, QColor(Qt::green)); });
++    flushWorkletQueues("SVG geometry after unregistration");
++    requireSvgCallbacks(1, 20);
++
++    evaluate("globalThis.__rnqnxRegisterSvgLayout();");
++    flushWorkletQueues("SVG re-registration");
++    requireSvgCallbacks(1, 20);
++    evaluate("globalThis.__rnqnxSetSvgWidth(40);");
++    waitFor("re-registered SVG rendered geometry", [&] { return pixel(185, 25, QColor(Qt::green)); });
++    waitFor("re-registered SVG native subscriber", [&] { return svgCallbackCount() == 2; });
++    requireSvgCallbacks(2, 40);
++    std::cout << "RNQNX_SVG_NATIVE_INTEREST_OK late remove readd\n";
++  }
++
++  // Outlive host-owned event listeners, including surface and runtime teardown.
++  std::atomic<int> svgDispatches_{0};
++#endif
+   QQmlEngine engine_;
+   QQuickWindow window_;
+   rnqnx::views::QtQuickItemFactory factory_;
+@@ -290,7 +383,11 @@ int main(int argc, char** argv) {
+       fixture.queueBeforeDestruction();
+     }
+     QCoreApplication::processEvents();
+-    std::cout << "RNQNX_WORKLETS_INTEGRATION_OK frames timing pixels pan reload teardown\n";
++    std::cout << "RNQNX_WORKLETS_INTEGRATION_OK frames timing pixels pan reload teardown";
++#if RNQNX_ENABLE_QT_RNSVG
++    std::cout << " svg-native-interest";
++#endif
++    std::cout << '\n';
+     return 0;
+   } catch (const std::exception& error) {
+     std::cerr << "RNQNX_WORKLETS_INTEGRATION_FAILED " << error.what() << '\n';
+diff --git a/vnext/src/reanimated/QnxReanimatedModule.cpp b/vnext/src/reanimated/QnxReanimatedModule.cpp
+index b6cae6c..d825a1f 100644
+--- a/vnext/src/reanimated/QnxReanimatedModule.cpp
++++ b/vnext/src/reanimated/QnxReanimatedModule.cpp
+@@ -60,6 +60,16 @@ void QnxReanimatedModule::install(Runtime& rt) {
+   };
+   proxy_->init(methods);
+   proxy_->initializeFabric(host_.scheduler().getUIManager());
++#if RNQNX_ENABLE_QT_RNSVG
++  // Native event registrations can arrive after an SVG node mounts and do not
++  // require a React onSvgLayout prop. The synchronized registry query captures
++  // no JSI values or owning reference to the proxy or its UI runtime.
++  host_.delegate().setSvgLayoutNativeEventInterest(
++      [weak = std::weak_ptr<::reanimated::ReanimatedModuleProxy>(proxy_)](facebook::react::Tag tag) {
++        const auto proxy = weak.lock();
++        return proxy && proxy->isAnyHandlerWaitingForEvent("onSvgLayout", tag);
++      });
++#endif
+ 
+   // Fabric events (scroll, gesture) feed worklet handlers. The handler runs on
+   // the UI thread; the event is copied across, never the JS runtime's objects.
+@@ -114,6 +124,10 @@ void QnxReanimatedModule::invalidate() {
+   }
+   invalidated_ = true;
+   if (proxy_) {
++#if RNQNX_ENABLE_QT_RNSVG
++    // Stop new reporter queries while the owner runtime is still alive.
++    host_.delegate().setSvgLayoutNativeEventInterest({});
++#endif
+     proxy_->cleanupSensors();
+   }
+   proxy_.reset();

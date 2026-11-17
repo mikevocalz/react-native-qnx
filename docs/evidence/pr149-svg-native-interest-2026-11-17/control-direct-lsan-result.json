@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_worklets_integration_host_test",
+    "-platform",
+    "offscreen"
+  ],
+  "sourceManifest": "control-source-identities.json",
+  "startedUtc": "2026-11-17T05:40:02.046425+00:00",
+  "sha256": {
+    "bin/rnqnx_worklets_integration_host_test": "27532cb3cff3df14df82fe57372c3cf7de474e6b97426968f8b743893ada7df5",
+    "librnqnx_reanimated.a": "5900cd2b06d8ae3dbb4e362eab87e1debfb18aa736d22cc79ff2499d992a0d8a",
+    "rnqnx-worklets-integration.bundle.js": "0683a1188a6f38bc97dadc462994503f707f2f6ff1ee4924f65721da0a18c752"
+  },
+  "timeoutSeconds": 60,
+  "exitCode": 1,
+  "timedOut": false,
+  "elapsedSeconds": 11.511350041999322,
+  "endedUtc": "2026-11-17T05:40:15.792522+00:00"
+}

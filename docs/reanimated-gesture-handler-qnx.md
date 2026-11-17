@@ -40,6 +40,16 @@ remaining recognizers, layout/scroll behavior, busy-JS rendering or the current
 branch on physical QNX. The device receipts below remain dated observations of
 their recorded candidates.
 
+With both SVG and Reanimated enabled, a per-host registry predicate also admits
+SVG layout events for native subscribers without a React layout prop. The linked
+fixture checks late native registration, removal and re-registration against
+painted SVG geometry and exact UI-worklet payloads, including teardown with a
+materialized handler and pending library frame. The final actual-parent pair
+passes 2/2; see the [native SVG event receipt](validation/pr149-svg-native-interest-2026-11-17.md)
+for its original-module control, source comparison and sanitizer scope. This
+bounded event path does not establish general public hook or animated SVG prop
+conformance.
+
 ## Reanimated
 
 `QnxReanimatedModule` is the `ReanimatedModule` TurboModule. Its

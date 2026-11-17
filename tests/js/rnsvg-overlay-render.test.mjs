@@ -37,18 +37,19 @@ function nativeComponent(name, config) {
   return Component;
 }
 const colors = { black: 0xff000000, red: 0xffff0000, white: 0xffffffff, blue: 0xff0000ff };
+const platform = globalThis.__rnsvgOverlayPlatform;
 module.exports = {
   // NativeComponentRegistry and the public entry share this module.
   get: nativeComponent,
   codegenNativeComponent: (name) => nativeComponent(name, null),
   // ViewConfigIgnore
-  ConditionallyIgnoredEventHandlers: (handlers) => handlers,
+  ConditionallyIgnoredEventHandlers: (handlers) => platform === 'ios' ? handlers : undefined,
   processColor: (value) => {
     if (typeof value === 'number') return value;
     if (typeof value === 'string' && colors[value] !== undefined) return colors[value] | 0;
     return null;
   },
-  Platform: { OS: 'qnx', select: (spec) => spec.qnx ?? spec.default },
+  Platform: { OS: platform, select: (spec) => spec[platform] ?? spec.default },
   Image: { resolveAssetSource: (source) => (typeof source === 'number' ? { uri: 'asset://' + source } : source) },
   findNodeHandle: () => null,
   StyleSheet: { create: (styles) => styles, flatten: (style) => style },
@@ -291,8 +292,11 @@ async function run(platform) {
     dev: false,
     minify: false,
   });
-  /** @type {{ console: object, overlayResults?: string }} */
-  const sandbox = { console: { warn() {}, error() {}, log() {} } };
+  /** @type {{ console: object, overlayResults?: string, __rnsvgOverlayPlatform: string }} */
+  const sandbox = {
+    console: { warn() {}, error() {}, log() {} },
+    __rnsvgOverlayPlatform: platform,
+  };
   vm.runInNewContext(bundle.code, sandbox);
   return JSON.parse(String(sandbox.overlayResults), (key, value) =>
     value === '__undefined__' ? undefined : value

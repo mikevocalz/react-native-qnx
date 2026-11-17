@@ -1,0 +1,10 @@
+{"command": ["pnpm", "validate:dependencies"], "startedAt": "2026-11-17T06:00:30.153339+00:00", "exitCode": 0, "elapsedSeconds": 0.269, "log": "final-light-1.log"}
+{"command": ["pnpm", "validate:architecture"], "startedAt": "2026-11-17T06:00:30.423372+00:00", "exitCode": 0, "elapsedSeconds": 0.102, "log": "final-light-2.log"}
+{"command": ["pnpm", "typecheck"], "startedAt": "2026-11-17T06:00:30.526014+00:00", "exitCode": 0, "elapsedSeconds": 0.977, "log": "final-light-3.log"}
+{"command": ["pnpm", "qt:rnsvg:check"], "startedAt": "2026-11-17T06:00:31.503229+00:00", "exitCode": 0, "elapsedSeconds": 0.699, "log": "final-light-4.log"}
+{"command": ["pnpm", "validate:docs"], "startedAt": "2026-11-17T06:00:32.203656+00:00", "exitCode": 1, "elapsedSeconds": 0.522, "log": "final-light-5.log"}
+{"command": ["pnpm", "docs:sync"], "startedAt": "2026-11-17T06:02:14.982850+00:00", "exitCode": 0, "elapsedSeconds": 0.824, "log": "docs-sync.log"}
+{"command": ["pnpm", "exec", "prettier", "--write", "docs/validation/pr161-svg-layout-interest-2026-11-17.md", "docs/evidence/pr161-svg-layout-interest-2026-11-17/README.md"], "startedAt": "2026-11-17T06:02:15.807763+00:00", "exitCode": 0, "elapsedSeconds": 0.414, "log": "final-document-format.log"}
+{"command": ["pnpm", "validate:docs"], "startedAt": "2026-11-17T06:02:16.221737+00:00", "exitCode": 0, "elapsedSeconds": 0.594, "log": "docs-verified.log"}
+{"command": ["pnpm", "format:check"], "startedAt": "2026-11-17T06:02:16.815517+00:00", "exitCode": 0, "elapsedSeconds": 9.032, "log": "format-verified.log"}
+{"command": ["git", "diff", "--check"], "startedAt": "2026-11-17T06:02:25.847825+00:00", "exitCode": 0, "elapsedSeconds": 0.03, "log": "diff-verified.log"}

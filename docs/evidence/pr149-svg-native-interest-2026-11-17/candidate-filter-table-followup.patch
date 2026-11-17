@@ -1,0 +1,44 @@
+diff --git a/vnext/src/fabric/QtRnsvgFilterConvert.cpp b/vnext/src/fabric/QtRnsvgFilterConvert.cpp
+index 40321aa..ee65dd7 100644
+--- a/vnext/src/fabric/QtRnsvgFilterConvert.cpp
++++ b/vnext/src/fabric/QtRnsvgFilterConvert.cpp
+@@ -85,7 +85,7 @@ filter::Params offsetOf(const rn::RNSVGFeOffsetProps& p) {
+ }  // namespace
+ 
+ void appendFilterEntries(std::vector<Entry>& out) {
+-  out.push_back(Entry{"RNSVGFilter", Kind::Filter, &convertFilterElement, false});
++  out.push_back(Entry{"RNSVGFilter", Kind::Filter, &convertFilterElement, nullptr});
+   out.push_back(primitiveEntry<rn::RNSVGFeBlendProps, PrimitiveType::Blend, blendOf>("RNSVGFeBlend"));
+   out.push_back(
+       primitiveEntry<rn::RNSVGFeColorMatrixProps, PrimitiveType::ColorMatrix, colorMatrixOf>("RNSVGFeColorMatrix"));
+diff --git a/vnext/src/fabric/QtRnsvgFilterConvert.h b/vnext/src/fabric/QtRnsvgFilterConvert.h
+index f43a828..7629a0d 100644
+--- a/vnext/src/fabric/QtRnsvgFilterConvert.h
++++ b/vnext/src/fabric/QtRnsvgFilterConvert.h
+@@ -104,7 +104,7 @@ bool convertPrimitive(const rn::Props& props, ElementProps& e, const ElementProp
+ 
+ template <class P, filter::PrimitiveType Type, filter::Params (*Make)(const P&)>
+ Entry primitiveEntry(const char* name) {
+-  return Entry{name, Kind::FilterPrimitive, &convertPrimitive<P, Type, Make>, false};
++  return Entry{name, Kind::FilterPrimitive, &convertPrimitive<P, Type, Make>, nullptr};
+ }
+ 
+ /// A flood color, lighting color or shadow color prop: `{type, payload}` or a
+diff --git a/vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp b/vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp
+index 9ad85ec..6a210da 100644
+--- a/vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp
++++ b/vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp
+@@ -201,11 +201,11 @@ void appendFilterExtraEntries(std::vector<Entry>& out) {
+   out.push_back(Entry{"RNSVGFeDiffuseLighting", Kind::FilterPrimitive,
+                       &convertLighting<rn::RNSVGFeDiffuseLightingProps, PrimitiveType::DiffuseLighting,
+                                        diffuseLightingOf>,
+-                      false});
++                      nullptr});
+   out.push_back(Entry{"RNSVGFeSpecularLighting", Kind::FilterPrimitive,
+                       &convertLighting<rn::RNSVGFeSpecularLightingProps, PrimitiveType::SpecularLighting,
+                                        specularLightingOf>,
+-                      false});
++                      nullptr});
+ }
+ 
+ }  // namespace rnqnx::fabric::rnsvg_bridge

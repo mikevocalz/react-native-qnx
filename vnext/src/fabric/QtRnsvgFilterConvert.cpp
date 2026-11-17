@@ -85,7 +85,7 @@ filter::Params offsetOf(const rn::RNSVGFeOffsetProps& p) {
 }  // namespace
 
 void appendFilterEntries(std::vector<Entry>& out) {
-  out.push_back(Entry{"RNSVGFilter", Kind::Filter, &convertFilterElement, false});
+  out.push_back(Entry{"RNSVGFilter", Kind::Filter, &convertFilterElement, nullptr});
   out.push_back(primitiveEntry<rn::RNSVGFeBlendProps, PrimitiveType::Blend, blendOf>("RNSVGFeBlend"));
   out.push_back(
       primitiveEntry<rn::RNSVGFeColorMatrixProps, PrimitiveType::ColorMatrix, colorMatrixOf>("RNSVGFeColorMatrix"));

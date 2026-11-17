@@ -1,0 +1,14 @@
+.project-state.json 46ms (unchanged)
+docs/handoff/CURRENT_STATE.md 160ms (unchanged)
+docs/releases/v1-readiness.json 10ms
+docs/validation/pr159-svg-interest-restack-2026-11-17.md 17ms
+docs/evidence/pr159-svg-interest-restack-2026-11-17/README.md 7ms
+docs/evidence/pr159-svg-interest-restack-2026-11-17/affected-image-tests.json 4ms (unchanged)
+docs/evidence/pr159-svg-interest-restack-2026-11-17/build.json 2ms (unchanged)
+docs/evidence/pr159-svg-interest-restack-2026-11-17/codegen.json 1ms
+docs/evidence/pr159-svg-interest-restack-2026-11-17/docs-sync.json 1ms
+docs/evidence/pr159-svg-interest-restack-2026-11-17/previous-head-ci.json 54ms
+docs/evidence/pr159-svg-interest-restack-2026-11-17/previous-head-source-trees.json 1ms
+docs/evidence/pr159-svg-interest-restack-2026-11-17/source-identities.json 2ms
+docs/evidence/pr159-svg-interest-restack-2026-11-17/transport.json 1ms
+docs/evidence/pr159-svg-interest-restack-2026-11-17/typecheck.json 1ms

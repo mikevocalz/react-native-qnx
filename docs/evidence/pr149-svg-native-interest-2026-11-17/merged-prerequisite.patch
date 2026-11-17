@@ -1,0 +1,1449 @@
+diff --git a/apps/rn-playground/rnsvg-fixture.js b/apps/rn-playground/rnsvg-fixture.js
+index 3ff20c5..3d9551d 100644
+--- a/apps/rn-playground/rnsvg-fixture.js
++++ b/apps/rn-playground/rnsvg-fixture.js
+@@ -43,6 +43,15 @@ globalThis.__rnsvgLayoutY = -1;
+ globalThis.__rnsvgLayoutW = -1;
+ globalThis.__rnsvgLayoutH = -1;
+ 
++const recordRectLayout = (event) => {
++  const layout = event.nativeEvent.layout;
++  globalThis.__rnsvgLayoutEvents++;
++  globalThis.__rnsvgLayoutX = layout.x;
++  globalThis.__rnsvgLayoutY = layout.y;
++  globalThis.__rnsvgLayoutW = layout.width;
++  globalThis.__rnsvgLayoutH = layout.height;
++};
++
+ function Fixture() {
+   const [state, setState] = useState({
+     pathFill: '#00ff00',
+@@ -52,6 +61,7 @@ function Fixture() {
+     extras: false,
+     rectX: 10,
+     rectFill: '#ff00ff',
++    rectLayout: true,
+   });
+   globalThis.__rnsvgUpdate = (patch) => setState((previous) => ({ ...previous, ...patch }));
+   // Counted in render: passive effects wait on a scheduler tick this host
+@@ -156,19 +166,13 @@ function Fixture() {
+       <Circle cx="150" cy="20" r="5" fill="#808080" clipRule="nonzero" />
+       <Circle cx="170" cy="20" r="5" fill="#808080" />
+       <Rect
++        id="layout-probe"
+         x={state.rectX}
+         y="60"
+         width="30"
+         height="20"
+         fill={state.rectFill}
+-        onLayout={(event) => {
+-          const layout = event.nativeEvent.layout;
+-          globalThis.__rnsvgLayoutEvents++;
+-          globalThis.__rnsvgLayoutX = layout.x;
+-          globalThis.__rnsvgLayoutY = layout.y;
+-          globalThis.__rnsvgLayoutW = layout.width;
+-          globalThis.__rnsvgLayoutH = layout.height;
+-        }}
++        onLayout={state.rectLayout ? recordRectLayout : undefined}
+       />
+       <Text
+         x={[10, 20]}
+diff --git a/packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js b/packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js
+index 199d35a..9cdcc49 100644
+--- a/packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js
++++ b/packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js
+@@ -101,6 +101,9 @@ module.exports = {
+     testID: true,
+     pointerEvents: true,
+     onLayout: true,
++    // RN's generated event-attribute helper includes this marker only on iOS.
++    // QNX retains the existing SVG listener marker for native event admission.
++    onSvgLayout: true,
+     accessible: true,
+     accessibilityLabel: true,
+     accessibilityHint: true,
+diff --git a/scripts/qt-rnsvg-codegen.mjs b/scripts/qt-rnsvg-codegen.mjs
+index e1c3b01..b23baa5 100644
+--- a/scripts/qt-rnsvg-codegen.mjs
++++ b/scripts/qt-rnsvg-codegen.mjs
+@@ -22,6 +22,10 @@
+ // JavaScript side: those specs are written to
+ // packages/react-native-qnx/svg/overlay/fabric, which Metro serves in place of
+ // the package's copy.
++// QNX BaseViewConfig explicitly admits the existing onSvgLayout listener
++// marker: RN's generated event-attribute helper includes it only on iOS.
++// Its native Boolean prop is retained below at schema level; this does not
++// add a JavaScript prop or change the event definition.
+ import { createRequire } from 'node:module';
+ import fs from 'node:fs';
+ import os from 'node:os';
+@@ -213,6 +217,8 @@ try {
+   ];
+   /** @type {Map<string, string>} */
+   const overlaySpecs = new Map();
++  /** @param {{ name: string }} entry */
++  const isSvgLayout = (entry) => entry.name === 'onSvgLayout';
+   for (const { name, file } of sources) {
+     const source = fs.readFileSync(file, 'utf8');
+     const patched = applyPatches(name, source);
+@@ -222,6 +228,22 @@ try {
+       overlaySpecs.set(`${name}.ts`, await overlaySpec(name, patched.text));
+     }
+     const schema = parser.parseFile(patchedFile);
++    for (const module of Object.values(schema.modules)) {
++      for (const [componentName, component] of Object.entries(module.components ?? {})) {
++        if (!component.events.some(isSvgLayout)) continue;
++        if (component.props.some(isSvgLayout)) {
++          throw new Error(`${componentName}: re-audit the upstream onSvgLayout prop`);
++        }
++        // ReactNativeAttributePayload sends true for an event callback and
++        // null on removal. The generated convertRawProp preserves the source
++        // on an omitted update and resets to false on null.
++        component.props.push({
++          name: 'onSvgLayout',
++          optional: true,
++          typeAnnotation: { type: 'BooleanTypeAnnotation', default: false },
++        });
++      }
++    }
+     Object.assign(modules, schema.modules);
+   }
+   // A patch whose name pattern matches no spec applied to nothing: the package
+diff --git a/tests/js/rnsvg-layout-transport.test.mjs b/tests/js/rnsvg-layout-transport.test.mjs
+new file mode 100644
+index 0000000..2a4b690
+--- /dev/null
++++ b/tests/js/rnsvg-layout-transport.test.mjs
+@@ -0,0 +1,132 @@
++// Exercise the pinned codegen, platform event filter, view-config composition
++// and React prop serializer. The native Fabric fixture proves the full path;
++// this isolates the platform distinction that an always-true helper hides.
++import assert from 'node:assert/strict';
++import { readFileSync } from 'node:fs';
++import { createRequire } from 'node:module';
++import path from 'node:path';
++import vm from 'node:vm';
++
++const require = createRequire(import.meta.url);
++const presetRequire = createRequire(require.resolve('babel-preset-expo'));
++const babel = presetRequire('@babel/core');
++const rnRoot = path.dirname(require.resolve('react-native/package.json'));
++const svgRoot = path.dirname(require.resolve('react-native-svg/package.json'));
++
++/** @param {string} file @param {Record<string, any>} dependencies @param {string} platform */
++function load(file, dependencies = {}, platform = 'qnx') {
++  const transformed = babel.transformSync(readFileSync(file, 'utf8'), {
++    babelrc: false,
++    configFile: false,
++    filename: file,
++    presets: [require.resolve('babel-preset-expo')],
++    caller: { name: 'metro', platform, isDev: false },
++  });
++  assert.ok(transformed?.code, `${file} must compile with the pinned preset`);
++  const module = { exports: /** @type {any} */ ({}) };
++  vm.runInNewContext(transformed.code, {
++    module,
++    exports: module.exports,
++    /** @param {string} name */
++    require(name) {
++      if (name.startsWith('@babel/runtime/')) return presetRequire(name);
++      assert.ok(Object.hasOwn(dependencies, name), `${file}: unexpected dependency ${name}`);
++      return dependencies[name];
++    },
++  });
++  return module.exports;
++}
++
++// Style conversion is unrelated to event admission. Event filtering,
++// generated metadata, config composition and serialization use real sources.
++const styles = { opacity: true };
++const base = load('packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js', {
++  'react-native/Libraries/Components/View/ReactNativeStyleAttributes': { default: styles },
++});
++const platformBase = load(
++  path.join(rnRoot, 'Libraries/NativeComponent/PlatformBaseViewConfig.js'),
++  {
++    './BaseViewConfig': base,
++  }
++);
++const { createViewConfig } = load(path.join(rnRoot, 'Libraries/NativeComponent/ViewConfig.js'), {
++  './PlatformBaseViewConfig': platformBase,
++});
++const payload = load(
++  path.join(
++    rnRoot,
++    'Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload.js'
++  ),
++  {
++    '../../StyleSheet/flattenStyle': load(
++      path.join(rnRoot, 'Libraries/StyleSheet/flattenStyle.js')
++    ),
++    '../../Utilities/differ/deepDiffer': load(
++      path.join(rnRoot, 'Libraries/Utilities/differ/deepDiffer.js')
++    ),
++  }
++);
++
++for (const platform of ['qnx', 'android', 'ios']) {
++  const ignore = load(
++    path.join(rnRoot, 'Libraries/NativeComponent/ViewConfigIgnore.js'),
++    { '../Utilities/Platform': { OS: platform } },
++    platform
++  );
++  const handlers = { onSvgLayout: true };
++  assert.equal(
++    ignore.ConditionallyIgnoredEventHandlers(handlers),
++    platform === 'ios' ? handlers : undefined,
++    `the real upstream helper must retain its ${platform} behavior`
++  );
++  const generated = load(
++    path.join(svgRoot, 'src/fabric/RectNativeComponent.ts'),
++    {
++      'react-native': {},
++      'react-native/Libraries/NativeComponent/NativeComponentRegistry': {
++        get: (/** @type {string} */ name) => name,
++      },
++      'react-native/Libraries/NativeComponent/ViewConfigIgnore': ignore,
++      'react-native/Libraries/Components/View/ReactNativeStyleAttributes': {},
++    },
++    platform
++  ).__INTERNAL_VIEW_CONFIG;
++  assert.equal(generated.directEventTypes.topSvgLayout.registrationName, 'onSvgLayout');
++  assert.equal(generated.validAttributes.onSvgLayout, platform === 'ios' ? true : undefined);
++  if (platform !== 'qnx') continue;
++
++  const config = createViewConfig(generated);
++  const attrs = config.validAttributes;
++  const listener = () => {};
++  assert.equal(payload.create({ x: 10 }, attrs).onSvgLayout, undefined);
++  assert.equal(payload.create({ x: 10, onSvgLayout: listener }, attrs).onSvgLayout, true);
++  const moved = payload.diff(
++    { x: 10, onSvgLayout: listener },
++    { x: 20, onSvgLayout: listener },
++    attrs
++  );
++  assert.equal(moved.x, 20);
++  assert.equal(
++    moved.onSvgLayout,
++    undefined,
++    'stable listener is omitted from geometry-only updates'
++  );
++  assert.equal(payload.diff({ x: 20, onSvgLayout: listener }, { x: 20 }, attrs).onSvgLayout, null);
++  assert.equal(payload.diff({ x: 20 }, { x: 20, onSvgLayout: listener }, attrs).onSvgLayout, true);
++  assert.equal(payload.create({ onLayout: listener }, attrs).onLayout, true);
++  assert.equal(config.directEventTypes.topSvgLayout.registrationName, 'onSvgLayout');
++  assert.equal(
++    base.directEventTypes.topSvgLayout,
++    undefined,
++    'the base must not invent SVG event metadata'
++  );
++  assert.equal(
++    base.validAttributes.onLoad,
++    undefined,
++    'unrelated custom event admission is unchanged'
++  );
++}
++
++console.log(
++  'SVG layout transport: real platform filtering, generated metadata and create/diff lifecycle passed'
++);
+diff --git a/tests/js/rnsvg-overlay-render.test.mjs b/tests/js/rnsvg-overlay-render.test.mjs
+index e1a04be..f07ebcf 100644
+--- a/tests/js/rnsvg-overlay-render.test.mjs
++++ b/tests/js/rnsvg-overlay-render.test.mjs
+@@ -37,18 +37,19 @@ function nativeComponent(name, config) {
+   return Component;
+ }
+ const colors = { black: 0xff000000, red: 0xffff0000, white: 0xffffffff, blue: 0xff0000ff };
++const platform = globalThis.__rnsvgOverlayPlatform;
+ module.exports = {
+   // NativeComponentRegistry and the public entry share this module.
+   get: nativeComponent,
+   codegenNativeComponent: (name) => nativeComponent(name, null),
+   // ViewConfigIgnore
+-  ConditionallyIgnoredEventHandlers: (handlers) => handlers,
++  ConditionallyIgnoredEventHandlers: (handlers) => platform === 'ios' ? handlers : undefined,
+   processColor: (value) => {
+     if (typeof value === 'number') return value;
+     if (typeof value === 'string' && colors[value] !== undefined) return colors[value] | 0;
+     return null;
+   },
+-  Platform: { OS: 'qnx', select: (spec) => spec.qnx ?? spec.default },
++  Platform: { OS: platform, select: (spec) => spec[platform] ?? spec.default },
+   Image: { resolveAssetSource: (source) => (typeof source === 'number' ? { uri: 'asset://' + source } : source) },
+   findNodeHandle: () => null,
+   StyleSheet: { create: (styles) => styles, flatten: (style) => style },
+@@ -291,8 +292,11 @@ async function run(platform) {
+     dev: false,
+     minify: false,
+   });
+-  /** @type {{ console: object, overlayResults?: string }} */
+-  const sandbox = { console: { warn() {}, error() {}, log() {} } };
++  /** @type {{ console: object, overlayResults?: string, __rnsvgOverlayPlatform: string }} */
++  const sandbox = {
++    console: { warn() {}, error() {}, log() {} },
++    __rnsvgOverlayPlatform: platform,
++  };
+   vm.runInNewContext(bundle.code, sandbox);
+   return JSON.parse(String(sandbox.overlayResults), (key, value) =>
+     value === '__undefined__' ? undefined : value
+diff --git a/tests/native/qt-rnsvg-fabric/RnsvgBridgeValuesTest.cpp b/tests/native/qt-rnsvg-fabric/RnsvgBridgeValuesTest.cpp
+index a3e332f..40d4e59 100644
+--- a/tests/native/qt-rnsvg-fabric/RnsvgBridgeValuesTest.cpp
++++ b/tests/native/qt-rnsvg-fabric/RnsvgBridgeValuesTest.cpp
+@@ -2,6 +2,8 @@
+ // behaviour or a thrown range_error: NaN, infinities, huge and negative values.
+ // Links the bridge's value converters directly; no JS runtime involved.
+ #include "QtRnsvgBridgeInternal.h"
++#include <react/renderer/components/rnsvg/Props.h>
++#include <react/renderer/core/RawPropsParser.h>
+ 
+ #include <cmath>
+ #include <iostream>
+@@ -18,10 +20,50 @@ void check(bool condition, const char* what) {
+   }
+ }
+ 
++template <class Props>
++void checkSvgLayoutMarker() {
++  namespace rn = facebook::react;
++  rn::RawPropsParser parser;
++  parser.prepare<Props>();
++  rn::ContextContainer container;
++  rn::PropsParserContext context(11, container);
++  const auto clone = [&](const Props& source, folly::dynamic values) {
++    rn::RawProps raw(std::move(values));
++    raw.parse(parser);
++    return Props(context, source, raw);
++  };
++  const Props initial;
++  check(!initial.onSvgLayout, "SVG listener marker defaults to absent");
++  const auto subscribed = clone(initial, folly::dynamic::object("onSvgLayout", true));
++  check(subscribed.onSvgLayout, "SVG listener marker accepts React's true value");
++  const auto retained = clone(subscribed, folly::dynamic::object());
++  check(retained.onSvgLayout, "Omitted SVG listener marker retains its source value");
++  const auto removed = clone(retained, folly::dynamic::object("onSvgLayout", nullptr));
++  check(!removed.onSvgLayout, "Null SVG listener marker removes the listener");
++  const auto disabled = clone(subscribed, folly::dynamic::object("onSvgLayout", false));
++  check(!disabled.onSvgLayout, "False SVG listener marker removes the listener");
++  const auto added = clone(removed, folly::dynamic::object("onSvgLayout", true));
++  check(added.onSvgLayout, "SVG listener marker can be re-added");
++}
++
+ }  // namespace
+ 
+ int main() {
+   using namespace rnqnx::fabric::rnsvg_bridge;
++  checkSvgLayoutMarker<rn::RNSVGCircleProps>();
++  checkSvgLayoutMarker<rn::RNSVGClipPathProps>();
++  checkSvgLayoutMarker<rn::RNSVGEllipseProps>();
++  checkSvgLayoutMarker<rn::RNSVGForeignObjectProps>();
++  checkSvgLayoutMarker<rn::RNSVGGroupProps>();
++  checkSvgLayoutMarker<rn::RNSVGImageProps>();
++  checkSvgLayoutMarker<rn::RNSVGLineProps>();
++  checkSvgLayoutMarker<rn::RNSVGMaskProps>();
++  checkSvgLayoutMarker<rn::RNSVGPathProps>();
++  checkSvgLayoutMarker<rn::RNSVGRectProps>();
++  checkSvgLayoutMarker<rn::RNSVGTSpanProps>();
++  checkSvgLayoutMarker<rn::RNSVGTextProps>();
++  checkSvgLayoutMarker<rn::RNSVGTextPathProps>();
++  checkSvgLayoutMarker<rn::RNSVGUseProps>();
+   const double nan = std::numeric_limits<double>::quiet_NaN();
+   const double inf = std::numeric_limits<double>::infinity();
+   const double values[] = {nan, inf, -inf, 1e30, -1e30, 4294967296.0, -4294967297.0, -1.0, 0.0};
+diff --git a/tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp b/tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp
+index f7a7f76..5fe4885 100644
+--- a/tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp
++++ b/tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp
+@@ -7,6 +7,7 @@
+ #include "react-native-qnx/views/QtQuickItemFactory.h"
+ #include <RnsvgForeignObjectItem.h>
+ #include <RnsvgItems.h>
++#include <react/renderer/core/EventListener.h>
+ 
+ #include <QElapsedTimer>
+ #include <QGuiApplication>
+@@ -22,6 +23,7 @@
+ #include <cmath>
+ #include <iterator>
+ #include <stdexcept>
++#include <unordered_map>
+ #include <vector>
+ 
+ namespace {
+@@ -140,7 +142,28 @@ int main(int argc, char** argv) {
+     rnqnx::fabric::QtTouchDispatcher dispatcher(layer, *window.contentItem());
+     adapter.setTouchDispatcher(&dispatcher);
+     adapter.mapComponent(QStringLiteral("View"), QStringLiteral("View"));
++    // Outlive the host's listener, including surface teardown. This sees
++    // native dispatch even when React has no callback and drops the event.
++    std::unordered_map<const QQuickItem*, int> svgLayoutDispatches;
++    std::unordered_map<const QQuickItem*, facebook::react::Tag> svgLayoutTags;
++    int svgLayoutFailures = 0;
++    const auto layoutCheck = [&](bool condition, const char* message) {
++      if (!condition) {
++        std::cerr << "FAIL: " << message << '\n';
++        ++svgLayoutFailures;
++      }
++    };
+     rnqnx::runtime::QtReactHost host(adapter);
++    host.scheduler().addEventListener(std::make_shared<const facebook::react::EventListener>(
++        [&](const facebook::react::RawEvent& event) {
++          if (event.type == "topSvgLayout" && event.eventTarget) {
++            const auto tag = event.eventTarget->getTag();
++            const auto* item = layer.itemForTag(tag);
++            ++svgLayoutDispatches[item];
++            svgLayoutTags[item] = tag;
++          }
++          return false;
++        }));
+     host.delegate().setTouchDispatcher(&dispatcher);
+     host.installTurboModuleBinding();
+     host.installComponentProvider();
+@@ -223,6 +246,7 @@ int main(int argc, char** argv) {
+     await(host, [&] { return number(host, "__rnsvgPresses") == 1; });
+     check(host.javaScriptErrors().empty(), "Touch handling reported a JavaScript error");
+ 
++    layoutCheck(svgLayoutDispatches.empty(), "SVG elements without listeners dispatched native layout events");
+ 
+     // The elements the first fixture does not use: Pattern, Symbol, Marker,
+     // TextPath and ForeignObject, the text, marker and clipRule props, and
+@@ -234,7 +258,7 @@ int main(int argc, char** argv) {
+     check(host.delegate().lastFailures().empty(), "Mounting the remaining elements reported a failure");
+     check(host.javaScriptErrors().empty(), "Mounting the remaining elements reported a JavaScript error");
+     check(root.data() == findRoot(window.contentItem()), "Mounting the second <Svg> remounted the first");
+-    const QQuickItem* extra = allRoots(window.contentItem()).back();
++    const auto* extra = allRoots(window.contentItem()).back();
+     check(extra != root.data(), "The second <Svg> was not found");
+ 
+     const auto* pattern = findElement(extra, Kind::Pattern);
+@@ -340,12 +364,143 @@ int main(int argc, char** argv) {
+               number(host, "__rnsvgLayoutW") == 30 && number(host, "__rnsvgLayoutH") == 20,
+           "onSvgLayout rect wrong");
+     const double layoutEvents = number(host, "__rnsvgLayoutEvents");
++    const auto layoutRect = [&] {
++      return findElement(extra, Kind::Rect, [](const ElementProps& p) { return p.name == "layout-probe"; });
++    };
++    const auto* retainedRect = layoutRect();
++    check(retainedRect != nullptr, "Layout probe was not mounted");
++    const int dispatched = svgLayoutDispatches[retainedRect];
++    layoutCheck(dispatched == layoutEvents, "Subscribed SVG native and JavaScript event counts differ");
+     evaluate(host, "__rnsvgUpdate({rectFill:'#00ffff'});");
+     settle();
+     check(number(host, "__rnsvgLayoutEvents") == layoutEvents, "onSvgLayout fired although the box did not move");
++    layoutCheck(svgLayoutDispatches[retainedRect] == dispatched, "Unchanged SVG bounds dispatched a native event");
++    // The stable callback is unchanged, so React omits its raw prop from
++    // this update. The native listener marker must retain the source value.
+     evaluate(host, "__rnsvgUpdate({rectX:25});");
+     await(host, [&] { return number(host, "__rnsvgLayoutEvents") == layoutEvents + 1; }, "onSvgLayout after a move");
+     check(number(host, "__rnsvgLayoutX") == 25, "onSvgLayout did not report the new x");
++    layoutCheck(svgLayoutDispatches[retainedRect] == dispatched + 1, "An omitted listener prop lost native delivery");
++
++    // Removing the public listener sends a null raw event prop. Geometry,
++    // painting and last-bounds tracking continue without native dispatch.
++    evaluate(host, "__rnsvgUpdate({rectLayout:false, rectX:40});");
++    await(host, [&] { return retainedRect->props().x.value == 40; }, "unsubscribed SVG geometry");
++    settle();
++    check(layoutRect() == retainedRect, "Removing the listener remounted the SVG element");
++    check(pixelIs(window, 45, 65, QColor(0, 255, 255)), "Unsubscribed SVG geometry did not repaint");
++    check(number(host, "__rnsvgLayoutEvents") == layoutEvents + 1, "Removed SVG listener still received an event");
++    layoutCheck(svgLayoutDispatches[retainedRect] == dispatched + 1, "Removed SVG listener still dispatched natively");
++    check(extra->reportedBounds(retainedRect) == QRectF(40, 60, 30, 20), "Unsubscribed SVG bounds tracking is stale");
++    evaluate(host, "__rnsvgUpdate({rectX:45});");
++    await(host, [&] { return retainedRect->props().x.value == 45; }, "later unsubscribed SVG geometry");
++    settle();
++    layoutCheck(svgLayoutDispatches[retainedRect] == dispatched + 1, "Unsubscribed SVG update restored native delivery");
++    check(extra->reportedBounds(retainedRect) == QRectF(45, 60, 30, 20), "Later unsubscribed SVG bounds tracking is stale");
++
++    // Listener changes alone preserve the existing same-box suppression.
++    evaluate(host, "__rnsvgUpdate({rectLayout:true});");
++    settle();
++    check(number(host, "__rnsvgLayoutEvents") == layoutEvents + 1, "Re-adding an SVG listener reset same-box suppression");
++    layoutCheck(svgLayoutDispatches[retainedRect] == dispatched + 1, "Same-box listener re-add dispatched natively");
++
++    // Re-add on a changed box: the retained element resumes the existing
++    // payload contract, with no remount or reset of its visual props.
++    evaluate(host, "__rnsvgUpdate({rectX:55});");
++    await(host, [&] { return number(host, "__rnsvgLayoutEvents") == layoutEvents + 2; }, "re-added SVG listener");
++    check(layoutRect() == retainedRect, "Re-adding the listener remounted the SVG element");
++    check(number(host, "__rnsvgLayoutX") == 55 && number(host, "__rnsvgLayoutY") == 60 &&
++              number(host, "__rnsvgLayoutW") == 30 && number(host, "__rnsvgLayoutH") == 20,
++          "Re-added SVG listener payload is wrong");
++    layoutCheck(svgLayoutDispatches[retainedRect] == dispatched + 2, "Re-added SVG listener native delivery is wrong");
++    layoutCheck(extra->reportedBounds(retainedRect) == QRectF(55, 60, 30, 20),
++                "Re-added SVG listener did not restore current bounds reporting");
++
++    // A native handler can register after the item was mounted without a
++    // React callback. Its interest is queried at delivery time, not cached
++    // when props are applied. The owner is weak so teardown cannot keep it alive.
++    evaluate(host, "__rnsvgUpdate({rectLayout:false, rectX:65});");
++    await(host, [&] { return retainedRect->props().x.value == 65; }, "native-listener fixture");
++    settle();
++    const int beforeNative = svgLayoutDispatches[retainedRect];
++    struct NativeInterestProbe {
++      facebook::react::Tag tag;
++      rnqnx::runtime::QtSchedulerDelegate* delegate;
++      bool enabled{true};
++      bool clearOnQuery{false};
++      int queries{0};
++    };
++    auto nativeProbe = std::make_shared<NativeInterestProbe>(
++        NativeInterestProbe{svgLayoutTags.at(retainedRect), &host.delegate()});
++    const auto nativeInterest = [weak = std::weak_ptr(nativeProbe)](facebook::react::Tag tag) {
++      const auto probe = weak.lock();
++      if (!probe || tag != probe->tag) return false;
++      ++probe->queries;
++      if (probe->clearOnQuery) probe->delegate->setSvgLayoutNativeEventInterest({});
++      return probe->enabled;
++    };
++    host.delegate().setSvgLayoutNativeEventInterest(nativeInterest);
++    evaluate(host, "__rnsvgUpdate({rectX:70});");
++    await(host, [&] { return svgLayoutDispatches[retainedRect] == beforeNative + 1; }, "late native SVG listener");
++    check(nativeProbe->queries > 0, "Native SVG interest was not queried with the element tag");
++    check(number(host, "__rnsvgLayoutEvents") == layoutEvents + 2, "Native interest invented a React callback");
++    nativeProbe->enabled = false;
++    evaluate(host, "__rnsvgUpdate({rectX:75});");
++    await(host, [&] { return retainedRect->props().x.value == 75; }, "native SVG interest removal");
++    settle();
++    check(svgLayoutDispatches[retainedRect] == beforeNative + 1, "Native SVG interest was cached across removal");
++    check(extra->reportedBounds(retainedRect) == QRectF(75, 60, 30, 20), "Native unsubscribe stopped bounds tracking");
++
++    // Reentrant clearing must not deadlock the holder or destroy a callback
++    // while it is running. The admitted event completes; later boxes do not.
++    nativeProbe->enabled = true;
++    nativeProbe->clearOnQuery = true;
++    evaluate(host, "__rnsvgUpdate({rectX:80});");
++    await(host, [&] { return svgLayoutDispatches[retainedRect] == beforeNative + 2; }, "self-clearing native interest");
++    const int queriesAfterClear = nativeProbe->queries;
++    evaluate(host, "__rnsvgUpdate({rectX:85});");
++    await(host, [&] { return retainedRect->props().x.value == 85; }, "cleared native interest");
++    settle();
++    check(svgLayoutDispatches[retainedRect] == beforeNative + 2 && nativeProbe->queries == queriesAfterClear,
++          "Cleared native SVG interest was still invoked");
++
++    // The final callback capture can destroy the reporter after the query
++    // returns. Keep the Fabric element and its emitter alive, so an extra
++    // native dispatch is a deterministic failure even without full-TU ASan.
++    QPointer<QObject> reporter;
++    for (auto* child : retainedRect->children()) {
++      if (child->inherits("rnqnx::fabric::rnsvg_bridge::SvgLayoutReporter")) reporter = child;
++    }
++    check(!reporter.isNull(), "SVG reporter lifetime fixture is missing");
++    struct ReporterLease {
++      QPointer<QObject> reporter;
++      ~ReporterLease() { delete reporter.data(); }
++    };
++    auto lease = std::make_shared<ReporterLease>();
++    lease->reporter = reporter;
++    host.delegate().setSvgLayoutNativeEventInterest([nativeInterest, lease](facebook::react::Tag tag) {
++      (void)lease;  // Its final release is the lifecycle boundary under test.
++      return nativeInterest(tag);
++    });
++    lease.reset();
++    evaluate(host, "__rnsvgUpdate({rectX:90});");
++    await(host, [&] { return reporter.isNull(); }, "native-interest capture release");
++    settle();
++    check(layoutRect() == retainedRect, "Reporter teardown destroyed the retained SVG element");
++    check(svgLayoutDispatches[retainedRect] == beforeNative + 2, "Destroyed SVG reporter dispatched after capture release");
++
++    // A later props update recreates the internal reporter. An expired native
++    // owner remains a miss and does not prevent ordinary geometry updates.
++    evaluate(host, "__rnsvgUpdate({rectX:95});");
++    await(host, [&] { return extra->reportedBounds(retainedRect) == QRectF(95, 60, 30, 20); }, "reporter recreation");
++    nativeProbe->clearOnQuery = false;
++    host.delegate().setSvgLayoutNativeEventInterest(nativeInterest);
++    nativeProbe.reset();
++    evaluate(host, "__rnsvgUpdate({rectX:100});");
++    await(host, [&] { return retainedRect->props().x.value == 100; }, "expired native SVG listener");
++    settle();
++    check(svgLayoutDispatches[retainedRect] == beforeNative + 2, "Expired native SVG owner admitted an event");
++    host.delegate().setSvgLayoutNativeEventInterest({});
+ 
+     evaluate(host, "__rnsvgUpdate({extras:false});");
+     await(host, [&] { return allRoots(window.contentItem()).size() == 1; }, "the second <Svg> to unmount");
+@@ -361,6 +516,7 @@ int main(int argc, char** argv) {
+     host.stopSurface(11);
+     host.pumpEvents();
+     check(host.javaScriptErrors().empty(), "react-native-svg lifecycle reported JavaScript errors");
++    check(svgLayoutFailures == 0, "SVG layout listener contract failed");
+     std::cout << "RNQNX_RNSVG_FABRIC_OK metro hermes fabric gradient clip mask use update remove touch resize extras\n";
+     return 0;
+   } catch (const std::exception& error) {
+diff --git a/vnext/generated/react/renderer/components/rnsvg/Props.cpp b/vnext/generated/react/renderer/components/rnsvg/Props.cpp
+index 426a4c7..8851212 100644
+--- a/vnext/generated/react/renderer/components/rnsvg/Props.cpp
++++ b/vnext/generated/react/renderer/components/rnsvg/Props.cpp
+@@ -129,7 +129,8 @@ RNSVGCircleProps::RNSVGCircleProps(
+     filter(convertRawProp(context, rawProps, "filter", sourceProps.filter, {})),
+     cx(convertRawProp(context, rawProps, "cx", sourceProps.cx, {})),
+     cy(convertRawProp(context, rawProps, "cy", sourceProps.cy, {})),
+-    r(convertRawProp(context, rawProps, "r", sourceProps.r, {})) {}
++    r(convertRawProp(context, rawProps, "r", sourceProps.r, {})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGCircleProps::getDiffPropsImplementationTarget() const {
+@@ -266,6 +267,10 @@ folly::dynamic RNSVGCircleProps::getDiffProps(
+   if (r != oldProps->r) {
+     result["r"] = r;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -303,7 +308,8 @@ RNSVGClipPathProps::RNSVGClipPathProps(
+     filter(convertRawProp(context, rawProps, "filter", sourceProps.filter, {})),
+     fontSize(convertRawProp(context, rawProps, "fontSize", sourceProps.fontSize, {})),
+     fontWeight(convertRawProp(context, rawProps, "fontWeight", sourceProps.fontWeight, {})),
+-    font(convertRawProp(context, rawProps, "font", sourceProps.font, {})) {}
++    font(convertRawProp(context, rawProps, "font", sourceProps.font, {})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGClipPathProps::getDiffPropsImplementationTarget() const {
+@@ -440,6 +446,10 @@ folly::dynamic RNSVGClipPathProps::getDiffProps(
+   if (font != oldProps->font) {
+     result["font"] = font;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -562,7 +572,8 @@ RNSVGEllipseProps::RNSVGEllipseProps(
+     cx(convertRawProp(context, rawProps, "cx", sourceProps.cx, {})),
+     cy(convertRawProp(context, rawProps, "cy", sourceProps.cy, {})),
+     rx(convertRawProp(context, rawProps, "rx", sourceProps.rx, {})),
+-    ry(convertRawProp(context, rawProps, "ry", sourceProps.ry, {})) {}
++    ry(convertRawProp(context, rawProps, "ry", sourceProps.ry, {})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGEllipseProps::getDiffPropsImplementationTarget() const {
+@@ -703,6 +714,10 @@ folly::dynamic RNSVGEllipseProps::getDiffProps(
+   if (ry != oldProps->ry) {
+     result["ry"] = ry;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -1296,7 +1311,8 @@ RNSVGForeignObjectProps::RNSVGForeignObjectProps(
+     x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
+     y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
+     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+-    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})) {}
++    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGForeignObjectProps::getDiffPropsImplementationTarget() const {
+@@ -1449,6 +1465,10 @@ folly::dynamic RNSVGForeignObjectProps::getDiffProps(
+   if (width != oldProps->width) {
+     result["width"] = width;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -1486,7 +1506,8 @@ RNSVGGroupProps::RNSVGGroupProps(
+     filter(convertRawProp(context, rawProps, "filter", sourceProps.filter, {})),
+     fontSize(convertRawProp(context, rawProps, "fontSize", sourceProps.fontSize, {})),
+     fontWeight(convertRawProp(context, rawProps, "fontWeight", sourceProps.fontWeight, {})),
+-    font(convertRawProp(context, rawProps, "font", sourceProps.font, {})) {}
++    font(convertRawProp(context, rawProps, "font", sourceProps.font, {})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGGroupProps::getDiffPropsImplementationTarget() const {
+@@ -1623,6 +1644,10 @@ folly::dynamic RNSVGGroupProps::getDiffProps(
+   if (font != oldProps->font) {
+     result["font"] = font;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -1664,7 +1689,8 @@ RNSVGImageProps::RNSVGImageProps(
+     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+     src(convertRawProp(context, rawProps, "src", sourceProps.src, {})),
+     align(convertRawProp(context, rawProps, "align", sourceProps.align, {})),
+-    meetOrSlice(convertRawProp(context, rawProps, "meetOrSlice", sourceProps.meetOrSlice, {0})) {}
++    meetOrSlice(convertRawProp(context, rawProps, "meetOrSlice", sourceProps.meetOrSlice, {0})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGImageProps::getDiffPropsImplementationTarget() const {
+@@ -1817,6 +1843,10 @@ folly::dynamic RNSVGImageProps::getDiffProps(
+   if (meetOrSlice != oldProps->meetOrSlice) {
+     result["meetOrSlice"] = meetOrSlice;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -1979,7 +2009,8 @@ RNSVGLineProps::RNSVGLineProps(
+     x1(convertRawProp(context, rawProps, "x1", sourceProps.x1, {})),
+     y1(convertRawProp(context, rawProps, "y1", sourceProps.y1, {})),
+     x2(convertRawProp(context, rawProps, "x2", sourceProps.x2, {})),
+-    y2(convertRawProp(context, rawProps, "y2", sourceProps.y2, {})) {}
++    y2(convertRawProp(context, rawProps, "y2", sourceProps.y2, {})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGLineProps::getDiffPropsImplementationTarget() const {
+@@ -2120,6 +2151,10 @@ folly::dynamic RNSVGLineProps::getDiffProps(
+   if (y2 != oldProps->y2) {
+     result["y2"] = y2;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -2398,7 +2433,8 @@ RNSVGMaskProps::RNSVGMaskProps(
+     width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+     maskUnits(convertRawProp(context, rawProps, "maskUnits", sourceProps.maskUnits, {0})),
+     maskContentUnits(convertRawProp(context, rawProps, "maskContentUnits", sourceProps.maskContentUnits, {0})),
+-    maskType(convertRawProp(context, rawProps, "maskType", sourceProps.maskType, {0})) {}
++    maskType(convertRawProp(context, rawProps, "maskType", sourceProps.maskType, {0})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGMaskProps::getDiffPropsImplementationTarget() const {
+@@ -2563,6 +2599,10 @@ folly::dynamic RNSVGMaskProps::getDiffProps(
+   if (maskType != oldProps->maskType) {
+     result["maskType"] = maskType;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -2598,7 +2638,8 @@ RNSVGPathProps::RNSVGPathProps(
+     vectorEffect(convertRawProp(context, rawProps, "vectorEffect", sourceProps.vectorEffect, {0})),
+     propList(convertRawProp(context, rawProps, "propList", sourceProps.propList, {})),
+     filter(convertRawProp(context, rawProps, "filter", sourceProps.filter, {})),
+-    d(convertRawProp(context, rawProps, "d", sourceProps.d, {})) {}
++    d(convertRawProp(context, rawProps, "d", sourceProps.d, {})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGPathProps::getDiffPropsImplementationTarget() const {
+@@ -2727,6 +2768,10 @@ folly::dynamic RNSVGPathProps::getDiffProps(
+   if (d != oldProps->d) {
+     result["d"] = d;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -3140,7 +3185,8 @@ RNSVGRectProps::RNSVGRectProps(
+     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+     width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+     rx(convertRawProp(context, rawProps, "rx", sourceProps.rx, {})),
+-    ry(convertRawProp(context, rawProps, "ry", sourceProps.ry, {})) {}
++    ry(convertRawProp(context, rawProps, "ry", sourceProps.ry, {})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGRectProps::getDiffPropsImplementationTarget() const {
+@@ -3289,6 +3335,10 @@ folly::dynamic RNSVGRectProps::getDiffProps(
+   if (ry != oldProps->ry) {
+     result["ry"] = ry;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -3541,7 +3591,8 @@ RNSVGTextProps::RNSVGTextProps(
+     baselineShift(convertRawProp(context, rawProps, "baselineShift", sourceProps.baselineShift, {})),
+     lengthAdjust(convertRawProp(context, rawProps, "lengthAdjust", sourceProps.lengthAdjust, {})),
+     alignmentBaseline(convertRawProp(context, rawProps, "alignmentBaseline", sourceProps.alignmentBaseline, {})),
+-    verticalAlign(convertRawProp(context, rawProps, "verticalAlign", sourceProps.verticalAlign, {})) {}
++    verticalAlign(convertRawProp(context, rawProps, "verticalAlign", sourceProps.verticalAlign, {})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGTextProps::getDiffPropsImplementationTarget() const {
+@@ -3722,6 +3773,10 @@ folly::dynamic RNSVGTextProps::getDiffProps(
+   if (verticalAlign != oldProps->verticalAlign) {
+     result["verticalAlign"] = verticalAlign;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -3776,7 +3831,8 @@ RNSVGTextPathProps::RNSVGTextPathProps(
+     method(convertRawProp(context, rawProps, "method", sourceProps.method, {})),
+     midLine(convertRawProp(context, rawProps, "midLine", sourceProps.midLine, {})),
+     spacing(convertRawProp(context, rawProps, "spacing", sourceProps.spacing, {})),
+-    startOffset(convertRawProp(context, rawProps, "startOffset", sourceProps.startOffset, {})) {}
++    startOffset(convertRawProp(context, rawProps, "startOffset", sourceProps.startOffset, {})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGTextPathProps::getDiffPropsImplementationTarget() const {
+@@ -3981,6 +4037,10 @@ folly::dynamic RNSVGTextPathProps::getDiffProps(
+   if (startOffset != oldProps->startOffset) {
+     result["startOffset"] = startOffset;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -4030,7 +4090,8 @@ RNSVGTSpanProps::RNSVGTSpanProps(
+     lengthAdjust(convertRawProp(context, rawProps, "lengthAdjust", sourceProps.lengthAdjust, {})),
+     alignmentBaseline(convertRawProp(context, rawProps, "alignmentBaseline", sourceProps.alignmentBaseline, {})),
+     verticalAlign(convertRawProp(context, rawProps, "verticalAlign", sourceProps.verticalAlign, {})),
+-    content(convertRawProp(context, rawProps, "content", sourceProps.content, {})) {}
++    content(convertRawProp(context, rawProps, "content", sourceProps.content, {})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGTSpanProps::getDiffPropsImplementationTarget() const {
+@@ -4215,6 +4276,10 @@ folly::dynamic RNSVGTSpanProps::getDiffProps(
+   if (content != oldProps->content) {
+     result["content"] = content;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+@@ -4254,7 +4319,8 @@ RNSVGUseProps::RNSVGUseProps(
+     x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
+     y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
+     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
+-    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})) {}
++    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
++    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
+ 
+ #ifdef RN_SERIALIZABLE_STATE
+ ComponentName RNSVGUseProps::getDiffPropsImplementationTarget() const {
+@@ -4399,6 +4465,10 @@ folly::dynamic RNSVGUseProps::getDiffProps(
+   if (width != oldProps->width) {
+     result["width"] = width;
+   }
++
++  if (onSvgLayout != oldProps->onSvgLayout) {
++    result["onSvgLayout"] = onSvgLayout;
++  }
+   return result;
+ }
+ #endif
+diff --git a/vnext/generated/react/renderer/components/rnsvg/Props.h b/vnext/generated/react/renderer/components/rnsvg/Props.h
+index 8f0f706..36c1cd9 100644
+--- a/vnext/generated/react/renderer/components/rnsvg/Props.h
++++ b/vnext/generated/react/renderer/components/rnsvg/Props.h
+@@ -84,6 +84,7 @@ class RNSVGCircleProps final : public ViewProps {
+   folly::dynamic cx{};
+   folly::dynamic cy{};
+   folly::dynamic r{};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -131,6 +132,7 @@ class RNSVGClipPathProps final : public ViewProps {
+   folly::dynamic fontSize{};
+   folly::dynamic fontWeight{};
+   folly::dynamic font{};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -208,6 +210,7 @@ class RNSVGEllipseProps final : public ViewProps {
+   folly::dynamic cy{};
+   folly::dynamic rx{};
+   folly::dynamic ry{};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -810,6 +813,7 @@ class RNSVGForeignObjectProps final : public ViewProps {
+   folly::dynamic y{};
+   folly::dynamic height{};
+   folly::dynamic width{};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -857,6 +861,7 @@ class RNSVGGroupProps final : public ViewProps {
+   folly::dynamic fontSize{};
+   folly::dynamic fontWeight{};
+   folly::dynamic font{};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -908,6 +913,7 @@ class RNSVGImageProps final : public ViewProps {
+   ImageSource src{};
+   std::string align{};
+   int meetOrSlice{0};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -993,6 +999,7 @@ class RNSVGLineProps final : public ViewProps {
+   folly::dynamic y1{};
+   folly::dynamic x2{};
+   folly::dynamic y2{};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -1106,6 +1113,7 @@ class RNSVGMaskProps final : public ViewProps {
+   int maskUnits{0};
+   int maskContentUnits{0};
+   int maskType{0};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -1151,6 +1159,7 @@ class RNSVGPathProps final : public ViewProps {
+   std::vector<std::string> propList{};
+   std::string filter{};
+   std::string d{};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -1300,6 +1309,7 @@ class RNSVGRectProps final : public ViewProps {
+   folly::dynamic width{};
+   folly::dynamic rx{};
+   folly::dynamic ry{};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -1411,6 +1421,7 @@ class RNSVGTextProps final : public ViewProps {
+   std::string lengthAdjust{};
+   std::string alignmentBaseline{};
+   folly::dynamic verticalAlign{};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -1475,6 +1486,7 @@ class RNSVGTextPathProps final : public ViewProps {
+   std::string midLine{};
+   std::string spacing{};
+   folly::dynamic startOffset{};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -1534,6 +1546,7 @@ class RNSVGTSpanProps final : public ViewProps {
+   std::string alignmentBaseline{};
+   folly::dynamic verticalAlign{};
+   std::string content{};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+@@ -1583,6 +1596,7 @@ class RNSVGUseProps final : public ViewProps {
+   folly::dynamic y{};
+   folly::dynamic height{};
+   folly::dynamic width{};
++  bool onSvgLayout{false};
+ 
+   #ifdef RN_SERIALIZABLE_STATE
+   ComponentName getDiffPropsImplementationTarget() const override;
+diff --git a/vnext/include/react-native-qnx/fabric/ShadowViewMutationAdapter.h b/vnext/include/react-native-qnx/fabric/ShadowViewMutationAdapter.h
+index 21a88b9..a3b1bf1 100644
+--- a/vnext/include/react-native-qnx/fabric/ShadowViewMutationAdapter.h
++++ b/vnext/include/react-native-qnx/fabric/ShadowViewMutationAdapter.h
+@@ -12,10 +12,18 @@
+ 
+ #include "react-native-qnx/fabric/QtModalBridge.h"
+ 
++#include <functional>
++#include <memory>
+ #include <vector>
+ 
+ namespace rnqnx::fabric {
+ 
++#if RNQNX_ENABLE_QT_RNSVG
++namespace rnsvg_bridge {
++class SvgLayoutNativeEventInterest;
++}
++#endif
++
+ /// One rejected mutation, kept with enough context to identify it in a log.
+ struct MutationFailure {
+   facebook::react::ShadowViewMutation::Type type{};
+@@ -63,6 +71,14 @@ class ShadowViewMutationAdapter {
+   /// before destroying it if that ordering cannot be guaranteed.
+   void setTouchDispatcher(QtTouchDispatcher* dispatcher);
+ 
++#if RNQNX_ENABLE_QT_RNSVG
++  /// Optional native onSvgLayout subscribers, queried on the Qt owner thread
++  /// after bounds change. The predicate must be runtime-free and should borrow
++  /// its native owner weakly. An empty predicate clears native interest.
++  /// Replacement is synchronized and reaches already-mounted SVG elements.
++  void setSvgLayoutNativeEventInterest(std::function<bool(facebook::react::Tag)> interest);
++#endif
++
+   /// Maps a React Native component name to a QML type registered on the
+   /// factory. Unmapped names fail rather than falling back to a generic view.
+   void mapComponent(const QString& componentName, const QString& qmlTypeName);
+@@ -125,6 +141,9 @@ class ShadowViewMutationAdapter {
+ 
+   QtQuickMountingLayer& layer_;
+   QtTouchDispatcher* touchDispatcher_{nullptr};
++#if RNQNX_ENABLE_QT_RNSVG
++  std::shared_ptr<rnsvg_bridge::SvgLayoutNativeEventInterest> svgLayoutNativeEventInterest_;
++#endif
+   QHash<QString, QString> componentTypes_;
+   /// Tags whose scroll signals are already connected, so a second Update does
+   /// not attach a duplicate handler.
+diff --git a/vnext/include/react-native-qnx/runtime/QtReactHost.h b/vnext/include/react-native-qnx/runtime/QtReactHost.h
+index 9e5bdc9..5bb55d1 100644
+--- a/vnext/include/react-native-qnx/runtime/QtReactHost.h
++++ b/vnext/include/react-native-qnx/runtime/QtReactHost.h
+@@ -68,6 +68,10 @@ class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
+   /// every transaction, including the empty-tree commit that stopping a surface
+   /// produces during teardown.
+   void setTouchDispatcher(fabric::QtTouchDispatcher* dispatcher);
++#if RNQNX_ENABLE_QT_RNSVG
++  /// Forwards this host's optional, runtime-free native SVG event interest.
++  void setSvgLayoutNativeEventInterest(std::function<bool(facebook::react::Tag)> interest);
++#endif
+ 
+   /// Hands work to the owner thread. Library code that commits to the shadow
+   /// tree from another thread (the UI-worklet thread) triggers mounting and
+diff --git a/vnext/src/fabric/QtRnsvgBridge.cpp b/vnext/src/fabric/QtRnsvgBridge.cpp
+index 3668c04..e5e1d74 100644
+--- a/vnext/src/fabric/QtRnsvgBridge.cpp
++++ b/vnext/src/fabric/QtRnsvgBridge.cpp
+@@ -87,10 +87,10 @@ bool applyRnsvgProps(QQuickItem* item, const rn::ShadowView& view) {
+   next.kind = it->second.kind;
+   if (!it->second.convert(*view.props, next, element->props())) return false;
+   element->setProps(std::move(next));
+-  // The emitter changes on a remount only, but setting it is cheap and keeps
+-  // the reporter from holding one that has been replaced.
+   if (it->second.kind == Kind::Image) attachImageLoading(element, view);
+-  if (it->second.emitsSvgLayout && view.eventEmitter) SvgLayoutReporter::attach(element, view.eventEmitter);
++  if (it->second.layoutListener && view.eventEmitter) {
++    SvgLayoutReporter::attach(element, view.eventEmitter, view.tag, it->second.layoutListener(*view.props));
++  }
+   return true;
+ }
+ 
+diff --git a/vnext/src/fabric/QtRnsvgBridgeDefs.cpp b/vnext/src/fabric/QtRnsvgBridgeDefs.cpp
+index 34cb0b3..76a2fcf 100644
+--- a/vnext/src/fabric/QtRnsvgBridgeDefs.cpp
++++ b/vnext/src/fabric/QtRnsvgBridgeDefs.cpp
+@@ -117,14 +117,15 @@ bool convertForeignObject(const rn::Props& props, ElementProps& e, const Element
+ }  // namespace
+ 
+ void appendDefinitionEntries(std::vector<Entry>& out) {
+-  out.push_back(Entry{"RNSVGLinearGradient", Kind::LinearGradient, &convertLinearGradient, false});
+-  out.push_back(Entry{"RNSVGRadialGradient", Kind::RadialGradient, &convertRadialGradient, false});
+-  out.push_back(Entry{"RNSVGClipPath", Kind::ClipPath, &convertClipPath, true});
+-  out.push_back(Entry{"RNSVGMask", Kind::Mask, &convertMask, true});
+-  out.push_back(Entry{"RNSVGPattern", Kind::Pattern, &convertPattern, false});
+-  out.push_back(Entry{"RNSVGSymbol", Kind::Symbol, &convertSymbol, false});
+-  out.push_back(Entry{"RNSVGMarker", Kind::Marker, &convertMarker, false});
+-  out.push_back(Entry{"RNSVGForeignObject", Kind::ForeignObject, &convertForeignObject, true});
++  out.push_back(Entry{"RNSVGLinearGradient", Kind::LinearGradient, &convertLinearGradient, nullptr});
++  out.push_back(Entry{"RNSVGRadialGradient", Kind::RadialGradient, &convertRadialGradient, nullptr});
++  out.push_back(Entry{"RNSVGClipPath", Kind::ClipPath, &convertClipPath, &hasSvgLayoutListener<rn::RNSVGClipPathProps>});
++  out.push_back(Entry{"RNSVGMask", Kind::Mask, &convertMask, &hasSvgLayoutListener<rn::RNSVGMaskProps>});
++  out.push_back(Entry{"RNSVGPattern", Kind::Pattern, &convertPattern, nullptr});
++  out.push_back(Entry{"RNSVGSymbol", Kind::Symbol, &convertSymbol, nullptr});
++  out.push_back(Entry{"RNSVGMarker", Kind::Marker, &convertMarker, nullptr});
++  out.push_back(Entry{"RNSVGForeignObject", Kind::ForeignObject, &convertForeignObject,
++                      &hasSvgLayoutListener<rn::RNSVGForeignObjectProps>});
+ }
+ 
+ }  // namespace rnqnx::fabric::rnsvg_bridge
+diff --git a/vnext/src/fabric/QtRnsvgBridgeInternal.h b/vnext/src/fabric/QtRnsvgBridgeInternal.h
+index 09dbb50..6d1f8ce 100644
+--- a/vnext/src/fabric/QtRnsvgBridgeInternal.h
++++ b/vnext/src/fabric/QtRnsvgBridgeInternal.h
+@@ -155,15 +155,23 @@ void gradientCommon(ElementProps& e, const P& p) {
+ // ---- the element table ------------------------------------------------------
+ 
+ using Converter = bool (*)(const rn::Props&, ElementProps&, const ElementProps& previous);
++using LayoutListener = bool (*)(const rn::Props&);
+ 
+ struct Entry {
+   const char* name;
+   Kind kind;
+   Converter convert;
+-  // The generated event emitter has `onSvgLayout` for this component.
+-  bool emitsSvgLayout;
++  // Null for components without onSvgLayout; otherwise reads the generated
++  // marker for the current React listener, including removal and re-addition.
++  LayoutListener layoutListener;
+ };
+ 
++template <class P>
++bool hasSvgLayoutListener(const rn::Props& props) {
++  const auto* p = dynamic_cast<const P*>(&props);
++  return p && p->onSvgLayout;
++}
++
+ template <class P, class Fn>
+ bool convertAs(const rn::Props& props, ElementProps& e, const ElementProps& previous, Fn&& fn) {
+   const auto* p = dynamic_cast<const P*>(&props);
+diff --git a/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp b/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp
+index d3fc455..a17d80c 100644
+--- a/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp
++++ b/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp
+@@ -18,6 +18,22 @@ int clampedInt(double v) {
+ 
+ }  // namespace
+ 
++void SvgLayoutNativeEventInterest::set(Predicate predicate) {
++  auto next = predicate ? std::make_shared<const Predicate>(std::move(predicate)) : nullptr;
++  std::shared_ptr<const Predicate> previous;
++  {
++    std::lock_guard lock(mutex_);
++    previous = std::move(predicate_);
++    predicate_ = std::move(next);
++  }
++  // Destroy callback captures outside the lock, just as invocation is outside.
++}
++
++std::shared_ptr<const SvgLayoutNativeEventInterest::Predicate> SvgLayoutNativeEventInterest::snapshot() const {
++  std::lock_guard lock(mutex_);
++  return predicate_;
++}
++
+ SvgLayoutReporter::Rect SvgLayoutReporter::toRect(const QRectF& bounds) {
+   if (!bounds.isValid() || bounds.isEmpty()) return {};
+   return Rect{clampedInt(bounds.x()), clampedInt(bounds.y()), clampedInt(bounds.width()), clampedInt(bounds.height())};
+@@ -30,14 +46,25 @@ SvgLayoutReporter::~SvgLayoutReporter() {
+ }
+ 
+ void SvgLayoutReporter::attach(views::RnsvgElementItem* element,
+-                               std::shared_ptr<const facebook::react::EventEmitter> emitter) {
++                               std::shared_ptr<const facebook::react::EventEmitter> emitter,
++                               facebook::react::Tag tag, bool hasReactListener) {
+   if (element == nullptr) return;
+   auto* reporter = element->findChild<SvgLayoutReporter*>(QString(), Qt::FindDirectChildrenOnly);
+   if (reporter == nullptr) reporter = new SvgLayoutReporter(element);
+   reporter->emitter_ = std::move(emitter);
++  reporter->tag_ = tag;
++  reporter->hasReactListener_ = hasReactListener;
+   reporter->rebind();
+ }
+ 
++void SvgLayoutReporter::setNativeEventInterest(QQuickItem* item,
++                                              std::weak_ptr<const SvgLayoutNativeEventInterest> interest) {
++  if (item == nullptr) return;
++  if (auto* reporter = item->findChild<SvgLayoutReporter*>(QString(), Qt::FindDirectChildrenOnly)) {
++    reporter->nativeInterest_ = std::move(interest);
++  }
++}
++
+ // Insert mutations arrive child by child, so an element can be attached to a
+ // parent before that parent reaches the <Svg>, and a subtree can later move
+ // under another one. Watching every link from the element up to its root
+@@ -72,6 +99,18 @@ void SvgLayoutReporter::evaluate() {
+   const Rect next = toRect(root_->reportedBounds(element_));
+   if (next == last_) return;
+   last_ = next;
++  if (!hasReactListener_) {
++    QPointer<SvgLayoutReporter> alive(this);
++    bool interested = false;
++    {
++      const auto holder = nativeInterest_.lock();
++      const auto interest = holder ? holder->snapshot() : nullptr;
++      if (interest) interested = (*interest)(tag_);
++    }
++    // A self-clearing callback can release its last owner when the snapshot
++    // dies. Check only after both it and the holder have been released.
++    if (!alive || !interested) return;
++  }
+   folly::dynamic layout = folly::dynamic::object("x", next.x)("y", next.y)("width", next.width)("height", next.height);
+   folly::dynamic payload = folly::dynamic::object("layout", std::move(layout));
+   // The same event name and payload the generated RNSVG*EventEmitter::onSvgLayout
+diff --git a/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.h b/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.h
+index 3c97274..f6126c8 100644
+--- a/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.h
++++ b/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.h
+@@ -8,16 +8,21 @@
+ // traversal per layout pass), which is valid only after the root has laid
+ // its tree out. A reporter therefore waits for the root's sceneLaidOut()
+ // signal, once per layout pass and never inside paint(), and sends an event
+-// only when the integer rect differs from the last one it sent.
++// only when the integer rect differs from the last one observed and either
++// React or a native subscriber is interested. Tracking stays active without
++// listeners so adding one preserves the same changed-bounds semantics.
+ 
+ #include <RnsvgItems.h>
++#include <react/renderer/core/ReactPrimitives.h>
+ 
+ #include <QMetaObject>
+ #include <QObject>
+ #include <QPointer>
+ #include <QVector>
+ 
++#include <functional>
+ #include <memory>
++#include <mutex>
+ 
+ namespace facebook::react {
+ class EventEmitter;
+@@ -25,12 +30,27 @@ class EventEmitter;
+ 
+ namespace rnqnx::fabric::rnsvg_bridge {
+ 
++// One holder per mutation adapter. A reporter only borrows it; replacing or
++// clearing native interest reaches existing reporters without a props update.
++class SvgLayoutNativeEventInterest final {
++ public:
++  using Predicate = std::function<bool(facebook::react::Tag)>;
++  void set(Predicate predicate);
++  std::shared_ptr<const Predicate> snapshot() const;
++
++ private:
++  mutable std::mutex mutex_;
++  std::shared_ptr<const Predicate> predicate_;
++};
++
+ class SvgLayoutReporter final : public QObject {
+   Q_OBJECT
+ 
+  public:
+   // Creates the reporter on `element` (as its child) or updates its emitter.
+-  static void attach(views::RnsvgElementItem* element, std::shared_ptr<const facebook::react::EventEmitter> emitter);
++  static void attach(views::RnsvgElementItem* element, std::shared_ptr<const facebook::react::EventEmitter> emitter,
++                     facebook::react::Tag tag, bool hasReactListener);
++  static void setNativeEventInterest(QQuickItem* item, std::weak_ptr<const SvgLayoutNativeEventInterest> interest);
+ 
+   struct Rect {
+     int x{0}, y{0}, width{0}, height{0};
+@@ -56,6 +76,9 @@ class SvgLayoutReporter final : public QObject {
+   // re-parenting along that chain can change which root the element is under.
+   QVector<QMetaObject::Connection> links_;
+   std::shared_ptr<const facebook::react::EventEmitter> emitter_;
++  std::weak_ptr<const SvgLayoutNativeEventInterest> nativeInterest_;
++  facebook::react::Tag tag_{};
++  bool hasReactListener_{false};
+   Rect last_;  // upstream starts at CGRectZero and reports changes from it
+ };
+ 
+diff --git a/vnext/src/fabric/QtRnsvgBridgeShapes.cpp b/vnext/src/fabric/QtRnsvgBridgeShapes.cpp
+index 5fcf493..ee4325c 100644
+--- a/vnext/src/fabric/QtRnsvgBridgeShapes.cpp
++++ b/vnext/src/fabric/QtRnsvgBridgeShapes.cpp
+@@ -11,16 +11,16 @@
+ namespace rnqnx::fabric::rnsvg_bridge {
+ namespace {
+ 
+-// A row is a name, the model kind, a converter and whether the component has
+-// an onSvgLayout event. The converter writes `e` from the props; `previous`
++// A row is a name, the model kind, a converter and a listener query for
++// onSvgLayout. The converter writes `e` from the props; `previous`
+ // is the element's retained props, for converters that skip repeated work.
+ template <class P, class Fn>
+-Entry row(const char* name, Kind kind, bool emitsSvgLayout, Fn) {
++Entry row(const char* name, Kind kind, LayoutListener layoutListener, Fn) {
+   return Entry{name, kind,
+                [](const rn::Props& props, ElementProps& e, const ElementProps& previous) {
+                  return convertAs<P>(props, e, previous, Fn{});
+                },
+-               emitsSvgLayout};
++               layoutListener};
+ }
+ 
+ struct GroupFn {
+@@ -95,17 +95,17 @@ struct UseFn {
+ }  // namespace
+ 
+ void appendShapeEntries(std::vector<Entry>& out) {
+-  out.push_back(row<rn::RNSVGGroupProps>("RNSVGGroup", Kind::Group, true, GroupFn{}));
+-  out.push_back(row<rn::RNSVGDefsProps>("RNSVGDefs", Kind::Defs, false, DefsFn{}));
+-  out.push_back(row<rn::RNSVGPathProps>("RNSVGPath", Kind::Path, true, PathFn{}));
+-  out.push_back(row<rn::RNSVGCircleProps>("RNSVGCircle", Kind::Circle, true, CircleFn{}));
+-  out.push_back(row<rn::RNSVGEllipseProps>("RNSVGEllipse", Kind::Ellipse, true, EllipseFn{}));
+-  out.push_back(row<rn::RNSVGRectProps>("RNSVGRect", Kind::Rect, true, RectFn{}));
+-  out.push_back(row<rn::RNSVGLineProps>("RNSVGLine", Kind::Line, true, LineFn{}));
+-  out.push_back(row<rn::RNSVGUseProps>("RNSVGUse", Kind::Use, true, UseFn{}));
++  out.push_back(row<rn::RNSVGGroupProps>("RNSVGGroup", Kind::Group, &hasSvgLayoutListener<rn::RNSVGGroupProps>, GroupFn{}));
++  out.push_back(row<rn::RNSVGDefsProps>("RNSVGDefs", Kind::Defs, nullptr, DefsFn{}));
++  out.push_back(row<rn::RNSVGPathProps>("RNSVGPath", Kind::Path, &hasSvgLayoutListener<rn::RNSVGPathProps>, PathFn{}));
++  out.push_back(row<rn::RNSVGCircleProps>("RNSVGCircle", Kind::Circle, &hasSvgLayoutListener<rn::RNSVGCircleProps>, CircleFn{}));
++  out.push_back(row<rn::RNSVGEllipseProps>("RNSVGEllipse", Kind::Ellipse, &hasSvgLayoutListener<rn::RNSVGEllipseProps>, EllipseFn{}));
++  out.push_back(row<rn::RNSVGRectProps>("RNSVGRect", Kind::Rect, &hasSvgLayoutListener<rn::RNSVGRectProps>, RectFn{}));
++  out.push_back(row<rn::RNSVGLineProps>("RNSVGLine", Kind::Line, &hasSvgLayoutListener<rn::RNSVGLineProps>, LineFn{}));
++  out.push_back(row<rn::RNSVGUseProps>("RNSVGUse", Kind::Use, &hasSvgLayoutListener<rn::RNSVGUseProps>, UseFn{}));
+   // Image has its own bridge (QtRnsvgImageBridge): the converter here, the
+   // load and onLoad in QtRnsvgBridge.cpp's applyRnsvgProps.
+-  out.push_back(Entry{"RNSVGImage", Kind::Image, &convertImageProps, true});
++  out.push_back(Entry{"RNSVGImage", Kind::Image, &convertImageProps, &hasSvgLayoutListener<rn::RNSVGImageProps>});
+ }
+ 
+ }  // namespace rnqnx::fabric::rnsvg_bridge
+diff --git a/vnext/src/fabric/QtRnsvgBridgeText.cpp b/vnext/src/fabric/QtRnsvgBridgeText.cpp
+index 7c57705..0c4eed4 100644
+--- a/vnext/src/fabric/QtRnsvgBridgeText.cpp
++++ b/vnext/src/fabric/QtRnsvgBridgeText.cpp
+@@ -43,9 +43,9 @@ bool convertTextPath(const rn::Props& props, ElementProps& e, const ElementProps
+ }  // namespace
+ 
+ void appendTextEntries(std::vector<Entry>& out) {
+-  out.push_back(Entry{"RNSVGText", Kind::Text, &convertText, true});
+-  out.push_back(Entry{"RNSVGTSpan", Kind::TSpan, &convertTSpan, true});
+-  out.push_back(Entry{"RNSVGTextPath", Kind::TextPath, &convertTextPath, true});
++  out.push_back(Entry{"RNSVGText", Kind::Text, &convertText, &hasSvgLayoutListener<rn::RNSVGTextProps>});
++  out.push_back(Entry{"RNSVGTSpan", Kind::TSpan, &convertTSpan, &hasSvgLayoutListener<rn::RNSVGTSpanProps>});
++  out.push_back(Entry{"RNSVGTextPath", Kind::TextPath, &convertTextPath, &hasSvgLayoutListener<rn::RNSVGTextPathProps>});
+ }
+ 
+ }  // namespace rnqnx::fabric::rnsvg_bridge
+diff --git a/vnext/src/fabric/QtRnsvgFilterConvert.cpp b/vnext/src/fabric/QtRnsvgFilterConvert.cpp
+index 40321aa..ee65dd7 100644
+--- a/vnext/src/fabric/QtRnsvgFilterConvert.cpp
++++ b/vnext/src/fabric/QtRnsvgFilterConvert.cpp
+@@ -85,7 +85,7 @@ filter::Params offsetOf(const rn::RNSVGFeOffsetProps& p) {
+ }  // namespace
+ 
+ void appendFilterEntries(std::vector<Entry>& out) {
+-  out.push_back(Entry{"RNSVGFilter", Kind::Filter, &convertFilterElement, false});
++  out.push_back(Entry{"RNSVGFilter", Kind::Filter, &convertFilterElement, nullptr});
+   out.push_back(primitiveEntry<rn::RNSVGFeBlendProps, PrimitiveType::Blend, blendOf>("RNSVGFeBlend"));
+   out.push_back(
+       primitiveEntry<rn::RNSVGFeColorMatrixProps, PrimitiveType::ColorMatrix, colorMatrixOf>("RNSVGFeColorMatrix"));
+diff --git a/vnext/src/fabric/QtRnsvgFilterConvert.h b/vnext/src/fabric/QtRnsvgFilterConvert.h
+index f43a828..7629a0d 100644
+--- a/vnext/src/fabric/QtRnsvgFilterConvert.h
++++ b/vnext/src/fabric/QtRnsvgFilterConvert.h
+@@ -104,7 +104,7 @@ bool convertPrimitive(const rn::Props& props, ElementProps& e, const ElementProp
+ 
+ template <class P, filter::PrimitiveType Type, filter::Params (*Make)(const P&)>
+ Entry primitiveEntry(const char* name) {
+-  return Entry{name, Kind::FilterPrimitive, &convertPrimitive<P, Type, Make>, false};
++  return Entry{name, Kind::FilterPrimitive, &convertPrimitive<P, Type, Make>, nullptr};
+ }
+ 
+ /// A flood color, lighting color or shadow color prop: `{type, payload}` or a
+diff --git a/vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp b/vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp
+index 9ad85ec..6a210da 100644
+--- a/vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp
++++ b/vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp
+@@ -201,11 +201,11 @@ void appendFilterExtraEntries(std::vector<Entry>& out) {
+   out.push_back(Entry{"RNSVGFeDiffuseLighting", Kind::FilterPrimitive,
+                       &convertLighting<rn::RNSVGFeDiffuseLightingProps, PrimitiveType::DiffuseLighting,
+                                        diffuseLightingOf>,
+-                      false});
++                      nullptr});
+   out.push_back(Entry{"RNSVGFeSpecularLighting", Kind::FilterPrimitive,
+                       &convertLighting<rn::RNSVGFeSpecularLightingProps, PrimitiveType::SpecularLighting,
+                                        specularLightingOf>,
+-                      false});
++                      nullptr});
+ }
+ 
+ }  // namespace rnqnx::fabric::rnsvg_bridge
+diff --git a/vnext/src/fabric/ShadowViewMutationAdapter.cpp b/vnext/src/fabric/ShadowViewMutationAdapter.cpp
+index 0f7fce9..667f1d9 100644
+--- a/vnext/src/fabric/ShadowViewMutationAdapter.cpp
++++ b/vnext/src/fabric/ShadowViewMutationAdapter.cpp
+@@ -17,6 +17,7 @@
+ 
+ #include "react-native-qnx/fabric/QtExtraComponents.h"
+ #if RNQNX_ENABLE_QT_RNSVG
++#include "QtRnsvgBridgeLayoutEvents.h"
+ #include <RnsvgItems.h>
+ #endif
+ #if RNQNX_ENABLE_QT_SVG
+@@ -413,6 +414,9 @@ LayoutFrame toLayoutFrame(const facebook::react::LayoutMetrics& metrics) {
+ ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer)
+     : layer_(layer) {
+   mapComponent(QStringLiteral("ModalHostView"), QStringLiteral("RNQnxModal"));
++#if RNQNX_ENABLE_QT_RNSVG
++  svgLayoutNativeEventInterest_ = std::make_shared<rnsvg_bridge::SvgLayoutNativeEventInterest>();
++#endif
+ #if RNQNX_ENABLE_QT_SVG
+   mapComponent(QStringLiteral("QnxSvgDocument"), QStringLiteral("QnxSvgDocument"));
+ #endif
+@@ -422,6 +426,13 @@ ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer
+   }
+ }
+ 
++#if RNQNX_ENABLE_QT_RNSVG
++void ShadowViewMutationAdapter::setSvgLayoutNativeEventInterest(
++    std::function<bool(facebook::react::Tag)> interest) {
++  svgLayoutNativeEventInterest_->set(std::move(interest));
++}
++#endif
++
+ #if RNQNX_ENABLE_QT_SVG
+ void ShadowViewMutationAdapter::applySvgDocument(const ShadowView& view) {
+   const auto* props = dynamic_cast<const facebook::react::QnxSvgDocumentProps*>(view.props.get());
+@@ -1110,6 +1121,9 @@ MountError ShadowViewMutationAdapter::applyOne(
+       applySvgDocument(view);
+ #endif
+       applyExtraComponentProps(layer_.itemForTag(view.tag), view);
++#if RNQNX_ENABLE_QT_RNSVG
++      rnsvg_bridge::SvgLayoutReporter::setNativeEventInterest(layer_.itemForTag(view.tag), svgLayoutNativeEventInterest_);
++#endif
+       const auto styleError = layer_.updateStyle(view.tag, toViewStyle(view));
+       if (styleError != MountError::None) return styleError;
+ #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
+@@ -1209,6 +1223,9 @@ MountError ShadowViewMutationAdapter::applyOne(
+       applySvgDocument(view);
+ #endif
+       applyExtraComponentProps(layer_.itemForTag(view.tag), view);
++#if RNQNX_ENABLE_QT_RNSVG
++      rnsvg_bridge::SvgLayoutReporter::setNativeEventInterest(layer_.itemForTag(view.tag), svgLayoutNativeEventInterest_);
++#endif
+       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
+       if (styleError != MountError::None) {
+         return styleError;
+diff --git a/vnext/src/runtime/QtReactHost.cpp b/vnext/src/runtime/QtReactHost.cpp
+index a3f48da..e871844 100644
+--- a/vnext/src/runtime/QtReactHost.cpp
++++ b/vnext/src/runtime/QtReactHost.cpp
+@@ -129,6 +129,12 @@ int QtSchedulerDelegate::mountedTransactionCount() const {
+   return mountedTransactionCount_;
+ }
+ 
++#if RNQNX_ENABLE_QT_RNSVG
++void QtSchedulerDelegate::setSvgLayoutNativeEventInterest(std::function<bool(facebook::react::Tag)> interest) {
++  adapter_.setSvgLayoutNativeEventInterest(std::move(interest));
++}
++#endif
++
+ void QtSchedulerDelegate::schedulerDidFinishTransaction(
+     const std::shared_ptr<const facebook::react::MountingCoordinator>&
+     /*mountingCoordinator*/) {

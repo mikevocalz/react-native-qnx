@@ -18,6 +18,22 @@ int clampedInt(double v) {
 
 }  // namespace
 
+void SvgLayoutNativeEventInterest::set(Predicate predicate) {
+  auto next = predicate ? std::make_shared<const Predicate>(std::move(predicate)) : nullptr;
+  std::shared_ptr<const Predicate> previous;
+  {
+    std::lock_guard lock(mutex_);
+    previous = std::move(predicate_);
+    predicate_ = std::move(next);
+  }
+  // Destroy callback captures outside the lock, just as invocation is outside.
+}
+
+std::shared_ptr<const SvgLayoutNativeEventInterest::Predicate> SvgLayoutNativeEventInterest::snapshot() const {
+  std::lock_guard lock(mutex_);
+  return predicate_;
+}
+
 SvgLayoutReporter::Rect SvgLayoutReporter::toRect(const QRectF& bounds) {
   if (!bounds.isValid() || bounds.isEmpty()) return {};
   return Rect{clampedInt(bounds.x()), clampedInt(bounds.y()), clampedInt(bounds.width()), clampedInt(bounds.height())};
@@ -30,12 +46,23 @@ SvgLayoutReporter::~SvgLayoutReporter() {
 }
 
 void SvgLayoutReporter::attach(views::RnsvgElementItem* element,
-                               std::shared_ptr<const facebook::react::EventEmitter> emitter) {
+                               std::shared_ptr<const facebook::react::EventEmitter> emitter,
+                               facebook::react::Tag tag, bool hasReactListener) {
   if (element == nullptr) return;
   auto* reporter = element->findChild<SvgLayoutReporter*>(QString(), Qt::FindDirectChildrenOnly);
   if (reporter == nullptr) reporter = new SvgLayoutReporter(element);
   reporter->emitter_ = std::move(emitter);
+  reporter->tag_ = tag;
+  reporter->hasReactListener_ = hasReactListener;
   reporter->rebind();
+}
+
+void SvgLayoutReporter::setNativeEventInterest(QQuickItem* item,
+                                              std::weak_ptr<const SvgLayoutNativeEventInterest> interest) {
+  if (item == nullptr) return;
+  if (auto* reporter = item->findChild<SvgLayoutReporter*>(QString(), Qt::FindDirectChildrenOnly)) {
+    reporter->nativeInterest_ = std::move(interest);
+  }
 }
 
 // Insert mutations arrive child by child, so an element can be attached to a
@@ -72,6 +99,18 @@ void SvgLayoutReporter::evaluate() {
   const Rect next = toRect(root_->reportedBounds(element_));
   if (next == last_) return;
   last_ = next;
+  if (!hasReactListener_) {
+    QPointer<SvgLayoutReporter> alive(this);
+    bool interested = false;
+    {
+      const auto holder = nativeInterest_.lock();
+      const auto interest = holder ? holder->snapshot() : nullptr;
+      if (interest) interested = (*interest)(tag_);
+    }
+    // A self-clearing callback can release its last owner when the snapshot
+    // dies. Check only after both it and the holder have been released.
+    if (!alive || !interested) return;
+  }
   folly::dynamic layout = folly::dynamic::object("x", next.x)("y", next.y)("width", next.width)("height", next.height);
   folly::dynamic payload = folly::dynamic::object("layout", std::move(layout));
   // The same event name and payload the generated RNSVG*EventEmitter::onSvgLayout

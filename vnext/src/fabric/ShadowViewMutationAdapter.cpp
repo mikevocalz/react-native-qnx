@@ -17,6 +17,7 @@
 
 #include "react-native-qnx/fabric/QtExtraComponents.h"
 #if RNQNX_ENABLE_QT_RNSVG
+#include "QtRnsvgBridgeLayoutEvents.h"
 #include <RnsvgItems.h>
 #endif
 #if RNQNX_ENABLE_QT_SVG
@@ -413,6 +414,9 @@ LayoutFrame toLayoutFrame(const facebook::react::LayoutMetrics& metrics) {
 ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer)
     : layer_(layer) {
   mapComponent(QStringLiteral("ModalHostView"), QStringLiteral("RNQnxModal"));
+#if RNQNX_ENABLE_QT_RNSVG
+  svgLayoutNativeEventInterest_ = std::make_shared<rnsvg_bridge::SvgLayoutNativeEventInterest>();
+#endif
 #if RNQNX_ENABLE_QT_SVG
   mapComponent(QStringLiteral("QnxSvgDocument"), QStringLiteral("QnxSvgDocument"));
 #endif
@@ -421,6 +425,13 @@ ShadowViewMutationAdapter::ShadowViewMutationAdapter(QtQuickMountingLayer& layer
     mapComponent(qtName, qtName);
   }
 }
+
+#if RNQNX_ENABLE_QT_RNSVG
+void ShadowViewMutationAdapter::setSvgLayoutNativeEventInterest(
+    std::function<bool(facebook::react::Tag)> interest) {
+  svgLayoutNativeEventInterest_->set(std::move(interest));
+}
+#endif
 
 #if RNQNX_ENABLE_QT_SVG
 void ShadowViewMutationAdapter::applySvgDocument(const ShadowView& view) {
@@ -1110,6 +1121,9 @@ MountError ShadowViewMutationAdapter::applyOne(
       applySvgDocument(view);
 #endif
       applyExtraComponentProps(layer_.itemForTag(view.tag), view);
+#if RNQNX_ENABLE_QT_RNSVG
+      rnsvg_bridge::SvgLayoutReporter::setNativeEventInterest(layer_.itemForTag(view.tag), svgLayoutNativeEventInterest_);
+#endif
       const auto styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) return styleError;
 #if RNQNX_ENABLE_ACCESSIBILITY_BRIDGE
@@ -1209,6 +1223,9 @@ MountError ShadowViewMutationAdapter::applyOne(
       applySvgDocument(view);
 #endif
       applyExtraComponentProps(layer_.itemForTag(view.tag), view);
+#if RNQNX_ENABLE_QT_RNSVG
+      rnsvg_bridge::SvgLayoutReporter::setNativeEventInterest(layer_.itemForTag(view.tag), svgLayoutNativeEventInterest_);
+#endif
       const MountError styleError = layer_.updateStyle(view.tag, toViewStyle(view));
       if (styleError != MountError::None) {
         return styleError;

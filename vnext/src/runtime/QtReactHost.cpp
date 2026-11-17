@@ -129,6 +129,12 @@ int QtSchedulerDelegate::mountedTransactionCount() const {
   return mountedTransactionCount_;
 }
 
+#if RNQNX_ENABLE_QT_RNSVG
+void QtSchedulerDelegate::setSvgLayoutNativeEventInterest(std::function<bool(facebook::react::Tag)> interest) {
+  adapter_.setSvgLayoutNativeEventInterest(std::move(interest));
+}
+#endif
+
 void QtSchedulerDelegate::schedulerDidFinishTransaction(
     const std::shared_ptr<const facebook::react::MountingCoordinator>&
     /*mountingCoordinator*/) {

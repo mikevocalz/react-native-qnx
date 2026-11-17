@@ -68,6 +68,10 @@ class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
   /// every transaction, including the empty-tree commit that stopping a surface
   /// produces during teardown.
   void setTouchDispatcher(fabric::QtTouchDispatcher* dispatcher);
+#if RNQNX_ENABLE_QT_RNSVG
+  /// Forwards this host's optional, runtime-free native SVG event interest.
+  void setSvgLayoutNativeEventInterest(std::function<bool(facebook::react::Tag)> interest);
+#endif
 
   /// Hands work to the owner thread. Library code that commits to the shadow
   /// tree from another thread (the UI-worklet thread) triggers mounting and

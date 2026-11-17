@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-clang++"
+	tests="1"
+	failures="1"
+	disabled="0"
+	skipped="0"
+	hostname="31d30cd8ad50"
+	time="12"
+	timestamp="2026-11-17T00:41:27"
+	>
+	<testcase name="rnqnx_worklets_integration_host_test" classname="rnqnx_worklets_integration_host_test" time="12.9373" status="fail">
+		<failure message="Failed"/>
+		<properties/>
+		<system-out>Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=686 framesDelivered=685 uiJobs=0 jsPosts=6
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1117 00:41:39.867188 23994944 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1117 00:41:39.870645 4152125120 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000015350).
+RNQNX_SVG_NATIVE_INTEREST_GEOMETRY width=20
+RNQNX_WORKLETS_INTEGRATION_FAILED late SVG native subscriber did not complete before the 5-second deadline
+</system-out>
+	</testcase>
+</testsuite>

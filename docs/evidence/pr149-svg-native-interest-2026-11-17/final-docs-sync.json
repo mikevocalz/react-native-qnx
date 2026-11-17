@@ -1,0 +1,7 @@
+{
+  "command": ["pnpm", "docs:sync"],
+  "startedAtUtc": "2026-11-17T06:33:03.204965+00:00",
+  "finishedAtUtc": "2026-11-17T06:33:03.742462+00:00",
+  "elapsedSeconds": 0.538,
+  "exitCode": 0
+}

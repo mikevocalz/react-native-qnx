@@ -43,6 +43,15 @@ globalThis.__rnsvgLayoutY = -1;
 globalThis.__rnsvgLayoutW = -1;
 globalThis.__rnsvgLayoutH = -1;
 
+const recordRectLayout = (event) => {
+  const layout = event.nativeEvent.layout;
+  globalThis.__rnsvgLayoutEvents++;
+  globalThis.__rnsvgLayoutX = layout.x;
+  globalThis.__rnsvgLayoutY = layout.y;
+  globalThis.__rnsvgLayoutW = layout.width;
+  globalThis.__rnsvgLayoutH = layout.height;
+};
+
 function Fixture() {
   const [state, setState] = useState({
     pathFill: '#00ff00',
@@ -52,6 +61,7 @@ function Fixture() {
     extras: false,
     rectX: 10,
     rectFill: '#ff00ff',
+    rectLayout: true,
   });
   globalThis.__rnsvgUpdate = (patch) => setState((previous) => ({ ...previous, ...patch }));
   // Counted in render: passive effects wait on a scheduler tick this host
@@ -156,19 +166,13 @@ function Fixture() {
       <Circle cx="150" cy="20" r="5" fill="#808080" clipRule="nonzero" />
       <Circle cx="170" cy="20" r="5" fill="#808080" />
       <Rect
+        id="layout-probe"
         x={state.rectX}
         y="60"
         width="30"
         height="20"
         fill={state.rectFill}
-        onLayout={(event) => {
-          const layout = event.nativeEvent.layout;
-          globalThis.__rnsvgLayoutEvents++;
-          globalThis.__rnsvgLayoutX = layout.x;
-          globalThis.__rnsvgLayoutY = layout.y;
-          globalThis.__rnsvgLayoutW = layout.width;
-          globalThis.__rnsvgLayoutH = layout.height;
-        }}
+        onLayout={state.rectLayout ? recordRectLayout : undefined}
       />
       <Text
         x={[10, 20]}

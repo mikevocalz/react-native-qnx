@@ -1,0 +1,53 @@
+{
+  "localParent": "ff86386a218ceda4e842e79c601fd70c2ff43b7a",
+  "publishedEquivalent": "75782e716d3a17fb7a22c47f883e37585a94f640",
+  "combinedPatchSha256": "3f32bac4cd2e55fbc5ceba1b18708d2923243baf0cad21a248d8ff249dfb44b4",
+  "packages": {
+    "react": "19.3.0",
+    "react-native": "0.88.1",
+    "expo": "58.0.24",
+    "react-native-svg": "15.16.0",
+    "react-native-worklets": "0.13.1",
+    "react-native-reanimated": "4.7.1",
+    "react-native-gesture-handler": "3.4.0"
+  },
+  "cache": {
+    "CMAKE_BUILD_TYPE": "Debug",
+    "CMAKE_CXX_COMPILER": "/workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang++",
+    "CMAKE_C_COMPILER": "/workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang",
+    "HERMES_SLOW_DEBUG": "ON",
+    "RNQNX_ENABLE_ACCESSIBILITY_BRIDGE": "ON",
+    "RNQNX_ENABLE_APP_STATE": "OFF",
+    "RNQNX_ENABLE_DEV_SUPPORT": "OFF",
+    "RNQNX_ENABLE_FRAME_TRACE": "OFF",
+    "RNQNX_ENABLE_GESTURE_HANDLER": "ON",
+    "RNQNX_ENABLE_HOST_SANITIZERS": "ON",
+    "RNQNX_ENABLE_INPUT_LIFECYCLE": "ON",
+    "RNQNX_ENABLE_NITRO_QT_DISPATCHER": "OFF",
+    "RNQNX_ENABLE_QT_EXPO_IMAGE": "ON",
+    "RNQNX_ENABLE_QT_GRAPHICS": "ON",
+    "RNQNX_ENABLE_QT_MOTION": "ON",
+    "RNQNX_ENABLE_QT_NATIVE_UI": "ON",
+    "RNQNX_ENABLE_QT_RNSVG": "ON",
+    "RNQNX_ENABLE_QT_SVG": "ON",
+    "RNQNX_ENABLE_QT_VIDEO": "ON",
+    "RNQNX_ENABLE_REANIMATED": "ON",
+    "RNQNX_ENABLE_TEXT_INPUT_CONTRACT": "ON",
+    "RNQNX_ENABLE_WEBSOCKETS": "OFF",
+    "RNQNX_ENABLE_WINDOW_CHROME": "ON",
+    "RNQNX_ENABLE_WORKLETS": "ON",
+    "CMAKE_GENERATOR": "Ninja"
+  },
+  "pinsSha256": {
+    "package.json": "567e7e127cd7aef0771af806f623b35fa25691ec44190851123f829f343481e2",
+    "pnpm-lock.yaml": "fa8abf8d922adf67b264971f37de533355cb976b12a4480c0a6c219ffdee0f0b",
+    "cmake/RnqnxWorkletsHostTests.cmake": "612493fb047f7864fffa9725602cb4d5be294dde0e1da02fa3028c7208e3ccee"
+  },
+  "upstreamSha256": {
+    "react-native-reanimated/Common/cpp/reanimated/Events/UIEventHandlerRegistry.cpp": "a03ab27ab3599260dda26f182fa21c82aca693f8b37142ad84b3502de5c24366",
+    "react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp": "4d1afb2237e882b90a234dd8c740f6ee7ebc2f4bcbe0a599143ca9656d006ccb"
+  },
+  "scope": "Provisional source snapshot; no commit or remote ref changed. Actual published #159 prerequisite required before final integration commit.",
+  "compileCommandsFile": "target-compile-commands.json",
+  "compileCommandsSource": "ninja -t compdb for the existing generated graph; CMake compile_commands.json contains only Hermes entries."
+}

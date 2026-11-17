@@ -1,0 +1,65 @@
+[0/2] Re-checking globbed directories...
+[1/31] Automatic MOC for target rnqnx_fabric_adapter
+[2/31] Bundling real Worklets/Reanimated/Gesture Handler host fixture
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./worklets-integration.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:50) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:49) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:64) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:69) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:51) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:62) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./worklets-integration.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-worklets-integration.bundle.js
+LOG:Done writing bundle output
+[3/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/rnqnx_fabric_adapter_autogen/mocs_compilation.cpp.o
+[4/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/ShadowViewMutationAdapter.cpp.o
+[5/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridge.cpp.o
+[6/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeDefs.cpp.o
+[7/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp.o
+[8/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeShapes.cpp.o
+[9/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeShadowNodes.cpp.o
+[10/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeText.cpp.o
+[11/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeValues.cpp.o
+[12/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgFilterConvert.cpp.o
+[13/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp.o
+[14/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgFilterBridge.cpp.o
+[15/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/rnsvg/Props.cpp.o
+[16/31] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgImageBridge.cpp.o
+[17/31] Linking CXX static library librnqnx_fabric_adapter.a
+[18/31] Automatic MOC for target rnqnx_react_host
+[19/30] Building CXX object CMakeFiles/rnqnx_worklets.dir/vnext/src/worklets/QtWorkletsPlatform.cpp.o
+[20/30] Building CXX object CMakeFiles/rnqnx_reanimated.dir/vnext/src/reanimated/QnxReanimatedModule.cpp.o
+[21/30] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtReactHost.cpp.o
+[22/30] Building CXX object CMakeFiles/rnqnx_reanimated.dir/vnext/src/reanimated/QtReanimatedPlatform.cpp.o
+[23/30] Linking CXX static library librnqnx_react_host.a
+[24/30] Linking CXX static library librnqnx_worklets.a
+[25/30] Building CXX object CMakeFiles/rnqnx_gesture_handler.dir/vnext/src/gesture/QtGesturePlatform.cpp.o
+[26/30] Linking CXX static library librnqnx_gesture_handler.a
+[27/30] Linking CXX static library librnqnx_reanimated.a
+[28/30] Building CXX object CMakeFiles/rnqnx_worklets_integration_host_test.dir/tests/cpp/WorkletsIntegrationHostTest.cpp.o
+[29/30] Linking CXX executable bin/rnqnx_worklets_integration_host_test

@@ -1,0 +1,18 @@
+{
+  "head": "d3eacc75dcad761c992736223a68b53ff852203b",
+  "tree": "fd7fe0ad6bcbd28e8c51d4a0526f1fadd2a543ea",
+  "source": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline",
+  "build": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer",
+  "tests": 49,
+  "corpusTimeouts": {
+    "rnqnx_qt_rnsvg_corpus_test": 300.0,
+    "rnqnx_qt_rnsvg_corpus_test_1": 300.0,
+    "rnqnx_qt_rnsvg_corpus_test_2": 300.0,
+    "rnqnx_qt_rnsvg_corpus_test_3": 300.0
+  },
+  "HermesSlowDebug": "ON",
+  "buildType": "Debug",
+  "gitStatus": "clean",
+  "reusesCompiledPr149Objects": false,
+  "ninjaStarted": false
+}

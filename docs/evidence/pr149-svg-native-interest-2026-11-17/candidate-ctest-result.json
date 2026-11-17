@@ -1,0 +1,27 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "build/linux-host-renderer",
+    "--no-tests=error",
+    "--output-on-failure",
+    "--parallel",
+    "1",
+    "--output-junit",
+    "/workspace/scratch/252a22fac759/pr149-svg-interest-validation/candidate-ctest.xml",
+    "-R",
+    "^rnqnx_worklets_(integration_host_test|rejects_missing_bootstrap)$"
+  ],
+  "sourceManifest": "candidate-source-identities.json",
+  "testProperties": "test-properties.json",
+  "startedUtc": "2026-11-17T05:43:41.680829+00:00",
+  "sha256": {
+    "bin/rnqnx_worklets_integration_host_test": "738b8a1624c291dd6033872f57f9866f936f8b0837ce672bede6126c23d99219",
+    "librnqnx_reanimated.a": "ec3903038d524671dfd0a5eeba402528aaaf6cc130380b1450cca483b55d9bf7",
+    "rnqnx-worklets-integration.bundle.js": "0683a1188a6f38bc97dadc462994503f707f2f6ff1ee4924f65721da0a18c752"
+  },
+  "sameBundleAsControl": true,
+  "exitCode": 0,
+  "elapsedSeconds": 18.840870194999297,
+  "endedUtc": "2026-11-17T05:44:00.521742+00:00"
+}

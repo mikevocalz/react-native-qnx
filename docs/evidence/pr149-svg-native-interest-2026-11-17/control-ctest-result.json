@@ -1,0 +1,19 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "build/linux-host-renderer",
+    "--no-tests=error",
+    "--output-on-failure",
+    "--output-junit",
+    "/workspace/scratch/252a22fac759/pr149-svg-interest-validation/control-ctest.xml",
+    "-R",
+    "^rnqnx_worklets_integration_host_test$"
+  ],
+  "sourceManifest": "control-source-identities.json",
+  "testProperties": "test-properties.json",
+  "startedUtc": "2026-11-17T05:41:26.912813+00:00",
+  "exitCode": 8,
+  "elapsedSeconds": 13.128663942001367,
+  "endedUtc": "2026-11-17T05:41:40.041543+00:00"
+}

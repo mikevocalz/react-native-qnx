@@ -60,6 +60,16 @@ void QnxReanimatedModule::install(Runtime& rt) {
   };
   proxy_->init(methods);
   proxy_->initializeFabric(host_.scheduler().getUIManager());
+#if RNQNX_ENABLE_QT_RNSVG
+  // Native event registrations can arrive after an SVG node mounts and do not
+  // require a React onSvgLayout prop. The synchronized registry query captures
+  // no JSI values or owning reference to the proxy or its UI runtime.
+  host_.delegate().setSvgLayoutNativeEventInterest(
+      [weak = std::weak_ptr<::reanimated::ReanimatedModuleProxy>(proxy_)](facebook::react::Tag tag) {
+        const auto proxy = weak.lock();
+        return proxy && proxy->isAnyHandlerWaitingForEvent("onSvgLayout", tag);
+      });
+#endif
 
   // Fabric events (scroll, gesture) feed worklet handlers. The handler runs on
   // the UI thread; the event is copied across, never the JS runtime's objects.
@@ -114,6 +124,10 @@ void QnxReanimatedModule::invalidate() {
   }
   invalidated_ = true;
   if (proxy_) {
+#if RNQNX_ENABLE_QT_RNSVG
+    // Stop new reporter queries while the owner runtime is still alive.
+    host_.delegate().setSvgLayoutNativeEventInterest({});
+#endif
     proxy_->cleanupSensors();
   }
   proxy_.reset();

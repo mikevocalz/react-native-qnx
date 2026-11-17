@@ -1,0 +1,89 @@
+{
+  "localParent": "ff86386a218ceda4e842e79c601fd70c2ff43b7a",
+  "publishedEquivalent": "75782e716d3a17fb7a22c47f883e37585a94f640",
+  "prerequisite": {
+    "baseCommit": "d3eacc75dcad761c992736223a68b53ff852203b",
+    "baseTree": "fd7fe0ad6bcbd28e8c51d4a0526f1fadd2a543ea",
+    "patchSha256": "802fd7d69f5afe66d78808f3b46f0db45cd8aef352c64b44f1cc4f963b1edbd0",
+    "files": {
+      "apps/rn-playground/rnsvg-fixture.js": "694aa86c6e6b745cbbf7d6f730196e3be4970fa93580f4785e9cadf38832c918",
+      "scripts/qt-rnsvg-codegen.mjs": "9d64c2b4fbcc2dd0b308c51e882465d04add505f162192b8d8b895636924a92b",
+      "tests/native/qt-rnsvg-fabric/RnsvgBridgeValuesTest.cpp": "295f76d313dccbc8b7257e582166434ff63889f5be2f33aa6c840c4ebfb53a3f",
+      "tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp": "9667a810b101f2c59f4be214207cfcf52b826e2dbd043e04a7896842399e71b1",
+      "vnext/generated/react/renderer/components/rnsvg/Props.cpp": "fc995dada9bd6230985002f770c6b945fbc869bbac3c923a2f624e7bcdb0ca19",
+      "vnext/generated/react/renderer/components/rnsvg/Props.h": "02f21e4cd193dd09db04872d67b1dd5ba8cf9c7620c5735d59a8e81b88e710b7",
+      "vnext/include/react-native-qnx/fabric/ShadowViewMutationAdapter.h": "afdd48210494d2f761a9b5feb594536dd13b4585da9573d2ee4a7f0a4fda499d",
+      "vnext/include/react-native-qnx/runtime/QtReactHost.h": "89d089b1faa00182c9a52561aa7e5b19fa8e654203e43cf53f7a23ac912013b1",
+      "vnext/src/fabric/QtRnsvgBridge.cpp": "34e4867f4189c77bf874ca313b5e581072e65c65ad6bc4b037b91fdbe1cd7733",
+      "vnext/src/fabric/QtRnsvgBridgeDefs.cpp": "ec25da1c58a22f386518da302cd85432930471f831aafd3e7ab1dee9a8bd9f6d",
+      "vnext/src/fabric/QtRnsvgBridgeInternal.h": "c688a2fc0ce28ee1c04e834edee1038dd478d431dd0bc325b00b3edbd96f06ad",
+      "vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp": "20b46b497bb18cade48899742dbc70794cb0c5aa94555b9b0ba97dbf802faab3",
+      "vnext/src/fabric/QtRnsvgBridgeLayoutEvents.h": "33ea12c93309350a9e28c18d571a4f7a49434b97153bf5625b746b29040535a4",
+      "vnext/src/fabric/QtRnsvgBridgeShapes.cpp": "242ead6e1e5ae396b03e1d3c2558987ceb1d8059ebfb8ac2fb466261555438da",
+      "vnext/src/fabric/QtRnsvgBridgeText.cpp": "3fa5b6aa6815cc6ebee18148bfc25fd5ebf7a118e1fb15534227a1f4456d27a6",
+      "vnext/src/fabric/ShadowViewMutationAdapter.cpp": "0e4c64d0890b6aed61ac0bf62cb1bf13cd7e7b2753092b8d5ff53ac460c7a42f",
+      "vnext/src/runtime/QtReactHost.cpp": "d7a255fbceb40ce20d4fe2a9f09eec4bb3c499118e906f416223042cf87211cf"
+    },
+    "scope": "Frozen reviewed source/generator/tests only; excludes receipts and canonical handoff. Native runtime validation pending."
+  },
+  "mergedPrerequisitePatchSha256": "e8a6939be8a7e428495564a2d69d05186485ec956acc8fe45858eb4b12fddf29",
+  "ownPatchSha256": "da68af7485147380eaf64eb3510739a34cb20fc881cba34942cef1eef8e4ab74",
+  "sourceSha256": {
+    "apps/rn-playground/rnsvg-fixture.js": "694aa86c6e6b745cbbf7d6f730196e3be4970fa93580f4785e9cadf38832c918",
+    "scripts/qt-rnsvg-codegen.mjs": "31f6b05341bfe0272d155075be87834bec46ac6640ce807e5854e2335537cbe3",
+    "tests/native/qt-rnsvg-fabric/RnsvgBridgeValuesTest.cpp": "295f76d313dccbc8b7257e582166434ff63889f5be2f33aa6c840c4ebfb53a3f",
+    "tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp": "9667a810b101f2c59f4be214207cfcf52b826e2dbd043e04a7896842399e71b1",
+    "vnext/generated/react/renderer/components/rnsvg/Props.cpp": "fc995dada9bd6230985002f770c6b945fbc869bbac3c923a2f624e7bcdb0ca19",
+    "vnext/generated/react/renderer/components/rnsvg/Props.h": "02f21e4cd193dd09db04872d67b1dd5ba8cf9c7620c5735d59a8e81b88e710b7",
+    "vnext/include/react-native-qnx/fabric/ShadowViewMutationAdapter.h": "77a0da599a443456fa7957a4062dd28e35adfecce8b7074328b4d0b446d9eff4",
+    "vnext/include/react-native-qnx/runtime/QtReactHost.h": "7fc9ba456fc0c154b1e2fc2ccde5b25495661fda43bbec77d1a6d6b5ea4eebfb",
+    "vnext/src/fabric/QtRnsvgBridge.cpp": "34e4867f4189c77bf874ca313b5e581072e65c65ad6bc4b037b91fdbe1cd7733",
+    "vnext/src/fabric/QtRnsvgBridgeDefs.cpp": "ec25da1c58a22f386518da302cd85432930471f831aafd3e7ab1dee9a8bd9f6d",
+    "vnext/src/fabric/QtRnsvgBridgeInternal.h": "c688a2fc0ce28ee1c04e834edee1038dd478d431dd0bc325b00b3edbd96f06ad",
+    "vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp": "20b46b497bb18cade48899742dbc70794cb0c5aa94555b9b0ba97dbf802faab3",
+    "vnext/src/fabric/QtRnsvgBridgeLayoutEvents.h": "33ea12c93309350a9e28c18d571a4f7a49434b97153bf5625b746b29040535a4",
+    "vnext/src/fabric/QtRnsvgBridgeShapes.cpp": "242ead6e1e5ae396b03e1d3c2558987ceb1d8059ebfb8ac2fb466261555438da",
+    "vnext/src/fabric/QtRnsvgBridgeText.cpp": "3fa5b6aa6815cc6ebee18148bfc25fd5ebf7a118e1fb15534227a1f4456d27a6",
+    "vnext/src/fabric/ShadowViewMutationAdapter.cpp": "fb44935374f23d21ef5ec8a062d0c0ca032b86793f9072228ddccc781271c1e2",
+    "vnext/src/runtime/QtReactHost.cpp": "eaa92cfb0bab4cb078854a8642089cc93fdbe18a1ea1649f90487f50bbc684b9",
+    "apps/rn-playground/worklets-integration.js": "f0abb93f704403fb1b458aecfdc826551dac884cfaa6b5bdec65128b636b1af3",
+    "tests/cpp/WorkletsIntegrationHostTest.cpp": "581b21a835db5bc8fd08f7effceff54efc199edd7298cadba1ebe96ddc74f61f",
+    "vnext/src/reanimated/QnxReanimatedModule.cpp": "f92c5c0db0abe2832f21b25b2862010ffb34eab33cfc534d306c3f66f1d284ef",
+    "vnext/src/fabric/QtRnsvgFilterConvert.cpp": "81809d445ed050cf12bcb01490f8be9b8dec494824aa9c1e7a97a624973971d2",
+    "vnext/src/fabric/QtRnsvgFilterConvert.h": "d1aac0cb14ba16f162f72372e8e52d5ae53fbffdc4423787e1fccc2b94842359",
+    "vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp": "12516d8f068ba638c0bc67e0dc26816636e36a2c5af3f092177332634e9b5079",
+    "tests/js/rnsvg-layout-transport.test.mjs": "72db22eb8dbc459cdae8e0d4b69c57c1c00a1cb0600dfd9ea28c671d4f0f4b41",
+    "packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js": "712f1ff34d9073c485f33d54764d5e0f8dfed792aeca49e29688d525cc92025c",
+    "tests/js/rnsvg-overlay-render.test.mjs": "3445d47a590979725aef950c0710b37be67dc44e4e5477ef9d431eacf1b89e3b"
+  },
+  "contextMergedFiles": [
+    "vnext/include/react-native-qnx/fabric/ShadowViewMutationAdapter.h",
+    "vnext/include/react-native-qnx/runtime/QtReactHost.h",
+    "vnext/src/fabric/ShadowViewMutationAdapter.cpp",
+    "vnext/src/runtime/QtReactHost.cpp",
+    "packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js"
+  ],
+  "conflictResolution": "Kept ModalHostView registration and QtModalBridge include, then added the SVG holder initialization/includes. Three-way application preserved all other #149/#159 additions. No source commits or remote refs changed.",
+  "scope": "Provisional imported prerequisite; runtime validation pending. Preserve original graph binaries at pr149-native-ff86386.",
+  "prerequisiteFollowup": {
+    "patchSha256": "8584890b86286aa2b56dd331fcd444a41550430964369483a222208a1ebe9bc1",
+    "files": [
+      "vnext/src/fabric/QtRnsvgFilterConvert.cpp",
+      "vnext/src/fabric/QtRnsvgFilterConvert.h",
+      "vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp"
+    ],
+    "reason": "Four false sentinels become nullptr for the new listener-predicate pointer type; no-layout-event behavior stays disabled."
+  },
+  "markerTransportFollowup": {
+    "path": "/workspace/scratch/252a22fac759/pr161-svg-layout-controls/candidate-marker-transport-final.patch",
+    "sha256": "ab3bf560ce92ae0a96f684e4b5092644655a09fd4151e73694d47fff9f471eef",
+    "files": {
+      "scripts/qt-rnsvg-codegen.mjs": "31f6b05341bfe0272d155075be87834bec46ac6640ce807e5854e2335537cbe3",
+      "tests/js/rnsvg-layout-transport.test.mjs": "72db22eb8dbc459cdae8e0d4b69c57c1c00a1cb0600dfd9ea28c671d4f0f4b41",
+      "packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js": "d7315012356fe1211683e00c359fdce9ef531454e77c3c38aeb96fa60af435b6",
+      "tests/js/rnsvg-overlay-render.test.mjs": "3445d47a590979725aef950c0710b37be67dc44e4e5477ef9d431eacf1b89e3b"
+    },
+    "base": "Reviewed20-file native candidate; includes the platform-aware overlay stub correction."
+  },
+  "markerTransportContext": "BaseViewConfig retains the exact pre-existing topClick/onClick/onClickCapture additions from #149/#159. Imported delta adds only existing onSvgLayout attribute admission and its comment."
+}

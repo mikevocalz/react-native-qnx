@@ -1,0 +1,26 @@
+{
+  "command": [
+    "ctest",
+    "--preset",
+    "linux-host-renderer",
+    "-R",
+    "^rnqnx_qt_rnsvg_fabric_test$",
+    "--output-on-failure",
+    "--output-junit",
+    "/workspace/scratch/252a22fac759/pr161-svg-layout-controls/lifetime-mutation.xml"
+  ],
+  "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline",
+  "startedAt": "2026-11-17T05:35:13.835735+00:00",
+  "finishedAt": "2026-11-17T05:35:21.838868+00:00",
+  "exitCode": 8,
+  "scope": "Explicit candidate mutation: remove post-release QPointer check. Same full Fabric test source/object and Metro bundle as passing candidate.",
+  "sha256": {
+    "vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp": "7ca4ad0357fb6a07cac8497560ba1692ac74e79d3b16e3ed420495f84e3c118c",
+    "tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp": "9667a810b101f2c59f4be214207cfcf52b826e2dbd043e04a7896842399e71b1",
+    "apps/rn-playground/rnsvg-fixture.js": "694aa86c6e6b745cbbf7d6f730196e3be4970fa93580f4785e9cadf38832c918",
+    "packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js": "d7315012356fe1211683e00c359fdce9ef531454e77c3c38aeb96fa60af435b6",
+    "build/linux-host-renderer/rnqnx-rnsvg.bundle.js": "686b1f91383b91d0f63c572f3205f5c301b4e0d13c03a10c00ec2a6b53c4fd2b",
+    "build/linux-host-renderer/CMakeFiles/rnqnx_qt_rnsvg_fabric_test.dir/tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp.o": "5a432565a32667337a82c581faff30a34965ebe64f1ad3ff879a30f5cc78cd77",
+    "build/linux-host-renderer/CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp.o": "10c06d49900d0bf6191fc4893f1309c9e5ff43a37fd4c356cda57fa8be20336f"
+  }
+}

@@ -101,6 +101,9 @@ module.exports = {
     testID: true,
     pointerEvents: true,
     onLayout: true,
+    // RN's generated event-attribute helper includes this marker only on iOS.
+    // QNX retains the existing SVG listener marker for native event admission.
+    onSvgLayout: true,
     accessible: true,
     accessibilityLabel: true,
     accessibilityHint: true,

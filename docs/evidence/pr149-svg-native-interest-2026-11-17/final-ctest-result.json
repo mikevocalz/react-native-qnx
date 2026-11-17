@@ -1,0 +1,38 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "build/linux-host-renderer",
+    "--no-tests=error",
+    "--output-on-failure",
+    "--parallel",
+    "1",
+    "--output-junit",
+    "/workspace/scratch/252a22fac759/pr149-svg-interest-validation/final-ctest.xml",
+    "-R",
+    "^rnqnx_worklets_(integration_host_test|rejects_missing_bootstrap)$"
+  ],
+  "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr149",
+  "sourceComparison": "final-source-comparison.json",
+  "testProperties": "final-test-properties.json",
+  "testPropertiesEqualToProvisional": true,
+  "startedAtUtc": "2026-11-17T06:30:20.177608+00:00",
+  "finishedAtUtc": "2026-11-17T06:30:41.222701+00:00",
+  "elapsedSeconds": 21.045,
+  "exitCode": 0,
+  "artifactSha256": {
+    "bin/rnqnx_worklets_integration_host_test": "738b8a1624c291dd6033872f57f9866f936f8b0837ce672bede6126c23d99219",
+    "librnqnx_reanimated.a": "ec3903038d524671dfd0a5eeba402528aaaf6cc130380b1450cca483b55d9bf7",
+    "rnqnx-worklets-integration.bundle.js": "0683a1188a6f38bc97dadc462994503f707f2f6ff1ee4924f65721da0a18c752"
+  },
+  "sameBundleAsProvisional": true,
+  "sourceHashesUnchanged": true,
+  "frameSha256": {
+    "0-initial.png": "c93860f6ba96c626327b9214c4dd1e37da49c18739e3b5dfbb63410e35504079",
+    "0-pan.png": "3c3d894ba6c90e88e682413391c681a04d1f07f226dbfb49ae1a3b07118e346e",
+    "0-timing.png": "3de76f40d010c0568adcd58a82f6ba5a7f3d4f61084d65f4545608f991a2bd25",
+    "1-initial.png": "c93860f6ba96c626327b9214c4dd1e37da49c18739e3b5dfbb63410e35504079",
+    "1-pan.png": "3c3d894ba6c90e88e682413391c681a04d1f07f226dbfb49ae1a3b07118e346e",
+    "1-timing.png": "3de76f40d010c0568adcd58a82f6ba5a7f3d4f61084d65f4545608f991a2bd25"
+  }
+}

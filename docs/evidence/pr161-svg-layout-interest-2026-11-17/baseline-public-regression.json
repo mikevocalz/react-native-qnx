@@ -1,0 +1,26 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer",
+    "-R",
+    "^rnqnx_qt_rnsvg_fabric_test$",
+    "--output-on-failure",
+    "--output-junit",
+    "/workspace/scratch/252a22fac759/pr161-svg-layout-controls/baseline-public-regression.xml"
+  ],
+  "startedAt": "2026-11-17T05:11:34.293131+00:00",
+  "finishedAt": "2026-11-17T05:11:41.560348+00:00",
+  "exitCode": 8,
+  "productionHead": "d3eacc75dcad761c992736223a68b53ff852203b",
+  "modifiedFiles": [
+    "apps/rn-playground/rnsvg-fixture.js",
+    "tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp"
+  ],
+  "sha256": {
+    "apps/rn-playground/rnsvg-fixture.js": "694aa86c6e6b745cbbf7d6f730196e3be4970fa93580f4785e9cadf38832c918",
+    "tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp": "daa452fe69885b4dc0aced0bc1b8b617bde2de08b5ce41f4ef702cafdda486cc",
+    "build/linux-host-renderer/CMakeFiles/rnqnx_qt_rnsvg_fabric_test.dir/tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp.o": "fd5ed74e70b4bc8a9a72f3bd4c74966a91ba5ad81fb98d36f0d3392bc3cfb0d7",
+    "build/linux-host-renderer/rnqnx-rnsvg.bundle.js": "df4e1e1b68fe27f67f294415444c93d078706bbb300104715dc1dd66b109b2ea"
+  }
+}

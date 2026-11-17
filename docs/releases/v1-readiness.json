@@ -185,6 +185,46 @@
       "review": "Independent final merge review preserves Worklets observers/mount-order case and both onLayout guards/regressions; earlier bounded cancellation, linked-fixture and fatal/soft reviews remain recorded. Only handoff insertion conflicted; both parent sections preserved.",
       "hostedCi": "Required final published-head workflows remain pending. Earlier 61/61 Worklets and 149-case copied SVG results retain their own source identities; no new full corpus or full JavaScript-suite result is claimed.",
       "targetExecution": "No new QNX cross-build or device run. Dedicated JS thread, busy-JS rendering, remaining recognizers, layout/scroll qualification and current clean combined target acceptance remain open. Keep PR draft, feature defaults OFF and all eleven release gates pending."
+    },
+    "pr161SvgLayoutInterest": {
+      "reviewedAt": "2026-11-17",
+      "baseCommit": "d3eacc75dcad761c992736223a68b53ff852203b",
+      "receipt": "docs/validation/pr161-svg-layout-interest-2026-11-17.md",
+      "nativeHost": "Fresh PR 161 candidate graph: 49/49 CTests in 445.87 seconds, 57 QtReactHost cases and 149/149 SVG pixel comparisons. Four corpus times 5.33/166.98/163.61/6.21 seconds under unchanged 300-second limits. Real prop transport, all 14 generated marker classes, native subscriber lifecycle, original-source controls and separately labeled lifetime mutation are recorded; reviewed source hashes remain unchanged.",
+      "hostedCi": "Parent d3eacc75: ten of eleven workflows pass; renderer ON 47/49 with two corpus timeouts. The published successor needs its own completed workflows; exact-head results are maintained on PR 161.",
+      "targetExecution": "Not run for this native continuation. Fresh combined QNX cross-build and current-device acceptance remain required. Keep draft and all eleven release gates pending."
+    },
+    "pr159SvgInterestRestack": {
+      "reviewedAt": "2026-11-17",
+      "previousPublishedHead": "d50e34d99a504f48b690225ad28e8cb3cd8ca37a",
+      "previousSourceTree": "03455c6af3891b91aa4a7e804055a777af57c5aa",
+      "integratedSvgHead": "6f40a8d5a26a987ebfe277b9e7d7a0f051d4d58c",
+      "integratedSvgTree": "f544c4d475a7115dec05e0289fbffcd658896074",
+      "mergedInputTree": "45ba17d4cb9c64405d64023eebe92d9fcace565d",
+      "receipt": "docs/validation/pr159-svg-interest-restack-2026-11-17.md",
+      "nativeHost": "Actual two-target rebuild passes; Expo module/Fabric 2/2 configured CTests pass in 1.42 seconds. Existing Debug Hermes graph has Expo Image ON and SVG OFF. All 23 imported source identities remain unchanged through execution; five files retain reviewed PR 159 context. The separate SVG prerequisite has its own 49/49 ON graph and 149 pixel comparisons.",
+      "javascriptHost": "Real platform-aware SVG transport, pinned codegen drift check and both TypeScript configurations pass. Existing local full-JS Unix-socket restriction remains separately recorded.",
+      "hostedCi": "Previous published d50e34d passes all 15 workflows and 17 jobs, with direct and synthetic-merge source trees verified identical. New merged-head hosted ON/OFF checks remain pending publication; prior-head results do not qualify the successor.",
+      "targetExecution": "No new QNX or Marathon runtime execution. Current cross-build/attribution, release animation assets and exact-device acceptance remain required. Keep draft and all eleven release gates pending.",
+      "dri": "finish_expo159",
+      "independentReviewers": ["root", "qnx_readiness"]
+    },
+    "pr149SvgNativeInterest": {
+      "reviewedAt": "2026-11-17",
+      "localParent": "ff86386a218ceda4e842e79c601fd70c2ff43b7a",
+      "publishedParentEquivalent": "75782e716d3a17fb7a22c47f883e37585a94f640",
+      "actualExpoParent": "12cae67885b77f9a371059fc2b0a1168ef07430b",
+      "actualExpoTree": "b057996aeb770ce1b1349077a0106c85d3f4ff4a",
+      "validation": "docs/validation/pr149-svg-native-interest-2026-11-17.md",
+      "rawEvidence": "docs/evidence/pr149-svg-native-interest-2026-11-17/README.md",
+      "hostExecution": "Real native late SVG event registration, removal and re-registration pass across three linked Worklets/Reanimated hosts; pixels, exact UI-worklet layout payloads, suppressed native dispatch and materialized-handler/pending-frame teardown are checked.",
+      "control": "Previously committed Reanimated module with the new prerequisite and identical fixture paints changed geometry, then fails the late native subscriber check. First direct-run LeakSanitizer ptrace failure is preserved separately; unchanged configured CTest isolates the expected failure.",
+      "finalIntegration": "All 26 provisional source hashes, three pin/build-input hashes and 25 configuration values match the actual-parent merge. Target rebuild passes in 72.545 seconds; configured pair passes 2/2 in 20.10 seconds (17.85 and 2.25). Executable, Reanimated archive and Metro bundle match the provisional candidate byte-for-byte.",
+      "instrumentation": "Existing Debug, HERMES_SLOW_DEBUG and 60-second limits retained. ASan fixture translation unit/link only, with existing configured leak detection disabled; no whole-graph, UBSan or leak qualification.",
+      "hostedCi": "Previous published 75782e7 workflows passed separately. Final successor requires its own hosted workflows; provisional control and candidate results retain their original ancestry.",
+      "targetExecution": "No new QNX cross-build or device execution. General public hook/animated SVG props, dedicated JS thread, remaining recognizers and layout/scroll/current combined target qualification remain open. Defaults OFF, all 11 gates pending, PR draft.",
+      "dri": "qnx_readiness",
+      "independentReviewers": ["root", "finish_expo159"]
     }
   },
   "gates": [

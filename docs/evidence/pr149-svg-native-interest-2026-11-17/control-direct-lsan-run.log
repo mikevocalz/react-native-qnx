@@ -1,0 +1,10 @@
+Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=703 framesDelivered=702 uiJobs=0 jsPosts=6
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1117 00:40:15.637477 2845172288 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1117 00:40:15.640251 2668385984 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000015350).
+RNQNX_SVG_NATIVE_INTEREST_GEOMETRY width=20
+RNQNX_WORKLETS_INTEGRATION_FAILED late SVG native subscriber did not complete before the 5-second deadline
+==6==LeakSanitizer has encountered a fatal error.
+==6==HINT: For debugging, try setting environment variable LSAN_OPTIONS=verbosity=1:log_threads=1
+==6==HINT: LeakSanitizer does not work under ptrace (strace, gdb, etc)
