@@ -1,0 +1,12 @@
+********* Start testing of RnsvgSceneTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgSceneTest::initTestCase()
+FAIL!  : RnsvgSceneTest::resizingNestedSvgRepaintsVisibleRoot() 'layouts.count() > 0' returned FALSE. ()
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-pr161/tests/native/qt-rnsvg/RnsvgSceneTest.cpp(682)]
+FAIL!  : RnsvgSceneTest::resizingRootRelayoutsForeignObjectsAndReportedBounds() 'layouts.count() > 0' returned FALSE. ()
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-pr161/tests/native/qt-rnsvg/RnsvgSceneTest.cpp(717)]
+PASS   : RnsvgSceneTest::cleanupTestCase()
+Totals: 2 passed, 2 failed, 0 skipped, 0 blacklisted, 12223ms
+********* Finished testing of RnsvgSceneTest *********
+
+EXIT_CODE=2

@@ -109,6 +109,23 @@
       "consumerHost": "Exact reviewed PR 159 f49e61e CLI copy-list and archive regression port: original source fails the missing SVG resolver assertion, corrected test passes; fresh external dual consumer installs and bundles for QNX and Marathon; no native execution or dependency changes",
       "hostedCi": "All nine workflows pass at 13a0e49ae7ea6b16faa23840926d3976866f6646, including both renderer lanes, 49/49 ON tests and all four corpus shards; packaging-only follow-up exact-head CI pending; original timeout cause remains unestablished",
       "targetExecution": "Not run for the new native correction; fresh combined SDP 8.0.5 build and current target SVG acceptance required; keep PR draft and all release gates pending"
+    },
+    "pr161Geometry": {
+      "reviewedAt": "2026-11-16",
+      "baseCommit": "3b24f5c2fd3733dbf1ebe77729f7014242db7db3",
+      "implementationCommit": "69fa85ff4072686328d8f195e47b454b53932abe",
+      "receipt": "docs/validation/pr161-geometry-2026-11-16.md",
+      "nativeHost": "Two original-source retained-geometry regressions fail and pass with the fix; 8/8 standalone Qt 6.11.1/Clang 19.1.7 Debug ASan/UBSan CTests pass; Qt libraries uninstrumented and leak detection disabled; independent agent source review",
+      "hostedCi": "Implementation-head checks identified Prettier formatting failures; formatting and canonical-handoff follow-up requires its own successful workflows",
+      "targetExecution": "Not run for the geometry correction; fresh clean combined QNX build and current target SVG acceptance required; keep PR draft and every release gate pending"
+    },
+    "pr161LayoutDispatch": {
+      "reviewedAt": "2026-11-16",
+      "baseCommit": "3220c8df9aecf84d2019b3c9ca62d89c1b6f0ac7",
+      "receipt": "docs/validation/pr161-layout-dispatch-2026-11-16.md",
+      "nativeHost": "Both new listener regressions fail with the original adapter; all 57 host cases and all 149 SVG comparisons pass with the two supported onLayout guards. Copied PR 149 Debug graph; all four corpus CTests pass in 5.21s, 204.75s, 232.22s and 6.59s with unchanged 300-second limits. Independent source review, identical host-test object and original corpus object; Hermes slow debug checks retained. This is not an exact PR 161 full-graph or QNX result.",
+      "hostedCi": "At 3220c8d ten of eleven workflows pass; renderer OFF 14/14 CTests pass, renderer ON 47/49 pass with two 300-second corpus timeouts. The listener-guard successor requires its own completed workflows; isolated copied-graph checks are not exact-head hosted CI.",
+      "targetExecution": "Not run for the native listener correction; fresh clean combined QNX build and current target acceptance required. Keep PR draft and all eleven release gates pending."
     }
   },
   "gates": [

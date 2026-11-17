@@ -1,5 +1,41 @@
 # Current state
 
+## PR 161 subscribed layout dispatch continuation (2026-11-16)
+
+The Fabric adapter now checks the existing `ViewProps::onLayout` flag before
+dispatching layout events on creation or update, matching React Native 0.88.1.
+The identical new regression object fails both listener cases with the original
+adapter; the guarded copy passes all 57 host cases, including existing public
+layout and list tests. Independent source review found no blocking issue.
+A paired host profile reduces the Complex-1 mount from 244.5 to 181.2 seconds
+without changing Hermes slow debug checks, fixtures, thresholds or timeouts.
+All 149 visual comparisons pass; the four original corpus CTests finish in
+5.21, 204.75, 232.22 and 6.59 seconds with their 300-second limits unchanged.
+
+The last completed exact hosted head, `3220c8d`, passed ten of eleven workflows:
+the renderer-OFF lane passed 14/14 CTests, while renderer-ON passed 47/49 with
+two 300-second SVG corpus timeouts. The isolated copied PR 149 host graph
+validates the listener correction; it is not an exact PR 161 full-graph result.
+The successor needs its own required workflows, a fresh clean combined QNX
+build and current-device validation. Keep PR 161 draft and all eleven release
+gates pending. [Receipt and evidence](../validation/pr161-layout-dispatch-2026-11-16.md).
+
+## PR 161 retained SVG geometry continuation (2026-11-16)
+
+Published correction `69fa85f` routes retained SVG geometry changes through
+outer-root painting and layout invalidation. Two real-window regressions fail
+against the original source and pass with the fix, covering nested resize
+pixels, live ForeignObject placement and cached bounds. All eight standalone
+Qt 6.11.1/Clang 19.1.7 Debug ASan/UBSan CTests pass, with independent source
+review. The guide now describes the existing optional QtSvg/plugin staging.
+
+The first published-head checks identified formatting failures. This narrow
+documentation follow-up applies the pinned formatter and updates the canonical
+handoff; native source and tests are unchanged. Follow-up CI, a fresh clean
+combined QNX build and current-device validation remain pending. Keep PR 161
+draft and every release gate pending; earlier device receipts do not qualify
+this geometry correction. [Receipt and logs](../validation/pr161-geometry-2026-11-16.md).
+
 ## PR 159 review follow-up — 2026-11-14
 
 PR 159 combines the image/router/consumer corrections, keyboard/modal fixes, current main and standalone SVG consumer follow-up 3b24f5c. The final full-host source b6bf7eb passes all 59 enabled QtReactHost cases, fails exactly the two intended cases with five original production files, then passes all 59 after restoration. Exact-head hosted CI and current-target qualification remain open.
