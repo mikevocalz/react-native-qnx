@@ -75,6 +75,8 @@ struct Registry::Impl {
   std::map<int, std::unique_ptr<Handler>> handlers;
   std::map<int, Track> tracks;
   std::vector<std::string> unsupported;
+  std::deque<GestureEvent> events;
+  bool deliveringEvents{false};
 
   bool enabled(const Handler& h) const { return get(h.cfg, "enabled", 1) != 0; }
 
@@ -121,7 +123,26 @@ struct Registry::Impl {
     e.kind = kind;
     e.data = snapshot(h);
     e.data.direction = direction;
-    sink(e);
+    events.push_back(std::move(e));
+  }
+
+  // Complete a registry mutation before calling client code. A sink may drop
+  // handlers or change the sink itself; neither may invalidate an in-flight
+  // recognizer reference or map iterator. Nested mutations append events to
+  // this same queue so their delivery stays ordered and non-recursive.
+  void deliverEvents() {
+    if (deliveringEvents) return;
+    deliveringEvents = true;
+    struct Reset {
+      bool& busy;
+      ~Reset() { busy = false; }
+    } reset{deliveringEvents};
+    while (!events.empty()) {
+      GestureEvent event = std::move(events.front());
+      events.pop_front();
+      auto callback = sink;
+      if (callback) callback(event);
+    }
   }
 
   void set(Handler& h, State next, int direction = 0) {
@@ -137,6 +158,18 @@ struct Registry::Impl {
       if (other->state == State::Began || other->state == State::Active) return true;
     }
     return false;
+  }
+
+  // Cancel without settling dependencies: input loss must end every affected
+  // handler before any waiter is considered for activation. Keep its contacts
+  // until the terminal event has captured their last coordinates.
+  void cancel(Handler& h) {
+    h.pendingActivate = false;
+    h.deadline = -1;
+    if (h.state == State::Active || h.state == State::Began) {
+      set(h, State::Cancelled);
+    }
+    h.pointers.clear();
   }
 
   void fail(Handler& h) {
@@ -195,8 +228,11 @@ struct Registry::Impl {
   }
 
   void resetIfIdle() {
-    if (!tracks.empty()) return;
     for (auto& [tag, h] : handlers) {
+      // An unrelated contact must not hold a detached/re-enabled handler in
+      // its terminal state. Failed recognizers still holding their own
+      // contact remain terminal until that contact has left.
+      if (!h->pointers.empty()) continue;
       if (h->state == State::End || h->state == State::Failed || h->state == State::Cancelled) {
         h->state = State::Undetermined;
       }
@@ -332,15 +368,42 @@ void Registry::create(const std::string& name, int tag, const Config& config) {
 
 void Registry::attach(int tag, int viewTag, int actionType) {
   if (auto it = impl_->handlers.find(tag); it != impl_->handlers.end()) {
+    if (it->second->viewTag != 0 && it->second->viewTag != viewTag) {
+      impl_->cancel(*it->second);
+    }
     it->second->viewTag = viewTag;
     it->second->actionType = actionType;
+    impl_->settleWaiters();
+    impl_->resetIfIdle();
   }
+  impl_->deliverEvents();
 }
 void Registry::detach(int tag) {
-  if (auto it = impl_->handlers.find(tag); it != impl_->handlers.end()) it->second->viewTag = 0;
+  detach(std::vector<int>{tag});
+}
+void Registry::detach(const std::vector<int>& tags) {
+  for (int tag : tags) {
+    if (auto it = impl_->handlers.find(tag); it != impl_->handlers.end()) {
+      impl_->cancel(*it->second);
+      it->second->viewTag = 0;
+    }
+  }
+  // All handlers removed from one detector must be cancelled before a
+  // predecessor's removal can release any surviving waiter.
+  impl_->settleWaiters();
+  impl_->resetIfIdle();
+  impl_->deliverEvents();
 }
 void Registry::setConfig(int tag, const Config& config) {
-  if (auto it = impl_->handlers.find(tag); it != impl_->handlers.end()) it->second->cfg = config;
+  if (auto it = impl_->handlers.find(tag); it != impl_->handlers.end()) {
+    it->second->cfg = config;
+    if (!impl_->enabled(*it->second)) {
+      impl_->cancel(*it->second);
+      impl_->settleWaiters();
+      impl_->resetIfIdle();
+    }
+  }
+  impl_->deliverEvents();
 }
 void Registry::setRelations(int tag, const Relations& relations) {
   if (auto it = impl_->handlers.find(tag); it != impl_->handlers.end()) it->second->rel = relations;
@@ -352,6 +415,7 @@ void Registry::drop(int tag) {
   if (h.state == State::Active || h.state == State::Began) impl_->fail(h);
   impl_->handlers.erase(it);
   impl_->settleWaiters();
+  impl_->deliverEvents();
 }
 
 void Registry::setState(int tag, State state) {
@@ -373,6 +437,7 @@ void Registry::setState(int tag, State state) {
     default:
       break;
   }
+  impl_->deliverEvents();
 }
 
 void Registry::pointerDown(int id, double x, double y, double nowMs) {
@@ -394,6 +459,7 @@ void Registry::pointerDown(int id, double x, double y, double nowMs) {
     h->pointers.insert(id);
     impl_->onDown(*h, nowMs);
   }
+  impl_->deliverEvents();
 }
 
 void Registry::pointerMove(int id, double x, double y, double nowMs) {
@@ -409,6 +475,7 @@ void Registry::pointerMove(int id, double x, double y, double nowMs) {
     auto h = impl_->handlers.find(tag);
     if (h != impl_->handlers.end()) impl_->onMove(*h->second, nowMs);
   }
+  impl_->deliverEvents();
 }
 
 void Registry::pointerUp(int id, double x, double y, double nowMs) {
@@ -432,6 +499,7 @@ void Registry::pointerUp(int id, double x, double y, double nowMs) {
   }
   impl_->tracks.erase(id);
   impl_->resetIfIdle();
+  impl_->deliverEvents();
 }
 
 void Registry::pointerCancel(int id, double nowMs) {
@@ -444,12 +512,23 @@ void Registry::pointerCancel(int id, double nowMs) {
   for (int tag : tags) {
     auto h = impl_->handlers.find(tag);
     if (h == impl_->handlers.end()) continue;
-    h->second->pointers.erase(id);
-    impl_->fail(*h->second);
+    impl_->cancel(*h->second);
   }
   impl_->tracks.erase(id);
+  impl_->settleWaiters();
   impl_->resetIfIdle();
+  impl_->deliverEvents();
   (void)nowMs;
+}
+
+void Registry::cancelAll() {
+  // No dependency settlement during a focus/touch cancellation. In
+  // particular, a completed single tap waiting for a double tap must not
+  // activate when the host loses the window, even though it has no contact.
+  for (auto& [tag, h] : impl_->handlers) impl_->cancel(*h);
+  impl_->tracks.clear();
+  impl_->resetIfIdle();
+  impl_->deliverEvents();
 }
 
 void Registry::advance(double nowMs) {
@@ -470,6 +549,7 @@ void Registry::advance(double nowMs) {
     }
   }
   impl_->resetIfIdle();
+  impl_->deliverEvents();
 }
 
 std::optional<double> Registry::nextDeadlineMs() const {

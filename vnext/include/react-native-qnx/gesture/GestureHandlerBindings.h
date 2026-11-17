@@ -25,14 +25,20 @@ class DetectorBindings {
   }
 
   void observe(int viewTag, const std::vector<int>& tags) {
+    std::vector<int> removed;
     for (auto it = views_.begin(); it != views_.end();) {
       if (it->second == viewTag && std::find(tags.begin(), tags.end(), it->first) == tags.end()) {
-        registry_.detach(it->first);
+        removed.push_back(it->first);
         it = views_.erase(it);
       } else {
         ++it;
       }
     }
+    for (int tag : tags) {
+      const auto old = views_.find(tag);
+      if (old != views_.end() && old->second != viewTag) removed.push_back(tag);
+    }
+    if (!removed.empty()) registry_.detach(removed);
     for (int tag : tags) {
       views_[tag] = viewTag;
       attach(tag);

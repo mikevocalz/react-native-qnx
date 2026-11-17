@@ -279,6 +279,229 @@ void manualHandlerFollowsStateManager() {
   r.reg.pointerUp(0, 50, 50, 10);
 }
 
+void detachCancelsTheOldViewBeforeReattachment() {
+  Rig r;
+  r.reg.create("PanGestureHandler", 1, {{"minDist", 5}});
+  r.reg.attach(1, 1, 1);
+  r.reg.pointerDown(42, 10, 10, 0);
+  r.reg.pointerMove(42, 30, 20, 16);
+  r.reg.detach(1);
+  CHECK(r.count(1, State::Cancelled) == 1);
+  CHECK(r.log.back().viewTag == 1);
+  CHECK(r.log.back().data.absoluteX == 30);
+  const auto afterDetach = r.log.size();
+  r.reg.attach(1, 2, 1);
+  r.reg.pointerMove(42, 150, 150, 32);
+  r.reg.pointerUp(42, 150, 150, 48);
+  CHECK(r.log.size() == afterDetach);
+  r.reg.pointerDown(43, 150, 150, 64);
+  r.reg.pointerMove(43, 170, 150, 80);
+  r.reg.pointerUp(43, 170, 150, 96);
+  CHECK(r.count(1, State::End) == 1);
+  CHECK(r.log.back().viewTag == 2);
+}
+
+void disablingHandlersEndsTheCurrentGesture() {
+  for (bool activate : {false, true}) {
+    Rig r;
+    r.reg.create("PanGestureHandler", 1, {{"minDist", 5}});
+    r.reg.attach(1, 1, 1);
+    r.reg.pointerDown(71, 10, 10, 0);
+    if (activate) r.reg.pointerMove(71, 30, 10, 16);
+    r.reg.setConfig(1, {{"enabled", 0}});
+    CHECK(r.count(1, State::Cancelled) == 1);
+    const auto afterDisable = r.log.size();
+    r.reg.setConfig(1, {{"enabled", 1}, {"minDist", 5}});
+    r.reg.pointerMove(71, 50, 10, 32);
+    r.reg.pointerUp(71, 50, 10, 48);
+    CHECK(r.log.size() == afterDisable);
+    r.reg.pointerDown(72, 10, 10, 64);
+    r.reg.pointerMove(72, 30, 10, 80);
+    r.reg.pointerUp(72, 30, 10, 96);
+    CHECK(r.count(1, State::End) == 1);
+  }
+}
+
+void cancelPreservesTheLastContactAndDoesNotActivateWaiters() {
+  Rig r;
+  r.reg.create("PanGestureHandler", 1, {{"minDist", 5}});
+  r.reg.attach(1, 1, 1);
+  r.reg.pointerDown(47, 50, 50, 0);
+  r.reg.pointerMove(47, 80, 60, 16);
+  r.reg.pointerCancel(47, 20);
+  CHECK(r.count(1, State::Cancelled) == 1);
+  CHECK(r.log.back().data.numberOfPointers == 1);
+  CHECK(r.log.back().data.absoluteX == 80);
+  CHECK(r.log.back().data.absoluteY == 60);
+  CHECK(r.log.back().data.translationX == 30);
+  const auto afterCancel = r.log.size();
+  r.reg.pointerCancel(47, 24);
+  CHECK(r.log.size() == afterCancel);
+
+  Rig waiting;
+  waiting.reg.create("ManualGestureHandler", 1, {});
+  waiting.reg.create("PanGestureHandler", 2, {{"minDist", 5}});
+  waiting.reg.attach(1, 1, 1);
+  waiting.reg.attach(2, 1, 1);
+  waiting.reg.setRelations(2, {{}, {1}, {}});
+  waiting.reg.pointerDown(47, 50, 50, 0);
+  waiting.reg.pointerMove(47, 80, 50, 16);
+  CHECK(waiting.reg.stateOf(2) == State::Began);
+  waiting.reg.pointerCancel(47, 20);
+  CHECK(waiting.count(2, State::Active) == 0);
+  CHECK(waiting.count(1, State::Cancelled) == 1);
+  CHECK(waiting.count(2, State::Cancelled) == 1);
+}
+
+void cancelAllStopsOpaquePointerIdsAndContactlessTapWaiters() {
+  Rig r;
+  r.reg.create("PanGestureHandler", 1, {{"minDist", 5}});
+  r.reg.create("PanGestureHandler", 2, {{"minDist", 5}});
+  r.reg.attach(1, 1, 1);
+  r.reg.attach(2, 2, 1);
+  r.reg.pointerDown(-1, 10, 10, 0);
+  r.reg.pointerMove(-1, 30, 10, 16);
+  r.reg.pointerDown(90210, 150, 150, 20);
+  r.reg.pointerMove(90210, 170, 150, 32);
+  CHECK(r.reg.stateOf(1) == State::Active);
+  CHECK(r.reg.stateOf(2) == State::Active);
+  r.reg.cancelAll();
+  CHECK(r.count(1, State::Cancelled) == 1);
+  CHECK(r.count(2, State::Cancelled) == 1);
+  CHECK(!r.reg.hasActivePointers());
+  const auto afterCancel = r.log.size();
+  r.reg.cancelAll();
+  r.reg.pointerUp(-1, 30, 10, 40);
+  r.reg.pointerUp(90210, 170, 150, 40);
+  CHECK(r.log.size() == afterCancel);
+  r.reg.pointerDown(17, 10, 10, 50);
+  r.reg.pointerMove(17, 30, 10, 66);
+  r.reg.pointerUp(17, 30, 10, 82);
+  CHECK(r.count(1, State::End) == 1);
+
+  Rig tap;
+  tap.reg.create("TapGestureHandler", 1, {});
+  tap.reg.create("TapGestureHandler", 2, {{"numberOfTaps", 2}});
+  tap.reg.attach(1, 1, 1);
+  tap.reg.attach(2, 1, 1);
+  tap.reg.setRelations(1, {{}, {2}, {}});
+  tap.reg.pointerDown(55, 10, 10, 0);
+  tap.reg.pointerUp(55, 10, 10, 20);
+  CHECK(!tap.reg.hasActivePointers());
+  CHECK(tap.reg.nextDeadlineMs().has_value());
+  tap.reg.cancelAll();
+  CHECK(tap.count(1, State::Active) == 0);
+  CHECK(tap.count(1, State::Cancelled) == 1);
+  CHECK(tap.count(2, State::Cancelled) == 1);
+  CHECK(!tap.reg.nextDeadlineMs().has_value());
+  tap.reg.advance(1000);
+  CHECK(tap.count(1, State::End) == 0);
+  CHECK(tap.reg.stateOf(1) == State::Undetermined);
+  CHECK(tap.reg.stateOf(2) == State::Undetermined);
+}
+
+void detachedAndDisabledHandlersAcceptFreshContactsWhileOthersRemain() {
+  for (bool detach : {false, true}) {
+    Rig r;
+    r.reg.create("PanGestureHandler", 1, {{"minDist", 5}});
+    r.reg.create("PanGestureHandler", 2, {{"minDist", 5}});
+    r.reg.attach(1, 1, 1);
+    r.reg.attach(2, 2, 1);
+    r.reg.pointerDown(41, 10, 10, 0);
+    r.reg.pointerMove(41, 30, 10, 16);
+    r.reg.pointerDown(42, 150, 150, 20);
+    r.reg.pointerMove(42, 170, 150, 32);
+    CHECK(r.reg.stateOf(2) == State::Active);
+    if (detach) {
+      r.reg.detach(1);
+      r.reg.attach(1, 1, 1);
+    } else {
+      r.reg.setConfig(1, {{"enabled", 0}});
+      r.reg.setConfig(1, {{"enabled", 1}, {"minDist", 5}});
+    }
+    const auto afterCancel = r.log.size();
+    r.reg.pointerMove(41, 50, 10, 40);
+    CHECK(r.log.size() == afterCancel);
+    r.reg.pointerDown(43, 10, 10, 48);
+    r.reg.pointerMove(43, 30, 10, 64);
+    r.reg.pointerUp(43, 30, 10, 80);
+    CHECK(r.count(1, State::End) == 1);
+    CHECK(r.reg.stateOf(2) == State::Active);
+    r.reg.pointerUp(41, 50, 10, 96);
+    r.reg.pointerUp(42, 170, 150, 96);
+    CHECK(r.count(2, State::End) == 1);
+  }
+}
+
+void detectorRemovalCancelsDependenciesAsOneBatch() {
+  // Removing a view, removing a subset, and moving handlers to a different
+  // detector must all cancel the old relationship as one operation.
+  for (int operation : {0, 1, 2}) {
+    Rig r;
+    DetectorBindings bindings(r.reg);
+    bindings.create("TapGestureHandler", 1, {{"numberOfTaps", 2}});
+    bindings.create("TapGestureHandler", 2, {});
+    bindings.create("PanGestureHandler", 3, {});
+    bindings.observe(1, {1, 2, 3});
+    r.reg.setRelations(2, {{}, {1}, {}});
+    r.reg.pointerDown(42, 10, 10, 0);
+    r.reg.pointerUp(42, 10, 10, 20);
+    if (operation == 0) bindings.removeView(1);
+    else if (operation == 1) bindings.observe(1, {3});
+    else bindings.observe(2, {1, 2});
+    CHECK(r.count(1, State::Cancelled) == 1);
+    CHECK(r.count(2, State::Cancelled) == 1);
+    CHECK(r.count(2, State::Active) == 0);
+    CHECK(r.count(2, State::End) == 0);
+    r.reg.advance(1000);
+    CHECK(r.count(2, State::Active) == 0);
+  }
+}
+
+void eventSinksCanDropHandlersWithoutRecursiveDelivery() {
+  Rig r;
+  r.reg.create("ManualGestureHandler", 1, {});
+  r.reg.create("ManualGestureHandler", 2, {});
+  r.reg.attach(1, 1, 1);
+  r.reg.attach(2, 1, 1);
+  bool inCallback = false;
+  r.reg.setSink([&](const GestureEvent& event) {
+    CHECK(!inCallback);
+    inCallback = true;
+    r.log.push_back(event);
+    if (event.state == State::Began) r.reg.drop(event.handlerTag);
+    inCallback = false;
+  });
+  r.reg.pointerDown(42, 10, 10, 0);
+  CHECK(r.log.size() == 4);
+  CHECK(r.log[0].handlerTag == 1 && r.log[0].state == State::Began);
+  CHECK(r.log[1].handlerTag == 2 && r.log[1].state == State::Began);
+  CHECK(r.count(1, State::Failed) == 1);
+  CHECK(r.count(2, State::Failed) == 1);
+  r.reg.pointerUp(42, 10, 10, 20);
+  CHECK(!r.reg.hasActivePointers());
+}
+
+void eventSinksCanDropHandlersDuringCancellation() {
+  for (bool cancelAll : {false, true}) {
+    Rig r;
+    r.reg.create("ManualGestureHandler", 1, {});
+    r.reg.create("PanGestureHandler", 2, {});
+    r.reg.attach(1, 1, 1);
+    r.reg.attach(2, 1, 1);
+    r.reg.pointerDown(42, 10, 10, 0);
+    r.reg.setSink([&](const GestureEvent& event) {
+      r.log.push_back(event);
+      if (event.state == State::Cancelled) r.reg.drop(event.handlerTag);
+    });
+    if (cancelAll) r.reg.cancelAll();
+    else r.reg.pointerCancel(42, 20);
+    CHECK(r.count(1, State::Cancelled) == 1);
+    CHECK(r.count(2, State::Cancelled) == 1);
+    CHECK(!r.reg.hasActivePointers());
+  }
+}
+
 void unsupportedHandlersFailAndAreListed() {
   Rig r;
   r.reg.create("PinchGestureHandler", 1, {});
@@ -307,6 +530,14 @@ int main() {
   hitTestPicksTheAttachedView();
   cancelFailsActiveHandlers();
   manualHandlerFollowsStateManager();
+  detachCancelsTheOldViewBeforeReattachment();
+  disablingHandlersEndsTheCurrentGesture();
+  cancelPreservesTheLastContactAndDoesNotActivateWaiters();
+  cancelAllStopsOpaquePointerIdsAndContactlessTapWaiters();
+  detachedAndDisabledHandlersAcceptFreshContactsWhileOthersRemain();
+  detectorRemovalCancelsDependenciesAsOneBatch();
+  eventSinksCanDropHandlersDuringCancellation();
+  eventSinksCanDropHandlersWithoutRecursiveDelivery();
   unsupportedHandlersFailAndAreListed();
   if (failures != 0) {
     std::fprintf(stderr, "%d check(s) failed\n", failures);

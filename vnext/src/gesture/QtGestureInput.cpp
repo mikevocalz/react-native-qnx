@@ -78,10 +78,7 @@ bool QtGestureInput::eventFilter(QObject*, QEvent* event) {
     }
     case QEvent::TouchCancel:
     case QEvent::WindowDeactivate: {
-      // Cancel everything in flight; ids are not enumerable, so the registry
-      // drops all of them.
-      registry_.pointerCancel(kMousePointer, nowMs());
-      for (int id = 0; id < 16; ++id) registry_.pointerCancel(id, nowMs());
+      registry_.cancelAll();
       rearm();
       break;
     }

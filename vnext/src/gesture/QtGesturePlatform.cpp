@@ -152,8 +152,8 @@ class Platform final : public QtGesturePlatform, public std::enable_shared_from_
   void observe(const facebook::react::ShadowView& view, bool removed) {
     if (view.componentName == nullptr || std::string_view(view.componentName) != "RNGestureHandlerDetector") return;
     if (removed) {
-      emitters_.erase(view.tag);
       bindings_.removeView(view.tag);
+      emitters_.erase(view.tag);
       return;
     }
     if (auto emitter = std::dynamic_pointer_cast<const RNGestureHandlerDetectorEventEmitter>(view.eventEmitter)) {

@@ -63,6 +63,9 @@ class Handler;
 /// reports each transition and each update through the sink. Time comes from
 /// the caller (`nowMs`), so tests are deterministic and a host can drive
 /// long-press deadlines with its own timer via `nextDeadlineMs()`.
+/// Events retain each transition's snapshot and are delivered after the input
+/// or configuration mutation completes. Sinks may mutate the registry; nested
+/// events are delivered in order after the already queued events.
 ///
 /// Implemented handlers: Pan, Tap, LongPress, Fling, Manual. Pinch, Rotation,
 /// Native and Hover are accepted by `create` and immediately fail on the first
@@ -82,6 +85,8 @@ class Registry {
   void create(const std::string& name, int tag, const Config& config);
   void attach(int tag, int viewTag, int actionType);
   void detach(int tag);
+  /// Remove a detector's handlers together without activating removed waiters.
+  void detach(const std::vector<int>& tags);
   void setConfig(int tag, const Config& config);
   void setRelations(int tag, const Relations& relations);
   void drop(int tag);
@@ -93,6 +98,10 @@ class Registry {
   void pointerMove(int pointerId, double x, double y, double nowMs);
   void pointerUp(int pointerId, double x, double y, double nowMs);
   void pointerCancel(int pointerId, double nowMs);
+
+  /// Cancel every gesture, including contactless tap waiters, after the host
+  /// loses input ownership. Pointer identifiers are opaque and unbounded.
+  void cancelAll();
 
   /// Fires long-press deadlines that have passed.
   void advance(double nowMs);
