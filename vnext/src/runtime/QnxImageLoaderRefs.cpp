@@ -1,8 +1,8 @@
 // The ImageRef half of the ImageLoader module: what @rn-qnx/expo-image-qnx
 // needs for expo-image's loadAsync, generateBlurhashAsync,
-// generateThumbhashAsync, writeToCacheAsync and readFromCacheAsync. Every
-// function returns a Promise and takes the same "source" argument: the id of an
-// ImageRef, a URI string, or an expo-image source object.
+// generateThumbhashAsync, writeToCacheAsync and readFromCacheAsync. Computation
+// and cache operations return Promises; releaseImage is synchronous. A source
+// is the id of an ImageRef, a URI string, or an expo-image source object.
 #include "react-native-qnx/runtime/QnxImageLoader.h"
 
 #include <react/bridging/Dynamic.h>
@@ -23,8 +23,10 @@
 #include <QUrl>
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <functional>
+#include <stdexcept>
 
 namespace rnqnx::runtime {
 namespace {
@@ -49,8 +51,6 @@ struct Picture {
   bool animated{false};
   QString error;
 };
-
-using PictureDone = std::function<void(Picture)>;
 
 std::string readHeaders(jsi::Runtime& rt, const jsi::Object& object, views::ImageHeaders& out) {
   auto names = object.getPropertyNames(rt);
@@ -115,42 +115,57 @@ Picture hashPicture(const SourceSpec& spec) {
   return picture;
 }
 
-void obtainPicture(views::QtImageFetcher& fetcher, const SourceSpec& spec, PictureDone done) {
+Picture decodePicture(views::FetchResult result) {
+  if (!result.error.isEmpty()) return failure(result.error);
+  auto decoded = views::decodeImage(result.bytes, QSize(), false, views::ContentFit::Cover);
+  if (!decoded.error.isEmpty()) return failure(decoded.error);
+  Picture picture;
+  picture.image = std::move(decoded.first);
+  picture.mediaType = std::move(decoded.mediaType);
+  picture.animated = decoded.animated;
+  picture.encoded = std::move(result.bytes);
+  return picture;
+}
+
+/// Snapshot ImageRefs on the owner thread, then decode and process native
+/// values on a worker. Only the owner completion may capture a JS Promise.
+template <typename Work, typename Done>
+void processPicture(views::QtImageFetcher& fetcher, views::ImageTaskQueue& tasks,
+                    const SourceSpec& spec, Work work, Done done) {
+  auto process = [&tasks, work = std::move(work), done = std::move(done)](
+                     std::function<Picture()> read) mutable {
+    tasks.run([read = std::move(read), work = std::move(work)]() mutable {
+      Picture picture = read();
+      if (!picture.error.isEmpty()) throw std::runtime_error(picture.error.toStdString());
+      return work(std::move(picture));
+    }, std::move(done));
+  };
   if (spec.refId != 0) {
     const auto entry = views::ImageRefRegistry::shared().find(spec.refId);
-    if (entry.image.isNull()) {
-      done(failure(QStringLiteral("The ImageRef was released")));
-      return;
-    }
     Picture picture;
     picture.image = entry.image;
     picture.mediaType = entry.mediaType;
-    done(std::move(picture));
+    if (picture.image.isNull()) picture.error = QStringLiteral("The ImageRef was released");
+    process([picture = std::move(picture)]() mutable { return std::move(picture); });
     return;
   }
   if (spec.request.uri.startsWith(QLatin1String("blurhash:/")) ||
       spec.request.uri.startsWith(QLatin1String("thumbhash:/"))) {
-    done(hashPicture(spec));
+    process([spec] { return hashPicture(spec); });
     return;
   }
-  fetcher.fetch(spec.request, {}, [done = std::move(done)](views::FetchResult result) {
-    if (!result.error.isEmpty()) {
-      done(failure(result.error));
-      return;
-    }
-    views::DecodedImage decoded =
-        views::decodeImage(result.bytes, QSize(), false, views::ContentFit::Cover);
-    if (!decoded.error.isEmpty()) {
-      done(failure(decoded.error));
-      return;
-    }
-    Picture picture;
-    picture.image = std::move(decoded.first);
-    picture.mediaType = decoded.mediaType;
-    picture.animated = decoded.animated;
-    picture.encoded = std::move(result.bytes);
-    done(std::move(picture));
+  fetcher.fetch(spec.request, {}, [process = std::move(process)](views::FetchResult result) mutable {
+    process([result = std::move(result)]() mutable { return decodePicture(std::move(result)); });
   });
+}
+
+template <typename Value>
+bool rejectFailure(Promise& promise, const std::variant<Value, views::ImageTaskError>& result) {
+  if (const auto* error = std::get_if<views::ImageTaskError>(&result)) {
+    promise.reject(error->message.toStdString());
+    return true;
+  }
+  return false;
 }
 
 QnxImageLoader& loaderOf(facebook::react::TurboModule& tm) { return static_cast<QnxImageLoader&>(tm); }
@@ -234,13 +249,14 @@ jsi::Value QnxImageLoader::loadImage(jsi::Runtime& rt, facebook::react::TurboMod
     }
   }
   const QString uri = spec.refId != 0 ? QString() : spec.request.uri;
-  obtainPicture(self.fetcher_, spec, [promise, uri, maxWidth, maxHeight, tinted, tint](Picture picture) mutable {
-    if (!picture.error.isEmpty()) {
-      promise.reject(picture.error.toStdString());
-      return;
-    }
+  processPicture(self.fetcher_, self.imageTasks_, spec,
+      [maxWidth, maxHeight, tinted, tint](Picture picture) {
     picture.image = fitWithin(std::move(picture.image), maxWidth, maxHeight);
     if (tinted) picture.image = views::tintImage(picture.image, tint);
+    return picture;
+  }, [promise, uri](auto loaded) mutable {
+    if (rejectFailure(promise, loaded)) return;
+    auto picture = std::get<Picture>(std::move(loaded));
     views::ImageLoadedNotifier::shared().notify({uri, picture.image.width(), picture.image.height()});
     promise.resolve(describe(retain(picture), picture.image, picture.mediaType));
   });
@@ -273,12 +289,12 @@ jsi::Value QnxImageLoader::generateBlurhash(jsi::Runtime& rt, facebook::react::T
   }
   const int componentsX = static_cast<int>(args[1].getNumber());
   const int componentsY = static_cast<int>(args[2].getNumber());
-  obtainPicture(self.fetcher_, spec, [promise, componentsX, componentsY](Picture picture) mutable {
-    if (!picture.error.isEmpty()) {
-      promise.reject(picture.error.toStdString());
-      return;
-    }
-    const QString hash = views::encodeBlurHash(picture.image, componentsX, componentsY);
+  processPicture(self.fetcher_, self.imageTasks_, spec,
+      [componentsX, componentsY](Picture picture) {
+    return views::encodeBlurHash(picture.image, componentsX, componentsY);
+  }, [promise](auto encoded) mutable {
+    if (rejectFailure(promise, encoded)) return;
+    const auto& hash = std::get<QString>(encoded);
     promise.resolve(hash.isEmpty() ? folly::dynamic(nullptr) : folly::dynamic(hash.toStdString()));
   });
   return result;
@@ -299,12 +315,11 @@ jsi::Value QnxImageLoader::generateThumbhash(jsi::Runtime& rt, facebook::react::
     promise.reject(error);
     return result;
   }
-  obtainPicture(self.fetcher_, spec, [promise](Picture picture) mutable {
-    if (!picture.error.isEmpty()) {
-      promise.reject(picture.error.toStdString());
-      return;
-    }
-    promise.resolve(views::encodeThumbHash(picture.image).toBase64().toStdString());
+  processPicture(self.fetcher_, self.imageTasks_, spec, [](Picture picture) {
+    return views::encodeThumbHash(picture.image).toBase64();
+  }, [promise](auto encoded) mutable {
+    if (rejectFailure(promise, encoded)) return;
+    promise.resolve(std::get<QByteArray>(encoded).toStdString());
   });
   return result;
 }
@@ -329,28 +344,33 @@ jsi::Value QnxImageLoader::writeToCache(jsi::Runtime& rt, facebook::react::Turbo
   const QString key = keyed(QString::fromStdString(args[1].asString(rt).utf8(rt)));
   // A cache clear invalidates writes already admitted, including the time
   // spent fetching and decoding the source before the explicit alias write.
-  const auto generation = views::ImageDiskCache::shared().generation();
-  obtainPicture(self.fetcher_, spec, [promise, key, generation](Picture picture) mutable {
-    if (!picture.error.isEmpty()) {
-      promise.reject(picture.error.toStdString());
-      return;
-    }
+  auto disk = views::ImageDiskCache::shared();
+  const auto generation = disk.generation();
+  processPicture(self.fetcher_, self.imageTasks_, spec,
+      [disk, key, generation](Picture picture) mutable {
     QByteArray bytes = picture.encoded;
     if (bytes.isEmpty()) {
       QBuffer buffer(&bytes);
       buffer.open(QIODevice::WriteOnly);
       if (!picture.image.save(&buffer, "PNG")) {
-        promise.reject("Could not encode the image for the cache");
-        return;
+        throw std::runtime_error("Could not encode the image for the cache");
       }
     }
-    auto& disk = views::ImageDiskCache::shared();
     if (!disk.write(key, bytes, generation)) {
-      promise.reject(disk.generation() != generation
+      throw std::runtime_error(disk.generation() != generation
           ? "The image cache was cleared before the write completed"
           : "The image could not be written to the disk cache");
+    }
+    return picture;
+  }, [promise, disk, key, generation](auto written) mutable {
+    if (rejectFailure(promise, written)) return;
+    // A clear can follow the worker's disk commit before its owner completion.
+    // It must also suppress publication of the old decoded alias.
+    if (disk.generation() != generation) {
+      promise.reject("The image cache was cleared before the write completed");
       return;
     }
+    auto picture = std::get<Picture>(std::move(written));
     views::DecodedImageCache::shared().insert(key, picture.image, picture.mediaType,
         picture.animated ? picture.encoded : QByteArray{});
     promise.resolve(folly::dynamic(nullptr));
@@ -371,25 +391,33 @@ jsi::Value QnxImageLoader::readFromCache(jsi::Runtime& rt, facebook::react::Turb
   }
   const QString given = QString::fromStdString(args[0].asString(rt).utf8(rt));
   auto& memory = views::DecodedImageCache::shared();
-  auto& disk = views::ImageDiskCache::shared();
-  for (const QString& key : {keyed(given), given}) {
-    Picture picture;
-    const auto cached = memory.entry(views::DecodedImageCache::key(key));
-    picture.image = cached.image;
-    picture.mediaType = cached.mediaType;
+  const std::array<QString, 2> keys{keyed(given), given};
+  std::array<Picture, 2> snapshots;
+  for (std::size_t i = 0; i < keys.size(); ++i) {
+    const auto cached = memory.entry(views::DecodedImageCache::key(keys[i]));
+    snapshots[i].image = cached.image;
+    snapshots[i].mediaType = cached.mediaType;
+  }
+  self.imageTasks_.run([disk = views::ImageDiskCache::shared(), keys, snapshots]() mutable {
+    for (std::size_t i = 0; i < keys.size(); ++i) {
+      if (!snapshots[i].image.isNull()) return snapshots[i];
+      views::FetchResult fetched;
+      fetched.bytes = disk.read(keys[i]);
+      if (fetched.bytes.isEmpty()) continue;
+      auto picture = decodePicture(std::move(fetched));
+      if (picture.error.isEmpty()) return picture;
+    }
+    return Picture{};
+  }, [promise, given](auto loaded) mutable {
+    if (rejectFailure(promise, loaded)) return;
+    auto picture = std::get<Picture>(std::move(loaded));
     if (picture.image.isNull()) {
-      const QByteArray bytes = disk.read(key);
-      if (bytes.isEmpty()) continue;
-      views::DecodedImage decoded = views::decodeImage(bytes, QSize(), false, views::ContentFit::Cover);
-      if (!decoded.error.isEmpty()) continue;
-      picture.image = std::move(decoded.first);
-      picture.mediaType = decoded.mediaType;
+      promise.resolve(folly::dynamic(nullptr));
+      return;
     }
     views::ImageLoadedNotifier::shared().notify({given, picture.image.width(), picture.image.height()});
     promise.resolve(describe(retain(picture), picture.image, picture.mediaType));
-    return result;
-  }
-  promise.resolve(folly::dynamic(nullptr));
+  });
   return result;
 }
 

@@ -26,7 +26,11 @@
 #include <QImageReader>
 #include <QQmlEngine>
 #include <QQuickWindow>
+#include <QScopeGuard>
+#include <QSemaphore>
 #include <QTemporaryDir>
+#include <QThreadPool>
+#include <QTimer>
 
 #include <fstream>
 #include <functional>
@@ -365,6 +369,95 @@ int main(int argc, char** argv) {
       if (current) current.release();
     )JS");
     check(failures.empty(), "cache clear during explicit write:\n" + failures);
+
+    // A blocked native pool must leave the owner event loop responsive, with
+    // every ImageRef computation still pending. Releasing the source after
+    // admission is safe because workers own a native image snapshot.
+    failures = rig.runAsync(R"JS(
+      const mod = expo.modules.ExpoImage;
+      globalThis.__workerRef = await mod.loadAsync(')JS" + dataUri(pngBytes(QSize(16, 12), QColor(40, 90, 200))) + R"JS(');
+      await mod.writeToCacheAsync(')JS" + dataUri(png) + R"JS(', 'worker-read-key');
+      await mod.clearMemoryCache();
+    )JS");
+    check(failures.empty(), "worker fixtures:\n" + failures);
+    {
+      auto* pool = QThreadPool::globalInstance();
+      check(pool->waitForDone(5000), "previous image workers finished");
+      const int maximum = pool->maxThreadCount();
+      pool->setMaxThreadCount(1);
+      QSemaphore entered, release;
+      auto cleanup = qScopeGuard([&] {
+        release.release();
+        pool->waitForDone();
+        pool->setMaxThreadCount(maximum);
+      });
+      pool->start([&] { entered.release(); release.acquire(); });
+      check(entered.tryAcquire(1, 1000), "the image worker gate started");
+      rig.eval(R"JS(
+        const mod = expo.modules.ExpoImage;
+        globalThis.__workerCompletions = 0;
+        const record = (pending) => pending.then(
+          (value) => { ++__workerCompletions; return { value }; },
+          (error) => { ++__workerCompletions; return { error }; }
+        );
+        globalThis.__workerPending = [
+          record(mod.loadAsync(__workerRef, { maxWidth: 4, tintColor: 0xFF0000FF | 0 })),
+          record(mod.generateBlurhashAsync(__workerRef, [4, 3])),
+          record(mod.generateThumbhashAsync(__workerRef)),
+          record(mod.writeToCacheAsync(__workerRef, 'worker-write-key')),
+          record(mod.readFromCacheAsync('worker-read-key')),
+        ];
+        __workerRef.release();
+      )JS");
+      bool ticked = false;
+      QTimer::singleShot(0, [&] { ticked = true; });
+      rig.settle([&] { return ticked; }, "the owner timer while image work waits");
+      check(rig.number("__workerCompletions") == 0, "ImageRef operations wait for the worker, not the owner thread");
+      release.release();
+      failures = rig.runAsync(R"JS(
+        const outcomes = await Promise.all(__workerPending);
+        for (let i = 0; i < outcomes.length; ++i) expect(!outcomes[i].error, 'worker operation ' + i + ' succeeds');
+        const scaled = outcomes[0].value;
+        expect(scaled && scaled.width === 4 && scaled.height === 3, 'worker resize keeps aspect ratio');
+        globalThis.__workerTintId = scaled.__expo_shared_object_id__;
+        expect(outcomes[1].value === __blurRef, 'worker blurhash uses the retained image snapshot');
+        expect(outcomes[2].value === __thumbRef, 'worker thumbhash uses the retained image snapshot');
+        const cached = outcomes[4].value;
+        expect(cached && cached.width === 10 && cached.height === 6, 'disk cache decoding ran after the gate');
+        if (cached) cached.release();
+        const written = await expo.modules.ExpoImage.readFromCacheAsync('worker-write-key');
+        expect(written && written.width === 16 && written.height === 12, 'worker cache encoding retains a released source');
+        if (written) written.release();
+      )JS");
+      check(failures.empty(), "ImageRef worker results:\n" + failures);
+      const auto tinted = rnqnx::views::ImageRefRegistry::shared().find(
+          static_cast<std::uint32_t>(rig.number("__workerTintId")));
+      check(tinted.image.pixelColor(1, 1) == QColor(Qt::blue), "worker tint preserves the requested colour");
+      rig.eval("nativeModuleProxy.ImageLoader.releaseImage(__workerTintId);");
+    }
+
+    // A disk commit can finish before its owner callback. Clearing in that
+    // window must suppress the decoded alias as well as remove the file.
+    failures = rig.runAsync(R"JS(
+      globalThis.__commitRef = await expo.modules.ExpoImage.loadAsync(')JS" + dataUri(png) + R"JS(');
+    )JS");
+    check(failures.empty(), "commit fixture:\n" + failures);
+    rig.eval(R"JS(
+      globalThis.__committedWrite = expo.modules.ExpoImage.writeToCacheAsync(__commitRef, 'committed-write-key')
+        .then(() => ({ resolved: true }), (error) => ({ error }));
+      __commitRef.release();
+    )JS");
+    check(QThreadPool::globalInstance()->waitForDone(5000), "the cache writer finished before owner delivery");
+    check(disk.contains(QStringLiteral("key:committed-write-key")), "the worker committed the encoded file");
+    rig.eval("globalThis.__commitClear = expo.modules.ExpoImage.clearDiskCache();");
+    failures = rig.runAsync(R"JS(
+      expect(await __commitClear === true, 'the post-commit clear completes');
+      const outcome = await __committedWrite;
+      expect(outcome.error instanceof Error, 'the cleared commit rejects before publishing its alias');
+      expect(await expo.modules.ExpoImage.getCachePathAsync('committed-write-key') === null, 'the committed file stays cleared');
+      expect(await expo.modules.ExpoImage.readFromCacheAsync('committed-write-key') === null, 'the cleared commit has no decoded alias');
+    )JS");
+    check(failures.empty(), "cache clear before owner completion:\n" + failures);
 
     // ---- configureCache -----------------------------------------------------
     failures = rig.runAsync(R"JS(

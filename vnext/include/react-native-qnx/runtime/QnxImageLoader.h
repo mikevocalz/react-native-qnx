@@ -3,6 +3,7 @@
 #include <ReactCommon/TurboModule.h>
 #include "react-native-qnx/runtime/QtImageCache.h"
 #include "react-native-qnx/views/image/ImageLoadedNotifier.h"
+#include "react-native-qnx/views/image/ImageTaskQueue.h"
 #include "react-native-qnx/views/image/QtImageFetcher.h"
 
 namespace rnqnx::runtime {
@@ -26,6 +27,9 @@ class QnxImageLoader final : public facebook::react::TurboModule {
 
  private:
   QtImageCache cache_;
+  // Fetch completions may enqueue native image work. Destroy the fetcher
+  // first, then drop every remaining owner/JSI completion in the task queue.
+  views::ImageTaskQueue imageTasks_;
   views::QtImageFetcher fetcher_{30000, &views::ImageDiskCache::shared(), &views::ImageFetchQueue::shared()};
   void registerMethods();
   static facebook::jsi::Value load(

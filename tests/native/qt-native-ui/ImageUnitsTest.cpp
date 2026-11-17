@@ -5,6 +5,7 @@
 #include "react-native-qnx/views/image/ImageLayout.h"
 #include "react-native-qnx/views/image/ImageLoadedNotifier.h"
 #include "react-native-qnx/views/image/ImageRefRegistry.h"
+#include "react-native-qnx/views/image/ImageTaskQueue.h"
 #include "react-native-qnx/views/image/QtImageFetcher.h"
 #include "react-native-qnx/views/image/ThumbHash.h"
 
@@ -21,7 +22,9 @@
 #include <QThread>
 #include <QtTest>
 
+#include <atomic>
 #include <memory>
+#include <stdexcept>
 
 using namespace rnqnx::views;
 
@@ -46,6 +49,11 @@ class ImageUnitsTest : public QObject {
   void fetcherSendsHeadersAndHitsDiskCacheSecondTime();
   void fetcherCancelNeverCallsBack();
   void fetcherReadsFilesOnWorkerAndCompletesOnOwner();
+  void imageTasksRunOnWorkerAndCompleteOnOwner();
+  void imageTasksCancelWaitingWorkAndSuppressLateCompletion();
+  void imageTasksHoldAdmissionUntilDestroyedWorkersFinish();
+  void imageTasksReportWorkerExceptionsOnOwner();
+  void imageTasksDropCompletionBeforeStartingSuccessor();
   void fetcherCancelsAndDestroysBlockedIo();
   void fetcherRetainsCacheStateDuringIo();
   void fetcherRecoversCorruptAndOversizedCache();
@@ -390,6 +398,176 @@ void ImageUnitsTest::fetcherReadsFilesOnWorkerAndCompletesOnOwner() {
   QVERIFY2(result.error.isEmpty(), qPrintable(result.error));
   QCOMPARE(result.bytes, png);
   QCOMPARE(callbackThread, QThread::currentThread());
+}
+
+void ImageUnitsTest::imageTasksRunOnWorkerAndCompleteOnOwner() {
+  QThreadPool pool;
+  pool.setMaxThreadCount(1);
+  QSemaphore entered, release;
+  ImageFetchQueue admission(1);
+  pool.start([&] { entered.release(); release.acquire(); });
+  auto cleanup = qScopeGuard([&] {
+    release.release();
+    pool.waitForDone();
+    QCoreApplication::processEvents();
+  });
+  QVERIFY(entered.tryAcquire(1, 1000));
+  ImageTaskQueue tasks(&admission, &pool);
+  bool done = false;
+  QThread* worker = nullptr;
+  QThread* completion = nullptr;
+  tasks.run([] { return QThread::currentThread(); }, [&](auto result) {
+    QVERIFY(std::holds_alternative<QThread*>(result));
+    worker = std::get<QThread*>(result);
+    completion = QThread::currentThread();
+    done = true;
+  });
+  bool ticked = false;
+  QTimer::singleShot(0, [&] { ticked = true; });
+  QTRY_VERIFY(ticked);
+  QVERIFY(!done);
+  release.release();
+  QTRY_VERIFY(done);
+  QVERIFY(worker != QThread::currentThread());
+  QCOMPARE(completion, QThread::currentThread());
+  QCOMPARE(admission.running(), 0);
+}
+
+void ImageUnitsTest::imageTasksCancelWaitingWorkAndSuppressLateCompletion() {
+  QThreadPool pool;
+  pool.setMaxThreadCount(1);
+  QSemaphore entered, release;
+  ImageFetchQueue admission(1);
+  std::atomic_int waitingRuns{0};
+  int callbacks = 0;
+  QThread* destroyedOn = nullptr;
+  auto callbackState = std::shared_ptr<int>(new int(0), [&](int* value) {
+    destroyedOn = QThread::currentThread();
+    delete value;
+  });
+  std::weak_ptr<int> weakState = callbackState;
+  auto cleanup = qScopeGuard([&] {
+    release.release();
+    pool.waitForDone();
+    QCoreApplication::processEvents();
+  });
+  auto tasks = std::make_unique<ImageTaskQueue>(&admission, &pool);
+  tasks->run([&] { entered.release(); release.acquire(); return 1; },
+             [&, callbackState](auto) { ++callbacks; });
+  QVERIFY(entered.tryAcquire(1, 1000));
+  tasks->run([&] { ++waitingRuns; return 2; }, [&, callbackState](auto) { ++callbacks; });
+  callbackState.reset();
+  QCOMPARE(admission.running(), 1);
+  QCOMPARE(admission.waiting(), 1);
+  tasks.reset();
+  QCOMPARE(admission.running(), 1);
+  QCOMPARE(admission.waiting(), 0);
+  QVERIFY(weakState.expired());
+  QCOMPARE(destroyedOn, QThread::currentThread());
+  release.release();
+  QVERIFY(pool.waitForDone(1000));
+  QTRY_COMPARE(admission.running(), 0);
+  QCOMPARE(waitingRuns.load(), 0);
+  QCOMPARE(callbacks, 0);
+}
+
+void ImageUnitsTest::imageTasksHoldAdmissionUntilDestroyedWorkersFinish() {
+  QThreadPool pool;
+  // More physical threads than admission slots exposes premature releases.
+  pool.setMaxThreadCount(4);
+  ImageFetchQueue admission(2);
+  QSemaphore entered, release;
+  std::atomic_int live{0}, peak{0}, starts{0};
+  int callbacks = 0;
+  bool successorDone = false;
+  auto cleanup = qScopeGuard([&] {
+    release.release(8);
+    pool.waitForDone();
+    QCoreApplication::processEvents();
+  });
+  const auto work = [&] {
+    const int active = ++live;
+    int previous = peak.load();
+    while (previous < active && !peak.compare_exchange_weak(previous, active)) {}
+    ++starts;
+    entered.release();
+    release.acquire();
+    --live;
+    return 1;
+  };
+  auto tasks = std::make_unique<ImageTaskQueue>(&admission, &pool);
+  tasks->run(work, [&](auto) { ++callbacks; });
+  tasks->run(work, [&](auto) { ++callbacks; });
+  QVERIFY(entered.tryAcquire(2, 1000));
+  tasks.reset();
+
+  // Repeated teardown/recreation cannot admit more physical workers while
+  // the previous owner's two jobs are still blocked.
+  for (int i = 0; i < 4; ++i) {
+    auto replacement = std::make_unique<ImageTaskQueue>(&admission, &pool);
+    replacement->run(work, [&](auto) { ++callbacks; });
+    // If destruction released a slot early, a third physical worker enters
+    // while both original workers are still blocked, regardless of counters.
+    (void)entered.tryAcquire(1, 100);
+    QCOMPARE(peak.load(), 2);
+    QCoreApplication::processEvents();
+    QCOMPARE(admission.running(), 2);
+    QCOMPARE(admission.waiting(), 1);
+    QCOMPARE(starts.load(), 2);
+    replacement.reset();
+    QCOMPARE(admission.waiting(), 0);
+  }
+  ImageTaskQueue successor(&admission, &pool);
+  successor.run(work, [&](auto) { successorDone = true; });
+  QCOMPARE(admission.waiting(), 1);
+  release.release(3);
+  QTRY_VERIFY(successorDone);
+  QCOMPARE(starts.load(), 3);
+  QCOMPARE(peak.load(), 2);
+  QCOMPARE(live.load(), 0);
+  QCOMPARE(callbacks, 0);
+  QCOMPARE(admission.running(), 0);
+  QCOMPARE(admission.waiting(), 0);
+}
+
+void ImageUnitsTest::imageTasksDropCompletionBeforeStartingSuccessor() {
+  ImageFetchQueue admission(1);
+  QThreadPool pool;
+  auto tasks = std::make_unique<ImageTaskQueue>(&admission, &pool);
+  auto state = std::make_shared<int>(7);
+  std::weak_ptr<int> weak = state;
+  bool completed = false, successorStarted = false, captureReleased = false;
+  tasks->run([] { return 7; }, [&, state](auto result) {
+    QCOMPARE(std::get<int>(result), *state);
+    completed = true;
+  });
+  state.reset();
+  admission.submit(ImagePriority::Normal, [&] {
+    // Admission can synchronously run owner teardown. JSI-bearing completion
+    // captures from the finished job must already have been released.
+    captureReleased = weak.expired();
+    tasks.reset();
+    successorStarted = true;
+    admission.release();
+  });
+  QCOMPARE(admission.waiting(), 1);
+  QTRY_VERIFY(successorStarted);
+  QVERIFY(completed);
+  QVERIFY(captureReleased);
+  QVERIFY(weak.expired());
+  QCOMPARE(admission.running(), 0);
+}
+
+void ImageUnitsTest::imageTasksReportWorkerExceptionsOnOwner() {
+  ImageTaskQueue tasks;
+  bool done = false;
+  tasks.run([]() -> int { throw std::runtime_error("image worker failure"); }, [&](auto result) {
+    QVERIFY(std::holds_alternative<ImageTaskError>(result));
+    QCOMPARE(std::get<ImageTaskError>(result).message, QStringLiteral("image worker failure"));
+    QCOMPARE(QThread::currentThread(), tasks.thread());
+    done = true;
+  });
+  QTRY_VERIFY(done);
 }
 
 void ImageUnitsTest::fetcherCancelsAndDestroysBlockedIo() {
