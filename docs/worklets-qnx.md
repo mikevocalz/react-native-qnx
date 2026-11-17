@@ -46,6 +46,13 @@ the commands, images, sanitizer scope and independent review. This is Qt 6.11.1
 software-rendering evidence on Linux; it does not qualify the QNX binary,
 physical-device lifecycle, presentation timing or busy-JS behavior.
 
+The runnable playground also rejects fatal native-bootstrap reports that Metro
+catches internally, even when bundle evaluation returns normally. Reported soft
+errors, handled exceptions and warnings preserve their existing behavior. The
+[playground error receipt](evidence/pr149-playground-errors-2026-11-16/README.md)
+records a real missing-module false positive before the fix and the corrected
+fatal/nonfatal controls.
+
 ## Threads
 
 | Thread                        | Runs                                                                                          |

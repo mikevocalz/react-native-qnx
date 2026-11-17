@@ -1,0 +1,16 @@
+Internal ctest changing into directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+Test project /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+    Start 28: rnqnx_playground_screenshot
+1/5 Test #28: rnqnx_playground_screenshot ...............   Passed    2.65 sec
+    Start 29: rnqnx_playground_rejects_start_failure
+2/5 Test #29: rnqnx_playground_rejects_start_failure ....   Passed    0.16 sec
+    Start 30: rnqnx_playground_rejects_stop_failure
+3/5 Test #30: rnqnx_playground_rejects_stop_failure .....   Passed    0.14 sec
+    Start 31: rnqnx_playground_rejects_reported_fatal
+4/5 Test #31: rnqnx_playground_rejects_reported_fatal ...   Passed    0.97 sec
+    Start 32: rnqnx_playground_allows_reported_soft
+5/5 Test #32: rnqnx_playground_allows_reported_soft .....   Passed    2.04 sec
+
+100% tests passed, 0 tests failed out of 5
+
+Total Test time (real) =   6.00 sec

@@ -22,6 +22,8 @@ if (process.platform === 'linux') {
     'shadow_tree_mounting_host_test',
     'qtquick_mounting_layer_host_test',
     'rnqnx_qtquick_host_probe',
+    'rnqnx_playground_rejects_reported_fatal',
+    'rnqnx_playground_allows_reported_soft',
   ];
   try {
     const bin = path.join(root, 'bin');

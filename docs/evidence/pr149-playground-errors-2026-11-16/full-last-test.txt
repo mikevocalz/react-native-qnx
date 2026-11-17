@@ -1,0 +1,2322 @@
+Start testing: Nov 16 22:06 EST
+----------------------------------------------------------
+1/61 Testing: rnqnx_g0_cxx20_probe
+1/61 Test: rnqnx_g0_cxx20_probe
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_g0_cxx20_probe"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_g0_cxx20_probe" start time: Nov 16 22:06 EST
+Output:
+----------------------------------------------------------
+RNQNX_G0_CXX20_OK ranges=12 designated=21 jthread=34
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_G0_CXX20_OK ranges=12 designated=21 (jthread=34|thread=34 jthread=unsupported)]
+"rnqnx_g0_cxx20_probe" end time: Nov 16 22:06 EST
+"rnqnx_g0_cxx20_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/61 Testing: rnqnx_gesture_core_test
+2/61 Test: rnqnx_gesture_core_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_gesture_core_test"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_gesture_core_test" start time: Nov 16 22:06 EST
+Output:
+----------------------------------------------------------
+RNQNX_GESTURE_CORE_OK
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_GESTURE_CORE_OK]
+"rnqnx_gesture_core_test" end time: Nov 16 22:06 EST
+"rnqnx_gesture_core_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/61 Testing: qnx_screen_surface_host_test
+3/61 Test: qnx_screen_surface_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/qnx_screen_surface_host_test"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"qnx_screen_surface_host_test" start time: Nov 16 22:06 EST
+Output:
+----------------------------------------------------------
+[PASS] successful initialization uses exact window and buffer setup
+[PASS] invalid initialization sizes are rejected before calling Screen
+[PASS] fill uses documented ARGB token-value list
+[PASS] present uses the buffer acquired for each frame
+[PASS] destroy is ordered, complete, and idempotent
+[PASS] move construction and assignment transfer sole ownership
+[PASS] partial initialization failures release fake resources
+[PASS] runtime failures are explicit and failed fills are not posted
+All QnxScreenSurface host tests passed.
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"qnx_screen_surface_host_test" end time: Nov 16 22:06 EST
+"qnx_screen_surface_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/61 Testing: rnqnx_hermes_probe
+4/61 Test: rnqnx_hermes_probe
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_hermes_probe"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_hermes_probe" start time: Nov 16 22:06 EST
+Output:
+----------------------------------------------------------
+RNQNX_HERMES_OK arithmetic es6 async-arrow host-function
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_HERMES_OK arithmetic es6 async-arrow host-function]
+"rnqnx_hermes_probe" end time: Nov 16 22:06 EST
+"rnqnx_hermes_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/61 Testing: rnqnx_qt_svg_fabric_test
+5/61 Test: rnqnx_qt_svg_fabric_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_qt_svg_fabric_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_qt_svg_fabric_test" start time: Nov 16 22:06 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxQtSvgFixture"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:06:57.635390 1368490560 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1116 22:06:57.636333 1270871744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000013fd0).
+W1116 22:06:57.636489 1270871744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_QT_SVG_FABRIC_OK metro hermes yoga pixels events replace clear unmount
+<end of output>
+Test time =   2.18 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_svg_fabric_test" end time: Nov 16 22:06 EST
+"rnqnx_qt_svg_fabric_test" time elapsed: 00:00:02
+----------------------------------------------------------
+
+6/61 Testing: rnqnx_qt_rnsvg_fabric_test
+6/61 Test: rnqnx_qt_rnsvg_fabric_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_qt_rnsvg_fabric_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_qt_rnsvg_fabric_test" start time: Nov 16 22:06 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgFixture"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:07:03.452252 3442147904 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+I1116 22:07:05.035931 3442147904 UIManagerBinding.cpp:150] instanceHandle is null, event of type topSvgLayout will be dropped
+W1116 22:07:05.039217 3442147904 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1116 22:07:05.040757 3302057664 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000013fd0).
+W1116 22:07:05.040931 3302057664 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_RNSVG_FABRIC_OK metro hermes fabric gradient clip mask use update remove touch resize extras
+<end of output>
+Test time =   7.42 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_fabric_test" end time: Nov 16 22:07 EST
+"rnqnx_qt_rnsvg_fabric_test" time elapsed: 00:00:07
+----------------------------------------------------------
+
+7/61 Testing: rnqnx_qt_rnsvg_image_fabric_test
+7/61 Test: rnqnx_qt_rnsvg_image_fabric_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_qt_rnsvg_image_fabric_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_qt_rnsvg_image_fabric_test" start time: Nov 16 22:07 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgImageFixture"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:07:07.486073 4122931712 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5612aec281b0).
+W1116 22:07:07.486900 4071741120 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5612aec44140).
+W1116 22:07:07.486960 4071741120 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5612aeb730d0).
+RNQNX_RNSVG_IMAGE_FABRIC_OK data-uri bundled-asset onLoad reload broken-source
+<end of output>
+Test time =   2.41 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_image_fabric_test" end time: Nov 16 22:07 EST
+"rnqnx_qt_rnsvg_image_fabric_test" time elapsed: 00:00:02
+----------------------------------------------------------
+
+8/61 Testing: rnqnx_qt_rnsvg_corpus_test
+8/61 Test: rnqnx_qt_rnsvg_corpus_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_qt_rnsvg_corpus_test" "-platform" "offscreen" "--shard-index" "0" "--shard-count" "4"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_qt_rnsvg_corpus_test" start time: Nov 16 22:07 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgCorpus"
+rnsvg batch 0 start
+rnsvg batch 0 mounted 1084 ms
+rnsvg batch 0 grabbed 1087 ms
+rnsvg batch 4 start
+rnsvg batch 4 mounted 906 ms
+rnsvg batch 4 grabbed 909 ms
+rnsvg batch 8 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:07:11.845103 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:11.873252 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:11.899870 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:11.928514 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:11.955297 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:12.068092 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:12.094214 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:12.118376 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:12.143399 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:12.254938 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:12.265395 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:12.471336 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:12.479023 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:12.517077 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:12.524413 2566390272 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+rnsvg batch 8 mounted 1364 ms
+rnsvg batch 8 grabbed 1365 ms
+rnsvg batch 12 start
+rnsvg batch 12 mounted 290 ms
+rnsvg batch 12 grabbed 290 ms
+W1116 22:07:13.485128 2566390272 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5569f4ce2420).
+W1116 22:07:13.491845 2479994560 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5569f4cfdc60).
+W1116 22:07:13.491896 2479994560 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5569f4c24280).
+rnsvg-corpus shard 0/4: 38 passed, 0 pending, 0 failed
+<end of output>
+Test time =   5.99 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_corpus_test" end time: Nov 16 22:07 EST
+"rnqnx_qt_rnsvg_corpus_test" time elapsed: 00:00:05
+----------------------------------------------------------
+
+9/61 Testing: rnqnx_qt_rnsvg_corpus_test_1
+9/61 Test: rnqnx_qt_rnsvg_corpus_test_1
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_qt_rnsvg_corpus_test" "-platform" "offscreen" "--shard-index" "1" "--shard-count" "4"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_qt_rnsvg_corpus_test_1" start time: Nov 16 22:07 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgCorpus"
+rnsvg batch 1 start
+rnsvg batch 1 mounted 1289 ms
+rnsvg batch 1 grabbed 1299 ms
+rnsvg batch 5 start
+rnsvg batch 5 mounted 789 ms
+rnsvg batch 5 grabbed 790 ms
+rnsvg batch 9 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:07:19.211980 1645154816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:19.225093 1645154816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:19.281972 1645154816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:19.296149 1645154816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:19.512429 1645154816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:07:19.524672 1645154816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+rnsvg batch 9 mounted 5346 ms
+rnsvg batch 9 grabbed 5359 ms
+rnsvg batch 13 start
+rnsvg batch 13 mounted 272846 ms
+rnsvg batch 13 grabbed 272872 ms
+W1116 22:12:08.633549 1645154816 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x56165d7b6c40).
+W1116 22:12:08.640019 1559471808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x56165d7b7480).
+W1116 22:12:08.640202 1559471808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x56165d71c0b0).
+rnsvg-corpus shard 1/4: 37 passed, 0 pending, 0 failed
+<end of output>
+Test time = 295.30 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_corpus_test_1" end time: Nov 16 22:12 EST
+"rnqnx_qt_rnsvg_corpus_test_1" time elapsed: 00:04:55
+----------------------------------------------------------
+
+10/61 Testing: rnqnx_qt_rnsvg_corpus_test_2
+10/61 Test: rnqnx_qt_rnsvg_corpus_test_2
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_qt_rnsvg_corpus_test" "-platform" "offscreen" "--shard-index" "2" "--shard-count" "4"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_qt_rnsvg_corpus_test_2" start time: Nov 16 22:12 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgCorpus"
+rnsvg batch 2 start
+rnsvg batch 2 mounted 1523 ms
+rnsvg batch 2 grabbed 1542 ms
+rnsvg batch 6 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:12:13.201901 4078690816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:12:13.209201 4078690816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:12:13.215718 4078690816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:12:13.307165 4078690816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:12:13.313440 4078690816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:12:13.338503 4078690816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:12:13.473587 4078690816 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+rnsvg batch 6 mounted 1395 ms
+rnsvg batch 6 grabbed 1407 ms
+rnsvg batch 10 start
+rnsvg batch 10 mounted 947 ms
+rnsvg batch 10 grabbed 949 ms
+rnsvg batch 14 start
+rnsvg batch 14 mounted 260552 ms
+rnsvg batch 14 grabbed 260567 ms
+W1116 22:16:41.869647 4078690816 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x55c412fe3810).
+W1116 22:16:41.876766 3994138304 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x55c412ffefc0).
+W1116 22:16:41.876896 3994138304 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x55c412f26e00).
+rnsvg-corpus shard 2/4: 37 passed, 0 pending, 0 failed
+<end of output>
+Test time = 273.25 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_corpus_test_2" end time: Nov 16 22:16 EST
+"rnqnx_qt_rnsvg_corpus_test_2" time elapsed: 00:04:33
+----------------------------------------------------------
+
+11/61 Testing: rnqnx_qt_rnsvg_corpus_test_3
+11/61 Test: rnqnx_qt_rnsvg_corpus_test_3
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_qt_rnsvg_corpus_test" "-platform" "offscreen" "--shard-index" "3" "--shard-count" "4"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_qt_rnsvg_corpus_test_3" start time: Nov 16 22:16 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgCorpus"
+rnsvg batch 3 start
+rnsvg batch 3 mounted 2118 ms
+rnsvg batch 3 grabbed 2120 ms
+rnsvg batch 7 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:16:46.787182 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:46.813584 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:46.839468 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:46.865538 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:46.891502 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:46.913797 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:47.039480 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:47.043177 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:47.047191 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:47.081060 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:47.113569 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:47.191208 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:47.295251 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:47.335887 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:47.502874 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+rnsvg batch 7 mounted 1264 ms
+rnsvg batch 7 grabbed 1265 ms
+rnsvg batch 11 start
+E1116 22:16:48.360574 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:48.568329 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:48.780745 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:48.998723 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:49.129176 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:16:49.343397 861893120 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+rnsvg batch 11 mounted 1574 ms
+rnsvg batch 11 grabbed 1578 ms
+rnsvg batch 15 start
+rnsvg batch 15 mounted 31 ms
+rnsvg batch 15 grabbed 32 ms
+W1116 22:16:49.668751 861893120 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x55c7bbcb50d0).
+W1116 22:16:49.671659 777107136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x55c7bbcd0880).
+W1116 22:16:49.671679 777107136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x55c7bbbf68a0).
+rnsvg-corpus shard 3/4: 37 passed, 0 pending, 0 failed
+<end of output>
+Test time =   7.63 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_corpus_test_3" end time: Nov 16 22:16 EST
+"rnqnx_qt_rnsvg_corpus_test_3" time elapsed: 00:00:07
+----------------------------------------------------------
+
+12/61 Testing: rnqnx_qt_rnsvg_values_test
+12/61 Test: rnqnx_qt_rnsvg_values_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_qt_rnsvg_values_test"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_qt_rnsvg_values_test" start time: Nov 16 22:16 EST
+Output:
+----------------------------------------------------------
+rnsvg bridge values: all checks passed
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_values_test" end time: Nov 16 22:16 EST
+"rnqnx_qt_rnsvg_values_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+13/61 Testing: rnqnx_accessibility_action_probe
+13/61 Test: rnqnx_accessibility_action_probe
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_accessibility_action_probe" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_accessibility_action_probe" start time: Nov 16 22:16 EST
+Output:
+----------------------------------------------------------
+Running "RNQnxAccessibilityActionProbe"
+Running "RNQnxAccessibilityActionProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:16:51.251897 1843450432 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 3 components out of 6
+W1116 22:16:51.252508 1843450432 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1116 22:16:51.253422 1729058496 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014bd0).
+W1116 22:16:51.253553 1729058496 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_ACCESSIBILITY_ACTION_OK react activate guards label teardown remount
+<end of output>
+Test time =   1.57 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_accessibility_action_probe" end time: Nov 16 22:16 EST
+"rnqnx_accessibility_action_probe" time elapsed: 00:00:01
+----------------------------------------------------------
+
+14/61 Testing: rnqnx_accessibility_action_native_test
+14/61 Test: rnqnx_accessibility_action_native_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_accessibility_action_native_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_accessibility_action_native_test" start time: Nov 16 22:16 EST
+Output:
+----------------------------------------------------------
+RNQNX_ACCESSIBILITY_ACTION_NATIVE_OK press guards generation invalidate delete
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_accessibility_action_native_test" end time: Nov 16 22:16 EST
+"rnqnx_accessibility_action_native_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+15/61 Testing: rnqnx_accessibility_action_rejects_interception
+15/61 Test: rnqnx_accessibility_action_rejects_interception
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_accessibility_action_probe" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/cmake/../tests/cmake/AccessibilityActionNegative.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_accessibility_action_rejects_interception" start time: Nov 16 22:16 EST
+Output:
+----------------------------------------------------------
+-- Accessibility action interception rejected at the JavaScript boundary
+<end of output>
+Test time =   3.59 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_accessibility_action_rejects_interception" end time: Nov 16 22:16 EST
+"rnqnx_accessibility_action_rejects_interception" time elapsed: 00:00:03
+----------------------------------------------------------
+
+16/61 Testing: rnqnx_accessibility_action_rejects_registration
+16/61 Test: rnqnx_accessibility_action_rejects_registration
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_accessibility_action_probe" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/cmake/../tests/cmake/AccessibilityActionRegistration.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_accessibility_action_rejects_registration" start time: Nov 16 22:16 EST
+Output:
+----------------------------------------------------------
+-- Unsupported accessibility action registration rejected explicitly
+<end of output>
+Test time =   1.87 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_accessibility_action_rejects_registration" end time: Nov 16 22:16 EST
+"rnqnx_accessibility_action_rejects_registration" time elapsed: 00:00:01
+----------------------------------------------------------
+
+17/61 Testing: rnqnx_accessibility_view_test
+17/61 Test: rnqnx_accessibility_view_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_accessibility_view_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_accessibility_view_test" start time: Nov 16 22:16 EST
+Output:
+----------------------------------------------------------
+RNQNX_ACCESSIBILITY_VIEW_OK tree identity state update clear reject delete
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_accessibility_view_test" end time: Nov 16 22:16 EST
+"rnqnx_accessibility_view_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+18/61 Testing: rnqnx_text_input_probe
+18/61 Test: rnqnx_text_input_probe
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_text_input_probe" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_text_input_probe" start time: Nov 16 22:16 EST
+Output:
+----------------------------------------------------------
+Running "RNQnxTextInputProbe"
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:101:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+Running "RNQnxTextInputProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:16:59.333796 255427136 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 4 components out of 8
+I1116 22:16:59.334698 255427136 UIManagerBinding.cpp:150] instanceHandle is null, event of type topSelectionChange will be dropped
+W1116 22:16:59.335568 255427136 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1116 22:16:59.336396 108025536 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014bd0).
+W1116 22:16:59.336565 108025536 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_TEXT_INPUT_OK react key preedit commit utf16 stale selection no-echo focus teardown remount
+<end of output>
+Test time =   2.51 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_text_input_probe" end time: Nov 16 22:16 EST
+"rnqnx_text_input_probe" time elapsed: 00:00:02
+----------------------------------------------------------
+
+19/61 Testing: rnqnx_text_input_bridge_test
+19/61 Test: rnqnx_text_input_bridge_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_text_input_bridge_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_text_input_bridge_test" start time: Nov 16 22:16 EST
+Output:
+----------------------------------------------------------
+qt.qml.context: :101:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+RNQNX_TEXT_INPUT_BRIDGE_OK count stale utf16 no-echo secure-query denial lifecycle
+<end of output>
+Test time =   0.13 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_text_input_bridge_test" end time: Nov 16 22:16 EST
+"rnqnx_text_input_bridge_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+20/61 Testing: rnqnx_text_input_rejects_interception
+20/61 Test: rnqnx_text_input_rejects_interception
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_text_input_probe" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/cmake/../tests/cmake/TextInputNegative.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_text_input_rejects_interception" start time: Nov 16 22:16 EST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   3.60 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_text_input_rejects_interception" end time: Nov 16 22:17 EST
+"rnqnx_text_input_rejects_interception" time elapsed: 00:00:03
+----------------------------------------------------------
+
+21/61 Testing: rnqnx_input_lifecycle_probe
+21/61 Test: rnqnx_input_lifecycle_probe
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_input_lifecycle_probe" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_input_lifecycle_probe" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:17:03.271366 2712281600 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x55d9f4ad42a0).
+W1116 22:17:03.271938 2659182272 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x55d9f4af0230).
+W1116 22:17:03.272022 2659182272 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x55d9f4a19200).
+RNQNX_INPUT_JS_OK events=12 terminal cancel ordering native-payload-parity
+RNQNX_INPUT_LIFECYCLE_OK decorated-hit terminal multi-contact cancel deactivate unmount mouse-reentrant
+<end of output>
+Test time =   0.18 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_input_lifecycle_probe" end time: Nov 16 22:17 EST
+"rnqnx_input_lifecycle_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+22/61 Testing: rnqnx_input_lifecycle_rejects_interception
+22/61 Test: rnqnx_input_lifecycle_rejects_interception
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE_PATH=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_input_lifecycle_probe" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/cmake/../tests/cmake/InputLifecycleNegative.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_input_lifecycle_rejects_interception" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_INPUT_JS_INTERCEPTION_REJECTED expected missing JS delivery
+<end of output>
+Test time =   0.18 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_input_lifecycle_rejects_interception" end time: Nov 16 22:17 EST
+"rnqnx_input_lifecycle_rejects_interception" time elapsed: 00:00:00
+----------------------------------------------------------
+
+23/61 Testing: rnqnx_pressable_probe
+23/61 Test: rnqnx_pressable_probe
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_pressable_probe" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_pressable_probe" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+Running "RNQnxPressableProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1116 22:17:06.113364 1619530240 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+Running "RNQnxPressableProbe"
+E1116 22:17:06.577718 1619530240 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 4 components out of 8
+W1116 22:17:06.578341 1619530240 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x55d696072080).
+W1116 22:17:06.578706 1568663232 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x55d69608e010).
+W1116 22:17:06.578858 1568663232 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x55d695fb71e0).
+RNQNX_PRESSABLE_OK tap cancel deactivate disabled unmount remount callbacks=11
+<end of output>
+Test time =   3.14 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_pressable_probe" end time: Nov 16 22:17 EST
+"rnqnx_pressable_probe" time elapsed: 00:00:03
+----------------------------------------------------------
+
+24/61 Testing: rnqnx_pressable_rejects_interception
+24/61 Test: rnqnx_pressable_rejects_interception
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE_PATH=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_pressable_probe" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/cmake/../tests/cmake/PressableNegative.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_pressable_rejects_interception" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PRESSABLE_INTERCEPTION_REJECTED
+<end of output>
+Test time =   3.33 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_pressable_rejects_interception" end time: Nov 16 22:17 EST
+"rnqnx_pressable_rejects_interception" time elapsed: 00:00:03
+----------------------------------------------------------
+
+25/61 Testing: rnqnx_pressable_rejects_disabled_cancellation
+25/61 Test: rnqnx_pressable_rejects_disabled_cancellation
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE_PATH=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_pressable_probe" "-DCONTROL=removed-target" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/cmake/../tests/cmake/PressableNegative.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_pressable_rejects_disabled_cancellation" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PRESSABLE_REMOVED_TARGET_CONTROL_REJECTED
+<end of output>
+Test time =   4.72 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_pressable_rejects_disabled_cancellation" end time: Nov 16 22:17 EST
+"rnqnx_pressable_rejects_disabled_cancellation" time elapsed: 00:00:04
+----------------------------------------------------------
+
+26/61 Testing: rnqnx_react_render_host_probe
+26/61 Test: rnqnx_react_render_host_probe
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_react_render_host_probe" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/ReactRenderProbePositive.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_react_render_host_probe" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+Running "RNQnxReactRenderProbe"
+RNQNX_REACT_RENDER_OK platform=host bundled-react initial=160x100/48x24 update=72x24 unmount=empty geometry-only transactions=3
+
+<end of output>
+Test time =   1.40 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_react_render_host_probe" end time: Nov 16 22:17 EST
+"rnqnx_react_render_host_probe" time elapsed: 00:00:01
+----------------------------------------------------------
+
+27/61 Testing: rnqnx_react_render_host_probe_rejects_bad_bundles
+27/61 Test: rnqnx_react_render_host_probe_rejects_bad_bundles
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_react_render_host_probe" "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/react-probe-negative" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/ReactRenderProbeNegative.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_react_render_host_probe_rejects_bad_bundles" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.24 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_react_render_host_probe_rejects_bad_bundles" end time: Nov 16 22:17 EST
+"rnqnx_react_render_host_probe_rejects_bad_bundles" time elapsed: 00:00:00
+----------------------------------------------------------
+
+28/61 Testing: rnqnx_playground_screenshot
+28/61 Test: rnqnx_playground_screenshot
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host" "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-playground.bundle.js" "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-positive" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_playground_screenshot" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_SCREENSHOT_ARTIFACT_OK
+<end of output>
+Test time =   1.94 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_screenshot" end time: Nov 16 22:17 EST
+"rnqnx_playground_screenshot" time elapsed: 00:00:01
+----------------------------------------------------------
+
+29/61 Testing: rnqnx_playground_rejects_start_failure
+29/61 Test: rnqnx_playground_rejects_start_failure
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host" "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/tests/fixtures/runtime-baseline/start-failure.js" "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-start-failure" "-DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_START_FAILURE" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_playground_rejects_start_failure" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_START_FAILURE
+<end of output>
+Test time =   0.14 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_rejects_start_failure" end time: Nov 16 22:17 EST
+"rnqnx_playground_rejects_start_failure" time elapsed: 00:00:00
+----------------------------------------------------------
+
+30/61 Testing: rnqnx_playground_rejects_stop_failure
+30/61 Test: rnqnx_playground_rejects_stop_failure
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host" "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/tests/fixtures/runtime-baseline/stop-failure.js" "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-stop-failure" "-DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_STOP_FAILURE" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_playground_rejects_stop_failure" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_STOP_FAILURE
+<end of output>
+Test time =   0.14 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_rejects_stop_failure" end time: Nov 16 22:17 EST
+"rnqnx_playground_rejects_stop_failure" time elapsed: 00:00:00
+----------------------------------------------------------
+
+31/61 Testing: rnqnx_playground_rejects_reported_fatal
+31/61 Test: rnqnx_playground_rejects_reported_fatal
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host" "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-fatal.bundle.js" "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-reported-fatal" "-DEXPECT_FAILURE=RNQNX_TEST_MISSING_BOOTSTRAP" "-DEXPECT_BOUNDARY=BUNDLE" "-DEXPECT_REPORT=[js fatal]" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_playground_rejects_reported_fatal" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_MISSING_BOOTSTRAP
+<end of output>
+Test time =   0.74 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_rejects_reported_fatal" end time: Nov 16 22:17 EST
+"rnqnx_playground_rejects_reported_fatal" time elapsed: 00:00:00
+----------------------------------------------------------
+
+32/61 Testing: rnqnx_playground_allows_reported_soft
+32/61 Test: rnqnx_playground_allows_reported_soft
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host" "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-soft.bundle.js" "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-reported-soft" "-DEXPECT_REPORT=[js error] Error: RNQNX_TEST_REPORTED_SOFT_ERROR" "-DEXPECT_MESSAGE=RNQNX_TEST_CAUGHT_ERROR_CONTINUED" "-DEXPECT_MOUNT=RNQNX_TEST_ERROR_CONTROL_MOUNTED" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_playground_allows_reported_soft" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_SCREENSHOT_ARTIFACT_OK
+<end of output>
+Test time =   2.02 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_allows_reported_soft" end time: Nov 16 22:17 EST
+"rnqnx_playground_allows_reported_soft" time elapsed: 00:00:02
+----------------------------------------------------------
+
+33/61 Testing: qt_react_host_host_test
+33/61 Test: qt_react_host_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/qt_react_host_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"qt_react_host_host_test" start time: Nov 16 22:17 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:17:21.404418 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1116 22:17:21.404918 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014bd0).
+W1116 22:17:21.405012 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+[PASS] inputLifecycleOptOutPreservesExistingDispatch
+W1116 22:17:21.480809 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000073d0).
+W1116 22:17:21.481766 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000021950).
+W1116 22:17:21.481928 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000009050).
+[PASS] touchCancelEndsEveryContactAndAllowsIdReuse
+W1116 22:17:21.558871 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000bf10).
+W1116 22:17:21.559296 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200004f850).
+W1116 22:17:21.559351 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000011c50).
+[PASS] inputTransparentDecorationPreservesTouchTarget
+W1116 22:17:21.635846 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000025c10).
+W1116 22:17:21.636265 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200005b9d0).
+W1116 22:17:21.636337 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000018250).
+[PASS] touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact
+I1116 22:17:21.736022 662016576 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+W1116 22:17:21.739567 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002a050).
+W1116 22:17:21.739943 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200007f6d0).
+W1116 22:17:21.740335 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400001e050).
+[PASS] forgettingTouchTargetCancelsAndClearsResponder
+W1116 22:17:21.841500 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002fb50).
+W1116 22:17:21.841846 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200008af50).
+W1116 22:17:21.841907 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000045e50).
+[PASS] windowDeactivationCancelsTouchStream
+W1116 22:17:21.912365 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000034a10).
+W1116 22:17:21.912846 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000ae950).
+W1116 22:17:21.912927 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400004b450).
+[PASS] mouseCaptureCancellationDoesNotCreateHoverTouches
+W1116 22:17:21.978899 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000038e50).
+W1116 22:17:21.979660 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000ca550).
+W1116 22:17:21.979729 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000026050).
+[PASS] mouseReleaseClearsCaptureBeforeNativeListeners
+W1116 22:17:22.048556 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300003d290).
+W1116 22:17:22.049049 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000e1f50).
+W1116 22:17:22.049155 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400002b850).
+[PASS] decoratedViewTargetsNearestRegisteredAncestor
+W1116 22:17:22.106994 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000042150).
+W1116 22:17:22.107594 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000edad0).
+W1116 22:17:22.107703 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000031650).
+[PASS] runtimeEvaluatesJavaScript
+W1116 22:17:22.165764 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000044d10).
+W1116 22:17:22.166175 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000106cd0).
+W1116 22:17:22.166241 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000050c50).
+[PASS] javaScriptErrorsAreReportedNotSwallowed
+W1116 22:17:22.242026 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000478d0).
+W1116 22:17:22.242278 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001165d0).
+W1116 22:17:22.242345 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000054a50).
+[PASS] turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection
+W1116 22:17:22.319538 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004a810).
+W1116 22:17:22.319772 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000126650).
+W1116 22:17:22.319852 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000057a50).
+[PASS] retainedSourceCodeTracksSubsequentEvaluations
+W1116 22:17:22.378304 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004d750).
+W1116 22:17:22.378650 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000136550).
+W1116 22:17:22.378714 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005ae50).
+[PASS] imageLoadedForwardingDoesNotRequireLoaderLookup
+W1116 22:17:22.449294 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000050690).
+W1116 22:17:22.449612 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200003e5d0).
+W1116 22:17:22.449649 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005e650).
+[PASS] segmentFetcherValidatesCallbackBoundary
+W1116 22:17:22.508941 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000053950).
+W1116 22:17:22.509339 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000151850).
+W1116 22:17:22.509400 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000061c50).
+[PASS] evaluateRejectsReentrantJavaScript
+W1116 22:17:22.568106 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000056510).
+W1116 22:17:22.568475 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000161150).
+W1116 22:17:22.568538 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000064250).
+[PASS] timerCallbacksRunMicrotaskCheckpoints
+[js task error] checkpoint-boom
+W1116 22:17:22.629350 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000059290).
+W1116 22:17:22.629638 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000170d50).
+W1116 22:17:22.629688 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000067050).
+[PASS] throwingMicrotasksAreReportedAndRecover
+[js task error] timer-boom
+W1116 22:17:22.689649 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005c390).
+W1116 22:17:22.689997 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000184fd0).
+W1116 22:17:22.690076 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006a250).
+[PASS] throwingTimerCallbacksAreReportedAndRecover
+[js task error] hook-boom
+ErrorUtils reporting failed; retaining the host error
+[js task error] original-boom
+W1116 22:17:22.759126 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005f2d0).
+W1116 22:17:22.759460 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000195050).
+W1116 22:17:22.759524 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006d450).
+[PASS] schedulerErrorsPreserveAndContainJavaScriptHandlers
+W1116 22:17:22.827759 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000062c90).
+W1116 22:17:22.828163 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001a5cd0).
+W1116 22:17:22.828224 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000071a50).
+[PASS] schedulerInstallsTheFabricUIManager
+W1116 22:17:22.901862 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000654d0).
+W1116 22:17:22.903359 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001b5150).
+W1116 22:17:22.903409 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000073850).
+[PASS] surfaceCommitMountsThroughTheDelegate
+W1116 22:17:22.977454 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000068b10).
+W1116 22:17:22.978119 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001cf3d0).
+W1116 22:17:22.978212 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000077050).
+[PASS] secondCommitUpdatesTheSameItem
+W1116 22:17:23.041540 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006ca10).
+W1116 22:17:23.042053 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001e58d0).
+W1116 22:17:23.042119 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007b050).
+[PASS] mountHooksObserveAppliedNativeTree
+W1116 22:17:23.103315 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000070210).
+W1116 22:17:23.103672 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001fbdd0).
+W1116 22:17:23.103747 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007f050).
+[PASS] stoppingASurfaceUnmountsItsItems
+W1116 22:17:23.162391 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000073850).
+W1116 22:17:23.162694 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200020fd50).
+W1116 22:17:23.162755 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000035850).
+[PASS] commitToAnUnknownSurfaceIsReported
+W1116 22:17:23.219260 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000076090).
+W1116 22:17:23.219587 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200021f1d0).
+W1116 22:17:23.219666 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000083a50).
+[PASS] componentPredicateAnswersForRegisteredNames
+W1116 22:17:23.296305 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000788d0).
+W1116 22:17:23.296763 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200022e650).
+W1116 22:17:23.297019 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000086850).
+[PASS] javaScriptBuildsTheTreeThroughFabricUIManager
+W1116 22:17:23.369611 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300007e210).
+W1116 22:17:23.369978 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200024a3d0).
+W1116 22:17:23.370055 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400008d850).
+[PASS] hostInstallsBridgelessGlobals
+W1116 22:17:23.435639 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000017190).
+W1116 22:17:23.435992 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000259e50).
+W1116 22:17:23.436074 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000090250).
+[PASS] platformConstantsReportCurrentReactNativeVersion
+[PASS] metroProducesABundleForQnx
+W1116 22:17:24.217615 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000199d0).
+W1116 22:17:24.218256 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000269750).
+W1116 22:17:24.218341 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000092050).
+[PASS] metroBundleEvaluatesInHermes
+Running "RNQnxPlayground"
+W1116 22:17:26.157783 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000091b50).
+W1116 22:17:26.158933 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002a2a50).
+W1116 22:17:26.159018 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400013e250).
+[PASS] metroBundleRendersThroughReact
+[js fatal] deliberate failure 
+   at renderThing (App.js:42)
+
+W1116 22:17:26.255925 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006f090).
+W1116 22:17:26.256435 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000112850).
+W1116 22:17:26.256479 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000082c50).
+[PASS] javaScriptErrorsReachTheHost
+Running "RNQnxPlayground"
+W1116 22:17:28.125381 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006db90).
+W1116 22:17:28.125976 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000394d0).
+W1116 22:17:28.126004 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007a250).
+[PASS] aSuccessfulRenderReportsNoErrors
+Running "RNQnxPlayground"
+W1116 22:17:30.011945 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300003add0).
+W1116 22:17:30.012768 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001e1e50).
+W1116 22:17:30.012835 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000047850).
+[PASS] renderedTreeIsPainted
+Running "RNQnxPlayground"
+W1116 22:17:32.120800 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300008b790).
+W1116 22:17:32.121377 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002eead0).
+W1116 22:17:32.121454 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000133850).
+[PASS] pointerEventsReachJavaScript
+Running "RNQnxPlayground"
+W1116 22:17:34.222318 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000df5d0).
+W1116 22:17:34.222899 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002569d0).
+W1116 22:17:34.222968 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000275050).
+[PASS] scrollEventsReachJavaScript
+Running "RNQnxFlatList"
+W1116 22:17:37.597988 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000098d10).
+W1116 22:17:37.598706 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002d61d0).
+W1116 22:17:37.598770 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140001a7a50).
+[PASS] flatListRendersAndVirtualises
+Running "RNQnxSectionList"
+W1116 22:17:40.227232 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000ac9d0).
+W1116 22:17:40.228223 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000298550).
+W1116 22:17:40.229282 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140002da450).
+[PASS] sectionListRenders
+Running "RNQnxTextInput"
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:101:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+W1116 22:17:41.972239 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300007c290).
+W1116 22:17:41.972638 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200017d1d0).
+W1116 22:17:41.972702 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000134050).
+[PASS] textInputMounts
+Running "RNQnxTextInput"
+W1116 22:17:43.623020 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006eed0).
+W1116 22:17:43.623608 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002f23d0).
+W1116 22:17:43.623673 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000433450).
+[PASS] textInputPlaceholder
+Running "RNQnxTextInputMultiline"
+W1116 22:17:45.332973 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000c0bd0).
+W1116 22:17:45.333559 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002baa50).
+W1116 22:17:45.333685 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400017ec50).
+[PASS] textInputMultiline
+Running "RNQnxTextEllipsis"
+W1116 22:17:47.024747 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000115490).
+W1116 22:17:47.025259 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001e4e50).
+W1116 22:17:47.025301 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000370c50).
+[PASS] textEllipsis
+Running "RNQnxActivityIndicator"
+W1116 22:17:49.238701 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000bbb50).
+W1116 22:17:49.239405 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001edb50).
+W1116 22:17:49.239459 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000319850).
+[PASS] activityIndicatorMounts
+Running "RNQnxSwitch"
+W1116 22:17:50.934890 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004b7d0).
+W1116 22:17:50.935705 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001912d0).
+W1116 22:17:50.935834 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000154450).
+[PASS] switchToggles
+Running "RNQnxButton"
+W1116 22:17:52.913259 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000ad610).
+W1116 22:17:52.913784 605796032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000f4b50).
+W1116 22:17:52.913815 605796032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140004b2850).
+[PASS] buttonMounts
+Running "RNQnxSafeAreaView"
+W1116 22:17:54.567425 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300009ef10).
+W1116 22:17:54.568147 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000994d0).
+W1116 22:17:54.568370 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140003b3a50).
+[PASS] safeAreaViewMounts
+Running "RNQnxViewLayout"
+W1116 22:17:57.269639 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000f1d90).
+W1116 22:17:57.270301 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200025ded0).
+W1116 22:17:57.270416 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000b0c50).
+[PASS] viewLayoutFires
+Running "RNQnxTransform"
+W1116 22:17:58.825397 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000081150).
+W1116 22:17:58.826062 428668608 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000213dd0).
+W1116 22:17:58.826146 428668608 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400052ea50).
+[PASS] viewTransformApplies
+Running "RNQnxImage"
+W1116 22:18:00.372783 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300011ecd0).
+W1116 22:18:00.373576 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200011b250).
+W1116 22:18:00.373679 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400013e050).
+[PASS] imageLoadEvents
+Running "RNQnxImageDefault"
+W1116 22:18:02.559859 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000074650).
+W1116 22:18:02.560535 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200029a950).
+W1116 22:18:02.560664 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000528450).
+[PASS] imageDefaultSourceFires
+Running "RNQnxImageLoading"
+W1116 22:18:04.886487 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000c5550).
+W1116 22:18:04.887110 428668608 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000292d0).
+W1116 22:18:04.887233 428668608 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400029a250).
+[PASS] imageLoadingIndicator
+Running "RNQnxHostStateUpdate"
+W1116 22:18:07.231024 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000040a90).
+W1116 22:18:07.231611 566228672 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000102f50).
+W1116 22:18:07.231727 566228672 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000474c50).
+[PASS] metroStateUpdateCommitsThroughScheduler
+Running "RNQnxImageGetSize"
+W1116 22:18:08.857966 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006fcd0).
+W1116 22:18:08.858493 428668608 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200029df50).
+W1116 22:18:08.858582 428668608 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140001d7650).
+[PASS] imageGetSize
+W1116 22:18:10.093815 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000360d0).
+W1116 22:18:10.094534 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002923d0).
+W1116 22:18:10.094614 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140004a7c50).
+[PASS] imageLoaderPromiseContract
+Running "RNQnxImageBackground"
+W1116 22:18:12.633983 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000a4310).
+W1116 22:18:12.634456 403662528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000208fd0).
+W1116 22:18:12.634528 403662528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140002c9050).
+[PASS] imageBackgroundMounts
+Running "RNQnxImageResolveAsset"
+W1116 22:18:15.395859 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000070910).
+W1116 22:18:15.396811 546264768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001f6b50).
+W1116 22:18:15.396922 546264768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000063450).
+[PASS] imageResolveAssetSource
+Running "RNQnxNativeAnimated"
+W1116 22:18:17.913017 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000049d90).
+W1116 22:18:17.913661 428668608 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000bb250).
+W1116 22:18:17.913727 428668608 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140003a0850).
+[PASS] nativeAnimatedOpacity
+Running "RNQnxModal"
+W1116 22:18:21.034464 662016576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000e4110).
+W1116 22:18:21.035241 403662528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000f31d0).
+W1116 22:18:21.035355 403662528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000343050).
+[PASS] modalMounts
+All 60 QtReactHost host tests passed.
+<end of output>
+Test time =  59.94 sec
+----------------------------------------------------------
+Test Passed.
+"qt_react_host_host_test" end time: Nov 16 22:18 EST
+"qt_react_host_host_test" time elapsed: 00:00:59
+----------------------------------------------------------
+
+34/61 Testing: rnqnx_expo_image_module_host_test
+34/61 Test: rnqnx_expo_image_module_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_expo_image_module_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_expo_image_module_host_test" start time: Nov 16 22:18 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:18:21.833419 250638912 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003a10).
+W1116 22:18:21.834077 106870464 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000016e50).
+W1116 22:18:21.834148 106870464 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004650).
+RNQNX_EXPO_IMAGE_MODULE_OK surface prefetch caches loadAsync hashes cache-io configure view-commands
+<end of output>
+Test time =   0.67 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_expo_image_module_host_test" end time: Nov 16 22:18 EST
+"rnqnx_expo_image_module_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+35/61 Testing: rnqnx_expo_image_fabric_host_test
+35/61 Test: rnqnx_expo_image_fabric_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_expo_image_fabric_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_expo_image_fabric_host_test" start time: Nov 16 22:18 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:18:22.410660 3037319744 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1116 22:18:22.411495 2696730304 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000166d0).
+W1116 22:18:22.411607 2696730304 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004650).
+RNQNX_EXPO_IMAGE_FABRIC_OK opacity transform onLayout events imageRef commands
+<end of output>
+Test time =   0.56 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_expo_image_fabric_host_test" end time: Nov 16 22:18 EST
+"rnqnx_expo_image_fabric_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+36/61 Testing: rnqnx_worklets_integration_host_test
+36/61 Test: rnqnx_worklets_integration_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_worklets_integration_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_worklets_integration_host_test" start time: Nov 16 22:18 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=13 framesDelivered=12 uiJobs=0 jsPosts=4
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:18:27.511066 294888000 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1116 22:18:27.513192 109688512 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000015350).
+Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=14 framesDelivered=13 uiJobs=0 jsPosts=4
+W1116 22:18:32.044538 294888000 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000068090).
+W1116 22:18:32.046567 139417280 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001c6e50).
+Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=4 framesDelivered=3 uiJobs=0 jsPosts=1
+W1116 22:18:37.734921 294888000 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000b0010).
+W1116 22:18:37.737632 89724608 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200010e1d0).
+RNQNX_WORKLETS_INTEGRATION_OK frames timing pixels pan reload teardown
+<end of output>
+Test time =  15.43 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_worklets_integration_host_test" end time: Nov 16 22:18 EST
+"rnqnx_worklets_integration_host_test" time elapsed: 00:00:15
+----------------------------------------------------------
+
+37/61 Testing: rnqnx_worklets_rejects_missing_bootstrap
+37/61 Test: rnqnx_worklets_rejects_missing_bootstrap
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_worklets_integration_host_test" "--omit-worklets" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_worklets_rejects_missing_bootstrap" start time: Nov 16 22:18 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:18:37.996647 191685184 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1116 22:18:37.998128 92272320 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000015350).
+W1116 22:18:37.998178 92272320 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+TypeError: Cannot read property 'loadUnpackersWithCode' of undefined
+[js fatal] TypeError: Cannot read property 'loadUnpackersWithCode' of undefined 
+   at k (worklets-integration.bundle.js:532)
+  at t (worklets-integration.bundle.js:532)
+  at anonymous (worklets-integration.bundle.js:532)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at h (worklets-integration.bundle.js:539)
+  at f (worklets-integration.bundle.js:539)
+  at anonymous (worklets-integration.bundle.js:539)
+  at k (worklets-integration.bundle.js:539)
+  at f (worklets-integration.bundle.js:539)
+  at u (worklets-integration.bundle.js:539)
+  at S (worklets-integration.bundle.js:539)
+  at anonymous (worklets-integration.bundle.js:539)
+  at A (worklets-integration.bundle.js:539)
+  at f (worklets-integration.bundle.js:539)
+  at anonymous (worklets-integration.bundle.js:529)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at l (worklets-integration.bundle.js:546)
+  at b (worklets-integration.bundle.js:530)
+  at anonymous (worklets-integration.bundle.js:530)
+  at anonymous (worklets-integration.bundle.js:527)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at anonymous (worklets-integration.bundle.js:5)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at global (worklets-integration.bundle.js:997)
+
+W1116 22:18:39.607100 191685184 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000006790).
+W1116 22:18:39.608283 131077824 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000253d0).
+W1116 22:18:39.608348 131077824 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000005c50).
+RNQNX_WORKLETS_MISSING_BOOTSTRAP_REJECTED
+<end of output>
+Test time =   1.80 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_worklets_rejects_missing_bootstrap" end time: Nov 16 22:18 EST
+"rnqnx_worklets_rejects_missing_bootstrap" time elapsed: 00:00:01
+----------------------------------------------------------
+
+38/61 Testing: rnqnx_rn_headers_probe
+38/61 Test: rnqnx_rn_headers_probe
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_rn_headers_probe"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_rn_headers_probe" start time: Nov 16 22:18 EST
+Output:
+----------------------------------------------------------
+RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0]
+"rnqnx_rn_headers_probe" end time: Nov 16 22:18 EST
+"rnqnx_rn_headers_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+39/61 Testing: shadow_view_mutation_adapter_host_test
+39/61 Test: shadow_view_mutation_adapter_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/shadow_view_mutation_adapter_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"shadow_view_mutation_adapter_host_test" start time: Nov 16 22:18 EST
+Output:
+----------------------------------------------------------
+[PASS] createInsertMountsAndPositions
+[PASS] insertOrderFollowsMutationIndex
+[PASS] updateAppliesNewFrame
+[PASS] transparentAndRemovedBackgroundClearThePreviousFill
+[PASS] removeThenDeleteUnmountsAndFrees
+[PASS] nestedTransactionBuildsATree
+[PASS] unmappedComponentIsReportedNotSkipped
+[PASS] insertIntoMissingParentIsReported
+All 8 ShadowViewMutationAdapter host tests passed.
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"shadow_view_mutation_adapter_host_test" end time: Nov 16 22:18 EST
+"shadow_view_mutation_adapter_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+40/61 Testing: shadow_tree_mounting_host_test
+40/61 Test: shadow_tree_mounting_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/shadow_tree_mounting_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"shadow_tree_mounting_host_test" start time: Nov 16 22:18 EST
+Output:
+----------------------------------------------------------
+[PASS] fixedSizeViewGetsYogaGeometry
+[PASS] flexChildrenSplitTheRootWidth
+[PASS] paddingOffsetsChildOrigin
+[PASS] secondCommitUpdatesGeometryInPlace
+[PASS] removingAChildUnmountsIt
+All 5 ShadowTree mounting host tests passed.
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"shadow_tree_mounting_host_test" end time: Nov 16 22:18 EST
+"shadow_tree_mounting_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+41/61 Testing: qtquick_mounting_layer_host_test
+41/61 Test: qtquick_mounting_layer_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/qtquick_mounting_layer_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"qtquick_mounting_layer_host_test" start time: Nov 16 22:18 EST
+Output:
+----------------------------------------------------------
+[PASS] rootIsMountedButNotOwned
+[PASS] createLeavesItemUnparented
+[PASS] insertParentsAndOrdersChildren
+[PASS] insertRejectsBadArguments
+[PASS] fabricIndicesExcludeQmlDecorations
+[PASS] removeDetachesWithoutDestroying
+[PASS] removeRejectsIndexDisagreement
+[PASS] destroyReleasesTagAndItem
+[PASS] destroyDetachesStillMountedItem
+[PASS] nestedTreeIsTornDownWithTheLayer
+[PASS] updateLayoutAppliesAbsoluteGeometry
+[PASS] unregisteredComponentTypeFails
+[PASS] brokenQmlSourceFails
+[PASS] nonItemTypeFails
+[PASS] duplicateTagFails
+[PASS] reregisteringATypeReplacesIt
+All 16 QtQuickMountingLayer host tests passed.
+<end of output>
+Test time =   0.15 sec
+----------------------------------------------------------
+Test Passed.
+"qtquick_mounting_layer_host_test" end time: Nov 16 22:18 EST
+"qtquick_mounting_layer_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+42/61 Testing: rnqnx_qtquick_host_probe
+42/61 Test: rnqnx_qtquick_host_probe
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_qtquick_host_probe" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_qtquick_host_probe" start time: Nov 16 22:18 EST
+Output:
+----------------------------------------------------------
+RNQNX_QTQUICK_HOST_OK items=1000 create_ms=8.459 update10_ms=0.651 destroy_ms=0.440 platform=offscreen
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_QTQUICK_HOST_OK items=1000]
+"rnqnx_qtquick_host_probe" end time: Nov 16 22:18 EST
+"rnqnx_qtquick_host_probe" time elapsed: 00:00:00
+----------------------------------------------------------
+
+43/61 Testing: rnqnx_qt_native_ui_test
+43/61 Test: rnqnx_qt_native_ui_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests/rnqnx_qt_native_ui_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests
+"rnqnx_qt_native_ui_test" start time: Nov 16 22:18 EST
+Output:
+----------------------------------------------------------
+********* Start testing of NativeUiQuickTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : NativeUiQuickTest::initTestCase()
+PASS   : NativeUiQuickTest::cssColorsParseTheWayJavaScriptWritesThem()
+PASS   : NativeUiQuickTest::drawerOpensAndClosesFromProps()
+PASS   : NativeUiQuickTest::drawerPanelInsertedBeforeContentKeepsItsRole()
+PASS   : NativeUiQuickTest::drawerStartsOpenWithoutAnimating()
+PASS   : NativeUiQuickTest::scrimCoversMainAndClosesOnTap()
+PASS   : NativeUiQuickTest::escapeRequestsCloseAndRevertsWhenRefused()
+PASS   : NativeUiQuickTest::edgeSwipeOpensPastFortyPercent()
+PASS   : NativeUiQuickTest::edgeSwipeStaysOutOfTheRail()
+PASS   : NativeUiQuickTest::quickFlingOpensEvenWhenShort()
+PASS   : NativeUiQuickTest::swipeDisabledIgnoresDrags()
+PASS   : NativeUiQuickTest::rightDrawerSlidesInFromTheRightAndSlideModePushesContent()
+PASS   : NativeUiQuickTest::backDrawerKeepsThePanelAndSlidesTheContentAway()
+PASS   : NativeUiQuickTest::drawerReadsDynamicMountMetadata()
+PASS   : NativeUiQuickTest::drawerItemsShowHoverAndPressedStates()
+PASS   : NativeUiQuickTest::drawerKeyboardMovesFocusAndPressesItems()
+PASS   : NativeUiQuickTest::drawerSkipsDisabledAndHiddenItems()
+PASS   : NativeUiQuickTest::drawerHoldsFocusWhileOpenAndGivesItBack()
+PASS   : NativeUiQuickTest::swipeEdgeWidthSetsTheStartStrip()
+PASS   : NativeUiQuickTest::rightDrawerOpensFromTheRightEdgeStrip()
+PASS   : NativeUiQuickTest::overlayColorIsTheScrimColor()
+PASS   : NativeUiQuickTest::frontDrawerLaysOverTheContentWithoutMovingIt()
+PASS   : NativeUiQuickTest::drawerWidthMovesThePanelAndTheScrim()
+PASS   : NativeUiQuickTest::swipeMinDistanceRejectsShortDragsThatPassTheFortyPercentRule()
+PASS   : NativeUiQuickTest::gestureEventsBracketADragAndCancelSettlesBack()
+PASS   : NativeUiQuickTest::tabBarSwitchesModeAndReportsSize()
+PASS   : NativeUiQuickTest::contentBesideTheRailEndsInsideTheWindowWithRoundedCorners()
+PASS   : NativeUiQuickTest::tabBarEdgesRtlAndLabels()
+PASS   : NativeUiQuickTest::tabBarPressedStateShowsOnLightAndDarkBars()
+PASS   : NativeUiQuickTest::tabBarPressedStateAndEscape()
+PASS   : NativeUiQuickTest::tabBarMouseAndKeyboard()
+PASS   : NativeUiQuickTest::tabBarLongPress()
+PASS   : NativeUiQuickTest::expoImageAccessibilityFollowsProps()
+PASS   : NativeUiQuickTest::cleanupTestCase()
+Totals: 34 passed, 0 failed, 0 skipped, 0 blacklisted, 17716ms
+********* Finished testing of NativeUiQuickTest *********
+<end of output>
+Test time =  17.75 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_native_ui_test" end time: Nov 16 22:18 EST
+"rnqnx_qt_native_ui_test" time elapsed: 00:00:17
+----------------------------------------------------------
+
+44/61 Testing: rnqnx_image_units_test
+44/61 Test: rnqnx_image_units_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests/rnqnx_image_units_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests
+"rnqnx_image_units_test" start time: Nov 16 22:18 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ImageUnitsTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageUnitsTest::initTestCase()
+PASS   : ImageUnitsTest::fitCoverContainAndFill()
+PASS   : ImageUnitsTest::fitNoneKeepsNaturalSizeAndScaleDownNeverGrows()
+PASS   : ImageUnitsTest::positionNamesOffsetsAndPercentages()
+PASS   : ImageUnitsTest::roundedPathClipsCornersAndLimitsRadii()
+PASS   : ImageUnitsTest::blurSpreadsAColorEdge()
+PASS   : ImageUnitsTest::tintKeepsAlphaAndReplacesColor()
+PASS   : ImageUnitsTest::blurHashDecodesTheReferenceVector()
+PASS   : ImageUnitsTest::blurHashRejectsMalformedInput()
+PASS   : ImageUnitsTest::thumbHashDecodesTheReferenceVectors()
+PASS   : ImageUnitsTest::thumbHashRejectsShortInput()
+PASS   : ImageUnitsTest::diskCacheEvictsLeastRecentlyUsedWithinBudget()
+PASS   : ImageUnitsTest::diskCacheRefusesOversizeAndClears()
+PASS   : ImageUnitsTest::diskCacheClearInvalidatesPendingWrites()
+PASS   : ImageUnitsTest::requestKeyFoldsHeadersAndHonoursCacheKey()
+PASS   : ImageUnitsTest::fetcherSendsHeadersAndHitsDiskCacheSecondTime()
+PASS   : ImageUnitsTest::fetcherCancelNeverCallsBack()
+PASS   : ImageUnitsTest::fetcherReadsFilesOnWorkerAndCompletesOnOwner()
+PASS   : ImageUnitsTest::fetcherCancelsAndDestroysBlockedIo()
+PASS   : ImageUnitsTest::fetcherRetainsCacheStateDuringIo()
+PASS   : ImageUnitsTest::fetcherRecoversCorruptAndOversizedCache()
+PASS   : ImageUnitsTest::fetcherFollowsRelativeRedirectAndStripsCrossOriginHeaders()
+PASS   : ImageUnitsTest::fetcherBoundsRedirectsAndRejectsUnsafeTargets()
+PASS   : ImageUnitsTest::sharedNetworkDoesNotReuseCookies()
+PASS   : ImageUnitsTest::redirectsShareOneDeadline()
+PASS   : ImageUnitsTest::decodedCacheHonorsCountAndCostLimits()
+PASS   : ImageUnitsTest::imageRefRegistryNeverReusesIds()
+PASS   : ImageUnitsTest::imageLoadedNotifierReachesListenersUntilUnsubscribed()
+PASS   : ImageUnitsTest::cleanupTestCase()
+Totals: 29 passed, 0 failed, 0 skipped, 0 blacklisted, 1049ms
+********* Finished testing of ImageUnitsTest *********
+<end of output>
+Test time =   1.07 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_image_units_test" end time: Nov 16 22:18 EST
+"rnqnx_image_units_test" time elapsed: 00:00:01
+----------------------------------------------------------
+
+45/61 Testing: rnqnx_expo_image_item_test
+45/61 Test: rnqnx_expo_image_item_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests/rnqnx_expo_image_item_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests
+"rnqnx_expo_image_item_test" start time: Nov 16 22:18 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ExpoImageItemTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ExpoImageItemTest::initTestCase()
+PASS   : ExpoImageItemTest::borderRadiusRoundsThePicture()
+PASS   : ExpoImageItemTest::perCornerRadiiRoundOnlyThoseCorners()
+PASS   : ExpoImageItemTest::tintReplacesColorAndKeepsShape()
+PASS   : ExpoImageItemTest::blurSoftensAHardEdge()
+PASS   : ExpoImageItemTest::contentFitNoneDrawsNaturalSizeCentered()
+PASS   : ExpoImageItemTest::contentPositionMovesTheImage()
+PASS   : ExpoImageItemTest::blurhashPlaceholderShowsUntilTheImageArrives()
+PASS   : ExpoImageItemTest::thumbhashSourceDrawsWithoutNetwork()
+PASS   : ExpoImageItemTest::crossDissolveBlendsOldAndNew()
+PASS   : ExpoImageItemTest::flipEffectsPassThroughAnEdgeOnMidpoint()
+PASS   : ExpoImageItemTest::curlFallsBackToCrossDissolve()
+PASS   : ExpoImageItemTest::multipleSourcesPickTheSmallestThatCovers()
+PASS   : ExpoImageItemTest::onLoadReportsSizeCacheTypeAndMediaType()
+PASS   : ExpoImageItemTest::secondViewReadsFromTheSharedMemoryCache()
+PASS   : ExpoImageItemTest::headersReachTheServerAndKeyTheCache()
+PASS   : ExpoImageItemTest::failedLoadReportsTheError()
+PASS   : ExpoImageItemTest::recyclingKeyClearsThePreviousPicture()
+PASS   : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses(direct)
+PASS   : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses(prefetched-memory)
+PASS   : ExpoImageItemTest::hitSlopExtendsAndPointerEventsNoneIgnoresTouches()
+PASS   : ExpoImageItemTest::downscalingKeepsReportedSize()
+PASS   : ExpoImageItemTest::growingADownscaledViewDecodesEnoughPixels()
+PASS   : ExpoImageItemTest::lockedGrowthDefersDecodeUntilUnlock()
+PASS   : ExpoImageItemTest::upgradingDecodeOptions(disable-downscaling)
+PASS   : ExpoImageItemTest::upgradingDecodeOptions(natural-size-fit)
+PASS   : ExpoImageItemTest::growthDuringInitialDecodeIsRechecked()
+PASS   : ExpoImageItemTest::freshViewReadsTheDiskCacheWhenMemoryIsCleared()
+PASS   : ExpoImageItemTest::imageRefSourceShowsTheDecodedPicture()
+PASS   : ExpoImageItemTest::lockedViewKeepsItsPictureUntilUnlockedOrReloaded()
+PASS   : ExpoImageItemTest::cleanupTestCase()
+Totals: 31 passed, 0 failed, 0 skipped, 0 blacklisted, 8458ms
+********* Finished testing of ExpoImageItemTest *********
+<end of output>
+Test time =   8.48 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_expo_image_item_test" end time: Nov 16 22:19 EST
+"rnqnx_expo_image_item_test" time elapsed: 00:00:08
+----------------------------------------------------------
+
+46/61 Testing: rnqnx_modal_quick_test
+46/61 Test: rnqnx_modal_quick_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests/rnqnx_modal_quick_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests
+"rnqnx_modal_quick_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ModalQuickTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ModalQuickTest::initTestCase()
+PASS   : ModalQuickTest::escapeRequestsCloseAndStopsAtTheModal()
+PASS   : ModalQuickTest::escapeFromAFocusedFieldInsideTheModalReachesTheModal()
+PASS   : ModalQuickTest::otherKeysDoNotRequestClose()
+PASS   : ModalQuickTest::focusStaysInTheModalWhenTheAppItemTriesToTakeIt()
+PASS   : ModalQuickTest::focusReturnsToThePreviousItemWhenTheModalCloses()
+PASS   : ModalQuickTest::aModalOpenedAboveAnotherTakesEscapeAndHandsFocusBackOnClose()
+PASS   : ModalQuickTest::aModalClosedBelowAnotherLeavesTheUpperModalFocused()
+PASS   : ModalQuickTest::onlyTheTopModalReclaimsFocusFromTheCoveredApp()
+PASS   : ModalQuickTest::aFieldInACoveredModalCannotTakeFocusFromTheTopModal()
+PASS   : ModalQuickTest::cleanupTestCase()
+Totals: 11 passed, 0 failed, 0 skipped, 0 blacklisted, 40ms
+********* Finished testing of ModalQuickTest *********
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_modal_quick_test" end time: Nov 16 22:19 EST
+"rnqnx_modal_quick_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+47/61 Testing: rnqnx_image_fetch_queue_test
+47/61 Test: rnqnx_image_fetch_queue_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests/rnqnx_image_fetch_queue_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests
+"rnqnx_image_fetch_queue_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ImageFetchQueueTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageFetchQueueTest::initTestCase()
+PASS   : ImageFetchQueueTest::parsesPriorityNames()
+PASS   : ImageFetchQueueTest::startsAtMostMaxConcurrentTasks()
+PASS   : ImageFetchQueueTest::startsWaitingTasksHighestPriorityFirst()
+PASS   : ImageFetchQueueTest::cancelDropsAWaitingTaskOnly()
+PASS   : ImageFetchQueueTest::aTaskThatFinishesAtOnceDoesNotStallTheQueue()
+PASS   : ImageFetchQueueTest::fetcherKeepsLoadsInFlightWithinTheBound()
+PASS   : ImageFetchQueueTest::fetcherStartsHigherPriorityRequestsFirst()
+PASS   : ImageFetchQueueTest::clearingDiskCacheDoesNotRestoreAnInFlightResponse()
+PASS   : ImageFetchQueueTest::viewsLoadInPriorityOrderThroughTheSharedQueue()
+PASS   : ImageFetchQueueTest::cancellingAQueuedLoadNeverStartsIt()
+PASS   : ImageFetchQueueTest::cancellingARunningLoadFreesItsSlot()
+PASS   : ImageFetchQueueTest::cleanupTestCase()
+Totals: 13 passed, 0 failed, 0 skipped, 0 blacklisted, 1434ms
+********* Finished testing of ImageFetchQueueTest *********
+<end of output>
+Test time =   1.46 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_image_fetch_queue_test" end time: Nov 16 22:19 EST
+"rnqnx_image_fetch_queue_test" time elapsed: 00:00:01
+----------------------------------------------------------
+
+48/61 Testing: rnqnx_image_hash_vectors_test
+48/61 Test: rnqnx_image_hash_vectors_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests/rnqnx_image_hash_vectors_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests
+"rnqnx_image_hash_vectors_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ImageHashVectorsTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageHashVectorsTest::initTestCase()
+PASS   : ImageHashVectorsTest::blurhashEncodeMatchesTheCReference()
+PASS   : ImageHashVectorsTest::blurhashEncodeRejectsBadInput()
+PASS   : ImageHashVectorsTest::blurhashDecodeMatchesTheReference()
+PASS   : ImageHashVectorsTest::thumbhashEncodeMatchesTheReference()
+PASS   : ImageHashVectorsTest::thumbhashDecodeMatchesTheReference()
+PASS   : ImageHashVectorsTest::thumbhashEncodeScalesLargeImagesDown()
+PASS   : ImageHashVectorsTest::cleanupTestCase()
+Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 26ms
+********* Finished testing of ImageHashVectorsTest *********
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_image_hash_vectors_test" end time: Nov 16 22:19 EST
+"rnqnx_image_hash_vectors_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+49/61 Testing: rnqnx_qt_motion_test
+49/61 Test: rnqnx_qt_motion_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/motion-tests/rnqnx_qt_motion_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/motion-tests
+"rnqnx_qt_motion_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+RNQNX_QT_MOTION_OK progress easing interruption pause resume cancel lifetime ownership reentrancy affinity clock
+<end of output>
+Test time =   0.16 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_motion_test" end time: Nov 16 22:19 EST
+"rnqnx_qt_motion_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+50/61 Testing: rnqnx_qt_svg_test
+50/61 Test: rnqnx_qt_svg_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/svg-tests/rnqnx_qt_svg_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/svg-tests
+"rnqnx_qt_svg_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of SvgDocumentTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : SvgDocumentTest::initTestCase()
+PASS   : SvgDocumentTest::fitModesMetadataAndResize()
+PASS   : SvgDocumentTest::replacementClearAndRecovery()
+PASS   : SvgDocumentTest::gradientsPathsAndShapes()
+PASS   : SvgDocumentTest::borrowedSourceIsOwnedBeforeReturn()
+PASS   : SvgDocumentTest::compactPathNumbersAndArcFlags()
+PASS   : SvgDocumentTest::unsupportedInput(script)
+PASS   : SvgDocumentTest::unsupportedInput(image)
+PASS   : SvgDocumentTest::unsupportedInput(external-use)
+PASS   : SvgDocumentTest::unsupportedInput(animation)
+PASS   : SvgDocumentTest::unsupportedInput(style-block)
+PASS   : SvgDocumentTest::unsupportedInput(style-attribute)
+PASS   : SvgDocumentTest::unsupportedInput(clip-path)
+PASS   : SvgDocumentTest::unsupportedInput(filter)
+PASS   : SvgDocumentTest::unsupportedInput(text)
+PASS   : SvgDocumentTest::unsupportedInput(external-paint)
+PASS   : SvgDocumentTest::unsupportedInput(missing-gradient)
+PASS   : SvgDocumentTest::unsupportedInput(wrong-reference-kind)
+PASS   : SvgDocumentTest::unsupportedInput(duplicate-id)
+PASS   : SvgDocumentTest::unsupportedInput(custom-namespace)
+PASS   : SvgDocumentTest::unsupportedInput(event-handler)
+PASS   : SvgDocumentTest::unsupportedInput(nested-root)
+PASS   : SvgDocumentTest::unsupportedInput(nonfinite)
+PASS   : SvgDocumentTest::unsupportedInput(overflow)
+PASS   : SvgDocumentTest::unsupportedInput(huge-dimension)
+PASS   : SvgDocumentTest::unsupportedInput(zero-dimension)
+PASS   : SvgDocumentTest::unsupportedInput(percentage-size)
+PASS   : SvgDocumentTest::unsupportedInput(unknown-attribute)
+PASS   : SvgDocumentTest::unsupportedInput(invalid-path)
+PASS   : SvgDocumentTest::unsupportedInput(incomplete-path)
+PASS   : SvgDocumentTest::unsupportedInput(incomplete-path-pair)
+PASS   : SvgDocumentTest::unsupportedInput(invalid-arc-flag)
+PASS   : SvgDocumentTest::unsupportedInput(numbers-after-close)
+PASS   : SvgDocumentTest::unsupportedInput(negative-radius)
+PASS   : SvgDocumentTest::unsupportedInput(negative-stroke)
+PASS   : SvgDocumentTest::unsupportedInput(negative-dash)
+PASS   : SvgDocumentTest::unsupportedInput(zero-dashes)
+PASS   : SvgDocumentTest::unsupportedInput(tiny-viewbox)
+PASS   : SvgDocumentTest::unsupportedInput(transform-product)
+PASS   : SvgDocumentTest::unsupportedInput(nested-transform-product)
+PASS   : SvgDocumentTest::unsupportedInput(singular-skew)
+PASS   : SvgDocumentTest::unsupportedInput(gradient-as-color)
+PASS   : SvgDocumentTest::unsupportedInput(gradient-as-stop-color)
+PASS   : SvgDocumentTest::unsupportedInput(huge-path-number)
+PASS   : SvgDocumentTest::unsupportedInput(broken-xml)
+PASS   : SvgDocumentTest::unsupportedInput(no-size)
+PASS   : SvgDocumentTest::unsupportedInput(doctype)
+PASS   : SvgDocumentTest::unsupportedInput(processing-instruction)
+PASS   : SvgDocumentTest::unsupportedInput(invalid-utf8)
+PASS   : SvgDocumentTest::unsupportedInput(nul)
+PASS   : SvgDocumentTest::boundedInputAndTexture()
+PASS   : SvgDocumentTest::ownerThreadAndLifetime()
+PASS   : SvgDocumentTest::workerConstructionAndChangedAffinityAreRejected()
+PASS   : SvgDocumentTest::actualQuickSceneRendersAndClears()
+PASS   : SvgDocumentTest::cleanupTestCase()
+Totals: 55 passed, 0 failed, 0 skipped, 0 blacklisted, 28ms
+********* Finished testing of SvgDocumentTest *********
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_svg_test" end time: Nov 16 22:19 EST
+"rnqnx_qt_svg_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+51/61 Testing: rnqnx_qt_graphics
+51/61 Test: rnqnx_qt_graphics
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/graphics-tests/rnqnx_qt_graphics_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/graphics-tests
+"rnqnx_qt_graphics" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of GraphicsSurfaceTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : GraphicsSurfaceTest::initTestCase()
+PASS   : GraphicsSurfaceTest::viewportValidation()
+PASS   : GraphicsSurfaceTest::realWindowLifecycle()
+PASS   : GraphicsSurfaceTest::destroyWindowDropsPendingEvents()
+PASS   : GraphicsSurfaceTest::closeDuringDeliveryAndWrongThread()
+PASS   : GraphicsSurfaceTest::deleteDuringDelivery()
+PASS   : GraphicsSurfaceTest::cleanupTestCase()
+Totals: 7 passed, 0 failed, 0 skipped, 0 blacklisted, 3ms
+********* Finished testing of GraphicsSurfaceTest *********
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_graphics" end time: Nov 16 22:19 EST
+"rnqnx_qt_graphics" time elapsed: 00:00:00
+----------------------------------------------------------
+
+52/61 Testing: rnqnx_qt_graphics_null
+52/61 Test: rnqnx_qt_graphics_null
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/graphics-tests/rnqnx_qt_graphics_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/graphics-tests
+"rnqnx_qt_graphics_null" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of GraphicsSurfaceTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : GraphicsSurfaceTest::initTestCase()
+PASS   : GraphicsSurfaceTest::viewportValidation()
+PASS   : GraphicsSurfaceTest::realWindowLifecycle()
+PASS   : GraphicsSurfaceTest::destroyWindowDropsPendingEvents()
+PASS   : GraphicsSurfaceTest::closeDuringDeliveryAndWrongThread()
+PASS   : GraphicsSurfaceTest::deleteDuringDelivery()
+PASS   : GraphicsSurfaceTest::cleanupTestCase()
+Totals: 7 passed, 0 failed, 0 skipped, 0 blacklisted, 4ms
+********* Finished testing of GraphicsSurfaceTest *********
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_graphics_null" end time: Nov 16 22:19 EST
+"rnqnx_qt_graphics_null" time elapsed: 00:00:00
+----------------------------------------------------------
+
+53/61 Testing: rnqnx_qt_rnsvg_filter_test
+53/61 Test: rnqnx_qt_rnsvg_filter_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_filter_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests
+"rnqnx_qt_rnsvg_filter_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgFilterTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgFilterTest::initTestCase()
+PASS   : RnsvgFilterTest::regionDefaultsAroundBoundingBox()
+PASS   : RnsvgFilterTest::regionInUserSpaceUnits()
+PASS   : RnsvgFilterTest::regionSnapsOriginDownAndSizeUp()
+PASS   : RnsvgFilterTest::regionFollowsScaleAndRotation()
+PASS   : RnsvgFilterTest::degenerateRegionsAreInvalid()
+PASS   : RnsvgFilterTest::regionCapIsExact()
+PASS   : RnsvgFilterTest::subregionDefaultsToFilterRegion()
+PASS   : RnsvgFilterTest::subregionExplicitAndPartial()
+PASS   : RnsvgFilterTest::subregionPercentAndBoundingBoxUnits()
+PASS   : RnsvgFilterTest::subregionWithNoAreaIsTransparent()
+PASS   : RnsvgFilterTest::resultIsClippedToSubregion()
+PASS   : RnsvgFilterTest::standardInputs()
+PASS   : RnsvgFilterTest::namedAndImplicitInputs()
+PASS   : RnsvgFilterTest::badReferencesFallBack()
+PASS   : RnsvgFilterTest::emptyAndNullPrimitiveLists()
+PASS   : RnsvgFilterTest::colorInterpolationFilters()
+PASS   : RnsvgFilterTest::offsetKeepsColorsExact()
+PASS   : RnsvgFilterTest::lightingColorIsConvertedToWorkingSpace()
+PASS   : RnsvgFilterTest::blurScalesWithTransform()
+PASS   : RnsvgFilterTest::offsetFollowsTransform()
+PASS   : RnsvgFilterTest::rotatedAndFlippedTransforms()
+PASS   : RnsvgFilterTest::gaussianBlurEdgeModesAndAxes()
+PASS   : RnsvgFilterTest::boxBlurMatchesDirectComputation()
+PASS   : RnsvgFilterTest::colorMatrixValues()
+PASS   : RnsvgFilterTest::componentTransferFunctions()
+PASS   : RnsvgFilterTest::compositeOperators()
+PASS   : RnsvgFilterTest::blendModes()
+PASS   : RnsvgFilterTest::mergeAndFloodArithmetic()
+PASS   : RnsvgFilterTest::morphologyRadii()
+PASS   : RnsvgFilterTest::dropShadowArithmetic()
+PASS   : RnsvgFilterTest::tileRepeatsTheInputSubregion()
+PASS   : RnsvgFilterTest::imagePlacement()
+PASS   : RnsvgFilterTest::convolveMatrixSemantics()
+PASS   : RnsvgFilterTest::displacementMapChannels()
+PASS   : RnsvgFilterTest::lightingOnFlatSurface()
+PASS   : RnsvgFilterTest::turbulenceProperties()
+PASS   : RnsvgFilterTest::invalidParametersFollowTheirRules()
+PASS   : RnsvgFilterTest::hostileParametersStayBounded()
+PASS   : RnsvgFilterTest::hostileSourcesAndRegions()
+QINFO  : RnsvgFilterTest::blurCostIsIndependentOfRadius() BLUR 256x256: sigma 2.5 11.14 ms, sigma 60 10.73 ms, sigma 5000 9.42 ms
+PASS   : RnsvgFilterTest::blurCostIsIndependentOfRadius()
+PASS   : RnsvgFilterTest::applyNeverModifiesItsInput()
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blur_box_5                 max= 15 mean= 0.852 over= 0.090%   4.86 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blur_kernel_1              max= 17 mean= 0.622 over= 1.190%   5.11 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blur_xy                    max= 12 mean= 0.689 over= 0.000%   4.45 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blur_axis_zero             max=  6 mean= 0.354 over= 0.000%   3.29 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blur_srgb                  max=  7 mean= 0.469 over= 0.000%   4.02 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blur_negative              max=  0 mean= 0.000 over= 0.000%   0.08 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN offset                     max=  0 mean= 0.000 over= 0.000%   0.06 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN flood_subregion            max=  0 mean= 0.000 over= 0.000%   0.08 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN flood_merge                max= 14 mean= 0.015 over= 0.025%   2.33 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN flood_srgb                 max=  0 mean= 0.000 over= 0.000%   0.08 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN drop_shadow_merge          max= 30 mean= 0.358 over= 0.085%   9.34 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN glow                       max=  6 mean= 0.208 over= 0.000%   6.97 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN colormatrix_saturate       max= 13 mean= 0.208 over= 0.010%   1.70 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN colormatrix_hue            max= 29 mean= 0.395 over= 0.055%   1.52 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN colormatrix_l2a            max= 55 mean= 0.188 over= 0.070%   1.61 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN colormatrix_matrix         max= 16 mean= 0.024 over= 0.042%   1.59 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_over             max= 16 mean= 0.019 over= 0.033%   1.66 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_in               max= 16 mean= 0.023 over= 0.042%   1.33 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_out              max= 10 mean= 0.004 over= 0.000%   1.29 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_atop             max= 16 mean= 0.018 over= 0.033%   2.37 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_xor              max= 19 mean= 0.021 over= 0.020%   2.49 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_arithmetic       max= 11 mean= 0.221 over= 0.000%   2.47 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN composite_arithmetic_k4    max= 15 mean= 0.198 over= 0.025%   3.22 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_normal               max= 15 mean= 0.019 over= 0.030%   2.33 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_multiply             max= 28 mean= 0.018 over= 0.033%   2.33 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_screen               max=  9 mean= 0.008 over= 0.000%   2.37 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_darken               max= 15 mean= 0.016 over= 0.020%   2.37 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_lighten              max= 14 mean= 0.053 over= 0.020%   2.30 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_overlay              max= 19 mean= 0.108 over= 0.033%   2.91 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_color_dodge          max= 21 mean= 0.011 over= 0.020%   2.40 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_color_burn           max= 27 mean= 0.019 over= 0.033%   2.39 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_hard_light           max= 19 mean= 0.019 over= 0.042%   2.54 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_soft_light           max= 10 mean= 0.011 over= 0.000%   2.52 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_difference           max= 28 mean= 0.011 over= 0.025%   2.39 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_exclusion            max=  6 mean= 0.006 over= 0.000%   2.45 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_hue                  max=  7 mean= 0.006 over= 0.000%   4.80 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_saturation           max= 35 mean= 0.380 over= 0.055%   3.84 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_color                max= 11 mean= 0.011 over= 0.000%   3.10 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN blend_luminosity           max= 24 mean= 0.648 over= 0.055%   2.94 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN morph_erode_5              max=  2 mean= 0.403 over= 0.000%   3.89 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN morph_dilate_4             max= 18 mean= 0.339 over= 0.040%   3.86 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN morph_erode_xy             max=  2 mean= 0.402 over= 0.000%   4.14 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN turbulence                 max=  1 mean= 0.002 over= 0.000%  12.98 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN fractal_noise              max=  1 mean= 0.002 over= 0.000%  14.38 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN turbulence_srgb            max=  1 mean= 0.000 over= 0.000%   8.95 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN displacement_turbulence    max= 18 mean= 0.314 over= 0.042%  10.44 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN displacement_alpha         max= 18 mean= 0.296 over= 0.037%   7.28 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN ct_mixed                   max= 19 mean= 0.072 over= 0.055%   2.22 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN ct_gamma                   max= 19 mean= 0.118 over= 0.050%   2.19 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN ct_alpha                   max=  9 mean= 0.306 over= 0.000%   1.84 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN ct_srgb                    max= 20 mean= 0.076 over= 0.040%   1.29 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN drop_shadow                max= 15 mean= 0.052 over= 0.020%   7.69 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN drop_shadow_noblur         max= 51 mean= 0.037 over= 0.092%   1.35 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN image_data                 max=  0 mean= 0.000 over= 0.000%   0.31 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN image_element              max=  0 mean= 0.000 over= 0.000%   0.09 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN image_element_xy           max=  0 mean= 0.000 over= 0.000%   0.05 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN conv_edge                  max= 59 mean= 0.041 over= 0.160%   2.88 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN conv_box                   max=  9 mean= 0.018 over= 0.000%   3.22 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN conv_sharpen_preserve      max=122 mean= 0.075 over= 0.328%   3.32 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN conv_order5                max= 10 mean= 0.018 over= 0.000%   6.25 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN conv_target                max= 16 mean= 0.024 over= 0.042%   3.17 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN tile                       max=  0 mean= 0.000 over= 0.000%   0.84 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN diffuse_distant            max= 13 mean= 0.302 over= 0.013%   4.97 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN diffuse_point              max= 12 mean= 0.403 over= 0.000%   4.78 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN diffuse_spot               max= 46 mean= 0.417 over= 0.367%   8.13 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN specular_distant           max= 32 mean= 0.432 over= 1.470%   7.76 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN specular_point             max= 15 mean= 0.244 over= 0.007%   7.48 ms
+QINFO  : RnsvgFilterTest::goldens() GOLDEN specular_spot              max= 11 mean= 0.143 over= 0.000%  10.33 ms
+PASS   : RnsvgFilterTest::goldens()
+PASS   : RnsvgFilterTest::cleanupTestCase()
+Totals: 44 passed, 0 failed, 0 skipped, 0 blacklisted, 2297ms
+********* Finished testing of RnsvgFilterTest *********
+<end of output>
+Test time =   2.32 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_filter_test" end time: Nov 16 22:19 EST
+"rnqnx_qt_rnsvg_filter_test" time elapsed: 00:00:02
+----------------------------------------------------------
+
+54/61 Testing: rnqnx_qt_rnsvg_fixtures_test
+54/61 Test: rnqnx_qt_rnsvg_fixtures_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_fixtures_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests
+"rnqnx_qt_rnsvg_fixtures_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgFixturesTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgFixturesTest::initTestCase()
+PASS   : RnsvgFixturesTest::fixture(Circle-1)
+PASS   : RnsvgFixturesTest::fixture(Circle-2)
+PASS   : RnsvgFixturesTest::fixture(Circle-3)
+PASS   : RnsvgFixturesTest::fixture(Circle-4)
+PASS   : RnsvgFixturesTest::fixture(Ellipse-1)
+PASS   : RnsvgFixturesTest::fixture(Ellipse-2)
+PASS   : RnsvgFixturesTest::fixture(Ellipse-3)
+PASS   : RnsvgFixturesTest::fixture(Line-1)
+PASS   : RnsvgFixturesTest::fixture(Line-2)
+PASS   : RnsvgFixturesTest::fixture(Polygon-1)
+PASS   : RnsvgFixturesTest::fixture(Polygon-2)
+PASS   : RnsvgFixturesTest::fixture(Polygon-3)
+PASS   : RnsvgFixturesTest::fixture(Polygon-4)
+PASS   : RnsvgFixturesTest::fixture(Polyline-1)
+PASS   : RnsvgFixturesTest::fixture(Polyline-2)
+PASS   : RnsvgFixturesTest::fixture(Polyline-3)
+PASS   : RnsvgFixturesTest::fixture(Polyline-4)
+PASS   : RnsvgFixturesTest::fixture(Path-1)
+PASS   : RnsvgFixturesTest::fixture(Path-2)
+PASS   : RnsvgFixturesTest::fixture(Path-3)
+PASS   : RnsvgFixturesTest::fixture(Rect-1)
+PASS   : RnsvgFixturesTest::fixture(Rect-2)
+PASS   : RnsvgFixturesTest::fixture(Rect-3)
+PASS   : RnsvgFixturesTest::fixture(Rect-4)
+PASS   : RnsvgFixturesTest::fixture(Rect-5)
+PASS   : RnsvgFixturesTest::fixture(ClipPath-1)
+PASS   : RnsvgFixturesTest::fixture(ClipPath-2)
+PASS   : RnsvgFixturesTest::fixture(ClipPath-3)
+PASS   : RnsvgFixturesTest::fixture(G-1)
+PASS   : RnsvgFixturesTest::fixture(G-2)
+PASS   : RnsvgFixturesTest::fixture(LinearGradient-1)
+PASS   : RnsvgFixturesTest::fixture(LinearGradient-2)
+PASS   : RnsvgFixturesTest::fixture(LinearGradient-3)
+PASS   : RnsvgFixturesTest::fixture(LinearGradient-4)
+PASS   : RnsvgFixturesTest::fixture(LinearGradient-5)
+PASS   : RnsvgFixturesTest::fixture(RadialGradient-1)
+PASS   : RnsvgFixturesTest::fixture(RadialGradient-2)
+PASS   : RnsvgFixturesTest::fixture(RadialGradient-3)
+PASS   : RnsvgFixturesTest::fixture(RadialGradient-4)
+PASS   : RnsvgFixturesTest::fixture(RadialGradient-5)
+PASS   : RnsvgFixturesTest::fixture(Image-1)
+PASS   : RnsvgFixturesTest::fixture(Image-2)
+PASS   : RnsvgFixturesTest::fixture(Image-3)
+PASS   : RnsvgFixturesTest::fixture(Marker-1)
+PASS   : RnsvgFixturesTest::fixture(Marker-2)
+PASS   : RnsvgFixturesTest::fixture(Marker-3)
+PASS   : RnsvgFixturesTest::fixture(Marker-4)
+PASS   : RnsvgFixturesTest::fixture(Marker-5)
+PASS   : RnsvgFixturesTest::fixture(Mask-1)
+PASS   : RnsvgFixturesTest::fixture(Mask-2)
+PASS   : RnsvgFixturesTest::fixture(Mask-3)
+PASS   : RnsvgFixturesTest::fixture(Use-1)
+PASS   : RnsvgFixturesTest::fixture(Use-2)
+PASS   : RnsvgFixturesTest::fixture(Use-3)
+PASS   : RnsvgFixturesTest::fixture(Symbol-1)
+PASS   : RnsvgFixturesTest::fixture(Stroke-1)
+PASS   : RnsvgFixturesTest::fixture(Stroke-2)
+PASS   : RnsvgFixturesTest::fixture(Stroke-3)
+PASS   : RnsvgFixturesTest::fixture(Stroke-4)
+PASS   : RnsvgFixturesTest::fixture(Stroke-5)
+PASS   : RnsvgFixturesTest::fixture(Stroke-6)
+PASS   : RnsvgFixturesTest::fixture(Stroke-7)
+PASS   : RnsvgFixturesTest::fixture(Svg-1)
+PASS   : RnsvgFixturesTest::fixture(Svg-2)
+PASS   : RnsvgFixturesTest::fixture(Svg-3)
+PASS   : RnsvgFixturesTest::fixture(Svg-4)
+PASS   : RnsvgFixturesTest::fixture(Svg-5)
+PASS   : RnsvgFixturesTest::fixture(Text-1)
+PASS   : RnsvgFixturesTest::fixture(Text-2)
+PASS   : RnsvgFixturesTest::fixture(Text-3)
+PASS   : RnsvgFixturesTest::fixture(Text-4)
+PASS   : RnsvgFixturesTest::fixture(TextPath-1)
+PASS   : RnsvgFixturesTest::fixture(TSpan-1)
+PASS   : RnsvgFixturesTest::fixture(Text-5)
+PASS   : RnsvgFixturesTest::fixture(Pattern-1)
+PASS   : RnsvgFixturesTest::fixture(Pattern-2)
+PASS   : RnsvgFixturesTest::fixture(Pattern-3)
+PASS   : RnsvgFixturesTest::fixture(Pattern-4)
+PASS   : RnsvgFixturesTest::fixture(Pattern-5)
+PASS   : RnsvgFixturesTest::fixture(GradientTransform-1)
+PASS   : RnsvgFixturesTest::fixture(GradientTransform-2)
+PASS   : RnsvgFixturesTest::fixture(FeBlend-1)
+PASS   : RnsvgFixturesTest::fixture(FeBlend-1b)
+PASS   : RnsvgFixturesTest::fixture(FeBlend-2)
+PASS   : RnsvgFixturesTest::fixture(FeBlend-3)
+PASS   : RnsvgFixturesTest::fixture(FeColorMatrix-1)
+PASS   : RnsvgFixturesTest::fixture(FeColorMatrix-2)
+PASS   : RnsvgFixturesTest::fixture(FeColorMatrix-3)
+PASS   : RnsvgFixturesTest::fixture(FeColorMatrix-4)
+PASS   : RnsvgFixturesTest::fixture(FeColorMatrix-5)
+PASS   : RnsvgFixturesTest::fixture(FeColorMatrix-6)
+PASS   : RnsvgFixturesTest::fixture(FeColorMatrix-7)
+PASS   : RnsvgFixturesTest::fixture(FeDropShadow-1)
+PASS   : RnsvgFixturesTest::fixture(FeDropShadow-2)
+PASS   : RnsvgFixturesTest::fixture(FeFlood-1)
+PASS   : RnsvgFixturesTest::fixture(FeFlood-2)
+PASS   : RnsvgFixturesTest::fixture(FeFlood-3)
+PASS   : RnsvgFixturesTest::fixture(FeFlood-4)
+PASS   : RnsvgFixturesTest::fixture(FeGaussianBlur-1)
+PASS   : RnsvgFixturesTest::fixture(FeGaussianBlur-2)
+PASS   : RnsvgFixturesTest::fixture(FeGaussianBlur-3)
+PASS   : RnsvgFixturesTest::fixture(FeGaussianBlur-4)
+PASS   : RnsvgFixturesTest::fixture(FeMerge-1)
+PASS   : RnsvgFixturesTest::fixture(FeMerge-2)
+PASS   : RnsvgFixturesTest::fixture(FeOffset-2)
+PASS   : RnsvgFixturesTest::fixture(FeMerge-3)
+PASS   : RnsvgFixturesTest::fixture(FeMerge-4)
+PASS   : RnsvgFixturesTest::fixture(FeOffset-1)
+PASS   : RnsvgFixturesTest::fixture(FeComposite-1)
+PASS   : RnsvgFixturesTest::fixture(FeComposite-8)
+PASS   : RnsvgFixturesTest::fixture(FeComposite-2)
+PASS   : RnsvgFixturesTest::fixture(FeComposite-3)
+PASS   : RnsvgFixturesTest::fixture(FeComposite-4)
+PASS   : RnsvgFixturesTest::fixture(FeComposite-5)
+PASS   : RnsvgFixturesTest::fixture(FeComposite-6)
+PASS   : RnsvgFixturesTest::fixture(FeComposite-7)
+PASS   : RnsvgFixturesTest::fixture(Test1374-1)
+PASS   : RnsvgFixturesTest::fixture(Test1374-2)
+PASS   : RnsvgFixturesTest::fixture(Test1374-3)
+PASS   : RnsvgFixturesTest::fixture(Test1790-1)
+PASS   : RnsvgFixturesTest::fixture(Test1813-1)
+PASS   : RnsvgFixturesTest::fixture(Test1813-1b)
+PASS   : RnsvgFixturesTest::fixture(Test1813-2)
+PASS   : RnsvgFixturesTest::fixture(Test2170-1)
+PASS   : RnsvgFixturesTest::fixture(Test2276-1)
+PASS   : RnsvgFixturesTest::fixture(Test2363-1)
+PASS   : RnsvgFixturesTest::fixture(Test2363-2)
+PASS   : RnsvgFixturesTest::fixture(Test2380-1)
+PASS   : RnsvgFixturesTest::fixture(Test2080-1)
+PASS   : RnsvgFixturesTest::fixture(Test2266-1)
+PASS   : RnsvgFixturesTest::fixture(Test2417-1)
+PASS   : RnsvgFixturesTest::fixture(Test2417-2)
+PASS   : RnsvgFixturesTest::fixture(Test2455-1)
+PASS   : RnsvgFixturesTest::fixture(Test2520-1)
+PASS   : RnsvgFixturesTest::fixture(Test2923-1)
+PASS   : RnsvgFixturesTest::fixture(Test2086-1)
+PASS   : RnsvgFixturesTest::fixture(Test2086-2)
+PASS   : RnsvgFixturesTest::fixture(Test2248-1)
+PASS   : RnsvgFixturesTest::fixture(Test2403-1)
+PASS   : RnsvgFixturesTest::fixture(Test1451-1)
+PASS   : RnsvgFixturesTest::fixture(Test2670-1)
+PASS   : RnsvgFixturesTest::fixture(Test2670-2)
+PASS   : RnsvgFixturesTest::fixture(Test2089-1)
+PASS   : RnsvgFixturesTest::fixture(Test2407-1)
+PASS   : RnsvgFixturesTest::fixture(Test2142-1)
+PASS   : RnsvgFixturesTest::fixture(Test2142-2)
+PASS   : RnsvgFixturesTest::fixture(Test2142-3)
+PASS   : RnsvgFixturesTest::fixture(FilterImage-1)
+PASS   : RnsvgFixturesTest::fixture(FilterImage-2)
+PASS   : RnsvgFixturesTest::fixture(FilterImage-3)
+PASS   : RnsvgFixturesTest::fixture(FilterImage-4)
+PASS   : RnsvgFixturesTest::fixture(FilterImage-5)
+PASS   : RnsvgFixturesTest::fixture(FilterImage-6)
+PASS   : RnsvgFixturesTest::fixture(Test1442-1)
+PASS   : RnsvgFixturesTest::fixture(Test1813-3)
+PASS   : RnsvgFixturesTest::fixture(Complex-1)
+PASS   : RnsvgFixturesTest::fixture(Complex-2)
+PASS   : RnsvgFixturesTest::fixture(Empty-1)
+QINFO  : RnsvgFixturesTest::cleanupTestCase() rnsvg-fixtures: 149 passed, 0 pending, 0 failed, 9 smoke-only (no reference image)
+PASS   : RnsvgFixturesTest::cleanupTestCase()
+Totals: 160 passed, 0 failed, 0 skipped, 0 blacklisted, 2003ms
+********* Finished testing of RnsvgFixturesTest *********
+<end of output>
+Test time =   2.04 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_fixtures_test" end time: Nov 16 22:19 EST
+"rnqnx_qt_rnsvg_fixtures_test" time elapsed: 00:00:02
+----------------------------------------------------------
+
+55/61 Testing: rnqnx_qt_rnsvg_foreignobject_test
+55/61 Test: rnqnx_qt_rnsvg_foreignobject_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_foreignobject_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests
+"rnqnx_qt_rnsvg_foreignobject_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgForeignObjectTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgForeignObjectTest::initTestCase()
+PASS   : RnsvgForeignObjectTest::hiddenUntilPlaced()
+PASS   : RnsvgForeignObjectTest::placementMapsBoxCoordinatesToTheParent()
+PASS   : RnsvgForeignObjectTest::yogaPositionAndSizeDoNotMoveTheBox()
+PASS   : RnsvgForeignObjectTest::clipsLiveChildrenToTheBoxOnScreen()
+PASS   : RnsvgForeignObjectTest::childrenOutsideTheBoxAreNotHit()
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(NaN translation)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(infinite scale)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(zero scale)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(scale 1e300)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(determinant 1e-16)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(zero width)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(zero height)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(negative width)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(NaN width)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(infinite height)
+PASS   : RnsvgForeignObjectTest::hugeBoxIsClamped()
+PASS   : RnsvgForeignObjectTest::deletingTheItemWithTheTransformAttachedIsSafe()
+PASS   : RnsvgForeignObjectTest::cleanupTestCase()
+Totals: 19 passed, 0 failed, 0 skipped, 0 blacklisted, 3ms
+********* Finished testing of RnsvgForeignObjectTest *********
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_foreignobject_test" end time: Nov 16 22:19 EST
+"rnqnx_qt_rnsvg_foreignobject_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+56/61 Testing: rnqnx_qt_rnsvg_image_test
+56/61 Test: rnqnx_qt_rnsvg_image_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_image_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests
+"rnqnx_qt_rnsvg_image_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgImageTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgImageTest::initTestCase()
+PASS   : RnsvgImageTest::startsIdleAndEmptyUriStaysIdle()
+PASS   : RnsvgImageTest::immediateSuccessSettlesOnceAndKeepsTheImage()
+PASS   : RnsvgImageTest::deferredSuccessIsLoadingUntilTheProviderCompletes()
+PASS   : RnsvgImageTest::failureReportsTheProviderMessageAndIsNotRetried()
+PASS   : RnsvgImageTest::emptyFailureMessageGetsAGenericOne()
+PASS   : RnsvgImageTest::sameUriWhileLoadingDoesNotStartASecondRequest()
+PASS   : RnsvgImageTest::clearingTheUriCancelsAndGoesIdle()
+PASS   : RnsvgImageTest::changingTheUriCancelsTheOldRequestAndIgnoresItsLateCompletion()
+PASS   : RnsvgImageTest::anOlderCompletionArrivingAfterANewerOneIsIgnored()
+PASS   : RnsvgImageTest::aCompletionDeliveredTwiceSettlesOnce()
+PASS   : RnsvgImageTest::destroyingTheLoaderMidFlightCancelsAndNeverCallsBack()
+PASS   : RnsvgImageTest::aSettledHandlerMayDestroyTheLoader()
+PASS   : RnsvgImageTest::aSettledHandlerMayStartTheNextLoad()
+PASS   : RnsvgImageTest::oversizeAndEmptyResultsFail()
+PASS   : RnsvgImageTest::decodesBase64AndPercentEncodedDataUris()
+libpng error: Read Error
+libpng error: Read Error
+PASS   : RnsvgImageTest::rejectsMalformedHostileDataUris()
+PASS   : RnsvgImageTest::dataUriOverTheCharacterBoundIsRejectedWithoutDecoding()
+PASS   : RnsvgImageTest::rasterOverTheDimensionBoundFailsBeforeAllocation()
+PASS   : RnsvgImageTest::garbageAndEmptyBytesFail()
+PASS   : RnsvgImageTest::svgDecodesThroughThePluginOrNamesTheMissingPlugin()
+PASS   : RnsvgImageTest::svgBase64DataUriAndGiantSvgAreBounded()
+PASS   : RnsvgImageTest::svgDetectionByMediaTypeExtensionAndContent()
+PASS   : RnsvgImageTest::sameUriKeepsTheLoadedImageAndANewOneClearsIt()
+PASS   : RnsvgImageTest::bindingRepaintsOnCompletionOnlyAndPaintsTheImage()
+PASS   : RnsvgImageTest::staleCompletionNeitherChangesPropsNorRepaints()
+PASS   : RnsvgImageTest::changingTheHrefDropsThePreviousImageImmediately()
+PASS   : RnsvgImageTest::aCommitThatKeepsTheHrefDoesNotReload()
+PASS   : RnsvgImageTest::failedLoadLeavesTheElementEmptyAndSilent()
+PASS   : RnsvgImageTest::loadedCallbackRunsOnceOnALaterEventLoopTurn()
+PASS   : RnsvgImageTest::immediateLoadDoesNotRunTheCallbackInsideTheCommit()
+PASS   : RnsvgImageTest::loadedCallbackIsDroppedWhenTheElementMovesOnOrIsDeleted()
+PASS   : RnsvgImageTest::immediateProviderLoadsInsideTheCommit()
+PASS   : RnsvgImageTest::preserveAspectRatioMeetSliceAndNoneWithALoadedImage()
+PASS   : RnsvgImageTest::destroyingTheElementMidFlightNeverTouchesItAgain()
+PASS   : RnsvgImageTest::destroyingTheRootMidFlightNeverTouchesTheTreeAgain()
+PASS   : RnsvgImageTest::manyElementsLoadIndependently()
+PASS   : RnsvgImageTest::cleanupTestCase()
+Totals: 38 passed, 0 failed, 0 skipped, 0 blacklisted, 252ms
+********* Finished testing of RnsvgImageTest *********
+<end of output>
+Test time =   0.29 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_image_test" end time: Nov 16 22:19 EST
+"rnqnx_qt_rnsvg_image_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+57/61 Testing: rnqnx_qt_rnsvg_loader_test
+57/61 Test: rnqnx_qt_rnsvg_loader_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_loader_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests
+"rnqnx_qt_rnsvg_loader_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgLoaderTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgLoaderTest::initTestCase()
+PASS   : RnsvgLoaderTest::attributesBeatStyleDeclarations()
+PASS   : RnsvgLoaderTest::kebabAndColonNamesAreCamelCased()
+PASS   : RnsvgLoaderTest::brushesFollowExtractBrush()
+PASS   : RnsvgLoaderTest::fillDefaultsToBlackWithoutJoiningThePropList()
+PASS   : RnsvgLoaderTest::dasharrayOddListsAreDoubled()
+PASS   : RnsvgLoaderTest::transformStringsCompose()
+PASS   : RnsvgLoaderTest::invalidTransformBecomesIdentity()
+PASS   : RnsvgLoaderTest::lengthsHandleUnitsAndGarbage()
+PASS   : RnsvgLoaderTest::viewBoxParsing()
+PASS   : RnsvgLoaderTest::polylinePointsKeepTheUpstreamFirstMinusQuirk()
+PASS   : RnsvgLoaderTest::textChildrenFollowExtractText()
+PASS   : RnsvgLoaderTest::gradientStopsTakeAlphaFromStopOpacity()
+PASS   : RnsvgLoaderTest::radialGradientFallsBackToR()
+PASS   : RnsvgLoaderTest::styleSheetsApplyOnlyWhenAsked()
+PASS   : RnsvgLoaderTest::unknownAndUnmountedTagsAreReported()
+PASS   : RnsvgLoaderTest::rootOpacityColorAndViewBox()
+PASS   : RnsvgLoaderTest::malformedAndHostileDocuments()
+PASS   : RnsvgLoaderTest::manyElementsStayBounded()
+PASS   : RnsvgLoaderTest::markerPatternSymbolProps()
+PASS   : RnsvgLoaderTest::filterElementsAndDropShadowExpansion()
+PASS   : RnsvgLoaderTest::textPathProps()
+PASS   : RnsvgLoaderTest::imageDiffMeasuresFailureModes()
+PASS   : RnsvgLoaderTest::imageDiffRefusesBadInput()
+PASS   : RnsvgLoaderTest::cleanupTestCase()
+Totals: 25 passed, 0 failed, 0 skipped, 0 blacklisted, 464ms
+********* Finished testing of RnsvgLoaderTest *********
+<end of output>
+Test time =   0.50 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_loader_test" end time: Nov 16 22:19 EST
+"rnqnx_qt_rnsvg_loader_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+58/61 Testing: rnqnx_qt_rnsvg_test
+58/61 Test: rnqnx_qt_rnsvg_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests
+"rnqnx_qt_rnsvg_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgRenderTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgRenderTest::initTestCase()
+PASS   : RnsvgRenderTest::pathParserHandlesAllCommands()
+PASS   : RnsvgRenderTest::pathParserKeepsValidPrefixOnError()
+PASS   : RnsvgRenderTest::primitivesFillAndStroke()
+PASS   : RnsvgRenderTest::rectRoundedCornersAndPercentLengths()
+PASS   : RnsvgRenderTest::viewBoxMapsUserSpace()
+PASS   : RnsvgRenderTest::fillRuleEvenOddPunchesHole()
+PASS   : RnsvgRenderTest::inheritanceFollowsPropList()
+PASS   : RnsvgRenderTest::currentColorUsesNearestColor()
+PASS   : RnsvgRenderTest::opacityAppliesToGroupAsAUnit()
+PASS   : RnsvgRenderTest::linearGradientFillsObjectBoundingBox()
+PASS   : RnsvgRenderTest::radialGradientAndUserSpaceUnits()
+PASS   : RnsvgRenderTest::gradientStopAlphaAndMissingServer()
+PASS   : RnsvgRenderTest::useInstantiatesDefinitionWithTranslation()
+PASS   : RnsvgRenderTest::clipPathRestrictsPainting()
+PASS   : RnsvgRenderTest::maskModulatesByLuminanceAndAlpha()
+PASS   : RnsvgRenderTest::textRendersAndAnchors()
+PASS   : RnsvgRenderTest::imageDrawsWithAspectRatio()
+PASS   : RnsvgRenderTest::hitTestingPicksTopmostResponsibleElement()
+PASS   : RnsvgRenderTest::hitTestingHonorsTransformsGroupsAndPointerEvents()
+PASS   : RnsvgRenderTest::propUpdatesRepaintWithoutRemount()
+PASS   : RnsvgRenderTest::insertRemoveAndOrderChangePaintOrder()
+PASS   : RnsvgRenderTest::destroyingRootReleasesElements()
+PASS   : RnsvgRenderTest::cyclicUseAndDeepNestingTerminate()
+PASS   : RnsvgRenderTest::cleanupTestCase()
+Totals: 25 passed, 0 failed, 0 skipped, 0 blacklisted, 33ms
+********* Finished testing of RnsvgRenderTest *********
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_test" end time: Nov 16 22:19 EST
+"rnqnx_qt_rnsvg_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+59/61 Testing: rnqnx_qt_rnsvg_scene_test
+59/61 Test: rnqnx_qt_rnsvg_scene_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_scene_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests
+"rnqnx_qt_rnsvg_scene_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgSceneTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgSceneTest::initTestCase()
+PASS   : RnsvgSceneTest::vertexRecorderFollowsPathData()
+PASS   : RnsvgSceneTest::clipRuleEvenOddOnTheReferencingElement()
+PASS   : RnsvgSceneTest::clipRuleOnAShapeInsideTheClipPath()
+PASS   : RnsvgSceneTest::clipPathOfAClipPathIntersects()
+PASS   : RnsvgSceneTest::groupLayersCoverOnlyTheGroupsExtent()
+PASS   : RnsvgSceneTest::filterFreeMaskLayerIsBoundedByTheMaskedElement()
+PASS   : RnsvgSceneTest::hitTestingHonorsClipPath()
+PASS   : RnsvgSceneTest::hitTestingHonorsMask()
+PASS   : RnsvgSceneTest::pointerEventsSelectsTheHitRegion()
+PASS   : RnsvgSceneTest::boxNoneGroupStillPassesPressesToChildren()
+PASS   : RnsvgSceneTest::userSpacePatternRepeatsItsTile()
+PASS   : RnsvgSceneTest::boundingBoxPatternScalesWithTheElement()
+PASS   : RnsvgSceneTest::patternViewBoxMapsContentIntoTheTile()
+PASS   : RnsvgSceneTest::patternFillOpacityApplies()
+PASS   : RnsvgSceneTest::useOfASymbolFitsItsViewBox()
+PASS   : RnsvgSceneTest::symbolIsNotDrawnByItself()
+PASS   : RnsvgSceneTest::markerEndOrientsAlongThePath()
+PASS   : RnsvgSceneTest::markerUnitsScaleWithStrokeWidth()
+PASS   : RnsvgSceneTest::markerStartAndMidAreDrawnAtVertices()
+PASS   : RnsvgSceneTest::markerContentUsesContextPaint()
+PASS   : RnsvgSceneTest::gradientSpreadMethods()
+PASS   : RnsvgSceneTest::dashesAlternateAlongTheStroke()
+PASS   : RnsvgSceneTest::dashOffsetShiftsThePattern()
+PASS   : RnsvgSceneTest::lineCapsExtendTheStroke()
+PASS   : RnsvgSceneTest::miterLimitBevelsSharpCorners()
+PASS   : RnsvgSceneTest::nonScalingStrokeKeepsItsWidthUnderAViewBox()
+PASS   : RnsvgSceneTest::selfReferencingPaintServersAndMarkersTerminate()
+PASS   : RnsvgSceneTest::degenerateValuesDoNotCrash()
+PASS   : RnsvgSceneTest::nestedSvgPaintsInlineWithItsOwnViewBox()
+PASS   : RnsvgSceneTest::nestedPropChangesScheduleTheVisiblePaintingRoot()
+PASS   : RnsvgSceneTest::nestedSvgElementsTakeTouches()
+PASS   : RnsvgSceneTest::removingNestedSvgChildRepaintsVisibleRoot()
+PASS   : RnsvgSceneTest::nestedRootsWithinNestedRootsContributeToGroupBounds()
+PASS   : RnsvgSceneTest::foreignObjectIsPlacedThroughEveryAncestorTransform()
+PASS   : RnsvgSceneTest::elementBoundsAreInRootCoordinates()
+PASS   : RnsvgSceneTest::boundsOfManyElementsTakeOneTraversal()
+PASS   : RnsvgSceneTest::clipPathCyclesWithBranchingTerminateQuickly()
+PASS   : RnsvgSceneTest::markerThatUsesItselfTerminatesWhenMeasured()
+PASS   : RnsvgSceneTest::useOfASymbolWithAViewBoxKeepsItsWholeLayer()
+PASS   : RnsvgSceneTest::groupWithNestedSvgKeepsItsContentWhenItNeedsALayer()
+PASS   : RnsvgSceneTest::nestedSvgDirectlyUnderTheRootPaintsOnce()
+PASS   : RnsvgSceneTest::foreignObjectInsideDefsIsNotPlaced()
+PASS   : RnsvgSceneTest::symbolViewportClipsTouches()
+PASS   : RnsvgSceneTest::invalidViewBoxIsIgnored()
+PASS   : RnsvgSceneTest::pointerEventsNoneShieldsLiveChildren()
+PASS   : RnsvgSceneTest::useGroupOpacityIsApplied()
+PASS   : RnsvgSceneTest::cleanupTestCase()
+Totals: 48 passed, 0 failed, 0 skipped, 0 blacklisted, 453ms
+********* Finished testing of RnsvgSceneTest *********
+<end of output>
+Test time =   0.48 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_scene_test" end time: Nov 16 22:19 EST
+"rnqnx_qt_rnsvg_scene_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+60/61 Testing: rnqnx_qt_rnsvg_text_test
+60/61 Test: rnqnx_qt_rnsvg_text_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_text_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests
+"rnqnx_qt_rnsvg_text_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgTextTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgTextTest::initTestCase()
+PASS   : RnsvgTextTest::firstGlyphSitsAtTheStartPosition()
+PASS   : RnsvgTextTest::advanceBoxCoversTheAdvanceOfTheString()
+PASS   : RnsvgTextTest::outputIsGroupedPerNodeInDocumentOrder()
+PASS   : RnsvgTextTest::anchorAppliesToTheChunkAcrossSpans()
+PASS   : RnsvgTextTest::endAnchorUsesTheWholeChunk()
+PASS   : RnsvgTextTest::absoluteXStartsANewChunk()
+PASS   : RnsvgTextTest::absoluteYStartsANewChunkAndMovesTheBaseline()
+PASS   : RnsvgTextTest::rotateListAppliesPerGlyphAndTheLastValueRepeats()
+PASS   : RnsvgTextTest::rotatedGlyphTurnsAboutItsOrigin()
+PASS   : RnsvgTextTest::dxAccumulatesAcrossCharacters()
+PASS   : RnsvgTextTest::dyAccumulatesAndYReplaces()
+PASS   : RnsvgTextTest::listIndexCountsAcrossTheWholeSubtree()
+PASS   : RnsvgTextTest::aSpansOwnListBeatsItsParents()
+PASS   : RnsvgTextTest::rotateInASpanDoesNotLeakToItsSiblings()
+PASS   : RnsvgTextTest::nonFiniteListEntriesLeaveTheCharacterUnchanged()
+PASS   : RnsvgTextTest::letterSpacingAddsAfterEveryGlyph()
+PASS   : RnsvgTextTest::wordSpacingWidensOnlySpaces()
+PASS   : RnsvgTextTest::autoKerningUsesTheFontsPairs()
+PASS   : RnsvgTextTest::numericKerningReplacesFontKerningAndPrecedesEachGlyph()
+PASS   : RnsvgTextTest::ligaturesFormAndSwitchOff()
+PASS   : RnsvgTextTest::aLigatureBreaksWhenItsSecondCharacterIsPositioned()
+PASS   : RnsvgTextTest::fontStretchScalesAdvancesAndOutlines()
+PASS   : RnsvgTextTest::weightPicksTheBoldFace()
+PASS   : RnsvgTextTest::aBoldRequestWithoutABoldFaceThickensTheOutlines()
+PASS   : RnsvgTextTest::italicSlantsTheOutlines()
+PASS   : RnsvgTextTest::monospaceFamilyGivesEqualAdvances()
+PASS   : RnsvgTextTest::textLengthSpacingHitsTheRequestedAdvanceExactly()
+PASS   : RnsvgTextTest::textLengthSpacingAndGlyphsScalesTheGlyphs()
+PASS   : RnsvgTextTest::textLengthOnTheRootCoversItsSpans()
+PASS   : RnsvgTextTest::aNestedTextLengthGovernsItsOwnText()
+PASS   : RnsvgTextTest::invalidTextLengthIsIgnored()
+PASS   : RnsvgTextTest::numericBaselineShiftRaisesTheText()
+PASS   : RnsvgTextTest::subAndSuperUseTheFontsOs2Offsets()
+PASS   : RnsvgTextTest::alignmentBaselineMovesTheBoxByFontMetrics()
+PASS   : RnsvgTextTest::topAndBottomAlignmentIgnoreBaselineShift()
+PASS   : RnsvgTextTest::verticalAlignFillsUnsetFieldsAndSpansInheritBaselines()
+PASS   : RnsvgTextTest::underlineFollowsTheFontsPostTable()
+PASS   : RnsvgTextTest::overlineAndLineThroughPositions()
+PASS   : RnsvgTextTest::combinedDecorationsGiveOneRectangleEach()
+PASS   : RnsvgTextTest::decorationFollowsTheShiftedBaselineAndEachSpanOwnsItsLine()
+PASS   : RnsvgTextTest::decorationOnAVerticalTextPathRunsAlongThePath()
+PASS   : RnsvgTextTest::inlineSizeWrapsAtSpaces()
+PASS   : RnsvgTextTest::inlineSizeAlignsEachLineByTheAnchor()
+PASS   : RnsvgTextTest::inlineSizeKeepsAnOverlongWordWhole()
+PASS   : RnsvgTextTest::glyphsRunAlongAStraightPath()
+PASS   : RnsvgTextTest::startOffsetInUnitsAndPercent()
+PASS   : RnsvgTextTest::glyphsBeyondThePathEndAreOmitted()
+PASS   : RnsvgTextTest::glyphsWhoseMidpointIsBeforeThePathStartAreOmitted()
+PASS   : RnsvgTextTest::midpointsLieOnADiagonalPathAndRotateWithIt()
+PASS   : RnsvgTextTest::midpointsLieOnACirclePerpendicularToTheRadius()
+PASS   : RnsvgTextTest::midpointsLieOnQuadraticAndCubicCurves()
+PASS   : RnsvgTextTest::aClosedPathIsTraversedOnce()
+PASS   : RnsvgTextTest::sideRightReversesThePath()
+PASS   : RnsvgTextTest::anchorShiftsTheTextAlongThePath()
+PASS   : RnsvgTextTest::dyOffsetsAcrossThePath()
+PASS   : RnsvgTextTest::onlyTheFirstSubpathCarriesText()
+PASS   : RnsvgTextTest::midLineSmoothTurnsGraduallyAndSharpSnapsAtACorner()
+PASS   : RnsvgTextTest::spacingAutoAndExactPlaceGlyphsAlike()
+PASS   : RnsvgTextTest::stretchBendsGlyphsOntoACurve()
+PASS   : RnsvgTextTest::stretchKeepsAStraightPathIntact()
+PASS   : RnsvgTextTest::hebrewRunsLayOutRightToLeft()
+PASS   : RnsvgTextTest::arabicShapesAndRunsRightToLeft()
+PASS   : RnsvgTextTest::mixedDirectionKeepsTheLatinRunsInOrder()
+PASS   : RnsvgTextTest::aHugeStringIsCappedWithAPartialResult()
+PASS   : RnsvgTextTest::aDeepTreeIsCut()
+PASS   : RnsvgTextTest::aBreadthOfEmptyNodesIsCut()
+PASS   : RnsvgTextTest::manySmallNodesFinishQuickly()
+PASS   : RnsvgTextTest::invalidFontSizesDrawNothing()
+PASS   : RnsvgTextTest::nonFiniteStartAndSpacingDoNotPoisonTheResult()
+PASS   : RnsvgTextTest::hostilePathsAndOffsetsTerminate()
+PASS   : RnsvgTextTest::hostileInlineSizeAndTextLengthTerminate()
+QINFO  : RnsvgTextTest::matchesResvg(basic) basic: 0.6125% of pixels differ by more than 12, mean difference 0.1986
+PASS   : RnsvgTextTest::matchesResvg(basic)
+QINFO  : RnsvgTextTest::matchesResvg(anchor-spans) anchor-spans: 0.5125% of pixels differ by more than 12, mean difference 0.1642
+PASS   : RnsvgTextTest::matchesResvg(anchor-spans)
+QINFO  : RnsvgTextTest::matchesResvg(lists) lists: 0.1012% of pixels differ by more than 12, mean difference 0.0730
+PASS   : RnsvgTextTest::matchesResvg(lists)
+QINFO  : RnsvgTextTest::matchesResvg(spacing) spacing: 0.2437% of pixels differ by more than 12, mean difference 0.0742
+PASS   : RnsvgTextTest::matchesResvg(spacing)
+QINFO  : RnsvgTextTest::matchesResvg(textlength-spacing) textlength-spacing: 0.3488% of pixels differ by more than 12, mean difference 0.1205
+PASS   : RnsvgTextTest::matchesResvg(textlength-spacing)
+QINFO  : RnsvgTextTest::matchesResvg(textlength-glyphs) textlength-glyphs: 0.6012% of pixels differ by more than 12, mean difference 0.1694
+PASS   : RnsvgTextTest::matchesResvg(textlength-glyphs)
+QINFO  : RnsvgTextTest::matchesResvg(textpath) textpath: 0.8662% of pixels differ by more than 12, mean difference 0.3014
+PASS   : RnsvgTextTest::matchesResvg(textpath)
+QINFO  : RnsvgTextTest::matchesResvg(baseline) baseline: 0.2550% of pixels differ by more than 12, mean difference 0.0897
+PASS   : RnsvgTextTest::matchesResvg(baseline)
+QINFO  : RnsvgTextTest::matchesResvg(decoration) decoration: 2.0550% of pixels differ by more than 12, mean difference 0.5693
+PASS   : RnsvgTextTest::matchesResvg(decoration)
+QINFO  : RnsvgTextTest::matchesResvg(fonts) fonts: 1.2750% of pixels differ by more than 12, mean difference 0.3778
+PASS   : RnsvgTextTest::matchesResvg(fonts)
+QINFO  : RnsvgTextTest::matchesResvg(bidi) bidi: 0.6888% of pixels differ by more than 12, mean difference 0.2049
+PASS   : RnsvgTextTest::matchesResvg(bidi)
+PASS   : RnsvgTextTest::goldenToleranceRejectsAShiftedLayout()
+PASS   : RnsvgTextTest::stringPropsMapToTheEngineEnums()
+PASS   : RnsvgTextTest::cleanupTestCase()
+Totals: 86 passed, 0 failed, 0 skipped, 0 blacklisted, 1661ms
+********* Finished testing of RnsvgTextTest *********
+<end of output>
+Test time =   1.69 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_text_test" end time: Nov 16 22:19 EST
+"rnqnx_qt_rnsvg_text_test" time elapsed: 00:00:01
+----------------------------------------------------------
+
+61/61 Testing: rnqnx_qt_video_test
+61/61 Test: rnqnx_qt_video_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/video-tests/rnqnx_qt_video_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/video-tests
+"rnqnx_qt_video_test" start time: Nov 16 22:19 EST
+Output:
+----------------------------------------------------------
+********* Start testing of VideoItemTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+QINFO  : VideoItemTest::initTestCase() qt.multimedia.ffmpeg: Using Qt multimedia with FFmpeg version 7.1.3 LGPL version 2.1 or later
+QWARN  : VideoItemTest::initTestCase() qt.multimedia.ffmpeg.mediadataholder: Could not open media. FFmpeg error description: No such file or directory
+PASS   : VideoItemTest::initTestCase()
+PASS   : VideoItemTest::resolvesSources()
+[W][22:19:16.630606] pw.conf      | [          conf.c: 1182 try_load_conf()] can't load config client.conf: No such file or directory
+[E][22:19:16.630640] pw.conf      | [          conf.c: 1215 pw_conf_load_conf_for_context()] can't load config client.conf: No such file or directory
+socket(): Operation not permitted
+socket(): Operation not permitted
+QWARN  : VideoItemTest::playsSeeksAndEnds() PulseAudioService: pa_context_connect() failed
+Input #0, matroska,webm, from '/workspace/scratch/252a22fac759/rnqnx-pr149/tests/native/qt-video/clip.webm':
+  Metadata:
+    ENCODER         : Lavf63.1.102
+  Duration: 00:00:01.00, start: 0.000000, bitrate: 77 kb/s
+  Stream #0:0: Video: vp8, yuv420p(tv, progressive), 160x90, SAR 1:1 DAR 16:9, 12 fps, 12 tbr, 1k tbn
+      Metadata:
+        ENCODER         : Lavc63.1.102 libvpx
+        DURATION        : 00:00:01.000000000
+QINFO  : VideoItemTest::playsSeeksAndEnds() qt.multimedia.playbackengine.codec: "No HW decoder found"
+PASS   : VideoItemTest::playsSeeksAndEnds()
+QWARN  : VideoItemTest::reportsBadSource() qt.multimedia.ffmpeg.mediadataholder: Could not open media. FFmpeg error description: No such file or directory
+PASS   : VideoItemTest::reportsBadSource()
+PASS   : VideoItemTest::destroysItsPlayer()
+PASS   : VideoItemTest::cleanupTestCase()
+Totals: 6 passed, 0 failed, 0 skipped, 0 blacklisted, 599ms
+********* Finished testing of VideoItemTest *********
+<end of output>
+Test time =   0.62 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_video_test" end time: Nov 16 22:19 EST
+"rnqnx_qt_video_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 16 22:19 EST

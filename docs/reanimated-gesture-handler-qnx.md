@@ -82,6 +82,17 @@ Began until the other fails or ends. Input is Qt mouse and touch events,
 observed by an event filter that never consumes them, so React responders and
 `Pressable` keep working beside it.
 
+Detaching, disabling or moving a handler cancels its current contact before
+discarding its old attachment. Removing a detector cancels its handlers as one
+batch, so a waiting exclusive tap cannot activate while that detector is being
+removed. Window deactivation and touch cancellation include arbitrary pointer
+IDs and completed taps still waiting for another recognizer. The terminal event
+preserves the last coordinates and pointer count. See the
+[native cancellation receipt](evidence/pr149-cancellation-2026-11-17/README.md)
+for the 24-case registry suite, regression controls and sanitizer scope. The
+linked host fixture above exercises pan; it does not establish full recognizer
+conformance or target input acceptance.
+
 Not implemented: pointer data callbacks (`onTouchesDown` and friends),
 multi-pointer pan averaging, hit-slop, `RNGestureHandlerButton` behavior
 (it mounts as a plain container), arbitration with Qt scrolling, and

@@ -441,6 +441,8 @@ else()
           set_tests_properties(rnqnx_playground_screenshot
             rnqnx_playground_rejects_start_failure
             rnqnx_playground_rejects_stop_failure PROPERTIES TIMEOUT 30)
+          include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxPlaygroundErrorTests.cmake)
+          rnqnx_add_playground_error_tests()
 
           # ASan's allocator is installed process-wide by interposition, so
           # heap use-after-free is caught in the React Native and Qt libraries
