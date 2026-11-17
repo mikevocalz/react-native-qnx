@@ -1,0 +1,307 @@
+{
+  "backtraceGraph": {
+    "commands": [
+      "add_test"
+    ],
+    "files": [
+      "/workspace/scratch/252a22fac759/rnqnx-pr161/tests/native/qt-rnsvg/CMakeLists.txt"
+    ],
+    "nodes": [
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 60,
+        "parent": 0
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 60,
+        "parent": 2
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 60,
+        "parent": 4
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 60,
+        "parent": 6
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 60,
+        "parent": 8
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 60,
+        "parent": 10
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 60,
+        "parent": 12
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 60,
+        "parent": 14
+      }
+    ]
+  },
+  "kind": "ctestInfo",
+  "tests": [
+    {
+      "backtrace": 1,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan/rnqnx_qt_rnsvg_filter_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_filter_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan"
+        }
+      ]
+    },
+    {
+      "backtrace": 3,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan/rnqnx_qt_rnsvg_fixtures_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_fixtures_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan"
+        }
+      ]
+    },
+    {
+      "backtrace": 5,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan/rnqnx_qt_rnsvg_foreignobject_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_foreignobject_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan"
+        }
+      ]
+    },
+    {
+      "backtrace": 7,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan/rnqnx_qt_rnsvg_image_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_image_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan"
+        }
+      ]
+    },
+    {
+      "backtrace": 9,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan/rnqnx_qt_rnsvg_loader_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_loader_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan"
+        }
+      ]
+    },
+    {
+      "backtrace": 11,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan/rnqnx_qt_rnsvg_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan"
+        }
+      ]
+    },
+    {
+      "backtrace": 13,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan/rnqnx_qt_rnsvg_scene_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_scene_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan"
+        }
+      ]
+    },
+    {
+      "backtrace": 15,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan/rnqnx_qt_rnsvg_text_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_text_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 1,
+    "minor": 0
+  }
+}

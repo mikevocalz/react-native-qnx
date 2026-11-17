@@ -656,6 +656,70 @@ class RnsvgSceneTest final : public QObject {
     QCOMPARE(s.root.hitElement(QPointF(90, 90)), nullptr);
   }
 
+  void resizingNestedSvgRepaintsVisibleRoot() {
+    QQuickWindow window;
+    window.setColor(Qt::white);
+    window.resize(100, 100);
+    Scene s(100, 100);
+    s.root.setParentItem(window.contentItem());
+    auto* nested = new RnsvgRootItem(&s.root);
+    nested->setSize(QSizeF(40, 40));
+    RootProps rp;
+    rp.vbWidth = 10; rp.vbHeight = 10;
+    nested->setRootProps(rp);
+    add(nested, rect(0, 0, 10, 10, Qt::red));
+    QSignalSpy layouts(&s.root, &RnsvgRootItem::sceneLaidOut);
+    window.show();
+    QTRY_VERIFY_WITH_TIMEOUT(layouts.count() > 0, 2000);
+    QTRY_VERIFY_WITH_TIMEOUT(s.root.paintCount() > 0, 2000);
+    QCOMPARE(window.grabWindow().pixelColor(20, 20), QColor(Qt::red));
+    QCOMPARE(window.grabWindow().pixelColor(60, 60), QColor(Qt::white));
+    layouts.clear();
+    const int before = s.root.paintCount();
+    // A layout-only mutation does not replace the retained SVG props.
+    // The hidden nested root must still invalidate the visible texture.
+    nested->setSize(QSizeF(80, 80));
+    QTRY_VERIFY_WITH_TIMEOUT(layouts.count() > 0, 2000);
+    QTRY_VERIFY_WITH_TIMEOUT(s.root.paintCount() > before, 2000);
+    QCOMPARE(window.grabWindow().pixelColor(60, 60), QColor(Qt::red));
+    layouts.clear();
+    const int enlarged = s.root.paintCount();
+    nested->setSize(QSizeF(20, 20));
+    QTRY_VERIFY_WITH_TIMEOUT(layouts.count() > 0, 2000);
+    QTRY_VERIFY_WITH_TIMEOUT(s.root.paintCount() > enlarged, 2000);
+    QCOMPARE(window.grabWindow().pixelColor(10, 10), QColor(Qt::red));
+    QCOMPARE(window.grabWindow().pixelColor(60, 60), QColor(Qt::white));
+  }
+
+  void resizingRootRelayoutsForeignObjectsAndReportedBounds() {
+    QQuickWindow window;
+    window.resize(200, 200);
+    Scene s(100, 100);
+    s.root.setParentItem(window.contentItem());
+    RootProps rp;
+    rp.vbWidth = 100; rp.vbHeight = 100;
+    s.root.setRootProps(rp);
+    auto* child = add(&s.root, rect(10, 20, 20, 10, Qt::red));
+    s.root.watchBounds(child);
+    auto* fo = new RnsvgForeignObjectItem(&s.root);
+    ElementProps p = make(Kind::ForeignObject);
+    p.x = px(10); p.y = px(20); p.width = px(20); p.height = px(10);
+    fo->setProps(p);
+    QSignalSpy layouts(&s.root, &RnsvgRootItem::sceneLaidOut);
+    window.show();
+    QTRY_VERIFY_WITH_TIMEOUT(layouts.count() > 0, 2000);
+    QCOMPARE(fo->mapToItem(&s.root, QPointF()), QPointF(10, 20));
+    QCOMPARE(s.root.reportedBounds(child), QRectF(10, 20, 20, 10));
+    layouts.clear();
+    s.root.setSize(QSizeF(200, 200));
+    // Painting alone updates SVG pixels but leaves the live Qt children and
+    // onSvgLayout's cached bounds at the previous viewBox scale.
+    QTRY_VERIFY_WITH_TIMEOUT(layouts.count() > 0, 2000);
+    QCOMPARE(fo->mapToItem(&s.root, QPointF()), QPointF(20, 40));
+    QCOMPARE(s.root.reportedBounds(child), QRectF(20, 40, 40, 20));
+    s.root.unwatchBounds(child);
+  }
+
   void removingNestedSvgChildRepaintsVisibleRoot() {
     QQuickWindow window;
     window.setColor(Qt::white);
