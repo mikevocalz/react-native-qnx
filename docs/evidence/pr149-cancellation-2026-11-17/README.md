@@ -45,12 +45,12 @@ under the execution environment's ptrace supervision; this is not leak evidence.
 
 ## Sources and decisions
 
-| Source read | Decision |
-| --- | --- |
-| Installed `react-native-gesture-handler@3.4.0`, `android/src/main/java/com/swmansion/gesturehandler/core/GestureHandler.kt`, `isEnabled`, `cancel()` and `fail()` | External cancellation emits `CANCELLED` for both begun and active handlers; recognition failure remains distinct. |
-| Repository `qnx-native-api` and `qnx-platform-validation` skills | Preserve the current renderer, opt-in switches and separate host/target acceptance. |
-| Margelo `api-design`, `build-nitro-modules`, `cpp` at `1e9e17be6f41c838db472d6a4b943fc26355a3be` | Preserve the upstream library contract and the ADR-0020 bootstrap exception; retain one owner and avoid callbacks during mutable container traversal. |
-| Callstack `react-native-best-practices` at `59e9d17446a248b21d86f078fcd0bd2d36db1ca4` | Validate observable native behavior and document the distinction from frame or application performance. |
+| Source read                                                                                                                                                       | Decision                                                                                                                                              |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Installed `react-native-gesture-handler@3.4.0`, `android/src/main/java/com/swmansion/gesturehandler/core/GestureHandler.kt`, `isEnabled`, `cancel()` and `fail()` | External cancellation emits `CANCELLED` for both begun and active handlers; recognition failure remains distinct.                                     |
+| Repository `qnx-native-api` and `qnx-platform-validation` skills                                                                                                  | Preserve the current renderer, opt-in switches and separate host/target acceptance.                                                                   |
+| Margelo `api-design`, `build-nitro-modules`, `cpp` at `1e9e17be6f41c838db472d6a4b943fc26355a3be`                                                                  | Preserve the upstream library contract and the ADR-0020 bootstrap exception; retain one owner and avoid callbacks during mutable container traversal. |
+| Callstack `react-native-best-practices` at `59e9d17446a248b21d86f078fcd0bd2d36db1ca4`                                                                             | Validate observable native behavior and document the distinction from frame or application performance.                                               |
 
 The upstream skill sources were read at the locked revisions. This receipt does
 not claim that they were installed as personal skills. No premium Nitro Forge
