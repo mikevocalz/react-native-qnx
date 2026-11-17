@@ -1,0 +1,125 @@
+Running qnx-expo-host-polyfill.test.mjs
+QNX Expo host polyfill: resolver override and globalThis.expo classes verified.
+Running qnx-expo-module-registration.test.mjs
+{
+  "action": "created",
+  "output": "/tmp/rnqnx-expo-modules-IDlflZ/app/build/qnx/native-app.json",
+  "configuration": {
+    "schemaVersion": 1,
+    "generatedBy": "react-native-qnx/prepare-native-v1",
+    "appId": "org.example.constants",
+    "displayName": "Constants App",
+    "componentName": "ConstantsApp",
+    "platform": "qnx",
+    "bundle": "/tmp/rnqnx-expo-modules-IDlflZ/app/build/qnx/app.hbc",
+    "bundleSha256": "a349357b4f8038fbb7f7910d3ef1995e4d495b18f0245baa386f8f5a53e64ed8",
+    "window": {
+      "controls": "macos",
+      "titleBarStyle": "default"
+    },
+    "expoModules": [
+      {
+        "package": "@rn-qnx/expo-constants-qnx",
+        "version": "0.1.0",
+        "root": "/workspace/scratch/252a22fac759/rnqnx-pr159/packages/expo-constants-qnx",
+        "cmakeLists": "/workspace/scratch/252a22fac759/rnqnx-pr159/packages/expo-constants-qnx/CMakeLists.txt",
+        "target": "expo_constants_qnx",
+        "initializer": "rnqnx::expo::constants::registerModule"
+      }
+    ],
+    "expoConfig": {
+      "name": "Constants App",
+      "slug": "constants-app",
+      "version": "2.3.0",
+      "icon": "./icon.png",
+      "extra": {
+        "rnqnx": {
+          "appId": "org.example.constants",
+          "componentName": "ConstantsApp"
+        }
+      },
+      "platforms": []
+    },
+    "shortName": "Constants App",
+    "icon": {
+      "source": "/tmp/rnqnx-expo-modules-IDlflZ/app/icon.png",
+      "sha256": "032e450b5a53aaee0150b977e643afee0b3514f7331498f996f59960d6d396f0",
+      "sizes": [
+        {
+          "size": 16,
+          "path": "/tmp/rnqnx-expo-modules-IDlflZ/app/build/qnx/icons/icon-16.png",
+          "sha256": "1e62ec5b106dab85d2dce19f55261a84c778ae53aafe343a3f6bd9cb2b7e1cd4"
+        },
+        {
+          "size": 24,
+          "path": "/tmp/rnqnx-expo-modules-IDlflZ/app/build/qnx/icons/icon-24.png",
+          "sha256": "91cbc6c38e3c8c0029d0c366746c75ca64e52edbc769f7077c93673ff3fb322b"
+        },
+        {
+          "size": 32,
+          "path": "/tmp/rnqnx-expo-modules-IDlflZ/app/build/qnx/icons/icon-32.png",
+          "sha256": "0ef494696c1d5792fde371da1ac80c500774fc1c2ced0dcef89ecbff584e405f"
+        },
+        {
+          "size": 48,
+          "path": "/tmp/rnqnx-expo-modules-IDlflZ/app/build/qnx/icons/icon-48.png",
+          "sha256": "a7ac059f09d57154b617be52a1268e9f7857cbffcb373f889cabc7a523666c55"
+        },
+        {
+          "size": 64,
+          "path": "/tmp/rnqnx-expo-modules-IDlflZ/app/build/qnx/icons/icon-64.png",
+          "sha256": "62c0427f7d57063a367052730c50cfa33e9c9001d38fa7146a708640b656d05c"
+        },
+        {
+          "size": 96,
+          "path": "/tmp/rnqnx-expo-modules-IDlflZ/app/build/qnx/icons/icon-96.png",
+          "sha256": "c084a1dfe1cbd60286adb2a1bd2abe6b577ec3a88705761a9b2112616799fb01"
+        },
+        {
+          "size": 128,
+          "path": "/tmp/rnqnx-expo-modules-IDlflZ/app/build/qnx/icons/icon-128.png",
+          "sha256": "3d5917e9759e6e369ac79e5e53897e8bc985fedc991d8769d374e32c99cd3a81"
+        },
+        {
+          "size": 192,
+          "path": "/tmp/rnqnx-expo-modules-IDlflZ/app/build/qnx/icons/icon-192.png",
+          "sha256": "783d75cb1ad6be3259db4934b15d514a9637af3e947beb37879fbfd0522b739b"
+        },
+        {
+          "size": 256,
+          "path": "/tmp/rnqnx-expo-modules-IDlflZ/app/build/qnx/icons/icon-256.png",
+          "sha256": "cb11c310d80215f00aad6d08e30bfb00e4ac0849dc5314722bd4636cf4611622"
+        },
+        {
+          "size": 512,
+          "path": "/tmp/rnqnx-expo-modules-IDlflZ/app/build/qnx/icons/icon-512.png",
+          "sha256": "f1cd4aee203ff0b783aea28aeea405b30a057faeaaaa814d0287e317cdd3cd1e"
+        }
+      ]
+    },
+    "labelFit": {
+      "target": "qnx",
+      "status": "not-measured",
+      "reason": "No QNX launcher is defined in this repository or the QNX SDP, so there is no label box to measure.",
+      "deviceMeasured": false
+    }
+  },
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+Expo module registration: 24 checks passed (discovery, descriptor, plan, CMake host compile; no QNX build or device run).
+Running qnx-public-entry-metro.test.mjs
+public-entry qnx: 717578 bytes (real Metro, runtime separate)
+public-entry marathon: 717619 bytes (real Metro, runtime separate)
+Running qnx-public-entry.test.mjs
+public-entry exports/resolver, Switch styles/events and Image loader contracts passed (host VM only)
+Running qt-package-exports.test.mjs
+qnx Metro / qnx: installed root, subpath and RN fallback passed
+qnx Metro / ios: installed root, subpath and RN fallback passed
+qnx Metro / android: installed root, subpath and RN fallback passed
+qnx Metro / web: installed root, subpath and RN fallback passed
+marathon Metro / marathon: installed root, subpath and RN fallback passed
+marathon Metro / ios: installed root, subpath and RN fallback passed
+marathon Metro / android: installed root, subpath and RN fallback passed
+marathon Metro / web: installed root, subpath and RN fallback passed
+RNQNX_AFFECTED_IMAGE_JS_METRO_OK 5

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "react-native-qnx/views/image/ImageDecode.h"
 #include "react-native-qnx/views/image/ImageLayout.h"
 #include "react-native-qnx/views/image/QtImageFetcher.h"
@@ -283,6 +285,7 @@ class ExpoImageItem : public QQuickPaintedItem {
   QString pendingUrl_;
   QString pendingKey_;
   bool pendingStore_{false};
+  std::uint64_t pendingMemoryGeneration_{0};
 };
 
 }  // namespace rnqnx::views

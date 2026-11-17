@@ -11,8 +11,13 @@
 #include <QTcpSocket>
 #include <QTemporaryFile>
 #include <QThread>
+#include <QThreadPool>
+#include <QScopeGuard>
+#include <QSemaphore>
+#include <QTimer>
 
 #include <iostream>
+#include <functional>
 #include <stdexcept>
 
 using rnqnx::runtime::QtImageCache;
@@ -83,6 +88,99 @@ class Server : public QTcpServer {
     return QStringLiteral("http://127.0.0.1:%1%2").arg(serverPort()).arg(QLatin1String(path));
   }
 };
+
+void pumpUntil(const std::function<bool()>& ready, const char* message) {
+  QElapsedTimer timer;
+  timer.start();
+  while (!ready() && timer.elapsed() < 5000) {
+    QCoreApplication::processEvents();
+    QThread::msleep(1);
+  }
+  check(ready(), message);
+}
+
+void decodeWaitsForWorkerAndHonorsSharedClear(const QByteArray& png) {
+  QTemporaryFile file;
+  check(file.open(), "decode fixture file");
+  check(file.write(png) == png.size() && file.flush(), "decode fixture bytes");
+  auto* pool = QThreadPool::globalInstance();
+  check(pool->waitForDone(5000), "previous workers finished before decode fixture");
+  const int maximum = pool->maxThreadCount();
+  pool->setMaxThreadCount(1);
+  QSemaphore entered, release;
+  bool called = false, ticked = false;
+  Result result;
+  QThread* callbackThread = nullptr;
+  auto cleanup = qScopeGuard([&] {
+    release.release();
+    pool->waitForDone();
+    pool->setMaxThreadCount(maximum);
+    QCoreApplication::processEvents();
+  });
+  QtImageCache cache;
+  QtImageCache clearer;
+  cache.load(file.fileName(), {}, [&](QSize size, QString error) {
+    result = {size, std::move(error)};
+    callbackThread = QThread::currentThread();
+    called = true;
+  });
+  // Finish only the file read; its owner callback has not been delivered.
+  check(pool->waitForDone(5000), "local fetch completed before decode gate");
+  pool->start([&] { entered.release(); release.acquire(); });
+  check(entered.tryAcquire(1, 1000), "decode worker gate started");
+  QCoreApplication::sendPostedEvents();
+  QTimer::singleShot(0, [&] { ticked = true; });
+  pumpUntil([&] { return ticked; }, "owner timer runs while decode waits");
+  check(!called, "decode must wait for its worker after fetch has already finished");
+  // A different loader clears the same decoded cache while decode is pending.
+  clearer.clearMemory();
+  release.release();
+  pumpUntil([&] { return called; }, "deferred decode completes");
+  check(result.error.isEmpty() && result.size == QSize(7, 5), "deferred decode returns dimensions");
+  check(callbackThread == QThread::currentThread(), "decode completion returns to owner");
+  check(!cache.contains(file.fileName()), "old decode must not repopulate a shared cleared cache");
+  check(load(cache, file.fileName()).size == QSize(7, 5), "new load after memory clear succeeds");
+  check(cache.contains(file.fileName()), "new load after memory clear can populate the cache");
+}
+
+void destroyingCacheDropsPendingDecode(const QByteArray& png) {
+  QTemporaryFile file;
+  check(file.open(), "teardown decode fixture file");
+  check(file.write(png) == png.size() && file.flush(), "teardown decode fixture bytes");
+  auto* pool = QThreadPool::globalInstance();
+  check(pool->waitForDone(5000), "previous workers finished before teardown fixture");
+  const int maximum = pool->maxThreadCount();
+  pool->setMaxThreadCount(1);
+  QSemaphore entered, release;
+  bool called = false;
+  QThread* destroyedOn = nullptr;
+  auto state = std::shared_ptr<int>(new int(0), [&](int* value) {
+    destroyedOn = QThread::currentThread();
+    delete value;
+  });
+  std::weak_ptr<int> weak = state;
+  auto cleanup = qScopeGuard([&] {
+    release.release();
+    pool->waitForDone();
+    pool->setMaxThreadCount(maximum);
+    QCoreApplication::processEvents();
+  });
+  auto cache = std::make_unique<QtImageCache>();
+  cache->load(file.fileName(), {}, [&, state](QSize, QString) { called = true; });
+  state.reset();
+  check(pool->waitForDone(5000), "teardown fetch finished before decode gate");
+  pool->start([&] { entered.release(); release.acquire(); });
+  check(entered.tryAcquire(1, 1000), "teardown decode worker gate started");
+  QCoreApplication::sendPostedEvents();
+  check(!called, "teardown decode is pending on its worker");
+  cache.reset();
+  check(weak.expired(), "cache destruction releases pending owner completion captures");
+  check(destroyedOn == QThread::currentThread(), "completion capture is destroyed on owner");
+  release.release();
+  check(pool->waitForDone(5000), "cancelled decoder worker finishes");
+  QCoreApplication::processEvents();
+  check(!called, "decode completion escaped cache destruction");
+}
 }
 int main(int argc, char** argv) {
   QGuiApplication app(argc, argv);
@@ -148,7 +246,9 @@ int main(int argc, char** argv) {
     { QtImageCache temporary; temporary.load(server.url("/slow"), {}, [&](QSize, QString) { called = true; }); }
     QCoreApplication::processEvents();
     check(!called, "callback escaped cache lifetime");
-    std::cout << "RNQNX_IMAGE_CACHE_OK HTTP headers failures timeout limits LRU teardown local-data\n";
+    decodeWaitsForWorkerAndHonorsSharedClear(server.png);
+    destroyingCacheDropsPendingDecode(server.png);
+    std::cout << "RNQNX_IMAGE_CACHE_OK HTTP headers failures timeout limits LRU teardown local-data decode-worker memory-clear\n";
     return 0;
   } catch (const std::exception& error) {
     std::cerr << error.what() << '\n';

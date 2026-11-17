@@ -1,0 +1,8 @@
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 21:37:53.217859 2857656896 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1116 21:37:53.218730 2510157504 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000012f50).
+W1116 21:37:53.218842 2510157504 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004250).
+cache clear during explicit write:
+the invalidated explicit write rejects with an Error
+the old write does not restore disk data
+the old write does not publish a decoded alias

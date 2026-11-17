@@ -26,7 +26,11 @@
 #include <QImageReader>
 #include <QQmlEngine>
 #include <QQuickWindow>
+#include <QScopeGuard>
+#include <QSemaphore>
 #include <QTemporaryDir>
+#include <QThreadPool>
+#include <QTimer>
 
 #include <fstream>
 #include <functional>
@@ -342,6 +346,180 @@ int main(int argc, char** argv) {
     )JS");
     check(failures.empty(), "cache read and write:\n" + failures);
     check(QFile::exists(disk.pathFor(QStringLiteral("key:file-key"))), "the disk cache file for the key exists");
+
+    // An explicit write admitted before clearDiskCache must not restore its
+    // alias when its asynchronous source finishes. Local fetch completion is
+    // queued on the owner thread, so both calls below precede that completion.
+    rig.eval(R"JS(
+      globalThis.__clearedWrite = expo.modules.ExpoImage.writeToCacheAsync(
+        ')JS" + dataUri(png) + R"JS(', 'cleared-write-key'
+      ).then(() => ({ resolved: true }), (error) => ({ error }));
+      globalThis.__diskClear = expo.modules.ExpoImage.clearDiskCache();
+    )JS");
+    failures = rig.runAsync(R"JS(
+      const mod = expo.modules.ExpoImage;
+      expect(await __diskClear === true, 'the disk clear completes');
+      const outcome = await __clearedWrite;
+      expect(outcome.error instanceof Error, 'the invalidated explicit write rejects with an Error');
+      expect(await mod.getCachePathAsync('cleared-write-key') === null, 'the old write does not restore disk data');
+      expect(await mod.readFromCacheAsync('cleared-write-key') === null, 'the old write does not publish a decoded alias');
+      await mod.writeToCacheAsync(')JS" + dataUri(png) + R"JS(', 'cleared-write-key');
+      const current = await mod.readFromCacheAsync('cleared-write-key');
+      expect(current && current.width === 10 && current.height === 6, 'a new write after the clear succeeds');
+      if (current) current.release();
+    )JS");
+    check(failures.empty(), "cache clear during explicit write:\n" + failures);
+
+    // A blocked native pool must leave the owner event loop responsive, with
+    // every ImageRef computation still pending. Releasing the source after
+    // admission is safe because workers own a native image snapshot.
+    failures = rig.runAsync(R"JS(
+      const mod = expo.modules.ExpoImage;
+      globalThis.__workerRef = await mod.loadAsync(')JS" + dataUri(pngBytes(QSize(16, 12), QColor(40, 90, 200))) + R"JS(');
+      await mod.writeToCacheAsync(')JS" + dataUri(png) + R"JS(', 'worker-read-key');
+      await mod.clearMemoryCache();
+    )JS");
+    check(failures.empty(), "worker fixtures:\n" + failures);
+    {
+      auto* pool = QThreadPool::globalInstance();
+      check(pool->waitForDone(5000), "previous image workers finished");
+      const int maximum = pool->maxThreadCount();
+      pool->setMaxThreadCount(1);
+      QSemaphore entered, release;
+      auto cleanup = qScopeGuard([&] {
+        release.release();
+        pool->waitForDone();
+        pool->setMaxThreadCount(maximum);
+      });
+      pool->start([&] { entered.release(); release.acquire(); });
+      check(entered.tryAcquire(1, 1000), "the image worker gate started");
+      rig.eval(R"JS(
+        const mod = expo.modules.ExpoImage;
+        globalThis.__workerCompletions = 0;
+        const record = (pending) => pending.then(
+          (value) => { ++__workerCompletions; return { value }; },
+          (error) => { ++__workerCompletions; return { error }; }
+        );
+        globalThis.__workerPending = [
+          record(mod.loadAsync(__workerRef, { maxWidth: 4, tintColor: 0xFF0000FF | 0 })),
+          record(mod.generateBlurhashAsync(__workerRef, [4, 3])),
+          record(mod.generateThumbhashAsync(__workerRef)),
+          record(mod.writeToCacheAsync(__workerRef, 'worker-write-key')),
+          record(mod.readFromCacheAsync('worker-read-key')),
+        ];
+        __workerRef.release();
+        globalThis.__workerMemoryClear = mod.clearMemoryCache();
+      )JS");
+      bool ticked = false;
+      QTimer::singleShot(0, [&] { ticked = true; });
+      rig.settle([&] { return ticked; }, "the owner timer while image work waits");
+      check(rig.number("__workerCompletions") == 0, "ImageRef operations wait for the worker, not the owner thread");
+      release.release();
+      failures = rig.runAsync(R"JS(
+        expect(await __workerMemoryClear === true, 'the memory clear completes independently of disk');
+        const outcomes = await Promise.all(__workerPending);
+        for (let i = 0; i < outcomes.length; ++i) expect(!outcomes[i].error, 'worker operation ' + i + ' succeeds');
+        const scaled = outcomes[0].value;
+        expect(scaled && scaled.width === 4 && scaled.height === 3, 'worker resize keeps aspect ratio');
+        globalThis.__workerTintId = scaled.__expo_shared_object_id__;
+        expect(outcomes[1].value === __blurRef, 'worker blurhash uses the retained image snapshot');
+        expect(outcomes[2].value === __thumbRef, 'worker thumbhash uses the retained image snapshot');
+        const cached = outcomes[4].value;
+        expect(cached && cached.width === 10 && cached.height === 6, 'disk cache decoding ran after the gate');
+        if (cached) cached.release();
+        const memory = await nativeModuleProxy.ImageLoader.queryCache(['key:worker-write-key']);
+        expect(Object.keys(memory).length === 0, 'the pending explicit write does not repopulate cleared memory');
+        const written = await expo.modules.ExpoImage.readFromCacheAsync('worker-write-key');
+        expect(written && written.width === 16 && written.height === 12, 'worker cache encoding retains a released source');
+        if (written) written.release();
+      )JS");
+      check(failures.empty(), "ImageRef worker results:\n" + failures);
+      const auto tinted = rnqnx::views::ImageRefRegistry::shared().find(
+          static_cast<std::uint32_t>(rig.number("__workerTintId")));
+      check(tinted.image.pixelColor(1, 1) == QColor(Qt::blue), "worker tint preserves the requested colour");
+      rig.eval("nativeModuleProxy.ImageLoader.releaseImage(__workerTintId);");
+    }
+
+    // A disk commit can finish before its owner callback. Clearing in that
+    // window must suppress the decoded alias as well as remove the file.
+    failures = rig.runAsync(R"JS(
+      globalThis.__commitRef = await expo.modules.ExpoImage.loadAsync(')JS" + dataUri(png) + R"JS(');
+    )JS");
+    check(failures.empty(), "commit fixture:\n" + failures);
+    rig.eval(R"JS(
+      globalThis.__committedWrite = expo.modules.ExpoImage.writeToCacheAsync(__commitRef, 'committed-write-key')
+        .then(() => ({ resolved: true }), (error) => ({ error }));
+      __commitRef.release();
+    )JS");
+    check(QThreadPool::globalInstance()->waitForDone(5000), "the cache writer finished before owner delivery");
+    check(disk.contains(QStringLiteral("key:committed-write-key")), "the worker committed the encoded file");
+    rig.eval("globalThis.__commitClear = expo.modules.ExpoImage.clearDiskCache();");
+    failures = rig.runAsync(R"JS(
+      expect(await __commitClear === true, 'the post-commit clear completes');
+      const outcome = await __committedWrite;
+      expect(outcome.error instanceof Error, 'the cleared commit rejects before publishing its alias');
+      expect(await expo.modules.ExpoImage.getCachePathAsync('committed-write-key') === null, 'the committed file stays cleared');
+      expect(await expo.modules.ExpoImage.readFromCacheAsync('committed-write-key') === null, 'the cleared commit has no decoded alias');
+    )JS");
+    check(failures.empty(), "cache clear before owner completion:\n" + failures);
+
+    // Cache path lookup and clear sweep both yield to the image worker pool.
+    // Clear invalidates older writers at admission, before any worker runs.
+    check(disk.write(QStringLiteral("key:deferred-clear-old"), png), "seed deferred clear fixture");
+    failures = rig.runAsync(R"JS(
+      globalThis.__clearWorkerRef = await expo.modules.ExpoImage.loadAsync(')JS" + dataUri(png) + R"JS(');
+    )JS");
+    check(failures.empty(), "deferred clear source:\n" + failures);
+    {
+      auto* pool = QThreadPool::globalInstance();
+      check(pool->waitForDone(5000), "previous workers finished before cache controls");
+      const int maximum = pool->maxThreadCount();
+      pool->setMaxThreadCount(1);
+      QSemaphore entered, release;
+      auto cleanup = qScopeGuard([&] {
+        release.release();
+        pool->waitForDone();
+        pool->setMaxThreadCount(maximum);
+      });
+      pool->start([&] { entered.release(); release.acquire(); });
+      check(entered.tryAcquire(1, 1000), "cache-control worker gate started");
+      const auto previousGeneration = disk.generation();
+      rig.eval(R"JS(
+        const mod = expo.modules.ExpoImage;
+        globalThis.__cacheControlCompletions = 0;
+        const record = (pending) => pending.then(
+          (value) => { ++__cacheControlCompletions; return { value }; },
+          (error) => { ++__cacheControlCompletions; return { error }; }
+        );
+        globalThis.__cacheControlPath = record(mod.getCachePathAsync('deferred-clear-old'));
+        globalThis.__cacheControlClear = record(mod.clearDiskCache());
+        globalThis.__cacheControlWrite = record(mod.writeToCacheAsync(__clearWorkerRef, 'deferred-clear-new'));
+        __clearWorkerRef.release();
+      )JS");
+      check(disk.generation() == previousGeneration + 1, "clear invalidates writers at owner admission");
+      check(QFile::exists(disk.pathFor(QStringLiteral("key:deferred-clear-old"))),
+            "clear defers its filesystem sweep to the worker");
+      bool ticked = false;
+      QTimer::singleShot(0, [&] { ticked = true; });
+      rig.settle([&] { return ticked; }, "owner timer while cache controls wait");
+      check(rig.number("__cacheControlCompletions") == 0, "cache controls wait for the worker");
+      release.release();
+      failures = rig.runAsync(R"JS(
+        const [path, clear, write] = await Promise.all([
+          __cacheControlPath, __cacheControlClear, __cacheControlWrite
+        ]);
+        expect(!path.error && path.value === null, 'pending path lookup observes the admitted clear');
+        expect(!clear.error && clear.value === true, 'the deferred sweep reports success');
+        expect(!write.error, 'the post-clear write succeeds');
+        const mod = expo.modules.ExpoImage;
+        expect(await mod.getCachePathAsync('deferred-clear-old') === null, 'the old cache entry stays cleared');
+        expect(typeof await mod.getCachePathAsync('deferred-clear-new') === 'string', 'the newer disk entry survives clear');
+        const restored = await mod.readFromCacheAsync('deferred-clear-new');
+        expect(restored && restored.width === 10 && restored.height === 6, 'the newer entry decodes after clear');
+        if (restored) restored.release();
+      )JS");
+      check(failures.empty(), "deferred cache controls:\n" + failures);
+    }
 
     // ---- configureCache -----------------------------------------------------
     failures = rig.runAsync(R"JS(

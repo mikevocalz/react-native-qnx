@@ -1,0 +1,12 @@
+********* Start testing of RnsvgImageHttpTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgImageHttpTest::initTestCase()
+PASS   : RnsvgImageHttpTest::privateAndNoStoreResponsesDeliverPixelsWithoutCaching(private)
+PASS   : RnsvgImageHttpTest::privateAndNoStoreResponsesDeliverPixelsWithoutCaching(no-store)
+PASS   : RnsvgImageHttpTest::anImageLargerThanTheCacheBudgetStillDeliversPixels()
+PASS   : RnsvgImageHttpTest::clearingMemoryDuringLoadStillDeliversPixels()
+PASS   : RnsvgImageHttpTest::deletingTheProviderFromCompletionStopsOtherWaiters()
+PASS   : RnsvgImageHttpTest::aSynchronousFailureMayDestroyTheProviderBeforeLoadReturns()
+PASS   : RnsvgImageHttpTest::cleanupTestCase()
+Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 481ms
+********* Finished testing of RnsvgImageHttpTest *********

@@ -103,6 +103,8 @@ class ExpoImageItemTest : public QObject {
   void upgradingDecodeOptions_data();
   void upgradingDecodeOptions();
   void growthDuringInitialDecodeIsRechecked();
+  void pendingLoadDoesNotRepopulateClearedMemory_data();
+  void pendingLoadDoesNotRepopulateClearedMemory();
   void freshViewReadsTheDiskCacheWhenMemoryIsCleared();
   void imageRefSourceShowsTheDecodedPicture();
   void lockedViewKeepsItsPictureUntilUnlockedOrReloaded();
@@ -648,6 +650,53 @@ void ExpoImageItemTest::growthDuringInitialDecodeIsRechecked() {
   decodeGate.release();
   QTRY_COMPARE_WITH_TIMEOUT(loaded.count(), 2, 5000);
   QCOMPARE(DecodedImageCache::shared().image(DecodedImageCache::key(uri)).size(), QSize(400, 400));
+}
+
+void ExpoImageItemTest::pendingLoadDoesNotRepopulateClearedMemory_data() {
+  QTest::addColumn<bool>("clearBeforeFetchCompletion");
+  QTest::newRow("fetch-pending") << true;
+  QTest::newRow("decode-pending") << false;
+}
+
+void ExpoImageItemTest::pendingLoadDoesNotRepopulateClearedMemory() {
+  QFETCH(bool, clearBeforeFetchCompletion);
+  auto* pool = QThreadPool::globalInstance();
+  QVERIFY(pool->waitForDone(5000));
+  const int previousThreads = pool->maxThreadCount();
+  pool->setMaxThreadCount(1);
+  QSemaphore started, ioGate, decodeStarted, decodeGate;
+  const auto cleanup = qScopeGuard([&] {
+    ioGate.release();
+    decodeGate.release();
+    pool->waitForDone();
+    pool->setMaxThreadCount(previousThreads);
+  });
+  pool->start([&] { started.release(); ioGate.acquire(); });
+  QVERIFY(started.tryAcquire(1, 1000));
+  make();
+  item_->setCachePolicy(QStringLiteral("memory"));
+  const QString file = writePng(dir_, "inflight-clear.png", QSize(40, 40), Qt::cyan);
+  const QString uri = QUrl::fromLocalFile(file).toString();
+  QSignalSpy loading(item_.get(), &ExpoImageItem::loadStarted);
+  QSignalSpy loaded(item_.get(), &ExpoImageItem::loaded);
+  item_->setSource(sourceOf(file));
+  QTRY_COMPARE_WITH_TIMEOUT(loading.count(), 1, 1000);
+  rnqnx::runtime::QtImageCache clearer;
+  if (clearBeforeFetchCompletion) clearer.clearMemory();
+  pool->start([&] { decodeStarted.release(); decodeGate.acquire(); });
+  ioGate.release();
+  QVERIFY(decodeStarted.tryAcquire(1, 1000));
+  QCoreApplication::processEvents();
+  QVERIFY(!item_->displayed());
+  if (!clearBeforeFetchCompletion) clearer.clearMemory();
+  decodeGate.release();
+  QTRY_COMPARE_WITH_TIMEOUT(loaded.count(), 1, 5000);
+  QVERIFY(item_->displayed());
+  QVERIFY(near(at(item_->grabImage(), 20, 20), Qt::cyan));
+  QVERIFY(!DecodedImageCache::shared().contains(uri));
+  item_->reload();
+  QTRY_COMPARE_WITH_TIMEOUT(loaded.count(), 2, 5000);
+  QVERIFY(DecodedImageCache::shared().contains(uri));
 }
 
 int main(int argc, char** argv) {

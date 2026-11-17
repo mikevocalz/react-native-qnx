@@ -1,0 +1,49 @@
+-- The CXX compiler identification is Clang 19.1.7
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE
+-- Found OpenGL: /workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/x86_64-linux-gnu/libOpenGL.so
+-- Found WrapOpenGL: TRUE
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Could NOT find Qt6TaskTree (missing: Qt6TaskTree_DIR)
+CMake Warning at /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package):
+  Found package configuration file:
+
+    /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6QmlAssetDownloaderPrivate/Qt6QmlAssetDownloaderPrivateConfig.cmake
+
+  but it set Qt6QmlAssetDownloaderPrivate_FOUND to FALSE so package
+  "Qt6QmlAssetDownloaderPrivate" is considered to be NOT FOUND.  Reason given
+  by package:
+
+  Qt6QmlAssetDownloaderPrivate could not be found because dependency
+  Qt6TaskTree could not be found.
+
+  Configuring with --debug-find-pkg=Qt6TaskTree might reveal details why the
+  package was not found.
+
+  Configuring with -DQT_DEBUG_FIND_PACKAGE=ON will print the values of some
+  of the path variables that find_package uses to try and find the package.
+
+Call Stack (most recent call first):
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginDependencies.cmake:22 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicPluginHelpers.cmake:638 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlPlugins.cmake:6 (__qt_internal_include_qml_plugin_packages)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlConfig.cmake:199 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/Qt6Config.cmake:253 (find_package)
+  CMakeLists.txt:10 (find_package)
+
+
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
+-- Configuring done (2.0s)
+-- Generating done (0.1s)
+-- Build files have been written to: /workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan

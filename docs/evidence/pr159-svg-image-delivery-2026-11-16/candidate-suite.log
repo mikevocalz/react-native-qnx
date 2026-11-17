@@ -1,0 +1,8 @@
+Internal ctest changing into directory: /workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan
+Test project /workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan
+    Start 1: rnqnx_qt_rnsvg_image_http_test
+1/1 Test #1: rnqnx_qt_rnsvg_image_http_test ...   Passed    1.65 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   1.65 sec

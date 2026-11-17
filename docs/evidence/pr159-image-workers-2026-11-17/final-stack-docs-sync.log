@@ -1,0 +1,2 @@
+$ node scripts/validate-docs.mjs --write
+Documentation updated: 24 components, 11 release gates.

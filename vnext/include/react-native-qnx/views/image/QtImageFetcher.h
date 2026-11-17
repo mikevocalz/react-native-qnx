@@ -58,7 +58,8 @@ struct FetchResult {
 /// Gets the encoded bytes of an image: from the disk cache, over HTTP(S) with
 /// the request's headers, or from a file, qrc or base64 data URI. Fetchers share
 /// a network manager on their owner thread. Destroying a fetcher or cancelling
-/// a request abandons its work and prevents later completion callbacks.
+/// a request abandons its result and prevents later completion callbacks.
+/// In-progress I/O retains its admission slot until the worker finishes.
 /// Local/disk I/O runs on workers. All loads run
 /// through an ImageFetchQueue: at most that queue's limit at once, the rest
 /// wait in priority order. Fetchers given the same queue (the views and the
@@ -71,8 +72,11 @@ class QtImageFetcher final : public QObject {
   using Id = std::uint64_t;
 
   /// \a queue orders this fetcher's loads; null gives the fetcher a queue
-  /// of its own with \a maxConcurrent slots. An optional worker pool must
-  /// outlive the fetcher and its submitted tasks; null uses the global pool.
+  /// of its own with \a maxConcurrent slots. External queues and an optional
+  /// worker pool must outlive submitted tasks, including cancelled I/O and
+  /// processing of owner-thread completions. The
+  /// private queue is retained until its workers finish. A null \a pool uses
+  /// the global pool.
   explicit QtImageFetcher(int timeoutMs = 30000, ImageDiskCache* disk = nullptr,
                           ImageFetchQueue* queue = nullptr,
                           int maxConcurrent = ImageFetchQueue::kSharedConcurrency,
@@ -103,7 +107,7 @@ class QtImageFetcher final : public QObject {
   std::shared_ptr<ImageDiskCache> disk_;
   QThreadPool* pool_;
   int timeoutMs_;
-  ImageFetchQueue ownQueue_;
+  std::shared_ptr<ImageFetchQueue> ownQueue_;
   ImageFetchQueue* queue_;
   std::size_t started_{0};
   Id nextId_{1};

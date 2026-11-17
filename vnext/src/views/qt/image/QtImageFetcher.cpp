@@ -13,6 +13,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QPointer>
+#include <QScopeGuard>
 #include <QTimer>
 #include <QUrl>
 
@@ -46,6 +47,20 @@ QString ImageRequest::storageKey() const {
 }
 
 namespace {
+// Native-only state: owner callbacks are never retained by a worker's
+// admission lifetime. Release always occurs on the queue's owner thread.
+struct LoadAdmission {
+  ImageFetchQueue* queue;
+  std::shared_ptr<ImageFetchQueue> privateQueue;
+  bool released{false};
+
+  void release() {
+    if (released) return;
+    released = true;
+    queue->release();
+  }
+};
+
 QNetworkAccessManager* ownerNetwork() {
   thread_local QPointer<QNetworkAccessManager> manager;
   if (!manager) {
@@ -62,6 +77,8 @@ struct QtImageFetcher::Pending {
   QPointer<QNetworkReply> reply;
   ImageFetchQueue::Id queued{0};
   bool started{false};
+  bool ioRunning{false};
+  std::shared_ptr<LoadAdmission> admission;
   QByteArray bytes;
   QString failure;
   ImageRequest request;
@@ -80,7 +97,8 @@ QtImageFetcher::QtImageFetcher(int timeoutMs, ImageDiskCache* disk, ImageFetchQu
                                int maxConcurrent, QThreadPool* pool)
     : network_(ownerNetwork()), disk_(disk ? std::make_shared<ImageDiskCache>(*disk) : nullptr),
       pool_(pool ? pool : QThreadPool::globalInstance()), timeoutMs_(timeoutMs),
-      ownQueue_(maxConcurrent), queue_(queue != nullptr ? queue : &ownQueue_) {}
+      ownQueue_(queue ? nullptr : std::make_shared<ImageFetchQueue>(maxConcurrent)),
+      queue_(queue != nullptr ? queue : ownQueue_.get()) {}
 
 FetchResult QtImageFetcher::readLocal(const QString& uri) {
   FetchResult result;
@@ -163,17 +181,31 @@ QtImageFetcher::Id QtImageFetcher::fetch(const ImageRequest& request, Progress p
 void QtImageFetcher::work(Id id, std::function<FetchResult()> task, bool networkOnMiss) {
   const auto found = pending_.find(id);
   if (found == pending_.end()) return;
+  found->second->ioRunning = true;
   auto cancelled = found->second->cancelled;
+  auto admission = found->second->admission;
   auto promise = std::make_shared<QPromise<FetchResult>>();
   promise->start();
-  auto* watcher = new QFutureWatcher<FetchResult>(this);
-  QObject::connect(watcher, &QFutureWatcher<FetchResult>::finished, this,
-                   [this, id, watcher, networkOnMiss] {
-    FetchResult result = watcher->result();
+  // This watcher must survive owner teardown: cancelling a request cannot
+  // stop an in-progress read and must not admit another physical worker yet.
+  auto* watcher = new QFutureWatcher<FetchResult>();
+  QObject::connect(watcher, &QFutureWatcher<FetchResult>::finished, watcher,
+                   [owner = QPointer<QtImageFetcher>(this), id, watcher,
+                    cancelled, admission, networkOnMiss] {
     watcher->deleteLater();
-    if (pending_.find(id) == pending_.end()) return;
-    if (networkOnMiss && result.bytes.isEmpty() && result.error.isEmpty()) startHttp(id);
-    else complete(id, std::move(result));
+    if (!owner || cancelled->load()) {
+      admission->release();
+      return;
+    }
+    const auto found = owner->pending_.find(id);
+    if (found == owner->pending_.end()) {
+      admission->release();
+      return;
+    }
+    found->second->ioRunning = false;
+    FetchResult result = watcher->result();
+    if (networkOnMiss && result.bytes.isEmpty() && result.error.isEmpty()) owner->startHttp(id);
+    else owner->complete(id, std::move(result));
   });
   watcher->setFuture(promise->future());
   // Worker captures contain no QObject, JSI value, or owner-thread completion.
@@ -190,6 +222,7 @@ void QtImageFetcher::startLoad(Id id) {
   if (found == pending_.end()) { queue_->release(); return; }
   auto pending = found->second;
   pending->started = true;
+  pending->admission = std::make_shared<LoadAdmission>(LoadAdmission{queue_, ownQueue_});
   pending->elapsed.start();
   ++started_;
   const QString scheme = pending->currentUrl.scheme().toLower();
@@ -216,8 +249,13 @@ void QtImageFetcher::complete(Id id, FetchResult result) {
   auto owned = found->second;
   pending_.erase(found);
   --started_;
-  queue_->release();
-  owned->done(std::move(result));
+  // A completion may destroy this fetcher. Its captures must also be released
+  // before a queued successor can destroy the runtime. Other stack frames may
+  // still retain Pending, so move callbacks out of that shared native state.
+  const auto release = qScopeGuard([admission = owned->admission] { admission->release(); });
+  auto done = std::move(owned->done);
+  owned->progress = {};
+  done(std::move(result));
 }
 
 void QtImageFetcher::startHttp(Id id) {
@@ -346,6 +384,8 @@ void QtImageFetcher::cancel(Id id) {
   owned->cancelled->store(true);
   if (!owned->started) {
     queue_->cancel(owned->queued);
+    owned->progress = {};
+    owned->done = {};
     return;
   }
   --started_;
@@ -356,7 +396,13 @@ void QtImageFetcher::cancel(Id id) {
     owned->reply->abort();
     owned->reply->deleteLater();
   }
-  queue_->release();
+  const bool releaseNow = !owned->ioRunning;
+  const auto admission = owned->admission;
+  // Finish all owner access before releasing callback captures: their cleanup
+  // may reenter owner teardown. The admission contains native queue state only.
+  owned->progress = {};
+  owned->done = {};
+  if (releaseNow) admission->release();
 }
 
 QtImageFetcher::~QtImageFetcher() {

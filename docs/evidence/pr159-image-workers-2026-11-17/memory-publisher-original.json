@@ -1,0 +1,7 @@
+{
+  "mutation": "none; original worker ImageRef publisher from92dea15 with new shared memory epoch/test",
+  "source_sha256": "530d651cdecdcbd5f573448bb7c24419685ca8ff93d2b26c244c84923b54bde8",
+  "test_sha256": "b75ac0a3786a14bc522f7ec7bbd601e966c4adadfd6b9e41d7f61d57727ac25a",
+  "binary_sha256": "7a2a07206cbed510c87876cdbced4792d68916bdde5dc81edd7eaf9622d4b9e5",
+  "exit": 1
+}

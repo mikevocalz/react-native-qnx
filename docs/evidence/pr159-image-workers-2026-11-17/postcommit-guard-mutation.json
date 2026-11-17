@@ -1,0 +1,7 @@
+{
+  "label": "postcommit-guard-mutation",
+  "source_sha256": "05f5d69fce68a741f2ccd224fbaf3cb6bf54ce7891f8a2a1c2331138650547d4",
+  "test_sha256": "29bad1e5c914a2d891715b5df6a39f8b72e874340064f55c15162bf01465d7da",
+  "binary_sha256": "4dde05f7d8cbc00c297cb380906ec404e6fa7fe85f9d954c8bb5c7c90d636bb6",
+  "exit": 1
+}

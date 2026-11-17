@@ -32,7 +32,9 @@ struct ImageDiskCache::State {
   const QString directory;
   std::atomic<std::int64_t> budget;
   QMutex mutex;
-  std::uint64_t generation{0};
+  std::atomic<std::uint64_t> requestedGeneration{0};
+  // Protected by mutex. Admission must remain independent of slow disk I/O.
+  std::uint64_t clearedGeneration{0};
 };
 
 ImageDiskCache::ImageDiskCache(QString directory, std::int64_t budgetBytes)
@@ -58,6 +60,9 @@ QString ImageDiskCache::pathFor(const QString& key) const {
 
 QByteArray ImageDiskCache::read(const QString& key, qint64 maxBytes) {
   QMutexLocker lock(&state_->mutex);
+  if (!applyPendingClearLocked()) return {};
+  const auto readGeneration = state_->clearedGeneration;
+  if (readGeneration != generation()) return {};
   QFile file(pathFor(key));
   if (!file.open(QIODevice::ReadOnly)) return {};
   if (maxBytes < 0 || file.size() > maxBytes) {
@@ -78,7 +83,7 @@ QByteArray ImageDiskCache::read(const QString& key, qint64 maxBytes) {
   if (touch.open(QIODevice::ReadWrite)) {
     touch.setFileTime(QDateTime::currentDateTimeUtc(), QFileDevice::FileModificationTime);
   }
-  return bytes;
+  return readGeneration == generation() ? bytes : QByteArray{};
 }
 
 void ImageDiskCache::remove(const QString& key) {
@@ -91,34 +96,80 @@ bool ImageDiskCache::write(const QString& key, const QByteArray& bytes) {
 }
 
 std::uint64_t ImageDiskCache::generation() const {
-  QMutexLocker lock(&state_->mutex);
-  return state_->generation;
+  return state_->requestedGeneration.load();
 }
 
 bool ImageDiskCache::write(const QString& key, const QByteArray& bytes,
                            std::uint64_t generation) {
   QMutexLocker lock(&state_->mutex);
-  if (generation != state_->generation) return false;
+  if (generation != this->generation()) return false;
   if (bytes.isEmpty() || bytes.size() > state_->budget) return false;
+  if (!applyPendingClearLocked() || generation != this->generation()) return false;
   if (!QDir().mkpath(state_->directory)) return false;
   QSaveFile file(pathFor(key));
-  if (!file.open(QIODevice::WriteOnly) || file.write(bytes) != bytes.size() || !file.commit()) {
+  if (!file.open(QIODevice::WriteOnly) || file.write(bytes) != bytes.size()) {
+    return false;
+  }
+  if (generation != this->generation()) {
+    file.cancelWriting();
+    return false;
+  }
+  if (!file.commit()) return false;
+  // A clear can be admitted while this thread owns the disk mutex. Its sweep
+  // cannot run yet, so remove our obsolete commit before publishing success.
+  if (generation != this->generation()) {
+    QFile::remove(pathFor(key));
     return false;
   }
   evictLocked();
+  if (generation != this->generation()) {
+    QFile::remove(pathFor(key));
+    return false;
+  }
   return true;
 }
 
 bool ImageDiskCache::contains(const QString& key) const {
   QMutexLocker lock(&state_->mutex);
-  return QFileInfo::exists(pathFor(key));
+  if (!applyPendingClearLocked()) return false;
+  const auto readGeneration = state_->clearedGeneration;
+  if (readGeneration != generation()) return false;
+  const bool exists = QFileInfo::exists(pathFor(key));
+  return exists && readGeneration == generation();
 }
 
-void ImageDiskCache::clear() {
+std::uint64_t ImageDiskCache::beginClear() {
+  return state_->requestedGeneration.fetch_add(1) + 1;
+}
+
+bool ImageDiskCache::completeClear(std::uint64_t generation) {
   QMutexLocker lock(&state_->mutex);
-  ++state_->generation;
+  if (generation > this->generation()) return false;
+  if (generation <= state_->clearedGeneration) return true;
+  return applyPendingClearLocked();
+}
+
+void ImageDiskCache::clear() { (void)completeClear(beginClear()); }
+
+bool ImageDiskCache::applyPendingClearLocked() const {
+  const auto requested = generation();
+  if (requested == state_->clearedGeneration) return true;
+  // mkpath distinguishes an absent cache from an inaccessible parent. A failed
+  // directory listing must not be mistaken for an empty successful sweep.
+  if (!QDir().mkpath(state_->directory)) return false;
+  const QFileInfo directoryInfo(state_->directory);
+  if (!directoryInfo.isDir() || !directoryInfo.isReadable() || !directoryInfo.isExecutable()) {
+    return false;
+  }
+  bool success = true;
   QDirIterator it(state_->directory, {QStringLiteral("*") + QLatin1String(kSuffix)}, QDir::Files);
-  while (it.hasNext()) QFile::remove(it.next());
+  while (it.hasNext()) {
+    if (!QFile::remove(it.next())) success = false;
+  }
+  if (!success) return false;
+  // A later admission remains pending. No write can interleave with this sweep.
+  state_->clearedGeneration = requested;
+  return true;
 }
 
 std::int64_t ImageDiskCache::usedBytes() const {

@@ -1,0 +1,139 @@
+Internal ctest changing into directory: /workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan
+UpdateCTestConfiguration  from :/workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan/DartConfiguration.tcl
+Parse Config file:/workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan/DartConfiguration.tcl
+Parse Config file:/workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan/DartConfiguration.tcl
+Test project /workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 2
+    Start 2: rnqnx_image_units_test
+
+2: Test command: /workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan/rnqnx_image_units_test "-platform" "offscreen"
+2: Working Directory: /workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan
+2: Environment variables:
+2:  QT_QUICK_BACKEND=software
+2: Test timeout computed to be: 90
+2: ********* Start testing of ImageUnitsTest *********
+2: Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+2: PASS   : ImageUnitsTest::initTestCase()
+2: PASS   : ImageUnitsTest::fitCoverContainAndFill()
+2: PASS   : ImageUnitsTest::fitNoneKeepsNaturalSizeAndScaleDownNeverGrows()
+2: PASS   : ImageUnitsTest::positionNamesOffsetsAndPercentages()
+2: PASS   : ImageUnitsTest::roundedPathClipsCornersAndLimitsRadii()
+2: PASS   : ImageUnitsTest::blurSpreadsAColorEdge()
+2: PASS   : ImageUnitsTest::tintKeepsAlphaAndReplacesColor()
+2: PASS   : ImageUnitsTest::blurHashDecodesTheReferenceVector()
+2: PASS   : ImageUnitsTest::blurHashRejectsMalformedInput()
+2: PASS   : ImageUnitsTest::thumbHashDecodesTheReferenceVectors()
+2: PASS   : ImageUnitsTest::thumbHashRejectsShortInput()
+2: PASS   : ImageUnitsTest::diskCacheEvictsLeastRecentlyUsedWithinBudget()
+2: PASS   : ImageUnitsTest::diskCacheRefusesOversizeAndClears()
+2: PASS   : ImageUnitsTest::diskCacheClearInvalidatesPendingWrites()
+2: PASS   : ImageUnitsTest::diskCacheClearAdmissionDoesNotWaitForIo()
+2: PASS   : ImageUnitsTest::diskCachePendingClearIsAppliedByReaders(read)
+2: PASS   : ImageUnitsTest::diskCachePendingClearIsAppliedByReaders(contains)
+2: PASS   : ImageUnitsTest::diskCacheDelayedClearPreservesNewWrites()
+2: PASS   : ImageUnitsTest::diskCacheOverlappingClearsPreserveNewestWrites()
+2: PASS   : ImageUnitsTest::diskCacheFailedClearStaysPending()
+2: PASS   : ImageUnitsTest::requestKeyFoldsHeadersAndHonoursCacheKey()
+2: PASS   : ImageUnitsTest::fetcherSendsHeadersAndHitsDiskCacheSecondTime()
+2: PASS   : ImageUnitsTest::fetcherCancelNeverCallsBack()
+2: PASS   : ImageUnitsTest::fetcherReadsFilesOnWorkerAndCompletesOnOwner()
+2: PASS   : ImageUnitsTest::fetcherCancelsAndDestroysBlockedIo()
+2: PASS   : ImageUnitsTest::fetcherRetainsCacheStateDuringIo()
+2: PASS   : ImageUnitsTest::fetcherRecoversCorruptAndOversizedCache()
+2: PASS   : ImageUnitsTest::fetcherFollowsRelativeRedirectAndStripsCrossOriginHeaders()
+2: PASS   : ImageUnitsTest::fetcherBoundsRedirectsAndRejectsUnsafeTargets()
+2: PASS   : ImageUnitsTest::sharedNetworkDoesNotReuseCookies()
+2: PASS   : ImageUnitsTest::redirectsShareOneDeadline()
+2: PASS   : ImageUnitsTest::decodedCacheHonorsCountAndCostLimits()
+2: PASS   : ImageUnitsTest::imageRefRegistryNeverReusesIds()
+2: PASS   : ImageUnitsTest::imageLoadedNotifierReachesListenersUntilUnsubscribed()
+2: PASS   : ImageUnitsTest::cleanupTestCase()
+2: Totals: 35 passed, 0 failed, 0 skipped, 0 blacklisted, 1266ms
+2: ********* Finished testing of ImageUnitsTest *********
+1/3 Test #2: rnqnx_image_units_test ...........   Passed    1.36 sec
+test 3
+    Start 3: rnqnx_expo_image_item_test
+
+3: Test command: /workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan/rnqnx_expo_image_item_test "-platform" "offscreen"
+3: Working Directory: /workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan
+3: Environment variables:
+3:  QT_QUICK_BACKEND=software
+3: Test timeout computed to be: 90
+3: ********* Start testing of ExpoImageItemTest *********
+3: Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+3: PASS   : ExpoImageItemTest::initTestCase()
+3: PASS   : ExpoImageItemTest::borderRadiusRoundsThePicture()
+3: PASS   : ExpoImageItemTest::perCornerRadiiRoundOnlyThoseCorners()
+3: PASS   : ExpoImageItemTest::tintReplacesColorAndKeepsShape()
+3: PASS   : ExpoImageItemTest::blurSoftensAHardEdge()
+3: PASS   : ExpoImageItemTest::contentFitNoneDrawsNaturalSizeCentered()
+3: PASS   : ExpoImageItemTest::contentPositionMovesTheImage()
+3: PASS   : ExpoImageItemTest::blurhashPlaceholderShowsUntilTheImageArrives()
+3: PASS   : ExpoImageItemTest::thumbhashSourceDrawsWithoutNetwork()
+3: PASS   : ExpoImageItemTest::crossDissolveBlendsOldAndNew()
+3: PASS   : ExpoImageItemTest::flipEffectsPassThroughAnEdgeOnMidpoint()
+3: PASS   : ExpoImageItemTest::curlFallsBackToCrossDissolve()
+3: PASS   : ExpoImageItemTest::multipleSourcesPickTheSmallestThatCovers()
+3: PASS   : ExpoImageItemTest::onLoadReportsSizeCacheTypeAndMediaType()
+3: PASS   : ExpoImageItemTest::secondViewReadsFromTheSharedMemoryCache()
+3: PASS   : ExpoImageItemTest::headersReachTheServerAndKeyTheCache()
+3: PASS   : ExpoImageItemTest::failedLoadReportsTheError()
+3: PASS   : ExpoImageItemTest::recyclingKeyClearsThePreviousPicture()
+3: PASS   : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses(direct)
+3: PASS   : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses(prefetched-memory)
+3: PASS   : ExpoImageItemTest::hitSlopExtendsAndPointerEventsNoneIgnoresTouches()
+3: PASS   : ExpoImageItemTest::downscalingKeepsReportedSize()
+3: PASS   : ExpoImageItemTest::growingADownscaledViewDecodesEnoughPixels()
+3: PASS   : ExpoImageItemTest::lockedGrowthDefersDecodeUntilUnlock()
+3: PASS   : ExpoImageItemTest::upgradingDecodeOptions(disable-downscaling)
+3: PASS   : ExpoImageItemTest::upgradingDecodeOptions(natural-size-fit)
+3: PASS   : ExpoImageItemTest::growthDuringInitialDecodeIsRechecked()
+3: PASS   : ExpoImageItemTest::freshViewReadsTheDiskCacheWhenMemoryIsCleared()
+3: PASS   : ExpoImageItemTest::imageRefSourceShowsTheDecodedPicture()
+3: PASS   : ExpoImageItemTest::lockedViewKeepsItsPictureUntilUnlockedOrReloaded()
+3: PASS   : ExpoImageItemTest::cleanupTestCase()
+3: Totals: 31 passed, 0 failed, 0 skipped, 0 blacklisted, 8509ms
+3: ********* Finished testing of ExpoImageItemTest *********
+2/3 Test #3: rnqnx_expo_image_item_test .......   Passed    8.59 sec
+test 5
+    Start 5: rnqnx_image_fetch_queue_test
+
+5: Test command: /workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan/rnqnx_image_fetch_queue_test "-platform" "offscreen"
+5: Working Directory: /workspace/scratch/252a22fac759/rnqnx-diskcache159/build/disk-epoch-asan
+5: Environment variables:
+5:  QT_QUICK_BACKEND=software
+5: Test timeout computed to be: 90
+5: ********* Start testing of ImageFetchQueueTest *********
+5: Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+5: PASS   : ImageFetchQueueTest::initTestCase()
+5: PASS   : ImageFetchQueueTest::parsesPriorityNames()
+5: PASS   : ImageFetchQueueTest::startsAtMostMaxConcurrentTasks()
+5: PASS   : ImageFetchQueueTest::startsWaitingTasksHighestPriorityFirst()
+5: PASS   : ImageFetchQueueTest::cancelDropsAWaitingTaskOnly()
+5: PASS   : ImageFetchQueueTest::aTaskThatFinishesAtOnceDoesNotStallTheQueue()
+5: PASS   : ImageFetchQueueTest::fetcherKeepsLoadsInFlightWithinTheBound()
+5: PASS   : ImageFetchQueueTest::fetcherStartsHigherPriorityRequestsFirst()
+5: PASS   : ImageFetchQueueTest::clearingDiskCacheDoesNotRestoreAnInFlightResponse()
+5: PASS   : ImageFetchQueueTest::viewsLoadInPriorityOrderThroughTheSharedQueue()
+5: PASS   : ImageFetchQueueTest::cancellingAQueuedLoadNeverStartsIt()
+5: PASS   : ImageFetchQueueTest::cancellingARunningLoadFreesItsSlot()
+5: PASS   : ImageFetchQueueTest::cleanupTestCase()
+5: Totals: 13 passed, 0 failed, 0 skipped, 0 blacklisted, 1504ms
+5: ********* Finished testing of ImageFetchQueueTest *********
+3/3 Test #5: rnqnx_image_fetch_queue_test .....   Passed    1.66 sec
+
+The following tests passed:
+	rnqnx_image_units_test
+	rnqnx_expo_image_item_test
+	rnqnx_image_fetch_queue_test
+
+100% tests passed, 0 tests failed out of 3
+
+Total Test time (real) =  11.62 sec

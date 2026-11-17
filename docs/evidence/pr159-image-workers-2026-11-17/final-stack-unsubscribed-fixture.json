@@ -1,0 +1,15 @@
+{
+  "local_source_head": "3e381a30dc20afdee774fe26c12204040f71706e",
+  "svg_parent": "d3eacc75dcad761c992736223a68b53ff852203b",
+  "scope": "affected Expo module/Fabric checks after SVG layout-listener merge; no full corpus replay",
+  "tests": {
+    "rnqnx_expo_image_module_host_test": {
+      "exit": 0,
+      "binary_sha256": "72f652f1eb86c1c335d1af80a1baeac96c466821ab5bd5fc6a7f6c8a1ea3ab7e"
+    },
+    "rnqnx_expo_image_fabric_host_test": {
+      "exit": 1,
+      "binary_sha256": "04854cd07e0a0b6682eb3d078fe3caa79fd225214bcc184f9b4c3c7c7b6d12fc"
+    }
+  }
+}

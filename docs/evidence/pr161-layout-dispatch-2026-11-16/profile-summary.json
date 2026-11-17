@@ -1,0 +1,263 @@
+{
+  "method": "10 ms ITIMER_PROF SIGPROF samples of program counter; module and symbol attribution only, not call stacks",
+  "baseline": {
+    "total_samples": 25574,
+    "modules": {
+      "/lib/x86_64-linux-gnu/libc.so.6": 94,
+      "/lib/x86_64-linux-gnu/libglib-2.0.so.0": 1,
+      "/lib/x86_64-linux-gnu/libstdc++.so.6": 8,
+      "/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Core.so.6": 11,
+      "/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Gui.so.6": 7,
+      "/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Qml.so.6": 3,
+      "/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Quick.so.6": 2,
+      "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/jsi/libjsi.so": 2,
+      "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so": 24873,
+      "/workspace/scratch/252a22fac759/rnsvg-profile/rnsvg-corpus-profile": 572,
+      "linux-vdso.so.1": 1
+    },
+    "top_functions": [
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::DenseMapInfo<char const*>::isEqual(char const*, char const*)",
+        "samples": 1732
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "bool llvh::DenseMapBase<llvh::DenseMap<char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >, char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >::LookupBucketFor<char const*>(char const* const&, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > const*&) const",
+        "samples": 1583
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> >::getFirst() const",
+        "samples": 830
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::GCCell::isValid() const",
+        "samples": 764
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::alignDown(unsigned long, unsigned long, unsigned long)",
+        "samples": 718
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::DenseMapIterator<char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> >, true>::operator==(llvh::DenseMapIterator<char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> >, true> const&) const",
+        "samples": 679
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::DenseMapIterator<char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> >, true>::DenseMapIterator(llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > const*, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > const*, llvh::DebugEpochBase const&, bool)",
+        "samples": 646
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "void hermes::vm::SlotVisitor::visit<hermes::vm::CheckHeapWellFormedAcceptor>(hermes::vm::CheckHeapWellFormedAcceptor&, hermes::vm::GCCell*, hermes::vm::Metadata::SlotOffsets const&)",
+        "samples": 534
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "void hermes::vm::SlotVisitor::visit<hermes::vm::HadesGC::verifyCardTable()::VerifyCardDirtyAcceptor>(hermes::vm::HadesGC::verifyCardTable()::VerifyCardDirtyAcceptor&, hermes::vm::GCCell*, hermes::vm::Metadata::SlotOffsets const&)",
+        "samples": 520
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::FixedSizeHeapSegment::contains(void const*) const",
+        "samples": 404
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::HadesGC::verifyCardTable()::VerifyCardDirtyAcceptor::acceptHelper(void*, void*)",
+        "samples": 394
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::DenseMapBase<llvh::DenseMap<char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >, char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >::getBucketsEnd() const",
+        "samples": 390
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::VTable::isValid() const",
+        "samples": 383
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::HadesGC::inOldGen(void const*) const",
+        "samples": 369
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::DenseMapBase<llvh::DenseMap<char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >, char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >::end() const",
+        "samples": 351
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::DenseMapBase<llvh::DenseMap<char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >, char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >::makeConstIterator(llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > const*, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > const*, llvh::DebugEpochBase const&, bool) const",
+        "samples": 349
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::KindAndSize::getKind() const",
+        "samples": 329
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::HadesGC::inYoungGen(void const*) const",
+        "samples": 309
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::DenseMapBase<llvh::DenseMap<char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >, char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >::find(char const*) const",
+        "samples": 304
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::CheckHeapWellFormedAcceptor::accept(hermes::vm::GCCell const*)",
+        "samples": 283
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::HermesValue::isPointer() const",
+        "samples": 274
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::DenseMapBase<llvh::DenseMap<char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >, char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >::getNumBuckets() const",
+        "samples": 269
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::GCCell::getAllocatedSize() const",
+        "samples": 265
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::DebugEpochBase::HandleBase::isHandleInSync() const",
+        "samples": 253
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::DenseMapBase<llvh::DenseMap<char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >, char const*, std::pair<char const*, char const*>, llvh::DenseMapInfo<char const*>, llvh::detail::DenseMapPair<char const*, std::pair<char const*, char const*> > >::getBuckets() const",
+        "samples": 251
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "llvh::DebugEpochBase::HandleBase::getEpochAddress() const",
+        "samples": 241
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::HadesGC::CompacteeState::contains(void const*) const",
+        "samples": 233
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::HadesGC::validPointer(void const*) const",
+        "samples": 227
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::CallResult<hermes::vm::HermesValue, (hermes::vm::detail::CallResultSpecialize)2> hermes::vm::Interpreter::interpretFunction<false, false>(hermes::vm::Runtime&, hermes::vm::InterpreterState&)",
+        "samples": 205
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "function": "hermes::vm::kindInRange(hermes::vm::CellKind, hermes::vm::CellKind, hermes::vm::CellKind)",
+        "samples": 197
+      }
+    ],
+    "top_locations": [
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/external/llvh/include/llvh/ADT/DenseMapInfo.h:56",
+        "samples": 1739
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/external/llvh/include/llvh/ADT/DenseMap.h:42",
+        "samples": 830
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/include/hermes/VM/GCCell.h:230",
+        "samples": 706
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/include/hermes/VM/SlotKinds.def:10",
+        "samples": 599
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/external/llvh/include/llvh/Support/MathExtras.h:721",
+        "samples": 471
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/external/llvh/include/llvh/ADT/DenseMap.h:611",
+        "samples": 444
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/external/llvh/include/llvh/ADT/DenseMap.h:1147",
+        "samples": 378
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/external/llvh/include/llvh/ADT/DenseMap.h:609",
+        "samples": 297
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/include/hermes/VM/AlignedHeapSegment.h:806",
+        "samples": 288
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/external/llvh/include/llvh/ADT/DenseMap.h:90",
+        "samples": 276
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/include/hermes/VM/GCCell.h:68",
+        "samples": 274
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/external/llvh/include/llvh/ADT/EpochTracker.h:90",
+        "samples": 253
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/external/llvh/include/llvh/ADT/EpochTracker.h:91",
+        "samples": 241
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/include/hermes/VM/SlotKinds.def:12",
+        "samples": 241
+      },
+      {
+        "module": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so",
+        "location": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/external/llvh/include/llvh/ADT/DenseMap.h:512",
+        "samples": 240
+      }
+    ]
+  },
+  "candidate": {
+    "total_samples": 19237,
+    "modules": {
+      "./rnsvg-corpus-listener-candidate": 494,
+      "/lib/x86_64-linux-gnu/libc.so.6": 81,
+      "/lib/x86_64-linux-gnu/libfreetype.so.6": 2,
+      "/lib/x86_64-linux-gnu/libstdc++.so.6": 1,
+      "/lib64/ld-linux-x86-64.so.2": 1,
+      "/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Core.so.6": 5,
+      "/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Gui.so.6": 3,
+      "/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Quick.so.6": 1,
+      "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/jsi/libjsi.so": 3,
+      "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/hermes/lib/libhermesvm.so": 18646
+    }
+  }
+}

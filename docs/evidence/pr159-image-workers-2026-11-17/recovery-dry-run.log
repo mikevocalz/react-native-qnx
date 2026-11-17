@@ -1,0 +1,6 @@
+ninja: Entering directory `build/linux-host-renderer'
+ninja: warning: premature end of file; recovering
+ninja explain: /workspace/scratch/252a22fac759/rnqnx-pr159/build/linux-host-renderer/CMakeFiles/VerifyGlobs.cmake_force is dirty
+[0/2] Re-checking globbed directories...
+ninja explain: /workspace/scratch/252a22fac759/rnqnx-pr159/build/linux-host-renderer/CMakeFiles/cmake.verify_globs is dirty
+[1/2] Re-running CMake...

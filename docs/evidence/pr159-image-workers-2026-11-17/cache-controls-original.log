@@ -1,0 +1,5 @@
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:35:05.735307 2796032576 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1116 22:35:05.735949 2681165504 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000130d0).
+W1116 22:35:05.736008 2681165504 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004250).
+clear defers its filesystem sweep to the worker

@@ -1,0 +1,6 @@
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:32:08.169404 4022047296 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1116 22:32:08.169842 3897509568 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000130d0).
+W1116 22:32:08.169891 3897509568 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004250).
+ImageRef worker results:
+the pending explicit write does not repopulate cleared memory

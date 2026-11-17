@@ -1,0 +1,22 @@
+********* Start testing of ImageUnitsTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageUnitsTest::initTestCase()
+FAIL!  : ImageUnitsTest::diskCacheClearAdmissionDoesNotWaitForIo() 'admission.wait_for(std::chrono::seconds(2)) == std::future_status::ready' returned FALSE. ()
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-diskcache159/tests/native/qt-native-ui/ImageUnitsTest.cpp(297)]
+FAIL!  : ImageUnitsTest::diskCachePendingClearIsAppliedByReaders(read) '!QFileInfo::exists(cache.pathFor(key))' returned FALSE. ()
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-diskcache159/tests/native/qt-native-ui/ImageUnitsTest.cpp(327)]
+FAIL!  : ImageUnitsTest::diskCachePendingClearIsAppliedByReaders(contains) '!QFileInfo::exists(cache.pathFor(key))' returned FALSE. ()
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-diskcache159/tests/native/qt-native-ui/ImageUnitsTest.cpp(327)]
+FAIL!  : ImageUnitsTest::diskCacheDelayedClearPreservesNewWrites() Compared values are not the same
+   Actual   (worker.read(QStringLiteral("new"))): ""
+   Expected (QByteArray("new bytes"))           : "new bytes"
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-diskcache159/tests/native/qt-native-ui/ImageUnitsTest.cpp(342)]
+FAIL!  : ImageUnitsTest::diskCacheOverlappingClearsPreserveNewestWrites() Compared values are not the same
+   Actual   (cache.read(key))                : ""
+   Expected (QByteArray("second generation")): "second generation"
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-diskcache159/tests/native/qt-native-ui/ImageUnitsTest.cpp(361)]
+FAIL!  : ImageUnitsTest::diskCacheFailedClearStaysPending() '!cache.completeClear(epoch)' returned FALSE. ()
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-diskcache159/tests/native/qt-native-ui/ImageUnitsTest.cpp(378)]
+PASS   : ImageUnitsTest::cleanupTestCase()
+Totals: 2 passed, 6 failed, 0 skipped, 0 blacklisted, 2068ms
+********* Finished testing of ImageUnitsTest *********

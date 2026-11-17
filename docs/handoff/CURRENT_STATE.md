@@ -1,5 +1,93 @@
 # Current state
 
+## PR 149 final SVG and Expo host integration (2026-11-16; 2026-11-17 UTC)
+
+The Worklets continuation now incorporates published Expo `d50e34d9`, including
+SVG `d3eacc75`, while preserving both branches' source and historical receipts.
+Independent merge review confirms the Worklets view observers and mount-order
+test remain intact alongside the subscribed-layout guards and their regressions.
+The integrated build passes, followed by all 23 focused CTests in 95.48 seconds:
+62 combined host cases, Expo module/Fabric, real public-library Worklets timing/
+pan/teardown, missing-bootstrap rejection, all five playground controls, and
+affected gesture, mounting, image and SVG cases. Type, dependency, architecture,
+inventory, frame-probe, documentation and formatting checks pass.
+
+The earlier 61/61 Worklets run and 149-case guarded SVG experiment retain their
+own source identities. This final merge does not claim a new full corpus run or
+full JavaScript-suite pass; the existing Unix-socket `EPERM` limitation remains
+recorded. Exact published-head CI and current combined QNX/device acceptance
+remain pending. Defaults stay OFF, all eleven release gates stay pending, and
+PR 149 stays draft. [Integration commands, hashes and raw logs](../validation/pr149-stack-integration-2026-11-16.md).
+
+## PR 159 image workers and cache lifecycle continuation (2026-11-16; 2026-11-17 UTC)
+
+PR 159 now stacks published SVG prerequisite `d3eacc75`. ImageRef computation,
+core image decoding, disk clearing and cache-path lookup use bounded native
+workers. Cancelled running work retains admission until it physically finishes;
+owner callbacks are released before a successor starts. Separate disk and
+memory generations prevent old work from restoring cleared entries, while
+active loads still receive pixels. SVG HTTP delivery no longer depends on
+cache retention. `configureCache` keeps its synchronous contract.
+
+The real-Hermes Expo module/Fabric candidates pass, with original-source and
+mutation controls that fail the intended assertions. The combined standalone
+image/cache/queue graph passes 90 QtTest entries under ASan/UBSan; the separate
+SVG HTTP receipt passes 21 entries. TypeScript, seven existing router suites,
+five affected image/public-entry checks and real QNX/Marathon Metro bundles
+pass. The full local JS runner stops at an unchanged Marathon Unix-socket
+fixture with `EPERM`; it is not counted as a complete pass. Exact integrated-head
+CI and current target qualification remain pending. Broader router prop/RTL/
+resize conformance is unchanged, and all eleven release gates stay pending.
+
+After the final SVG merge, the Expo module passes. The Fabric fixture now
+explicitly subscribes its existing layout scenario to `onLayout`; the initial
+unsubscribed timeout is preserved, and the corrected fixture passes with every
+geometry/event assertion and the production listener guard unchanged.
+
+[Worker controls, scope and rollback](../validation/pr159-image-worker-completion-2026-11-17.md),
+[fetch admission](../validation/pr159-fetcher-admission-2026-11-16.md),
+[callback lifetime](../validation/pr159-callback-lifetime-2026-11-16.md),
+[disk epochs](../validation/pr159-disk-clear-epochs-2026-11-16.md) and
+[SVG delivery](../validation/pr159-svg-image-delivery-2026-11-16.md) preserve the
+source identities, raw logs and independent reviews. No fresh QNX plugin audit,
+release animation asset or exact-device evidence is supplied; keep PR 159 draft.
+
+## PR 161 subscribed layout dispatch continuation (2026-11-16)
+
+The Fabric adapter now checks the existing `ViewProps::onLayout` flag before
+dispatching layout events on creation or update, matching React Native 0.88.1.
+The identical new regression object fails both listener cases with the original
+adapter; the guarded copy passes all 57 host cases, including existing public
+layout and list tests. Independent source review found no blocking issue.
+A paired host profile reduces the Complex-1 mount from 244.5 to 181.2 seconds
+without changing Hermes slow debug checks, fixtures, thresholds or timeouts.
+All 149 visual comparisons pass; the four original corpus CTests finish in
+5.21, 204.75, 232.22 and 6.59 seconds with their 300-second limits unchanged.
+
+The last completed exact hosted head, `3220c8d`, passed ten of eleven workflows:
+the renderer-OFF lane passed 14/14 CTests, while renderer-ON passed 47/49 with
+two 300-second SVG corpus timeouts. The isolated copied PR 149 host graph
+validates the listener correction; it is not an exact PR 161 full-graph result.
+The successor needs its own required workflows, a fresh clean combined QNX
+build and current-device validation. Keep PR 161 draft and all eleven release
+gates pending. [Receipt and evidence](../validation/pr161-layout-dispatch-2026-11-16.md).
+
+## PR 161 retained SVG geometry continuation (2026-11-16)
+
+Published correction `69fa85f` routes retained SVG geometry changes through
+outer-root painting and layout invalidation. Two real-window regressions fail
+against the original source and pass with the fix, covering nested resize
+pixels, live ForeignObject placement and cached bounds. All eight standalone
+Qt 6.11.1/Clang 19.1.7 Debug ASan/UBSan CTests pass, with independent source
+review. The guide now describes the existing optional QtSvg/plugin staging.
+
+The first published-head checks identified formatting failures. This narrow
+documentation follow-up applies the pinned formatter and updates the canonical
+handoff; native source and tests are unchanged. Follow-up CI, a fresh clean
+combined QNX build and current-device validation remain pending. Keep PR 161
+draft and every release gate pending; earlier device receipts do not qualify
+this geometry correction. [Receipt and logs](../validation/pr161-geometry-2026-11-16.md).
+
 ## PR 149 shutdown follow-up — 2026-11-14
 
 Worklets queue admission and receiver teardown are serialized, and concurrent stop callers wait for one completed join. The integrated branch includes main plus SVG `3b24f5c` and Expo `e032a5b`. Six standalone lifecycle cases pass under ASan/UBSan. With all three integrations enabled, Worklets, Reanimated and Gesture Handler static libraries compile and the integrated host passes 60 QtReactHost cases, including mount ordering and the Expo lifecycle regressions. Ten affected gallery/router/frame suites pass in their shared runner order. Feature switches remain OFF by default. Current QNX cross-build/device evidence is still unavailable; prior Pi results remain historical.

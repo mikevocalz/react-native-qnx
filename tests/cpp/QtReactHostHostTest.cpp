@@ -858,6 +858,86 @@ void flushTouchEvents(Fixture& fixture) {
   }
 }
 
+// The raw Fabric handler records even events with no React listener. The
+// native listener also catches dispatch before JavaScript payload creation.
+void installLayoutRecorder(Fixture& fixture, int& dispatched) {
+  fixture.host().installComponentProvider();
+  fixture.host().startEmptySurface(kSurfaceId, 640.0F, 480.0F);
+  fixture.host().scheduler().addEventListener(
+      std::make_shared<const facebook::react::EventListener>(
+          [&dispatched](const facebook::react::RawEvent& event) {
+            if (event.type == "topLayout") ++dispatched;
+            return false;
+          }));
+  EXPECT(fixture.host().evaluate(R"JS(
+    globalThis.layoutEvents = [];
+    const fabric = globalThis.nativeFabricUIManager;
+    fabric.registerEventHandler((instance, type, payload) => {
+      if (type === 'topLayout') layoutEvents.push(payload.layout);
+    });
+    globalThis.commitLayout = (enabled, width) => {
+      const props = {width, height: 20, onLayout: enabled, collapsable: false};
+      globalThis.layoutNode = globalThis.layoutNode
+        ? fabric.cloneNodeWithNewProps(layoutNode, props)
+        : fabric.createNode(551, 'View', )JS" + std::to_string(kSurfaceId) + R"JS(, props, {});
+      const children = fabric.createChildSet();
+      fabric.appendChildToSet(children, layoutNode);
+      fabric.completeRoot()JS" + std::to_string(kSurfaceId) + R"JS(, children);
+    };
+  )JS", "layout-recorder.js"));
+}
+
+void layoutWithoutListenerDoesNotDispatch() {
+  // Outlive the fixture's event listener, including surface teardown.
+  int dispatched = 0;
+  Fixture fixture;
+  installLayoutRecorder(fixture, dispatched);
+  EXPECT(fixture.host().evaluate("commitLayout(false, 30);", "layout-without-listener.js"));
+  flushTouchEvents(fixture);
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  QQuickItem* item = fixture.layer().itemForTag(551);
+  EXPECT(item != nullptr);
+  EXPECT_NEAR(item->width(), 30);
+  EXPECT(dispatched == 0);
+  EXPECT(fixture.host().evaluate(
+      "if (layoutEvents.length !== 0) throw new Error('unsubscribed layout reached JavaScript');",
+      "layout-without-listener-check.js"));
+  EXPECT(fixture.host().evaluate("commitLayout(false, 40);", "unsubscribed-layout-change.js"));
+  flushTouchEvents(fixture);
+  EXPECT_NEAR(item->width(), 40);
+  EXPECT(dispatched == 0);
+}
+
+void layoutListenerRemovalAndReadditionPreserveChangedBounds() {
+  int dispatched = 0;
+  Fixture fixture;
+  installLayoutRecorder(fixture, dispatched);
+  EXPECT(fixture.host().evaluate("commitLayout(true, 30);", "layout-with-listener.js"));
+  flushTouchEvents(fixture);
+  EXPECT(dispatched == 1);
+  QQuickItem* item = fixture.layer().itemForTag(551);
+  EXPECT(item != nullptr);
+  EXPECT(fixture.host().evaluate("commitLayout(true, 40);", "subscribed-layout-change.js"));
+  flushTouchEvents(fixture);
+  EXPECT(dispatched == 2);
+  EXPECT(fixture.host().evaluate("commitLayout(false, 50);", "remove-layout-listener.js"));
+  flushTouchEvents(fixture);
+  EXPECT(dispatched == 2);
+  EXPECT_NEAR(item->width(), 50);
+  EXPECT(fixture.host().evaluate("commitLayout(true, 60);", "readd-layout-listener.js"));
+  flushTouchEvents(fixture);
+  EXPECT(dispatched == 3);
+  EXPECT(fixture.layer().itemForTag(551) == item);
+  EXPECT_NEAR(item->width(), 60);
+  EXPECT(fixture.host().delegate().lastFailures().empty());
+  EXPECT(fixture.host().evaluate(R"JS(
+    if (layoutEvents.length !== 3 || layoutEvents[0].width !== 30 ||
+        layoutEvents[1].width !== 40 || layoutEvents[2].width !== 60 ||
+        layoutEvents.some(box => box.x !== 0 || box.y !== 0 || box.height !== 20))
+      throw new Error('listener changes lost or duplicated the requested layout bounds');
+  )JS", "layout-listener-change-check.js"));
+}
+
 void sendTouch(
     Fixture& fixture,
     QEvent::Type type,
@@ -2817,6 +2897,9 @@ int main(int argc, char** argv) {
   QGuiApplication app(argc, argv);
 
   const std::vector<TestCase> tests{
+      {"layoutWithoutListenerDoesNotDispatch", layoutWithoutListenerDoesNotDispatch},
+      {"layoutListenerRemovalAndReadditionPreserveChangedBounds",
+       layoutListenerRemovalAndReadditionPreserveChangedBounds},
       {"inputLifecycleOptOutPreservesExistingDispatch", inputLifecycleOptOutPreservesExistingDispatch},
       {"touchCancelEndsEveryContactAndAllowsIdReuse", touchCancelEndsEveryContactAndAllowsIdReuse},
       {"inputTransparentDecorationPreservesTouchTarget", inputTransparentDecorationPreservesTouchTarget},

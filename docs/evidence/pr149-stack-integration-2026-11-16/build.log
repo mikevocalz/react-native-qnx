@@ -1,0 +1,189 @@
+[0/2] Re-checking globbed directories...
+[1/92] Automatic MOC for target rnqnx_qt_rnsvg
+[2/91] Automatic MOC for target rnqnx_expo_image_under_test
+[3/91] Bundling real playground fatal-error control
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./error-control-fatal.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:61) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:63) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:81) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:62) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:75) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:69) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./error-control-fatal.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-fatal.bundle.js
+LOG:Done writing bundle output
+[4/91] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgItems.cpp.o
+[5/91] Building CXX object qt-native/nativeui-tests/CMakeFiles/rnqnx_expo_image_under_test.dir/rnqnx_expo_image_under_test_autogen/mocs_compilation.cpp.o
+[6/91] Linking CXX static library qt-native/rnsvg/librnqnx_qt_rnsvg.a
+[7/91] Automatic MOC for target rnqnx_views_qt
+[8/91] Building CXX object qt-native/nativeui-tests/CMakeFiles/rnqnx_expo_image_under_test.dir/__/__/__/vnext/src/runtime/QtImageCache.cpp.o
+[9/91] Building CXX object CMakeFiles/rnqnx_views_qt.dir/rnqnx_views_qt_autogen/mocs_compilation.cpp.o
+[10/91] Building CXX object qt-native/nativeui-tests/CMakeFiles/rnqnx_expo_image_under_test.dir/__/__/__/vnext/src/views/qt/image/ExpoImageItem.cpp.o
+[11/91] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtQuickItemFactory.cpp.o
+[12/91] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QnxImageProvider.cpp.o
+[13/91] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtExtraItems.cpp.o
+[14/91] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/ImageDiskCache.cpp.o
+[15/91] Building CXX object qt-native/nativeui-tests/CMakeFiles/rnqnx_expo_image_under_test.dir/__/__/__/vnext/src/views/qt/image/ImageDiskCache.cpp.o
+[16/91] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/QtImageFetcher.cpp.o
+[17/91] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/image/ExpoImageItem.cpp.o
+[18/91] Linking CXX static library librnqnx_views_qt.a
+[19/91] Automatic MOC for target rnqnx_fabric_adapter
+[20/90] Bundling real playground soft-error control
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./error-control-soft.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:174) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:175) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:207) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:183) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:199) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./error-control-soft.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-soft.bundle.js
+LOG:Done writing bundle output
+[21/90] Building CXX object qt-native/nativeui-tests/CMakeFiles/rnqnx_expo_image_under_test.dir/__/__/__/vnext/src/views/qt/image/QtImageFetcher.cpp.o
+[22/90] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/runtime/QtImageCache.cpp.o
+[23/90] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/ShadowViewMutationAdapter.cpp.o
+[24/90] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgImageBridge.cpp.o
+[25/90] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgImageProvider.cpp.o
+[26/90] Automatic MOC for target rnqnx_qt_native_ui_test
+[27/89] Bundling real Worklets/Reanimated/Gesture Handler host fixture
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./worklets-integration.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:267) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:299) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:277) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:276) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:292) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./worklets-integration.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-worklets-integration.bundle.js
+LOG:Done writing bundle output
+[28/89] Automatic MOC for target rnqnx_image_units_test
+[29/88] Automatic MOC for target rnqnx_expo_image_item_test
+[30/87] Automatic MOC for target rnqnx_qt_rnsvg_scene_test
+[31/86] Automatic MOC for target rnqnx_image_fetch_queue_test
+[32/85] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtExpoImageBridge.cpp.o
+[33/85] Linking CXX static library librnqnx_fabric_adapter.a
+[34/85] Automatic MOC for target rnqnx_react_host
+[35/84] Building CXX object qt-native/nativeui-tests/CMakeFiles/rnqnx_qt_native_ui_test.dir/NativeUiQuickTest.cpp.o
+[36/84] Building CXX object qt-native/nativeui-tests/CMakeFiles/rnqnx_image_units_test.dir/ImageUnitsTest.cpp.o
+[37/84] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxImageLoaderRefs.cpp.o
+[38/84] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxImageLoader.cpp.o
+[39/84] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtImageCache.cpp.o
+[40/84] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtReactHost.cpp.o
+[41/84] Linking CXX static library librnqnx_react_host.a
+[42/84] Building CXX object CMakeFiles/rnqnx_expo_image_module_host_test.dir/tests/cpp/ExpoImageModuleHostTest.cpp.o
+[43/84] Building CXX object CMakeFiles/qt_react_host_host_test.dir/tests/cpp/QtReactHostHostTest.cpp.o
+[44/84] Building CXX object qt-native/nativeui-tests/CMakeFiles/rnqnx_expo_image_item_test.dir/ExpoImageItemTest.cpp.o
+[45/84] Building CXX object qt-native/nativeui-tests/CMakeFiles/rnqnx_image_fetch_queue_test.dir/ImageFetchQueueTest.cpp.o
+[46/84] Building CXX object CMakeFiles/rnqnx_expo_image_fabric_host_test.dir/tests/cpp/ExpoImageFabricHostTest.cpp.o
+[47/84] Linking CXX executable rnqnx_qt_rnsvg_fabric_test
+[48/84] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_scene_test.dir/RnsvgSceneTest.cpp.o
+[49/84] Linking CXX executable rnqnx_qt_svg_fabric_test
+[50/84] Linking CXX executable rnqnx_qt_rnsvg_image_fabric_test
+[51/84] Linking CXX executable rnqnx_qt_rnsvg_values_test
+[52/84] Linking CXX executable rnqnx_qt_rnsvg_corpus_test
+[53/84] Linking CXX executable bin/rnqnx_accessibility_action_native_test
+[54/84] Linking CXX executable rnqnx_accessibility_view_test
+[55/84] Linking CXX executable bin/rnqnx_text_input_bridge_test
+[56/84] Linking CXX executable bin/rnqnx_accessibility_action_probe
+[57/84] Linking CXX executable bin/rnqnx_input_lifecycle_probe
+[58/84] Linking CXX executable bin/rnqnx_text_input_probe
+[59/84] Linking CXX executable bin/rnqnx_react_render_host_probe
+[60/84] Linking CXX executable bin/rnqnx_pressable_probe
+[61/84] Linking CXX executable bin/qt_react_host_host_test
+[62/84] Linking CXX executable bin/rnqnx_expo_image_module_host_test
+[63/84] Linking CXX executable bin/rnqnx_playground_host
+[64/84] Linking CXX executable bin/rnqnx_expo_image_fabric_host_test
+[65/84] Linking CXX executable bin/rnqnx_rn_headers_probe
+[66/84] Linking CXX executable bin/shadow_tree_mounting_host_test
+[67/84] Linking CXX executable bin/shadow_view_mutation_adapter_host_test
+[68/84] Linking CXX executable bin/qtquick_mounting_layer_host_test
+[69/84] Linking CXX executable bin/rnqnx_qtquick_host_probe
+[70/84] Linking CXX executable qt-native/nativeui-tests/rnqnx_qt_native_ui_test
+[71/84] Linking CXX executable qt-native/nativeui-tests/rnqnx_image_units_test
+[72/84] Linking CXX executable qt-native/nativeui-tests/rnqnx_expo_image_item_test
+[73/84] Linking CXX executable qt-native/nativeui-tests/rnqnx_image_fetch_queue_test
+[74/84] Linking CXX executable qt-native/nativeui-tests/rnqnx_image_hash_vectors_test
+[75/84] Linking CXX executable bin/rnqnx_worklets_integration_host_test
+[76/84] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_filter_test
+[77/84] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_fixtures_test
+[78/84] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_foreignobject_test
+[79/84] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_image_test
+[80/84] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_test
+[81/84] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_loader_test
+[82/84] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_scene_test
+[83/84] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_text_test

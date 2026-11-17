@@ -1,0 +1,2 @@
+$ node scripts/validate-architecture.mjs
+validate:architecture passed.

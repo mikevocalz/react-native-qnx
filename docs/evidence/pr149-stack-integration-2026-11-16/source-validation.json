@@ -1,0 +1,754 @@
+{
+  "localBase": "ebd8182e6cded86331505beab780c79ec5e8cbea",
+  "incomingPublicHead": "d50e34d99a504f48b690225ad28e8cb3cd8ca37a",
+  "incomingPublicTree": "03455c6af3891b91aa4a7e804055a777af57c5aa",
+  "integratedSvgPublicHead": "d3eacc75dcad761c992736223a68b53ff852203b",
+  "testedPreReceiptMergeTree": "01d5d6dbc912c08351bd0ddeffb6b28f19e0a6f4",
+  "mergeResolution": "Only CURRENT_STATE insertion conflict; preserved both parent section bodies. Native source merged automatically and received independent source review.",
+  "settings": {
+    "CMAKE_BUILD_TYPE": "Debug",
+    "CMAKE_CXX_COMPILER": "/workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang++",
+    "CMAKE_C_COMPILER": "/workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang",
+    "HERMES_SLOW_DEBUG": "ON",
+    "RNQNX_ENABLE_ACCESSIBILITY_BRIDGE": "ON",
+    "RNQNX_ENABLE_APP_STATE": "OFF",
+    "RNQNX_ENABLE_DEV_SUPPORT": "OFF",
+    "RNQNX_ENABLE_FRAME_TRACE": "OFF",
+    "RNQNX_ENABLE_GESTURE_HANDLER": "ON",
+    "RNQNX_ENABLE_HOST_SANITIZERS": "ON",
+    "RNQNX_ENABLE_INPUT_LIFECYCLE": "ON",
+    "RNQNX_ENABLE_NITRO_QT_DISPATCHER": "OFF",
+    "RNQNX_ENABLE_QT_EXPO_IMAGE": "ON",
+    "RNQNX_ENABLE_QT_GRAPHICS": "ON",
+    "RNQNX_ENABLE_QT_MOTION": "ON",
+    "RNQNX_ENABLE_QT_NATIVE_UI": "ON",
+    "RNQNX_ENABLE_QT_RNSVG": "ON",
+    "RNQNX_ENABLE_QT_SVG": "ON",
+    "RNQNX_ENABLE_QT_VIDEO": "ON",
+    "RNQNX_ENABLE_REANIMATED": "ON",
+    "RNQNX_ENABLE_TEXT_INPUT_CONTRACT": "ON",
+    "RNQNX_ENABLE_WEBSOCKETS": "OFF",
+    "RNQNX_ENABLE_WINDOW_CHROME": "ON",
+    "RNQNX_ENABLE_WORKLETS": "ON"
+  },
+  "sourceSha256": {
+    "CMakeLists.txt": "9f29168d7778f1504a2cada1da71e84eda57cac6a997871ded7a6c90c72c3291",
+    "apps/rn-playground/error-control-app.js": "c9d525275e1a9d4934bf8b1e4b94e10dc7ab7ce23485b63508d1dc2508a2e205",
+    "apps/rn-playground/error-control-fatal.js": "38e74ce7c6fe60eefa02a8dc77e9133088fa1641bba0ee808fef547a98036c5f",
+    "apps/rn-playground/error-control-soft.js": "f321b5ef6f3fd323e7e1024de05556652d559f0157fdfa9dc22b0740c06d8a7c",
+    "apps/rn-playground/worklets-integration.js": "e0434a7db3c9cc0323a6b94650abb075ad06d3729ae1ce998d673395b1b87da5",
+    "cmake/RnqnxPlaygroundErrorTests.cmake": "1b9ff474edab45a51d9fc72f88980187682616ee8e692d47a14342b900c763ad",
+    "cmake/RnqnxReactQt.cmake": "01275733b47043029e7d84ccbf9b6f9bb9b22ba550bad3899f1b5c3995a6dd0e",
+    "cmake/RnqnxWorkletsHostTests.cmake": "612493fb047f7864fffa9725602cb4d5be294dde0e1da02fa3028c7208e3ccee",
+    "native/qt/rnsvg/RnsvgItems.cpp": "f147d21848f75fc739eeae78667f7b9675d1c729f0fe48376c869db280d6091e",
+    "package.json": "567e7e127cd7aef0771af806f623b35fa25691ec44190851123f829f343481e2",
+    "pnpm-lock.yaml": "fa8abf8d922adf67b264971f37de533355cb976b12a4480c0a6c219ffdee0f0b",
+    "scripts/validate-host-renderer.mjs": "682bd8e9c6e176c99a68e640b07df1cb4036347b9f00ae6fcb886adbc607d2e3",
+    "tests/cmake/PlaygroundScreenshot.cmake": "f0ebb27cf1c32d449d4c87380ef00b59fb790399e8216e8357fa966dd15d1e10",
+    "tests/cpp/ExpoImageFabricHostTest.cpp": "e06f36d7b38b7d96c44d132aa07d8703d3e40f3cd7f1664b5be3275af4205a15",
+    "tests/cpp/ExpoImageModuleHostTest.cpp": "03474b9a9b1ae1d1658d5b904dc882549ee02d92bda0189fdb14eca50a2a8426",
+    "tests/cpp/QtReactHostHostTest.cpp": "4a7b8b7908d4a4053c93452b9ff86a0e600c4becc0d2537c398bf7ed0eb92cb4",
+    "tests/cpp/WorkletsIntegrationHostTest.cpp": "78a8be1616401cead440121b91734d57a12ad4e63272e5931addf9737276dc5c",
+    "tests/image-loader/QtImageCacheTest.cpp": "a57ab2f17ee9d119c5c85a15eef9192c349f25f74e17d41396837f323ca4d1e5",
+    "tests/js/host-renderer-contract.test.mjs": "cc902b7c277208eb3b115a8db5039464cd947b8287e3e4747c94b75d58c80882",
+    "tests/native/gesture-handler/GestureHandlerCoreTest.cpp": "b6060477f3c8f892dba64aa1502a3c3f200ea61d8733a141a420378049ec8a1f",
+    "tests/native/qt-native-ui/ExpoImageItemTest.cpp": "5e839c9a296f16ee703be3536e4972d9b9dca1ef315d64fbe4a8f5baeb46c932",
+    "tests/native/qt-native-ui/ImageUnitsTest.cpp": "b1ed07d171729b1d464e3db4a9715ac82df2f2d5c23b97db756044e5c38dc526",
+    "tests/native/qt-rnsvg-image-http/RnsvgImageHttpTest.cpp": "3fa81cd74c103a9421be1be0e48f03277e5da7ed5ad1d3bc22e8211565d74573",
+    "tests/native/qt-rnsvg/RnsvgSceneTest.cpp": "45c54cc476e89f2e2ee92e5e0f7746f97202a8bb5518059f5451a3e0311ffafa",
+    "vnext/include/react-native-qnx/fabric/QtRnsvgImageProvider.h": "7234d25a96d0f7415697dadff0c68a4bb734cb26989fc999f725ac04930596b1",
+    "vnext/include/react-native-qnx/gesture/GestureHandlerBindings.h": "f4a9e1efdf4ffff8d49a6efd5246114af3bc9aecab64e93f82d50c14308fa24d",
+    "vnext/include/react-native-qnx/gesture/GestureHandlerCore.h": "9754262f22405325a84c77d4d8000fcc2181546ba97a6958b2110e42abdfb002",
+    "vnext/include/react-native-qnx/runtime/QnxImageLoader.h": "1ce4482026be37ee4404ee41241cf3bf13f8afb82fc6c986e6d6fbba2af3bdd9",
+    "vnext/include/react-native-qnx/runtime/QtImageCache.h": "09f4bab98793d89343fb1d8b918561495303dbc923948c263db1c3abed51f9d4",
+    "vnext/include/react-native-qnx/views/DecodedImageCache.h": "ac4e000f5e9d83d9ad0150088587ebad53ecde34ec5c3ddffeb0ba317316d8e7",
+    "vnext/include/react-native-qnx/views/image/ExpoImageItem.h": "ff3e9eafd9df84f7ad3a18151bca2b87cefff70faf70895fd67287c2d54f88f0",
+    "vnext/include/react-native-qnx/views/image/ImageDiskCache.h": "8d0f0aa482098f2fd0afc58f634f6f36659a609e7755cb74e545284780862f9c",
+    "vnext/include/react-native-qnx/views/image/ImageTaskQueue.h": "5bb0813547863d7a06edf0a0dbc3efb717992df390217b76af1d810d7e77d331",
+    "vnext/include/react-native-qnx/views/image/QtImageFetcher.h": "cc70ad76afac86d5574da974b4dbbf173fad03c85d10bd25010d491570120694",
+    "vnext/probes/playground/main.cpp": "364e518239710f0d2509840c6860d40602b84f6f55786c5ffc73bc1ce18d2ec6",
+    "vnext/src/fabric/QtRnsvgImageProvider.cpp": "f9b1a9482289e99c0b7b9cae061ee88259b9ee315878abb1cce658c8f169bfc9",
+    "vnext/src/fabric/ShadowViewMutationAdapter.cpp": "6e89aeba286e6e01945662c3f9a08d122770baf1c2d3764abb93d233cfede830",
+    "vnext/src/gesture/GestureHandlerCore.cpp": "3b4e6e770f5ffdf3b90b672f7241411ba110e1b4b66a6d4697ea938be9da61cd",
+    "vnext/src/gesture/QtGestureInput.cpp": "5f1d2fe09e2ec779991d2ff7c7136f583a8c0586e4202e1ce15ee67253dcd0d9",
+    "vnext/src/gesture/QtGesturePlatform.cpp": "9f441092b7d253badeae617aa8f7040f760e005f63ed6f0b191246358aeb8864",
+    "vnext/src/runtime/QnxImageLoader.cpp": "cbe45a16339a65d798862630e414fb7cb2e113b60d7804a177d9500887ba5c4b",
+    "vnext/src/runtime/QnxImageLoaderRefs.cpp": "93e3c6911a33e060252e4ee36b088fac370da8bbfcaf0cf32c950dc362178f37",
+    "vnext/src/runtime/QtImageCache.cpp": "d0fd2040dfcc8c5a57f6c2042da41737738836b7b362121d887e014409895c1a",
+    "vnext/src/views/qt/image/ExpoImageItem.cpp": "15e097bb28ffe216e50aa44dee7e24375b8dd0e9b459ea8be60934232888f205",
+    "vnext/src/views/qt/image/ImageDiskCache.cpp": "3b3cba0648c389e76dab3963aed18ae52afb7ec963ca0a2d68384b069a567352",
+    "vnext/src/views/qt/image/QtImageFetcher.cpp": "2f5ff6bcdecbb88299431f825920639eae01a3285cbc7b505040c1087596a88b"
+  },
+  "selectedTests": {
+    "rnqnx_gesture_core_test": {
+      "backtrace": 3,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_gesture_core_test"
+      ],
+      "name": "rnqnx_gesture_core_test",
+      "properties": [
+        {
+          "name": "PASS_REGULAR_EXPRESSION",
+          "value": ["RNQNX_GESTURE_CORE_OK"]
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "rnqnx_qt_rnsvg_fabric_test": {
+      "backtrace": 15,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_qt_rnsvg_fabric_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_fabric_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software", "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 60.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "rnqnx_qt_rnsvg_image_fabric_test": {
+      "backtrace": 19,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_qt_rnsvg_image_fabric_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_image_fabric_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software", "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 60.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "rnqnx_playground_screenshot": {
+      "backtrace": 93,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host",
+        "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-playground.bundle.js",
+        "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-positive",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+      ],
+      "name": "rnqnx_playground_screenshot",
+      "properties": [
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "rnqnx_playground_rejects_start_failure": {
+      "backtrace": 95,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host",
+        "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/tests/fixtures/runtime-baseline/start-failure.js",
+        "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-start-failure",
+        "-DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_START_FAILURE",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+      ],
+      "name": "rnqnx_playground_rejects_start_failure",
+      "properties": [
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "rnqnx_playground_rejects_stop_failure": {
+      "backtrace": 97,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host",
+        "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/tests/fixtures/runtime-baseline/stop-failure.js",
+        "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-stop-failure",
+        "-DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_STOP_FAILURE",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+      ],
+      "name": "rnqnx_playground_rejects_stop_failure",
+      "properties": [
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "rnqnx_playground_rejects_reported_fatal": {
+      "backtrace": 100,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host",
+        "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-fatal.bundle.js",
+        "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-reported-fatal",
+        "-DEXPECT_FAILURE=RNQNX_TEST_MISSING_BOOTSTRAP",
+        "-DEXPECT_BOUNDARY=BUNDLE",
+        "-DEXPECT_REPORT=[js fatal]",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+      ],
+      "name": "rnqnx_playground_rejects_reported_fatal",
+      "properties": [
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "rnqnx_playground_allows_reported_soft": {
+      "backtrace": 103,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host",
+        "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-soft.bundle.js",
+        "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-reported-soft",
+        "-DEXPECT_REPORT=[js error] Error: RNQNX_TEST_REPORTED_SOFT_ERROR",
+        "-DEXPECT_MESSAGE=RNQNX_TEST_CAUGHT_ERROR_CONTINUED",
+        "-DEXPECT_MOUNT=RNQNX_TEST_ERROR_CONTROL_MOUNTED",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+      ],
+      "name": "rnqnx_playground_allows_reported_soft",
+      "properties": [
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "qt_react_host_host_test": {
+      "backtrace": 105,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/qt_react_host_host_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "qt_react_host_host_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["ASAN_OPTIONS=detect_leaks=0"]
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "rnqnx_expo_image_module_host_test": {
+      "backtrace": 108,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_expo_image_module_host_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_expo_image_module_host_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software", "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "rnqnx_expo_image_fabric_host_test": {
+      "backtrace": 111,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_expo_image_fabric_host_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_expo_image_fabric_host_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software", "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "rnqnx_worklets_integration_host_test": {
+      "backtrace": 114,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_worklets_integration_host_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_worklets_integration_host_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "RNQNX_WORKLETS_EVIDENCE_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/evidence/worklets-integration"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 60.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "rnqnx_worklets_rejects_missing_bootstrap": {
+      "backtrace": 117,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_worklets_integration_host_test",
+        "--omit-worklets",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_worklets_rejects_missing_bootstrap",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software", "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 60.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "shadow_view_mutation_adapter_host_test": {
+      "backtrace": 121,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/shadow_view_mutation_adapter_host_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "shadow_view_mutation_adapter_host_test",
+      "properties": [
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "shadow_tree_mounting_host_test": {
+      "backtrace": 123,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/shadow_tree_mounting_host_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "shadow_tree_mounting_host_test",
+      "properties": [
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "qtquick_mounting_layer_host_test": {
+      "backtrace": 125,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/qtquick_mounting_layer_host_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "qtquick_mounting_layer_host_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["ASAN_OPTIONS=detect_leaks=0:halt_on_error=1", "UBSAN_OPTIONS=halt_on_error=1"]
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    "rnqnx_image_units_test": {
+      "backtrace": 133,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests/rnqnx_image_units_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_image_units_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 90.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests"
+        }
+      ]
+    },
+    "rnqnx_expo_image_item_test": {
+      "backtrace": 136,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests/rnqnx_expo_image_item_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_expo_image_item_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 90.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests"
+        }
+      ]
+    },
+    "rnqnx_image_fetch_queue_test": {
+      "backtrace": 141,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests/rnqnx_image_fetch_queue_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_image_fetch_queue_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 90.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests"
+        }
+      ]
+    },
+    "rnqnx_qt_rnsvg_foreignobject_test": {
+      "backtrace": 158,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_foreignobject_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_foreignobject_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests"
+        }
+      ]
+    },
+    "rnqnx_qt_rnsvg_image_test": {
+      "backtrace": 160,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_image_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_image_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests"
+        }
+      ]
+    },
+    "rnqnx_qt_rnsvg_loader_test": {
+      "backtrace": 162,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_loader_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_loader_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests"
+        }
+      ]
+    },
+    "rnqnx_qt_rnsvg_scene_test": {
+      "backtrace": 166,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_scene_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_qt_rnsvg_scene_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests"
+        }
+      ]
+    }
+  },
+  "instrumentationLimit": "As in the earlier host receipt: host/worklets test translation units and links use ASan; upstream React Native, Hermes, Qt and some native archives are not all sanitizer-instrumented. Leak detection disabled. No full graph ASan/UBSan or QNX claim.",
+  "validation": {
+    "ctestsPassed": 23,
+    "ctestsFailed": 0,
+    "wallSeconds": 95.48,
+    "hostCasesPassed": 62,
+    "testResults": [
+      {
+        "name": "rnqnx_gesture_core_test",
+        "seconds": 0.00786496,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_qt_rnsvg_fabric_test",
+        "seconds": 5.82889,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_qt_rnsvg_image_fabric_test",
+        "seconds": 2.11433,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_playground_screenshot",
+        "seconds": 1.9693,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_playground_rejects_start_failure",
+        "seconds": 0.128949,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_playground_rejects_stop_failure",
+        "seconds": 0.116703,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_playground_rejects_reported_fatal",
+        "seconds": 0.68667,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_playground_allows_reported_soft",
+        "seconds": 1.43307,
+        "status": "run"
+      },
+      {
+        "name": "qt_react_host_host_test",
+        "seconds": 51.6457,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_expo_image_module_host_test",
+        "seconds": 0.66012,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_expo_image_fabric_host_test",
+        "seconds": 0.530627,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_worklets_integration_host_test",
+        "seconds": 14.599,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_worklets_rejects_missing_bootstrap",
+        "seconds": 2.00479,
+        "status": "run"
+      },
+      {
+        "name": "shadow_view_mutation_adapter_host_test",
+        "seconds": 0.0655848,
+        "status": "run"
+      },
+      {
+        "name": "shadow_tree_mounting_host_test",
+        "seconds": 0.0608623,
+        "status": "run"
+      },
+      {
+        "name": "qtquick_mounting_layer_host_test",
+        "seconds": 0.131439,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_image_units_test",
+        "seconds": 1.92166,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_expo_image_item_test",
+        "seconds": 8.67458,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_image_fetch_queue_test",
+        "seconds": 1.47791,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_qt_rnsvg_foreignobject_test",
+        "seconds": 0.0385909,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_qt_rnsvg_image_test",
+        "seconds": 0.196018,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_qt_rnsvg_loader_test",
+        "seconds": 0.526445,
+        "status": "run"
+      },
+      {
+        "name": "rnqnx_qt_rnsvg_scene_test",
+        "seconds": 0.597655,
+        "status": "run"
+      }
+    ],
+    "qtTestSummaries": [
+      "Totals: 44 passed, 0 failed, 0 skipped, 0 blacklisted, 1900ms",
+      "Totals: 33 passed, 0 failed, 0 skipped, 0 blacklisted, 8639ms",
+      "Totals: 13 passed, 0 failed, 0 skipped, 0 blacklisted, 1439ms",
+      "Totals: 19 passed, 0 failed, 0 skipped, 0 blacklisted, 4ms",
+      "Totals: 38 passed, 0 failed, 0 skipped, 0 blacklisted, 173ms",
+      "Totals: 25 passed, 0 failed, 0 skipped, 0 blacklisted, 501ms",
+      "Totals: 50 passed, 0 failed, 0 skipped, 0 blacklisted, 571ms"
+    ],
+    "sanitizerDiagnosticObserved": false,
+    "sourceHashesStillMatchAfterTests": true,
+    "lightChecksPassed": [
+      "pnpm typecheck",
+      "pnpm validate:dependencies",
+      "pnpm validate:architecture",
+      "node tests/js/host-renderer-contract.test.mjs",
+      "node tests/js/worklets-frame-probe.test.mjs",
+      "pnpm validate:docs",
+      "pnpm format:check"
+    ],
+    "fullJavaScriptSuite": "Not rerun; previous known Marathon Unix-socket EPERM remains a recorded environment limit.",
+    "fullCorpus": "Not rerun for this integration. Earlier #149 61/61 run and separate guarded-corpus experiment remain separately identified evidence; new exact-head hosted CI is still required.",
+    "releaseGatePreservation": "All 11 gate objects compare equal to ebd8182 before and after documentation regeneration; original literal Unicode is retained."
+  }
+}

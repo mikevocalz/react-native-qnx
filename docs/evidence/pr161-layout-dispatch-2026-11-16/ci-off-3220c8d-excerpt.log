@@ -1,0 +1,33 @@
+2026-11-17T02:43:30.9798179Z Test project /home/runner/work/react-native-qnx/react-native-qnx/build/linux-host-renderer
+2026-11-17T02:43:30.9825449Z       Start  1: rnqnx_g0_cxx20_probe
+2026-11-17T02:43:30.9839288Z  1/14 Test  #1: rnqnx_g0_cxx20_probe ................................   Passed    0.00 sec
+2026-11-17T02:43:30.9839670Z       Start  2: qnx_screen_surface_host_test
+2026-11-17T02:43:30.9957917Z  2/14 Test  #2: qnx_screen_surface_host_test ........................   Passed    0.01 sec
+2026-11-17T02:43:30.9958524Z       Start  3: rnqnx_hermes_probe
+2026-11-17T02:43:31.0287764Z  3/14 Test  #3: rnqnx_hermes_probe ..................................   Passed    0.03 sec
+2026-11-17T02:43:31.0288176Z       Start  4: rnqnx_react_render_host_probe
+2026-11-17T02:43:32.2224956Z  4/14 Test  #4: rnqnx_react_render_host_probe .......................   Passed    1.19 sec
+2026-11-17T02:43:32.2225412Z       Start  5: rnqnx_react_render_host_probe_rejects_bad_bundles
+2026-11-17T02:43:32.3448787Z  5/14 Test  #5: rnqnx_react_render_host_probe_rejects_bad_bundles ...   Passed    0.12 sec
+2026-11-17T02:43:32.3449322Z       Start  6: rnqnx_playground_screenshot
+2026-11-17T02:43:33.6411545Z  6/14 Test  #6: rnqnx_playground_screenshot .........................   Passed    1.30 sec
+2026-11-17T02:43:33.6412107Z       Start  7: rnqnx_playground_rejects_start_failure
+2026-11-17T02:43:33.6950350Z  7/14 Test  #7: rnqnx_playground_rejects_start_failure ..............   Passed    0.05 sec
+2026-11-17T02:43:33.6951148Z       Start  8: rnqnx_playground_rejects_stop_failure
+2026-11-17T02:43:33.7481822Z  8/14 Test  #8: rnqnx_playground_rejects_stop_failure ...............   Passed    0.05 sec
+2026-11-17T02:43:33.7482224Z       Start  9: qt_react_host_host_test
+2026-11-17T02:44:08.6259615Z  9/14 Test  #9: qt_react_host_host_test .............................   Passed   34.88 sec
+2026-11-17T02:44:08.6259999Z       Start 10: rnqnx_rn_headers_probe
+2026-11-17T02:44:08.6359059Z 10/14 Test #10: rnqnx_rn_headers_probe ..............................   Passed    0.01 sec
+2026-11-17T02:44:08.6359476Z       Start 11: shadow_view_mutation_adapter_host_test
+2026-11-17T02:44:08.6657741Z 11/14 Test #11: shadow_view_mutation_adapter_host_test ..............   Passed    0.03 sec
+2026-11-17T02:44:08.6658148Z       Start 12: shadow_tree_mounting_host_test
+2026-11-17T02:44:08.6951011Z 12/14 Test #12: shadow_tree_mounting_host_test ......................   Passed    0.03 sec
+2026-11-17T02:44:08.6951456Z       Start 13: qtquick_mounting_layer_host_test
+2026-11-17T02:44:08.7801409Z 13/14 Test #13: qtquick_mounting_layer_host_test ....................   Passed    0.08 sec
+2026-11-17T02:44:08.7801979Z       Start 14: rnqnx_qtquick_host_probe
+2026-11-17T02:44:08.8017642Z 14/14 Test #14: rnqnx_qtquick_host_probe ............................   Passed    0.02 sec
+2026-11-17T02:44:08.8018438Z
+2026-11-17T02:44:08.8018669Z 100% tests passed, 0 tests failed out of 14
+2026-11-17T02:44:08.8018889Z
+2026-11-17T02:44:08.8019060Z Total Test time (real) =  37.82 sec

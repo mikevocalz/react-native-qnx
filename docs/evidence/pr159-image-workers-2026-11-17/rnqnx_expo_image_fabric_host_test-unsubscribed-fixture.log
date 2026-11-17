@@ -1,0 +1,5 @@
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 23:01:29.985491 919605824 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1116 23:01:29.987726 748590784 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000012950).
+W1116 23:01:29.987893 748590784 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004450).
+Timed out waiting for the layout event

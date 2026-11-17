@@ -128,6 +128,63 @@
       "consumerHost": "Exact reviewed PR 159 f49e61e CLI copy-list and archive regression port: original source fails the missing SVG resolver assertion, corrected test passes; fresh external dual consumer installs and bundles for QNX and Marathon; no native execution or dependency changes",
       "hostedCi": "All nine workflows pass at 13a0e49ae7ea6b16faa23840926d3976866f6646, including both renderer lanes, 49/49 ON tests and all four corpus shards; packaging-only follow-up exact-head CI pending; original timeout cause remains unestablished",
       "targetExecution": "Not run for the new native correction; fresh combined SDP 8.0.5 build and current target SVG acceptance required; keep PR draft and all release gates pending"
+    },
+    "pr161Geometry": {
+      "reviewedAt": "2026-11-16",
+      "baseCommit": "3b24f5c2fd3733dbf1ebe77729f7014242db7db3",
+      "implementationCommit": "69fa85ff4072686328d8f195e47b454b53932abe",
+      "receipt": "docs/validation/pr161-geometry-2026-11-16.md",
+      "nativeHost": "Two original-source retained-geometry regressions fail and pass with the fix; 8/8 standalone Qt 6.11.1/Clang 19.1.7 Debug ASan/UBSan CTests pass; Qt libraries uninstrumented and leak detection disabled; independent agent source review",
+      "hostedCi": "Implementation-head checks identified Prettier formatting failures; formatting and canonical-handoff follow-up requires its own successful workflows",
+      "targetExecution": "Not run for the geometry correction; fresh clean combined QNX build and current target SVG acceptance required; keep PR draft and every release gate pending"
+    },
+    "pr161LayoutDispatch": {
+      "reviewedAt": "2026-11-16",
+      "baseCommit": "3220c8df9aecf84d2019b3c9ca62d89c1b6f0ac7",
+      "receipt": "docs/validation/pr161-layout-dispatch-2026-11-16.md",
+      "nativeHost": "Both new listener regressions fail with the original adapter; all 57 host cases and all 149 SVG comparisons pass with the two supported onLayout guards. Copied PR 149 Debug graph; all four corpus CTests pass in 5.21s, 204.75s, 232.22s and 6.59s with unchanged 300-second limits. Independent source review, identical host-test object and original corpus object; Hermes slow debug checks retained. This is not an exact PR 161 full-graph or QNX result.",
+      "hostedCi": "At 3220c8d ten of eleven workflows pass; renderer OFF 14/14 CTests pass, renderer ON 47/49 pass with two 300-second corpus timeouts. The listener-guard successor requires its own completed workflows; isolated copied-graph checks are not exact-head hosted CI.",
+      "targetExecution": "Not run for the native listener correction; fresh clean combined QNX build and current target acceptance required. Keep PR draft and all eleven release gates pending."
+    },
+    "pr159WorkerCompletion": {
+      "reviewedAt": "2026-11-16",
+      "reviewedAtUtc": "2026-11-17",
+      "baseCommit": "e032a5b2c946c0de4b899daebed73bafed94108d",
+      "localSourceMerge": "3e381a30dc20afdee774fe26c12204040f71706e",
+      "integratedSvgHead": "d3eacc75dcad761c992736223a68b53ff852203b",
+      "dri": "finish_expo159",
+      "independentReviewers": ["root", "finish_svg161"],
+      "receipt": "docs/validation/pr159-image-worker-completion-2026-11-17.md",
+      "relatedReceipts": [
+        "docs/validation/pr159-fetcher-admission-2026-11-16.md",
+        "docs/validation/pr159-callback-lifetime-2026-11-16.md",
+        "docs/validation/pr159-disk-clear-epochs-2026-11-16.md",
+        "docs/validation/pr159-svg-image-delivery-2026-11-16.md"
+      ],
+      "nativeHost": "Real-Hermes Expo module and Fabric checks pass for the worker, memory-epoch and async-clear candidates. Original-source and explicit mutation controls fail the intended race/lifetime assertions. Combined standalone image/cache/queue graph passes 90 QtTest entries under ASan/UBSan; the separate SVG HTTP delivery receipt passes 21 entries. Full runtime objects are not all sanitizer-instrumented. Final merge affected checks are recorded separately. After merging published SVG d3eacc75, the Expo module passes. The Fabric fixture initially omitted onLayout subscription; adding it only to node 701 preserves every geometry/event assertion and the production guard, and the corrected fixture passes. The initial failure is retained.",
+      "javascriptHost": "Typecheck, seven existing router suites and five image/public-entry/package checks pass, including real QNX and Marathon Metro bundles. The unchanged full JS runner is blocked by EPERM at the temporary Unix-domain socket in the Marathon launcher fixture; no full-suite pass claimed.",
+      "hostedCi": "Exact integrated-head workflows pending publication. Published SVG prerequisite d3eacc75 requires its own completed workflows; historical and isolated results do not replace them.",
+      "targetExecution": "No new QNX or Marathon runtime execution. Fresh clean combined QNX build, current plugin/attribution audit, release animation assets and exact-device receipt remain required. Keep PR draft and all eleven release gates pending.",
+      "contractLimit": "configureCache retains its synchronous contract and may perform disk eviction; broader router prop/RTL/resize conformance is not closed by these tests.",
+      "finalStackValidation": "docs/evidence/pr159-image-workers-2026-11-17/final-stack-validation.json"
+    },
+    "pr149IntegratedHost": {
+      "reviewedAt": "2026-11-16",
+      "reviewedAtUtc": "2026-11-17",
+      "localBaseCommit": "ebd8182e6cded86331505beab780c79ec5e8cbea",
+      "integratedExpoHead": "d50e34d99a504f48b690225ad28e8cb3cd8ca37a",
+      "integratedSvgHead": "d3eacc75dcad761c992736223a68b53ff852203b",
+      "testedPreReceiptMergeTree": "01d5d6dbc912c08351bd0ddeffb6b28f19e0a6f4",
+      "receipt": "docs/validation/pr149-stack-integration-2026-11-16.md",
+      "earlierReceipts": [
+        "docs/evidence/pr149-cancellation-2026-11-17/README.md",
+        "docs/evidence/pr149-linked-host-2026-11-17/README.md",
+        "docs/evidence/pr149-playground-errors-2026-11-16/README.md"
+      ],
+      "nativeHost": "Final integrated build and 23/23 focused CTests pass in 95.48 seconds, including 62 combined QtReactHost cases, real Worklets/Reanimated/Gesture Handler timing/pan/teardown and missing-bootstrap control, Expo module/Fabric, all five playground controls and affected gesture/mounting/image/SVG cases. All 46 source/pin hashes match after execution. No sanitizer diagnostic; instrumentation is scoped and Qt/upstream objects are not all instrumented; leak detection disabled.",
+      "review": "Independent final merge review preserves Worklets observers/mount-order case and both onLayout guards/regressions; earlier bounded cancellation, linked-fixture and fatal/soft reviews remain recorded. Only handoff insertion conflicted; both parent sections preserved.",
+      "hostedCi": "Required final published-head workflows remain pending. Earlier 61/61 Worklets and 149-case copied SVG results retain their own source identities; no new full corpus or full JavaScript-suite result is claimed.",
+      "targetExecution": "No new QNX cross-build or device run. Dedicated JS thread, busy-JS rendering, remaining recognizers, layout/scroll qualification and current clean combined target acceptance remain open. Keep PR draft, feature defaults OFF and all eleven release gates pending."
     }
   },
   "gates": [

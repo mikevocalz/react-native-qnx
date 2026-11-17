@@ -163,7 +163,9 @@ void RnsvgRootItem::paint(QPainter* painter) {
 void RnsvgRootItem::geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) {
   QQuickPaintedItem::geometryChange(newGeometry, oldGeometry);
   updateTextureSize();
-  update();
+  // Layout-only changes must reach the visible root and refresh both live
+  // ForeignObject placements and cached onSvgLayout bounds.
+  invalidate();
 }
 
 void RnsvgRootItem::itemChange(ItemChange change, const ItemChangeData& data) {

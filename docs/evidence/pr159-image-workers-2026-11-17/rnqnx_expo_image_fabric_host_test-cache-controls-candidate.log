@@ -1,0 +1,5 @@
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:36:10.162976 1449030208 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1116 22:36:10.163420 1107089088 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000012950).
+W1116 22:36:10.163460 1107089088 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004450).
+RNQNX_EXPO_IMAGE_FABRIC_OK opacity transform onLayout events imageRef commands

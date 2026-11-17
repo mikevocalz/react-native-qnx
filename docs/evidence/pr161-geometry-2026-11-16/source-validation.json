@@ -1,0 +1,88 @@
+{
+  "recorded_at_utc": "2026-11-17T02:09:50.334300+00:00",
+  "base_commit": "3b24f5c2fd3733dbf1ebe77729f7014242db7db3",
+  "environment": {
+    "os": "PRETTY_NAME=\"Debian GNU/Linux 13 (trixie)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"13\"\nVERSION=\"13 (trixie)\"\nVERSION_CODENAME=trixie\nDEBIAN_VERSION_FULL=13.6\nID=debian\nHOME_URL=\"https://www.debian.org/\"\nSUPPORT_URL=\"https://www.debian.org/support\"\nBUG_REPORT_URL=\"https://bugs.debian.org/\"\n",
+    "compiler": "Debian clang version 19.1.7 (3+b1)\nTarget: x86_64-pc-linux-gnu\nThread model: posix\nInstalledDir: /workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin",
+    "cmake": "cmake version 3.31.10\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).",
+    "ninja": "1.13.2.git.kitware.jobserver-pipe-1",
+    "qt": "6.11.1"
+  },
+  "baseline_sources": [
+    {
+      "path": "native/qt/rnsvg/RnsvgItems.cpp",
+      "sha256": "5e6365a40aefdce247be62caf8184d69eb203428d5236b8992b2bd16a9bd1970",
+      "git_blob": "2170b4508d0500376822899e5a057546d5bc76f8"
+    },
+    {
+      "path": "tests/native/qt-rnsvg/RnsvgSceneTest.cpp",
+      "sha256": "45c54cc476e89f2e2ee92e5e0f7746f97202a8bb5518059f5451a3e0311ffafa",
+      "git_blob": "e750170c2d6aacb6e72c280a18b0251f6f73118b"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "4198fb84cd0abd9e8da568af4741a12c2318280827d3b823727e92ed98b2b565",
+      "git_blob": "628bc8b64a4056a3f825adc273a90c29f4a7c1a8"
+    }
+  ],
+  "configure_command": "cmake -S tests/native/qt-rnsvg -B build/pr161-geometry-asan -G Ninja -DRNQNX_ENABLE_QT_RNSVG=ON -DRNQNX_QT_RNSVG_SANITIZERS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=\"$CXX\"",
+  "environment_script": "/workspace/scratch/252a22fac759/native-env.sh",
+  "candidate_recorded_at_utc": "2026-11-17T02:13:38.296825+00:00",
+  "candidate_sources": [
+    {
+      "path": "native/qt/rnsvg/RnsvgItems.cpp",
+      "sha256": "f147d21848f75fc739eeae78667f7b9675d1c729f0fe48376c869db280d6091e",
+      "git_blob": "cb021419e5b49727f27d03a259f198b8dcc33401"
+    },
+    {
+      "path": "tests/native/qt-rnsvg/RnsvgSceneTest.cpp",
+      "sha256": "45c54cc476e89f2e2ee92e5e0f7746f97202a8bb5518059f5451a3e0311ffafa",
+      "git_blob": "e750170c2d6aacb6e72c280a18b0251f6f73118b"
+    },
+    {
+      "path": "docs/v2/react-native-svg.md",
+      "sha256": "d58f03b6e30df85af915be51ef05c1b0a32b1f545619403c30e7c73fba878636",
+      "git_blob": "ff7c23b6598fcc33e54210241d8d270764812288"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "4198fb84cd0abd9e8da568af4741a12c2318280827d3b823727e92ed98b2b565",
+      "git_blob": "628bc8b64a4056a3f825adc273a90c29f4a7c1a8"
+    }
+  ],
+  "compiled_commands": [
+    "/workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICK_LIB -I/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan/rnsvg/rnqnx_qt_rnsvg_autogen/include -I/workspace/scratch/252a22fac759/rnqnx-pr161/native/qt/rnsvg -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtCore -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/mkspecs/linux-g++ -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtGui -isystem /workspace/scratch/252a22fac759/debian-native/sysroot/usr/include -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtQuick -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtQml -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtQmlIntegration -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtNetwork -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtOpenGL -g -fPIC -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -fPIC -MD -MT rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgItems.cpp.o -MF rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgItems.cpp.o.d -o rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgItems.cpp.o -c /workspace/scratch/252a22fac759/rnqnx-pr161/native/qt/rnsvg/RnsvgItems.cpp",
+    "/workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICK_LIB -DQT_TESTCASE_BUILDDIR=\\\"/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan\\\" -DQT_TESTCASE_SOURCEDIR=\\\"/workspace/scratch/252a22fac759/rnqnx-pr161/tests/native/qt-rnsvg\\\" -DQT_TESTLIB_LIB -DRNQNX_RNSVG_TEST_DATA_DIR=\\\"/workspace/scratch/252a22fac759/rnqnx-pr161/tests/native/qt-rnsvg\\\" -I/workspace/scratch/252a22fac759/rnqnx-pr161/build/pr161-geometry-asan/rnqnx_qt_rnsvg_scene_test_autogen/include -I/workspace/scratch/252a22fac759/rnqnx-pr161/native/qt/rnsvg -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtCore -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/mkspecs/linux-g++ -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtGui -isystem /workspace/scratch/252a22fac759/debian-native/sysroot/usr/include -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtQuick -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtQml -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtQmlIntegration -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtNetwork -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtOpenGL -isystem /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/include/QtTest -g -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -fPIC -MD -MT CMakeFiles/rnqnx_qt_rnsvg_scene_test.dir/RnsvgSceneTest.cpp.o -MF CMakeFiles/rnqnx_qt_rnsvg_scene_test.dir/RnsvgSceneTest.cpp.o.d -o CMakeFiles/rnqnx_qt_rnsvg_scene_test.dir/RnsvgSceneTest.cpp.o -c /workspace/scratch/252a22fac759/rnqnx-pr161/tests/native/qt-rnsvg/RnsvgSceneTest.cpp"
+  ],
+  "focused_test_command": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 build/pr161-geometry-asan/rnqnx_qt_rnsvg_scene_test resizingNestedSvgRepaintsVisibleRoot resizingRootRelayoutsForeignObjectsAndReportedBounds -platform offscreen",
+  "focused_results": {
+    "baseline_exit_code": 2,
+    "baseline_failed_assertions": 2,
+    "candidate_exit_code": 0,
+    "candidate_passed_regressions": 2
+  },
+  "candidate_scene_executable_sha256": "848181a3600ed86f60adce244326012c98c41413d87f3e69a6898e1df997d229",
+  "full_suite_result": {
+    "exit_code": 0,
+    "ctests_passed": 8,
+    "ctests_failed": 0,
+    "elapsed_seconds": 21.17
+  },
+  "format_follow_up": {
+    "recorded_at_utc": "2026-11-17T02:27:00.020702+00:00",
+    "implementation_commit": "69fa85ff4072686328d8f195e47b454b53932abe",
+    "formatter": "Prettier 3.9.10",
+    "guide_before_format": {
+      "path": "docs/v2/react-native-svg.md",
+      "sha256": "f08051b01af1fac9da08d06d282774864b1e1c91e888539688523ef765fea4c6",
+      "git_blob": "d5d101054a34bdf9d36594715c96f9ab0e81f561"
+    },
+    "test_configuration_semantically_unchanged": true,
+    "native_test_and_lock_blobs_unchanged": {
+      "native/qt/rnsvg/RnsvgItems.cpp": "cb021419e5b49727f27d03a259f198b8dcc33401",
+      "tests/native/qt-rnsvg/RnsvgSceneTest.cpp": "e750170c2d6aacb6e72c280a18b0251f6f73118b",
+      "pnpm-lock.yaml": "628bc8b64a4056a3f825adc273a90c29f4a7c1a8"
+    },
+    "prior_readiness_evidence_and_all_11_pending_gate_records_unchanged": true
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "exit": 0,
+  "base": "69248f9",
+  "fetcher_followup": "26dcae8",
+  "disk_epoch_core": "4c917af",
+  "binaries": {
+    "rnqnx_image_units_test": "b8225d557de4adbf2e7ab6dfbc6955a404b13058916afc6ce5147f1d240d59dd",
+    "rnqnx_expo_image_item_test": "4f1f6154f5084e05fafa6189856edfea006b7e5646520c8989210c9d9fa97433",
+    "rnqnx_image_fetch_queue_test": "6baccdff74b9f1d48833e7966083bd47ddc1f50ac41b0a1a5e2437415da9d1d5"
+  }
+}

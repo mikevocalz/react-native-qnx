@@ -1,0 +1,71 @@
+RNQNX_TEMP_PC_SAMPLER active=1 period_us=10000
+Running "RnqnxRnsvgCorpus"
+rnsvg batch 1 start
+RNQNX_TEMP_EVALUATE batch=1 ms=930
+RNQNX_RNSVG_PAINT n=1 ms="0.72" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="0.19" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="45.38" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="0.30" size=200x60 device=200x60
+RNQNX_RNSVG_PAINT n=1 ms="1.37" size=225x200 device=225x200
+RNQNX_RNSVG_PAINT n=1 ms="0.15" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="0.18" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="0.09" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="0.07" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="0.13" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="0.05" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="0.25" size=105x105 device=105x105
+RNQNX_TEMP_AWAIT batch 1 to mount loops=1 drain_ms=0.003409 pump_ms=229.866
+rnsvg batch 1 mounted 1209 ms
+rnsvg batch 1 grabbed 1222 ms
+rnsvg batch 5 start
+RNQNX_TEMP_EVALUATE batch=5 ms=545
+RNQNX_RNSVG_PAINT n=1 ms="1.46" size=200x100 device=200x100
+RNQNX_RNSVG_PAINT n=1 ms="0.96" size=200x60 device=200x60
+RNQNX_RNSVG_PAINT n=1 ms="2.05" size=200x60 device=200x60
+RNQNX_RNSVG_PAINT n=1 ms="1.55" size=200x60 device=200x60
+RNQNX_RNSVG_PAINT n=1 ms="0.55" size=100x30 device=100x30
+RNQNX_RNSVG_PAINT n=1 ms="0.07" size=150x100 device=150x100
+RNQNX_RNSVG_PAINT n=1 ms="0.08" size=200x100 device=200x100
+RNQNX_RNSVG_PAINT n=1 ms="0.07" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="0.10" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="0.08" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="0.09" size=200x100 device=200x100
+RNQNX_RNSVG_PAINT n=1 ms="0.03" size=30x30 device=30x30
+RNQNX_TEMP_AWAIT batch 5 to mount loops=2 drain_ms=0.002664 pump_ms=99.9801
+rnsvg batch 5 mounted 781 ms
+rnsvg batch 5 grabbed 783 ms
+rnsvg batch 9 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:20:11.028225 3343663616 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:20:11.036454 3343663616 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:20:11.073119 3343663616 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:20:11.081534 3343663616 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:20:11.266583 3343663616 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:20:11.294363 3343663616 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+RNQNX_TEMP_EVALUATE batch=9 ms=3907
+RNQNX_RNSVG_PAINT n=1 ms="2.20" size=131x95 device=131x95
+RNQNX_RNSVG_PAINT n=1 ms="0.96" size=131x95 device=131x95
+RNQNX_RNSVG_PAINT n=1 ms="0.47" size=200x200 device=200x200
+RNQNX_RNSVG_PAINT n=1 ms="0.28" size=300x200 device=300x200
+RNQNX_RNSVG_PAINT n=1 ms="0.03" size=32x32 device=32x32
+RNQNX_RNSVG_PAINT n=1 ms="0.15" size=32x32 device=32x32
+RNQNX_RNSVG_PAINT n=1 ms="0.51" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="0.09" size=400x200 device=400x200
+RNQNX_RNSVG_PAINT n=1 ms="0.14" size=100x100 device=100x100
+RNQNX_RNSVG_PAINT n=1 ms="4.50" size=260x130 device=260x130
+RNQNX_RNSVG_PAINT n=1 ms="3.42" size=260x130 device=260x130
+RNQNX_RNSVG_PAINT n=1 ms="4.17" size=260x130 device=260x130
+RNQNX_TEMP_AWAIT batch 9 to mount loops=1 drain_ms=0.002486 pump_ms=653.684
+rnsvg batch 9 mounted 4941 ms
+rnsvg batch 9 grabbed 4961 ms
+rnsvg batch 13 start
+RNQNX_TEMP_EVALUATE batch=13 ms=136940
+RNQNX_RNSVG_PAINT n=1 ms="20.74" size=512x412 device=512x412
+RNQNX_TEMP_AWAIT batch 13 to mount loops=1 drain_ms=0.023718 pump_ms=53447.5
+rnsvg batch 13 mounted 244535 ms
+rnsvg batch 13 grabbed 244555 ms
+W1116 22:24:32.698014 3343663616 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5612b03ddca0).
+W1116 22:24:32.703882 3255940800 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5612b03f9450).
+W1116 22:24:32.704100 3255940800 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5612b02dca20).
+rnsvg-corpus shard 1/4: 37 passed, 0 pending, 0 failed
+RNQNX_TEMP_PC_SAMPLER samples=25574 offsets=4122

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="5"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="518"
+	timestamp="2026-11-16T22:42:07"
+	>
+	<testcase name="host_listener_candidate" classname="host_listener_candidate" time="70.153" status="run">
+		<properties/>
+		<system-out>WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:42:07.205649 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1116 22:42:07.206537 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000013cd0).
+W1116 22:42:07.206625 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+[PASS] layoutWithoutListenerDoesNotDispatch
+W1116 22:42:07.287840 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000007590).
+W1116 22:42:07.288260 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200002bcd0).
+W1116 22:42:07.288319 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400000ac50).
+[PASS] layoutListenerRemovalAndReadditionPreserveChangedBounds
+W1116 22:42:07.360313 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000c290).
+W1116 22:42:07.3...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="corpus_listener_candidate_0" classname="corpus_listener_candidate_0" time="5.20989" status="run">
+		<properties/>
+		<system-out>Running "RnqnxRnsvgCorpus"
+rnsvg batch 0 start
+rnsvg batch 0 mounted 901 ms
+rnsvg batch 0 grabbed 903 ms
+rnsvg batch 4 start
+rnsvg batch 4 mounted 832 ms
+rnsvg batch 4 grabbed 834 ms
+rnsvg batch 8 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:43:21.119827 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:43:21.156872 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:43:21.183921 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:43:21.215760 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:43:21.332557 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:43:21.361284 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;s...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="corpus_listener_candidate_1" classname="corpus_listener_candidate_1" time="204.748" status="run">
+		<properties/>
+		<system-out>Running "RnqnxRnsvgCorpus"
+rnsvg batch 1 start
+rnsvg batch 1 mounted 1116 ms
+rnsvg batch 1 grabbed 1119 ms
+rnsvg batch 5 start
+rnsvg batch 5 mounted 635 ms
+rnsvg batch 5 grabbed 636 ms
+rnsvg batch 9 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:43:27.259472 1548890624 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:43:27.269518 1548890624 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:43:27.309448 1548890624 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:43:27.316947 1548890624 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:43:27.465109 1548890624 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:43:27.473170 1548890624 FilterPropsConversions.h:30] react_native_expect failure: value.hasType...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="corpus_listener_candidate_2" classname="corpus_listener_candidate_2" time="232.215" status="run">
+		<properties/>
+		<system-out>Running "RnqnxRnsvgCorpus"
+rnsvg batch 2 start
+rnsvg batch 2 mounted 2379 ms
+rnsvg batch 2 grabbed 2388 ms
+rnsvg batch 6 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:46:52.912813 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:46:52.924244 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:46:52.935143 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:46:52.947670 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:46:52.962009 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:46:53.003189 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:46:53.382813 3994731008 FilterPropsConversi...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="corpus_listener_candidate_3" classname="corpus_listener_candidate_3" time="6.58603" status="run">
+		<properties/>
+		<system-out>Running "RnqnxRnsvgCorpus"
+rnsvg batch 3 start
+rnsvg batch 3 mounted 1654 ms
+rnsvg batch 3 grabbed 1659 ms
+rnsvg batch 7 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:50:43.493245 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:50:43.523910 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:50:43.653082 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:50:43.682482 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:50:43.711488 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:50:43.732666 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1116 22:50:43.772375 4001731072 FilterPropsConversi...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+</testsuite>

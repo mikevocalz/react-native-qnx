@@ -1083,10 +1083,15 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (layoutError != MountError::None) {
         return layoutError;
       }
-      if (auto viewEmitter =
-              std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(
-                  view.eventEmitter)) {
-        viewEmitter->onLayout(view.layoutMetrics);
+      // Match React Native's LayoutEventEmitter: an emitter can exist even
+      // when JavaScript did not subscribe to onLayout.
+      if (const auto* props = dynamic_cast<const facebook::react::ViewProps*>(view.props.get());
+          props != nullptr && props->onLayout) {
+        if (auto viewEmitter =
+                std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(
+                    view.eventEmitter)) {
+          viewEmitter->onLayout(view.layoutMetrics);
+        }
       }
       registerEventEmitter(view);
       if (const auto& observer = viewObserver()) observer(view, false);
@@ -1179,10 +1184,15 @@ MountError ShadowViewMutationAdapter::applyOne(
       if (layoutError != MountError::None) {
         return layoutError;
       }
-      if (auto viewEmitter =
-              std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(
-                  view.eventEmitter)) {
-        viewEmitter->onLayout(view.layoutMetrics);
+      // Match React Native's LayoutEventEmitter: an emitter can exist even
+      // when JavaScript did not subscribe to onLayout.
+      if (const auto* props = dynamic_cast<const facebook::react::ViewProps*>(view.props.get());
+          props != nullptr && props->onLayout) {
+        if (auto viewEmitter =
+                std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(
+                    view.eventEmitter)) {
+          viewEmitter->onLayout(view.layoutMetrics);
+        }
       }
       connectTextInputEvents(view);
       connectSwitchEvents(view);

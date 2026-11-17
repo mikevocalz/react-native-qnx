@@ -153,7 +153,9 @@ int main(int argc, char** argv) {
     )JS");
 
     // ---- opacity, transform, layout -------------------------------------
-    rig.eval("make(701, { width: 40, height: 30, opacity: 0.5, transform: [{ translateX: 7 }, { translateY: 3 }, { scale: 2 }, { rotate: '90deg' }],"
+    // Direct Fabric props must request layout events; the event recorder alone
+    // does not subscribe this view to React Native's onLayout contract.
+    rig.eval("make(701, { width: 40, height: 30, onLayout: true, opacity: 0.5, transform: [{ translateX: 7 }, { translateY: 3 }, { scale: 2 }, { rotate: '90deg' }],"
              " cachePolicy: 'none', source: [{ uri: '" + fileUri(red) + "' }] }); show(701);");
     rig.settle([&] { return rig.image(701) != nullptr; }, "the ExpoImage item to mount");
     ExpoImageItem* item = rig.image(701);

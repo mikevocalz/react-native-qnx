@@ -1,0 +1,2 @@
+libpng error: Read Error
+decode must wait for its worker after fetch has already finished

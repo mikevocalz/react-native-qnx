@@ -1,0 +1,24 @@
+********* Start testing of RnsvgImageHttpTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgImageHttpTest::initTestCase()
+FAIL!  : RnsvgImageHttpTest::privateAndNoStoreResponsesDeliverPixelsWithoutCaching(private) Compared values are not the same
+   Actual   (first.state())     : 3
+   Expected (ImageState::Loaded): 2
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-fetcher159/tests/native/qt-rnsvg-image-http/RnsvgImageHttpTest.cpp(239)]
+FAIL!  : RnsvgImageHttpTest::privateAndNoStoreResponsesDeliverPixelsWithoutCaching(no-store) Compared values are not the same
+   Actual   (first.state())     : 3
+   Expected (ImageState::Loaded): 2
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-fetcher159/tests/native/qt-rnsvg-image-http/RnsvgImageHttpTest.cpp(239)]
+FAIL!  : RnsvgImageHttpTest::anImageLargerThanTheCacheBudgetStillDeliversPixels() Compared values are not the same
+   Actual   (element.state())   : 3
+   Expected (ImageState::Loaded): 2
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-fetcher159/tests/native/qt-rnsvg-image-http/RnsvgImageHttpTest.cpp(266)]
+FAIL!  : RnsvgImageHttpTest::clearingMemoryDuringLoadStillDeliversPixels() Compared values are not the same
+   Actual   (element.state())   : 3
+   Expected (ImageState::Loaded): 2
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-fetcher159/tests/native/qt-rnsvg-image-http/RnsvgImageHttpTest.cpp(285)]
+FAIL!  : RnsvgImageHttpTest::deletingTheProviderFromCompletionStopsOtherWaiters() '!secondCalled' returned FALSE. (An image waiter ran after its provider was destroyed by another completion)
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-fetcher159/tests/native/qt-rnsvg-image-http/RnsvgImageHttpTest.cpp(446)]
+PASS   : RnsvgImageHttpTest::cleanupTestCase()
+Totals: 2 passed, 5 failed, 0 skipped, 0 blacklisted, 368ms
+********* Finished testing of RnsvgImageHttpTest *********
