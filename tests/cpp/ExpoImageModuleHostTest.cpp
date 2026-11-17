@@ -463,6 +463,64 @@ int main(int argc, char** argv) {
     )JS");
     check(failures.empty(), "cache clear before owner completion:\n" + failures);
 
+    // Cache path lookup and clear sweep both yield to the image worker pool.
+    // Clear invalidates older writers at admission, before any worker runs.
+    check(disk.write(QStringLiteral("key:deferred-clear-old"), png), "seed deferred clear fixture");
+    failures = rig.runAsync(R"JS(
+      globalThis.__clearWorkerRef = await expo.modules.ExpoImage.loadAsync(')JS" + dataUri(png) + R"JS(');
+    )JS");
+    check(failures.empty(), "deferred clear source:\n" + failures);
+    {
+      auto* pool = QThreadPool::globalInstance();
+      check(pool->waitForDone(5000), "previous workers finished before cache controls");
+      const int maximum = pool->maxThreadCount();
+      pool->setMaxThreadCount(1);
+      QSemaphore entered, release;
+      auto cleanup = qScopeGuard([&] {
+        release.release();
+        pool->waitForDone();
+        pool->setMaxThreadCount(maximum);
+      });
+      pool->start([&] { entered.release(); release.acquire(); });
+      check(entered.tryAcquire(1, 1000), "cache-control worker gate started");
+      const auto previousGeneration = disk.generation();
+      rig.eval(R"JS(
+        const mod = expo.modules.ExpoImage;
+        globalThis.__cacheControlCompletions = 0;
+        const record = (pending) => pending.then(
+          (value) => { ++__cacheControlCompletions; return { value }; },
+          (error) => { ++__cacheControlCompletions; return { error }; }
+        );
+        globalThis.__cacheControlPath = record(mod.getCachePathAsync('deferred-clear-old'));
+        globalThis.__cacheControlClear = record(mod.clearDiskCache());
+        globalThis.__cacheControlWrite = record(mod.writeToCacheAsync(__clearWorkerRef, 'deferred-clear-new'));
+        __clearWorkerRef.release();
+      )JS");
+      check(disk.generation() == previousGeneration + 1, "clear invalidates writers at owner admission");
+      check(QFile::exists(disk.pathFor(QStringLiteral("key:deferred-clear-old"))),
+            "clear defers its filesystem sweep to the worker");
+      bool ticked = false;
+      QTimer::singleShot(0, [&] { ticked = true; });
+      rig.settle([&] { return ticked; }, "owner timer while cache controls wait");
+      check(rig.number("__cacheControlCompletions") == 0, "cache controls wait for the worker");
+      release.release();
+      failures = rig.runAsync(R"JS(
+        const [path, clear, write] = await Promise.all([
+          __cacheControlPath, __cacheControlClear, __cacheControlWrite
+        ]);
+        expect(!path.error && path.value === null, 'pending path lookup observes the admitted clear');
+        expect(!clear.error && clear.value === true, 'the deferred sweep reports success');
+        expect(!write.error, 'the post-clear write succeeds');
+        const mod = expo.modules.ExpoImage;
+        expect(await mod.getCachePathAsync('deferred-clear-old') === null, 'the old cache entry stays cleared');
+        expect(typeof await mod.getCachePathAsync('deferred-clear-new') === 'string', 'the newer disk entry survives clear');
+        const restored = await mod.readFromCacheAsync('deferred-clear-new');
+        expect(restored && restored.width === 10 && restored.height === 6, 'the newer entry decodes after clear');
+        if (restored) restored.release();
+      )JS");
+      check(failures.empty(), "deferred cache controls:\n" + failures);
+    }
+
     // ---- configureCache -----------------------------------------------------
     failures = rig.runAsync(R"JS(
       const mod = expo.modules.ExpoImage;

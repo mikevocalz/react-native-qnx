@@ -210,8 +210,18 @@ facebook::jsi::Value QnxImageLoader::clearDiskCache(
   auto& self = static_cast<QnxImageLoader&>(tm);
   facebook::react::AsyncPromise<folly::dynamic> promise(rt, self.jsInvoker_);
   auto result = promise.get(rt);
-  views::ImageDiskCache::shared().clear();
-  promise.resolve(true);
+  auto disk = views::ImageDiskCache::shared();
+  // Invalidate older writers immediately. The filesystem sweep runs on the
+  // bounded image pool and may also be completed by a newer cache operation.
+  const auto generation = disk.beginClear();
+  self.imageTasks_.run([disk, generation]() mutable {
+    return disk.completeClear(generation);
+  }, [promise](auto cleared) mutable {
+    if (const auto* error = std::get_if<views::ImageTaskError>(&cleared))
+      promise.reject(error->message.toStdString());
+    else
+      promise.resolve(std::get<bool>(cleared));
+  });
   return result;
 }
 
@@ -228,14 +238,21 @@ facebook::jsi::Value QnxImageLoader::getCachePath(
   // expo-image's getCachePathAsync takes the `cacheKey` a source named, or the
   // URL when it named none. Only an entry that exists has a path; null otherwise.
   const QString given = QString::fromStdString(args[0].asString(rt).utf8(rt));
-  auto& disk = views::ImageDiskCache::shared();
-  for (const QString& key : {QStringLiteral("key:") + given, given}) {
-    if (disk.contains(key)) {
-      promise.resolve(disk.pathFor(key).toStdString());
-      return result;
+  auto disk = views::ImageDiskCache::shared();
+  self.imageTasks_.run([disk, given] {
+    for (const QString& key : {QStringLiteral("key:") + given, given}) {
+      if (disk.contains(key)) return disk.pathFor(key);
     }
-  }
-  promise.resolve(folly::dynamic(nullptr));
+    return QString{};
+  }, [promise](auto path) mutable {
+    if (const auto* error = std::get_if<views::ImageTaskError>(&path)) {
+      promise.reject(error->message.toStdString());
+      return;
+    }
+    const auto found = std::get<QString>(std::move(path));
+    if (found.isEmpty()) promise.resolve(folly::dynamic(nullptr));
+    else promise.resolve(found.toStdString());
+  });
   return result;
 }
 
