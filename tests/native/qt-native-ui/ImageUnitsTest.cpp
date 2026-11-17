@@ -23,6 +23,7 @@
 #include <QtTest>
 
 #include <atomic>
+#include <future>
 #include <memory>
 #include <stdexcept>
 #if defined(Q_OS_UNIX)
@@ -50,6 +51,12 @@ class ImageUnitsTest : public QObject {
   void diskCacheEvictsLeastRecentlyUsedWithinBudget();
   void diskCacheRefusesOversizeAndClears();
   void diskCacheClearInvalidatesPendingWrites();
+  void diskCacheClearAdmissionDoesNotWaitForIo();
+  void diskCachePendingClearIsAppliedByReaders_data();
+  void diskCachePendingClearIsAppliedByReaders();
+  void diskCacheDelayedClearPreservesNewWrites();
+  void diskCacheOverlappingClearsPreserveNewestWrites();
+  void diskCacheFailedClearStaysPending();
   void requestKeyFoldsHeadersAndHonoursCacheKey();
   void fetcherSendsHeadersAndHitsDiskCacheSecondTime();
   void fetcherCancelNeverCallsBack();
@@ -263,6 +270,139 @@ void ImageUnitsTest::diskCacheClearInvalidatesPendingWrites() {
   QVERIFY(!cache.contains(QStringLiteral("old")));
   QVERIFY(worker.write(QStringLiteral("new"), "bytes", worker.generation()));
   QVERIFY(cache.contains(QStringLiteral("new")));
+}
+
+void ImageUnitsTest::diskCacheClearAdmissionDoesNotWaitForIo() {
+#ifdef Q_OS_UNIX
+  QTemporaryDir dir;
+  QVERIFY(dir.isValid());
+  ImageDiskCache cache(dir.path(), 1024);
+  const QString key = QStringLiteral("blocked");
+  const QByteArray path = QFile::encodeName(cache.pathFor(key));
+  QCOMPARE(::mkfifo(path.constData(), 0600), 0);
+  std::atomic_bool readFinished{false};
+  std::promise<std::uint64_t> admitted;
+  auto admission = admitted.get_future();
+  QThreadPool pool;
+  pool.setMaxThreadCount(2);
+  int writer = -1;
+  auto cleanup = qScopeGuard([&] {
+    // Closing the writer releases Qt's buffered read through EOF, including
+    // assertion exits. Do this before joining either worker.
+    if (writer < 0) writer = ::open(path.constData(), O_RDWR | O_NONBLOCK);
+    if (writer >= 0) ::close(writer);
+    pool.waitForDone();
+  });
+  pool.start([&] {
+    (void)cache.read(key, 1);
+    readFinished = true;
+  });
+  // A writer can connect only once read() has entered QFile::open with the
+  // disk mutex held. Keep it open without bytes so that real I/O stays blocked.
+  QTRY_VERIFY_WITH_TIMEOUT(writer >= 0 ||
+      (writer = ::open(path.constData(), O_WRONLY | O_NONBLOCK)) >= 0, 2000);
+  QVERIFY(!readFinished.load());
+  pool.start([&] {
+    const auto epoch = cache.beginClear();
+    admitted.set_value(cache.generation() == epoch ? epoch : 0);
+  });
+  QVERIFY(admission.wait_for(std::chrono::seconds(2)) == std::future_status::ready);
+  QCOMPARE(admission.get(), std::uint64_t{1});
+  QVERIFY(!readFinished.load());
+#else
+  QSKIP("The blocked filesystem admission control requires a Unix FIFO");
+#endif
+}
+
+void ImageUnitsTest::diskCachePendingClearIsAppliedByReaders_data() {
+  QTest::addColumn<bool>("useContains");
+  QTest::newRow("read") << false;
+  QTest::newRow("contains") << true;
+}
+
+void ImageUnitsTest::diskCachePendingClearIsAppliedByReaders() {
+  QFETCH(bool, useContains);
+  QTemporaryDir dir;
+  QVERIFY(dir.isValid());
+  ImageDiskCache cache(dir.path(), 1024);
+  const QString key = QStringLiteral("old");
+  QVERIFY(cache.write(key, "old bytes"));
+  const auto oldGeneration = cache.generation();
+  const auto epoch = cache.beginClear();
+  QCOMPARE(epoch, oldGeneration + 1);
+  // Admission performs no filesystem work. Neither stale writes nor stale
+  // reads may slip through while the explicit clear worker is delayed.
+  QVERIFY(QFileInfo::exists(cache.pathFor(key)));
+  QVERIFY(!cache.write(QStringLiteral("stale"), "bytes", oldGeneration));
+  if (useContains) QVERIFY(!cache.contains(key));
+  else QVERIFY(cache.read(key).isEmpty());
+  QVERIFY(!QFileInfo::exists(cache.pathFor(key)));
+  QVERIFY(cache.completeClear(epoch));
+}
+
+void ImageUnitsTest::diskCacheDelayedClearPreservesNewWrites() {
+  QTemporaryDir dir;
+  QVERIFY(dir.isValid());
+  ImageDiskCache cache(dir.path(), 1024);
+  ImageDiskCache worker = cache;
+  QVERIFY(cache.write(QStringLiteral("old"), "old bytes"));
+  const auto epoch = cache.beginClear();
+  // The post-clear worker wins the disk mutex before the queued clear worker.
+  QVERIFY(worker.write(QStringLiteral("new"), "new bytes", epoch));
+  QVERIFY(!QFileInfo::exists(cache.pathFor(QStringLiteral("old"))));
+  QVERIFY(cache.completeClear(epoch));
+  QCOMPARE(worker.read(QStringLiteral("new")), QByteArray("new bytes"));
+  QVERIFY(worker.completeClear(epoch));
+  QCOMPARE(cache.read(QStringLiteral("new")), QByteArray("new bytes"));
+}
+
+void ImageUnitsTest::diskCacheOverlappingClearsPreserveNewestWrites() {
+  QTemporaryDir dir;
+  QVERIFY(dir.isValid());
+  ImageDiskCache cache(dir.path(), 1024);
+  const QString key = QStringLiteral("same key");
+  QVERIFY(cache.write(key, "old bytes"));
+  const auto first = cache.beginClear();
+  QVERIFY(cache.write(key, "first generation", first));
+  const auto second = cache.beginClear();
+  QVERIFY(!cache.write(key, "stale first generation", first));
+  QVERIFY(cache.write(key, "second generation", second));
+  // Clear workers complete in reverse admission order after the newest write.
+  QVERIFY(cache.completeClear(second));
+  QVERIFY(cache.completeClear(first));
+  QCOMPARE(cache.read(key), QByteArray("second generation"));
+  QCOMPARE(cache.generation(), second);
+}
+
+void ImageUnitsTest::diskCacheFailedClearStaysPending() {
+#ifdef Q_OS_UNIX
+  if (::geteuid() == 0) QSKIP("The deletion failure requires an unprivileged process");
+  QTemporaryDir dir;
+  QVERIFY(dir.isValid());
+  ImageDiskCache cache(dir.path(), 1024);
+  const QString key = QStringLiteral("old");
+  QVERIFY(cache.write(key, "old bytes"));
+  const auto permissions = QFile::permissions(dir.path());
+  auto restorePermissions = qScopeGuard([&] { QFile::setPermissions(dir.path(), permissions); });
+  QVERIFY(QFile::setPermissions(dir.path(), QFile::ReadOwner | QFile::ExeOwner));
+  QVERIFY(!QFile::remove(cache.pathFor(key)));
+  const auto epoch = cache.beginClear();
+  QVERIFY(!cache.completeClear(epoch));
+  QVERIFY(QFileInfo::exists(cache.pathFor(key)));
+  QVERIFY(cache.read(key).isEmpty());
+  QVERIFY(!cache.contains(key));
+  QVERIFY(!cache.write(QStringLiteral("new"), "new bytes", epoch));
+  // Failure must not advance the sweep watermark. Retrying the same clear
+  // after the permission problem is fixed really removes the old entry.
+  QVERIFY(QFile::setPermissions(dir.path(), permissions));
+  QVERIFY(cache.completeClear(epoch));
+  QVERIFY(!QFileInfo::exists(cache.pathFor(key)));
+  QVERIFY(cache.write(QStringLiteral("new"), "new bytes", epoch));
+  QVERIFY(cache.completeClear(epoch));
+  QCOMPARE(cache.read(QStringLiteral("new")), QByteArray("new bytes"));
+#else
+  QSKIP("The deterministic unlink failure uses Unix directory permissions");
+#endif
 }
 
 namespace {

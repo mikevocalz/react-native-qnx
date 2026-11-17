@@ -1,0 +1,12 @@
+********* Start testing of ImageUnitsTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageUnitsTest::initTestCase()
+PASS   : ImageUnitsTest::diskCacheClearAdmissionDoesNotWaitForIo()
+PASS   : ImageUnitsTest::diskCachePendingClearIsAppliedByReaders(read)
+PASS   : ImageUnitsTest::diskCachePendingClearIsAppliedByReaders(contains)
+PASS   : ImageUnitsTest::diskCacheDelayedClearPreservesNewWrites()
+PASS   : ImageUnitsTest::diskCacheOverlappingClearsPreserveNewestWrites()
+PASS   : ImageUnitsTest::diskCacheFailedClearStaysPending()
+PASS   : ImageUnitsTest::cleanupTestCase()
+Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 84ms
+********* Finished testing of ImageUnitsTest *********

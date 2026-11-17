@@ -1,0 +1,78 @@
+{
+  "base_commit": "0cf65e6bcb5462d14b7cafa3e2a9c360ca6168ef",
+  "recorded_utc": "2026-11-17T03:05:19.064630+00:00",
+  "sources": {
+    "vnext/include/react-native-qnx/views/image/ImageDiskCache.h": {
+      "git_blob": "0a71cb0b3dd198083a6bc122752b84b77987e73a",
+      "sha256": "8d0f0aa482098f2fd0afc58f634f6f36659a609e7755cb74e545284780862f9c"
+    },
+    "vnext/src/views/qt/image/ImageDiskCache.cpp": {
+      "git_blob": "abfd62f32a53ba61616ead86c5c6895b23299a72",
+      "sha256": "3b3cba0648c389e76dab3963aed18ae52afb7ec963ca0a2d68384b069a567352"
+    },
+    "tests/native/qt-native-ui/ImageUnitsTest.cpp": {
+      "git_blob": "86b862868beff9e231060d7eb5ce4cb51b88f764",
+      "sha256": "f8fa5f9ec5da2a5c094e22e6f532c38ddac3e28b20bc53937b91fd441ee8b0bd"
+    }
+  },
+  "toolchain": {
+    "os": "Debian 13 x86-64",
+    "compiler": "Clang 19.1.7",
+    "qt": "6.11.1 shared release binary (not rebuilt with sanitizers)",
+    "cmake": "3.31.10",
+    "ninja": "1.13.2",
+    "build": "Debug C++20; -Wall -Wextra -Wpedantic -Werror",
+    "sanitizers": "address,undefined; -fno-sanitize-recover=undefined; -fno-omit-frame-pointer",
+    "ASAN_OPTIONS": "detect_leaks=0",
+    "UBSAN_OPTIONS": "halt_on_error=1",
+    "display": "offscreen Qt Quick software",
+    "effective_uid": 1000
+  },
+  "results": {
+    "candidate_focused": {
+      "exit_code": 0,
+      "qt_test_entries_passed": 8,
+      "behavior_cases": 6,
+      "failed": 0,
+      "skipped": 0,
+      "milliseconds": 84
+    },
+    "mutation_focused": {
+      "exit_code": 6,
+      "qt_test_entries_passed": 2,
+      "behavior_cases_failed": 6,
+      "skipped": 0,
+      "milliseconds": 2068
+    },
+    "candidate_ctest": {
+      "exit_code": 0,
+      "ctests_passed": 3,
+      "qt_test_entries_passed": 79,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 11.62,
+      "executables": {
+        "rnqnx_image_units_test": 35,
+        "rnqnx_expo_image_item_test": 31,
+        "rnqnx_image_fetch_queue_test": 13
+      }
+    },
+    "documentation": {
+      "components": 24,
+      "release_gates": 11,
+      "result": "passed"
+    },
+    "full_format_check": "passed using pinned Prettier 3.9.10"
+  },
+  "notes": [
+    "QtTest entry totals include initTestCase and cleanupTestCase.",
+    "Mutation binary substitutes only ImageDiskCache object; the candidate source, original object and compiled test object remain unchanged.",
+    "The first FIFO-test prototype waited for its reader before closing the writer and timed out; the corrected cleanup closes the writer before joining workers.",
+    "Host-only low-level cache evidence; no JSI, Hermes, QNX, Wayland or device qualification.",
+    "Docs validation reused the already frozen rnqnx-pr159 node_modules graph via an untracked symlink; manifests and lockfile are unchanged."
+  ],
+  "reviewers": [
+    "/root/finish_expo159: independent source/test review, no blocking finding",
+    "/root: independent source/test review, no blocking finding; final hashes/results supplied separately"
+  ]
+}
