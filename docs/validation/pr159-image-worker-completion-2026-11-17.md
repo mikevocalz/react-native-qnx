@@ -176,6 +176,33 @@ candidate execution. Immutable copies of the first completed generation
 candidate executables were tested while the unchanged-source recovery ran;
 the copy hashes were checked before and after each snapshot.
 
+## Final SVG stack integration
+
+Published SVG prerequisite `d3eacc75dcad761c992736223a68b53ff852203b` is merged
+in local source commit `3e381a30dc20afdee774fe26c12204040f71706e`. The only merge
+conflicts were documentation: both historical handoff continuations were kept,
+and the SVG guide combines uncached-pixel delivery with the accurate optional
+QtSvg/plugin staging description.
+
+The affected Expo module executable passes after this merge. The original
+Fabric fixture timed out waiting for a layout event because its direct
+`fabric.createNode` call recorded events without setting `onLayout: true`.
+Pinned React Native `BaseViewProps` defaults that subscription flag to false,
+and the generated ExpoImage props correctly delegate to `ViewProps`.
+The fixture now requests the flag only for its existing layout scenario
+(node 701). All initial/resized geometry and event assertions, production
+guards and timeouts remain unchanged. The coordinator independently reviewed
+that exact fixture correction; the corrected Fabric executable passes.
+
+The [initial failed run](../evidence/pr159-image-workers-2026-11-17/final-stack-unsubscribed-fixture.json)
+and its [unsubscribed fixture log](../evidence/pr159-image-workers-2026-11-17/rnqnx_expo_image_fabric_host_test-unsubscribed-fixture.log)
+are retained. The [final identity record](../evidence/pr159-image-workers-2026-11-17/final-stack-validation.json)
+records both passing executable hashes and the corrected fixture hash. The
+[module log](../evidence/pr159-image-workers-2026-11-17/rnqnx_expo_image_module_host_test-final-stack.log)
+and [corrected Fabric log](../evidence/pr159-image-workers-2026-11-17/rnqnx_expo_image_fabric_host_test-final-stack.log)
+record the final passes. No full corpus replay or new target qualification is
+claimed for this integration check.
+
 ## Architecture, review and rollback
 
 This retains the existing core `ImageLoader` compatibility adapter and public

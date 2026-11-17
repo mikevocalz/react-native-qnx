@@ -1,5 +1,38 @@
 # Current state
 
+## PR 159 image workers and cache lifecycle continuation (2026-11-16; 2026-11-17 UTC)
+
+PR 159 now stacks published SVG prerequisite `d3eacc75`. ImageRef computation,
+core image decoding, disk clearing and cache-path lookup use bounded native
+workers. Cancelled running work retains admission until it physically finishes;
+owner callbacks are released before a successor starts. Separate disk and
+memory generations prevent old work from restoring cleared entries, while
+active loads still receive pixels. SVG HTTP delivery no longer depends on
+cache retention. `configureCache` keeps its synchronous contract.
+
+The real-Hermes Expo module/Fabric candidates pass, with original-source and
+mutation controls that fail the intended assertions. The combined standalone
+image/cache/queue graph passes 90 QtTest entries under ASan/UBSan; the separate
+SVG HTTP receipt passes 21 entries. TypeScript, seven existing router suites,
+five affected image/public-entry checks and real QNX/Marathon Metro bundles
+pass. The full local JS runner stops at an unchanged Marathon Unix-socket
+fixture with `EPERM`; it is not counted as a complete pass. Exact integrated-head
+CI and current target qualification remain pending. Broader router prop/RTL/
+resize conformance is unchanged, and all eleven release gates stay pending.
+
+After the final SVG merge, the Expo module passes. The Fabric fixture now
+explicitly subscribes its existing layout scenario to `onLayout`; the initial
+unsubscribed timeout is preserved, and the corrected fixture passes with every
+geometry/event assertion and the production listener guard unchanged.
+
+[Worker controls, scope and rollback](../validation/pr159-image-worker-completion-2026-11-17.md),
+[fetch admission](../validation/pr159-fetcher-admission-2026-11-16.md),
+[callback lifetime](../validation/pr159-callback-lifetime-2026-11-16.md),
+[disk epochs](../validation/pr159-disk-clear-epochs-2026-11-16.md) and
+[SVG delivery](../validation/pr159-svg-image-delivery-2026-11-16.md) preserve the
+source identities, raw logs and independent reviews. No fresh QNX plugin audit,
+release animation asset or exact-device evidence is supplied; keep PR 159 draft.
+
 ## PR 161 subscribed layout dispatch continuation (2026-11-16)
 
 The Fabric adapter now checks the existing `ViewProps::onLayout` flag before
