@@ -62,6 +62,7 @@ class ImageUnitsTest : public QObject {
   void fetcherCancelsAndDestroysBlockedIo();
   void fetcherRetainsPrivateQueueUntilWorkerFinishes();
   void fetcherCompletesBeforeStartingReentrantQueuedCallback();
+  void fetcherCancellationReleasesCallbacksBeforeStartingSuccessor();
 #if defined(Q_OS_UNIX)
   void cancelledFileReadsHoldSharedAdmissionUntilFinished();
 #endif
@@ -648,23 +649,65 @@ void ImageUnitsTest::fetcherCompletesBeforeStartingReentrantQueuedCallback() {
   bool firstCompleted = false;
   bool firstHadOwner = false;
   bool secondCompleted = false;
+  bool captureReleasedBeforeSuccessor = false;
+  auto capture = std::make_shared<int>(1);
+  std::weak_ptr<int> weakCapture = capture;
   ImageRequest local;
   local.uri = QStringLiteral("data:image/png;base64,") + QString::fromLatin1(pngBytes().toBase64());
-  fetcher->fetch(local, {}, [&](FetchResult result) {
+  fetcher->fetch(local, {}, [&, capture](FetchResult result) {
     QCOMPARE(result.bytes, pngBytes());
     firstHadOwner = fetcher != nullptr;
     firstCompleted = true;
   });
+  capture.reset();
   ImageRequest expired;
   expired.uri = QStringLiteral("https://example.invalid/expired.png");
   fetcher->fetch(expired, {}, [&](FetchResult result) {
     QVERIFY(result.error.contains(QStringLiteral("timed out")));
+    captureReleasedBeforeSuccessor = weakCapture.expired();
     secondCompleted = true;
     fetcher.reset();
   });
   QTRY_VERIFY(firstCompleted && secondCompleted);
   QVERIFY2(firstHadOwner, "A queued callback destroyed the owner before the completed callback ran");
+  QVERIFY2(captureReleasedBeforeSuccessor, "A completed callback retained owner state while its successor could destroy the runtime");
   QCOMPARE(queue.running(), 0);
+}
+
+void ImageUnitsTest::fetcherCancellationReleasesCallbacksBeforeStartingSuccessor() {
+  QTcpServer silent;
+  QVERIFY(silent.listen(QHostAddress::LocalHost, 0));
+  ImageFetchQueue queue(1);
+  auto fetcher = std::make_unique<QtImageFetcher>(5000, nullptr, &queue);
+  auto doneCapture = std::make_shared<int>(1);
+  auto progressCapture = std::make_shared<int>(2);
+  const std::weak_ptr<int> weakDone = doneCapture;
+  const std::weak_ptr<int> weakProgress = progressCapture;
+  bool cancelledCallback = false;
+  bool successorStarted = false;
+  bool capturesReleased = false;
+  ImageRequest request;
+  request.uri = QStringLiteral("http://127.0.0.1:%1/never.png").arg(silent.serverPort());
+  const auto id = fetcher->fetch(request,
+      [progressCapture](qint64, qint64) {},
+      [&, doneCapture](FetchResult) { cancelledCallback = true; });
+  doneCapture.reset();
+  progressCapture.reset();
+  queue.submit(ImagePriority::Normal, [&] {
+    capturesReleased = weakDone.expired() && weakProgress.expired();
+    successorStarted = true;
+    fetcher.reset();
+    queue.release();
+  });
+  QCOMPARE(queue.running(), 1);
+  QCOMPARE(queue.waiting(), 1);
+  fetcher->cancel(id);
+  QVERIFY(successorStarted);
+  QVERIFY2(capturesReleased, "Cancelled callbacks retained owner state while a successor could destroy the runtime");
+  QVERIFY(!cancelledCallback);
+  QVERIFY(!fetcher);
+  QCOMPARE(queue.running(), 0);
+  QCOMPARE(queue.waiting(), 0);
 }
 
 #if defined(Q_OS_UNIX)

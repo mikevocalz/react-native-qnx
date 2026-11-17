@@ -1,0 +1,76 @@
+{
+  "recordedAtUtc": "2026-11-17T03:06:43.665360+00:00",
+  "localBaseCommit": "69248f969aa0602473059c293151de1d08b3e58b",
+  "negativeControl": {
+    "productionSourceCommit": "69248f969aa0602473059c293151de1d08b3e58b",
+    "replacedFiles": ["vnext/src/views/qt/image/QtImageFetcher.cpp"],
+    "sameTestFileForControlAndCandidate": true,
+    "exitCode": 2,
+    "failedRegressions": 2
+  },
+  "sources": [
+    {
+      "path": "vnext/src/views/qt/image/QtImageFetcher.cpp",
+      "controlGitBlob": "0899eb36eb11dcbca864ced61c313de7679e9f5f",
+      "controlSha256": "33b7cf8018693fe2c2d48bad239635163076c5b8ab58eb1e2c35dba2bcff5c10",
+      "candidateGitBlob": "29856d45560ed497c59c4648a3697f7e8d0edb7e",
+      "candidateSha256": "2f5ff6bcdecbb88299431f825920639eae01a3285cbc7b505040c1087596a88b"
+    },
+    {
+      "path": "vnext/include/react-native-qnx/views/image/QtImageFetcher.h",
+      "controlGitBlob": "1e07777f10e0f94c2ba438779cfc1327f021a942",
+      "controlSha256": "cc70ad76afac86d5574da974b4dbbf173fad03c85d10bd25010d491570120694",
+      "candidateGitBlob": "1e07777f10e0f94c2ba438779cfc1327f021a942",
+      "candidateSha256": "cc70ad76afac86d5574da974b4dbbf173fad03c85d10bd25010d491570120694"
+    },
+    {
+      "path": "tests/native/qt-native-ui/ImageUnitsTest.cpp",
+      "controlGitBlob": "6f56703c2a5ef394b477a69a2581eed4d1e7bd2c",
+      "controlSha256": "cc98e68787c4ae42aca209418beee912b8936bce72e5719e0a117dc2d1cde167",
+      "candidateGitBlob": "4ab7339cdcfa154e778a0fe75725788a116f555e",
+      "candidateSha256": "d084d7252d23532a260e8f2ca9d111dbc7ce519c83e7b10b193090ffc53a3544"
+    }
+  ],
+  "dependencySnapshots": {
+    "vnext/include/react-native-qnx/views/DecodedImageCache.h": "ac4e000f5e9d83d9ad0150088587ebad53ecde34ec5c3ddffeb0ba317316d8e7"
+  },
+  "dependencyNote": "The separately reviewed decoded-memory epoch interface is present in the standalone target. Control and candidate used the identical recorded header. That file is not part of this follow-up commit.",
+  "environment": {
+    "os": "Debian 13 x86_64",
+    "qt": "6.11.1 prebuilt, uninstrumented",
+    "clang": "19.1.7",
+    "cmake": "3.31.10",
+    "sanitizers": ["address", "undefined"],
+    "leakDetection": false,
+    "display": "offscreen/software"
+  },
+  "commands": {
+    "build": "cmake --build build/fetcher-asan --parallel 1 --target rnqnx_image_units_test rnqnx_image_fetch_queue_test rnqnx_expo_image_item_test",
+    "focused": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 build/fetcher-asan/rnqnx_image_units_test fetcherCompletesBeforeStartingReentrantQueuedCallback fetcherCancellationReleasesCallbacksBeforeStartingSuccessor",
+    "suite": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 ctest --test-dir build/fetcher-asan -R '^(rnqnx_image_units_test|rnqnx_image_fetch_queue_test|rnqnx_expo_image_item_test)$' --output-on-failure"
+  },
+  "results": {
+    "focusedExit": 0,
+    "focusedRegressionsPassed": 2,
+    "focusedQtTestEntriesPassed": 4,
+    "focusedMilliseconds": 57,
+    "suiteExit": 0,
+    "suiteCTestsPassed": 3,
+    "suiteQtTestEntriesPassed": 77,
+    "failures": 0,
+    "skips": 0,
+    "suiteSeconds": 11.69
+  },
+  "binaries": {
+    "rnqnx_image_units_test": "b913aaf06a5b87874a114c047d60bffb4c7de07fe2a149efdb70764b34507fe1",
+    "rnqnx_image_fetch_queue_test": "ca3ab8d6af3324d52961ef65d2c59ae594484af31776986a2ff945dde8022636",
+    "rnqnx_expo_image_item_test": "02aab8711f5556fca09c114f47672842634e9eb40a03cadf57730cfd1f6bc4bd"
+  },
+  "independentReview": {
+    "reviewer": "separate SVG workstream agent",
+    "outcome": "no blocking findings"
+  },
+  "qnxCrossBuild": "not run",
+  "physicalDevice": "not run",
+  "marathonShell": "not run"
+}

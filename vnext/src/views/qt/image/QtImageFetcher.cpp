@@ -249,10 +249,13 @@ void QtImageFetcher::complete(Id id, FetchResult result) {
   auto owned = found->second;
   pending_.erase(found);
   --started_;
-  // A completion may destroy this fetcher. Keep only native admission state
-  // across that callback, and do not start another callback before it returns.
+  // A completion may destroy this fetcher. Its captures must also be released
+  // before a queued successor can destroy the runtime. Other stack frames may
+  // still retain Pending, so move callbacks out of that shared native state.
   const auto release = qScopeGuard([admission = owned->admission] { admission->release(); });
-  owned->done(std::move(result));
+  auto done = std::move(owned->done);
+  owned->progress = {};
+  done(std::move(result));
 }
 
 void QtImageFetcher::startHttp(Id id) {
@@ -381,6 +384,8 @@ void QtImageFetcher::cancel(Id id) {
   owned->cancelled->store(true);
   if (!owned->started) {
     queue_->cancel(owned->queued);
+    owned->progress = {};
+    owned->done = {};
     return;
   }
   --started_;
@@ -391,7 +396,13 @@ void QtImageFetcher::cancel(Id id) {
     owned->reply->abort();
     owned->reply->deleteLater();
   }
-  if (!owned->ioRunning) owned->admission->release();
+  const bool releaseNow = !owned->ioRunning;
+  const auto admission = owned->admission;
+  // Finish all owner access before releasing callback captures: their cleanup
+  // may reenter owner teardown. The admission contains native queue state only.
+  owned->progress = {};
+  owned->done = {};
+  if (releaseNow) admission->release();
 }
 
 QtImageFetcher::~QtImageFetcher() {

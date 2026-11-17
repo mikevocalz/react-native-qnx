@@ -1,0 +1,10 @@
+********* Start testing of ImageUnitsTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageUnitsTest::initTestCase()
+FAIL!  : ImageUnitsTest::fetcherCompletesBeforeStartingReentrantQueuedCallback() 'captureReleasedBeforeSuccessor' returned FALSE. (A completed callback retained owner state while its successor could destroy the runtime)
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-fetcher159/tests/native/qt-native-ui/ImageUnitsTest.cpp(495)]
+FAIL!  : ImageUnitsTest::fetcherCancellationReleasesCallbacksBeforeStartingSuccessor() 'capturesReleased' returned FALSE. (Cancelled callbacks retained owner state while a successor could destroy the runtime)
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-fetcher159/tests/native/qt-native-ui/ImageUnitsTest.cpp(528)]
+PASS   : ImageUnitsTest::cleanupTestCase()
+Totals: 2 passed, 2 failed, 0 skipped, 0 blacklisted, 65ms
+********* Finished testing of ImageUnitsTest *********
