@@ -1,0 +1,60 @@
+{
+  "recordedAt": "2026-11-17T05:44:47.524307+00:00",
+  "method": "Preserve output bytes and record timestamps, then set only these nine application bundle mtimes to one second after the epoch so ordinary Ninja dependencies rebuild them.",
+  "outputs": [
+    {
+      "path": "rnqnx-accessibility-action-probe.bundle.js",
+      "sha256": "ba1edc0059407ed30f1755312c8660c20671e87fc28a2aed2d2efe196478a54b",
+      "atimeNs": 1794892030198830684,
+      "mtimeNs": 1794892030198830684
+    },
+    {
+      "path": "rnqnx-playground.bundle.js",
+      "sha256": "25cf18b0c45f078377d4db791bd59d7ecd0a3ab2bcb5b2f4157d5218e5013a78",
+      "atimeNs": 1794892034806759858,
+      "mtimeNs": 1794892034810759797
+    },
+    {
+      "path": "rnqnx-pressable-probe.bundle.js",
+      "sha256": "14eefd5592a9fe25a25ffb3e835175355ea67cd3503c44d2e835b04644085278",
+      "atimeNs": 1794892032770791142,
+      "mtimeNs": 1794892032770791142
+    },
+    {
+      "path": "rnqnx-qt-svg.bundle.js",
+      "sha256": "34e9952fa221c24f31c4e100068ca8d3e221d8798bd428aa856f97b4049460c7",
+      "atimeNs": 1794892020598978300,
+      "mtimeNs": 1794892020610978115
+    },
+    {
+      "path": "rnqnx-react-probe.bundle.js",
+      "sha256": "520d95d84dec92b57dd3717b32d2152e4dd6c28c5f34e295dba71f4667ebc7c5",
+      "atimeNs": 1794892034330767172,
+      "mtimeNs": 1794892034330767172
+    },
+    {
+      "path": "rnqnx-rnsvg-corpus.bundle.js",
+      "sha256": "539ead325bc3d9401b28f2a0facaed7f53f3f225daf693fb5922608e68bef475",
+      "atimeNs": 1794892359181769497,
+      "mtimeNs": 1794892029374843365
+    },
+    {
+      "path": "rnqnx-rnsvg-image.bundle.js",
+      "sha256": "e3031cfcb264d7453a741b5c82a7ed357ada50e00d78932b1184dbe9f1dbde71",
+      "atimeNs": 1794892024310921294,
+      "mtimeNs": 1794892024318921170
+    },
+    {
+      "path": "rnqnx-rnsvg.bundle.js",
+      "sha256": "686b1f91383b91d0f63c572f3205f5c301b4e0d13c03a10c00ec2a6b53c4fd2b",
+      "atimeNs": 1794893457452483558,
+      "mtimeNs": 1794893356786040226
+    },
+    {
+      "path": "rnqnx-text-input-probe.bundle.js",
+      "sha256": "6b3674097425429aed2b8f868d8fc7bd0a4a9bcc4f0f206b077c1e68993d13ee",
+      "atimeNs": 1794892030870820343,
+      "mtimeNs": 1794892030870820343
+    }
+  ]
+}

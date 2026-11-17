@@ -1,0 +1,603 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-clang++"
+	tests="49"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="31d30cd8ad50"
+	time="445"
+	timestamp="2026-11-17T00:47:35"
+	>
+	<testcase name="rnqnx_g0_cxx20_probe" classname="rnqnx_g0_cxx20_probe" time="0.00299862" status="run">
+		<properties/>
+		<system-out>RNQNX_G0_CXX20_OK ranges=12 designated=21 jthread=34
+</system-out>
+	</testcase>
+	<testcase name="qnx_screen_surface_host_test" classname="qnx_screen_surface_host_test" time="0.019539" status="run">
+		<properties/>
+		<system-out>[PASS] successful initialization uses exact window and buffer setup
+[PASS] invalid initialization sizes are rejected before calling Screen
+[PASS] fill uses documented ARGB token-value list
+[PASS] present uses the buffer acquired for each frame
+[PASS] destroy is ordered, complete, and idempotent
+[PASS] move construction and assignment transfer sole ownership
+[PASS] partial initialization failures release fake resources
+[PASS] runtime failures are explicit and failed fills are not posted
+All QnxScreenSurface host tests passed.
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_hermes_probe" classname="rnqnx_hermes_probe" time="0.0648469" status="run">
+		<properties/>
+		<system-out>RNQNX_HERMES_OK arithmetic es6 async-arrow host-function
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_svg_fabric_test" classname="rnqnx_qt_svg_fabric_test" time="1.83464" status="run">
+		<properties/>
+		<system-out>Running "RnqnxQtSvgFixture"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1117 00:47:37.486064 406254144 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1117 00:47:37.487165 310089408 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014bd0).
+W1117 00:47:37.487260 310089408 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_QT_SVG_FABRIC_OK metro hermes yoga pixels events replace clear unmount
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_fabric_test" classname="rnqnx_qt_rnsvg_fabric_test" time="8.9751" status="run">
+		<properties/>
+		<system-out>Running "RnqnxRnsvgFixture"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:47:41.021695 2079482432 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+W1117 00:47:46.423763 2079482432 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1117 00:47:46.426189 1940440768 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014bd0).
+W1117 00:47:46.426285 1940440768 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_RNSVG_FABRIC_OK metro hermes fabric gradient clip mask use update remove touch resize extras
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_image_fabric_test" classname="rnqnx_qt_rnsvg_image_fabric_test" time="1.99856" status="run">
+		<properties/>
+		<system-out>Running "RnqnxRnsvgImageFixture"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1117 00:47:48.482370 3427267008 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x559563d5bc00).
+W1117 00:47:48.482879 3368015552 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x559563d77b90).
+W1117 00:47:48.483079 3368015552 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x559563ca92b0).
+RNQNX_RNSVG_IMAGE_FABRIC_OK data-uri bundled-asset onLoad reload broken-source
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_corpus_test" classname="rnqnx_qt_rnsvg_corpus_test" time="5.33129" status="run">
+		<properties/>
+		<system-out>Running "RnqnxRnsvgCorpus"
+rnsvg batch 0 start
+rnsvg batch 0 mounted 927 ms
+rnsvg batch 0 grabbed 933 ms
+rnsvg batch 4 start
+rnsvg batch 4 mounted 665 ms
+rnsvg batch 4 grabbed 669 ms
+rnsvg batch 8 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:47:52.436977 2802225600 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:47:52.463951 2802225600 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:47:52.492262 2802225600 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:47:52.520946 2802225600 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:47:52.547567 2802225600 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:47:52.573899 2802225600 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;s...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_corpus_test_1" classname="rnqnx_qt_rnsvg_corpus_test_1" time="166.978" status="run">
+		<properties/>
+		<system-out>Running "RnqnxRnsvgCorpus"
+rnsvg batch 1 start
+rnsvg batch 1 mounted 915 ms
+rnsvg batch 1 grabbed 919 ms
+rnsvg batch 5 start
+rnsvg batch 5 mounted 481 ms
+rnsvg batch 5 grabbed 482 ms
+rnsvg batch 9 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:47:58.743659 338514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:47:58.752023 338514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:47:58.908305 338514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:47:58.916375 338514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:47:58.958169 338514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:47:58.966655 338514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::ve...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_corpus_test_2" classname="rnqnx_qt_rnsvg_corpus_test_2" time="163.607" status="run">
+		<properties/>
+		<system-out>Running "RnqnxRnsvgCorpus"
+rnsvg batch 2 start
+rnsvg batch 2 mounted 1137 ms
+rnsvg batch 2 grabbed 1151 ms
+rnsvg batch 6 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:50:44.820839 1654567360 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:50:44.827343 1654567360 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:50:44.919328 1654567360 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:50:44.925366 1654567360 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:50:44.931445 1654567360 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:50:44.954125 1654567360 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:50:45.086513 1654567360 FilterPropsConversi...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_corpus_test_3" classname="rnqnx_qt_rnsvg_corpus_test_3" time="6.2078" status="run">
+		<properties/>
+		<system-out>Running "RnqnxRnsvgCorpus"
+rnsvg batch 3 start
+rnsvg batch 3 mounted 1581 ms
+rnsvg batch 3 grabbed 1584 ms
+rnsvg batch 7 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:53:28.386595 1052778944 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:53:28.415442 1052778944 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:53:28.444571 1052778944 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:53:28.547335 1052778944 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:53:28.575532 1052778944 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:53:28.599637 1052778944 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:53:28.640439 1052778944 FilterPropsConversi...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_values_test" classname="rnqnx_qt_rnsvg_values_test" time="0.040903" status="run">
+		<properties/>
+		<system-out>rnsvg bridge values: all checks passed
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_accessibility_action_probe" classname="rnqnx_accessibility_action_probe" time="1.74138" status="run">
+		<properties/>
+		<system-out>Running "RNQnxAccessibilityActionProbe"
+Running "RNQnxAccessibilityActionProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:53:32.377255 468009536 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 3 components out of 6
+W1117 00:53:32.377862 468009536 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1117 00:53:32.378237 353326784 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000151d0).
+W1117 00:53:32.378350 353326784 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_ACCESSIBILITY_ACTION_OK react activate guards label teardown remount
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_accessibility_action_native_test" classname="rnqnx_accessibility_action_native_test" time="0.0631315" status="run">
+		<properties/>
+		<system-out>RNQNX_ACCESSIBILITY_ACTION_NATIVE_OK press guards generation invalidate delete
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_accessibility_action_rejects_interception" classname="rnqnx_accessibility_action_rejects_interception" time="3.30435" status="run">
+		<properties/>
+		<system-out>-- Accessibility action interception rejected at the JavaScript boundary
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_accessibility_action_rejects_registration" classname="rnqnx_accessibility_action_rejects_registration" time="1.59874" status="run">
+		<properties/>
+		<system-out>-- Unsupported accessibility action registration rejected explicitly
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_accessibility_view_test" classname="rnqnx_accessibility_view_test" time="0.0439455" status="run">
+		<properties/>
+		<system-out>RNQNX_ACCESSIBILITY_VIEW_OK tree identity state update clear reject delete
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_text_input_probe" classname="rnqnx_text_input_probe" time="2.07392" status="run">
+		<properties/>
+		<system-out>Running "RNQnxTextInputProbe"
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:101:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+Running "RNQnxTextInputProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:53:39.469461 1540399680 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 4 components out of 8
+I1117 00:53:39.470471 1540399680 UIManagerBinding.cpp:150] instanceHandle is null, event of type topSelectionChange will be dropped
+W1117 00:53:39.471239 1540399680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1117 00:53:39.471627 1394001600 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000151d0).
+W1117 00:53:39.471753 1394001600 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_TEXT_INPUT_OK react key preedit commit utf16 stale selection no-echo f...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_text_input_bridge_test" classname="rnqnx_text_input_bridge_test" time="0.140553" status="run">
+		<properties/>
+		<system-out>qt.qml.context: :101:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+RNQNX_TEXT_INPUT_BRIDGE_OK count stale utf16 no-echo secure-query denial lifecycle
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_text_input_rejects_interception" classname="rnqnx_text_input_rejects_interception" time="3.68475" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="rnqnx_input_lifecycle_probe" classname="rnqnx_input_lifecycle_probe" time="0.130434" status="run">
+		<properties/>
+		<system-out>WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1117 00:53:43.459095 861757888 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x559dc06d0a60).
+W1117 00:53:43.459546 738195136 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x559dc06ec9f0).
+W1117 00:53:43.459638 738195136 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x559dc06180f0).
+RNQNX_INPUT_JS_OK events=12 terminal cancel ordering native-payload-parity
+RNQNX_INPUT_LIFECYCLE_OK decorated-hit terminal multi-contact cancel deactivate unmount mouse-reentrant
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_input_lifecycle_rejects_interception" classname="rnqnx_input_lifecycle_rejects_interception" time="0.104932" status="run">
+		<properties/>
+		<system-out>-- RNQNX_INPUT_JS_INTERCEPTION_REJECTED expected missing JS delivery
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_pressable_probe" classname="rnqnx_pressable_probe" time="2.73765" status="run">
+		<properties/>
+		<system-out>Running "RNQnxPressableProbe"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I1117 00:53:45.795720 3100062144 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+Running "RNQnxPressableProbe"
+E1117 00:53:46.282150 3100062144 LeakChecker.cpp:53] [LeakChecker] Surface with id: 11 has leaked 4 components out of 8
+W1117 00:53:46.282784 3100062144 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x556ca8324a70).
+W1117 00:53:46.283224 3049252544 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x556ca8340a00).
+W1117 00:53:46.283371 3049252544 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x556ca826c0d0).
+RNQNX_PRESSABLE_OK tap cancel deactivate disabled unmount remount callbacks=11
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_pressable_rejects_interception" classname="rnqnx_pressable_rejects_interception" time="3.15956" status="run">
+		<properties/>
+		<system-out>-- RNQNX_PRESSABLE_INTERCEPTION_REJECTED
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_pressable_rejects_disabled_cancellation" classname="rnqnx_pressable_rejects_disabled_cancellation" time="4.55076" status="run">
+		<properties/>
+		<system-out>-- RNQNX_PRESSABLE_REMOVED_TARGET_CONTROL_REJECTED
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_react_render_host_probe" classname="rnqnx_react_render_host_probe" time="1.09075" status="run">
+		<properties/>
+		<system-out>Running "RNQnxReactRenderProbe"
+RNQNX_REACT_RENDER_OK platform=host bundled-react initial=160x100/48x24 update=72x24 unmount=empty geometry-only transactions=3
+
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_react_render_host_probe_rejects_bad_bundles" classname="rnqnx_react_render_host_probe_rejects_bad_bundles" time="0.230342" status="run">
+		<properties/>
+		<system-out></system-out>
+	</testcase>
+	<testcase name="rnqnx_playground_screenshot" classname="rnqnx_playground_screenshot" time="1.62636" status="run">
+		<properties/>
+		<system-out>-- RNQNX_PLAYGROUND_SCREENSHOT_ARTIFACT_OK
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_playground_rejects_start_failure" classname="rnqnx_playground_rejects_start_failure" time="0.0998324" status="run">
+		<properties/>
+		<system-out>-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_START_FAILURE
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_playground_rejects_stop_failure" classname="rnqnx_playground_rejects_stop_failure" time="0.0828074" status="run">
+		<properties/>
+		<system-out>-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_STOP_FAILURE
+</system-out>
+	</testcase>
+	<testcase name="qt_react_host_host_test" classname="qt_react_host_host_test" time="49.4924" status="run">
+		<properties/>
+		<system-out>WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1117 00:53:57.306289 3368456768 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1117 00:53:57.306989 3255785152 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000151d0).
+W1117 00:53:57.307134 3255785152 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+[PASS] layoutWithoutListenerDoesNotDispatch
+W1117 00:53:57.408905 3368456768 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000007c90).
+W1117 00:53:57.409379 3315316416 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000021350).
+W1117 00:53:57.409427 3315316416 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400000ac50).
+[PASS] layoutListenerRemovalAndReadditionPreserveChangedBounds
+W1117 00:53:57.492223 3368456768 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000d410).
+W1117 00:53:57.4...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_rn_headers_probe" classname="rnqnx_rn_headers_probe" time="0.0344716" status="run">
+		<properties/>
+		<system-out>RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0
+</system-out>
+	</testcase>
+	<testcase name="shadow_view_mutation_adapter_host_test" classname="shadow_view_mutation_adapter_host_test" time="0.0590619" status="run">
+		<properties/>
+		<system-out>[PASS] createInsertMountsAndPositions
+[PASS] insertOrderFollowsMutationIndex
+[PASS] updateAppliesNewFrame
+[PASS] removeThenDeleteUnmountsAndFrees
+[PASS] nestedTransactionBuildsATree
+[PASS] unmappedComponentIsReportedNotSkipped
+[PASS] insertIntoMissingParentIsReported
+All 7 ShadowViewMutationAdapter host tests passed.
+</system-out>
+	</testcase>
+	<testcase name="shadow_tree_mounting_host_test" classname="shadow_tree_mounting_host_test" time="0.0543807" status="run">
+		<properties/>
+		<system-out>[PASS] fixedSizeViewGetsYogaGeometry
+[PASS] flexChildrenSplitTheRootWidth
+[PASS] paddingOffsetsChildOrigin
+[PASS] secondCommitUpdatesGeometryInPlace
+[PASS] removingAChildUnmountsIt
+All 5 ShadowTree mounting host tests passed.
+</system-out>
+	</testcase>
+	<testcase name="qtquick_mounting_layer_host_test" classname="qtquick_mounting_layer_host_test" time="0.223958" status="run">
+		<properties/>
+		<system-out>[PASS] rootIsMountedButNotOwned
+[PASS] createLeavesItemUnparented
+[PASS] insertParentsAndOrdersChildren
+[PASS] insertRejectsBadArguments
+[PASS] fabricIndicesExcludeQmlDecorations
+[PASS] removeDetachesWithoutDestroying
+[PASS] removeRejectsIndexDisagreement
+[PASS] destroyReleasesTagAndItem
+[PASS] destroyDetachesStillMountedItem
+[PASS] nestedTreeIsTornDownWithTheLayer
+[PASS] updateLayoutAppliesAbsoluteGeometry
+[PASS] unregisteredComponentTypeFails
+[PASS] brokenQmlSourceFails
+[PASS] nonItemTypeFails
+[PASS] duplicateTagFails
+[PASS] reregisteringATypeReplacesIt
+All 16 QtQuickMountingLayer host tests passed.
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qtquick_host_probe" classname="rnqnx_qtquick_host_probe" time="0.0367488" status="run">
+		<properties/>
+		<system-out>RNQNX_QTQUICK_HOST_OK items=1000 create_ms=5.953 update10_ms=0.588 destroy_ms=0.324 platform=offscreen
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_native_ui_test" classname="rnqnx_qt_native_ui_test" time="5.98047" status="run">
+		<properties/>
+		<system-out>********* Start testing of NativeUiQuickTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : NativeUiQuickTest::initTestCase()
+PASS   : NativeUiQuickTest::cssColorsParseTheWayJavaScriptWritesThem()
+PASS   : NativeUiQuickTest::drawerOpensAndClosesFromProps()
+PASS   : NativeUiQuickTest::drawerPanelInsertedBeforeContentKeepsItsRole()
+PASS   : NativeUiQuickTest::drawerStartsOpenWithoutAnimating()
+PASS   : NativeUiQuickTest::scrimCoversMainAndClosesOnTap()
+PASS   : NativeUiQuickTest::escapeRequestsCloseAndRevertsWhenRefused()
+PASS   : NativeUiQuickTest::edgeSwipeOpensPastFortyPercent()
+PASS   : NativeUiQuickTest::edgeSwipeStaysOutOfTheRail()
+PASS   : NativeUiQuickTest::quickFlingOpensEvenWhenShort()
+PASS   : NativeUiQuickTest::swipeDisabledIgnoresDrags()
+PASS   : NativeUiQuickTest::rightDrawerSlidesInFromTheRightAndSlideModePushesContent()
+PASS   : NativeUiQuickTest::tabBarSwitchesMod...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_motion_test" classname="rnqnx_qt_motion_test" time="0.172524" status="run">
+		<properties/>
+		<system-out>RNQNX_QT_MOTION_OK progress easing interruption pause resume cancel lifetime ownership reentrancy affinity clock
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_svg_test" classname="rnqnx_qt_svg_test" time="0.119032" status="run">
+		<properties/>
+		<system-out>********* Start testing of SvgDocumentTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : SvgDocumentTest::initTestCase()
+PASS   : SvgDocumentTest::fitModesMetadataAndResize()
+PASS   : SvgDocumentTest::replacementClearAndRecovery()
+PASS   : SvgDocumentTest::gradientsPathsAndShapes()
+PASS   : SvgDocumentTest::borrowedSourceIsOwnedBeforeReturn()
+PASS   : SvgDocumentTest::compactPathNumbersAndArcFlags()
+PASS   : SvgDocumentTest::unsupportedInput(script)
+PASS   : SvgDocumentTest::unsupportedInput(image)
+PASS   : SvgDocumentTest::unsupportedInput(external-use)
+PASS   : SvgDocumentTest::unsupportedInput(animation)
+PASS   : SvgDocumentTest::unsupportedInput(style-block)
+PASS   : SvgDocumentTest::unsupportedInput(style-attribute)
+PASS   : SvgDocumentTest::unsupportedInput(clip-path)
+PASS   : SvgDocumentTest::unsupportedInput(filter)
+PASS   : SvgDocumentTest::unsupportedInput(text)
+PASS ...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_graphics" classname="rnqnx_qt_graphics" time="0.0323908" status="run">
+		<properties/>
+		<system-out>********* Start testing of GraphicsSurfaceTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : GraphicsSurfaceTest::initTestCase()
+PASS   : GraphicsSurfaceTest::viewportValidation()
+PASS   : GraphicsSurfaceTest::realWindowLifecycle()
+PASS   : GraphicsSurfaceTest::destroyWindowDropsPendingEvents()
+PASS   : GraphicsSurfaceTest::closeDuringDeliveryAndWrongThread()
+PASS   : GraphicsSurfaceTest::deleteDuringDelivery()
+PASS   : GraphicsSurfaceTest::cleanupTestCase()
+Totals: 7 passed, 0 failed, 0 skipped, 0 blacklisted, 4ms
+********* Finished testing of GraphicsSurfaceTest *********
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_graphics_null" classname="rnqnx_qt_graphics_null" time="0.022755" status="run">
+		<properties/>
+		<system-out>********* Start testing of GraphicsSurfaceTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : GraphicsSurfaceTest::initTestCase()
+PASS   : GraphicsSurfaceTest::viewportValidation()
+PASS   : GraphicsSurfaceTest::realWindowLifecycle()
+PASS   : GraphicsSurfaceTest::destroyWindowDropsPendingEvents()
+PASS   : GraphicsSurfaceTest::closeDuringDeliveryAndWrongThread()
+PASS   : GraphicsSurfaceTest::deleteDuringDelivery()
+PASS   : GraphicsSurfaceTest::cleanupTestCase()
+Totals: 7 passed, 0 failed, 0 skipped, 0 blacklisted, 3ms
+********* Finished testing of GraphicsSurfaceTest *********
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_filter_test" classname="rnqnx_qt_rnsvg_filter_test" time="2.17263" status="run">
+		<properties/>
+		<system-out>********* Start testing of RnsvgFilterTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgFilterTest::initTestCase()
+PASS   : RnsvgFilterTest::regionDefaultsAroundBoundingBox()
+PASS   : RnsvgFilterTest::regionInUserSpaceUnits()
+PASS   : RnsvgFilterTest::regionSnapsOriginDownAndSizeUp()
+PASS   : RnsvgFilterTest::regionFollowsScaleAndRotation()
+PASS   : RnsvgFilterTest::degenerateRegionsAreInvalid()
+PASS   : RnsvgFilterTest::regionCapIsExact()
+PASS   : RnsvgFilterTest::subregionDefaultsToFilterRegion()
+PASS   : RnsvgFilterTest::subregionExplicitAndPartial()
+PASS   : RnsvgFilterTest::subregionPercentAndBoundingBoxUnits()
+PASS   : RnsvgFilterTest::subregionWithNoAreaIsTransparent()
+PASS   : RnsvgFilterTest::resultIsClippedToSubregion()
+PASS   : RnsvgFilterTest::standardInputs()
+PASS   : RnsvgFilterTest::namedAndImplicitInputs()
+PASS   : RnsvgFilterTest::badReferencesFallBack()
+...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_fixtures_test" classname="rnqnx_qt_rnsvg_fixtures_test" time="1.86782" status="run">
+		<properties/>
+		<system-out>********* Start testing of RnsvgFixturesTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgFixturesTest::initTestCase()
+PASS   : RnsvgFixturesTest::fixture(Circle-1)
+PASS   : RnsvgFixturesTest::fixture(Circle-2)
+PASS   : RnsvgFixturesTest::fixture(Circle-3)
+PASS   : RnsvgFixturesTest::fixture(Circle-4)
+PASS   : RnsvgFixturesTest::fixture(Ellipse-1)
+PASS   : RnsvgFixturesTest::fixture(Ellipse-2)
+PASS   : RnsvgFixturesTest::fixture(Ellipse-3)
+PASS   : RnsvgFixturesTest::fixture(Line-1)
+PASS   : RnsvgFixturesTest::fixture(Line-2)
+PASS   : RnsvgFixturesTest::fixture(Polygon-1)
+PASS   : RnsvgFixturesTest::fixture(Polygon-2)
+PASS   : RnsvgFixturesTest::fixture(Polygon-3)
+PASS   : RnsvgFixturesTest::fixture(Polygon-4)
+PASS   : RnsvgFixturesTest::fixture(Polyline-1)
+PASS   : RnsvgFixturesTest::fixture(Polyline-2)
+PASS   : RnsvgFixturesTest::fixture(Polyline-3)
+PASS   : RnsvgFixtur...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_foreignobject_test" classname="rnqnx_qt_rnsvg_foreignobject_test" time="0.0753366" status="run">
+		<properties/>
+		<system-out>********* Start testing of RnsvgForeignObjectTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgForeignObjectTest::initTestCase()
+PASS   : RnsvgForeignObjectTest::hiddenUntilPlaced()
+PASS   : RnsvgForeignObjectTest::placementMapsBoxCoordinatesToTheParent()
+PASS   : RnsvgForeignObjectTest::yogaPositionAndSizeDoNotMoveTheBox()
+PASS   : RnsvgForeignObjectTest::clipsLiveChildrenToTheBoxOnScreen()
+PASS   : RnsvgForeignObjectTest::childrenOutsideTheBoxAreNotHit()
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(NaN translation)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(infinite scale)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(zero scale)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(scale 1e300)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(determinant 1e-16)
+PASS   : RnsvgForeignObjectTest::unusableInputHides...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_image_test" classname="rnqnx_qt_rnsvg_image_test" time="0.204339" status="run">
+		<properties/>
+		<system-out>********* Start testing of RnsvgImageTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgImageTest::initTestCase()
+PASS   : RnsvgImageTest::startsIdleAndEmptyUriStaysIdle()
+PASS   : RnsvgImageTest::immediateSuccessSettlesOnceAndKeepsTheImage()
+PASS   : RnsvgImageTest::deferredSuccessIsLoadingUntilTheProviderCompletes()
+PASS   : RnsvgImageTest::failureReportsTheProviderMessageAndIsNotRetried()
+PASS   : RnsvgImageTest::emptyFailureMessageGetsAGenericOne()
+PASS   : RnsvgImageTest::sameUriWhileLoadingDoesNotStartASecondRequest()
+PASS   : RnsvgImageTest::clearingTheUriCancelsAndGoesIdle()
+PASS   : RnsvgImageTest::changingTheUriCancelsTheOldRequestAndIgnoresItsLateCompletion()
+PASS   : RnsvgImageTest::anOlderCompletionArrivingAfterANewerOneIsIgnored()
+PASS   : RnsvgImageTest::aCompletionDeliveredTwiceSettlesOnce()
+PASS   : RnsvgImageTest::destroyingTheLoaderMidFlightCancelsAndNev...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_loader_test" classname="rnqnx_qt_rnsvg_loader_test" time="0.606739" status="run">
+		<properties/>
+		<system-out>********* Start testing of RnsvgLoaderTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgLoaderTest::initTestCase()
+PASS   : RnsvgLoaderTest::attributesBeatStyleDeclarations()
+PASS   : RnsvgLoaderTest::kebabAndColonNamesAreCamelCased()
+PASS   : RnsvgLoaderTest::brushesFollowExtractBrush()
+PASS   : RnsvgLoaderTest::fillDefaultsToBlackWithoutJoiningThePropList()
+PASS   : RnsvgLoaderTest::dasharrayOddListsAreDoubled()
+PASS   : RnsvgLoaderTest::transformStringsCompose()
+PASS   : RnsvgLoaderTest::invalidTransformBecomesIdentity()
+PASS   : RnsvgLoaderTest::lengthsHandleUnitsAndGarbage()
+PASS   : RnsvgLoaderTest::viewBoxParsing()
+PASS   : RnsvgLoaderTest::polylinePointsKeepTheUpstreamFirstMinusQuirk()
+PASS   : RnsvgLoaderTest::textChildrenFollowExtractText()
+PASS   : RnsvgLoaderTest::gradientStopsTakeAlphaFromStopOpacity()
+PASS   : RnsvgLoaderTest::radialGradientFallsBackToR()
+PA...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_test" classname="rnqnx_qt_rnsvg_test" time="0.0477044" status="run">
+		<properties/>
+		<system-out>********* Start testing of RnsvgRenderTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgRenderTest::initTestCase()
+PASS   : RnsvgRenderTest::pathParserHandlesAllCommands()
+PASS   : RnsvgRenderTest::pathParserKeepsValidPrefixOnError()
+PASS   : RnsvgRenderTest::primitivesFillAndStroke()
+PASS   : RnsvgRenderTest::rectRoundedCornersAndPercentLengths()
+PASS   : RnsvgRenderTest::viewBoxMapsUserSpace()
+PASS   : RnsvgRenderTest::fillRuleEvenOddPunchesHole()
+PASS   : RnsvgRenderTest::inheritanceFollowsPropList()
+PASS   : RnsvgRenderTest::currentColorUsesNearestColor()
+PASS   : RnsvgRenderTest::opacityAppliesToGroupAsAUnit()
+PASS   : RnsvgRenderTest::linearGradientFillsObjectBoundingBox()
+PASS   : RnsvgRenderTest::radialGradientAndUserSpaceUnits()
+PASS   : RnsvgRenderTest::gradientStopAlphaAndMissingServer()
+PASS   : RnsvgRenderTest::useInstantiatesDefinitionWithTranslation()
+PASS ...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_scene_test" classname="rnqnx_qt_rnsvg_scene_test" time="0.624846" status="run">
+		<properties/>
+		<system-out>********* Start testing of RnsvgSceneTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgSceneTest::initTestCase()
+PASS   : RnsvgSceneTest::vertexRecorderFollowsPathData()
+PASS   : RnsvgSceneTest::clipRuleEvenOddOnTheReferencingElement()
+PASS   : RnsvgSceneTest::clipRuleOnAShapeInsideTheClipPath()
+PASS   : RnsvgSceneTest::clipPathOfAClipPathIntersects()
+PASS   : RnsvgSceneTest::groupLayersCoverOnlyTheGroupsExtent()
+PASS   : RnsvgSceneTest::filterFreeMaskLayerIsBoundedByTheMaskedElement()
+PASS   : RnsvgSceneTest::hitTestingHonorsClipPath()
+PASS   : RnsvgSceneTest::hitTestingHonorsMask()
+PASS   : RnsvgSceneTest::pointerEventsSelectsTheHitRegion()
+PASS   : RnsvgSceneTest::boxNoneGroupStillPassesPressesToChildren()
+PASS   : RnsvgSceneTest::userSpacePatternRepeatsItsTile()
+PASS   : RnsvgSceneTest::boundingBoxPatternScalesWithTheElement()
+PASS   : RnsvgSceneTest::patternViewBoxMa...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_rnsvg_text_test" classname="rnqnx_qt_rnsvg_text_test" time="1.84777" status="run">
+		<properties/>
+		<system-out>********* Start testing of RnsvgTextTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgTextTest::initTestCase()
+PASS   : RnsvgTextTest::firstGlyphSitsAtTheStartPosition()
+PASS   : RnsvgTextTest::advanceBoxCoversTheAdvanceOfTheString()
+PASS   : RnsvgTextTest::outputIsGroupedPerNodeInDocumentOrder()
+PASS   : RnsvgTextTest::anchorAppliesToTheChunkAcrossSpans()
+PASS   : RnsvgTextTest::endAnchorUsesTheWholeChunk()
+PASS   : RnsvgTextTest::absoluteXStartsANewChunk()
+PASS   : RnsvgTextTest::absoluteYStartsANewChunkAndMovesTheBaseline()
+PASS   : RnsvgTextTest::rotateListAppliesPerGlyphAndTheLastValueRepeats()
+PASS   : RnsvgTextTest::rotatedGlyphTurnsAboutItsOrigin()
+PASS   : RnsvgTextTest::dxAccumulatesAcrossCharacters()
+PASS   : RnsvgTextTest::dyAccumulatesAndYReplaces()
+PASS   : RnsvgTextTest::listIndexCountsAcrossTheWholeSubtree()
+PASS   : RnsvgTextTest::aSpansOwnListBeatsItsPar...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+	<testcase name="rnqnx_qt_video_test" classname="rnqnx_qt_video_test" time="0.640918" status="run">
+		<properties/>
+		<system-out>********* Start testing of VideoItemTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+QINFO  : VideoItemTest::initTestCase() qt.multimedia.ffmpeg: Using Qt multimedia with FFmpeg version 7.1.3 LGPL version 2.1 or later
+QWARN  : VideoItemTest::initTestCase() qt.multimedia.ffmpeg.mediadataholder: Could not open media. FFmpeg error description: No such file or directory
+PASS   : VideoItemTest::initTestCase()
+PASS   : VideoItemTest::resolvesSources()
+[W][00:55:00.929026] pw.conf      | [          conf.c: 1182 try_load_conf()] can't load config client.conf: No such file or directory
+[E][00:55:00.929153] pw.conf      | [          conf.c: 1215 pw_conf_load_conf_for_context()] can't load config client.conf: No such file or directory
+socket(): Operation not permitted
+socket(): Operation not permitted
+QWARN  : VideoItemTest::playsSeeksAndEnds() PulseAudioService: pa_context_connect() failed
+Inpu...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+</testsuite>

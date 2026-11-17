@@ -1,0 +1,1698 @@
+{
+  "backtraceGraph": {
+    "commands": [
+      "add_test",
+      "rnqnx_add_qt_svg_fabric_test",
+      "rnqnx_add_react_host_target",
+      "rnqnx_add_qt_rnsvg_fabric_test",
+      "rnqnx_add_qt_rnsvg_image_fabric_test",
+      "rnqnx_add_qt_rnsvg_corpus_test",
+      "rnqnx_add_qt_rnsvg_values_test",
+      "rnqnx_add_accessibility_action_probe",
+      "rnqnx_add_text_input_probe",
+      "rnqnx_add_input_lifecycle_probe",
+      "rnqnx_add_react_render_probe"
+    ],
+    "files": [
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/CMakeLists.txt",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/RnqnxQtSvgFabric.cmake",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/RnqnxReactQt.cmake",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/RnqnxQtRnsvgFabric.cmake",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/RnqnxAccessibilityActions.cmake",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/RnqnxTextInput.cmake",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/RnqnxInputLifecycle.cmake",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/RnqnxReactProbe.cmake",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/native/qt-native-ui/CMakeLists.txt",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/native/qt-motion/CMakeLists.txt",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/native/qt-svg/CMakeLists.txt",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/native/qt-graphics/CMakeLists.txt",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/native/qt-rnsvg/CMakeLists.txt",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/native/qt-video/CMakeLists.txt"
+    ],
+    "nodes": [
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 123,
+        "parent": 0
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 293,
+        "parent": 2
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 328,
+        "parent": 4
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 6
+      },
+      {
+        "command": 1,
+        "file": 2,
+        "line": 262,
+        "parent": 7
+      },
+      {
+        "command": 0,
+        "file": 1,
+        "line": 29,
+        "parent": 8
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 10
+      },
+      {
+        "command": 3,
+        "file": 2,
+        "line": 264,
+        "parent": 11
+      },
+      {
+        "command": 0,
+        "file": 3,
+        "line": 27,
+        "parent": 12
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 14
+      },
+      {
+        "command": 4,
+        "file": 2,
+        "line": 265,
+        "parent": 15
+      },
+      {
+        "command": 0,
+        "file": 3,
+        "line": 53,
+        "parent": 16
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 18
+      },
+      {
+        "command": 5,
+        "file": 2,
+        "line": 266,
+        "parent": 19
+      },
+      {
+        "command": 0,
+        "file": 3,
+        "line": 98,
+        "parent": 20
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 22
+      },
+      {
+        "command": 5,
+        "file": 2,
+        "line": 266,
+        "parent": 23
+      },
+      {
+        "command": 0,
+        "file": 3,
+        "line": 98,
+        "parent": 24
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 26
+      },
+      {
+        "command": 5,
+        "file": 2,
+        "line": 266,
+        "parent": 27
+      },
+      {
+        "command": 0,
+        "file": 3,
+        "line": 98,
+        "parent": 28
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 30
+      },
+      {
+        "command": 5,
+        "file": 2,
+        "line": 266,
+        "parent": 31
+      },
+      {
+        "command": 0,
+        "file": 3,
+        "line": 98,
+        "parent": 32
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 34
+      },
+      {
+        "command": 6,
+        "file": 2,
+        "line": 267,
+        "parent": 35
+      },
+      {
+        "command": 0,
+        "file": 3,
+        "line": 115,
+        "parent": 36
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 38
+      },
+      {
+        "command": 7,
+        "file": 2,
+        "line": 271,
+        "parent": 39
+      },
+      {
+        "command": 0,
+        "file": 4,
+        "line": 51,
+        "parent": 40
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 42
+      },
+      {
+        "command": 7,
+        "file": 2,
+        "line": 271,
+        "parent": 43
+      },
+      {
+        "command": 0,
+        "file": 4,
+        "line": 52,
+        "parent": 44
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 46
+      },
+      {
+        "command": 7,
+        "file": 2,
+        "line": 271,
+        "parent": 47
+      },
+      {
+        "command": 0,
+        "file": 4,
+        "line": 53,
+        "parent": 48
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 50
+      },
+      {
+        "command": 7,
+        "file": 2,
+        "line": 271,
+        "parent": 51
+      },
+      {
+        "command": 0,
+        "file": 4,
+        "line": 55,
+        "parent": 52
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 54
+      },
+      {
+        "command": 0,
+        "file": 2,
+        "line": 277,
+        "parent": 55
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 57
+      },
+      {
+        "command": 8,
+        "file": 2,
+        "line": 283,
+        "parent": 58
+      },
+      {
+        "command": 0,
+        "file": 5,
+        "line": 52,
+        "parent": 59
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 61
+      },
+      {
+        "command": 8,
+        "file": 2,
+        "line": 283,
+        "parent": 62
+      },
+      {
+        "command": 0,
+        "file": 5,
+        "line": 53,
+        "parent": 63
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 2,
+        "file": 0,
+        "line": 344,
+        "parent": 65
+      },
+      {
+        "command": 8,
+        "file": 2,
+        "line": 283,
+        "parent": 66
+      },
+      {
+        "command": 0,
+        "file": 5,
+        "line": 54,
+        "parent": 67
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 9,
+        "file": 0,
+        "line": 346,
+        "parent": 69
+      },
+      {
+        "command": 0,
+        "file": 6,
+        "line": 29,
+        "parent": 70
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 9,
+        "file": 0,
+        "line": 346,
+        "parent": 72
+      },
+      {
+        "command": 0,
+        "file": 6,
+        "line": 30,
+        "parent": 73
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 9,
+        "file": 0,
+        "line": 346,
+        "parent": 75
+      },
+      {
+        "command": 0,
+        "file": 6,
+        "line": 83,
+        "parent": 76
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 9,
+        "file": 0,
+        "line": 346,
+        "parent": 78
+      },
+      {
+        "command": 0,
+        "file": 6,
+        "line": 84,
+        "parent": 79
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 9,
+        "file": 0,
+        "line": 346,
+        "parent": 81
+      },
+      {
+        "command": 0,
+        "file": 6,
+        "line": 87,
+        "parent": 82
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 10,
+        "file": 0,
+        "line": 353,
+        "parent": 84
+      },
+      {
+        "command": 0,
+        "file": 7,
+        "line": 34,
+        "parent": 85
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 10,
+        "file": 0,
+        "line": 353,
+        "parent": 87
+      },
+      {
+        "command": 0,
+        "file": 7,
+        "line": 39,
+        "parent": 88
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 401,
+        "parent": 90
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 407,
+        "parent": 92
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 414,
+        "parent": 94
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 442,
+        "parent": 96
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 462,
+        "parent": 98
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 480,
+        "parent": 100
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 496,
+        "parent": 102
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 523,
+        "parent": 104
+      },
+      {
+        "file": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 544,
+        "parent": 106
+      },
+      {
+        "file": 8
+      },
+      {
+        "command": 0,
+        "file": 8,
+        "line": 26,
+        "parent": 108
+      },
+      {
+        "file": 9
+      },
+      {
+        "command": 0,
+        "file": 9,
+        "line": 25,
+        "parent": 110
+      },
+      {
+        "file": 10
+      },
+      {
+        "command": 0,
+        "file": 10,
+        "line": 38,
+        "parent": 112
+      },
+      {
+        "file": 11
+      },
+      {
+        "command": 0,
+        "file": 11,
+        "line": 35,
+        "parent": 114
+      },
+      {
+        "file": 11
+      },
+      {
+        "command": 0,
+        "file": 11,
+        "line": 38,
+        "parent": 116
+      },
+      {
+        "file": 12
+      },
+      {
+        "command": 0,
+        "file": 12,
+        "line": 60,
+        "parent": 118
+      },
+      {
+        "file": 12
+      },
+      {
+        "command": 0,
+        "file": 12,
+        "line": 60,
+        "parent": 120
+      },
+      {
+        "file": 12
+      },
+      {
+        "command": 0,
+        "file": 12,
+        "line": 60,
+        "parent": 122
+      },
+      {
+        "file": 12
+      },
+      {
+        "command": 0,
+        "file": 12,
+        "line": 60,
+        "parent": 124
+      },
+      {
+        "file": 12
+      },
+      {
+        "command": 0,
+        "file": 12,
+        "line": 60,
+        "parent": 126
+      },
+      {
+        "file": 12
+      },
+      {
+        "command": 0,
+        "file": 12,
+        "line": 60,
+        "parent": 128
+      },
+      {
+        "file": 12
+      },
+      {
+        "command": 0,
+        "file": 12,
+        "line": 60,
+        "parent": 130
+      },
+      {
+        "file": 12
+      },
+      {
+        "command": 0,
+        "file": 12,
+        "line": 60,
+        "parent": 132
+      },
+      {
+        "file": 13
+      },
+      {
+        "command": 0,
+        "file": 13,
+        "line": 25,
+        "parent": 134
+      }
+    ]
+  },
+  "kind": "ctestInfo",
+  "tests": [
+    {
+      "backtrace": 1,
+      "name": "rnqnx_g0_cxx20_probe",
+      "properties": [
+        {
+          "name": "PASS_REGULAR_EXPRESSION",
+          "value": [
+            "RNQNX_G0_CXX20_OK ranges=12 designated=21 (jthread=34|thread=34 jthread=unsupported)"
+          ]
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 3,
+      "name": "qnx_screen_surface_host_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["ASAN_OPTIONS=detect_leaks=0:halt_on_error=1", "UBSAN_OPTIONS=halt_on_error=1"]
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 5,
+      "name": "rnqnx_hermes_probe",
+      "properties": [
+        {
+          "name": "PASS_REGULAR_EXPRESSION",
+          "value": ["RNQNX_HERMES_OK arithmetic es6 async-arrow host-function"]
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 9,
+      "name": "rnqnx_qt_svg_fabric_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software", "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 13,
+      "name": "rnqnx_qt_rnsvg_fabric_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software", "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 60.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 17,
+      "name": "rnqnx_qt_rnsvg_image_fabric_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software", "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 60.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 21,
+      "name": "rnqnx_qt_rnsvg_corpus_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 300.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 25,
+      "name": "rnqnx_qt_rnsvg_corpus_test_1",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 300.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 29,
+      "name": "rnqnx_qt_rnsvg_corpus_test_2",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 300.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 33,
+      "name": "rnqnx_qt_rnsvg_corpus_test_3",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 300.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 37,
+      "name": "rnqnx_qt_rnsvg_values_test",
+      "properties": [
+        {
+          "name": "TIMEOUT",
+          "value": 60.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 41,
+      "name": "rnqnx_accessibility_action_probe",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 45,
+      "name": "rnqnx_accessibility_action_native_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 49,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/bin/rnqnx_accessibility_action_probe",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/../tests/cmake/AccessibilityActionNegative.cmake"
+      ],
+      "name": "rnqnx_accessibility_action_rejects_interception",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 53,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/bin/rnqnx_accessibility_action_probe",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/../tests/cmake/AccessibilityActionRegistration.cmake"
+      ],
+      "name": "rnqnx_accessibility_action_rejects_registration",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 56,
+      "name": "rnqnx_accessibility_view_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 15.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 60,
+      "name": "rnqnx_text_input_probe",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 64,
+      "name": "rnqnx_text_input_bridge_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 68,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/bin/rnqnx_text_input_probe",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/../tests/cmake/TextInputNegative.cmake"
+      ],
+      "name": "rnqnx_text_input_rejects_interception",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 71,
+      "name": "rnqnx_input_lifecycle_probe",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["ASAN_OPTIONS=detect_leaks=0:halt_on_error=1", "UBSAN_OPTIONS=halt_on_error=1"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 74,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE_PATH=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/bin/rnqnx_input_lifecycle_probe",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/../tests/cmake/InputLifecycleNegative.cmake"
+      ],
+      "name": "rnqnx_input_lifecycle_rejects_interception",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["ASAN_OPTIONS=detect_leaks=0:halt_on_error=1", "UBSAN_OPTIONS=halt_on_error=1"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 77,
+      "name": "rnqnx_pressable_probe",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 80,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE_PATH=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/bin/rnqnx_pressable_probe",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/../tests/cmake/PressableNegative.cmake"
+      ],
+      "name": "rnqnx_pressable_rejects_interception",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 83,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE_PATH=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/bin/rnqnx_pressable_probe",
+        "-DCONTROL=removed-target",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/cmake/../tests/cmake/PressableNegative.cmake"
+      ],
+      "name": "rnqnx_pressable_rejects_disabled_cancellation",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 86,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/bin/rnqnx_react_render_host_probe",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/cmake/ReactRenderProbePositive.cmake"
+      ],
+      "name": "rnqnx_react_render_host_probe",
+      "properties": [
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 89,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/bin/rnqnx_react_render_host_probe",
+        "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/react-probe-negative",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/cmake/ReactRenderProbeNegative.cmake"
+      ],
+      "name": "rnqnx_react_render_host_probe_rejects_bad_bundles",
+      "properties": [
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 91,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/bin/rnqnx_playground_host",
+        "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-playground.bundle.js",
+        "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/playground-positive",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/cmake/PlaygroundScreenshot.cmake"
+      ],
+      "name": "rnqnx_playground_screenshot",
+      "properties": [
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 93,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/bin/rnqnx_playground_host",
+        "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/fixtures/runtime-baseline/start-failure.js",
+        "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/playground-start-failure",
+        "-DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_START_FAILURE",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/cmake/PlaygroundScreenshot.cmake"
+      ],
+      "name": "rnqnx_playground_rejects_start_failure",
+      "properties": [
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 95,
+      "command": [
+        "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake",
+        "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/bin/rnqnx_playground_host",
+        "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/fixtures/runtime-baseline/stop-failure.js",
+        "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/playground-stop-failure",
+        "-DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_STOP_FAILURE",
+        "-P",
+        "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/cmake/PlaygroundScreenshot.cmake"
+      ],
+      "name": "rnqnx_playground_rejects_stop_failure",
+      "properties": [
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 97,
+      "name": "qt_react_host_host_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["ASAN_OPTIONS=detect_leaks=0"]
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 99,
+      "name": "rnqnx_rn_headers_probe",
+      "properties": [
+        {
+          "name": "PASS_REGULAR_EXPRESSION",
+          "value": ["RNQNX_RN_HEADERS_OK tag=42 frame=10.0,20.0,100.0x50.0"]
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 101,
+      "name": "shadow_view_mutation_adapter_host_test",
+      "properties": [
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 103,
+      "name": "shadow_tree_mounting_host_test",
+      "properties": [
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 105,
+      "name": "qtquick_mounting_layer_host_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["ASAN_OPTIONS=detect_leaks=0:halt_on_error=1", "UBSAN_OPTIONS=halt_on_error=1"]
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 107,
+      "name": "rnqnx_qtquick_host_probe",
+      "properties": [
+        {
+          "name": "PASS_REGULAR_EXPRESSION",
+          "value": ["RNQNX_QTQUICK_HOST_OK items=1000"]
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 109,
+      "name": "rnqnx_qt_native_ui_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 90.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/nativeui-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 111,
+      "name": "rnqnx_qt_motion_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 15.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/motion-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 113,
+      "name": "rnqnx_qt_svg_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 30.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/svg-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 115,
+      "name": "rnqnx_qt_graphics",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "QT_SCALE_FACTOR=1.25",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 25.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/graphics-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 117,
+      "name": "rnqnx_qt_graphics_null",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=",
+            "QSG_RHI_BACKEND=null",
+            "QT_SCALE_FACTOR=1.25",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 25.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/graphics-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 119,
+      "name": "rnqnx_qt_rnsvg_filter_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/rnsvg-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 121,
+      "name": "rnqnx_qt_rnsvg_fixtures_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/rnsvg-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 123,
+      "name": "rnqnx_qt_rnsvg_foreignobject_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/rnsvg-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 125,
+      "name": "rnqnx_qt_rnsvg_image_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/rnsvg-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 127,
+      "name": "rnqnx_qt_rnsvg_loader_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/rnsvg-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 129,
+      "name": "rnqnx_qt_rnsvg_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/rnsvg-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 131,
+      "name": "rnqnx_qt_rnsvg_scene_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/rnsvg-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 133,
+      "name": "rnqnx_qt_rnsvg_text_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "UBSAN_OPTIONS=halt_on_error=1"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 120.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/rnsvg-tests"
+        }
+      ]
+    },
+    {
+      "backtrace": 135,
+      "name": "rnqnx_qt_video_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software", "QT_MEDIA_BACKEND=ffmpeg"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 60.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/qt-native/video-tests"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 1,
+    "minor": 0
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "command": ["pnpm", "qt:rnsvg:check"],
+  "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr159",
+  "startedAt": "2026-11-17T06:13:22.250425+00:00",
+  "finishedAt": "2026-11-17T06:13:22.965069+00:00",
+  "elapsedSeconds": 0.7146509859994694,
+  "exitCode": 0
+}

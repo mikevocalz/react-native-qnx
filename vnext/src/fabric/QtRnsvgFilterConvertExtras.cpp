@@ -201,11 +201,11 @@ void appendFilterExtraEntries(std::vector<Entry>& out) {
   out.push_back(Entry{"RNSVGFeDiffuseLighting", Kind::FilterPrimitive,
                       &convertLighting<rn::RNSVGFeDiffuseLightingProps, PrimitiveType::DiffuseLighting,
                                        diffuseLightingOf>,
-                      false});
+                      nullptr});
   out.push_back(Entry{"RNSVGFeSpecularLighting", Kind::FilterPrimitive,
                       &convertLighting<rn::RNSVGFeSpecularLightingProps, PrimitiveType::SpecularLighting,
                                        specularLightingOf>,
-                      false});
+                      nullptr});
 }
 
 }  // namespace rnqnx::fabric::rnsvg_bridge

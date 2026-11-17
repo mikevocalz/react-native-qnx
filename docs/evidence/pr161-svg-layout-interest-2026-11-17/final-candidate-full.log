@@ -1,0 +1,103 @@
+Test project /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer
+      Start  1: rnqnx_g0_cxx20_probe
+ 1/49 Test  #1: rnqnx_g0_cxx20_probe ................................   Passed    0.00 sec
+      Start  2: qnx_screen_surface_host_test
+ 2/49 Test  #2: qnx_screen_surface_host_test ........................   Passed    0.02 sec
+      Start  3: rnqnx_hermes_probe
+ 3/49 Test  #3: rnqnx_hermes_probe ..................................   Passed    0.06 sec
+      Start  4: rnqnx_qt_svg_fabric_test
+ 4/49 Test  #4: rnqnx_qt_svg_fabric_test ............................   Passed    1.83 sec
+      Start  5: rnqnx_qt_rnsvg_fabric_test
+ 5/49 Test  #5: rnqnx_qt_rnsvg_fabric_test ..........................   Passed    8.98 sec
+      Start  6: rnqnx_qt_rnsvg_image_fabric_test
+ 6/49 Test  #6: rnqnx_qt_rnsvg_image_fabric_test ....................   Passed    2.00 sec
+      Start  7: rnqnx_qt_rnsvg_corpus_test
+ 7/49 Test  #7: rnqnx_qt_rnsvg_corpus_test ..........................   Passed    5.33 sec
+      Start  8: rnqnx_qt_rnsvg_corpus_test_1
+ 8/49 Test  #8: rnqnx_qt_rnsvg_corpus_test_1 ........................   Passed  166.98 sec
+      Start  9: rnqnx_qt_rnsvg_corpus_test_2
+ 9/49 Test  #9: rnqnx_qt_rnsvg_corpus_test_2 ........................   Passed  163.61 sec
+      Start 10: rnqnx_qt_rnsvg_corpus_test_3
+10/49 Test #10: rnqnx_qt_rnsvg_corpus_test_3 ........................   Passed    6.21 sec
+      Start 11: rnqnx_qt_rnsvg_values_test
+11/49 Test #11: rnqnx_qt_rnsvg_values_test ..........................   Passed    0.04 sec
+      Start 12: rnqnx_accessibility_action_probe
+12/49 Test #12: rnqnx_accessibility_action_probe ....................   Passed    1.74 sec
+      Start 13: rnqnx_accessibility_action_native_test
+13/49 Test #13: rnqnx_accessibility_action_native_test ..............   Passed    0.06 sec
+      Start 14: rnqnx_accessibility_action_rejects_interception
+14/49 Test #14: rnqnx_accessibility_action_rejects_interception .....   Passed    3.30 sec
+      Start 15: rnqnx_accessibility_action_rejects_registration
+15/49 Test #15: rnqnx_accessibility_action_rejects_registration .....   Passed    1.60 sec
+      Start 16: rnqnx_accessibility_view_test
+16/49 Test #16: rnqnx_accessibility_view_test .......................   Passed    0.04 sec
+      Start 17: rnqnx_text_input_probe
+17/49 Test #17: rnqnx_text_input_probe ..............................   Passed    2.07 sec
+      Start 18: rnqnx_text_input_bridge_test
+18/49 Test #18: rnqnx_text_input_bridge_test ........................   Passed    0.14 sec
+      Start 19: rnqnx_text_input_rejects_interception
+19/49 Test #19: rnqnx_text_input_rejects_interception ...............   Passed    3.68 sec
+      Start 20: rnqnx_input_lifecycle_probe
+20/49 Test #20: rnqnx_input_lifecycle_probe .........................   Passed    0.13 sec
+      Start 21: rnqnx_input_lifecycle_rejects_interception
+21/49 Test #21: rnqnx_input_lifecycle_rejects_interception ..........   Passed    0.10 sec
+      Start 22: rnqnx_pressable_probe
+22/49 Test #22: rnqnx_pressable_probe ...............................   Passed    2.74 sec
+      Start 23: rnqnx_pressable_rejects_interception
+23/49 Test #23: rnqnx_pressable_rejects_interception ................   Passed    3.16 sec
+      Start 24: rnqnx_pressable_rejects_disabled_cancellation
+24/49 Test #24: rnqnx_pressable_rejects_disabled_cancellation .......   Passed    4.55 sec
+      Start 25: rnqnx_react_render_host_probe
+25/49 Test #25: rnqnx_react_render_host_probe .......................   Passed    1.09 sec
+      Start 26: rnqnx_react_render_host_probe_rejects_bad_bundles
+26/49 Test #26: rnqnx_react_render_host_probe_rejects_bad_bundles ...   Passed    0.23 sec
+      Start 27: rnqnx_playground_screenshot
+27/49 Test #27: rnqnx_playground_screenshot .........................   Passed    1.63 sec
+      Start 28: rnqnx_playground_rejects_start_failure
+28/49 Test #28: rnqnx_playground_rejects_start_failure ..............   Passed    0.10 sec
+      Start 29: rnqnx_playground_rejects_stop_failure
+29/49 Test #29: rnqnx_playground_rejects_stop_failure ...............   Passed    0.08 sec
+      Start 30: qt_react_host_host_test
+30/49 Test #30: qt_react_host_host_test .............................   Passed   49.49 sec
+      Start 31: rnqnx_rn_headers_probe
+31/49 Test #31: rnqnx_rn_headers_probe ..............................   Passed    0.03 sec
+      Start 32: shadow_view_mutation_adapter_host_test
+32/49 Test #32: shadow_view_mutation_adapter_host_test ..............   Passed    0.06 sec
+      Start 33: shadow_tree_mounting_host_test
+33/49 Test #33: shadow_tree_mounting_host_test ......................   Passed    0.05 sec
+      Start 34: qtquick_mounting_layer_host_test
+34/49 Test #34: qtquick_mounting_layer_host_test ....................   Passed    0.22 sec
+      Start 35: rnqnx_qtquick_host_probe
+35/49 Test #35: rnqnx_qtquick_host_probe ............................   Passed    0.04 sec
+      Start 36: rnqnx_qt_native_ui_test
+36/49 Test #36: rnqnx_qt_native_ui_test .............................   Passed    5.98 sec
+      Start 37: rnqnx_qt_motion_test
+37/49 Test #37: rnqnx_qt_motion_test ................................   Passed    0.17 sec
+      Start 38: rnqnx_qt_svg_test
+38/49 Test #38: rnqnx_qt_svg_test ...................................   Passed    0.12 sec
+      Start 39: rnqnx_qt_graphics
+39/49 Test #39: rnqnx_qt_graphics ...................................   Passed    0.03 sec
+      Start 40: rnqnx_qt_graphics_null
+40/49 Test #40: rnqnx_qt_graphics_null ..............................   Passed    0.02 sec
+      Start 41: rnqnx_qt_rnsvg_filter_test
+41/49 Test #41: rnqnx_qt_rnsvg_filter_test ..........................   Passed    2.17 sec
+      Start 42: rnqnx_qt_rnsvg_fixtures_test
+42/49 Test #42: rnqnx_qt_rnsvg_fixtures_test ........................   Passed    1.87 sec
+      Start 43: rnqnx_qt_rnsvg_foreignobject_test
+43/49 Test #43: rnqnx_qt_rnsvg_foreignobject_test ...................   Passed    0.08 sec
+      Start 44: rnqnx_qt_rnsvg_image_test
+44/49 Test #44: rnqnx_qt_rnsvg_image_test ...........................   Passed    0.20 sec
+      Start 45: rnqnx_qt_rnsvg_loader_test
+45/49 Test #45: rnqnx_qt_rnsvg_loader_test ..........................   Passed    0.61 sec
+      Start 46: rnqnx_qt_rnsvg_test
+46/49 Test #46: rnqnx_qt_rnsvg_test .................................   Passed    0.05 sec
+      Start 47: rnqnx_qt_rnsvg_scene_test
+47/49 Test #47: rnqnx_qt_rnsvg_scene_test ...........................   Passed    0.62 sec
+      Start 48: rnqnx_qt_rnsvg_text_test
+48/49 Test #48: rnqnx_qt_rnsvg_text_test ............................   Passed    1.85 sec
+      Start 49: rnqnx_qt_video_test
+49/49 Test #49: rnqnx_qt_video_test .................................   Passed    0.64 sec
+
+100% tests passed, 0 tests failed out of 49
+
+Total Test time (real) = 445.87 sec

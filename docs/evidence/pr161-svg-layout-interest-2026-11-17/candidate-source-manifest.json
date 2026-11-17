@@ -1,0 +1,25 @@
+{
+  "baseCommit": "d3eacc75dcad761c992736223a68b53ff852203b",
+  "baseTree": "fd7fe0ad6bcbd28e8c51d4a0526f1fadd2a543ea",
+  "patchSha256": "802fd7d69f5afe66d78808f3b46f0db45cd8aef352c64b44f1cc4f963b1edbd0",
+  "files": {
+    "apps/rn-playground/rnsvg-fixture.js": "694aa86c6e6b745cbbf7d6f730196e3be4970fa93580f4785e9cadf38832c918",
+    "scripts/qt-rnsvg-codegen.mjs": "9d64c2b4fbcc2dd0b308c51e882465d04add505f162192b8d8b895636924a92b",
+    "tests/native/qt-rnsvg-fabric/RnsvgBridgeValuesTest.cpp": "295f76d313dccbc8b7257e582166434ff63889f5be2f33aa6c840c4ebfb53a3f",
+    "tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp": "9667a810b101f2c59f4be214207cfcf52b826e2dbd043e04a7896842399e71b1",
+    "vnext/generated/react/renderer/components/rnsvg/Props.cpp": "fc995dada9bd6230985002f770c6b945fbc869bbac3c923a2f624e7bcdb0ca19",
+    "vnext/generated/react/renderer/components/rnsvg/Props.h": "02f21e4cd193dd09db04872d67b1dd5ba8cf9c7620c5735d59a8e81b88e710b7",
+    "vnext/include/react-native-qnx/fabric/ShadowViewMutationAdapter.h": "afdd48210494d2f761a9b5feb594536dd13b4585da9573d2ee4a7f0a4fda499d",
+    "vnext/include/react-native-qnx/runtime/QtReactHost.h": "89d089b1faa00182c9a52561aa7e5b19fa8e654203e43cf53f7a23ac912013b1",
+    "vnext/src/fabric/QtRnsvgBridge.cpp": "34e4867f4189c77bf874ca313b5e581072e65c65ad6bc4b037b91fdbe1cd7733",
+    "vnext/src/fabric/QtRnsvgBridgeDefs.cpp": "ec25da1c58a22f386518da302cd85432930471f831aafd3e7ab1dee9a8bd9f6d",
+    "vnext/src/fabric/QtRnsvgBridgeInternal.h": "c688a2fc0ce28ee1c04e834edee1038dd478d431dd0bc325b00b3edbd96f06ad",
+    "vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp": "20b46b497bb18cade48899742dbc70794cb0c5aa94555b9b0ba97dbf802faab3",
+    "vnext/src/fabric/QtRnsvgBridgeLayoutEvents.h": "33ea12c93309350a9e28c18d571a4f7a49434b97153bf5625b746b29040535a4",
+    "vnext/src/fabric/QtRnsvgBridgeShapes.cpp": "242ead6e1e5ae396b03e1d3c2558987ceb1d8059ebfb8ac2fb466261555438da",
+    "vnext/src/fabric/QtRnsvgBridgeText.cpp": "3fa5b6aa6815cc6ebee18148bfc25fd5ebf7a118e1fb15534227a1f4456d27a6",
+    "vnext/src/fabric/ShadowViewMutationAdapter.cpp": "0e4c64d0890b6aed61ac0bf62cb1bf13cd7e7b2753092b8d5ff53ac460c7a42f",
+    "vnext/src/runtime/QtReactHost.cpp": "d7a255fbceb40ce20d4fe2a9f09eec4bb3c499118e906f416223042cf87211cf"
+  },
+  "scope": "Frozen reviewed source/generator/tests only; excludes receipts and canonical handoff. Native runtime validation pending."
+}

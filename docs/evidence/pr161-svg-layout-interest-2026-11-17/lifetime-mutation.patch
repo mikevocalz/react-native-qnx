@@ -1,0 +1,12 @@
+--- a/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp
++++ b/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp
+@@ -109,7 +109,8 @@
+     }
+     // A self-clearing callback can release its last owner when the snapshot
+     // dies. Check only after both it and the holder have been released.
+-    if (!alive || !interested) return;
++    (void)alive;  // Mutation: omit the post-release lifetime check.
++    if (!interested) return;
+   }
+   folly::dynamic layout = folly::dynamic::object("x", next.x)("y", next.y)("width", next.width)("height", next.height);
+   folly::dynamic payload = folly::dynamic::object("layout", std::move(layout));

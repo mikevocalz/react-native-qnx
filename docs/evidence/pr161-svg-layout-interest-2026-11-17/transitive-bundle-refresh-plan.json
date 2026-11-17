@@ -1,0 +1,14 @@
+{
+  "reason": "BaseViewConfig is a transitive JS dependency not listed in every CMake fixture DEPENDS; refresh generated app bundles before final acceptance. Do not touch Hermes internal JS/bytecode inputs.",
+  "outputs": [
+    "rnqnx-accessibility-action-probe.bundle.js",
+    "rnqnx-playground.bundle.js",
+    "rnqnx-pressable-probe.bundle.js",
+    "rnqnx-qt-svg.bundle.js",
+    "rnqnx-react-probe.bundle.js",
+    "rnqnx-rnsvg-corpus.bundle.js",
+    "rnqnx-rnsvg-image.bundle.js",
+    "rnqnx-rnsvg.bundle.js",
+    "rnqnx-text-input-probe.bundle.js"
+  ]
+}

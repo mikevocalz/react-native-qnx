@@ -117,14 +117,15 @@ bool convertForeignObject(const rn::Props& props, ElementProps& e, const Element
 }  // namespace
 
 void appendDefinitionEntries(std::vector<Entry>& out) {
-  out.push_back(Entry{"RNSVGLinearGradient", Kind::LinearGradient, &convertLinearGradient, false});
-  out.push_back(Entry{"RNSVGRadialGradient", Kind::RadialGradient, &convertRadialGradient, false});
-  out.push_back(Entry{"RNSVGClipPath", Kind::ClipPath, &convertClipPath, true});
-  out.push_back(Entry{"RNSVGMask", Kind::Mask, &convertMask, true});
-  out.push_back(Entry{"RNSVGPattern", Kind::Pattern, &convertPattern, false});
-  out.push_back(Entry{"RNSVGSymbol", Kind::Symbol, &convertSymbol, false});
-  out.push_back(Entry{"RNSVGMarker", Kind::Marker, &convertMarker, false});
-  out.push_back(Entry{"RNSVGForeignObject", Kind::ForeignObject, &convertForeignObject, true});
+  out.push_back(Entry{"RNSVGLinearGradient", Kind::LinearGradient, &convertLinearGradient, nullptr});
+  out.push_back(Entry{"RNSVGRadialGradient", Kind::RadialGradient, &convertRadialGradient, nullptr});
+  out.push_back(Entry{"RNSVGClipPath", Kind::ClipPath, &convertClipPath, &hasSvgLayoutListener<rn::RNSVGClipPathProps>});
+  out.push_back(Entry{"RNSVGMask", Kind::Mask, &convertMask, &hasSvgLayoutListener<rn::RNSVGMaskProps>});
+  out.push_back(Entry{"RNSVGPattern", Kind::Pattern, &convertPattern, nullptr});
+  out.push_back(Entry{"RNSVGSymbol", Kind::Symbol, &convertSymbol, nullptr});
+  out.push_back(Entry{"RNSVGMarker", Kind::Marker, &convertMarker, nullptr});
+  out.push_back(Entry{"RNSVGForeignObject", Kind::ForeignObject, &convertForeignObject,
+                      &hasSvgLayoutListener<rn::RNSVGForeignObjectProps>});
 }
 
 }  // namespace rnqnx::fabric::rnsvg_bridge

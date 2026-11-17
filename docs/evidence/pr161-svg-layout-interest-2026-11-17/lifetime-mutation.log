@@ -1,0 +1,19 @@
+Test project /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer
+    Start 5: rnqnx_qt_rnsvg_fabric_test
+1/1 Test #5: rnqnx_qt_rnsvg_fabric_test .......***Failed    7.89 sec
+Running "RnqnxRnsvgFixture"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:35:17.269197 2884375104 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+W1117 00:35:21.759497 2884375104 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1117 00:35:21.762096 2745329344 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014bd0).
+W1117 00:35:21.762128 2745329344 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+Destroyed SVG reporter dispatched after capture release
+
+
+0% tests passed, 1 tests failed out of 1
+
+Total Test time (real) =   7.89 sec
+
+The following tests FAILED:
+	  5 - rnqnx_qt_rnsvg_fabric_test (Failed)
+Errors while running CTest

@@ -1,0 +1,18 @@
+{
+  "recordedAt": "2026-11-17T05:55:50.167829+00:00",
+  "sha256": {
+    "CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp.o": "243cb253ff10c3a3108466297a8650d5667d2e0abc2bb55424a9255c98f831e0",
+    "CMakeFiles/rnqnx_qt_rnsvg_fabric_test.dir/tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp.o": "5a432565a32667337a82c581faff30a34965ebe64f1ad3ff879a30f5cc78cd77",
+    "librnqnx_fabric_adapter.a": "3d64c41389ffc8c852627f3eda617d7c40cbf5ae2004d00e0a1380d29488856d",
+    "rnqnx_qt_rnsvg_fabric_test": "8b9fde15446dbd201c8a76acc4b6397194603cbb022d8ee8a10c7c6a140663f9",
+    "rnqnx_qt_rnsvg_corpus_test": "247c246435db470aec1a2525de0f55c142e14864d19a5e7002c410a787d32916",
+    "rnqnx-rnsvg.bundle.js": "686b1f91383b91d0f63c572f3205f5c301b4e0d13c03a10c00ec2a6b53c4fd2b",
+    "rnqnx-rnsvg-corpus.bundle.js": "b287b71187ca91c715376419329cee0d1f26b247967ecf7afaf5a9b18d0c28c9"
+  },
+  "matchesEarlierGuardedCandidate": {
+    "CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp.o": true,
+    "CMakeFiles/rnqnx_qt_rnsvg_fabric_test.dir/tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp.o": true,
+    "rnqnx-rnsvg.bundle.js": true
+  },
+  "scope": "Compiled artifacts after restoring reviewed source and completing the full49 graph."
+}

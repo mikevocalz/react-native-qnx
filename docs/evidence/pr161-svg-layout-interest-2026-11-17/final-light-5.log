@@ -1,0 +1,3 @@
+$ node scripts/validate-docs.mjs
+.project-state.json is stale. Run pnpm docs:sync and review the generated diff.
+[ELIFECYCLE] Command failed with exit code 1.

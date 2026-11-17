@@ -104,7 +104,7 @@ bool convertPrimitive(const rn::Props& props, ElementProps& e, const ElementProp
 
 template <class P, filter::PrimitiveType Type, filter::Params (*Make)(const P&)>
 Entry primitiveEntry(const char* name) {
-  return Entry{name, Kind::FilterPrimitive, &convertPrimitive<P, Type, Make>, false};
+  return Entry{name, Kind::FilterPrimitive, &convertPrimitive<P, Type, Make>, nullptr};
 }
 
 /// A flood color, lighting color or shadow color prop: `{type, payload}` or a

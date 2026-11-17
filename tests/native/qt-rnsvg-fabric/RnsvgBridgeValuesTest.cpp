@@ -2,6 +2,8 @@
 // behaviour or a thrown range_error: NaN, infinities, huge and negative values.
 // Links the bridge's value converters directly; no JS runtime involved.
 #include "QtRnsvgBridgeInternal.h"
+#include <react/renderer/components/rnsvg/Props.h>
+#include <react/renderer/core/RawPropsParser.h>
 
 #include <cmath>
 #include <iostream>
@@ -18,10 +20,50 @@ void check(bool condition, const char* what) {
   }
 }
 
+template <class Props>
+void checkSvgLayoutMarker() {
+  namespace rn = facebook::react;
+  rn::RawPropsParser parser;
+  parser.prepare<Props>();
+  rn::ContextContainer container;
+  rn::PropsParserContext context(11, container);
+  const auto clone = [&](const Props& source, folly::dynamic values) {
+    rn::RawProps raw(std::move(values));
+    raw.parse(parser);
+    return Props(context, source, raw);
+  };
+  const Props initial;
+  check(!initial.onSvgLayout, "SVG listener marker defaults to absent");
+  const auto subscribed = clone(initial, folly::dynamic::object("onSvgLayout", true));
+  check(subscribed.onSvgLayout, "SVG listener marker accepts React's true value");
+  const auto retained = clone(subscribed, folly::dynamic::object());
+  check(retained.onSvgLayout, "Omitted SVG listener marker retains its source value");
+  const auto removed = clone(retained, folly::dynamic::object("onSvgLayout", nullptr));
+  check(!removed.onSvgLayout, "Null SVG listener marker removes the listener");
+  const auto disabled = clone(subscribed, folly::dynamic::object("onSvgLayout", false));
+  check(!disabled.onSvgLayout, "False SVG listener marker removes the listener");
+  const auto added = clone(removed, folly::dynamic::object("onSvgLayout", true));
+  check(added.onSvgLayout, "SVG listener marker can be re-added");
+}
+
 }  // namespace
 
 int main() {
   using namespace rnqnx::fabric::rnsvg_bridge;
+  checkSvgLayoutMarker<rn::RNSVGCircleProps>();
+  checkSvgLayoutMarker<rn::RNSVGClipPathProps>();
+  checkSvgLayoutMarker<rn::RNSVGEllipseProps>();
+  checkSvgLayoutMarker<rn::RNSVGForeignObjectProps>();
+  checkSvgLayoutMarker<rn::RNSVGGroupProps>();
+  checkSvgLayoutMarker<rn::RNSVGImageProps>();
+  checkSvgLayoutMarker<rn::RNSVGLineProps>();
+  checkSvgLayoutMarker<rn::RNSVGMaskProps>();
+  checkSvgLayoutMarker<rn::RNSVGPathProps>();
+  checkSvgLayoutMarker<rn::RNSVGRectProps>();
+  checkSvgLayoutMarker<rn::RNSVGTSpanProps>();
+  checkSvgLayoutMarker<rn::RNSVGTextProps>();
+  checkSvgLayoutMarker<rn::RNSVGTextPathProps>();
+  checkSvgLayoutMarker<rn::RNSVGUseProps>();
   const double nan = std::numeric_limits<double>::quiet_NaN();
   const double inf = std::numeric_limits<double>::infinity();
   const double values[] = {nan, inf, -inf, 1e30, -1e30, 4294967296.0, -4294967297.0, -1.0, 0.0};

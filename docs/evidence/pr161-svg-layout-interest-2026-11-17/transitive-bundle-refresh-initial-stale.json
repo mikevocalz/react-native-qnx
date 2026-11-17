@@ -1,0 +1,11 @@
+{
+  "recordedAt": "2026-11-17T05:47:15.371565+00:00",
+  "outputs": [
+    "rnqnx-qt-svg.bundle.js",
+    "rnqnx-rnsvg-corpus.bundle.js",
+    "rnqnx-rnsvg-image.bundle.js",
+    "rnqnx-rnsvg.bundle.js",
+    "rnqnx-text-input-probe.bundle.js"
+  ],
+  "result": "The native rebuild succeeded, but freshness verification stopped before any CTest. Ninja restat retained these five outputs. Exact existing Metro commands are used below to refresh them without source changes or deletion."
+}

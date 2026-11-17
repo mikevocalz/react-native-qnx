@@ -1,0 +1,8 @@
+{
+  "command": ["pnpm", "docs:sync"],
+  "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr159",
+  "startedAt": "2026-11-17T06:18:37.702855+00:00",
+  "finishedAt": "2026-11-17T06:18:38.335857+00:00",
+  "elapsedSeconds": 0.6330082909989869,
+  "exitCode": 0
+}

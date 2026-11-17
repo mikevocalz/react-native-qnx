@@ -1,0 +1,27 @@
+{
+  "command": [
+    "pnpm",
+    "exec",
+    "prettier",
+    "--write",
+    ".project-state.json",
+    "docs/handoff/CURRENT_STATE.md",
+    "docs/releases/v1-readiness.json",
+    "docs/validation/pr159-svg-interest-restack-2026-11-17.md",
+    "/workspace/scratch/252a22fac759/rnqnx-pr159/docs/evidence/pr159-svg-interest-restack-2026-11-17/README.md",
+    "/workspace/scratch/252a22fac759/rnqnx-pr159/docs/evidence/pr159-svg-interest-restack-2026-11-17/affected-image-tests.json",
+    "/workspace/scratch/252a22fac759/rnqnx-pr159/docs/evidence/pr159-svg-interest-restack-2026-11-17/build.json",
+    "/workspace/scratch/252a22fac759/rnqnx-pr159/docs/evidence/pr159-svg-interest-restack-2026-11-17/codegen.json",
+    "/workspace/scratch/252a22fac759/rnqnx-pr159/docs/evidence/pr159-svg-interest-restack-2026-11-17/docs-sync.json",
+    "/workspace/scratch/252a22fac759/rnqnx-pr159/docs/evidence/pr159-svg-interest-restack-2026-11-17/previous-head-ci.json",
+    "/workspace/scratch/252a22fac759/rnqnx-pr159/docs/evidence/pr159-svg-interest-restack-2026-11-17/previous-head-source-trees.json",
+    "/workspace/scratch/252a22fac759/rnqnx-pr159/docs/evidence/pr159-svg-interest-restack-2026-11-17/source-identities.json",
+    "/workspace/scratch/252a22fac759/rnqnx-pr159/docs/evidence/pr159-svg-interest-restack-2026-11-17/transport.json",
+    "/workspace/scratch/252a22fac759/rnqnx-pr159/docs/evidence/pr159-svg-interest-restack-2026-11-17/typecheck.json"
+  ],
+  "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr159",
+  "startedAt": "2026-11-17T06:18:38.336589+00:00",
+  "finishedAt": "2026-11-17T06:18:38.874665+00:00",
+  "elapsedSeconds": 0.5380804920005176,
+  "exitCode": 0
+}

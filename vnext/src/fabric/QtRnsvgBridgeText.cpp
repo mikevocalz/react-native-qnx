@@ -43,9 +43,9 @@ bool convertTextPath(const rn::Props& props, ElementProps& e, const ElementProps
 }  // namespace
 
 void appendTextEntries(std::vector<Entry>& out) {
-  out.push_back(Entry{"RNSVGText", Kind::Text, &convertText, true});
-  out.push_back(Entry{"RNSVGTSpan", Kind::TSpan, &convertTSpan, true});
-  out.push_back(Entry{"RNSVGTextPath", Kind::TextPath, &convertTextPath, true});
+  out.push_back(Entry{"RNSVGText", Kind::Text, &convertText, &hasSvgLayoutListener<rn::RNSVGTextProps>});
+  out.push_back(Entry{"RNSVGTSpan", Kind::TSpan, &convertTSpan, &hasSvgLayoutListener<rn::RNSVGTSpanProps>});
+  out.push_back(Entry{"RNSVGTextPath", Kind::TextPath, &convertTextPath, &hasSvgLayoutListener<rn::RNSVGTextPathProps>});
 }
 
 }  // namespace rnqnx::fabric::rnsvg_bridge

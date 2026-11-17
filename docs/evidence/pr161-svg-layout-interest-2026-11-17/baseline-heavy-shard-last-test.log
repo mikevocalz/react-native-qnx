@@ -1,0 +1,42 @@
+Start testing: Nov 17 00:12 EST
+----------------------------------------------------------
+8/49 Testing: rnqnx_qt_rnsvg_corpus_test_1
+8/49 Test: rnqnx_qt_rnsvg_corpus_test_1
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx_qt_rnsvg_corpus_test" "-platform" "offscreen" "--shard-index" "1" "--shard-count" "4"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer
+"rnqnx_qt_rnsvg_corpus_test_1" start time: Nov 17 00:12 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgCorpus"
+rnsvg batch 1 start
+rnsvg batch 1 mounted 1099 ms
+rnsvg batch 1 grabbed 1113 ms
+rnsvg batch 5 start
+rnsvg batch 5 mounted 713 ms
+rnsvg batch 5 grabbed 716 ms
+rnsvg batch 9 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:12:44.294675 3885081024 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1117 00:12:44.303700 3885081024 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1117 00:12:44.346290 3885081024 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1117 00:12:44.354086 3885081024 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1117 00:12:44.510228 3885081024 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1117 00:12:44.518826 3885081024 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+rnsvg batch 9 mounted 3286 ms
+rnsvg batch 9 grabbed 3290 ms
+rnsvg batch 13 start
+rnsvg batch 13 mounted 179912 ms
+rnsvg batch 13 grabbed 179934 ms
+W1117 00:15:58.223869 3885081024 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x55f2b68366b0).
+W1117 00:15:58.228994 3799230144 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x55f2b6851e60).
+W1117 00:15:58.229075 3799230144 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x55f2b6735e70).
+rnsvg-corpus shard 1/4: 37 passed, 0 pending, 0 failed
+<end of output>
+Test time = 199.36 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_corpus_test_1" end time: Nov 17 00:15 EST
+"rnqnx_qt_rnsvg_corpus_test_1" time elapsed: 00:03:19
+----------------------------------------------------------
+
+End testing: Nov 17 00:15 EST

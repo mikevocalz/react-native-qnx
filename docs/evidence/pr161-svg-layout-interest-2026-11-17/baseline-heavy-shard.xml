@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-clang++"
+	tests="1"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="31d30cd8ad50"
+	time="199"
+	timestamp="2026-11-17T00:12:39"
+	>
+	<testcase name="rnqnx_qt_rnsvg_corpus_test_1" classname="rnqnx_qt_rnsvg_corpus_test_1" time="199.357" status="run">
+		<properties/>
+		<system-out>Running "RnqnxRnsvgCorpus"
+rnsvg batch 1 start
+rnsvg batch 1 mounted 1099 ms
+rnsvg batch 1 grabbed 1113 ms
+rnsvg batch 5 start
+rnsvg batch 5 mounted 713 ms
+rnsvg batch 5 grabbed 716 ms
+rnsvg batch 9 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:12:44.294675 3885081024 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:12:44.303700 3885081024 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:12:44.346290 3885081024 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:12:44.354086 3885081024 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:12:44.510228 3885081024 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+E1117 00:12:44.518826 3885081024 FilterPropsConversions.h:30] react_native_expect failure: value.hasType...
+[This part of the test output was removed since it exceeds the threshold of 1024 bytes.]
+</system-out>
+	</testcase>
+</testsuite>

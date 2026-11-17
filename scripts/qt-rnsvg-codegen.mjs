@@ -22,6 +22,10 @@
 // JavaScript side: those specs are written to
 // packages/react-native-qnx/svg/overlay/fabric, which Metro serves in place of
 // the package's copy.
+// QNX BaseViewConfig explicitly admits the existing onSvgLayout listener
+// marker: RN's generated event-attribute helper includes it only on iOS.
+// Its native Boolean prop is retained below at schema level; this does not
+// add a JavaScript prop or change the event definition.
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -213,6 +217,8 @@ try {
   ];
   /** @type {Map<string, string>} */
   const overlaySpecs = new Map();
+  /** @param {{ name: string }} entry */
+  const isSvgLayout = (entry) => entry.name === 'onSvgLayout';
   for (const { name, file } of sources) {
     const source = fs.readFileSync(file, 'utf8');
     const patched = applyPatches(name, source);
@@ -222,6 +228,22 @@ try {
       overlaySpecs.set(`${name}.ts`, await overlaySpec(name, patched.text));
     }
     const schema = parser.parseFile(patchedFile);
+    for (const module of Object.values(schema.modules)) {
+      for (const [componentName, component] of Object.entries(module.components ?? {})) {
+        if (!component.events.some(isSvgLayout)) continue;
+        if (component.props.some(isSvgLayout)) {
+          throw new Error(`${componentName}: re-audit the upstream onSvgLayout prop`);
+        }
+        // ReactNativeAttributePayload sends true for an event callback and
+        // null on removal. The generated convertRawProp preserves the source
+        // on an omitted update and resets to false on null.
+        component.props.push({
+          name: 'onSvgLayout',
+          optional: true,
+          typeAnnotation: { type: 'BooleanTypeAnnotation', default: false },
+        });
+      }
+    }
     Object.assign(modules, schema.modules);
   }
   // A patch whose name pattern matches no spec applied to nothing: the package

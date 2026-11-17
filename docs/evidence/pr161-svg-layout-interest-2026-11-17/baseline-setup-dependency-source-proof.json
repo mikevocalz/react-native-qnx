@@ -1,0 +1,56 @@
+{
+  "rnqnx_folly": {
+    "source": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src",
+    "archive": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-tmp/v2024.11.18.00.tar.gz",
+    "sha256": "b2c6879ba8ba625218d1ab9eefcc1611a9003d05bc2cb1a38f3bae21892e5167",
+    "regularFilesVerified": 2692,
+    "archivePayloadMatchesSource": true
+  },
+  "rnqnx_fmt": {
+    "source": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_fmt-src",
+    "archive": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_fmt-tmp/12.1.0.tar.gz",
+    "sha256": "ea7de4299689e12b6dddd392f9896f08fb0777ac7168897a244a6d6085043fea",
+    "regularFilesVerified": 128,
+    "archivePayloadMatchesSource": true
+  },
+  "rnqnx_glog": {
+    "source": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_glog-src",
+    "archive": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_glog-tmp/v0.3.5.tar.gz",
+    "sha256": "7580e408a2c0b5a89ca214739978ce6ff480b5e7d8d7698a2aa92fadc484d1e0",
+    "regularFilesVerified": 118,
+    "archivePayloadMatchesSource": true
+  },
+  "rnqnx_double_conversion": {
+    "source": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_double_conversion-src",
+    "archive": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_double_conversion-tmp/v1.1.6.tar.gz",
+    "sha256": "6b850acd8e88515764472c52973277744a945f9a769a93968efc42efef64d67a",
+    "regularFilesVerified": 55,
+    "archivePayloadMatchesSource": true
+  },
+  "rnqnx_fast_float": {
+    "source": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_fast_float-src",
+    "archive": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_fast_float-tmp/v8.0.0.tar.gz",
+    "sha256": "f312f2dc34c61e665f4b132c0307d6f70ad9420185fa831911bc24408acf625d",
+    "regularFilesVerified": 106,
+    "archivePayloadMatchesSource": true
+  },
+  "rnqnx_boost": {
+    "source": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_boost-src",
+    "archive": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_boost-tmp/v1.84.0.tar.gz",
+    "sha256": "954a04e9468dee21259937b83a2b21c3985cc96f91ee0152a34a7f0f752093e8",
+    "regularFilesVerified": 1471,
+    "archivePayloadMatchesSource": true
+  },
+  "rnqnx_boost_config": {
+    "source": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_boost_config-src",
+    "archive": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_boost_config-tmp/boost-1.84.0.tar.gz",
+    "sha256": "4c45e04b689e79234cf1ef60f966c93755dca2ff433e72db5b4f367f94007aa9",
+    "regularFilesVerified": 1047,
+    "archivePayloadMatchesSource": true
+  },
+  "rnqnx_hermes": {
+    "source": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src",
+    "commit": "9a115f15785851f4ff2747ebb090ddd066fc8ad2",
+    "gitStatus": "clean"
+  }
+}

@@ -1,0 +1,8 @@
+Internal ctest changing into directory: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer
+Test project /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer
+    Start 8: rnqnx_qt_rnsvg_corpus_test_1
+1/1 Test #8: rnqnx_qt_rnsvg_corpus_test_1 .....   Passed  199.36 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) = 199.37 sec
