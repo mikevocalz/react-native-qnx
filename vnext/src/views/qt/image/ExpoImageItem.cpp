@@ -477,12 +477,13 @@ void ExpoImageItem::startLoad() {
   }
 
   loadPlaceholder();
+  const auto memoryGeneration = DecodedImageCache::shared().generation();
   mainFetch_ = fetcher_.fetch(
       request,
       [this, generation](qint64 received, qint64 total) {
         if (generation == generation_) Q_EMIT progressed(static_cast<double>(received), static_cast<double>(total));
       },
-      [this, generation, key, uri = choice.uri, policy = policy_](FetchResult result) {
+      [this, generation, memoryGeneration, key, uri = choice.uri, policy = policy_](FetchResult result) {
         if (generation != generation_) return;
         if (!result.error.isEmpty()) {
           Q_EMIT failed(result.error);
@@ -493,6 +494,7 @@ void ExpoImageItem::startLoad() {
         pendingUrl_ = uri;
         pendingKey_ = key;
         pendingStore_ = usesMemory(policy) && result.cacheable;
+        pendingMemoryGeneration_ = memoryGeneration;
         decodeGeneration_ = generation;
         const QSize target = targetPixels();
         const bool allow = allowDownscaling_;
@@ -569,7 +571,8 @@ void ExpoImageItem::onDecoded() {
   const QString mediaType = decoded.mediaType;
   const bool animated = decoded.animated;
   if (pendingStore_ && !decoded.downscaled) {
-    DecodedImageCache::shared().insert(pendingKey_, decoded.first, decoded.mediaType, decoded.bytes);
+    DecodedImageCache::shared().insert(pendingKey_, decoded.first, decoded.mediaType,
+                                     decoded.bytes, pendingMemoryGeneration_);
   }
   auto layer = std::make_unique<Layer>();
   layer->image = std::move(decoded.first);

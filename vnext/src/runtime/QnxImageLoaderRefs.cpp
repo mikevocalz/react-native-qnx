@@ -346,6 +346,7 @@ jsi::Value QnxImageLoader::writeToCache(jsi::Runtime& rt, facebook::react::Turbo
   // spent fetching and decoding the source before the explicit alias write.
   auto disk = views::ImageDiskCache::shared();
   const auto generation = disk.generation();
+  const auto memoryGeneration = views::DecodedImageCache::shared().generation();
   processPicture(self.fetcher_, self.imageTasks_, spec,
       [disk, key, generation](Picture picture) mutable {
     QByteArray bytes = picture.encoded;
@@ -362,7 +363,7 @@ jsi::Value QnxImageLoader::writeToCache(jsi::Runtime& rt, facebook::react::Turbo
           : "The image could not be written to the disk cache");
     }
     return picture;
-  }, [promise, disk, key, generation](auto written) mutable {
+  }, [promise, disk, key, generation, memoryGeneration](auto written) mutable {
     if (rejectFailure(promise, written)) return;
     // A clear can follow the worker's disk commit before its owner completion.
     // It must also suppress publication of the old decoded alias.
@@ -372,7 +373,7 @@ jsi::Value QnxImageLoader::writeToCache(jsi::Runtime& rt, facebook::react::Turbo
     }
     auto picture = std::get<Picture>(std::move(written));
     views::DecodedImageCache::shared().insert(key, picture.image, picture.mediaType,
-        picture.animated ? picture.encoded : QByteArray{});
+        picture.animated ? picture.encoded : QByteArray{}, memoryGeneration);
     promise.resolve(folly::dynamic(nullptr));
   });
   return result;

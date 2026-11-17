@@ -9,7 +9,9 @@
 #include <QString>
 
 #include <algorithm>
+#include <cstdint>
 #include <deque>
+#include <optional>
 #include <utility>
 
 namespace rnqnx::views {
@@ -43,8 +45,15 @@ class DecodedImageCache {
   /// Drops every decoded image.
   void clear() {
     QMutexLocker lock(&mutex_);
+    ++generation_;
     images_.clear();
     order_.clear();
+  }
+  /// Async producers snapshot this before fetching/decoding. A clear from
+  /// any loader invalidates their later cache publication, not their pixels.
+  std::uint64_t generation() {
+    QMutexLocker lock(&mutex_);
+    return generation_;
   }
   /// Whether an image stored under \a uri (or a storage key) is held.
   bool contains(const QString& uri) {
@@ -52,9 +61,11 @@ class DecodedImageCache {
     return images_.contains(key(uri));
   }
   void insert(const QString& uri, QImage image, QString mediaType = {},
-              QByteArray animationBytes = {}) {
+              QByteArray animationBytes = {},
+              std::optional<std::uint64_t> admittedGeneration = std::nullopt) {
     const auto cost = (image.sizeInBytes() + animationBytes.size() + 1023) / 1024;
     QMutexLocker lock(&mutex_);
+    if (admittedGeneration && *admittedGeneration != generation_) return;
     if (cost <= images_.maxCost()) {
       const QString hashed = key(uri);
       images_.insert(hashed, new Entry{std::move(image), std::move(mediaType), std::move(animationBytes)},
@@ -110,6 +121,7 @@ class DecodedImageCache {
   QCache<QString, Entry> images_;
   std::deque<QString> order_;
   int maxCount_{0};
+  std::uint64_t generation_{0};
 };
 
 }  // namespace rnqnx::views

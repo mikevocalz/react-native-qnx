@@ -408,6 +408,7 @@ int main(int argc, char** argv) {
           record(mod.readFromCacheAsync('worker-read-key')),
         ];
         __workerRef.release();
+        globalThis.__workerMemoryClear = mod.clearMemoryCache();
       )JS");
       bool ticked = false;
       QTimer::singleShot(0, [&] { ticked = true; });
@@ -415,6 +416,7 @@ int main(int argc, char** argv) {
       check(rig.number("__workerCompletions") == 0, "ImageRef operations wait for the worker, not the owner thread");
       release.release();
       failures = rig.runAsync(R"JS(
+        expect(await __workerMemoryClear === true, 'the memory clear completes independently of disk');
         const outcomes = await Promise.all(__workerPending);
         for (let i = 0; i < outcomes.length; ++i) expect(!outcomes[i].error, 'worker operation ' + i + ' succeeds');
         const scaled = outcomes[0].value;
@@ -425,6 +427,8 @@ int main(int argc, char** argv) {
         const cached = outcomes[4].value;
         expect(cached && cached.width === 10 && cached.height === 6, 'disk cache decoding ran after the gate');
         if (cached) cached.release();
+        const memory = await nativeModuleProxy.ImageLoader.queryCache(['key:worker-write-key']);
+        expect(Object.keys(memory).length === 0, 'the pending explicit write does not repopulate cleared memory');
         const written = await expo.modules.ExpoImage.readFromCacheAsync('worker-write-key');
         expect(written && written.width === 16 && written.height === 12, 'worker cache encoding retains a released source');
         if (written) written.release();
