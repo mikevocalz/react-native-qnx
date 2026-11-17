@@ -1,5 +1,21 @@
 # Current state
 
+## PR 161 retained SVG geometry continuation (2026-11-16)
+
+Published correction `69fa85f` routes retained SVG geometry changes through
+outer-root painting and layout invalidation. Two real-window regressions fail
+against the original source and pass with the fix, covering nested resize
+pixels, live ForeignObject placement and cached bounds. All eight standalone
+Qt 6.11.1/Clang 19.1.7 Debug ASan/UBSan CTests pass, with independent source
+review. The guide now describes the existing optional QtSvg/plugin staging.
+
+The first published-head checks identified formatting failures. This narrow
+documentation follow-up applies the pinned formatter and updates the canonical
+handoff; native source and tests are unchanged. Follow-up CI, a fresh clean
+combined QNX build and current-device validation remain pending. Keep PR 161
+draft and every release gate pending; earlier device receipts do not qualify
+this geometry correction. [Receipt and logs](../validation/pr161-geometry-2026-11-16.md).
+
 ## PR 161 nested SVG and standalone consumer (2026-11-14)
 
 Published native correction `3324e7c` forwards nested child removal to the

@@ -43,6 +43,15 @@
       "consumerHost": "Exact reviewed PR 159 f49e61e CLI copy-list and archive regression port: original source fails the missing SVG resolver assertion, corrected test passes; fresh external dual consumer installs and bundles for QNX and Marathon; no native execution or dependency changes",
       "hostedCi": "All nine workflows pass at 13a0e49ae7ea6b16faa23840926d3976866f6646, including both renderer lanes, 49/49 ON tests and all four corpus shards; packaging-only follow-up exact-head CI pending; original timeout cause remains unestablished",
       "targetExecution": "Not run for the new native correction; fresh combined SDP 8.0.5 build and current target SVG acceptance required; keep PR draft and all release gates pending"
+    },
+    "pr161Geometry": {
+      "reviewedAt": "2026-11-16",
+      "baseCommit": "3b24f5c2fd3733dbf1ebe77729f7014242db7db3",
+      "implementationCommit": "69fa85ff4072686328d8f195e47b454b53932abe",
+      "receipt": "docs/validation/pr161-geometry-2026-11-16.md",
+      "nativeHost": "Two original-source retained-geometry regressions fail and pass with the fix; 8/8 standalone Qt 6.11.1/Clang 19.1.7 Debug ASan/UBSan CTests pass; Qt libraries uninstrumented and leak detection disabled; independent agent source review",
+      "hostedCi": "Implementation-head checks identified Prettier formatting failures; formatting and canonical-handoff follow-up requires its own successful workflows",
+      "targetExecution": "Not run for the geometry correction; fresh clean combined QNX build and current target SVG acceptance required; keep PR draft and every release gate pending"
     }
   },
   "gates": [

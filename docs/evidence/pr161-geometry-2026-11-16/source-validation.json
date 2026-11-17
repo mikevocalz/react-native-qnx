@@ -41,8 +41,8 @@
     },
     {
       "path": "docs/v2/react-native-svg.md",
-      "sha256": "f08051b01af1fac9da08d06d282774864b1e1c91e888539688523ef765fea4c6",
-      "git_blob": "d5d101054a34bdf9d36594715c96f9ab0e81f561"
+      "sha256": "d58f03b6e30df85af915be51ef05c1b0a32b1f545619403c30e7c73fba878636",
+      "git_blob": "ff7c23b6598fcc33e54210241d8d270764812288"
     },
     {
       "path": "pnpm-lock.yaml",
@@ -67,5 +67,22 @@
     "ctests_passed": 8,
     "ctests_failed": 0,
     "elapsed_seconds": 21.17
+  },
+  "format_follow_up": {
+    "recorded_at_utc": "2026-11-17T02:27:00.020702+00:00",
+    "implementation_commit": "69fa85ff4072686328d8f195e47b454b53932abe",
+    "formatter": "Prettier 3.9.10",
+    "guide_before_format": {
+      "path": "docs/v2/react-native-svg.md",
+      "sha256": "f08051b01af1fac9da08d06d282774864b1e1c91e888539688523ef765fea4c6",
+      "git_blob": "d5d101054a34bdf9d36594715c96f9ab0e81f561"
+    },
+    "test_configuration_semantically_unchanged": true,
+    "native_test_and_lock_blobs_unchanged": {
+      "native/qt/rnsvg/RnsvgItems.cpp": "cb021419e5b49727f27d03a259f198b8dcc33401",
+      "tests/native/qt-rnsvg/RnsvgSceneTest.cpp": "e750170c2d6aacb6e72c280a18b0251f6f73118b",
+      "pnpm-lock.yaml": "628bc8b64a4056a3f825adc273a90c29f4a7c1a8"
+    },
+    "prior_readiness_evidence_and_all_11_pending_gate_records_unchanged": true
   }
 }

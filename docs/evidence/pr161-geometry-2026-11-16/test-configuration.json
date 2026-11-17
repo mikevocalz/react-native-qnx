@@ -1,11 +1,7 @@
 {
   "backtraceGraph": {
-    "commands": [
-      "add_test"
-    ],
-    "files": [
-      "/workspace/scratch/252a22fac759/rnqnx-pr161/tests/native/qt-rnsvg/CMakeLists.txt"
-    ],
+    "commands": ["add_test"],
+    "files": ["/workspace/scratch/252a22fac759/rnqnx-pr161/tests/native/qt-rnsvg/CMakeLists.txt"],
     "nodes": [
       {
         "file": 0
