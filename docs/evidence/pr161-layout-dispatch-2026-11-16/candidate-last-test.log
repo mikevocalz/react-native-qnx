@@ -1,0 +1,462 @@
+Start testing: Nov 16 22:42 EST
+----------------------------------------------------------
+1/5 Testing: host_listener_candidate
+1/5 Test: host_listener_candidate
+Command: "/workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate/host-tests-candidate" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate
+"host_listener_candidate" start time: Nov 16 22:42 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:42:07.205649 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1116 22:42:07.206537 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000013cd0).
+W1116 22:42:07.206625 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+[PASS] layoutWithoutListenerDoesNotDispatch
+W1116 22:42:07.287840 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000007590).
+W1116 22:42:07.288260 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200002bcd0).
+W1116 22:42:07.288319 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400000ac50).
+[PASS] layoutListenerRemovalAndReadditionPreserveChangedBounds
+W1116 22:42:07.360313 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000c290).
+W1116 22:42:07.360769 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200004e7d0).
+W1116 22:42:07.360821 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000025250).
+[PASS] inputLifecycleOptOutPreservesExistingDispatch
+W1116 22:42:07.497779 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000025c10).
+W1116 22:42:07.498358 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000595d0).
+W1116 22:42:07.498461 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400002a850).
+[PASS] touchCancelEndsEveryContactAndAllowsIdReuse
+W1116 22:42:07.583555 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002a750).
+W1116 22:42:07.584071 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200007ce50).
+W1116 22:42:07.584185 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000013e50).
+[PASS] touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact
+I1116 22:42:07.660892 2278191680 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+W1116 22:42:07.663826 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002eb90).
+W1116 22:42:07.664258 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000883d0).
+W1116 22:42:07.664309 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000019a50).
+[PASS] forgettingTouchTargetCancelsAndClearsResponder
+W1116 22:42:07.733292 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000035110).
+W1116 22:42:07.733669 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000acfd0).
+W1116 22:42:07.733721 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000032c50).
+[PASS] windowDeactivationCancelsTouchStream
+W1116 22:42:07.804534 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000039550).
+W1116 22:42:07.805002 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000c4250).
+W1116 22:42:07.805094 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000046a50).
+[PASS] mouseCaptureCancellationDoesNotCreateHoverTouches
+W1116 22:42:07.874105 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300003d990).
+W1116 22:42:07.874603 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000db050).
+W1116 22:42:07.874673 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400004c050).
+[PASS] mouseReleaseClearsCaptureBeforeNativeListeners
+W1116 22:42:07.947065 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000042850).
+W1116 22:42:07.947361 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000e59d0).
+W1116 22:42:07.947404 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000051650).
+[PASS] decoratedViewTargetsNearestRegisteredAncestor
+W1116 22:42:08.011000 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000046c90).
+W1116 22:42:08.011359 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000108c50).
+W1116 22:42:08.011409 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000059850).
+[PASS] runtimeEvaluatesJavaScript
+W1116 22:42:08.083344 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000049850).
+W1116 22:42:08.084728 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001183d0).
+W1116 22:42:08.084839 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005be50).
+[PASS] javaScriptErrorsAreReportedNotSwallowed
+W1116 22:42:08.243516 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004c410).
+W1116 22:42:08.244313 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000127cd0).
+W1116 22:42:08.244378 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005e450).
+[PASS] segmentFetcherValidatesCallbackBoundary
+W1116 22:42:08.310739 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004fa50).
+W1116 22:42:08.311355 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200013a450).
+W1116 22:42:08.311517 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000061a50).
+[PASS] evaluateRejectsReentrantJavaScript
+W1116 22:42:08.373682 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000052610).
+W1116 22:42:08.373996 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000141dd0).
+W1116 22:42:08.374061 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000064c50).
+[PASS] timerCallbacksRunMicrotaskCheckpoints
+[js task error] checkpoint-boom
+W1116 22:42:08.433998 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000055390).
+W1116 22:42:08.434511 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000151850).
+W1116 22:42:08.434561 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000067a50).
+[PASS] throwingMicrotasksAreReportedAndRecover
+[js task error] timer-boom
+W1116 22:42:08.495524 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000058490).
+W1116 22:42:08.495918 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001618d0).
+W1116 22:42:08.495965 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006ac50).
+[PASS] throwingTimerCallbacksAreReportedAndRecover
+[js task error] hook-boom
+ErrorUtils reporting failed; retaining the host error
+[js task error] original-boom
+W1116 22:42:08.565649 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005b3d0).
+W1116 22:42:08.565979 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000171950).
+W1116 22:42:08.566045 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006de50).
+[PASS] schedulerErrorsPreserveAndContainJavaScriptHandlers
+W1116 22:42:08.626716 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005ed90).
+W1116 22:42:08.627142 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001864d0).
+W1116 22:42:08.627183 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000072450).
+[PASS] schedulerInstallsTheFabricUIManager
+W1116 22:42:08.706358 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000615d0).
+W1116 22:42:08.706832 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000195950).
+W1116 22:42:08.706873 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000074250).
+[PASS] surfaceCommitMountsThroughTheDelegate
+W1116 22:42:08.799515 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000064c10).
+W1116 22:42:08.799937 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001aadd0).
+W1116 22:42:08.800004 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000077a50).
+[PASS] secondCommitUpdatesTheSameItem
+W1116 22:42:08.900273 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000068410).
+W1116 22:42:08.900714 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200017c450).
+W1116 22:42:08.900764 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007ba50).
+[PASS] stoppingASurfaceUnmountsItsItems
+W1116 22:42:08.968216 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006c4d0).
+W1116 22:42:08.968698 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001cf250).
+W1116 22:42:08.968750 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007f250).
+[PASS] commitToAnUnknownSurfaceIsReported
+W1116 22:42:09.033602 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006ed10).
+W1116 22:42:09.033924 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001de6d0).
+W1116 22:42:09.033972 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000034050).
+[PASS] componentPredicateAnswersForRegisteredNames
+W1116 22:42:09.102070 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000071550).
+W1116 22:42:09.102486 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001edb50).
+W1116 22:42:09.102566 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000036e50).
+[PASS] javaScriptBuildsTheTreeThroughFabricUIManager
+W1116 22:42:09.161180 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000076790).
+W1116 22:42:09.161520 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200020a7d0).
+W1116 22:42:09.161571 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000088850).
+[PASS] hostInstallsBridgelessGlobals
+W1116 22:42:09.221199 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000079350).
+W1116 22:42:09.221511 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200021a0d0).
+W1116 22:42:09.221633 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400008b250).
+[PASS] platformConstantsReportCurrentReactNativeVersion
+[PASS] metroProducesABundleForQnx
+W1116 22:42:10.009379 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300007bf10).
+W1116 22:42:10.010169 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002299d0).
+W1116 22:42:10.010257 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400008d050).
+[PASS] metroBundleEvaluatesInHermes
+Running "RNQnxPlayground"
+W1116 22:42:12.723760 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000089d50).
+W1116 22:42:12.724354 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200026ee50).
+W1116 22:42:12.724396 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000139e50).
+[PASS] metroBundleRendersThroughReact
+[js fatal] deliberate failure
+   at renderThing (App.js:42)
+
+W1116 22:42:12.821388 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000050150).
+W1116 22:42:12.822073 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000106850).
+W1116 22:42:12.822113 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000071e50).
+[PASS] javaScriptErrorsReachTheHost
+Running "RNQnxPlayground"
+W1116 22:42:14.994923 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000ed790).
+W1116 22:42:14.995445 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000185150).
+W1116 22:42:14.995478 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000070050).
+[PASS] aSuccessfulRenderReportsNoErrors
+Running "RNQnxPlayground"
+W1116 22:42:17.759339 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002a50).
+W1116 22:42:17.759821 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001fded0).
+W1116 22:42:17.759891 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400020d650).
+[PASS] renderedTreeIsPainted
+Running "RNQnxPlayground"
+W1116 22:42:20.546983 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000087190).
+W1116 22:42:20.548127 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000181250).
+W1116 22:42:20.548234 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000112a50).
+[PASS] pointerEventsReachJavaScript
+Running "RNQnxPlayground"
+W1116 22:42:23.045377 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000025510).
+W1116 22:42:23.045826 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200001e4d0).
+W1116 22:42:23.045861 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400050e250).
+[PASS] scrollEventsReachJavaScript
+Running "RNQnxFlatList"
+W1116 22:42:26.831080 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000114a10).
+W1116 22:42:26.831902 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200027dfd0).
+W1116 22:42:26.831974 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000050e50).
+[PASS] flatListRendersAndVirtualises
+Running "RNQnxSectionList"
+W1116 22:42:29.763469 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000016550).
+W1116 22:42:29.764053 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200017a7d0).
+W1116 22:42:29.764089 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000512250).
+[PASS] sectionListRenders
+Running "RNQnxTextInput"
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:101:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+W1116 22:42:31.740324 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004d210).
+W1116 22:42:31.743395 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000487d0).
+W1116 22:42:31.743731 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000479e50).
+[PASS] textInputMounts
+Running "RNQnxTextInput"
+W1116 22:42:33.583382 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000076090).
+W1116 22:42:33.584558 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200027ff50).
+W1116 22:42:33.584703 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000536650).
+[PASS] textInputPlaceholder
+Running "RNQnxTextInputMultiline"
+W1116 22:42:35.479583 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000a1050).
+W1116 22:42:35.480100 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200029c750).
+W1116 22:42:35.480149 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140004e5250).
+[PASS] textInputMultiline
+Running "RNQnxTextEllipsis"
+W1116 22:42:37.742358 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000d54d0).
+W1116 22:42:37.743170 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001bde50).
+W1116 22:42:37.743294 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140003c2450).
+[PASS] textEllipsis
+Running "RNQnxActivityIndicator"
+W1116 22:42:40.082509 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000f6a90).
+W1116 22:42:40.083415 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200027a3d0).
+W1116 22:42:40.083485 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000299050).
+[PASS] activityIndicatorMounts
+Running "RNQnxSwitch"
+W1116 22:42:42.103065 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300009c6d0).
+W1116 22:42:42.103561 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002002d0).
+W1116 22:42:42.103598 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140004d8c50).
+[PASS] switchToggles
+Running "RNQnxButton"
+W1116 22:42:44.515936 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000056c10).
+W1116 22:42:44.516659 2222700224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000205fd0).
+W1116 22:42:44.516762 2222700224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000bd450).
+[PASS] buttonMounts
+Running "RNQnxSafeAreaView"
+W1116 22:42:46.493525 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300008ad10).
+W1116 22:42:46.494014 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000101d50).
+W1116 22:42:46.494117 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000251450).
+[PASS] safeAreaViewMounts
+Running "RNQnxViewLayout"
+W1116 22:42:49.138878 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000d31d0).
+W1116 22:42:49.139631 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000282050).
+W1116 22:42:49.139729 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140004cfa50).
+[PASS] viewLayoutFires
+Running "RNQnxTransform"
+W1116 22:42:51.821180 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300009ba90).
+W1116 22:42:51.821694 2054149824 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000210dd0).
+W1116 22:42:51.821740 2054149824 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000448e50).
+[PASS] viewTransformApplies
+Running "RNQnxImage"
+W1116 22:42:59.151983 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000054e50).
+W1116 22:42:59.153170 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000204650).
+W1116 22:42:59.153275 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006e650).
+[PASS] imageLoadEvents
+Running "RNQnxImageDefault"
+W1116 22:43:04.001848 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004ce90).
+W1116 22:43:04.002770 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001870d0).
+W1116 22:43:04.002902 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400016c850).
+[PASS] imageDefaultSourceFires
+Running "RNQnxImageLoading"
+W1116 22:43:06.116533 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005ebd0).
+W1116 22:43:06.117061 2054149824 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001a2550).
+W1116 22:43:06.117110 2054149824 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140001b1e50).
+[PASS] imageLoadingIndicator
+Running "RNQnxHostStateUpdate"
+W1116 22:43:07.535291 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004de50).
+W1116 22:43:07.535667 2161071808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000268b50).
+W1116 22:43:07.535728 2161071808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000d0450).
+[PASS] metroStateUpdateCommitsThroughScheduler
+Running "RNQnxImageGetSize"
+W1116 22:43:09.088284 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000039e10).
+W1116 22:43:09.088761 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001a8e50).
+W1116 22:43:09.088811 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000271a50).
+[PASS] imageGetSize
+W1116 22:43:09.948760 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130001087d0).
+W1116 22:43:09.950801 2054149824 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200021d250).
+W1116 22:43:09.951107 2054149824 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000241050).
+[PASS] imageLoaderPromiseContract
+Running "RNQnxImageBackground"
+W1116 22:43:11.614971 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000088a10).
+W1116 22:43:11.615633 2022614720 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001af8d0).
+W1116 22:43:11.615692 2022614720 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000233450).
+[PASS] imageBackgroundMounts
+Running "RNQnxImageResolveAsset"
+W1116 22:43:13.192085 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000440d0).
+W1116 22:43:13.192464 2054149824 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002cdc50).
+W1116 22:43:13.192509 2054149824 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140001d0450).
+[PASS] imageResolveAssetSource
+Running "RNQnxNativeAnimated"
+W1116 22:43:15.147611 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000ca090).
+W1116 22:43:15.148056 2181035712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002d22d0).
+W1116 22:43:15.148135 2181035712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140002dd850).
+[PASS] nativeAnimatedOpacity
+Running "RNQnxModal"
+W1116 22:43:17.058588 2278191680 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000116290).
+W1116 22:43:17.059098 2022614720 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002308d0).
+W1116 22:43:17.059192 2022614720 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000156650).
+[PASS] modalMounts
+All 57 QtReactHost host tests passed.
+<end of output>
+Test time =  70.15 sec
+----------------------------------------------------------
+Test Passed.
+"host_listener_candidate" end time: Nov 16 22:43 EST
+"host_listener_candidate" time elapsed: 00:01:10
+----------------------------------------------------------
+
+2/5 Testing: corpus_listener_candidate_0
+2/5 Test: corpus_listener_candidate_0
+Command: "/workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate/corpus-candidate" "-platform" "offscreen" "--shard-index" "0" "--shard-count" "4"
+Directory: /workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate
+"corpus_listener_candidate_0" start time: Nov 16 22:43 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgCorpus"
+rnsvg batch 0 start
+rnsvg batch 0 mounted 901 ms
+rnsvg batch 0 grabbed 903 ms
+rnsvg batch 4 start
+rnsvg batch 4 mounted 832 ms
+rnsvg batch 4 grabbed 834 ms
+rnsvg batch 8 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:43:21.119827 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.156872 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.183921 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.215760 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.332557 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.361284 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.386065 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.409194 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.435745 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.479252 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.486603 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.615520 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.624486 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.663522 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:21.672756 1096200704 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+rnsvg batch 8 mounted 1004 ms
+rnsvg batch 8 grabbed 1005 ms
+rnsvg batch 12 start
+rnsvg batch 12 mounted 250 ms
+rnsvg batch 12 grabbed 251 ms
+W1116 22:43:22.360801 1096200704 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x56340d3552a0).
+W1116 22:43:22.363335 986810048 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x56340d370a50).
+W1116 22:43:22.363364 986810048 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x56340d2b9e20).
+rnsvg-corpus shard 0/4: 38 passed, 0 pending, 0 failed
+<end of output>
+Test time =   5.21 sec
+----------------------------------------------------------
+Test Passed.
+"corpus_listener_candidate_0" end time: Nov 16 22:43 EST
+"corpus_listener_candidate_0" time elapsed: 00:00:05
+----------------------------------------------------------
+
+3/5 Testing: corpus_listener_candidate_1
+3/5 Test: corpus_listener_candidate_1
+Command: "/workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate/corpus-candidate" "-platform" "offscreen" "--shard-index" "1" "--shard-count" "4"
+Directory: /workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate
+"corpus_listener_candidate_1" start time: Nov 16 22:43 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgCorpus"
+rnsvg batch 1 start
+rnsvg batch 1 mounted 1116 ms
+rnsvg batch 1 grabbed 1119 ms
+rnsvg batch 5 start
+rnsvg batch 5 mounted 635 ms
+rnsvg batch 5 grabbed 636 ms
+rnsvg batch 9 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:43:27.259472 1548890624 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:27.269518 1548890624 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:27.309448 1548890624 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:27.316947 1548890624 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:27.465109 1548890624 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:43:27.473170 1548890624 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+rnsvg batch 9 mounted 3404 ms
+rnsvg batch 9 grabbed 3409 ms
+rnsvg batch 13 start
+rnsvg batch 13 mounted 184804 ms
+rnsvg batch 13 grabbed 184824 ms
+W1116 22:46:46.961621 1548890624 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x55f45350f2f0).
+W1116 22:46:46.966353 1463002816 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x55f45352aaa0).
+W1116 22:46:46.966439 1463002816 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x55f45340e040).
+rnsvg-corpus shard 1/4: 37 passed, 0 pending, 0 failed
+<end of output>
+Test time = 204.75 sec
+----------------------------------------------------------
+Test Passed.
+"corpus_listener_candidate_1" end time: Nov 16 22:46 EST
+"corpus_listener_candidate_1" time elapsed: 00:03:24
+----------------------------------------------------------
+
+4/5 Testing: corpus_listener_candidate_2
+4/5 Test: corpus_listener_candidate_2
+Command: "/workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate/corpus-candidate" "-platform" "offscreen" "--shard-index" "2" "--shard-count" "4"
+Directory: /workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate
+"corpus_listener_candidate_2" start time: Nov 16 22:46 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgCorpus"
+rnsvg batch 2 start
+rnsvg batch 2 mounted 2379 ms
+rnsvg batch 2 grabbed 2388 ms
+rnsvg batch 6 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:46:52.912813 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:46:52.924244 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:46:52.935143 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:46:52.947670 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:46:52.962009 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:46:53.003189 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:46:53.382813 3994731008 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+rnsvg batch 6 mounted 1791 ms
+rnsvg batch 6 grabbed 1795 ms
+rnsvg batch 10 start
+rnsvg batch 10 mounted 909 ms
+rnsvg batch 10 grabbed 910 ms
+rnsvg batch 14 start
+rnsvg batch 14 mounted 219332 ms
+rnsvg batch 14 grabbed 219360 ms
+W1116 22:50:39.169956 3994731008 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x55a8145d64b0).
+W1116 22:50:39.176446 3910252224 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x55a8145f1c40).
+W1116 22:50:39.176554 3910252224 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x55a814497640).
+rnsvg-corpus shard 2/4: 37 passed, 0 pending, 0 failed
+<end of output>
+Test time = 232.22 sec
+----------------------------------------------------------
+Test Passed.
+"corpus_listener_candidate_2" end time: Nov 16 22:50 EST
+"corpus_listener_candidate_2" time elapsed: 00:03:52
+----------------------------------------------------------
+
+5/5 Testing: corpus_listener_candidate_3
+5/5 Test: corpus_listener_candidate_3
+Command: "/workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate/corpus-candidate" "-platform" "offscreen" "--shard-index" "3" "--shard-count" "4"
+Directory: /workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate
+"corpus_listener_candidate_3" start time: Nov 16 22:50 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgCorpus"
+rnsvg batch 3 start
+rnsvg batch 3 mounted 1654 ms
+rnsvg batch 3 grabbed 1659 ms
+rnsvg batch 7 start
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 22:50:43.493245 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:43.523910 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:43.653082 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:43.682482 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:43.711488 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:43.732666 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:43.772375 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:43.775067 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:43.777406 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:43.804281 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:43.825591 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:43.957638 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:44.030103 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:44.060699 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:44.093336 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+rnsvg batch 7 mounted 895 ms
+rnsvg batch 7 grabbed 896 ms
+rnsvg batch 11 start
+E1116 22:50:44.657284 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:44.875940 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:45.003975 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:45.225556 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:45.450315 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+E1116 22:50:45.696436 4001731072 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+rnsvg batch 11 mounted 1462 ms
+rnsvg batch 11 grabbed 1463 ms
+rnsvg batch 15 start
+rnsvg batch 15 mounted 29 ms
+rnsvg batch 15 grabbed 29 ms
+W1116 22:50:45.876822 4001731072 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x55ea7deeb520).
+W1116 22:50:45.879711 3914446528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x55ea7df06d60).
+W1116 22:50:45.879751 3914446528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x55ea7de2d310).
+rnsvg-corpus shard 3/4: 37 passed, 0 pending, 0 failed
+<end of output>
+Test time =   6.59 sec
+----------------------------------------------------------
+Test Passed.
+"corpus_listener_candidate_3" end time: Nov 16 22:50 EST
+"corpus_listener_candidate_3" time elapsed: 00:00:06
+----------------------------------------------------------
+
+End testing: Nov 16 22:50 EST
