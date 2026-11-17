@@ -1,0 +1,5 @@
+[0/2] Re-checking globbed directories...
+[1/6] Automatic MOC for target rnqnx_qt_rnsvg_image_http_test
+[2/5] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_image_http_test.dir/workspace/scratch/252a22fac759/rnqnx-fetcher159/vnext/src/fabric/QtRnsvgImageProvider.cpp.o
+[3/5] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_image_http_test.dir/RnsvgImageHttpTest.cpp.o
+[4/5] Linking CXX executable rnqnx_qt_rnsvg_image_http_test

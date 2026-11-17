@@ -1,0 +1,81 @@
+********* Start testing of RnsvgImageHttpTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgImageHttpTest::initTestCase()
+FAIL!  : RnsvgImageHttpTest::aSynchronousFailureMayDestroyTheProviderBeforeLoadReturns() '!handle' returned FALSE. ()
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-fetcher159/tests/native/qt-rnsvg-image-http/RnsvgImageHttpTest.cpp(461)]
+=================================================================
+==28==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000001434 at pc 0x55a5e214594b bp 0x7fff0e2badb0 sp 0x7fff0e2bada8
+READ of size 4 at 0x502000001434 thread T0
+==28==WARNING: invalid path to external symbolizer!
+==28==WARNING: Failed to use and restart external symbolizer!
+    #0 0x55a5e214594a  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x3f394a) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #1 0x55a5e2145840  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x3f3840) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #2 0x55a5e218f722  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x43d722) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #3 0x55a5e2250c50  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x4fec50) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #4 0x55a5e22479d4  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x4f59d4) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #5 0x55a5e2259dab  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x507dab) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #6 0x55a5e225a0b4  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x5080b4) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #7 0x55a5e219786a  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x44586a) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #8 0x55a5e21924fa  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x4404fa) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #9 0x55a5e214223b  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x3f023b) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #10 0x55a5e210cfc8  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x3bafc8) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #11 0x7fc2be70a839  (/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Core.so.6+0x1a1839) (BuildId: aec36f0b2ce8b42428a041c92d510b897349d4c8)
+    #12 0x7fc2be70ba8f  (/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Core.so.6+0x1a2a8f) (BuildId: aec36f0b2ce8b42428a041c92d510b897349d4c8)
+    #13 0x7fc2c095cf51  (/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Test.so.6+0x2df51) (BuildId: d941c238dcd78ea9f7b4b207d0baaf6c5e9fb453)
+    #14 0x7fc2c0964b1b  (/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Test.so.6+0x35b1b) (BuildId: d941c238dcd78ea9f7b4b207d0baaf6c5e9fb453)
+    #15 0x7fc2c0965930  (/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Test.so.6+0x36930) (BuildId: d941c238dcd78ea9f7b4b207d0baaf6c5e9fb453)
+    #16 0x7fc2c0966017  (/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Test.so.6+0x37017) (BuildId: d941c238dcd78ea9f7b4b207d0baaf6c5e9fb453)
+    #17 0x7fc2c0966df9  (/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Test.so.6+0x37df9) (BuildId: d941c238dcd78ea9f7b4b207d0baaf6c5e9fb453)
+    #18 0x7fc2c096700f  (/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Test.so.6+0x3800f) (BuildId: d941c238dcd78ea9f7b4b207d0baaf6c5e9fb453)
+    #19 0x55a5e210bf03  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x3b9f03) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #20 0x7fc2bdfe4ca7  (/lib/x86_64-linux-gnu/libc.so.6+0x29ca7) (BuildId: 5e5b51f4c39af9ac589408c1dc432ba390a273cc)
+    #21 0x7fc2bdfe4d64  (/lib/x86_64-linux-gnu/libc.so.6+0x29d64) (BuildId: 5e5b51f4c39af9ac589408c1dc432ba390a273cc)
+    #22 0x55a5e2028310  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x2d6310) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+
+0x502000001434 is located 4 bytes inside of 16-byte region [0x502000001430,0x502000001440)
+freed by thread T0 here:
+    #0 0x55a5e21098c1  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x3b78c1) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #1 0x55a5e2249355  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x4f7355) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #2 0x55a5e22444cc  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x4f24cc) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #3 0x55a5e214200f  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x3f000f) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #4 0x55a5e210cfc8  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x3bafc8) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #5 0x7fc2be70a839  (/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Core.so.6+0x1a1839) (BuildId: aec36f0b2ce8b42428a041c92d510b897349d4c8)
+    #6 0x7fc2be70ba8f  (/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Core.so.6+0x1a2a8f) (BuildId: aec36f0b2ce8b42428a041c92d510b897349d4c8)
+
+previously allocated by thread T0 here:
+    #0 0x55a5e21098c1  (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x3b78c1) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+    #1 0x7fc2be86b54d  (/workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/libQt6Core.so.6+0x30254d) (BuildId: aec36f0b2ce8b42428a041c92d510b897349d4c8)
+
+SUMMARY: AddressSanitizer: heap-use-after-free (/workspace/scratch/252a22fac759/rnqnx-fetcher159/build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test+0x3f394a) (BuildId: 1dd776160e757ff49768dd1b7725ec3050bb7e55)
+Shadow bytes around the buggy address:
+  0x502000001180: fa fa fd fd fa fa fd fd fa fa fd fd fa fa fd fd
+  0x502000001200: fa fa fd fa fa fa fd fa fa fa fd fa fa fa fd fd
+  0x502000001280: fa fa fd fd fa fa fd fd fa fa fd fd fa fa 00 00
+  0x502000001300: fa fa 00 00 fa fa 00 00 fa fa 00 00 fa fa 00 00
+  0x502000001380: fa fa 00 00 fa fa fd fa fa fa fd fa fa fa 00 00
+=>0x502000001400: fa fa fd fd fa fa[fd]fd fa fa 00 00 fa fa fa fa
+  0x502000001480: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000001500: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000001580: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000001600: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x502000001680: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==28==ABORTING

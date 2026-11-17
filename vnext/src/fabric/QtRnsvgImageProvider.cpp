@@ -84,18 +84,22 @@ std::unique_ptr<ImageRequest> QtRnsvgImageProvider::load(const QString& uri, Com
   // element asking for the same URI joins it instead of starting another.
   const auto [entry, startsFetch] = fetches_.try_emplace(uri);
   entry->second.push_back(waiter);
+  const QPointer<QtRnsvgImageProvider> self(this);
   if (startsFetch) {
     // QtImageCache never calls back after it is destroyed. The guard covers the
     // other order, a provider deleted while the cache lives on.
-    QPointer<QtRnsvgImageProvider> self(this);
-    cache_.load(uri, {}, [self, uri](QSize, QString error) {
-      if (self) self->finish(uri, error);
+    cache_.loadImage(uri, {}, [self, uri](QImage image, QSize, QString error) {
+      if (self) self->finish(uri, std::move(image), error);
     });
   }
-  return std::make_unique<Handle>(this, uri, std::move(waiter));
+  // URL validation can complete synchronously, and that completion can delete
+  // the provider before loadImage returns. Never construct a guard from a dead
+  // QObject when returning the request handle.
+  if (!self) return nullptr;
+  return std::make_unique<Handle>(self.data(), uri, std::move(waiter));
 }
 
-void QtRnsvgImageProvider::finish(const QString& uri, const QString& error) {
+void QtRnsvgImageProvider::finish(const QString& uri, QImage image, const QString& error) {
   const auto found = fetches_.find(uri);
   if (found == fetches_.end()) return;
   // Take the list out first: a completion may start or cancel other loads.
@@ -104,19 +108,20 @@ void QtRnsvgImageProvider::finish(const QString& uri, const QString& error) {
 
   ImageLoadResult result = ImageLoadFailure{error};
   if (error.isEmpty()) {
-    QImage image = views::DecodedImageCache::shared().image(views::DecodedImageCache::key(uri));
-    // QtImageCache keeps a response out of the cache when it is marked
-    // private or no-store, or when it is larger than the cache budget, and
-    // reports only the size to its caller. There is then no image to hand over.
+    // Retention is optional: private/no-store responses, budget misses and
+    // concurrent clears still deliver the decoded pixels to active elements.
     result = image.isNull()
         ? ImageLoadResult{ImageLoadFailure{QStringLiteral(
-              "The image loaded but the decoded-image cache did not keep it "
-              "(a no-store or private response, or larger than the cache budget)")}}
+              "The image decoder returned no pixels")}}
         : ImageLoadResult{std::move(image)};
   } else {
     result = failureFor(uri, error);
   }
+  const QPointer<QtRnsvgImageProvider> alive(this);
   for (const auto& waiter : waiters) {
+    // A completion may destroy the provider. Other waiters then have the
+    // same suppressed-completion guarantee as destruction during the fetch.
+    if (!alive) break;
     if (waiter->cancelled) continue;
     waiter->cancelled = true;  // delivered: a late cancel from a handle is a no-op
     Completion completion = std::move(waiter->completion);

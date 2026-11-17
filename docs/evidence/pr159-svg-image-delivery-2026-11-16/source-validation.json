@@ -1,0 +1,100 @@
+{
+  "recordedAtUtc": "2026-11-17T03:10:51.984603+00:00",
+  "publicProviderComparisonBase": "e032a5b2c946c0de4b899daebed73bafed94108d",
+  "localFetcherCommit": "26dcae8e9873f70aa93f7fbc1d7e865aa38e1ebd",
+  "sources": [
+    {
+      "path": "vnext/src/fabric/QtRnsvgImageProvider.cpp",
+      "baseGitBlob": "b2ba65dbeeb4428fd6daac6ffa9cdeda6b251a42",
+      "baseSha256": "29be1fbf952823bac2d79f8489276d285001639691e88d577e62064d22e2d37d",
+      "candidateGitBlob": "88401d27c7e5123b3942abdc3780deb4c115c46c",
+      "candidateSha256": "f9b1a9482289e99c0b7b9cae061ee88259b9ee315878abb1cce658c8f169bfc9"
+    },
+    {
+      "path": "vnext/include/react-native-qnx/fabric/QtRnsvgImageProvider.h",
+      "baseGitBlob": "fb0fee6e1f0f3f11b002573125ca007503fdb948",
+      "baseSha256": "626c9cb952a16769fe37150b96c182fccd72216f6a082d5c12fd8b5b28fa39f3",
+      "candidateGitBlob": "a0c5c94543f3f3d10d5016f68d01087f43def77c",
+      "candidateSha256": "7234d25a96d0f7415697dadff0c68a4bb734cb26989fc999f725ac04930596b1"
+    },
+    {
+      "path": "tests/native/qt-rnsvg-image-http/RnsvgImageHttpTest.cpp",
+      "baseGitBlob": "be62ae283b10a37df036c627a988801d968338a8",
+      "baseSha256": "b58b808985177a120aadb572b6002754d166d6bc34828b45676b28e9265ccfeb",
+      "candidateGitBlob": "a3691e2428cb8e5a0d9f2bbad7e587f654274c54",
+      "candidateSha256": "3fa81cd74c103a9421be1be0e48f03277e5da7ed5ad1d3bc22e8211565d74573"
+    }
+  ],
+  "initialCacheSnapshot": {
+    "vnext/include/react-native-qnx/runtime/QtImageCache.h": "09f4bab98793d89343fb1d8b918561495303dbc923948c263db1c3abed51f9d4",
+    "vnext/src/runtime/QtImageCache.cpp": "d0fd2040dfcc8c5a57f6c2042da41737738836b7b362121d887e014409895c1a",
+    "vnext/include/react-native-qnx/views/DecodedImageCache.h": "ac4e000f5e9d83d9ad0150088587ebad53ecde34ec5c3ddffeb0ba317316d8e7",
+    "vnext/include/react-native-qnx/views/image/ImageTaskQueue.h": "0f0a21bf9e3444677b66c91995f5e087179e8ffc4e61367d1809967f5ac0d329"
+  },
+  "finalCacheSnapshot": {
+    "vnext/include/react-native-qnx/runtime/QtImageCache.h": "09f4bab98793d89343fb1d8b918561495303dbc923948c263db1c3abed51f9d4",
+    "vnext/src/runtime/QtImageCache.cpp": "d0fd2040dfcc8c5a57f6c2042da41737738836b7b362121d887e014409895c1a",
+    "vnext/include/react-native-qnx/views/DecodedImageCache.h": "ac4e000f5e9d83d9ad0150088587ebad53ecde34ec5c3ddffeb0ba317316d8e7",
+    "vnext/include/react-native-qnx/views/image/ImageTaskQueue.h": "5bb0813547863d7a06edf0a0dbc3efb717992df390217b76af1d810d7e77d331"
+  },
+  "dependencyNote": "Cache API/epoch/worker source belongs to the independently reviewed Expo image slice. Initial original-provider comparison used the same initial cache snapshot. The final guard-only control and restored final suite use identical final dependencies. The guard-only control returns through synchronous URL validation before any worker is admitted.",
+  "originalProviderControl": {
+    "replacedProductionFiles": [
+      "vnext/src/fabric/QtRnsvgImageProvider.cpp",
+      "vnext/include/react-native-qnx/fabric/QtRnsvgImageProvider.h"
+    ],
+    "productionSourceCommit": "e032a5b2c946c0de4b899daebed73bafed94108d",
+    "failedBehaviorCases": 5,
+    "exitCode": 5,
+    "sameInitialFiveBehaviorImplementationsInFinalTest": true,
+    "finalTestAddsSynchronousLifetimeCase": true
+  },
+  "guardOnlyControl": {
+    "control": "Revert only the synchronous-return lifetime guard in final provider source; all other final production and test inputs are unchanged.",
+    "candidateProviderSha256": "f9b1a9482289e99c0b7b9cae061ee88259b9ee315878abb1cce658c8f169bfc9",
+    "controlProviderSha256": "0d489b59df1dd8e630e313b7bea2f16728154879cb1ef308ff1e7745a356f0ce",
+    "testSha256": "3fa81cd74c103a9421be1be0e48f03277e5da7ed5ad1d3bc22e8211565d74573",
+    "exitCode": 1
+  },
+  "results": {
+    "focusedBehaviorCasesPassed": 6,
+    "focusedQtTestEntriesPassed": 8,
+    "focusedFailures": 0,
+    "focusedSkips": 0,
+    "focusedMilliseconds": 481,
+    "suiteExit": 0,
+    "suiteCTestsPassed": 1,
+    "suiteQtTestEntriesPassed": 21,
+    "suiteFailures": 0,
+    "suiteSkips": 0,
+    "suiteSeconds": 1.65
+  },
+  "environment": {
+    "os": "Debian13 x86_64",
+    "qt": "6.11.1 prebuilt, uninstrumented",
+    "clang": "19.1.7",
+    "cmake": "3.31.10",
+    "display": "offscreen/software",
+    "sanitizers": ["address", "undefined"],
+    "leakDetection": false,
+    "externalSymbolizer": "unavailable; raw negative diagnostics preserved"
+  },
+  "commands": {
+    "configure": "cmake -S tests/native/qt-rnsvg-image-http -B build/svg-rich-image-asan -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++ -DRNQNX_QT_RNSVG_SANITIZERS=ON",
+    "build": "cmake --build build/svg-rich-image-asan --parallel 1",
+    "focused": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test privateAndNoStoreResponsesDeliverPixelsWithoutCaching anImageLargerThanTheCacheBudgetStillDeliversPixels clearingMemoryDuringLoadStillDeliversPixels deletingTheProviderFromCompletionStopsOtherWaiters aSynchronousFailureMayDestroyTheProviderBeforeLoadReturns",
+    "guardControl": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 build/svg-rich-image-asan/rnqnx_qt_rnsvg_image_http_test aSynchronousFailureMayDestroyTheProviderBeforeLoadReturns",
+    "suite": "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 ctest --test-dir build/svg-rich-image-asan --output-on-failure"
+  },
+  "binarySha256": "80ba2280f4da39d551ac917867c93ce8a7944fa3571f2332d7010fcaa878e3d5",
+  "lockfileSha256": "edf0327a216c8963c0ffea2300c37f0b7e29d05510e7f3fb5a3a2a4ad9feea49",
+  "independentReview": {
+    "reviewer": "separate Expo image workstream agent",
+    "initialFinding": "synchronous completion can destroy provider before Handle construction",
+    "findingReproducedAndResolved": true,
+    "finalOutcome": "no remaining blocker"
+  },
+  "qnxCrossBuild": "not run",
+  "physicalDevice": "not run",
+  "marathonShell": "not run"
+}

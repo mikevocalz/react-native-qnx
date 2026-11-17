@@ -1,0 +1,7 @@
+{
+  "control": "Revert only the synchronous-return lifetime guard in final provider source; all other final production and test inputs are unchanged.",
+  "candidateProviderSha256": "f9b1a9482289e99c0b7b9cae061ee88259b9ee315878abb1cce658c8f169bfc9",
+  "controlProviderSha256": "0d489b59df1dd8e630e313b7bea2f16728154879cb1ef308ff1e7745a356f0ce",
+  "testSha256": "3fa81cd74c103a9421be1be0e48f03277e5da7ed5ad1d3bc22e8211565d74573",
+  "exitCode": 1
+}

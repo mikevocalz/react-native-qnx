@@ -6,9 +6,10 @@
 // loader behind Image.getSize and Image.prefetch, so a bundled asset resolved
 // by Image.resolveAssetSource (a file:// URI beside the bundle, or the dev
 // server's /assets/ URL) takes the same route as the regular Image component.
-// Decoded pixels come out of the shared DecodedImageCache, so a prefetched
-// image is reused and one URI is fetched and decoded once. `data:` URIs are
-// decoded in place, because QtImageCache accepts only base64 ones.
+// Prefetched images are reused from DecodedImageCache. In-flight requests for
+// one URI share a decode, which delivers pixels independently of cache
+// retention. `data:` URIs are decoded in place, because QtImageCache accepts
+// only base64 ones.
 
 #include "react-native-qnx/runtime/QtImageCache.h"
 
@@ -42,7 +43,7 @@ class QtRnsvgImageProvider final : public QObject, public views::rnsvg::ImagePro
  private:
   struct Waiter;
   class Handle;
-  void finish(const QString& uri, const QString& error);
+  void finish(const QString& uri, QImage image, const QString& error);
   void forget(const QString& uri, const std::shared_ptr<Waiter>& waiter);
 
   runtime::QtImageCache& cache_;

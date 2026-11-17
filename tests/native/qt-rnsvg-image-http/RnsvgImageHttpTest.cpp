@@ -20,6 +20,7 @@
 #include <QPainter>
 #include <QPointer>
 #include <QQuickItem>
+#include <QScopeGuard>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QTemporaryDir>
@@ -121,6 +122,12 @@ class Server final : public QTcpServer {
           "image/gif");
     } else if (route == QStringLiteral("/small.png")) {
       respond(socket, "200 OK", png3x3, "image/png");
+    } else if (route == QStringLiteral("/no-store.png")) {
+      respond(socket, "200 OK", png7x5, "image/png", "Cache-Control: no-store\r\n");
+    } else if (route == QStringLiteral("/private.png")) {
+      respond(socket, "200 OK", png7x5, "image/png", "Cache-Control: private\r\n");
+    } else if (route == QStringLiteral("/large.png")) {
+      respond(socket, "200 OK", encode(splitImage(64, 48)), "image/png");
     } else {  // /ok.png and the dev-server style /assets/... paths
       respond(socket, "200 OK", png7x5, "image/png");
     }
@@ -213,6 +220,73 @@ class RnsvgImageHttpTest final : public QObject {
     QCOMPARE(element.state(), ImageState::Loaded);
     QCOMPARE(element.imageSize(), QSize(3, 3));
     QCOMPARE(server_->requests(QStringLiteral("/small.png?prefetched")), 1);
+  }
+
+  void privateAndNoStoreResponsesDeliverPixelsWithoutCaching_data() {
+    QTest::addColumn<QString>("route");
+    QTest::newRow("private") << QStringLiteral("/private.png");
+    QTest::newRow("no-store") << QStringLiteral("/no-store.png");
+  }
+
+  void privateAndNoStoreResponsesDeliverPixelsWithoutCaching() {
+    QFETCH(QString, route);
+    auto& provider = QtRnsvgImageProvider::shared();
+    const QString uri = server_->url(route);
+    Element first(provider), second(provider);
+    first.commit(uri);
+    second.commit(uri);
+    QTRY_VERIFY_WITH_TIMEOUT(first.state() != ImageState::Loading && second.state() != ImageState::Loading, kWaitMs);
+    QCOMPARE(first.state(), ImageState::Loaded);
+    QCOMPARE(second.state(), ImageState::Loaded);
+    QCOMPARE(first.item->props().image.pixelColor(0, 0), QColor(Qt::red));
+    QCOMPARE(second.item->props().image.pixelColor(6, 4), QColor(Qt::blue));
+    QCOMPARE(first.loadedEvents, 1);
+    QCOMPARE(second.loadedEvents, 1);
+    QCOMPARE(server_->requests(route), 1);
+    QVERIFY(!DecodedImageCache::shared().contains(uri));
+    Element later(provider);
+    later.commit(uri);
+    QTRY_VERIFY_WITH_TIMEOUT(later.state() != ImageState::Loading, kWaitMs);
+    QCOMPARE(later.state(), ImageState::Loaded);
+    QCOMPARE(server_->requests(route), 2);
+    QVERIFY(!DecodedImageCache::shared().contains(uri));
+  }
+
+  void anImageLargerThanTheCacheBudgetStillDeliversPixels() {
+    auto& memory = DecodedImageCache::shared();
+    const int budget = memory.maxCostKiB();
+    const auto restore = qScopeGuard([&] { memory.clear(); memory.configure(budget, 0); });
+    memory.clear();
+    memory.configure(1, 0);
+    const QString route = QStringLiteral("/large.png");
+    const QString uri = server_->url(route);
+    Element element(QtRnsvgImageProvider::shared());
+    element.commit(uri);
+    QTRY_VERIFY_WITH_TIMEOUT(element.state() != ImageState::Loading, kWaitMs);
+    QCOMPARE(element.state(), ImageState::Loaded);
+    QCOMPARE(element.imageSize(), QSize(64, 48));
+    QCOMPARE(element.item->props().image.pixelColor(1, 1), QColor(Qt::red));
+    QCOMPARE(element.item->props().image.pixelColor(63, 47), QColor(Qt::blue));
+    QCOMPARE(element.loadedEvents, 1);
+    QVERIFY(!memory.contains(uri));
+  }
+
+  void clearingMemoryDuringLoadStillDeliversPixels() {
+    QtImageCache cache;
+    QtRnsvgImageProvider provider(cache);
+    const QString route = QStringLiteral("/gate-memory-clear");
+    const QString uri = server_->url(route);
+    Element element(provider);
+    element.commit(uri);
+    QTRY_VERIFY_WITH_TIMEOUT(server_->gateWaiting(route), kWaitMs);
+    cache.clearMemory();
+    server_->release(route);
+    QTRY_VERIFY_WITH_TIMEOUT(element.state() != ImageState::Loading, kWaitMs);
+    QCOMPARE(element.state(), ImageState::Loaded);
+    QCOMPARE(element.imageSize(), QSize(7, 5));
+    QCOMPARE(element.item->props().image.pixelColor(6, 4), QColor(Qt::blue));
+    QCOMPARE(element.loadedEvents, 1);
+    QVERIFY(!DecodedImageCache::shared().contains(uri));
   }
 
   void aBundledAssetFromTheDevServerLoadsLikeAnyOtherUrl() {
@@ -351,6 +425,40 @@ class RnsvgImageHttpTest final : public QObject {
     server_->release(QStringLiteral("/gate-orphan"));
     QCoreApplication::processEvents();
     QVERIFY(!called);
+  }
+
+  void deletingTheProviderFromCompletionStopsOtherWaiters() {
+    QtImageCache cache;
+    auto provider = std::make_unique<QtRnsvgImageProvider>(cache);
+    const QString route = QStringLiteral("/gate-provider-callback");
+    const QString uri = server_->url(route);
+    bool firstCalled = false;
+    bool secondCalled = false;
+    auto first = provider->load(uri, [&](ImageLoadResult) {
+      firstCalled = true;
+      provider.reset();
+    });
+    auto second = provider->load(uri, [&](ImageLoadResult) { secondCalled = true; });
+    QTRY_VERIFY_WITH_TIMEOUT(server_->gateWaiting(route), kWaitMs);
+    QCOMPARE(server_->requests(route), 1);
+    server_->release(route);
+    QTRY_VERIFY_WITH_TIMEOUT(firstCalled, kWaitMs);
+    QVERIFY2(!secondCalled, "An image waiter ran after its provider was destroyed by another completion");
+  }
+
+  void aSynchronousFailureMayDestroyTheProviderBeforeLoadReturns() {
+    QtImageCache cache;
+    auto provider = std::make_unique<QtRnsvgImageProvider>(cache);
+    bool called = false;
+    auto handle = provider->load(QStringLiteral("http://user:password@127.0.0.1/invalid.png"),
+        [&](ImageLoadResult result) {
+      QVERIFY(std::holds_alternative<ImageLoadFailure>(result));
+      called = true;
+      provider.reset();
+    });
+    QVERIFY(called);
+    QVERIFY(!provider);
+    QVERIFY(!handle);
   }
 
   void dataUrisAreDecodedWithoutTheNetworkIncludingPercentEncodedSvg() {
