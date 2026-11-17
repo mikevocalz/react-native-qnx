@@ -10,6 +10,16 @@ include(${CMAKE_CURRENT_LIST_DIR}/RnqnxWorklets.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxReanimated.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/RnqnxGestureHandler.cmake)
 
+# Runtime bootstrap in the playground is selected by the public definitions on
+# these libraries. Link the selected extensions into each runnable application.
+function(rnqnx_link_runtime_extensions target)
+  foreach(extension IN ITEMS rnqnx_worklets rnqnx_reanimated rnqnx_gesture_handler)
+    if(TARGET ${extension})
+      target_link_libraries(${target} PRIVATE ${extension})
+    endif()
+  endforeach()
+endfunction()
+
 # Add the opt-in consumer only after the existing runtime and optional native
 # adapters have been declared. The OFF path leaves all original targets alone.
 option(RNQNX_BUILD_CONSUMER_APP "Build an external configured consumer application" OFF)

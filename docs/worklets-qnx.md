@@ -29,6 +29,23 @@ The switch defaults to OFF and the CMake step rejects any version outside
 0.13.x. `babel-preset-expo` adds the `react-native-worklets/plugin` Babel plugin
 by itself when the package is installed, so an app needs no Babel change.
 
+## Linked Linux host validation, November 17
+
+The opt-in host fixture now links Worklets, Reanimated and Gesture Handler into
+the real Qt/Hermes/Fabric application and imports their installed JavaScript
+packages through Metro. It passes a three-frame UI-worklet roundtrip, exact
+rendered timing and pan movement, repeated host creation, unmount, and destruction
+with a confirmed pending library frame callback. A second test rejects a real
+bundle without the Worklets native bootstrap and checks that an unrelated error
+cannot satisfy that negative control.
+
+The host and QNX playground targets also link enabled runtime extensions so
+their existing bootstrap code is compiled. All three feature defaults remain
+OFF. The [Linux receipt](evidence/pr149-linked-host-2026-11-17/README.md) records
+the commands, images, sanitizer scope and independent review. This is Qt 6.11.1
+software-rendering evidence on Linux; it does not qualify the QNX binary,
+physical-device lifecycle, presentation timing or busy-JS behavior.
+
 ## Threads
 
 | Thread                        | Runs                                                                                          |

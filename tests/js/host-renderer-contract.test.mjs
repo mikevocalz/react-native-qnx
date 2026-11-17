@@ -181,6 +181,39 @@ if (process.platform === 'linux') {
       assert.notEqual(unexpected.status, 0);
       assert.match(unexpected.stderr, /Disabled Qt feature registered a test:/);
     }
+    // The ON lane must execute the linked real-package test and its missing
+    // bootstrap negative control; archive compilation alone is insufficient.
+    const workletsTests = [
+      'rnqnx_worklets_integration_host_test',
+      'rnqnx_worklets_rejects_missing_bootstrap',
+    ];
+    for (let mask = 0; mask < 8; mask += 1) {
+      const switches = ['WORKLETS', 'REANIMATED', 'GESTURE_HANDLER'].map(
+        (feature, index) => `RNQNX_ENABLE_${feature}:BOOL=${mask & (1 << index) ? 'ON' : 'OFF'}\n`
+      );
+      writeFileSync(cache, bothOff + switches.join(''));
+      const complete = [...names, ...workletsTests];
+      /** @param {string[]} tests */
+      const inventory = (tests) => JSON.stringify({ tests: tests.map((name) => ({ name })) });
+      const accepted = invoke({ FAKE_INVENTORY: inventory(mask === 7 ? complete : names) });
+      assert.equal(accepted.status, 0, accepted.stderr);
+      if (mask === 7) {
+        for (const missing of workletsTests) {
+          const rejected = invoke({
+            FAKE_INVENTORY: inventory(complete.filter((name) => name !== missing)),
+          });
+          assert.notEqual(rejected.status, 0);
+          assert.match(
+            rejected.stderr,
+            new RegExp(`Required host-renderer test missing: ${missing}`)
+          );
+        }
+      } else {
+        const rejected = invoke({ FAKE_INVENTORY: inventory(complete) });
+        assert.notEqual(rejected.status, 0);
+        assert.match(rejected.stderr, /Disabled runtime feature registered a test:/);
+      }
+    }
     writeFileSync(cache, bothOff);
     assert.notEqual(invoke({ FAKE_BUILD_STATUS: '7' }).status, 0);
     const testFailure = invoke({ FAKE_TEST_STATUS: '8' });

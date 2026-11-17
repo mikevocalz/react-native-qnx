@@ -23,6 +23,23 @@ headers need is generated into the build directory by
 `scripts/fabric-codegen.mjs`, using the repository's pinned React Native
 codegen (0.88.1).
 
+## Linked Linux host validation, November 17
+
+The real-package host fixture passes `withTiming` moving a mounted Fabric view
+by 60 pixels and a Gesture Handler pan moving another by 40 pixels through Qt
+pointer input and its UI-worklet callback. The checks require both exact scene
+origins and the expected painted pixels. Two fresh hosts repeat the complete
+flow, including unmount; a third is destroyed with a confirmed pending library
+frame callback. Worklets native-bootstrap failure has a separate negative
+control.
+
+See the [Linux receipt](evidence/pr149-linked-host-2026-11-17/README.md) for the
+linked build, images, tests and limits. This closes a host application-linkage
+gap and exercises the implemented timing/pan path. It does not qualify the
+remaining recognizers, layout/scroll behavior, busy-JS rendering or the current
+branch on physical QNX. The device receipts below remain dated observations of
+their recorded candidates.
+
 ## Reanimated
 
 `QnxReanimatedModule` is the `ReanimatedModule` TurboModule. Its

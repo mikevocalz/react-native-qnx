@@ -253,6 +253,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
       rnqnx_add_runtime_baseline_supervisor()
       add_executable(rnqnx_playground_qnx vnext/probes/playground/main.cpp)
       target_link_libraries(rnqnx_playground_qnx PRIVATE rnqnx_react_host)
+      rnqnx_link_runtime_extensions(rnqnx_playground_qnx)
       if(RNQNX_BUILD_NITRO_QNX)
         target_link_libraries(rnqnx_playground_qnx PRIVATE rnqnx_nitro_qnx)
         target_compile_definitions(rnqnx_playground_qnx PRIVATE
@@ -409,6 +410,7 @@ else()
           rnqnx_add_runtime_baseline_supervisor()
           add_executable(rnqnx_playground_host vnext/probes/playground/main.cpp)
           target_link_libraries(rnqnx_playground_host PRIVATE rnqnx_react_host)
+          rnqnx_link_runtime_extensions(rnqnx_playground_host)
           rnqnx_enable_strict_warnings(rnqnx_playground_host)
           add_dependencies(rnqnx_playground_host rnqnx_playground_bundle)
           target_compile_definitions(rnqnx_playground_host PRIVATE
@@ -467,6 +469,8 @@ else()
 
           include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxExpoImageHostTests.cmake)
           rnqnx_add_expo_image_host_tests()
+          include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxWorkletsHostTests.cmake)
+          rnqnx_add_worklets_host_tests()
         endif()
 
         add_executable(rnqnx_rn_headers_probe

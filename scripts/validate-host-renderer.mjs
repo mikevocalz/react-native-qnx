@@ -62,6 +62,14 @@ if (/^RNQNX_ENABLE_ACCESSIBILITY_BRIDGE:BOOL=ON$/m.test(cache)) {
   );
 }
 const disabledQtTests = [];
+const workletsTests = [
+  'rnqnx_worklets_integration_host_test',
+  'rnqnx_worklets_rejects_missing_bootstrap',
+];
+const workletsEnabled = ['WORKLETS', 'REANIMATED', 'GESTURE_HANDLER'].every((feature) =>
+  new RegExp(`^RNQNX_ENABLE_${feature}:BOOL=ON$`, 'm').test(cache)
+);
+if (workletsEnabled) expectedTests.push(...workletsTests);
 for (const [feature, tests] of [
   ['SVG', ['rnqnx_qt_svg_test', 'rnqnx_qt_svg_fabric_test']],
   [
@@ -114,6 +122,12 @@ for (const name of expectedTests) {
 }
 for (const name of disabledQtTests) {
   if (registered.has(name)) throw new Error(`Disabled Qt feature registered a test: ${name}`);
+}
+if (!workletsEnabled) {
+  for (const name of workletsTests) {
+    if (registered.has(name))
+      throw new Error(`Disabled runtime feature registered a test: ${name}`);
+  }
 }
 mkdirSync(path.join(build, 'evidence'), { recursive: true });
 writeFileSync(path.join(build, 'evidence', 'ctest-inventory.json'), inventory);
