@@ -129,7 +129,8 @@ RNSVGCircleProps::RNSVGCircleProps(
     filter(convertRawProp(context, rawProps, "filter", sourceProps.filter, {})),
     cx(convertRawProp(context, rawProps, "cx", sourceProps.cx, {})),
     cy(convertRawProp(context, rawProps, "cy", sourceProps.cy, {})),
-    r(convertRawProp(context, rawProps, "r", sourceProps.r, {})) {}
+    r(convertRawProp(context, rawProps, "r", sourceProps.r, {})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGCircleProps::getDiffPropsImplementationTarget() const {
@@ -266,6 +267,10 @@ folly::dynamic RNSVGCircleProps::getDiffProps(
   if (r != oldProps->r) {
     result["r"] = r;
   }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
+  }
   return result;
 }
 #endif
@@ -303,7 +308,8 @@ RNSVGClipPathProps::RNSVGClipPathProps(
     filter(convertRawProp(context, rawProps, "filter", sourceProps.filter, {})),
     fontSize(convertRawProp(context, rawProps, "fontSize", sourceProps.fontSize, {})),
     fontWeight(convertRawProp(context, rawProps, "fontWeight", sourceProps.fontWeight, {})),
-    font(convertRawProp(context, rawProps, "font", sourceProps.font, {})) {}
+    font(convertRawProp(context, rawProps, "font", sourceProps.font, {})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGClipPathProps::getDiffPropsImplementationTarget() const {
@@ -440,6 +446,10 @@ folly::dynamic RNSVGClipPathProps::getDiffProps(
   if (font != oldProps->font) {
     result["font"] = font;
   }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
+  }
   return result;
 }
 #endif
@@ -562,7 +572,8 @@ RNSVGEllipseProps::RNSVGEllipseProps(
     cx(convertRawProp(context, rawProps, "cx", sourceProps.cx, {})),
     cy(convertRawProp(context, rawProps, "cy", sourceProps.cy, {})),
     rx(convertRawProp(context, rawProps, "rx", sourceProps.rx, {})),
-    ry(convertRawProp(context, rawProps, "ry", sourceProps.ry, {})) {}
+    ry(convertRawProp(context, rawProps, "ry", sourceProps.ry, {})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGEllipseProps::getDiffPropsImplementationTarget() const {
@@ -702,6 +713,10 @@ folly::dynamic RNSVGEllipseProps::getDiffProps(
 
   if (ry != oldProps->ry) {
     result["ry"] = ry;
+  }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
   }
   return result;
 }
@@ -1296,7 +1311,8 @@ RNSVGForeignObjectProps::RNSVGForeignObjectProps(
     x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
     y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
-    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})) {}
+    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGForeignObjectProps::getDiffPropsImplementationTarget() const {
@@ -1449,6 +1465,10 @@ folly::dynamic RNSVGForeignObjectProps::getDiffProps(
   if (width != oldProps->width) {
     result["width"] = width;
   }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
+  }
   return result;
 }
 #endif
@@ -1486,7 +1506,8 @@ RNSVGGroupProps::RNSVGGroupProps(
     filter(convertRawProp(context, rawProps, "filter", sourceProps.filter, {})),
     fontSize(convertRawProp(context, rawProps, "fontSize", sourceProps.fontSize, {})),
     fontWeight(convertRawProp(context, rawProps, "fontWeight", sourceProps.fontWeight, {})),
-    font(convertRawProp(context, rawProps, "font", sourceProps.font, {})) {}
+    font(convertRawProp(context, rawProps, "font", sourceProps.font, {})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGGroupProps::getDiffPropsImplementationTarget() const {
@@ -1623,6 +1644,10 @@ folly::dynamic RNSVGGroupProps::getDiffProps(
   if (font != oldProps->font) {
     result["font"] = font;
   }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
+  }
   return result;
 }
 #endif
@@ -1664,7 +1689,8 @@ RNSVGImageProps::RNSVGImageProps(
     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
     src(convertRawProp(context, rawProps, "src", sourceProps.src, {})),
     align(convertRawProp(context, rawProps, "align", sourceProps.align, {})),
-    meetOrSlice(convertRawProp(context, rawProps, "meetOrSlice", sourceProps.meetOrSlice, {0})) {}
+    meetOrSlice(convertRawProp(context, rawProps, "meetOrSlice", sourceProps.meetOrSlice, {0})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGImageProps::getDiffPropsImplementationTarget() const {
@@ -1816,6 +1842,10 @@ folly::dynamic RNSVGImageProps::getDiffProps(
 
   if (meetOrSlice != oldProps->meetOrSlice) {
     result["meetOrSlice"] = meetOrSlice;
+  }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
   }
   return result;
 }
@@ -1979,7 +2009,8 @@ RNSVGLineProps::RNSVGLineProps(
     x1(convertRawProp(context, rawProps, "x1", sourceProps.x1, {})),
     y1(convertRawProp(context, rawProps, "y1", sourceProps.y1, {})),
     x2(convertRawProp(context, rawProps, "x2", sourceProps.x2, {})),
-    y2(convertRawProp(context, rawProps, "y2", sourceProps.y2, {})) {}
+    y2(convertRawProp(context, rawProps, "y2", sourceProps.y2, {})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGLineProps::getDiffPropsImplementationTarget() const {
@@ -2119,6 +2150,10 @@ folly::dynamic RNSVGLineProps::getDiffProps(
 
   if (y2 != oldProps->y2) {
     result["y2"] = y2;
+  }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
   }
   return result;
 }
@@ -2398,7 +2433,8 @@ RNSVGMaskProps::RNSVGMaskProps(
     width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
     maskUnits(convertRawProp(context, rawProps, "maskUnits", sourceProps.maskUnits, {0})),
     maskContentUnits(convertRawProp(context, rawProps, "maskContentUnits", sourceProps.maskContentUnits, {0})),
-    maskType(convertRawProp(context, rawProps, "maskType", sourceProps.maskType, {0})) {}
+    maskType(convertRawProp(context, rawProps, "maskType", sourceProps.maskType, {0})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGMaskProps::getDiffPropsImplementationTarget() const {
@@ -2563,6 +2599,10 @@ folly::dynamic RNSVGMaskProps::getDiffProps(
   if (maskType != oldProps->maskType) {
     result["maskType"] = maskType;
   }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
+  }
   return result;
 }
 #endif
@@ -2598,7 +2638,8 @@ RNSVGPathProps::RNSVGPathProps(
     vectorEffect(convertRawProp(context, rawProps, "vectorEffect", sourceProps.vectorEffect, {0})),
     propList(convertRawProp(context, rawProps, "propList", sourceProps.propList, {})),
     filter(convertRawProp(context, rawProps, "filter", sourceProps.filter, {})),
-    d(convertRawProp(context, rawProps, "d", sourceProps.d, {})) {}
+    d(convertRawProp(context, rawProps, "d", sourceProps.d, {})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGPathProps::getDiffPropsImplementationTarget() const {
@@ -2726,6 +2767,10 @@ folly::dynamic RNSVGPathProps::getDiffProps(
 
   if (d != oldProps->d) {
     result["d"] = d;
+  }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
   }
   return result;
 }
@@ -3140,7 +3185,8 @@ RNSVGRectProps::RNSVGRectProps(
     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
     width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
     rx(convertRawProp(context, rawProps, "rx", sourceProps.rx, {})),
-    ry(convertRawProp(context, rawProps, "ry", sourceProps.ry, {})) {}
+    ry(convertRawProp(context, rawProps, "ry", sourceProps.ry, {})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGRectProps::getDiffPropsImplementationTarget() const {
@@ -3288,6 +3334,10 @@ folly::dynamic RNSVGRectProps::getDiffProps(
 
   if (ry != oldProps->ry) {
     result["ry"] = ry;
+  }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
   }
   return result;
 }
@@ -3541,7 +3591,8 @@ RNSVGTextProps::RNSVGTextProps(
     baselineShift(convertRawProp(context, rawProps, "baselineShift", sourceProps.baselineShift, {})),
     lengthAdjust(convertRawProp(context, rawProps, "lengthAdjust", sourceProps.lengthAdjust, {})),
     alignmentBaseline(convertRawProp(context, rawProps, "alignmentBaseline", sourceProps.alignmentBaseline, {})),
-    verticalAlign(convertRawProp(context, rawProps, "verticalAlign", sourceProps.verticalAlign, {})) {}
+    verticalAlign(convertRawProp(context, rawProps, "verticalAlign", sourceProps.verticalAlign, {})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGTextProps::getDiffPropsImplementationTarget() const {
@@ -3722,6 +3773,10 @@ folly::dynamic RNSVGTextProps::getDiffProps(
   if (verticalAlign != oldProps->verticalAlign) {
     result["verticalAlign"] = verticalAlign;
   }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
+  }
   return result;
 }
 #endif
@@ -3776,7 +3831,8 @@ RNSVGTextPathProps::RNSVGTextPathProps(
     method(convertRawProp(context, rawProps, "method", sourceProps.method, {})),
     midLine(convertRawProp(context, rawProps, "midLine", sourceProps.midLine, {})),
     spacing(convertRawProp(context, rawProps, "spacing", sourceProps.spacing, {})),
-    startOffset(convertRawProp(context, rawProps, "startOffset", sourceProps.startOffset, {})) {}
+    startOffset(convertRawProp(context, rawProps, "startOffset", sourceProps.startOffset, {})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGTextPathProps::getDiffPropsImplementationTarget() const {
@@ -3981,6 +4037,10 @@ folly::dynamic RNSVGTextPathProps::getDiffProps(
   if (startOffset != oldProps->startOffset) {
     result["startOffset"] = startOffset;
   }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
+  }
   return result;
 }
 #endif
@@ -4030,7 +4090,8 @@ RNSVGTSpanProps::RNSVGTSpanProps(
     lengthAdjust(convertRawProp(context, rawProps, "lengthAdjust", sourceProps.lengthAdjust, {})),
     alignmentBaseline(convertRawProp(context, rawProps, "alignmentBaseline", sourceProps.alignmentBaseline, {})),
     verticalAlign(convertRawProp(context, rawProps, "verticalAlign", sourceProps.verticalAlign, {})),
-    content(convertRawProp(context, rawProps, "content", sourceProps.content, {})) {}
+    content(convertRawProp(context, rawProps, "content", sourceProps.content, {})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGTSpanProps::getDiffPropsImplementationTarget() const {
@@ -4215,6 +4276,10 @@ folly::dynamic RNSVGTSpanProps::getDiffProps(
   if (content != oldProps->content) {
     result["content"] = content;
   }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
+  }
   return result;
 }
 #endif
@@ -4254,7 +4319,8 @@ RNSVGUseProps::RNSVGUseProps(
     x(convertRawProp(context, rawProps, "x", sourceProps.x, {})),
     y(convertRawProp(context, rawProps, "y", sourceProps.y, {})),
     height(convertRawProp(context, rawProps, "height", sourceProps.height, {})),
-    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})) {}
+    width(convertRawProp(context, rawProps, "width", sourceProps.width, {})),
+    onSvgLayout(convertRawProp(context, rawProps, "onSvgLayout", sourceProps.onSvgLayout, {false})) {}
 
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName RNSVGUseProps::getDiffPropsImplementationTarget() const {
@@ -4398,6 +4464,10 @@ folly::dynamic RNSVGUseProps::getDiffProps(
 
   if (width != oldProps->width) {
     result["width"] = width;
+  }
+
+  if (onSvgLayout != oldProps->onSvgLayout) {
+    result["onSvgLayout"] = onSvgLayout;
   }
   return result;
 }

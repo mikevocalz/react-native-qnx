@@ -11,16 +11,16 @@
 namespace rnqnx::fabric::rnsvg_bridge {
 namespace {
 
-// A row is a name, the model kind, a converter and whether the component has
-// an onSvgLayout event. The converter writes `e` from the props; `previous`
+// A row is a name, the model kind, a converter and a listener query for
+// onSvgLayout. The converter writes `e` from the props; `previous`
 // is the element's retained props, for converters that skip repeated work.
 template <class P, class Fn>
-Entry row(const char* name, Kind kind, bool emitsSvgLayout, Fn) {
+Entry row(const char* name, Kind kind, LayoutListener layoutListener, Fn) {
   return Entry{name, kind,
                [](const rn::Props& props, ElementProps& e, const ElementProps& previous) {
                  return convertAs<P>(props, e, previous, Fn{});
                },
-               emitsSvgLayout};
+               layoutListener};
 }
 
 struct GroupFn {
@@ -95,17 +95,17 @@ struct UseFn {
 }  // namespace
 
 void appendShapeEntries(std::vector<Entry>& out) {
-  out.push_back(row<rn::RNSVGGroupProps>("RNSVGGroup", Kind::Group, true, GroupFn{}));
-  out.push_back(row<rn::RNSVGDefsProps>("RNSVGDefs", Kind::Defs, false, DefsFn{}));
-  out.push_back(row<rn::RNSVGPathProps>("RNSVGPath", Kind::Path, true, PathFn{}));
-  out.push_back(row<rn::RNSVGCircleProps>("RNSVGCircle", Kind::Circle, true, CircleFn{}));
-  out.push_back(row<rn::RNSVGEllipseProps>("RNSVGEllipse", Kind::Ellipse, true, EllipseFn{}));
-  out.push_back(row<rn::RNSVGRectProps>("RNSVGRect", Kind::Rect, true, RectFn{}));
-  out.push_back(row<rn::RNSVGLineProps>("RNSVGLine", Kind::Line, true, LineFn{}));
-  out.push_back(row<rn::RNSVGUseProps>("RNSVGUse", Kind::Use, true, UseFn{}));
+  out.push_back(row<rn::RNSVGGroupProps>("RNSVGGroup", Kind::Group, &hasSvgLayoutListener<rn::RNSVGGroupProps>, GroupFn{}));
+  out.push_back(row<rn::RNSVGDefsProps>("RNSVGDefs", Kind::Defs, nullptr, DefsFn{}));
+  out.push_back(row<rn::RNSVGPathProps>("RNSVGPath", Kind::Path, &hasSvgLayoutListener<rn::RNSVGPathProps>, PathFn{}));
+  out.push_back(row<rn::RNSVGCircleProps>("RNSVGCircle", Kind::Circle, &hasSvgLayoutListener<rn::RNSVGCircleProps>, CircleFn{}));
+  out.push_back(row<rn::RNSVGEllipseProps>("RNSVGEllipse", Kind::Ellipse, &hasSvgLayoutListener<rn::RNSVGEllipseProps>, EllipseFn{}));
+  out.push_back(row<rn::RNSVGRectProps>("RNSVGRect", Kind::Rect, &hasSvgLayoutListener<rn::RNSVGRectProps>, RectFn{}));
+  out.push_back(row<rn::RNSVGLineProps>("RNSVGLine", Kind::Line, &hasSvgLayoutListener<rn::RNSVGLineProps>, LineFn{}));
+  out.push_back(row<rn::RNSVGUseProps>("RNSVGUse", Kind::Use, &hasSvgLayoutListener<rn::RNSVGUseProps>, UseFn{}));
   // Image has its own bridge (QtRnsvgImageBridge): the converter here, the
   // load and onLoad in QtRnsvgBridge.cpp's applyRnsvgProps.
-  out.push_back(Entry{"RNSVGImage", Kind::Image, &convertImageProps, true});
+  out.push_back(Entry{"RNSVGImage", Kind::Image, &convertImageProps, &hasSvgLayoutListener<rn::RNSVGImageProps>});
 }
 
 }  // namespace rnqnx::fabric::rnsvg_bridge

@@ -1,0 +1,298 @@
+{
+  "head": "d3eacc75dcad761c992736223a68b53ff852203b",
+  "tree": "fd7fe0ad6bcbd28e8c51d4a0526f1fadd2a543ea",
+  "synthetic_merge": "0c7d463aa3bb3d4f5cab822a4faadb2d0c179223",
+  "identical_merge_tree": true,
+  "checked_at": "2026-11-17 04:39:06 UTC",
+  "workflow_runs": [
+    {
+      "id": 44013662306,
+      "name": "Pi tooling quality",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662306",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44013662399,
+      "name": "React Fabric Qt QNX source check",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662399",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44013662325,
+      "name": "Image loader HTTP and cache",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662325",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44013662396,
+      "name": "Nitro v1 native C++ source and host compile",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662396",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44013662208,
+      "name": "Marathon Metro platform conformance",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662208",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44013662327,
+      "name": "SDK 58 validation",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662327",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44013662347,
+      "name": "External Expo project creation",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662347",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44013662356,
+      "name": "Experimental WebSocket host tests",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662356",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44013662174,
+      "name": "Shared runtime AppState integration",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662174",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44013662424,
+      "name": "External native Expo consumer build",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662424",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 44013662836,
+      "name": "SDK 58 full host renderer",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662836",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "observed_native_results": {
+    "renderer_off": {
+      "job_id": 133806320820,
+      "ctest": "14/14",
+      "seconds": 37.86
+    },
+    "appstate_on": {
+      "job_id": 133806318168,
+      "ctest": "16/16",
+      "seconds": 68.95,
+      "focused": "2/2",
+      "focused_seconds": 8.13
+    },
+    "appstate_off": {
+      "job_id": 133806318485,
+      "ctest": "16/16",
+      "seconds": 83.12,
+      "focused": "2/2",
+      "focused_seconds": 7.93
+    },
+    "image_cache": {
+      "job_id": 133806318270,
+      "ctest": "1/1",
+      "seconds": 0.44
+    },
+    "websocket": {
+      "job_id": 133806318515,
+      "ctest": "3/3",
+      "seconds": 1.4,
+      "probes": "2/2",
+      "probe_seconds": 0.01
+    },
+    "nitro": {
+      "job_id": 133806318444,
+      "result": "Shared core plus QNX and Marathon adapter archives compiled; no native execution claim"
+    },
+    "external_native": {
+      "job_id": 133806318869,
+      "result": "Two distinct Linux native consumers built and rendered 640x480 screenshots",
+      "started_at": "2026-11-17T03:56:22Z",
+      "completed_at": "2026-11-17T04:22:39Z"
+    }
+  },
+  "final_status": "10 workflows succeeded; full renderer workflow failed",
+  "jobs": [
+    {
+      "id": 133806318585,
+      "run_id": 44013662306,
+      "name": "Shell syntax and lint",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662306/job/133806318585",
+      "status": "completed",
+      "conclusion": "success",
+      "skipped_steps": []
+    },
+    {
+      "id": 133806318465,
+      "run_id": 44013662399,
+      "name": "source-contract",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662399/job/133806318465",
+      "status": "completed",
+      "conclusion": "success",
+      "skipped_steps": []
+    },
+    {
+      "id": 133806318270,
+      "run_id": 44013662325,
+      "name": "image-cache",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662325/job/133806318270",
+      "status": "completed",
+      "conclusion": "success",
+      "skipped_steps": []
+    },
+    {
+      "id": 133806318444,
+      "run_id": 44013662396,
+      "name": "source-and-compile",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662396/job/133806318444",
+      "status": "completed",
+      "conclusion": "success",
+      "skipped_steps": []
+    },
+    {
+      "id": 133806317944,
+      "run_id": 44013662208,
+      "name": "metro",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662208/job/133806317944",
+      "status": "completed",
+      "conclusion": "success",
+      "skipped_steps": []
+    },
+    {
+      "id": 133806318676,
+      "run_id": 44013662327,
+      "name": "validate",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662327/job/133806318676",
+      "status": "completed",
+      "conclusion": "success",
+      "skipped_steps": []
+    },
+    {
+      "id": 133806318083,
+      "run_id": 44013662347,
+      "name": "create",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662347/job/133806318083",
+      "status": "completed",
+      "conclusion": "success",
+      "skipped_steps": []
+    },
+    {
+      "id": 133806318515,
+      "run_id": 44013662356,
+      "name": "loopback-and-jsi",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662356/job/133806318515",
+      "status": "completed",
+      "conclusion": "success",
+      "skipped_steps": []
+    },
+    {
+      "id": 133806318168,
+      "run_id": 44013662174,
+      "name": "native-runtime (ON)",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662174/job/133806318168",
+      "status": "completed",
+      "conclusion": "success",
+      "skipped_steps": []
+    },
+    {
+      "id": 133806318485,
+      "run_id": 44013662174,
+      "name": "native-runtime (OFF)",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662174/job/133806318485",
+      "status": "completed",
+      "conclusion": "success",
+      "skipped_steps": []
+    },
+    {
+      "id": 133806318869,
+      "run_id": 44013662424,
+      "name": "native-consumer",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662424/job/133806318869",
+      "status": "completed",
+      "conclusion": "success",
+      "skipped_steps": []
+    },
+    {
+      "id": 133806320402,
+      "run_id": 44013662836,
+      "name": "Qt 6.11 / RN 0.88 / Hermes (input lifecycle ON)",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662836/job/133806320402",
+      "status": "completed",
+      "conclusion": "failure",
+      "skipped_steps": [
+        "react-native-svg renderer, filters, text and images under ASan and UBSan (ON leg)",
+        "Render the conformance app (Linux host only)",
+        "Render both window chrome layouts (Linux host only, chrome ON leg)",
+        "Render performance workloads (Linux host only)",
+        "Create and render an app from a fresh source checkout",
+        "Exercise one external public-import app through both target tools",
+        "Post Run actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444"
+      ]
+    },
+    {
+      "id": 133806320820,
+      "run_id": 44013662836,
+      "name": "Qt 6.11 / RN 0.88 / Hermes (input lifecycle OFF)",
+      "url": "https://github.com/mikevocalz/react-native-qnx/actions/runs/44013662836/job/133806320820",
+      "status": "completed",
+      "conclusion": "success",
+      "skipped_steps": [
+        "Verify reproducible SVG bindings",
+        "react-native-svg renderer, filters, text and images under ASan and UBSan (ON leg)",
+        "Render both window chrome layouts (Linux host only, chrome ON leg)"
+      ]
+    }
+  ],
+  "renderer_on": {
+    "job_id": 133806320402,
+    "status": "failure",
+    "started_at": "2026-11-17T03:56:23Z",
+    "completed_at": "2026-11-17T04:38:05Z",
+    "graph_started_at": "2026-11-17T03:57:39Z",
+    "graph_completed_at": "2026-11-17T04:38:01Z",
+    "ctest_started_at": "2026-11-17T04:25:34Z",
+    "ctest_passed": 47,
+    "ctest_failed": 2,
+    "ctest_seconds": 747,
+    "corpus_shards": [
+      {
+        "index": 0,
+        "result": "passed",
+        "seconds": 8.05
+      },
+      {
+        "index": 1,
+        "result": "timeout",
+        "seconds": 300.11
+      },
+      {
+        "index": 2,
+        "result": "timeout",
+        "seconds": 300.12
+      },
+      {
+        "index": 3,
+        "result": "passed",
+        "seconds": 9.48
+      }
+    ],
+    "heavy_batches_mounted": false,
+    "host_suite_seconds": 69.58,
+    "artifact_id": 14300200801
+  }
+}

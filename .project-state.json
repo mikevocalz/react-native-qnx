@@ -82,6 +82,14 @@
       "nativeHost": "Both new listener regressions fail with the original adapter; all 57 host cases and all 149 SVG comparisons pass with the two supported onLayout guards. Copied PR 149 Debug graph; all four corpus CTests pass in 5.21s, 204.75s, 232.22s and 6.59s with unchanged 300-second limits. Independent source review, identical host-test object and original corpus object; Hermes slow debug checks retained. This is not an exact PR 161 full-graph or QNX result.",
       "hostedCi": "At 3220c8d ten of eleven workflows pass; renderer OFF 14/14 CTests pass, renderer ON 47/49 pass with two 300-second corpus timeouts. The listener-guard successor requires its own completed workflows; isolated copied-graph checks are not exact-head hosted CI.",
       "targetExecution": "Not run for the native listener correction; fresh clean combined QNX build and current target acceptance required. Keep PR draft and all eleven release gates pending."
+    },
+    "pr161SvgLayoutInterest": {
+      "reviewedAt": "2026-11-17",
+      "baseCommit": "d3eacc75dcad761c992736223a68b53ff852203b",
+      "receipt": "docs/validation/pr161-svg-layout-interest-2026-11-17.md",
+      "nativeHost": "Fresh PR 161 candidate graph: 49/49 CTests in 445.87 seconds, 57 QtReactHost cases and 149/149 SVG pixel comparisons. Four corpus times 5.33/166.98/163.61/6.21 seconds under unchanged 300-second limits. Real prop transport, all 14 generated marker classes, native subscriber lifecycle, original-source controls and separately labeled lifetime mutation are recorded; reviewed source hashes remain unchanged.",
+      "hostedCi": "Parent d3eacc75: ten of eleven workflows pass; renderer ON 47/49 with two corpus timeouts. The published successor needs its own completed workflows; exact-head results are maintained on PR 161.",
+      "targetExecution": "Not run for this native continuation. Fresh combined QNX cross-build and current-device acceptance remain required. Keep draft and all eleven release gates pending."
     }
   },
   "activeMilestone": "v1 preparation; release gates remain open",

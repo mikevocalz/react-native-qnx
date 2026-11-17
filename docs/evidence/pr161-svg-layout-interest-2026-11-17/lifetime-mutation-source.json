@@ -1,0 +1,6 @@
+{
+  "scope": "Explicit candidate mutation, not original published source. Removes only the post-snapshot-release QPointer guard.",
+  "file": "vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp",
+  "candidateSha256": "20b46b497bb18cade48899742dbc70794cb0c5aa94555b9b0ba97dbf802faab3",
+  "mutantSha256": "7ca4ad0357fb6a07cac8497560ba1692ac74e79d3b16e3ed420495f84e3c118c"
+}

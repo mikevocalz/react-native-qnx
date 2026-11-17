@@ -155,14 +155,22 @@ void gradientCommon(ElementProps& e, const P& p) {
 // ---- the element table ------------------------------------------------------
 
 using Converter = bool (*)(const rn::Props&, ElementProps&, const ElementProps& previous);
+using LayoutListener = bool (*)(const rn::Props&);
 
 struct Entry {
   const char* name;
   Kind kind;
   Converter convert;
-  // The generated event emitter has `onSvgLayout` for this component.
-  bool emitsSvgLayout;
+  // Null for components without onSvgLayout; otherwise reads the generated
+  // marker for the current React listener, including removal and re-addition.
+  LayoutListener layoutListener;
 };
+
+template <class P>
+bool hasSvgLayoutListener(const rn::Props& props) {
+  const auto* p = dynamic_cast<const P*>(&props);
+  return p && p->onSvgLayout;
+}
 
 template <class P, class Fn>
 bool convertAs(const rn::Props& props, ElementProps& e, const ElementProps& previous, Fn&& fn) {

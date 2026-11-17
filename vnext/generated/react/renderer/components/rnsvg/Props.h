@@ -84,6 +84,7 @@ class RNSVGCircleProps final : public ViewProps {
   folly::dynamic cx{};
   folly::dynamic cy{};
   folly::dynamic r{};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -131,6 +132,7 @@ class RNSVGClipPathProps final : public ViewProps {
   folly::dynamic fontSize{};
   folly::dynamic fontWeight{};
   folly::dynamic font{};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -208,6 +210,7 @@ class RNSVGEllipseProps final : public ViewProps {
   folly::dynamic cy{};
   folly::dynamic rx{};
   folly::dynamic ry{};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -810,6 +813,7 @@ class RNSVGForeignObjectProps final : public ViewProps {
   folly::dynamic y{};
   folly::dynamic height{};
   folly::dynamic width{};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -857,6 +861,7 @@ class RNSVGGroupProps final : public ViewProps {
   folly::dynamic fontSize{};
   folly::dynamic fontWeight{};
   folly::dynamic font{};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -908,6 +913,7 @@ class RNSVGImageProps final : public ViewProps {
   ImageSource src{};
   std::string align{};
   int meetOrSlice{0};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -993,6 +999,7 @@ class RNSVGLineProps final : public ViewProps {
   folly::dynamic y1{};
   folly::dynamic x2{};
   folly::dynamic y2{};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -1106,6 +1113,7 @@ class RNSVGMaskProps final : public ViewProps {
   int maskUnits{0};
   int maskContentUnits{0};
   int maskType{0};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -1151,6 +1159,7 @@ class RNSVGPathProps final : public ViewProps {
   std::vector<std::string> propList{};
   std::string filter{};
   std::string d{};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -1300,6 +1309,7 @@ class RNSVGRectProps final : public ViewProps {
   folly::dynamic width{};
   folly::dynamic rx{};
   folly::dynamic ry{};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -1411,6 +1421,7 @@ class RNSVGTextProps final : public ViewProps {
   std::string lengthAdjust{};
   std::string alignmentBaseline{};
   folly::dynamic verticalAlign{};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -1475,6 +1486,7 @@ class RNSVGTextPathProps final : public ViewProps {
   std::string midLine{};
   std::string spacing{};
   folly::dynamic startOffset{};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -1534,6 +1546,7 @@ class RNSVGTSpanProps final : public ViewProps {
   std::string alignmentBaseline{};
   folly::dynamic verticalAlign{};
   std::string content{};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
@@ -1583,6 +1596,7 @@ class RNSVGUseProps final : public ViewProps {
   folly::dynamic y{};
   folly::dynamic height{};
   folly::dynamic width{};
+  bool onSvgLayout{false};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;

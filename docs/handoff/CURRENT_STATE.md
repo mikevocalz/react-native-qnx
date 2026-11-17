@@ -1,5 +1,30 @@
 # Current state
 
+## PR 161 SVG layout subscriptions (2026-11-17)
+
+The native SVG generator retains the existing onSvgLayout subscription marker,
+and QNX BaseViewConfig transports it through the real React prop pipeline.
+Reporters preserve bounds tracking and only dispatch to React or native
+subscribers. Late native registration, removal and callback teardown retain
+explicit behavioral coverage. The optional native-interest seam is empty by
+default; PR 149 supplies its real Reanimated registry integration.
+
+The reviewed candidate, built in a fresh graph rooted at the published
+PR 161 parent, passes **49/49 CTests in 445.87 seconds**, including all 57 QtReactHost cases and all 149 SVG
+pixel comparisons. Corpus shards take 5.33, 166.98, 163.61 and 6.21 seconds
+under unchanged 300-second limits. The original local heavy-shard comparison
+is 199.36 seconds. Source, test object, bundle, original-source controls and
+separate lifetime mutation evidence are recorded in the
+[subscription receipt](../validation/pr161-svg-layout-interest-2026-11-17.md).
+
+The published parent d3eacc75 passed ten of eleven workflows; its renderer-ON
+lane timed out two corpus shards. That failed result is preserved. Follow the
+successor's exact hosted checks on [PR 161](https://github.com/mikevocalz/react-native-qnx/pull/161);
+local passes do not qualify hosted CI or current QNX execution. A fresh clean
+combined QNX build and current-device acceptance remain required. Keep the PR
+draft and all eleven release gates pending. The dated sections below retain
+their original scope.
+
 ## PR 161 subscribed layout dispatch continuation (2026-11-16)
 
 The Fabric adapter now checks the existing `ViewProps::onLayout` flag before

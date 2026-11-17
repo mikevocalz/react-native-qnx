@@ -66,6 +66,10 @@ class QtSchedulerDelegate final : public facebook::react::SchedulerDelegate {
   /// every transaction, including the empty-tree commit that stopping a surface
   /// produces during teardown.
   void setTouchDispatcher(fabric::QtTouchDispatcher* dispatcher);
+#if RNQNX_ENABLE_QT_RNSVG
+  /// Forwards this host's optional, runtime-free native SVG event interest.
+  void setSvgLayoutNativeEventInterest(std::function<bool(facebook::react::Tag)> interest);
+#endif
 
   /// Failures from the most recent mount, empty when everything applied.
   const std::vector<fabric::MutationFailure>& lastFailures() const;

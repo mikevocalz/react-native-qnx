@@ -87,10 +87,10 @@ bool applyRnsvgProps(QQuickItem* item, const rn::ShadowView& view) {
   next.kind = it->second.kind;
   if (!it->second.convert(*view.props, next, element->props())) return false;
   element->setProps(std::move(next));
-  // The emitter changes on a remount only, but setting it is cheap and keeps
-  // the reporter from holding one that has been replaced.
   if (it->second.kind == Kind::Image) attachImageLoading(element, view);
-  if (it->second.emitsSvgLayout && view.eventEmitter) SvgLayoutReporter::attach(element, view.eventEmitter);
+  if (it->second.layoutListener && view.eventEmitter) {
+    SvgLayoutReporter::attach(element, view.eventEmitter, view.tag, it->second.layoutListener(*view.props));
+  }
   return true;
 }
 

@@ -1,0 +1,2 @@
+$ node scripts/qt-rnsvg-codegen.mjs --check
+react-native-svg Fabric codegen check passed (15.16.0, 5 files, 9 overlay specs)

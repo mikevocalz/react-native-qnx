@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-clang++"
+	tests="1"
+	failures="1"
+	disabled="0"
+	skipped="0"
+	hostname="31d30cd8ad50"
+	time="7"
+	timestamp="2026-11-17T00:11:34"
+	>
+	<testcase name="rnqnx_qt_rnsvg_fabric_test" classname="rnqnx_qt_rnsvg_fabric_test" time="7.05976" status="fail">
+		<failure message="Failed"/>
+		<properties/>
+		<system-out>Running "RnqnxRnsvgFixture"
+FAIL: SVG elements without listeners dispatched native layout events
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:11:38.693816 3381858880 FilterPropsConversions.h:30] react_native_expect failure: value.hasType&lt;std::vector&lt;RawValue&gt;&gt;()
+FAIL: Removed SVG listener still dispatched natively
+FAIL: Unsubscribed SVG update restored native delivery
+FAIL: Same-box listener re-add dispatched natively
+FAIL: Re-added SVG listener native delivery is wrong
+I1117 00:11:41.471725 3381858880 UIManagerBinding.cpp:150] instanceHandle is null, event of type topSvgLayout will be dropped
+W1117 00:11:41.479991 3381858880 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1117 00:11:41.483364 3242772160 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014bd0).
+W1117 00:11:41.483454 3242772160 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+SVG layout listener contract failed
+</system-out>
+	</testcase>
+</testsuite>

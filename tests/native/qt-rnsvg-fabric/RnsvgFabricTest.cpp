@@ -7,6 +7,7 @@
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 #include <RnsvgForeignObjectItem.h>
 #include <RnsvgItems.h>
+#include <react/renderer/core/EventListener.h>
 
 #include <QElapsedTimer>
 #include <QGuiApplication>
@@ -22,6 +23,7 @@
 #include <cmath>
 #include <iterator>
 #include <stdexcept>
+#include <unordered_map>
 #include <vector>
 
 namespace {
@@ -140,7 +142,28 @@ int main(int argc, char** argv) {
     rnqnx::fabric::QtTouchDispatcher dispatcher(layer, *window.contentItem());
     adapter.setTouchDispatcher(&dispatcher);
     adapter.mapComponent(QStringLiteral("View"), QStringLiteral("View"));
+    // Outlive the host's listener, including surface teardown. This sees
+    // native dispatch even when React has no callback and drops the event.
+    std::unordered_map<const QQuickItem*, int> svgLayoutDispatches;
+    std::unordered_map<const QQuickItem*, facebook::react::Tag> svgLayoutTags;
+    int svgLayoutFailures = 0;
+    const auto layoutCheck = [&](bool condition, const char* message) {
+      if (!condition) {
+        std::cerr << "FAIL: " << message << '\n';
+        ++svgLayoutFailures;
+      }
+    };
     rnqnx::runtime::QtReactHost host(adapter);
+    host.scheduler().addEventListener(std::make_shared<const facebook::react::EventListener>(
+        [&](const facebook::react::RawEvent& event) {
+          if (event.type == "topSvgLayout" && event.eventTarget) {
+            const auto tag = event.eventTarget->getTag();
+            const auto* item = layer.itemForTag(tag);
+            ++svgLayoutDispatches[item];
+            svgLayoutTags[item] = tag;
+          }
+          return false;
+        }));
     host.delegate().setTouchDispatcher(&dispatcher);
     host.installTurboModuleBinding();
     host.installComponentProvider();
@@ -223,6 +246,7 @@ int main(int argc, char** argv) {
     await(host, [&] { return number(host, "__rnsvgPresses") == 1; });
     check(host.javaScriptErrors().empty(), "Touch handling reported a JavaScript error");
 
+    layoutCheck(svgLayoutDispatches.empty(), "SVG elements without listeners dispatched native layout events");
 
     // The elements the first fixture does not use: Pattern, Symbol, Marker,
     // TextPath and ForeignObject, the text, marker and clipRule props, and
@@ -234,7 +258,7 @@ int main(int argc, char** argv) {
     check(host.delegate().lastFailures().empty(), "Mounting the remaining elements reported a failure");
     check(host.javaScriptErrors().empty(), "Mounting the remaining elements reported a JavaScript error");
     check(root.data() == findRoot(window.contentItem()), "Mounting the second <Svg> remounted the first");
-    const QQuickItem* extra = allRoots(window.contentItem()).back();
+    const auto* extra = allRoots(window.contentItem()).back();
     check(extra != root.data(), "The second <Svg> was not found");
 
     const auto* pattern = findElement(extra, Kind::Pattern);
@@ -340,12 +364,143 @@ int main(int argc, char** argv) {
               number(host, "__rnsvgLayoutW") == 30 && number(host, "__rnsvgLayoutH") == 20,
           "onSvgLayout rect wrong");
     const double layoutEvents = number(host, "__rnsvgLayoutEvents");
+    const auto layoutRect = [&] {
+      return findElement(extra, Kind::Rect, [](const ElementProps& p) { return p.name == "layout-probe"; });
+    };
+    const auto* retainedRect = layoutRect();
+    check(retainedRect != nullptr, "Layout probe was not mounted");
+    const int dispatched = svgLayoutDispatches[retainedRect];
+    layoutCheck(dispatched == layoutEvents, "Subscribed SVG native and JavaScript event counts differ");
     evaluate(host, "__rnsvgUpdate({rectFill:'#00ffff'});");
     settle();
     check(number(host, "__rnsvgLayoutEvents") == layoutEvents, "onSvgLayout fired although the box did not move");
+    layoutCheck(svgLayoutDispatches[retainedRect] == dispatched, "Unchanged SVG bounds dispatched a native event");
+    // The stable callback is unchanged, so React omits its raw prop from
+    // this update. The native listener marker must retain the source value.
     evaluate(host, "__rnsvgUpdate({rectX:25});");
     await(host, [&] { return number(host, "__rnsvgLayoutEvents") == layoutEvents + 1; }, "onSvgLayout after a move");
     check(number(host, "__rnsvgLayoutX") == 25, "onSvgLayout did not report the new x");
+    layoutCheck(svgLayoutDispatches[retainedRect] == dispatched + 1, "An omitted listener prop lost native delivery");
+
+    // Removing the public listener sends a null raw event prop. Geometry,
+    // painting and last-bounds tracking continue without native dispatch.
+    evaluate(host, "__rnsvgUpdate({rectLayout:false, rectX:40});");
+    await(host, [&] { return retainedRect->props().x.value == 40; }, "unsubscribed SVG geometry");
+    settle();
+    check(layoutRect() == retainedRect, "Removing the listener remounted the SVG element");
+    check(pixelIs(window, 45, 65, QColor(0, 255, 255)), "Unsubscribed SVG geometry did not repaint");
+    check(number(host, "__rnsvgLayoutEvents") == layoutEvents + 1, "Removed SVG listener still received an event");
+    layoutCheck(svgLayoutDispatches[retainedRect] == dispatched + 1, "Removed SVG listener still dispatched natively");
+    check(extra->reportedBounds(retainedRect) == QRectF(40, 60, 30, 20), "Unsubscribed SVG bounds tracking is stale");
+    evaluate(host, "__rnsvgUpdate({rectX:45});");
+    await(host, [&] { return retainedRect->props().x.value == 45; }, "later unsubscribed SVG geometry");
+    settle();
+    layoutCheck(svgLayoutDispatches[retainedRect] == dispatched + 1, "Unsubscribed SVG update restored native delivery");
+    check(extra->reportedBounds(retainedRect) == QRectF(45, 60, 30, 20), "Later unsubscribed SVG bounds tracking is stale");
+
+    // Listener changes alone preserve the existing same-box suppression.
+    evaluate(host, "__rnsvgUpdate({rectLayout:true});");
+    settle();
+    check(number(host, "__rnsvgLayoutEvents") == layoutEvents + 1, "Re-adding an SVG listener reset same-box suppression");
+    layoutCheck(svgLayoutDispatches[retainedRect] == dispatched + 1, "Same-box listener re-add dispatched natively");
+
+    // Re-add on a changed box: the retained element resumes the existing
+    // payload contract, with no remount or reset of its visual props.
+    evaluate(host, "__rnsvgUpdate({rectX:55});");
+    await(host, [&] { return number(host, "__rnsvgLayoutEvents") == layoutEvents + 2; }, "re-added SVG listener");
+    check(layoutRect() == retainedRect, "Re-adding the listener remounted the SVG element");
+    check(number(host, "__rnsvgLayoutX") == 55 && number(host, "__rnsvgLayoutY") == 60 &&
+              number(host, "__rnsvgLayoutW") == 30 && number(host, "__rnsvgLayoutH") == 20,
+          "Re-added SVG listener payload is wrong");
+    layoutCheck(svgLayoutDispatches[retainedRect] == dispatched + 2, "Re-added SVG listener native delivery is wrong");
+    layoutCheck(extra->reportedBounds(retainedRect) == QRectF(55, 60, 30, 20),
+                "Re-added SVG listener did not restore current bounds reporting");
+
+    // A native handler can register after the item was mounted without a
+    // React callback. Its interest is queried at delivery time, not cached
+    // when props are applied. The owner is weak so teardown cannot keep it alive.
+    evaluate(host, "__rnsvgUpdate({rectLayout:false, rectX:65});");
+    await(host, [&] { return retainedRect->props().x.value == 65; }, "native-listener fixture");
+    settle();
+    const int beforeNative = svgLayoutDispatches[retainedRect];
+    struct NativeInterestProbe {
+      facebook::react::Tag tag;
+      rnqnx::runtime::QtSchedulerDelegate* delegate;
+      bool enabled{true};
+      bool clearOnQuery{false};
+      int queries{0};
+    };
+    auto nativeProbe = std::make_shared<NativeInterestProbe>(
+        NativeInterestProbe{svgLayoutTags.at(retainedRect), &host.delegate()});
+    const auto nativeInterest = [weak = std::weak_ptr(nativeProbe)](facebook::react::Tag tag) {
+      const auto probe = weak.lock();
+      if (!probe || tag != probe->tag) return false;
+      ++probe->queries;
+      if (probe->clearOnQuery) probe->delegate->setSvgLayoutNativeEventInterest({});
+      return probe->enabled;
+    };
+    host.delegate().setSvgLayoutNativeEventInterest(nativeInterest);
+    evaluate(host, "__rnsvgUpdate({rectX:70});");
+    await(host, [&] { return svgLayoutDispatches[retainedRect] == beforeNative + 1; }, "late native SVG listener");
+    check(nativeProbe->queries > 0, "Native SVG interest was not queried with the element tag");
+    check(number(host, "__rnsvgLayoutEvents") == layoutEvents + 2, "Native interest invented a React callback");
+    nativeProbe->enabled = false;
+    evaluate(host, "__rnsvgUpdate({rectX:75});");
+    await(host, [&] { return retainedRect->props().x.value == 75; }, "native SVG interest removal");
+    settle();
+    check(svgLayoutDispatches[retainedRect] == beforeNative + 1, "Native SVG interest was cached across removal");
+    check(extra->reportedBounds(retainedRect) == QRectF(75, 60, 30, 20), "Native unsubscribe stopped bounds tracking");
+
+    // Reentrant clearing must not deadlock the holder or destroy a callback
+    // while it is running. The admitted event completes; later boxes do not.
+    nativeProbe->enabled = true;
+    nativeProbe->clearOnQuery = true;
+    evaluate(host, "__rnsvgUpdate({rectX:80});");
+    await(host, [&] { return svgLayoutDispatches[retainedRect] == beforeNative + 2; }, "self-clearing native interest");
+    const int queriesAfterClear = nativeProbe->queries;
+    evaluate(host, "__rnsvgUpdate({rectX:85});");
+    await(host, [&] { return retainedRect->props().x.value == 85; }, "cleared native interest");
+    settle();
+    check(svgLayoutDispatches[retainedRect] == beforeNative + 2 && nativeProbe->queries == queriesAfterClear,
+          "Cleared native SVG interest was still invoked");
+
+    // The final callback capture can destroy the reporter after the query
+    // returns. Keep the Fabric element and its emitter alive, so an extra
+    // native dispatch is a deterministic failure even without full-TU ASan.
+    QPointer<QObject> reporter;
+    for (auto* child : retainedRect->children()) {
+      if (child->inherits("rnqnx::fabric::rnsvg_bridge::SvgLayoutReporter")) reporter = child;
+    }
+    check(!reporter.isNull(), "SVG reporter lifetime fixture is missing");
+    struct ReporterLease {
+      QPointer<QObject> reporter;
+      ~ReporterLease() { delete reporter.data(); }
+    };
+    auto lease = std::make_shared<ReporterLease>();
+    lease->reporter = reporter;
+    host.delegate().setSvgLayoutNativeEventInterest([nativeInterest, lease](facebook::react::Tag tag) {
+      (void)lease;  // Its final release is the lifecycle boundary under test.
+      return nativeInterest(tag);
+    });
+    lease.reset();
+    evaluate(host, "__rnsvgUpdate({rectX:90});");
+    await(host, [&] { return reporter.isNull(); }, "native-interest capture release");
+    settle();
+    check(layoutRect() == retainedRect, "Reporter teardown destroyed the retained SVG element");
+    check(svgLayoutDispatches[retainedRect] == beforeNative + 2, "Destroyed SVG reporter dispatched after capture release");
+
+    // A later props update recreates the internal reporter. An expired native
+    // owner remains a miss and does not prevent ordinary geometry updates.
+    evaluate(host, "__rnsvgUpdate({rectX:95});");
+    await(host, [&] { return extra->reportedBounds(retainedRect) == QRectF(95, 60, 30, 20); }, "reporter recreation");
+    nativeProbe->clearOnQuery = false;
+    host.delegate().setSvgLayoutNativeEventInterest(nativeInterest);
+    nativeProbe.reset();
+    evaluate(host, "__rnsvgUpdate({rectX:100});");
+    await(host, [&] { return retainedRect->props().x.value == 100; }, "expired native SVG listener");
+    settle();
+    check(svgLayoutDispatches[retainedRect] == beforeNative + 2, "Expired native SVG owner admitted an event");
+    host.delegate().setSvgLayoutNativeEventInterest({});
 
     evaluate(host, "__rnsvgUpdate({extras:false});");
     await(host, [&] { return allRoots(window.contentItem()).size() == 1; }, "the second <Svg> to unmount");
@@ -361,6 +516,7 @@ int main(int argc, char** argv) {
     host.stopSurface(11);
     host.pumpEvents();
     check(host.javaScriptErrors().empty(), "react-native-svg lifecycle reported JavaScript errors");
+    check(svgLayoutFailures == 0, "SVG layout listener contract failed");
     std::cout << "RNQNX_RNSVG_FABRIC_OK metro hermes fabric gradient clip mask use update remove touch resize extras\n";
     return 0;
   } catch (const std::exception& error) {
