@@ -1,112 +1,167 @@
+<div align="center">
+
 # react-native-qnx
 
-Run React Native on QNX with Fabric, Hermes, Yoga and a Qt Quick view backend.
-The experimental Pi 400 target renders Hello World at 1920×1080 on QNX SDP 8.0.5.
+**React Native on QNX, rendered through Fabric, Hermes, Yoga and Qt Quick.**
 
-![A Pi 400 display showing "React Native QNX: Hello World" in white text centred on dark blue, captured fullscreen at 1920×1080](docs/evidence/pi400-hello-world-fullscreen-2026-11-07.png)
+[![SDK 58 validation](https://github.com/mikevocalz/react-native-qnx/actions/workflows/sdk58-validation.yml/badge.svg)](https://github.com/mikevocalz/react-native-qnx/actions/workflows/sdk58-validation.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![QNX SDP 8.0.5](https://img.shields.io/badge/QNX%20SDP-8.0.5-black)
+![React Native 0.88.1](https://img.shields.io/badge/React%20Native-0.88.1-61dafb)
+![Status: experimental](https://img.shields.io/badge/status-experimental-orange)
 
-This is v1 preparation. Graphics cold boot, stock Pi 4 QSTI parity, performance
-measurements and release packaging remain open. Development follows the
-[open-source Qt path](docs/adr/0013-open-source-qt.md), with no paid Qt subscription
-prerequisite. The Pi 400 receipts retain their evaluation-artifact provenance. Read
-[the evidence boundaries](docs/handoff/CURRENT_STATE.md) and
-[v1 gates](docs/releases/v1-readiness.md) before selecting a target.
+![The component gallery app in a QNX window on a Raspberry Pi 400 desktop, with a sidebar of Components, Advanced, Documents, Controls and More tabs](docs/evidence/pr149-pi400-run2-2026-11-19/gallery-first-screen.png)
 
-The [v1 documentation draft](docs/v1/README.md) collects the getting-started
-pages, support limits, an [evidence gallery](docs/v1/evidence-gallery.md) split
-by target, and draft release notes.
+<sub>The gallery app on a Raspberry Pi 400, 1024x768, from the [PR 149 run 2 receipt](docs/evidence/pr149-pi400-run2-2026-11-19/README.md).</sub>
 
-## Start from source
+</div>
 
-Use Node 26+ and pnpm 12.18.0. The CLI operates inside this checkout; no npm
-installation or standalone native-project support is claimed.
+## What it is
 
-Node 26 does not bundle Corepack. If `pnpm --version` does not print 12.18.0,
-install it first. An older global pnpm (for example Homebrew's pnpm 10) tries to
-switch itself to 12.18.0 from `packageManager` and can fail with
-`Failed to switch pnpm to v12.18.0`:
+react-native-qnx is an out-of-tree React Native platform for QNX. JavaScript runs on Hermes, Fabric
+and Yoga lay out the views, and a Qt Quick mounting layer draws them through QNX Screen. It is
+v1 preparation software: one Raspberry Pi 400 on a custom BCM2711 QNX 8.0.5 image runs it, and all
+eleven release gates in [`v1-readiness.json`](docs/releases/v1-readiness.json) are still pending.
+
+It is not published to npm, it does not run Expo Go, and no stock Raspberry Pi 4 or Pi 5 result is
+recorded here.
+
+## Quick start (host preview)
+
+This path runs on a Mac or Linux machine and needs no QNX SDP and no board. It builds the host
+renderer, so the first CMake configure downloads and compiles Hermes, folly and Boost, which takes a
+while. It proves your JavaScript bundles and renders. It does not prove anything about QNX.
+
+You need Node 26 or newer, pnpm 12.18.0, CMake, Ninja and Qt 6.11.1 or newer
+([toolchain notes](docs/toolchain.md)).
 
 ```bash
 npm install -g pnpm@12.18.0
-pnpm --version   # 12.18.0
-```
-
-JavaScript work and host validation run on macOS or Linux. QNX cross-builds need
-an x86-64 Linux host (canonically Ubuntu 22.04) with the licensed QNX SDP,
-because SDP 8.0 ships Linux and Windows host tools only.
-`pnpm qnx doctor` reports which of these prerequisites are missing and what to run
-next.
-
-```bash
 git clone https://github.com/mikevocalz/react-native-qnx.git
 cd react-native-qnx
 pnpm install --frozen-lockfile
-pnpm validate:dependencies
-pnpm qnx --help
 pnpm qnx init dashboard
 pnpm install --no-frozen-lockfile
 pnpm qnx bundle-qnx --app dashboard --out build/dashboard.bundle.js
+cmake -S . -B build/playground -G Ninja -DCMAKE_BUILD_TYPE=Debug -DRNQNX_BUILD_HERMES=ON
+cmake --build build/playground --target rnqnx_playground_host
+./build/playground/bin/rnqnx_playground_host --bundle build/dashboard.bundle.js
 ```
 
-This creates a workspace app and a production QNX Metro bundle. To render it,
-build the existing [host playground](docs/getting-started/qnx-cli.md#render-your-bundle-on-the-host)
-and pass the bundle with `--bundle`. Native builds, QNX runtime deployment and
-Qt provisioning have separate prerequisites.
+Append `-platform offscreen --screenshot build/dashboard.png` to the last command for a headless
+capture. Run `pnpm qnx doctor` to see which QNX prerequisites your machine lacks.
 
-For stock Pi 4/5 QSTI 0.5.0 build 50, use [the QSTI guide](docs/getting-started/raspberry-pi-today.md).
-For the custom Pi 400 image, use [the Pi 400 guide](docs/getting-started/raspberry-pi-400.md)
-and [runtime bring-up](docs/getting-started/pi400-hello-world.md). To run an
-app as a window on the Pi 400's QNX desktop, see
-[the Pi 400 desktop guide](docs/getting-started/pi400-desktop-app.md) and
-[window chrome](docs/getting-started/window-chrome.md).
-`rnqnx_playground` is the Screen probe; `rnqnx_playground_qnx` is the React
-Native runtime. See [CLI commands and limits](docs/getting-started/qnx-cli.md).
+To run on the Pi 400, follow [the Pi 400 guide](docs/getting-started/raspberry-pi-400.md), then
+[runtime bring-up](docs/getting-started/pi400-hello-world.md) and
+[the desktop app guide](docs/getting-started/pi400-desktop-app.md). The commands in those guides
+are not part of the verified quick start above. For a stock Pi 4 or Pi 5 on QSTI 0.5.0 build 50, see
+[the QSTI guide](docs/getting-started/raspberry-pi-today.md).
 
-## Check your checkout
+## Status
 
-```bash
-pnpm typecheck
-pnpm test:js
-pnpm validate:docs
-pnpm validate:macos
+Each row comes from [`docs/component-support.json`](docs/component-support.json). The SHA is the
+last commit that changed that row. Host means the host renderer tests. Pi 400 means scoped proof on
+the one board described above. No row has Pi 4 QSTI evidence. The longer notes, with partial APIs
+and no-ops, are in [component support](docs/component-support.md).
+
+| Component                  | Host       | Pi 400     | Row last changed |
+| -------------------------- | ---------- | ---------- | ---------------- |
+| `View`                     | partial    | scoped     | `7c664c2`        |
+| `Text`                     | partial    | scoped     | `0e87951`        |
+| `Image`                    | supported  | unverified | `0e87951`        |
+| `ScrollView`               | supported  | unverified | `0e87951`        |
+| `TextInput`                | partial    | scoped     | `5aba848`        |
+| `Pressable`                | supported  | scoped     | `6e4882a`        |
+| `FlatList`                 | supported  | unverified | `0e87951`        |
+| `VirtualizedList`          | supported  | unverified | `0e87951`        |
+| `SectionList`              | supported  | unverified | `0e87951`        |
+| `VirtualizedSectionList`   | unverified | unverified | `0e87951`        |
+| `Button`                   | supported  | unverified | `0e87951`        |
+| `TouchableOpacity`         | supported  | unverified | `0e87951`        |
+| `TouchableHighlight`       | unverified | unverified | `0e87951`        |
+| `TouchableWithoutFeedback` | unverified | unverified | `0e87951`        |
+| `ImageBackground`          | supported  | unverified | `0e87951`        |
+| `KeyboardAvoidingView`     | no-op      | unverified | `0e87951`        |
+| `ActivityIndicator`        | supported  | unverified | `0e87951`        |
+| `RefreshControl`           | no-op      | unverified | `0e87951`        |
+| `Modal`                    | partial    | scoped     | `79a4279`        |
+| `SafeAreaView`             | partial    | unverified | `0e87951`        |
+| `Switch`                   | supported  | unverified | `0e87951`        |
+| `StatusBar`                | no-op      | unverified | `73ff82a`        |
+| `QtVideo`                  | unverified | scoped     | `79a4279`        |
+| `QtAudio`                  | unverified | scoped     | `79a4279`        |
+
+Modules outside that table, with their device evidence. Run 2 used a build with Worklets,
+Reanimated, Gesture Handler, Qt SVG and RNSVG on.
+
+- Reanimated, with Worklets: `withSpring` ran to its end state and the UI frame counter advanced.
+  [Run 2 receipt](docs/evidence/pr149-pi400-run2-2026-11-19/README.md), `22039ec`.
+- Gesture Handler: pan with release, tap and double-tap.
+  Same receipt, `22039ec`.
+- `react-native-svg` 15.16.0: fill rules, gradients, filters, patterns, text and touch targets.
+  Same receipt, `22039ec`.
+- `expo-image`: animated GIF and WebP frames and resize. [Receipt](docs/evidence/expo-image-device-2026-11-13),
+  `df434d5`.
+- Keyboard: Escape closed a Modal and the drawer, and a held Down key moved a focus ring. The
+  key events were synthetic Screen events, not a USB keyboard. Same receipt, `22039ec`.
+- Audio: no component named QtAudio exists in the code. QtVideo plays audio files through Qt AudioOutput, and run 2 did not build it in.
+  [Media receipt](docs/evidence/media-2026-11-13.md), `1a9e181`.
+
+## Requirements
+
+- Host for JavaScript work: macOS or Linux, Node 26 or newer, pnpm 12.18.0.
+- Host renderer: Qt 6.11.1 or newer, CMake and Ninja. The quick start was run with Qt 6.12.0, CMake 4.4.5 and Ninja 1.13.2 on macOS.
+- QNX cross-builds: an x86-64 Linux host (Ubuntu 22.04 is the canonical one) with a licensed QNX SDP
+  8.0.5, because SDP 8.0 ships Linux and Windows host tools only. `pnpm qnx doctor` reports gaps.
+- Target: a Raspberry Pi 400 on a custom BCM2711 QNX 8.0.5 image, or a stock Pi 4 or Pi 5 on QSTI
+  0.5.0 build 50 (no results recorded for the stock images). Qt for the target is built from open
+  source ([ADR-0013](docs/adr/0013-open-source-qt.md)).
+
+## Expo and the prebuilt runner
+
+The CLI runs from this checkout. Expo SDK 58 is pinned, and development builds replace Expo Go
+([ADR-0006](docs/adr/0006-expo-dev-builds.md)). To create a native Expo app, run
+`node packages/react-native-qnx-cli/src/bin.mjs project create --project ../notes-qnx --app-id org.example.notes --name "Notes"`.
+Add `--dry-run` to validate the path and identity first. See
+[creating an Expo project](docs/getting-started/expo-project-create.md) and
+[adding QNX to an existing app](docs/getting-started/expo-add-to-existing.md).
+
+`pnpm qnx runner fetch` downloads and checksum-verifies a prebuilt development runner from a
+manifest. No manifest is published yet, so you pass the URL of your own with `--manifest`. See
+[ADR-0018](docs/adr/0018-runner-hosting-and-sdp-boundary.md).
+
+## How it works
+
+```text
+React app (JS)  ->  Metro bundle, run by Hermes
+Fabric shadow tree  ->  Yoga layout
+Qt Quick mounting layer  ->  Qt Quick items, drawn by Qt
+Qt QPA on QNX Screen  ->  the display
+Nitro Modules  ->  native APIs from JS
 ```
 
-The [React Pressable responder receipt](docs/evidence/pressable-qnx-2026-11-07.md)
-records 23/23 host CTests with input/tracing ON and 16/16 with both OFF. Physical
-Pi 400 synthetic Qt input exercises the production React Pressable responder
-path, including remount recovery and failure controls. This does not establish
-physical HID, RNGH or Worklets qualification; the input option remains OFF by
-default.
+Read the [architecture decisions](docs/adr/index.md) and the
+[delivery plans](docs/platform-modernization/README.md).
 
-The [bounded native tracing receipt](docs/evidence/pi400-runtime-trace-2026-11-07.md)
-retains earlier 20/20 ON, 18/18 OFF and 4/4 focused queue-correlation results.
-Physical Pi 400 export, protected-file failure, OFF-path capture and traced
-Nitro worker/shutdown assertions passed at the cited revisions. These native
-diagnostics do not establish input/Fabric/render-loop or presentation markers,
-tracing overhead, or performance budgets. Tracing remains OFF by default.
+## Known gaps
 
-`pnpm test:js` stops at the first failing file. Known macOS failures and a
-per-file command are in
-[the clean-host simulation receipt](docs/evidence/clean-host-sim-2026-11-12-b51b49c.md#known-test-failures-on-macos).
+- No release gate has passed. The 11 gates in `v1-readiness.json` are all pending with empty
+  evidence.
+- Every device result comes from one Pi 400. Stock Pi 4 and Pi 5 are unproven.
+- 1920x1080 is unproven on current builds. The Pi ran at 1024x768 because its monitor EDID is
+  unreadable. An earlier 2026-11-07 Hello World capture is 1920x1080.
+- Pinch, rotation and multi-pointer gestures are unproven. JavaScript still runs on the GUI thread,
+  so a gesture that keeps running while JS is blocked is unproven too.
+- A real USB keyboard held down is unproven. IME and software keyboards are unqualified.
+- Video and Audio cards do not run in the current showcase build, because QtVideo was off in it.
+  The Pi 400 image has no HDMI audio driver.
+- Device performance is unmeasured. Host timings do not predict QNX numbers.
+- `RemoteImageCard` load times of 154149 ms and 618203 ms in run 2 are unexplained.
+- Per-key repeat counts and whether Modal `onRequestClose` fired on Escape rest on screenshots only.
+- Hosted CI covers Linux host builds and source checks. It does not cross-build for QNX or run on a
+  device ([required checks](docs/releases/required-checks.md)).
 
-`validate:macos` runs host checks. It does not cross-build or run QNX.
-The dated handoff records earlier billing refusals.
-[PR #68](https://github.com/mikevocalz/react-native-qnx/pull/68/checks) starts
-hosted CI again; local passes remain separate. `pnpm validate:v1` checks the release
-record and exits nonzero while required acceptance evidence is missing.
-
-## Know what is supported
-
-[Component support](docs/component-support.md) lists host, Pi 400 and Pi 4 QSTI
-results separately, including partial APIs and intentional no-ops. Nitro v1
-alpha is pinned exactly; sync HybridClass and optional async dispatcher device
-proof are narrower than generic third-party module support. IME, multi-touch
-and Reanimated integration remain gaps.
-
-The [experimental v2 native Qt APIs](docs/v2/README.md) add an opt-in React SVG
-document component and native C++ motion/graphics primitives. Their Linux host
-validation and separate Worklets, GPU-library and QNX target gates are recorded
-in the v2 plan; they are not part of the default platform support claim.
+## Dependencies
 
 <!-- generated:dependencies:start -->
 
@@ -133,13 +188,17 @@ in the v2 plan; they are not part of the default platform support claim.
 
 <!-- generated:dependencies:end -->
 
-See [the compatibility matrix](docs/getting-started/compatibility-matrix.md),
-[architecture decisions](docs/adr/index.md), [delivery plans](docs/platform-modernization/README.md),
-[contributing](CONTRIBUTING.md) and [security policy](SECURITY.md).
-The separate Linux/Wayland target is documented under [Marathon](docs/marathon/ARCHITECTURE.md).
-Licensed app components follow [the optional premium-component policy](docs/policy/premium-components.md).
+## Docs, contributing, license
 
-## License
+[Evidence gallery](docs/v1/evidence-gallery.md), [v1 documentation](docs/v1/README.md),
+[compatibility matrix](docs/getting-started/compatibility-matrix.md),
+[CLI commands](docs/getting-started/qnx-cli.md), [current state](docs/handoff/CURRENT_STATE.md),
+[contributing](CONTRIBUTING.md), [security policy](SECURITY.md) and the
+[premium-component policy](docs/policy/premium-components.md).
 
-Repository-authored code is [MIT](LICENSE). Dependencies retain their own terms;
-see [third-party notices](THIRD_PARTY_NOTICES.md) and [packaging](docs/packaging.md).
+Repository code is [MIT](LICENSE). Dependencies keep their own terms: see
+[third-party notices](THIRD_PARTY_NOTICES.md) and [packaging](docs/packaging.md).
+
+Built on [React Native](https://reactnative.dev), [Hermes](https://hermesengine.dev),
+[Yoga](https://www.yogalayout.dev), [Qt](https://www.qt.io), [Nitro Modules](https://nitro.margelo.com),
+[Expo](https://expo.dev) and [QNX](https://www.qnx.com/developers/docs/8.0/).
