@@ -32,6 +32,10 @@ const SOURCE_EXTENSIONS = new Set(['.js', '.jsx', '.mjs', '.cjs', '.ts', '.tsx']
 const SKIPPED_DIRECTORIES = new Set(['node_modules', 'build', '.git']);
 const REQUIRE = /\brequire\(\s*(['"])(\.{1,2}\/[^'"]+)\1\s*\)/g;
 
+/**
+ * @param {string} directory
+ * @returns {AsyncGenerator<string, void, undefined>}
+ */
 async function* sourceFiles(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     if (entry.isDirectory()) {
@@ -43,7 +47,7 @@ async function* sourceFiles(directory) {
   }
 }
 
-const sha256 = async (file) =>
+const sha256 = async (/** @type {string} */ file) =>
   createHash('sha256')
     .update(await readFile(file))
     .digest('hex');
@@ -57,6 +61,7 @@ export async function referencedAssets(appRoot) {
   const root = path.resolve(appRoot);
   /** @type {Map<string, { source: string, staged: string, referencedBy: string[] }>} */
   const found = new Map();
+  /** @type {string[]} */
   const missing = [];
   for await (const file of sourceFiles(root)) {
     const text = await readFile(file, 'utf8');
@@ -97,6 +102,7 @@ export async function referencedAssets(appRoot) {
  * @param {string} deployDir
  */
 export async function missingFromDeploy(appRoot, deployDir) {
+  /** @type {string[]} */
   const problems = [];
   for (const asset of await referencedAssets(appRoot)) {
     const target = path.join(deployDir, asset.staged);
@@ -130,10 +136,13 @@ export async function stageAssets(appRoot, deployDir) {
   return assets.map((asset) => asset.staged);
 }
 
+/** @param {string[]} argv */
 async function main(argv) {
   const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   let app = path.join(repoRoot, 'apps/component-gallery');
+  /** @type {string | null} */
   let out = null;
+  /** @type {string | null} */
   let check = null;
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--app') app = path.resolve(argv[++i] ?? '');
@@ -152,6 +161,7 @@ async function main(argv) {
     console.log(`all referenced assets are staged in ${check}`);
     return;
   }
+  if (out === null) throw new Error('unreachable: --out is required');
   for (const staged of await stageAssets(app, out)) console.log(`staged ${staged}`);
 }
 
