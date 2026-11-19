@@ -44,9 +44,14 @@ for (const f of walk(docs).filter((f) => f.endsWith('.mdx'))) {
   }
 }
 
+const support = JSON.parse(readFileSync(join(site, '../docs/component-support.json'), 'utf8'));
+for (const c of support.components)
+  if (!pages.has('/docs/reference/components/' + c.name.toLowerCase()))
+    errors.push(`no reference page for component ${c.name}`);
+
 const out = join(site, 'out');
 if (existsSync(out)) {
-  for (const need of ['llms.txt', 'llms-full.txt', 'SKILL.md', 'api/search', 'docs.html'])
+  for (const need of ['llms.txt', 'llms-full.txt', 'SKILL.md', 'api/search', 'docs.html', 'sitemap.xml', 'robots.txt'])
     if (!existsSync(join(out, need))) errors.push(`missing build output: out/${need}`);
   for (const f of walk(out).filter((f) => /\.(html|txt|md|json)$/.test(f)))
     if (banned.test(readFileSync(f, 'utf8'))) errors.push(`banned term in out/${relative(out, f)}`);

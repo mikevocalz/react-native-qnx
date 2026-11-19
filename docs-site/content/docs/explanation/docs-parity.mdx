@@ -1,0 +1,79 @@
+---
+title: Documentation parity
+description: What the docs of comparable desktop React Native platforms offer, what this site offers, and what was added to close each gap.
+---
+
+This page compares this site with the public docs of four related projects. Each cell comes from a page or file fetched on 2026-11-19. Where a fetch could not settle a question, the cell says **unverified**, not absent.
+
+## Sources
+
+| Project | What it is | Pages read | Notes |
+| --- | --- | --- | --- |
+| [Legend Spark](https://legend.so/spark) | React Native on macOS, built on Expo Desktop. Marked experimental. | [home](https://legend.so/spark), [getting started](https://legend.so/spark/getting-started/), [API guide](https://legend.so/spark/reference/), [llms.txt](https://legend.so/spark/llms.txt), [sitemap](https://legend.so/sitemap.xml), [robots.txt](https://legend.so/robots.txt) | The reader returned page text only, so search, theme toggle, copy buttons and edit links could not be seen. |
+| [Expo Desktop](https://expo-desktop-docs.vercel.app/) | Community project adding macOS and Windows to Expo apps. Not an official Expo project. | [home](https://expo-desktop-docs.vercel.app/), [prerequisites](https://expo-desktop-docs.vercel.app/guides/prerequisites) | Only these two pages were reachable. `/llms.txt`, `/sitemap.xml` and `/robots.txt` returned 404. Other page slugs were guessed and returned 404, so their real URLs are unknown. |
+| [react-native-macos](https://microsoft.github.io/react-native-macos/) | Microsoft's macOS platform. Docusaurus site. | [intro](https://microsoft.github.io/react-native-macos/docs/intro), [getting started](https://microsoft.github.io/react-native-macos/docs/getting-started), [API](https://microsoft.github.io/react-native-macos/api), [sitemap](https://microsoft.github.io/react-native-macos/sitemap.xml) | `/llms.txt` returned 404. Search, theme toggle and copy buttons are unverified. |
+| [react-native-windows](https://microsoft.github.io/react-native-windows/) | Microsoft's Windows platform. Docusaurus site. | [getting started](https://microsoft.github.io/react-native-windows/docs/getting-started), [native platform](https://microsoft.github.io/react-native-windows/docs/native-platform), [releases](https://microsoft.github.io/react-native-windows/docs/releases), [sitemap](https://microsoft.github.io/react-native-windows/sitemap.xml) (first 100,000 of 136,000 characters) | `/llms.txt` returned 404. Search UI, theme toggle and copy buttons are unverified. |
+
+React Native's own [out-of-tree platforms page](https://reactnative.dev/docs/out-of-tree-platforms) sets no documentation requirements. It lists platforms, links each to its repository, and says platform authoring is poorly documented. It is not a benchmark, so the matrix below compares against the four projects above.
+
+Not reached: Spark's `legend-docs` source repository and the raw HTML of every site above, which would settle the unverified rows. Nothing in this page was copied from those sites.
+
+## Parity matrix
+
+Legend: **yes** means the page or feature exists. **partial** means a narrower version exists. **no** means the site does not have it where we looked. **?** means unverified.
+
+| Feature | Spark | Expo Desktop | RN macOS | RN Windows | This site | Gap and action |
+| --- | --- | --- | --- | --- | --- | --- |
+| Getting started | yes | yes (home quickstart) | yes | yes | yes: [Quick start](/docs/tutorials/quick-start) | None. |
+| Environment and requirements page | partial (prerequisites section) | yes (prerequisites) | partial (links to the Windows page) | yes (system requirements) | yes: [Requirements](/docs/reference/requirements) | Added. |
+| Device setup and first run | partial | partial | partial | partial | yes: [First device run](/docs/tutorials/first-device-run) | None. |
+| CLI reference | not seen | not seen | yes | yes (per command) | yes: [CLI](/docs/reference/cli) | None. |
+| Config reference | yes (application configuration) | yes (app.json page) | no | yes (config schema) | yes: [Config](/docs/reference/config) | None. |
+| Per-component pages | no (per-capability pages) | no | no (View props and events only) | partial (one parity page, one TextInput page) | yes: [24 pages](/docs/reference/component-matrix), one per component | Added, generated from `docs/component-support.json`. |
+| API reference | partial (API guide) | no | yes (View additions) | yes (about 185 native API pages) | partial: [component matrix](/docs/reference/component-matrix), [module matrix](/docs/reference/module-matrix) | Open. There is no per-function reference for the native API. See "Left open". |
+| Platform detection | not seen | not seen | not seen | yes | yes: [Platform detection](/docs/reference/platform-detection) | Added. |
+| Metro setup for the platform | not seen | not seen | not seen | yes | yes: [Metro config](/docs/how-to/metro-config) | Added. |
+| Native modules guide | ? | no (not in nav) | yes | yes | yes: [Nitro modules](/docs/how-to/nitro-modules) | None. |
+| Troubleshooting | partial (limitations page) | no | no | yes | yes: [Troubleshooting](/docs/troubleshooting) | None. |
+| FAQ | no | no | no | no | yes: [FAQ](/docs/faq) | None. |
+| Known limits | yes | yes (supported scope) | no | partial (parity page) | yes: [Known gaps](/docs/reference/known-gaps), [Status](/docs/reference/status) | None. |
+| Changelog | no (CHANGELOG.md in repo) | no | no (release process pages) | no (release strategy page) | yes: [Changelog](/docs/reference/changelog) | Added, generated from merged pull requests. |
+| Versioning and support policy | partial (migration page) | no | yes (versioning page) | yes (release strategy, support page) | yes: [Versioning and support](/docs/explanation/versioning-and-support) | Added. |
+| Versioned docs | no (single version) | no | no | yes (0.83, 0.84, 0.85 selector) | no | Closed by decision: no release exists to version. See below. |
+| Contributing | partial (section in getting started) | no | yes | no | yes: [Contributing](/docs/contributing) | None. |
+| Architecture | yes | no | no | yes (new architecture page) | yes: [Architecture](/docs/explanation/architecture), [Threading](/docs/explanation/threading), [ADR index](/docs/explanation/adr-index) | None. |
+| CI and release checks | no | no | partial (release pages) | partial | yes: [CI checks](/docs/reference/ci-checks), [Release gates](/docs/reference/release-gates) | Added. |
+| Licensing and packaging | no | yes (licences page) | no | partial | yes: [Licensing and packaging](/docs/explanation/licensing-and-packaging) | Added. |
+| Evidence trail | no | no | no | no | yes: [Verification log](/docs/reference/verification-log) | None. |
+| Search | ? | yes (Cmd+K) | ? | route exists, box unverified | yes (static index at `/api/search`) | None. |
+| llms.txt | yes | no (404) | no (404) | no (404) | yes: `/llms.txt`, `/llms-full.txt`, per-page `.md` | None. |
+| Per-page Markdown export | yes | ? | ? | ? | yes (copy button and `/llms.mdx/docs/<page>.md`) | None. |
+| sitemap.xml and robots.txt | yes | no (404) | yes (sitemap) | yes (sitemap) | yes, added | Added. Needs `DOCS_SITE_URL` at deploy time. |
+| Copy-code buttons | ? | ? | ? | ? | yes | None. |
+| Dark mode | ? | ? | ? | ? | yes (theme toggle) | None. |
+| Edit on GitHub | no (issue link only in fetched text) | no | yes | partial (points at a samples repo) | yes, added to every page | Added. Generated pages link to their data file. |
+| Report a problem link | yes (issue form) | no | no | no | yes, added | Added. |
+| On-this-page table of contents | ? | yes | yes | ? | yes | None. |
+| Previous and next links | ? | yes | yes | ? | yes | None. |
+| Sidebar sections by user task | ? | partial | partial | yes | yes (four Diataxis sections plus help) | None. |
+| Social preview images | ? | ? | ? | ? | yes (`/og/docs/...`) | None. |
+| Samples or showcase | no | no | partial (links out) | yes (samples, showcase) | no | Open. No sample gallery exists to link to. |
+
+The "this site" column was read from the built output (`out/`) and the page source, not from memory. Fumadocs renders the table of contents, previous and next links and breadcrumbs on the client, so they are checked in a browser, not in the static HTML (see the [verification log](/docs/reference/verification-log)).
+
+## Reading the matrix
+
+The projects fall into two groups. Spark and Expo Desktop are young, document by capability and omit reference material such as a CLI page or changelog. The Microsoft sites are mature, so they carry a CLI reference, release process pages and, for Windows, versioned docs and a native API reference. This site carries more reference than the first group because every status claim has to cite a commit. It has less API depth than react-native-windows.
+
+Three things only this site has: a status and a commit SHA on every component row, a verification log of every documented command, and the pages being generated from `docs/component-support.json` and git, so they cannot drift from the data.
+
+## Left open
+
+- **Per-function native API reference.** react-native-windows publishes one page per native type. Doing that here means generating pages from the C++ headers. The Nitro and Qt host APIs are still changing, so a generated reference would go stale between commits. Until the API settles, [Nitro modules](/docs/how-to/nitro-modules) and [Threading](/docs/explanation/threading) are the reference.
+- **Versioned docs.** Every sibling site that versions its docs has tagged releases. This repository has none (`git tag` prints nothing), and v1 is not released. When a release exists, the docs need a version selector and a frozen copy per release.
+- **Samples gallery.** react-native-windows links to a samples repository. The playground app in `apps/` is the only sample here, and it has no page.
+- **Search quality.** The search index is Fumadocs' static index. It has not been compared against the others, and none of the other sites could be tested interactively.
+
+## Layout references
+
+Layout notes from Mobbin for the changelog and component pages are in `docs-site/REFERENCES.md` in the repository. The Mobbin search returned few documentation screens, so those notes are thin.
