@@ -5,12 +5,12 @@ description: What is proven on a device, what is host-tested, what is not proven
 
 Four statuses appear in these docs. No page uses "seamless" or similar wording for a feature without a device-verified row and the commit behind it.
 
-| Status | Meaning |
-| --- | --- |
+| Status          | Meaning                                                                       |
+| --------------- | ----------------------------------------------------------------------------- |
 | Device-verified | A receipt shows it running on the custom Pi 400 image. The scenario is named. |
-| Host-tested | A host test covers it, run in CI or locally. No device receipt. |
-| Untested | No claim either way. |
-| Not supported | Not implemented. |
+| Host-tested     | A host test covers it, run in CI or locally. No device receipt.               |
+| Untested        | No claim either way.                                                          |
+| Not supported   | Not implemented.                                                              |
 
 "Host-tested" in this repository means a hosted CI job builds and runs the test on Linux. The repository does not use a "Tier A" label for it.
 
@@ -18,15 +18,15 @@ Four statuses appear in these docs. No page uses "seamless" or similar wording f
 
 Hardware: Raspberry Pi 400, custom BCM2711 image, QNX 8.0.5.
 
-| Capability | Receipt |
-| --- | --- |
+| Capability                                      | Receipt                                                                                                            |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | Hello World through Fabric, Hermes and Qt Quick | [receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-hello-world-2026-11-07.txt) |
-| Reanimated timing and spring | [run 1](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19) |
-| Gesture Handler pan, tap, double-tap | [run 1](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19) |
-| SVG and expo-image cards | [run 2](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19) |
-| Escape closes a Modal and a drawer | [run 2](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19) |
-| Held key repeat via synthetic Screen events | [key hold](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-keyhold-2026-11-19) |
-| Metro, Fast Refresh and reload | [dev client](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pi400-dev-client-2026-11-13) |
+| Reanimated timing and spring                    | [run 1](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19)        |
+| Gesture Handler pan, tap, double-tap            | [run 1](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19)        |
+| SVG and expo-image cards                        | [run 2](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19)        |
+| Escape closes a Modal and a drawer              | [run 2](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19)        |
+| Held key repeat via synthetic Screen events     | [key hold](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-keyhold-2026-11-19)  |
+| Metro, Fast Refresh and reload                  | [dev client](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pi400-dev-client-2026-11-13)   |
 
 ## Not proven
 

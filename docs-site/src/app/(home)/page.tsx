@@ -93,9 +93,7 @@ pnpm qnx bundle-qnx --app dashboard --out build/dashboard.bundle.js`}</code>
             <Link href="/docs/tutorials/first-device-run" className="font-medium underline">
               I have a QNX SDP and a board
             </Link>
-            <p className="mt-2 text-sm text-fd-muted-foreground">
-              See what a Pi 400 run needs.
-            </p>
+            <p className="mt-2 text-sm text-fd-muted-foreground">See what a Pi 400 run needs.</p>
           </li>
           <li className="rounded-md border border-fd-border p-4">
             <Link href="/docs/explanation/threading" className="font-medium underline">

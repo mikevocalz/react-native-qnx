@@ -13,3 +13,16 @@ vnext/generated/
 # Third-party license text, kept byte-identical to its upstream source.
 native/app-identity/fonts/
 tests/fixtures/rnsvg/manifest.json
+
+# Documentation site: generated and installed output.
+docs-site/.next/
+docs-site/.source/
+docs-site/out/
+docs-site/node_modules/
+docs-site/package-lock.json
+docs-site/next-env.d.ts
+# Written by docs-site/scripts/generate-data.mjs; formatting would break its --check.
+docs-site/content/docs/reference/component-matrix.mdx
+docs-site/content/docs/reference/release-gates.mdx
+docs-site/content/docs/explanation/adr-index.mdx
+docs-site/src/generated/

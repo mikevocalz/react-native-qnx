@@ -35,12 +35,12 @@ const config: ExpoConfig = {
 export default config;
 ```
 
-| Field | Values | Default |
-| --- | --- | --- |
-| `controls` | `macos` (left, round), `windows` (right) | `macos` |
-| `titleBarStyle` | `default`, `hidden`, `none` | `default` |
-| `initialSize` | `{ width, height }`, integers 1 to 16384 | none |
-| `unavailableControls` | `hide`, `disable` | `hide` |
+| Field                 | Values                                   | Default   |
+| --------------------- | ---------------------------------------- | --------- |
+| `controls`            | `macos` (left, round), `windows` (right) | `macos`   |
+| `titleBarStyle`       | `default`, `hidden`, `none`              | `default` |
+| `initialSize`         | `{ width, height }`, integers 1 to 16384 | none      |
+| `unavailableControls` | `hide`, `disable`                        | `hide`    |
 
 With `titleBarStyle: "none"` nothing is drawn and the app owns its exit path. Without `initialSize` the app fills the screen on QNX.
 

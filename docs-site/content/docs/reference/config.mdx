@@ -7,23 +7,23 @@ description: The app.json and config plugin fields React Native QNX reads, with 
 
 ## Identity
 
-| Field | Required | Meaning |
-| --- | --- | --- |
-| `expo.name` | yes | Window title and About name. Tile label when `shortName` is absent. |
-| `expo.icon` | no | Square PNG, at least 1024 by 1024. Unset uses `template/qnx/assets/icon.png`. |
-| `expo.extra.rnqnx.appId` or plugin `appId` | yes | Reverse-DNS app ID, for example `org.example.notes`. |
-| `expo.extra.rnqnx.componentName` or plugin `componentName` | no | Registered React component. Defaults to `main`. |
-| `expo.extra.rnqnx.icon` | no | Icon override for QNX only. |
-| `expo.extra.rnqnx.shortName` | no | Launcher tile label. |
+| Field                                                      | Required | Meaning                                                                       |
+| ---------------------------------------------------------- | -------- | ----------------------------------------------------------------------------- |
+| `expo.name`                                                | yes      | Window title and About name. Tile label when `shortName` is absent.           |
+| `expo.icon`                                                | no       | Square PNG, at least 1024 by 1024. Unset uses `template/qnx/assets/icon.png`. |
+| `expo.extra.rnqnx.appId` or plugin `appId`                 | yes      | Reverse-DNS app ID, for example `org.example.notes`.                          |
+| `expo.extra.rnqnx.componentName` or plugin `componentName` | no       | Registered React component. Defaults to `main`.                               |
+| `expo.extra.rnqnx.icon`                                    | no       | Icon override for QNX only.                                                   |
+| `expo.extra.rnqnx.shortName`                               | no       | Launcher tile label.                                                          |
 
 ## Window
 
-| Field | Values | Default |
-| --- | --- | --- |
-| `window.controls` | `macos`, `windows` | `macos` |
-| `window.titleBarStyle` | `default`, `hidden`, `none` | `default` |
-| `window.initialSize` | `{ width, height }`, integers 1 to 16384 | none |
-| `window.unavailableControls` | `hide`, `disable` | `hide` |
+| Field                        | Values                                   | Default   |
+| ---------------------------- | ---------------------------------------- | --------- |
+| `window.controls`            | `macos`, `windows`                       | `macos`   |
+| `window.titleBarStyle`       | `default`, `hidden`, `none`              | `default` |
+| `window.initialSize`         | `{ width, height }`, integers 1 to 16384 | none      |
+| `window.unavailableControls` | `hide`, `disable`                        | `hide`    |
 
 Each value is validated by the config plugin, `prepare-native`, CMake and the C++ reader, so a typo fails at prebuild. The window needs a build with `RNQNX_ENABLE_WINDOW_CHROME=ON`.
 
