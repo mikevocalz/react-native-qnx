@@ -5,7 +5,9 @@ description: Create a React Native QNX app and produce a QNX JavaScript bundle o
 
 By the end you will have a new app in `apps/dashboard` and a production Metro bundle at `build/dashboard.bundle.js`. This page covers the host side only. Running the bundle on a device needs a QNX SDP and a board; see [first device run](/docs/tutorials/first-device-run).
 
-Every command below was run from a fresh clone at commit `be7560b` on macOS arm64 with Node 26.13.0 and pnpm 12.18.0. The results are in the [verification log](/docs/reference/verification-log).
+Every command below was run from a fresh clone on macOS arm64 with Node 26.13.0 and pnpm 12.18.0. The verifier ran it at commit `be7560b`, and a cold reader repeated it at `73e5972` (current `main` when written) with the same results. The results are in the [verification log](/docs/reference/verification-log).
+
+Allow about 1 GB of disk (83 MB for the clone, about 730 MB after install). A first install downloads about 520 packages, so it takes longer on a slow network than the few seconds shown below.
 
 ## Before you start
 
@@ -28,7 +30,15 @@ npm install -g pnpm@12.18.0
 pnpm --version
 ```
 
-The verifier used a prefixed install instead (`npm install --prefix <dir> pnpm@12.18.0`) so it would not change the machine's global pnpm. It printed `12.18.0` either way.
+To leave your global pnpm alone, install into a prefix and put it first on your PATH:
+
+```bash
+npm install --prefix ~/pnpm12 pnpm@12.18.0
+export PATH=~/pnpm12/node_modules/.bin:$PATH
+pnpm --version
+```
+
+npm may warn that pnpm's install scripts were blocked. pnpm still runs. Both routes printed `12.18.0`.
 
 ## 1. Clone and install
 
@@ -38,7 +48,7 @@ cd react-native-qnx
 pnpm install --frozen-lockfile
 ```
 
-Expected: `Scope: all 15 workspace projects`, then `Done in` a few seconds.
+Expected: `Scope: all 15 workspace projects`, then `Done in <time> using pnpm v12.18.0`.
 
 ## 2. Check the pinned dependencies
 
@@ -46,7 +56,7 @@ Expected: `Scope: all 15 workspace projects`, then `Done in` a few seconds.
 pnpm validate:dependencies
 ```
 
-Expected: a list of `SOURCE:` checks, ending with `validate:dependencies passed.`
+Expected: a list of `PIN:` and `SOURCE:` checks, ending with `validate:dependencies passed.`
 
 ## 3. See the CLI
 
@@ -63,7 +73,7 @@ pnpm qnx init dashboard
 pnpm install --no-frozen-lockfile
 ```
 
-Expected: `Created apps/dashboard.` The second install links the new workspace app. It adds about 13 lines to the tracked `pnpm-lock.yaml`. Commit the app and the lockfile together.
+Expected: `Created apps/dashboard.` The second install links the new workspace app. Its scope reads 16 workspace projects. It adds about 13 lines to the tracked `pnpm-lock.yaml`. Commit the app and the lockfile together.
 
 Choose a lowercase name made of letters, digits and hyphens. The command refuses an existing destination.
 
@@ -74,7 +84,7 @@ pnpm qnx bundle-qnx --app dashboard --out build/dashboard.bundle.js
 ls -l build/dashboard.bundle.js
 ```
 
-Expected: Metro v0.87.1 output ending with `Done writing bundle output`, and a file of about 480 KB.
+Expected: Metro v0.87.1 output ending with `Done writing bundle output`, and a file of about 480,000 bytes (`ls -l` shows 482873 here). The last two lines of the output carry the result; the rest is Metro's banner and progress bar.
 
 The output must be inside the checkout's `build/` directory. A path elsewhere fails with `Bundle output must be inside this checkout's build/ directory.`
 
@@ -84,7 +94,7 @@ The output must be inside the checkout's `build/` directory. A path elsewhere fa
 pnpm qnx deploy-qnx --arch aarch64 --config Release --target rnqnx_playground --dry-run
 ```
 
-Expected: JSON naming `scripts/deploy-qnx.sh` and its arguments. Nothing is deployed. `--dry-run` works on every executable command.
+Expected: JSON naming `scripts/deploy-qnx.sh` (as an absolute path under your checkout) and its arguments. Nothing is deployed. `--dry-run` works on every executable command.
 
 ## 7. Check your checkout
 
