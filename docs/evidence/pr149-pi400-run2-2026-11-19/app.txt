@@ -1,0 +1,13 @@
+QQnxScreen: QQNX_PHYSICAL_SCREEN_SIZE variable not set. Could not determine physical screen size. Defaulting to 150x90.
+Running "RNQnxPlayground"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1119 07:39:28.675468     1 conversions.h:368] Could not parse yoga::PositionType: left
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":1,"view":20,"sourceWidth":1024,"sourceHeight":1024,"cache":"none"}
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":1,"view":20,"sourceWidth":64,"sourceHeight":48,"cache":"none"}
+RNQNX_JS_LOG [gui] IMAGE-PROOF startAnimating dispatched
+[RemoteImageCard] loaded https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 in 154149 ms
+[RemoteImageCard] Image.getSize https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 = 640x427
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":2,"view":20,"sourceWidth":64,"sourceHeight":48,"cache":"none"}
+RNQNX_JS_LOG [gui] reanimated UI frames: 27204, shared x: 220, runtime kind: 1
+[RemoteImageCard] loaded https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 in 618203 ms
+[RemoteImageCard] Image.getSize https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 = 640x427

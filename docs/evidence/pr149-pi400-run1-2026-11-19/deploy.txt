@@ -1,0 +1,23 @@
+copied
+mk=0
+scp=0
+/system/bin/sha256sum
+/system/bin/shasum
+/system/bin/openssl
+bash: line 1: sha256: command not found
+942c64cea3fc603be2e2343fcac557a5f132f2639c7e57aa8375ecf526726419  org.rnqnx.showcase
+358527886692ba802744dda0c6339b4713f5fde11c8ccbb270152596600204a5  app.bundle.js
+a48934c6560d8da5adeb7fadb7469e4c02b9dd925846fdbb69bf36f78f96f62f  libhermesvm.so
+total 49460
+drwxr-xr-x   5 qnxuser qnxuser     4096 2026-11-19 05:50 .
+drwx--x---+ 75 qnxuser qnxuser     4096 2026-11-19 05:50 ..
+-rw-r--r--   1 qnxuser qnxuser     1362 2026-11-19 05:50 ExpoModules.generated.h.in
+-rw-r--r--   1 qnxuser qnxuser  4576155 2026-11-19 05:50 app.bundle.js
+drwxr-xr-x   3 qnxuser qnxuser     4096 2026-11-19 05:50 assets
+drwxr-xr-x   2 qnxuser qnxuser     4096 2026-11-19 05:50 icons
+-rwxr-xr-x   1 qnxuser qnxuser  8723680 2026-11-19 05:50 libhermesvm.so
+-rw-------   1 qnxuser qnxuser     4574 2026-11-19 05:50 native-app.json
+-rwxr-xr-x   1 qnxuser qnxuser 11994472 2026-11-19 05:50 org.rnqnx.showcase
+drwxr-xr-x   4 qnxuser qnxuser     4096 2026-11-19 05:50 plugins
+-rwxr-xr-x   1 qnxuser qnxuser     4130 2026-11-19 05:50 run-app.sh
+/dev/hd0t179            19955692   5486800  14468892      28%  /data/          

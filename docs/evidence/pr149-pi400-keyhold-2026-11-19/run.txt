@@ -1,0 +1,38 @@
+## keyhold deploy Thu Nov 19 02:57:54 EST 2026
+3d52daac5471c49ee7046c7d2f4fa7e79740f3376c3213a7be2e7d2d270262fa  /data/home/qnxuser/bin/rnqnx-inject5
+grep=1
+/dev/io-hid/io-hid
+keyhold: MS must be 1..30000 and HZ 1..120
+bad=2
+39272482 org.rnqnx.showcase
+pidin=0
+## explore Thu Nov 19 02:59:23 EST 2026
+click_exit=0
+tab_exit=0
+shot_ex1=0
+down_exit=0
+shot_ex2=0
+## hold test Thu Nov 19 03:00:18 EST 2026
+log_lines_before=6
+shot_A0=0
+CMD keyhold down 800 10
+A_exit=0
+shot_A1=0
+CMD keyhold down 2500 (bg)
+shot_B_during=0
+B_exit=0
+shot_B1=0
+shot_B2=0
+log_lines_after=6
+Running "RNQnxPlayground"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1119 07:58:28.380719     1 conversions.h:368] Could not parse yoga::PositionType: left
+[RemoteImageCard] loaded https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 in 30905 ms
+[RemoteImageCard] Image.getSize https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 = 640x427
+## stop Thu Nov 19 03:01:34 EST 2026
+QQnxScreen: QQNX_PHYSICAL_SCREEN_SIZE variable not set. Could not determine physical screen size. Defaulting to 150x90.
+RNQNX_SINGLE_INSTANCE replacing pid 39272482 (release)
+RNQNX_SINGLE_INSTANCE stopped org.rnqnx.showcase
+stop_exit=0
+grep=1
+shot=0

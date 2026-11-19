@@ -68,3 +68,16 @@ Missing for each of modal Escape, drawer Escape and the held `down` on the Advan
 
 A fresh run that records those fields next to the screenshots closes this finding. Until
 then the three screenshots stay historical, as the status note at the top says.
+
+## Update, 2026-11-19: where the missing fields are now recorded
+
+Modal Escape, drawer Escape and the held `down` were run again on the Pi 400 with the full record
+the table above asks for. The three screenshots and notes above are unchanged.
+
+- Modal Escape and drawer Escape: `docs/evidence/pr149-pi400-run2-2026-11-19/README.md`
+  (`modal-open.png`, `modal-after-escape.png`, `drawer-open.png`, `drawer-after-escape.png`,
+  `run.txt` with every command and exit status, `SHA256SUMS`, build `240dc08`). The run has no app-log
+  line for the Modal `onRequestClose` or the drawer close, so that row of the table stays open.
+- Held `down`: `docs/evidence/pr149-pi400-run2-2026-11-19/README.md` holds the single key-down result
+  (focus moved one tab), and `docs/evidence/pr149-pi400-keyhold-2026-11-19/README.md` holds the run
+  with `SCREEN_FLAG_KEY_REPEAT` events from `rnqnx-inject keyhold`.
