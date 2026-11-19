@@ -1,0 +1,52 @@
+name: Documentation site
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs-site/**'
+      - 'docs/component-support.json'
+      - 'docs/releases/v1-readiness.json'
+      - 'docs/adr/**'
+      - '.github/workflows/docs-site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docs-site:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: docs-site
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          # generate-data.mjs reads `git log` for each evidence file.
+          fetch-depth: 0
+
+      - name: Use Node 26
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 26.13.1
+          package-manager-cache: false
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Generated pages are current
+        run: npm run data:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run types:check
+
+      - name: Build static site
+        run: npm run build
+
+      - name: Check links, front matter and build output
+        run: npm run check:content

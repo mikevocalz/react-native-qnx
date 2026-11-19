@@ -1,0 +1,24 @@
+---
+title: Cross-build from Windows
+description: What the repository documents about using a Windows 11 PC as the QNX SDP build host, and what it does not.
+---
+
+The repository has no verified Windows build recipe. This page states what is documented so you do not assume more.
+
+## What is documented
+
+- QNX SDP 8.0.5 supports Windows 11 x64, Ubuntu Desktop 22.04 and 24.04, and RHEL 9 hosts. It does not support macOS or ARM hosts.
+- The Pi 400 guide recommends a spare x86-64 Windows PC as the SDP host, with a Mac for editing and Git. See [development host](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-400.md#development-host-use-the-spare-windows-pc-first).
+- Windows 10 is a legacy host. Windows 7, 8, 8.1 and 32-bit Windows are unsupported.
+
+## What is not verified
+
+The repository's helper scripts are POSIX shell. On a native Windows SDP, validate the QNX toolchain first and use the environment QNX supplies. Do not assume the bash helpers run unchanged. Nothing in the repository shows `pnpm qnx build-qnx` running on Windows. The app identity tool also refuses to configure on Windows.
+
+## The path that is verified
+
+Ubuntu 22.04 on x86-64 is the host the project builds on. Its cross-builds run in a `qnx805-build` container with the licensed SDP. If your PC cannot run Windows 11, the Pi 400 guide recommends installing Ubuntu 24.04 on a spare SSD or dual booting.
+
+On macOS, `pnpm qnx doctor` reports that `qcc` is unavailable even with the SDP sourced, because `QNX_HOST` selects Windows host tools. The error is correct for that host.
+
+If you use a Windows PC, set up the toolchain from the QNX documentation at [qnx.com/developers/docs/8.0](https://www.qnx.com/developers/docs/8.0/), then follow [build and deploy](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/build-and-deploy.md) and report which steps need changes.

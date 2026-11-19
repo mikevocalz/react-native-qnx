@@ -1,0 +1,40 @@
+---
+title: Use the prebuilt runner
+description: Download and verify a prebuilt development runner archive. No runner manifest is published yet.
+---
+
+A prebuilt runner is a native host you download instead of building. The command to get one exists. No manifest is published, so there is nothing to download from the project today.
+
+```bash
+pnpm qnx runner --help
+```
+
+The help prints these commands:
+
+```text
+runner fetch --target <target> --manifest <url> [--cache <dir>]
+runner list  --manifest <url>
+```
+
+Targets: `qnx-aarch64-pi400`, `macos-arm64`, `macos-x86_64`, `linux-x86_64`, `linux-aarch64`. The manifest URL comes from `--manifest` or the `RNQNX_RUNNER_MANIFEST` environment variable. Until the project publishes one, pass the URL of your own manifest.
+
+## What `fetch` does
+
+- Verifies size and SHA-256 against the manifest and deletes a download that does not match.
+- Refuses redirects, except GitHub Release downloads to `githubusercontent.com`.
+- Refuses a QNX runner archive that contains QNX SDP files.
+- Prints the cached archive path. It does not unpack, install or launch the runner, and it does not contact a device.
+
+## Check the board's libraries
+
+A QNX runner loads QNX system libraries from the board. To check the board has them:
+
+```bash
+ls -1 /usr/lib /lib /proc/boot > target-libs.txt
+```
+
+Run that on the board, copy `target-libs.txt` back and pass `--target-libs target-libs.txt`. This command was not run by the verifier because it needs a board.
+
+Version flags default to the versions the checkout pins. Host runners use `--sdp none`. QNX targets require `--sdp <version>`.
+
+Why runners carry no SDP files: [ADR-0018](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0018-runner-hosting-and-sdp-boundary.md).

@@ -1,0 +1,57 @@
+---
+title: Add window chrome
+description: Draw a title bar with window controls in a QNX app, and set controls, style and initial size.
+---
+
+QNX Screen draws no window decorations, so the title bar is Qt Quick inside the app window, above the React Native surface. The feature is experimental and off by default. The reasoning is in [ADR-0016](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0016-window-chrome-on-qnx-screen.md).
+
+## Configure it
+
+In `app.config.ts`:
+
+```ts
+import type { ExpoConfig } from 'expo/config';
+
+const config: ExpoConfig = {
+  name: 'My App',
+  slug: 'my-app',
+  icon: './assets/icon.png',
+  plugins: [
+    [
+      '@rn-qnx/expo-qnx-config-plugins',
+      {
+        appId: 'org.example.myapp',
+        componentName: 'main',
+        window: {
+          controls: 'windows',
+          titleBarStyle: 'default',
+          initialSize: { width: 1024, height: 600 },
+        },
+      },
+    ],
+  ],
+};
+
+export default config;
+```
+
+| Field                 | Values                                   | Default   |
+| --------------------- | ---------------------------------------- | --------- |
+| `controls`            | `macos` (left, round), `windows` (right) | `macos`   |
+| `titleBarStyle`       | `default`, `hidden`, `none`              | `default` |
+| `initialSize`         | `{ width, height }`, integers 1 to 16384 | none      |
+| `unavailableControls` | `hide`, `disable`                        | `hide`    |
+
+With `titleBarStyle: "none"` nothing is drawn and the app owns its exit path. Without `initialSize` the app fills the screen on QNX.
+
+## Build it in
+
+```bash
+pnpm qnx project build-native --project my-app --window-chrome
+```
+
+Without `--window-chrome` the `window` object is validated and otherwise ignored.
+
+## What ran
+
+Host tests cover the title bar. One Pi 400 run on 2026-11-12 moved, resized, minimized, maximized and restored an app window under `rnqnx-winmgr`, using pointer events injected through Screen. See [window chrome](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/window-chrome.md) for the receipt. The build command above was not run by this docs pass.

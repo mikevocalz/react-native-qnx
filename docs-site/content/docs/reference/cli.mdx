@@ -1,0 +1,60 @@
+---
+title: CLI reference
+description: Commands and options of the rnqnx CLI, taken from its own help output and parseArgs tables.
+---
+
+Run the CLI inside a checkout as `pnpm qnx <command>`. It needs Node 26 or newer and pnpm 12.18.0. The package `@rn-qnx/react-native-qnx-cli` is private, so `rnqnx` is not on your PATH. Where other pages write `rnqnx`, they mean `node <checkout>/packages/react-native-qnx-cli/src/bin.mjs`.
+
+Commands marked **run** were executed by the verifier; see the [verification log](/docs/reference/verification-log).
+
+## Top-level commands
+
+| Command                                        | What it does                                                                                   | Verified                    |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------- |
+| `init <name>`                                  | Creates `apps/<name>`. Name matches `^[a-z][a-z0-9-]{0,62}$`. Refuses an existing directory.   | run                         |
+| `bundle-qnx --app <name> [--out build/<file>]` | Production Metro bundle with `--platform qnx --dev false`. Output must be inside `build/`.     | run                         |
+| `doctor`                                       | Checks host tools, the SDP environment and target settings. Each failure prints a `Fix:` line. | run (exit 1 without an SDP) |
+| `configure-qnx`                                | Configures the QNX CMake preset.                                                               | help only                   |
+| `build-qnx`                                    | Builds the configured preset.                                                                  | help only                   |
+| `deploy-qnx`                                   | Deploys one executable with the atomic deploy script.                                          | `--dry-run` run             |
+| `run-qnx`                                      | Runs one deployed executable.                                                                  | help only                   |
+| `log-qnx`                                      | Streams slog2 output from the target.                                                          | help only                   |
+| `evidence verify [--dir <path>]`               | Verifies captured Pi evidence and writes a SHA-256 manifest into that directory.               | help only                   |
+
+Shared options: `--help`, `--dry-run`, `--app`, `--out`, `--arch aarch64|x86_64` (default `aarch64`), `--config Debug|Release` (default `Debug`), `--target <cmake-target>` (default `rnqnx_playground`, the Screen probe), `--dir`. Unrelated options and extra words are rejected.
+
+`rnqnx_playground` is the Screen probe. The React Native runtime is `rnqnx_playground_qnx`.
+
+## project commands
+
+| Command                             | Options                                                                                                 |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `project inspect`, `project bundle` | `--project --platform qnx --entry --out --dry-run`                                                      |
+| `project create`                    | `--project <new dir> --app-id --name [--component-name main] --dry-run`                                 |
+| `project add-qnx`                   | `--project --app-id [--component-name main] --dry-run`                                                  |
+| `project doctor`                    | `--project --platform --entry --identity-tool --json --target-runtime-report <file> --verbose`          |
+| `project prepare-native`            | `--project --platform --bundle --identity-tool --dry-run`                                               |
+| `project build-native`              | `--project --platform --host-preview --window-chrome --dry-run`                                         |
+| `project desktop-entry`             | `--project --exec --app-dir --run-as --row --order --dry-run`                                           |
+| `project run`                       | `--project --platform --device --launcher --identity --known-hosts`                                     |
+| `project start`                     | `--project --platform --port --host --reset-cache`                                                      |
+| `project dev`                       | `--project --platform --port --device --launcher --identity --known-hosts --host-address --reset-cache` |
+
+`project run` exits 0 when every step ran, 3 when it needs a board, SDP or bundle, and 1 on failure.
+
+## runner commands
+
+`runner fetch` and `runner list`. See [use the prebuilt runner](/docs/how-to/prebuilt-runner).
+
+## Other tools
+
+| Command                                                                        | Purpose                                                                      |
+| ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| `pnpm qnx:device status`, `logs`, `screenshot --out <new.bmp>`, `port-forward` | Board status and logs over SSH.                                              |
+| `pnpm expo:qnx inspect`, `prepare`                                             | Expo SDK 58 support checks.                                                  |
+| `pnpm validate:docs`                                                           | Checks generated docs tables against the JSON records.                       |
+| `pnpm validate:v1`                                                             | Checks the release record. Exits nonzero while required evidence is missing. |
+
+## Exit behavior
+
+A failed child process stays a nonzero CLI result. SIGINT and SIGTERM are forwarded to the direct child. `log-qnx` reports SSH failures instead of returning success.

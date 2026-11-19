@@ -1,0 +1,34 @@
+---
+title: Qt module tiers
+description: Which Qt modules React Native QNX uses, by tier, and which are gated by licence.
+---
+
+The Qt module discipline is a rule from [`docs/build-qt-modules.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/build-qt-modules.md): add one module at a time, with a justification, a licence check and size and time data. Development follows the open-source Qt path ([ADR-0013](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0013-open-source-qt.md)). No paid Qt subscription is a prerequisite.
+
+## Tier 0: always on
+
+Qt Core, Qt GUI, Qt Qml and Qt Quick. LGPLv3 or GPLv2. Host builds use Qt 6.11.1 or newer.
+
+## Tier 1: component-backing
+
+Added when a component needs them. LGPLv3 or GPLv2.
+
+| Module                                | Why                                               |
+| ------------------------------------- | ------------------------------------------------- |
+| Quick Controls 2, and its Basic style | Native `Button`, `Switch` and similar controls    |
+| Quick Effects                         | Filters, blur, drop shadow                        |
+| SVG                                   | SVG icons and images                              |
+| Multimedia                            | Video and audio. Not in the current device build. |
+| Quick Dialogs 2                       | File and colour pickers                           |
+| Image Formats                         | Extra image codecs                                |
+| SQL                                   | Local SQL                                         |
+
+## Tier 2: evaluate per need
+
+Includes Material and Fusion styles, Remote Objects, Serial Bus, Serial Port, Positioning, Text To Speech, WebSockets and Print Support under LGPLv3 or GPLv2. Quick 3D, Graphs, Lottie, Quick Timeline, Quick 3D Physics, Canvas Painter, HTTP Server and the Qml compiler are **GPLv3 only** in the open-source distribution. Qt PDF is an extension or commercial module.
+
+## Excluded
+
+`QtQuickLayouts` conflicts with Yoga. `QtWebEngine` and `QtWebView` have no QNX backend. `QtVirtualKeyboard` is GPLv3-only and needs a product decision. See [ADR-0011](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0011-qt-module-licensing.md).
+
+The size and build-time columns in the source table read TBD. No QNX size measurement is published.

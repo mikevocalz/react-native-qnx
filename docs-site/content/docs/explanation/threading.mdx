@@ -1,0 +1,32 @@
+---
+title: Threading model
+description: Which thread runs JavaScript, Qt and native module work, and what that means for module authors.
+---
+
+This page follows [Owned Qt/JavaScript Nitro v1 dispatch](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/nitro/QT_DISPATCHER.md), audited at Nitro alpha 105 and re-pinned to alpha 136. The QNX cross-build and device run were not repeated at 136.
+
+## One owner thread
+
+JavaScript shares the Qt thread that constructed the host. There is no separate JS thread. Heavy native work must run on the native engine's own workers.
+
+## Getting back to JavaScript
+
+A worker calls `runAsync`. That posts an owned task to the host's `QObject`, and the owner thread then enters a React Native scheduler task. That boundary performs React Native's microtask checkpoint and the rendering update.
+
+- `runSync` requires the owner thread and throws otherwise. It never blocks a worker waiting for Qt.
+- Nitro's `Callback::callSync` bypasses `runSync`, so the dispatcher tracks nested entries and runs the checkpoint after the outermost native call.
+- Qt `QueuedConnection` posts a wakeup without running user work. Tasks run on the owner, outside the admission mutex. Nested Qt pumping does not reorder the queue.
+
+## Shutdown
+
+At idle owner-thread destruction the host stops surfaces, closes worker admission, drains every accepted task including ones posted while draining, then deletes the `QObject`. Late work is rejected.
+
+Close is a drain, not a cancellation or a deadline. A task that never returns, or one that keeps posting owner work, can delay shutdown. Do not join a worker that needs a synchronous JS call from the owner. Destroying the host during active JavaScript is invalid.
+
+## For module authors
+
+- Do cheap reads synchronously.
+- Put I/O and compute on your own worker and complete through the dispatcher.
+- Dispose producers at an idle owner boundary.
+
+Forge worker shutdown and HybridClass disposal still need their own tests. A dedicated JS thread for Worklets is open work.

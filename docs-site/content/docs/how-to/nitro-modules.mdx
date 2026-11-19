@@ -1,0 +1,27 @@
+---
+title: Use Nitro modules
+description: What native modules can use on React Native QNX today, and where the limits are.
+---
+
+Application-facing native APIs on QNX use [Nitro Modules](https://nitro.margelo.com), not TurboModules. See [ADR-0004](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0004-nitro-modules.md) and [ADR-0009](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md).
+
+## What is pinned
+
+Nitro `1.0.0-alpha.nightly.136.gdb81de61bd32` is pinned exactly for `nitro-core`, `nitro-modules` and `nitrogen`. It is an alpha. Dispatcher patches require that exact source structure.
+
+## What has run
+
+A synchronous `HybridClass` and an optional async dispatcher ran on the Pi 400. That is narrower than support for any third-party Nitro module. See the [Nitro and Qt receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-nitro-qt-2026-11-07.md) and the [API contracts](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/nitro/API_CONTRACTS.md).
+
+## Rules for writing a module
+
+- Use a typed, cached synchronous property for a cheap local read.
+- Use an owned native execution context for I/O or heavy work. A Promise around a blocking call does not move work off the JS thread.
+- Return a ready resource from a factory and define its disposal.
+- Keep heavy work on your own workers. JavaScript shares the Qt thread today. See [threading](/docs/explanation/threading).
+
+The full policy is in the [Nitro v1 API policy](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/platform-modernization/NITRO_V1_API_POLICY.md).
+
+## Not covered
+
+General QNX codegen, third-party module support and Forge worker shutdown are open. The runtime package is `@rn-qnx/qnx-nitro-runtime`.

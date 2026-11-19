@@ -1,0 +1,40 @@
+---
+title: First device run
+description: What you need to run a React Native QNX app on a Raspberry Pi 400, and which repository guides cover each step.
+---
+
+This page does not repeat the device runbooks. It tells you what a Pi 400 run requires and where each step is documented. No step on this page was re-run for these docs. The receipts linked from each guide record when it last ran.
+
+## The target
+
+The only board with device results is a Raspberry Pi 400 with a custom BCM2711 image of QNX 8.0.5, adapted from the Raspberry Pi 4 custom target image. It is not a stock Pi 4. Stock Pi 4 and Pi 5 QSTI have a separate guide and no runtime results yet.
+
+## What you need
+
+| Need                           | Notes                                                                                                                                                           |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| QNX SDP 8.0.5                  | Licensed, installed on an x86-64 host. Official hosts are Windows 11, Ubuntu 22.04 or 24.04, and RHEL 9. There is no macOS or ARM host.                         |
+| A Pi 400 with the custom image | Built from QNX's Pi 4 image sources. See the [Pi 400 guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-400.md). |
+| Qt for QNX                     | Public-source Qt 6.12.0, built by [`scripts/qt-public/`](https://github.com/mikevocalz/react-native-qnx/tree/main/scripts/qt-public).                           |
+| Hermes for QNX                 | Built by `pnpm hermes:qnx:prepare` and `pnpm hermes:qnx:configure`.                                                                                             |
+
+## Check the host
+
+```bash
+pnpm qnx doctor
+```
+
+On a Mac without the SDP this exits with code 1. That is the expected result. The first failure reads `The QNX SDP environment is not loaded (QNX_HOST and QNX_TARGET are unset).` and its `Fix:` line says to source `qnxsdp-env.sh` and rerun. Every failed check prints a `Fix:` line.
+
+## The path
+
+1. [Pi 400 setup](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-400.md): image, boot, network.
+2. [Runtime bring-up](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-hello-world.md): build and run the React Native runtime.
+3. [Run an app on the desktop](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md): build, deploy and launch a windowed app.
+4. [Debugging](/docs/how-to/debugging): Metro and Fast Refresh from your computer.
+
+Nothing starts at boot. Launch apps by hand.
+
+## What was seen
+
+The [status page](/docs/reference/status) lists what ran on the board and what did not.

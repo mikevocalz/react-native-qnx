@@ -1,0 +1,49 @@
+---
+title: Module matrix
+description: Workspace packages, pinned versions and opt-in libraries, with the evidence behind each.
+---
+
+## Pinned versions
+
+From `package.json` and the lockfile, current on `main`:
+
+| Component                       | Version                                 |
+| ------------------------------- | --------------------------------------- |
+| React Native                    | `0.88.1`                                |
+| React                           | `19.3.0`                                |
+| Expo                            | `58.0.24`                               |
+| Metro                           | `0.87.1`                                |
+| Nitro (core, modules, nitrogen) | `1.0.0-alpha.nightly.136.gdb81de61bd32` |
+| Hermes compiler                 | `260318099.0.5`                         |
+| Node                            | `>=26.0.0`                              |
+| pnpm                            | `12.18.0`                               |
+
+React stays at 19.3.0 and Metro at 0.87.1 on purpose. The reasons are in the [compatibility matrix](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/compatibility-matrix.md).
+
+## Workspace packages
+
+All are version `0.1.0` and unpublished.
+
+| Package                           | Purpose                                                   |
+| --------------------------------- | --------------------------------------------------------- |
+| `@rn-qnx/react-native-qnx`        | JavaScript platform implementation                        |
+| `@rn-qnx/metro-config-qnx`        | Metro configuration for QNX                               |
+| `@rn-qnx/qnx-nitro-runtime`       | Nitro runtime integration                                 |
+| `@rn-qnx/expo-modules-core-qnx`   | QNX JSI bootstrap for Expo Modules Core                   |
+| `@rn-qnx/expo-qnx-autolinking`    | QNX resolver on Expo Modules Autolinking                  |
+| `@rn-qnx/expo-qnx-config-plugins` | Expo config helpers                                       |
+| `@rn-qnx/expo-constants-qnx`      | `expo-constants` native module                            |
+| `@rn-qnx/expo-image-qnx`          | `expo-image` native module and view config                |
+| `@rn-qnx/expo-router-qnx`         | expo-router: Metro resolver, native Qt drawer and tab bar |
+| `@rn-qnx/react-native-qnx-cli`    | CLI (private)                                             |
+
+## Opt-in libraries
+
+| Library                                         | Version   | Host                                  | Pi 400                           | Not supported                                                     |
+| ----------------------------------------------- | --------- | ------------------------------------- | -------------------------------- | ----------------------------------------------------------------- |
+| `react-native-svg` (`RNQNX_ENABLE_QT_RNSVG=ON`) | `15.16.0` | Fabric fixture and golden-pixel tests | Scoped: gallery cards            | Pattern, Symbol, Marker, TextPath, Filter and Fe\*, ForeignObject |
+| `react-native-reanimated`                       | `4.7.1`   | Linked host fixture                   | Timing and spring seen on device | Remaining recognizers, layout and scroll behavior                 |
+| `react-native-gesture-handler`                  | `3.4.0`   | Linked host fixture                   | Pan, tap, double-tap             | Pinch, rotation, multi-pointer                                    |
+| `react-native-worklets`                         | `0.13.x`  | Linked host fixture                   | Device run recorded              | Dedicated JS thread work                                          |
+
+Each opt-in switch is default-off. Sources: [Reanimated and Gesture Handler on QNX](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/reanimated-gesture-handler-qnx.md), [run 1 receipt](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19), [run 2 receipt](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19).
