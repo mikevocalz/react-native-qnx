@@ -30,6 +30,9 @@
  *                            bksp del left right up down home end pgup pgdn
  *                            alt ctrl shift, or one character)
  *   keydown NAME|HEX, keyup NAME|HEX
+ *   keyhold NAME|HEX MS [HZ] hold a key for MS ms (1..30000) like a keyboard:
+ *                            one press, then auto-repeat events after 500 ms
+ *                            at HZ per second (default 30, 1..120), then release
  *   type TEXT                type ASCII text
  *   sleep MS
  * Without arguments it prints this text. */
@@ -93,11 +96,17 @@ static int set_buttons(int buttons) {
   return send_pointer(0, 0);
 }
 
-static int send_key(int sym, int down) {
+/* repeat adds SCREEN_FLAG_KEY_REPEAT to a key-down event. Screen documents it
+ * as "keyboard mapping for key repeat" (QNX 8.0 Screen event flags,
+ * group__screen__events_1Screen_Flags_Masks.html). Qt's QNX plugin passes
+ * flags & KEY_REPEAT to handleExtendedKeyEvent as the auto-repeat argument
+ * (qqnxscreeneventhandler.cpp, injectKeyboardEvent). */
+static int send_key(int sym, int down, int repeat) {
   screen_event_t ev;
   if (screen_create_event(&ev)) return perror("screen_create_event"), 1;
   int type = SCREEN_EVENT_KEYBOARD;
-  int flags = SCREEN_FLAG_SYM_VALID | SCREEN_FLAG_CAP_VALID | (down ? SCREEN_FLAG_KEY_DOWN : 0);
+  int flags = SCREEN_FLAG_SYM_VALID | SCREEN_FLAG_CAP_VALID | (down ? SCREEN_FLAG_KEY_DOWN : 0) |
+              (down && repeat ? SCREEN_FLAG_KEY_REPEAT : 0);
   screen_set_event_property_iv(ev, SCREEN_PROPERTY_TYPE, &type);
   screen_set_event_property_pv(ev, SCREEN_PROPERTY_DEVICE, (void**)&keyboardDevice);
   screen_set_event_property_iv(ev, SCREEN_PROPERTY_FLAGS, &flags);
@@ -126,6 +135,34 @@ static int key_sym(const char* name) {
   return (int)strtol(name, NULL, 16);
 }
 
+/* Hold a key like a keyboard: a press, a pause of 500 ms (a keyboard's repeat
+ * delay), repeat presses every 1000/hz ms, then a release at ms. */
+static int hold_key(int sym, int ms, int hz) {
+  const int delay = 500;
+  long long start = now_ms(), next = start + delay, end = start + ms;
+  int rc = send_key(sym, 1, 0);
+  while (!rc) {
+    long long t = now_ms(), until = next < end ? next : end;
+    if (until > t) pause_ms((int)(until - t));
+    if (next >= end) break;
+    rc = send_key(sym, 1, 1);
+    next += 1000 / hz;
+  }
+  long long left = end - now_ms();
+  if (left > 0) pause_ms((int)left);
+  rc |= send_key(sym, 0, 0);
+  pause_ms(60);
+  return rc;
+}
+
+static int parse_int(const char* s, int lo, int hi, int* out) {
+  char* end;
+  long v = strtol(s, &end, 10);
+  if (end == s || *end || v < lo || v > hi) return 0;
+  *out = (int)v;
+  return 1;
+}
+
 static int button_mask(const char* name) {
   if (!name) return SCREEN_LEFT_MOUSE_BUTTON;
   if (!strcmp(name, "right")) return SCREEN_RIGHT_MOUSE_BUTTON;
@@ -142,7 +179,7 @@ static void usage(const char* argv0) {
           "usage: %s <command> [args] ...\n"
           "  move X Y | down [left|middle|right] | up | click X Y [button] | dclick X Y\n"
           "  drag X0 Y0 X1 Y1 [steps] | wheel N | hwheel N | mods HEX\n"
-          "  key NAME|HEX [mods] | keydown NAME|HEX | keyup NAME|HEX | type TEXT | sleep MS\n"
+          "  key NAME|HEX [mods] | keydown NAME|HEX | keyup NAME|HEX | keyhold NAME|HEX MS [HZ]\n  type TEXT | sleep MS\n"
           "Coordinates are display pixels. Run as root. See the comment at the top of\n"
           "tools/qnx-input/rnqnx-inject.c.\n",
           argv0);
@@ -218,18 +255,27 @@ int main(int argc, char** argv) {
       int sym = key_sym(argv[i++]);
       if (left >= 2 && argv[i][0] >= '0' && argv[i][0] <= '9')
         curMods = (int)strtol(argv[i++], NULL, 16);
-      rc = send_key(sym, 1);
+      rc = send_key(sym, 1, 0);
       pause_ms(60);
-      rc |= send_key(sym, 0);
+      rc |= send_key(sym, 0, 0);
       pause_ms(60);
     } else if ((!strcmp(c, "keydown") || !strcmp(c, "keyup")) && left >= 1) {
-      rc = send_key(key_sym(argv[i++]), !strcmp(c, "keydown"));
+      rc = send_key(key_sym(argv[i++]), !strcmp(c, "keydown"), 0);
       pause_ms(60);
+    } else if (!strcmp(c, "keyhold") && left >= 2) {
+      int sym = key_sym(argv[i++]), ms = 0, hz = 30;
+      if (!parse_int(argv[i++], 1, 30000, &ms) ||
+          (i < argc && argv[i][0] >= '0' && argv[i][0] <= '9' && !parse_int(argv[i++], 1, 120, &hz))) {
+        fprintf(stderr, "keyhold: MS must be 1..30000 and HZ 1..120\n");
+        rc = 2;
+      } else {
+        rc = hold_key(sym, ms, hz);
+      }
     } else if (!strcmp(c, "type") && left >= 1) {
       for (const char* p = argv[i++]; *p && !rc; ++p) {
-        rc = send_key((unsigned char)*p, 1);
+        rc = send_key((unsigned char)*p, 1, 0);
         pause_ms(30);
-        rc |= send_key((unsigned char)*p, 0);
+        rc |= send_key((unsigned char)*p, 0, 0);
         pause_ms(30);
       }
     } else if (!strcmp(c, "sleep") && left >= 1) {
