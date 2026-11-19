@@ -1,0 +1,48 @@
+---
+title: FAQ
+description: Short answers about targets, licences, Expo, and what is supported.
+---
+
+## Can I run this on a stock Raspberry Pi 4?
+
+No result exists. All device results are from a Raspberry Pi 400 with a custom BCM2711 image. There is a separate [guide for stock Pi 4 and Pi 5 QSTI](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-today.md), and its full-runtime device result is pending.
+
+## Can I use Expo Go?
+
+No. Expo runs through development builds ([ADR-0006](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0006-expo-dev-builds.md)).
+
+## Is it on npm?
+
+No. Packages are source-distributed and version 0.1.0. `rnqnx runner fetch` has no published manifest.
+
+## Does it need a paid Qt licence?
+
+The project follows the open-source Qt path with no paid subscription as a prerequisite ([ADR-0013](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0013-open-source-qt.md)). Some Qt modules are GPLv3 only. See [Qt tiers](/docs/reference/qt-tiers). Check your own obligations.
+
+## Do I need a QNX licence?
+
+Yes, for QNX builds. The QNX SDP is licensed software, and this project does not redistribute it.
+
+## Can I build on a Mac?
+
+You can create apps, bundle and run the host renderer. QNX cross-builds need an x86-64 host. SDP 8.0.5 has no macOS or ARM host.
+
+## Which React Native version?
+
+0.88.1, with Expo SDK 58 (`58.0.24`) and Hermes compiler `260318099.0.5`.
+
+## Does Reanimated work?
+
+Reanimated timing and spring ran on the Pi 400, with Gesture Handler pan, tap and double-tap. Pinch, rotation and multi-pointer are not proven. See [status](/docs/reference/status).
+
+## Does video work?
+
+Not in the device build. QtVideo is opt-in and needs the Qt Multimedia add-on. See [known gaps](/docs/reference/known-gaps).
+
+## Is it ready for production?
+
+No. v1 is not released and all eleven gates are open. See [release gates](/docs/reference/release-gates).
+
+## How do I report a problem or contribute?
+
+See [contributing](/docs/contributing).

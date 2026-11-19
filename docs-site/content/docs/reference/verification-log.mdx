@@ -1,0 +1,54 @@
+---
+title: Verification log
+description: Each command shown in these docs, who ran it, on what, and what it printed.
+---
+
+A verifier that did not write these pages ran the commands below from a fresh clone of `main` at commit `be7560b`, on 2026-11-19. Host: macOS arm64, Node v26.13.0, pnpm 12.18.0 installed into a prefix (`npm install --prefix <dir> pnpm@12.18.0`). No board, SDP container or Qt build was used.
+
+## Host commands
+
+| Command | Exit | Key output |
+| --- | --- | --- |
+| `pnpm --version` | 0 | `12.18.0` |
+| `pnpm install --frozen-lockfile` | 0 | `Scope: all 15 workspace projects`, `Lockfile is up to date`, `Packages: +581`, `Done in 2.5s` |
+| `pnpm validate:dependencies` | 0 | about 46 `SOURCE:` lines, then `validate:dependencies passed.` |
+| `pnpm qnx --help` | 0 | usage with `init`, `bundle-qnx`, `doctor`, `configure-qnx`, `build-qnx`, `deploy-qnx`, `run-qnx`, `log-qnx`, `evidence verify` |
+| `pnpm qnx init dashboard` | 0 | `Created apps/dashboard.` |
+| `pnpm install --no-frozen-lockfile` | 0 | `Already up to date`, `Done in 5.9s`. Modifies `pnpm-lock.yaml` (13 lines added) |
+| `pnpm qnx bundle-qnx --app dashboard --out build/dashboard.bundle.js` | 0 | `Welcome to Metro v0.87.1`, `Done writing bundle output`; file is 482,873 bytes |
+| `pnpm qnx deploy-qnx --arch aarch64 --config Release --target rnqnx_playground --dry-run` | 0 | JSON: `bash scripts/deploy-qnx.sh aarch64 rnqnx_playground Release`. Nothing deployed |
+| `pnpm qnx doctor` | 1 | `Environment has 1 error(s) and 2 warning(s).` Error: SDP environment not loaded. Expected without an SDP |
+| `pnpm validate:docs` | 0 | `Documentation validated: 24 components, 11 release gates.` |
+| `pnpm typecheck` | 0 | no errors; TypeScript 7.0.2 |
+| `pnpm test:js` | 1 | host failure, not a quick-start step. It occurs on `main` at `be7560b` (that is the commit the verifier ran). Stopped at `tests/js/braces-security.test.mjs` with `ERR_INVALID_ARG_TYPE`. Four earlier files passed |
+
+## Help and dry-run commands
+
+| Command | Exit | Key output |
+| --- | --- | --- |
+| `pnpm qnx project --help` | 0 | `project inspect` and `project bundle` options |
+| `pnpm qnx runner --help` | 0 | `runner fetch`, `runner list`, five targets, `No runner manifest is published yet` |
+| `pnpm qnx project doctor --help` | 0 | `--project`, `--platform`, `--entry`, `--identity-tool`, `--json`, `--target-runtime-report` |
+| `pnpm qnx project create --help` | 0 | `--project --app-id --name [--component-name main] [--dry-run]` |
+| `pnpm qnx project add-qnx --help` | 0 | `--project --app-id [--component-name main] [--dry-run]` |
+| `pnpm qnx project dev --help` | 0 | `--device --launcher [--project] [--platform] [--port 8081] [--identity] [--known-hosts] [--host-address] [--reset-cache]` |
+| `pnpm qnx project create --project <dir>/notes-qnx --app-id org.example.notes --name "Notes" --dry-run` | 0 | JSON with `action: "dry-run"`, `platforms: ["qnx"]`, `nativeBuildVerified: false`. No directory created |
+| `pnpm qnx project add-qnx --project <dir> --app-id org.example.t --dry-run` (no `expo` dependency) | 1 | `package.json does not depend on expo; add-qnx targets existing Expo apps.` |
+| same, with `"dependencies": {"expo": "*"}` | 0 | JSON lists `metro.qnx.config.js` created, `package.json` updated, `app.json` plugin added. Nothing written |
+| `pnpm qnx project bundle --project apps/dashboard --platform qnx --dry-run` | 0 | JSON: output `apps/dashboard/build/qnx/app.bundle.js`, Metro 0.87.1, `runtimeVerified: false` |
+| `pnpm qnx bundle-qnx --app dashboard --out /tmp/x.js` | 1 | `Bundle output must be inside this checkout’s build/ directory.` No file written |
+
+## Not run
+
+These appear in the docs as links or descriptions, not as verified steps.
+
+- The host render: `cmake -S . -B build/playground ... -DRNQNX_BUILD_HERMES=ON`, its build and `rnqnx_playground_host --bundle`. It builds Hermes from source. Host tools were present (CMake 4.4.5, Ninja 1.13.2, Qt 6.12.0).
+- Every device command: `project dev`, `project run`, `deploy-qnx` without `--dry-run`, `runner fetch`, the `ls` on the board, `prepare-native`, `build-native`. They need a board or a QNX SDP.
+- `pnpm validate:macos` and `pnpm test:cpp:host`.
+
+## Defects the run found in the repository's docs
+
+- The README does not say that `pnpm qnx doctor` exits 1 on a machine without the SDP, or that the second install changes `pnpm-lock.yaml`.
+- The README lists `pnpm test:js` under "Check your checkout", and it fails on this host.
+
+These are reported here and left unchanged because another change owns the README and the existing pages.

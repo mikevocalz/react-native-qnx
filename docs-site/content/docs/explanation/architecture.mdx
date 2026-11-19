@@ -1,0 +1,34 @@
+---
+title: Architecture
+description: The layers between your JavaScript and the QNX screen, and the decision behind each.
+---
+
+A React Native QNX app is layered like this, top to bottom.
+
+| Layer | What it is | Decision |
+| --- | --- | --- |
+| Your app | React 19.3.0 components, bundled by Metro 0.87.1 with the QNX platform config | |
+| JavaScript engine | Hermes, cross-compiled for QNX | [ADR-0005](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0005-hermes-only.md) |
+| Renderer | Fabric and JSI only. No Paper view managers, no legacy bridge | [ADR-0009](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md) |
+| Layout | Yoga is the only layout authority. Qt items get absolute geometry | [component support](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/component-support.md) |
+| View backend | A retained Qt Quick item tree: items, text, images, input, animation | [ADR-0001](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0001-qt-quick-backend.md) |
+| Window system | Qt's QNX platform plugin on QNX Screen | ADR-0001 |
+| Native modules | Nitro HybridObjects with typed contracts | [ADR-0004](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0004-nitro-modules.md) |
+
+## Why Qt Quick
+
+The platform needs a retained native item tree for Fabric views, shaped text, images, input and accessibility. Qt Quick gives the renderer, the Fabric host, the Hermes host and the Nitro layer one native language (C++) and one event loop. QNX Screen stays the compositor beneath Qt. The direct-Screen executable `rnqnx_playground` is a probe, not the component backend. GTK4 was viable and was rejected to avoid a second object and event model.
+
+## Why Nitro, not TurboModules
+
+TurboModules need manual C++ boilerplate and are not type-safe across the boundary. Nitro generates JSI bindings and typed C++ HybridObjects. A thin adapter satisfies React Native core interfaces that expect TurboModule semantics, and delegates to Nitro or the platform runtime. Nitro is pinned at an alpha release.
+
+## Expo
+
+Expo runs through development builds, not Expo Go ([ADR-0006](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0006-expo-dev-builds.md)). Expo Modules Core gets a QNX JSI bootstrap, and autolinking has a QNX resolver.
+
+## What is not in the design
+
+Skia was the first renderer choice and is superseded ([ADR-0003](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0003-skia-initial-renderer.md)). No second JavaScript engine is supported.
+
+All decisions: [architecture decisions](/docs/explanation/adr-index).

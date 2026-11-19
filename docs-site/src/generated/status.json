@@ -1,0 +1,14 @@
+{
+  "generatedFrom": {
+    "componentSupport": "66917fd",
+    "readiness": "26bd6aa"
+  },
+  "counts": {
+    "Device-verified (Pi 400, scoped)": 6,
+    "Host-tested": 15,
+    "Untested": 3
+  },
+  "total": 24,
+  "gatesPending": 11,
+  "gatesTotal": 11
+}

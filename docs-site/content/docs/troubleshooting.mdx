@@ -1,0 +1,44 @@
+---
+title: Troubleshooting
+description: Error messages from the CLI and host tools, what causes each, and the fix.
+---
+
+Messages marked **seen** were produced by the verifier. Others are quoted from the repository's guides.
+
+## pnpm
+
+**`Failed to switch pnpm to v12.18.0`** (seen as an `ENOEXEC` on a broken global pnpm). The repository pins pnpm through `packageManager`. Install it: `npm install -g pnpm@12.18.0`, or install it into a prefix and put that on your PATH. Check with `pnpm --version`.
+
+## CLI
+
+**`rnqnx: Bundle output must be inside this checkout’s build/ directory.`** (seen). Use `--out build/<file>`.
+
+**`already exists`**. `init` refuses an existing app. Pick another name.
+
+**`apps/<name>/index.js not found`**. Run `pnpm qnx init <name>` and the second `pnpm install --no-frozen-lockfile`, or pass an app that exists under `apps/`.
+
+**`does not accept` or `takes options only`**. Check `pnpm qnx --help`. Unrelated options and extra words are rejected.
+
+**`rnqnx: package.json does not depend on expo; add-qnx targets existing Expo apps.`** (seen). `project add-qnx` only works on Expo apps. Add `expo` to `dependencies`.
+
+**`configure-qnx exited with code 1`** (or build, deploy, run). The next line names the next command. Run `pnpm qnx doctor` first.
+
+## doctor
+
+**`The QNX SDP environment is not loaded (QNX_HOST and QNX_TARGET are unset).`** (seen). Source `<qnx-installation>/qnxsdp-env.sh` in the same shell and rerun. `pnpm qnx doctor` exits 1 on a Mac without the SDP. That is correct.
+
+**`qcc` unavailable on macOS with the SDP sourced.** The SDP selects Windows host tools there. QNX cross-builds need an x86-64 Linux host in this project's setup.
+
+**Warnings about host OS Darwin and arm64.** Expected. Each has a `Fix:` line about building on x86-64 Ubuntu 22.04.
+
+## Tests
+
+**`pnpm test:js` stops at `tests/js/braces-security.test.mjs`** with `ERR_INVALID_ARG_TYPE: The "message" argument must be one of type string or function` (seen on macOS arm64, Node 26.13.0). The README says the suite stops at the first failing file and lists known macOS failures in [the clean-host receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/clean-host-sim-2026-11-12-b51b49c.md#known-test-failures-on-macos). Whether this one is listed there was not checked.
+
+## Device
+
+**Two windows of one app.** Use `--replace`, which `project dev` passes. See [one instance per app](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md#one-instance-per-app).
+
+**"Could not connect to Metro" screen.** Start Metro. The app loads as soon as it is up.
+
+**Black screen or no input on the board.** Check the input and GPU nodes first. The [Pi 400 desktop guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md) lists the checks and the recovery boot. Do not rewrite boot configuration without a recovery path.

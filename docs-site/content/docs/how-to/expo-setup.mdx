@@ -1,0 +1,46 @@
+---
+title: Set up Expo
+description: Create a shared Expo app for QNX, or add QNX to an existing Expo app, with the rnqnx project commands.
+---
+
+The commands run from a React Native QNX checkout. `rnqnx` below means `node <checkout>/packages/react-native-qnx-cli/src/bin.mjs`, or `pnpm qnx` inside the checkout. Nothing is published to npm.
+
+## Preview a new project
+
+```bash
+pnpm qnx project create --project ../notes-qnx --app-id org.example.notes --name "Notes" --dry-run
+```
+
+The dry run prints JSON with `action: "dry-run"`, the identity (`appId`, `displayName`, `componentName: "main"`), `platforms: ["qnx"]` and `nativeBuildVerified: false`. It creates no directory. Drop `--dry-run` to create the project.
+
+A QNX-only project is an expo-router starter with a left drawer around three tabs (Home, Explore, Controls). It was installed and bundled in a container on 2026-11-13. It was not built into a native host or run on the Pi.
+
+## Add QNX to an existing Expo app
+
+The target must depend on `expo`. Without it the command stops with `package.json does not depend on expo; add-qnx targets existing Expo apps.`
+
+```bash
+pnpm qnx project add-qnx --project /path/to/your-app --app-id org.example.notes --dry-run
+```
+
+With an Expo app, the dry run lists these changes and writes nothing:
+
+- `metro.qnx.config.js` is created. `metro.config.js` stays Expo's.
+- `package.json` gets a `scripts.qnx` entry and `file:` links to three `@rn-qnx` packages.
+- `app.json` gets the `@rn-qnx/expo-qnx-config-plugins` plugin entry.
+
+Run it again without `--dry-run` to apply them. It adds entries and never replaces one. The `file:` links use absolute paths to your checkout, so moving the checkout breaks the install until you rerun the command.
+
+## Bundle an app outside the checkout
+
+```bash
+pnpm qnx project bundle --project apps/dashboard --platform qnx --dry-run
+```
+
+Expected JSON includes the entry `apps/dashboard/index.js`, the output `apps/dashboard/build/qnx/app.bundle.js`, `metroVersion: "0.87.1"`, `nativeBuildVerified: false` and `runtimeVerified: false`. Output must be a new file under the project's `build/` directory. This produces JavaScript only.
+
+## Check a project
+
+`rnqnx project doctor --project <directory>` runs read-only metadata checks. Add `--json` for machine output.
+
+For the dev and run commands, see [debugging](/docs/how-to/debugging).

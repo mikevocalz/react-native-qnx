@@ -1,0 +1,48 @@
+---
+title: Set the icon and app name
+description: Set the window title, launcher tile label and icon set for a QNX app with app.json or a config plugin.
+---
+
+`prepare-native` reads your Expo config the way `expo start` does. Options on the `@rn-qnx/expo-qnx-config-plugins` entry win over `extra.rnqnx`.
+
+## Set the fields
+
+```json
+{
+  "expo": {
+    "name": "Field Notes Professional",
+    "icon": "./assets/icon.png",
+    "extra": {
+      "rnqnx": {
+        "appId": "org.example.fieldnotes",
+        "componentName": "FieldNotes",
+        "shortName": "Notes"
+      }
+    }
+  }
+}
+```
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `expo.name` | yes | Window title and About name. Also the tile label when `shortName` is absent. |
+| `expo.icon` | no | Project-relative path to a square PNG. Unset uses the default icon. |
+| `expo.extra.rnqnx.icon` | no | Overrides `expo.icon` for QNX only. |
+| `expo.extra.rnqnx.shortName` | no | Tile label, for when `expo.name` is too wide for the launcher. |
+
+Use a square PNG of at least 1024 by 1024. A field that is set is checked strictly. An empty string, a missing file or a bad PNG stops `prepare-native`; it never falls back to the default.
+
+## Generated sizes
+
+The icon tool writes an icon set from 16 to 512 px. Run `prepare-native` with the identity tool, built from `native/app-identity`:
+
+```bash
+cmake -S native/app-identity -B build/identity -G Ninja -DRNQNX_BUILD_IDENTITY_TOOL=ON
+cmake --build build/identity
+```
+
+The identity tool runs on Linux or macOS. On other hosts its CMake refuses to configure.
+
+Full details, including how labels fit launcher boxes: [App icon and tile name](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/app-identity.md). Device result: [tile layout on the Pi 400](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/tile-layout-pi400-2026-11-13).
+
+These steps were not run by this docs pass.

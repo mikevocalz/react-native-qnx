@@ -1,0 +1,37 @@
+---
+title: Debug and iterate
+description: Run Metro, Fast Refresh, reload and the developer menu against a QNX board from your computer.
+---
+
+A release build runs Hermes bytecode staged next to the executable. A development build loads the bundle from Metro on your computer, applies Fast Refresh and shows LogBox errors. This ran on one Pi 400 on 2026-11-13 over a USB Ethernet link. The [receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-dev-client-2026-11-13/README.md) has the details.
+
+## The daily loop
+
+From the app directory on the computer the board is plugged into:
+
+```bash
+rnqnx project dev \
+  --device qnxuser@192.168.2.2 \
+  --launcher /data/home/qnxuser/run-chrome-app-dev.sh
+```
+
+`rnqnx` is `node <checkout>/packages/react-native-qnx-cli/src/bin.mjs`. Add `--identity <key>` and `--known-hosts <file>` if your SSH setup needs them. Metro starts on port 8081, the command works out which of your addresses the board reaches, and it runs the launcher with `--replace --dev-server http://<address>:8081`.
+
+`rnqnx project dev --help` lists `--project`, `--platform`, `--port`, `--host-address` and `--reset-cache`.
+
+## What the keys do
+
+| You do | The app does |
+| --- | --- |
+| Save a component file | Fast Refresh keeps component state |
+| Save the entry file | Full reload |
+| `r` in the Metro terminal, `Ctrl+R` or `F5` in the app | Full reload |
+| `d` in the terminal, `Ctrl+D` or `F1` in the app | Developer menu |
+| Save a syntax error | LogBox shows it; fixing it clears it |
+| Stop Metro | The app keeps running and reloads when Metro returns |
+
+## Not covered
+
+The Hermes debugger (CDP) and React DevTools were not tested. For on-board logs use `pnpm qnx log-qnx`, which streams slog2.
+
+The device commands on this page were not run by this docs pass. Only the `--help` output was.

@@ -1,0 +1,45 @@
+---
+title: Known gaps
+description: What does not work on React Native QNX, and the reason for each gap.
+---
+
+A gap here is a fact about the repository today. Fixing one is feature work and belongs in the repository, not in these docs.
+
+## Not proven on a device
+
+| Gap | Reason |
+| --- | --- |
+| Pinch, rotation and multi-pointer gestures | No device run. Only pan, tap and double-tap ran. |
+| 1920x1080 output | A Hello World capture at 1920x1080 exists from 2026-11-07 ([PNG is 1920 x 1080](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-hello-world-fullscreen-2026-11-07.png)). The 2026-11-19 runs (gestures, SVG, Modal, drawer, key hold) ran at 1024x768 because the monitor's EDID was unreadable. Nothing beyond Hello World is proven at 1920x1080. |
+| Held key on a real USB keyboard | Held-key repeat was sent as synthetic Screen events. The `io-hid` path was not exercised. |
+| Stock Pi 4 | No receipt exists. Every device result is from a Pi 400. |
+| Performance | Unmeasured on QNX. |
+| Graphics cold boot | The 20-boot gate has no result. |
+
+## Not in the build
+
+| Gap | Reason |
+| --- | --- |
+| Video and audio | QtVideo needs the Qt Multimedia add-on, which is not in the device build. |
+| Skia, WebGPU, TypeGPU, Three.js components | A Dawn WebGPU backend ran in a native test app only. No React Native component is supported. |
+
+## Components that accept calls and do nothing
+
+| Component | Behavior |
+| --- | --- |
+| `KeyboardAvoidingView` | Renders children as a `View`. No keyboard module is wired. |
+| `RefreshControl` | No-op. |
+| `StatusBar` | Static calls have no effect. The target has no status bar. |
+| `Modal` | `onShow`, `onRequestClose` and `onDismiss` are unwired. |
+| `Text` inline views | Attachments have zero size. |
+
+## Input and platform
+
+| Gap | Reason |
+| --- | --- |
+| IME and software keyboard | Not qualified. |
+| Router options that need a status bar or Gesture Handler configuration | No QNX behavior. Each warns once under `__DEV__`. |
+| Native window chrome beyond one run | Host tests plus one Pi 400 run on pointer events injected through Screen. |
+| Release packaging | No runner is published. `rnqnx runner fetch` has no manifest to read. |
+
+The full per-prop tables are in [component-support.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/component-support.md).

@@ -1,0 +1,33 @@
+---
+title: Contributing
+description: How to contribute to React Native QNX and to this documentation site.
+---
+
+Code contributions follow [CONTRIBUTING.md](https://github.com/mikevocalz/react-native-qnx/blob/main/CONTRIBUTING.md). Read the [current state handoff](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/handoff/CURRENT_STATE.md) first. The rules that matter most:
+
+- Fabric and JSI only. No legacy bridge.
+- Qt Quick is the view backend and Yoga is the only layout authority.
+- Native modules use Nitro HybridObjects, not TurboModules.
+- Cite the installed header or pinned source before calling a native symbol.
+- A locally prepared harness is not a passed gate.
+
+Security issues go through the [security policy](https://github.com/mikevocalz/react-native-qnx/blob/main/SECURITY.md).
+
+## Contribute to these docs
+
+The site lives in `docs-site/` and is a Next.js app using Fumadocs. Pages are MDX under `docs-site/content/docs`.
+
+```bash
+cd docs-site
+npm ci
+npm run dev
+```
+
+Rules for a page:
+
+1. Pick one Diataxis type: tutorial, how-to, reference or explanation.
+2. Claim only what you verified. Name the board for any device claim.
+3. Run every command you show, and add its result to the [verification log](/docs/reference/verification-log).
+4. Give external claims a real URL.
+
+The component matrix, release gates and ADR index are generated. Edit the JSON or ADR source, then run `npm run data`. `npm run data:check` fails if the committed pages are stale. Run `npm run build` and `npm run check:content` before you push.

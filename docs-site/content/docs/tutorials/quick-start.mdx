@@ -1,0 +1,110 @@
+---
+title: Quick start
+description: Create a React Native QNX app and produce a QNX JavaScript bundle on macOS or Linux, using commands that a verifier ran from a fresh clone.
+---
+
+By the end you will have a new app in `apps/dashboard` and a production Metro bundle at `build/dashboard.bundle.js`. This page covers the host side only. Running the bundle on a device needs a QNX SDP and a board; see [first device run](/docs/tutorials/first-device-run).
+
+Every command below was run from a fresh clone at commit `be7560b` on macOS arm64 with Node 26.13.0 and pnpm 12.18.0. The results are in the [verification log](/docs/reference/verification-log).
+
+## Before you start
+
+You need:
+
+- Node 26 or newer.
+- pnpm 12.18.0 exactly. The repository's `packageManager` field pins it.
+- Git.
+
+Check pnpm first:
+
+```bash
+pnpm --version
+```
+
+If it does not print `12.18.0`, an older global pnpm tries to switch itself and can fail with `Failed to switch pnpm to v12.18.0`. Install the pinned version:
+
+```bash
+npm install -g pnpm@12.18.0
+pnpm --version
+```
+
+The verifier used a prefixed install instead (`npm install --prefix <dir> pnpm@12.18.0`) so it would not change the machine's global pnpm. It printed `12.18.0` either way.
+
+## 1. Clone and install
+
+```bash
+git clone https://github.com/mikevocalz/react-native-qnx.git
+cd react-native-qnx
+pnpm install --frozen-lockfile
+```
+
+Expected: `Scope: all 15 workspace projects`, then `Done in` a few seconds.
+
+## 2. Check the pinned dependencies
+
+```bash
+pnpm validate:dependencies
+```
+
+Expected: a list of `SOURCE:` checks, ending with `validate:dependencies passed.`
+
+## 3. See the CLI
+
+```bash
+pnpm qnx --help
+```
+
+Expected: usage text listing `init`, `bundle-qnx`, `doctor`, `configure-qnx`, `build-qnx`, `deploy-qnx`, `run-qnx`, `log-qnx` and `evidence verify`.
+
+## 4. Create an app
+
+```bash
+pnpm qnx init dashboard
+pnpm install --no-frozen-lockfile
+```
+
+Expected: `Created apps/dashboard.` The second install links the new workspace app. It adds about 13 lines to the tracked `pnpm-lock.yaml`. Commit the app and the lockfile together.
+
+Choose a lowercase name made of letters, digits and hyphens. The command refuses an existing destination.
+
+## 5. Bundle the app for QNX
+
+```bash
+pnpm qnx bundle-qnx --app dashboard --out build/dashboard.bundle.js
+ls -l build/dashboard.bundle.js
+```
+
+Expected: Metro v0.87.1 output ending with `Done writing bundle output`, and a file of about 480 KB.
+
+The output must be inside the checkout's `build/` directory. A path elsewhere fails with `Bundle output must be inside this checkout's build/ directory.`
+
+## 6. Preview a deploy without doing it
+
+```bash
+pnpm qnx deploy-qnx --arch aarch64 --config Release --target rnqnx_playground --dry-run
+```
+
+Expected: JSON naming `scripts/deploy-qnx.sh` and its arguments. Nothing is deployed. `--dry-run` works on every executable command.
+
+## 7. Check your checkout
+
+```bash
+pnpm validate:docs
+pnpm typecheck
+```
+
+Expected: `Documentation validated: 24 components, 11 release gates.` and no type errors.
+
+## What you have and what you do not
+
+You have JavaScript that the QNX runner can load. You do not have a native binary, and nothing ran on a device. A bundle does not establish device compatibility.
+
+To render the bundle in a window on your Mac or Linux machine, build the host playground. That needs Qt 6.11.1 or newer, CMake and Ninja, and it builds Hermes from source. The steps are in [the CLI guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/qnx-cli.md#render-your-bundle-on-the-host). The verifier did not run them, so they are not in the verification log.
+
+## Next
+
+<Cards>
+  <Card title="First device run" href="/docs/tutorials/first-device-run">What a Pi 400 run needs.</Card>
+  <Card title="Set up Expo" href="/docs/how-to/expo-setup">Use a shared Expo app instead of a workspace app.</Card>
+  <Card title="Troubleshooting" href="/docs/troubleshooting">Fixes for the errors above.</Card>
+</Cards>
