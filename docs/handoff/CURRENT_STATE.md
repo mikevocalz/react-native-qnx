@@ -1,5 +1,29 @@
 # Current state
 
+## PR 149 native SVG subscription integration (2026-11-17)
+
+The Worklets branch now incorporates actual published Expo `12cae678`, including
+SVG `6f40a8d5`. Its optional Reanimated hook supplies the synchronized SVG-interest
+seam with the real tag-specific event registry and clears it before proxy reset.
+The linked fixture covers late native registration, removal, re-registration,
+actual geometry and UI-worklet payloads across three hosts, followed by teardown
+with a materialized handler and an admitted pending frame. The original-module
+control fails at the expected missing event; its separate direct-run
+LeakSanitizer ptrace limitation remains recorded.
+
+All 26 source hashes, three pin/build-input hashes and 25 configuration values
+match the provisional candidate. The actual public-parent rebuild passes, then
+the two configured Worklets CTests pass in 20.10 seconds. The earlier provisional
+pair and original-module control retain their own provenance. Independent source,
+metadata and final-parent reviews passed. [Receipt and raw evidence](../validation/pr149-svg-native-interest-2026-11-17.md).
+
+The previous published PR 149 head's successful hosted graph remains separate;
+the new head needs its own workflows. General animated SVG props, broader hook
+compositions, dedicated JS-thread work, remaining recognizers/layout/scroll and
+current combined QNX/device acceptance remain open. Keep all feature defaults
+OFF, all eleven release gates pending and the PR draft. The dated sections below
+preserve their original scope.
+
 ## PR 159 SVG subscription restack (2026-11-17)
 
 PR 159 now incorporates actual published SVG head `6f40a8d5`, including its
@@ -46,6 +70,25 @@ local passes do not qualify hosted CI or current QNX execution. A fresh clean
 combined QNX build and current-device acceptance remain required. Keep the PR
 draft and all eleven release gates pending. The dated sections below retain
 their original scope.
+
+## PR 149 final SVG and Expo host integration (2026-11-16; 2026-11-17 UTC)
+
+The Worklets continuation now incorporates published Expo `d50e34d9`, including
+SVG `d3eacc75`, while preserving both branches' source and historical receipts.
+Independent merge review confirms the Worklets view observers and mount-order
+test remain intact alongside the subscribed-layout guards and their regressions.
+The integrated build passes, followed by all 23 focused CTests in 95.48 seconds:
+62 combined host cases, Expo module/Fabric, real public-library Worklets timing/
+pan/teardown, missing-bootstrap rejection, all five playground controls, and
+affected gesture, mounting, image and SVG cases. Type, dependency, architecture,
+inventory, frame-probe, documentation and formatting checks pass.
+
+The earlier 61/61 Worklets run and 149-case guarded SVG experiment retain their
+own source identities. This final merge does not claim a new full corpus run or
+full JavaScript-suite pass; the existing Unix-socket `EPERM` limitation remains
+recorded. Exact published-head CI and current combined QNX/device acceptance
+remain pending. Defaults stay OFF, all eleven release gates stay pending, and
+PR 149 stays draft. [Integration commands, hashes and raw logs](../validation/pr149-stack-integration-2026-11-16.md).
 
 ## PR 159 image workers and cache lifecycle continuation (2026-11-16; 2026-11-17 UTC)
 
@@ -115,6 +158,19 @@ handoff; native source and tests are unchanged. Follow-up CI, a fresh clean
 combined QNX build and current-device validation remain pending. Keep PR 161
 draft and every release gate pending; earlier device receipts do not qualify
 this geometry correction. [Receipt and logs](../validation/pr161-geometry-2026-11-16.md).
+
+## PR 149 shutdown follow-up — 2026-11-14
+
+Worklets queue admission and receiver teardown are serialized, and concurrent stop callers wait for one completed join. The integrated branch includes main plus SVG `3b24f5c` and Expo `e032a5b`. Six standalone lifecycle cases pass under ASan/UBSan. With all three integrations enabled, Worklets, Reanimated and Gesture Handler static libraries compile and the integrated host passes 60 QtReactHost cases, including mount ordering and the Expo lifecycle regressions. Ten affected gallery/router/frame suites pass in their shared runner order. Feature switches remain OFF by default. Current QNX cross-build/device evidence is still unavailable; prior Pi results remain historical.
+[Shutdown and integration receipt](../validation/pr149-shutdown-2026-11-14.md); [native ON build receipt](../validation/pr149-on-native-build-2026-11-14.md).
+
+## PR 149 frame/mount continuation — 2026-11-13
+
+The Pi now completes the Worklets frame probe and paints intermediate timing pixels. Gesture attachment/routing is repaired; pan moves and springs back on release. Single tap and exclusive double tap now pass on the device. Exact-head CI and review of the later Hermes import remain open.
+The Hermes importer now selects the real compiler VM for opt-in Worklets;
+configuration/error regressions, real-root cross-build and a lean-file-free
+Pi frame probe passed. The importer review reported zero findings.
+[Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
 
 ## PR 159 review follow-up — 2026-11-14
 

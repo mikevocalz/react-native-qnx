@@ -1,5 +1,18 @@
 # BLOCKERS.md
 
+## PR 149 shutdown follow-up — 2026-11-14
+
+PR 149 stays draft. Current-patch QNX SDP/device qualification is unavailable here. Historical busy-JS delivery was 0/40; dedicated React JS scheduling, remaining recognizers, layout animations and scroll handlers remain open. The local native ON result establishes static-library compilation and integrated host tests; the playground host does not link all three integration libraries, so it does not establish a Worklets application runtime. Final-head required hosted checks must pass. The full local JavaScript runner is blocked by this environment's AF_UNIX socket restriction; focused suites passed without changing that gate. Independent source reviews found no remaining blocker in the reviewed changes. A fresh CodeRabbit service review remains unavailable because its CLI agent login is unsupported here.
+[Shutdown and integration receipt](../validation/pr149-shutdown-2026-11-14.md); [native ON build receipt](../validation/pr149-on-native-build-2026-11-14.md).
+
+## PR 149 frame/mount continuation — 2026-11-13
+
+PR 149 stays draft. Busy-JS delivery, remaining recognizers, exact-head hosted gates and independent review remain open. The combined native slice was independently reviewed; its stale documentation link is fixed. PR 161 must merge before PR 159, then PR 149.
+The Hermes importer now selects the real compiler VM for opt-in Worklets;
+configuration/error regressions, real-root cross-build and a lean-file-free
+Pi frame probe passed. The importer review reported zero findings.
+[Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
+
 ## PR 159 review follow-up — 2026-11-14
 
 Remaining acceptance work is exact-head required hosted CI plus current-target and release-artifact evidence. Local SourceCode and image-event host regressions are now proven by candidate/control/restoration runs. Codec attribution output, release-app animation and reproducible device-run receipts are still missing. The full local JS runner is blocked by AF_UNIX EPERM; CodeRabbit CLI remains signed out. All 11 release gates remain pending.

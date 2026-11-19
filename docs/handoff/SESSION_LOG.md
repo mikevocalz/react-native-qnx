@@ -1,5 +1,18 @@
 # SESSION_LOG.md
 
+## PR 149 shutdown follow-up — 2026-11-14
+
+Fixed receiver lifetime races and post-shutdown callback delivery, with deterministic original-source controls and independent review. Integrated the reviewed SVG/Expo heads while preserving owner-thread dispatch, mount reporting, retained modules, imageLoaded forwarding and reverse teardown. Real full-host compilation exposed the SourceCode map-key conversion and repeated TurboModule-binding installation defects; both corrections and the Expo regressions are retained. Diagnosed all ten failed workflows on `11ff6f2`: six shared the nullable TurboModuleRegistry omission in the gallery layout fixture, and four stopped at the already-corrected SourceCode lookup. Added a two-line layout fixture correction, then passed its original-source control and ten ordered shared-process suites. The ON native build exposed missing standard headers in pinned upstream packages; 26 CMake adapter lines supply them without altering installed package bytes, pins or warning policy. Compiled all three optional libraries, passed all 60 QtReactHost cases, refreshed stale header consumers and verified the tested executable hash stayed unchanged. Recorded commands, failures, final artifact hashes and evidence limits separately from historical device receipts.
+[Shutdown and integration receipt](../validation/pr149-shutdown-2026-11-14.md); [native ON build receipt](../validation/pr149-on-native-build-2026-11-14.md).
+
+## PR 149 frame/mount continuation — 2026-11-13
+
+Repaired the recursive frame closure, RefreshControl export and native mount completion. Measured two thirty-frame Pi runs and comparative timing pixels. Fixed detector attachment/routing and measured pan release at 80,15 with spring return; single/exclusive double tap also passed. The tap default-delay regression failed before its repair and passes under sanitizers.
+The Hermes importer now selects the real compiler VM for opt-in Worklets;
+configuration/error regressions, real-root cross-build and a lean-file-free
+Pi frame probe passed. The importer review reported zero findings.
+[Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
+
 ## PR 159 review follow-up — 2026-11-14
 
 Preserved the GCC toolchain failure and initial Clang source/runtime failures. Corrected the SourceCode map key conversion and made repeated TurboModule binding installation preserve the existing binding/cache/observer. Independent review found no remaining issue in those narrow fixes. The unchanged 59-case host runner passes on b6bf7eb, fails only the two new regressions with five original source files, then passes after exact restoration. Merged the independently reviewed identical standalone SVG CLI port 3b24f5c and retained both evidence sets.

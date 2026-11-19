@@ -1,0 +1,22 @@
+exit=0
+stdout:
+Invariant Violation: TurboModuleRegistry.getEnforcing(...): 'RNQNX_TEST_MISSING_BOOTSTRAP' could not be found. Verify that a module by this name is registered in the native binary.
+Running "RNQnxPlayground"
+RNQNX_TEST_ERROR_CONTROL_MOUNTED
+RNQNX_PLAYGROUND_SCREENSHOT /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-fatal-before.png 640x480
+
+stderr:
+[js fatal] Invariant Violation: TurboModuleRegistry.getEnforcing(...): 'RNQNX_TEST_MISSING_BOOTSTRAP' could not be found. Verify that a module by this name is registered in the native binary. 
+   at anonymous (/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-fatal.bundle.js:34)
+  at anonymous (/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-fatal.bundle.js:33)
+  at anonymous (/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-fatal.bundle.js:5)
+  at h (/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-fatal.bundle.js:2)
+  at d (/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-fatal.bundle.js:2)
+  at i (/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-fatal.bundle.js:2)
+  at global (/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-fatal.bundle.js:529)
+
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=0 framesDelivered=0 uiJobs=0 jsPosts=0
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 21:57:05.246608 978223616 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x55a3ab9fdb30).
+W1116 21:57:05.248144 935327424 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x55a3aba196a0).
+W1116 21:57:05.248193 935327424 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x55a3ab945f30).

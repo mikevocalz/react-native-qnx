@@ -62,6 +62,7 @@
 #include <QMetaObject>
 
 #include <algorithm>
+#include <stdexcept>
 #include <cstdio>
 #include <exception>
 #include <utility>
@@ -141,24 +142,63 @@ void QtSchedulerDelegate::schedulerDidFinishTransaction(
   // schedulerShouldRenderTransactions instead.
 }
 
+void QtSchedulerDelegate::setOwnerPoster(OwnerPoster poster) {
+  ownerPoster_ = std::move(poster);
+}
+
+void QtSchedulerDelegate::setMountReporter(MountReporter reporter) {
+  mountReporter_ = std::move(reporter);
+}
+
+bool QtSchedulerDelegate::onOwnerOrPost(std::function<void()> work) {
+  if (std::this_thread::get_id() == owner_) {
+    return true;
+  }
+  if (!ownerPoster_) {
+    // A commit from a foreign thread without a poster would mutate Qt items off
+    // the GUI thread. Fail loudly instead.
+    std::fprintf(stderr, "RNQNX_FATAL scheduler delegate called off the owner thread without an owner poster\n");
+    std::terminate();
+  }
+  ownerPoster_(std::move(work));
+  return false;
+}
+
 void QtSchedulerDelegate::schedulerShouldRenderTransactions(
     const std::shared_ptr<const facebook::react::MountingCoordinator>&
         mountingCoordinator) {
   if (mountingCoordinator == nullptr) {
     return;
   }
+  if (!onOwnerOrPost([this, mountingCoordinator]() {
+        schedulerShouldRenderTransactions(mountingCoordinator);
+      })) {
+    return;
+  }
 
-  // Transactions can queue up, so drain rather than pulling once.
-  while (auto transaction = mountingCoordinator->pullTransaction()) {
-    lastFailures_ = adapter_.apply(transaction->getMutations());
-    ++mountedTransactionCount_;
-    // A failed mutation leaves a view (and often its subtree) off screen with
-    // no other trace, so each one is logged.
-    for (const auto& failure : lastFailures_) {
-      std::fprintf(stderr, "RNQNX_MOUNT_FAILURE type=%d tag=%d error=%d %s\n",
-                   static_cast<int>(failure.type), static_cast<int>(failure.tag),
-                   static_cast<int>(failure.error), failure.detail.toUtf8().constData());
-    }
+  // One pull per notification. The coordinator holds at most one pending
+  // revision, and every later commit or animation frame notifies again. A
+  // `while (pullTransaction())` loop never ends once a MountingOverrideDelegate
+  // is installed: Reanimated's layout-animation proxy answers every pull with a
+  // transaction, empty or not, so the loop spun at 100% CPU on the first
+  // screen that mounted a Reanimated component.
+  auto transaction = mountingCoordinator->pullTransaction();
+  if (!transaction) {
+    return;
+  }
+  lastFailures_ = adapter_.apply(transaction->getMutations());
+  ++mountedTransactionCount_;
+  // Mount hooks (including Reanimated) resume commits only after the native
+  // tree has applied the revision. Never acknowledge a partially failed mount.
+  if (lastFailures_.empty() && mountReporter_) {
+    mountReporter_(mountingCoordinator->getSurfaceId());
+  }
+  // A failed mutation leaves a view (and often its subtree) off screen with
+  // no other trace, so each one is logged.
+  for (const auto& failure : lastFailures_) {
+    std::fprintf(stderr, "RNQNX_MOUNT_FAILURE type=%d tag=%d error=%d %s\n",
+                 static_cast<int>(failure.type), static_cast<int>(failure.tag),
+                 static_cast<int>(failure.error), failure.detail.toUtf8().constData());
   }
 }
 
@@ -175,6 +215,11 @@ void QtSchedulerDelegate::schedulerDidDispatchCommand(
     const facebook::react::ShadowView& shadowView,
     const std::string& commandName,
     const folly::dynamic& args) {
+  if (!onOwnerOrPost([this, shadowView, commandName, args]() {
+        schedulerDidDispatchCommand(shadowView, commandName, args);
+      })) {
+    return;
+  }
   const auto failure = adapter_.dispatchCommand(
       shadowView.tag, commandName, args, &shadowView);
   if (failure.error != rnqnx::fabric::MountError::None) {
@@ -209,6 +254,11 @@ void QtSchedulerDelegate::schedulerDidSetIsJSResponder(
 void QtSchedulerDelegate::schedulerShouldSynchronouslyUpdateViewOnUIThread(
     facebook::react::Tag tag,
     const folly::dynamic& props) {
+  if (!onOwnerOrPost([this, tag, props]() {
+        schedulerShouldSynchronouslyUpdateViewOnUIThread(tag, props);
+      })) {
+    return;
+  }
   // The native-driver animation path: apply the prop delta directly to the
   // mounted Qt Quick item without a full shadow-tree commit.
   adapter_.synchronouslyUpdateViewOnUIThread(tag, props);
@@ -231,9 +281,36 @@ void QtSchedulerDelegate::schedulerDidSetViewSnapshot(
 
 void QtSchedulerDelegate::schedulerDidClearPendingSnapshots() {}
 
+namespace {
+std::vector<std::pair<std::string, facebook::react::ComponentDescriptorProvider>>&
+extraComponentProviders() {
+  static std::vector<std::pair<std::string, facebook::react::ComponentDescriptorProvider>> providers;
+  return providers;
+}
+}  // namespace
+
+void QtReactHost::addComponentDescriptorProvider(
+    std::string name, facebook::react::ComponentDescriptorProvider provider) {
+  auto& providers = extraComponentProviders();
+  for (const auto& [existing, unused] : providers) {
+    if (existing == name) {
+      throw std::invalid_argument("Component descriptor is already registered");
+    }
+  }
+  providers.emplace_back(std::move(name), std::move(provider));
+}
+
+std::vector<std::string> registeredBuiltinComponentNames();
+
 std::vector<std::string> registeredComponentNames() {
   // One list, used by both the registry factory and the JavaScript predicate,
   // so the two cannot drift apart.
+  std::vector<std::string> names = registeredBuiltinComponentNames();
+  for (const auto& [name, provider] : extraComponentProviders()) names.push_back(name);
+  return names;
+}
+
+std::vector<std::string> registeredBuiltinComponentNames() {
   std::vector<std::string> names = {
       std::string(RootComponentDescriptor::ConcreteShadowNode::Name()),
 #if RNQNX_ENABLE_QT_SVG
@@ -339,6 +416,10 @@ facebook::react::ComponentRegistryFactory makeComponentRegistryFactory() {
     providerRegistry->add(
         facebook::react::concreteComponentDescriptorProvider<
             facebook::react::ModalHostViewComponentDescriptor>());
+    // Descriptors libraries asked for with addComponentDescriptorProvider().
+    for (const auto& [name, provider] : extraComponentProviders()) {
+      providerRegistry->add(provider);
+    }
 
     // Without a fallback, an unregistered component name throws
     // std::invalid_argument out of ComponentDescriptorRegistry::at
@@ -524,6 +605,13 @@ class QtReactHost::Impl {
 
     scheduler = std::make_shared<Scheduler>(
         toolbox, /*animationDelegate=*/nullptr, &delegate);
+    delegate.setMountReporter(
+        [weak = std::weak_ptr<facebook::react::UIManager>(scheduler->getUIManager())](
+            facebook::react::SurfaceId surfaceId) {
+          if (auto manager = weak.lock()) {
+            manager->reportMount(surfaceId);
+          }
+        });
 
     // React Native's JavaScript branches on this global to decide whether the
     // legacy bridge exists. Without it, loading a bundle throws
@@ -602,6 +690,11 @@ class QtReactHost::Impl {
       scheduler->unregisterSurface(*handler);
     }
     surfaces.clear();
+    // Library teardown (worklet runtimes, their threads) needs Hermes alive.
+    for (auto it = teardownHooks.rbegin(); it != teardownHooks.rend(); ++it) {
+      (*it)();
+    }
+    teardownHooks.clear();
     // React unmount cleanup may still invoke native callbacks or stop producers.
     // Close admission only after those entries, while Hermes/scheduler live.
 #if RNQNX_ENABLE_APP_STATE
@@ -631,6 +724,8 @@ class QtReactHost::Impl {
   /// Modules JavaScript has registered as callable from native. Nothing calls
   /// them yet; keeping them is what makes that possible later.
   std::unordered_map<std::string, facebook::jsi::Value> callableModules;
+  std::unordered_map<std::string, QtReactHost::TurboModuleFactory> extraTurboModules;
+  std::vector<std::function<void()>> teardownHooks;
   /// Module objects from callableModules factories, resolved on first call.
   std::unordered_map<std::string, facebook::jsi::Object> resolvedCallableModules;
   // The window size last sent to JavaScript (setWindowSize).
@@ -777,6 +872,23 @@ const std::vector<JavaScriptError>& QtReactHost::javaScriptErrors() const {
   return impl_->javaScriptErrors;
 }
 
+void QtReactHost::registerTurboModule(std::string name, TurboModuleFactory factory) {
+  if (!factory) {
+    throw std::invalid_argument("TurboModule factory must be callable");
+  }
+  if (!impl_->extraTurboModules.emplace(std::move(name), std::move(factory)).second) {
+    throw std::invalid_argument("TurboModule is already registered");
+  }
+}
+
+void QtReactHost::setOwnerPoster(QtSchedulerDelegate::OwnerPoster poster) {
+  impl_->delegate.setOwnerPoster(std::move(poster));
+}
+
+void QtReactHost::addTeardownHook(std::function<void()> hook) {
+  impl_->teardownHooks.push_back(std::move(hook));
+}
+
 void QtReactHost::setTurboModuleProvider(TurboModuleProvider provider) {
   impl_->turboModuleProvider = std::move(provider);
 }
@@ -895,6 +1007,10 @@ void QtReactHost::installTurboModuleBinding() {
           facebook::jsi::Runtime& /*jsRuntime*/,
           const std::string& name)
           -> std::shared_ptr<facebook::react::TurboModule> {
+        if (const auto extra = impl->extraTurboModules.find(name);
+            extra != impl->extraTurboModules.end()) {
+          return extra->second(callInvoker);
+        }
         if (impl->turboModuleProvider) {
           if (auto module = impl->turboModuleProvider(name, callInvoker)) {
             return module;

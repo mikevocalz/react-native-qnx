@@ -1,0 +1,10 @@
+Internal ctest changing into directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+Test project /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+    Start 34: rnqnx_worklets_integration_host_test
+1/2 Test #34: rnqnx_worklets_integration_host_test .......   Passed   27.39 sec
+    Start 35: rnqnx_worklets_rejects_missing_bootstrap
+2/2 Test #35: rnqnx_worklets_rejects_missing_bootstrap ...   Passed    3.19 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =  30.60 sec

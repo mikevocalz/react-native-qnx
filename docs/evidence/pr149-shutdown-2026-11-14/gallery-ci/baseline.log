@@ -1,0 +1,68 @@
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+/workspace/scratch/853552216e74/react-native-qnx/apps/component-gallery/motion/lazyCard.js:13
+  return TurboModuleRegistry.get('WorkletsModule') != null;
+                             ^
+
+TypeError: Cannot read properties of undefined (reading 'get')
+    at nativeWorkletsAvailable (/workspace/scratch/853552216e74/react-native-qnx/apps/component-gallery/motion/lazyCard.js:13:30)
+    at MotionAdvancedCard (/workspace/scratch/853552216e74/react-native-qnx/apps/component-gallery/motion/lazyCard.js:24:27)
+    at Object.react_stack_bottom_frame (/workspace/scratch/853552216e74/react-native-qnx/node_modules/.pnpm/react-test-renderer@19.3.0_react@19.3.0/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:16690:20)
+    at renderWithHooks (/workspace/scratch/853552216e74/react-native-qnx/node_modules/.pnpm/react-test-renderer@19.3.0_react@19.3.0/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:5126:22)
+    at updateFunctionComponent (/workspace/scratch/853552216e74/react-native-qnx/node_modules/.pnpm/react-test-renderer@19.3.0_react@19.3.0/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:7302:19)
+    at beginWork (/workspace/scratch/853552216e74/react-native-qnx/node_modules/.pnpm/react-test-renderer@19.3.0_react@19.3.0/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:8851:18)
+    at runWithFiberInDEV (/workspace/scratch/853552216e74/react-native-qnx/node_modules/.pnpm/react-test-renderer@19.3.0_react@19.3.0/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:2503:30)
+    at performUnitOfWork (/workspace/scratch/853552216e74/react-native-qnx/node_modules/.pnpm/react-test-renderer@19.3.0_react@19.3.0/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:14142:22)
+    at workLoopSync (/workspace/scratch/853552216e74/react-native-qnx/node_modules/.pnpm/react-test-renderer@19.3.0_react@19.3.0/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13986:41)
+    at renderRootSync (/workspace/scratch/853552216e74/react-native-qnx/node_modules/.pnpm/react-test-renderer@19.3.0_react@19.3.0/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13967:11)
+    at performWorkOnRoot (/workspace/scratch/853552216e74/react-native-qnx/node_modules/.pnpm/react-test-renderer@19.3.0_react@19.3.0/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:13153:39)
+    at performWorkOnRootViaSchedulerTask (/workspace/scratch/853552216e74/react-native-qnx/node_modules/.pnpm/react-test-renderer@19.3.0_react@19.3.0/node_modules/react-test-renderer/cjs/react-test-renderer.development.js:3124:7)
+    at flushActQueue (/workspace/scratch/853552216e74/react-native-qnx/node_modules/.pnpm/react@19.3.0/node_modules/react/cjs/react.development.js:664:34)
+    at process.env.NODE_ENV.exports.act (/workspace/scratch/853552216e74/react-native-qnx/node_modules/.pnpm/react@19.3.0/node_modules/react/cjs/react.development.js:960:10)
+    at layoutWindow (file:///workspace/scratch/853552216e74/react-native-qnx/tests/js/helpers/yoga-host.mjs:342:5)
+    at lay (file:///workspace/scratch/853552216e74/react-native-qnx/tests/js/qnx-gallery-yoga-layout.test.mjs:114:21)
+    at Object.patch (file:///workspace/scratch/853552216e74/react-native-qnx/tests/js/qnx-gallery-yoga-layout.test.mjs:119:14)
+    at file:///workspace/scratch/853552216e74/react-native-qnx/tests/js/qnx-gallery-yoga-layout.test.mjs:203:20
+
+Node.js v26.13.1

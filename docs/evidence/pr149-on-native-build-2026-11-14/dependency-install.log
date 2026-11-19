@@ -1,0 +1,15 @@
+Scope: all 15 workspace projects
+✓ Lockfile passes supply-chain policies (verified 1h ago)
+Lockfile is up to date, resolution step is skipped
+Packages: +63 -4
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----
+Progress: resolved 63, reused 63, downloaded 0, added 63, done
+
+devDependencies:
++ @legendapp/list 3.7.2
++ @legendapp/motion 2.5.3
++ react-native-gesture-handler 3.4.0
++ react-native-reanimated 4.7.1
++ react-native-worklets 0.13.1
+
+Done in 738ms using pnpm v12.18.0

@@ -1,5 +1,18 @@
 # NEXT_ACTIONS.md
 
+## PR 149 shutdown follow-up — 2026-11-14
+
+Inspect the required hosted checks on the final published head; the old `11ff6f2` JavaScript fixture and SourceCode compile failures are corrected in this candidate. Then perform a licensed QNX cross-build with the pinned SDP/Qt closure and record bounded device shutdown/reload trials and the remaining runtime acceptance. Preserve the historical busy-JS limitation independently of the shutdown fix. Keep the draft until the required current-patch runtime/target evidence exists, and retain all eleven v1 gates as pending. Merge order remains SVG #161, Expo #159, then Worklets #149.
+[Shutdown and integration receipt](../validation/pr149-shutdown-2026-11-14.md); [native ON build receipt](../validation/pr149-on-native-build-2026-11-14.md).
+
+## PR 149 frame/mount continuation — 2026-11-13
+
+Complete teardown checks, review the native slice, inspect exact-head CI, and keep the draft until its acceptance gates pass. Finish the remaining image and SVG handoff gaps separately.
+The Hermes importer now selects the real compiler VM for opt-in Worklets;
+configuration/error regressions, real-root cross-build and a lean-file-free
+Pi frame probe passed. The importer review reported zero findings.
+[Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
+
 ## PR 159 review follow-up — 2026-11-14
 
 Publish the final integrated source/evidence tree and inspect its required hosted ON/OFF checks. Resolve the two host findings using the actual candidate/control/restoration evidence; retain the three artifact/device evidence requests. Run current-target image/input/teardown and release-app checks with host, image, source/artifact hashes, full commands and exit statuses. Do not infer target completion from host tests.

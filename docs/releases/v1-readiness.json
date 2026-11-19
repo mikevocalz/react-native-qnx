@@ -16,6 +16,25 @@
       "hostedCi": "passed at the implementation commit; follow-up CI must be checked after publication",
       "targetExecution": "not run for this candidate; generated C++ unchanged"
     },
+    "pr149FrameMount": {
+      "reviewedAt": "2026-11-13",
+      "receipt": "docs/validation/pr149-frame-mount-2026-11-13.md",
+      "status": "in-progress; Pi timing, spring, pan, single/exclusive double tap observed; 16 sanitizer cases pass; review and CI pending",
+      "hermesImport": "configuration/error regressions, real-root QNX link and Pi frame probe passed without lean-named file; independent review zero findings"
+    },
+    "pr149Shutdown": {
+      "reviewedAt": "2026-11-14",
+      "baseCommit": "2db4dd8d1a895acc8e1e382f22c474084a316a9b",
+      "receipt": "docs/validation/pr149-shutdown-2026-11-14.md",
+      "hostValidation": "six standalone real-Qt lifecycle cases pass under scoped ASan/UBSan; all three optional native static libraries compile ON and the integrated host passes 60 QtReactHost cases; ten affected JavaScript suites pass in shared runner order; frozen install, type/dependency/docs checks and production Metro bundling pass",
+      "review": "independent reviews of synchronization, combined host, layout fixture and standard-header adapters found no blocker; fresh CodeRabbit service review unavailable",
+      "status": "draft; final-head required hosted checks and current QNX cross-build/device qualification remain open; static compilation is not linked Worklets application acceptance; historical busy-JS 0/40 and remaining feature acceptance remain open",
+      "nativeBuildReceipt": "docs/validation/pr149-on-native-build-2026-11-14.md",
+      "nativeSourceCommit": "4d13330ccc18438d4e7a3c38128886feaa6525ca",
+      "nativeSourceTree": "2f9479e2b37c8d6fec673d2d6316c641f2044e6b",
+      "integratedExpoHead": "e032a5b2c946c0de4b899daebed73bafed94108d",
+      "integratedSvgHead": "3b24f5c2fd3733dbf1ebe77729f7014242db7db3"
+    },
     "pr161Corpus": {
       "reviewedAt": "2026-11-13",
       "baseCommit": "4076e67",
@@ -149,6 +168,24 @@
       "contractLimit": "configureCache retains its synchronous contract and may perform disk eviction; broader router prop/RTL/resize conformance is not closed by these tests.",
       "finalStackValidation": "docs/evidence/pr159-image-workers-2026-11-17/final-stack-validation.json"
     },
+    "pr149IntegratedHost": {
+      "reviewedAt": "2026-11-16",
+      "reviewedAtUtc": "2026-11-17",
+      "localBaseCommit": "ebd8182e6cded86331505beab780c79ec5e8cbea",
+      "integratedExpoHead": "d50e34d99a504f48b690225ad28e8cb3cd8ca37a",
+      "integratedSvgHead": "d3eacc75dcad761c992736223a68b53ff852203b",
+      "testedPreReceiptMergeTree": "01d5d6dbc912c08351bd0ddeffb6b28f19e0a6f4",
+      "receipt": "docs/validation/pr149-stack-integration-2026-11-16.md",
+      "earlierReceipts": [
+        "docs/evidence/pr149-cancellation-2026-11-17/README.md",
+        "docs/evidence/pr149-linked-host-2026-11-17/README.md",
+        "docs/evidence/pr149-playground-errors-2026-11-16/README.md"
+      ],
+      "nativeHost": "Final integrated build and 23/23 focused CTests pass in 95.48 seconds, including 62 combined QtReactHost cases, real Worklets/Reanimated/Gesture Handler timing/pan/teardown and missing-bootstrap control, Expo module/Fabric, all five playground controls and affected gesture/mounting/image/SVG cases. All 46 source/pin hashes match after execution. No sanitizer diagnostic; instrumentation is scoped and Qt/upstream objects are not all instrumented; leak detection disabled.",
+      "review": "Independent final merge review preserves Worklets observers/mount-order case and both onLayout guards/regressions; earlier bounded cancellation, linked-fixture and fatal/soft reviews remain recorded. Only handoff insertion conflicted; both parent sections preserved.",
+      "hostedCi": "Required final published-head workflows remain pending. Earlier 61/61 Worklets and 149-case copied SVG results retain their own source identities; no new full corpus or full JavaScript-suite result is claimed.",
+      "targetExecution": "No new QNX cross-build or device run. Dedicated JS thread, busy-JS rendering, remaining recognizers, layout/scroll qualification and current clean combined target acceptance remain open. Keep PR draft, feature defaults OFF and all eleven release gates pending."
+    },
     "pr161SvgLayoutInterest": {
       "reviewedAt": "2026-11-17",
       "baseCommit": "d3eacc75dcad761c992736223a68b53ff852203b",
@@ -171,6 +208,23 @@
       "targetExecution": "No new QNX or Marathon runtime execution. Current cross-build/attribution, release animation assets and exact-device acceptance remain required. Keep draft and all eleven release gates pending.",
       "dri": "finish_expo159",
       "independentReviewers": ["root", "qnx_readiness"]
+    },
+    "pr149SvgNativeInterest": {
+      "reviewedAt": "2026-11-17",
+      "localParent": "ff86386a218ceda4e842e79c601fd70c2ff43b7a",
+      "publishedParentEquivalent": "75782e716d3a17fb7a22c47f883e37585a94f640",
+      "actualExpoParent": "12cae67885b77f9a371059fc2b0a1168ef07430b",
+      "actualExpoTree": "b057996aeb770ce1b1349077a0106c85d3f4ff4a",
+      "validation": "docs/validation/pr149-svg-native-interest-2026-11-17.md",
+      "rawEvidence": "docs/evidence/pr149-svg-native-interest-2026-11-17/README.md",
+      "hostExecution": "Real native late SVG event registration, removal and re-registration pass across three linked Worklets/Reanimated hosts; pixels, exact UI-worklet layout payloads, suppressed native dispatch and materialized-handler/pending-frame teardown are checked.",
+      "control": "Previously committed Reanimated module with the new prerequisite and identical fixture paints changed geometry, then fails the late native subscriber check. First direct-run LeakSanitizer ptrace failure is preserved separately; unchanged configured CTest isolates the expected failure.",
+      "finalIntegration": "All 26 provisional source hashes, three pin/build-input hashes and 25 configuration values match the actual-parent merge. Target rebuild passes in 72.545 seconds; configured pair passes 2/2 in 20.10 seconds (17.85 and 2.25). Executable, Reanimated archive and Metro bundle match the provisional candidate byte-for-byte.",
+      "instrumentation": "Existing Debug, HERMES_SLOW_DEBUG and 60-second limits retained. ASan fixture translation unit/link only, with existing configured leak detection disabled; no whole-graph, UBSan or leak qualification.",
+      "hostedCi": "Previous published 75782e7 workflows passed separately. Final successor requires its own hosted workflows; provisional control and candidate results retain their original ancestry.",
+      "targetExecution": "No new QNX cross-build or device execution. General public hook/animated SVG props, dedicated JS thread, remaining recognizers and layout/scroll/current combined target qualification remain open. Defaults OFF, all 11 gates pending, PR draft.",
+      "dri": "qnx_readiness",
+      "independentReviewers": ["root", "finish_expo159"]
     }
   },
   "gates": [

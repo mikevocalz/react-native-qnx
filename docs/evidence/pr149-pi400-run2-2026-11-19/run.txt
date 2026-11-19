@@ -1,0 +1,456 @@
+## Thu Nov 19 07:37:30 UTC 2026
+QNX qnxpi 8.0.0 2026/06/05-16:21:14EDT RaspberryPi400 aarch64le
+qnxpi
+/dev/io-hid/io-hid
+io-hid=0
+/dev/hd0t179            19955692   5486804  14468888      28%  /data/          
+bin
+cores
+forge-probe
+glfix
+glfix-plugin-backups
+gpu-access
+launcher-tile
+lib
+mx
+pr102-1a29431-physical-20261109T080809Z
+pr102-2befbd7-physical-20261109T073617Z
+pr102-aa2cff0-physical-20261109T075349Z
+pr104-showcase-ad51691-69a4e1c96e4d
+projects
+qnx-gui-session-20261109T091012Z
+qnx-launcher-20261109T090429Z.log
+qnx-launcher-20261109T090429Z.pid
+qnx-stock-gui-20261109T092220Z.launcher.log
+qnx-stock-gui-20261109T092220Z.launcher.pid
+qnx-stock-gui-20261109T092220Z.managed.log
+qnx-stock-gui-20261109T092220Z.managed.pid
+qnx-stock-gui-20261109T092220Z.standalone.log
+qnx-stock-gui-20261109T092220Z.standalone.pid
+qnx-stock-gui-20261109T092220Z.wm.log
+qnx-stock-gui-20261109T092220Z.wm.pid
+qt612-media
+qt612-public
+qt612-public-o2
+qt612-public-o2-plugin-backups
+qt612-public-proofs
+qt612-public-runtime-o2.tar.gz
+qt612-public-runtime.tar.gz
+repos
+rnqnx-anim-1
+rnqnx-anim-2
+rnqnx-anim-3
+rnqnx-anim-4
+rnqnx-anim-5
+rnqnx-anim-6
+rnqnx-anim-frame-fix
+rnqnx-anim-frame-flush
+rnqnx-anim-gesture-bindings
+rnqnx-anim-gesture-deadline
+rnqnx-anim-gesture-trace
+rnqnx-anim-gesture-zustand
+rnqnx-anim-mount-report
+rnqnx-anim-readback
+rnqnx-anim-real-hermes
+rnqnx-async-test
+rnqnx-chrome-app
+rnqnx-chrome-app-next
+rnqnx-devclient-1
+rnqnx-devclient-3
+rnqnx-dock-2
+rnqnx-drawer-clear-1113
+rnqnx-drawer-route-1113
+rnqnx-fmt-1
+rnqnx-hello-world
+rnqnx-image-current-1113
+rnqnx-image-io-1113
+rnqnx-image-io-final-1113
+rnqnx-media-probe
+rnqnx-module-cache-1113
+rnqnx-native-drawer-1113
+rnqnx-pr149-1
+rnqnx-router-4
+rnqnx-router-rel
+rnqnx-showcase-1113
+rnqnx-svg-app
+rnqnx-svg-css-1113
+rnqnx-svg-current-1113
+rnqnx-svg-live-1113
+rnqnx-svg-remote-1113
+rnqnx-svg-runtime-1113
+rnqnx-svg-runtime-1113.tar.gz
+rnqnx-tile-1
+rnqnx-webgpu
+rnqnx-webgpu-s5
+rnqnx-winmgr-stage
+rnqnx-wm
+  786459 rnqnx-winmgr      
+  966681 demolauncher      
+pidin=0
+exit=0
+rnqnx-pr149-1:
+total 49460
+drwxr-xr-x   5 qnxuser qnxuser     4096 2026-11-19 05:50 .
+drwx--x---+ 75 qnxuser qnxuser     4096 2026-11-19 05:50 ..
+-rw-r--r--   1 qnxuser qnxuser     1362 2026-11-19 05:50 ExpoModules.generated.h.in
+-rw-r--r--   1 qnxuser qnxuser  4576155 2026-11-19 05:50 app.bundle.js
+drwxr-xr-x   3 qnxuser qnxuser     4096 2026-11-19 05:50 assets
+drwxr-xr-x   2 qnxuser qnxuser     4096 2026-11-19 05:50 icons
+-rwxr-xr-x   1 qnxuser qnxuser  8723680 2026-11-19 05:50 libhermesvm.so
+-rw-------   1 qnxuser qnxuser     4574 2026-11-19 05:50 native-app.json
+-rwxr-xr-x   1 qnxuser qnxuser 11994472 2026-11-19 05:50 org.rnqnx.showcase
+drwxr-xr-x   4 qnxuser qnxuser     4096 2026-11-19 05:50 plugins
+-rwxr-xr-x   1 qnxuser qnxuser     4130 2026-11-19 05:50 run-app.sh
+
+rnqnx-pr149-1/assets/assets:
+total 152
+drwxr-xr-x  2 qnxuser qnxuser  4096 2026-11-19 05:50 .
+drwxr-xr-x  3 qnxuser qnxuser  4096 2026-11-19 05:50 ..
+-rw-r--r--  1 qnxuser qnxuser   829 2026-11-19 05:50 anim.gif
+-rw-r--r--  1 qnxuser qnxuser   362 2026-11-19 05:50 anim.webp
+-rw-r--r--  1 qnxuser qnxuser 68884 2026-11-19 05:50 icon.png
+
+rnqnx-pr149-1/plugins:
+total 32
+drwxr-xr-x  4 qnxuser qnxuser 4096 2026-11-19 05:50 .
+drwxr-xr-x  5 qnxuser qnxuser 4096 2026-11-19 05:50 ..
+drwxr-xr-x  2 qnxuser qnxuser 4096 2026-11-19 05:50 imageformats
+drwxr-xr-x  2 qnxuser qnxuser 4096 2026-11-19 05:50 tls
+
+rnqnx-pr149-1/plugins/imageformats:
+total 4224
+drwxr-xr-x  2 qnxuser qnxuser    4096 2026-11-19 05:50 .
+drwxr-xr-x  4 qnxuser qnxuser    4096 2026-11-19 05:50 ..
+-rwxr-xr-x  1 qnxuser qnxuser   41808 2026-11-19 05:50 libqgif.so
+-rwxr-xr-x  1 qnxuser qnxuser   52128 2026-11-19 05:50 libqicns.so
+-rwxr-xr-x  1 qnxuser qnxuser  510968 2026-11-19 05:50 libqjpeg.so
+-rwxr-xr-x  1 qnxuser qnxuser   33632 2026-11-19 05:50 libqtga.so
+-rwxr-xr-x  1 qnxuser qnxuser 1008304 2026-11-19 05:50 libqtiff.so
+-rwxr-xr-x  1 qnxuser qnxuser   32520 2026-11-19 05:50 libqwbmp.so
+-rwxr-xr-x  1 qnxuser qnxuser  474288 2026-11-19 05:50 libqwebp.so
+
+rnqnx-pr149-1/plugins/tls:
+total 898
+drwxr-xr-x  2 qnxuser qnxuser   4096 2026-11-19 05:50 .
+drwxr-xr-x  4 qnxuser qnxuser   4096 2026-11-19 05:50 ..
+-rwxr-xr-x  1 qnxuser qnxuser 451688 2026-11-19 05:50 libqopensslbackend.so
+#!/bin/sh
+# Launcher for org.rnqnx.showcase on a QNX board. Run it by hand, from the desktop tile
+# or from `rnqnx project dev` / `project run`; it is not part of boot.
+#
+# One instance per app. The app guards itself over a local socket, and this
+# script guards the cases where the socket cannot (a stale socket, a process
+# owned by another login): it looks for the app's process with pidin before it
+# starts anything.
+#
+#   run-app.sh                 show the running app, or start it
+#   run-app.sh --replace       stop the running app (quit, then SIGTERM), then start
+#   run-app.sh --dev-server U  as above, loading the bundle from Metro (dev client)
+#
+# Never SIGKILL: a process that ignores SIGTERM for 5 s makes this script fail
+# instead of starting a second copy.
+#
+# Environment: RNQNX_APP_DIR (default: this script's directory) holds the app
+# executable; RNQNX_QT_ROOT is the Qt runtime; RNQNX_LOG the log file;
+# RNQNX_PIDIN the pidin command.
+
+APP_ID=org.rnqnx.showcase
+HERE=$(cd "$(dirname "$0")" && pwd)
+APP_DIR=${RNQNX_APP_DIR:-$HERE}
+QT_ROOT=${RNQNX_QT_ROOT:-/data/home/qnxuser/qt612-public-o2}
+LOG=${RNQNX_LOG:-/tmp/rnqnx-$APP_ID.log}
+PIDIN=${RNQNX_PIDIN:-pidin}
+BIN=$APP_DIR/$APP_ID
+TERM_WAIT=${RNQNX_TERM_WAIT:-5}
+
+# The instance key: the app id without build-variant suffixes. Keep this list
+# in step with buildVariantSuffixes() in native/window-chrome/WindowHost.cpp.
+base_id() {
+  id=$1
+  while :; do
+    case $id in
+      *.*.dev | *.*.debug | *.*.preview) id=${id%.*} ;;
+      *) break ;;
+    esac
+  done
+  echo "$id"
+}
+BASE=$(base_id "$APP_ID")
+
+# Pids of this app's processes, in any build variant: this user's, or every
+# user's when run as root (root sees them all and may stop them).
+running_pids() {
+  me=${RNQNX_UID:-$(id -u)}
+  name_me=$(id -un 2>/dev/null)
+  "$PIDIN" -F '%a %N %U' 2>/dev/null | while read -r pid name uid rest; do
+    case $pid in '' | *[!0-9]*) continue ;; esac
+    [ "$me" = 0 ] || [ "$uid" = "$me" ] || [ "$uid" = "$name_me" ] || continue
+    name=${name##*/}
+    [ "$(base_id "$name")" = "$BASE" ] || continue
+    [ "$pid" = "$$" ] && continue
+    echo "$pid"
+  done
+}
+
+# SIGTERM every running copy and wait up to TERM_WAIT seconds for them to go.
+terminate_running() {
+  pids=$(running_pids)
+  [ -n "$pids" ] || return 0
+  # shellcheck disable=SC2086
+  kill $pids 2>/dev/null
+  n=0
+  while [ -n "$(running_pids)" ]; do
+    n=$((n + 1))
+    if [ "$n" -gt "$TERM_WAIT" ]; then
+      echo "rnqnx: $APP_ID (pid $(running_pids | tr '\n' ' ')) did not stop after SIGTERM; not starting a second copy" >&2
+      return 1
+    fi
+    sleep 1
+  done
+  return 0
+}
+
+# The app runs below and, to restore or stop a running copy, above.
+export LD_LIBRARY_PATH="$APP_DIR:$QT_ROOT/lib:/data/pi400-graphics-compat/lib/dll:/data/pi400-graphics-compat/usr/lib:/data/pi400-graphics-compat/usr/lib/graphics/rpi4-drm:/usr/lib"
+# no-fullscreen: the window opens at the app size, a real window under
+# rnqnx-winmgr.
+export QT_QPA_PLATFORM=qnx:no-fullscreen
+export QT_QPA_PLATFORM_PLUGIN_PATH=$QT_ROOT/plugins/platforms
+# The app's own plugins (TLS backend, image formats) first, then the runtime's.
+export QT_PLUGIN_PATH=$APP_DIR/plugins:$QT_ROOT/plugins
+export QML_IMPORT_PATH=$QT_ROOT/qml
+export QML2_IMPORT_PATH=$QT_ROOT/qml
+export QT_QPA_FONTDIR=/usr/share/fonts/dejavu
+export QT_FORCE_STDERR_LOGGING=1
+unset QT_QUICK_BACKEND
+unset DL_DEBUG
+
+replace=
+for arg in "$@"; do
+  [ "$arg" = --replace ] && replace=1
+done
+
+if [ -n "$(running_pids)" ]; then
+  if [ -n "$replace" ]; then
+    # Ask the app to quit (graceful close), then make sure nothing is left.
+    "$BIN" --stop-running >/dev/null 2>&1
+    terminate_running || exit 1
+  else
+    # Restore the running window. When the app cannot be reached (stale
+    # socket, a different login) it exits 75 without starting; stop the old
+    # process and start fresh, so there is still exactly one.
+    "$BIN" --restore-only "$@"
+    status=$?
+    [ "$status" -eq 0 ] && exit 0
+    if [ "$status" -ne 75 ]; then exit "$status"; fi
+    terminate_running || exit 1
+  fi
+fi
+
+[ -t 1 ] || exec >>"$LOG" 2>&1
+cd "$APP_DIR" || exit 1
+exec "$BIN" "$@"
+total 526
+drwxr-xr-x   2 qnxuser qnxuser   4096 2026-11-13 19:53 .
+drwx--x---+ 75 qnxuser qnxuser   4096 2026-11-19 05:50 ..
+-rwxr-xr-x   1 qnxuser qnxuser  19312 2026-11-13 19:22 rnqnx-inject
+-rwxr-xr-x   1 qnxuser qnxuser  14632 2026-11-13 07:03 rnqnx-inject2
+-rwxr-xr-x   1 qnxuser qnxuser 111360 2026-11-13 19:10 rnqnx-inject3
+-rwxr-xr-x   1 qnxuser qnxuser 116080 2026-11-13 19:53 rnqnx-inject4
+-rwxr-xr-x  1 qnxuser qnxuser 8723680 2026-11-19 05:50 rnqnx-pr149-1/libhermesvm.so
+## deploy Thu Nov 19 07:37:49 UTC 2026
+ls: /data/home/qnxuser/qt612-public-o2/plugins/imageformats: No such file or directory
+cp=0
+mk=0
+scp1=0
+scp2=0
+scp3=0
+## shot Thu Nov 19 07:39:11 UTC 2026
+exit=0
+-rw-r--r--  1 qnxuser qnxuser 103473 2026-11-19 07:39 /tmp/pr149b-x.png
+tail: /tmp/org.rnqnx.showcase.log: No such file or directory
+pidin=1
+scp=0
+## launch Thu Nov 19 07:39:26 UTC 2026
+launched
+26193952 org.rnqnx.showcase
+pidin=0
+QQnxScreen: QQNX_PHYSICAL_SCREEN_SIZE variable not set. Could not determine physical screen size. Defaulting to 150x90.
+Running "RNQnxPlayground"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1119 07:39:28.675468     1 conversions.h:368] Could not parse yoga::PositionType: left
+shot_desk0=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 500 400 click 48 215
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 298 264
+inject_exit=0
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":1,"view":20,"sourceWidth":1024,"sourceHeight":1024,"cache":"none"}
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":1,"view":20,"sourceWidth":64,"sourceHeight":48,"cache":"none"}
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 418 264 move 600 500
+inject_exit=0
+QQnxScreen: QQNX_PHYSICAL_SCREEN_SIZE variable not set. Could not determine physical screen size. Defaulting to 150x90.
+Running "RNQnxPlayground"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1119 07:39:28.675468     1 conversions.h:368] Could not parse yoga::PositionType: left
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":1,"view":20,"sourceWidth":1024,"sourceHeight":1024,"cache":"none"}
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":1,"view":20,"sourceWidth":64,"sourceHeight":48,"cache":"none"}
+RNQNX_JS_LOG [gui] IMAGE-PROOF startAnimating dispatched
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 48 143 move 560 450 wheel 12
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 wheel 6
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 290 124 move 700 400
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 415 124 move 700 400
+inject_exit=0
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":1,"view":20,"sourceWidth":1024,"sourceHeight":1024,"cache":"none"}
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":1,"view":20,"sourceWidth":64,"sourceHeight":48,"cache":"none"}
+RNQNX_JS_LOG [gui] IMAGE-PROOF startAnimating dispatched
+[RemoteImageCard] loaded https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 in 154149 ms
+[RemoteImageCard] Image.getSize https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 = 640x427
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 48 215 move 560 450 wheel 30
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 wheel 8
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 570 455
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel 10
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 565 402
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -3 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -3 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -3 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -4 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -4 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -4 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -4 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -4 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -4 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel 8 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 219 613 sleep 600 click 369 613 sleep 600 move 600 400
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 610 405
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel 100 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -5 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -4 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -4 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 drag 234 345 500 430 25
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 234 345 sleep 700 move 600 450
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 610 455
+inject_exit=0
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":1,"view":20,"sourceWidth":1024,"sourceHeight":1024,"cache":"none"}
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":1,"view":20,"sourceWidth":64,"sourceHeight":48,"cache":"none"}
+RNQNX_JS_LOG [gui] IMAGE-PROOF startAnimating dispatched
+[RemoteImageCard] loaded https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 in 154149 ms
+[RemoteImageCard] Image.getSize https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 = 640x427
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":2,"view":20,"sourceWidth":64,"sourceHeight":48,"cache":"none"}
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 234 414 sleep 900 move 600 450
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 610 455
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 234 414 sleep 100 click 234 414 sleep 900 move 600 450
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 612 452
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -3 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 440 347 sleep 600 move 600 450
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 606 452
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 560 400 wheel -3 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 187 337 sleep 150 move 600 200
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 610 205
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 570 337 sleep 600 move 600 200
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 606 204
+inject_exit=0
+[RemoteImageCard] loaded https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 in 154149 ms
+[RemoteImageCard] Image.getSize https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 = 640x427
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":2,"view":20,"sourceWidth":64,"sourceHeight":48,"cache":"none"}
+RNQNX_JS_LOG [gui] reanimated UI frames: 27204, shared x: 220, runtime kind: 1
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 48 143 move 560 400 wheel 80 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 211 585 sleep 800 move 600 300
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 606 304
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 key esc sleep 800 move 600 300
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 612 306
+inject_exit=0
+RNQNX_JS_LOG [gui] reanimated UI frames: 27204, shared x: 220, runtime kind: 1
+[RemoteImageCard] loaded https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 in 618203 ms
+[RemoteImageCard] Image.getSize https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 = 640x427
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 32 71 sleep 900 move 600 300
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 606 304
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 key esc sleep 900 move 600 300
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 612 306
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 48 143 move 560 400 wheel -200 sleep 800 move 566 404
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 click 800 350 sleep 400 move 805 352
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 keydown down sleep 2500 keyup down sleep 500 move 600 300
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 606 304
+inject_exit=0
+RNQNX_JS_LOG [gui] reanimated UI frames: 27204, shared x: 220, runtime kind: 1
+[RemoteImageCard] loaded https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 in 618203 ms
+[RemoteImageCard] Image.getSize https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 = 640x427
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 keydown down sleep 4000 keyup down sleep 500 move 600 300
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 606 304
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 key down sleep 150 key down sleep 150 key down sleep 500 move 600 300
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 606 304
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 key up sleep 150 key up sleep 150 key up sleep 150 key up sleep 300 move 610 300
+inject_exit=0
+CMD: sudo -n /data/home/qnxuser/bin/rnqnx-inject4 move 604 304
+inject_exit=0
+RNQNX_JS_LOG [gui] reanimated UI frames: 27204, shared x: 220, runtime kind: 1
+[RemoteImageCard] loaded https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 in 618203 ms
+[RemoteImageCard] Image.getSize https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 = 640x427
+26193952 org.rnqnx.showcase
+/dev/io-hid/io-hid
+## stop Thu Nov 19 07:52:30 UTC 2026
+QQnxScreen: QQNX_PHYSICAL_SCREEN_SIZE variable not set. Could not determine physical screen size. Defaulting to 150x90.
+RNQNX_SINGLE_INSTANCE replacing pid 26193952 (release)
+RNQNX_SINGLE_INSTANCE_WARNING pid 26193952 ignored quit; sending SIGTERM
+RNQNX_SINGLE_INSTANCE stopped org.rnqnx.showcase
+stop_exit=0
+26193952 org.rnqnx.showcase
+showcase_grep=0
+  786459 rnqnx-winmgr      
+  966681 demolauncher      
+/dev/io-hid/io-hid
+grep=1
+  786459 rnqnx-winmgr      
+  966681 demolauncher      
+/dev/io-hid/io-hid

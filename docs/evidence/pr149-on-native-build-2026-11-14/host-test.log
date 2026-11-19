@@ -1,0 +1,303 @@
+Internal ctest changing into directory: /workspace/scratch/853552216e74/pr159/build/host-review159-clang
+UpdateCTestConfiguration  from :/workspace/scratch/853552216e74/pr159/build/host-review159-clang/DartConfiguration.tcl
+Parse Config file:/workspace/scratch/853552216e74/pr159/build/host-review159-clang/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/workspace/scratch/853552216e74/pr159/build/host-review159-clang/DartConfiguration.tcl
+Parse Config file:/workspace/scratch/853552216e74/pr159/build/host-review159-clang/DartConfiguration.tcl
+Test project /workspace/scratch/853552216e74/pr159/build/host-review159-clang
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 31
+    Start 31: qt_react_host_host_test
+
+31: Test command: /workspace/scratch/853552216e74/pr159/build/host-review159-clang/bin/qt_react_host_host_test "-platform" "offscreen"
+31: Working Directory: /workspace/scratch/853552216e74/pr159/build/host-review159-clang
+31: Environment variables: 
+31:  ASAN_OPTIONS=detect_leaks=0
+31: Test timeout computed to be: 180
+31: WARNING: Logging before InitGoogleLogging() is written to STDERR
+31: W1114 13:10:20.361027 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+31: W1114 13:10:20.362488 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000013cd0).
+31: W1114 13:10:20.362697 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+31: [PASS] inputLifecycleOptOutPreservesExistingDispatch
+31: W1114 13:10:20.550077 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000073d0).
+31: W1114 13:10:20.550805 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200002c150).
+31: W1114 13:10:20.550925 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000009050).
+31: [PASS] touchCancelEndsEveryContactAndAllowsIdReuse
+31: W1114 13:10:20.723233 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000bf10).
+31: W1114 13:10:20.724313 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200004e050).
+31: W1114 13:10:20.724427 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000011c50).
+31: [PASS] inputTransparentDecorationPreservesTouchTarget
+31: W1114 13:10:20.886905 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000025c10).
+31: W1114 13:10:20.887645 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000658d0).
+31: W1114 13:10:20.887776 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000018250).
+31: [PASS] touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact
+31: I1114 13:10:21.061625 2636022336 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+31: W1114 13:10:21.068200 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002a050).
+31: W1114 13:10:21.068902 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200007ccd0).
+31: W1114 13:10:21.069013 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400001e050).
+31: [PASS] forgettingTouchTargetCancelsAndClearsResponder
+31: W1114 13:10:21.233361 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002fb50).
+31: W1114 13:10:21.234367 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000089750).
+31: W1114 13:10:21.234457 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000045e50).
+31: [PASS] windowDeactivationCancelsTouchStream
+31: W1114 13:10:21.397503 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000034a10).
+31: W1114 13:10:21.398340 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000ac850).
+31: W1114 13:10:21.398470 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400004b450).
+31: [PASS] mouseCaptureCancellationDoesNotCreateHoverTouches
+31: W1114 13:10:21.560386 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000038e50).
+31: W1114 13:10:21.561615 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000c34d0).
+31: W1114 13:10:21.561810 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000026050).
+31: [PASS] mouseReleaseClearsCaptureBeforeNativeListeners
+31: W1114 13:10:21.729825 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300003d290).
+31: W1114 13:10:21.730558 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000da5d0).
+31: W1114 13:10:21.730683 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400002b850).
+31: [PASS] decoratedViewTargetsNearestRegisteredAncestor
+31: W1114 13:10:21.835129 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000042150).
+31: W1114 13:10:21.835654 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000f1850).
+31: W1114 13:10:21.835762 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000031650).
+31: [PASS] runtimeEvaluatesJavaScript
+31: W1114 13:10:21.934171 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000044d10).
+31: W1114 13:10:21.934772 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000b59d0).
+31: W1114 13:10:21.934831 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000050c50).
+31: [PASS] javaScriptErrorsAreReportedNotSwallowed
+31: W1114 13:10:22.053702 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000478d0).
+31: W1114 13:10:22.054066 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001096d0).
+31: W1114 13:10:22.054167 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000054a50).
+31: [PASS] turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection
+31: W1114 13:10:22.169763 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004a810).
+31: W1114 13:10:22.170164 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001195d0).
+31: W1114 13:10:22.170285 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000057a50).
+31: [PASS] retainedSourceCodeTracksSubsequentEvaluations
+31: W1114 13:10:22.276101 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004d750).
+31: W1114 13:10:22.276782 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001294d0).
+31: W1114 13:10:22.276912 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005ae50).
+31: [PASS] imageLoadedForwardingDoesNotRequireLoaderLookup
+31: W1114 13:10:22.398716 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000050690).
+31: W1114 13:10:22.399544 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000139fd0).
+31: W1114 13:10:22.399672 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005e650).
+31: [PASS] segmentFetcherValidatesCallbackBoundary
+31: W1114 13:10:22.496308 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000053950).
+31: W1114 13:10:22.497001 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001507d0).
+31: W1114 13:10:22.497097 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000061c50).
+31: [PASS] evaluateRejectsReentrantJavaScript
+31: W1114 13:10:22.599093 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000056510).
+31: W1114 13:10:22.599637 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001600d0).
+31: W1114 13:10:22.599736 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000064250).
+31: [PASS] timerCallbacksRunMicrotaskCheckpoints
+31: [js task error] checkpoint-boom
+31: W1114 13:10:22.701187 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000059290).
+31: W1114 13:10:22.701957 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200016fb50).
+31: W1114 13:10:22.702078 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000067050).
+31: [PASS] throwingMicrotasksAreReportedAndRecover
+31: [js task error] timer-boom
+31: W1114 13:10:22.816221 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005c390).
+31: W1114 13:10:22.816951 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000183c50).
+31: W1114 13:10:22.817072 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006a250).
+31: [PASS] throwingTimerCallbacksAreReportedAndRecover
+31: [js task error] hook-boom
+31: ErrorUtils reporting failed; retaining the host error
+31: [js task error] original-boom
+31: W1114 13:10:22.922746 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005f2d0).
+31: W1114 13:10:22.923269 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000193cd0).
+31: W1114 13:10:22.923380 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006d450).
+31: [PASS] schedulerErrorsPreserveAndContainJavaScriptHandlers
+31: W1114 13:10:23.015280 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000062c90).
+31: W1114 13:10:23.015892 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001a47d0).
+31: W1114 13:10:23.016072 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000071a50).
+31: [PASS] schedulerInstallsTheFabricUIManager
+31: W1114 13:10:23.117921 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000654d0).
+31: W1114 13:10:23.118420 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001b3c50).
+31: W1114 13:10:23.118515 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000073850).
+31: [PASS] surfaceCommitMountsThroughTheDelegate
+31: W1114 13:10:23.218770 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000068b10).
+31: W1114 13:10:23.219239 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001c7d50).
+31: W1114 13:10:23.219300 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000077050).
+31: [PASS] secondCommitUpdatesTheSameItem
+31: W1114 13:10:23.334895 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006ca10).
+31: W1114 13:10:23.336127 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001dd950).
+31: W1114 13:10:23.336257 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007b050).
+31: [PASS] mountHooksObserveAppliedNativeTree
+31: W1114 13:10:23.433815 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000070210).
+31: W1114 13:10:23.434355 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001f3550).
+31: W1114 13:10:23.434443 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007f050).
+31: [PASS] stoppingASurfaceUnmountsItsItems
+31: W1114 13:10:23.527343 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000073850).
+31: W1114 13:10:23.528085 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002086d0).
+31: W1114 13:10:23.528162 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000035850).
+31: [PASS] commitToAnUnknownSurfaceIsReported
+31: W1114 13:10:23.619027 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000076090).
+31: W1114 13:10:23.619542 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000217b50).
+31: W1114 13:10:23.619656 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000083a50).
+31: [PASS] componentPredicateAnswersForRegisteredNames
+31: W1114 13:10:23.732440 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000788d0).
+31: W1114 13:10:23.733258 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000226fd0).
+31: W1114 13:10:23.733376 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000086850).
+31: [PASS] javaScriptBuildsTheTreeThroughFabricUIManager
+31: W1114 13:10:23.829156 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300007e210).
+31: W1114 13:10:23.829727 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200023e6d0).
+31: W1114 13:10:23.829836 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400008d850).
+31: [PASS] hostInstallsBridgelessGlobals
+31: W1114 13:10:23.980679 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000017190).
+31: W1114 13:10:23.982954 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200024c7d0).
+31: W1114 13:10:23.983464 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000090250).
+31: [PASS] platformConstantsReportCurrentReactNativeVersion
+31: [PASS] metroProducesABundleForQnx
+31: W1114 13:10:25.211042 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000199d0).
+31: W1114 13:10:25.212273 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200025c0d0).
+31: W1114 13:10:25.212391 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000092050).
+31: [PASS] metroBundleEvaluatesInHermes
+31: Running "RNQnxPlayground"
+31: W1114 13:10:28.376513 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000091b50).
+31: W1114 13:10:28.378470 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002a13d0).
+31: W1114 13:10:28.378630 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400013e250).
+31: [PASS] metroBundleRendersThroughReact
+31: [js fatal] deliberate failure 
+31:    at renderThing (App.js:42)
+31: 
+31: W1114 13:10:28.507601 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006f090).
+31: W1114 13:10:28.508001 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000f4550).
+31: W1114 13:10:28.508038 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000082850).
+31: [PASS] javaScriptErrorsReachTheHost
+31: Running "RNQnxPlayground"
+31: W1114 13:10:31.283983 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006db90).
+31: W1114 13:10:31.284916 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000120ad0).
+31: W1114 13:10:31.284962 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007a250).
+31: [PASS] aSuccessfulRenderReportsNoErrors
+31: Running "RNQnxPlayground"
+31: W1114 13:10:33.878135 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000040010).
+31: W1114 13:10:33.878783 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001bbbd0).
+31: W1114 13:10:33.879051 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400001fc50).
+31: [PASS] renderedTreeIsPainted
+31: Running "RNQnxPlayground"
+31: W1114 13:10:36.398211 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000090110).
+31: W1114 13:10:36.399119 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002e8950).
+31: W1114 13:10:36.399197 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000139850).
+31: [PASS] pointerEventsReachJavaScript
+31: Running "RNQnxPlayground"
+31: W1114 13:10:39.014360 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002fed0).
+31: W1114 13:10:39.014968 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000126dd0).
+31: W1114 13:10:39.015014 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000319850).
+31: [PASS] scrollEventsReachJavaScript
+31: Running "RNQnxFlatList"
+31: W1114 13:10:43.279229 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000096310).
+31: W1114 13:10:43.280119 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000a03d0).
+31: W1114 13:10:43.280170 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400043a250).
+31: [PASS] flatListRendersAndVirtualises
+31: Running "RNQnxSectionList"
+31: W1114 13:10:46.555373 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000025dd0).
+31: W1114 13:10:46.555936 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200029b550).
+31: W1114 13:10:46.555977 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140002fd850).
+31: [PASS] sectionListRenders
+31: Running "RNQnxTextInput"
+31: qt.qml.context: qrc:/react-native-qnx/TextInput.qml:101:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+31: W1114 13:10:48.512403 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000199d0).
+31: W1114 13:10:48.512951 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200010c850).
+31: W1114 13:10:48.513018 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000b1050).
+31: [PASS] textInputMounts
+31: Running "RNQnxTextInput"
+31: W1114 13:10:50.923074 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000d8cd0).
+31: W1114 13:10:50.927542 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200011bfd0).
+31: W1114 13:10:50.927611 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400053bc50).
+31: [PASS] textInputPlaceholder
+31: Running "RNQnxTextInputMultiline"
+31: W1114 13:10:52.797279 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300008dc50).
+31: W1114 13:10:52.797827 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200013e650).
+31: W1114 13:10:52.797897 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000fa450).
+31: [PASS] textInputMultiline
+31: Running "RNQnxTextEllipsis"
+31: W1114 13:10:55.251513 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000112c50).
+31: W1114 13:10:55.251950 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200023ee50).
+31: W1114 13:10:55.251996 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000c2050).
+31: [PASS] textEllipsis
+31: Running "RNQnxActivityIndicator"
+31: W1114 13:10:57.118415 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005a5d0).
+31: W1114 13:10:57.119134 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000031550).
+31: W1114 13:10:57.119212 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000e1250).
+31: [PASS] activityIndicatorMounts
+31: Running "RNQnxSwitch"
+31: W1114 13:10:59.088069 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300011b690).
+31: W1114 13:10:59.088646 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000242a50).
+31: W1114 13:10:59.088707 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140002b1050).
+31: [PASS] switchToggles
+31: Running "RNQnxButton"
+31: W1114 13:11:01.645875 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300009be10).
+31: W1114 13:11:01.646654 2583410368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000262250).
+31: W1114 13:11:01.646921 2583410368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000418650).
+31: [PASS] buttonMounts
+31: Running "RNQnxSafeAreaView"
+31: W1114 13:11:03.998308 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000d5310).
+31: W1114 13:11:03.998768 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002545d0).
+31: W1114 13:11:03.998816 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000503650).
+31: [PASS] safeAreaViewMounts
+31: Running "RNQnxViewLayout"
+31: W1114 13:11:06.206714 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000111750).
+31: W1114 13:11:06.207363 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000e44d0).
+31: W1114 13:11:06.207449 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000c2050).
+31: [PASS] viewLayoutFires
+31: Running "RNQnxTransform"
+31: W1114 13:11:08.408895 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000dac50).
+31: W1114 13:11:08.409585 2404185792 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000255ad0).
+31: W1114 13:11:08.409678 2404185792 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000521450).
+31: [PASS] viewTransformApplies
+31: Running "RNQnxImage"
+31: W1114 13:11:10.344343 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000051d50).
+31: W1114 13:11:10.344966 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002140d0).
+31: W1114 13:11:10.345027 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000360250).
+31: [PASS] imageLoadEvents
+31: Running "RNQnxImageDefault"
+31: W1114 13:11:12.362336 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000055e10).
+31: W1114 13:11:12.362977 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001fc9d0).
+31: W1114 13:11:12.363049 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000e0250).
+31: [PASS] imageDefaultSourceFires
+31: Running "RNQnxImageLoading"
+31: W1114 13:11:14.271405 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000104c50).
+31: W1114 13:11:14.271881 2404185792 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000207950).
+31: W1114 13:11:14.271931 2404185792 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000087650).
+31: [PASS] imageLoadingIndicator
+31: Running "RNQnxHostStateUpdate"
+31: W1114 13:11:16.091768 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000069910).
+31: W1114 13:11:16.092226 2541745856 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200026ee50).
+31: W1114 13:11:16.092267 2541745856 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000271050).
+31: [PASS] metroStateUpdateCommitsThroughScheduler
+31: Running "RNQnxImageGetSize"
+31: W1114 13:11:17.991699 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000cc1d0).
+31: W1114 13:11:17.992317 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000f8ed0).
+31: W1114 13:11:17.992362 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000303850).
+31: [PASS] imageGetSize
+31: W1114 13:11:18.957867 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000049d0).
+31: W1114 13:11:18.958405 2404185792 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002a1b50).
+31: W1114 13:11:18.958468 2404185792 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400034f850).
+31: [PASS] imageLoaderPromiseContract
+31: Running "RNQnxImageBackground"
+31: W1114 13:11:21.009586 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000060290).
+31: W1114 13:11:21.010179 2379179712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002b0fd0).
+31: W1114 13:11:21.010314 2379179712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000137650).
+31: [PASS] imageBackgroundMounts
+31: Running "RNQnxImageResolveAsset"
+31: W1114 13:11:22.947767 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000095350).
+31: W1114 13:11:22.948256 2404185792 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000d06d0).
+31: W1114 13:11:22.948299 2404185792 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000239a50).
+31: [PASS] imageResolveAssetSource
+31: Running "RNQnxNativeAnimated"
+31: W1114 13:11:25.146427 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000107810).
+31: W1114 13:11:25.146924 2521781952 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000a30d0).
+31: W1114 13:11:25.146967 2521781952 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400010ea50).
+31: [PASS] nativeAnimatedOpacity
+31: Running "RNQnxModal"
+31: W1114 13:11:27.709805 2636022336 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000ec90).
+31: W1114 13:11:27.710270 2379179712 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002584d0).
+31: W1114 13:11:27.710314 2379179712 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000348850).
+31: [PASS] modalMounts
+31: All 60 QtReactHost host tests passed.
+1/1 Test #31: qt_react_host_host_test ..........   Passed   67.99 sec
+
+The following tests passed:
+	qt_react_host_host_test
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =  68.00 sec

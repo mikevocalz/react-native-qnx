@@ -1,0 +1,51 @@
+Test project /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+      Start  2: rnqnx_gesture_core_test
+ 1/23 Test  #2: rnqnx_gesture_core_test ....................   Passed    0.01 sec
+      Start  6: rnqnx_qt_rnsvg_fabric_test
+ 2/23 Test  #6: rnqnx_qt_rnsvg_fabric_test .................   Passed    5.83 sec
+      Start  7: rnqnx_qt_rnsvg_image_fabric_test
+ 3/23 Test  #7: rnqnx_qt_rnsvg_image_fabric_test ...........   Passed    2.11 sec
+      Start 28: rnqnx_playground_screenshot
+ 4/23 Test #28: rnqnx_playground_screenshot ................   Passed    1.97 sec
+      Start 29: rnqnx_playground_rejects_start_failure
+ 5/23 Test #29: rnqnx_playground_rejects_start_failure .....   Passed    0.13 sec
+      Start 30: rnqnx_playground_rejects_stop_failure
+ 6/23 Test #30: rnqnx_playground_rejects_stop_failure ......   Passed    0.12 sec
+      Start 31: rnqnx_playground_rejects_reported_fatal
+ 7/23 Test #31: rnqnx_playground_rejects_reported_fatal ....   Passed    0.69 sec
+      Start 32: rnqnx_playground_allows_reported_soft
+ 8/23 Test #32: rnqnx_playground_allows_reported_soft ......   Passed    1.43 sec
+      Start 33: qt_react_host_host_test
+ 9/23 Test #33: qt_react_host_host_test ....................   Passed   51.65 sec
+      Start 34: rnqnx_expo_image_module_host_test
+10/23 Test #34: rnqnx_expo_image_module_host_test ..........   Passed    0.66 sec
+      Start 35: rnqnx_expo_image_fabric_host_test
+11/23 Test #35: rnqnx_expo_image_fabric_host_test ..........   Passed    0.53 sec
+      Start 36: rnqnx_worklets_integration_host_test
+12/23 Test #36: rnqnx_worklets_integration_host_test .......   Passed   14.60 sec
+      Start 37: rnqnx_worklets_rejects_missing_bootstrap
+13/23 Test #37: rnqnx_worklets_rejects_missing_bootstrap ...   Passed    2.00 sec
+      Start 39: shadow_view_mutation_adapter_host_test
+14/23 Test #39: shadow_view_mutation_adapter_host_test .....   Passed    0.07 sec
+      Start 40: shadow_tree_mounting_host_test
+15/23 Test #40: shadow_tree_mounting_host_test .............   Passed    0.06 sec
+      Start 41: qtquick_mounting_layer_host_test
+16/23 Test #41: qtquick_mounting_layer_host_test ...........   Passed    0.13 sec
+      Start 44: rnqnx_image_units_test
+17/23 Test #44: rnqnx_image_units_test .....................   Passed    1.92 sec
+      Start 45: rnqnx_expo_image_item_test
+18/23 Test #45: rnqnx_expo_image_item_test .................   Passed    8.67 sec
+      Start 47: rnqnx_image_fetch_queue_test
+19/23 Test #47: rnqnx_image_fetch_queue_test ...............   Passed    1.48 sec
+      Start 55: rnqnx_qt_rnsvg_foreignobject_test
+20/23 Test #55: rnqnx_qt_rnsvg_foreignobject_test ..........   Passed    0.04 sec
+      Start 56: rnqnx_qt_rnsvg_image_test
+21/23 Test #56: rnqnx_qt_rnsvg_image_test ..................   Passed    0.20 sec
+      Start 57: rnqnx_qt_rnsvg_loader_test
+22/23 Test #57: rnqnx_qt_rnsvg_loader_test .................   Passed    0.53 sec
+      Start 59: rnqnx_qt_rnsvg_scene_test
+23/23 Test #59: rnqnx_qt_rnsvg_scene_test ..................   Passed    0.60 sec
+
+100% tests passed, 0 tests failed out of 23
+
+Total Test time (real) =  95.48 sec

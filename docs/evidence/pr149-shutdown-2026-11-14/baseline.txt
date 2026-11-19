@@ -1,0 +1,20 @@
+********* Start testing of QtWorkletsLifecycleTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : QtWorkletsLifecycleTest::initTestCase()
+FAIL!  : QtWorkletsLifecycleTest::queuedFrameIsDroppedAfterShutdown() Compared values are not the same
+   Actual   (delivered.load()): 1
+   Expected (0)               : 0
+   Loc: [/workspace/scratch/853552216e74/worklets-negative-control/tests/native/worklets/QtWorkletsLifecycleTest.cpp(47)]
+FAIL!  : QtWorkletsLifecycleTest::shutdownDropsRemainingCallbacksInRunningBatch() Compared values are not the same
+   Actual   (delivered.load()): 2
+   Expected (1)               : 1
+   Loc: [/workspace/scratch/853552216e74/worklets-negative-control/tests/native/worklets/QtWorkletsLifecycleTest.cpp(104)]
+FAIL!  : QtWorkletsLifecycleTest::concurrentStopsWaitForRunningJobAndDiscardQueuedWork() Compared values are not the same
+   Actual   (secondStatus)               : 0
+   Expected (std::future_status::timeout): 1
+   Loc: [/workspace/scratch/853552216e74/worklets-negative-control/tests/native/worklets/QtWorkletsLifecycleTest.cpp(143)]
+PASS   : QtWorkletsLifecycleTest::cleanupTestCase()
+Totals: 2 passed, 3 failed, 0 skipped, 0 blacklisted, 9ms
+********* Finished testing of QtWorkletsLifecycleTest *********
+
+Exit: 3

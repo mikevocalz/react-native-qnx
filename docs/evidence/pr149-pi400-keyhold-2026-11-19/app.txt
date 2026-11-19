@@ -1,0 +1,6 @@
+QQnxScreen: QQNX_PHYSICAL_SCREEN_SIZE variable not set. Could not determine physical screen size. Defaulting to 150x90.
+Running "RNQnxPlayground"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1119 07:58:28.380719     1 conversions.h:368] Could not parse yoga::PositionType: left
+[RemoteImageCard] loaded https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 in 30905 ms
+[RemoteImageCard] Image.getSize https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 = 640x427

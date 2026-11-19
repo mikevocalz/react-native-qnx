@@ -1,0 +1,1003 @@
+Start testing: Nov 16 23:16 EST
+----------------------------------------------------------
+2/61 Testing: rnqnx_gesture_core_test
+2/61 Test: rnqnx_gesture_core_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_gesture_core_test"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_gesture_core_test" start time: Nov 16 23:16 EST
+Output:
+----------------------------------------------------------
+RNQNX_GESTURE_CORE_OK
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[RNQNX_GESTURE_CORE_OK]
+"rnqnx_gesture_core_test" end time: Nov 16 23:16 EST
+"rnqnx_gesture_core_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/61 Testing: rnqnx_qt_rnsvg_fabric_test
+6/61 Test: rnqnx_qt_rnsvg_fabric_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_qt_rnsvg_fabric_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_qt_rnsvg_fabric_test" start time: Nov 16 23:16 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgFixture"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1116 23:16:36.565405 1986077248 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+I1116 23:16:38.115597 1986077248 UIManagerBinding.cpp:150] instanceHandle is null, event of type topSvgLayout will be dropped
+W1116 23:16:38.118486 1986077248 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1116 23:16:38.120026 1845933760 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000013fd0).
+W1116 23:16:38.120157 1845933760 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_RNSVG_FABRIC_OK metro hermes fabric gradient clip mask use update remove touch resize extras
+<end of output>
+Test time =   5.83 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_fabric_test" end time: Nov 16 23:16 EST
+"rnqnx_qt_rnsvg_fabric_test" time elapsed: 00:00:05
+----------------------------------------------------------
+
+7/61 Testing: rnqnx_qt_rnsvg_image_fabric_test
+7/61 Test: rnqnx_qt_rnsvg_image_fabric_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx_qt_rnsvg_image_fabric_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_qt_rnsvg_image_fabric_test" start time: Nov 16 23:16 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgImageFixture"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 23:16:40.281347 1337324032 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x555f4c010390).
+W1116 23:16:40.281991 1207957184 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x555f4c02c320).
+W1116 23:16:40.282015 1207957184 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x555f4bf5b0d0).
+RNQNX_RNSVG_IMAGE_FABRIC_OK data-uri bundled-asset onLoad reload broken-source
+<end of output>
+Test time =   2.11 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_image_fabric_test" end time: Nov 16 23:16 EST
+"rnqnx_qt_rnsvg_image_fabric_test" time elapsed: 00:00:02
+----------------------------------------------------------
+
+28/61 Testing: rnqnx_playground_screenshot
+28/61 Test: rnqnx_playground_screenshot
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host" "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-playground.bundle.js" "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-positive" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_playground_screenshot" start time: Nov 16 23:16 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_SCREENSHOT_ARTIFACT_OK
+<end of output>
+Test time =   1.97 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_screenshot" end time: Nov 16 23:16 EST
+"rnqnx_playground_screenshot" time elapsed: 00:00:01
+----------------------------------------------------------
+
+29/61 Testing: rnqnx_playground_rejects_start_failure
+29/61 Test: rnqnx_playground_rejects_start_failure
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host" "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/tests/fixtures/runtime-baseline/start-failure.js" "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-start-failure" "-DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_START_FAILURE" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_playground_rejects_start_failure" start time: Nov 16 23:16 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_START_FAILURE
+<end of output>
+Test time =   0.13 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_rejects_start_failure" end time: Nov 16 23:16 EST
+"rnqnx_playground_rejects_start_failure" time elapsed: 00:00:00
+----------------------------------------------------------
+
+30/61 Testing: rnqnx_playground_rejects_stop_failure
+30/61 Test: rnqnx_playground_rejects_stop_failure
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host" "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/tests/fixtures/runtime-baseline/stop-failure.js" "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-stop-failure" "-DEXPECT_FAILURE=RNQNX_TEST_APPLICATION_STOP_FAILURE" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_playground_rejects_stop_failure" start time: Nov 16 23:16 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_APPLICATION_STOP_FAILURE
+<end of output>
+Test time =   0.12 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_rejects_stop_failure" end time: Nov 16 23:16 EST
+"rnqnx_playground_rejects_stop_failure" time elapsed: 00:00:00
+----------------------------------------------------------
+
+31/61 Testing: rnqnx_playground_rejects_reported_fatal
+31/61 Test: rnqnx_playground_rejects_reported_fatal
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host" "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-fatal.bundle.js" "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-reported-fatal" "-DEXPECT_FAILURE=RNQNX_TEST_MISSING_BOOTSTRAP" "-DEXPECT_BOUNDARY=BUNDLE" "-DEXPECT_REPORT=[js fatal]" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_playground_rejects_reported_fatal" start time: Nov 16 23:16 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_APPLICATION_FAILURE_REJECTED RNQNX_TEST_MISSING_BOOTSTRAP
+<end of output>
+Test time =   0.69 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_rejects_reported_fatal" end time: Nov 16 23:16 EST
+"rnqnx_playground_rejects_reported_fatal" time elapsed: 00:00:00
+----------------------------------------------------------
+
+32/61 Testing: rnqnx_playground_allows_reported_soft
+32/61 Test: rnqnx_playground_allows_reported_soft
+Command: "/workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/bin/cmake" "-DPROBE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_playground_host" "-DBUNDLE=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-soft.bundle.js" "-DWORK_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-reported-soft" "-DEXPECT_REPORT=[js error] Error: RNQNX_TEST_REPORTED_SOFT_ERROR" "-DEXPECT_MESSAGE=RNQNX_TEST_CAUGHT_ERROR_CONTINUED" "-DEXPECT_MOUNT=RNQNX_TEST_ERROR_CONTROL_MOUNTED" "-P" "/workspace/scratch/252a22fac759/rnqnx-pr149/tests/cmake/PlaygroundScreenshot.cmake"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_playground_allows_reported_soft" start time: Nov 16 23:16 EST
+Output:
+----------------------------------------------------------
+-- RNQNX_PLAYGROUND_SCREENSHOT_ARTIFACT_OK
+<end of output>
+Test time =   1.43 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_playground_allows_reported_soft" end time: Nov 16 23:16 EST
+"rnqnx_playground_allows_reported_soft" time elapsed: 00:00:01
+----------------------------------------------------------
+
+33/61 Testing: qt_react_host_host_test
+33/61 Test: qt_react_host_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/qt_react_host_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"qt_react_host_host_test" start time: Nov 16 23:16 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 23:16:44.791278 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1116 23:16:44.791757 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014bd0).
+W1116 23:16:44.791844 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+[PASS] layoutWithoutListenerDoesNotDispatch
+W1116 23:16:44.881265 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000007750).
+W1116 23:16:44.881706 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000021c50).
+W1116 23:16:44.881785 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400000ac50).
+[PASS] layoutListenerRemovalAndReadditionPreserveChangedBounds
+W1116 23:16:44.970443 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000c610).
+W1116 23:16:44.970800 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000505d0).
+W1116 23:16:44.970849 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000025250).
+[PASS] inputLifecycleOptOutPreservesExistingDispatch
+W1116 23:16:45.046278 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000025f90).
+W1116 23:16:45.046968 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000682d0).
+W1116 23:16:45.047019 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400002a850).
+[PASS] touchCancelEndsEveryContactAndAllowsIdReuse
+W1116 23:16:45.124233 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002aad0).
+W1116 23:16:45.124595 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000373d0).
+W1116 23:16:45.124640 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000013e50).
+[PASS] inputTransparentDecorationPreservesTouchTarget
+W1116 23:16:45.200423 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002f290).
+W1116 23:16:45.200804 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000096650).
+W1116 23:16:45.200855 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400001a450).
+[PASS] touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact
+I1116 23:16:45.284302 320455232 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+W1116 23:16:45.287381 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000184d0).
+W1116 23:16:45.287832 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000ae1d0).
+W1116 23:16:45.287880 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000020050).
+[PASS] forgettingTouchTargetCancelsAndClearsResponder
+W1116 23:16:45.378122 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300001dfd0).
+W1116 23:16:45.378576 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000bbcd0).
+W1116 23:16:45.378628 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000057a50).
+[PASS] windowDeactivationCancelsTouchStream
+W1116 23:16:45.451380 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000022410).
+W1116 23:16:45.451871 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000e32d0).
+W1116 23:16:45.451923 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005d050).
+[PASS] mouseCaptureCancellationDoesNotCreateHoverTouches
+W1116 23:16:45.526358 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000050bd0).
+W1116 23:16:45.526706 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000fafd0).
+W1116 23:16:45.526748 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000044a50).
+[PASS] mouseReleaseClearsCaptureBeforeNativeListeners
+W1116 23:16:45.604825 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000055010).
+W1116 23:16:45.605370 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001102d0).
+W1116 23:16:45.605515 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400004a050).
+[PASS] decoratedViewTargetsNearestRegisteredAncestor
+W1116 23:16:45.669180 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000059450).
+W1116 23:16:45.669571 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200011bcd0).
+W1116 23:16:45.669620 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400004fe50).
+[PASS] runtimeEvaluatesJavaScript
+W1116 23:16:45.734537 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005c010).
+W1116 23:16:45.734817 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000137450).
+W1116 23:16:45.734865 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000062450).
+[PASS] javaScriptErrorsAreReportedNotSwallowed
+W1116 23:16:45.864868 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000043650).
+W1116 23:16:45.865478 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200003e2d0).
+W1116 23:16:45.865526 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000066250).
+[PASS] turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection
+W1116 23:16:46.102999 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000046590).
+W1116 23:16:46.104333 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200014eb50).
+W1116 23:16:46.104424 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000069250).
+[PASS] retainedSourceCodeTracksSubsequentEvaluations
+W1116 23:16:46.189170 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000494d0).
+W1116 23:16:46.189580 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200015ea50).
+W1116 23:16:46.189654 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006c650).
+[PASS] imageLoadedForwardingDoesNotRequireLoaderLookup
+W1116 23:16:46.270680 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004c410).
+W1116 23:16:46.271024 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200016f550).
+W1116 23:16:46.271112 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006fe50).
+[PASS] segmentFetcherValidatesCallbackBoundary
+W1116 23:16:46.344204 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005d6d0).
+W1116 23:16:46.344653 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000185d50).
+W1116 23:16:46.344687 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000073450).
+[PASS] evaluateRejectsReentrantJavaScript
+W1116 23:16:46.421164 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000060290).
+W1116 23:16:46.421613 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000195650).
+W1116 23:16:46.421646 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000075a50).
+[PASS] timerCallbacksRunMicrotaskCheckpoints
+[js task error] checkpoint-boom
+W1116 23:16:46.487248 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000063010).
+W1116 23:16:46.487684 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001a5250).
+W1116 23:16:46.487716 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000078850).
+[PASS] throwingMicrotasksAreReportedAndRecover
+[js task error] timer-boom
+W1116 23:16:46.563752 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000066110).
+W1116 23:16:46.564167 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001b5450).
+W1116 23:16:46.564200 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007ba50).
+[PASS] throwingTimerCallbacksAreReportedAndRecover
+[js task error] hook-boom
+ErrorUtils reporting failed; retaining the host error
+[js task error] original-boom
+W1116 23:16:46.645586 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000069050).
+W1116 23:16:46.645938 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001c93d0).
+W1116 23:16:46.645988 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400007ec50).
+[PASS] schedulerErrorsPreserveAndContainJavaScriptHandlers
+W1116 23:16:46.718442 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006ca10).
+W1116 23:16:46.718881 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001da050).
+W1116 23:16:46.718918 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000036250).
+[PASS] schedulerInstallsTheFabricUIManager
+W1116 23:16:46.789903 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300006f250).
+W1116 23:16:46.790416 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001e94d0).
+W1116 23:16:46.790460 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000038050).
+[PASS] surfaceCommitMountsThroughTheDelegate
+W1116 23:16:46.860168 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000072890).
+W1116 23:16:46.860776 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001ff850).
+W1116 23:16:46.860831 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000083450).
+[PASS] secondCommitUpdatesTheSameItem
+W1116 23:16:46.929145 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000076090).
+W1116 23:16:46.929607 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000213c50).
+W1116 23:16:46.929710 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000087450).
+[PASS] mountHooksObserveAppliedNativeTree
+W1116 23:16:46.994313 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300007a310).
+W1116 23:16:46.994681 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200022a150).
+W1116 23:16:46.994724 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400008b450).
+[PASS] stoppingASurfaceUnmountsItsItems
+W1116 23:16:47.054574 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300007d950).
+W1116 23:16:47.054940 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001be5d0).
+W1116 23:16:47.054984 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400008ec50).
+[PASS] commitToAnUnknownSurfaceIsReported
+W1116 23:16:47.114259 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000032550).
+W1116 23:16:47.114614 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200024d550).
+W1116 23:16:47.114645 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000093a50).
+[PASS] componentPredicateAnswersForRegisteredNames
+W1116 23:16:47.186748 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000034d90).
+W1116 23:16:47.187186 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200025c9d0).
+W1116 23:16:47.187238 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000096850).
+[PASS] javaScriptBuildsTheTreeThroughFabricUIManager
+W1116 23:16:47.252686 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000806d0).
+W1116 23:16:47.253103 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002749d0).
+W1116 23:16:47.253166 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400009d650).
+[PASS] hostInstallsBridgelessGlobals
+W1116 23:16:47.313793 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000083290).
+W1116 23:16:47.314146 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002821d0).
+W1116 23:16:47.314195 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000a0050).
+[PASS] platformConstantsReportCurrentReactNativeVersion
+[PASS] metroProducesABundleForQnx
+W1116 23:16:48.293064 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000085ad0).
+W1116 23:16:48.295594 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000291ad0).
+W1116 23:16:48.295769 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140000a1e50).
+[PASS] metroBundleEvaluatesInHermes
+Running "RNQnxPlayground"
+W1116 23:16:50.848170 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300009b550).
+W1116 23:16:50.849061 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002d6f50).
+W1116 23:16:50.849097 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400014e050).
+[PASS] metroBundleRendersThroughReact
+[js fatal] deliberate failure 
+   at renderThing (App.js:42)
+
+W1116 23:16:50.948276 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000615d0).
+W1116 23:16:50.948585 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001867d0).
+W1116 23:16:50.948616 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000074c50).
+[PASS] javaScriptErrorsReachTheHost
+Running "RNQnxPlayground"
+W1116 23:16:53.165164 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000fb090).
+W1116 23:16:53.165925 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001e3350).
+W1116 23:16:53.165949 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000353e50).
+[PASS] aSuccessfulRenderReportsNoErrors
+Running "RNQnxPlayground"
+W1116 23:16:55.368352 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000cf9d0).
+W1116 23:16:55.368701 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000010b50).
+W1116 23:16:55.368726 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000224450).
+[PASS] renderedTreeIsPainted
+Running "RNQnxPlayground"
+W1116 23:16:57.612592 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000098b50).
+W1116 23:16:57.613200 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002512d0).
+W1116 23:16:57.613246 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400006c250).
+[PASS] pointerEventsReachJavaScript
+Running "RNQnxPlayground"
+W1116 23:16:59.602567 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000d9590).
+W1116 23:16:59.602970 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000b17d0).
+W1116 23:16:59.603001 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400032c050).
+[PASS] scrollEventsReachJavaScript
+Running "RNQnxFlatList"
+W1116 23:17:03.012024 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000114150).
+W1116 23:17:03.012794 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002eb950).
+W1116 23:17:03.012842 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000479050).
+[PASS] flatListRendersAndVirtualises
+Running "RNQnxSectionList"
+W1116 23:17:05.356353 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300008b090).
+W1116 23:17:05.357090 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000ffc50).
+W1116 23:17:05.357133 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400000d250).
+[PASS] sectionListRenders
+Running "RNQnxTextInput"
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:101:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+W1116 23:17:06.949558 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005c710).
+W1116 23:17:06.949988 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001ed250).
+W1116 23:17:06.950058 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400045fe50).
+[PASS] textInputMounts
+Running "RNQnxTextInput"
+W1116 23:17:08.378013 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000092410).
+W1116 23:17:08.378410 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000070fd0).
+W1116 23:17:08.378460 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000325a50).
+[PASS] textInputPlaceholder
+Running "RNQnxTextInputMultiline"
+W1116 23:17:09.965096 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000c990).
+W1116 23:17:09.965708 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000265b50).
+W1116 23:17:09.965772 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140004ab450).
+[PASS] textInputMultiline
+Running "RNQnxTextEllipsis"
+W1116 23:17:11.419390 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000048a50).
+W1116 23:17:11.419819 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002b39d0).
+W1116 23:17:11.419900 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000249050).
+[PASS] textEllipsis
+Running "RNQnxActivityIndicator"
+W1116 23:17:12.894271 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000ced0).
+W1116 23:17:12.894608 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200016d2d0).
+W1116 23:17:12.894636 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140003ea250).
+[PASS] activityIndicatorMounts
+Running "RNQnxSwitch"
+W1116 23:17:14.488569 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000107d50).
+W1116 23:17:14.489003 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000a4bd0).
+W1116 23:17:14.489251 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140003a3450).
+[PASS] switchToggles
+Running "RNQnxButton"
+W1116 23:17:16.406766 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300005ea10).
+W1116 23:17:16.407397 202331840 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000263150).
+W1116 23:17:16.407424 202331840 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000246450).
+[PASS] buttonMounts
+Running "RNQnxSafeAreaView"
+W1116 23:17:17.961716 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000e2f90).
+W1116 23:17:17.962302 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000162f50).
+W1116 23:17:17.962342 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140001db050).
+[PASS] safeAreaViewMounts
+Running "RNQnxViewLayout"
+W1116 23:17:19.430773 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000081f50).
+W1116 23:17:19.431236 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002467d0).
+W1116 23:17:19.431296 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140001bd250).
+[PASS] viewLayoutFires
+Running "RNQnxTransform"
+W1116 23:17:20.994324 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000103050).
+W1116 23:17:20.994870 93124288 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200027f950).
+W1116 23:17:20.994905 93124288 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140004d9c50).
+[PASS] viewTransformApplies
+Running "RNQnxImage"
+W1116 23:17:22.568405 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000010890).
+W1116 23:17:22.568909 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200020add0).
+W1116 23:17:22.568956 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000172250).
+[PASS] imageLoadEvents
+Running "RNQnxImageDefault"
+W1116 23:17:24.093509 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000034f50).
+W1116 23:17:24.093979 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000164a50).
+W1116 23:17:24.094049 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000040050).
+[PASS] imageDefaultSourceFires
+Running "RNQnxImageLoading"
+W1116 23:17:25.587075 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000024390).
+W1116 23:17:25.587438 93124288 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000168050).
+W1116 23:17:25.587466 93124288 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140003a5e50).
+[PASS] imageLoadingIndicator
+Running "RNQnxHostStateUpdate"
+W1116 23:17:27.002873 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000ec0d0).
+W1116 23:17:27.003307 263960256 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200023c750).
+W1116 23:17:27.003363 263960256 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000167050).
+[PASS] metroStateUpdateCommitsThroughScheduler
+Running "RNQnxImageGetSize"
+W1116 23:17:28.603909 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000034690).
+W1116 23:17:28.604530 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000af550).
+W1116 23:17:28.604588 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000277850).
+[PASS] imageGetSize
+W1116 23:17:29.355397 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000e3a10).
+W1116 23:17:29.355697 93124288 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000181cd0).
+W1116 23:17:29.355728 93124288 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x5140003bc650).
+[PASS] imageLoaderPromiseContract
+Running "RNQnxImageBackground"
+W1116 23:17:30.939121 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300011b850).
+W1116 23:17:30.939553 68118208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120002e8950).
+W1116 23:17:30.939615 68118208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400031fa50).
+[PASS] imageBackgroundMounts
+Running "RNQnxImageResolveAsset"
+W1116 23:17:32.690613 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300008c3d0).
+W1116 23:17:32.691192 93124288 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000d5650).
+W1116 23:17:32.691229 93124288 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000417650).
+[PASS] imageResolveAssetSource
+Running "RNQnxNativeAnimated"
+W1116 23:17:34.370649 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000ccfd0).
+W1116 23:17:34.371009 222295744 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000181550).
+W1116 23:17:34.371058 222295744 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000043a50).
+[PASS] nativeAnimatedOpacity
+Running "RNQnxModal"
+W1116 23:17:36.208293 320455232 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000021610).
+W1116 23:17:36.208796 68118208 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200007f9d0).
+W1116 23:17:36.208873 68118208 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004e50).
+[PASS] modalMounts
+All 62 QtReactHost host tests passed.
+<end of output>
+Test time =  51.65 sec
+----------------------------------------------------------
+Test Passed.
+"qt_react_host_host_test" end time: Nov 16 23:17 EST
+"qt_react_host_host_test" time elapsed: 00:00:51
+----------------------------------------------------------
+
+34/61 Testing: rnqnx_expo_image_module_host_test
+34/61 Test: rnqnx_expo_image_module_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_expo_image_module_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_expo_image_module_host_test" start time: Nov 16 23:17 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 23:17:36.923604 2355339840 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003a10).
+W1116 23:17:36.924278 2220799680 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000016fd0).
+W1116 23:17:36.924389 2220799680 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004650).
+RNQNX_EXPO_IMAGE_MODULE_OK surface prefetch caches loadAsync hashes cache-io configure view-commands
+<end of output>
+Test time =   0.66 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_expo_image_module_host_test" end time: Nov 16 23:17 EST
+"rnqnx_expo_image_module_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+35/61 Testing: rnqnx_expo_image_fabric_host_test
+35/61 Test: rnqnx_expo_image_fabric_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_expo_image_fabric_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_expo_image_fabric_host_test" start time: Nov 16 23:17 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 23:17:37.473799 2728559168 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003310).
+W1116 23:17:37.474543 2386351808 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000166d0).
+W1116 23:17:37.474648 2386351808 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004650).
+RNQNX_EXPO_IMAGE_FABRIC_OK opacity transform onLayout events imageRef commands
+<end of output>
+Test time =   0.53 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_expo_image_fabric_host_test" end time: Nov 16 23:17 EST
+"rnqnx_expo_image_fabric_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+36/61 Testing: rnqnx_worklets_integration_host_test
+36/61 Test: rnqnx_worklets_integration_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_worklets_integration_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_worklets_integration_host_test" start time: Nov 16 23:17 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=13 framesDelivered=12 uiJobs=0 jsPosts=4
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 23:17:42.757295 2408796736 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1116 23:17:42.759610 2223617728 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000015350).
+Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=13 framesDelivered=12 uiJobs=0 jsPosts=4
+W1116 23:17:47.699216 2408796736 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000069050).
+W1116 23:17:47.701016 2253346496 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001bc050).
+Running "RnqnxWorkletsIntegration"
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=4 framesDelivered=3 uiJobs=0 jsPosts=1
+W1116 23:17:51.960932 2408796736 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300009f290).
+W1116 23:17:51.962646 2203653824 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000009650).
+RNQNX_WORKLETS_INTEGRATION_OK frames timing pixels pan reload teardown
+<end of output>
+Test time =  14.60 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_worklets_integration_host_test" end time: Nov 16 23:17 EST
+"rnqnx_worklets_integration_host_test" time elapsed: 00:00:14
+----------------------------------------------------------
+
+37/61 Testing: rnqnx_worklets_rejects_missing_bootstrap
+37/61 Test: rnqnx_worklets_rejects_missing_bootstrap
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_worklets_integration_host_test" "--omit-worklets" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"rnqnx_worklets_rejects_missing_bootstrap" start time: Nov 16 23:17 EST
+Output:
+----------------------------------------------------------
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 23:17:52.223237 831160896 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000003690).
+W1116 23:17:52.223734 729806528 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000015350).
+W1116 23:17:52.223809 729806528 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+TypeError: Cannot read property 'loadUnpackersWithCode' of undefined
+[js fatal] TypeError: Cannot read property 'loadUnpackersWithCode' of undefined 
+   at k (worklets-integration.bundle.js:532)
+  at t (worklets-integration.bundle.js:532)
+  at anonymous (worklets-integration.bundle.js:532)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at h (worklets-integration.bundle.js:539)
+  at f (worklets-integration.bundle.js:539)
+  at anonymous (worklets-integration.bundle.js:539)
+  at k (worklets-integration.bundle.js:539)
+  at f (worklets-integration.bundle.js:539)
+  at u (worklets-integration.bundle.js:539)
+  at S (worklets-integration.bundle.js:539)
+  at anonymous (worklets-integration.bundle.js:539)
+  at A (worklets-integration.bundle.js:539)
+  at f (worklets-integration.bundle.js:539)
+  at anonymous (worklets-integration.bundle.js:529)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at l (worklets-integration.bundle.js:546)
+  at b (worklets-integration.bundle.js:530)
+  at anonymous (worklets-integration.bundle.js:530)
+  at anonymous (worklets-integration.bundle.js:527)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at anonymous (worklets-integration.bundle.js:5)
+  at h (worklets-integration.bundle.js:2)
+  at d (worklets-integration.bundle.js:2)
+  at i (worklets-integration.bundle.js:2)
+  at global (worklets-integration.bundle.js:997)
+
+W1116 23:17:54.049572 831160896 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000006790).
+W1116 23:17:54.050127 770709184 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000253d0).
+W1116 23:17:54.050184 770709184 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000005c50).
+RNQNX_WORKLETS_MISSING_BOOTSTRAP_REJECTED
+<end of output>
+Test time =   2.00 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_worklets_rejects_missing_bootstrap" end time: Nov 16 23:17 EST
+"rnqnx_worklets_rejects_missing_bootstrap" time elapsed: 00:00:02
+----------------------------------------------------------
+
+39/61 Testing: shadow_view_mutation_adapter_host_test
+39/61 Test: shadow_view_mutation_adapter_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/shadow_view_mutation_adapter_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"shadow_view_mutation_adapter_host_test" start time: Nov 16 23:17 EST
+Output:
+----------------------------------------------------------
+[PASS] createInsertMountsAndPositions
+[PASS] insertOrderFollowsMutationIndex
+[PASS] updateAppliesNewFrame
+[PASS] transparentAndRemovedBackgroundClearThePreviousFill
+[PASS] removeThenDeleteUnmountsAndFrees
+[PASS] nestedTransactionBuildsATree
+[PASS] unmappedComponentIsReportedNotSkipped
+[PASS] insertIntoMissingParentIsReported
+All 8 ShadowViewMutationAdapter host tests passed.
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"shadow_view_mutation_adapter_host_test" end time: Nov 16 23:17 EST
+"shadow_view_mutation_adapter_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+40/61 Testing: shadow_tree_mounting_host_test
+40/61 Test: shadow_tree_mounting_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/shadow_tree_mounting_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"shadow_tree_mounting_host_test" start time: Nov 16 23:17 EST
+Output:
+----------------------------------------------------------
+[PASS] fixedSizeViewGetsYogaGeometry
+[PASS] flexChildrenSplitTheRootWidth
+[PASS] paddingOffsetsChildOrigin
+[PASS] secondCommitUpdatesGeometryInPlace
+[PASS] removingAChildUnmountsIt
+All 5 ShadowTree mounting host tests passed.
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Passed.
+"shadow_tree_mounting_host_test" end time: Nov 16 23:17 EST
+"shadow_tree_mounting_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+41/61 Testing: qtquick_mounting_layer_host_test
+41/61 Test: qtquick_mounting_layer_host_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/qtquick_mounting_layer_host_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer
+"qtquick_mounting_layer_host_test" start time: Nov 16 23:17 EST
+Output:
+----------------------------------------------------------
+[PASS] rootIsMountedButNotOwned
+[PASS] createLeavesItemUnparented
+[PASS] insertParentsAndOrdersChildren
+[PASS] insertRejectsBadArguments
+[PASS] fabricIndicesExcludeQmlDecorations
+[PASS] removeDetachesWithoutDestroying
+[PASS] removeRejectsIndexDisagreement
+[PASS] destroyReleasesTagAndItem
+[PASS] destroyDetachesStillMountedItem
+[PASS] nestedTreeIsTornDownWithTheLayer
+[PASS] updateLayoutAppliesAbsoluteGeometry
+[PASS] unregisteredComponentTypeFails
+[PASS] brokenQmlSourceFails
+[PASS] nonItemTypeFails
+[PASS] duplicateTagFails
+[PASS] reregisteringATypeReplacesIt
+All 16 QtQuickMountingLayer host tests passed.
+<end of output>
+Test time =   0.13 sec
+----------------------------------------------------------
+Test Passed.
+"qtquick_mounting_layer_host_test" end time: Nov 16 23:17 EST
+"qtquick_mounting_layer_host_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+44/61 Testing: rnqnx_image_units_test
+44/61 Test: rnqnx_image_units_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests/rnqnx_image_units_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests
+"rnqnx_image_units_test" start time: Nov 16 23:17 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ImageUnitsTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageUnitsTest::initTestCase()
+PASS   : ImageUnitsTest::fitCoverContainAndFill()
+PASS   : ImageUnitsTest::fitNoneKeepsNaturalSizeAndScaleDownNeverGrows()
+PASS   : ImageUnitsTest::positionNamesOffsetsAndPercentages()
+PASS   : ImageUnitsTest::roundedPathClipsCornersAndLimitsRadii()
+PASS   : ImageUnitsTest::blurSpreadsAColorEdge()
+PASS   : ImageUnitsTest::tintKeepsAlphaAndReplacesColor()
+PASS   : ImageUnitsTest::blurHashDecodesTheReferenceVector()
+PASS   : ImageUnitsTest::blurHashRejectsMalformedInput()
+PASS   : ImageUnitsTest::thumbHashDecodesTheReferenceVectors()
+PASS   : ImageUnitsTest::thumbHashRejectsShortInput()
+PASS   : ImageUnitsTest::diskCacheEvictsLeastRecentlyUsedWithinBudget()
+PASS   : ImageUnitsTest::diskCacheRefusesOversizeAndClears()
+PASS   : ImageUnitsTest::diskCacheClearInvalidatesPendingWrites()
+PASS   : ImageUnitsTest::diskCacheClearAdmissionDoesNotWaitForIo()
+PASS   : ImageUnitsTest::diskCachePendingClearIsAppliedByReaders(read)
+PASS   : ImageUnitsTest::diskCachePendingClearIsAppliedByReaders(contains)
+PASS   : ImageUnitsTest::diskCacheDelayedClearPreservesNewWrites()
+PASS   : ImageUnitsTest::diskCacheOverlappingClearsPreserveNewestWrites()
+PASS   : ImageUnitsTest::diskCacheFailedClearStaysPending()
+PASS   : ImageUnitsTest::requestKeyFoldsHeadersAndHonoursCacheKey()
+PASS   : ImageUnitsTest::fetcherSendsHeadersAndHitsDiskCacheSecondTime()
+PASS   : ImageUnitsTest::fetcherCancelNeverCallsBack()
+PASS   : ImageUnitsTest::fetcherReadsFilesOnWorkerAndCompletesOnOwner()
+PASS   : ImageUnitsTest::imageTasksRunOnWorkerAndCompleteOnOwner()
+PASS   : ImageUnitsTest::imageTasksCancelWaitingWorkAndSuppressLateCompletion()
+PASS   : ImageUnitsTest::imageTasksHoldAdmissionUntilDestroyedWorkersFinish()
+PASS   : ImageUnitsTest::imageTasksReportWorkerExceptionsOnOwner()
+PASS   : ImageUnitsTest::imageTasksDropCompletionBeforeStartingSuccessor()
+PASS   : ImageUnitsTest::fetcherCancelsAndDestroysBlockedIo()
+PASS   : ImageUnitsTest::fetcherRetainsPrivateQueueUntilWorkerFinishes()
+PASS   : ImageUnitsTest::fetcherCompletesBeforeStartingReentrantQueuedCallback()
+PASS   : ImageUnitsTest::fetcherCancellationReleasesCallbacksBeforeStartingSuccessor()
+PASS   : ImageUnitsTest::cancelledFileReadsHoldSharedAdmissionUntilFinished()
+PASS   : ImageUnitsTest::fetcherRetainsCacheStateDuringIo()
+PASS   : ImageUnitsTest::fetcherRecoversCorruptAndOversizedCache()
+PASS   : ImageUnitsTest::fetcherFollowsRelativeRedirectAndStripsCrossOriginHeaders()
+PASS   : ImageUnitsTest::fetcherBoundsRedirectsAndRejectsUnsafeTargets()
+PASS   : ImageUnitsTest::sharedNetworkDoesNotReuseCookies()
+PASS   : ImageUnitsTest::redirectsShareOneDeadline()
+PASS   : ImageUnitsTest::decodedCacheHonorsCountAndCostLimits()
+PASS   : ImageUnitsTest::imageRefRegistryNeverReusesIds()
+PASS   : ImageUnitsTest::imageLoadedNotifierReachesListenersUntilUnsubscribed()
+PASS   : ImageUnitsTest::cleanupTestCase()
+Totals: 44 passed, 0 failed, 0 skipped, 0 blacklisted, 1900ms
+********* Finished testing of ImageUnitsTest *********
+<end of output>
+Test time =   1.92 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_image_units_test" end time: Nov 16 23:17 EST
+"rnqnx_image_units_test" time elapsed: 00:00:01
+----------------------------------------------------------
+
+45/61 Testing: rnqnx_expo_image_item_test
+45/61 Test: rnqnx_expo_image_item_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests/rnqnx_expo_image_item_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests
+"rnqnx_expo_image_item_test" start time: Nov 16 23:17 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ExpoImageItemTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ExpoImageItemTest::initTestCase()
+PASS   : ExpoImageItemTest::borderRadiusRoundsThePicture()
+PASS   : ExpoImageItemTest::perCornerRadiiRoundOnlyThoseCorners()
+PASS   : ExpoImageItemTest::tintReplacesColorAndKeepsShape()
+PASS   : ExpoImageItemTest::blurSoftensAHardEdge()
+PASS   : ExpoImageItemTest::contentFitNoneDrawsNaturalSizeCentered()
+PASS   : ExpoImageItemTest::contentPositionMovesTheImage()
+PASS   : ExpoImageItemTest::blurhashPlaceholderShowsUntilTheImageArrives()
+PASS   : ExpoImageItemTest::thumbhashSourceDrawsWithoutNetwork()
+PASS   : ExpoImageItemTest::crossDissolveBlendsOldAndNew()
+PASS   : ExpoImageItemTest::flipEffectsPassThroughAnEdgeOnMidpoint()
+PASS   : ExpoImageItemTest::curlFallsBackToCrossDissolve()
+PASS   : ExpoImageItemTest::multipleSourcesPickTheSmallestThatCovers()
+PASS   : ExpoImageItemTest::onLoadReportsSizeCacheTypeAndMediaType()
+PASS   : ExpoImageItemTest::secondViewReadsFromTheSharedMemoryCache()
+PASS   : ExpoImageItemTest::headersReachTheServerAndKeyTheCache()
+PASS   : ExpoImageItemTest::failedLoadReportsTheError()
+PASS   : ExpoImageItemTest::recyclingKeyClearsThePreviousPicture()
+PASS   : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses(direct)
+PASS   : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses(prefetched-memory)
+PASS   : ExpoImageItemTest::hitSlopExtendsAndPointerEventsNoneIgnoresTouches()
+PASS   : ExpoImageItemTest::downscalingKeepsReportedSize()
+PASS   : ExpoImageItemTest::growingADownscaledViewDecodesEnoughPixels()
+PASS   : ExpoImageItemTest::lockedGrowthDefersDecodeUntilUnlock()
+PASS   : ExpoImageItemTest::upgradingDecodeOptions(disable-downscaling)
+PASS   : ExpoImageItemTest::upgradingDecodeOptions(natural-size-fit)
+PASS   : ExpoImageItemTest::growthDuringInitialDecodeIsRechecked()
+PASS   : ExpoImageItemTest::pendingLoadDoesNotRepopulateClearedMemory(fetch-pending)
+PASS   : ExpoImageItemTest::pendingLoadDoesNotRepopulateClearedMemory(decode-pending)
+PASS   : ExpoImageItemTest::freshViewReadsTheDiskCacheWhenMemoryIsCleared()
+PASS   : ExpoImageItemTest::imageRefSourceShowsTheDecodedPicture()
+PASS   : ExpoImageItemTest::lockedViewKeepsItsPictureUntilUnlockedOrReloaded()
+PASS   : ExpoImageItemTest::cleanupTestCase()
+Totals: 33 passed, 0 failed, 0 skipped, 0 blacklisted, 8639ms
+********* Finished testing of ExpoImageItemTest *********
+<end of output>
+Test time =   8.67 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_expo_image_item_test" end time: Nov 16 23:18 EST
+"rnqnx_expo_image_item_test" time elapsed: 00:00:08
+----------------------------------------------------------
+
+47/61 Testing: rnqnx_image_fetch_queue_test
+47/61 Test: rnqnx_image_fetch_queue_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests/rnqnx_image_fetch_queue_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/nativeui-tests
+"rnqnx_image_fetch_queue_test" start time: Nov 16 23:18 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ImageFetchQueueTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageFetchQueueTest::initTestCase()
+PASS   : ImageFetchQueueTest::parsesPriorityNames()
+PASS   : ImageFetchQueueTest::startsAtMostMaxConcurrentTasks()
+PASS   : ImageFetchQueueTest::startsWaitingTasksHighestPriorityFirst()
+PASS   : ImageFetchQueueTest::cancelDropsAWaitingTaskOnly()
+PASS   : ImageFetchQueueTest::aTaskThatFinishesAtOnceDoesNotStallTheQueue()
+PASS   : ImageFetchQueueTest::fetcherKeepsLoadsInFlightWithinTheBound()
+PASS   : ImageFetchQueueTest::fetcherStartsHigherPriorityRequestsFirst()
+PASS   : ImageFetchQueueTest::clearingDiskCacheDoesNotRestoreAnInFlightResponse()
+PASS   : ImageFetchQueueTest::viewsLoadInPriorityOrderThroughTheSharedQueue()
+PASS   : ImageFetchQueueTest::cancellingAQueuedLoadNeverStartsIt()
+PASS   : ImageFetchQueueTest::cancellingARunningLoadFreesItsSlot()
+PASS   : ImageFetchQueueTest::cleanupTestCase()
+Totals: 13 passed, 0 failed, 0 skipped, 0 blacklisted, 1439ms
+********* Finished testing of ImageFetchQueueTest *********
+<end of output>
+Test time =   1.48 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_image_fetch_queue_test" end time: Nov 16 23:18 EST
+"rnqnx_image_fetch_queue_test" time elapsed: 00:00:01
+----------------------------------------------------------
+
+55/61 Testing: rnqnx_qt_rnsvg_foreignobject_test
+55/61 Test: rnqnx_qt_rnsvg_foreignobject_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_foreignobject_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests
+"rnqnx_qt_rnsvg_foreignobject_test" start time: Nov 16 23:18 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgForeignObjectTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgForeignObjectTest::initTestCase()
+PASS   : RnsvgForeignObjectTest::hiddenUntilPlaced()
+PASS   : RnsvgForeignObjectTest::placementMapsBoxCoordinatesToTheParent()
+PASS   : RnsvgForeignObjectTest::yogaPositionAndSizeDoNotMoveTheBox()
+PASS   : RnsvgForeignObjectTest::clipsLiveChildrenToTheBoxOnScreen()
+PASS   : RnsvgForeignObjectTest::childrenOutsideTheBoxAreNotHit()
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(NaN translation)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(infinite scale)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(zero scale)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(scale 1e300)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(determinant 1e-16)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(zero width)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(zero height)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(negative width)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(NaN width)
+PASS   : RnsvgForeignObjectTest::unusableInputHidesTheItem(infinite height)
+PASS   : RnsvgForeignObjectTest::hugeBoxIsClamped()
+PASS   : RnsvgForeignObjectTest::deletingTheItemWithTheTransformAttachedIsSafe()
+PASS   : RnsvgForeignObjectTest::cleanupTestCase()
+Totals: 19 passed, 0 failed, 0 skipped, 0 blacklisted, 4ms
+********* Finished testing of RnsvgForeignObjectTest *********
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_foreignobject_test" end time: Nov 16 23:18 EST
+"rnqnx_qt_rnsvg_foreignobject_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+56/61 Testing: rnqnx_qt_rnsvg_image_test
+56/61 Test: rnqnx_qt_rnsvg_image_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_image_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests
+"rnqnx_qt_rnsvg_image_test" start time: Nov 16 23:18 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgImageTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgImageTest::initTestCase()
+PASS   : RnsvgImageTest::startsIdleAndEmptyUriStaysIdle()
+PASS   : RnsvgImageTest::immediateSuccessSettlesOnceAndKeepsTheImage()
+PASS   : RnsvgImageTest::deferredSuccessIsLoadingUntilTheProviderCompletes()
+PASS   : RnsvgImageTest::failureReportsTheProviderMessageAndIsNotRetried()
+PASS   : RnsvgImageTest::emptyFailureMessageGetsAGenericOne()
+PASS   : RnsvgImageTest::sameUriWhileLoadingDoesNotStartASecondRequest()
+PASS   : RnsvgImageTest::clearingTheUriCancelsAndGoesIdle()
+PASS   : RnsvgImageTest::changingTheUriCancelsTheOldRequestAndIgnoresItsLateCompletion()
+PASS   : RnsvgImageTest::anOlderCompletionArrivingAfterANewerOneIsIgnored()
+PASS   : RnsvgImageTest::aCompletionDeliveredTwiceSettlesOnce()
+PASS   : RnsvgImageTest::destroyingTheLoaderMidFlightCancelsAndNeverCallsBack()
+PASS   : RnsvgImageTest::aSettledHandlerMayDestroyTheLoader()
+PASS   : RnsvgImageTest::aSettledHandlerMayStartTheNextLoad()
+PASS   : RnsvgImageTest::oversizeAndEmptyResultsFail()
+PASS   : RnsvgImageTest::decodesBase64AndPercentEncodedDataUris()
+libpng error: Read Error
+libpng error: Read Error
+PASS   : RnsvgImageTest::rejectsMalformedHostileDataUris()
+PASS   : RnsvgImageTest::dataUriOverTheCharacterBoundIsRejectedWithoutDecoding()
+PASS   : RnsvgImageTest::rasterOverTheDimensionBoundFailsBeforeAllocation()
+PASS   : RnsvgImageTest::garbageAndEmptyBytesFail()
+PASS   : RnsvgImageTest::svgDecodesThroughThePluginOrNamesTheMissingPlugin()
+PASS   : RnsvgImageTest::svgBase64DataUriAndGiantSvgAreBounded()
+PASS   : RnsvgImageTest::svgDetectionByMediaTypeExtensionAndContent()
+PASS   : RnsvgImageTest::sameUriKeepsTheLoadedImageAndANewOneClearsIt()
+PASS   : RnsvgImageTest::bindingRepaintsOnCompletionOnlyAndPaintsTheImage()
+PASS   : RnsvgImageTest::staleCompletionNeitherChangesPropsNorRepaints()
+PASS   : RnsvgImageTest::changingTheHrefDropsThePreviousImageImmediately()
+PASS   : RnsvgImageTest::aCommitThatKeepsTheHrefDoesNotReload()
+PASS   : RnsvgImageTest::failedLoadLeavesTheElementEmptyAndSilent()
+PASS   : RnsvgImageTest::loadedCallbackRunsOnceOnALaterEventLoopTurn()
+PASS   : RnsvgImageTest::immediateLoadDoesNotRunTheCallbackInsideTheCommit()
+PASS   : RnsvgImageTest::loadedCallbackIsDroppedWhenTheElementMovesOnOrIsDeleted()
+PASS   : RnsvgImageTest::immediateProviderLoadsInsideTheCommit()
+PASS   : RnsvgImageTest::preserveAspectRatioMeetSliceAndNoneWithALoadedImage()
+PASS   : RnsvgImageTest::destroyingTheElementMidFlightNeverTouchesItAgain()
+PASS   : RnsvgImageTest::destroyingTheRootMidFlightNeverTouchesTheTreeAgain()
+PASS   : RnsvgImageTest::manyElementsLoadIndependently()
+PASS   : RnsvgImageTest::cleanupTestCase()
+Totals: 38 passed, 0 failed, 0 skipped, 0 blacklisted, 173ms
+********* Finished testing of RnsvgImageTest *********
+<end of output>
+Test time =   0.20 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_image_test" end time: Nov 16 23:18 EST
+"rnqnx_qt_rnsvg_image_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+57/61 Testing: rnqnx_qt_rnsvg_loader_test
+57/61 Test: rnqnx_qt_rnsvg_loader_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_loader_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests
+"rnqnx_qt_rnsvg_loader_test" start time: Nov 16 23:18 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgLoaderTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgLoaderTest::initTestCase()
+PASS   : RnsvgLoaderTest::attributesBeatStyleDeclarations()
+PASS   : RnsvgLoaderTest::kebabAndColonNamesAreCamelCased()
+PASS   : RnsvgLoaderTest::brushesFollowExtractBrush()
+PASS   : RnsvgLoaderTest::fillDefaultsToBlackWithoutJoiningThePropList()
+PASS   : RnsvgLoaderTest::dasharrayOddListsAreDoubled()
+PASS   : RnsvgLoaderTest::transformStringsCompose()
+PASS   : RnsvgLoaderTest::invalidTransformBecomesIdentity()
+PASS   : RnsvgLoaderTest::lengthsHandleUnitsAndGarbage()
+PASS   : RnsvgLoaderTest::viewBoxParsing()
+PASS   : RnsvgLoaderTest::polylinePointsKeepTheUpstreamFirstMinusQuirk()
+PASS   : RnsvgLoaderTest::textChildrenFollowExtractText()
+PASS   : RnsvgLoaderTest::gradientStopsTakeAlphaFromStopOpacity()
+PASS   : RnsvgLoaderTest::radialGradientFallsBackToR()
+PASS   : RnsvgLoaderTest::styleSheetsApplyOnlyWhenAsked()
+PASS   : RnsvgLoaderTest::unknownAndUnmountedTagsAreReported()
+PASS   : RnsvgLoaderTest::rootOpacityColorAndViewBox()
+PASS   : RnsvgLoaderTest::malformedAndHostileDocuments()
+PASS   : RnsvgLoaderTest::manyElementsStayBounded()
+PASS   : RnsvgLoaderTest::markerPatternSymbolProps()
+PASS   : RnsvgLoaderTest::filterElementsAndDropShadowExpansion()
+PASS   : RnsvgLoaderTest::textPathProps()
+PASS   : RnsvgLoaderTest::imageDiffMeasuresFailureModes()
+PASS   : RnsvgLoaderTest::imageDiffRefusesBadInput()
+PASS   : RnsvgLoaderTest::cleanupTestCase()
+Totals: 25 passed, 0 failed, 0 skipped, 0 blacklisted, 501ms
+********* Finished testing of RnsvgLoaderTest *********
+<end of output>
+Test time =   0.53 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_loader_test" end time: Nov 16 23:18 EST
+"rnqnx_qt_rnsvg_loader_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+59/61 Testing: rnqnx_qt_rnsvg_scene_test
+59/61 Test: rnqnx_qt_rnsvg_scene_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests/rnqnx_qt_rnsvg_scene_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/qt-native/rnsvg-tests
+"rnqnx_qt_rnsvg_scene_test" start time: Nov 16 23:18 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgSceneTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgSceneTest::initTestCase()
+PASS   : RnsvgSceneTest::vertexRecorderFollowsPathData()
+PASS   : RnsvgSceneTest::clipRuleEvenOddOnTheReferencingElement()
+PASS   : RnsvgSceneTest::clipRuleOnAShapeInsideTheClipPath()
+PASS   : RnsvgSceneTest::clipPathOfAClipPathIntersects()
+PASS   : RnsvgSceneTest::groupLayersCoverOnlyTheGroupsExtent()
+PASS   : RnsvgSceneTest::filterFreeMaskLayerIsBoundedByTheMaskedElement()
+PASS   : RnsvgSceneTest::hitTestingHonorsClipPath()
+PASS   : RnsvgSceneTest::hitTestingHonorsMask()
+PASS   : RnsvgSceneTest::pointerEventsSelectsTheHitRegion()
+PASS   : RnsvgSceneTest::boxNoneGroupStillPassesPressesToChildren()
+PASS   : RnsvgSceneTest::userSpacePatternRepeatsItsTile()
+PASS   : RnsvgSceneTest::boundingBoxPatternScalesWithTheElement()
+PASS   : RnsvgSceneTest::patternViewBoxMapsContentIntoTheTile()
+PASS   : RnsvgSceneTest::patternFillOpacityApplies()
+PASS   : RnsvgSceneTest::useOfASymbolFitsItsViewBox()
+PASS   : RnsvgSceneTest::symbolIsNotDrawnByItself()
+PASS   : RnsvgSceneTest::markerEndOrientsAlongThePath()
+PASS   : RnsvgSceneTest::markerUnitsScaleWithStrokeWidth()
+PASS   : RnsvgSceneTest::markerStartAndMidAreDrawnAtVertices()
+PASS   : RnsvgSceneTest::markerContentUsesContextPaint()
+PASS   : RnsvgSceneTest::gradientSpreadMethods()
+PASS   : RnsvgSceneTest::dashesAlternateAlongTheStroke()
+PASS   : RnsvgSceneTest::dashOffsetShiftsThePattern()
+PASS   : RnsvgSceneTest::lineCapsExtendTheStroke()
+PASS   : RnsvgSceneTest::miterLimitBevelsSharpCorners()
+PASS   : RnsvgSceneTest::nonScalingStrokeKeepsItsWidthUnderAViewBox()
+PASS   : RnsvgSceneTest::selfReferencingPaintServersAndMarkersTerminate()
+PASS   : RnsvgSceneTest::degenerateValuesDoNotCrash()
+PASS   : RnsvgSceneTest::nestedSvgPaintsInlineWithItsOwnViewBox()
+PASS   : RnsvgSceneTest::nestedPropChangesScheduleTheVisiblePaintingRoot()
+PASS   : RnsvgSceneTest::nestedSvgElementsTakeTouches()
+PASS   : RnsvgSceneTest::resizingNestedSvgRepaintsVisibleRoot()
+PASS   : RnsvgSceneTest::resizingRootRelayoutsForeignObjectsAndReportedBounds()
+PASS   : RnsvgSceneTest::removingNestedSvgChildRepaintsVisibleRoot()
+PASS   : RnsvgSceneTest::nestedRootsWithinNestedRootsContributeToGroupBounds()
+PASS   : RnsvgSceneTest::foreignObjectIsPlacedThroughEveryAncestorTransform()
+PASS   : RnsvgSceneTest::elementBoundsAreInRootCoordinates()
+PASS   : RnsvgSceneTest::boundsOfManyElementsTakeOneTraversal()
+PASS   : RnsvgSceneTest::clipPathCyclesWithBranchingTerminateQuickly()
+PASS   : RnsvgSceneTest::markerThatUsesItselfTerminatesWhenMeasured()
+PASS   : RnsvgSceneTest::useOfASymbolWithAViewBoxKeepsItsWholeLayer()
+PASS   : RnsvgSceneTest::groupWithNestedSvgKeepsItsContentWhenItNeedsALayer()
+PASS   : RnsvgSceneTest::nestedSvgDirectlyUnderTheRootPaintsOnce()
+PASS   : RnsvgSceneTest::foreignObjectInsideDefsIsNotPlaced()
+PASS   : RnsvgSceneTest::symbolViewportClipsTouches()
+PASS   : RnsvgSceneTest::invalidViewBoxIsIgnored()
+PASS   : RnsvgSceneTest::pointerEventsNoneShieldsLiveChildren()
+PASS   : RnsvgSceneTest::useGroupOpacityIsApplied()
+PASS   : RnsvgSceneTest::cleanupTestCase()
+Totals: 50 passed, 0 failed, 0 skipped, 0 blacklisted, 571ms
+********* Finished testing of RnsvgSceneTest *********
+<end of output>
+Test time =   0.60 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_scene_test" end time: Nov 16 23:18 EST
+"rnqnx_qt_rnsvg_scene_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 16 23:18 EST

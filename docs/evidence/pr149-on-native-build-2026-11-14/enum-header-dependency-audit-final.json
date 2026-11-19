@@ -1,0 +1,71 @@
+{
+  "objects_examined": 113,
+  "objects_recording_generated_enum_headers": 20,
+  "objects_still_recording_original_enum_headers": {},
+  "rebuild_exit_code": 0,
+  "generated_dependencies": {
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/operations/perspective.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/operations/skew.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/operations/matrix.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/operations/rotate.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/operations/scale.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/operations/translate.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/TransformOperation.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/TransformOperationInterpolator.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/TransformsStyleInterpolator.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/InterpolatorFactory.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/filters/FilterOp.h",
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/transforms/TransformMatrix2D.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/transforms/TransformMatrix3D.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/transforms/TransformOp.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/transforms/TransformMatrix.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/operations/OperationsStyleInterpolator.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/filters/FilterOp.h",
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/InterpolatorRegistry.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h",
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/filters/FilterOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/filters/FilterOp.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/filters/FilterOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/filters/FilterStyleInterpolator.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/filters/FilterOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/filters/FilterOperationInterpolator.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/filters/FilterOp.h"
+    ],
+    "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/filters/FilterOperation.cpp.o": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/filters/FilterOp.h"
+    ]
+  }
+}

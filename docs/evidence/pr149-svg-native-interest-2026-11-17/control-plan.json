@@ -1,0 +1,7 @@
+{
+  "candidateModuleSha256": "f92c5c0db0abe2832f21b25b2862010ffb34eab33cfc534d306c3f66f1d284ef",
+  "controlModuleSha256": "fb4c442c4f9b60b73c6f215143162efb9382623fee37605b83df7af370d295c3",
+  "controlModuleSource": "ff86386a218ceda4e842e79c601fd70c2ff43b7a:vnext/src/reanimated/QnxReanimatedModule.cpp",
+  "difference": "Only SVG native-interest install/clear wiring. Same reviewed SVG admission prerequisite and actual bundle/native fixture in both runs.",
+  "status": "Prepared only; native execution pending."
+}

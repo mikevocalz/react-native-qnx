@@ -129,6 +129,24 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX" OR BUILD_TESTING)
   endif()
 endif()
 
+# Gesture Handler recognizer registry: pure C++ with no Qt or React dependency,
+# so it is host-tested everywhere. Device behavior is a separate gate.
+if(BUILD_TESTING AND NOT CMAKE_SYSTEM_NAME STREQUAL "QNX")
+  add_executable(rnqnx_gesture_core_test
+    vnext/src/gesture/GestureHandlerCore.cpp
+    tests/native/gesture-handler/GestureHandlerCoreTest.cpp
+  )
+  target_include_directories(rnqnx_gesture_core_test PRIVATE vnext/include)
+  rnqnx_enable_strict_warnings(rnqnx_gesture_core_test)
+  set_target_properties(rnqnx_gesture_core_test PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+  )
+  add_test(NAME rnqnx_gesture_core_test
+    COMMAND $<TARGET_FILE:rnqnx_gesture_core_test>)
+  set_tests_properties(rnqnx_gesture_core_test PROPERTIES
+    PASS_REGULAR_EXPRESSION "RNQNX_GESTURE_CORE_OK")
+endif()
+
 if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
   message(STATUS "Configuring react-native-qnx for QNX")
 
@@ -235,6 +253,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
       rnqnx_add_runtime_baseline_supervisor()
       add_executable(rnqnx_playground_qnx vnext/probes/playground/main.cpp)
       target_link_libraries(rnqnx_playground_qnx PRIVATE rnqnx_react_host)
+      rnqnx_link_runtime_extensions(rnqnx_playground_qnx)
       if(RNQNX_BUILD_NITRO_QNX)
         target_link_libraries(rnqnx_playground_qnx PRIVATE rnqnx_nitro_qnx)
         target_compile_definitions(rnqnx_playground_qnx PRIVATE
@@ -391,6 +410,7 @@ else()
           rnqnx_add_runtime_baseline_supervisor()
           add_executable(rnqnx_playground_host vnext/probes/playground/main.cpp)
           target_link_libraries(rnqnx_playground_host PRIVATE rnqnx_react_host)
+          rnqnx_link_runtime_extensions(rnqnx_playground_host)
           rnqnx_enable_strict_warnings(rnqnx_playground_host)
           add_dependencies(rnqnx_playground_host rnqnx_playground_bundle)
           target_compile_definitions(rnqnx_playground_host PRIVATE
@@ -421,6 +441,8 @@ else()
           set_tests_properties(rnqnx_playground_screenshot
             rnqnx_playground_rejects_start_failure
             rnqnx_playground_rejects_stop_failure PROPERTIES TIMEOUT 30)
+          include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxPlaygroundErrorTests.cmake)
+          rnqnx_add_playground_error_tests()
 
           # ASan's allocator is installed process-wide by interposition, so
           # heap use-after-free is caught in the React Native and Qt libraries
@@ -449,6 +471,8 @@ else()
 
           include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxExpoImageHostTests.cmake)
           rnqnx_add_expo_image_host_tests()
+          include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxWorkletsHostTests.cmake)
+          rnqnx_add_worklets_host_tests()
         endif()
 
         add_executable(rnqnx_rn_headers_probe

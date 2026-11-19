@@ -1,0 +1,299 @@
+{
+  "recordedAtUtc": "2026-11-17T06:28:20.354887+00:00",
+  "localParent": "ff86386a218ceda4e842e79c601fd70c2ff43b7a",
+  "actualPublic159Parent": "12cae67885b77f9a371059fc2b0a1168ef07430b",
+  "actualPublic159Tree": "b057996aeb770ce1b1349077a0106c85d3f4ff4a",
+  "sources": {
+    "apps/rn-playground/rnsvg-fixture.js": {
+      "provisionalSha256": "694aa86c6e6b745cbbf7d6f730196e3be4970fa93580f4785e9cadf38832c918",
+      "actualSha256": "694aa86c6e6b745cbbf7d6f730196e3be4970fa93580f4785e9cadf38832c918",
+      "equal": true
+    },
+    "scripts/qt-rnsvg-codegen.mjs": {
+      "provisionalSha256": "31f6b05341bfe0272d155075be87834bec46ac6640ce807e5854e2335537cbe3",
+      "actualSha256": "31f6b05341bfe0272d155075be87834bec46ac6640ce807e5854e2335537cbe3",
+      "equal": true
+    },
+    "tests/native/qt-rnsvg-fabric/RnsvgBridgeValuesTest.cpp": {
+      "provisionalSha256": "295f76d313dccbc8b7257e582166434ff63889f5be2f33aa6c840c4ebfb53a3f",
+      "actualSha256": "295f76d313dccbc8b7257e582166434ff63889f5be2f33aa6c840c4ebfb53a3f",
+      "equal": true
+    },
+    "tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp": {
+      "provisionalSha256": "9667a810b101f2c59f4be214207cfcf52b826e2dbd043e04a7896842399e71b1",
+      "actualSha256": "9667a810b101f2c59f4be214207cfcf52b826e2dbd043e04a7896842399e71b1",
+      "equal": true
+    },
+    "vnext/generated/react/renderer/components/rnsvg/Props.cpp": {
+      "provisionalSha256": "fc995dada9bd6230985002f770c6b945fbc869bbac3c923a2f624e7bcdb0ca19",
+      "actualSha256": "fc995dada9bd6230985002f770c6b945fbc869bbac3c923a2f624e7bcdb0ca19",
+      "equal": true
+    },
+    "vnext/generated/react/renderer/components/rnsvg/Props.h": {
+      "provisionalSha256": "02f21e4cd193dd09db04872d67b1dd5ba8cf9c7620c5735d59a8e81b88e710b7",
+      "actualSha256": "02f21e4cd193dd09db04872d67b1dd5ba8cf9c7620c5735d59a8e81b88e710b7",
+      "equal": true
+    },
+    "vnext/include/react-native-qnx/fabric/ShadowViewMutationAdapter.h": {
+      "provisionalSha256": "77a0da599a443456fa7957a4062dd28e35adfecce8b7074328b4d0b446d9eff4",
+      "actualSha256": "77a0da599a443456fa7957a4062dd28e35adfecce8b7074328b4d0b446d9eff4",
+      "equal": true
+    },
+    "vnext/include/react-native-qnx/runtime/QtReactHost.h": {
+      "provisionalSha256": "7fc9ba456fc0c154b1e2fc2ccde5b25495661fda43bbec77d1a6d6b5ea4eebfb",
+      "actualSha256": "7fc9ba456fc0c154b1e2fc2ccde5b25495661fda43bbec77d1a6d6b5ea4eebfb",
+      "equal": true
+    },
+    "vnext/src/fabric/QtRnsvgBridge.cpp": {
+      "provisionalSha256": "34e4867f4189c77bf874ca313b5e581072e65c65ad6bc4b037b91fdbe1cd7733",
+      "actualSha256": "34e4867f4189c77bf874ca313b5e581072e65c65ad6bc4b037b91fdbe1cd7733",
+      "equal": true
+    },
+    "vnext/src/fabric/QtRnsvgBridgeDefs.cpp": {
+      "provisionalSha256": "ec25da1c58a22f386518da302cd85432930471f831aafd3e7ab1dee9a8bd9f6d",
+      "actualSha256": "ec25da1c58a22f386518da302cd85432930471f831aafd3e7ab1dee9a8bd9f6d",
+      "equal": true
+    },
+    "vnext/src/fabric/QtRnsvgBridgeInternal.h": {
+      "provisionalSha256": "c688a2fc0ce28ee1c04e834edee1038dd478d431dd0bc325b00b3edbd96f06ad",
+      "actualSha256": "c688a2fc0ce28ee1c04e834edee1038dd478d431dd0bc325b00b3edbd96f06ad",
+      "equal": true
+    },
+    "vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp": {
+      "provisionalSha256": "20b46b497bb18cade48899742dbc70794cb0c5aa94555b9b0ba97dbf802faab3",
+      "actualSha256": "20b46b497bb18cade48899742dbc70794cb0c5aa94555b9b0ba97dbf802faab3",
+      "equal": true
+    },
+    "vnext/src/fabric/QtRnsvgBridgeLayoutEvents.h": {
+      "provisionalSha256": "33ea12c93309350a9e28c18d571a4f7a49434b97153bf5625b746b29040535a4",
+      "actualSha256": "33ea12c93309350a9e28c18d571a4f7a49434b97153bf5625b746b29040535a4",
+      "equal": true
+    },
+    "vnext/src/fabric/QtRnsvgBridgeShapes.cpp": {
+      "provisionalSha256": "242ead6e1e5ae396b03e1d3c2558987ceb1d8059ebfb8ac2fb466261555438da",
+      "actualSha256": "242ead6e1e5ae396b03e1d3c2558987ceb1d8059ebfb8ac2fb466261555438da",
+      "equal": true
+    },
+    "vnext/src/fabric/QtRnsvgBridgeText.cpp": {
+      "provisionalSha256": "3fa5b6aa6815cc6ebee18148bfc25fd5ebf7a118e1fb15534227a1f4456d27a6",
+      "actualSha256": "3fa5b6aa6815cc6ebee18148bfc25fd5ebf7a118e1fb15534227a1f4456d27a6",
+      "equal": true
+    },
+    "vnext/src/fabric/ShadowViewMutationAdapter.cpp": {
+      "provisionalSha256": "fb44935374f23d21ef5ec8a062d0c0ca032b86793f9072228ddccc781271c1e2",
+      "actualSha256": "fb44935374f23d21ef5ec8a062d0c0ca032b86793f9072228ddccc781271c1e2",
+      "equal": true
+    },
+    "vnext/src/runtime/QtReactHost.cpp": {
+      "provisionalSha256": "eaa92cfb0bab4cb078854a8642089cc93fdbe18a1ea1649f90487f50bbc684b9",
+      "actualSha256": "eaa92cfb0bab4cb078854a8642089cc93fdbe18a1ea1649f90487f50bbc684b9",
+      "equal": true
+    },
+    "apps/rn-playground/worklets-integration.js": {
+      "provisionalSha256": "f0abb93f704403fb1b458aecfdc826551dac884cfaa6b5bdec65128b636b1af3",
+      "actualSha256": "f0abb93f704403fb1b458aecfdc826551dac884cfaa6b5bdec65128b636b1af3",
+      "equal": true
+    },
+    "tests/cpp/WorkletsIntegrationHostTest.cpp": {
+      "provisionalSha256": "581b21a835db5bc8fd08f7effceff54efc199edd7298cadba1ebe96ddc74f61f",
+      "actualSha256": "581b21a835db5bc8fd08f7effceff54efc199edd7298cadba1ebe96ddc74f61f",
+      "equal": true
+    },
+    "vnext/src/reanimated/QnxReanimatedModule.cpp": {
+      "provisionalSha256": "f92c5c0db0abe2832f21b25b2862010ffb34eab33cfc534d306c3f66f1d284ef",
+      "actualSha256": "f92c5c0db0abe2832f21b25b2862010ffb34eab33cfc534d306c3f66f1d284ef",
+      "equal": true
+    },
+    "vnext/src/fabric/QtRnsvgFilterConvert.cpp": {
+      "provisionalSha256": "81809d445ed050cf12bcb01490f8be9b8dec494824aa9c1e7a97a624973971d2",
+      "actualSha256": "81809d445ed050cf12bcb01490f8be9b8dec494824aa9c1e7a97a624973971d2",
+      "equal": true
+    },
+    "vnext/src/fabric/QtRnsvgFilterConvert.h": {
+      "provisionalSha256": "d1aac0cb14ba16f162f72372e8e52d5ae53fbffdc4423787e1fccc2b94842359",
+      "actualSha256": "d1aac0cb14ba16f162f72372e8e52d5ae53fbffdc4423787e1fccc2b94842359",
+      "equal": true
+    },
+    "vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp": {
+      "provisionalSha256": "12516d8f068ba638c0bc67e0dc26816636e36a2c5af3f092177332634e9b5079",
+      "actualSha256": "12516d8f068ba638c0bc67e0dc26816636e36a2c5af3f092177332634e9b5079",
+      "equal": true
+    },
+    "tests/js/rnsvg-layout-transport.test.mjs": {
+      "provisionalSha256": "72db22eb8dbc459cdae8e0d4b69c57c1c00a1cb0600dfd9ea28c671d4f0f4b41",
+      "actualSha256": "72db22eb8dbc459cdae8e0d4b69c57c1c00a1cb0600dfd9ea28c671d4f0f4b41",
+      "equal": true
+    },
+    "packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js": {
+      "provisionalSha256": "712f1ff34d9073c485f33d54764d5e0f8dfed792aeca49e29688d525cc92025c",
+      "actualSha256": "712f1ff34d9073c485f33d54764d5e0f8dfed792aeca49e29688d525cc92025c",
+      "equal": true
+    },
+    "tests/js/rnsvg-overlay-render.test.mjs": {
+      "provisionalSha256": "3445d47a590979725aef950c0710b37be67dc44e4e5477ef9d431eacf1b89e3b",
+      "actualSha256": "3445d47a590979725aef950c0710b37be67dc44e4e5477ef9d431eacf1b89e3b",
+      "equal": true
+    }
+  },
+  "pinsAndCMake": {
+    "package.json": {
+      "provisionalSha256": "567e7e127cd7aef0771af806f623b35fa25691ec44190851123f829f343481e2",
+      "actualSha256": "567e7e127cd7aef0771af806f623b35fa25691ec44190851123f829f343481e2",
+      "equal": true
+    },
+    "pnpm-lock.yaml": {
+      "provisionalSha256": "fa8abf8d922adf67b264971f37de533355cb976b12a4480c0a6c219ffdee0f0b",
+      "actualSha256": "fa8abf8d922adf67b264971f37de533355cb976b12a4480c0a6c219ffdee0f0b",
+      "equal": true
+    },
+    "cmake/RnqnxWorkletsHostTests.cmake": {
+      "provisionalSha256": "612493fb047f7864fffa9725602cb4d5be294dde0e1da02fa3028c7208e3ccee",
+      "actualSha256": "612493fb047f7864fffa9725602cb4d5be294dde0e1da02fa3028c7208e3ccee",
+      "equal": true
+    }
+  },
+  "configuration": {
+    "CMAKE_BUILD_TYPE": {
+      "provisional": "Debug",
+      "actual": "Debug",
+      "equal": true
+    },
+    "CMAKE_CXX_COMPILER": {
+      "provisional": "/workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang++",
+      "actual": "/workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang++",
+      "equal": true
+    },
+    "CMAKE_C_COMPILER": {
+      "provisional": "/workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang",
+      "actual": "/workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang",
+      "equal": true
+    },
+    "HERMES_SLOW_DEBUG": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_ACCESSIBILITY_BRIDGE": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_APP_STATE": {
+      "provisional": "OFF",
+      "actual": "OFF",
+      "equal": true
+    },
+    "RNQNX_ENABLE_DEV_SUPPORT": {
+      "provisional": "OFF",
+      "actual": "OFF",
+      "equal": true
+    },
+    "RNQNX_ENABLE_FRAME_TRACE": {
+      "provisional": "OFF",
+      "actual": "OFF",
+      "equal": true
+    },
+    "RNQNX_ENABLE_GESTURE_HANDLER": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_HOST_SANITIZERS": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_INPUT_LIFECYCLE": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_NITRO_QT_DISPATCHER": {
+      "provisional": "OFF",
+      "actual": "OFF",
+      "equal": true
+    },
+    "RNQNX_ENABLE_QT_EXPO_IMAGE": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_QT_GRAPHICS": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_QT_MOTION": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_QT_NATIVE_UI": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_QT_RNSVG": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_QT_SVG": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_QT_VIDEO": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_REANIMATED": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_TEXT_INPUT_CONTRACT": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_WEBSOCKETS": {
+      "provisional": "OFF",
+      "actual": "OFF",
+      "equal": true
+    },
+    "RNQNX_ENABLE_WINDOW_CHROME": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "RNQNX_ENABLE_WORKLETS": {
+      "provisional": "ON",
+      "actual": "ON",
+      "equal": true
+    },
+    "CMAKE_GENERATOR": {
+      "provisional": "Ninja",
+      "actual": "Ninja",
+      "equal": true
+    }
+  },
+  "parentGateArraysEqual": true,
+  "gatesCount": 11,
+  "gateStatuses": [
+    "pending",
+    "pending",
+    "pending",
+    "pending",
+    "pending",
+    "pending",
+    "pending",
+    "pending",
+    "pending",
+    "pending",
+    "pending"
+  ],
+  "resolution": "Native/source merge was automatic. Handoff preserves both parent sections; readiness preserves the union of parent evidence entries, with common values and all gate objects unchanged. Project state regenerated from canonical records.",
+  "scope": "Final actual-public-parent comparison. Earlier original-module control and candidate tests retain provisional ancestry."
+}

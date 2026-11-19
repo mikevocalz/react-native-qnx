@@ -1,0 +1,21 @@
+QQnxScreen: QQNX_PHYSICAL_SCREEN_SIZE variable not set. Could not determine physical screen size. Defaulting to 150x90.
+Running "RNQnxPlayground"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1119 05:50:53.457139     1 conversions.h:368] Could not parse yoga::PositionType: left
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=0 framesDelivered=0 uiJobs=0 jsPosts=0
+W1119 05:50:55.171309     1 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 5501c072a8).
+W1119 05:50:55.174774     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 5501c80568).
+W1119 05:50:55.175065     8 UIManager.cpp:57] UIManager::~UIManager() was called (address: 5501c20258).
+RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=1024x768 mode=native-moved
+RNQNX_PLAYGROUND_SCREENSHOT /tmp/pr149-shot.png 1024x768
+QQnxScreen: QQNX_PHYSICAL_SCREEN_SIZE variable not set. Could not determine physical screen size. Defaulting to 150x90.
+Running "RNQnxPlayground"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1119 05:51:27.171746     1 conversions.h:368] Could not parse yoga::PositionType: left
+RNQNX_JS_LOG [gui] IMAGE-PROOF load {"count":1,"view":20,"sourceWidth":1024,"sourceHeight":1024,"cache":"none"}
+RNQNX_JS_LOG [gui] reanimated UI frames: 6534, shared x: 219.98725512191317, runtime kind: 1
+RNQNX_JS_LOG [gui] JS thread role: gui
+RNQNX_JS_LOG [gui] worklet thread role: ui-worklet
+RNQNX_JS_LOG [gui] frames 30 in 459 ms, worst gap 23 ms, role ui-worklet, stats {"requested":11162,"delivered":11161,"signalled":12672,"uiJobs":0}
+RNQNX_JS_LOG [gui] JS busy 300 ms: 0 of 40 UI worklet jobs ran inside the busy window
+RNQNX_JS_LOG [gui] PROOF-COMPLETE

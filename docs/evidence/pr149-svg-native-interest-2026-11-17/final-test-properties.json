@@ -1,0 +1,99 @@
+{
+  "backtraceGraph": {
+    "commands": ["add_test", "rnqnx_add_worklets_host_tests"],
+    "files": [
+      "/workspace/scratch/252a22fac759/rnqnx-pr149/cmake/RnqnxWorkletsHostTests.cmake",
+      "/workspace/scratch/252a22fac759/rnqnx-pr149/CMakeLists.txt"
+    ],
+    "nodes": [
+      {
+        "file": 1
+      },
+      {
+        "command": 1,
+        "file": 1,
+        "line": 475,
+        "parent": 0
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 46,
+        "parent": 1
+      },
+      {
+        "file": 1
+      },
+      {
+        "command": 1,
+        "file": 1,
+        "line": 475,
+        "parent": 3
+      },
+      {
+        "command": 0,
+        "file": 0,
+        "line": 48,
+        "parent": 4
+      }
+    ]
+  },
+  "kind": "ctestInfo",
+  "tests": [
+    {
+      "backtrace": 2,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_worklets_integration_host_test",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_worklets_integration_host_test",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": [
+            "QT_QUICK_BACKEND=software",
+            "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1",
+            "RNQNX_WORKLETS_EVIDENCE_DIR=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/evidence/worklets-integration"
+          ]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 60.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    },
+    {
+      "backtrace": 5,
+      "command": [
+        "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/bin/rnqnx_worklets_integration_host_test",
+        "--omit-worklets",
+        "-platform",
+        "offscreen"
+      ],
+      "name": "rnqnx_worklets_rejects_missing_bootstrap",
+      "properties": [
+        {
+          "name": "ENVIRONMENT",
+          "value": ["QT_QUICK_BACKEND=software", "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1"]
+        },
+        {
+          "name": "TIMEOUT",
+          "value": 60.0
+        },
+        {
+          "name": "WORKING_DIRECTORY",
+          "value": "/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 1,
+    "minor": 0
+  }
+}

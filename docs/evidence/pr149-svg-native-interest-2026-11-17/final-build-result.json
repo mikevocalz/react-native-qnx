@@ -1,0 +1,17 @@
+{
+  "command": [
+    "cmake",
+    "--build",
+    "build/linux-host-renderer",
+    "--target",
+    "rnqnx_worklets_integration_host_test",
+    "--parallel",
+    "3"
+  ],
+  "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr149",
+  "startedAtUtc": "2026-11-17T06:28:39.954824+00:00",
+  "finishedAtUtc": "2026-11-17T06:29:52.499937+00:00",
+  "elapsedSeconds": 72.545,
+  "exitCode": 0,
+  "sourceComparison": "final-source-comparison.json"
+}

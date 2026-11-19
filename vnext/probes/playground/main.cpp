@@ -15,6 +15,15 @@
 #include "react-native-qnx/fabric/QtQuickMountingLayer.h"
 #include "react-native-qnx/fabric/ShadowViewMutationAdapter.h"
 #include "react-native-qnx/runtime/QtReactHost.h"
+#if RNQNX_ENABLE_WORKLETS
+#include "react-native-qnx/worklets/QtWorkletsPlatform.h"
+#endif
+#if RNQNX_ENABLE_REANIMATED
+#include "react-native-qnx/reanimated/QtReanimatedPlatform.h"
+#endif
+#if RNQNX_ENABLE_GESTURE_HANDLER
+#include "react-native-qnx/gesture/QtGesturePlatform.h"
+#endif
 #include "react-native-qnx/runtime/ApplicationIdentity.h"
 #include "react-native-qnx/runtime/ApplicationIcon.h"
 #ifdef RNQNX_CONSUMER_APP_HEADER
@@ -744,6 +753,10 @@ int main(int argc, char** argv) {
   adapter.setTouchDispatcher(&touchDispatcher);
   window.installEventFilter(&touchDispatcher);
 #endif
+#if RNQNX_ENABLE_GESTURE_HANDLER
+  // Fabric descriptors must exist before the first host builds its registry.
+  rnqnx::gesture::registerComponents();
+#endif
 #if RNQNX_ENABLE_FRAME_TRACE
   std::shared_ptr<rnqnx::runtime::RuntimeTrace> trace;
   if (parser.isSet(traceOption)) trace = std::make_shared<rnqnx::runtime::RuntimeTrace>(16384);
@@ -840,6 +853,21 @@ int main(int argc, char** argv) {
 #else
   rnqnx::runtime::QtReactHost host(adapter);
 #endif
+  // A reload creates a new host. Keep this boundary explicit as well: only
+  // reports from this application attempt can reject its startup or capture.
+  const auto firstErrorReport = host.javaScriptErrors().size();
+  const auto applicationFailure = [&host, firstErrorReport]() -> QString {
+    if (!host.lastError().isEmpty()) return host.lastError();
+    const auto& reports = host.javaScriptErrors();
+    for (auto i = firstErrorReport; i < reports.size(); ++i) {
+      if (reports[i].isFatal) {
+        return reports[i].message.empty()
+            ? QStringLiteral("JavaScript reported a fatal error")
+            : QString::fromStdString(reports[i].message);
+      }
+    }
+    return {};
+  };
 #if RNQNX_ENABLE_INPUT_LIFECYCLE
   host.delegate().setTouchDispatcher(&touchDispatcher);
 #endif
@@ -875,21 +903,34 @@ int main(int argc, char** argv) {
   rnqnx::consumer::installExpoModules(host.runtime(), false);
 #endif
 #endif
+#if RNQNX_ENABLE_WORKLETS
+  // react-native-worklets: a UI-worklet thread, its frame callbacks and the
+  // WorkletsModule TurboModule. The host stops them before Hermes goes away.
+  const auto worklets = rnqnx::worklets::QtWorkletsPlatform::install(host, &window);
+#if RNQNX_ENABLE_REANIMATED
+  rnqnx::reanimated::installReanimated(host, worklets);
+#endif
+#if RNQNX_ENABLE_GESTURE_HANDLER
+  rnqnx::gesture::QtGesturePlatform::install(host, adapter, layer, window, worklets);
+#endif
+#endif
   host.installTurboModuleBinding();
   host.installComponentProvider();
   host.installPlatformConstants();
   host.installTimers();
 
-  if (!host.evaluate(bundle.toStdString(), bundlePath.toStdString())) {
+  const bool evaluated = host.evaluate(bundle.toStdString(), bundlePath.toStdString());
+  const auto bundleFailure = applicationFailure();
+  if (!evaluated || !bundleFailure.isEmpty()) {
     std::fprintf(
         stderr,
-        "Bundle failed to evaluate: %s\n",
-        host.lastError().toUtf8().constData());
+        "RNQNX_PLAYGROUND_BUNDLE_FAILED %s\n",
+        bundleFailure.toUtf8().constData());
 #if RNQNX_ENABLE_DEV_SUPPORT
     if (dev && !parser.isSet(screenshotOption)) {
       // Keep the window: show the error and wait for a fix and a reload.
       dev->showError(QStringLiteral("The JavaScript bundle threw while loading"),
-                     host.lastError());
+                     bundleFailure);
       return quitByLaunch ? 0 : runApplicationLoop();
     }
 #endif
@@ -913,6 +954,16 @@ int main(int argc, char** argv) {
       static_cast<float>(surfaceSize.height()));
   host.setWindowSize(static_cast<float>(surfaceSize.width()), static_cast<float>(surfaceSize.height()),
                      static_cast<float>(window.devicePixelRatio()));
+  if (const auto failure = applicationFailure(); !failure.isEmpty()) {
+    std::fprintf(stderr, "RNQNX_PLAYGROUND_RENDER_FAILED %s\n", failure.toUtf8().constData());
+#if RNQNX_ENABLE_DEV_SUPPORT
+    if (dev && !parser.isSet(screenshotOption)) {
+      dev->showError(QStringLiteral("The JavaScript application failed to start"), failure);
+      return quitByLaunch ? 0 : runApplicationLoop();
+    }
+#endif
+    return 1;
+  }
 
 #if RNQNX_ENABLE_DEV_SUPPORT
   // Fast Refresh: what AppDelegate/ReactHost do on iOS and Android after the
@@ -1009,11 +1060,11 @@ int main(int argc, char** argv) {
       host.runtime().drainMicrotasks();
       host.pumpEvents();
     }
-    if (!host.lastError().isEmpty()) {
+    if (const auto failure = applicationFailure(); !failure.isEmpty()) {
       std::fprintf(
           stderr,
           "RNQNX_PLAYGROUND_RENDER_FAILED %s\n",
-          host.lastError().toUtf8().constData());
+          failure.toUtf8().constData());
       return 1;
     }
     const QImage frame = window.grabWindow();
@@ -1026,11 +1077,11 @@ int main(int argc, char** argv) {
     }
     // grabWindow and surface cleanup can process events. A valid Qt image
     // cannot turn a failed application or failed cleanup into a passing trial.
-    if (!host.lastError().isEmpty()) {
+    if (const auto failure = applicationFailure(); !failure.isEmpty()) {
       std::fprintf(
           stderr,
           "RNQNX_PLAYGROUND_RENDER_FAILED %s\n",
-          host.lastError().toUtf8().constData());
+          failure.toUtf8().constData());
       return 1;
     }
     if (frame.isNull() || !frame.save(parser.value(screenshotOption))) {

@@ -1,0 +1,32 @@
+[
+  {
+    "object": "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/filters/FilterOp.cpp.o",
+    "enum_headers": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/filters/FilterOp.h"
+    ]
+  },
+  {
+    "object": "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/filters/FilterOperation.cpp.o",
+    "enum_headers": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/filters/FilterOp.h"
+    ]
+  },
+  {
+    "object": "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/filters/FilterStyleInterpolator.cpp.o",
+    "enum_headers": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/filters/FilterOp.h"
+    ]
+  },
+  {
+    "object": "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/filters/FilterOperationInterpolator.cpp.o",
+    "enum_headers": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/filters/FilterOp.h"
+    ]
+  },
+  {
+    "object": "CMakeFiles/rnqnx_reanimated.dir/node_modules/.pnpm/react-native-reanimated@4.7.1_react-native-worklets@0.13.1_@babel+core@7.29.7_supports-_af7582976fceafb06045d4b92b2151d1/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/common/transforms/TransformOp.cpp.o",
+    "enum_headers": [
+      "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/generated/reanimated/patched/reanimated/CSS/common/transforms/TransformOp.h"
+    ]
+  }
+]

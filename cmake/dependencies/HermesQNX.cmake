@@ -43,10 +43,11 @@ endif()
 set(_hermes_include "${RNQNX_HERMES_QNX_SOURCE_DIR}/API")
 set(_hermes_public_include "${RNQNX_HERMES_QNX_SOURCE_DIR}/public")
 set(_jsi_include "${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi")
-# Release apps run precompiled bytecode on the lean VM. The development client
-# evaluates Metro's JavaScript and every Fast Refresh update, which needs the
-# VM with the compiler (build target hermesvm in the same Hermes build tree).
-if(RNQNX_ENABLE_DEV_SUPPORT)
+# Ordinary release apps run bytecode on the lean VM. Development clients
+# evaluate Metro source; Worklets also evaluates serialized functions in its
+# secondary runtime, including in a release app. Both need the compiler VM
+# (build target hermesvm), never a full VM renamed as the lean library.
+if(RNQNX_ENABLE_DEV_SUPPORT OR RNQNX_ENABLE_WORKLETS)
   set(_hermes_so "${RNQNX_HERMES_QNX_DIR}/lib/libhermesvm.so")
 else()
   set(_hermes_so "${RNQNX_HERMES_QNX_DIR}/lib/libhermesvmlean.so")

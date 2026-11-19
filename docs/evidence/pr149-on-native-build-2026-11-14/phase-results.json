@@ -1,0 +1,75 @@
+{
+  "source_commit": "4d13330ccc18438d4e7a3c38128886feaa6525ca",
+  "source_tree": "2f9479e2b37c8d6fec673d2d6316c641f2044e6b",
+  "native_parallel": 4,
+  "autogen_parallel": 2,
+  "tests_changed": false,
+  "phases": [
+    {
+      "name": "frozen-dependencies",
+      "exit_code": 0,
+      "log": "dependency-install.log"
+    },
+    {
+      "name": "configure-on",
+      "exit_code": 0,
+      "log": "configure.log"
+    },
+    {
+      "name": "real-metro-bundle",
+      "exit_code": 0,
+      "log": "metro-build.log"
+    },
+    {
+      "name": "original-on-compile",
+      "exit_code": 1,
+      "log": "build.log",
+      "observed_failure": "Worklets EventLoop missing algorithm"
+    },
+    {
+      "name": "event-loop-fixed-compile",
+      "exit_code": 1,
+      "log": "build-worklets-algorithm.log",
+      "observed_failure": "Worklets JSISerializer missing algorithm"
+    },
+    {
+      "name": "two-algorithm-fixes-compile",
+      "exit_code": 1,
+      "log": "build-worklets-algorithms.log",
+      "observed_failure": "WorkletsJSIUtils missing iterator"
+    },
+    {
+      "name": "worklets-headers-fixed-compile",
+      "exit_code": 1,
+      "log": "build-worklets-headers.log",
+      "observed_failure": "Reanimated FilterOp missing type/exception headers"
+    },
+    {
+      "name": "keep-going-compile",
+      "exit_code": 1,
+      "log": "build-upstream-headers.log",
+      "observed_failure": "TransformOp type/exception headers, vectors math header, FilterOp shared header consumers"
+    },
+    {
+      "name": "all-header-fixes-compile",
+      "exit_code": 0,
+      "log": "build-final-headers.log"
+    },
+    {
+      "name": "host-test",
+      "exit_code": 0,
+      "log": "host-test.log",
+      "case_count": 60,
+      "ctest_target_count": 1,
+      "skips_reported": 0,
+      "seconds": 68.0
+    },
+    {
+      "name": "enum-consumer-dependency-refresh",
+      "exit_code": 0,
+      "log": "build-enum-dependency-refresh.log",
+      "recompiled_objects": 15,
+      "tested_executable_hash_unchanged": true
+    }
+  ]
+}

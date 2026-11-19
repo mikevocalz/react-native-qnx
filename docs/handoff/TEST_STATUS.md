@@ -1,5 +1,18 @@
 # TEST_STATUS.md
 
+## PR 149 shutdown follow-up — 2026-11-14
+
+The GCC 14.2/Qt 6.11.1 standalone shutdown suite passes six lifecycle cases under scoped ASan/UBSan (8 QtTest entries); three deterministic controls fail with the original production source. The Clang 19.1.7/Qt 6.11.1 integrated ON build compiles all three optional static libraries and passes 60 QtReactHost cases in 68.00 seconds. A final header-dependency audit finds no stale enum-header dependencies, and the tested host executable is unchanged after archive refresh. Only the host test executable is ASan-instrumented in that integrated run; no whole-graph or UBSan claim is made. The gallery layout regression fails before its fixture correction and passes afterward; ten affected suites also pass in one shared process. Frozen install, type/dependency/docs checks and production Metro bundling pass. Final-head hosted OFF/ON checks and target acceptance remain separate requirements.
+[Shutdown and integration receipt](../validation/pr149-shutdown-2026-11-14.md); [native ON build receipt](../validation/pr149-on-native-build-2026-11-14.md).
+
+## PR 149 frame/mount continuation — 2026-11-13
+
+Transformed Worklets output, public exports, typecheck and sixteen recognizer/binding cases under ASan/UBSan pass. The new mount-hook observer passes and fails with reporting disabled. QNX cross-build and scoped Pi timing/spring/pan checks passed. The transplanted full-host executable still has one pixel failure; no full-host green claim.
+The Hermes importer now selects the real compiler VM for opt-in Worklets;
+configuration/error regressions, real-root cross-build and a lean-file-free
+Pi frame probe passed. The importer review reported zero findings.
+[Receipt and limits](../validation/pr149-frame-mount-2026-11-13.md).
+
 ## PR 159 review follow-up — 2026-11-14
 
 Image source 252b128 passes corrected Release 6/6 CTests with 126 QtTest entries and fresh image ASan/UBSan 3/3 with 73 entries. Full-host source b6bf7eb passes 59 cases, the five-file original-source control passes 57 and fails 2 as intended, and restored source passes 59 again with an identical executable hash. Seven targeted/ordered JS suites, fresh dual consumer bundles, standalone HTTP/cache and 25 staging fixtures pass at their recorded source scopes. Full JS remains blocked by the environment AF_UNIX EPERM; hosted ON/OFF and target gates remain pending.

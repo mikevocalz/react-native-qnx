@@ -1,0 +1,23 @@
+Final scoped checks, 2026-11-17 UTC
+
+cmake --build build/linux-host-renderer --target rnqnx_worklets_integration_host_test --parallel 3
+PASS: exit 0, 72.545s; final-build-result.json.
+
+ctest --test-dir build/linux-host-renderer --no-tests=error --output-on-failure --parallel 1 --output-junit <final-ctest.xml absolute path> -R '^rnqnx_worklets_(integration_host_test|rejects_missing_bootstrap)$'
+PASS: 2/2, 20.10s (17.85s integration; 2.25s missing-bootstrap), final-ctest-result.json.
+
+pnpm docs:sync
+PASS: 24 components, 11 unchanged pending release gates; final-docs-sync.log.
+
+pnpm validate:docs
+PASS; final-docs-check.log.
+
+pnpm format:check
+PASS: full repository; final-format-check.log. Evidence JSON formatting preserves values; raw logs, patches, JUnit and PNGs preserve bytes.
+
+Source/provenance integrity
+PASS: 26 source hashes, 3 pin/build-input hashes, 25 configuration fields, 130 imported evidence files, all parent metadata/handoff sections, and all 11 complete gate objects. See final-integrity.json and evidence-copy-identities.json.
+
+Scoped staged whitespace check
+Command: git diff --cached --check -- . ':(exclude)docs/evidence/**'
+Raw imported and new evidence retains original bytes; source and canonical metadata are checked. Result follows in final-diff-check.log.

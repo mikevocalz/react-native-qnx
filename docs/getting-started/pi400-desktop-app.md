@@ -483,7 +483,14 @@ sudo rnqnx-inject drag 900 160 1000 260 12      # title bar drag
 sudo rnqnx-inject move 900 600 wheel 3           # wheel, 3 notches down
 sudo rnqnx-inject dclick 960 22                  # double click
 sudo rnqnx-inject mods 4 keydown alt key tab sleep 800 mods 0 keyup alt
+sudo rnqnx-inject keyhold down 2500              # hold Down 2.5 s with auto-repeat
 ```
+
+`keydown ... sleep ... keyup` sends one press and one release, so an app sees
+no auto-repeat. `keyhold KEY MS [HZ]` sends the press, waits 500 ms, then sends
+repeat presses (`SCREEN_FLAG_KEY_DOWN | SCREEN_FLAG_KEY_REPEAT`) at HZ per
+second (default 30, up to 120), and releases at MS (up to 30000). Qt's QNX
+plugin reports those events as auto-repeat key presses.
 
 Coordinates are display pixels. Two details matter, and a first injector that
 missed them never reached an app window:

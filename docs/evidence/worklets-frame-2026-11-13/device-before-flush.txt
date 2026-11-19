@@ -1,0 +1,24 @@
+84043a162d9eb826180ba2eb30b556194a0eece8895ba43c224d596d16b48e0c  /data/home/qnxuser/rnqnx-anim-frame-fix/org.rnqnx.showcase
+de98d3fcd86386be86419157f8163c42b6f08dcd78b1b4973e712bf51ff3b184  /data/home/qnxuser/rnqnx-anim-frame-fix/app.bundle.js
+Running "RNQnxPlayground"
+qt.qml.context: qrc:/react-native-qnx/ViewManagerAdapter_ExpoImage.qml:83:9 Parameter "progress" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+[RemoteImageCard] loaded https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 in 654 ms
+[RemoteImageCard] Image.getSize https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=640&q=80 = 640x427
+RNQNX_JS_LOG [gui] JS thread role: gui
+RNQNX_JS_LOG [gui] worklet thread role: ui-worklet
+RNQNX_JS_LOG [gui] frames 30 in 465 ms, worst gap 18 ms, role ui-worklet, stats {"requested":3198,"delivered":3197,"signalled":5150,"uiJobs":0}
+RNQNX_JS_LOG [gui] JS busy 300 ms: 0 of 40 UI worklet jobs ran inside the busy window
+RNQNX_JS_LOG [gui] PROOF-COMPLETE
+RNQNX_JS_LOG [gui] reanimated UI frames: 9580
+RNQNX_JS_LOG [gui] JS thread role: gui
+RNQNX_JS_LOG [gui] worklet thread role: ui-worklet
+RNQNX_JS_LOG [gui] frames 30 in 472 ms, worst gap 17 ms, role ui-worklet, stats {"requested":9653,"delivered":9652,"signalled":11612,"uiJobs":0}
+RNQNX_JS_LOG [gui] JS busy 300 ms: 0 of 40 UI worklet jobs ran inside the busy window
+RNQNX_JS_LOG [gui] PROOF-COMPLETE
+RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=1280x800 mode=native-moved
+RNQNX_WINDOW_ACTION quit
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=24570 framesDelivered=24569 uiJobs=0 jsPosts=85
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1113 23:16:15.576352     1 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 2cb88026b8).
+W1113 23:16:15.585142     8 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 2cb887b978).
+INPUT_OK

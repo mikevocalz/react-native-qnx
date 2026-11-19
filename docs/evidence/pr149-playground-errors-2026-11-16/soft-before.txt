@@ -1,0 +1,22 @@
+exit=0
+stdout:
+Error: RNQNX_TEST_REPORTED_SOFT_ERROR
+RNQNX_TEST_CAUGHT_ERROR_CONTINUED
+RNQNX_TEST_BENIGN_WARNING
+Running "RNQnxPlayground"
+RNQNX_TEST_ERROR_CONTROL_MOUNTED
+RNQNX_PLAYGROUND_SCREENSHOT /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/playground-soft-before.png 640x480
+
+stderr:
+[js error] Error: RNQNX_TEST_REPORTED_SOFT_ERROR 
+   at anonymous (/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-soft.bundle.js:5)
+  at h (/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-soft.bundle.js:2)
+  at d (/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-soft.bundle.js:2)
+  at i (/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-soft.bundle.js:2)
+  at global (/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/rnqnx-error-control-soft.bundle.js:529)
+
+RNQNX_WORKLETS_SHUTDOWN_OK framesRequested=0 framesDelivered=0 uiJobs=0 jsPosts=0
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 21:57:08.174791 4127101440 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x56307a9f4030).
+W1116 21:57:08.177983 4081055424 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x56307aa0fba0).
+W1116 21:57:08.178189 4081055424 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x56307a93bf30).

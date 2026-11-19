@@ -1,0 +1,29 @@
+{
+  "publishedFailingHead": "11ff6f2d2f6215b6235ddd541d3091a1a7c0c932",
+  "localBaselineCommit": "2f3f208e2d925b42ec8b3ce2e60f7db725bd67c0",
+  "failingWorkflowRuns": [
+    43619370040, 43619369996, 43619369967, 43619370208, 43619370276, 43619370141
+  ],
+  "failure": "TypeError: Cannot read properties of undefined (reading get), nativeWorkletsAvailable in apps/component-gallery/motion/lazyCard.js, reached through qnx-gallery-yoga-layout.test.mjs:203",
+  "correction": "Add the nullable TurboModuleRegistry.get API only to the gallery layout host, returning null because this host provides no native modules.",
+  "baseline": {
+    "command": "node tests/js/qnx-gallery-yoga-layout.test.mjs",
+    "exit": 1,
+    "log": "baseline.log"
+  },
+  "candidate": {
+    "command": "node tests/js/qnx-gallery-yoga-layout.test.mjs",
+    "exit": 0,
+    "log": "candidate.log"
+  },
+  "orderedFocusedSuites": {
+    "selector": "Sorted .test.mjs names matching ^(expo-router-qnx|qnx-router-|qnx-gallery-|worklets-frame-probe), imported in one Node process",
+    "count": 10,
+    "exit": 0,
+    "log": "shared-order.log"
+  },
+  "candidateFixtureSha256": "ebe8c049ce214a5a323cbb4b4762201f7a3733716684d25a33263104f7de36b1",
+  "unchangedGalleryTestSha256": "de8a65a6ee8f10f4ee505a321fa0ffdefa348d28459014e8da6e65631a1d491d",
+  "review": "Independent SVG reviewer verified the installed RN nullable lookup contract; no blocker.",
+  "scope": "Production capability detection, all layout assertions, the shared router stand-in and native source remain unchanged. This focused run does not qualify the complete JS runner; the environment denies AF_UNIX socket creation needed by its earlier Wayland fixture."
+}

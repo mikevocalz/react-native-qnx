@@ -120,6 +120,8 @@ Image.resolveAssetSource = () => ({ uri: 'file:///asset' });
 
 const named = {
   ...base,
+  // This layout host has no native modules; preserve RN's nullable lookup API.
+  TurboModuleRegistry: { get: () => null },
   Animated: {
     ...base.Animated,
     createAnimatedComponent: (/** @type {any} */ C) => C,
