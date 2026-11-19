@@ -1,0 +1,6 @@
+candidate-test exit=0 passed=59 failed=[]
+baseline-build exit=0 passed=0 failed=[]
+baseline-test exit=8 passed=57 failed=['imageLoadedForwardingDoesNotRequireLoaderLookup', 'retainedSourceCodeTracksSubsequentEvaluations']
+restored-candidate-build exit=0 passed=0 failed=[]
+restored-candidate-test exit=0 passed=59 failed=[]
+Candidate, expected baseline failures, and restored candidate verified.

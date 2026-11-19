@@ -1,0 +1,14 @@
+********* Start testing of ExpoImageItemTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ExpoImageItemTest::initTestCase()
+FAIL!  : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses(direct) Compared values are not the same
+   Actual   (paused->grabImage().pixelColor(20, 20)): #00000000
+   Expected (QColor(Qt::red))                       : #ffff0000
+   Loc: [/workspace/scratch/853552216e74/pr159/tests/native/qt-native-ui/ExpoImageItemTest.cpp(514)]
+FAIL!  : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses(prefetched-memory) Compared values are not the same
+   Actual   (paused->grabImage().pixelColor(20, 20)): #00000000
+   Expected (QColor(Qt::red))                       : #ffff0000
+   Loc: [/workspace/scratch/853552216e74/pr159/tests/native/qt-native-ui/ExpoImageItemTest.cpp(514)]
+PASS   : ExpoImageItemTest::cleanupTestCase()
+Totals: 2 passed, 2 failed, 0 skipped, 0 blacklisted, 115ms
+********* Finished testing of ExpoImageItemTest *********

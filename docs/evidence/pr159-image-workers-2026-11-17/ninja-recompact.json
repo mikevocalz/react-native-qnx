@@ -1,0 +1,22 @@
+{
+  "version": "Ninja 1.13.2",
+  "malformed_offset": 663504,
+  "expected_path_id": 2328,
+  "recorded_path_id": 2323,
+  "before": {
+    "inode": 1059179,
+    "size": 663544,
+    "mtime_ns": 1794884996523248460,
+    "sha256": "d3d2e0b8ceb7f0f0637b2e9a1497d2c16f8ec978eb42e643dc4fa65f477161f9"
+  },
+  "visible_active_build_processes": [],
+  "after": {
+    "inode": 1058424,
+    "size": 663504,
+    "mtime_ns": 1794885126234582766,
+    "sha256": "ffe49e435c3ad942ab9b842f6c3ffcab624f0d21af2a4ed3d026fdcfee247b9f",
+    "paths": 2328,
+    "dependency_records": 289,
+    "valid_bytes": 663504
+  }
+}

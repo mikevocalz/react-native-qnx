@@ -13,6 +13,8 @@ const SELECTED = '#1b5b61';
 
 const SOURCES = [
   { id: 'local', label: 'Local file', source: require('./assets/icon.png') },
+  { id: 'gif', label: 'Animated GIF', source: require('./assets/anim.gif') },
+  { id: 'webp', label: 'Animated WebP', source: require('./assets/anim.webp') },
   {
     id: 'url',
     label: 'URL',

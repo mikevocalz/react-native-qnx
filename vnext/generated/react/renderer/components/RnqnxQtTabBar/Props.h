@@ -120,6 +120,9 @@ class RNQnxTabBarProps final : public ViewProps {
   std::string activeKey{};
   RNQnxTabBarLayout layout{RNQnxTabBarLayout::Auto};
   double sideBreakpoint{700.0};
+  std::string position{};
+  bool showLabel{true};
+  bool rtl{false};
   double railWidth{88.0};
   double barHeight{60.0};
   double availableWidth{0.0};

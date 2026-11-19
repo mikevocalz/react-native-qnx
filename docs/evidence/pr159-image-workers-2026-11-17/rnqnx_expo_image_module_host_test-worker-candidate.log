@@ -1,0 +1,5 @@
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1116 22:25:28.747088 152343104 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000004810).
+W1116 22:25:28.747545 14595776 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000133d0).
+W1116 22:25:28.747603 14595776 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000004850).
+RNQNX_EXPO_IMAGE_MODULE_OK surface prefetch caches loadAsync hashes cache-io configure view-commands

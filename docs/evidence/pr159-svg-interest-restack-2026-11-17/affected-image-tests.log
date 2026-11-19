@@ -1,0 +1,10 @@
+Internal ctest changing into directory: /workspace/scratch/252a22fac759/rnqnx-pr159/build/linux-host-renderer
+Test project /workspace/scratch/252a22fac759/rnqnx-pr159/build/linux-host-renderer
+    Start 10: rnqnx_expo_image_module_host_test
+1/2 Test #10: rnqnx_expo_image_module_host_test ...   Passed    0.78 sec
+    Start 11: rnqnx_expo_image_fabric_host_test
+2/2 Test #11: rnqnx_expo_image_fabric_host_test ...   Passed    0.62 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =   1.42 sec

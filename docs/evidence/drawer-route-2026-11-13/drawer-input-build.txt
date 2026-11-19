@@ -1,0 +1,9 @@
+[0/2] Re-checking globbed directories...
+[1/12] Automatic MOC for target rnqnx_views_qt
+[2/11] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtExtraItems.cpp.o
+[3/11] Linking CXX static library librnqnx_views_qt.a
+[4/11] Automatic MOC for target rnqnx_fabric_adapter
+[5/10] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtTouchDispatcher.cpp.o
+[6/10] Linking CXX static library librnqnx_fabric_adapter.a
+[7/10] Automatic MOC for target rnqnx_react_host
+[8/8] Linking CXX executable consumer/qnx/org.rnqnx.showcase/org.rnqnx.showcase

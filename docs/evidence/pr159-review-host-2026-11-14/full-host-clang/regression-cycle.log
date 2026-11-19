@@ -1,0 +1,9 @@
+candidate-test exit=8 passed=13 failed=['imageLoadedForwardingDoesNotRequireLoaderLookup']
+Traceback (most recent call last):
+  File "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/run-regression-controls.py", line 107, in <module>
+    require_candidate_cases(execute('candidate-test', TEST_COMMAND))
+  File "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/run-regression-controls.py", line 76, in require_candidate_cases
+    require_success(record)
+  File "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/run-regression-controls.py", line 72, in require_success
+    raise RuntimeError('Phase failed: ' + record['phase'])
+RuntimeError: Phase failed: candidate-test

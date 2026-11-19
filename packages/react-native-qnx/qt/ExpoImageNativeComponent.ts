@@ -1,5 +1,6 @@
-import type { CodegenTypes, ColorValue, ViewProps } from 'react-native';
-import { codegenNativeComponent } from 'react-native';
+import type { CodegenTypes, ColorValue, HostComponent, ViewProps } from 'react-native';
+import { codegenNativeCommands, codegenNativeComponent } from 'react-native';
+import type * as React from 'react';
 
 type LoadStartEvent = Readonly<{ started: boolean }>;
 type ProgressEvent = Readonly<{ loaded: CodegenTypes.Double; total: CodegenTypes.Double }>;
@@ -21,6 +22,9 @@ interface NativeProps extends ViewProps {
   /** expo-image's resolved source array: [{ uri, width, height, headers, cacheKey, ... }]. */
   source?: CodegenTypes.UnsafeMixed;
   placeholder?: CodegenTypes.UnsafeMixed;
+  /** How the placeholder fits the view; expo-image's default is `scale-down`. */
+  placeholderContentFit?: string;
+  responsivePolicy?: string;
   contentFit?: string;
   contentPosition?: CodegenTypes.UnsafeMixed;
   transition?: CodegenTypes.UnsafeMixed;
@@ -39,4 +43,30 @@ interface NativeProps extends ViewProps {
   onDisplay?: CodegenTypes.DirectEventHandler<DisplayEvent>;
 }
 
-export default codegenNativeComponent<NativeProps>('ViewManagerAdapter_ExpoImage');
+type NativeType = HostComponent<NativeProps>;
+
+/**
+ * What expo-image calls on a view ref. `startAnimating` and `stopAnimating`
+ * play or pause an animated image; `lockResource` and `unlockResource` hold or
+ * release the loaded picture against `source` changes; `reload` loads the
+ * source again and ignores the lock.
+ */
+interface NativeCommands {
+  readonly startAnimating: (viewRef: React.ElementRef<NativeType>) => void;
+  readonly stopAnimating: (viewRef: React.ElementRef<NativeType>) => void;
+  readonly lockResource: (viewRef: React.ElementRef<NativeType>) => void;
+  readonly unlockResource: (viewRef: React.ElementRef<NativeType>) => void;
+  readonly reload: (viewRef: React.ElementRef<NativeType>) => void;
+}
+
+export const Commands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: [
+    'startAnimating',
+    'stopAnimating',
+    'lockResource',
+    'unlockResource',
+    'reload',
+  ],
+});
+
+export default codegenNativeComponent<NativeProps>('ViewManagerAdapter_ExpoImage') as NativeType;

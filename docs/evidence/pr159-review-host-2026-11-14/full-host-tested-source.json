@@ -1,0 +1,238 @@
+{
+  "validationCommit": "b6bf7eb6b37827a592a4547fb4ac7137557f463f",
+  "validationTree": "d2f56c2d54de785744c76d8f1a69a87e14d53edf",
+  "imageValidationCommit": "252b128d0bbb93357dd87f840ea81d31a08c5ef1",
+  "mergedConsumerCommit": "3b24f5c2fd3733dbf1ebe77729f7014242db7db3",
+  "localMergeCommit": "d92312784c80e79d1e7df8aa2e29dd51b2a99b10",
+  "purpose": "Identify the corrected full-host source. The standalone consumer merge retains identical source trees. Earlier image results remain scoped to the separate 252b128 inventory.",
+  "sourceTrees": {
+    "apps": "129de878dd61ccbdecefdca26c1186457a0f8c5e",
+    "native": "572c82c66341102f001a26922b752844c424ab49",
+    "packages": "e2e1bc375743f984920db9412430f2e1d30e7e1a",
+    "scripts": "9b3da92abaffb10992205271146f5a6ed2421e75",
+    "tests": "b88ce0be73866f82e1056d965c84f2b5262948b1",
+    "vnext": "7261655f85930c327c6881a2291f22bd439feacb"
+  },
+  "files": {
+    "AGENTS.md": {
+      "sha256": "6a65ec0cecb37a3f560ed694a2dcfc35b751ab986ea51d4b4b15b5dc5a144544",
+      "bytes": 7799
+    },
+    "CMakeLists.txt": {
+      "sha256": "b02d2f68439efb6e5787e5698b840b33508dd2f31b2f392d35bd8f9a5bfdcf89",
+      "bytes": 26117
+    },
+    "CMakePresets.json": {
+      "sha256": "7302769490165935654c6f77b64ce4dfc511549b2621abc84f1fed4262ecbd73",
+      "bytes": 8027
+    },
+    "apps/component-gallery/README.md": {
+      "sha256": "ef171dc9d5566e7dc4923312ceafc8b187c1402b9d1df6501b0f6b710b6cdee6",
+      "bytes": 4980
+    },
+    "native/qt/rnsvg/RnsvgItems.cpp": {
+      "sha256": "5e6365a40aefdce247be62caf8184d69eb203428d5236b8992b2bd16a9bd1970",
+      "bytes": 8755
+    },
+    "native/qt/rnsvg/scene/Bounds.cpp": {
+      "sha256": "aaaee304d46b8a30a7dd84543127d0eb33ba837d4dfc559473be43fff5483e43",
+      "bytes": 5602
+    },
+    "package.json": {
+      "sha256": "b14f2885d202c7562b12721d444a3c66e9ceae4e0d6a44fd9208e30e1aa15895",
+      "bytes": 4240
+    },
+    "packages/expo-router-qnx/src/BottomTabBar.js": {
+      "sha256": "b721e3d5f7fe225a4710f265f7d0ccf7697373cfc9ec7ec539fd4a4b9aee42b3",
+      "bytes": 7587
+    },
+    "packages/expo-router-qnx/src/JsDrawer.js": {
+      "sha256": "2d69c2ea4ecd3f576978caf3e1bb98c7c591cc6300086e1134a0bcf3427ef565",
+      "bytes": 9371
+    },
+    "packages/expo-router-qnx/src/tabBarModel.js": {
+      "sha256": "27733151c9c159832e538935a7ba04a708922be355ceedd00e879d955f54a9b6",
+      "bytes": 5542
+    },
+    "packages/react-native-qnx-cli/src/bin.mjs": {
+      "sha256": "c050dfea687b88519ec0d52c476ecd587f406d7fc93c2d32024ed15489f5ed17",
+      "bytes": 4010
+    },
+    "packages/react-native-qnx-cli/src/create-project.mjs": {
+      "sha256": "de08b2d5d7ba764c42e39b430f8b87b0b2d8b36bbe823902cdd94e82ff97ed3c",
+      "bytes": 19268
+    },
+    "packages/react-native-qnx-cli/src/doctor.mjs": {
+      "sha256": "75843fa3ff0e3b39072e00de9f32cdf3d04986e08d7ad82a008c0c8b2f6af659",
+      "bytes": 19337
+    },
+    "packages/react-native-qnx-cli/src/target-runtime-doctor.mjs": {
+      "sha256": "c067f928e74d27b2b0e8d0755b414fd8fa238d4264fc898e29a33139351742cf",
+      "bytes": 11571
+    },
+    "pnpm-lock.yaml": {
+      "sha256": "edf0327a216c8963c0ffea2300c37f0b7e29d05510e7f3fb5a3a2a4ad9feea49",
+      "bytes": 279210
+    },
+    "scripts/qt-public/README.md": {
+      "sha256": "6e78083ccb11fe0c169f2eda2af545421ecc335f403f6576b45ec73cb1aa2290",
+      "bytes": 14186
+    },
+    "scripts/qt-public/stage-runtime.py": {
+      "sha256": "84edf382d2f855a29d3c0cc377e0d4023163b2de1c7c8cab190c3ffa61a3bdf0",
+      "bytes": 13169
+    },
+    "tests/cpp/QtReactHostHostTest.cpp": {
+      "sha256": "1c52a62c0243445f553bc216c63636b48f5a9639974489e54adbbea2f8462f18",
+      "bytes": 115813
+    },
+    "tests/fixtures/image-hashes/reference-vectors.json": {
+      "sha256": "c3abaedde45a9f6821860c53aae61bf05c41be410f01e90912251e6b6190a842",
+      "bytes": 42002
+    },
+    "tests/image-loader/QtImageCacheTest.cpp": {
+      "sha256": "dd1d2829b68af34a145133954f7cf0fc3824d8ed3fc51903d04dd7f4dda9ff85",
+      "bytes": 7942
+    },
+    "tests/js/qnx-project-create.test.mjs": {
+      "sha256": "c12c93ac0ba412f7e1a671ebe337755b600e4a19e860f7d9809d48bcd24313d6",
+      "bytes": 7797
+    },
+    "tests/js/qnx-public-runtime-staging.test.mjs": {
+      "sha256": "b6dc5b3ddb81f7090113d7be314d97375c3033cd053aa3efd63d2f2d87462e6c",
+      "bytes": 295
+    },
+    "tests/js/qnx-router-badge-palette.test.mjs": {
+      "sha256": "0ec2b88522f94458bf3f6b81791c456e56cfa7e7dc4843c65c2f3b10aedb8ea0",
+      "bytes": 1093
+    },
+    "tests/js/qnx-router-keyboard-space.test.mjs": {
+      "sha256": "08ee154c4b2d4885400ecfe15870ea9b456f2f73c8c9db833af61c8068d353c7",
+      "bytes": 7069
+    },
+    "tests/js/qnx-router-native-drawer.test.mjs": {
+      "sha256": "9774c9ffe3c4831989aead8bf333b1b042b36c58844c3d4e72a44bc39da9443a",
+      "bytes": 14243
+    },
+    "tests/js/qnx-router-rendering.test.mjs": {
+      "sha256": "6010a13f46835c54077cd8ca19d2a53df40067d48c1f74ecb97844caf35a31b3",
+      "bytes": 8558
+    },
+    "tests/js/qnx-target-runtime-doctor.test.mjs": {
+      "sha256": "36221c0f4b9b75613f58a2fd53c533775d08ee86dc047037f266a7de4c4c50e4",
+      "bytes": 10662
+    },
+    "tests/native/qt-native-ui/CMakeLists.txt": {
+      "sha256": "fa2b2508655a438e20be48405154a9349b351187453280033d34df52e468a6bb",
+      "bytes": 5038
+    },
+    "tests/native/qt-native-ui/ExpoImageItemTest.cpp": {
+      "sha256": "a121351b242ad1404cfac2cf458af19d1779dcb16df36f9c697d97cd268e2c99",
+      "bytes": 28197
+    },
+    "tests/native/qt-native-ui/ImageFetchQueueTest.cpp": {
+      "sha256": "0f199feb731f908a0fe023548a2bfe69b7964e018e1c09c81e59fef36efd1c25",
+      "bytes": 12063
+    },
+    "tests/native/qt-native-ui/ImageHashVectorsTest.cpp": {
+      "sha256": "ad404e8b6ed6bb7211a5c13d5bf75c6674fa5c34a2f12b20cf6a1a69e1fd68aa",
+      "bytes": 6512
+    },
+    "tests/native/qt-native-ui/ImageUnitsTest.cpp": {
+      "sha256": "08ee4078050d8e905949b145a907670567df7de779dd2d92bb1e6f54cbd30a96",
+      "bytes": 25781
+    },
+    "tests/native/qt-native-ui/ModalQuickTest.cpp": {
+      "sha256": "15a320521c4bb5cef85c6a22ee5567cf8ea646ce896bbfd59e2572748b52864f",
+      "bytes": 6628
+    },
+    "tests/native/qt-rnsvg-image-http/CMakeLists.txt": {
+      "sha256": "a1dfd2b0ea62906ecfb608c78eb1dedb8ca2a476d4fa62966a735e8d06568bed",
+      "bytes": 2229
+    },
+    "tests/native/qt-rnsvg-image-http/RnsvgImageHttpTest.cpp": {
+      "sha256": "b58b808985177a120aadb572b6002754d166d6bc34828b45676b28e9265ccfeb",
+      "bytes": 15851
+    },
+    "tests/native/qt-rnsvg/RnsvgSceneTest.cpp": {
+      "sha256": "d902bb11b0a8409ea57479f5c64fb4663eda84f61773de94ddee2122b28f3e67",
+      "bytes": 37779
+    },
+    "tests/native/qt-rnsvg/golden/filter/unit/SpatialPrimitiveTests.h": {
+      "sha256": "29347e63af684b34c63d525ccdccc2453088a0dbddf45b97ef5ab9fcca988a8d",
+      "bytes": 13313
+    },
+    "tests/python/test_qt_public_staging.py": {
+      "sha256": "29b56c4d544bfed7b821919b68e8a9a713db2dc3cff16f1c82c81f459fdbdfd3",
+      "bytes": 20521
+    },
+    "vnext/include/react-native-qnx/fabric/QtModalBridge.h": {
+      "sha256": "23f2b4dcbcbdb9c2942dfcc117b4f34db85672f3ea7ad9bc6aa410f7ee293f4f",
+      "bytes": 1563
+    },
+    "vnext/include/react-native-qnx/runtime/QnxExceptionsManager.h": {
+      "sha256": "ef9178e76f2d388e01d0411384e7d97cb4a2e10c87df5bbd60672c24cbb10e65",
+      "bytes": 3395
+    },
+    "vnext/include/react-native-qnx/runtime/QnxImageLoader.h": {
+      "sha256": "5c94114ef0c7dcf461099d03de5d8071ba2299fd4651ce074bdfa2c45b86b26b",
+      "bytes": 4654
+    },
+    "vnext/include/react-native-qnx/views/DecodedImageCache.h": {
+      "sha256": "caecaed74f8a9e1683b8d758b737a5be7732cc66ecae01ebd1f47e39018d1859",
+      "bytes": 3700
+    },
+    "vnext/include/react-native-qnx/views/image/ImageDiskCache.h": {
+      "sha256": "d93f4a4aa4e1689d640f4d8eb47ae4cd9d9088af97750d78ba1a16c3b3c899cd",
+      "bytes": 2051
+    },
+    "vnext/include/react-native-qnx/views/image/ImageLoadedNotifier.h": {
+      "sha256": "2bbde787e085434dee446ce74b8fbaf1779dcedd2f944f8077efbcf0fdc20f96",
+      "bytes": 963
+    },
+    "vnext/include/react-native-qnx/views/image/QtImageFetcher.h": {
+      "sha256": "b18e483a167f7a9b18462c5ab2094f4a303943b5015aac232e41df8dcdbed0a4",
+      "bytes": 4129
+    },
+    "vnext/src/fabric/QtModalBridge.cpp": {
+      "sha256": "e79166fc18c2f180253694c372c4f14396733fed3c29e41b3386de61c0e9ec07",
+      "bytes": 3659
+    },
+    "vnext/src/runtime/QnxExceptionsManager.cpp": {
+      "sha256": "8994b5da5b7a05e093eb593f0156c906510c4315c969fb38d1774ebe6ef47da2",
+      "bytes": 6258
+    },
+    "vnext/src/runtime/QnxImageLoader.cpp": {
+      "sha256": "c91ca7f7f68b4e0494d065c14724b651385b14cfc4de86c158f98742ca03af0b",
+      "bytes": 11606
+    },
+    "vnext/src/runtime/QnxImageLoaderRefs.cpp": {
+      "sha256": "afc69535afa75df18ec5f31ac57f17fa337de63c1a7bb161769e56b26d0c4923",
+      "bytes": 16277
+    },
+    "vnext/src/runtime/QtImageCache.cpp": {
+      "sha256": "cce9b5c8666025e394dbe8f237ddea47414e910ff33863e88f0f60bc9b1420a4",
+      "bytes": 2823
+    },
+    "vnext/src/runtime/QtReactHost.cpp": {
+      "sha256": "e20e61d56293d379425e69af0ee8cafae87d44deb9fad613f317d067dc22e039",
+      "bytes": 55927
+    },
+    "vnext/src/views/qt/image/BlurHashEncoder.cpp": {
+      "sha256": "d8d03b4de0d77c6f42151867ac726fc4b19142cf78b22cf7a08c4c129a0e3583",
+      "bytes": 3654
+    },
+    "vnext/src/views/qt/image/ExpoImageItem.cpp": {
+      "sha256": "5e6bc2fb15884e5dbfc1e5260e812d0f9f6764a77dc926521389a184c9bbfa41",
+      "bytes": 27217
+    },
+    "vnext/src/views/qt/image/ImageDiskCache.cpp": {
+      "sha256": "db3e6b94ec6fed8ca7b555113123a7bf1263e4c62c56e51cb680201384d8bfb8",
+      "bytes": 4938
+    },
+    "vnext/src/views/qt/image/QtImageFetcher.cpp": {
+      "sha256": "26fff06216f41eabcd15585e12a7f593a92270a60063c6ff2181f99c41a953e7",
+      "bytes": 14811
+    }
+  }
+}

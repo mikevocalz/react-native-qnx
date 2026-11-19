@@ -1,0 +1,4 @@
+[1/5] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/views/qt/image/ImageLoadedNotifier.cpp.o
+[2/5] Automatic MOC for target rnqnx_expo_image_item_test
+[3/4] Building CXX object CMakeFiles/rnqnx_expo_image_item_test.dir/ExpoImageItemTest.cpp.o
+[4/4] Linking CXX executable rnqnx_expo_image_item_test

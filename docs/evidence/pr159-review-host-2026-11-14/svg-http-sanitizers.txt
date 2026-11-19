@@ -1,0 +1,14 @@
+[0/2] Re-checking globbed directories...
+[1/7] Automatic MOC for target rnqnx_qt_rnsvg_image_http_test
+[2/6] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_image_http_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/runtime/QtImageCache.cpp.o
+[3/6] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_image_http_test.dir/RnsvgImageHttpTest.cpp.o
+[4/6] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_image_http_test.dir/workspace/scratch/853552216e74/pr159/vnext/src/fabric/QtRnsvgImageProvider.cpp.o
+[5/6] Linking CXX executable rnqnx_qt_rnsvg_image_http_test
+Internal ctest changing into directory: /workspace/scratch/853552216e74/pr159/build/pr159-svg-http-asan
+Test project /workspace/scratch/853552216e74/pr159/build/pr159-svg-http-asan
+    Start 1: rnqnx_qt_rnsvg_image_http_test
+1/1 Test #1: rnqnx_qt_rnsvg_image_http_test ...   Passed    1.21 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   1.21 sec

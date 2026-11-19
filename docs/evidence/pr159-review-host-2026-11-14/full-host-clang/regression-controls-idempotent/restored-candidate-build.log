@@ -1,0 +1,9 @@
+[0/2] Re-checking globbed directories...
+[1/10] Automatic MOC for target rnqnx_react_host
+[2/9] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxImageLoaderRefs.cpp.o
+[3/9] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxExceptionsManager.cpp.o
+[4/9] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxImageLoader.cpp.o
+[5/9] Building CXX object CMakeFiles/qt_react_host_host_test.dir/tests/cpp/QtReactHostHostTest.cpp.o
+[6/9] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtReactHost.cpp.o
+[7/9] Linking CXX static library librnqnx_react_host.a
+[8/9] Linking CXX executable bin/qt_react_host_host_test

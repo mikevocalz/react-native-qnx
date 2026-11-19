@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import runpy
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -33,6 +34,7 @@ class StagingTest(unittest.TestCase):
         self.build = self.base / 'build'
         self.stage = self.build / 'qnx-build/qtbase'
         self.svg = self.build / 'svg-qnx'
+        self.imageformats = self.build / 'imageformats-qnx'
         self.src = self.root / 'src/qt-everywhere-src-6.12.0'
         self.out = self.base / 'runtime'
         self.out.mkdir()
@@ -43,13 +45,20 @@ class StagingTest(unittest.TestCase):
         for rel in ('platforms/libqqnx.so', 'tls/libqopensslbackend.so',
                     'imageformats/libqjpeg.so', 'imageformats/libqgif.so'):
             self.write(self.stage / 'plugins' / rel, rel)
+        for name in ('libqwebp.so', 'libqtiff.so', 'libqtga.so', 'libqicns.so', 'libqwbmp.so'):
+            self.write(self.imageformats / 'plugins/imageformats' / name, name)
         for folder, names in QML.items():
             for name in names:
                 self.write(self.stage / 'qml' / folder / name, name)
-        for mod in ('qtbase', 'qtdeclarative', 'qtshadertools'):
+        for mod in ('qtbase', 'qtdeclarative', 'qtshadertools', 'qtimageformats'):
             self.write(self.src / mod / 'LICENSES/LGPL-3.0-only.txt', 'license fixture')
         self.audit = self.base / 'audit.json'
-        self.audit.write_text(json.dumps({'third_party_components': {}, 'embedded_attributions': []}))
+        # The staged qwebp and qtiff plugins bundle libwebp and libtiff, so the
+        # default audit has to carry their notices or staging refuses.
+        self.audit.write_text(json.dumps({'third_party_components': {
+            f'qtimageformats/src/3rdparty/{name}': {'attribution': [{
+                'name': name, 'license': 'BSD-3-Clause'}]}
+            for name in ('libwebp', 'libtiff')}, 'embedded_attributions': []}))
         tool = self.base / 'bin/ntoaarch64-readelf'
         self.write(tool, f'#!{sys.executable}\nimport os, sys\n'
                    'if os.environ.get("READELF_FAIL"): sys.exit(9)\n'
@@ -59,6 +68,8 @@ class StagingTest(unittest.TestCase):
         self.env = {**os.environ, 'QT_PUBLIC_ROOT': str(self.root),
                     'QT_PUBLIC_BUILD': str(self.build),
                     'SVG_BUILD': str(self.svg),
+                    'IMAGEFORMATS_BUILD': str(self.imageformats),
+                    'IMAGEFORMATS_SRC': str(self.root / 'src'),
                     'QT_EVAL_MANIFEST': str(self.base / 'absent-evaluation.json'),
                     'PATH': str(tool.parent) + os.pathsep + os.environ['PATH']}
 
@@ -78,9 +89,10 @@ class StagingTest(unittest.TestCase):
         self.write(self.svg / 'plugins/imageformats/libqsvg.so', 'Svg plugin fixture')
         self.write(self.src / 'qtsvg/LICENSES/LGPL-3.0-only.txt', 'Svg license fixture')
 
-    def run_stage(self, output=None):
+    def run_stage(self, output=None, audits=None):
         return subprocess.run([sys.executable, '-I', str(SCRIPT), str(output or self.out),
-                               str(self.audit)], env=self.env, capture_output=True,
+                               *(str(path) for path in (audits if audits is not None else [self.audit]))],
+                              env=self.env, capture_output=True,
                               text=True, timeout=15)
 
     def assert_preserved_failure(self, expected):
@@ -148,6 +160,143 @@ class StagingTest(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn('source/build tree', result.stderr)
         self.assertEqual(self.snapshot(self.svg), before)
+
+    def test_imageformat_plugins_and_multiple_audit_notices_are_staged(self):
+        audits = []
+        for module, names in (('qtbase', ('base-fixture',)),
+                              ('qtimageformats', ('libwebp-fixture', 'libtiff-fixture'))):
+            components = {}
+            for name in names:
+                directory = f'{module}/src/3rdparty/{name}'
+                self.write(self.src / directory / 'NOTICE', name + ' notice')
+                components[directory] = {'attribution': [{
+                    'name': name, 'license': 'MIT', 'license_files': ['NOTICE']}]}
+            audit = self.base / f'{module}-audit.json'
+            audit.write_text(json.dumps({'third_party_components': components,
+                                         'embedded_attributions': []}))
+            audits.append(audit)
+        result = self.run_stage(audits=audits)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        entries = json.loads((self.out / 'manifest.json').read_text())
+        for name in ('libqwebp.so', 'libqtiff.so', 'libqtga.so', 'libqicns.so', 'libqwbmp.so'):
+            rel = 'plugins/imageformats/' + name
+            self.assertEqual(entries[rel]['sha256'], hashlib.sha256((self.out / rel).read_bytes()).hexdigest())
+        notices = (self.out / 'licenses/THIRD_PARTY_ATTRIBUTIONS.txt').read_text()
+        for name in ('base-fixture', 'libwebp-fixture', 'libtiff-fixture'):
+            self.assertIn(name, notices)
+        self.assertIn('licenses/qtimageformats/attributed/src/3rdparty/libwebp-fixture/NOTICE', entries)
+
+    def test_missing_codec_attribution_preserves_previous_runtime(self):
+        # The qtbase audit alone (the recipe Devin flagged) must not stage.
+        for kept, expected in (('libwebp', 'no tiff attribution'), ('libtiff', 'no webp attribution')):
+            with self.subTest(kept=kept):
+                self.audit.write_text(json.dumps({'third_party_components': {
+                    f'qtimageformats/src/3rdparty/{kept}': {'attribution': [{
+                        'name': kept, 'license': 'BSD-3-Clause'}]}}, 'embedded_attributions': []}))
+                self.assert_preserved_failure(expected)
+        self.audit.write_text(json.dumps({'third_party_components': {}, 'embedded_attributions': []}))
+        self.assert_preserved_failure('no webp attribution')
+
+    def test_no_audit_with_bundled_codec_plugins_preserves_previous_runtime(self):
+        before = self.snapshot()
+        result = self.run_stage(audits=[])
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn('no SPDX audit was supplied', result.stderr)
+        self.assertEqual(self.snapshot(), before)
+
+    def test_missing_imageformat_plugin_preserves_previous_runtime(self):
+        (self.imageformats / 'plugins/imageformats/libqwebp.so').unlink()
+        self.assert_preserved_failure('missing in public build')
+
+    def test_separate_imageformats_source_notices_are_staged(self):
+        # Match build-imageformats-qnx.sh's extraction layout. No imageformat
+        # license or notice is present under the default source tree.
+        shutil.rmtree(self.src / 'qtimageformats')
+        selected = self.base / 'separate-imageformats-source'
+        self.env['IMAGEFORMATS_SRC'] = str(selected)
+        module = selected / 'qt-everywhere-src-6.12.0/qtimageformats'
+        self.write(module / 'LICENSES/MIT.txt', 'selected module license')
+        self.write(module / 'src/3rdparty/webp/LICENSE', 'selected third-party license')
+        self.write(module / 'src/3rdparty/webp/NOTICE', 'selected attribution notice')
+        self.audit.write_text(json.dumps({
+            'third_party_components': {'qtimageformats/src/3rdparty/webp': {
+                'attribution': [{'name': 'selected-webp', 'license': 'MIT',
+                                 'license_files': ['NOTICE']}]},
+                'qtimageformats/src/3rdparty/libtiff': {
+                'attribution': [{'name': 'libtiff', 'license': 'MIT'}]}},
+            'embedded_attributions': []}))
+        result = self.run_stage()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        entries = json.loads((self.out / 'manifest.json').read_text())
+        expected = {
+            'licenses/qtimageformats/MIT.txt': 'selected module license',
+            'licenses/qtimageformats/third-party/webp/LICENSE': 'selected third-party license',
+            'licenses/qtimageformats/attributed/src/3rdparty/webp/NOTICE': 'selected attribution notice',
+        }
+        for rel, content in expected.items():
+            self.assertEqual((self.out / rel).read_text(), content)
+            self.assertEqual(entries[rel]['sha256'], hashlib.sha256(content.encode()).hexdigest())
+        notices = (self.out / 'licenses/THIRD_PARTY_ATTRIBUTIONS.txt').read_text()
+        self.assertIn('selected-webp', notices)
+        self.assertIn('licenses/qtimageformats/MIT.txt', notices)
+        self.assertIn('licenses/qtimageformats/attributed/src/3rdparty/webp/NOTICE', notices)
+        self.assertNotIn('none found', notices)
+
+    def test_separate_imageformats_source_output_collision_is_rejected(self):
+        selected = self.base / 'separate-imageformats-source'
+        self.env['IMAGEFORMATS_SRC'] = str(selected)
+        module = selected / 'qt-everywhere-src-6.12.0/qtimageformats'
+        self.write(module / 'LICENSES/MIT.txt', 'selected module license')
+        before = self.snapshot(selected)
+        for path in (selected, module, module / 'nested'):
+            with self.subTest(path=path):
+                result = self.run_stage(path)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('source/build tree', result.stderr)
+        self.assertEqual(self.snapshot(selected), before)
+
+    def test_separate_imageformats_notice_escape_preserves_previous_runtime(self):
+        selected = self.base / 'separate-imageformats-source'
+        self.env['IMAGEFORMATS_SRC'] = str(selected)
+        module = selected / 'qt-everywhere-src-6.12.0/qtimageformats'
+        self.write(module / 'LICENSES/MIT.txt', 'selected module license')
+        notice = module / 'src/3rdparty/webp/NOTICE'
+        notice.parent.mkdir(parents=True)
+        external = self.base / 'outside-imageformats-notice'
+        external.write_text('not in the selected module source')
+        notice.symlink_to(external)
+        self.audit.write_text(json.dumps({
+            'third_party_components': {'qtimageformats/src/3rdparty/webp': {
+                'attribution': [{'license_files': ['NOTICE']}]}},
+            'embedded_attributions': []}))
+        self.assert_preserved_failure('source path escapes')
+
+    def test_imageformat_source_symlink_escape_preserves_previous_runtime(self):
+        plugin = self.imageformats / 'plugins/imageformats/libqwebp.so'
+        plugin.unlink()
+        external = self.base / 'outside-imageformats'
+        external.write_text('not in the selected imageformats build')
+        plugin.symlink_to(external)
+        self.assert_preserved_failure('source path escapes')
+
+    def test_imageformats_build_output_collision_is_rejected(self):
+        before = self.snapshot(self.imageformats)
+        for path in (self.imageformats, self.imageformats / 'nested'):
+            with self.subTest(path=path):
+                result = self.run_stage(path)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('source/build tree', result.stderr)
+        self.assertEqual(self.snapshot(self.imageformats), before)
+
+    def test_malformed_second_audit_preserves_previous_runtime(self):
+        second = self.base / 'imageformats-audit.json'
+        second.write_text('{')
+        before = self.snapshot()
+        result = self.run_stage(audits=[self.audit, second])
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('JSONDecodeError', result.stderr)
+        self.assertEqual(self.snapshot(), before)
+        self.assertEqual(list(self.out.parent.glob('.runtime.stage-*')), [])
 
     def test_source_symlink_escape_preserves_previous_runtime(self):
         lib = self.stage / 'lib/libQt6Core.so.6.12.0'

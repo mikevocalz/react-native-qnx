@@ -1,0 +1,22 @@
+test_separate_imageformats_source_notices_are_staged (staging_tests.StagingTest.test_separate_imageformats_source_notices_are_staged) ... ERROR
+
+======================================================================
+ERROR: test_separate_imageformats_source_notices_are_staged (staging_tests.StagingTest.test_separate_imageformats_source_notices_are_staged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/853552216e74/pr159/tests/python/test_qt_public_staging.py", line 212, in test_separate_imageformats_source_notices_are_staged
+    self.assertEqual((self.out / rel).read_text(), content)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/rnqnx-stage-test-4mbbra6e/runtime/licenses/qtimageformats/MIT.txt'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.951s
+
+FAILED (errors=1)
+Expected original-source failure observed; candidate source was not changed.

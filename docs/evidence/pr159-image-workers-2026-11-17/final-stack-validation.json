@@ -1,0 +1,18 @@
+{
+  "local_source_head": "3e381a30dc20afdee774fe26c12204040f71706e",
+  "svg_parent": "d3eacc75dcad761c992736223a68b53ff852203b",
+  "scope": "affected Expo module/Fabric checks after SVG layout-listener merge; no full corpus replay",
+  "tests": {
+    "rnqnx_expo_image_module_host_test": {
+      "exit": 0,
+      "binary_sha256": "72f652f1eb86c1c335d1af80a1baeac96c466821ab5bd5fc6a7f6c8a1ea3ab7e"
+    },
+    "rnqnx_expo_image_fabric_host_test": {
+      "exit": 0,
+      "binary_sha256": "a504309ca476158b69a440ee77c80f891aa4e2d76cac659bec726286cd067138"
+    }
+  },
+  "fabric_fixture_sha256": "e06f36d7b38b7d96c44d132aa07d8703d3e40f3cd7f1664b5be3275af4205a15",
+  "fixture_correction": "Node 701 explicitly requests onLayout; all geometry/event assertions and production subscription guards remain unchanged.",
+  "original_fixture_failure": "final-stack-unsubscribed-fixture.json"
+}

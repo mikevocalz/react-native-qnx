@@ -33,8 +33,19 @@ node packages/react-native-qnx-cli/src/bin.mjs bundle-qnx --app component-galler
 "$RNQNX_HOST_HERMESC" -O -emit-binary -out build/gallery/app.hbc build/gallery/app.bundle.js
 ```
 
-Stage `assets/icon.png` as `assets/assets/icon.png` next to the bundle; the
-Image card loads it from there.
+Stage the bundled assets next to the bundle. The Image and Expo Image cards
+load them from disk; Metro's JavaScript bundle does not embed them:
+
+```bash
+node scripts/stage-gallery-assets.mjs --out build/gallery          # copies every require()d asset
+node scripts/stage-gallery-assets.mjs --check <deploy dir on the host>  # fails if one is missing or stale
+```
+
+The script finds each asset the gallery sources `require()` (`icon.png`,
+`anim.gif`, `anim.webp`, the media clips) and writes it to
+`assets/<directory>/<file>`, for example `assets/assets/anim.webp`, which is
+where the host resolves it. Animated WebP also requires the staged Qt
+image-format plugin.
 
 The app opens as a 1280 x 800 window (`extra.rnqnx.window.initialSize`) with
 the macOS-style title bar. The Components page lays its cards out in one, two
@@ -89,6 +100,6 @@ switch) and an Audio card (`audio.card.js`: a bundled tone with play, pause and
 volume). The Media screen in the drawer shows the expo-image card, then both at
 full width. They need a host built with `RNQNX_ENABLE_QT_VIDEO=ON` and the Qt
 Multimedia add-on ([media guide](../../docs/getting-started/media.md)); without
-them the cards show a notice. Stage `assets/media/` next to the executable. The
+them the cards show a notice. `stage-gallery-assets.mjs` stages `assets/media/` as `assets/assets/media/`. The
 Mac URL source expects `python3 -m http.server 8765` in that directory on
 192.168.2.1.

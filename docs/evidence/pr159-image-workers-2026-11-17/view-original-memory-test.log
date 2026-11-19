@@ -1,0 +1,10 @@
+********* Start testing of ExpoImageItemTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ExpoImageItemTest::initTestCase()
+FAIL!  : ExpoImageItemTest::pendingLoadDoesNotRepopulateClearedMemory(fetch-pending) '!DecodedImageCache::shared().contains(uri)' returned FALSE. ()
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-cache159/tests/native/qt-native-ui/ExpoImageItemTest.cpp(696)]
+FAIL!  : ExpoImageItemTest::pendingLoadDoesNotRepopulateClearedMemory(decode-pending) '!DecodedImageCache::shared().contains(uri)' returned FALSE. ()
+   Loc: [/workspace/scratch/252a22fac759/rnqnx-cache159/tests/native/qt-native-ui/ExpoImageItemTest.cpp(696)]
+PASS   : ExpoImageItemTest::cleanupTestCase()
+Totals: 2 passed, 2 failed, 0 skipped, 0 blacklisted, 117ms
+********* Finished testing of ExpoImageItemTest *********

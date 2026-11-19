@@ -12,6 +12,9 @@
 #include "react-native-qnx/views/QtQuickItemFactory.h"
 
 #include <react/renderer/mounting/ShadowView.h>
+#include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/graphics/Color.h>
+#include <QColor>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 #include <QByteArray>
@@ -43,7 +46,7 @@ using rnqnx::fabric::Tag;
 using rnqnx::views::QtQuickItemFactory;
 
 constexpr Tag kRootTag = 1;
-constexpr const char* kViewSource = "import QtQuick\nRectangle { visible: true }\n";
+constexpr const char* kViewSource = "import QtQuick\nRectangle { id: root; visible: true; property alias backgroundColor: root.color }\n";
 
 class TestFailure final : public std::runtime_error {
  public:
@@ -188,6 +191,29 @@ void updateAppliesNewFrame() {
   EXPECT(item->height() == 400.0);
 }
 
+void transparentAndRemovedBackgroundClearThePreviousFill() {
+  Fixture fixture;
+  auto selected = makeShadowView(2, "View", 0, 0, 100, 40);
+  auto props = std::make_shared<facebook::react::ViewProps>();
+  props->backgroundColor = facebook::react::colorFromRGBA(27, 83, 94, 255);
+  selected.props = props;
+  EXPECT_NO_FAILURES(fixture.adapter().apply({
+      ShadowViewMutation::CreateMutation(selected),
+      ShadowViewMutation::InsertMutation(kRootTag, selected, 0)}));
+  auto* item = fixture.layer().itemForTag(2);
+  EXPECT(item->property("backgroundColor").value<QColor>().alpha() == 255);
+  for (bool explicitTransparent : {true, false}) {
+    auto clear = selected;
+    auto clearedProps = std::make_shared<facebook::react::ViewProps>();
+    if (explicitTransparent) clearedProps->backgroundColor = facebook::react::clearColor();
+    clear.props = clearedProps;
+    EXPECT_NO_FAILURES(fixture.adapter().apply({ShadowViewMutation::UpdateMutation(selected, clear, kRootTag)}));
+    EXPECT(item->property("backgroundColor").value<QColor>().alpha() == 0);
+    EXPECT_NO_FAILURES(fixture.adapter().apply({ShadowViewMutation::UpdateMutation(clear, selected, kRootTag)}));
+    EXPECT(item->property("backgroundColor").value<QColor>().alpha() == 255);
+  }
+}
+
 void removeThenDeleteUnmountsAndFrees() {
   Fixture fixture;
   const ShadowView view = makeShadowView(2, "View");
@@ -280,6 +306,7 @@ int main(int argc, char** argv) {
       {"createInsertMountsAndPositions", createInsertMountsAndPositions},
       {"insertOrderFollowsMutationIndex", insertOrderFollowsMutationIndex},
       {"updateAppliesNewFrame", updateAppliesNewFrame},
+      {"transparentAndRemovedBackgroundClearThePreviousFill", transparentAndRemovedBackgroundClearThePreviousFill},
       {"removeThenDeleteUnmountsAndFrees", removeThenDeleteUnmountsAndFrees},
       {"nestedTransactionBuildsATree", nestedTransactionBuildsATree},
       {"unmappedComponentIsReportedNotSkipped", unmappedComponentIsReportedNotSkipped},

@@ -1,0 +1,11 @@
+Test project <sanitizer-build>
+    Start 2: rnqnx_image_units_test
+1/3 Test #2: rnqnx_image_units_test ...........   Passed    1.82 sec
+    Start 3: rnqnx_expo_image_item_test
+2/3 Test #3: rnqnx_expo_image_item_test .......   Passed    8.23 sec
+    Start 5: rnqnx_image_fetch_queue_test
+3/3 Test #5: rnqnx_image_fetch_queue_test .....   Passed    1.49 sec
+
+100% tests passed out of 3
+
+Total Test time (real) =  11.55 sec

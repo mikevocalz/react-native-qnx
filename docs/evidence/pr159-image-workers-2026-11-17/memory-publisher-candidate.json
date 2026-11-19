@@ -1,0 +1,14 @@
+{
+  "source_sha256": "93e3c6911a33e060252e4ee36b088fac370da8bbfcaf0cf32c950dc362178f37",
+  "test_sha256": "b75ac0a3786a14bc522f7ec7bbd601e966c4adadfd6b9e41d7f61d57727ac25a",
+  "tests": {
+    "rnqnx_expo_image_module_host_test": {
+      "exit": 0,
+      "binary_sha256": "3d3d1b16f48a7e1ec75f6ad71b216f9669fbeceabb517f6cfb6507921c723254"
+    },
+    "rnqnx_expo_image_fabric_host_test": {
+      "exit": 0,
+      "binary_sha256": "3b06544941980ee0adb95f78977bc70040b016045e1f202caaf0ca0036f4e2e2"
+    }
+  }
+}

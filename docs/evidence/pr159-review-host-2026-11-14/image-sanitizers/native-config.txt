@@ -1,0 +1,62 @@
+Focused image view/cache sanitizer validation
+Source commit: 252b128d0bbb93357dd87f840ea81d31a08c5ef1
+Source tree: 3a19dc66775917c333a61d219400cd73ecb8bc5b
+No production/test source edits during validation.
+
+$ /usr/bin/g++ --version
+g++ (Debian 14.2.0-19) 14.2.0
+Copyright (C) 2024 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ cmake --version
+cmake version 3.31.10
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+
+$ ninja --version
+1.13.2.git.kitware.jobserver-pipe-1
+
+$ /workspace/scratch/853552216e74/qt/6.11.1/gcc_64/bin/qmake -query QT_VERSION
+6.11.1
+
+Selected generated CMake cache entries:
+CMAKE_AUTOGEN_PARALLEL:UNINITIALIZED=2
+CMAKE_BUILD_TYPE:STRING=Debug
+CMAKE_CXX_COMPILER:STRING=/usr/bin/g++
+CMAKE_CXX_FLAGS:STRING=-fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer
+CMAKE_CXX_FLAGS_DEBUG:STRING=-g
+CMAKE_EXE_LINKER_FLAGS:STRING=-fsanitize=address,undefined
+Qt6_DIR:PATH=/workspace/scratch/853552216e74/qt/6.11.1/gcc_64/lib/cmake/Qt6
+
+Unique generated Ninja sanitizer flags:
+FLAGS = -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -g
+FLAGS = -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -g -std=gnu++20 -Wall -Wextra -Wpedantic -Werror -fPIC
+FLAGS = -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -g -std=gnu++20 -fPIC -Wall -Wextra -Wpedantic -Werror -fPIC
+LINK_FLAGS = -fsanitize=address,undefined    -Wl,--dependency-file=CMakeFiles/rnqnx_expo_image_item_test.dir/link.d
+LINK_FLAGS = -fsanitize=address,undefined    -Wl,--dependency-file=CMakeFiles/rnqnx_image_fetch_queue_test.dir/link.d
+LINK_FLAGS = -fsanitize=address,undefined    -Wl,--dependency-file=CMakeFiles/rnqnx_image_hash_vectors_test.dir/link.d
+LINK_FLAGS = -fsanitize=address,undefined    -Wl,--dependency-file=CMakeFiles/rnqnx_image_units_test.dir/link.d
+LINK_FLAGS = -fsanitize=address,undefined    -Wl,--dependency-file=CMakeFiles/rnqnx_modal_quick_test.dir/link.d
+LINK_FLAGS = -fsanitize=address,undefined    -Wl,--dependency-file=CMakeFiles/rnqnx_qt_native_ui_test.dir/link.d
+
+Execution environment:
+ASAN_OPTIONS=detect_leaks=0:halt_on_error=1
+UBSAN_OPTIONS=halt_on_error=1
+CTest sets QT_QUICK_BACKEND=software and -platform offscreen; timeout remains 90 seconds.
+Qt shared libraries are uninstrumented. Leak checks, Hermes/Fabric, QNX/device and Marathon are outside this focused run.
+
+Source SHA-256:
+5e6bc2fb15884e5dbfc1e5260e812d0f9f6764a77dc926521389a184c9bbfa41  vnext/src/views/qt/image/ExpoImageItem.cpp
+99975bd0b114790100c7ae2d8b8a92d915b5eaf4ade701c674d63ca68343a84d  vnext/include/react-native-qnx/views/image/ExpoImageItem.h
+caecaed74f8a9e1683b8d758b737a5be7732cc66ecae01ebd1f47e39018d1859  vnext/include/react-native-qnx/views/DecodedImageCache.h
+cce9b5c8666025e394dbe8f237ddea47414e910ff33863e88f0f60bc9b1420a4  vnext/src/runtime/QtImageCache.cpp
+26fff06216f41eabcd15585e12a7f593a92270a60063c6ff2181f99c41a953e7  vnext/src/views/qt/image/QtImageFetcher.cpp
+b18e483a167f7a9b18462c5ab2094f4a303943b5015aac232e41df8dcdbed0a4  vnext/include/react-native-qnx/views/image/QtImageFetcher.h
+db3e6b94ec6fed8ca7b555113123a7bf1263e4c62c56e51cb680201384d8bfb8  vnext/src/views/qt/image/ImageDiskCache.cpp
+d93f4a4aa4e1689d640f4d8eb47ae4cd9d9088af97750d78ba1a16c3b3c899cd  vnext/include/react-native-qnx/views/image/ImageDiskCache.h
+0b89155ebe428d8e5909ea868e041861fcf24a8beafaf40c82732ec3bd67505f  vnext/src/views/qt/image/ImageDecode.cpp
+fa2b2508655a438e20be48405154a9349b351187453280033d34df52e468a6bb  tests/native/qt-native-ui/CMakeLists.txt
+a121351b242ad1404cfac2cf458af19d1779dcb16df36f9c697d97cd268e2c99  tests/native/qt-native-ui/ExpoImageItemTest.cpp
+08ee4078050d8e905949b145a907670567df7de779dd2d92bb1e6f54cbd30a96  tests/native/qt-native-ui/ImageUnitsTest.cpp
+0f199feb731f908a0fe023548a2bfe69b7964e018e1c09c81e59fef36efd1c25  tests/native/qt-native-ui/ImageFetchQueueTest.cpp

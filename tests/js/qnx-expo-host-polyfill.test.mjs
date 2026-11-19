@@ -101,4 +101,36 @@ const bare = run();
 assert.deepEqual(Object.keys(bare.expo.modules), []);
 assert.equal(typeof bare.expo.NativeModule, 'function');
 
+// expo.dispatchViewCommand runs a view function's command through React
+// Native's dispatchCommand on the host view the component wraps; an unmounted
+// view has nothing to command.
+/** @type {unknown[][]} */
+const dispatched = [];
+const sandboxWithRenderer = run();
+sandboxWithRenderer.require = (/** @type {string} */ request) => {
+  assert.equal(request, 'react-native/Libraries/ReactNative/RendererProxy');
+  return { dispatchCommand: (/** @type {unknown[]} */ ...call) => dispatched.push(call) };
+};
+const commandRun = (
+  /** @type {string} */ name,
+  /** @type {any} */ component,
+  /** @type {unknown} */ args
+) => {
+  Object.assign(sandboxWithRenderer, { component, name, args });
+  vm.runInNewContext('expo.dispatchViewCommand(component, name, args)', sandboxWithRenderer);
+};
+const hostView = { id: 'host-view' };
+commandRun('startAnimating', { getNativeRef: () => hostView }, undefined);
+commandRun('args', { getNativeRef: () => hostView }, [1]);
+commandRun('reload', { getNativeRef: () => null }, undefined);
+// The arguments come from another realm, so compare their JSON.
+assert.equal(
+  JSON.stringify(dispatched),
+  JSON.stringify([
+    [hostView, 'startAnimating', []],
+    [hostView, 'args', [1]],
+  ])
+);
+assert.equal(typeof withHost.expo.dispatchViewCommand, 'function');
+
 console.log('QNX Expo host polyfill: resolver override and globalThis.expo classes verified.');

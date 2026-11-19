@@ -1,0 +1,12 @@
+{
+  "baseCommit": "df434d5",
+  "productionFiles": {
+    "vnext/include/react-native-qnx/views/image/ImageDiskCache.h": "c8527a023ce5121c2df45c113f320b342cad03da4934ecc5b7e0cd2f2200e6fe",
+    "vnext/include/react-native-qnx/views/image/QtImageFetcher.h": "f620ed0a3063de7c1763c6efe12722270b48858b7038713a919c4ba333453c85",
+    "vnext/src/views/qt/image/ImageDiskCache.cpp": "3368e1d4251b8ee2d6c460485a5a3993b03d6f8444738ea5825e9b8b24d7b562",
+    "vnext/src/views/qt/image/QtImageFetcher.cpp": "9052641467b76741e5bd988ae8832b422ed58c6ada98048eeb96414f505be24e"
+  },
+  "containerMatch": true,
+  "nativeSha256": "f720133e9ba68b9af3278cb6adbc5c31f170bc528ece884c3d4a2307361f5a1b",
+  "hbcSha256": "0da7041c179c7f93257697ce8e7b4fcf4e4499444501d0432a465cf5c8474cb7"
+}

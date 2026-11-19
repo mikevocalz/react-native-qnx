@@ -9,7 +9,9 @@ new application TurboModule architecture.
 Run on a Raspberry Pi 400 (QNX SDP 8.0.5, public Qt 6.12.0) on 2026-11-13,
 with the gallery's "Image from a URL" card (`apps/component-gallery/RemoteImageCard.js`).
 Each line is the card's own log output; the board reached the Mac over USB
-Ethernet and the internet through the Mac.
+Ethernet and the internet through the Mac. This is a historical device receipt
+for that baseline. The worker, cache-clear and SVG completion changes described
+below have separate host evidence and still require their own target receipt.
 
 | Source                                                         | Result on the Pi                                                                |
 | -------------------------------------------------------------- | ------------------------------------------------------------------------------- |
@@ -29,6 +31,11 @@ What the device needed, beyond the Linux-tested loader:
   untrusted certificates are refused.
 - **Qt's JPEG and GIF image plugins.** Without `plugins/imageformats/` Qt Quick
   decodes only PNG; most photos on the web are JPEG.
+- **Qt's WebP plugin** (and TIFF, TGA, ICNS, WBMP) from the `qtimageformats`
+  module, built by `scripts/qt-public/build-imageformats-qnx.sh`. Without
+  `libqwebp.so`, `QImageReader` reports no `webp` format and an animated or
+  still WebP fails to load. An app carries `libqwebp.so` in
+  `plugins/imageformats/` like the JPEG and GIF plugins.
 - `scripts/qt-public/configure-qnx.sh` now builds all three and
   `stage-runtime.py` stages them. An app can also carry them in its own
   `plugins/` directory (`QT_PLUGIN_PATH=<app>/plugins:<runtime>/plugins`), which
@@ -95,31 +102,86 @@ or cancellation-by-request-ID API is provided.
 - HTTP header-bearing requests bypass and do not populate the URI-only cache.
   Automatic cookie load/save and cached authentication reuse are disabled.
   Uncredentialed requests respect private/no-store response directives.
-- Redirects are rejected rather than forwarding caller credentials or silently
-  crossing origins. Callers may explicitly request the destination. TLS errors
-  are not ignored. HTTP errors, malformed payloads, oversized images, missing
-  files and unsupported schemes reject the Promise.
+- Redirects allow at most five hops under the original request deadline.
+  Same-origin hops retain caller headers; an origin change drops those headers.
+  Non-HTTP(S), credential-bearing and HTTPS-to-HTTP redirect targets are rejected.
+  TLS errors are not ignored. HTTP errors, malformed payloads, oversized images,
+  missing files and unsupported schemes reject the Promise.
 - Requests have a 30-second wall-clock timeout and a 16 MiB encoded limit.
   Decode checks dimensions before allocation and rejects over 16 million
   pixels. All supported formats depend on installed Qt image plugins.
 - File URLs, absolute paths, qrc URLs and strict base64 data URIs also decode
   into this cache. Percent-encoded data URIs are explicitly unsupported.
 - Invalid arguments reject Promises. Native completions use React Native's
-  `AsyncPromise`/CallInvoker rather than retaining raw runtime pointers.
+  `AsyncPromise`/CallInvoker. Worker closures contain native values; Promise,
+  registry and event-delivery work stays on the owner thread.
+- `QtImageCache` decodes on the bounded image worker queue. Its internal rich
+  completion returns pixels and original dimensions independently of memory
+  retention. SVG image elements can display private/no-store responses, images
+  above the cache budget and images whose cache was cleared while they loaded.
+  Coalesced SVG waiters still receive one fetch result, and a later request for
+  an unretained response fetches again.
 
 ## The ExpoImage view
 
 `expo-image` renders through the Fabric component `ViewManagerAdapter_ExpoImage`
-(`RNQNX_ENABLE_QT_EXPO_IMAGE`). Its QML item takes the first `uri` of the
-`source` array and resolves it with the same function as the Image component,
-`resolveImageUri`: a URI the decoded cache holds is served as
-`image://rnqnx/cache/<key>` and reports `cacheType: "memory"`, a base64 data URI
-is decoded by `QnxImageProvider`, and anything else goes to Qt Quick, which
-fetches it as for `Image`. The view adds no cache of its own. `Image.prefetch`
-from React Native fills the cache the view reads; `expo-image`'s own `prefetch`
-resolves `false`. `onProgress` reports a fraction out of 1000, because Qt gives
-no byte counts. The prop and limit table is in
+(`RNQNX_ENABLE_QT_EXPO_IMAGE`). Its item, `ExpoImageItem`, picks a source from the
+`source` array and loads it itself: from the decoded memory cache
+(`DecodedImageCache`, `cacheType: "memory"`), the on-disk cache (`"disk"`), the
+network with the source's headers, or a file or base64 data URI. It decodes on a
+worker thread and paints with `QPainter`. It shares the decoded cache with
+`Image`, so `Image.prefetch` from React Native and `expo-image`'s own `prefetch`
+fill the cache the view reads. A `source` that is an `ImageRef` (from
+`Image.loadAsync`) skips loading: the picture is read from `ImageRefRegistry`.
+The prop and limit table is in
 [`@rn-qnx/expo-image-qnx`](../packages/expo-image-qnx/README.md).
+
+Fetches from every Expo Image view, `prefetch` and `loadAsync` go through one
+`ImageFetchQueue`, with six admitted tasks. The ImageLoader computations and
+cache operations below share that admission queue; expo-image's fetch `priority`
+(`low`, `normal`, `high`) decides which waiting fetch starts next. Cancelling a
+waiting task removes it. A cancelled or abandoned worker keeps its admission
+slot until its physical work finishes, so repeated owner teardown cannot add
+unbounded work behind blocked file reads. Owner callbacks are released before
+admission starts a successor, which may itself trigger teardown.
+
+File/data and disk-cache I/O run on workers, while network and completion
+callbacks stay on the owner thread. Fetchers share that thread's network manager
+with automatic cookies and authentication reuse disabled. Corrupt/oversized
+disk entries are evicted before one network fallback. The earlier I/O scope is
+recorded in [its receipt](validation/pr159-image-io-2026-11-13.md); the additional
+computation and cache controls are covered by the
+[worker completion receipt](validation/pr159-image-worker-completion-2026-11-17.md).
+
+The loader module serves the expo-image functions the same way: `loadImage`,
+`releaseImage`, `generateBlurhash`, `generateThumbhash`, `writeToCache`,
+`readFromCache` and `configureCache` are methods of `ImageLoader` next to
+`prefetchImageWithOptions`, `clearMemoryCache`, `clearDiskCache` and
+`getCachePath`. `@rn-qnx/expo-image-qnx` wraps them as the `ExpoImage` module.
+
+ImageRef loading, resizing, tinting, BlurHash/ThumbHash generation, PNG encoding,
+explicit cache writes and disk-cache reads run on the worker queue. An ImageRef
+is copied into a native snapshot at admission, so releasing the JavaScript
+source while admitted work waits is safe. Registry lookup and publication,
+Promise resolution and image-loaded notifications stay on the owner thread.
+`releaseImage` remains synchronous.
+
+`clearDiskCache` advances the shared disk generation immediately, then sweeps
+files on a worker. A read or newer write can apply that pending sweep first;
+the delayed clear worker recognizes the completed generation and preserves
+newer files. Explicit writes admitted before a clear reject, including a write whose
+file commit finished but whose owner callback had not yet run. A failed sweep
+resolves `false`, leaves the generation pending and keeps old disk entries hidden
+until a later successful sweep. `getCachePath` also checks the filesystem on a
+worker and resolves a path or `null`.
+
+`clearMemoryCache` advances a separate shared memory generation and clears the
+LRU on the owner thread. Earlier loads may still deliver their decoded pixels
+and dimensions, but pending view decodes, core prefetches and explicit writes
+do not refill that cleared memory cache. A new load can populate it. Clearing
+memory does not invalidate the disk generation; clearing disk does not clear
+memory. `configureCache` retains its documented synchronous contract and can
+perform filesystem eviction while applying a lower disk budget.
 
 ## Boundaries
 
@@ -127,8 +189,10 @@ This is a process-memory decoded cache, not an HTTP revalidation cache. Entries
 remain until LRU eviction/process exit; changing resources should use versioned
 URLs. Qt Quick can also maintain its own image cache. A query is a snapshot;
 eviction can occur before a later image request. Request cancellation by ID,
-disk persistence, cross-process caching and source-header props on visual
-`Image` are not implemented by this change. The host currently runs JavaScript
+cross-process caching and source-header props on React Native's own visual
+`Image` are not implemented. The `ExpoImage` view and `expo-image`'s prefetch
+use a 128 MiB on-disk cache (`ImageDiskCache`, least recently used first) and
+key requests by URI plus headers. The host currently runs JavaScript
 on the Qt event-loop thread; the loader shares that thread-affinity contract.
 
 ## Deterministic host validation
@@ -160,9 +224,23 @@ The fixture uses a loopback `QTcpServer`, not an external service: successful
 PNG dimensions, cache reuse without a second request, actual headers and
 header-cache isolation, 404/403, malformed/truncated bodies, redirects, byte
 limits, timeouts, LRU eviction, private/no-store, local/base64 inputs and
-teardown while a request is pending. It also resolves and reads a prefetched
-entry through the real Qt Quick provider. CI runs this test with exact Qt
+teardown while a request is pending. Worker gates also verify that decoding
+leaves the owner loop responsive, that another loader's memory clear prevents
+late cache publication, and that destroying the loader releases pending owner
+callbacks. It resolves and reads a prefetched entry through the real Qt Quick
+provider. CI runs this test with exact Qt
 6.11.1 and uploads its CTest evidence.
+
+The expo-image functions and the view run on real Hermes in two more host tests,
+`rnqnx_expo_image_module_host_test` (JavaScript calls the module: prefetch, cache
+functions, `loadAsync`, the hash generators, cache read and write,
+`configureCache`, the view-ref functions through Fabric commands) and
+`rnqnx_expo_image_fabric_host_test` (`opacity`, `transform`, `onLayout`, the image
+events as Fabric events, `ImageRef` sources, commands). The queue, the hash
+encoders against reference vectors and the view's lock and `ImageRef` handling are
+Qt tests in `tests/native/qt-native-ui`. The first-draft module forwarding used
+`__turboModuleProxy`, which this bridgeless host does not install; the module test
+is what found it, and the module now reads `nativeModuleProxy`.
 
 The full `QtReactHostHostTest` also contains `imageLoaderPromiseContract`, which
 uses the real bridgeless `nativeModuleProxy.ImageLoader` in Hermes after loading
@@ -182,6 +260,7 @@ workflows. The [candidate receipt](validation/pr106-merge-readiness-2026-11-10.m
 records those runs separately from fresh local wrapper/Metro checks. Later
 integrated revisions still require their own validation.
 
-These checks are host evidence. QNX SDP 8.0.5 cross-compilation, Qt Network
-module size/build-time measurements, physical Pi networking/TLS/plugin behavior
-and on-glass rendering remain pending. No physical-target gate is promoted.
+The new checks are host evidence. The integrated candidate still needs QNX
+SDP 8.0.5 cross-compilation, current Qt plugin and attribution artifacts, release
+animated assets, and its exact-device on-glass receipt. The historical Pi result
+above does not establish those gates for the updated implementation.

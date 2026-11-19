@@ -1,0 +1,7 @@
+{
+  "label": "postcommit-guard-restored",
+  "source_sha256": "530d651cdecdcbd5f573448bb7c24419685ca8ff93d2b26c244c84923b54bde8",
+  "test_sha256": "29bad1e5c914a2d891715b5df6a39f8b72e874340064f55c15162bf01465d7da",
+  "binary_sha256": "ae2dd37ec07c076e58baca2cc20e8a47cba00e12394202e1b9176c74d0a53be7",
+  "exit": 0
+}

@@ -1,0 +1,88 @@
+Internal ctest changing into directory: /workspace/scratch/853552216e74/pr159/build/native-ui-image-sanitized
+UpdateCTestConfiguration  from :/workspace/scratch/853552216e74/pr159/build/native-ui-image-sanitized/DartConfiguration.tcl
+Parse Config file:/workspace/scratch/853552216e74/pr159/build/native-ui-image-sanitized/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/workspace/scratch/853552216e74/pr159/build/native-ui-image-sanitized/DartConfiguration.tcl
+Parse Config file:/workspace/scratch/853552216e74/pr159/build/native-ui-image-sanitized/DartConfiguration.tcl
+Test project /workspace/scratch/853552216e74/pr159/build/native-ui-image-sanitized
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 2
+    Start 2: rnqnx_image_units_test
+
+2: Test command: /workspace/scratch/853552216e74/pr159/build/native-ui-image-sanitized/rnqnx_image_units_test "-platform" "offscreen"
+2: Working Directory: /workspace/scratch/853552216e74/pr159/build/native-ui-image-sanitized
+2: Environment variables:
+2:  QT_QUICK_BACKEND=software
+2: Test timeout computed to be: 90
+2: ********* Start testing of ImageUnitsTest *********
+2: Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+2: PASS   : ImageUnitsTest::initTestCase()
+2: PASS   : ImageUnitsTest::fitCoverContainAndFill()
+2: PASS   : ImageUnitsTest::fitNoneKeepsNaturalSizeAndScaleDownNeverGrows()
+2: PASS   : ImageUnitsTest::positionNamesOffsetsAndPercentages()
+2: PASS   : ImageUnitsTest::roundedPathClipsCornersAndLimitsRadii()
+2: PASS   : ImageUnitsTest::blurSpreadsAColorEdge()
+2: PASS   : ImageUnitsTest::tintKeepsAlphaAndReplacesColor()
+2: PASS   : ImageUnitsTest::blurHashDecodesTheReferenceVector()
+2: PASS   : ImageUnitsTest::blurHashRejectsMalformedInput()
+2: PASS   : ImageUnitsTest::thumbHashDecodesTheReferenceVectors()
+2: PASS   : ImageUnitsTest::thumbHashRejectsShortInput()
+2: PASS   : ImageUnitsTest::diskCacheEvictsLeastRecentlyUsedWithinBudget()
+2: PASS   : ImageUnitsTest::diskCacheRefusesOversizeAndClears()
+2: PASS   : ImageUnitsTest::diskCacheClearInvalidatesPendingWrites()
+2: PASS   : ImageUnitsTest::requestKeyFoldsHeadersAndHonoursCacheKey()
+2: PASS   : ImageUnitsTest::fetcherSendsHeadersAndHitsDiskCacheSecondTime()
+2: PASS   : ImageUnitsTest::fetcherCancelNeverCallsBack()
+2: PASS   : ImageUnitsTest::fetcherReadsFilesOnWorkerAndCompletesOnOwner()
+2: PASS   : ImageUnitsTest::fetcherCancelsAndDestroysBlockedIo()
+2: PASS   : ImageUnitsTest::fetcherRetainsCacheStateDuringIo()
+2: PASS   : ImageUnitsTest::fetcherRecoversCorruptAndOversizedCache()
+2: PASS   : ImageUnitsTest::fetcherFollowsRelativeRedirectAndStripsCrossOriginHeaders()
+2: PASS   : ImageUnitsTest::fetcherBoundsRedirectsAndRejectsUnsafeTargets()
+2: PASS   : ImageUnitsTest::sharedNetworkDoesNotReuseCookies()
+2: PASS   : ImageUnitsTest::redirectsShareOneDeadline()
+2: PASS   : ImageUnitsTest::decodedCacheHonorsCountAndCostLimits()
+2: PASS   : ImageUnitsTest::imageRefRegistryNeverReusesIds()
+2: PASS   : ImageUnitsTest::imageLoadedNotifierReachesListenersUntilUnsubscribed()
+2: PASS   : ImageUnitsTest::cleanupTestCase()
+2: Totals: 29 passed, 0 failed, 0 skipped, 0 blacklisted, 1759ms
+2: ********* Finished testing of ImageUnitsTest *********
+1/2 Test #2: rnqnx_image_units_test ...........   Passed    1.85 sec
+test 5
+    Start 5: rnqnx_image_fetch_queue_test
+
+5: Test command: /workspace/scratch/853552216e74/pr159/build/native-ui-image-sanitized/rnqnx_image_fetch_queue_test "-platform" "offscreen"
+5: Working Directory: /workspace/scratch/853552216e74/pr159/build/native-ui-image-sanitized
+5: Environment variables:
+5:  QT_QUICK_BACKEND=software
+5: Test timeout computed to be: 90
+5: ********* Start testing of ImageFetchQueueTest *********
+5: Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+5: PASS   : ImageFetchQueueTest::initTestCase()
+5: PASS   : ImageFetchQueueTest::parsesPriorityNames()
+5: PASS   : ImageFetchQueueTest::startsAtMostMaxConcurrentTasks()
+5: PASS   : ImageFetchQueueTest::startsWaitingTasksHighestPriorityFirst()
+5: PASS   : ImageFetchQueueTest::cancelDropsAWaitingTaskOnly()
+5: PASS   : ImageFetchQueueTest::aTaskThatFinishesAtOnceDoesNotStallTheQueue()
+5: PASS   : ImageFetchQueueTest::fetcherKeepsLoadsInFlightWithinTheBound()
+5: PASS   : ImageFetchQueueTest::fetcherStartsHigherPriorityRequestsFirst()
+5: PASS   : ImageFetchQueueTest::clearingDiskCacheDoesNotRestoreAnInFlightResponse()
+5: PASS   : ImageFetchQueueTest::viewsLoadInPriorityOrderThroughTheSharedQueue()
+5: PASS   : ImageFetchQueueTest::cancellingAQueuedLoadNeverStartsIt()
+5: PASS   : ImageFetchQueueTest::cancellingARunningLoadFreesItsSlot()
+5: PASS   : ImageFetchQueueTest::cleanupTestCase()
+5: Totals: 13 passed, 0 failed, 0 skipped, 0 blacklisted, 1463ms
+5: ********* Finished testing of ImageFetchQueueTest *********
+2/2 Test #5: rnqnx_image_fetch_queue_test .....   Passed    1.56 sec
+
+The following tests passed:
+	rnqnx_image_units_test
+	rnqnx_image_fetch_queue_test
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =   3.41 sec

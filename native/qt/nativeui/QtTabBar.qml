@@ -17,6 +17,13 @@ FocusScope {
     property var tabs: []
     property string activeKey: ""
     property string layout: "auto"
+    // Where the bar sits: bottom, top, left or right. Empty follows `layout`
+    // (bottom, or a left rail when the window is wide).
+    property string position: ""
+    property bool showLabel: true
+    // Right-to-left: the bar's tabs run right to left, and a rail on the
+    // start side sits on the right.
+    property bool rtl: false
     property real sideBreakpoint: 700
     property real railWidth: 88
     property real barHeight: 60
@@ -35,7 +42,12 @@ FocusScope {
     readonly property string mode: layout === "bottom" ? "bottom"
                                    : layout === "side" ? "side"
                                    : (measuredWidth >= sideBreakpoint ? "side" : "bottom")
-    readonly property bool sideMode: mode === "side"
+    readonly property string edge: position === "top" || position === "left" || position === "right"
+                                   || position === "bottom" ? position : (mode === "side" ? "left" : "bottom")
+    readonly property bool sideMode: edge === "left" || edge === "right"
+    // `left` is the start side and `right` the end side (react-navigation's
+    // tabBarPosition), so right-to-left puts a `left` rail on the physical right.
+    readonly property bool railOnRight: sideMode && ((edge === "right") !== rtl)
     readonly property real occupied: hidden ? 0 : (sideMode ? railWidth : barHeight)
     readonly property int count: tabs ? tabs.length : 0
 
@@ -43,10 +55,11 @@ FocusScope {
     property bool focusVisible: false
     property bool ready: false
     property string reportedMode: ""
+    property string reportedEdge: ""
     property real reportedSize: -1
 
     // The mounting layer decorates nothing here; this bar has no React children.
-    readonly property real tabExtent: sideMode ? 72 : (count > 0 ? width / count : width)
+    readonly property real tabExtent: sideMode ? (showLabel ? 72 : 52) : (count > 0 ? width / count : width)
 
     function activeIndex() {
         for (var i = 0; i < count; i++) {
@@ -64,11 +77,13 @@ FocusScope {
     function report() {
         if (!ready || !bridge)
             return;
-        if (reportedMode === mode && reportedSize === occupied)
+        var reported = sideMode ? "side" : "bottom";
+        if (reportedMode === reported && reportedSize === occupied && reportedEdge === edge)
             return;
-        reportedMode = mode;
+        reportedMode = reported;
         reportedSize = occupied;
-        bridge.layoutModeChanged(mode, occupied);
+        reportedEdge = edge;
+        bridge.layoutModeChanged(reported, occupied);
     }
 
     function press(index) {
@@ -94,6 +109,7 @@ FocusScope {
         focusVisible = true;
     }
 
+    onEdgeChanged: Qt.callLater(report)
     onModeChanged: Qt.callLater(report)
     onOccupiedChanged: Qt.callLater(report)
     onBridgeChanged: Qt.callLater(report)
@@ -114,6 +130,8 @@ FocusScope {
         root.report();
     })
 
+    Accessible.role: Accessible.PageTabList
+    Accessible.name: "Tabs"
     activeFocusOnTab: true
     onActiveFocusChanged: {
         if (!activeFocus)
@@ -123,13 +141,26 @@ FocusScope {
     Keys.onPressed: function(event) {
         switch (event.key) {
         case Qt.Key_Left:
+            moveFocus(sideMode ? 0 : (rtl ? 1 : -1));
+            event.accepted = !sideMode;
+            break;
         case Qt.Key_Up:
             moveFocus(-1);
             event.accepted = true;
             break;
         case Qt.Key_Right:
+            moveFocus(sideMode ? 0 : (rtl ? -1 : 1));
+            event.accepted = !sideMode;
+            break;
         case Qt.Key_Down:
             moveFocus(1);
+            event.accepted = true;
+            break;
+        case Qt.Key_Escape:
+            // Leaves the bar: focus returns to the content.
+            focusVisible = false;
+            focusedIndex = Math.max(0, activeIndex());
+            root.focus = false;
             event.accepted = true;
             break;
         case Qt.Key_Home:
@@ -164,8 +195,10 @@ FocusScope {
         color: root.dividerColor
         width: root.sideMode ? 1 : root.width
         height: root.sideMode ? root.height : 1
-        x: root.sideMode ? root.width - 1 : 0
-        y: 0
+        // The edge that faces the content: right of a left rail, left of a
+        // right rail, top of a bottom bar, bottom of a top bar.
+        x: root.sideMode ? (root.railOnRight ? 0 : root.width - 1) : 0
+        y: root.sideMode ? 0 : (root.edge === "top" ? root.height - 1 : 0)
     }
 
     Repeater {
@@ -181,7 +214,7 @@ FocusScope {
                                              && String(info.badge).length > 0
             readonly property color tint: active ? root.tintActive : root.tintInactive
 
-            x: root.sideMode ? 0 : index * root.tabExtent
+            x: root.sideMode ? 0 : (root.rtl ? root.width - (index + 1) * root.tabExtent : index * root.tabExtent)
             y: root.sideMode ? 8 + index * root.tabExtent : 0
             width: root.sideMode ? root.width : root.tabExtent
             height: root.sideMode ? root.tabExtent : root.height
@@ -198,8 +231,12 @@ FocusScope {
                 anchors.fill: parent
                 anchors.margins: root.sideMode ? 6 : 4
                 radius: 10
-                color: tab.active ? Qt.rgba(root.tintActive.r, root.tintActive.g, root.tintActive.b, 0.16)
-                                  : (hover.hovered ? "#22ffffff" : "transparent")
+                // The wash comes from the tab's own tint, which the app picks to
+                // read against its bar color. A fixed white wash vanished on a
+                // light bar.
+                color: Qt.rgba(tab.tint.r, tab.tint.g, tab.tint.b,
+                               tap.pressed ? (tab.active ? 0.30 : 0.24)
+                                           : (tab.active ? 0.16 : (hover.hovered ? 0.12 : 0)))
                 Behavior on color { ColorAnimation { duration: 120 } }
             }
 
@@ -216,6 +253,8 @@ FocusScope {
             Column {
                 anchors.centerIn: parent
                 spacing: 2
+                scale: tap.pressed ? 0.94 : 1
+                Behavior on scale { NumberAnimation { duration: 90 } }
 
                 Item {
                     id: iconBox
@@ -258,6 +297,7 @@ FocusScope {
                 }
 
                 Text {
+                    visible: root.showLabel
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: Math.min(implicitWidth, tab.width - 8)
                     elide: Text.ElideRight
@@ -274,6 +314,7 @@ FocusScope {
                 cursorShape: Qt.PointingHandCursor
             }
             TapHandler {
+                id: tap
                 acceptedButtons: Qt.LeftButton
                 onLongPressed: root.longPress(tab.index)
                 onPressedChanged: {

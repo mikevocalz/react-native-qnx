@@ -1,0 +1,8 @@
+[1/9] Automatic MOC for target rnqnx_expo_image_under_test
+[2/9] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/252a22fac759/rnqnx-fetcher159/vnext/src/runtime/QtImageCache.cpp.o
+[3/9] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/rnqnx_expo_image_under_test_autogen/mocs_compilation.cpp.o
+[4/9] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/252a22fac759/rnqnx-fetcher159/vnext/src/views/qt/image/ExpoImageItem.cpp.o
+[5/9] Building CXX object CMakeFiles/rnqnx_expo_image_under_test.dir/workspace/scratch/252a22fac759/rnqnx-fetcher159/vnext/src/views/qt/image/QtImageFetcher.cpp.o
+[6/9] Automatic MOC for target rnqnx_image_units_test
+[7/8] Building CXX object CMakeFiles/rnqnx_image_units_test.dir/ImageUnitsTest.cpp.o
+[8/8] Linking CXX executable rnqnx_image_units_test

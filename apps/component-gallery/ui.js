@@ -30,16 +30,12 @@ const useConformance = create((set) => ({
   text: 'QNX input sample',
   toggle: false,
   presses: 0,
-  width: 0,
-  height: 0,
   goTo: (page) => set({ page }),
   chooseRow: (row) => set({ row }),
   setText: (text) => set({ text }),
   setToggle: (toggle) => set({ toggle }),
   setModal: (modal) => set({ modal }),
   press: () => set((state) => ({ presses: state.presses + 1 })),
-  setViewport: (width, height) =>
-    set((state) => (state.width === width && state.height === height ? state : { width, height })),
 }));
 
 function Label({ children, color = MUTED, size = 14, style }) {
@@ -77,30 +73,44 @@ function ActionButton({ title, onPress }) {
   );
 }
 
+// The size of the Screen a card grid sits in. Every mounted page (the five
+// tabs and any drawer destination already visited) measures itself, so each
+// grid reads its own page's width. A single shared store let the last page to
+// lay out set the width for all of them, and a full-width drawer page made the
+// tab pages draw cards as wide as the window instead of window minus the rail.
+const ViewportContext = React.createContext({ width: 0, height: 0 });
+
+function useViewport() {
+  return React.useContext(ViewportContext);
+}
+
 // A tab or drawer page: the gallery background with the page padding, and the
-// store's viewport kept in step with the window. The card grids read
-// `width` from the store, so each page reports it when it lays out.
+// page's own measured size for the grids below it.
 function Screen({ children }) {
-  const setViewport = useConformance((state) => state.setViewport);
+  const [size, setSize] = React.useState({ width: 0, height: 0 });
+  const onLayout = React.useCallback((event) => {
+    const width = Math.round(event.nativeEvent.layout.width);
+    const height = Math.round(event.nativeEvent.layout.height);
+    if (!(width > 0 && height > 0)) return;
+    setSize((previous) =>
+      previous.width === width && previous.height === height ? previous : { width, height }
+    );
+  }, []);
   return h(
     View,
     {
       collapsable: false,
       style: { flex: 1, backgroundColor: BACKGROUND, paddingHorizontal: 28, paddingTop: 18 },
-      onLayout: (event) => {
-        const { width, height } = event.nativeEvent.layout;
-        if (Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0) {
-          setViewport(Math.round(width), Math.round(height));
-        }
-      },
+      onLayout,
     },
-    children
+    h(ViewportContext.Provider, { value: size }, children)
   );
 }
 
 module.exports = {
   h,
   Screen,
+  useViewport,
   INK,
   MUTED,
   ACCENT,

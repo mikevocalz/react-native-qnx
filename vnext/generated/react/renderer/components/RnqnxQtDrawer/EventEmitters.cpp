@@ -13,6 +13,33 @@
 
 namespace facebook::react {
 
+void RNQnxDrawerEventEmitter::onGestureStart(OnGestureStart event) const {
+  dispatchEvent("gestureStart", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, "open", event.open);
+    return payload;
+  });
+}
+
+
+void RNQnxDrawerEventEmitter::onGestureEnd(OnGestureEnd event) const {
+  dispatchEvent("gestureEnd", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, "open", event.open);
+    return payload;
+  });
+}
+
+
+void RNQnxDrawerEventEmitter::onGestureCancel(OnGestureCancel event) const {
+  dispatchEvent("gestureCancel", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, "open", event.open);
+    return payload;
+  });
+}
+
+
 void RNQnxDrawerEventEmitter::onRequestChange(OnRequestChange event) const {
   dispatchEvent("requestChange", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);

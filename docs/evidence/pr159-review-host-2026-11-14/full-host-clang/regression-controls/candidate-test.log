@@ -1,0 +1,152 @@
+Internal ctest changing into directory: /workspace/scratch/853552216e74/pr159/build/host-review159-clang
+UpdateCTestConfiguration  from :/workspace/scratch/853552216e74/pr159/build/host-review159-clang/DartConfiguration.tcl
+Parse Config file:/workspace/scratch/853552216e74/pr159/build/host-review159-clang/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/workspace/scratch/853552216e74/pr159/build/host-review159-clang/DartConfiguration.tcl
+Parse Config file:/workspace/scratch/853552216e74/pr159/build/host-review159-clang/DartConfiguration.tcl
+Test project /workspace/scratch/853552216e74/pr159/build/host-review159-clang
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 30
+    Start 30: qt_react_host_host_test
+
+30: Test command: /workspace/scratch/853552216e74/pr159/build/host-review159-clang/bin/qt_react_host_host_test "-platform" "offscreen"
+30: Working Directory: /workspace/scratch/853552216e74/pr159/build/host-review159-clang
+30: Environment variables:
+30:  ASAN_OPTIONS=detect_leaks=0
+30: Test timeout computed to be: 180
+30: WARNING: Logging before InitGoogleLogging() is written to STDERR
+30: W1114 12:35:20.299940 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+30: W1114 12:35:20.300937 399464128 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000013cd0).
+30: W1114 12:35:20.301017 399464128 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+30: [PASS] inputLifecycleOptOutPreservesExistingDispatch
+30: W1114 12:35:20.543350 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000073d0).
+30: W1114 12:35:20.544462 461092544 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200002c150).
+30: W1114 12:35:20.544588 461092544 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000009050).
+30: [PASS] touchCancelEndsEveryContactAndAllowsIdReuse
+30: W1114 12:35:20.693027 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000bf10).
+30: W1114 12:35:20.693876 419428032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200004e050).
+30: W1114 12:35:20.693946 419428032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000011c50).
+30: [PASS] inputTransparentDecorationPreservesTouchTarget
+30: W1114 12:35:20.883098 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000025c10).
+30: W1114 12:35:20.883647 399464128 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000658d0).
+30: W1114 12:35:20.883705 399464128 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000018250).
+30: [PASS] touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact
+30: I1114 12:35:21.075371 514855488 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+30: W1114 12:35:21.081683 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002a050).
+30: W1114 12:35:21.082574 461092544 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200007ccd0).
+30: W1114 12:35:21.082695 461092544 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400001e050).
+30: [PASS] forgettingTouchTargetCancelsAndClearsResponder
+30: W1114 12:35:21.245959 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002fb50).
+30: W1114 12:35:21.246939 419428032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000089750).
+30: W1114 12:35:21.247004 419428032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000045e50).
+30: [PASS] windowDeactivationCancelsTouchStream
+30: W1114 12:35:21.431281 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000034a10).
+30: W1114 12:35:21.431862 399464128 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000ac850).
+30: W1114 12:35:21.431917 399464128 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400004b450).
+30: [PASS] mouseCaptureCancellationDoesNotCreateHoverTouches
+30: W1114 12:35:21.596081 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000038e50).
+30: W1114 12:35:21.597018 461092544 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000c34d0).
+30: W1114 12:35:21.597168 461092544 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000026050).
+30: [PASS] mouseReleaseClearsCaptureBeforeNativeListeners
+30: W1114 12:35:21.788892 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300003d290).
+30: W1114 12:35:21.789733 419428032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000da5d0).
+30: W1114 12:35:21.789871 419428032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400002b850).
+30: [PASS] decoratedViewTargetsNearestRegisteredAncestor
+30: W1114 12:35:21.910742 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000042150).
+30: W1114 12:35:21.911609 419428032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000f1850).
+30: W1114 12:35:21.911727 419428032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000031650).
+30: [PASS] runtimeEvaluatesJavaScript
+30: W1114 12:35:22.051455 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000044d10).
+30: W1114 12:35:22.052728 461092544 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000b59d0).
+30: W1114 12:35:22.068002 461092544 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000050c50).
+30: [PASS] javaScriptErrorsAreReportedNotSwallowed
+30: W1114 12:35:22.345598 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000478d0).
+30: W1114 12:35:22.346102 419428032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001096d0).
+30: W1114 12:35:22.346236 419428032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000054a50).
+30: [PASS] turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection
+30: W1114 12:35:22.496047 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004a810).
+30: W1114 12:35:22.496444 461092544 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001195d0).
+30: W1114 12:35:22.496605 461092544 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000057a50).
+30: [PASS] retainedSourceCodeTracksSubsequentEvaluations
+30: W1114 12:35:22.632236 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004d750).
+30: W1114 12:35:22.633018 419428032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001294d0).
+30: W1114 12:35:22.633119 419428032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005ae50).
+30: [FAIL] imageLoadedForwardingDoesNotRequireLoaderLookup: Tried to redefine read-only global "nativeModuleProxy", but read-only globals can only be defined once.
+30:
+30: Error: Tried to redefine read-only global "nativeModuleProxy", but read-only globals can only be defined once.
+30: qt_react_host_host_test: /workspace/scratch/853552216e74/pr159/build/host-review159/_deps/rnqnx_hermes-src/API/hermes/hermes.cpp:1213: virtual void facebook::hermes::(anonymous namespace)::HermesRuntimeImpl::ManagedValue<hermes::vm::PinnedHermesValue>::invalidate() [T = hermes::vm::PinnedHermesValue]: Assertion `((1u << 31) & refCount_) == 0 && "This PointerValue was left dangling after the Runtime was destroyed."' failed.
+1/1 Test #30: qt_react_host_host_test ..........Subprocess aborted***Exception:   2.76 sec
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1114 12:35:20.299940 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1114 12:35:20.300937 399464128 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000013cd0).
+W1114 12:35:20.301017 399464128 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+[PASS] inputLifecycleOptOutPreservesExistingDispatch
+W1114 12:35:20.543350 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000073d0).
+W1114 12:35:20.544462 461092544 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200002c150).
+W1114 12:35:20.544588 461092544 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000009050).
+[PASS] touchCancelEndsEveryContactAndAllowsIdReuse
+W1114 12:35:20.693027 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300000bf10).
+W1114 12:35:20.693876 419428032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200004e050).
+W1114 12:35:20.693946 419428032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000011c50).
+[PASS] inputTransparentDecorationPreservesTouchTarget
+W1114 12:35:20.883098 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000025c10).
+W1114 12:35:20.883647 399464128 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000658d0).
+W1114 12:35:20.883705 399464128 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000018250).
+[PASS] touchReleaseUsesTerminalCoordinatesAndKeepsOtherContact
+I1114 12:35:21.075371 514855488 UIManagerBinding.cpp:150] instanceHandle is null, event of type topTouchCancel will be dropped
+W1114 12:35:21.081683 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002a050).
+W1114 12:35:21.082574 461092544 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x51200007ccd0).
+W1114 12:35:21.082695 461092544 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400001e050).
+[PASS] forgettingTouchTargetCancelsAndClearsResponder
+W1114 12:35:21.245959 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300002fb50).
+W1114 12:35:21.246939 419428032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000089750).
+W1114 12:35:21.247004 419428032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000045e50).
+[PASS] windowDeactivationCancelsTouchStream
+W1114 12:35:21.431281 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000034a10).
+W1114 12:35:21.431862 399464128 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000ac850).
+W1114 12:35:21.431917 399464128 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400004b450).
+[PASS] mouseCaptureCancellationDoesNotCreateHoverTouches
+W1114 12:35:21.596081 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000038e50).
+W1114 12:35:21.597018 461092544 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000c34d0).
+W1114 12:35:21.597168 461092544 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000026050).
+[PASS] mouseReleaseClearsCaptureBeforeNativeListeners
+W1114 12:35:21.788892 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300003d290).
+W1114 12:35:21.789733 419428032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000da5d0).
+W1114 12:35:21.789871 419428032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400002b850).
+[PASS] decoratedViewTargetsNearestRegisteredAncestor
+W1114 12:35:21.910742 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000042150).
+W1114 12:35:21.911609 419428032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000f1850).
+W1114 12:35:21.911727 419428032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000031650).
+[PASS] runtimeEvaluatesJavaScript
+W1114 12:35:22.051455 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000044d10).
+W1114 12:35:22.052728 461092544 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120000b59d0).
+W1114 12:35:22.068002 461092544 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000050c50).
+[PASS] javaScriptErrorsAreReportedNotSwallowed
+W1114 12:35:22.345598 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x5130000478d0).
+W1114 12:35:22.346102 419428032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001096d0).
+W1114 12:35:22.346236 419428032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000054a50).
+[PASS] turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection
+W1114 12:35:22.496047 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004a810).
+W1114 12:35:22.496444 461092544 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001195d0).
+W1114 12:35:22.496605 461092544 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000057a50).
+[PASS] retainedSourceCodeTracksSubsequentEvaluations
+W1114 12:35:22.632236 514855488 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x51300004d750).
+W1114 12:35:22.633018 419428032 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x5120001294d0).
+W1114 12:35:22.633119 419428032 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x51400005ae50).
+[FAIL] imageLoadedForwardingDoesNotRequireLoaderLookup: Tried to redefine read-only global "nativeModuleProxy", but read-only globals can only be defined once.
+
+Error: Tried to redefine read-only global "nativeModuleProxy", but read-only globals can only be defined once.
+qt_react_host_host_test: /workspace/scratch/853552216e74/pr159/build/host-review159/_deps/rnqnx_hermes-src/API/hermes/hermes.cpp:1213: virtual void facebook::hermes::(anonymous namespace)::HermesRuntimeImpl::ManagedValue<hermes::vm::PinnedHermesValue>::invalidate() [T = hermes::vm::PinnedHermesValue]: Assertion `((1u << 31) & refCount_) == 0 && "This PointerValue was left dangling after the Runtime was destroyed."' failed.
+
+
+0% tests passed, 1 tests failed out of 1
+
+Total Test time (real) =   2.80 sec
+
+The following tests FAILED:
+	 30 - qt_react_host_host_test (Subprocess aborted)
+Errors while running CTest

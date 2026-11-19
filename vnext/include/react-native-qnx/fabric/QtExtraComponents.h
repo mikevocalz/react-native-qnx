@@ -28,6 +28,10 @@ struct ExtraComponentSet {
   /// on Create and on every Update of a component named in `names`. Returns
   /// false when the item or props do not match the component.
   bool (*applyProps)(QQuickItem* item, const facebook::react::ShadowView& view);
+  /// Runs a Fabric view command (`UIManager.dispatchCommand`) on a mounted item
+  /// of a component named in `names`. Returns false when the set has no such
+  /// command, or null when the set has no commands at all.
+  bool (*dispatchCommand)(QQuickItem* item, const std::string& command);
 };
 
 /// The compiled-in sets, in registration order.
@@ -45,5 +49,10 @@ bool isExtraComponent(const std::string& componentName);
 /// Routes \a view to the set that owns its component. Returns false for a view
 /// no set owns (the caller then does nothing) or when the set rejects it.
 bool applyExtraComponentProps(QQuickItem* item, const facebook::react::ShadowView& view);
+
+/// Routes a view command to the set that owns \a view's component. Returns
+/// false when no set owns the view or the set does not know \a command.
+bool dispatchExtraComponentCommand(QQuickItem* item, const facebook::react::ShadowView& view,
+                                   const std::string& command);
 
 }  // namespace rnqnx::fabric

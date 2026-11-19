@@ -1,5 +1,27 @@
 # Current state
 
+## PR 159 SVG subscription restack (2026-11-17)
+
+PR 159 now incorporates actual published SVG head `6f40a8d5`, including its
+native subscription marker, QNX prop transport and optional native-interest
+seam. The merge preserves the existing modal behavior, image workers and both
+workstreams' evidence. The source and conflict resolutions received independent
+review. [Restack receipt](../validation/pr159-svg-interest-restack-2026-11-17.md).
+
+The two affected Expo module/Fabric executables rebuild and pass, with Expo
+Image enabled and SVG disabled in this existing Debug graph. The real transport
+test, pinned codegen and both TypeScript configurations pass. The prerequisite's
+SVG-enabled 49-test graph and 149 pixel comparisons retain their separate
+receipt; final merged-head hosted renderer ON/OFF results remain required.
+
+Previous published image head `d50e34d9` completed all 15 workflows and 17 jobs,
+including the full hosted JavaScript suites. Its direct and synthetic-merge
+checkouts were verified against the same source tree. That result belongs to
+the previous head; the successor requires its own workflows. Current QNX
+cross-build/runtime attribution, release animation assets and exact-device
+acceptance remain missing. Keep the PR draft and all eleven release gates
+pending. Dated sections below preserve their original validation scope.
+
 ## PR 161 SVG layout subscriptions (2026-11-17)
 
 The native SVG generator retains the existing onSvgLayout subscription marker,
@@ -24,6 +46,39 @@ local passes do not qualify hosted CI or current QNX execution. A fresh clean
 combined QNX build and current-device acceptance remain required. Keep the PR
 draft and all eleven release gates pending. The dated sections below retain
 their original scope.
+
+## PR 159 image workers and cache lifecycle continuation (2026-11-16; 2026-11-17 UTC)
+
+PR 159 now stacks published SVG prerequisite `d3eacc75`. ImageRef computation,
+core image decoding, disk clearing and cache-path lookup use bounded native
+workers. Cancelled running work retains admission until it physically finishes;
+owner callbacks are released before a successor starts. Separate disk and
+memory generations prevent old work from restoring cleared entries, while
+active loads still receive pixels. SVG HTTP delivery no longer depends on
+cache retention. `configureCache` keeps its synchronous contract.
+
+The real-Hermes Expo module/Fabric candidates pass, with original-source and
+mutation controls that fail the intended assertions. The combined standalone
+image/cache/queue graph passes 90 QtTest entries under ASan/UBSan; the separate
+SVG HTTP receipt passes 21 entries. TypeScript, seven existing router suites,
+five affected image/public-entry checks and real QNX/Marathon Metro bundles
+pass. The full local JS runner stops at an unchanged Marathon Unix-socket
+fixture with `EPERM`; it is not counted as a complete pass. Exact integrated-head
+CI and current target qualification remain pending. Broader router prop/RTL/
+resize conformance is unchanged, and all eleven release gates stay pending.
+
+After the final SVG merge, the Expo module passes. The Fabric fixture now
+explicitly subscribes its existing layout scenario to `onLayout`; the initial
+unsubscribed timeout is preserved, and the corrected fixture passes with every
+geometry/event assertion and the production listener guard unchanged.
+
+[Worker controls, scope and rollback](../validation/pr159-image-worker-completion-2026-11-17.md),
+[fetch admission](../validation/pr159-fetcher-admission-2026-11-16.md),
+[callback lifetime](../validation/pr159-callback-lifetime-2026-11-16.md),
+[disk epochs](../validation/pr159-disk-clear-epochs-2026-11-16.md) and
+[SVG delivery](../validation/pr159-svg-image-delivery-2026-11-16.md) preserve the
+source identities, raw logs and independent reviews. No fresh QNX plugin audit,
+release animation asset or exact-device evidence is supplied; keep PR 159 draft.
 
 ## PR 161 subscribed layout dispatch continuation (2026-11-16)
 
@@ -60,6 +115,86 @@ handoff; native source and tests are unchanged. Follow-up CI, a fresh clean
 combined QNX build and current-device validation remain pending. Keep PR 161
 draft and every release gate pending; earlier device receipts do not qualify
 this geometry correction. [Receipt and logs](../validation/pr161-geometry-2026-11-16.md).
+
+## PR 159 review follow-up — 2026-11-14
+
+PR 159 combines the image/router/consumer corrections, keyboard/modal fixes, current main and standalone SVG consumer follow-up 3b24f5c. The final full-host source b6bf7eb passes all 59 enabled QtReactHost cases, fails exactly the two intended cases with five original production files, then passes all 59 after restoration. Exact-head hosted CI and current-target qualification remain open.
+
+[Source, commands, hashes, limitations and rollback](../validation/pr159-review-followup-2026-11-14.md). Image results retain source 252b128; full-host results name b6bf7eb and a separate 55-file source inventory. Initial and restored host binaries share SHA-256 55af47f994614c2ca0110e3dd77004822b0c479772631c7afe4fbb2355712cd1. The consumer merge changes no tested source-tree identity. Prior 125-entry Release logs remain preserved with their stale-MOC omission; the corrected 126-entry run executes that disk-clear regression. Host ASan scope and uninstrumented dependencies are stated explicitly.
+
+## PR 159 drawer route and pointer correction — 2026-11-13
+
+The drawer now selects its navigator destination across all Home child tabs.
+Native hover/focus decoration no longer obscures the row's input target.
+Commit 1f809ce has failing old-source controls, passing JS/type/layout/bundle
+checks, 34 QML cases, the native input regression and zero review findings.
+Nine physical Pi captures show one selected row across five destinations and
+all five Home tabs. The transplanted full host retains two separate failures;
+exact-head CI, the clean combined build and owner-tile promotion remain open.
+[Evidence, provenance and rollback](../validation/pr159-drawer-route-2026-11-13.md).
+
+## PR 159 drawer selection correction — 2026-11-13
+
+SVG d38097f is stacked into PR 159 with both source/evidence sets preserved.
+Dependency/type/docs checks pass; the full local JS runner stops at its Linux-only
+consumer-preview test on macOS. PR 161 renderer ON has two complex-corpus timeouts;
+merge and clean combined target qualification remain pending.
+
+The owner caught two teal rows after Components → Home. The renderer skipped
+transparent background updates, leaving the old selection painted. Commit
+cf43271 clears transparent/removed generic View fills; its regression fails
+before the fix and all eight adapter cases pass with the isolated delta.
+Pi captures now show one teal row for each route, including the final binary/
+HBC pair. The independent review's interrupted-swipe issue is also fixed with
+Zustand gesture state and three regressions. Final four-file review has zero
+findings. Exact-head CI and clean combined qualification remain pending.
+[Evidence and rollback](../validation/pr159-drawer-selection-2026-11-13.md).
+
+## PR 159 drawer and module lifetime continuation — 2026-11-13
+
+Committed d257b5a retains one TurboModule per successful host lookup; its forced
+GC regression fails without retention and passes after restoration. The same
+optimized device bundle now completes its image API sequence. Commit 874ea81
+fixes JS drawer swipe reversal with Zustand state and native drawer dynamic
+metadata/click transport. Pi captures show hover, keyboard focus and Enter
+navigation; the final binary/HBC repeat navigation and image APIs. All 34
+standalone QML cases pass in Release and ASan/UBSan. The transplanted Linux host
+suite retains two separate failures, so only its lifetime case is qualified.
+Inherited cross-build flags/object reuse are corrected in the receipts. CI found cross-test mock caching; the settlement case now runs in a child
+process and the four router tests pass in shared-runner order. A fresh
+combined build and exact-head CI/review remain required before final promotion.
+[Sources, artifacts, limits and rollback](../validation/pr159-drawer-runtime-2026-11-13.md).
+
+## PR 159 fetch worker continuation — 2026-11-13
+
+File/data and disk-cache fetch I/O now run on bounded workers with owner-thread
+completion. Fetchers share a network manager; corrupt/oversized cache recovery
+and safe bounded redirects have regressions. Six Release native executables
+and three ASan/UBSan image executables pass, as does the QNX cross-build and
+Pi 400 resize/cache/ImageRef/blurhash check. The initial slice's independent
+review has zero findings. Exact-head hosted checks remain required. The standalone image-cache link exposed a missing ImageDecode.cpp source;
+that graph is corrected and its clean local loopback test passes. Explicit
+cache API and ImageRef decode/hash/encode worker conversion remains open.
+[Commands, evidence and rollback](../validation/pr159-image-io-2026-11-13.md).
+
+## PR 159 image device continuation — 2026-11-13
+
+The c2badc4 implementation head passed all hosted checks. On the custom-image
+Pi 400, the new Zustand gallery driver shows a second image load after growth
+from 20 to 240 pixels, successful cache/ImageRef/blurhash APIs, GIF frame
+changes after start and stable pixels after stop. Window size remains 1280x800.
+The loader I/O, cache recovery, redirects, navigation and wider conformance
+work remains open. This driver needs its own CI and review.
+[Evidence and rollback](../validation/pr159-device-image-2026-11-13.md).
+
+## PR 159 image resolution continuation — 2026-11-13
+
+Growing a downscaled still image now schedules an adequate decode, respecting
+resource locks and decode options. All 30 native image-item host cases pass;
+the growth and initial-decode race controls fail as expected. The review
+finding is fixed; new-head CI and target
+resize checks remain pending. Other image-loader/navigation gaps stay open.
+[Receipt and rollback](../validation/pr159-image-resize-2026-11-13.md).
 
 ## PR 161 nested SVG and standalone consumer (2026-11-14)
 
@@ -110,6 +245,11 @@ This follow-up still needs its exact-head checks and independent review.
 Start with the [2026-11-13 handoff](HANDOFF_2026-11-13.md): it explains how to
 load and control the app on the Pi 400, what is merged, and what is open.
 The sections below keep their original dates.
+
+## PR 159 build repair — 2026-11-13
+
+The video component row now initializes its optional command handler. Local strict table compilation and JS checks pass; new-head CI and target checks remain pending.
+[Commands and limits](../validation/pr159-table-initializer-2026-11-13.md).
 
 ## PR 161 corpus continuation — 2026-11-13
 

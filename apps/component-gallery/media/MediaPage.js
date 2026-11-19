@@ -16,7 +16,7 @@ function MediaPage({ width }) {
       'QtVideo is not in this build (RNQNX_ENABLE_QT_VIDEO=OFF).'
     );
   }
-  const cardWidth = Math.max(320, Math.min(width, 720));
+  const cardWidth = Math.max(240, Math.min(width, 720));
   return h(
     View,
     null,

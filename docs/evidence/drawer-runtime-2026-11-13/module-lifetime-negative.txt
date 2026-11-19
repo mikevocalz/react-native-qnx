@@ -1,0 +1,4 @@
+[FAIL] turboModuleInstancesSurviveTemporaryLookupsAndGarbageCollection: <transplanted-source>/tests/cpp/QtReactHostHostTest.cpp:405: check failed: !retained.expired()
+[FAIL] renderedTreeIsPainted: <transplanted-source>/tests/cpp/QtReactHostHostTest.cpp:2554: check failed: outer.red() == 0x20
+[FAIL] modalMounts: <transplanted-source>/tests/cpp/QtReactHostHostTest.cpp:2415: check failed: fixture.host().delegate().lastFailures().empty()
+3 QtReactHost host test(s) failed.

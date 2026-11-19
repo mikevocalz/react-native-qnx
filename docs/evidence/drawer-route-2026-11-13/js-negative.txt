@@ -1,0 +1,22 @@
+node:internal/modules/run_main:111
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: /advanced: exactly one drawer destination
+
+0 !== 1
+
+    at check (file:///private/tmp/rnqnx-image-1113/tests/js/qnx-gallery-drawer-selection.test.mjs:50:10)
+    at file:///private/tmp/rnqnx-image-1113/tests/js/qnx-gallery-drawer-selection.test.mjs:64:77
+    at ModuleJob.run (node:internal/modules/esm/module_job:569:25)
+    at async node:internal/modules/esm/loader:650:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:105:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 0,
+  expected: 1,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v26.13.0

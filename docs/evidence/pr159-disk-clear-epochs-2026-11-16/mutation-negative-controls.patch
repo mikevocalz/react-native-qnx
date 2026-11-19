@@ -1,0 +1,14 @@
+--- candidate/ImageDiskCache.cpp
++++ mutant/ImageDiskCache.cpp
+@@ -63 +62,0 @@
+-  if (!applyPendingClearLocked()) return {};
+@@ -134 +132,0 @@
+-  if (!applyPendingClearLocked()) return false;
+@@ -141,0 +140 @@
++  QMutexLocker lock(&state_->mutex);
+@@ -148 +147 @@
+-  if (generation <= state_->clearedGeneration) return true;
++  state_->clearedGeneration = 0;
+@@ -169 +168 @@
+-  if (!success) return false;
++  (void)success;

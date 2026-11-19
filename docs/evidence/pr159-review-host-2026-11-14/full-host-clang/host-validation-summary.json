@@ -1,0 +1,126 @@
+{
+  "source_commit": "b6bf7eb6b37827a592a4547fb4ac7137557f463f",
+  "source_tree": "d2f56c2d54de785744c76d8f1a69a87e14d53edf",
+  "new_source_fixes": [
+    {
+      "commit": "70c170c1bed83c3cbbb8ae6f5bcae48cacea218e",
+      "change": "Explicit std::string conversion for cached SourceCode map lookup",
+      "evidence": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/build-parallel4.log"
+    },
+    {
+      "commit": "b6bf7eb6b37827a592a4547fb4ac7137557f463f",
+      "change": "Idempotent per-runtime TurboModule binding installation",
+      "evidence": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/regression-controls/candidate-test.log"
+    }
+  ],
+  "baseline_scope": "Only the five listed production files restored from d862625 into the candidate tree; regression tests and all other files unchanged. This is a controlled production-hunk baseline, not a full checkout of d862625.",
+  "phases": [
+    {
+      "phase": "candidate-test",
+      "exit_code": 0,
+      "runner_passed_total": 59,
+      "runner_failed_total": null,
+      "log": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/regression-controls-idempotent/candidate-test.log",
+      "executable": {
+        "path": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/bin/qt_react_host_host_test",
+        "bytes": 146402544,
+        "sha256": "55af47f994614c2ca0110e3dd77004822b0c479772631c7afe4fbb2355712cd1"
+      },
+      "metro_bundle": {
+        "path": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/rnqnx-playground.bundle.js",
+        "bytes": 784360,
+        "sha256": "761ef40b9100ae5eec2a9ee830e4a24a33d45554bf7a9784673c27cc5b6ea817"
+      },
+      "ctest_seconds": 76.24,
+      "passed_count": 59,
+      "failed_cases": [],
+      "skip_markers": []
+    },
+    {
+      "phase": "baseline-build",
+      "exit_code": 0,
+      "runner_passed_total": null,
+      "runner_failed_total": null,
+      "log": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/regression-controls-idempotent/baseline-build.log",
+      "executable": null,
+      "metro_bundle": null
+    },
+    {
+      "phase": "baseline-test",
+      "exit_code": 8,
+      "runner_passed_total": null,
+      "runner_failed_total": 2,
+      "log": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/regression-controls-idempotent/baseline-test.log",
+      "executable": {
+        "path": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/bin/qt_react_host_host_test",
+        "bytes": 146400752,
+        "sha256": "565a05d4951031384447231c267049300f6c8546e208bd1c6a971681fbcf57ca"
+      },
+      "metro_bundle": {
+        "path": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/rnqnx-playground.bundle.js",
+        "bytes": 784360,
+        "sha256": "761ef40b9100ae5eec2a9ee830e4a24a33d45554bf7a9784673c27cc5b6ea817"
+      },
+      "ctest_seconds": 75.07,
+      "passed_count": 57,
+      "failed_cases": [
+        "imageLoadedForwardingDoesNotRequireLoaderLookup",
+        "retainedSourceCodeTracksSubsequentEvaluations"
+      ],
+      "skip_markers": []
+    },
+    {
+      "phase": "restored-candidate-build",
+      "exit_code": 0,
+      "runner_passed_total": null,
+      "runner_failed_total": null,
+      "log": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/regression-controls-idempotent/restored-candidate-build.log",
+      "executable": null,
+      "metro_bundle": null
+    },
+    {
+      "phase": "restored-candidate-test",
+      "exit_code": 0,
+      "runner_passed_total": 59,
+      "runner_failed_total": null,
+      "log": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/regression-controls-idempotent/restored-candidate-test.log",
+      "executable": {
+        "path": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/bin/qt_react_host_host_test",
+        "bytes": 146402544,
+        "sha256": "55af47f994614c2ca0110e3dd77004822b0c479772631c7afe4fbb2355712cd1"
+      },
+      "metro_bundle": {
+        "path": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/rnqnx-playground.bundle.js",
+        "bytes": 784360,
+        "sha256": "761ef40b9100ae5eec2a9ee830e4a24a33d45554bf7a9784673c27cc5b6ea817"
+      },
+      "ctest_seconds": 69.28,
+      "passed_count": 59,
+      "failed_cases": [],
+      "skip_markers": []
+    }
+  ],
+  "regression_summary": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/regression-controls-idempotent/summary.json",
+  "toolchain": "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/clang-environment.json",
+  "candidate_build_logs": [
+    "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/configure.log",
+    "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/build.log",
+    "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/resume.json",
+    "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/build-parallel4.log",
+    "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/build-sourcecode-fix.log",
+    "/workspace/scratch/853552216e74/pr159/build/host-review159-clang/build-idempotent-binding.log"
+  ],
+  "gcc_failure_log": "/workspace/scratch/853552216e74/pr159/build/host-review159/qt-react-host-build.log",
+  "metro_build_log": "/workspace/scratch/853552216e74/pr159/build/host-review159/metro-build.log",
+  "limitations": [
+    "Host Linux/offscreen/software rendering only; no QNX cross-build, target runtime, Wayland compositor, device run or release artifact acceptance is established.",
+    "Only the qt_react_host_host_test CTest target ran here, with all 59 enabled cases and no reported skips. Other CTest targets were not requested or executed by this run.",
+    "The host test executable is AddressSanitizer-instrumented/linked according to the existing project target; no claim that every linked production/dependency object is instrumented; UBSan is not enabled on this target.",
+    "This Clang19 build differs from hosted CI toolchain selection; preserve required CI checks on the final remote head."
+  ],
+  "source_restored_and_diff_clean": true,
+  "unchanged_test_source_sha256": "1c52a62c0243445f553bc216c63636b48f5a9639974489e54adbbea2f8462f18",
+  "working_tree_status_observed_after_release": "M  .project-state.json\nA  docs/evidence/pr161-nested-roots-2026-11-14/consumer-checks.txt\nA  docs/evidence/pr161-nested-roots-2026-11-14/consumer-create.log\nA  docs/evidence/pr161-nested-roots-2026-11-14/consumer-install.log\nA  docs/evidence/pr161-nested-roots-2026-11-14/consumer-marathon-bundle.log\nA  docs/evidence/pr161-nested-roots-2026-11-14/consumer-negative-project-create.log\nA  docs/evidence/pr161-nested-roots-2026-11-14/consumer-platform-archive-listing.txt\nA  docs/evidence/pr161-nested-roots-2026-11-14/consumer-project-create.log\nA  docs/evidence/pr161-nested-roots-2026-11-14/consumer-qnx-bundle.log\nA  docs/evidence/pr161-nested-roots-2026-11-14/consumer-validation.json\nA  docs/evidence/pr161-nested-roots-2026-11-14/published-head-ci.json\nA  docs/evidence/pr161-nested-roots-2026-11-14/published-renderer-on-excerpt.txt\nUU docs/handoff/BLOCKERS.md\nUU docs/handoff/CURRENT_STATE.md\nM  docs/handoff/NEXT_ACTIONS.md\nUU docs/handoff/SESSION_LOG.md\nUU docs/handoff/TEST_STATUS.md\nM  docs/releases/v1-readiness.json\nM  docs/validation/pr161-nested-roots-2026-11-14.md\n",
+  "working_tree_status_at_cycle_completion": "",
+  "post_release_note": "After source restoration, successful rerun, and clean git-status observation, the Expo owner was explicitly released and began the agreed CLI/evidence merge. The later status snapshot reflects that separate owner merge; tested production bytes remain those of b6bf7eb."
+}

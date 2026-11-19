@@ -14,7 +14,15 @@ export async function dependencyBaseline(root) {
   const require = createRequire(path.join(root, 'package.json'));
   const direct = manifest.devDependencies;
   for (const [name, version] of Object.entries(direct)) {
-    const installed = await json(require.resolve(`${name}/package.json`));
+    // A package whose `exports` hides package.json (yoga-layout) is read from node_modules.
+    let manifestPath;
+    try {
+      manifestPath = require.resolve(`${name}/package.json`);
+    } catch (error) {
+      if (/** @type {any} */ (error).code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') throw error;
+      manifestPath = path.join(root, 'node_modules', name, 'package.json');
+    }
+    const installed = await json(manifestPath);
     if (installed.version !== version) {
       throw new Error(
         `${name}: installed ${installed.version} disagrees with package.json ${version}`

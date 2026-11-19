@@ -49,6 +49,21 @@ import { qnxTabsScreenOptions } from '@rn-qnx/expo-router-qnx';
 `side`. Give each `Tabs.Screen` `options.qnxIcon` (a glyph or an image URI);
 `tabBarIcon` renders React elements and cannot reach the native bar.
 
+## Props
+
+`Tabs`: `tabBarPosition` (`bottom`, `top`, `left`, `right`; `qnxTabsScreenOptions` sets it
+from the window width), `tabBarShowLabel`, `tabBarActiveTintColor`, `tabBarInactiveTintColor`,
+`tabBarStyle` (`backgroundColor`, `height`, `display: 'none'`), `tabBarBadge`,
+`tabBarBadgeStyle` (`backgroundColor`, `color`), `tabBarLabel`, `tabBarAccessibilityLabel`,
+`headerShown` (drawn by react-navigation, above the bar), `hidden` and `tabBarIcon`. A
+`tabBarIcon` function is drawn by the JavaScript tab bar for that screen set, because React
+elements cannot cross to the native bar; `qnxIcon` keeps the native bar.
+Inactive tabs are `display: none`, so they take no layout and no touches.
+
+`Drawer`: `drawerPosition`, `drawerType` (`front`, `slide`, `back`, `permanent`),
+`drawerStyle.width`, `overlayStyle.backgroundColor`, `overlayAccessibilityLabel`,
+`swipeEnabled` and `swipeEdgeWidth`. Right-to-left follows `I18nManager.isRTL`.
+
 ## Limits
 
 - No stack navigator is provided or tried. expo-router's default `Stack` is a native stack that

@@ -1,0 +1,37 @@
+Start testing: Nov 14 11:31 EST
+----------------------------------------------------------
+1/1 Testing: rnqnx_qt_rnsvg_image_http_test
+1/1 Test: rnqnx_qt_rnsvg_image_http_test
+Command: "/workspace/scratch/853552216e74/pr159/build/pr159-svg-http-asan/rnqnx_qt_rnsvg_image_http_test" "-platform" "offscreen"
+Directory: /workspace/scratch/853552216e74/pr159/build/pr159-svg-http-asan
+"rnqnx_qt_rnsvg_image_http_test" start time: Nov 14 11:31 EST
+Output:
+----------------------------------------------------------
+********* Start testing of RnsvgImageHttpTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : RnsvgImageHttpTest::initTestCase()
+PASS   : RnsvgImageHttpTest::twoElementsWithTheSameUriMakeOneRequest()
+PASS   : RnsvgImageHttpTest::aPrefetchedImageIsReused()
+PASS   : RnsvgImageHttpTest::aBundledAssetFromTheDevServerLoadsLikeAnyOtherUrl()
+PASS   : RnsvgImageHttpTest::anAnimatedPrefetchStillProvidesSvgWithItsFirstFrame()
+PASS   : RnsvgImageHttpTest::aBundledAssetBesideTheBundleLoadsFromAFileUrl()
+PASS   : RnsvgImageHttpTest::aSafeSameOriginRedirectLoadsItsImage()
+PASS   : RnsvgImageHttpTest::httpAndFileFailuresReportAReasonAndAreNotRetried()
+PASS   : RnsvgImageHttpTest::aHrefChangeMidFlightShowsTheNewImageNotTheLateOne()
+PASS   : RnsvgImageHttpTest::deletingAnElementMidFlightIsSafeAndOtherWaitersStillLoad()
+PASS   : RnsvgImageHttpTest::deletingEveryElementMidFlightLeavesNothingBehind()
+PASS   : RnsvgImageHttpTest::aHandleMayOutliveTheProvider()
+PASS   : RnsvgImageHttpTest::dataUrisAreDecodedWithoutTheNetworkIncludingPercentEncodedSvg()
+PASS   : RnsvgImageHttpTest::anSvgFetchedOverHttpIsRendered()
+PASS   : RnsvgImageHttpTest::cleanupTestCase()
+Totals: 15 passed, 0 failed, 0 skipped, 0 blacklisted, 1079ms
+********* Finished testing of RnsvgImageHttpTest *********
+<end of output>
+Test time =   1.21 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_image_http_test" end time: Nov 14 11:31 EST
+"rnqnx_qt_rnsvg_image_http_test" time elapsed: 00:00:01
+----------------------------------------------------------
+
+End testing: Nov 14 11:31 EST

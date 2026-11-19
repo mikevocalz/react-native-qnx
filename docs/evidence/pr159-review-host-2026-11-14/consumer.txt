@@ -1,0 +1,135 @@
+{
+  "action": "created",
+  "destination": "/workspace/scratch/853552216e74/pr159-created-dual",
+  "identity": {
+    "appId": "org.example.created",
+    "displayName": "Created",
+    "componentName": "main"
+  },
+  "platforms": [
+    "qnx",
+    "marathon"
+  ],
+  "archives": [
+    "@rn-qnx/react-native-qnx",
+    "@rn-qnx/metro-config-qnx",
+    "@rn-qnx/react-native-marathon",
+    "@rn-qnx/metro-config-marathon"
+  ],
+  "dependenciesInstalled": false,
+  "nativeBuildVerified": false,
+  "runtimeVerified": false
+}
+Progress: resolved 0, reused 1, downloaded 0, added 0
+Progress: resolved 0, reused 133, downloaded 1, added 0
+Progress: resolved 0, reused 346, downloaded 40, added 0
+Progress: resolved 0, reused 366, downloaded 43, added 0
+Packages are hard linked from the content-addressable store to the virtual store.
+  Content-addressable store is at: /workspace/.pnpm-store/v11
+  Virtual store is at:             node_modules/.pnpm
+Packages: +445
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 445, reused 398, downloaded 47, added 445, done
+
+dependencies:
++ @rn-qnx/metro-config-marathon 0.1.0
++ @rn-qnx/metro-config-qnx 0.1.0
++ @rn-qnx/react-native-marathon 0.1.0
++ @rn-qnx/react-native-qnx 0.1.0
++ expo 58.0.24
++ react 19.3.0
++ react-native 0.88.1
++ zustand 5.1.0
+
+devDependencies:
++ @react-native/metro-config 0.88.1
++ babel-preset-expo 58.0.25
++ metro 0.87.1
++ metro-config 0.87.1
+
+Done in 7.9s using pnpm v12.18.0
+$ metro build index.js --config metro.config.js --platform qnx --dev false --out build/qnx/app.bundle.js
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:317) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:318) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:324) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:330) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:332) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:344) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 4% (2/5)
+ BUNDLE  ./index.js ▓▓▓▓▓▓▓░░░░░░░░░ 48% (14/69)
+ BUNDLE  ./index.js ▓▓▓▓▓▓▓░░░░░░░░░ 48% (136/239)
+ BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 89% (297/315)
+ BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99% (369/404)
+ BUNDLE  ./index.js 
+LOG:Writing bundle output to: build/qnx/app.bundle.js
+LOG:Done writing bundle output
+$ metro build index.js --config metro.marathon.config.js --platform marathon --dev false --out build/marathon/app.bundle.js
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:415) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:416) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:417) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:419) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:427) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:424) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 4% (2/5)
+ BUNDLE  ./index.js ▓▓▓▓▓░░░░░░░░░░░ 36% (31/107)
+ BUNDLE  ./index.js ▓▓▓▓▓░░░░░░░░░░░ 36% (145/241)
+ BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 92% (303/315)
+ BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99% (337/338)
+ BUNDLE  ./index.js 
+LOG:Writing bundle output to: build/marathon/app.bundle.js
+ BUNDLE  ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99% (429/429)
+LOG:Done writing bundle output
+e14eec08251d1b408d576dd200d08dcc41e55bb6f552eed2720e558de095c075  build/qnx/app.bundle.js
+906c8b3a19bb9532bf030194d97aff10fbe48f55650576580666160e04acf81d  build/marathon/app.bundle.js

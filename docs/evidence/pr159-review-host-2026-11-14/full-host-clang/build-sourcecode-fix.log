@@ -1,0 +1,7 @@
+[0/2] Re-checking globbed directories...
+[1/8] Automatic MOC for target rnqnx_react_host
+[2/7] Linking CXX shared library hermes/lib/libhermesvm.so
+[3/7] Building CXX object CMakeFiles/qt_react_host_host_test.dir/tests/cpp/QtReactHostHostTest.cpp.o
+[4/7] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtReactHost.cpp.o
+[5/7] Linking CXX static library librnqnx_react_host.a
+[6/7] Linking CXX executable bin/qt_react_host_host_test

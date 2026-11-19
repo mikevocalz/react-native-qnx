@@ -1,0 +1,8 @@
+[1/8] Automatic MOC for target rnqnx_image_fetch_queue_test
+[2/8] Building CXX object CMakeFiles/rnqnx_image_fetch_queue_test.dir/rnqnx_image_fetch_queue_test_autogen/mocs_compilation.cpp.o
+[3/8] Automatic MOC for target rnqnx_image_units_test
+[4/8] Building CXX object CMakeFiles/rnqnx_image_units_test.dir/rnqnx_image_units_test_autogen/mocs_compilation.cpp.o
+[5/8] Building CXX object CMakeFiles/rnqnx_image_units_test.dir/ImageUnitsTest.cpp.o
+[6/8] Building CXX object CMakeFiles/rnqnx_image_fetch_queue_test.dir/ImageFetchQueueTest.cpp.o
+[7/8] Linking CXX executable rnqnx_image_units_test
+[8/8] Linking CXX executable rnqnx_image_fetch_queue_test

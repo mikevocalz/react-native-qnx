@@ -1,0 +1,125 @@
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+node:internal/modules/run_main:111
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: a short swipe preserves logical state during an interrupted animation
+
+1 !== 0
+
+    at file://<source>/tests/js/fixtures/drawer-settlement.mjs:132:12
+    at ModuleJob.run (node:internal/modules/esm/module_job:569:25)
+    at async node:internal/modules/esm/loader:650:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:105:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v26.13.0
+node:internal/errors:999
+  const err = new Error(message);
+              ^
+
+Error: Command failed: /opt/homebrew/Cellar/node/26.13.0_2/bin/node <source>/tests/js/fixtures/drawer-settlement.mjs
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer
+node:internal/modules/run_main:111
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: a short swipe preserves logical state during an interrupted animation
+
+1 !== 0
+
+    at file://<source>/tests/js/fixtures/drawer-settlement.mjs:132:12
+    at ModuleJob.run (node:internal/modules/esm/module_job:569:25)
+    at async node:internal/modules/esm/loader:650:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:105:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v26.13.0
+
+    at genericNodeError (node:internal/errors:999:15)
+    at wrappedFn (node:internal/errors:544:14)
+    at checkExecSyncError (node:child_process:990:11)
+    at execFileSync (node:child_process:1026:15)
+    at file://<source>/tests/js/qnx-router-drawer-settlement.test.mjs:6:16
+    at ModuleJob.run (node:internal/modules/esm/module_job:569:25)
+    at async node:internal/modules/esm/loader:650:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:105:5) {
+  status: 1,
+  signal: null,
+  output: [
+    null,
+    '',
+    'react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer\n' +
+      'react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer\n' +
+      'react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer\n' +
+      'react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer\n' +
+      'node:internal/modules/run_main:111\n' +
+      '    triggerUncaughtException(\n' +
+      '    ^\n' +
+      '\n' +
+      'AssertionError [ERR_ASSERTION]: a short swipe preserves logical state during an interrupted animation\n' +
+      '\n' +
+      '1 !== 0\n' +
+      '\n' +
+      '    at file://<source>/tests/js/fixtures/drawer-settlement.mjs:132:12\n' +
+      '    at ModuleJob.run (node:internal/modules/esm/module_job:569:25)\n' +
+      '    at async node:internal/modules/esm/loader:650:26\n' +
+      '    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:105:5) {\n' +
+      '  generatedMessage: false,\n' +
+      "  code: 'ERR_ASSERTION',\n" +
+      '  actual: 1,\n' +
+      '  expected: 0,\n' +
+      "  operator: 'strictEqual',\n" +
+      "  diff: 'simple'\n" +
+      '}\n' +
+      '\n' +
+      'Node.js v26.13.0\n'
+  ],
+  pid: 67672,
+  stdout: '',
+  stderr: 'react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer\n' +
+    'react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer\n' +
+    'react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer\n' +
+    'react-test-renderer is deprecated. See https://react.dev/warnings/react-test-renderer\n' +
+    'node:internal/modules/run_main:111\n' +
+    '    triggerUncaughtException(\n' +
+    '    ^\n' +
+    '\n' +
+    'AssertionError [ERR_ASSERTION]: a short swipe preserves logical state during an interrupted animation\n' +
+    '\n' +
+    '1 !== 0\n' +
+    '\n' +
+    '    at file://<source>/tests/js/fixtures/drawer-settlement.mjs:132:12\n' +
+    '    at ModuleJob.run (node:internal/modules/esm/module_job:569:25)\n' +
+    '    at async node:internal/modules/esm/loader:650:26\n' +
+    '    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:105:5) {\n' +
+    '  generatedMessage: false,\n' +
+    "  code: 'ERR_ASSERTION',\n" +
+    '  actual: 1,\n' +
+    '  expected: 0,\n' +
+    "  operator: 'strictEqual',\n" +
+    "  diff: 'simple'\n" +
+    '}\n' +
+    '\n' +
+    'Node.js v26.13.0\n'
+}
+
+Node.js v26.13.0

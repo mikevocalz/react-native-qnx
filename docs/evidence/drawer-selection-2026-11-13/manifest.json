@@ -1,0 +1,22 @@
+{
+  "implementationCommit": "cf43271",
+  "nativeSha256": "8538fcaecbe022d9a586fc8b7e09d12a4a08333565e86219eaed1476d2f424c5",
+  "finalHbcSha256": "295bec66e55ba95d28b4139e7df8a163de4e2531e05f68d40a32a19b27ac4741",
+  "before": {
+    "capture": "before.png",
+    "nativeSha256": "e93f22ef0227a443453e7aa5688c22c1297e777af1c139ae5253169385d3e6ba",
+    "hbcSha256": "b03f946c76a78df2d9a195dadc9a469efb1fed42e62cbb3869b572f88d3f401b"
+  },
+  "intermediateCaptures": {
+    "files": ["components.png", "home.png"],
+    "hbcSha256": "df8bb9a144937f8228f09462ad324da4b53e6adb5c93c58b1580a8cacd9eaeb8"
+  },
+  "finalCapture": "final.png",
+  "sourceFiles": {
+    "vnext/src/fabric/ShadowViewMutationAdapter.cpp": "d4c321f2766bfbe06ac3e3324e69d1b67310a673df2bdb932861cf40cbe6ab17",
+    "packages/expo-router-qnx/src/JsDrawer.js": "1aa78aa352bcedf601ecb0e7a8fdae25e660298eb7babc105dff06eeee93ce4e",
+    "tests/cpp/ShadowViewMutationAdapterHostTest.cpp": "1f0177ac25c310629e6578e604811ab9274811623396afae17c4d6fdf32de145",
+    "tests/js/fixtures/drawer-settlement.mjs": "a67b7f8f56c1cc6f13b329b9c19db8c5dd1ec1920a413d84a30ebdb2f8031ccc"
+  },
+  "inspectedRnColorSourceSha256": "a454e243ddafd603ac02afcf97d5ef26345938b155d60f670deebcee58d7404d"
+}

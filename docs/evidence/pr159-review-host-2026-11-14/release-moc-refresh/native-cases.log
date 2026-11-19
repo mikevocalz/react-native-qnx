@@ -1,0 +1,243 @@
+Start testing: Nov 14 11:52 EST
+----------------------------------------------------------
+1/6 Testing: rnqnx_qt_native_ui_test
+1/6 Test: rnqnx_qt_native_ui_test
+Command: "/workspace/scratch/853552216e74/pr159/build/pr159-native-ui/rnqnx_qt_native_ui_test" "-platform" "offscreen"
+Directory: /workspace/scratch/853552216e74/pr159/build/pr159-native-ui
+"rnqnx_qt_native_ui_test" start time: Nov 14 11:52 EST
+Output:
+----------------------------------------------------------
+********* Start testing of NativeUiQuickTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : NativeUiQuickTest::initTestCase()
+PASS   : NativeUiQuickTest::cssColorsParseTheWayJavaScriptWritesThem()
+PASS   : NativeUiQuickTest::drawerOpensAndClosesFromProps()
+PASS   : NativeUiQuickTest::drawerPanelInsertedBeforeContentKeepsItsRole()
+PASS   : NativeUiQuickTest::drawerStartsOpenWithoutAnimating()
+PASS   : NativeUiQuickTest::scrimCoversMainAndClosesOnTap()
+PASS   : NativeUiQuickTest::escapeRequestsCloseAndRevertsWhenRefused()
+PASS   : NativeUiQuickTest::edgeSwipeOpensPastFortyPercent()
+PASS   : NativeUiQuickTest::edgeSwipeStaysOutOfTheRail()
+PASS   : NativeUiQuickTest::quickFlingOpensEvenWhenShort()
+PASS   : NativeUiQuickTest::swipeDisabledIgnoresDrags()
+PASS   : NativeUiQuickTest::rightDrawerSlidesInFromTheRightAndSlideModePushesContent()
+PASS   : NativeUiQuickTest::backDrawerKeepsThePanelAndSlidesTheContentAway()
+PASS   : NativeUiQuickTest::drawerReadsDynamicMountMetadata()
+PASS   : NativeUiQuickTest::drawerItemsShowHoverAndPressedStates()
+PASS   : NativeUiQuickTest::drawerKeyboardMovesFocusAndPressesItems()
+PASS   : NativeUiQuickTest::drawerSkipsDisabledAndHiddenItems()
+PASS   : NativeUiQuickTest::drawerHoldsFocusWhileOpenAndGivesItBack()
+PASS   : NativeUiQuickTest::swipeEdgeWidthSetsTheStartStrip()
+PASS   : NativeUiQuickTest::rightDrawerOpensFromTheRightEdgeStrip()
+PASS   : NativeUiQuickTest::overlayColorIsTheScrimColor()
+PASS   : NativeUiQuickTest::frontDrawerLaysOverTheContentWithoutMovingIt()
+PASS   : NativeUiQuickTest::drawerWidthMovesThePanelAndTheScrim()
+PASS   : NativeUiQuickTest::swipeMinDistanceRejectsShortDragsThatPassTheFortyPercentRule()
+PASS   : NativeUiQuickTest::gestureEventsBracketADragAndCancelSettlesBack()
+PASS   : NativeUiQuickTest::tabBarSwitchesModeAndReportsSize()
+PASS   : NativeUiQuickTest::contentBesideTheRailEndsInsideTheWindowWithRoundedCorners()
+PASS   : NativeUiQuickTest::tabBarEdgesRtlAndLabels()
+PASS   : NativeUiQuickTest::tabBarPressedStateShowsOnLightAndDarkBars()
+PASS   : NativeUiQuickTest::tabBarPressedStateAndEscape()
+PASS   : NativeUiQuickTest::tabBarMouseAndKeyboard()
+PASS   : NativeUiQuickTest::tabBarLongPress()
+PASS   : NativeUiQuickTest::expoImageAccessibilityFollowsProps()
+PASS   : NativeUiQuickTest::cleanupTestCase()
+Totals: 34 passed, 0 failed, 0 skipped, 0 blacklisted, 18171ms
+********* Finished testing of NativeUiQuickTest *********
+<end of output>
+Test time =  18.23 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_native_ui_test" end time: Nov 14 11:52 EST
+"rnqnx_qt_native_ui_test" time elapsed: 00:00:18
+----------------------------------------------------------
+
+2/6 Testing: rnqnx_image_units_test
+2/6 Test: rnqnx_image_units_test
+Command: "/workspace/scratch/853552216e74/pr159/build/pr159-native-ui/rnqnx_image_units_test" "-platform" "offscreen"
+Directory: /workspace/scratch/853552216e74/pr159/build/pr159-native-ui
+"rnqnx_image_units_test" start time: Nov 14 11:52 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ImageUnitsTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageUnitsTest::initTestCase()
+PASS   : ImageUnitsTest::fitCoverContainAndFill()
+PASS   : ImageUnitsTest::fitNoneKeepsNaturalSizeAndScaleDownNeverGrows()
+PASS   : ImageUnitsTest::positionNamesOffsetsAndPercentages()
+PASS   : ImageUnitsTest::roundedPathClipsCornersAndLimitsRadii()
+PASS   : ImageUnitsTest::blurSpreadsAColorEdge()
+PASS   : ImageUnitsTest::tintKeepsAlphaAndReplacesColor()
+PASS   : ImageUnitsTest::blurHashDecodesTheReferenceVector()
+PASS   : ImageUnitsTest::blurHashRejectsMalformedInput()
+PASS   : ImageUnitsTest::thumbHashDecodesTheReferenceVectors()
+PASS   : ImageUnitsTest::thumbHashRejectsShortInput()
+PASS   : ImageUnitsTest::diskCacheEvictsLeastRecentlyUsedWithinBudget()
+PASS   : ImageUnitsTest::diskCacheRefusesOversizeAndClears()
+PASS   : ImageUnitsTest::diskCacheClearInvalidatesPendingWrites()
+PASS   : ImageUnitsTest::requestKeyFoldsHeadersAndHonoursCacheKey()
+PASS   : ImageUnitsTest::fetcherSendsHeadersAndHitsDiskCacheSecondTime()
+PASS   : ImageUnitsTest::fetcherCancelNeverCallsBack()
+PASS   : ImageUnitsTest::fetcherReadsFilesOnWorkerAndCompletesOnOwner()
+PASS   : ImageUnitsTest::fetcherCancelsAndDestroysBlockedIo()
+PASS   : ImageUnitsTest::fetcherRetainsCacheStateDuringIo()
+PASS   : ImageUnitsTest::fetcherRecoversCorruptAndOversizedCache()
+PASS   : ImageUnitsTest::fetcherFollowsRelativeRedirectAndStripsCrossOriginHeaders()
+PASS   : ImageUnitsTest::fetcherBoundsRedirectsAndRejectsUnsafeTargets()
+PASS   : ImageUnitsTest::sharedNetworkDoesNotReuseCookies()
+PASS   : ImageUnitsTest::redirectsShareOneDeadline()
+PASS   : ImageUnitsTest::decodedCacheHonorsCountAndCostLimits()
+PASS   : ImageUnitsTest::imageRefRegistryNeverReusesIds()
+PASS   : ImageUnitsTest::imageLoadedNotifierReachesListenersUntilUnsubscribed()
+PASS   : ImageUnitsTest::cleanupTestCase()
+Totals: 29 passed, 0 failed, 0 skipped, 0 blacklisted, 1084ms
+********* Finished testing of ImageUnitsTest *********
+<end of output>
+Test time =   1.14 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_image_units_test" end time: Nov 14 11:52 EST
+"rnqnx_image_units_test" time elapsed: 00:00:01
+----------------------------------------------------------
+
+3/6 Testing: rnqnx_expo_image_item_test
+3/6 Test: rnqnx_expo_image_item_test
+Command: "/workspace/scratch/853552216e74/pr159/build/pr159-native-ui/rnqnx_expo_image_item_test" "-platform" "offscreen"
+Directory: /workspace/scratch/853552216e74/pr159/build/pr159-native-ui
+"rnqnx_expo_image_item_test" start time: Nov 14 11:52 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ExpoImageItemTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ExpoImageItemTest::initTestCase()
+PASS   : ExpoImageItemTest::borderRadiusRoundsThePicture()
+PASS   : ExpoImageItemTest::perCornerRadiiRoundOnlyThoseCorners()
+PASS   : ExpoImageItemTest::tintReplacesColorAndKeepsShape()
+PASS   : ExpoImageItemTest::blurSoftensAHardEdge()
+PASS   : ExpoImageItemTest::contentFitNoneDrawsNaturalSizeCentered()
+PASS   : ExpoImageItemTest::contentPositionMovesTheImage()
+PASS   : ExpoImageItemTest::blurhashPlaceholderShowsUntilTheImageArrives()
+PASS   : ExpoImageItemTest::thumbhashSourceDrawsWithoutNetwork()
+PASS   : ExpoImageItemTest::crossDissolveBlendsOldAndNew()
+PASS   : ExpoImageItemTest::flipEffectsPassThroughAnEdgeOnMidpoint()
+PASS   : ExpoImageItemTest::curlFallsBackToCrossDissolve()
+PASS   : ExpoImageItemTest::multipleSourcesPickTheSmallestThatCovers()
+PASS   : ExpoImageItemTest::onLoadReportsSizeCacheTypeAndMediaType()
+PASS   : ExpoImageItemTest::secondViewReadsFromTheSharedMemoryCache()
+PASS   : ExpoImageItemTest::headersReachTheServerAndKeyTheCache()
+PASS   : ExpoImageItemTest::failedLoadReportsTheError()
+PASS   : ExpoImageItemTest::recyclingKeyClearsThePreviousPicture()
+PASS   : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses(direct)
+PASS   : ExpoImageItemTest::animatedGifPlaysAndAutoplayFalsePauses(prefetched-memory)
+PASS   : ExpoImageItemTest::hitSlopExtendsAndPointerEventsNoneIgnoresTouches()
+PASS   : ExpoImageItemTest::downscalingKeepsReportedSize()
+PASS   : ExpoImageItemTest::growingADownscaledViewDecodesEnoughPixels()
+PASS   : ExpoImageItemTest::lockedGrowthDefersDecodeUntilUnlock()
+PASS   : ExpoImageItemTest::upgradingDecodeOptions(disable-downscaling)
+PASS   : ExpoImageItemTest::upgradingDecodeOptions(natural-size-fit)
+PASS   : ExpoImageItemTest::growthDuringInitialDecodeIsRechecked()
+PASS   : ExpoImageItemTest::freshViewReadsTheDiskCacheWhenMemoryIsCleared()
+PASS   : ExpoImageItemTest::imageRefSourceShowsTheDecodedPicture()
+PASS   : ExpoImageItemTest::lockedViewKeepsItsPictureUntilUnlockedOrReloaded()
+PASS   : ExpoImageItemTest::cleanupTestCase()
+Totals: 31 passed, 0 failed, 0 skipped, 0 blacklisted, 8621ms
+********* Finished testing of ExpoImageItemTest *********
+<end of output>
+Test time =   8.66 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_expo_image_item_test" end time: Nov 14 11:52 EST
+"rnqnx_expo_image_item_test" time elapsed: 00:00:08
+----------------------------------------------------------
+
+4/6 Testing: rnqnx_modal_quick_test
+4/6 Test: rnqnx_modal_quick_test
+Command: "/workspace/scratch/853552216e74/pr159/build/pr159-native-ui/rnqnx_modal_quick_test" "-platform" "offscreen"
+Directory: /workspace/scratch/853552216e74/pr159/build/pr159-native-ui
+"rnqnx_modal_quick_test" start time: Nov 14 11:52 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ModalQuickTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ModalQuickTest::initTestCase()
+PASS   : ModalQuickTest::escapeRequestsCloseAndStopsAtTheModal()
+PASS   : ModalQuickTest::escapeFromAFocusedFieldInsideTheModalReachesTheModal()
+PASS   : ModalQuickTest::otherKeysDoNotRequestClose()
+PASS   : ModalQuickTest::focusStaysInTheModalWhenTheAppItemTriesToTakeIt()
+PASS   : ModalQuickTest::focusReturnsToThePreviousItemWhenTheModalCloses()
+PASS   : ModalQuickTest::aModalOpenedAboveAnotherTakesEscapeAndHandsFocusBackOnClose()
+PASS   : ModalQuickTest::aModalClosedBelowAnotherLeavesTheUpperModalFocused()
+PASS   : ModalQuickTest::onlyTheTopModalReclaimsFocusFromTheCoveredApp()
+PASS   : ModalQuickTest::aFieldInACoveredModalCannotTakeFocusFromTheTopModal()
+PASS   : ModalQuickTest::cleanupTestCase()
+Totals: 11 passed, 0 failed, 0 skipped, 0 blacklisted, 43ms
+********* Finished testing of ModalQuickTest *********
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_modal_quick_test" end time: Nov 14 11:52 EST
+"rnqnx_modal_quick_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/6 Testing: rnqnx_image_fetch_queue_test
+5/6 Test: rnqnx_image_fetch_queue_test
+Command: "/workspace/scratch/853552216e74/pr159/build/pr159-native-ui/rnqnx_image_fetch_queue_test" "-platform" "offscreen"
+Directory: /workspace/scratch/853552216e74/pr159/build/pr159-native-ui
+"rnqnx_image_fetch_queue_test" start time: Nov 14 11:52 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ImageFetchQueueTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageFetchQueueTest::initTestCase()
+PASS   : ImageFetchQueueTest::parsesPriorityNames()
+PASS   : ImageFetchQueueTest::startsAtMostMaxConcurrentTasks()
+PASS   : ImageFetchQueueTest::startsWaitingTasksHighestPriorityFirst()
+PASS   : ImageFetchQueueTest::cancelDropsAWaitingTaskOnly()
+PASS   : ImageFetchQueueTest::aTaskThatFinishesAtOnceDoesNotStallTheQueue()
+PASS   : ImageFetchQueueTest::fetcherKeepsLoadsInFlightWithinTheBound()
+PASS   : ImageFetchQueueTest::fetcherStartsHigherPriorityRequestsFirst()
+PASS   : ImageFetchQueueTest::clearingDiskCacheDoesNotRestoreAnInFlightResponse()
+PASS   : ImageFetchQueueTest::viewsLoadInPriorityOrderThroughTheSharedQueue()
+PASS   : ImageFetchQueueTest::cancellingAQueuedLoadNeverStartsIt()
+PASS   : ImageFetchQueueTest::cancellingARunningLoadFreesItsSlot()
+PASS   : ImageFetchQueueTest::cleanupTestCase()
+Totals: 13 passed, 0 failed, 0 skipped, 0 blacklisted, 1457ms
+********* Finished testing of ImageFetchQueueTest *********
+<end of output>
+Test time =   1.54 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_image_fetch_queue_test" end time: Nov 14 11:52 EST
+"rnqnx_image_fetch_queue_test" time elapsed: 00:00:01
+----------------------------------------------------------
+
+6/6 Testing: rnqnx_image_hash_vectors_test
+6/6 Test: rnqnx_image_hash_vectors_test
+Command: "/workspace/scratch/853552216e74/pr159/build/pr159-native-ui/rnqnx_image_hash_vectors_test" "-platform" "offscreen"
+Directory: /workspace/scratch/853552216e74/pr159/build/pr159-native-ui
+"rnqnx_image_hash_vectors_test" start time: Nov 14 11:52 EST
+Output:
+----------------------------------------------------------
+********* Start testing of ImageHashVectorsTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageHashVectorsTest::initTestCase()
+PASS   : ImageHashVectorsTest::blurhashEncodeMatchesTheCReference()
+PASS   : ImageHashVectorsTest::blurhashEncodeRejectsBadInput()
+PASS   : ImageHashVectorsTest::blurhashDecodeMatchesTheReference()
+PASS   : ImageHashVectorsTest::thumbhashEncodeMatchesTheReference()
+PASS   : ImageHashVectorsTest::thumbhashDecodeMatchesTheReference()
+PASS   : ImageHashVectorsTest::thumbhashEncodeScalesLargeImagesDown()
+PASS   : ImageHashVectorsTest::cleanupTestCase()
+Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 31ms
+********* Finished testing of ImageHashVectorsTest *********
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_image_hash_vectors_test" end time: Nov 14 11:52 EST
+"rnqnx_image_hash_vectors_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 14 11:52 EST

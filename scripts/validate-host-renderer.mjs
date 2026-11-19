@@ -84,7 +84,17 @@ for (const [feature, tests] of [
       'rnqnx_qt_rnsvg_values_test',
     ],
   ],
-  ['NATIVE_UI', ['rnqnx_qt_native_ui_test']],
+  [
+    'NATIVE_UI',
+    [
+      'rnqnx_qt_native_ui_test',
+      'rnqnx_image_units_test',
+      'rnqnx_expo_image_item_test',
+      'rnqnx_image_fetch_queue_test',
+      'rnqnx_image_hash_vectors_test',
+    ],
+  ],
+  ['EXPO_IMAGE', ['rnqnx_expo_image_module_host_test', 'rnqnx_expo_image_fabric_host_test']],
   ['MOTION', ['rnqnx_qt_motion_test']],
   ['GRAPHICS', ['rnqnx_qt_graphics', 'rnqnx_qt_graphics_null']],
 ]) {

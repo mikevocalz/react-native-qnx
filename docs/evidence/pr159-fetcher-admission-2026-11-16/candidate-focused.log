@@ -1,0 +1,10 @@
+********* Start testing of ImageUnitsTest *********
+Config: Using QtTest library 6.11.1, Qt 6.11.1 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 11.5.0 20240719 (Red Hat 11.5.0-11)), debian 13
+PASS   : ImageUnitsTest::initTestCase()
+PASS   : ImageUnitsTest::fetcherCancelsAndDestroysBlockedIo()
+PASS   : ImageUnitsTest::fetcherRetainsPrivateQueueUntilWorkerFinishes()
+PASS   : ImageUnitsTest::fetcherCompletesBeforeStartingReentrantQueuedCallback()
+PASS   : ImageUnitsTest::cancelledFileReadsHoldSharedAdmissionUntilFinished()
+PASS   : ImageUnitsTest::cleanupTestCase()
+Totals: 6 passed, 0 failed, 0 skipped, 0 blacklisted, 219ms
+********* Finished testing of ImageUnitsTest *********

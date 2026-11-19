@@ -1,0 +1,6 @@
+[0/2] Re-checking globbed directories...
+[1/7] Automatic MOC for target rnqnx_fabric_adapter
+[2/6] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/ShadowViewMutationAdapter.cpp.o
+[3/6] Linking CXX static library librnqnx_fabric_adapter.a
+[4/6] Linking CXX executable bin/rnqnx_expo_image_fabric_host_test
+[5/6] Linking CXX executable bin/rnqnx_expo_image_module_host_test

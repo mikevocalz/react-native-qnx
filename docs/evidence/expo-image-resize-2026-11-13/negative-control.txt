@@ -1,0 +1,14 @@
+********* Start testing of ExpoImageItemTest *********
+Config: Using QtTest library 6.12.0, Qt 6.12.0 (arm64-little_endian-lp64 shared (dynamic) release build; by Apple LLVM 21.0.0 (clang-2100.3.34.2)), macos 27.0.0
+PASS   : ExpoImageItemTest::initTestCase()
+FAIL!  : ExpoImageItemTest::growingADownscaledViewDecodesEnoughPixels() Compared values are not the same
+   Actual   (loaded.count()): 1
+   Expected (2)             : 2
+   Loc: [<checkout>/tests/native/qt-native-ui/ExpoImageItemTest.cpp(526)]
+FAIL!  : ExpoImageItemTest::lockedGrowthDefersDecodeUntilUnlock() Compared values are not the same
+   Actual   (loaded.count()): 1
+   Expected (2)             : 2
+   Loc: [<checkout>/tests/native/qt-native-ui/ExpoImageItemTest.cpp(543)]
+PASS   : ExpoImageItemTest::cleanupTestCase()
+Totals: 2 passed, 2 failed, 0 skipped, 0 blacklisted, 31842ms
+********* Finished testing of ExpoImageItemTest *********

@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.21)
+project(fmtprobe CXX)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui)
+add_executable(fmtprobe probe.cpp)
+target_link_libraries(fmtprobe PRIVATE Qt6::Core Qt6::Gui)

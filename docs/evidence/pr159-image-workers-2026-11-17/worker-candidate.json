@@ -1,0 +1,19 @@
+{
+  "sources": {
+    "vnext/include/react-native-qnx/runtime/QnxImageLoader.h": "1ce4482026be37ee4404ee41241cf3bf13f8afb82fc6c986e6d6fbba2af3bdd9",
+    "vnext/src/runtime/QnxImageLoaderRefs.cpp": "530d651cdecdcbd5f573448bb7c24419685ca8ff93d2b26c244c84923b54bde8",
+    "vnext/include/react-native-qnx/views/image/ImageTaskQueue.h": "5bb0813547863d7a06edf0a0dbc3efb717992df390217b76af1d810d7e77d331",
+    "tests/cpp/ExpoImageModuleHostTest.cpp": "29bad1e5c914a2d891715b5df6a39f8b72e874340064f55c15162bf01465d7da",
+    "tests/native/qt-native-ui/ImageUnitsTest.cpp": "a253fcdaca05610438c428cc033b65fb170e0d8d263768101be5b9a5d41b770f"
+  },
+  "tests": {
+    "rnqnx_expo_image_module_host_test": {
+      "exit": 0,
+      "binary_sha256": "ae2dd37ec07c076e58baca2cc20e8a47cba00e12394202e1b9176c74d0a53be7"
+    },
+    "rnqnx_expo_image_fabric_host_test": {
+      "exit": 0,
+      "binary_sha256": "d71ac9d636e2959de31d428cc4031e9cdaeb23951cc312f3e0041407ab2df414"
+    }
+  }
+}

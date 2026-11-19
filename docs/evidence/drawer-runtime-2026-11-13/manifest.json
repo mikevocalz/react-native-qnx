@@ -1,0 +1,54 @@
+{
+  "implementationHead": "874ea81",
+  "nativeFiles": {
+    "vnext/src/runtime/QtReactHost.cpp": "182d122c76e21529594ea4908ffaf2f3f694ce5fa82aba506a8340d24d460e9e",
+    "vnext/include/react-native-qnx/fabric/QtNativeUiBridge.h": "5c81207516b651b092f92e5a00697e1ea72958639ef77634e5149f54c8454b19",
+    "vnext/src/fabric/QtNativeUiBridge.cpp": "bb5c6d028c87bd12d91df4885fa5e3697d4f85f657b0bf7895948163e728d318",
+    "vnext/src/fabric/ShadowViewMutationAdapter.cpp": "f950983a951fd0a599533d2e218eab5b319c3369c4a0901a2d2e98b62b4210d1",
+    "native/qt/nativeui/QtDrawer.qml": "96ad5486a4572b15dcea3424579b9503e7c4386ed8e76491f30bd22c4138606e",
+    "vnext/include/react-native-qnx/views/image/ImageDiskCache.h": "c8527a023ce5121c2df45c113f320b342cad03da4934ecc5b7e0cd2f2200e6fe",
+    "vnext/include/react-native-qnx/views/image/QtImageFetcher.h": "f620ed0a3063de7c1763c6efe12722270b48858b7038713a919c4ba333453c85",
+    "vnext/src/views/qt/image/ImageDiskCache.cpp": "3368e1d4251b8ee2d6c460485a5a3993b03d6f8444738ea5825e9b8b24d7b562",
+    "vnext/src/views/qt/image/QtImageFetcher.cpp": "9052641467b76741e5bd988ae8832b422ed58c6ada98048eeb96414f505be24e"
+  },
+  "nativeSourceMatchesContainer": true,
+  "javascriptFiles": {
+    "packages/expo-router-qnx/src/JsDrawer.js": "43cca75a6e976300304f83d4eae37c5dbc2d4926dedac2f2e19740fa00eabee6",
+    "packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js": "ed3cf759034a1573587b01fad738357278d0579246cdf3a434ca99632b51e4e3",
+    "packages/expo-router-qnx/package.json": "e52c87e1af120ddb9f99b1f1df0061c7a9a88406326763c15584652017ed2bdd",
+    "pnpm-lock.yaml": "30ef88d1637b74f719c1e0e82fb0cc61b997b152542e26760186484890ad2a77",
+    "apps/component-gallery/navigation/DrawerProof.js": "7292f2f66a1e19f5a0b92af91f6eef4786e847088e1914364908ed3c49780c7b",
+    "apps/component-gallery/components/advanced/drawer-proof.card.js": "2e78457d810b6e54370c4f3c3698bae10aca4c0a77d6c89e9d43fc209fa2135a",
+    "apps/component-gallery/image/ProofCard.js": "ba37c21c17586805b82b07c2f772d4b65c07a9f4304174d450ada6c548197f98"
+  },
+  "reactNativeVersion": "0.88.1",
+  "inspectedReactNativeFiles": {
+    "ReactCommon/react/nativemodule/core/ReactCommon/TurboModuleBinding.cpp": "e13076545d14c35c8c4de792821fcfda64a1991f367979f3490705dcc4709883",
+    "ReactCommon/react/nativemodule/core/ReactCommon/TurboModule.h": "81fdfa9d859eccad2a233a88ad6eefd6ea180e3b3538fe03f00e5760bfe33709",
+    "Libraries/Pressability/Pressability.js": "e69bf22b5de59c9b5fe61cf97deab986e53f2ec3efd8c855829ff35cbd6a38c1",
+    "ReactCommon/react/renderer/components/view/PointerEvent.cpp": "c7dfea391df2a91ffe1cfd97c65b7fc3bdf8796d9eafdfc8f16c0b7d72bf155b",
+    "ReactCommon/react/renderer/components/view/TouchEventEmitter.cpp": "b0f33a89e1c812112e1457076667863226b4f42247aa35c2b367e577195dd6b7",
+    "Libraries/NativeComponent/BaseViewConfig.android.js": "7f652698d8805d356fb9c946d0796d3ab3e20902d33c8b241a95d5e23fe25b8b",
+    "Libraries/NativeComponent/BaseViewConfig.ios.js": "957a3dbf606155b1664ea04a0f1888cc2a41bdcc1fd4db8c9c7932395e0dc394"
+  },
+  "finalNativeSha256": "e93f22ef0227a443453e7aa5688c22c1297e777af1c139ae5253169385d3e6ba",
+  "finalHbcSha256": "b03f946c76a78df2d9a195dadc9a469efb1fed42e62cbb3869b572f88d3f401b",
+  "stages": {
+    "js-open.png, js-closed.png, js-ignored.png": {
+      "nativeSha256": "f720133e9ba68b9af3278cb6adbc5c31f170bc528ece884c3d4a2307361f5a1b",
+      "hbcSha256": "d2efb0bdf81647eb04b6c0409db94b59412c505ed0aa8a9bb372ea9017b2239a"
+    },
+    "native-hover.png, native-focus.png": {
+      "nativeSha256": "e93f22ef0227a443453e7aa5688c22c1297e777af1c139ae5253169385d3e6ba",
+      "hbcSha256": "d2efb0bdf81647eb04b6c0409db94b59412c505ed0aa8a9bb372ea9017b2239a"
+    },
+    "native-enter.png": {
+      "nativeSha256": "e93f22ef0227a443453e7aa5688c22c1297e777af1c139ae5253169385d3e6ba",
+      "hbcSha256": "6bb1a8426e25fa0e13c91e14cdca88316816d04be37b7369b9e6b71b6389e644"
+    },
+    "retained-loader-apis.png": {
+      "nativeSha256": "75b5888bf75c00b5e3bf6b6cd21b184f498738c62c6af6049506bbc72813ce06",
+      "hbcSha256": "d2efb0bdf81647eb04b6c0409db94b59412c505ed0aa8a9bb372ea9017b2239a"
+    }
+  }
+}

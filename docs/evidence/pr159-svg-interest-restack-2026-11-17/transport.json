@@ -1,0 +1,8 @@
+{
+  "command": ["node", "tests/js/rnsvg-layout-transport.test.mjs"],
+  "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr159",
+  "startedAt": "2026-11-17T06:13:22.248840+00:00",
+  "finishedAt": "2026-11-17T06:13:23.429900+00:00",
+  "elapsedSeconds": 1.1810652160002064,
+  "exitCode": 0
+}

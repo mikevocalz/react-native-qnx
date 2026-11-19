@@ -1,0 +1,7 @@
+{
+  "control": "original synchronous cache methods with reviewed worker and disk epoch dependencies",
+  "source_sha256": "c91ca7f7f68b4e0494d065c14724b651385b14cfc4de86c158f98742ca03af0b",
+  "test_sha256": "03474b9a9b1ae1d1658d5b904dc882549ee02d92bda0189fdb14eca50a2a8426",
+  "binary_sha256": "1fe2a0931873b8fbf4389e1bac1dd72b93e7fbdcf2dfd0d238c3ef5938fe1a69",
+  "exit": 1
+}

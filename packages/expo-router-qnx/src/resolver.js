@@ -10,6 +10,7 @@
 //   .../bottom-tabs/views/BottomTabBar -> BottomTabBar.js (native Qt tab bar or JS)
 //   expo/build/winter/fetch -> shims/expo-fetch.js (no ExpoFetchModule on QNX)
 //   expo-linking/build/ExpoLinking -> shims/expo-linking-native.js
+//   .../bottom-tabs/views/ScreenFallback -> shims/tabs-screen-fallback.js (inactive tabs are display: none)
 //
 // `import { Tabs } from 'expo-router'` and `import { Drawer } from
 // 'expo-router/drawer'` therefore run unchanged. Other platforms resolve the
@@ -29,6 +30,10 @@ const BY_NAME = new Map([
 const BY_FILE = [
   [/[\\/]expo[\\/]build[\\/]winter[\\/]fetch[\\/]index\.js$/, 'expo-fetch.js'],
   [/[\\/]expo-linking[\\/]build[\\/]ExpoLinking\.js$/, 'expo-linking-native.js'],
+  [
+    /[\\/]expo-router[\\/]build[\\/]react-navigation[\\/]bottom-tabs[\\/]views[\\/]ScreenFallback\.js$/,
+    'tabs-screen-fallback.js',
+  ],
 ];
 // Deep imports (react-native-screens/lib/commonjs/..., .../jest/mock) reach
 // the same native-backed code, so they get the same replacement.

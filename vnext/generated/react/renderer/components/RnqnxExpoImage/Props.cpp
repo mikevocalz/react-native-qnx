@@ -22,6 +22,8 @@ ViewManagerAdapter_ExpoImageProps::ViewManagerAdapter_ExpoImageProps(
 
     source(convertRawProp(context, rawProps, "source", sourceProps.source, {})),
     placeholder(convertRawProp(context, rawProps, "placeholder", sourceProps.placeholder, {})),
+    placeholderContentFit(convertRawProp(context, rawProps, "placeholderContentFit", sourceProps.placeholderContentFit, {})),
+    responsivePolicy(convertRawProp(context, rawProps, "responsivePolicy", sourceProps.responsivePolicy, {})),
     contentFit(convertRawProp(context, rawProps, "contentFit", sourceProps.contentFit, {})),
     contentPosition(convertRawProp(context, rawProps, "contentPosition", sourceProps.contentPosition, {})),
     transition(convertRawProp(context, rawProps, "transition", sourceProps.transition, {})),
@@ -56,6 +58,14 @@ folly::dynamic ViewManagerAdapter_ExpoImageProps::getDiffProps(
 
   if (placeholder != oldProps->placeholder) {
     result["placeholder"] = placeholder;
+  }
+
+  if (placeholderContentFit != oldProps->placeholderContentFit) {
+    result["placeholderContentFit"] = placeholderContentFit;
+  }
+
+  if (responsivePolicy != oldProps->responsivePolicy) {
+    result["responsivePolicy"] = responsivePolicy;
   }
 
   if (contentFit != oldProps->contentFit) {
