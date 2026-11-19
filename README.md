@@ -110,7 +110,7 @@ Reanimated, Gesture Handler, Qt SVG and RNSVG on.
 ## Requirements
 
 - Host for JavaScript work: macOS or Linux, Node 26 or newer, pnpm 12.18.0.
-- Host renderer: Qt 6.11.1 or newer, CMake and Ninja.
+- Host renderer: Qt 6.11.1 or newer, CMake and Ninja. The quick start was run with Qt 6.12.0, CMake 4.4.5 and Ninja 1.13.2 on macOS.
 - QNX cross-builds: an x86-64 Linux host (Ubuntu 22.04 is the canonical one) with a licensed QNX SDP
   8.0.5, because SDP 8.0 ships Linux and Windows host tools only. `pnpm qnx doctor` reports gaps.
 - Target: a Raspberry Pi 400 on a custom BCM2711 QNX 8.0.5 image, or a stock Pi 4 or Pi 5 on QSTI
