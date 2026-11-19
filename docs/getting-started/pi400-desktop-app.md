@@ -116,8 +116,11 @@ Copy into that directory:
 - `org.rnqnx.showcase` and `app.bundle.js`
 - `icons/`
 - `libhermesvmlean.so` from the QNX Hermes build
-- `assets/icon.png` as `assets/assets/icon.png` (the gallery's Image card)
-- `assets/anim.gif` and `assets/anim.webp` under `assets/assets/` (the Expo Image card)
+- the bundled assets: run `node scripts/stage-gallery-assets.mjs --out <dir>` on the
+  build host and copy the resulting `assets/` tree. It stages `assets/icon.png`
+  (Image card), `assets/anim.gif` and `assets/anim.webp` (Expo Image card) and
+  the media clips under `assets/assets/`. Run it with `--check <dir>` against a
+  deploy directory to confirm nothing is missing before switching the launcher.
 
 ## Launch
 

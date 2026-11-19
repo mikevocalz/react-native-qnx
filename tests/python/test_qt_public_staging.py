@@ -53,7 +53,12 @@ class StagingTest(unittest.TestCase):
         for mod in ('qtbase', 'qtdeclarative', 'qtshadertools', 'qtimageformats'):
             self.write(self.src / mod / 'LICENSES/LGPL-3.0-only.txt', 'license fixture')
         self.audit = self.base / 'audit.json'
-        self.audit.write_text(json.dumps({'third_party_components': {}, 'embedded_attributions': []}))
+        # The staged qwebp and qtiff plugins bundle libwebp and libtiff, so the
+        # default audit has to carry their notices or staging refuses.
+        self.audit.write_text(json.dumps({'third_party_components': {
+            f'qtimageformats/src/3rdparty/{name}': {'attribution': [{
+                'name': name, 'license': 'BSD-3-Clause'}]}
+            for name in ('libwebp', 'libtiff')}, 'embedded_attributions': []}))
         tool = self.base / 'bin/ntoaarch64-readelf'
         self.write(tool, f'#!{sys.executable}\nimport os, sys\n'
                    'if os.environ.get("READELF_FAIL"): sys.exit(9)\n'
@@ -181,6 +186,24 @@ class StagingTest(unittest.TestCase):
             self.assertIn(name, notices)
         self.assertIn('licenses/qtimageformats/attributed/src/3rdparty/libwebp-fixture/NOTICE', entries)
 
+    def test_missing_codec_attribution_preserves_previous_runtime(self):
+        # The qtbase audit alone (the recipe Devin flagged) must not stage.
+        for kept, expected in (('libwebp', 'no tiff attribution'), ('libtiff', 'no webp attribution')):
+            with self.subTest(kept=kept):
+                self.audit.write_text(json.dumps({'third_party_components': {
+                    f'qtimageformats/src/3rdparty/{kept}': {'attribution': [{
+                        'name': kept, 'license': 'BSD-3-Clause'}]}}, 'embedded_attributions': []}))
+                self.assert_preserved_failure(expected)
+        self.audit.write_text(json.dumps({'third_party_components': {}, 'embedded_attributions': []}))
+        self.assert_preserved_failure('no webp attribution')
+
+    def test_no_audit_with_bundled_codec_plugins_preserves_previous_runtime(self):
+        before = self.snapshot()
+        result = self.run_stage(audits=[])
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn('no SPDX audit was supplied', result.stderr)
+        self.assertEqual(self.snapshot(), before)
+
     def test_missing_imageformat_plugin_preserves_previous_runtime(self):
         (self.imageformats / 'plugins/imageformats/libqwebp.so').unlink()
         self.assert_preserved_failure('missing in public build')
@@ -198,7 +221,9 @@ class StagingTest(unittest.TestCase):
         self.audit.write_text(json.dumps({
             'third_party_components': {'qtimageformats/src/3rdparty/webp': {
                 'attribution': [{'name': 'selected-webp', 'license': 'MIT',
-                                 'license_files': ['NOTICE']}]}},
+                                 'license_files': ['NOTICE']}]},
+                'qtimageformats/src/3rdparty/libtiff': {
+                'attribution': [{'name': 'libtiff', 'license': 'MIT'}]}},
             'embedded_attributions': []}))
         result = self.run_stage()
         self.assertEqual(result.returncode, 0, result.stderr)

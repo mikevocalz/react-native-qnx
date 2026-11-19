@@ -56,6 +56,7 @@
     "qnx": "node packages/react-native-qnx-cli/src/bin.mjs",
     "qnx:device": "node packages/qnx-devtools/src/cli.mjs",
     "expo:qnx": "node packages/expo-qnx/src/cli.mjs",
+    "stage:gallery-assets": "node scripts/stage-gallery-assets.mjs",
     "validate:clean-app": "bash scripts/validate-clean-app.sh",
     "docs:sync": "node scripts/validate-docs.mjs --write",
     "validate:docs": "node scripts/validate-docs.mjs",
