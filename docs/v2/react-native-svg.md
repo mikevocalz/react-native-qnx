@@ -253,8 +253,13 @@ Each of these has a cause that can be shown; none is a guess.
 state library re-renders the element with new props and the retained tree
 repaints. `Animated.Value` objects passed into SVG props
 (`createAnimatedComponent(Circle)`) use the package's `setNativeProps` path.
-Reanimated's `useAnimatedProps` needs the Worklets runtime, which is not merged
-(pull request 149 is an open draft), so it is not claimed.
+Reanimated's `useAnimatedProps` needs the Worklets runtime. Worklets and
+Reanimated are now merged (pull request 149), and the Pi 400 run 2 on 2026-11-19
+rendered the SVG cards alongside them
+([receipt](../evidence/pr149-pi400-run2-2026-11-19/README.md)). That run did not
+drive SVG props from `useAnimatedProps`, so Reanimated-animated SVG props remain
+unclaimed on the device. The host fixture covers a bounded SVG layout-event path
+only ([Gesture Handler on QNX](../reanimated-gesture-handler-qnx.md)).
 
 ## Renderer choice
 

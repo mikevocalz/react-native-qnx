@@ -28,8 +28,8 @@
     "qnxSdp": "8.0.5",
     "stockTarget": "Pi 4/5 QSTI 0.5.0 build 50; full-runtime device result pending",
     "experimentalTarget": "Pi 400 custom BCM2711 image; scoped Hello World/Nitro/runtime/input receipts",
-    "qtTarget": "Historical Pi 400 receipts: 6.12.0 evaluation expires 2026-11-17. Selected route: eligible open-source Qt per ADR-0013; separate public-source build receipt pending.",
-    "hostedCi": "blocked before runner startup by billing/spending limits at the reviewed baseline",
+    "qtTarget": "Historical Pi 400 receipts: 6.12.0 evaluation expires 2026-11-17. Selected route: eligible open-source Qt per ADR-0013. Public-source Qt 6.12.0 Pi 400 receipts exist from 2026-11-12 (docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md, docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md); no gate is closed by them.",
+    "hostedCi": "blocked before runner startup by billing/spending limits at the reviewed baseline (2026-11-07); hosted checks have run since, see docs/releases/required-checks.md",
     "performance": "unmeasured on QNX",
     "pr105": {
       "reviewedAt": "2026-11-10",

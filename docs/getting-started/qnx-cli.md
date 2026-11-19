@@ -39,6 +39,14 @@ cmake --build build/playground --target rnqnx_playground_host
 ./build/playground/bin/rnqnx_playground_host --bundle build/dashboard.bundle.js
 ```
 
+The `rnqnx_playground_host` target is only defined when CMake finds Qt 6.11.1 or
+newer (`CMakeLists.txt`, the `RNQNX_REQUIRE_FULL_HOST_RENDERER` branch); without
+Qt the configure step still succeeds and the build fails on an unknown target.
+Add `-DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON` to fail at configure time instead.
+CI configures through the `linux-host-renderer` preset, which also sets clang,
+`RNQNX_REQUIRE_FULL_HOST_RENDERER=ON` and `RNQNX_FETCH_REACT_NATIVE_DEPS=ON`;
+the shorter command above was not run for this edit.
+
 For an offscreen capture, append `-platform offscreen --screenshot build/dashboard.png`.
 The runner's existing default window dimensions remain unchanged. This host
 run is separate from QNX execution.

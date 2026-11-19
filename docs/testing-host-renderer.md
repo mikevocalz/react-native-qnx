@@ -3,8 +3,8 @@
 The ordinary `test:cpp:host` lane remains a fast smoke lane on machines without
 Qt. A successful smoke run does **not** validate the renderer. The separate
 `SDK 58 full host renderer` workflow requires Qt 6.11.1, the frozen SDK 58 / React
-Native 0.88.0-rc.3 dependencies, and Hermes source commit
-`4188b63f24026ca62b79dc81d95db122a59c6089` selected by that RN release.
+Native 0.88.1 dependencies, and Hermes source commit
+`9a115f15785851f4ff2747ebb090ddd066fc8ad2` (tag `hermes-v260318099.0.5`) selected by that RN release.
 
 On Linux with Clang (using the system libstdc++ ABI), CMake 3.31.9+, Ninja, OpenGL/EGL development packages,
 Python, ICU development headers/libraries, and Qt 6.11.1 Core/Gui/Qml/Quick installed:

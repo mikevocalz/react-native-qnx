@@ -388,9 +388,13 @@ scheduling, boot, graphics or default-window policy changed.
   coverage need named target results. See the separate device columns in the
   [support table](../component-support.md).
 - Startup-to-first-frame, presented-frame interval and RSS are unmeasured.
-- The reviewed baseline had hosted CI billing/spending refusals.
-  [PR #68](https://github.com/mikevocalz/react-native-qnx/pull/68/checks) now starts
-  hosted jobs; candidate results remain separate from local checks.
+- The reviewed baseline (2026-11-07) had hosted CI billing/spending refusals.
+  Hosted jobs have run since: [required-checks.md](../releases/required-checks.md)
+  records dispatch results, and the required checks `validate`, `image-cache` and
+  the two `Qt 6.11 / RN 0.88 / Hermes` jobs ran on PR #149's head before it merged
+  into `main` on 2026-11-19 (`gh pr checks 149`: all passed; the `Devin Review`
+  check, which is not required, reported "Review skipped: diff exceeds the size
+  limit"). Candidate results remain separate from local checks.
 - Open-source Qt is the selected path, with no paid-license prerequisite, per
   [ADR-0013](../adr/0013-open-source-qt.md). The older evaluation artifacts expire
   on 17 November 2026; qualify the separate public-source build and its

@@ -47,6 +47,16 @@ added one at a time with size/time data.
 
 ### Tier 1 component-backing
 
+"Host installed" is a host-build fact only. `ImageFormats` is the exception to
+"candidate": `scripts/qt-public/build-imageformats-qnx.sh` cross-builds the
+plugins (for example `libqwebp.so`) and `scripts/qt-public/stage-runtime.py` stages
+them into the runtime. No CMake target links `Qt6::ImageFormats`; Qt loads the
+plugins at run time from `plugins/imageformats`. The deployed file list of the
+Pi 400 [run 2](evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS) holds only
+`plugins/imageformats/libqsvg.so` in that directory, while the same run captured
+animated GIF and WebP frames changing, so the receipt does not record which
+decoder produced them.
+
 | CMake component       | Qt module                    | Tier | Justification                                    | License status (open-source) | Host installed | QNX size delta | QNX build time delta |
 | --------------------- | ---------------------------- | ---- | ------------------------------------------------ | ---------------------------- | -------------- | -------------- | -------------------- |
 | `QuickControls2`      | Qt Quick Controls            | 1    | native `Button`, `Switch`, `Slider`, `TextField` | LGPLv3 / GPLv2               | yes            | TBD            | TBD                  |

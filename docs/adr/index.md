@@ -20,11 +20,11 @@ This directory records significant architectural decisions for `react-native-qnx
 | [0012](0012-quick-controls-styling.md)                        | Quick Controls style for QNX                                    | Proposed                                           | 2026-08-14 |
 | [0013](0013-open-source-qt.md)                                | Open-source Qt without a paid-license prerequisite              | Accepted                                           | 2026-11-07 |
 | [0015](0015-marathon-linux-wayland-native-target.md)          | MarathonOS Linux/Wayland target on the shared Qt/Fabric backend | Proposed                                           | 2026-11-02 |
-| [0016](0016-window-chrome-on-qnx-screen.md)                   | Client-drawn window chrome on QNX Screen                        | Proposed; host tests only                          | 2026-11-12 |
+| [0016](0016-window-chrome-on-qnx-screen.md)                   | Client-drawn window chrome on QNX Screen                        | Proposed; host tests, Pi 400 close only            | 2026-11-12 |
 | [0017](0017-qt-qnx-optimization-level.md)                     | Compile public-source Qt for QNX at -O2                         | Accepted; rebuild pending                          | 2026-11-12 |
 | [0018](0018-runner-hosting-and-sdp-boundary.md)               | Runner hosting, signing and the QNX SDP boundary                | Accepted; no runner published                      | 2026-11-12 |
 | [0019](0019-nitro-package-metadata.md)                        | QNX native build metadata for Nitro packages                    | Accepted; host tests only                          | 2026-11-12 |
-| [0020](0020-worklets-reanimated-gesture-handler-bootstrap.md) | Native bootstrap for Worklets, Reanimated and Gesture Handler   | Accepted; Worklets device-run                      | 2026-11-13 |
+| [0020](0020-worklets-reanimated-gesture-handler-bootstrap.md) | Native bootstrap for Worklets, Reanimated and Gesture Handler   | Accepted; Pi 400 runs 2026-11-13 and 2026-11-19    | 2026-11-13 |
 
 ADR-0015 was filed as a second ADR-0013 and renumbered on 2026-11-11. Links to
 `0013-marathon-linux-wayland-native-target.md` now point to

@@ -197,4 +197,4 @@ when that implementation begins.
 
 Rollback is reverting these documentation/evidence changes. No dependency,
 runtime, display/window contract, graphics boot, permission or application-state
-migration is needed. CI remains subject to the existing GitHub billing blocker.
+migration is needed. When this audit was written, hosted CI was blocked by GitHub billing; hosted checks have run since (see [required-checks](releases/required-checks.md)).

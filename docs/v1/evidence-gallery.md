@@ -5,10 +5,22 @@ on. A receipt that covers a host run and a device run appears in both tables;
 each row states only what ran on that table's target. A host result never
 counts toward a device column.
 
-All receipts below are dated 2026-11-06 or 2026-11-07 and record the candidate
-revision named inside them. None was rerun for this page. They are historical
-prerequisite evidence and have not been attached to any v1 gate in
-[v1-readiness.json](../releases/v1-readiness.json).
+All receipts in the tables below are dated 2026-11-06 or 2026-11-07 and record
+the candidate revision named inside them. None was rerun for this page. They are
+historical prerequisite evidence and have not been attached to any v1 gate in
+[v1-readiness.json](../releases/v1-readiness.json). The Hello World and Nitro
+receipts ran Nitro `1.0.0-alpha.nightly.105.g69d365fc9b18`; the pin on `main`
+is `alpha.nightly.136.gdb81de61bd32`, and the Nitro device result was not rerun on it.
+
+Three later Pi 400 receipts, dated 2026-11-19, are not in the tables:
+[run 1](../evidence/pr149-pi400-run1-2026-11-19/README.md) (commit `26bd6aa`),
+[run 2](../evidence/pr149-pi400-run2-2026-11-19/README.md) (commit `240dc08`) and
+[the held-key run](../evidence/pr149-pi400-keyhold-2026-11-19/README.md). They
+cover Worklets, Reanimated, Gesture Handler pan, tap and double-tap, SVG,
+`expo-image` animated GIF and WebP, modal and drawer Escape, and key repeat, on a
+1024x768 display. They do not cover pinch, rotation, multi-pointer input,
+1920x1080, Video, Audio or a gesture that runs while JavaScript is blocked.
+They are not attached to any v1 gate.
 
 | Target                       | What that target means here                                                  |
 | ---------------------------- | ---------------------------------------------------------------------------- |

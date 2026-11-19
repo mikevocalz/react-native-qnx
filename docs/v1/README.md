@@ -6,9 +6,9 @@ Draft. This is the documentation set for the v1 release of the React Native
 page below describes the current `main` branch, and every device claim names
 the board it ran on.
 
-Gates 8 to 11 come from
-[PR #115](https://github.com/mikevocalz/react-native-qnx/pull/115); until it
-merges, the readiness record on `main` lists seven.
+Gates 8 to 11 came from
+[PR #115](https://github.com/mikevocalz/react-native-qnx/pull/115), merged on
+2026-11-12; the readiness record on `main` lists all eleven.
 
 ## Get started
 
@@ -31,8 +31,10 @@ QSTI are different targets with different results.
   React Native, React, Expo, Metro, Nitro, Hermes and toolchain versions.
 - [Nitro v1 API policy](../platform-modernization/NITRO_V1_API_POLICY.md) and
   [API contracts](../nitro/API_CONTRACTS.md): what native modules can use.
-- [Reanimated and Gesture Handler gap](../reanimated-gesture-handler-qnx-map.md):
-  why these libraries are not supported yet.
+- [Reanimated and Gesture Handler on QNX](../reanimated-gesture-handler-qnx.md):
+  what ran on the Pi 400 on 2026-11-19 and what did not (pinch, rotation,
+  multi-pointer, busy-JS rendering, 1920x1080). The earlier
+  [map](../reanimated-gesture-handler-qnx-map.md) predates the integration.
 
 ## Evidence
 

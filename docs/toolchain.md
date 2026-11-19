@@ -6,7 +6,12 @@ The licensed Linux/amd64 development container has QNX SDP 8.0.5. The physical
 Pi 400 has executed the cross-built C++20 and Hermes probes. G0-A and the
 under-30-second G0-D deploy/run check have measured evidence below. Qt 6.12.0
 LTS source is selected for the temporarily licensed evaluation; a Qt target
-build and real React Native rendering are still pending.
+build and real React Native rendering were still pending on that date.
+Both have since run on the Pi 400: see
+[the 2026-11-07 Hello World receipt](evidence/pi400-hello-world-2026-11-07.txt)
+(Qt 6.12.0 evaluation build, Hermes, Fabric, RN 0.88.1, 640x480) and the
+[2026-11-19 gallery runs](evidence/pr149-pi400-run2-2026-11-19/README.md)
+(public-source Qt 6.12.0, 1024x768).
 
 ## Historical baseline (2026-08-14, superseded)
 
