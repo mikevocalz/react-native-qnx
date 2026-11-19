@@ -9,8 +9,13 @@ needs a Pi-400-specific device tree and Wi-Fi firmware.
 This is different from the repository's current stock-QSTI baseline:
 
 - **Pi 4 / Pi 5:** current QNX Everywhere QSTI 0.5.0 build 50 + SDP 8.0.5
-- **Pi 400:** QNX-published custom-image adaptation; physical
-  `react-native-qnx` validation is still pending
+- **Pi 400:** QNX-published custom-image adaptation; scoped
+  `react-native-qnx` device receipts exist from one board (Hello World on
+  2026-11-07, the PR 149 gallery runs on 2026-11-19; see
+  [evidence](../evidence/pi400-hello-world-2026-11-07.txt) and
+  [run 2](../evidence/pr149-pi400-run2-2026-11-19/README.md)). Release-level
+  validation is not done: the v1 gates stay open and the stock Pi 4 / Pi 5 QSTI
+  target has no receipt
 
 The QNX Pi 400 article is based on the Pi 4 CTI release `CTI-8.0.2`. Do not
 describe a Pi 400 run as equivalent to the repository's SDP 8.0.5/QSTI build-50
@@ -274,10 +279,12 @@ There are three separate claims; keep them separate:
 1. **QNX boots on Pi 400** — covered by QNX's published custom-image recipe.
 2. **react-native-qnx native Screen lane runs on Pi 400** — pending a captured
    `pnpm pi:install` hardware run.
-3. **full React Native + Hermes + Qt Quick runtime runs on Pi 400** — later
-   milestone after the native Screen and runtime probes pass.
+3. **full React Native + Hermes + Qt Quick runtime runs on Pi 400** — scoped
+   receipts exist on the custom image (Hello World on 2026-11-07, the component
+   gallery on 2026-11-19, 1024x768 only). Neither is a release acceptance or a
+   stock-QSTI result.
 
-Until #2 is captured, Pi 400 support remains experimental in this repository.
+Until #2 is captured and the v1 gates close, Pi 400 support remains experimental in this repository.
 
 ## Troubleshooting
 

@@ -1,7 +1,7 @@
 include_guard(GLOBAL)
 
 option(RNQNX_ENABLE_WEBSOCKETS
-  "Enable the experimental host Qt WebSockets backend (QNX acceptance pending)" OFF)
+  "Enable the experimental Qt WebSockets backend (run on a Pi 400 as the dev-client transport; QNX release acceptance pending)" OFF)
 
 if(RNQNX_ENABLE_WEBSOCKETS)
   # QNX: Qt WebSockets cross-built from the public Qt 6.12.0 source

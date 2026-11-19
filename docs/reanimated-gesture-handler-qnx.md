@@ -36,9 +36,16 @@ control.
 See the [Linux receipt](evidence/pr149-linked-host-2026-11-17/README.md) for the
 linked build, images, tests and limits. This closes a host application-linkage
 gap and exercises the implemented timing/pan path. It does not qualify the
-remaining recognizers, layout/scroll behavior, busy-JS rendering or the current
-branch on physical QNX. The device receipts below remain dated observations of
-their recorded candidates.
+remaining recognizers, layout/scroll behavior or busy-JS rendering. The Pi 400
+runs of 2026-11-19 ([run 1](evidence/pr149-pi400-run1-2026-11-19/README.md),
+commit `26bd6aa`; [run 2](evidence/pr149-pi400-run2-2026-11-19/README.md), commit
+`240dc08`) add device observations: the Worklets proof on a `ui-worklet` thread,
+`withSpring` to its end state, Gesture Handler pan with spring-back, tap, double-tap
+and a swipeable list, all from single-pointer injected input on a 1024x768
+display. They do not cover pinch, rotation, multi-pointer input, 1920x1080, or a
+gesture running while JavaScript is blocked (run 1: `0 of 40 UI worklet jobs ran
+inside the busy window`). The earlier device receipts below remain dated
+observations of their recorded candidates.
 
 With both SVG and Reanimated enabled, a per-host registry predicate also admits
 SVG layout events for native subscribers without a React layout prop. The linked
