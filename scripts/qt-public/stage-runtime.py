@@ -48,6 +48,12 @@ QML = {
     'qml/QtQuick/Shapes': ['qmldir', 'plugins.qmltypes', 'libqmlshapesplugin.so'],
 }
 MODULES = ('qtbase', 'qtdeclarative', 'qtshadertools', 'qtimageformats')
+# Plugins that statically link bundled third-party code. build-imageformats-qnx.sh
+# turns the system libraries off, so the code is compiled into the plugin and its
+# notice must ship with it. The audit passed to this script must list a component
+# whose source directory or attribution name contains each marker.
+BUNDLED_CODEC_NOTICES = {'plugins/imageformats/libqwebp.so': 'webp',
+                         'plugins/imageformats/libqtiff.so': 'tiff'}
 
 @contextmanager
 def staging_destination(destination):
@@ -182,6 +188,10 @@ with staging_destination(out) as out:
     # copyright line and SPDX id are written here, and the license text is the
     # module's LICENSES/<id>.txt copied above.
     audits = [Path(arg) for arg in sys.argv[2:]]
+    staged_codecs = sorted(set(BUNDLED_CODEC_NOTICES) & set(entries))
+    if staged_codecs and not audits:
+        sys.exit(f'{", ".join(staged_codecs)} bundle third-party code but no SPDX audit was supplied; '
+                 'pass the qtbase and imageformats audits (see scripts/qt-public/README.md)')
     if audits:
         items = []
         for audit in audits:
@@ -212,6 +222,11 @@ with staging_destination(out) as out:
                       '  Copyright: ' + ('\n    '.join(e['copyright']) if isinstance(e.get('copyright'), list)
                                         else (e.get('copyright') or '(see license text)')),
                       f"  License texts: {', '.join(texts) or 'none found'}", '']
+        for plugin, marker in BUNDLED_CODEC_NOTICES.items():
+            if plugin in entries and not any(
+                    marker in f"{d} {e.get('name') or ''}".lower() for d, e in items):
+                sys.exit(f'no {marker} attribution in the supplied SPDX audits for staged {plugin}; '
+                         'pass the imageformats audit (see scripts/qt-public/README.md)')
         rel = 'licenses/THIRD_PARTY_ATTRIBUTIONS.txt'
         (out / rel).write_text('\n'.join(lines))
         data = (out / rel).read_bytes()

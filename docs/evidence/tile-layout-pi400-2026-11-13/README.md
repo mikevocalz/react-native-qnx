@@ -41,3 +41,30 @@ build identity was retained):
 - modal-escape-before-after.png: the gallery's Modal appears open on the left and closed on the right. The notes attribute the change to `key f01b`; the image alone does not prove the input dispatch or `onRequestClose` callback.
 - drawer-escape-before-after.png: the drawer appears open on the left and closed on the right. The same input attribution lacks a command receipt.
 - tab-pressed-advanced.png: the Advanced tab shows a pressed wash and shrunken content. The original notes attribute it to a held `down`; its command status is unknown.
+
+## What exists and what is missing for the three input claims
+
+Searched on 2026-11-19 at head `12cae67`: `git grep` for `f01b`, every `rnqnx-inject`
+mention under `docs/`, and the history of this folder (commits `b895bc5` to `f49e61e`).
+The only record of these runs is the prose added in `d67b59b` (2026-11-13 15:53 -0500)
+and the three screenshots. No log, transcript, receipt or exit status for any of them
+is in the repository. They are not reconstructed here.
+
+Independently checkable: `tools/qnx-input/rnqnx-inject.c` line 118 maps `esc` to `0xf01b`, so
+`key f01b` is the Escape key, and `docs/handoff/HANDOFF_2026-11-13.md` lists `down` as an
+injector command.
+
+Missing for each of modal Escape, drawer Escape and the held `down` on the Advanced tab:
+
+| Field             | Needed                                                                             |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| Host              | Machine that ran the injector and capture (name, OS)                               |
+| Target            | Pi 400 image identifier and the address used                                       |
+| Build             | Deployed git SHA and `sha256` of the deployed executable and `app.bundle.js`       |
+| Injector commands | Full command lines, in order, including the settle delay before each capture       |
+| Capture commands  | Full command lines for the before and after frames                                 |
+| Exit statuses     | `$?` of every injector and capture command                                         |
+| Observed result   | Frame names, plus the app-log line for the Modal `onRequestClose` and drawer close |
+
+A fresh run that records those fields next to the screenshots closes this finding. Until
+then the three screenshots stay historical, as the status note at the top says.

@@ -60,7 +60,9 @@ python3 -I stage-runtime.py "$QT_PUBLIC_ROOT/runtime" \
 
 Inspect `licenses/THIRD_PARTY_ATTRIBUTIONS.txt` after staging: it must contain
 the bundled libwebp and libtiff component notices and license texts from the
-image-format audit. A qtbase-only audit does not cover those plugin binaries.
+image-format audit. A qtbase-only audit does not cover those plugin binaries, so
+`stage-runtime.py` exits without publishing when `libqwebp.so` or `libqtiff.so`
+is staged and the supplied audits name no webp or tiff component.
 
 ### Staging failures and recovery
 
