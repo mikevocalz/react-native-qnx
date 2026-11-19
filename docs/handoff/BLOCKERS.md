@@ -1,5 +1,53 @@
 # BLOCKERS.md
 
+## PR 161 current native and consumer candidate (2026-11-14)
+
+Local software blockers are corrected: nested child removal and nested-root
+bounds have failing/passing controls, the GCC convolution fixture is
+deterministic, and the main merge preserves transactional QtSvg staging.
+The standalone host graph passes 8/8; all 17 staging fixtures pass.
+
+All nine hosted workflows now pass at `13a0e49`, including both renderer lanes
+and all four corpus shards at the original limits. The earlier timeout cause
+remains unestablished. The standalone consumer packaging omission is corrected
+with the exact reviewed PR 159 port; original-source failure control and a
+fresh dual consumer install plus both Metro bundles pass. The packaging
+follow-up still requires its own published-head hosted checks.
+
+A fresh combined candidate build with licensed QNX SDP 8.0.5 and the
+selected public Qt closure, followed by the actual target SVG cases, is also
+required. This Cloud environment has neither that SDP nor a connected target.
+An operator with access to the existing build host and authorized target must
+capture the evidence. Keep this native PR draft until that requirement is
+met; prior Pi 400 receipts remain scoped to their original source and recipe.
+[Evidence and limits](../validation/pr161-nested-roots-2026-11-14.md).
+
+## PR 161 cross-build recipe correction — 2026-11-13
+
+The native consumer used inherited Release/O1 flags with selected GCC warning
+exceptions; public Qt libraries were O2. Its launcher reused upstream objects
+without independently checking flags/header closure, while project sources
+were recompiled. Device behavior and hashes stand as scoped evidence. Use a
+fresh build without that launcher for final combined qualification.
+[Corrected receipt](../validation/pr161-device-gallery-2026-11-13.md).
+
+## PR 161 gallery and target continuation — 2026-11-13
+
+Required checks passed at a52ffff. The current-source Pi run then exposed the
+SvgCss root import; it now uses the pinned CSS subpackage and has a failing/
+passing Metro regression. The twelve-card gallery renders on the real lean
+VM/public QtSvg runtime, including bundled/SVG/HTTPS images and live
+ForeignObject input blocking. Circle/group counters and rotation pause pass.
+The added nested-invalidation control fails without outward forwarding; all
+eight restored native host CTests pass. Prior review threads are resolved.
+This follow-up still needs its exact-head checks and independent review.
+[Artifacts, element table and rollback](../validation/pr161-device-gallery-2026-11-13.md).
+
+## PR 161 corpus continuation — 2026-11-13
+
+The new corpus runner needs exact-head Debug CI. Per-element device checks from the November 13 handoff remain open; a local standalone renderer pass does not close them.
+[Receipt](../validation/pr161-corpus-shards-2026-11-13.md).
+
 ## PR 105 review state — 2026-11-10
 
 The mandatory handoff omission is addressed by this follow-up. Hosted checks

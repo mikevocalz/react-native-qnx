@@ -1,0 +1,15 @@
+AssertionError [ERR_ASSERTION]: The XML gallery uses the CSS subpackage component
+
+false !== true
+
+    at file://<checkout>/tests/js/rnsvg-overlay-render.test.mjs:323:10
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v26.13.0

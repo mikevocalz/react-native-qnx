@@ -1,0 +1,15 @@
+Test project /workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate
+    Start 1: host_listener_candidate
+1/5 Test #1: host_listener_candidate ..........   Passed   70.15 sec
+    Start 2: corpus_listener_candidate_0
+2/5 Test #2: corpus_listener_candidate_0 ......   Passed    5.21 sec
+    Start 3: corpus_listener_candidate_1
+3/5 Test #3: corpus_listener_candidate_1 ......   Passed  204.75 sec
+    Start 4: corpus_listener_candidate_2
+4/5 Test #4: corpus_listener_candidate_2 ......   Passed  232.22 sec
+    Start 5: corpus_listener_candidate_3
+5/5 Test #5: corpus_listener_candidate_3 ......   Passed    6.59 sec
+
+100% tests passed, 0 tests failed out of 5
+
+Total Test time (real) = 518.93 sec

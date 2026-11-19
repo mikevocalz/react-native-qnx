@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 100 100">
+<defs>
+<marker id="selection" markerUnits="strokeWidth" refX="0" refY="0" orient="auto" markerWidth="3" markerHeight="3" overflow="visible">
+<ellipse fill="#3a6cff" rx="5" ry="8" cx="0" cy="0" stroke-width="1" stroke="white"/>
+</marker>
+</defs>
+<path d="M50 50 H80 V80 H50 Z" fill="none" stroke="blue" stroke-width="1" marker-start="url(#selection)" marker-mid="url(#selection)" marker-end="url(#selection)"/>
+</svg>

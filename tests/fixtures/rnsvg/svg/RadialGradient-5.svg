@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150">
+<defs>
+<radialGradient id="grad-8" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+<stop offset="0%" stop-color="#fff" stop-opacity="1"/>
+<stop offset="100%" stop-color="#00f" stop-opacity="1"/>
+</radialGradient>
+</defs>
+<rect x="5" y="5" width="290" height="130" fill="url(#grad-8)" stroke="pink" stroke-width="5"/>
+</svg>

@@ -1,0 +1,23 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer",
+    "-R",
+    "^(rnqnx_qt_rnsvg_fabric_test|rnqnx_qt_rnsvg_values_test)$",
+    "--output-on-failure",
+    "--output-junit",
+    "/workspace/scratch/252a22fac759/pr161-svg-layout-controls/candidate-public-regression.xml"
+  ],
+  "startedAt": "2026-11-17T05:30:57.062563+00:00",
+  "finishedAt": "2026-11-17T05:31:04.777981+00:00",
+  "exitCode": 0,
+  "scope": "Candidate production plus explicit QNX marker admission; same public Fabric regression source and fixture as original control, rebuilt Metro bundle from candidate transitive base config. Additional marker parser cases.",
+  "sha256": {
+    "apps/rn-playground/rnsvg-fixture.js": "694aa86c6e6b745cbbf7d6f730196e3be4970fa93580f4785e9cadf38832c918",
+    "tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp": "daa452fe69885b4dc0aced0bc1b8b617bde2de08b5ce41f4ef702cafdda486cc",
+    "packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js": "d7315012356fe1211683e00c359fdce9ef531454e77c3c38aeb96fa60af435b6",
+    "build/linux-host-renderer/CMakeFiles/rnqnx_qt_rnsvg_fabric_test.dir/tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp.o": "980c516f6f0ea07ba15fca75993dfb3a967c866e87df66ba93dc1276bc6c02dc",
+    "build/linux-host-renderer/rnqnx-rnsvg.bundle.js": "686b1f91383b91d0f63c572f3205f5c301b4e0d13c03a10c00ec2a6b53c4fd2b"
+  }
+}

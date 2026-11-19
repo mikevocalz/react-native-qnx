@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150">
+<ellipse cx="150" cy="75" rx="85" ry="55" fill="url(#grad-1)"/>
+<defs>
+<linearGradient id="grad-1" x1="65" y1="0" x2="235" y2="0" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="rgb(255,255,0)" stop-opacity="1"/>
+<stop offset="1" stop-color="red"/>
+</linearGradient>
+</defs>
+</svg>

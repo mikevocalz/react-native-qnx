@@ -3,6 +3,7 @@
 #include <QPointF>
 #include <algorithm>
 #include <cmath>
+#include <functional>
 
 namespace rnqnx::views::rnsvg {
 namespace {
@@ -62,12 +63,22 @@ class Scanner {
 };
 
 // SVG implementation notes F.6: endpoint to center parameterization.
-void arcTo(QPainterPath& path, QPointF p0, double rx, double ry, double xAxisRotation,
-           bool largeArc, bool sweep, QPointF p1) {
-  if (p0 == p1) return;
+// `segment(end, startDirection, endDirection)` is called once per cubic the arc
+// becomes. react-native-svg's own path parser also turns an arc into cubics
+// and places markers at each cubic's end, so the vertices match it (the SVG
+// text would put one at the arc's end only).
+using SegmentSink = std::function<void(QPointF end, QPointF startDirection, QPointF endDirection)>;
+
+bool arcTo(QPainterPath& path, QPointF p0, double rx, double ry, double xAxisRotation,
+           bool largeArc, bool sweep, QPointF p1, const SegmentSink& segment) {
+  if (p0 == p1) return false;
   rx = std::abs(rx);
   ry = std::abs(ry);
-  if (rx == 0 || ry == 0) { path.lineTo(p1); return; }
+  if (rx == 0 || ry == 0) {
+    path.lineTo(p1);
+    segment(p1, p1 - p0, p1 - p0);
+    return true;
+  }
   const double phi = xAxisRotation * kPi / 180.0;
   const double cosPhi = std::cos(phi), sinPhi = std::sin(phi);
   const double dx2 = (p0.x() - p1.x()) / 2.0, dy2 = (p0.y() - p1.y()) / 2.0;
@@ -99,6 +110,7 @@ void arcTo(QPainterPath& path, QPointF p0, double rx, double ry, double xAxisRot
   const double step = delta / segments;
   const double t = 4.0 / 3.0 * std::tan(step / 4.0);
   double a = theta1;
+  QPointF segStart = p0;
   for (int i = 0; i < segments; ++i) {
     const double cosA = std::cos(a), sinA = std::sin(a);
     const double cosB = std::cos(a + step), sinB = std::sin(a + step);
@@ -109,14 +121,93 @@ void arcTo(QPainterPath& path, QPointF p0, double rx, double ry, double xAxisRot
       const double x = rx * q.x(), y = ry * q.y();
       return QPointF(cosPhi * x - sinPhi * y + cx, sinPhi * x + cosPhi * y + cy);
     };
-    path.cubicTo(map(e1), map(e2), i == segments - 1 ? p1 : map(e3));
+    const QPointF end = i == segments - 1 ? p1 : map(e3);
+    path.cubicTo(map(e1), map(e2), end);
+    segment(end, map(e1) - segStart, end - map(e2));
+    segStart = end;
     a += step;
   }
+  return true;
 }
+
+QPointF unit(QPointF d) {
+  const double len = std::hypot(d.x(), d.y());
+  return len > 0 && std::isfinite(len) ? d / len : QPointF();
+}
+
+// The first of `candidates` that is not the zero vector, normalized.
+QPointF firstDirection(std::initializer_list<QPointF> candidates) {
+  for (const QPointF& c : candidates) {
+    const QPointF u = unit(c);
+    if (u.x() != 0 || u.y() != 0) return u;
+  }
+  return {};
+}
+
+// Records the vertices of a path as it is parsed: where each segment starts
+// and ends and which way the path travels there.
+class VertexRecorder {
+ public:
+  explicit VertexRecorder(std::vector<PathVertex>* out) : out_(out) {}
+
+  void moveTo(QPointF p) {
+    if (!out_) return;
+    endSubpath();
+    PathVertex v;
+    v.point = p;
+    v.subpathStart = true;
+    out_->push_back(v);
+    start_ = out_->size() - 1;
+  }
+
+  // A segment from the current vertex to `end`, leaving along `startDir` and
+  // arriving along `endDir`.
+  void segment(QPointF end, QPointF startDir, QPointF endDir) {
+    if (!out_ || out_->empty()) return;
+    out_->back().outDirection = unit(startDir);
+    PathVertex v;
+    v.point = end;
+    v.inDirection = unit(endDir);
+    out_->push_back(v);
+  }
+
+  // `z` from a point other than the subpath start adds the closing segment
+  // and its vertex. When the path already ended at the start no vertex is
+  // added; the closing segment has zero length, and resvg (the reference
+  // renderer) gives such a segment the direction (1, 0). The first vertex of
+  // a closed subpath keeps no incoming direction: neither renderer bisects a
+  // closed subpath's start with its closing segment.
+  void close(QPointF current, QPointF subpathStart) {
+    if (!out_ || out_->empty()) return;
+    if (current != subpathStart) {
+      const QPointF d = subpathStart - current;
+      segment(subpathStart, d, d);
+    } else {
+      out_->back().outDirection = QPointF(1, 0);
+    }
+    out_->back().closesSubpath = true;
+    out_->back().subpathEnd = true;
+    closed_ = true;
+  }
+
+  void finish() { endSubpath(); }
+
+ private:
+  void endSubpath() {
+    if (!out_ || out_->empty()) return;
+    if (!closed_) out_->back().subpathEnd = true;
+    closed_ = false;
+  }
+  std::vector<PathVertex>* out_;
+  size_t start_{0};
+  bool closed_{false};
+};
 
 }  // namespace
 
-QPainterPath parseSvgPath(const QString& data, bool* okOut) {
+QPainterPath parseSvgPath(const QString& data, bool* okOut, std::vector<PathVertex>* vertices) {
+  if (vertices) vertices->clear();
+  VertexRecorder rec(vertices);
   QPainterPath path;
   bool ok = true;
   Scanner in(data);
@@ -142,6 +233,7 @@ QPainterPath parseSvgPath(const QString& data, bool* okOut) {
       return true;
     };
     if (up == 'Z') {
+      rec.close(cur, start);
       path.closeSubpath();
       cur = start;
       prev = up;
@@ -153,26 +245,33 @@ QPainterPath parseSvgPath(const QString& data, bool* okOut) {
         if (!read(2)) { reject(); break; }
         cur = rel ? cur + QPointF(n[0], n[1]) : QPointF(n[0], n[1]);
         path.moveTo(cur);
+        rec.moveTo(cur);
         start = cur;
         cmd = rel ? QChar('l') : QChar('L');  // further pairs are lineto
         break;
       }
       case 'L': {
         if (!read(2)) { reject(); break; }
-        cur = rel ? cur + QPointF(n[0], n[1]) : QPointF(n[0], n[1]);
-        path.lineTo(cur);
+        const QPointF to = rel ? cur + QPointF(n[0], n[1]) : QPointF(n[0], n[1]);
+        path.lineTo(to);
+        rec.segment(to, to - cur, to - cur);
+        cur = to;
         break;
       }
       case 'H': {
         if (!read(1)) { reject(); break; }
-        cur.setX(rel ? cur.x() + n[0] : n[0]);
-        path.lineTo(cur);
+        const QPointF to(rel ? cur.x() + n[0] : n[0], cur.y());
+        path.lineTo(to);
+        rec.segment(to, to - cur, to - cur);
+        cur = to;
         break;
       }
       case 'V': {
         if (!read(1)) { reject(); break; }
-        cur.setY(rel ? cur.y() + n[0] : n[0]);
-        path.lineTo(cur);
+        const QPointF to(cur.x(), rel ? cur.y() + n[0] : n[0]);
+        path.lineTo(to);
+        rec.segment(to, to - cur, to - cur);
+        cur = to;
         break;
       }
       case 'C': {
@@ -180,6 +279,7 @@ QPainterPath parseSvgPath(const QString& data, bool* okOut) {
         const QPointF o = rel ? cur : QPointF();
         const QPointF c1 = o + QPointF(n[0], n[1]), c2 = o + QPointF(n[2], n[3]), e = o + QPointF(n[4], n[5]);
         path.cubicTo(c1, c2, e);
+        rec.segment(e, firstDirection({c1 - cur, c2 - cur, e - cur}), firstDirection({e - c2, e - c1, e - cur}));
         lastCtrl = c2;
         cur = e;
         break;
@@ -190,6 +290,7 @@ QPainterPath parseSvgPath(const QString& data, bool* okOut) {
         const QPointF c1 = (prev == 'C' || prev == 'S') ? 2 * cur - lastCtrl : cur;
         const QPointF c2 = o + QPointF(n[0], n[1]), e = o + QPointF(n[2], n[3]);
         path.cubicTo(c1, c2, e);
+        rec.segment(e, firstDirection({c1 - cur, c2 - cur, e - cur}), firstDirection({e - c2, e - c1, e - cur}));
         lastCtrl = c2;
         cur = e;
         break;
@@ -199,6 +300,7 @@ QPainterPath parseSvgPath(const QString& data, bool* okOut) {
         const QPointF o = rel ? cur : QPointF();
         const QPointF c = o + QPointF(n[0], n[1]), e = o + QPointF(n[2], n[3]);
         path.quadTo(c, e);
+        rec.segment(e, firstDirection({c - cur, e - cur}), firstDirection({e - c, e - cur}));
         lastCtrl = c;
         cur = e;
         break;
@@ -208,6 +310,7 @@ QPainterPath parseSvgPath(const QString& data, bool* okOut) {
         const QPointF c = (prev == 'Q' || prev == 'T') ? 2 * cur - lastCtrl : cur;
         const QPointF e = (rel ? cur : QPointF()) + QPointF(n[0], n[1]);
         path.quadTo(c, e);
+        rec.segment(e, firstDirection({c - cur, e - cur}), firstDirection({e - c, e - cur}));
         lastCtrl = c;
         cur = e;
         break;
@@ -221,7 +324,10 @@ QPainterPath parseSvgPath(const QString& data, bool* okOut) {
           break;
         }
         const QPointF e = (rel ? cur : QPointF()) + QPointF(ex, ey);
-        arcTo(path, cur, rxv, ryv, rot, large, sweep, e);
+        arcTo(path, cur, rxv, ryv, rot, large, sweep, e,
+              [&](QPointF end, QPointF startDirection, QPointF endDirection) {
+                rec.segment(end, startDirection, endDirection);
+              });
         cur = e;
         break;
       }
@@ -229,6 +335,7 @@ QPainterPath parseSvgPath(const QString& data, bool* okOut) {
     }
     prev = up;
   }
+  rec.finish();
   if (okOut) *okOut = ok;
   return path;
 }

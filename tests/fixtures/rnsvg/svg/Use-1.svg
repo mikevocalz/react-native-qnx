@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="100">
+<defs>
+<g id="reuse-shape">
+<circle cx="50" cy="50" r="50"/>
+<rect x="50" y="50" width="50" height="50"/>
+<circle cx="50" cy="50" r="5" fill="blue"/>
+</g>
+</defs>
+<use href="#reuse-shape" x="20" y="0"/>
+<use href="#reuse-shape" x="170" y="0"/>
+</svg>

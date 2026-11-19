@@ -1,0 +1,17 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer",
+    "-R",
+    "^rnqnx_qt_rnsvg_corpus_test_1$",
+    "--output-on-failure",
+    "--output-junit",
+    "/workspace/scratch/252a22fac759/pr161-svg-layout-controls/baseline-heavy-shard.xml"
+  ],
+  "startedAt": "2026-11-17T05:12:38.874753+00:00",
+  "finishedAt": "2026-11-17T05:15:58.408019+00:00",
+  "exitCode": 0,
+  "productionHead": "d3eacc75dcad761c992736223a68b53ff852203b",
+  "scope": "Original full PR161 production and original corpus object/bundle. Public Fabric regression test/fixture only are changed in other targets; no source or corpus limit change."
+}

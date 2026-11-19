@@ -1,0 +1,97 @@
+[
+  {
+    "command": [
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/node_modules/.bin/metro",
+      "build",
+      "qt-svg-fixture.js",
+      "--platform",
+      "qnx",
+      "--dev",
+      "false",
+      "--out",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-qt-svg.bundle.js"
+    ],
+    "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/apps/rn-playground",
+    "startedAt": "2026-11-17T05:47:15.371733+00:00",
+    "finishedAt": "2026-11-17T05:47:19.290119+00:00",
+    "exitCode": 0,
+    "sha256": "64e6d1bc4a052d91e2e51ef4cbadf37f506349854d557d07d222d350e559205c",
+    "mtimeNs": 1794894437169801334
+  },
+  {
+    "command": [
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/node_modules/.bin/metro",
+      "build",
+      "rnsvg-corpus.js",
+      "--platform",
+      "qnx",
+      "--dev",
+      "false",
+      "--out",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-rnsvg-corpus.bundle.js"
+    ],
+    "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/apps/rn-playground",
+    "startedAt": "2026-11-17T05:47:19.291686+00:00",
+    "finishedAt": "2026-11-17T05:47:23.358758+00:00",
+    "exitCode": 0,
+    "sha256": "b287b71187ca91c715376419329cee0d1f26b247967ecf7afaf5a9b18d0c28c9",
+    "mtimeNs": 1794894441265738108
+  },
+  {
+    "command": [
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/node_modules/.bin/metro",
+      "build",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/tests/native/qt-rnsvg-fabric/rnsvg-image-fixture.js",
+      "--platform",
+      "qnx",
+      "--dev",
+      "false",
+      "--out",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-rnsvg-image.bundle.js"
+    ],
+    "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/apps/rn-playground",
+    "startedAt": "2026-11-17T05:47:23.380173+00:00",
+    "finishedAt": "2026-11-17T05:47:27.450662+00:00",
+    "exitCode": 0,
+    "sha256": "df4fe5129c66ef7a6bc656b0aebc6332426753528c3c4fe153b07f50e0e705df",
+    "mtimeNs": 1794894445173677863
+  },
+  {
+    "command": [
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/node_modules/.bin/metro",
+      "build",
+      "rnsvg-fixture.js",
+      "--platform",
+      "qnx",
+      "--dev",
+      "false",
+      "--out",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-rnsvg.bundle.js"
+    ],
+    "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/apps/rn-playground",
+    "startedAt": "2026-11-17T05:47:27.456403+00:00",
+    "finishedAt": "2026-11-17T05:47:31.355331+00:00",
+    "exitCode": 0,
+    "sha256": "686b1f91383b91d0f63c572f3205f5c301b4e0d13c03a10c00ec2a6b53c4fd2b",
+    "mtimeNs": 1794894449053618065
+  },
+  {
+    "command": [
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/node_modules/.bin/metro",
+      "build",
+      "text-input-probe.js",
+      "--platform",
+      "qnx",
+      "--dev",
+      "false",
+      "--out",
+      "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-text-input-probe.bundle.js"
+    ],
+    "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/apps/rn-playground",
+    "startedAt": "2026-11-17T05:47:31.363197+00:00",
+    "finishedAt": "2026-11-17T05:47:35.328747+00:00",
+    "exitCode": 0,
+    "sha256": "d5610b370861850fc86cbac4b8c445eba4b9449c84110174265d3a6f04a950d7",
+    "mtimeNs": 1794894453045556533
+  }
+]

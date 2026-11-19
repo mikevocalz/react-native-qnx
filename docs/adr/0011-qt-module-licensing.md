@@ -74,6 +74,16 @@ excluded. The evaluation does not accept this ADR's broader module matrix or
 authorize release packaging. The expiry applies to these evaluation artifacts; it does not expire
 independently obtained open-source Qt.
 
+**QtSvg (added 2026-11-13).** The qtsvg module from the same archive is built
+for QNX by `scripts/qt-public/build-svg-qnx.sh` against the existing qtbase and
+staged by `stage-runtime.py` when present. It supplies `libQt6Svg` and the
+`qsvg` image-format plugin, which let `QImageReader` decode an SVG document for
+an `<Image>` in `react-native-svg`. The module offers `LGPL-3.0-only`, as the
+other staged modules do; its `LICENSES/` directory is copied beside theirs. The
+renderer does not link `Qt6::Svg`: the plugin is found at run time through
+`QT_PLUGIN_PATH`, and a runtime without it still renders everything but SVG
+`<Image>` sources.
+
 Sources: [Qt account licenses](https://account.qt.io/s/),
 [Device Creation tiers](https://www.qt.io/development/qt-framework/target-devices),
 [Qt for QNX](https://doc.qt.io/qt-6/qnx.html).

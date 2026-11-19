@@ -1,0 +1,576 @@
+cmake --preset linux-host-renderer -DRNQNX_ENABLE_INPUT_LIFECYCLE=ON -DRNQNX_ENABLE_TEXT_INPUT_CONTRACT=ON -DRNQNX_ENABLE_ACCESSIBILITY_BRIDGE=ON -DRNQNX_ENABLE_WINDOW_CHROME=ON -DRNQNX_ENABLE_QT_SVG=ON -DRNQNX_ENABLE_QT_RNSVG=ON -DRNQNX_ENABLE_QT_NATIVE_UI=ON -DRNQNX_ENABLE_QT_EXPO_IMAGE=ON -DRNQNX_ENABLE_QT_MOTION=ON -DRNQNX_ENABLE_QT_GRAPHICS=ON -DRNQNX_ENABLE_QT_VIDEO=ON -DFETCHCONTENT_SOURCE_DIR_RNQNX_FOLLY=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src -DFETCHCONTENT_SOURCE_DIR_RNQNX_FMT=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_fmt-src -DFETCHCONTENT_SOURCE_DIR_RNQNX_GLOG=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_glog-src -DFETCHCONTENT_SOURCE_DIR_RNQNX_DOUBLE_CONVERSION=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_double_conversion-src -DFETCHCONTENT_SOURCE_DIR_RNQNX_FAST_FLOAT=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_fast_float-src -DFETCHCONTENT_SOURCE_DIR_RNQNX_BOOST=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_boost-src -DFETCHCONTENT_SOURCE_DIR_RNQNX_BOOST_CONFIG=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_boost_config-src -DFETCHCONTENT_SOURCE_DIR_RNQNX_HERMES=/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src
+Preset CMake variables:
+
+  BUILD_TESTING="ON"
+  CMAKE_BUILD_TYPE="Debug"
+  CMAKE_CXX_COMPILER="clang++"
+  CMAKE_CXX_SCAN_FOR_MODULES="OFF"
+  CMAKE_C_COMPILER="clang"
+  RNQNX_BUILD_HERMES="ON"
+  RNQNX_ENABLE_HOST_SANITIZERS="ON"
+  RNQNX_FETCH_REACT_NATIVE_DEPS="ON"
+  RNQNX_REQUIRE_FULL_HOST_RENDERER="ON"
+
+-- The C compiler identification is Clang 19.1.7
+-- The CXX compiler identification is Clang 19.1.7
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE
+-- Found OpenGL: /workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/x86_64-linux-gnu/libOpenGL.so
+-- Found WrapOpenGL: TRUE
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find Qt6TaskTree (missing: Qt6TaskTree_DIR)
+CMake Warning at /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package):
+  Found package configuration file:
+
+    /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6QmlAssetDownloaderPrivate/Qt6QmlAssetDownloaderPrivateConfig.cmake
+
+  but it set Qt6QmlAssetDownloaderPrivate_FOUND to FALSE so package
+  "Qt6QmlAssetDownloaderPrivate" is considered to be NOT FOUND.  Reason given
+  by package:
+
+  Qt6QmlAssetDownloaderPrivate could not be found because dependency
+  Qt6TaskTree could not be found.
+
+  Configuring with --debug-find-pkg=Qt6TaskTree might reveal details why the
+  package was not found.
+
+  Configuring with -DQT_DEBUG_FIND_PACKAGE=ON will print the values of some
+  of the path variables that find_package uses to try and find the package.
+
+Call Stack (most recent call first):
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginDependencies.cmake:22 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicPluginHelpers.cmake:638 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlPlugins.cmake:6 (__qt_internal_include_qml_plugin_packages)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlConfig.cmake:199 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/Qt6Config.cmake:253 (find_package)
+  tests/native/qt-native-ui/CMakeLists.txt:10 (find_package)
+
+
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find Qt6TaskTree (missing: Qt6TaskTree_DIR)
+CMake Warning at /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package):
+  Found package configuration file:
+
+    /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6QmlAssetDownloaderPrivate/Qt6QmlAssetDownloaderPrivateConfig.cmake
+
+  but it set Qt6QmlAssetDownloaderPrivate_FOUND to FALSE so package
+  "Qt6QmlAssetDownloaderPrivate" is considered to be NOT FOUND.  Reason given
+  by package:
+
+  Qt6QmlAssetDownloaderPrivate could not be found because dependency
+  Qt6TaskTree could not be found.
+
+  Configuring with --debug-find-pkg=Qt6TaskTree might reveal details why the
+  package was not found.
+
+  Configuring with -DQT_DEBUG_FIND_PACKAGE=ON will print the values of some
+  of the path variables that find_package uses to try and find the package.
+
+Call Stack (most recent call first):
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginDependencies.cmake:22 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicPluginHelpers.cmake:638 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlPlugins.cmake:6 (__qt_internal_include_qml_plugin_packages)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlConfig.cmake:199 (include)
+  /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Quick/Qt6QuickDependencies.cmake:50 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Quick/Qt6QuickConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/Qt6Config.cmake:253 (find_package)
+  native/qt/motion/CMakeLists.txt:14 (find_package)
+
+
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find Qt6TaskTree (missing: Qt6TaskTree_DIR)
+CMake Warning at /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package):
+  Found package configuration file:
+
+    /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6QmlAssetDownloaderPrivate/Qt6QmlAssetDownloaderPrivateConfig.cmake
+
+  but it set Qt6QmlAssetDownloaderPrivate_FOUND to FALSE so package
+  "Qt6QmlAssetDownloaderPrivate" is considered to be NOT FOUND.  Reason given
+  by package:
+
+  Qt6QmlAssetDownloaderPrivate could not be found because dependency
+  Qt6TaskTree could not be found.
+
+  Configuring with --debug-find-pkg=Qt6TaskTree might reveal details why the
+  package was not found.
+
+  Configuring with -DQT_DEBUG_FIND_PACKAGE=ON will print the values of some
+  of the path variables that find_package uses to try and find the package.
+
+Call Stack (most recent call first):
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginDependencies.cmake:22 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicPluginHelpers.cmake:638 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlPlugins.cmake:6 (__qt_internal_include_qml_plugin_packages)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlConfig.cmake:199 (include)
+  /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Quick/Qt6QuickDependencies.cmake:50 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Quick/Qt6QuickConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/Qt6Config.cmake:253 (find_package)
+  native/qt/svg/CMakeLists.txt:15 (find_package)
+
+
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find Qt6TaskTree (missing: Qt6TaskTree_DIR)
+CMake Warning at /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package):
+  Found package configuration file:
+
+    /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6QmlAssetDownloaderPrivate/Qt6QmlAssetDownloaderPrivateConfig.cmake
+
+  but it set Qt6QmlAssetDownloaderPrivate_FOUND to FALSE so package
+  "Qt6QmlAssetDownloaderPrivate" is considered to be NOT FOUND.  Reason given
+  by package:
+
+  Qt6QmlAssetDownloaderPrivate could not be found because dependency
+  Qt6TaskTree could not be found.
+
+  Configuring with --debug-find-pkg=Qt6TaskTree might reveal details why the
+  package was not found.
+
+  Configuring with -DQT_DEBUG_FIND_PACKAGE=ON will print the values of some
+  of the path variables that find_package uses to try and find the package.
+
+Call Stack (most recent call first):
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginDependencies.cmake:22 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicPluginHelpers.cmake:638 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlPlugins.cmake:6 (__qt_internal_include_qml_plugin_packages)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlConfig.cmake:199 (include)
+  /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Quick/Qt6QuickDependencies.cmake:50 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Quick/Qt6QuickConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/Qt6Config.cmake:253 (find_package)
+  tests/native/qt-svg/CMakeLists.txt:13 (find_package)
+
+
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find Qt6TaskTree (missing: Qt6TaskTree_DIR)
+CMake Warning at /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package):
+  Found package configuration file:
+
+    /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6QmlAssetDownloaderPrivate/Qt6QmlAssetDownloaderPrivateConfig.cmake
+
+  but it set Qt6QmlAssetDownloaderPrivate_FOUND to FALSE so package
+  "Qt6QmlAssetDownloaderPrivate" is considered to be NOT FOUND.  Reason given
+  by package:
+
+  Qt6QmlAssetDownloaderPrivate could not be found because dependency
+  Qt6TaskTree could not be found.
+
+  Configuring with --debug-find-pkg=Qt6TaskTree might reveal details why the
+  package was not found.
+
+  Configuring with -DQT_DEBUG_FIND_PACKAGE=ON will print the values of some
+  of the path variables that find_package uses to try and find the package.
+
+Call Stack (most recent call first):
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginDependencies.cmake:22 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicPluginHelpers.cmake:638 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlPlugins.cmake:6 (__qt_internal_include_qml_plugin_packages)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlConfig.cmake:199 (include)
+  /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Quick/Qt6QuickDependencies.cmake:50 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Quick/Qt6QuickConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/Qt6Config.cmake:253 (find_package)
+  native/qt/graphics/CMakeLists.txt:13 (find_package)
+
+
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find Qt6TaskTree (missing: Qt6TaskTree_DIR)
+CMake Warning at /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package):
+  Found package configuration file:
+
+    /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6QmlAssetDownloaderPrivate/Qt6QmlAssetDownloaderPrivateConfig.cmake
+
+  but it set Qt6QmlAssetDownloaderPrivate_FOUND to FALSE so package
+  "Qt6QmlAssetDownloaderPrivate" is considered to be NOT FOUND.  Reason given
+  by package:
+
+  Qt6QmlAssetDownloaderPrivate could not be found because dependency
+  Qt6TaskTree could not be found.
+
+  Configuring with --debug-find-pkg=Qt6TaskTree might reveal details why the
+  package was not found.
+
+  Configuring with -DQT_DEBUG_FIND_PACKAGE=ON will print the values of some
+  of the path variables that find_package uses to try and find the package.
+
+Call Stack (most recent call first):
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginDependencies.cmake:22 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicPluginHelpers.cmake:638 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlPlugins.cmake:6 (__qt_internal_include_qml_plugin_packages)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlConfig.cmake:199 (include)
+  /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Quick/Qt6QuickDependencies.cmake:50 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Quick/Qt6QuickConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/Qt6Config.cmake:253 (find_package)
+  native/qt/rnsvg/CMakeLists.txt:17 (find_package)
+
+
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find Qt6TaskTree (missing: Qt6TaskTree_DIR)
+CMake Warning at /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package):
+  Found package configuration file:
+
+    /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6QmlAssetDownloaderPrivate/Qt6QmlAssetDownloaderPrivateConfig.cmake
+
+  but it set Qt6QmlAssetDownloaderPrivate_FOUND to FALSE so package
+  "Qt6QmlAssetDownloaderPrivate" is considered to be NOT FOUND.  Reason given
+  by package:
+
+  Qt6QmlAssetDownloaderPrivate could not be found because dependency
+  Qt6TaskTree could not be found.
+
+  Configuring with --debug-find-pkg=Qt6TaskTree might reveal details why the
+  package was not found.
+
+  Configuring with -DQT_DEBUG_FIND_PACKAGE=ON will print the values of some
+  of the path variables that find_package uses to try and find the package.
+
+Call Stack (most recent call first):
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginDependencies.cmake:22 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicPluginHelpers.cmake:638 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlPlugins.cmake:6 (__qt_internal_include_qml_plugin_packages)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlConfig.cmake:199 (include)
+  /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Quick/Qt6QuickDependencies.cmake:50 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Quick/Qt6QuickConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/Qt6Config.cmake:253 (find_package)
+  tests/native/qt-rnsvg/CMakeLists.txt:13 (find_package)
+
+
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find Qt6TaskTree (missing: Qt6TaskTree_DIR)
+CMake Warning at /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package):
+  Found package configuration file:
+
+    /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6QmlAssetDownloaderPrivate/Qt6QmlAssetDownloaderPrivateConfig.cmake
+
+  but it set Qt6QmlAssetDownloaderPrivate_FOUND to FALSE so package
+  "Qt6QmlAssetDownloaderPrivate" is considered to be NOT FOUND.  Reason given
+  by package:
+
+  Qt6QmlAssetDownloaderPrivate could not be found because dependency
+  Qt6TaskTree could not be found.
+
+  Configuring with --debug-find-pkg=Qt6TaskTree might reveal details why the
+  package was not found.
+
+  Configuring with -DQT_DEBUG_FIND_PACKAGE=ON will print the values of some
+  of the path variables that find_package uses to try and find the package.
+
+Call Stack (most recent call first):
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginDependencies.cmake:22 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicPluginHelpers.cmake:638 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlPlugins.cmake:6 (__qt_internal_include_qml_plugin_packages)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlConfig.cmake:199 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/Qt6Config.cmake:253 (find_package)
+  native/qt/video/CMakeLists.txt:15 (find_package)
+
+
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find Qt6TaskTree (missing: Qt6TaskTree_DIR)
+CMake Warning at /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package):
+  Found package configuration file:
+
+    /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6QmlAssetDownloaderPrivate/Qt6QmlAssetDownloaderPrivateConfig.cmake
+
+  but it set Qt6QmlAssetDownloaderPrivate_FOUND to FALSE so package
+  "Qt6QmlAssetDownloaderPrivate" is considered to be NOT FOUND.  Reason given
+  by package:
+
+  Qt6QmlAssetDownloaderPrivate could not be found because dependency
+  Qt6TaskTree could not be found.
+
+  Configuring with --debug-find-pkg=Qt6TaskTree might reveal details why the
+  package was not found.
+
+  Configuring with -DQT_DEBUG_FIND_PACKAGE=ON will print the values of some
+  of the path variables that find_package uses to try and find the package.
+
+Call Stack (most recent call first):
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginDependencies.cmake:22 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicPluginHelpers.cmake:638 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlPlugins.cmake:6 (__qt_internal_include_qml_plugin_packages)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlConfig.cmake:199 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/Qt6Config.cmake:253 (find_package)
+  tests/native/qt-video/CMakeLists.txt:12 (find_package)
+
+
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Configuring react-native-qnx for host development
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Could NOT find Qt6TaskTree (missing: Qt6TaskTree_DIR)
+CMake Warning at /workspace/scratch/252a22fac759/native-tools/lib/python3.12/site-packages/cmake/data/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package):
+  Found package configuration file:
+
+    /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6QmlAssetDownloaderPrivate/Qt6QmlAssetDownloaderPrivateConfig.cmake
+
+  but it set Qt6QmlAssetDownloaderPrivate_FOUND to FALSE so package
+  "Qt6QmlAssetDownloaderPrivate" is considered to be NOT FOUND.  Reason given
+  by package:
+
+  Qt6QmlAssetDownloaderPrivate could not be found because dependency
+  Qt6TaskTree could not be found.
+
+  Configuring with --debug-find-pkg=Qt6TaskTree might reveal details why the
+  package was not found.
+
+  Configuring with -DQT_DEBUG_FIND_PACKAGE=ON will print the values of some
+  of the path variables that find_package uses to try and find the package.
+
+Call Stack (most recent call first):
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:142 (find_dependency)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginDependencies.cmake:22 (_qt_internal_find_qt_dependencies)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/QmlPlugins/Qt6QmlAssetDownloaderPrivatepluginConfig.cmake:40 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/QtPublicPluginHelpers.cmake:638 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlPlugins.cmake:6 (__qt_internal_include_qml_plugin_packages)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6Qml/Qt6QmlConfig.cmake:199 (include)
+  /workspace/scratch/252a22fac759/Qt/6.11.1/gcc_64/lib/cmake/Qt6/Qt6Config.cmake:253 (find_package)
+  CMakeLists.txt:305 (find_package)
+
+
+-- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
+-- Qt 6.11.1 found; building Qt Quick host targets (minimum 6.11.1)
+-- Performing Test CXX_SUPPORTS_MISSING_FIELD_INITIALIZERS_FLAG
+-- Performing Test CXX_SUPPORTS_MISSING_FIELD_INITIALIZERS_FLAG - Success
+-- Performing Test DEPRECATED_COPY_FLAG
+-- Performing Test DEPRECATED_COPY_FLAG - Success
+-- Performing Test CXX_SUPPORTS_CLASS_MEMACCESS_FLAG
+-- Performing Test CXX_SUPPORTS_CLASS_MEMACCESS_FLAG - Failed
+-- Performing Test CXX_SUPPORTS_NOEXCEPT_TYPE_FLAG
+-- Performing Test CXX_SUPPORTS_NOEXCEPT_TYPE_FLAG - Success
+-- Performing Test CXX_WONT_WARN_ON_FINAL_NONVIRTUALDTOR
+-- Performing Test CXX_WONT_WARN_ON_FINAL_NONVIRTUALDTOR - Success
+-- Performing Test C_SUPPORTS_DELETE_NON_VIRTUAL_DTOR_FLAG
+-- Performing Test C_SUPPORTS_DELETE_NON_VIRTUAL_DTOR_FLAG - Success
+-- Performing Test CXX_SUPPORTS_DELETE_NON_VIRTUAL_DTOR_FLAG
+-- Performing Test CXX_SUPPORTS_DELETE_NON_VIRTUAL_DTOR_FLAG - Success
+-- Performing Test C_SUPPORTS_FP_CONTRACT_FLAG
+-- Performing Test C_SUPPORTS_FP_CONTRACT_FLAG - Success
+-- Performing Test CXX_SUPPORTS_FP_CONTRACT_FLAG
+-- Performing Test CXX_SUPPORTS_FP_CONTRACT_FLAG - Success
+-- Performing Test RANGE_ANALYSIS_FLAG
+-- Performing Test RANGE_ANALYSIS_FLAG - Success
+-- Found Python: /workspace/scratch/252a22fac759/native-tools/bin/python3.12 (found version "3.12.14") found components: Interpreter
+-- Performing Test HAVE_COMPUTED_GOTO
+-- Performing Test HAVE_COMPUTED_GOTO - Success
+-- Performing Test HAVE_GC_SECTIONS
+-- Performing Test HAVE_GC_SECTIONS - Success
+-- Performing Test HAVE_ICF
+-- Performing Test HAVE_ICF - Failed
+-- Performing Test C_SUPPORTS_FUNCTION_SECTIONS
+-- Performing Test C_SUPPORTS_FUNCTION_SECTIONS - Success
+-- Performing Test CXX_SUPPORTS_FUNCTION_SECTIONS
+-- Performing Test CXX_SUPPORTS_FUNCTION_SECTIONS - Success
+-- Performing Test C_SUPPORTS_DATA_SECTIONS
+-- Performing Test C_SUPPORTS_DATA_SECTIONS - Success
+-- Performing Test CXX_SUPPORTS_DATA_SECTIONS
+-- Performing Test CXX_SUPPORTS_DATA_SECTIONS - Success
+-- Found ICU: /workspace/scratch/252a22fac759/debian-native/sysroot/usr/include (found suitable version "76.1", minimum required is "52") found components: uc i18n data uc
+icu dir: /workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/x86_64-linux-gnu
+-- Performing Test LLVM_NO_OLD_LIBSTDCXX
+-- Performing Test LLVM_NO_OLD_LIBSTDCXX - Success
+-- Looking for dlfcn.h
+-- Looking for dlfcn.h - found
+-- Looking for errno.h
+-- Looking for errno.h - found
+-- Looking for fcntl.h
+-- Looking for fcntl.h - found
+-- Looking for link.h
+-- Looking for link.h - found
+-- Looking for malloc.h
+-- Looking for malloc.h - found
+-- Looking for malloc/malloc.h
+-- Looking for malloc/malloc.h - not found
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Looking for signal.h
+-- Looking for signal.h - found
+-- Looking for sys/ioctl.h
+-- Looking for sys/ioctl.h - found
+-- Looking for sys/mman.h
+-- Looking for sys/mman.h - found
+-- Looking for sys/param.h
+-- Looking for sys/param.h - found
+-- Looking for sys/resource.h
+-- Looking for sys/resource.h - found
+-- Looking for sys/stat.h
+-- Looking for sys/stat.h - found
+-- Looking for sys/time.h
+-- Looking for sys/time.h - found
+-- Looking for sys/types.h
+-- Looking for sys/types.h - found
+-- Looking for termios.h
+-- Looking for termios.h - found
+-- Looking for unistd.h
+-- Looking for unistd.h - found
+-- Looking for valgrind/valgrind.h
+-- Looking for valgrind/valgrind.h - not found
+-- Looking for zlib.h
+-- Looking for zlib.h - found
+-- Looking for fenv.h
+-- Looking for fenv.h - found
+-- Looking for FE_ALL_EXCEPT
+-- Looking for FE_ALL_EXCEPT - found
+-- Looking for FE_INEXACT
+-- Looking for FE_INEXACT - found
+-- Looking for mach/mach.h
+-- Looking for mach/mach.h - not found
+-- Looking for histedit.h
+-- Looking for histedit.h - not found
+-- Looking for CrashReporterClient.h
+-- Looking for CrashReporterClient.h - not found
+-- Looking for linux/magic.h
+-- Looking for linux/magic.h - found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Looking for pthread_getspecific in pthread
+-- Looking for pthread_getspecific in pthread - found
+-- Looking for pthread_rwlock_init in pthread
+-- Looking for pthread_rwlock_init in pthread - found
+-- Looking for pthread_mutex_lock in pthread
+-- Looking for pthread_mutex_lock in pthread - found
+-- Looking for dlopen in dl
+-- Looking for dlopen in dl - found
+-- Looking for clock_gettime in rt
+-- Looking for clock_gettime in rt - found
+-- Looking for xar_open in xar
+-- Looking for xar_open in xar - not found
+-- Looking for arc4random
+-- Looking for arc4random - found
+-- Looking for backtrace
+-- Looking for backtrace - found
+-- backtrace facility detected in default set of libraries
+-- Found Backtrace: /usr/include
+-- Performing Test C_SUPPORTS_WERROR_UNGUARDED_AVAILABILITY_NEW
+-- Performing Test C_SUPPORTS_WERROR_UNGUARDED_AVAILABILITY_NEW - Success
+-- Looking for _Unwind_Backtrace
+-- Looking for _Unwind_Backtrace - found
+-- Looking for getpagesize
+-- Looking for getpagesize - found
+-- Looking for sysconf
+-- Looking for sysconf - found
+-- Looking for getrusage
+-- Looking for getrusage - found
+-- Looking for setrlimit
+-- Looking for setrlimit - found
+-- Looking for isatty
+-- Looking for isatty - found
+-- Looking for futimens
+-- Looking for futimens - found
+-- Looking for futimes
+-- Looking for futimes - found
+-- Looking for posix_fallocate
+-- Looking for posix_fallocate - found
+-- Looking for sigaltstack
+-- Looking for sigaltstack - found
+-- Looking for lseek64
+-- Looking for lseek64 - found
+-- Looking for mallctl
+-- Looking for mallctl - not found
+-- Looking for mallinfo
+-- Looking for mallinfo - found
+-- Looking for malloc_zone_statistics
+-- Looking for malloc_zone_statistics - not found
+-- Looking for getrlimit
+-- Looking for getrlimit - found
+-- Looking for posix_spawn
+-- Looking for posix_spawn - found
+-- Looking for pread
+-- Looking for pread - found
+-- Looking for realpath
+-- Looking for realpath - found
+-- Looking for sbrk
+-- Looking for sbrk - found
+-- Looking for strerror
+-- Looking for strerror - found
+-- Looking for strerror_r
+-- Looking for strerror_r - found
+-- Looking for strerror_s
+-- Looking for strerror_s - not found
+-- Looking for setenv
+-- Looking for setenv - found
+-- Looking for dlopen
+-- Looking for dlopen - found
+-- Looking for dladdr
+-- Looking for dladdr - not found
+-- Looking for __GLIBC__
+-- Looking for __GLIBC__ - found
+-- Looking for sched_getaffinity
+-- Looking for sched_getaffinity - found
+-- Looking for CPU_COUNT
+-- Looking for CPU_COUNT - found
+-- Looking for pthread_getname_np
+-- Looking for pthread_getname_np - found
+-- Looking for pthread_setname_np
+-- Looking for pthread_setname_np - found
+-- Performing Test HAVE_CXX_ATOMICS_WITHOUT_LIB
+-- Performing Test HAVE_CXX_ATOMICS_WITHOUT_LIB - Success
+-- Performing Test HAVE_CXX_ATOMICS64_WITHOUT_LIB
+-- Performing Test HAVE_CXX_ATOMICS64_WITHOUT_LIB - Success
+-- Performing Test LLVM_HAS_ATOMICS
+-- Performing Test LLVM_HAS_ATOMICS - Success
+-- Performing Test SUPPORTS_NO_PIE_FLAG
+-- Performing Test SUPPORTS_NO_PIE_FLAG - Success
+-- Performing Test SUPPORTS_VARIADIC_MACROS_FLAG
+-- Performing Test SUPPORTS_VARIADIC_MACROS_FLAG - Success
+-- Performing Test SUPPORTS_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS_FLAG
+-- Performing Test SUPPORTS_GNU_ZERO_VARIADIC_MACRO_ARGUMENTS_FLAG - Success
+-- Threads enabled.
+-- Doxygen disabled.
+-- Go bindings disabled.
+-- Could NOT find Python module pygments
+-- Could NOT find Python module pygments.lexers.c_cpp
+-- Could NOT find Python module yaml
+-- Boost.Context: architecture x86_64, binary format elf, ABI sysv, assembler gas, suffix .S, implementation fcontext
+-- The ASM compiler identification is Clang with GNU-like command-line
+-- Found assembler: /workspace/scratch/252a22fac759/debian-native/sysroot/usr/lib/llvm-19/bin/clang
+-- Configuring done (14.3s)
+-- Generating done (1.4s)
+-- Build files have been written to: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer

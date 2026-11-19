@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300">
+<defs>
+<marker id="selection" markerUnits="userSpaceOnUse" refX="0" refY="0" orient="auto" markerWidth="10" markerHeight="10" overflow="visible">
+<circle fill="#3a6cff" r="5" cx="0" cy="0" stroke-width="1" stroke="white"/>
+</marker>
+</defs>
+<path d="M80 170 A120 30 0 0 1 320 170 A120 30 0 0 1 80 170 Z" stroke="purple" stroke-width="2" fill="yellow" marker-start="url(#selection)" marker-mid="url(#selection)" marker-end="url(#selection)"/>
+</svg>

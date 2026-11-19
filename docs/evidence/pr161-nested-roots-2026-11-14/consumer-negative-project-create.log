@@ -1,0 +1,15 @@
+node:internal/modules/run_main:111
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: package/svg/resolver.js
+    at file:///workspace/scratch/853552216e74/pr161/tests/js/qnx-project-create.test.mjs:88:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v26.13.1

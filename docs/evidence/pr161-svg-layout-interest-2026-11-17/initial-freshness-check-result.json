@@ -1,0 +1,10 @@
+{
+  "scope": "Summary of the observed exec result, not a separate native test",
+  "command": ["python", "/workspace/scratch/252a22fac759/run-final-svg-acceptance.py"],
+  "exitCode": 1,
+  "nativeBuildExitCode": 0,
+  "nativeBuildSeconds": 35.21026134299973,
+  "ctestStarted": false,
+  "cause": "The application bundle freshness assertion found five outputs still at the deliberately aged mtime. Existing Ninja restat skipped those outputs. Exact existing Metro commands refreshed them before final CTest.",
+  "followup": "transitive-bundle-refresh-direct.json"
+}

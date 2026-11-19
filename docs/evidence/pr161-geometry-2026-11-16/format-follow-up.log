@@ -1,0 +1,7 @@
+3.9.10
+$ prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+$ node scripts/validate-docs.mjs
+Documentation validated: 24 components, 11 release gates.
+Semantic/source verification passed: CTest JSON, native/test/lock blobs, prior readiness evidence, and all 11 pending gate records unchanged.

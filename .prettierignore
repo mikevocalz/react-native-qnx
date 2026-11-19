@@ -12,3 +12,4 @@ vnext/generated/
 
 # Third-party license text, kept byte-identical to its upstream source.
 native/app-identity/fonts/
+tests/fixtures/rnsvg/manifest.json

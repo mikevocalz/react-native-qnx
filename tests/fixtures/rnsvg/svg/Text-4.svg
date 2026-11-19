@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60">
+<defs>
+<linearGradient id="text-fill-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" stop-color="rgb(255,255,0)" stop-opacity="0.5"/>
+<stop offset="100%" stop-color="red" stop-opacity="1"/>
+</linearGradient>
+</defs>
+<text fill="url(#text-fill-grad)" stroke="purple" stroke-width="1" font-size="20" font-weight="bold" x="100" y="20" text-anchor="middle" font-family="DejaVu Sans">FILL TEXT</text>
+</svg>

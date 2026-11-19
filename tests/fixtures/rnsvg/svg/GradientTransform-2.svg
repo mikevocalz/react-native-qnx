@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="100">
+<defs>
+<linearGradient id="lr" x1="0.3" y1="0" x2="0.7" y2="0" spreadMethod="reflect"><stop offset="0" stop-color="red"/><stop offset="1" stop-color="blue"/></linearGradient>
+<linearGradient id="lp" x1="0.3" y1="0" x2="0.7" y2="0" spreadMethod="repeat" gradientTransform="rotate(30 .5 .5)"><stop offset="0" stop-color="red"/><stop offset="1" stop-color="blue"/></linearGradient>
+</defs>
+<rect x="5" y="5" width="140" height="90" fill="url(#lr)"/>
+<rect x="155" y="5" width="140" height="90" fill="url(#lp)"/>
+</svg>

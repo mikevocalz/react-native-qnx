@@ -37,6 +37,59 @@
       "receipt": "docs/validation/pr105-merge-readiness-2026-11-10.md",
       "hostedCi": "passed at the implementation commit; follow-up CI must be checked after publication",
       "targetExecution": "not run for this candidate; generated C++ unchanged"
+    },
+    "pr161Corpus": {
+      "reviewedAt": "2026-11-13",
+      "baseCommit": "4076e67",
+      "receipt": "docs/validation/pr161-corpus-shards-2026-11-13.md",
+      "hostedCi": "pending for the continuation head",
+      "targetExecution": "not run for the test-only continuation"
+    },
+    "pr161Target": {
+      "reviewedAt": "2026-11-13",
+      "receipt": "docs/validation/pr161-device-gallery-2026-11-13.md",
+      "status": "base required CI passed; Pi gallery/images/input and restored native tests passed; follow-up head CI/review pending"
+    },
+    "pr161BuildRecipe": {
+      "reviewedAt": "2026-11-13",
+      "receipt": "docs/validation/pr161-device-gallery-2026-11-13.md",
+      "status": "native O1 with selected strict-warning exceptions; Qt O2; inherited upstream object reuse has no independent flag/header audit; clean combined build required"
+    },
+    "pr161NestedRoots": {
+      "reviewedAt": "2026-11-14",
+      "runtimeCommit": "3324e7c5acdfef0a7046e5a1520f8a981c4900ef",
+      "mainIntegrationCommit": "446d28ff47131a5032fb476987ada08c751cd697",
+      "receipt": "docs/validation/pr161-nested-roots-2026-11-14.md",
+      "nativeHost": "Original-source negative controls and candidate scene passes; 8/8 standalone Qt 6.11.1/GCC 14.2 Debug ASan/UBSan CTests after deterministic test-kernel construction; Qt libraries uninstrumented and leak detection disabled",
+      "stagingHost": "17 transactional staging fixtures pass, including bounded SVG copies and rollback; independent agent source review and repeated fixture pass",
+      "consumerHost": "Exact reviewed PR 159 f49e61e CLI copy-list and archive regression port: original source fails the missing SVG resolver assertion, corrected test passes; fresh external dual consumer installs and bundles for QNX and Marathon; no native execution or dependency changes",
+      "hostedCi": "All nine workflows pass at 13a0e49ae7ea6b16faa23840926d3976866f6646, including both renderer lanes, 49/49 ON tests and all four corpus shards; packaging-only follow-up exact-head CI pending; original timeout cause remains unestablished",
+      "targetExecution": "Not run for the new native correction; fresh combined SDP 8.0.5 build and current target SVG acceptance required; keep PR draft and all release gates pending"
+    },
+    "pr161Geometry": {
+      "reviewedAt": "2026-11-16",
+      "baseCommit": "3b24f5c2fd3733dbf1ebe77729f7014242db7db3",
+      "implementationCommit": "69fa85ff4072686328d8f195e47b454b53932abe",
+      "receipt": "docs/validation/pr161-geometry-2026-11-16.md",
+      "nativeHost": "Two original-source retained-geometry regressions fail and pass with the fix; 8/8 standalone Qt 6.11.1/Clang 19.1.7 Debug ASan/UBSan CTests pass; Qt libraries uninstrumented and leak detection disabled; independent agent source review",
+      "hostedCi": "Implementation-head checks identified Prettier formatting failures; formatting and canonical-handoff follow-up requires its own successful workflows",
+      "targetExecution": "Not run for the geometry correction; fresh clean combined QNX build and current target SVG acceptance required; keep PR draft and every release gate pending"
+    },
+    "pr161LayoutDispatch": {
+      "reviewedAt": "2026-11-16",
+      "baseCommit": "3220c8df9aecf84d2019b3c9ca62d89c1b6f0ac7",
+      "receipt": "docs/validation/pr161-layout-dispatch-2026-11-16.md",
+      "nativeHost": "Both new listener regressions fail with the original adapter; all 57 host cases and all 149 SVG comparisons pass with the two supported onLayout guards. Copied PR 149 Debug graph; all four corpus CTests pass in 5.21s, 204.75s, 232.22s and 6.59s with unchanged 300-second limits. Independent source review, identical host-test object and original corpus object; Hermes slow debug checks retained. This is not an exact PR 161 full-graph or QNX result.",
+      "hostedCi": "At 3220c8d ten of eleven workflows pass; renderer OFF 14/14 CTests pass, renderer ON 47/49 pass with two 300-second corpus timeouts. The listener-guard successor requires its own completed workflows; isolated copied-graph checks are not exact-head hosted CI.",
+      "targetExecution": "Not run for the native listener correction; fresh clean combined QNX build and current target acceptance required. Keep PR draft and all eleven release gates pending."
+    },
+    "pr161SvgLayoutInterest": {
+      "reviewedAt": "2026-11-17",
+      "baseCommit": "d3eacc75dcad761c992736223a68b53ff852203b",
+      "receipt": "docs/validation/pr161-svg-layout-interest-2026-11-17.md",
+      "nativeHost": "Fresh PR 161 candidate graph: 49/49 CTests in 445.87 seconds, 57 QtReactHost cases and 149/149 SVG pixel comparisons. Four corpus times 5.33/166.98/163.61/6.21 seconds under unchanged 300-second limits. Real prop transport, all 14 generated marker classes, native subscriber lifecycle, original-source controls and separately labeled lifetime mutation are recorded; reviewed source hashes remain unchanged.",
+      "hostedCi": "Parent d3eacc75: ten of eleven workflows pass; renderer ON 47/49 with two corpus timeouts. The published successor needs its own completed workflows; exact-head results are maintained on PR 161.",
+      "targetExecution": "Not run for this native continuation. Fresh combined QNX cross-build and current-device acceptance remain required. Keep draft and all eleven release gates pending."
     }
   },
   "activeMilestone": "v1 preparation; release gates remain open",

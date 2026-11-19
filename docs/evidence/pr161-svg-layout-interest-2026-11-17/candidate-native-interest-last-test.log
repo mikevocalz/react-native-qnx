@@ -1,0 +1,25 @@
+Start testing: Nov 17 00:33 EST
+----------------------------------------------------------
+5/49 Testing: rnqnx_qt_rnsvg_fabric_test
+5/49 Test: rnqnx_qt_rnsvg_fabric_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx_qt_rnsvg_fabric_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer
+"rnqnx_qt_rnsvg_fabric_test" start time: Nov 17 00:33 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgFixture"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:34:03.816531 1724588608 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+W1117 00:34:09.061218 1724588608 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1117 00:34:09.062841 1585522368 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014bd0).
+W1117 00:34:09.062891 1585522368 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_RNSVG_FABRIC_OK metro hermes fabric gradient clip mask use update remove touch resize extras
+<end of output>
+Test time =   9.46 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_fabric_test" end time: Nov 17 00:34 EST
+"rnqnx_qt_rnsvg_fabric_test" time elapsed: 00:00:09
+----------------------------------------------------------
+
+End testing: Nov 17 00:34 EST

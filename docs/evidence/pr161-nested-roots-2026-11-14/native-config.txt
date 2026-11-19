@@ -1,0 +1,47 @@
+Standalone SVG native host build configuration; captured after the final passing run.
+
+$ /usr/bin/g++ --version
+g++ (Debian 14.2.0-19) 14.2.0
+Copyright (C) 2024 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ cmake --version
+cmake version 3.31.10
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+
+$ ninja --version
+1.13.2.git.kitware.jobserver-pipe-1
+
+$ /workspace/scratch/853552216e74/qt/6.11.1/gcc_64/bin/qmake -query QT_VERSION
+6.11.1
+
+Selected CMake cache entries:
+CMAKE_BUILD_TYPE:STRING=Debug
+CMAKE_CXX_COMPILER:STRING=/usr/bin/g++
+CMAKE_CXX_FLAGS_DEBUG:STRING=-g
+Qt6_DIR:PATH=/workspace/scratch/853552216e74/qt/6.11.1/gcc_64/lib/cmake/Qt6
+RNQNX_ENABLE_QT_RNSVG:BOOL=ON
+RNQNX_QT_RNSVG_SANITIZERS:BOOL=ON
+
+Unique sanitizer compile/link flags from generated Ninja file:
+FLAGS = -g -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -fPIC
+FLAGS = -g -fPIC -Wall -Wextra -Wpedantic -Werror -fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -fPIC
+LINK_FLAGS = -fsanitize=address,undefined -Wl,--dependency-file=CMakeFiles/rnqnx_qt_rnsvg_filter_test.dir/link.d
+LINK_FLAGS = -fsanitize=address,undefined -Wl,--dependency-file=CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/link.d
+LINK_FLAGS = -fsanitize=address,undefined -Wl,--dependency-file=CMakeFiles/rnqnx_qt_rnsvg_foreignobject_test.dir/link.d
+LINK_FLAGS = -fsanitize=address,undefined -Wl,--dependency-file=CMakeFiles/rnqnx_qt_rnsvg_image_test.dir/link.d
+LINK_FLAGS = -fsanitize=address,undefined -Wl,--dependency-file=CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/link.d
+LINK_FLAGS = -fsanitize=address,undefined -Wl,--dependency-file=CMakeFiles/rnqnx_qt_rnsvg_scene_test.dir/link.d
+LINK_FLAGS = -fsanitize=address,undefined -Wl,--dependency-file=CMakeFiles/rnqnx_qt_rnsvg_test.dir/link.d
+LINK_FLAGS = -fsanitize=address,undefined -Wl,--dependency-file=CMakeFiles/rnqnx_qt_rnsvg_text_test.dir/link.d
+
+Representative generated CTest environment/timeout:
+set_tests_properties([=[rnqnx_qt_rnsvg_scene_test]=] PROPERTIES  ENVIRONMENT "QT_QUICK_BACKEND=software;ASAN_OPTIONS=detect_leaks=0:halt_on_error=1;UBSAN_OPTIONS=halt_on_error=1" TIMEOUT "120" _BACKTRACE_TRIPLES "/workspace/scratch/853552216e74/pr161-native/tests/native/qt-rnsvg/CMakeLists.txt;60;add_test;/workspace/scratch/853552216e74/pr161-native/tests/native/qt-rnsvg/CMakeLists.txt;0;")
+
+SHA-256 of tested native sources and regressions:
+5e6365a40aefdce247be62caf8184d69eb203428d5236b8992b2bd16a9bd1970  native/qt/rnsvg/RnsvgItems.cpp
+aaaee304d46b8a30a7dd84543127d0eb33ba837d4dfc559473be43fff5483e43  native/qt/rnsvg/scene/Bounds.cpp
+d902bb11b0a8409ea57479f5c64fb4663eda84f61773de94ddee2122b28f3e67  tests/native/qt-rnsvg/RnsvgSceneTest.cpp
+29347e63af684b34c63d525ccdccc2453088a0dbddf45b97ef5ab9fcca988a8d  tests/native/qt-rnsvg/golden/filter/unit/SpatialPrimitiveTests.h

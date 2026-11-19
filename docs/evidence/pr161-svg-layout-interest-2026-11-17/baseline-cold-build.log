@@ -1,0 +1,1460 @@
+[0/2] Re-checking globbed directories...
+[1/1122] Automatic MOC for target rnqnx_qt_video
+[2/1122] Running rcc for resource rnqnx_qt_video_qml
+[3/1122] Automatic MOC for target rnqnx_qt_svg
+[4/1122] Automatic MOC for target rnqnx_qt_rnsvg
+[5/1122] Building CXX object CMakeFiles/rnqnx_glog.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_glog-src/src/demangle.cc.o
+[6/1122] Building CXX object CMakeFiles/rnqnx_glog.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_glog-src/src/raw_logging.cc.o
+[7/1122] Building CXX object CMakeFiles/rnqnx_glog.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_glog-src/src/logging.cc.o
+[8/1122] Building CXX object CMakeFiles/rnqnx_glog.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_glog-src/src/signalhandler.cc.o
+[9/1122] Building CXX object CMakeFiles/rnqnx_glog.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_glog-src/src/symbolize.cc.o
+[10/1122] Building CXX object CMakeFiles/rnqnx_glog.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_glog-src/src/utilities.cc.o
+[11/1122] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/bignum.cc.o
+[12/1122] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/bignum-dtoa.cc.o
+[13/1122] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/cached-powers.cc.o
+[14/1122] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/diy-fp.cc.o
+[15/1122] Building CXX object CMakeFiles/rnqnx_glog.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_glog-src/src/vlog_is_on.cc.o
+[16/1122] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/fast-dtoa.cc.o
+[17/1122] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/double-conversion.cc.o
+[18/1122] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/fixed-dtoa.cc.o
+[19/1122] Building CXX object CMakeFiles/rnqnx_double_conversion.dir/double-conversion-staged/double-conversion/strtod.cc.o
+[20/1122] Building CXX object CMakeFiles/rnqnx_fmt.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_fmt-src/src/format.cc.o
+[21/1122] Building CXX object qt-native/svg/CMakeFiles/rnqnx_qt_svg.dir/rnqnx_qt_svg_autogen/mocs_compilation.cpp.o
+[22/1122] Building CXX object qt-native/svg/CMakeFiles/rnqnx_qt_svg.dir/SvgDocumentValidation.cpp.o
+[23/1122] Building CXX object qt-native/svg/CMakeFiles/rnqnx_qt_svg.dir/QtSvgItem.cpp.o
+[24/1122] Building CXX object qt-native/svg/CMakeFiles/rnqnx_qt_svg.dir/SvgPathValidation.cpp.o
+[25/1122] Building CXX object qt-native/svg/CMakeFiles/rnqnx_qt_svg.dir/SvgTransformValidation.cpp.o
+[26/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/rnqnx_qt_rnsvg_autogen/mocs_compilation.cpp.o
+[27/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgForeignObjectItem.cpp.o
+[28/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgItems.cpp.o
+[29/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgPath.cpp.o
+[30/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeBlend.cpp.o
+[31/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeColorMatrix.cpp.o
+[32/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeComponentTransfer.cpp.o
+[33/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/RnsvgRenderer.cpp.o
+[34/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeComposite.cpp.o
+[35/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeDropShadow.cpp.o
+[36/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeConvolveMatrix.cpp.o
+[37/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeDisplacementMap.cpp.o
+[38/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeGaussianBlur.cpp.o
+[39/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeImage.cpp.o
+[40/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeFlood.cpp.o
+[41/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeLighting.cpp.o
+[42/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeMerge.cpp.o
+[43/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeMorphology.cpp.o
+[44/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeOffset.cpp.o
+[45/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeTile.cpp.o
+[46/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FeTurbulence.cpp.o
+[47/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FilterColorSpace.cpp.o
+[48/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FilterRegion.cpp.o
+[49/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/FilterEngine.cpp.o
+[50/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/filter/GaussianBlur.cpp.o
+[51/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/image/ImageElementProps.cpp.o
+[52/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/image/ImageBinding.cpp.o
+[53/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/image/ImageDecoding.cpp.o
+[54/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/image/ImageLoader.cpp.o
+[55/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/ConicalGradient.cpp.o
+[56/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/ClipMask.cpp.o
+[57/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Bounds.cpp.o
+[58/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Geometry.cpp.o
+[59/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/HitTester.cpp.o
+[60/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Effects.cpp.o
+[61/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/FilterRunner.cpp.o
+[62/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/PaintServers.cpp.o
+[63/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/ImageRenderer.cpp.o
+[64/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Markers.cpp.o
+[65/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/PatternPaint.cpp.o
+[66/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/ShapePainter.cpp.o
+[67/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/SceneLayout.cpp.o
+[68/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Scene.cpp.o
+[69/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/Style.cpp.o
+[70/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/scene/TextRenderer.cpp.o
+[71/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/Baseline.cpp.o
+[72/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/CharAttrs.cpp.o
+[73/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/Decoration.cpp.o
+[74/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/FlatTree.cpp.o
+[75/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/FontProbe.cpp.o
+[76/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/GlyphEmit.cpp.o
+[77/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/InlineSize.cpp.o
+[78/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/PathMeasure.cpp.o
+[79/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/PathGlyphs.cpp.o
+[80/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/Placement.cpp.o
+[81/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/TextLength.cpp.o
+[82/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/TextLayout.cpp.o
+[83/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/Shaper.cpp.o
+[84/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/TextParse.cpp.o
+[85/1122] Building CXX object qt-native/rnsvg/CMakeFiles/rnqnx_qt_rnsvg.dir/text/UnitBuilder.cpp.o
+[86/1122] Building CXX object qt-native/video/CMakeFiles/rnqnx_qt_video.dir/.qt/rcc/qrc_rnqnx_qt_video_qml.cpp.o
+[87/1122] Building ASM object hermes/external/boost/boost_1_86_0/libs/context/CMakeFiles/boost_context_obj.dir/src/asm/make_x86_64_sysv_elf_gas.S.o
+[88/1122] Building ASM object hermes/external/boost/boost_1_86_0/libs/context/CMakeFiles/boost_context_obj.dir/src/asm/jump_x86_64_sysv_elf_gas.S.o
+[89/1122] Building ASM object hermes/external/boost/boost_1_86_0/libs/context/CMakeFiles/boost_context_obj.dir/src/asm/ontop_x86_64_sysv_elf_gas.S.o
+[90/1122] Building CXX object hermes/external/boost/boost_1_86_0/libs/context/CMakeFiles/boost_context_obj.dir/src/posix/stack_traits.cpp.o
+[91/1122] Linking CXX static library librnqnx_glog.a
+[92/1122] Linking CXX static library librnqnx_fmt.a
+[93/1122] Linking CXX static library librnqnx_double_conversion.a
+[94/1122] Building CXX object qt-native/video/CMakeFiles/rnqnx_qt_video.dir/rnqnx_qt_video_autogen/mocs_compilation.cpp.o
+[95/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/Conv.cpp.o
+[96/1122] Building CXX object qt-native/video/CMakeFiles/rnqnx_qt_video.dir/QtVideoItem.cpp.o
+[97/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/FileUtil.cpp.o
+[98/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/Demangle.cpp.o
+[99/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/ScopeGuard.cpp.o
+[100/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/Format.cpp.o
+[101/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/String.cpp.o
+[102/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/SharedMutex.cpp.o
+[103/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/Unicode.cpp.o
+[104/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/detail/FileUtilDetail.cpp.o
+[105/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/concurrency/CacheLocality.cpp.o
+[106/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/container/detail/F14Table.cpp.o
+[107/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/detail/UniqueInstance.cpp.o
+[108/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/hash/SpookyHashV2.cpp.o
+[109/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/detail/Futex.cpp.o
+[110/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/detail/SplitStringSimd.cpp.o
+[111/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/json/json_pointer.cpp.o
+[112/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/lang/CString.cpp.o
+[113/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/lang/Exception.cpp.o
+[114/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/json/dynamic.cpp.o
+[115/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/lang/ToAscii.cpp.o
+[116/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/memory/detail/MallocImpl.cpp.o
+[117/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/lang/SafeAssert.cpp.o
+[118/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/json/json.cpp.o
+[119/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/synchronization/SanitizeThread.cpp.o
+[120/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/net/NetOps.cpp.o
+[121/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/portability/SysUio.cpp.o
+[122/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/synchronization/ParkingLot.cpp.o
+[123/1122] Linking CXX static library qt-native/svg/librnqnx_qt_svg.a
+[124/1122] Linking CXX static library qt-native/rnsvg/librnqnx_qt_rnsvg.a
+[125/1122] Linking CXX static library qt-native/video/librnqnx_qt_video.a
+[126/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/system/AtFork.cpp.o
+[127/1122] Building CXX object CMakeFiles/rnqnx_folly_runtime.dir/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_folly-src/folly/system/ThreadId.cpp.o
+[128/1122] Building C object hermes/external/dtoa/CMakeFiles/dtoa_obj.dir/dtoa.c.o
+[129/1122] Building C object hermes/external/dtoa/CMakeFiles/dtoa_obj.dir/g_fmt.c.o
+[130/1122] Building CXX object hermes/external/dtoa/CMakeFiles/dtoa_obj.dir/locks.cpp.o
+[131/1122] Building C object hermes/external/zip/CMakeFiles/zip_obj.dir/src/zip.c.o
+[132/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/circular_raw_ostream.cpp.o
+[133/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/APFloat.cpp.o
+[134/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/ConvertUTF.cpp.o
+[135/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/APInt.cpp.o
+[136/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/ConvertUTFWrapper.cpp.o
+[137/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Debug.cpp.o
+[138/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/CommandLine.cpp.o
+[139/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Errno.cpp.o
+[140/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/ErrorHandling.cpp.o
+[141/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Error.cpp.o
+[142/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/FoldingSet.cpp.o
+[143/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/FormatVariadic.cpp.o
+[144/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/FileCheck.cpp.o
+[145/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Hashing.cpp.o
+[146/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/GraphWriter.cpp.o
+[147/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/InitLLVM.cpp.o
+[148/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Host.cpp.o
+[149/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/JSON.cpp.o
+[150/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/LineIterator.cpp.o
+[151/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Locale.cpp.o
+[152/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/ManagedStatic.cpp.o
+[153/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/MD5.cpp.o
+[154/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Memory.cpp.o
+[155/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/MemoryBuffer.cpp.o
+[156/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/NativeFormatting.cpp.o
+[157/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Mutex.cpp.o
+[158/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/PrettyStackTrace.cpp.o
+[159/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Path.cpp.o
+[160/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Process.cpp.o
+In file included from /workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/external/llvh/lib/Support/Process.cpp:94:
+/workspace/scratch/252a22fac759/rnqnx-pr149/build/linux-host-renderer/_deps/rnqnx_hermes-src/external/llvh/lib/Support/Unix/Process.inc:93:10: warning: 'mallinfo' is deprecated [-Wdeprecated-declarations]
+   93 |   mi = ::mallinfo();
+      |          ^
+/usr/include/malloc.h:114:48: note: 'mallinfo' has been explicitly marked deprecated here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                                                ^
+/usr/include/malloc.h:32:30: note: expanded from macro '__MALLOC_DEPRECATED'
+   32 | # define __MALLOC_DEPRECATED __attribute_deprecated__
+      |                              ^
+/usr/include/x86_64-linux-gnu/sys/cdefs.h:510:51: note: expanded from macro '__attribute_deprecated__'
+  510 | # define __attribute_deprecated__ __attribute__ ((__deprecated__))
+      |                                                   ^
+1 warning generated.
+[161/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/raw_ostream.cpp.o
+[162/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/raw_os_ostream.cpp.o
+[163/1122] Building C object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/regcomp.c.o
+[164/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Program.cpp.o
+[165/1122] Building C object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/regerror.c.o
+[166/1122] Building C object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/regfree.c.o
+[167/1122] Building C object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/regstrlcpy.c.o
+[168/1122] Building C object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/regexec.c.o
+[169/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Regex.cpp.o
+[170/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/SHA1.cpp.o
+[171/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/SmallVector.cpp.o
+[172/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Signals.cpp.o
+[173/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/SmallPtrSet.cpp.o
+[174/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/SourceMgr.cpp.o
+[175/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/StringExtras.cpp.o
+[176/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/StringMap.cpp.o
+[177/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Statistic.cpp.o
+[178/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/StringRef.cpp.o
+[179/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/TargetParser.cpp.o
+[180/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/StringSaver.cpp.o
+[181/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Threading.cpp.o
+[182/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/ToolOutputFile.cpp.o
+[183/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Triple.cpp.o
+[184/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Timer.cpp.o
+[185/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Twine.cpp.o
+[186/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Valgrind.cpp.o
+[187/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Watchdog.cpp.o
+[188/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/Unicode.cpp.o
+[189/1122] Building CXX object hermes/external/llvh/lib/Support/CMakeFiles/LLVHSupport_obj.dir/WithColor.cpp.o
+[190/1122] Building CXX object hermes/external/llvh/lib/Demangle/CMakeFiles/LLVHDemangle_obj.dir/MicrosoftDemangleNodes.cpp.o
+[191/1122] Linking CXX static library hermes/external/boost/boost_1_86_0/libs/context/libboost_context.a
+[192/1122] Building CXX object hermes/external/llvh/lib/Demangle/CMakeFiles/LLVHDemangle_obj.dir/MicrosoftDemangle.cpp.o
+[193/1122] Building CXX object hermes/external/llvh/lib/Demangle/CMakeFiles/LLVHDemangle_obj.dir/ItaniumDemangle.cpp.o
+[194/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/PassManager/PassManager.cpp.o
+[195/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/PassManager/Pipeline.cpp.o
+[196/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/CSE.cpp.o
+[197/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/SimplifyCFG.cpp.o
+[198/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/CodeMotion.cpp.o
+[199/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/DCE.cpp.o
+[200/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/MetroRequireOpt.cpp.o
+[201/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/LowerGeneratorFunction.cpp.o
+[202/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/Mem2Reg.cpp.o
+[203/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/SimpleMem2Reg.cpp.o
+[204/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/FrameLoadStoreOpts.cpp.o
+[205/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/LowerBuiltinCalls.cpp.o
+[206/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/ScopeElimination.cpp.o
+[207/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/ScopeHoisting.cpp.o
+[208/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/TypeInference.cpp.o
+[209/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/SimpleStackPromotion.cpp.o
+[210/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/ObjectStackPromotion.cpp.o
+[211/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/ObjectMergeNewStores.cpp.o
+[212/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/InstSimplify.cpp.o
+[213/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/ResolveStaticRequire.cpp.o
+[214/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/Auditor.cpp.o
+[215/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/FuncSigOpts.cpp.o
+[216/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/Utils.cpp.o
+[217/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/FunctionAnalysis.cpp.o
+[218/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/Inlining.cpp.o
+[219/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/InstructionEscapeAnalysis.cpp.o
+[220/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/TDZDedup.cpp.o
+[221/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/PrivateBrandCheckDedup.cpp.o
+[222/1122] Building CXX object hermes/lib/CMakeFiles/hermesOptimizer_obj.dir/Optimizer/Scalar/StripDebugInsts.cpp.o
+[223/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IRGen/IRGen.cpp.o
+[224/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IRGen/ESTreeIRGen.cpp.o
+[225/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IRGen/ESTreeIRGen-expr.cpp.o
+[226/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IRGen/ESTreeIRGen-func.cpp.o
+[227/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IRGen/ESTreeIRGen-except.cpp.o
+[228/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IRGen/ESTreeIRGen-stmt.cpp.o
+[229/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IRGen/ESTreeIRGen-typed-class.cpp.o
+[230/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IR/Analysis.cpp.o
+[231/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IRGen/ESTreeIRGen-legacy-class.cpp.o
+[232/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IR/IRHash.cpp.o
+[233/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IR/IREval.cpp.o
+[234/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IR/IR.cpp.o
+[235/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IR/IRBuilder.cpp.o
+[236/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IR/CFG.cpp.o
+[237/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IR/IRVerifier.cpp.o
+[238/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IR/Instrs.cpp.o
+[239/1122] Building CXX object hermes/lib/Inst/CMakeFiles/hermesInst_obj.dir/InstDecode.cpp.o
+[240/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/IR/IRUtils.cpp.o
+[241/1122] Building CXX object hermes/lib/FrontEndDefs/CMakeFiles/hermesFrontEndDefs_obj.dir/Builtins.cpp.o
+[242/1122] Building CXX object hermes/lib/Inst/CMakeFiles/hermesInst_obj.dir/InstDecode2.cpp.o
+[243/1122] Building CXX object hermes/lib/ADT/CMakeFiles/hermesADT_obj.dir/CompactArray.cpp.o
+[244/1122] Building CXX object hermes/lib/CMakeFiles/hermesFrontend_obj.dir/Utils/Dumper.cpp.o
+[245/1122] Building CXX object hermes/lib/AST/CMakeFiles/hermesAST_obj.dir/ASTUtils.cpp.o
+[246/1122] Building CXX object hermes/lib/AST/CMakeFiles/hermesAST_obj.dir/ASTBuilder.cpp.o
+[247/1122] Building CXX object hermes/lib/AST/CMakeFiles/hermesAST_obj.dir/ESTree.cpp.o
+[248/1122] Building CXX object hermes/lib/AST/CMakeFiles/hermesAST_obj.dir/CommonJS.cpp.o
+[249/1122] Building CXX object hermes/lib/AST/CMakeFiles/hermesAST_obj.dir/AsyncGenerator.cpp.o
+[250/1122] Building CXX object hermes/lib/AST/CMakeFiles/hermesAST_obj.dir/ESTreeJSONDumper.cpp.o
+[251/1122] Building CXX object hermes/lib/AST/CMakeFiles/hermesAST_obj.dir/StripTS.cpp.o
+[252/1122] Building CXX object hermes/lib/AST/CMakeFiles/hermesAST_obj.dir/TransformAST.cpp.o
+[253/1122] Building CXX object hermes/lib/AST/CMakeFiles/hermesAST_obj.dir/NativeContext.cpp.o
+[254/1122] Building CXX object hermes/lib/AST/CMakeFiles/hermesAST_obj.dir/TS2Flow.cpp.o
+[255/1122] Building CXX object hermes/lib/AST2JS/CMakeFiles/hermesAST2JS_obj.dir/AST2JS.cpp.o
+[256/1122] Building CXX object hermes/lib/Parser/CMakeFiles/hermesParser_obj.dir/JSLexer.cpp.o
+[257/1122] Building CXX object hermes/lib/AST/CMakeFiles/hermesAST_obj.dir/Context.cpp.o
+[258/1122] Building CXX object hermes/lib/Parser/CMakeFiles/hermesParser_obj.dir/JSONParser.cpp.o
+[259/1122] Building CXX object hermes/lib/Parser/CMakeFiles/hermesParser_obj.dir/JSParser.cpp.o
+[260/1122] Building CXX object hermes/lib/Parser/CMakeFiles/hermesParser_obj.dir/JSParserImpl-flow.cpp.o
+[261/1122] Building CXX object hermes/lib/Parser/CMakeFiles/hermesParser_obj.dir/JSParserImpl.cpp.o
+[262/1122] Building CXX object hermes/lib/Parser/CMakeFiles/hermesParser_obj.dir/JSParserImpl-jsx.cpp.o
+[263/1122] Building CXX object hermes/lib/Parser/CMakeFiles/hermesParser_obj.dir/FlowHelpers.cpp.o
+[264/1122] Building CXX object hermes/lib/Parser/CMakeFiles/hermesParser_obj.dir/JSParserImpl-ts.cpp.o
+[265/1122] Building CXX object hermes/lib/Parser/CMakeFiles/hermesParser_obj.dir/rust-api.cpp.o
+[266/1122] Building CXX object hermes/lib/SourceMap/CMakeFiles/hermesSourceMap_obj.dir/c-api.cpp.o
+[267/1122] Building CXX object hermes/lib/SourceMap/CMakeFiles/hermesSourceMap_obj.dir/SourceMap.cpp.o
+[268/1122] Building CXX object hermes/lib/SourceMap/CMakeFiles/hermesSourceMap_obj.dir/SourceMapGenerator.cpp.o
+[269/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/Base64.cpp.o
+[270/1122] Building CXX object hermes/lib/SourceMap/CMakeFiles/hermesSourceMap_obj.dir/SourceMapParser.cpp.o
+[271/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/Base64vlq.cpp.o
+[272/1122] Building CXX object hermes/lib/SourceMap/CMakeFiles/hermesSourceMap_obj.dir/SourceMapTranslator.cpp.o
+[273/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/CheckedMalloc.cpp.o
+[274/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/Conversions.cpp.o
+[275/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/BigIntSupport.cpp.o
+[276/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/FastDoubleToDecimal.cpp.o
+[277/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/ErrorHandling.cpp.o
+[278/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/FastArraySearch.cpp.o
+[279/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/FastStrToDouble.cpp.o
+[280/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/JSONEmitter.cpp.o
+[281/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/OSCompatEmscripten.cpp.o
+[282/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/MD5.cpp.o
+[283/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/OSCompatWindows.cpp.o
+[284/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/OSCompatCommon.cpp.o
+[285/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/OSCompatPosix.cpp.o
+[286/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/PageAccessTrackerPosix.cpp.o
+[287/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/PerfSection.cpp.o
+[288/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/SemaphorePosix.cpp.o
+[289/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/SerialExecutor.cpp.o
+[290/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/SHA1.cpp.o
+[291/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/StackOverflowGuard.cpp.o
+[292/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/StackExecutor.cpp.o
+[293/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/SNPrintfBuf.cpp.o
+[294/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/StringTable.cpp.o
+[295/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/SimpleDiagHandler.cpp.o
+[296/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/SourceErrorManager.cpp.o
+[297/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/UTF8.cpp.o
+[298/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/UTF16Stream.cpp.o
+[299/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/LEB128.cpp.o
+[300/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/MemorySizeParser.cpp.o
+[301/1122] Building CXX object hermes/lib/Support/CMakeFiles/hermesSupport_obj.dir/RandomSeedParser.cpp.o
+[302/1122] Building CXX object hermes/lib/BCGen/CMakeFiles/hermesBackend_obj.dir/BackendContext.cpp.o
+[303/1122] Building CXX object hermes/lib/BCGen/CMakeFiles/hermesBackend_obj.dir/RegAlloc.cpp.o
+[304/1122] Building CXX object hermes/lib/BCGen/CMakeFiles/hermesBackend_obj.dir/Lowering.cpp.o
+[305/1122] Building CXX object hermes/lib/BCGen/CMakeFiles/hermesBackend_obj.dir/LowerScopes.cpp.o
+[306/1122] Building CXX object hermes/lib/BCGen/CMakeFiles/hermesBackend_obj.dir/Exceptions.cpp.o
+[307/1122] Building CXX object hermes/lib/BCGen/CMakeFiles/hermesBackend_obj.dir/SerializedLiteralGenerator.cpp.o
+[308/1122] Building CXX object hermes/lib/BCGen/CMakeFiles/hermesBackend_obj.dir/OptEnvironmentInit.cpp.o
+[309/1122] Building CXX object hermes/lib/BCGen/CMakeFiles/hermesBackend_obj.dir/LiteralBufferBuilder.cpp.o
+[310/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/HBC.cpp.o
+[311/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/Bytecode.cpp.o
+[312/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/BytecodeStream.cpp.o
+[313/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/ISel.cpp.o
+[314/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/BCProviderFromSrc.cpp.o
+[315/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/BCProvider.cpp.o
+[316/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/BytecodeGenerator.cpp.o
+[317/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/BytecodeFormConverter.cpp.o
+[318/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/BytecodeDisassembler.cpp.o
+[319/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/DebugInfo.cpp.o
+[320/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/ConsecutiveStringStorage.cpp.o
+[321/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/DebugInfoNonLean.cpp.o
+[322/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/StringKind.cpp.o
+[323/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/SimpleBytecodeBuilder.cpp.o
+[324/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/UniquingFilenameTable.cpp.o
+[325/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/Passes.cpp.o
+[326/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/UniquingStringLiteralTable.cpp.o
+[327/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/Passes/OptParentEnvironment.cpp.o
+[328/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/Passes/InsertProfilePoint.cpp.o
+[329/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/LoweringPipelines.cpp.o
+[330/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/Passes/PeepholeLowering.cpp.o
+[331/1122] Building CXX object hermes/lib/BCGen/SH/CMakeFiles/hermesSHBackend_obj.dir/LowerCalls.cpp.o
+[332/1122] Building CXX object hermes/lib/BCGen/HBC/CMakeFiles/hermesHBCBackend_obj.dir/Passes/ReorderRegisters.cpp.o
+[333/1122] Building CXX object hermes/lib/BCGen/SH/CMakeFiles/hermesSHBackend_obj.dir/LoadConstants.cpp.o
+[334/1122] Building CXX object hermes/lib/BCGen/SH/CMakeFiles/hermesSHBackend_obj.dir/RecreateCheapValues.cpp.o
+[335/1122] Building CXX object hermes/lib/BCGen/SH/CMakeFiles/hermesSHBackend_obj.dir/LowerNanBoxedUnionNarrowT.cpp.o
+[336/1122] Building CXX object hermes/lib/BCGen/SH/CMakeFiles/hermesSHBackend_obj.dir/PeepholeLowering.cpp.o
+[337/1122] Building CXX object hermes/lib/BCGen/SH/CMakeFiles/hermesSHBackend_obj.dir/LineDirectiveEmitter.cpp.o
+[338/1122] Building CXX object hermes/lib/BCGen/SH/CMakeFiles/hermesSHBackend_obj.dir/SH.cpp.o
+[339/1122] Building CXX object hermes/lib/BCGen/SH/CMakeFiles/hermesSHBackend_obj.dir/SHRegAlloc.cpp.o
+[340/1122] Building CXX object hermes/lib/Regex/CMakeFiles/hermesRegex_obj.dir/Executor.cpp.o
+[341/1122] Building CXX object hermes/lib/Platform/CMakeFiles/hermesPlatform_obj.dir/Logging.cpp.o
+[342/1122] Building CXX object hermes/lib/Regex/CMakeFiles/hermesRegex_obj.dir/RegexParser.cpp.o
+[343/1122] Building CXX object hermes/lib/Regex/CMakeFiles/hermesRegex_obj.dir/RegexSerialization.cpp.o
+[344/1122] Building CXX object hermes/lib/Platform/Unicode/CMakeFiles/hermesPlatformUnicode_obj.dir/PlatformUnicodeJava.cpp.o
+[345/1122] Building CXX object hermes/lib/Platform/Unicode/CMakeFiles/hermesPlatformUnicode_obj.dir/PlatformUnicodeICU.cpp.o
+[346/1122] Building CXX object hermes/lib/Platform/Unicode/CMakeFiles/hermesPlatformUnicode_obj.dir/PlatformUnicodeCF.cpp.o
+[347/1122] Building CXX object hermes/lib/Platform/Unicode/CMakeFiles/hermesPlatformUnicode_obj.dir/PlatformUnicodeLite.cpp.o
+[348/1122] Building CXX object hermes/lib/Platform/Unicode/CMakeFiles/hermesPlatformUnicode_obj.dir/PlatformUnicodeEmscripten.cpp.o
+[349/1122] Building CXX object hermes/lib/Platform/Unicode/CMakeFiles/hermesPlatformUnicode_obj.dir/CharacterProperties.cpp.o
+[350/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/ASTEval.cpp.o
+[351/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/SemContext.cpp.o
+[352/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/ASTLowering.cpp.o
+[353/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/DeclCollector.cpp.o
+[354/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/SemanticResolver.cpp.o
+[355/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/SemResolve.cpp.o
+[356/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/ESTreeClone.cpp.o
+[357/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/CheckImplicitReturn.cpp.o
+[358/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/ScopedFunctionPromoter.cpp.o
+[359/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/FlowTypesDumper.cpp.o
+[360/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/FlowContext.cpp.o
+[361/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/FlowChecker-scopetypes.cpp.o
+[362/1122] Building CXX object hermes/public/hermes/Public/CMakeFiles/hermesPublic_obj.dir/rtti.cpp.o
+[363/1122] Building CXX object hermes/public/hermes/Public/CMakeFiles/hermesPublic_obj.dir/rtti_common.cpp.o
+[364/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/FlowChecker.cpp.o
+[365/1122] Linking CXX static library librnqnx_folly_runtime.a
+[366/1122] Building CXX object hermes/lib/Sema/CMakeFiles/hermesSema_obj.dir/FlowChecker-expr.cpp.o
+[367/1122] Automatic MOC for target rnqnx_views_qt
+[368/1122] Building CXX object hermes/jsi/CMakeFiles/jsi.dir/jsi.cpp.o
+[369/1122] Linking CXX static library hermes/lib/libhermescompiler.a
+[370/1122] Linking CXX shared library hermes/jsi/libjsi.so
+[371/1122] Building CXX object react-native/jserrorhandler/CMakeFiles/jserrorhandler.dir/ErrorUtils.cpp.o
+[372/1122] Building CXX object hermes/tools/hermesc/CMakeFiles/hermesc.dir/hermesc.cpp.o
+[373/1122] Building CXX object react-native/jserrorhandler/CMakeFiles/jserrorhandler.dir/StackTraceParser.cpp.o
+[374/1122] Building CXX object react-native/react/debug/CMakeFiles/react_debug.dir/react_native_assert.cpp.o
+[375/1122] Building CXX object hermes/lib/CompilerDriver/CMakeFiles/hermesCompilerDriver_obj.dir/CompilerDriver.cpp.o
+[376/1122] Building CXX object react-native/jserrorhandler/CMakeFiles/jserrorhandler.dir/JsErrorHandler.cpp.o
+[377/1122] Building CXX object react-native/react/debug/CMakeFiles/react_debug.dir/redbox/AnsiParser.cpp.o
+[378/1122] Building CXX object react-native/react/debug/CMakeFiles/react_debug.dir/redbox/JscSafeUrl.cpp.o
+[379/1122] Building CXX object react-native/react/utils/CMakeFiles/react_utils.dir/RunLoopObserver.cpp.o
+[380/1122] Building CXX object react-native/react/utils/CMakeFiles/react_utils.dir/Uuid.cpp.o
+[381/1122] Building CXX object react-native/react/debug/CMakeFiles/react_debug.dir/redbox/RedBoxErrorParser.cpp.o
+[382/1122] Building CXX object react-native/react/featureflags/CMakeFiles/react_featureflags.dir/ReactNativeFeatureFlags.cpp.o
+[383/1122] Building CXX object react-native/react/featureflags/CMakeFiles/react_featureflags.dir/ReactNativeFeatureFlagsAccessor.cpp.o
+[384/1122] Building CXX object react-native/react/utils/CMakeFiles/react_utils.dir/jsi-utils.cpp.o
+[385/1122] Building CXX object react-native/react/renderer/debug/CMakeFiles/react_renderer_debug.dir/DebugStringConvertibleItem.cpp.o
+[386/1122] Building CXX object react-native/react/renderer/debug/CMakeFiles/react_renderer_debug.dir/DebugStringConvertible.cpp.o
+[387/1122] Building CXX object react-native/react/renderer/runtimescheduler/CMakeFiles/react_renderer_runtimescheduler.dir/RuntimeScheduler.cpp.o
+[388/1122] Building CXX object react-native/react/renderer/runtimescheduler/CMakeFiles/react_renderer_runtimescheduler.dir/RuntimeSchedulerBinding.cpp.o
+[389/1122] Building CXX object react-native/react/renderer/runtimescheduler/CMakeFiles/react_renderer_runtimescheduler.dir/RuntimeSchedulerCallInvoker.cpp.o
+[390/1122] Building CXX object react-native/react/renderer/runtimescheduler/CMakeFiles/react_renderer_runtimescheduler.dir/RuntimeScheduler_Legacy.cpp.o
+[391/1122] Building CXX object react-native/react/renderer/consistency/CMakeFiles/react_renderer_consistency.dir/ShadowTreeRevisionConsistencyManager.cpp.o
+[392/1122] Building CXX object react-native/react/renderer/runtimescheduler/CMakeFiles/react_renderer_runtimescheduler.dir/Task.cpp.o
+[393/1122] Building CXX object react-native/react/performance/timeline/CMakeFiles/react_performance_timeline.dir/PerformanceEntryCircularBuffer.cpp.o
+[394/1122] Building CXX object react-native/react/renderer/runtimescheduler/CMakeFiles/react_renderer_runtimescheduler.dir/RuntimeScheduler_Modern.cpp.o
+[395/1122] Building CXX object react-native/react/performance/timeline/CMakeFiles/react_performance_timeline.dir/PerformanceEntryKeyedBuffer.cpp.o
+[396/1122] Building CXX object react-native/react/performance/timeline/CMakeFiles/react_performance_timeline.dir/PerformanceObserverRegistry.cpp.o
+[397/1122] Building CXX object react-native/react/performance/timeline/CMakeFiles/react_performance_timeline.dir/PerformanceEntryReporter.cpp.o
+[398/1122] Building CXX object react-native/react/performance/timeline/CMakeFiles/react_performance_timeline.dir/PerformanceObserver.cpp.o
+[399/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/ConsoleMessage.cpp.o
+[400/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/ConsoleTask.cpp.o
+[401/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/ConsoleTaskContext.cpp.o
+[402/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/ExecutionContext.cpp.o
+[403/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/ExecutionContextManager.cpp.o
+[404/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/ConsoleTaskOrchestrator.cpp.o
+[405/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/EmulationAgent.cpp.o
+[406/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/FallbackRuntimeAgentDelegate.cpp.o
+[407/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/FallbackRuntimeTargetDelegate.cpp.o
+[408/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/HostAgent.cpp.o
+[409/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/HostTargetTraceRecording.cpp.o
+[410/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/HostTargetTracing.cpp.o
+[411/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/HostTarget.cpp.o
+[412/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/InspectorFlags.cpp.o
+[413/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/InspectorUtilities.cpp.o
+[414/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/InspectorInterfaces.cpp.o
+[415/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/InspectorPackagerConnection.cpp.o
+[416/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/InstanceAgent.cpp.o
+[417/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/InstanceTarget.cpp.o
+[418/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/NetworkIOAgent.cpp.o
+[419/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/PerfMonitorV2.cpp.o
+[420/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/RuntimeTarget.cpp.o
+[421/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/RuntimeAgent.cpp.o
+[422/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/RuntimeTargetGlobalStateObserver.cpp.o
+[423/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/RuntimeTargetConsole.cpp.o
+[424/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/RuntimeTargetNetwork.cpp.o
+[425/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/RuntimeTargetDebuggerSessionObserver.cpp.o
+[426/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/RuntimeTargetTracingStateObserver.cpp.o
+[427/1122] Building CXX object react-native/oscompat/CMakeFiles/oscompat.dir/OSCompatPosix.cpp.o
+[428/1122] Building CXX object react-native/oscompat/CMakeFiles/oscompat.dir/OSCompatWindows.cpp.o
+[429/1122] Building CXX object react-native/jsinspector-modern/network/CMakeFiles/jsinspector_network.dir/BoundedRequestBuffer.cpp.o
+[430/1122] Building CXX object react-native/jsinspector-modern/CMakeFiles/jsinspector.dir/TracingAgent.cpp.o
+[431/1122] Building CXX object react-native/jsinspector-modern/cdp/CMakeFiles/jsinspector_cdp.dir/CdpJson.cpp.o
+[432/1122] Building CXX object react-native/jsinspector-modern/network/CMakeFiles/jsinspector_network.dir/HttpUtils.cpp.o
+[433/1122] Building CXX object react-native/jsinspector-modern/network/CMakeFiles/jsinspector_network.dir/CdpNetwork.cpp.o
+[434/1122] Building CXX object react-native/reactperflogger/CMakeFiles/reactperflogger.dir/reactperflogger/BridgeNativeModulePerfLogger.cpp.o
+[435/1122] Building CXX object react-native/reactperflogger/CMakeFiles/reactperflogger.dir/reactperflogger/FuseboxPerfettoDataSource.cpp.o
+[436/1122] Building CXX object react-native/reactperflogger/CMakeFiles/reactperflogger.dir/reactperflogger/HermesPerfettoDataSource.cpp.o
+[437/1122] Building CXX object react-native/reactperflogger/CMakeFiles/reactperflogger.dir/reactperflogger/ReactPerfetto.cpp.o
+[438/1122] Building CXX object react-native/reactperflogger/CMakeFiles/reactperflogger.dir/reactperflogger/ReactPerfettoCategories.cpp.o
+[439/1122] Building CXX object react-native/jsinspector-modern/network/CMakeFiles/jsinspector_network.dir/NetworkHandler.cpp.o
+[440/1122] Building CXX object react-native/reactperflogger/CMakeFiles/reactperflogger.dir/reactperflogger/ReactPerfettoLogger.cpp.o
+[441/1122] Building CXX object react-native/jsinspector-modern/tracing/CMakeFiles/jsinspector_tracing.dir/EventLoopReporter.cpp.o
+[442/1122] Building CXX object react-native/reactperflogger/CMakeFiles/reactperflogger.dir/fusebox/FuseboxTracer.cpp.o
+[443/1122] Building CXX object react-native/jsinspector-modern/tracing/CMakeFiles/jsinspector_tracing.dir/HostTracingProfileSerializer.cpp.o
+[444/1122] Building CXX object react-native/jsinspector-modern/tracing/CMakeFiles/jsinspector_tracing.dir/ConsoleTimeStamp.cpp.o
+[445/1122] Building CXX object react-native/jsinspector-modern/tracing/CMakeFiles/jsinspector_tracing.dir/RuntimeSamplingProfileTraceEventSerializer.cpp.o
+[446/1122] Building CXX object react-native/jsinspector-modern/tracing/CMakeFiles/jsinspector_tracing.dir/PerformanceTracer.cpp.o
+[447/1122] Building CXX object react-native/runtimeexecutor/CMakeFiles/runtimeexecutor.dir/platform/cxx/ReactCommon/RuntimeExecutorSyncUIThreadUtils.cpp.o
+[448/1122] Building CXX object react-native/jsinspector-modern/tracing/CMakeFiles/jsinspector_tracing.dir/TraceEventGenerator.cpp.o
+[449/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/YGEnums.cpp.o
+[450/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/YGNode.cpp.o
+[451/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/YGConfig.cpp.o
+[452/1122] Building CXX object react-native/jsinspector-modern/tracing/CMakeFiles/jsinspector_tracing.dir/TraceEventSerializer.cpp.o
+[453/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/YGNodeLayout.cpp.o
+[454/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/YGValue.cpp.o
+[455/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/YGNodeStyle.cpp.o
+[456/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/YGPixelGrid.cpp.o
+[457/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/algorithm/Cache.cpp.o
+[458/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/algorithm/Baseline.cpp.o
+[459/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/algorithm/AbsoluteLayout.cpp.o
+[460/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/algorithm/PixelGrid.cpp.o
+[461/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/algorithm/FlexLine.cpp.o
+[462/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/algorithm/CalculateLayout.cpp.o
+[463/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/config/Config.cpp.o
+[464/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/debug/AssertFatal.cpp.o
+[465/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/debug/Log.cpp.o
+[466/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/event/event.cpp.o
+[467/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/node/LayoutResults.cpp.o
+[468/1122] Building CXX object react-native/yoga/yoga/CMakeFiles/yogacore.dir/node/Node.cpp.o
+[469/1122] Building CXX object CMakeFiles/rnqnx_views_qt.dir/rnqnx_views_qt_autogen/mocs_compilation.cpp.o
+[470/1122] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtQuickItemFactory.cpp.o
+[471/1122] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtExtraItems.cpp.o
+[472/1122] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QtTextInputQml.cpp.o
+[473/1122] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/views/qt/QnxImageProvider.cpp.o
+[474/1122] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/fabric/QtTextInputBridge.cpp.o
+[475/1122] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/fabric/QtQuickMountingLayer.cpp.o
+[476/1122] Building CXX object qt-native/video/CMakeFiles/rnqnx_qt_video_resources_1.dir/.qt/rcc/qrc_rnqnx_qt_video_qml_init.cpp.o
+[477/1122] Linking CXX static library hermes/external/llvh/lib/Demangle/libLLVHDemangle.a
+[478/1122] Linking CXX executable bin/hermesc
+[479/1122] Building CXX object react-native/react/renderer/graphics/CMakeFiles/react_renderer_graphics.dir/BackgroundImage.cpp.o
+[480/1122] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/fabric/QtViewAccessibility.cpp.o
+[481/1122] Building CXX object react-native/react/renderer/graphics/CMakeFiles/react_renderer_graphics.dir/ColorComponents.cpp.o
+[482/1122] Building CXX object react-native/react/renderer/graphics/CMakeFiles/react_renderer_graphics.dir/Color.cpp.o
+[483/1122] Building CXX object react-native/react/renderer/graphics/CMakeFiles/react_renderer_graphics.dir/ColorStop.cpp.o
+[484/1122] Building CXX object react-native/react/renderer/graphics/CMakeFiles/react_renderer_graphics.dir/LinearGradient.cpp.o
+[485/1122] Building CXX object react-native/react/renderer/graphics/CMakeFiles/react_renderer_graphics.dir/RadialGradient.cpp.o
+[486/1122] Building CXX object CMakeFiles/rnqnx_views_qt.dir/vnext/src/fabric/QtAccessibilityActivation.cpp.o
+[487/1122] Building CXX object react-native/react/renderer/graphics/CMakeFiles/react_renderer_graphics.dir/ValueUnit.cpp.o
+[488/1122] Building CXX object react-native/react/renderer/mapbuffer/CMakeFiles/react_renderer_mapbuffer.dir/MapBuffer.cpp.o
+[489/1122] Building CXX object react-native/react/renderer/mapbuffer/CMakeFiles/react_renderer_mapbuffer.dir/MapBufferBuilder.cpp.o
+[490/1122] Building CXX object react-native/react/renderer/graphics/CMakeFiles/react_renderer_graphics.dir/Transform.cpp.o
+[491/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/ComponentDescriptor.cpp.o
+[492/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/DynamicEventPayload.cpp.o
+[493/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/DynamicPointerEvent.cpp.o
+[494/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/DynamicPropsUtilities.cpp.o
+[495/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/EventDispatcher.cpp.o
+[496/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/EventBeat.cpp.o
+[497/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/EventEmitter.cpp.o
+[498/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/EventListener.cpp.o
+[499/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/EventTarget.cpp.o
+[500/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/InstanceHandle.cpp.o
+[501/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/EventQueueProcessor.cpp.o
+[502/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/LayoutConstraints.cpp.o
+[503/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/EventQueue.cpp.o
+[504/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/LayoutMetrics.cpp.o
+[505/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/RawEvent.cpp.o
+[506/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/Props.cpp.o
+[507/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/RawPropsKeyMap.cpp.o
+[508/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/RawProps.cpp.o
+[509/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/LayoutableShadowNode.cpp.o
+[510/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/ReactRootViewTagGenerator.cpp.o
+[511/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/Sealable.cpp.o
+[512/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/RawValue.cpp.o
+[513/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/RawPropsParser.cpp.o
+[514/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/ShadowNode.cpp.o
+[515/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/ShadowNodeTraits.cpp.o
+[516/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/ShadowNodeFragment.cpp.o
+[517/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/ShadowNodeFamily.cpp.o
+[518/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/StateUpdate.cpp.o
+[519/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/ValueFactoryEventPayload.cpp.o
+[520/1122] Building CXX object react-native/react/renderer/core/CMakeFiles/react_renderer_core.dir/State.cpp.o
+[521/1122] Building CXX object react-native/react/renderer/components/view/CMakeFiles/rrc_view.dir/BaseTouch.cpp.o
+[522/1122] Building CXX object react-native/react/renderer/components/view/CMakeFiles/rrc_view.dir/AccessibilityProps.cpp.o
+[523/1122] Building CXX object react-native/react/renderer/components/view/CMakeFiles/rrc_view.dir/BaseViewEventEmitter.cpp.o
+[524/1122] Building CXX object react-native/react/renderer/components/view/CMakeFiles/rrc_view.dir/BackgroundImagePropsConversions.cpp.o
+[525/1122] Building CXX object react-native/react/renderer/components/view/CMakeFiles/rrc_view.dir/PointerEvent.cpp.o
+[526/1122] Building CXX object react-native/react/renderer/components/view/CMakeFiles/rrc_view.dir/TouchEvent.cpp.o
+[527/1122] Building CXX object react-native/react/renderer/components/view/CMakeFiles/rrc_view.dir/TouchEventEmitter.cpp.o
+[528/1122] Building CXX object react-native/react/renderer/components/view/CMakeFiles/rrc_view.dir/ViewShadowNode.cpp.o
+[529/1122] Building CXX object react-native/react/renderer/components/view/CMakeFiles/rrc_view.dir/BaseViewProps.cpp.o
+[530/1122] Building CXX object react-native/react/renderer/components/view/CMakeFiles/rrc_view.dir/YogaLayoutableShadowNode.cpp.o
+[531/1122] Building CXX object react-native/react/renderer/components/scrollview/CMakeFiles/rrc_scrollview.dir/ScrollEvent.cpp.o
+[532/1122] Building CXX object react-native/react/renderer/components/view/CMakeFiles/rrc_view.dir/YogaStylableProps.cpp.o
+[533/1122] Building CXX object react-native/react/renderer/components/scrollview/CMakeFiles/rrc_scrollview.dir/BaseScrollViewProps.cpp.o
+[534/1122] Building CXX object react-native/react/renderer/components/scrollview/CMakeFiles/rrc_scrollview.dir/ScrollViewState.cpp.o
+[535/1122] Building CXX object react-native/react/renderer/components/scrollview/CMakeFiles/rrc_scrollview.dir/ScrollViewEventEmitter.cpp.o
+[536/1122] Building CXX object react-native/react/renderer/leakchecker/CMakeFiles/react_renderer_leakchecker.dir/WeakFamilyRegistry.cpp.o
+[537/1122] Building CXX object react-native/react/renderer/css/CMakeFiles/react_renderer_css.dir/CSSDummy.cpp.o
+[538/1122] Linking CXX static library react-native/react/renderer/runtimescheduler/libreact_renderer_runtimescheduler.a
+[539/1122] Building CXX object react-native/logger/CMakeFiles/logger.dir/react_native_log.cpp.o
+[540/1122] Linking CXX static library react-native/yoga/yoga/libyogacore.a
+[541/1122] Building CXX object react-native/react/renderer/leakchecker/CMakeFiles/react_renderer_leakchecker.dir/LeakChecker.cpp.o
+[542/1122] Building CXX object react-native/react/renderer/components/scrollview/CMakeFiles/rrc_scrollview.dir/ScrollViewShadowNode.cpp.o
+[543/1122] Building CXX object CMakeFiles/react_codegen_rncore.dir/node_modules/react-native/React/FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/ComponentDescriptors.cpp.o
+[544/1122] Building CXX object CMakeFiles/react_codegen_rncore.dir/node_modules/react-native/React/FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/EventEmitters.cpp.o
+[545/1122] Building CXX object CMakeFiles/react_codegen_rncore.dir/node_modules/react-native/React/FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/States.cpp.o
+[546/1122] Building CXX object CMakeFiles/react_codegen_rncore.dir/node_modules/react-native/React/FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/Props.cpp.o
+[547/1122] Building CXX object CMakeFiles/react_codegen_rncore.dir/node_modules/react-native/React/FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/ShadowNodes.cpp.o
+[548/1122] Linking CXX static library librnqnx_views_qt.a
+[549/1122] Linking CXX static library hermes/external/dtoa/libdtoa.a
+[550/1122] Linking CXX static library hermes/external/llvh/lib/Support/libLLVHSupport.a
+[551/1122] Linking CXX static library hermes/lib/Platform/Unicode/libhermesPlatformUnicode.a
+[552/1122] Generating InternalBytecode.js
+[553/1122] Generating ExtensionsBytecode.js
+[554/1122] Building CXX object CMakeFiles/react_renderer_textlayoutmanager.dir/node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/TextMeasureCache.cpp.o
+[555/1122] Building CXX object react-native/react/renderer/telemetry/CMakeFiles/react_renderer_telemetry.dir/SurfaceTelemetry.cpp.o
+[556/1122] Building CXX object react-native/react/renderer/telemetry/CMakeFiles/react_renderer_telemetry.dir/TransactionTelemetry.cpp.o
+[557/1122] Building CXX object CMakeFiles/react_renderer_textlayoutmanager.dir/vnext/src/text/QtTextLayoutManager.cpp.o
+[558/1122] Building CXX object react-native/react/renderer/componentregistry/CMakeFiles/react_renderer_componentregistry.dir/componentNameByReactViewName.cpp.o
+[559/1122] Building CXX object react-native/react/renderer/componentregistry/CMakeFiles/react_renderer_componentregistry.dir/ComponentDescriptorProviderRegistry.cpp.o
+[560/1122] Building CXX object react-native/react/renderer/componentregistry/CMakeFiles/react_renderer_componentregistry.dir/ComponentDescriptorRegistry.cpp.o
+[561/1122] Building CXX object react-native/react/renderer/components/root/CMakeFiles/rrc_root.dir/RootProps.cpp.o
+[562/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/Differentiator.cpp.o
+[563/1122] Building CXX object react-native/react/renderer/components/root/CMakeFiles/rrc_root.dir/RootShadowNode.cpp.o
+[564/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/MountingCoordinator.cpp.o
+[565/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/MountingTransaction.cpp.o
+[566/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/ShadowTree.cpp.o
+[567/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/ShadowTreeRevision.cpp.o
+[568/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/ShadowTreeRegistry.cpp.o
+[569/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/ShadowView.cpp.o
+[570/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/ShadowViewMutation.cpp.o
+[571/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/TelemetryController.cpp.o
+[572/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/internal/CullingContext.cpp.o
+[573/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/internal/sliceChildShadowNodeViewPairs.cpp.o
+[574/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/stubs/StubView.cpp.o
+[575/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/stubs/StubViewTree.cpp.o
+[576/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/stubs/stubs.cpp.o
+[577/1122] Building CXX object react-native/react/renderer/mounting/CMakeFiles/react_renderer_mounting.dir/updateMountedFlag.cpp.o
+[578/1122] Building CXX object react-native/react/renderer/viewtransition/CMakeFiles/react_renderer_viewtransition.dir/ViewTransitionModule.cpp.o
+[579/1122] Building CXX object react-native/react/renderer/attributedstring/CMakeFiles/react_renderer_attributedstring.dir/AttributedString.cpp.o
+[580/1122] Building CXX object react-native/react/renderer/attributedstring/CMakeFiles/react_renderer_attributedstring.dir/AttributedStringBox.cpp.o
+[581/1122] Building CXX object react-native/react/renderer/attributedstring/CMakeFiles/react_renderer_attributedstring.dir/ParagraphAttributes.cpp.o
+[582/1122] Building CXX object react-native/react/renderer/attributedstring/CMakeFiles/react_renderer_attributedstring.dir/TextAttributes.cpp.o
+[583/1122] Building CXX object react-native/react/renderer/components/text/CMakeFiles/rrc_text.dir/BaseTextShadowNode.cpp.o
+[584/1122] Building CXX object react-native/react/renderer/components/text/CMakeFiles/rrc_text.dir/BaseParagraphProps.cpp.o
+[585/1122] Building CXX object react-native/react/renderer/components/text/CMakeFiles/rrc_text.dir/ParagraphEventEmitter.cpp.o
+[586/1122] Building CXX object react-native/react/renderer/components/text/CMakeFiles/rrc_text.dir/BaseTextProps.cpp.o
+[587/1122] Building CXX object react-native/react/renderer/components/text/CMakeFiles/rrc_text.dir/RawTextProps.cpp.o
+[588/1122] Building CXX object react-native/react/renderer/components/text/CMakeFiles/rrc_text.dir/RawTextShadowNode.cpp.o
+[589/1122] Building CXX object react-native/react/renderer/components/text/CMakeFiles/rrc_text.dir/TextEffectProps.cpp.o
+[590/1122] Building CXX object react-native/react/renderer/components/text/CMakeFiles/rrc_text.dir/ParagraphShadowNode.cpp.o
+[591/1122] Building CXX object react-native/react/renderer/components/text/CMakeFiles/rrc_text.dir/TextEffectShadowNode.cpp.o
+[592/1122] Building CXX object react-native/react/renderer/components/text/CMakeFiles/rrc_text.dir/TextProps.cpp.o
+[593/1122] Building CXX object react-native/react/renderer/components/text/CMakeFiles/rrc_text.dir/TextShadowNode.cpp.o
+[594/1122] Building CXX object react-native/react/renderer/dom/CMakeFiles/react_renderer_dom.dir/DOM.cpp.o
+[595/1122] Building CXX object react-native/react/renderer/uimanager/consistency/CMakeFiles/react_renderer_uimanager_consistency.dir/LazyShadowTreeRevisionConsistencyManager.cpp.o
+[596/1122] Building CXX object react-native/cxxreact/CMakeFiles/react_cxxreact.dir/JSBigString.cpp.o
+[597/1122] Building CXX object react-native/cxxreact/CMakeFiles/react_cxxreact.dir/JSBundleType.cpp.o
+[598/1122] Building CXX object react-native/cxxreact/CMakeFiles/react_cxxreact.dir/CxxNativeModule.cpp.o
+[599/1122] Building CXX object react-native/cxxreact/CMakeFiles/react_cxxreact.dir/Instance.cpp.o
+[600/1122] Building CXX object react-native/cxxreact/CMakeFiles/react_cxxreact.dir/MethodCall.cpp.o
+[601/1122] Building CXX object react-native/cxxreact/CMakeFiles/react_cxxreact.dir/JSExecutor.cpp.o
+[602/1122] Building CXX object react-native/cxxreact/CMakeFiles/react_cxxreact.dir/RAMBundleRegistry.cpp.o
+[603/1122] Building CXX object react-native/cxxreact/CMakeFiles/react_cxxreact.dir/ModuleRegistry.cpp.o
+[604/1122] Building CXX object react-native/cxxreact/CMakeFiles/react_cxxreact.dir/ReactMarker.cpp.o
+[605/1122] Building CXX object react-native/cxxreact/CMakeFiles/react_cxxreact.dir/NativeToJsBridge.cpp.o
+[606/1122] Building CXX object react-native/react/renderer/uimanager/CMakeFiles/react_renderer_uimanager.dir/AppRegistryBinding.cpp.o
+[607/1122] Building CXX object react-native/react/renderer/uimanager/CMakeFiles/react_renderer_uimanager.dir/LayoutEventEmitter.cpp.o
+[608/1122] Building CXX object react-native/react/renderer/uimanager/CMakeFiles/react_renderer_uimanager.dir/PointerEventsProcessor.cpp.o
+[609/1122] Building CXX object react-native/react/renderer/uimanager/CMakeFiles/react_renderer_uimanager.dir/PointerHoverTracker.cpp.o
+[610/1122] Building CXX object react-native/react/renderer/uimanager/CMakeFiles/react_renderer_uimanager.dir/UIManager.cpp.o
+[611/1122] Building CXX object react-native/react/renderer/components/legacyviewmanagerinterop/CMakeFiles/rrc_legacyviewmanagerinterop.dir/LegacyViewManagerInteropShadowNode.cpp.o
+[612/1122] Building CXX object react-native/react/renderer/uimanager/CMakeFiles/react_renderer_uimanager.dir/UIManagerBinding.cpp.o
+[613/1122] Building CXX object react-native/react/renderer/components/legacyviewmanagerinterop/CMakeFiles/rrc_legacyviewmanagerinterop.dir/LegacyViewManagerInteropViewProps.cpp.o
+[614/1122] Building CXX object react-native/react/renderer/components/legacyviewmanagerinterop/CMakeFiles/rrc_legacyviewmanagerinterop.dir/UnstableLegacyViewManagerAutomaticShadowNode.cpp.o
+[615/1122] Linking CXX static library react-native/react/renderer/components/scrollview/librrc_scrollview.a
+[616/1122] Linking CXX static library react-native/react/renderer/leakchecker/libreact_renderer_leakchecker.a
+[617/1122] Building CXX object react-native/react/renderer/uimanager/CMakeFiles/react_renderer_uimanager.dir/UIManagerUpdateShadowTree.cpp.o
+[618/1122] Linking CXX static library libreact_codegen_rncore.a
+[619/1122] Automatic MOC for target rnqnx_fabric_adapter
+[620/1122] Linking CXX static library hermes/lib/Support/libhermesSupport.a
+[621/1122] Linking CXX static library hermes/lib/Regex/libhermesRegex.a
+[622/1122] Building CXX object CMakeFiles/rnqnx_jsi_dynamic.dir/node_modules/react-native/ReactCommon/jsi/jsi/JSIDynamic.cpp.o
+[623/1122] Generating ExtensionsBytecode.hbc
+[624/1122] Building CXX object react-native/react/renderer/components/legacyviewmanagerinterop/CMakeFiles/rrc_legacyviewmanagerinterop.dir/UnstableLegacyViewManagerAutomaticComponentDescriptor.cpp.o
+[625/1122] Building CXX object react-native/react/renderer/animationbackend/CMakeFiles/react_renderer_animationbackend.dir/AnimatedPropSerializer.cpp.o
+[626/1122] Building CXX object react-native/react/renderer/observers/events/CMakeFiles/react_renderer_observers_events.dir/EventPerformanceLogger.cpp.o
+[627/1122] Generating InternalBytecode.hbc
+[628/1122] Building CXX object react-native/react/renderer/animationbackend/CMakeFiles/react_renderer_animationbackend.dir/AnimatedPropsRegistry.cpp.o
+[629/1122] Building CXX object react-native/react/performance/cdpmetrics/CMakeFiles/react_performance_cdpmetrics.dir/CdpInteractionTypes.cpp.o
+[630/1122] Building CXX object react-native/react/renderer/animationbackend/CMakeFiles/react_renderer_animationbackend.dir/AnimationBackend.cpp.o
+[631/1122] Building CXX object react-native/react/renderer/animationbackend/CMakeFiles/react_renderer_animationbackend.dir/AnimationBackendCommitHook.cpp.o
+[632/1122] Building CXX object react-native/react/performance/cdpmetrics/CMakeFiles/react_performance_cdpmetrics.dir/CdpMetricsReporter.cpp.o
+[633/1122] Building CXX object react-native/react/performance/cdpmetrics/CMakeFiles/react_performance_cdpmetrics.dir/CdpPerfIssuesReporter.cpp.o
+[634/1122] Building CXX object react-native/react/renderer/components/unimplementedview/CMakeFiles/rrc_unimplementedview.dir/UnimplementedViewProps.cpp.o
+[635/1122] Building CXX object react-native/react/renderer/components/unimplementedview/CMakeFiles/rrc_unimplementedview.dir/UnimplementedViewComponentDescriptor.cpp.o
+[636/1122] Building CXX object react-native/react/renderer/components/unimplementedview/CMakeFiles/rrc_unimplementedview.dir/UnimplementedViewShadowNode.cpp.o
+[637/1122] Building CXX object react-native/react/renderer/scheduler/CMakeFiles/react_renderer_scheduler.dir/Scheduler.cpp.o
+[638/1122] Linking CXX static library react-native/react/renderer/viewtransition/libreact_renderer_viewtransition.a
+[639/1122] Building CXX object react-native/react/renderer/scheduler/CMakeFiles/react_renderer_scheduler.dir/SurfaceHandler.cpp.o
+[640/1122] Building CXX object react-native/react/renderer/scheduler/CMakeFiles/react_renderer_scheduler.dir/SurfaceManager.cpp.o
+[641/1122] Building CXX object CMakeFiles/rrc_textinput.dir/node_modules/react-native/ReactCommon/react/renderer/components/textinput/TextInputEventEmitter.cpp.o
+[642/1122] Building CXX object CMakeFiles/rrc_textinput.dir/node_modules/react-native/ReactCommon/react/renderer/components/textinput/BaseTextInputProps.cpp.o
+[643/1122] Building CXX object CMakeFiles/rrc_textinput.dir/node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/ios/react/renderer/components/iostextinput/TextInputProps.cpp.o
+[644/1122] Building CXX object CMakeFiles/rrc_textinput.dir/node_modules/react-native/ReactCommon/react/renderer/components/textinput/platform/ios/react/renderer/components/iostextinput/TextInputShadowNode.cpp.o
+[645/1122] Building CXX object CMakeFiles/rrc_safeareaview.dir/node_modules/react-native/ReactCommon/react/renderer/components/safeareaview/SafeAreaViewState.cpp.o
+[646/1122] Building CXX object CMakeFiles/rrc_switch.dir/vnext/src/fabric/SwitchShadowNode.cpp.o
+[647/1122] Building CXX object CMakeFiles/rrc_safeareaview.dir/node_modules/react-native/ReactCommon/react/renderer/components/safeareaview/SafeAreaViewShadowNode.cpp.o
+[648/1122] Building CXX object CMakeFiles/rrc_modal.dir/node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewComponentDescriptor.cpp.o
+[649/1122] Building CXX object CMakeFiles/rrc_modal.dir/node_modules/react-native/ReactCommon/react/renderer/components/modal/platform/cxx/ModalHostViewUtils.cpp.o
+[650/1122] Linking CXX static library librnqnx_jsi_dynamic.a
+[651/1122] Building CXX object CMakeFiles/rrc_modal.dir/node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewState.cpp.o
+[652/1122] Building CXX object CMakeFiles/rrc_modal.dir/node_modules/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewShadowNode.cpp.o
+[653/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/rnqnx_fabric_adapter_autogen/mocs_compilation.cpp.o
+[654/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/runtime/QtImageCache.cpp.o
+[655/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtScrollBridge.cpp.o
+[656/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/ShadowViewMutationAdapter.cpp.o
+[657/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtSwitchBridge.cpp.o
+[658/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtTouchDispatcher.cpp.o
+[659/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtExtraComponents.cpp.o
+[660/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtImageBridge.cpp.o
+[661/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtVideoBridge.cpp.o
+[662/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtVideo/EventEmitters.cpp.o
+[663/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtVideo/ComponentDescriptors.cpp.o
+[664/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtVideo/Props.cpp.o
+[665/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtVideo/States.cpp.o
+[666/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtVideo/ShadowNodes.cpp.o
+[667/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtSvg/ComponentDescriptors.cpp.o
+[668/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtSvgBridge.cpp.o
+[669/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtSvg/EventEmitters.cpp.o
+[670/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtSvg/States.cpp.o
+[671/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtSvg/Props.cpp.o
+[672/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtSvg/ShadowNodes.cpp.o
+[673/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp.o
+[674/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeDefs.cpp.o
+[675/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridge.cpp.o
+[676/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeShapes.cpp.o
+[677/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeText.cpp.o
+[678/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeValues.cpp.o
+[679/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeShadowNodes.cpp.o
+[680/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgFilterConvert.cpp.o
+[681/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgFilterBridge.cpp.o
+[682/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgFilterConvertExtras.cpp.o
+[683/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/node_modules/react-native-svg/common/cpp/react/renderer/components/rnsvg/RNSVGLayoutableShadowNode.cpp.o
+[684/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgImageProvider.cpp.o
+[685/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgImageBridge.cpp.o
+[686/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/rnsvg/EventEmitters.cpp.o
+[687/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/rnsvg/Props.cpp.o
+[688/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtDrawer/ComponentDescriptors.cpp.o
+[689/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtNativeUiBridge.cpp.o
+[690/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtDrawer/EventEmitters.cpp.o
+[691/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtDrawer/States.cpp.o
+[692/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtDrawer/Props.cpp.o
+[693/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtDrawer/ShadowNodes.cpp.o
+[694/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtTabBar/EventEmitters.cpp.o
+[695/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtTabBar/ComponentDescriptors.cpp.o
+[696/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtTabBar/States.cpp.o
+[697/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtTabBar/Props.cpp.o
+[698/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxExpoImage/ComponentDescriptors.cpp.o
+[699/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxQtTabBar/ShadowNodes.cpp.o
+[700/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxExpoImage/EventEmitters.cpp.o
+[701/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxExpoImage/States.cpp.o
+[702/1122] Automatic MOC for target rnqnx_qt_graphics
+[703/1122] Linking CXX static library hermes/lib/AST/libhermesAST.a
+[704/1122] Generating InternalBytecode.inc
+[705/1122] Generating ExtensionsBytecode.inc
+[706/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxExpoImage/Props.cpp.o
+[707/1122] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/generated/react/renderer/components/RnqnxExpoImage/ShadowNodes.cpp.o
+[708/1122] Building CXX object react-native/react/renderer/observers/resize/CMakeFiles/react_renderer_observers_resize.dir/ResizeObserver.cpp.o
+[709/1122] Building CXX object react-native/react/renderer/observers/resize/CMakeFiles/react_renderer_observers_resize.dir/ResizeObserverManager.cpp.o
+[710/1122] Building CXX object react-native/react/renderer/components/image/CMakeFiles/rrc_image.dir/ImageEventEmitter.cpp.o
+[711/1122] Building CXX object react-native/react/nativemodule/resizeobserver/CMakeFiles/react_nativemodule_resizeobserver.dir/NativeResizeObserver.cpp.o
+[712/1122] Building CXX object react-native/react/renderer/components/image/CMakeFiles/rrc_image.dir/ImageComponentDescriptor.cpp.o
+[713/1122] Building CXX object react-native/react/renderer/components/image/CMakeFiles/rrc_image.dir/ImageProps.cpp.o
+[714/1122] Building CXX object react-native/react/renderer/components/image/CMakeFiles/rrc_image.dir/ImageState.cpp.o
+[715/1122] Building CXX object react-native/react/renderer/components/image/CMakeFiles/rrc_image.dir/ImageShadowNode.cpp.o
+[716/1122] Building CXX object react-native/react/renderer/imagemanager/CMakeFiles/react_renderer_imagemanager.dir/ImageResponse.cpp.o
+[717/1122] Building CXX object react-native/react/renderer/imagemanager/CMakeFiles/react_renderer_imagemanager.dir/ImageResponseObserverCoordinator.cpp.o
+[718/1122] Building CXX object react-native/react/renderer/imagemanager/CMakeFiles/react_renderer_imagemanager.dir/ImageRequest.cpp.o
+[719/1122] Building CXX object react-native/react/renderer/imagemanager/CMakeFiles/react_renderer_imagemanager.dir/ImageTelemetry.cpp.o
+[720/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/MergedValueDispatcher.cpp.o
+[721/1122] Building CXX object react-native/react/renderer/imagemanager/CMakeFiles/react_renderer_imagemanager.dir/platform/cxx/react/renderer/imagemanager/ImageManager.cpp.o
+[722/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/NativeAnimatedNodesManager.cpp.o
+[723/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/AnimatedModule.cpp.o
+[724/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/drivers/AnimationDriver.cpp.o
+[725/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/drivers/DecayAnimationDriver.cpp.o
+[726/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/NativeAnimatedNodesManagerProvider.cpp.o
+[727/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/drivers/FrameAnimationDriver.cpp.o
+[728/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/event_drivers/EventAnimationDriver.cpp.o
+[729/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/drivers/SpringAnimationDriver.cpp.o
+[730/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/internal/AnimatedMountingOverrideDelegate.cpp.o
+[731/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/AdditionAnimatedNode.cpp.o
+[732/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/AnimatedNode.cpp.o
+[733/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/ColorAnimatedNode.cpp.o
+[734/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/DiffClampAnimatedNode.cpp.o
+[735/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/DivisionAnimatedNode.cpp.o
+[736/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/InterpolationAnimatedNode.cpp.o
+[737/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/ModulusAnimatedNode.cpp.o
+[738/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/MultiplicationAnimatedNode.cpp.o
+[739/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/PropsAnimatedNode.cpp.o
+[740/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/ObjectAnimatedNode.cpp.o
+[741/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/RoundAnimatedNode.cpp.o
+[742/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/SubtractionAnimatedNode.cpp.o
+[743/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/StyleAnimatedNode.cpp.o
+[744/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/TrackingAnimatedNode.cpp.o
+[745/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/TransformAnimatedNode.cpp.o
+[746/1122] Building CXX object react-native/react/renderer/observers/mutation/CMakeFiles/react_renderer_observers_mutation.dir/MutationObserver.cpp.o
+[747/1122] Building CXX object react-native/react/renderer/animated/CMakeFiles/react_renderer_animated.dir/nodes/ValueAnimatedNode.cpp.o
+[748/1122] Building CXX object react-native/react/renderer/observers/mutation/CMakeFiles/react_renderer_observers_mutation.dir/MutationObserverManager.cpp.o
+[749/1122] Building CXX object react-native/react/renderer/observers/intersection/CMakeFiles/react_renderer_observers_intersection.dir/IntersectionObserverState.cpp.o
+[750/1122] Building CXX object react-native/react/renderer/observers/intersection/CMakeFiles/react_renderer_observers_intersection.dir/IntersectionObserver.cpp.o
+[751/1122] Building CXX object react-native/react/bridging/CMakeFiles/react_bridging.dir/LongLivedObject.cpp.o
+[752/1122] Building CXX object react-native/devtoolsruntimesettings/CMakeFiles/devtoolsruntimesettings.dir/DevToolsRuntimeSettings.cpp.o
+[753/1122] Building CXX object react-native/react/renderer/observers/intersection/CMakeFiles/react_renderer_observers_intersection.dir/IntersectionObserverManager.cpp.o
+[754/1122] Building CXX object react-native/react/nativemodule/core/CMakeFiles/react_nativemodule_core.dir/ReactCommon/TurboModule.cpp.o
+[755/1122] Building CXX object react-native/react/nativemodule/core/CMakeFiles/react_nativemodule_core.dir/ReactCommon/CxxTurboModuleUtils.cpp.o
+[756/1122] Building CXX object react-native/react/nativemodule/core/CMakeFiles/react_nativemodule_core.dir/ReactCommon/TurboModulePerfLogger.cpp.o
+[757/1122] Building CXX object react-native/react/nativemodule/core/CMakeFiles/react_nativemodule_core.dir/ReactCommon/TurboModuleBinding.cpp.o
+[758/1122] Building CXX object react-native/react/nativemodule/core/CMakeFiles/react_nativemodule_core.dir/ReactCommon/TurboModuleUtils.cpp.o
+[759/1122] Building CXX object react-native/react/nativemodule/core/CMakeFiles/react_nativemodule_core.dir/ReactCommon/TurboModuleWithJSIBindings.cpp.o
+[760/1122] Building CXX object react-native/react/nativemodule/microtasks/CMakeFiles/react_nativemodule_microtasks.dir/NativeMicrotasks.cpp.o
+[761/1122] Building CXX object react-native/react/nativemodule/idlecallbacks/CMakeFiles/react_nativemodule_idlecallbacks.dir/NativeIdleCallbacks.cpp.o
+[762/1122] Building CXX object react-native/react/nativemodule/dom/CMakeFiles/react_nativemodule_dom.dir/NativeDOM.cpp.o
+[763/1122] Building CXX object react-native/react/nativemodule/featureflags/CMakeFiles/react_nativemodule_featureflags.dir/NativeReactNativeFeatureFlags.cpp.o
+[764/1122] Building CXX object react-native/react/nativemodule/devtoolsruntimesettings/CMakeFiles/react_nativemodule_devtoolsruntimesettings.dir/DevToolsRuntimeSettingsModule.cpp.o
+[765/1122] Building CXX object react-native/react/nativemodule/intersectionobserver/CMakeFiles/react_nativemodule_intersectionobserver.dir/NativeIntersectionObserver.cpp.o
+[766/1122] Building CXX object react-native/react/nativemodule/mutationobserver/CMakeFiles/react_nativemodule_mutationobserver.dir/NativeMutationObserver.cpp.o
+[767/1122] Building CXX object react-native/react/nativemodule/viewtransition/CMakeFiles/react_nativemodule_viewtransition.dir/NativeViewTransition.cpp.o
+[768/1122] Building CXX object react-native/react/renderer/componentregistry/native/CMakeFiles/rrc_native.dir/NativeComponentRegistryBinding.cpp.o
+[769/1122] Linking CXX static library react-native/react/renderer/components/unimplementedview/librrc_unimplementedview.a
+[770/1122] Building CXX object react-native/react/nativemodule/webperformance/CMakeFiles/react_nativemodule_webperformance.dir/NativePerformance.cpp.o
+[771/1122] Linking CXX static library react-native/react/renderer/scheduler/libreact_renderer_scheduler.a
+[772/1122] Building CXX object react-native/react/nativemodule/defaults/CMakeFiles/react_nativemodule_defaults.dir/DefaultTurboModules.cpp.o
+[773/1122] Building CXX object react-native/react/renderer/element/CMakeFiles/react_renderer_element.dir/ElementFragment.cpp.o
+[774/1122] Building CXX object react-native/react/renderer/element/CMakeFiles/react_renderer_element.dir/ComponentBuilder.cpp.o
+[775/1122] Building CXX object react-native/react/renderer/element/CMakeFiles/react_renderer_element.dir/Element.cpp.o
+[776/1122] Building CXX object qt-native/graphics/CMakeFiles/rnqnx_qt_graphics.dir/GraphicsSurfaceState.cpp.o
+[777/1122] Building CXX object hermes/lib/VM/Instrumentation/CMakeFiles/hermesInstrumentation_obj.dir/PerfEventsLinux.cpp.o
+[778/1122] Building CXX object qt-native/graphics/CMakeFiles/rnqnx_qt_graphics.dir/rnqnx_qt_graphics_autogen/mocs_compilation.cpp.o
+[779/1122] Building CXX object hermes/lib/VM/Instrumentation/CMakeFiles/hermesInstrumentation_obj.dir/ProcessStats.cpp.o
+[780/1122] Building CXX object hermes/lib/VM/Instrumentation/CMakeFiles/hermesInstrumentation_obj.dir/StatSamplingThread.cpp.o
+[781/1122] Linking CXX static library hermes/lib/Parser/libhermesParser.a
+[782/1122] Building CXX object qt-native/graphics/CMakeFiles/rnqnx_qt_graphics.dir/QtGraphicsSurface.cpp.o
+[783/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/BasicBlockExecutionInfo.cpp.o
+[784/1122] Building CXX object hermes/lib/InternalJavaScript/CMakeFiles/hermesInternalBytecode_obj.dir/InternalBytecode.cpp.o
+[785/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/ArrayStorage.cpp.o
+[786/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/BigIntPrimitive.cpp.o
+[787/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/BuildMetadata.cpp.o
+[788/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/CellKind.cpp.o
+[789/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/BoxedDouble.cpp.o
+[790/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Callable.cpp.o
+[791/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/CheckHeapWellFormedAcceptor.cpp.o
+[792/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/CodeBlock.cpp.o
+[793/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Domain.cpp.o
+[794/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/DictPropertyMap.cpp.o
+[795/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/DummyObject.cpp.o
+[796/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/LargeDummyObject.cpp.o
+[797/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/FastArray.cpp.o
+[798/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/HandleRootOwner.cpp.o
+[799/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/GCBase.cpp.o
+[800/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/OrderedHashMap.cpp.o
+[801/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/HermesValue.cpp.o
+[802/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/HeapSnapshot.cpp.o
+[803/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/IdentifierTable.cpp.o
+[804/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/HiddenClass.cpp.o
+[805/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Interpreter.cpp.o
+[806/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Interpreter-slowpaths.cpp.o
+[807/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSArray.cpp.o
+[808/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSArrayBuffer.cpp.o
+[809/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSCallSite.cpp.o
+[810/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSCallableProxy.cpp.o
+[811/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSDataView.cpp.o
+[812/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSDate.cpp.o
+[813/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSError.cpp.o
+[814/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSGeneratorObject.cpp.o
+[815/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSProxy.cpp.o
+[816/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSObject.cpp.o
+[817/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSRegExp.cpp.o
+[818/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSMapImpl.cpp.o
+[819/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSNativeFunctions.cpp.o
+[820/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSRegExpStringIterator.cpp.o
+[821/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSWeakMapImpl.cpp.o
+[822/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSWeakRef.cpp.o
+[823/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSTypedArray.cpp.o
+[824/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/LimitedStorageProvider.cpp.o
+[825/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSFinalizationRegistry.cpp.o
+[826/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/DecoratedObject.cpp.o
+[827/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/HostModel.cpp.o
+[828/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/NativeState.cpp.o
+[829/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/ModuleExportsCache.cpp.o
+[830/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/PredefinedStringIDs.cpp.o
+[831/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Operations.cpp.o
+[832/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/PrimitiveBox.cpp.o
+[833/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/PropertyAccessor.cpp.o
+[834/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Runtime-profilers.cpp.o
+[835/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Runtime.cpp.o
+[836/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/RuntimeFlags.cpp.o
+[837/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/RuntimeModule.cpp.o
+[838/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Profiler/TraceSerializer.cpp.o
+[839/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Profiler/CodeCoverageProfiler.cpp.o
+[840/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Profiler/ProfileGenerator.cpp.o
+[841/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Profiler/SamplingProfiler.cpp.o
+[842/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Profiler/SamplingProfilerPosix.cpp.o
+[843/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Profiler/SamplingProfilerWindows.cpp.o
+[844/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Profiler/SamplingProfilerSampler.cpp.o
+[845/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/StackFrame.cpp.o
+[846/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/SingleObject.cpp.o
+[847/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/StackTracesTree.cpp.o
+[848/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/SerializedValue.cpp.o
+[849/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/StorageProvider.cpp.o
+[850/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/StringView.cpp.o
+[851/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/SymbolRegistry.cpp.o
+[852/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/StringPrimitive.cpp.o
+[853/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/StringRefUtils.cpp.o
+[854/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/VTable.cpp.o
+[855/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Metadata.cpp.o
+[856/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/TimeLimitMonitor.cpp.o
+[857/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/TwineChar16.cpp.o
+[858/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/StaticH.cpp.o
+[859/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/StaticHInit.cpp.o
+[860/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/StaticHUnit.cpp.o
+[861/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JIT/DiscoverBB.cpp.o
+[862/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/detail/IdentifierHashTable.cpp.o
+[863/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Array.cpp.o
+[864/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/ArrayBuffer.cpp.o
+[865/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/ArrayIterator.cpp.o
+[866/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/AsyncFunction.cpp.o
+[867/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Base64Util.cpp.o
+[868/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Base64.cpp.o
+[869/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/BigInt.cpp.o
+[870/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/CallSite.cpp.o
+[871/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/DataView.cpp.o
+[872/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/GeneratorFunction.cpp.o
+[873/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/TypedArray.cpp.o
+[874/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Error.cpp.o
+[875/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/GeneratorPrototype.cpp.o
+[876/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/IteratorPrototype.cpp.o
+[877/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/GlobalObject.cpp.o
+[878/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/HermesInternal.cpp.o
+[879/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Intl.cpp.o
+[880/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/HermesBuiltin.cpp.o
+[881/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/JSLibStorage.cpp.o
+[882/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/JSLibInternal.cpp.o
+[883/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Map.cpp.o
+[884/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Math.cpp.o
+[885/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/JSON.cpp.o
+[886/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/RuntimeJSONParse.cpp.o
+[887/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/RuntimeJSONStringify.cpp.o
+[888/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/JSONLexer.cpp.o
+[889/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Object.cpp.o
+[890/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Proxy.cpp.o
+[891/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Reflect.cpp.o
+[892/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Set.cpp.o
+[893/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/String.cpp.o
+[894/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/StringIterator.cpp.o
+[895/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Number.cpp.o
+[896/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Function.cpp.o
+[897/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Boolean.cpp.o
+[898/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/RegExpStringIterator.cpp.o
+[899/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/RegExp.cpp.o
+[900/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Sorting.cpp.o
+[901/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/DateUtil.cpp.o
+[902/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Symbol.cpp.o
+[903/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/DateCache.cpp.o
+[904/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/WeakRef.cpp.o
+[905/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/Date.cpp.o
+[906/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/WeakMap.cpp.o
+[907/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/WeakSet.cpp.o
+[908/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/print.cpp.o
+[909/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/FinalizationRegistry.cpp.o
+[910/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/escape.cpp.o
+[911/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/eval.cpp.o
+[912/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/gcs/CardBoundaryTable.cpp.o
+[913/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/require.cpp.o
+[914/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/gcs/AlignedHeapSegment.cpp.o
+[915/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/gcs/FillerCell.cpp.o
+[916/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/Debugger/Debugger.cpp.o
+[917/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/gcs/HadesGC.cpp.o
+[918/1122] Building CXX object hermes/lib/VM/CMakeFiles/hermesVMRuntime_obj.dir/JSLib/DebuggerInternal.cpp.o
+[919/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/AsyncDebuggerAPI.cpp.o
+[920/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/RuntimeTaskRunner.cpp.o
+[921/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/DebuggerAPI.cpp.o
+[922/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/CallbackOStream.cpp.o
+[923/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/ConsoleMessage.cpp.o
+[924/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/hermes.cpp.o
+[925/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/CDPAgent.cpp.o
+[926/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/DebuggerDomainCoordinator.cpp.o
+[927/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/HeapProfilerDomainAgent.cpp.o
+[928/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/DebuggerDomainAgent.cpp.o
+[929/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/RemoteObjectsTable.cpp.o
+[930/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/ProfilerDomainAgent.cpp.o
+[931/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/RemoteObjectConverters.cpp.o
+[932/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/CDPDebugAPI.cpp.o
+[933/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/DomainState.cpp.o
+[934/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/RuntimeDomainAgent.cpp.o
+[935/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/JSONValueInterfaces.cpp.o
+[936/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/MessageConverters.cpp.o
+[937/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/MessageInterfaces.cpp.o
+[938/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/extensions/Extensions.cpp.o
+[939/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/extensions/Intrinsics.cpp.o
+[940/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/extensions/JSIUtils.cpp.o
+[941/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/extensions/Dummy.cpp.o
+[942/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/extensions/TextEncoder.cpp.o
+[943/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/extensions/contrib/ContribExtensions.cpp.o
+[944/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/extensions/ExtensionsBytecode.cpp.o
+[945/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/extensions/contrib/ContribDummy.cpp.o
+[946/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/extensions/contrib/TextDecoderUtils.cpp.o
+[947/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/extensions/contrib/TextDecoder.cpp.o
+[948/1122] Generating /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/apps/rn-playground/rnsvg-corpus-generated/rnsvg-corpus-data.js, rnqnx-rnsvg-corpus-layout.json
+rnsvg-reference: 149 fixtures in 16 batches
+[949/1122] Automatic MOC for target rnqnx_qt_motion
+[950/1122] Linking CXX static library qt-native/graphics/librnqnx_qt_graphics.a
+[951/1122] Building CXX object hermes/lib/CMakeFiles/hermesvm.dir/dummy.cpp.o
+[952/1122] Building CXX object hermes/API/hermes/CMakeFiles/hermesapi_obj.dir/cdp/MessageTypes.cpp.o
+[953/1122] Linking CXX static library librnqnx_fabric_adapter.a
+[954/1122] Automatic MOC for target rnqnx_react_host
+[955/1122] Linking CXX static library hermes/lib/libhermesvm_a.a
+[956/1122] Generating rnqnx-qt-svg.bundle.js
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./qt-svg-fixture.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:2106) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2107) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2114) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2115) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2121) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./qt-svg-fixture.js ▓▓▓▓▓░░░░░░░░░░░ 36% (40/157)
+ BUNDLE  ./qt-svg-fixture.js ▓▓▓▓▓▓▓▓▓▓▓▓░░░░ 79% (329/370)
+ BUNDLE  ./qt-svg-fixture.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99% (434/464)
+ BUNDLE  ./qt-svg-fixture.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-qt-svg.bundle.js
+LOG:Done writing bundle output
+[957/1122] Generating rnqnx-rnsvg.bundle.js
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./rnsvg-fixture.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:2196) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2199) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2207) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2205) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2198) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2197) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./rnsvg-fixture.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97% (172/174)
+ BUNDLE  ./rnsvg-fixture.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 98% (455/503)
+ BUNDLE  ./rnsvg-fixture.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-rnsvg.bundle.js
+LOG:Done writing bundle output
+[958/1122] Generating rnqnx-rnsvg-image.bundle.js
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ../../tests/native/qt-rnsvg-fabric/rnsvg-image-fixture.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:2270) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2265) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2267) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2266) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2269) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ../../tests/native/qt-rnsvg-fabric/rnsvg-image-fixture.js ░░░░░░░░░░░░░░░░ 1% (1/1)
+ BUNDLE  ../../tests/native/qt-rnsvg-fabric/rnsvg-image-fixture.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99% (621/623)
+ BUNDLE  ../../tests/native/qt-rnsvg-fabric/rnsvg-image-fixture.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-rnsvg-image.bundle.js
+LOG:Done writing bundle output
+[959/1122] Generating rnqnx-rnsvg-corpus.bundle.js
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./rnsvg-corpus.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:2338) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2339) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2346) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2341) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2352) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2357) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./rnsvg-corpus.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99% (627/628)
+ BUNDLE  ./rnsvg-corpus.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-rnsvg-corpus.bundle.js
+LOG:Done writing bundle output
+[960/1122] Generating rnqnx-accessibility-action-probe.bundle.js
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./accessibility-action-probe.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:2428) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2429) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2435) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2442) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2453) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./accessibility-action-probe.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-accessibility-action-probe.bundle.js
+LOG:Done writing bundle output
+[961/1122] Generating rnqnx-text-input-probe.bundle.js
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./text-input-probe.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:2477) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2478) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2496) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2476) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2490) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./text-input-probe.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-text-input-probe.bundle.js
+LOG:Done writing bundle output
+[962/1122] Generating rnqnx-pressable-probe.bundle.js
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./pressable-probe.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:2553) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2545) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2559) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2546) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2547) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2565) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./pressable-probe.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-pressable-probe.bundle.js
+LOG:Done writing bundle output
+[963/1122] Bundling real React render probe for qnx
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./react-probe.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:2635) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2636) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2642) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2648) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2660) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2654) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./react-probe.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-react-probe.bundle.js
+LOG:Done writing bundle output
+[964/1122] Bundling apps/rn-playground for qnx
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+                Welcome to Metro v0.87.1
+              Fast - Scalable - Integrated
+
+
+ BUNDLE  ./index.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+transform[stderr]: (node:2687) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2683) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2684) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2691) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2697) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+transform[stderr]: (node:2703) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+transform[stderr]: (Use `node --trace-warnings ...` to show where the warning was created)
+ BUNDLE  ./index.js 
+LOG:Writing bundle output to: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx-playground.bundle.js
+LOG:Done writing bundle output
+[965/1122] Building CXX object CMakeFiles/rnqnx_react_host.dir/rnqnx_react_host_autogen/mocs_compilation.cpp.o
+[966/1122] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtRuntimeTaskQueue.cpp.o
+[967/1122] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxFileReaderModule.cpp.o
+[968/1122] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxExceptionsManager.cpp.o
+[969/1122] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxImageLoader.cpp.o
+[970/1122] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxSegmentFetcher.cpp.o
+[971/1122] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxWebSocketModule.cpp.o
+[972/1122] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QnxDevSupportModules.cpp.o
+[973/1122] Building CXX object CMakeFiles/rnqnx_react_host.dir/native/window-chrome/WindowChrome.cpp.o
+[974/1122] Building CXX object CMakeFiles/rnqnx_react_host.dir/native/window-chrome/WindowChromeModel.cpp.o
+[975/1122] Automatic MOC for target rnqnx_qt_native_ui_test
+[976/1122] Building CXX object CMakeFiles/rnqnx_react_host.dir/vnext/src/runtime/QtReactHost.cpp.o
+[977/1122] Building CXX object qt-native/motion/CMakeFiles/rnqnx_qt_motion.dir/rnqnx_qt_motion_autogen/mocs_compilation.cpp.o
+[978/1122] Building CXX object CMakeFiles/rnqnx_react_host.dir/native/window-chrome/WindowHost.cpp.o
+[979/1122] Automatic MOC for target rnqnx_qt_svg_test
+[980/1122] Automatic MOC for target rnqnx_qt_graphics_test
+[981/1122] Automatic MOC for target rnqnx_qt_rnsvg_filter_test
+[982/1122] Building CXX object qt-native/motion/CMakeFiles/rnqnx_qt_motion.dir/MotionController.cpp.o
+[983/1122] Automatic MOC for target rnqnx_qt_rnsvg_fixtures_test
+[984/1122] Automatic MOC for target rnqnx_qt_rnsvg_foreignobject_test
+[985/1122] Automatic MOC for target rnqnx_qt_rnsvg_image_test
+[986/1122] Automatic MOC for target rnqnx_qt_rnsvg_loader_test
+[987/1122] Automatic MOC for target rnqnx_qt_rnsvg_test
+[988/1122] Automatic MOC for target rnqnx_qt_rnsvg_scene_test
+[989/1122] Automatic MOC for target rnqnx_qt_rnsvg_text_test
+[990/1122] Building CXX object qt-native/motion/CMakeFiles/rnqnx_qt_motion.dir/MotionTransform.cpp.o
+[991/1122] Automatic MOC for target rnqnx_qt_video_test
+[992/1122] Building CXX object CMakeFiles/qnx_screen_surface_host_test.dir/native/platform/qnx/screen/QnxScreenSurface.cpp.o
+[993/1122] Building CXX object CMakeFiles/rnqnx_g0_cxx20_probe.dir/vnext/probes/cxx20/main.cpp.o
+[994/1122] Building CXX object CMakeFiles/qnx_screen_surface_host_test.dir/tests/cpp/QnxScreenSurfaceHostTest.cpp.o
+[995/1122] Building CXX object CMakeFiles/qnx_screen_surface_host_test.dir/tests/cpp/qnx-screen-fake/FakeQnxScreen.cpp.o
+[996/1122] Building CXX object CMakeFiles/rnqnx_hermes_probe.dir/vnext/probes/hermes/main.cpp.o
+[997/1122] Linking CXX shared library hermes/lib/libhermesvm.so
+[998/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_values_test.dir/tests/native/qt-rnsvg-fabric/RnsvgBridgeValuesTest.cpp.o
+[999/1122] Building CXX object CMakeFiles/rnqnx_accessibility_action_native_test.dir/tests/native/accessibility/ActionTest.cpp.o
+[1000/1122] Linking CXX static library librnqnx_react_host.a
+[1001/1122] Building CXX object CMakeFiles/rnqnx_accessibility_view_test.dir/tests/native/accessibility/ViewTest.cpp.o
+[1002/1122] Building CXX object CMakeFiles/rnqnx_runtime_baseline_supervisor.dir/native/platform/qnx/tools/runtime-baseline-supervisor.cpp.o
+[1003/1122] Building CXX object CMakeFiles/rnqnx_text_input_bridge_test.dir/tests/native/text-input/BridgeTest.cpp.o
+[1004/1122] Building CXX object CMakeFiles/rnqnx_input_lifecycle_probe.dir/tests/cpp/QtInputLifecycleProbe.cpp.o
+[1005/1122] Building CXX object CMakeFiles/rnqnx_rn_headers_probe.dir/vnext/probes/rn-headers/main.cpp.o
+[1006/1122] Building CXX object CMakeFiles/shadow_view_mutation_adapter_host_test.dir/tests/cpp/ShadowViewMutationAdapterHostTest.cpp.o
+[1007/1122] Building CXX object CMakeFiles/qtquick_mounting_layer_host_test.dir/tests/cpp/QtQuickMountingLayerHostTest.cpp.o
+[1008/1122] Building CXX object CMakeFiles/shadow_tree_mounting_host_test.dir/tests/cpp/ShadowTreeMountingHostTest.cpp.o
+[1009/1122] Building CXX object CMakeFiles/rnqnx_qtquick_host_probe.dir/vnext/probes/qtquick/main.cpp.o
+[1010/1122] Building CXX object CMakeFiles/rnqnx_qt_svg_fabric_test.dir/tests/native/qt-svg-fabric/SvgFabricTest.cpp.o
+[1011/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fabric_test.dir/tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp.o
+[1012/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_image_fabric_test.dir/tests/native/qt-rnsvg-fabric/RnsvgImageFabricTest.cpp.o
+[1013/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/ImageDiff.cpp.o
+[1014/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/FixtureManifest.cpp.o
+[1015/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg-fabric/RnsvgCorpusFabricTest.cpp.o
+[1016/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgCss.cpp.o
+[1017/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/ModelAdapter.cpp.o
+[1018/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgCommonProps.cpp.o
+[1019/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgElementBuilders.cpp.o
+[1020/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgDocumentLoader.cpp.o
+[1021/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgFilters.cpp.o
+[1022/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgGradient.cpp.o
+[1023/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgImageSource.cpp.o
+[1024/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgText.cpp.o
+[1025/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/XmlDocument.cpp.o
+[1026/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgValues.cpp.o
+[1027/1122] Building CXX object CMakeFiles/rnqnx_accessibility_action_probe.dir/tests/cpp/QtAccessibilityActionProbe.cpp.o
+[1028/1122] Building CXX object CMakeFiles/rnqnx_pressable_probe.dir/tests/cpp/QtPressableProbe.cpp.o
+[1029/1122] Building CXX object CMakeFiles/rnqnx_text_input_probe.dir/tests/cpp/QtTextInputProbe.cpp.o
+[1030/1122] Building CXX object CMakeFiles/rnqnx_react_render_host_probe.dir/vnext/probes/react-qnx/main.cpp.o
+[1031/1122] Building CXX object qt-native/nativeui-tests/CMakeFiles/rnqnx_qt_native_ui_test.dir/rnqnx_qt_native_ui_test_autogen/mocs_compilation.cpp.o
+[1032/1122] Building CXX object CMakeFiles/rnqnx_playground_host.dir/vnext/probes/playground/main.cpp.o
+[1033/1122] Linking CXX static library qt-native/motion/librnqnx_qt_motion.a
+[1034/1122] Building CXX object CMakeFiles/qt_react_host_host_test.dir/tests/cpp/QtReactHostHostTest.cpp.o
+[1035/1122] Building CXX object qt-native/svg-tests/CMakeFiles/rnqnx_qt_svg_test.dir/rnqnx_qt_svg_test_autogen/mocs_compilation.cpp.o
+[1036/1122] Building CXX object qt-native/nativeui-tests/CMakeFiles/rnqnx_qt_native_ui_test.dir/NativeUiQuickTest.cpp.o
+[1037/1122] Building CXX object qt-native/graphics-tests/CMakeFiles/rnqnx_qt_graphics_test.dir/rnqnx_qt_graphics_test_autogen/mocs_compilation.cpp.o
+[1038/1122] Building CXX object qt-native/motion-tests/CMakeFiles/rnqnx_qt_motion_test.dir/MotionTest.cpp.o
+[1039/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_filter_test.dir/rnqnx_qt_rnsvg_filter_test_autogen/mocs_compilation.cpp.o
+[1040/1122] Building CXX object qt-native/svg-tests/CMakeFiles/rnqnx_qt_svg_test.dir/SvgDocumentTest.cpp.o
+[1041/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/rnqnx_qt_rnsvg_fixtures_test_autogen/mocs_compilation.cpp.o
+[1042/1122] Building CXX object qt-native/graphics-tests/CMakeFiles/rnqnx_qt_graphics_test.dir/GraphicsSurfaceTest.cpp.o
+[1043/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/RnsvgFixturesTest.cpp.o
+[1044/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/FixtureManifest.cpp.o
+[1045/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/ImageDiff.cpp.o
+[1046/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_filter_test.dir/RnsvgFilterTest.cpp.o
+[1047/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgCommonProps.cpp.o
+[1048/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/ModelAdapter.cpp.o
+[1049/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgCss.cpp.o
+[1050/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgElementBuilders.cpp.o
+[1051/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgDocumentLoader.cpp.o
+[1052/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgFilters.cpp.o
+[1053/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgGradient.cpp.o
+[1054/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgImageSource.cpp.o
+[1055/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgText.cpp.o
+[1056/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_foreignobject_test.dir/rnqnx_qt_rnsvg_foreignobject_test_autogen/mocs_compilation.cpp.o
+[1057/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/XmlDocument.cpp.o
+[1058/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_image_test.dir/rnqnx_qt_rnsvg_image_test_autogen/mocs_compilation.cpp.o
+[1059/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgValues.cpp.o
+[1060/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/rnqnx_qt_rnsvg_loader_test_autogen/mocs_compilation.cpp.o
+[1061/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_foreignobject_test.dir/RnsvgForeignObjectTest.cpp.o
+[1062/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/RnsvgLoaderTest.cpp.o
+[1063/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_image_test.dir/RnsvgImageTest.cpp.o
+[1064/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/FixtureManifest.cpp.o
+[1065/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/ImageDiff.cpp.o
+[1066/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/ModelAdapter.cpp.o
+[1067/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgCss.cpp.o
+[1068/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgCommonProps.cpp.o
+[1069/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgDocumentLoader.cpp.o
+[1070/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgElementBuilders.cpp.o
+[1071/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgFilters.cpp.o
+[1072/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgGradient.cpp.o
+[1073/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgImageSource.cpp.o
+[1074/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgText.cpp.o
+[1075/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_test.dir/rnqnx_qt_rnsvg_test_autogen/mocs_compilation.cpp.o
+[1076/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/XmlDocument.cpp.o
+[1077/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_scene_test.dir/rnqnx_qt_rnsvg_scene_test_autogen/mocs_compilation.cpp.o
+[1078/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgValues.cpp.o
+[1079/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_text_test.dir/rnqnx_qt_rnsvg_text_test_autogen/mocs_compilation.cpp.o
+[1080/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_test.dir/RnsvgRenderTest.cpp.o
+[1081/1122] Building CXX object qt-native/video-tests/CMakeFiles/rnqnx_qt_video_test.dir/rnqnx_qt_video_test_autogen/mocs_compilation.cpp.o
+[1082/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_text_test.dir/RnsvgTextTest.cpp.o
+[1083/1122] Building CXX object qt-native/rnsvg-tests/CMakeFiles/rnqnx_qt_rnsvg_scene_test.dir/RnsvgSceneTest.cpp.o
+[1084/1122] Linking CXX executable bin/rnqnx_g0_cxx20_probe
+[1085/1122] Linking CXX executable bin/rnqnx_hermes_probe
+[1086/1122] Linking CXX executable bin/qnx_screen_surface_host_test
+[1087/1122] Building CXX object qt-native/video-tests/CMakeFiles/rnqnx_qt_video_test.dir/VideoItemTest.cpp.o
+[1088/1122] Linking CXX executable rnqnx_qt_rnsvg_fabric_test
+[1089/1122] Linking CXX executable rnqnx_qt_svg_fabric_test
+[1090/1122] Linking CXX executable rnqnx_qt_rnsvg_image_fabric_test
+[1091/1122] Linking CXX executable rnqnx_qt_rnsvg_values_test
+[1092/1122] Linking CXX executable bin/rnqnx_accessibility_action_native_test
+[1093/1122] Linking CXX executable rnqnx_qt_rnsvg_corpus_test
+[1094/1122] Linking CXX executable rnqnx_accessibility_view_test
+[1095/1122] Linking CXX executable bin/rnqnx_text_input_bridge_test
+[1096/1122] Linking CXX executable bin/rnqnx_accessibility_action_probe
+[1097/1122] Linking CXX executable bin/rnqnx_text_input_probe
+[1098/1122] Linking CXX executable bin/rnqnx_input_lifecycle_probe
+[1099/1122] Linking CXX executable bin/rnqnx_pressable_probe
+[1100/1122] Linking CXX executable bin/rnqnx_runtime_baseline_supervisor
+[1101/1122] Linking CXX executable bin/rnqnx_react_render_host_probe
+[1102/1122] Linking CXX executable bin/rnqnx_rn_headers_probe
+[1103/1122] Linking CXX executable bin/qt_react_host_host_test
+[1104/1122] Linking CXX executable bin/rnqnx_playground_host
+[1105/1122] Linking CXX executable bin/qtquick_mounting_layer_host_test
+[1106/1122] Linking CXX executable bin/shadow_view_mutation_adapter_host_test
+[1107/1122] Linking CXX executable bin/rnqnx_qtquick_host_probe
+[1108/1122] Linking CXX executable qt-native/nativeui-tests/rnqnx_qt_native_ui_test
+[1109/1122] Linking CXX executable qt-native/motion-tests/rnqnx_qt_motion_test
+[1110/1122] Linking CXX executable qt-native/svg-tests/rnqnx_qt_svg_test
+[1111/1122] Linking CXX executable qt-native/graphics-tests/rnqnx_qt_graphics_test
+[1112/1122] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_filter_test
+[1113/1122] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_fixtures_test
+[1114/1122] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_foreignobject_test
+[1115/1122] Linking CXX executable bin/shadow_tree_mounting_host_test
+[1116/1122] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_image_test
+[1117/1122] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_test
+[1118/1122] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_loader_test
+[1119/1122] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_scene_test
+[1120/1122] Linking CXX executable qt-native/rnsvg-tests/rnqnx_qt_rnsvg_text_test
+[1121/1122] Linking CXX executable qt-native/video-tests/rnqnx_qt_video_test

@@ -1,0 +1,1 @@
+The full staged whitespace scan reports original trailing whitespace in raw build/CI logs and unified-patch context. Those evidence bytes are retained. A separate strict staged scan of all changed production, test, generator, documentation, JSON metadata and Python helper files passed with exit 0. No Git whitespace policy or test gate was changed.

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150">
+<defs>
+<linearGradient id="grad-3" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" stop-color="rgb(255,255,0)" stop-opacity="0"/>
+<stop offset="100%" stop-color="red" stop-opacity="1"/>
+</linearGradient>
+</defs>
+<text x="25" y="70" fill="#333" font-family="DejaVu Sans">x1=0%</text>
+<text x="235" y="70" fill="#333" font-family="DejaVu Sans">x2=100%</text>
+<ellipse cx="150" cy="75" rx="85" ry="55" fill="url(#grad-3)"/>
+</svg>

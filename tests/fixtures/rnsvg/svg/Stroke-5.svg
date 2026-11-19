@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="80">
+<defs>
+<radialGradient id="advanced-stroke-grad" cx="50%" cy="50%" r="80%" fx="50%" fy="50%">
+<stop offset="50%" stop-color="#fff" stop-opacity="0.5"/>
+<stop offset="100%" stop-color="#f00" stop-opacity="1"/>
+</radialGradient>
+<clipPath id="advanced-stroke-clip">
+<circle r="96" cx="100" cy="40"/>
+</clipPath>
+</defs>
+<rect x="5" y="5" height="70" width="190" fill="blue" stroke="url(#advanced-stroke-grad)" stroke-width="5" stroke-dasharray="10" clip-path="url(#advanced-stroke-clip)"/>
+<polyline stroke-dasharray="20,10,5,5,5,10" points="10,10 20,12 30,20 40,60 60,70 90,55" fill="none" stroke="url(#advanced-stroke-grad)" stroke-linecap="round" stroke-width="5"/>
+</svg>

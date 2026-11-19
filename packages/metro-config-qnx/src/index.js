@@ -13,6 +13,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+const { createSvgOverlayResolveRequest } = require('@rn-qnx/react-native-qnx/svg/resolver');
 
 const QNX_PLATFORM = 'qnx';
 
@@ -130,7 +131,12 @@ function getQnxMetroConfig(projectRoot, overrides) {
 
   const qnxConfig = {
     resolver: {
-      resolveRequest: createQnxResolveRequest(OVERRIDES_ROOT),
+      // react-native-svg's missing features are supplied by an overlay on its
+      // source tree (packages/react-native-qnx/svg). It applies to `qnx` only
+      // and does nothing when react-native-svg is not installed.
+      resolveRequest: createSvgOverlayResolveRequest(createQnxResolveRequest(OVERRIDES_ROOT), {
+        platforms: [QNX_PLATFORM],
+      }),
       // Order matters to Metro only in that the requested platform is tried
       // first; `qnx` is appended rather than replacing the list so a shared
       // codebase can still resolve its other platforms.

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150">
+<defs>
+<radialGradient id="grad-6" cx="20%" cy="30%" r="30%" fx="50%" fy="50%">
+<stop offset="0%" stop-color="#fff" stop-opacity="0"/>
+<stop offset="100%" stop-color="#00f" stop-opacity="1"/>
+</radialGradient>
+</defs>
+<ellipse cx="150" cy="75" rx="85" ry="55" fill="url(#grad-6)"/>
+</svg>

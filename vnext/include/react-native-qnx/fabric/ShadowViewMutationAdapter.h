@@ -10,9 +10,17 @@
 #include <QSet>
 #include <QString>
 
+#include <functional>
+#include <memory>
 #include <vector>
 
 namespace rnqnx::fabric {
+
+#if RNQNX_ENABLE_QT_RNSVG
+namespace rnsvg_bridge {
+class SvgLayoutNativeEventInterest;
+}
+#endif
 
 /// One rejected mutation, kept with enough context to identify it in a log.
 struct MutationFailure {
@@ -60,6 +68,14 @@ class ShadowViewMutationAdapter {
   /// produces, which arrives while the host is being torn down. Pass nullptr
   /// before destroying it if that ordering cannot be guaranteed.
   void setTouchDispatcher(QtTouchDispatcher* dispatcher);
+
+#if RNQNX_ENABLE_QT_RNSVG
+  /// Optional native onSvgLayout subscribers, queried on the Qt owner thread
+  /// after bounds change. The predicate must be runtime-free and should borrow
+  /// its native owner weakly. An empty predicate clears native interest.
+  /// Replacement is synchronized and reaches already-mounted SVG elements.
+  void setSvgLayoutNativeEventInterest(std::function<bool(facebook::react::Tag)> interest);
+#endif
 
   /// Maps a React Native component name to a QML type registered on the
   /// factory. Unmapped names fail rather than falling back to a generic view.
@@ -122,6 +138,9 @@ class ShadowViewMutationAdapter {
 
   QtQuickMountingLayer& layer_;
   QtTouchDispatcher* touchDispatcher_{nullptr};
+#if RNQNX_ENABLE_QT_RNSVG
+  std::shared_ptr<rnsvg_bridge::SvgLayoutNativeEventInterest> svgLayoutNativeEventInterest_;
+#endif
   QHash<QString, QString> componentTypes_;
   /// Tags whose scroll signals are already connected, so a second Update does
   /// not attach a duplicate handler.

@@ -1,0 +1,72 @@
+Source: https://github.com/mikevocalz/react-native-qnx/actions/runs/43616638798/job/132513032000
+Head: 13a0e49ae7ea6b16faa23840926d3976866f6646
+Job: Qt 6.11 / RN 0.88 / Hermes (input lifecycle ON)
+Observed completed/success: 2026-11-14T17:35:56Z
+Selected checkout, corpus and CTest result lines; full job log remains linked above.
+
+2026-11-14T17:07:46.6557332Z   ref: 13a0e49ae7ea6b16faa23840926d3976866f6646
+2026-11-14T17:07:46.9718749Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 13a0e49ae7ea6b16faa23840926d3976866f6646
+2026-11-14T17:07:48.1241410Z  * branch            13a0e49ae7ea6b16faa23840926d3976866f6646 -> FETCH_HEAD
+2026-11-14T17:07:48.1369966Z [command]/usr/bin/git checkout --progress --force 13a0e49ae7ea6b16faa23840926d3976866f6646
+2026-11-14T17:07:48.2544202Z Note: switching to '13a0e49ae7ea6b16faa23840926d3976866f6646'.
+2026-11-14T17:07:48.2547876Z HEAD is now at 13a0e49 Fix SVG convolution fixture and record native validation
+2026-11-14T17:07:48.2641049Z 13a0e49ae7ea6b16faa23840926d3976866f6646
+2026-11-14T17:20:34.4317937Z [949/1122] Generating /home/runner/work/react-native-qnx/react-native-qnx/apps/rn-playground/rnsvg-corpus-generated/rnsvg-corpus-data.js, rnqnx-rnsvg-corpus-layout.json
+2026-11-14T17:21:06.1811158Z [960/1122] Generating rnqnx-rnsvg-corpus.bundle.js
+2026-11-14T17:21:06.1816704Z  BUNDLE  ./rnsvg-corpus.js ░░░░░░░░░░░░░░░░ 0% (0/1)
+2026-11-14T17:21:06.1817136Z  BUNDLE  ./rnsvg-corpus.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99% (717/757)
+2026-11-14T17:21:06.1817461Z  BUNDLE  ./rnsvg-corpus.js
+2026-11-14T17:21:06.1818285Z LOG:Writing bundle output to: /home/runner/work/react-native-qnx/react-native-qnx/build/linux-host-renderer/rnqnx-rnsvg-corpus.bundle.js
+2026-11-14T17:21:58.8757214Z [1013/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/FixtureManifest.cpp.o
+2026-11-14T17:21:59.0153735Z [1014/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg-fabric/RnsvgCorpusFabricTest.cpp.o
+2026-11-14T17:21:59.9908120Z [1015/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/ImageDiff.cpp.o
+2026-11-14T17:22:01.0428946Z [1016/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/ModelAdapter.cpp.o
+2026-11-14T17:22:02.1981136Z [1017/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgCommonProps.cpp.o
+2026-11-14T17:22:02.8826315Z [1018/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgCss.cpp.o
+2026-11-14T17:22:04.5765520Z [1019/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgDocumentLoader.cpp.o
+2026-11-14T17:22:05.1821155Z [1020/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgElementBuilders.cpp.o
+2026-11-14T17:22:07.1200599Z [1021/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgFilters.cpp.o
+2026-11-14T17:22:07.4441456Z [1022/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgGradient.cpp.o
+2026-11-14T17:22:09.2794577Z [1023/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgImageSource.cpp.o
+2026-11-14T17:22:09.5950706Z [1024/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgText.cpp.o
+2026-11-14T17:22:11.2476055Z [1025/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/XmlDocument.cpp.o
+2026-11-14T17:22:11.4710906Z [1026/1122] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg/support/SvgValues.cpp.o
+2026-11-14T17:23:16.9991711Z [1091/1122] Linking CXX executable rnqnx_qt_rnsvg_corpus_test
+2026-11-14T17:23:41.2232537Z  5/49 Test  #5: rnqnx_qt_rnsvg_fabric_test ..........................   Passed    4.37 sec
+2026-11-14T17:23:42.7926730Z  6/49 Test  #6: rnqnx_qt_rnsvg_image_fabric_test ....................   Passed    1.57 sec
+2026-11-14T17:23:42.7929511Z       Start  7: rnqnx_qt_rnsvg_corpus_test
+2026-11-14T17:23:47.2941759Z  7/49 Test  #7: rnqnx_qt_rnsvg_corpus_test ..........................   Passed    4.50 sec
+2026-11-14T17:23:47.2942263Z       Start  8: rnqnx_qt_rnsvg_corpus_test_1
+2026-11-14T17:27:04.5570356Z  8/49 Test  #8: rnqnx_qt_rnsvg_corpus_test_1 ........................   Passed  197.26 sec
+2026-11-14T17:27:04.5570784Z       Start  9: rnqnx_qt_rnsvg_corpus_test_2
+2026-11-14T17:30:22.4048463Z  9/49 Test  #9: rnqnx_qt_rnsvg_corpus_test_2 ........................   Passed  197.85 sec
+2026-11-14T17:30:22.4048990Z       Start 10: rnqnx_qt_rnsvg_corpus_test_3
+2026-11-14T17:30:27.7249778Z 10/49 Test #10: rnqnx_qt_rnsvg_corpus_test_3 ........................   Passed    5.32 sec
+2026-11-14T17:30:27.7398244Z 11/49 Test #11: rnqnx_qt_rnsvg_values_test ..........................   Passed    0.01 sec
+2026-11-14T17:31:37.5961831Z 41/49 Test #41: rnqnx_qt_rnsvg_filter_test ..........................   Passed    1.77 sec
+2026-11-14T17:31:38.7407513Z 42/49 Test #42: rnqnx_qt_rnsvg_fixtures_test ........................   Passed    1.14 sec
+2026-11-14T17:31:38.7579781Z 43/49 Test #43: rnqnx_qt_rnsvg_foreignobject_test ...................   Passed    0.02 sec
+2026-11-14T17:31:38.8675619Z 44/49 Test #44: rnqnx_qt_rnsvg_image_test ...........................   Passed    0.11 sec
+2026-11-14T17:31:39.2530441Z 45/49 Test #45: rnqnx_qt_rnsvg_loader_test ..........................   Passed    0.39 sec
+2026-11-14T17:31:39.2759510Z 46/49 Test #46: rnqnx_qt_rnsvg_test .................................   Passed    0.02 sec
+2026-11-14T17:31:39.6627575Z 47/49 Test #47: rnqnx_qt_rnsvg_scene_test ...........................   Passed    0.39 sec
+2026-11-14T17:31:40.7838231Z 48/49 Test #48: rnqnx_qt_rnsvg_text_test ............................   Passed    1.12 sec
+2026-11-14T17:31:41.3349635Z 100% tests passed, 0 tests failed out of 49
+2026-11-14T17:31:41.3349991Z Total Test time (real) = 485.90 sec
+2026-11-14T17:32:52.3049082Z 1/8 Test #1: rnqnx_qt_rnsvg_filter_test ..........   Passed    3.57 sec
+2026-11-14T17:32:55.5694032Z 2/8 Test #2: rnqnx_qt_rnsvg_fixtures_test ........   Passed    3.26 sec
+2026-11-14T17:32:55.6092274Z 3/8 Test #3: rnqnx_qt_rnsvg_foreignobject_test ...   Passed    0.04 sec
+2026-11-14T17:32:55.7748365Z 4/8 Test #4: rnqnx_qt_rnsvg_image_test ...........   Passed    0.17 sec
+2026-11-14T17:32:56.8562218Z 5/8 Test #5: rnqnx_qt_rnsvg_loader_test ..........   Passed    1.08 sec
+2026-11-14T17:32:56.9131818Z 6/8 Test #6: rnqnx_qt_rnsvg_test .................   Passed    0.06 sec
+2026-11-14T17:32:57.8074164Z 7/8 Test #7: rnqnx_qt_rnsvg_scene_test ...........   Passed    0.89 sec
+2026-11-14T17:32:59.9419073Z 8/8 Test #8: rnqnx_qt_rnsvg_text_test ............   Passed    2.13 sec
+2026-11-14T17:32:59.9419714Z 100% tests passed, 0 tests failed out of 8
+2026-11-14T17:32:59.9420083Z Total Test time (real) =  11.21 sec
+2026-11-14T17:33:39.1682258Z 1/1 Test #1: rnqnx_qt_rnsvg_image_http_test ...   Passed    0.81 sec
+2026-11-14T17:33:39.1685430Z 100% tests passed, 0 tests failed out of 1
+2026-11-14T17:33:39.1685674Z Total Test time (real) =   0.81 sec
+2026-11-14T17:35:07.8891686Z   name: host-renderer-13a0e49ae7ea6b16faa23840926d3976866f6646-input-ON
+2026-11-14T17:35:09.4907560Z Artifact host-renderer-13a0e49ae7ea6b16faa23840926d3976866f6646-input-ON.zip successfully finalized. Artifact ID 14124191827
+2026-11-14T17:35:09.4908904Z Artifact host-renderer-13a0e49ae7ea6b16faa23840926d3976866f6646-input-ON has been successfully uploaded! Final size is 1173876 bytes. Artifact ID is 14124191827
+2026-11-14T17:35:09.4913359Z Artifact download URL: https://github.com/mikevocalz/react-native-qnx/actions/runs/43616638798/artifacts/14124191827

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 20 20">
+<g fill="none" stroke="black" stroke-width="2">
+<path stroke-dasharray="2,2" d="M0 4 h20"/>
+<path stroke-dasharray="4,4" d="M0 10 h20"/>
+<path stroke-dasharray="4,2,1,1,1,6" d="M0 19 h20"/>
+</g>
+</svg>

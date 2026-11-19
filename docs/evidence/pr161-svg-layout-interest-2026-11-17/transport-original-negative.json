@@ -1,0 +1,13 @@
+{
+  "command": [
+    "node",
+    "/workspace/scratch/252a22fac759/rnqnx-pr161/tests/js/rnsvg-layout-transport.test.mjs"
+  ],
+  "cwd": "/workspace/scratch/252a22fac759/pr161-svg-layout-controls/transport-original-cwd",
+  "startedAt": "2026-11-17T05:30:12.937592+00:00",
+  "finishedAt": "2026-11-17T05:30:14.117109+00:00",
+  "exitCode": 1,
+  "testSha256": "72db22eb8dbc459cdae8e0d4b69c57c1c00a1cb0600dfd9ea28c671d4f0f4b41",
+  "baseConfigSha256": "e54a3b1d2f4d8587eae11221a5973746a993f25aded962e8560282f90837a1ea",
+  "scope": "Identical actual-pinned-pipeline test; only QNX BaseViewConfig source differs. Original file comes from d3eacc75 in an isolated cwd; candidate is the primary clone."
+}

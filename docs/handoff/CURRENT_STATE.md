@@ -1,8 +1,120 @@
 # Current state
 
+## PR 161 SVG layout subscriptions (2026-11-17)
+
+The native SVG generator retains the existing onSvgLayout subscription marker,
+and QNX BaseViewConfig transports it through the real React prop pipeline.
+Reporters preserve bounds tracking and only dispatch to React or native
+subscribers. Late native registration, removal and callback teardown retain
+explicit behavioral coverage. The optional native-interest seam is empty by
+default; PR 149 supplies its real Reanimated registry integration.
+
+The reviewed candidate, built in a fresh graph rooted at the published
+PR 161 parent, passes **49/49 CTests in 445.87 seconds**, including all 57 QtReactHost cases and all 149 SVG
+pixel comparisons. Corpus shards take 5.33, 166.98, 163.61 and 6.21 seconds
+under unchanged 300-second limits. The original local heavy-shard comparison
+is 199.36 seconds. Source, test object, bundle, original-source controls and
+separate lifetime mutation evidence are recorded in the
+[subscription receipt](../validation/pr161-svg-layout-interest-2026-11-17.md).
+
+The published parent d3eacc75 passed ten of eleven workflows; its renderer-ON
+lane timed out two corpus shards. That failed result is preserved. Follow the
+successor's exact hosted checks on [PR 161](https://github.com/mikevocalz/react-native-qnx/pull/161);
+local passes do not qualify hosted CI or current QNX execution. A fresh clean
+combined QNX build and current-device acceptance remain required. Keep the PR
+draft and all eleven release gates pending. The dated sections below retain
+their original scope.
+
+## PR 161 subscribed layout dispatch continuation (2026-11-16)
+
+The Fabric adapter now checks the existing `ViewProps::onLayout` flag before
+dispatching layout events on creation or update, matching React Native 0.88.1.
+The identical new regression object fails both listener cases with the original
+adapter; the guarded copy passes all 57 host cases, including existing public
+layout and list tests. Independent source review found no blocking issue.
+A paired host profile reduces the Complex-1 mount from 244.5 to 181.2 seconds
+without changing Hermes slow debug checks, fixtures, thresholds or timeouts.
+All 149 visual comparisons pass; the four original corpus CTests finish in
+5.21, 204.75, 232.22 and 6.59 seconds with their 300-second limits unchanged.
+
+The last completed exact hosted head, `3220c8d`, passed ten of eleven workflows:
+the renderer-OFF lane passed 14/14 CTests, while renderer-ON passed 47/49 with
+two 300-second SVG corpus timeouts. The isolated copied PR 149 host graph
+validates the listener correction; it is not an exact PR 161 full-graph result.
+The successor needs its own required workflows, a fresh clean combined QNX
+build and current-device validation. Keep PR 161 draft and all eleven release
+gates pending. [Receipt and evidence](../validation/pr161-layout-dispatch-2026-11-16.md).
+
+## PR 161 retained SVG geometry continuation (2026-11-16)
+
+Published correction `69fa85f` routes retained SVG geometry changes through
+outer-root painting and layout invalidation. Two real-window regressions fail
+against the original source and pass with the fix, covering nested resize
+pixels, live ForeignObject placement and cached bounds. All eight standalone
+Qt 6.11.1/Clang 19.1.7 Debug ASan/UBSan CTests pass, with independent source
+review. The guide now describes the existing optional QtSvg/plugin staging.
+
+The first published-head checks identified formatting failures. This narrow
+documentation follow-up applies the pinned formatter and updates the canonical
+handoff; native source and tests are unchanged. Follow-up CI, a fresh clean
+combined QNX build and current-device validation remain pending. Keep PR 161
+draft and every release gate pending; earlier device receipts do not qualify
+this geometry correction. [Receipt and logs](../validation/pr161-geometry-2026-11-16.md).
+
+## PR 161 nested SVG and standalone consumer (2026-11-14)
+
+Published native correction `3324e7c` forwards nested child removal to the
+visible root and includes roots nested directly inside other roots in group
+bounds. Both new regressions fail against the original source and pass with
+the correction. Main integration `446d28f` retains PR 163's transactional
+staging and bounded optional QtSvg copies. All 17 staging fixtures pass.
+
+The Linux Qt 6.11.1/GCC 14.2 Debug ASan/UBSan standalone SVG graph passes all
+eight CTests after a test-only kernel-size-before-move correction. The
+published `13a0e49` head passes all nine hosted workflows, including both full
+renderer lanes, 49/49 ON integrated tests and all four corpus shards.
+
+A narrow follow-up ports PR 159's reviewed CLI package copy list and archive
+regression so this PR independently ships its SVG resolver and public entry
+files in new consumer archives. The original-source assertion fails as
+expected; the corrected regression and fresh dual consumer install, QNX
+bundle and Marathon bundle pass. The two files match published `f49e61e`
+exactly, with independent review. No native source or dependency changes.
+The packaging follow-up's exact-head CI, a fresh combined QNX build and
+current-device validation remain pending.
+Keep PR 161 draft until its required target evidence is available. Historical
+Pi receipts below do not validate these new native changes. All release gates
+remain pending. [Receipt and logs](../validation/pr161-nested-roots-2026-11-14.md).
+
+## PR 161 cross-build recipe correction — 2026-11-13
+
+The native consumer used inherited Release/O1 flags with selected GCC warning
+exceptions; public Qt libraries were O2. Its launcher reused upstream objects
+without independently checking flags/header closure, while project sources
+were recompiled. Device behavior and hashes stand as scoped evidence. Use a
+fresh build without that launcher for final combined qualification.
+[Corrected receipt](../validation/pr161-device-gallery-2026-11-13.md).
+
+## PR 161 gallery and target continuation — 2026-11-13
+
+Required checks passed at a52ffff. The current-source Pi run then exposed the
+SvgCss root import; it now uses the pinned CSS subpackage and has a failing/
+passing Metro regression. The twelve-card gallery renders on the real lean
+VM/public QtSvg runtime, including bundled/SVG/HTTPS images and live
+ForeignObject input blocking. Circle/group counters and rotation pause pass.
+The added nested-invalidation control fails without outward forwarding; all
+eight restored native host CTests pass. Prior review threads are resolved.
+This follow-up still needs its exact-head checks and independent review.
+[Artifacts, element table and rollback](../validation/pr161-device-gallery-2026-11-13.md).
+
 Start with the [2026-11-13 handoff](HANDOFF_2026-11-13.md): it explains how to
 load and control the app on the Pi 400, what is merged, and what is open.
 The sections below keep their original dates.
+
+## PR 161 corpus continuation — 2026-11-13
+
+PR 161 now isolates large corpus scenes and requires four disjoint CTests. Local packing, type and standalone native checks pass; the new Debug CI result is pending.
+[Receipt](../validation/pr161-corpus-shards-2026-11-13.md).
 
 ## PR 105 review follow-up — 2026-11-10
 

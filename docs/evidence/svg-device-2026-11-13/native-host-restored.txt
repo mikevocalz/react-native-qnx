@@ -1,0 +1,21 @@
+Test project <host-build>
+    Start 1: rnqnx_qt_rnsvg_filter_test
+1/8 Test #1: rnqnx_qt_rnsvg_filter_test ..........   Passed    0.44 sec
+    Start 2: rnqnx_qt_rnsvg_fixtures_test
+2/8 Test #2: rnqnx_qt_rnsvg_fixtures_test ........   Passed    0.74 sec
+    Start 3: rnqnx_qt_rnsvg_foreignobject_test
+3/8 Test #3: rnqnx_qt_rnsvg_foreignobject_test ...   Passed    0.10 sec
+    Start 4: rnqnx_qt_rnsvg_image_test
+4/8 Test #4: rnqnx_qt_rnsvg_image_test ...........   Passed    0.16 sec
+    Start 5: rnqnx_qt_rnsvg_loader_test
+5/8 Test #5: rnqnx_qt_rnsvg_loader_test ..........   Passed    0.21 sec
+    Start 6: rnqnx_qt_rnsvg_test
+6/8 Test #6: rnqnx_qt_rnsvg_test .................   Passed    0.29 sec
+    Start 7: rnqnx_qt_rnsvg_scene_test
+7/8 Test #7: rnqnx_qt_rnsvg_scene_test ...........   Passed    0.18 sec
+    Start 8: rnqnx_qt_rnsvg_text_test
+8/8 Test #8: rnqnx_qt_rnsvg_text_test ............   Passed    0.46 sec
+
+100% tests passed out of 8
+
+Total Test time (real) =   2.58 sec

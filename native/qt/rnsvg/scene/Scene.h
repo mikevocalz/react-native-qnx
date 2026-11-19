@@ -1,0 +1,210 @@
+#pragma once
+
+#include "../RnsvgItems.h"
+#include "Bounds.h"
+#include "ClipMask.h"
+#include "Effects.h"
+#include "FilterRunner.h"
+#include "HitTester.h"
+#include "ImageRenderer.h"
+#include "Markers.h"
+#include "PaintServers.h"
+#include "ShapePainter.h"
+#include "Style.h"
+#include "TextRenderer.h"
+
+#include <QPainter>
+#include <algorithm>
+#include <functional>
+#include <optional>
+#include <unordered_map>
+
+#include <vector>
+
+namespace rnqnx::views::rnsvg {
+
+// Where the scene draws: a painter, the transform from item space to that
+// painter's device pixels, and the device-space rectangle worth drawing in.
+// Layers (group opacity, masks, filters, patterns) push a smaller target.
+struct Target {
+  QPainter* painter{nullptr};
+  QTransform base;
+  QRectF clip;
+};
+
+// Caps for hostile documents: elements visited per paint or hit test, and
+// nesting of groups, <use> chains and mask recursion.
+inline constexpr int kMaxVisits = 200000;
+inline constexpr int kMaxDepth = 32;
+// Steps the analysis recursions (clip paths, bounds, markers) may take in one
+// paint or hit test. A reference cycle that fans out (a clip path whose two
+// children both use the clip path) would otherwise cost 2^depth.
+inline constexpr int kMaxAnalysisSteps = 2000000;
+// Pixels all effect layers of one paint may allocate together. Past it, an
+// element draws without its group effect instead of allocating another layer.
+inline constexpr qint64 kMaxLayerPixelsPerPaint = qint64{64} * 1024 * 1024;
+
+// One paint or hit test over a root's retained element tree. It owns the
+// traversal and the state that is shared across elements; each collaborator
+// (paint servers, clip and mask, markers, text, effects, hit testing) owns one
+// kind of work and reaches back here through the small public surface below.
+class Scene {
+ public:
+  Scene(const RnsvgRootItem& root, QPainter* painter, std::optional<QPointF> hit);
+
+  void run();
+  const RnsvgElementItem* hitTarget() const { return hitTarget_; }
+  const PaintStats& stats() const { return stats_; }
+  // False when another layer of `pixels` would pass the per-paint budget.
+  bool layerAffordable(qint64 pixels) const { return stats_.layerPixels + pixels <= kMaxLayerPixelsPerPaint; }
+
+  // Recursion guard for the analysis passes. `key` names what is being
+  // analysed; entering it again while it is active, or past the step budget,
+  // fails.
+  class AnalysisScope {
+   public:
+    AnalysisScope(Scene& scene, const void* key) : scene_(scene), ok_(scene.enterAnalysis(key)) {}
+    ~AnalysisScope() {
+      if (ok_) scene_.leaveAnalysis();
+    }
+    AnalysisScope(const AnalysisScope&) = delete;
+    AnalysisScope& operator=(const AnalysisScope&) = delete;
+    bool ok() const { return ok_; }
+
+   private:
+    Scene& scene_;
+    bool ok_;
+  };
+  void noteLayer(const QSize& size) {
+    const qint64 pixels = qint64(size.width()) * size.height();
+    ++stats_.layers;
+    stats_.layerPixels += pixels;
+    stats_.largestLayerPixels = std::max(stats_.largestLayerPixels, pixels);
+  }
+
+  // ---- surface for the collaborators --------------------------------------
+  const RnsvgElementItem* byId(const QString& id) const;
+  Target& target() { return target_; }
+  QPainter* painter() const { return target_.painter; }
+  bool hitMode() const { return hit_.has_value(); }
+  const std::optional<QPointF>& hitPoint() const { return hit_; }
+  const RootProps& rootProps() const { return root_.rootProps(); }
+  QSizeF itemSize() const { return QSizeF(root_.width(), root_.height()); }
+
+  void render(const RnsvgElementItem* e, const Frame& parent, int depth);
+  // Renders the element and nested <Svg> children of `container` (an element
+  // or a root) with the frame `f`.
+  void renderChildren(const QQuickItem* container, const Frame& f, int depth);
+  // A <Svg> inside this <Svg>: its viewport and viewBox applied, drawn inline.
+  void renderNested(const RnsvgRootItem& nested, const Frame& f, int depth);
+
+  // Visits every element reachable by containment (not through <use>) in
+  // document order with its parent frame and its own frame. `visit` returns
+  // false to skip the element's children. display:none subtrees are skipped.
+  using FrameVisitor = std::function<bool(const RnsvgElementItem*, const Frame& parent, const Frame& own)>;
+  void walkFrames(const FrameVisitor& visit);
+  // Runs `fn` with `t` as the target, restoring the previous one after.
+  template <class Fn>
+  void withTarget(const Target& t, Fn&& fn) {
+    const Target saved = target_;
+    target_ = t;
+    fn();
+    target_ = saved;
+  }
+  // Same, with hit testing switched off (mask and pattern content paints).
+  template <class Fn>
+  void withoutHit(Fn&& fn) {
+    const auto saved = hit_;
+    hit_.reset();
+    fn();
+    hit_ = saved;
+  }
+  // Records `e`, or its nearest responsible ancestor, as the hit target.
+  void noteHit(const RnsvgElementItem* e) {
+    const RnsvgElementItem* target = e->props().responsible ? e : nullptr;
+    for (auto it = responsible_.rbegin(); !target && it != responsible_.rend(); ++it) target = *it;
+    if (target) hitTarget_ = target;
+  }
+  void pushResponsible(const RnsvgElementItem* e) { responsible_.push_back(e); }
+  void popResponsible() { responsible_.pop_back(); }
+
+  // context-fill / context-stroke: the paint of the element a marker or a
+  // <use> is instantiated for.
+  struct ContextPaint {
+    Brush fill, stroke;
+    QRectF bbox;
+    Frame frame;
+  };
+  void pushContext(const ContextPaint& c) { context_.push_back(c); }
+  void popContext() { context_.pop_back(); }
+  const ContextPaint* context() const { return context_.empty() ? nullptr : &context_.back(); }
+
+  Bounds& bounds() { return bounds_; }
+  PaintServers& paintServers() { return paintServers_; }
+  ShapePainter& shapes() { return shapes_; }
+  ClipMask& clipMask() { return clipMask_; }
+  Markers& markers() { return markers_; }
+  HitTester& hitTester() { return hitTester_; }
+  Effects& effects() { return effects_; }
+  TextRenderer& text() { return text_; }
+  ImageRenderer& images() { return images_; }
+  FilterRunner& filters() { return filters_; }
+
+  static void configure(QPainter& p) {
+    p.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
+  }
+
+ private:
+  void collect(const QQuickItem* container, int depth);
+  Frame rootFrame() const;
+  Frame nestedFrame(const RnsvgRootItem& nested, const Frame& f, QSizeF& size) const;
+  void walk(const QQuickItem* container, const Frame& parent, int depth, const FrameVisitor& visit);
+  void renderShape(const RnsvgElementItem* e, const Frame& f, const Frame& parent, int depth);
+  void renderGroup(const RnsvgElementItem* e, const Frame& f, const Frame& parent, int depth);
+  void renderUse(const RnsvgElementItem* e, const Frame& f, const Frame& parent, int depth);
+  // A <use> of a <symbol>: the symbol's viewBox laid into the use's width and
+  // height (default 100%), content clipped to that viewport.
+  Frame symbolFrame(const RnsvgElementItem& symbol, const Frame& useFrame, const Units& units,
+                    const ElementProps& use) const;
+  void renderSymbol(const RnsvgElementItem& symbol, const Frame& useFrame, const Units& units,
+                    const ElementProps& use, int depth);
+
+  const RnsvgRootItem& root_;
+  std::optional<QPointF> hit_;
+  Target target_;
+  QTransform view_;
+  QSizeF viewport_;
+  QColor rootColor_{Qt::black};
+  struct QStringHash {
+    size_t operator()(const QString& s) const { return qHash(s); }
+  };
+  std::unordered_map<QString, const RnsvgElementItem*, QStringHash> ids_;
+  std::vector<const RnsvgElementItem*> responsible_;
+  std::vector<const RnsvgElementItem*> active_;
+  std::vector<ContextPaint> context_;
+  bool enterAnalysis(const void* key) {
+    if (++analysisSteps_ > kMaxAnalysisSteps) return false;
+    if (std::find(analysisActive_.begin(), analysisActive_.end(), key) != analysisActive_.end()) return false;
+    analysisActive_.push_back(key);
+    return true;
+  }
+  void leaveAnalysis() { analysisActive_.pop_back(); }
+  std::vector<const void*> analysisActive_;
+  int analysisSteps_{0};
+  int visits_{0};
+  PaintStats stats_;
+  const RnsvgElementItem* hitTarget_{nullptr};
+
+  Bounds bounds_;
+  PaintServers paintServers_;
+  ShapePainter shapes_;
+  ClipMask clipMask_;
+  Markers markers_;
+  HitTester hitTester_;
+  Effects effects_;
+  TextRenderer text_;
+  ImageRenderer images_;
+  FilterRunner filters_;
+};
+
+}  // namespace rnqnx::views::rnsvg

@@ -1,0 +1,34 @@
+Local validation output excerpts, 2026-11-14
+Debian 13 x86-64, Node v26.13.1, pnpm 12.18.0
+Base: d38097f38d5a1ebb560627649e95c84d04d32f02
+These commands do not compile or execute the new C++ regression cases.
+
+$ pnpm install --frozen-lockfile
+Lockfile is up to date, resolution step is skipped
+Packages: +522
+Progress: resolved 522, reused 522, downloaded 0, added 522, done
+Done in 10.1s using pnpm v12.18.0
+exit: 0
+
+$ pnpm typecheck
+$ tsc --noEmit && tsc --noEmit -p tests/types/adaptive.tsconfig.json
+exit: 0
+
+$ pnpm validate:dependencies
+validate:dependencies passed.
+exit: 0
+
+$ node tests/js/rnsvg-corpus-packing.test.mjs
+SVG corpus packing: 149 fixtures, 16 bounded batches, four nonempty shards
+exit: 0
+
+$ node tests/js/rnsvg-overlay-render.test.mjs
+react-native-svg overlay: 57 qnx probes checked, 57 ios probes untouched
+exit: 0
+
+$ pnpm validate:docs
+Documentation validated: 24 components, 11 release gates.
+exit: 0
+
+$ git diff --check
+exit: 0

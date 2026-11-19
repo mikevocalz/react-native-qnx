@@ -41,4 +41,5 @@ artifacts/g0/*
 
 # QNX
 *.core
+apps/rn-playground/rnsvg-corpus-generated/
 artifacts/pi-mouse-smoke/

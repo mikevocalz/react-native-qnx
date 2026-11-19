@@ -1,0 +1,8 @@
+{
+  "command": ["cmake", "--build", "--preset", "linux-host-renderer", "--parallel", "3"],
+  "cwd": "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline",
+  "startedAt": "2026-11-17T05:44:47.524692+00:00",
+  "finishedAt": "2026-11-17T05:45:22.734939+00:00",
+  "elapsedSeconds": 35.21026134299973,
+  "exitCode": 0
+}

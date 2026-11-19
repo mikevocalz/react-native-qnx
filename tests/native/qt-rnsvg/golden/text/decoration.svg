@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200" font-family="DejaVu Sans">
+  <text x="20" y="45" font-size="32" text-decoration="underline">Underline</text>
+  <text x="20" y="100" font-size="32" text-decoration="overline">Overline</text>
+  <text x="20" y="155" font-size="32" text-decoration="line-through">Line through</text>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="160">
+<text y="20" dx="5 5" fill="black" font-family="DejaVu Sans">
+<tspan x="10">tspan line 1</tspan>
+<tspan x="10" dy="15">tspan line 2</tspan>
+<tspan x="10" dx="10" dy="15">tspan line 3</tspan>
+</text>
+<text x="10" y="60" fill="red" font-size="14" font-family="DejaVu Sans">
+<tspan dy="5 10 20">12345</tspan>
+<tspan fill="blue" dy="15" dx="0 5 5"><tspan>6</tspan><tspan>7</tspan></tspan>
+<tspan dx="0 10 20" dy="0 20" font-weight="bold" font-size="12">89a</tspan>
+</text>
+<text y="140" dx="0 5 5" dy="0 -5 -5" fill="black" font-family="DejaVu Sans">delta on text</text>
+</svg>

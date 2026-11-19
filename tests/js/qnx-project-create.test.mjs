@@ -75,6 +75,18 @@ try {
   for (const entry of ['package/metro.js', 'package/README.md', 'package/src/resolver.js']) {
     assert.ok(listing.stdout.includes(entry), entry);
   }
+  const platformArchive = qnxArtifacts0['@rn-qnx/react-native-qnx'];
+  const platformListing = spawnSync('tar', ['-tzf', path.join(qnx, platformArchive.file)], {
+    encoding: 'utf8',
+  });
+  assert.equal(platformListing.status, 0, platformListing.stderr);
+  for (const entry of [
+    'package/svg/resolver.js',
+    'package/qt/index.js',
+    'package/adaptive/index.js',
+  ]) {
+    assert.ok(platformListing.stdout.includes(entry), entry);
+  }
   const workspaceYaml = await readFile(path.join(qnx, 'pnpm-workspace.yaml'), 'utf8');
   assert.match(workspaceYaml, /'@rn-qnx\/expo-router-qnx': 'file:vendor\//);
   for (const name of [

@@ -10,6 +10,13 @@ const svgCards = [
   require('./GradientsCard'),
   require('./ClipMaskCard'),
   require('./TextCard'),
+  require('./PatternsCard'),
+  require('./StrokesCard'),
+  require('./TextLayoutCard'),
+  require('./FiltersCard'),
+  require('./ImageCard'),
+  require('./XmlCard'),
+  require('./ForeignObjectCard'),
   require('./PressableCard'),
 ];
 

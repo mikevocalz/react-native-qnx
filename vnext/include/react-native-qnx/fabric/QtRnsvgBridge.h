@@ -13,20 +13,22 @@ struct ShadowView;
 
 namespace rnqnx::fabric {
 
-/// The react-native-svg Fabric components this host mounts. Pattern, Symbol,
-/// Marker, TextPath, Filter, Fe* and ForeignObject are deliberately absent:
-/// rendering one fails with React Native's unknown-component error instead of
-/// silently drawing nothing.
+/// The react-native-svg Fabric components this host mounts: every element the
+/// package registers. A component the host cannot mount fails with React
+/// Native's unknown-component error instead of silently drawing nothing.
 std::vector<std::string> rnsvgComponentNames();
 
 /// Registers the descriptors. Shadow nodes and layout come from the pinned
-/// react-native-svg package's own C++, so Yoga treats elements as it does there.
+/// react-native-svg package's own C++, so Yoga treats elements as it does there:
+/// elements fill their parent, and the React Native children of a
+/// ForeignObject are laid out by Yoga inside it.
 void addRnsvgComponentDescriptors(facebook::react::ComponentDescriptorProviderRegistry& registry);
 
 bool isRnsvgComponent(const std::string& componentName);
 
 /// Converts the view's generated props into the retained element/root props and
-/// applies them to `item` without remounting. Returns false for a view that is
+/// applies them to `item` without remounting. Also wires the element's
+/// onSvgLayout event to the <Svg> root's layout pass. Returns false for a view that is
 /// not a react-native-svg component or whose props do not match its item.
 bool applyRnsvgProps(QQuickItem* item, const facebook::react::ShadowView& view);
 

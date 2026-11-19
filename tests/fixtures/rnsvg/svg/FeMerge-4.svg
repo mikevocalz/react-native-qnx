@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150">
+<filter id="mergeWithHue" filterUnits="userSpaceOnUse" x="0" y="0" width="180" height="180">
+<feOffset dx="50" dy="50"/>
+<feColorMatrix type="hueRotate" values="240"/>
+<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>
+<rect x="0" y="0" width="100" height="100" stroke="black" fill="red" filter="url(#mergeWithHue)"/>
+</svg>

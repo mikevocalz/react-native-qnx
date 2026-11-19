@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150">
+<filter id="f"><feColorMatrix type="luminanceToAlpha"/></filter>
+<g filter="url(#f)">
+<circle cx="75" cy="50" r="40" fill="blue" fill-opacity="0.5"/>
+<circle cx="55" cy="90" r="40" fill="green" fill-opacity="0.5"/>
+<circle cx="95" cy="90" r="40" fill="red" fill-opacity="0.5"/>
+</g>
+</svg>

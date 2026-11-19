@@ -1,0 +1,38 @@
+--- original/ShadowViewMutationAdapter.cpp
++++ candidate/ShadowViewMutationAdapter.cpp
+@@ -1083,10 +1083,13 @@
+       if (layoutError != MountError::None) {
+         return layoutError;
+       }
+-      if (auto viewEmitter =
+-              std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(
+-                  view.eventEmitter)) {
+-        viewEmitter->onLayout(view.layoutMetrics);
++      if (const auto* props = dynamic_cast<const facebook::react::ViewProps*>(view.props.get());
++          props != nullptr && props->onLayout) {
++        if (auto viewEmitter =
++                std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(
++                    view.eventEmitter)) {
++          viewEmitter->onLayout(view.layoutMetrics);
++        }
+       }
+       registerEventEmitter(view);
+       if (const auto& observer = viewObserver()) observer(view, false);
+@@ -1179,10 +1182,13 @@
+       if (layoutError != MountError::None) {
+         return layoutError;
+       }
+-      if (auto viewEmitter =
+-              std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(
+-                  view.eventEmitter)) {
+-        viewEmitter->onLayout(view.layoutMetrics);
++      if (const auto* props = dynamic_cast<const facebook::react::ViewProps*>(view.props.get());
++          props != nullptr && props->onLayout) {
++        if (auto viewEmitter =
++                std::dynamic_pointer_cast<const facebook::react::ViewEventEmitter>(
++                    view.eventEmitter)) {
++          viewEmitter->onLayout(view.layoutMetrics);
++        }
+       }
+       connectTextInputEvents(view);
+       connectSwitchEvents(view);

@@ -1,0 +1,41 @@
+Start testing: Nov 17 00:30 EST
+----------------------------------------------------------
+5/49 Testing: rnqnx_qt_rnsvg_fabric_test
+5/49 Test: rnqnx_qt_rnsvg_fabric_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx_qt_rnsvg_fabric_test" "-platform" "offscreen"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer
+"rnqnx_qt_rnsvg_fabric_test" start time: Nov 17 00:30 EST
+Output:
+----------------------------------------------------------
+Running "RnqnxRnsvgFixture"
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E1117 00:31:01.556135 308830784 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+W1117 00:31:04.586660 308830784 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0x513000002f90).
+W1117 00:31:04.592180 169764544 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0x512000014bd0).
+W1117 00:31:04.592343 169764544 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0x514000003650).
+RNQNX_RNSVG_FABRIC_OK metro hermes fabric gradient clip mask use update remove touch resize extras
+<end of output>
+Test time =   7.50 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_fabric_test" end time: Nov 17 00:31 EST
+"rnqnx_qt_rnsvg_fabric_test" time elapsed: 00:00:07
+----------------------------------------------------------
+
+11/49 Testing: rnqnx_qt_rnsvg_values_test
+11/49 Test: rnqnx_qt_rnsvg_values_test
+Command: "/workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer/rnqnx_qt_rnsvg_values_test"
+Directory: /workspace/scratch/252a22fac759/rnqnx-pr161-baseline/build/linux-host-renderer
+"rnqnx_qt_rnsvg_values_test" start time: Nov 17 00:31 EST
+Output:
+----------------------------------------------------------
+rnsvg bridge values: all checks passed
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"rnqnx_qt_rnsvg_values_test" end time: Nov 17 00:31 EST
+"rnqnx_qt_rnsvg_values_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 17 00:31 EST

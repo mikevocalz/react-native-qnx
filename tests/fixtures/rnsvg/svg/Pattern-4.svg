@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100">
+<defs>
+<pattern id="pv" x="0" y="0" width="0.25" height="0.5" viewBox="0 0 10 10" preserveAspectRatio="xMidYMid meet">
+<rect width="5" height="5" fill="orange"/>
+<rect x="5" y="5" width="5" height="5" fill="teal"/>
+</pattern>
+<pattern id="pc" width="0.5" height="0.5" patternContentUnits="objectBoundingBox">
+<circle cx="0.25" cy="0.25" r="0.2" fill="purple"/>
+</pattern>
+</defs>
+<rect x="5" y="5" width="90" height="90" fill="url(#pv)" stroke="black"/>
+<rect x="105" y="5" width="90" height="90" fill="url(#pc)" stroke="black"/>
+</svg>

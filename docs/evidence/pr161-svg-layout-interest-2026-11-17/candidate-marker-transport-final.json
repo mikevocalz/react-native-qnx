@@ -1,0 +1,11 @@
+{
+  "path": "/workspace/scratch/252a22fac759/pr161-svg-layout-controls/candidate-marker-transport-final.patch",
+  "sha256": "ab3bf560ce92ae0a96f684e4b5092644655a09fd4151e73694d47fff9f471eef",
+  "files": {
+    "scripts/qt-rnsvg-codegen.mjs": "31f6b05341bfe0272d155075be87834bec46ac6640ce807e5854e2335537cbe3",
+    "tests/js/rnsvg-layout-transport.test.mjs": "72db22eb8dbc459cdae8e0d4b69c57c1c00a1cb0600dfd9ea28c671d4f0f4b41",
+    "packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js": "d7315012356fe1211683e00c359fdce9ef531454e77c3c38aeb96fa60af435b6",
+    "tests/js/rnsvg-overlay-render.test.mjs": "3445d47a590979725aef950c0710b37be67dc44e4e5477ef9d431eacf1b89e3b"
+  },
+  "base": "Reviewed20-file native candidate; includes the platform-aware overlay stub correction."
+}

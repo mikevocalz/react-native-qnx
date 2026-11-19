@@ -129,4 +129,44 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@protocol RCTRNSVGFeComponentTransferViewProtocol <NSObject>
+
+@end
+
+@protocol RCTRNSVGFeConvolveMatrixViewProtocol <NSObject>
+
+@end
+
+@protocol RCTRNSVGFeDiffuseLightingViewProtocol <NSObject>
+
+@end
+
+@protocol RCTRNSVGFeDisplacementMapViewProtocol <NSObject>
+
+@end
+
+@protocol RCTRNSVGFeDropShadowViewProtocol <NSObject>
+
+@end
+
+@protocol RCTRNSVGFeImageViewProtocol <NSObject>
+
+@end
+
+@protocol RCTRNSVGFeMorphologyViewProtocol <NSObject>
+
+@end
+
+@protocol RCTRNSVGFeSpecularLightingViewProtocol <NSObject>
+
+@end
+
+@protocol RCTRNSVGFeTileViewProtocol <NSObject>
+
+@end
+
+@protocol RCTRNSVGFeTurbulenceViewProtocol <NSObject>
+
+@end
+
 NS_ASSUME_NONNULL_END

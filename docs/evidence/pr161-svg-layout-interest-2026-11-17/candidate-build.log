@@ -1,0 +1,21 @@
+[0/2] Re-checking globbed directories...
+[1/21] Automatic MOC for target rnqnx_fabric_adapter
+[2/21] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/rnqnx_fabric_adapter_autogen/mocs_compilation.cpp.o
+[3/21] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridge.cpp.o
+[4/21] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/ShadowViewMutationAdapter.cpp.o
+[5/21] Building CXX object CMakeFiles/rnqnx_fabric_adapter.dir/vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp.o
+[6/21] Linking CXX static library librnqnx_fabric_adapter.a
+[7/21] Linking CXX executable rnqnx_qt_rnsvg_image_fabric_test
+[8/21] Linking CXX executable rnqnx_qt_rnsvg_fabric_test
+[9/21] Linking CXX executable rnqnx_qt_svg_fabric_test
+[10/21] Linking CXX executable rnqnx_qt_rnsvg_values_test
+[11/21] Linking CXX executable rnqnx_qt_rnsvg_corpus_test
+[12/21] Linking CXX executable bin/rnqnx_accessibility_action_probe
+[13/21] Linking CXX executable bin/rnqnx_text_input_probe
+[14/21] Linking CXX executable bin/rnqnx_input_lifecycle_probe
+[15/21] Linking CXX executable bin/rnqnx_pressable_probe
+[16/21] Linking CXX executable bin/rnqnx_react_render_host_probe
+[17/21] Linking CXX executable bin/qt_react_host_host_test
+[18/21] Linking CXX executable bin/rnqnx_playground_host
+[19/21] Linking CXX executable bin/shadow_view_mutation_adapter_host_test
+[20/21] Linking CXX executable bin/shadow_tree_mounting_host_test

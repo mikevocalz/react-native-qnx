@@ -134,6 +134,37 @@ bool visiblyContains(const QQuickItem* item, const QPointF& windowPoint) {
 }
 }  // namespace
 
+namespace {
+// The deepest visible item under the point, taking the topmost sibling at each
+// level (paint order is z, then sibling order, which matches Qt's own stacking
+// and lets the drawer's panel and scrim win by z).
+const QQuickItem* deepestItemAt(const QQuickItem* current, const QPointF& windowPoint) {
+  QList<QQuickItem*> children = current->childItems();
+  std::stable_sort(children.begin(), children.end(),
+                   [](const QQuickItem* a, const QQuickItem* b) { return a->z() < b->z(); });
+  for (auto iterator = children.crbegin(); iterator != children.crend(); ++iterator) {
+    QQuickItem* child = *iterator;
+    if (!visiblyContains(child, windowPoint)) continue;
+#if RNQNX_ENABLE_QT_RNSVG
+    // The element items of an <Svg> are structural: they draw nothing and the
+    // <Svg> resolves its own elements. They stay in the tree so live views
+    // under a <ForeignObject> can be reached through them, but a point that
+    // lands on no such view must not stop on an element item.
+    if (const auto* element = qobject_cast<const views::RnsvgElementItem*>(child)) {
+      // pointerEvents none or box-only, and display:none, shield the live
+      // views below this element (and so on up through ancestor groups).
+      if (!element->passesTouchesToChildren()) continue;
+      if (const QQuickItem* inner = deepestItemAt(child, windowPoint)) return inner;
+      continue;
+    }
+#endif
+    if (const QQuickItem* inner = deepestItemAt(child, windowPoint)) return inner;
+    return child;
+  }
+  return nullptr;
+}
+}  // namespace
+
 Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
   for (const auto& shield : shields_) {
     if (visiblyContains(shield.data(), windowPoint)) return -1;
@@ -148,37 +179,7 @@ Tag QtTouchDispatcher::hitTest(const QPointF& windowPoint) const {
   }
   // Walk down from the root taking the last (topmost) child that contains the
   // point, which matches Qt's own stacking order.
-  const QQuickItem* target = nullptr;
-  const QQuickItem* current = root;
-
-  while (true) {
-    const QQuickItem* next = nullptr;
-    // Topmost first: paint order is z, then sibling order. Sorting by z (a
-    // stable sort keeps sibling order among equal z) lets an item with a
-    // higher z win, which the drawer's panel and scrim rely on.
-    QList<QQuickItem*> children = current->childItems();
-    std::stable_sort(children.begin(), children.end(),
-                     [](const QQuickItem* a, const QQuickItem* b) { return a->z() < b->z(); });
-    for (auto iterator = children.crbegin(); iterator != children.crend();
-         ++iterator) {
-      QQuickItem* child = *iterator;
-      if (!child->isVisible()) {
-        continue;
-      }
-      const QPointF local = child->mapFromScene(windowPoint);
-      if (local.x() >= 0 && local.y() >= 0 && local.x() < child->width() &&
-          local.y() < child->height()) {
-        next = child;
-        break;
-      }
-    }
-    if (next == nullptr) {
-      break;
-    }
-    target = next;
-    current = next;
-  }
-
+  const QQuickItem* target = deepestItemAt(root, windowPoint);
   if (target == nullptr) {
     return -1;
   }

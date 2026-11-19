@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100">
+<defs>
+<path id="textpath" d="M 10 20
+C 40 10 60  0 80 10
+C 100 20 120 30 140 20
+C 160 10 180 10 180 10"/>
+</defs>
+<g transform="translate(0 20)">
+<text fill="blue" font-family="DejaVu Sans">
+<textPath href="#textpath" startOffset="-10%">We go up and down,<tspan fill="red" dy="5,5,5">then up again</tspan></textPath>
+</text>
+<path d="M 10 20
+C 40 10 60  0 80 10
+C 100 20 120 30 140 20
+C 160 10 180 10 180 10" fill="none" stroke="red" stroke-width="1"/>
+</g>
+</svg>

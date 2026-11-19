@@ -1,0 +1,11 @@
+# Isolated validation: original corpus object; copied guarded adapter archive.
+add_test(host_listener_candidate "/workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate/host-tests-candidate" "-platform" "offscreen")
+set_tests_properties(host_listener_candidate PROPERTIES ENVIRONMENT "ASAN_OPTIONS=detect_leaks=0")
+add_test(corpus_listener_candidate_0 "/workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate/corpus-candidate" "-platform" "offscreen" "--shard-index" "0" "--shard-count" "4")
+set_tests_properties(corpus_listener_candidate_0 PROPERTIES ENVIRONMENT "QT_QUICK_BACKEND=software" TIMEOUT "300")
+add_test(corpus_listener_candidate_1 "/workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate/corpus-candidate" "-platform" "offscreen" "--shard-index" "1" "--shard-count" "4")
+set_tests_properties(corpus_listener_candidate_1 PROPERTIES ENVIRONMENT "QT_QUICK_BACKEND=software" TIMEOUT "300")
+add_test(corpus_listener_candidate_2 "/workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate/corpus-candidate" "-platform" "offscreen" "--shard-index" "2" "--shard-count" "4")
+set_tests_properties(corpus_listener_candidate_2 PROPERTIES ENVIRONMENT "QT_QUICK_BACKEND=software" TIMEOUT "300")
+add_test(corpus_listener_candidate_3 "/workspace/scratch/252a22fac759/rnsvg-profile/listener-candidate/corpus-candidate" "-platform" "offscreen" "--shard-index" "3" "--shard-count" "4")
+set_tests_properties(corpus_listener_candidate_3 PROPERTIES ENVIRONMENT "QT_QUICK_BACKEND=software" TIMEOUT "300")

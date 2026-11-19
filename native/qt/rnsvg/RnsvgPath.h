@@ -1,7 +1,10 @@
 #pragma once
 
+#include "RnsvgBasicTypes.h"
+
 #include <QPainterPath>
 #include <QString>
+#include <vector>
 
 namespace rnqnx::views::rnsvg {
 
@@ -10,6 +13,10 @@ namespace rnqnx::views::rnsvg {
 // requires; `ok` (when given) is false if anything was rejected. Bounded: more
 // than kMaxPathTokens numbers/commands stops parsing.
 inline constexpr int kMaxPathTokens = 100000;
-QPainterPath parseSvgPath(const QString& data, bool* ok = nullptr);
+//
+// `vertices`, when given, receives the path's vertices as the data wrote them
+// (an arc is one segment however many cubics Qt stores), with the directions
+// of travel into and out of each, for markers.
+QPainterPath parseSvgPath(const QString& data, bool* ok = nullptr, std::vector<PathVertex>* vertices = nullptr);
 
 }  // namespace rnqnx::views::rnsvg

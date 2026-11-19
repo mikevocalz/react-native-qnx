@@ -1,0 +1,55 @@
+[0/2] Re-checking globbed directories...
+[1/55] Automatic MOC for target rnqnx_qt_rnsvg_fixtures_test
+[2/55] Automatic MOC for target rnqnx_qt_rnsvg_filter_test
+[3/55] Automatic MOC for target rnqnx_qt_rnsvg_foreignobject_test
+[4/55] Automatic MOC for target rnqnx_qt_rnsvg_image_test
+[5/55] Automatic MOC for target rnqnx_qt_rnsvg_loader_test
+[6/55] Automatic MOC for target rnqnx_qt_rnsvg_test
+[7/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_filter_test.dir/rnqnx_qt_rnsvg_filter_test_autogen/mocs_compilation.cpp.o
+[8/55] Automatic MOC for target rnqnx_qt_rnsvg_text_test
+[9/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/rnqnx_qt_rnsvg_fixtures_test_autogen/mocs_compilation.cpp.o
+[10/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/RnsvgFixturesTest.cpp.o
+[11/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/FixtureManifest.cpp.o
+[12/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/ImageDiff.cpp.o
+[13/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/ModelAdapter.cpp.o
+[14/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_filter_test.dir/RnsvgFilterTest.cpp.o
+[15/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgCommonProps.cpp.o
+[16/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgCss.cpp.o
+[17/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgDocumentLoader.cpp.o
+[18/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgElementBuilders.cpp.o
+[19/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgFilters.cpp.o
+[20/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgGradient.cpp.o
+[21/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgImageSource.cpp.o
+[22/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgText.cpp.o
+[23/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/SvgValues.cpp.o
+[24/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_foreignobject_test.dir/rnqnx_qt_rnsvg_foreignobject_test_autogen/mocs_compilation.cpp.o
+[25/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_fixtures_test.dir/support/XmlDocument.cpp.o
+[26/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_image_test.dir/rnqnx_qt_rnsvg_image_test_autogen/mocs_compilation.cpp.o
+[27/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_foreignobject_test.dir/RnsvgForeignObjectTest.cpp.o
+[28/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/rnqnx_qt_rnsvg_loader_test_autogen/mocs_compilation.cpp.o
+[29/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/RnsvgLoaderTest.cpp.o
+[30/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_image_test.dir/RnsvgImageTest.cpp.o
+[31/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/ImageDiff.cpp.o
+[32/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/FixtureManifest.cpp.o
+[33/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/ModelAdapter.cpp.o
+[34/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgCommonProps.cpp.o
+[35/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgDocumentLoader.cpp.o
+[36/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgCss.cpp.o
+[37/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgElementBuilders.cpp.o
+[38/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgGradient.cpp.o
+[39/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgFilters.cpp.o
+[40/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgImageSource.cpp.o
+[41/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgText.cpp.o
+[42/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/XmlDocument.cpp.o
+[43/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_test.dir/rnqnx_qt_rnsvg_test_autogen/mocs_compilation.cpp.o
+[44/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_loader_test.dir/support/SvgValues.cpp.o
+[45/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_text_test.dir/rnqnx_qt_rnsvg_text_test_autogen/mocs_compilation.cpp.o
+[46/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_test.dir/RnsvgRenderTest.cpp.o
+[47/55] Linking CXX executable rnqnx_qt_rnsvg_filter_test
+[48/55] Building CXX object CMakeFiles/rnqnx_qt_rnsvg_text_test.dir/RnsvgTextTest.cpp.o
+[49/55] Linking CXX executable rnqnx_qt_rnsvg_fixtures_test
+[50/55] Linking CXX executable rnqnx_qt_rnsvg_foreignobject_test
+[51/55] Linking CXX executable rnqnx_qt_rnsvg_image_test
+[52/55] Linking CXX executable rnqnx_qt_rnsvg_loader_test
+[53/55] Linking CXX executable rnqnx_qt_rnsvg_test
+[54/55] Linking CXX executable rnqnx_qt_rnsvg_text_test

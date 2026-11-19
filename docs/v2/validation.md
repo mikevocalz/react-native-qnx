@@ -242,12 +242,17 @@ Stage 4: `react-native-svg` 15.16.0 elements on Qt Quick, behind
 `RNQNX_ENABLE_QT_RNSVG` (default OFF). Guide:
 [react-native-svg.md](react-native-svg.md).
 
-| Check                                                                           | Result                                                                                                                                   |
-| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm qt:rnsvg:check`                                                           | Generated props and events match the package's specs (codegen 0.88.1, package 15.16.0)                                                   |
-| `rnqnx_qt_rnsvg_test` (25 cases, golden pixels and hit tests)                   | 25/25 passed on a Linux aarch64 VM: Qt 6.12.0 offscreen software, GCC 13.3, ASan+UBSan, `-Werror` ([output](evidence/rnsvg-host-vm.txt)) |
-| `rnqnx_qt_rnsvg_fabric_test` (unmodified package through Metro, Hermes, Fabric) | Runs in the `host-renderer` workflow, input-lifecycle ON leg; see the PR for the run                                                     |
-| QNX aarch64 cross-build of the consumer app with the switch ON                  | See "Pi 400 device" below                                                                                                                |
+| Check                                                                                                                                                                 | Result                                                                                                   |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `pnpm qt:rnsvg:check`                                                                                                                                                 | Generated props and events match the package's specs (codegen 0.88.1, package 15.16.0)                   |
+| `rnqnx_qt_rnsvg_test`, `_scene_test` (25 and 35 cases: golden pixels, hit tests, layers, patterns, markers, nested `<Svg>`, `ForeignObject` placement, hostile input) | Pass on Apple Clang with Qt 6.12.0; the `host-renderer` workflow runs them on Linux under ASan and UBSan |
+| `rnqnx_qt_rnsvg_filter_test` (44 slots; 68 resvg goldens)                                                                                                             | Pass; each primitive's tolerance and measured difference is in the PR                                    |
+| `rnqnx_qt_rnsvg_text_test` (86 cases; 11 resvg goldens)                                                                                                               | Pass; geometry assertions plus goldens at stated tolerances                                              |
+| `rnqnx_qt_rnsvg_image_test`, `rnqnx_qt_rnsvg_image_http_test` (38 and 13 cases)                                                                                       | Pass, including a real local HTTP server and ASan                                                        |
+| `rnqnx_qt_rnsvg_fixtures_test` (149 fixtures against resvg 0.50.0, 9 without a reference)                                                                             | 149 passed, 0 pending ([reference harness](rnsvg-reference.md))                                          |
+| `rnqnx_qt_rnsvg_fabric_test`, `_image_fabric_test`, `_corpus_test` (unmodified package through Metro, Hermes, Fabric)                                                 | Run in the `host-renderer` workflow, input-lifecycle ON leg; see the PR for the run                      |
+| `node tests/js/rnsvg-overlay-resolver.test.mjs`, `rnsvg-overlay-render.test.mjs`                                                                                      | Overlay mapping and the native props of every replaced component, through the real Metro configuration   |
+| QNX aarch64 cross-build of the consumer app with the switch ON                                                                                                        | See "Pi 400 device" below                                                                                |
 
 ### Pi 400 device
 

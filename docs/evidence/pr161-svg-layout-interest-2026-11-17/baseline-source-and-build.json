@@ -1,0 +1,34 @@
+{
+  "head": "d3eacc75dcad761c992736223a68b53ff852203b",
+  "tree": "fd7fe0ad6bcbd28e8c51d4a0526f1fadd2a543ea",
+  "status": "",
+  "sourceSha256": {
+    "apps/rn-playground/rnsvg-fixture.js": "549955af317ff039fb15f2db6e466f6ed4c649cd1ef1995acb74c902bf2c5ffb",
+    "scripts/qt-rnsvg-codegen.mjs": "2ab5d798f41843f6f1b5dc5bb7a36eef084aa26866acca07118e5aaa7b568826",
+    "tests/native/qt-rnsvg-fabric/RnsvgBridgeValuesTest.cpp": "931cf9d99df719eac5dbb465ddf74f8bd7a6c2445acb7657e3865a8bfae92b34",
+    "tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp": "9561af656d12ae3cc9e8266f6fa83eeb3c1beee9995f5bcbad8f13a88a24576e",
+    "vnext/generated/react/renderer/components/rnsvg/Props.cpp": "4123f18a1c42df8794ce05167ba2e801db63a87c047badf011bf5df020d69bba",
+    "vnext/generated/react/renderer/components/rnsvg/Props.h": "8e73089f9e45d115104d7c3a7832822564659affce200634e7a2c382a40aab2b",
+    "vnext/include/react-native-qnx/fabric/ShadowViewMutationAdapter.h": "a5c8b78102b132fcfad9058c32d29ef357887830b76744942ff5108cf5f41837",
+    "vnext/include/react-native-qnx/runtime/QtReactHost.h": "f6b05897711263ae54cbd02fee23fdd6f9290ee8a3fdab0368dfd065682e851c",
+    "vnext/src/fabric/QtRnsvgBridge.cpp": "a6ec405792dd10657d9e7f0b5d9eef039b8dae08263f67fdba2fd46a77614c7d",
+    "vnext/src/fabric/QtRnsvgBridgeDefs.cpp": "90af6009916125218b56260d9e68e47af34d7bf5102133ecda6771668e563924",
+    "vnext/src/fabric/QtRnsvgBridgeInternal.h": "fc403fb7ceb39dec1df502e596984febefb5b729eba3927084c18c1cf47726fd",
+    "vnext/src/fabric/QtRnsvgBridgeLayoutEvents.cpp": "2b8935cdfbab7f09e8e96cc4833beeed368be4c43569ba1d78b227ba44de09af",
+    "vnext/src/fabric/QtRnsvgBridgeLayoutEvents.h": "6b0f7d38bce65339e03d7a47b38c8f24d1fff46b672b834d6e03c37d8ad3e148",
+    "vnext/src/fabric/QtRnsvgBridgeShapes.cpp": "a8d2448c9fac7fa6ae28f20cfd6f36d57de07cb5db1b295d57de4db3dcaa0184",
+    "vnext/src/fabric/QtRnsvgBridgeText.cpp": "bc32248d24401eed11fa9fec83b0d426b0d9e8d56938c7968092b57e66dec978",
+    "vnext/src/fabric/ShadowViewMutationAdapter.cpp": "2a1d8454b7c25037f7204307e6f4bf80c6bc194c8f415919ee53efa351466aed",
+    "vnext/src/runtime/QtReactHost.cpp": "6dc82de5e9365afa31122dc8e0762725fbaa2b039e58b8a0653dd3e4aaaae6e2"
+  },
+  "builtSha256": {
+    "build/linux-host-renderer/CMakeFiles/rnqnx_qt_rnsvg_values_test.dir/tests/native/qt-rnsvg-fabric/RnsvgBridgeValuesTest.cpp.o": "dac81d8ae929ef0af69c931ebe22f5129b776c410afcf30867cae02d2ec37caf",
+    "build/linux-host-renderer/CMakeFiles/rnqnx_qt_rnsvg_corpus_test.dir/tests/native/qt-rnsvg-fabric/RnsvgCorpusFabricTest.cpp.o": "b7b29baf9e19f65fcfe61b6d24a4fdbd62a9a5584dd025f809c7c4e6d15ef487",
+    "build/linux-host-renderer/CMakeFiles/rnqnx_qt_rnsvg_image_fabric_test.dir/tests/native/qt-rnsvg-fabric/RnsvgImageFabricTest.cpp.o": "a8efaa07ed1ef61d735736ab27f4776e0bba8b9ff2023691eb594f0c818e2cae",
+    "build/linux-host-renderer/CMakeFiles/rnqnx_qt_rnsvg_fabric_test.dir/tests/native/qt-rnsvg-fabric/RnsvgFabricTest.cpp.o": "ad60162f5e1bdf158ee24899cf9d82ec164244e7999ba430facdf124afaa2816",
+    "build/linux-host-renderer/rnqnx_qt_rnsvg_corpus_test": "fcb3756b576452cd94b7088adb9705ee6d3c72a30c0e6433ab67f05a2c3b8929",
+    "build/linux-host-renderer/rnqnx_qt_rnsvg_fabric_test": "f7b557dd8898b01a440efea09e0e26b9edd33388db4b4fe430ec147605a347dc",
+    "build/linux-host-renderer/rnqnx-rnsvg.bundle.js": "4fcc23ccef2d4d3f99549cd8e970b41757031e8605e76ffb0a0c9f3961848e02"
+  },
+  "scope": "Fresh exact public baseline production and original fixtures, before applying public listener regression subset. Verified cached dependency sources only; no reused compiled PR149 objects."
+}

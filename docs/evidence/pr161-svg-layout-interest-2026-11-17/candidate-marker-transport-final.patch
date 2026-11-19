@@ -1,0 +1,206 @@
+diff --git a/scripts/qt-rnsvg-codegen.mjs b/scripts/qt-rnsvg-codegen.mjs
+--- a/scripts/qt-rnsvg-codegen.mjs
++++ b/scripts/qt-rnsvg-codegen.mjs
+@@ -22,9 +22,10 @@
+ // JavaScript side: those specs are written to
+ // packages/react-native-qnx/svg/overlay/fabric, which Metro serves in place of
+ // the package's copy.
+-// The existing onSvgLayout event already puts its listener marker in the
+-// view config. Its native Boolean prop is retained below at schema level;
+-// this does not add a JavaScript prop or change the event definition.
++// QNX BaseViewConfig explicitly admits the existing onSvgLayout listener
++// marker: RN's generated event-attribute helper includes it only on iOS.
++// Its native Boolean prop is retained below at schema level; this does not
++// add a JavaScript prop or change the event definition.
+ import { createRequire } from 'node:module';
+ import fs from 'node:fs';
+ import os from 'node:os';
+diff --git a/tests/js/rnsvg-layout-transport.test.mjs b/tests/js/rnsvg-layout-transport.test.mjs
+new file mode 100644
+--- /dev/null
++++ b/tests/js/rnsvg-layout-transport.test.mjs
+@@ -0,0 +1,132 @@
++// Exercise the pinned codegen, platform event filter, view-config composition
++// and React prop serializer. The native Fabric fixture proves the full path;
++// this isolates the platform distinction that an always-true helper hides.
++import assert from 'node:assert/strict';
++import { readFileSync } from 'node:fs';
++import { createRequire } from 'node:module';
++import path from 'node:path';
++import vm from 'node:vm';
++
++const require = createRequire(import.meta.url);
++const presetRequire = createRequire(require.resolve('babel-preset-expo'));
++const babel = presetRequire('@babel/core');
++const rnRoot = path.dirname(require.resolve('react-native/package.json'));
++const svgRoot = path.dirname(require.resolve('react-native-svg/package.json'));
++
++/** @param {string} file @param {Record<string, any>} dependencies @param {string} platform */
++function load(file, dependencies = {}, platform = 'qnx') {
++  const transformed = babel.transformSync(readFileSync(file, 'utf8'), {
++    babelrc: false,
++    configFile: false,
++    filename: file,
++    presets: [require.resolve('babel-preset-expo')],
++    caller: { name: 'metro', platform, isDev: false },
++  });
++  assert.ok(transformed?.code, `${file} must compile with the pinned preset`);
++  const module = { exports: /** @type {any} */ ({}) };
++  vm.runInNewContext(transformed.code, {
++    module,
++    exports: module.exports,
++    /** @param {string} name */
++    require(name) {
++      if (name.startsWith('@babel/runtime/')) return presetRequire(name);
++      assert.ok(Object.hasOwn(dependencies, name), `${file}: unexpected dependency ${name}`);
++      return dependencies[name];
++    },
++  });
++  return module.exports;
++}
++
++// Style conversion is unrelated to event admission. Event filtering,
++// generated metadata, config composition and serialization use real sources.
++const styles = { opacity: true };
++const base = load('packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js', {
++  'react-native/Libraries/Components/View/ReactNativeStyleAttributes': { default: styles },
++});
++const platformBase = load(
++  path.join(rnRoot, 'Libraries/NativeComponent/PlatformBaseViewConfig.js'),
++  {
++    './BaseViewConfig': base,
++  }
++);
++const { createViewConfig } = load(path.join(rnRoot, 'Libraries/NativeComponent/ViewConfig.js'), {
++  './PlatformBaseViewConfig': platformBase,
++});
++const payload = load(
++  path.join(
++    rnRoot,
++    'Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload.js'
++  ),
++  {
++    '../../StyleSheet/flattenStyle': load(
++      path.join(rnRoot, 'Libraries/StyleSheet/flattenStyle.js')
++    ),
++    '../../Utilities/differ/deepDiffer': load(
++      path.join(rnRoot, 'Libraries/Utilities/differ/deepDiffer.js')
++    ),
++  }
++);
++
++for (const platform of ['qnx', 'android', 'ios']) {
++  const ignore = load(
++    path.join(rnRoot, 'Libraries/NativeComponent/ViewConfigIgnore.js'),
++    { '../Utilities/Platform': { OS: platform } },
++    platform
++  );
++  const handlers = { onSvgLayout: true };
++  assert.equal(
++    ignore.ConditionallyIgnoredEventHandlers(handlers),
++    platform === 'ios' ? handlers : undefined,
++    `the real upstream helper must retain its ${platform} behavior`
++  );
++  const generated = load(
++    path.join(svgRoot, 'src/fabric/RectNativeComponent.ts'),
++    {
++      'react-native': {},
++      'react-native/Libraries/NativeComponent/NativeComponentRegistry': {
++        get: (/** @type {string} */ name) => name,
++      },
++      'react-native/Libraries/NativeComponent/ViewConfigIgnore': ignore,
++      'react-native/Libraries/Components/View/ReactNativeStyleAttributes': {},
++    },
++    platform
++  ).__INTERNAL_VIEW_CONFIG;
++  assert.equal(generated.directEventTypes.topSvgLayout.registrationName, 'onSvgLayout');
++  assert.equal(generated.validAttributes.onSvgLayout, platform === 'ios' ? true : undefined);
++  if (platform !== 'qnx') continue;
++
++  const config = createViewConfig(generated);
++  const attrs = config.validAttributes;
++  const listener = () => {};
++  assert.equal(payload.create({ x: 10 }, attrs).onSvgLayout, undefined);
++  assert.equal(payload.create({ x: 10, onSvgLayout: listener }, attrs).onSvgLayout, true);
++  const moved = payload.diff(
++    { x: 10, onSvgLayout: listener },
++    { x: 20, onSvgLayout: listener },
++    attrs
++  );
++  assert.equal(moved.x, 20);
++  assert.equal(
++    moved.onSvgLayout,
++    undefined,
++    'stable listener is omitted from geometry-only updates'
++  );
++  assert.equal(payload.diff({ x: 20, onSvgLayout: listener }, { x: 20 }, attrs).onSvgLayout, null);
++  assert.equal(payload.diff({ x: 20 }, { x: 20, onSvgLayout: listener }, attrs).onSvgLayout, true);
++  assert.equal(payload.create({ onLayout: listener }, attrs).onLayout, true);
++  assert.equal(config.directEventTypes.topSvgLayout.registrationName, 'onSvgLayout');
++  assert.equal(
++    base.directEventTypes.topSvgLayout,
++    undefined,
++    'the base must not invent SVG event metadata'
++  );
++  assert.equal(
++    base.validAttributes.onLoad,
++    undefined,
++    'unrelated custom event admission is unchanged'
++  );
++}
++
++console.log(
++  'SVG layout transport: real platform filtering, generated metadata and create/diff lifecycle passed'
++);
+diff --git a/packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js b/packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js
+--- a/packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js
++++ b/packages/react-native-qnx/Libraries/NativeComponent/BaseViewConfig.js
+@@ -96,6 +96,9 @@
+     testID: true,
+     pointerEvents: true,
+     onLayout: true,
++    // RN's generated event-attribute helper includes this marker only on iOS.
++    // QNX retains the existing SVG listener marker for native event admission.
++    onSvgLayout: true,
+     accessible: true,
+     accessibilityLabel: true,
+     accessibilityHint: true,
+diff --git a/tests/js/rnsvg-overlay-render.test.mjs b/tests/js/rnsvg-overlay-render.test.mjs
+--- a/tests/js/rnsvg-overlay-render.test.mjs
++++ b/tests/js/rnsvg-overlay-render.test.mjs
+@@ -37,18 +37,19 @@
+   return Component;
+ }
+ const colors = { black: 0xff000000, red: 0xffff0000, white: 0xffffffff, blue: 0xff0000ff };
++const platform = globalThis.__rnsvgOverlayPlatform;
+ module.exports = {
+   // NativeComponentRegistry and the public entry share this module.
+   get: nativeComponent,
+   codegenNativeComponent: (name) => nativeComponent(name, null),
+   // ViewConfigIgnore
+-  ConditionallyIgnoredEventHandlers: (handlers) => handlers,
++  ConditionallyIgnoredEventHandlers: (handlers) => platform === 'ios' ? handlers : undefined,
+   processColor: (value) => {
+     if (typeof value === 'number') return value;
+     if (typeof value === 'string' && colors[value] !== undefined) return colors[value] | 0;
+     return null;
+   },
+-  Platform: { OS: 'qnx', select: (spec) => spec.qnx ?? spec.default },
++  Platform: { OS: platform, select: (spec) => spec[platform] ?? spec.default },
+   Image: { resolveAssetSource: (source) => (typeof source === 'number' ? { uri: 'asset://' + source } : source) },
+   findNodeHandle: () => null,
+   StyleSheet: { create: (styles) => styles, flatten: (style) => style },
+@@ -291,8 +292,11 @@
+     dev: false,
+     minify: false,
+   });
+-  /** @type {{ console: object, overlayResults?: string }} */
+-  const sandbox = { console: { warn() {}, error() {}, log() {} } };
++  /** @type {{ console: object, overlayResults?: string, __rnsvgOverlayPlatform: string }} */
++  const sandbox = {
++    console: { warn() {}, error() {}, log() {} },
++    __rnsvgOverlayPlatform: platform,
++  };
+   vm.runInNewContext(bundle.code, sandbox);
+   return JSON.parse(String(sandbox.overlayResults), (key, value) =>
+     value === '__undefined__' ? undefined : value

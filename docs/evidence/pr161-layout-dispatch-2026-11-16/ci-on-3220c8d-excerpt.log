@@ -1,0 +1,164 @@
+2026-11-17T02:50:24.3112528Z Test project /home/runner/work/react-native-qnx/react-native-qnx/build/linux-host-renderer
+2026-11-17T02:50:24.3168355Z       Start  1: rnqnx_g0_cxx20_probe
+2026-11-17T02:50:24.3184936Z  1/49 Test  #1: rnqnx_g0_cxx20_probe ................................   Passed    0.00 sec
+2026-11-17T02:50:24.3185524Z       Start  2: qnx_screen_surface_host_test
+2026-11-17T02:50:24.3297005Z  2/49 Test  #2: qnx_screen_surface_host_test ........................   Passed    0.01 sec
+2026-11-17T02:50:24.3297677Z       Start  3: rnqnx_hermes_probe
+2026-11-17T02:50:24.3792100Z  3/49 Test  #3: rnqnx_hermes_probe ..................................   Passed    0.05 sec
+2026-11-17T02:50:24.3792693Z       Start  4: rnqnx_qt_svg_fabric_test
+2026-11-17T02:50:26.2593616Z  4/49 Test  #4: rnqnx_qt_svg_fabric_test ............................   Passed    1.88 sec
+2026-11-17T02:50:26.2594371Z       Start  5: rnqnx_qt_rnsvg_fabric_test
+2026-11-17T02:50:31.7322690Z  5/49 Test  #5: rnqnx_qt_rnsvg_fabric_test ..........................   Passed    5.47 sec
+2026-11-17T02:50:31.7323386Z       Start  6: rnqnx_qt_rnsvg_image_fabric_test
+2026-11-17T02:50:33.9693927Z  6/49 Test  #6: rnqnx_qt_rnsvg_image_fabric_test ....................   Passed    2.24 sec
+2026-11-17T02:50:33.9694546Z       Start  7: rnqnx_qt_rnsvg_corpus_test
+2026-11-17T02:50:40.6899344Z  7/49 Test  #7: rnqnx_qt_rnsvg_corpus_test ..........................   Passed    6.72 sec
+2026-11-17T02:50:40.6899938Z       Start  8: rnqnx_qt_rnsvg_corpus_test_1
+2026-11-17T02:55:40.7188804Z  8/49 Test  #8: rnqnx_qt_rnsvg_corpus_test_1 ........................***Timeout 300.03 sec
+2026-11-17T02:55:40.7189363Z Running "RnqnxRnsvgCorpus"
+2026-11-17T02:55:40.7189658Z rnsvg batch 1 start
+2026-11-17T02:55:40.7189951Z rnsvg batch 1 mounted 1347 ms
+2026-11-17T02:55:40.7190307Z rnsvg batch 1 grabbed 1349 ms
+2026-11-17T02:55:40.7190611Z rnsvg batch 5 start
+2026-11-17T02:55:40.7190889Z rnsvg batch 5 mounted 997 ms
+2026-11-17T02:55:40.7191292Z rnsvg batch 5 grabbed 998 ms
+2026-11-17T02:55:40.7191602Z rnsvg batch 9 start
+2026-11-17T02:55:40.7191915Z WARNING: Logging before InitGoogleLogging() is written to STDERR
+2026-11-17T02:55:40.7192598Z E1117 02:50:46.792878 3351437760 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T02:55:40.7193340Z E1117 02:50:46.803134 3351437760 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T02:55:40.7194293Z E1117 02:50:46.851898 3351437760 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T02:55:40.7195022Z E1117 02:50:46.862023 3351437760 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T02:55:40.7195759Z E1117 02:50:47.055876 3351437760 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T02:55:40.7196943Z E1117 02:50:47.066016 3351437760 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T02:55:40.7197714Z rnsvg batch 9 mounted 4673 ms
+2026-11-17T02:55:40.7198059Z rnsvg batch 9 grabbed 4675 ms
+2026-11-17T02:55:40.7198389Z rnsvg batch 13 start
+2026-11-17T02:55:40.7198691Z rnsvg batch 13 mounted 285562 ms
+2026-11-17T02:55:40.7198933Z rnsvg batch 13 grabbed 285564 ms
+2026-11-17T02:55:40.7199067Z
+2026-11-17T02:55:40.7199211Z       Start  9: rnqnx_qt_rnsvg_corpus_test_2
+2026-11-17T03:00:40.7483088Z  9/49 Test  #9: rnqnx_qt_rnsvg_corpus_test_2 ........................***Timeout 300.03 sec
+2026-11-17T03:00:40.7483509Z Running "RnqnxRnsvgCorpus"
+2026-11-17T03:00:40.7483952Z rnsvg batch 2 start
+2026-11-17T03:00:40.7484174Z rnsvg batch 2 mounted 1746 ms
+2026-11-17T03:00:40.7484409Z rnsvg batch 2 grabbed 1748 ms
+2026-11-17T03:00:40.7484969Z rnsvg batch 6 start
+2026-11-17T03:00:40.7485284Z WARNING: Logging before InitGoogleLogging() is written to STDERR
+2026-11-17T03:00:40.7485950Z E1117 02:55:45.739210 786514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T03:00:40.7486865Z E1117 02:55:45.747517 786514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T03:00:40.7487575Z E1117 02:55:45.755734 786514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T03:00:40.7488282Z E1117 02:55:45.875589 786514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T03:00:40.7488990Z E1117 02:55:45.883917 786514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T03:00:40.7489703Z E1117 02:55:45.912645 786514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T03:00:40.7490427Z E1117 02:55:46.094116 786514368 FilterPropsConversions.h:30] react_native_expect failure: value.hasType<std::vector<RawValue>>()
+2026-11-17T03:00:40.7490862Z rnsvg batch 6 mounted 1725 ms
+2026-11-17T03:00:40.7491083Z rnsvg batch 6 grabbed 1726 ms
+2026-11-17T03:00:40.7491292Z rnsvg batch 10 start
+2026-11-17T03:00:40.7491508Z rnsvg batch 10 mounted 1201 ms
+2026-11-17T03:00:40.7491737Z rnsvg batch 10 grabbed 1202 ms
+2026-11-17T03:00:40.7491937Z rnsvg batch 14 start
+2026-11-17T03:00:40.7492155Z rnsvg batch 14 mounted 289090 ms
+2026-11-17T03:00:40.7492386Z rnsvg batch 14 grabbed 289092 ms
+2026-11-17T03:00:40.7492515Z
+2026-11-17T03:00:40.7492631Z       Start 10: rnqnx_qt_rnsvg_corpus_test_3
+2026-11-17T03:00:48.5485710Z 10/49 Test #10: rnqnx_qt_rnsvg_corpus_test_3 ........................   Passed    7.80 sec
+2026-11-17T03:00:48.5487313Z       Start 11: rnqnx_qt_rnsvg_values_test
+2026-11-17T03:00:48.5636315Z 11/49 Test #11: rnqnx_qt_rnsvg_values_test ..........................   Passed    0.01 sec
+2026-11-17T03:00:48.5636946Z       Start 12: rnqnx_accessibility_action_probe
+2026-11-17T03:00:50.2958778Z 12/49 Test #12: rnqnx_accessibility_action_probe ....................   Passed    1.73 sec
+2026-11-17T03:00:50.2959444Z       Start 13: rnqnx_accessibility_action_native_test
+2026-11-17T03:00:50.3495412Z 13/49 Test #13: rnqnx_accessibility_action_native_test ..............   Passed    0.05 sec
+2026-11-17T03:00:50.3495916Z       Start 14: rnqnx_accessibility_action_rejects_interception
+2026-11-17T03:00:53.9135738Z 14/49 Test #14: rnqnx_accessibility_action_rejects_interception .....   Passed    3.56 sec
+2026-11-17T03:00:53.9136435Z       Start 15: rnqnx_accessibility_action_rejects_registration
+2026-11-17T03:00:55.5199797Z 15/49 Test #15: rnqnx_accessibility_action_rejects_registration .....   Passed    1.61 sec
+2026-11-17T03:00:55.5200473Z       Start 16: rnqnx_accessibility_view_test
+2026-11-17T03:00:55.5472412Z 16/49 Test #16: rnqnx_accessibility_view_test .......................   Passed    0.03 sec
+2026-11-17T03:00:55.5473193Z       Start 17: rnqnx_text_input_probe
+2026-11-17T03:00:57.4829619Z 17/49 Test #17: rnqnx_text_input_probe ..............................   Passed    1.94 sec
+2026-11-17T03:00:57.4830287Z       Start 18: rnqnx_text_input_bridge_test
+2026-11-17T03:00:57.5730885Z 18/49 Test #18: rnqnx_text_input_bridge_test ........................   Passed    0.09 sec
+2026-11-17T03:00:57.5731659Z       Start 19: rnqnx_text_input_rejects_interception
+2026-11-17T03:01:01.2545533Z 19/49 Test #19: rnqnx_text_input_rejects_interception ...............   Passed    3.68 sec
+2026-11-17T03:01:01.2546153Z       Start 20: rnqnx_input_lifecycle_probe
+2026-11-17T03:01:01.3615963Z 20/49 Test #20: rnqnx_input_lifecycle_probe .........................   Passed    0.11 sec
+2026-11-17T03:01:01.3616449Z       Start 21: rnqnx_input_lifecycle_rejects_interception
+2026-11-17T03:01:01.4662235Z 21/49 Test #21: rnqnx_input_lifecycle_rejects_interception ..........   Passed    0.10 sec
+2026-11-17T03:01:01.4662690Z       Start 22: rnqnx_pressable_probe
+2026-11-17T03:01:04.3613343Z 22/49 Test #22: rnqnx_pressable_probe ...............................   Passed    2.89 sec
+2026-11-17T03:01:04.3614302Z       Start 23: rnqnx_pressable_rejects_interception
+2026-11-17T03:01:07.7368953Z 23/49 Test #23: rnqnx_pressable_rejects_interception ................   Passed    3.38 sec
+2026-11-17T03:01:07.7369640Z       Start 24: rnqnx_pressable_rejects_disabled_cancellation
+2026-11-17T03:01:12.4617073Z 24/49 Test #24: rnqnx_pressable_rejects_disabled_cancellation .......   Passed    4.72 sec
+2026-11-17T03:01:12.4617544Z       Start 25: rnqnx_react_render_host_probe
+2026-11-17T03:01:13.7766769Z 25/49 Test #25: rnqnx_react_render_host_probe .......................   Passed    1.31 sec
+2026-11-17T03:01:13.7767254Z       Start 26: rnqnx_react_render_host_probe_rejects_bad_bundles
+2026-11-17T03:01:13.9896122Z 26/49 Test #26: rnqnx_react_render_host_probe_rejects_bad_bundles ...   Passed    0.21 sec
+2026-11-17T03:01:13.9896584Z       Start 27: rnqnx_playground_screenshot
+2026-11-17T03:01:15.9755083Z 27/49 Test #27: rnqnx_playground_screenshot .........................   Passed    1.99 sec
+2026-11-17T03:01:15.9755787Z       Start 28: rnqnx_playground_rejects_start_failure
+2026-11-17T03:01:16.0688394Z 28/49 Test #28: rnqnx_playground_rejects_start_failure ..............   Passed    0.09 sec
+2026-11-17T03:01:16.0689055Z       Start 29: rnqnx_playground_rejects_stop_failure
+2026-11-17T03:01:16.1618461Z 29/49 Test #29: rnqnx_playground_rejects_stop_failure ...............   Passed    0.09 sec
+2026-11-17T03:01:16.1619057Z       Start 30: qt_react_host_host_test
+2026-11-17T03:02:10.8941580Z 30/49 Test #30: qt_react_host_host_test .............................   Passed   54.73 sec
+2026-11-17T03:02:10.8942191Z       Start 31: rnqnx_rn_headers_probe
+2026-11-17T03:02:10.9079885Z 31/49 Test #31: rnqnx_rn_headers_probe ..............................   Passed    0.01 sec
+2026-11-17T03:02:10.9081835Z       Start 32: shadow_view_mutation_adapter_host_test
+2026-11-17T03:02:10.9472008Z 32/49 Test #32: shadow_view_mutation_adapter_host_test ..............   Passed    0.04 sec
+2026-11-17T03:02:10.9472615Z       Start 33: shadow_tree_mounting_host_test
+2026-11-17T03:02:10.9873054Z 33/49 Test #33: shadow_tree_mounting_host_test ......................   Passed    0.04 sec
+2026-11-17T03:02:10.9873619Z       Start 34: qtquick_mounting_layer_host_test
+2026-11-17T03:02:11.1013839Z 34/49 Test #34: qtquick_mounting_layer_host_test ....................   Passed    0.11 sec
+2026-11-17T03:02:11.1014335Z       Start 35: rnqnx_qtquick_host_probe
+2026-11-17T03:02:11.1306452Z 35/49 Test #35: rnqnx_qtquick_host_probe ............................   Passed    0.03 sec
+2026-11-17T03:02:11.1307034Z       Start 36: rnqnx_qt_native_ui_test
+2026-11-17T03:02:17.0070965Z 36/49 Test #36: rnqnx_qt_native_ui_test .............................   Passed    5.88 sec
+2026-11-17T03:02:17.0071981Z       Start 37: rnqnx_qt_motion_test
+2026-11-17T03:02:17.1536598Z 37/49 Test #37: rnqnx_qt_motion_test ................................   Passed    0.15 sec
+2026-11-17T03:02:17.1537020Z       Start 38: rnqnx_qt_svg_test
+2026-11-17T03:02:17.1849650Z 38/49 Test #38: rnqnx_qt_svg_test ...................................   Passed    0.03 sec
+2026-11-17T03:02:17.1850061Z       Start 39: rnqnx_qt_graphics
+2026-11-17T03:02:17.2024829Z 39/49 Test #39: rnqnx_qt_graphics ...................................   Passed    0.02 sec
+2026-11-17T03:02:17.2025422Z       Start 40: rnqnx_qt_graphics_null
+2026-11-17T03:02:17.2192922Z 40/49 Test #40: rnqnx_qt_graphics_null ..............................   Passed    0.02 sec
+2026-11-17T03:02:17.2193333Z       Start 41: rnqnx_qt_rnsvg_filter_test
+2026-11-17T03:02:19.5050919Z 41/49 Test #41: rnqnx_qt_rnsvg_filter_test ..........................   Passed    2.29 sec
+2026-11-17T03:02:19.5051505Z       Start 42: rnqnx_qt_rnsvg_fixtures_test
+2026-11-17T03:02:21.0849746Z 42/49 Test #42: rnqnx_qt_rnsvg_fixtures_test ........................   Passed    1.58 sec
+2026-11-17T03:02:21.0850393Z       Start 43: rnqnx_qt_rnsvg_foreignobject_test
+2026-11-17T03:02:21.1034741Z 43/49 Test #43: rnqnx_qt_rnsvg_foreignobject_test ...................   Passed    0.02 sec
+2026-11-17T03:02:21.1035685Z       Start 44: rnqnx_qt_rnsvg_image_test
+2026-11-17T03:02:21.2245890Z 44/49 Test #44: rnqnx_qt_rnsvg_image_test ...........................   Passed    0.12 sec
+2026-11-17T03:02:21.2246476Z       Start 45: rnqnx_qt_rnsvg_loader_test
+2026-11-17T03:02:21.7093410Z 45/49 Test #45: rnqnx_qt_rnsvg_loader_test ..........................   Passed    0.48 sec
+2026-11-17T03:02:21.7094147Z       Start 46: rnqnx_qt_rnsvg_test
+2026-11-17T03:02:21.7339957Z 46/49 Test #46: rnqnx_qt_rnsvg_test .................................   Passed    0.02 sec
+2026-11-17T03:02:21.7340528Z       Start 47: rnqnx_qt_rnsvg_scene_test
+2026-11-17T03:02:22.4904711Z 47/49 Test #47: rnqnx_qt_rnsvg_scene_test ...........................   Passed    0.76 sec
+2026-11-17T03:02:22.4905368Z       Start 48: rnqnx_qt_rnsvg_text_test
+2026-11-17T03:02:24.0564869Z 48/49 Test #48: rnqnx_qt_rnsvg_text_test ............................   Passed    1.57 sec
+2026-11-17T03:02:24.0565296Z       Start 49: rnqnx_qt_video_test
+2026-11-17T03:02:24.6104278Z 49/49 Test #49: rnqnx_qt_video_test .................................   Passed    0.55 sec
+2026-11-17T03:02:24.6107948Z
+2026-11-17T03:02:24.6108180Z 96% tests passed, 2 tests failed out of 49
+2026-11-17T03:02:24.6108356Z
+2026-11-17T03:02:24.6108539Z Total Test time (real) = 720.30 sec
+2026-11-17T03:02:24.6108706Z
+2026-11-17T03:02:24.6108807Z The following tests FAILED:
+2026-11-17T03:02:24.6109073Z 	  8 - rnqnx_qt_rnsvg_corpus_test_1 (Timeout)
+2026-11-17T03:02:24.6109350Z 	  9 - rnqnx_qt_rnsvg_corpus_test_2 (Timeout)
+2026-11-17T03:02:24.6118158Z Errors while running CTest
+2026-11-17T03:02:24.6140399Z file:///home/runner/work/react-native-qnx/react-native-qnx/scripts/validate-host-renderer.mjs:38
+2026-11-17T03:02:24.6141275Z     throw new Error(`${command} failed (${result.signal ?? result.status})`);
+2026-11-17T03:02:24.6141826Z           ^
+2026-11-17T03:02:24.6141962Z
+2026-11-17T03:02:24.6142125Z Error: ctest failed (8)
+2026-11-17T03:02:24.6142913Z     at run (file:///home/runner/work/react-native-qnx/react-native-qnx/scripts/validate-host-renderer.mjs:38:11)
+2026-11-17T03:02:24.6143962Z     at file:///home/runner/work/react-native-qnx/react-native-qnx/scripts/validate-host-renderer.mjs:110:1
+2026-11-17T03:02:24.6144479Z     at ModuleJob.run (node:internal/modules/esm/module_job:569:25)
+2026-11-17T03:02:24.6144821Z     at async node:internal/modules/esm/loader:650:26
+2026-11-17T03:02:24.6145221Z     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:105:5)
+2026-11-17T03:02:24.6145487Z
+2026-11-17T03:02:24.6145564Z Node.js v26.13.1
+2026-11-17T03:02:24.6173366Z ##[error]Process completed with exit code 1.
