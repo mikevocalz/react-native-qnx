@@ -44,8 +44,16 @@ newer (`CMakeLists.txt`, the `RNQNX_REQUIRE_FULL_HOST_RENDERER` branch); without
 Qt the configure step still succeeds and the build fails on an unknown target.
 Add `-DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON` to fail at configure time instead.
 CI configures through the `linux-host-renderer` preset, which also sets clang,
-`RNQNX_REQUIRE_FULL_HOST_RENDERER=ON` and `RNQNX_FETCH_REACT_NATIVE_DEPS=ON`;
-the shorter command above was not run for this edit.
+`RNQNX_REQUIRE_FULL_HOST_RENDERER=ON` and `RNQNX_FETCH_REACT_NATIVE_DEPS=ON`.
+
+The three commands above were run as written on 2026-11-19 on macOS 27.0
+(arm64) with Homebrew Qt 6.12.0, CMake 4.4.5, Ninja 1.13.2 and AppleClang 21,
+without `CMAKE_PREFIX_PATH` or the preset flags. CMake printed
+`Qt 6.12.0 found; building Qt Quick host targets`, the build ran 854 steps, and
+the offscreen run printed `RNQNX_PLAYGROUND_SCREENSHOT build/dashboard.png 640x480`
+and exited 0. The PNG shows the text "dashboard on React Native QNX" on a dark
+background. The first configure and build download and compile Hermes, folly and
+Boost and need several GB of free disk space under `build/`.
 
 For an offscreen capture, append `-platform offscreen --screenshot build/dashboard.png`.
 The runner's existing default window dimensions remain unchanged. This host
