@@ -1,0 +1,29 @@
+{
+  "title": "Components",
+  "pages": [
+    "view",
+    "text",
+    "image",
+    "scrollview",
+    "textinput",
+    "pressable",
+    "flatlist",
+    "virtualizedlist",
+    "sectionlist",
+    "virtualizedsectionlist",
+    "button",
+    "touchableopacity",
+    "touchablehighlight",
+    "touchablewithoutfeedback",
+    "imagebackground",
+    "keyboardavoidingview",
+    "activityindicator",
+    "refreshcontrol",
+    "modal",
+    "safeareaview",
+    "switch",
+    "statusbar",
+    "qtvideo",
+    "qtaudio"
+  ]
+}

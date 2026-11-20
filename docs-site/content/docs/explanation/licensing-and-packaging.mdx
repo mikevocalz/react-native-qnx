@@ -1,0 +1,80 @@
+---
+title: Licensing and packaging
+description: The license on project code, what the project does and does not redistribute, and the constraints on Qt, QNX and premium components.
+---
+
+This page summarizes constraints recorded in the repository. It is not legal advice. The source document, [docs/packaging.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/packaging.md), opens with the same statement: it "records constraints, not legal advice". Check your own obligations before shipping anything.
+
+No QNX, Qt or npm package has been produced by the current working tree, per the same document. The packaging notes below describe what a future release must carry.
+
+## Project code
+
+Repository-authored code is MIT-licensed. The [LICENSE](https://github.com/mikevocalz/react-native-qnx/blob/main/LICENSE) file is the standard MIT text, "Copyright (c) 2026 react-native-qnx contributors". The 12 packages under `packages/` declare `MIT` in their manifests.
+
+The MIT license does not cover dependencies. [THIRD_PARTY_NOTICES.md](https://github.com/mikevocalz/react-native-qnx/blob/main/THIRD_PARTY_NOTICES.md) says each dependency keeps its own copyright notice, license and distribution terms. It is a source inventory. It is not a complete binary SBOM and not permission to redistribute a target runtime. A release has to collect notices for its actual linked, plugin and font closure, including transitive components.
+
+| Component                                             | Source of terms                                                      | Packaging requirement                                                                                                     |
+| ----------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| React and React Native                                | Installed package `LICENSE` files (MIT)                              | Preserve upstream notices in distributions that contain them                                                              |
+| Hermes                                                | Pinned Hermes source `LICENSE` (MIT), plus its external dependencies | Collect notices from the exact source and build closure                                                                   |
+| Nitro core, RN adapter and Nitrogen                   | Exact pinned packages and their license files                        | Preserve notices. Generated and native dependencies need their own inventory                                              |
+| folly, fmt, glog, double-conversion, fast_float, Yoga | Each pinned source's license and notice files                        | Inventory the versions actually fetched or bundled                                                                        |
+| Qt                                                    | Selected open-source source and module licenses                      | Record the public-source build, every module and plugin, notices and applicable LGPL or GPL materials                     |
+| QNX                                                   | Licensed SDP, BSP, image and runtime terms                           | Obtain independently. Keep tools, sysroots, headers, vendor libraries, images and account material out of public packages |
+| Optional premium Forge packages                       | Separately licensed product terms                                    | Excluded from core platform distributions                                                                                 |
+
+The table condenses the one in THIRD_PARTY_NOTICES.md, which also lists a font used only for host label measurement.
+
+## Qt
+
+[ADR-0013](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0013-open-source-qt.md) (accepted 2026-11-07) selects eligible open-source Qt under its LGPL and GPL terms. A paid Qt subscription is not a prerequisite for open-source development, and project code stays MIT. A commercial Qt subscription is an optional route.
+
+Constraints recorded in [ADR-0011](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0011-qt-module-licensing.md) and [packaging.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/packaging.md):
+
+- A Qt module enters the build only after its license is recorded.
+- Modules that Qt lists as GPLv3-only in the open-source edition stay out of the LGPL-compatible core. packaging.md names Qt Virtual Keyboard, Qt Quick 3D, Qt Graphs, Qt Lottie Animation, Qt Quick Timeline, Qt Quick 3D Physics, Qt Canvas Painter, Qt Qml Compiler, Qt HTTP Server, Qt MQTT and Qt OPC UA. Adding one needs a compatible GPL product decision or a commercial route.
+- Qt Virtual Keyboard is the main consequence. The project has no on-screen keyboard from Qt under this posture. ADR-0011 lists the options: buy a commercial license, build a keyboard as a React Native component over `TextInput`, or require a physical keyboard. It records this as a product-level gap until the owner chooses.
+- Check each selected module against the pinned source notices. Do not infer terms for modules nobody inspected.
+
+The [Qt tiers reference](/docs/reference/qt-tiers) lists modules by tier.
+
+### The public-source Qt build
+
+packaging.md records a public-source Qt 6.12.0 build for QNX dated 2026-11-12. The source is `qt-everywhere-src-6.12.0.tar.xz` from `download.qt.io`, with three published qtbase security diffs applied. The modules are qtbase (Core, Gui, Network, OpenGL), qtdeclarative (Qml, QmlMeta, QmlModels, QmlWorkerScript, Quick, QuickShapes) and the QNX QPA plugin. The recorded audit found every Qt module file offering `LGPL-3.0-only` and no GPL-only file. The first build used `-optimize-size`, which gives qcc no optimization flag, so its hashes do not qualify. The `-O2` rebuild is the runtime that runners and packages build on ([ADR-0017](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0017-qt-qnx-optimization-level.md)). The same document says no package has been produced from it and that no release gate depends on the hash yet.
+
+A package that includes these Qt libraries, per packaging.md and Qt's LGPL page, carries:
+
+1. **Notices.** The staged `licenses/` tree, `THIRD_PARTY_ATTRIBUTIONS.txt`, and a statement that the application uses Qt under LGPL-3.0.
+2. **A FreeType credit line** in the product documentation, because the FreeType license requires it. packaging.md quotes the line.
+3. **Corresponding source.** The exact archive (by URL and checksum), the security diffs and the scripts in `scripts/qt-public/`, offered from the same place or by written offer if the package is distributed.
+4. **Library replacement.** Qt is linked as shared libraries, so a user can rebuild it and substitute it. Shipped binaries must not carry a build-host `DT_RPATH`, because QNX's loader searches it before `LD_LIBRARY_PATH`. packaging.md says the current RN executables do carry one and that it must be stripped or made a relative `$ORIGIN` path. For a locked-down device, installation information needed to run a modified library must also be supplied.
+
+An optional Qt Multimedia and FFmpeg add-on is described separately in packaging.md. It builds FFmpeg 8.0 with `--disable-gpl --disable-nonfree --enable-version3` and no external codec libraries. The document states that patent licenses for H.264 and AAC are the shipper's concern and are not addressed.
+
+## QNX
+
+[packaging.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/packaging.md) says QNX Everywhere offers a free, non-commercial QNX SDP 8.0 license through a signed-in myQNX account. Commercial development or shipping needs a separate license determination with QNX.
+
+The repository does not commit or redistribute QNX SDP tools, sysroots, headers, libraries, target images, BSP payloads, licenses or account data. Public CI cannot claim a QNX build unless it runs on an authorized private or self-hosted runner and records only sanitized evidence. [ADR-0013](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0013-open-source-qt.md) keeps the QNX SDP and BSP terms separate from Qt.
+
+[ADR-0018](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0018-runner-hosting-and-sdp-boundary.md) covers runner archives. A QNX runner loads system libraries from the board image and a graphics overlay taken from QNX Software Center packages. The ADR says QNX's redistribution terms for those files have not been checked, that nothing in the repository reads those terms, and that runner archives stay free of them. The same ADR says no runner has been built or published yet.
+
+## Optional premium components
+
+[docs/policy/premium-components.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/policy/premium-components.md) describes Nitro Forge as a separately sold premium component product. The rules it sets:
+
+- Forge is not a built-in platform component, a default dependency, a bundled sample requirement or a prerequisite for platform build, boot, tests or release.
+- No premium components, engines, assets, binaries or entitlement code are vendored into platform distributions.
+- Core CI uses non-premium fixtures. Commercial integration tests are opt-in and separately authorized.
+- Removing Forge must leave the platform usable.
+- The default-OFF external-checkout adapter is a compatibility experiment, not permission to redistribute Forge.
+
+## npm packaging
+
+The `@rn-qnx` scope is provisional. packaging.md says not to publish until the owner supplies the real npm organization, package ownership, provenance and authentication policy, and CODEOWNERS identities. `.github/CODEOWNERS` currently names the repository owner as the only owner.
+
+A release that claims QNX support needs, at minimum, frozen dependency and source identities, a licensed `qcc` cross-build, execution on the named QNX target, cited native seams, generated Nitrogen output when a HybridObject spec changes, and updated support tables with an honest list of unimplemented capabilities. See [CI checks](/docs/reference/ci-checks) for how that evidence splits across hosted, cross-build and device results.
+
+## Sources
+
+[LICENSE](https://github.com/mikevocalz/react-native-qnx/blob/main/LICENSE), [THIRD_PARTY_NOTICES.md](https://github.com/mikevocalz/react-native-qnx/blob/main/THIRD_PARTY_NOTICES.md), [docs/packaging.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/packaging.md), [docs/policy/premium-components.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/policy/premium-components.md), [ADR-0011](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0011-qt-module-licensing.md), [ADR-0013](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0013-open-source-qt.md), [ADR-0018](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0018-runner-hosting-and-sdp-boundary.md).

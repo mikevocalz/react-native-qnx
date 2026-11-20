@@ -13,6 +13,15 @@ import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
 import { getPageImageUrl, gitConfig } from '@/lib/shared';
 
+function generatedSource(path: string): string | null {
+  if (path.startsWith('reference/components/') || path === 'reference/component-matrix.mdx')
+    return 'docs/component-support.json';
+  if (path === 'reference/release-gates.mdx') return 'docs/releases/v1-readiness.json';
+  if (path === 'explanation/adr-index.mdx') return 'docs/adr/index.md';
+  if (path === 'reference/changelog.mdx') return 'CHANGELOG.md';
+  return null;
+}
+
 export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   const params = await props.params;
   const page = source.getPage(params.slug);
@@ -20,6 +29,13 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
 
   const MDX = page.data.body;
   const markdownUrl = `/llms.mdx${page.url}.md`;
+  const repoUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}`;
+  const sourcePath = `${gitConfig.contentDir}/${page.path}`;
+  // Generated pages are rebuilt from their data source, so an edit to the MDX
+  // would be overwritten. Send the editor to the data file instead.
+  const dataSource = generatedSource(page.path);
+  const editUrl = `${repoUrl}/edit/${gitConfig.branch}/${encodeURI(dataSource ?? sourcePath)}`;
+  const issueUrl = `${repoUrl}/issues/new?title=${encodeURIComponent(`docs: ${page.data.title}`)}&body=${encodeURIComponent(`Page: ${page.url}\nSource: ${dataSource ?? sourcePath}\n\nWhat is wrong:\n`)}`;
 
   return (
     <DocsPage toc={page.data.toc} full={page.data.full}>
@@ -40,6 +56,24 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
           })}
         />
       </DocsBody>
+      <div className="flex flex-row flex-wrap gap-x-6 gap-y-2 border-t pt-6 text-sm">
+        <a
+          className="text-fd-muted-foreground underline underline-offset-4 hover:text-fd-foreground"
+          href={editUrl}
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          Edit this page on GitHub
+        </a>
+        <a
+          className="text-fd-muted-foreground underline underline-offset-4 hover:text-fd-foreground"
+          href={issueUrl}
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          Report a problem with this page
+        </a>
+      </div>
     </DocsPage>
   );
 }
