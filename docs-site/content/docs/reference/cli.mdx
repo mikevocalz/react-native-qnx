@@ -27,18 +27,18 @@ Shared options: `--help`, `--dry-run`, `--app`, `--out`, `--arch aarch64|x86_64`
 
 ## project commands
 
-| Command                             | Options                                                                                                 |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `project inspect`, `project bundle` | `--project --platform qnx --entry --out --dry-run`                                                      |
-| `project create`                    | `--project <new dir> --app-id --name [--component-name main] --dry-run`                                 |
-| `project add-qnx`                   | `--project --app-id [--component-name main] --dry-run`                                                  |
-| `project doctor`                    | `--project --platform --entry --identity-tool --json --target-runtime-report <file> --verbose`          |
-| `project prepare-native`            | `--project --platform --bundle --identity-tool --dry-run`                                               |
-| `project build-native`              | `--project --platform --host-preview --window-chrome --dry-run`                                         |
-| `project desktop-entry`             | `--project --exec --app-dir --run-as --row --order --dry-run`                                           |
-| `project run`                       | `--project --platform --device --launcher --identity --known-hosts`                                     |
-| `project start`                     | `--project --platform --port --host --reset-cache`                                                      |
-| `project dev`                       | `--project --platform --port --device --launcher --identity --known-hosts --host-address --reset-cache` |
+| Command                             | Options                                                                                                           |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `project inspect`, `project bundle` | `--project --platform qnx --entry --out --dry-run`                                                                |
+| `project create`                    | `--project <new dir> --app-id --name [--component-name main] --dry-run`                                           |
+| `project add-qnx`                   | `--project --app-id [--component-name main] --dry-run`                                                            |
+| `project doctor`                    | `--project --platform --entry --identity-tool --json --target-runtime-report <file> --verbose`                    |
+| `project prepare-native`            | `--project --platform --bundle --identity-tool --dry-run`                                                         |
+| `project build-native`              | `--project --platform --host-preview --window-chrome --dry-run`                                                   |
+| `project desktop-entry`             | `--project --exec --app-dir --run-as --row --order --dry-run`                                                     |
+| `project run`                       | `--project --platform --device --launcher --identity --known-hosts --dry-run`                                     |
+| `project start`                     | `--project --platform --port --host --reset-cache`                                                                |
+| `project dev`                       | `--project --platform --port --device --launcher --identity --known-hosts --host-address --reset-cache --dry-run` |
 
 `project run` exits 0 when every step ran, 3 when it needs a board, SDP or bundle, and 1 on failure.
 

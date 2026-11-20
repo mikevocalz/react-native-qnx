@@ -6,9 +6,9 @@ description: Build the development client once, then run Metro, Fast Refresh, re
 A release build runs Hermes bytecode staged next to the executable. A development build loads the bundle from Metro on your computer, applies Fast Refresh and shows LogBox errors. This ran on one Raspberry Pi 400 on 2026-11-13 over a USB Ethernet link, with the board at `192.168.2.2` and the computer at `192.168.2.1`. The [receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-dev-client-2026-11-13/README.md) has the captures.
 
 <Callout type="warn">
-  Not run in this docs pass: every command on this page that talks to a board. Only the `--help`
-  output of `project dev` and `project start` was run. `project dev` and `project run` do not accept
-  `--dry-run`: both print `Unknown option '--dry-run'`.
+  Not run in this docs pass: every command on this page that talks to a board. Only `--help` and
+  `project dev --dry-run` were run. `--dry-run` prints the Metro settings and the ssh command as
+  JSON and starts neither. `project start` does not accept it.
 </Callout>
 
 ## Prerequisites
@@ -103,7 +103,7 @@ LogBox shows call stacks unsymbolicated, because symbolication goes through `fet
 
 | What you see                               | Cause and fix                                                                                                   |
 | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| `Unknown option '--dry-run'`               | `project dev` and `project run` do not take it.                                                                 |
+| `Unknown option '--dry-run'`               | `project start` does not take it. `project dev` and `project run` do.                                           |
 | "Could not connect to Metro" screen        | Metro is not running or the board cannot reach your address. Pass `--host-address`. It loads once Metro starts. |
 | Two app windows                            | Launch with `--replace`, which `project dev` does for you.                                                      |
 | `RNQNX_ENABLE_DEV_SUPPORT` stops configure | `RNQNX_ENABLE_WEBSOCKETS=ON` is missing.                                                                        |

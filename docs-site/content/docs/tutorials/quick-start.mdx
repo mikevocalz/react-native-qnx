@@ -150,7 +150,7 @@ If you see this, Metro, Hermes, React, Fabric, Yoga and Qt Quick all worked on y
 pnpm qnx deploy-qnx --arch aarch64 --config Release --target rnqnx_playground --dry-run
 ```
 
-Expected: JSON that names `scripts/deploy-qnx.sh` as an absolute path under your checkout, with the arguments `aarch64`, `rnqnx_playground` and `Release`. Nothing is deployed. The top-level executable commands accept `--dry-run`. The `project` subcommands do not all accept it: `project dev` and `project run` reject it with `Unknown option '--dry-run'`.
+Expected: JSON that names `scripts/deploy-qnx.sh` as an absolute path under your checkout, with the arguments `aarch64`, `rnqnx_playground` and `Release`. Nothing is deployed. The top-level executable commands accept `--dry-run`. So do `project bundle`, `project create`, `project add-qnx`, `project prepare-native`, `project build-native`, `project desktop-entry`, `project dev` and `project run`. `project start` does not, and rejects it with `Unknown option '--dry-run'`.
 
 ## 8. Check your checkout
 

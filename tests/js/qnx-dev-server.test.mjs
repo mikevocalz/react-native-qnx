@@ -7,11 +7,12 @@ import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { launchStepDetail } from '../../packages/react-native-qnx-cli/src/run.mjs';
+import { launchStepDetail, runMain } from '../../packages/react-native-qnx-cli/src/run.mjs';
 import {
   launchCommand,
   REPLACE_FLAG,
   addressTowards,
+  devMain,
 } from '../../packages/react-native-qnx-cli/src/dev-server.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -180,6 +181,50 @@ if (metroAvailable) {
     await rm(tmp, { recursive: true, force: true });
   }
 }
+
+// --dry-run on project dev and project run prints a plan and starts nothing.
+async function captureJson(/** @type {() => Promise<number>} */ fn) {
+  const log = console.log;
+  const lines = [];
+  console.log = (line) => lines.push(String(line));
+  try {
+    assert.equal(await fn(), 0);
+  } finally {
+    console.log = log;
+  }
+  return JSON.parse(lines.join('\n'));
+}
+const devPlan = await captureJson(() =>
+  devMain([
+    '--device',
+    'qnxuser@192.168.2.2',
+    '--launcher',
+    '/data/home/qnxuser/run-chrome-app-dev.sh',
+    '--host-address',
+    '192.168.2.1',
+    '--dry-run',
+  ])
+);
+assert.equal(devPlan.action, 'dry-run');
+assert.equal(devPlan.devServer, 'http://192.168.2.1:8081');
+assert.equal(devPlan.metro.port, 8081);
+assert.equal(devPlan.ssh.executable, 'ssh');
+assert.ok(devPlan.ssh.args.at(-1).includes('--replace --dev-server http://192.168.2.1:8081'));
+const runPlan = await captureJson(() =>
+  runMain([
+    '--project',
+    '.',
+    '--device',
+    'qnxuser@192.168.2.2',
+    '--launcher',
+    '/data/home/qnxuser/run-app.sh',
+    '--dry-run',
+  ])
+);
+assert.equal(runPlan.action, 'dry-run');
+assert.deepEqual(runPlan.steps.slice(-2), ['deploy', 'launch']);
+assert.ok(runPlan.launch.args.at(-1).includes('/data/home/qnxuser/run-app.sh --replace'));
+assert.equal((await captureJson(() => runMain(['--project', '.', '--dry-run']))).launch, null);
 
 console.log(
   `dev-server launch command, resolver fallback${metroAvailable ? ', /message and /status' : ''} passed`
