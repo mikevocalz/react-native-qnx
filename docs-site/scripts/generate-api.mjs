@@ -961,6 +961,12 @@ const rules = [
     ev: [line('cmake/toolchains/qnx-8.0.cmake', /qnx-hermes-shims/.source)],
   },
   {
+    re: /^native\/platform\/linux-host\/(?!nitro\/)/,
+    cls: 'internal',
+    why: 'Linux host start-up helpers, included by the host executable and its tests. The adapter library next to them does not list or export these headers.',
+    ev: [absentIn('native/platform/linux-host/nitro/CMakeLists.txt', 'MainThreadStack')],
+  },
+  {
     re: /^tools\/qnx-winmgr\//,
     cls: 'internal',
     why: 'Window manager tool source. No CMake target includes it.',
