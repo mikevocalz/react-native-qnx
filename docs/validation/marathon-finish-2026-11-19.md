@@ -61,3 +61,7 @@ Physical Pi 400 (custom QNX 8.0.0 image, cross-built with SDP 8.0.5): [pi400-hos
 ## Open items needing owner or upstream
 
 The full list is in [ARCHITECTURE](../marathon/ARCHITECTURE.md#open-items-needing-owner-or-upstream). In short: a Wayland compositor run, a Marathon VM or device run, a device-toolchain build, an upstream decision on native-executable delivery, and lifecycle, back and IME behavior.
+
+## Runs on the marathon/finish PR
+
+[`marathon-qt-host` run 44646133204](https://github.com/mikevocalz/react-native-qnx/actions/runs/44646133204) (PR #170, success): the Marathon host links the Marathon Nitro adapter and the Qt dispatcher, prints `RNQNX_MARATHON_NITRO_OK platform=marathon architecture=x86_64 add=5` offscreen and under Wayland, `rnqnx_nitro_` ctest passes 2 of 2, and the Wayland log checker prints `PASS xdg_toplevel created with app_id org.rnqnx.marathon.playground, configured, buffer attach` against `weston --backend=headless`. This is a generic compositor, not a Marathon shell.

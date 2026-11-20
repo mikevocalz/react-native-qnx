@@ -41,6 +41,6 @@ Marathon qualification from these commands.
 
 The command ships in `pnpm qnx` (PR #93 closed as redundant; its launcher is in main through PR #96). Its test, `tests/js/marathon-development-launcher.test.mjs`, runs in `pnpm test:js`, which the Marathon CI workflows run. It compiles and executes a small native Linux ELF fixture, create a real
 Unix socket and check arguments, failure, timeout, termination and cleanup.
-That fixture is not Qt or a Wayland compositor. No run of `rnqnx_marathon_host` through this launcher under a real compositor exists yet. The actual Marathon runner, compositor and target device need separate evidence: on a Linux machine with a Wayland session, build the host as in [NATIVE_HOST](../marathon/NATIVE_HOST.md), then run the three commands above and save the output and a screenshot. Core tests require no
+That fixture is not Qt or a Wayland compositor. `rnqnx_marathon_host` has run under a generic headless Weston in CI, but no run through this launcher under a Marathon compositor exists yet. The actual Marathon runner, compositor and target device need separate evidence: on a Linux machine with a Wayland session, build the host as in [NATIVE_HOST](../marathon/NATIVE_HOST.md), then run the three commands above and save the output and a screenshot. Core tests require no
 premium package or licensed SDK. Remove this command and its bin delegation
 to roll back; it writes no project, boot or application files itself.

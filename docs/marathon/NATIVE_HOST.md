@@ -11,7 +11,7 @@ PR #35 builds a distinct Linux native executable from the existing `vnext/probes
 
 ## Build and run
 
-The offscreen steps below run in CI on every change to the host files. The Wayland step has not been run anywhere.
+The offscreen steps below run in CI on every change to the host files. The Wayland step runs in CI against a generic headless Weston. It has not been run against a Marathon shell.
 
 ```bash
 pnpm install --frozen-lockfile
@@ -30,7 +30,7 @@ cmake --build build/marathon-host --target rnqnx_marathon_host
 QT_QPA_PLATFORM=offscreen ./build/marathon-host/bin/rnqnx_marathon_host \
   -platform offscreen --screenshot marathon-frame.png
 
-# Under a Wayland compositor. Not yet run: needs the Qt Wayland client plugin and a compositor socket.
+# Under a Wayland compositor. CI runs this against `weston --backend=headless` (see the `marathon-qt-host` workflow).
 export QT_QPA_PLATFORM=wayland
 export WAYLAND_DISPLAY=<compositor socket name>
 ./build/marathon-host/bin/rnqnx_marathon_host
@@ -54,19 +54,19 @@ The first successful native host job, on PR #35 before merge, is [run 4151951998
 
 ## Validation gates
 
-| #   | Gate                                                                                                           | Status                                                                                        |
-| --- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| 1   | Frozen install, JS tests and both Metro bundles succeed with the exact package graph                           | Verified in `marathon-metro` run above                                                        |
-| 2   | Linux CMake target builds and links with no QNX headers or libscreen                                           | Verified: `tests/js/marathon-native-host-contract.test.mjs` asserts it, the CI build links    |
-| 3   | Qt Wayland client plugin connects to a compositor socket and creates an `xdg_toplevel` with the desktop app id | Not run. Needs a compositor; command in the Build and run section                             |
-| 4   | Hermes + Fabric mount content; touch, scroll and text work; log, screenshot and video saved                    | Mount and one offscreen frame verified. Touch, scroll and text on Wayland not run             |
-| 5   | IME, back, lifecycle, cgroups, permissions                                                                     | Not implemented. Wait on upstream lifecycle and permission contracts                          |
-| 6   | QNX SDP 8.0.5 probe and QNX Metro bundle keep passing                                                          | QNX bundle builds in `marathon-metro`. Pi 400 receipts are in `docs/evidence` (PR #149 run 1) |
-| 7   | HackberryPi CM5 and a phone                                                                                    | Not run. Needed before any performance or "out of the box" claim                              |
+| #   | Gate                                                                                                           | Status                                                                                                                                                                                                                                                                    |
+| --- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Frozen install, JS tests and both Metro bundles succeed with the exact package graph                           | Verified in `marathon-metro` run above                                                                                                                                                                                                                                    |
+| 2   | Linux CMake target builds and links with no QNX headers or libscreen                                           | Verified: `tests/js/marathon-native-host-contract.test.mjs` asserts it, the CI build links                                                                                                                                                                                |
+| 3   | Qt Wayland client plugin connects to a compositor socket and creates an `xdg_toplevel` with the desktop app id | Verified on generic headless Weston: [run 44646133204](https://github.com/mikevocalz/react-native-qnx/actions/runs/44646133204) checks `get_toplevel`, `set_app_id`, `ack_configure` and a buffer commit. Not a Marathon shell                                            |
+| 4   | Hermes + Fabric mount content; touch, scroll and text work; log, screenshot and video saved                    | Mount, one offscreen frame and one Wayland frame verified, and the Marathon Nitro hybrid is read from JS in the real host process ([run 44646133204](https://github.com/mikevocalz/react-native-qnx/actions/runs/44646133204)). Touch, scroll and text on Wayland not run |
+| 5   | IME, back, lifecycle, cgroups, permissions                                                                     | Not implemented. Wait on upstream lifecycle and permission contracts                                                                                                                                                                                                      |
+| 6   | QNX SDP 8.0.5 probe and QNX Metro bundle keep passing                                                          | QNX bundle builds in `marathon-metro`. Pi 400 receipts are in `docs/evidence` (PR #149 run 1)                                                                                                                                                                             |
+| 7   | HackberryPi CM5 and a phone                                                                                    | Not run. Needed before any performance or "out of the box" claim                                                                                                                                                                                                          |
 
 ## Open items needing owner or upstream
 
-- Run gates 3, 4 (Wayland part) and 7. Owner action: provide a Linux machine with a Wayland compositor, then a Marathon VM image or device, and run the commands above. Save the log, `WAYLAND_DISPLAY`, compositor name and version, and a screenshot.
+- Run gate 3 against the Marathon compositor, gate 4 touch, scroll and text, and gate 7. Owner action: provide a Linux machine with a Wayland compositor, then a Marathon VM image or device, and run the commands above. Save the log, `WAYLAND_DISPLAY`, compositor name and version, and a screenshot.
 - Build against the device toolchain (Alpine/musl, Marathon's Qt). Record the Qt version and `ldd` output.
 - Native lifecycle, back, IME, insets and permission mediation need the upstream contract described in [UPSTREAM_RFC](UPSTREAM_RFC.md). Do not work around bubblewrap or call unrestricted D-Bus.
 - Signed `.marathon` packaging is blocked on upstream: the manifest schema requires a `.qml` `entryPoint`.
