@@ -178,7 +178,7 @@
       "host": "no-op",
       "pi400": "unverified",
       "pi4Qsti": "unverified",
-      "notes": "Renders children as a View; behavior, keyboardVerticalOffset and enabled are ignored because no Keyboard module is wired.",
+      "notes": "Renders children as a View and forwards the other View props; behavior, keyboardVerticalOffset, enabled and contentContainerStyle are ignored because no Keyboard module is wired. The override sits at the upstream path, so the Metro resolver selects it.",
       "evidence": {
         "pi400": [],
         "pi4Qsti": []
