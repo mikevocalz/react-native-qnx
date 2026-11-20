@@ -1,0 +1,60 @@
+---
+title: Gesture Handler
+description: Which react-native-gesture-handler 3.4.0 recognizers the Qt host implements and which fail.
+---
+
+## Install
+
+The root `package.json` pins `react-native-gesture-handler` at `3.4.0`. `docs/reanimated-gesture-handler-qnx.md` explains the choice. Expo SDK 58's `bundledNativeModules.json` selects `~3.3.0`, but the upstream table lists 3.4.x for React Native 0.88, so the app must pin 3.4.0 itself. `expo install` would pick the older line.
+
+The library's JavaScript and its detector shadow node are upstream's. The recognizers are ours, in `vnext/src/gesture/GestureHandlerCore.cpp`, a registry with no Qt or React dependency. Input comes from `QtGestureInput.cpp`, and the module is `QnxGestureHandlerModule`.
+
+## Setup
+
+`cmake/RnqnxGestureHandler.cmake` defines `RNQNX_ENABLE_GESTURE_HANDLER` (default OFF). It needs `RNQNX_ENABLE_WORKLETS` and builds with `RNGH_USE_WORKLETS=1`.
+
+```sh
+cmake ... -DRNQNX_ENABLE_WORKLETS=ON -DRNQNX_ENABLE_GESTURE_HANDLER=ON \
+          -DRNQNX_GESTURE_HANDLER_SOURCE_DIR=<node_modules>/react-native-gesture-handler
+```
+
+The configure step checks the package version. See [Worklets](/docs/reference/modules/worklets) for the Hermes and Babel requirements.
+
+## Supported API
+
+From `docs/reanimated-gesture-handler-qnx.md`:
+
+| Handler   | Implemented behavior                                                                               |
+| --------- | -------------------------------------------------------------------------------------------------- |
+| Pan       | Min distance, active and fail offsets, velocity, translation, begin, activate, update, end, cancel |
+| Tap       | Tap count, max duration, max delay between taps, max distance                                      |
+| LongPress | Min duration deadline, max distance                                                                |
+| Fling     | Direction mask, minimum velocity                                                                   |
+| Manual    | Driven by `GestureStateManager` through `_setGestureStateSync` and `_setGestureStateAsync`         |
+
+Arbitration: by default the first handler to activate fails every other begun or active handler that shares a pointer. `simultaneousHandlers` allows two active together. `waitFor` and `blocksHandlers` hold a handler at Began until the other fails or ends.
+
+Input is Qt mouse and touch events, seen through an event filter that does not consume them, so React responders and `Pressable` still work. Detaching, disabling or moving a handler cancels its current contact. Removing a detector cancels its handlers as one batch.
+
+## Not supported
+
+- Pinch, Rotation, Native and Hover: accepted, then fail on the first pointer with a log line.
+- Pointer data callbacks (`onTouchesDown` and similar), multi-pointer pan averaging, hit-slop.
+- `RNGestureHandlerButton` behavior: it mounts as a plain container.
+- Arbitration with Qt scrolling.
+- Coordinate spaces for transformed ancestors: the view's `mapFromScene` is used.
+- A stack navigator through expo-router. See [expo-router](/docs/reference/modules/expo-router).
+- Gestures while JavaScript is blocked. The GUI thread owns rendering.
+
+## Evidence
+
+| Path                                           | Shows                                                                                                                            |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/reanimated-gesture-handler-qnx-audit.md` | Source audit of 2026-11-07. It examined RNGH 3.5.0 as a target. The port uses 3.4.0.                                             |
+| `docs/evidence/pr149-cancellation-2026-11-17/` | Registry suite of 24 cases with regression controls, host only.                                                                  |
+| `docs/evidence/pr149-linked-host-2026-11-17/`  | Linux host, Qt 6.11.1, software rendering. A pan moves a view 40 px, checked against exact origins and painted pixels.           |
+| `docs/evidence/pr149-pi400-run1-2026-11-19/`   | Pi 400, commit `26bd6aa`. Screenshots of pan with spring-back, tap, and a swipeable list. Injector command lines were not saved. |
+| `docs/evidence/pr149-pi400-run2-2026-11-19/`   | Pi 400, commit `240dc08`. Repeats the interaction checks with command logs.                                                      |
+| `docs/evidence/worklets-frame-2026-11-13/`     | Pi 400, 2026-11-13. Pan held and released, single tap, double tap screenshots.                                                   |
+
+The Pi 400 runs used single-pointer injected input at 1024x768. The doc states they do not cover pinch, rotation, multi-pointer input, 1920x1080, or a gesture while JavaScript is blocked. `docs/component-support.json` still records physical HID input as unverified for `Pressable`. No Pi 4 QSTI run exists. The older doc text that "Gesture Handler pan and tap were not run on the device" refers to the first 2026-11-13 run and is superseded by the later receipts.

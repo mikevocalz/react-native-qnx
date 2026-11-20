@@ -1,0 +1,66 @@
+## Props
+
+`ScrollView` is React Native's JavaScript component over the Fabric `ScrollView` descriptor (`ScrollViewComponentDescriptor`, registered in `vnext/src/runtime/QtReactHost.cpp`). The adapter mounts it as a Qt Quick `Flickable`. The Flickable QML I read is `kScrollViewSource` in `vnext/probes/playground/main.cpp`; other hosts may register their own source, which I did not read.
+
+| Prop                                                                                                                                 | Type     | Status             | Source-backed note                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------------------ | ----------------------------------------------------------------- |
+| `style`, `contentContainerStyle`                                                                                                     | style    | supported          | Laid out by Yoga; children go into the Flickable's `contentItem`. |
+| `style.backgroundColor`                                                                                                              | color    | supported          | The QML draws it behind the content (`backgroundColor` property). |
+| `horizontal`                                                                                                                         | boolean  | partial            | Read only by the `scrollToEnd` command to pick the axis.          |
+| `zoomScale`                                                                                                                          | number   | partial            | Echoed in scroll events; visible content scale stays 1.           |
+| `onScroll`, `onScrollBeginDrag`, `onScrollEndDrag`, `onMomentumScrollBegin`, `onMomentumScrollEnd`                                   | function | supported          | See Events.                                                       |
+| `scrollEnabled`, `pagingEnabled`, `showsVerticalScrollIndicator`, `showsHorizontalScrollIndicator`, `contentInset`, `snapToInterval` | various  | accepted-no-effect | No evidence found that native code reads them.                    |
+| `bounces`                                                                                                                            | boolean  | accepted-no-effect | The QML fixes `boundsBehavior: Flickable.StopAtBounds`.           |
+
+## Events
+
+| Event                                          | Status    | Source                                                                                                                         |
+| ---------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `onScroll`                                     | supported | Qt `contentXChanged` and `contentYChanged` signals, via `QtScrollBridge`.                                                      |
+| `onScrollBeginDrag`                            | supported | `dragStarted`.                                                                                                                 |
+| `onScrollEndDrag`                              | supported | `dragEnded`; velocity from `horizontalVelocity` and `verticalVelocity`. `targetContentOffset` is set equal to `contentOffset`. |
+| `onMomentumScrollBegin`, `onMomentumScrollEnd` | supported | `flickStarted` and `flickEnded`.                                                                                               |
+
+Each event carries `contentOffset`, `contentSize`, `containerSize` and `zoomScale` (`connectScrollEvents` in `ShadowViewMutationAdapter.cpp`).
+
+## Platform behavior on QNX
+
+Qt's Flickable does not derive its content size from its children. `updateScrollContentSize` recomputes `contentWidth` and `contentHeight` from the children's extents on every insert, remove and child layout change. Mounting redirects children to `contentItem`, since that is what scrolls. The QML adds a `WheelHandler` that scrolls a fixed 100 units per wheel notch and treats the QNX plugin's notch value as 10 rather than 120, per its comment.
+
+Commands: `scrollTo(x, y)` sets `contentX` and `contentY`; `scrollToEnd` sets one axis to `contentSize - viewport`. Both ignore the `animated` flag (the parameter is unnamed or commented out in `QtQuickMountingLayer.cpp`).
+
+Yoga collapsed a ScrollView to zero height in an early host test until the app set `flexShrink: 0` on it (`docs/handoff/TEST_STATUS.md`, "ScrollView scrolls").
+
+## Unsupported or partial props
+
+- `animated` on `scrollTo` and `scrollToEnd`: ignored, the offset jumps.
+- `zoomScale` and pinch zoom: reported only.
+- `refreshControl`, `stickyHeaderIndices`, `keyboardDismissMode`, `onContentSizeChange` behavior: No evidence found of native handling. `onContentSizeChange` is driven from JS layout events, which the FlatList test exercised.
+
+## Minimal example
+
+```tsx
+import React from 'react';
+import { ScrollView, Text, View } from 'react-native';
+
+export default function App() {
+  return (
+    <ScrollView
+      style={{ height: 200, flexShrink: 0 }}
+      onScroll={(e) => console.log(e.nativeEvent.contentOffset.y)}
+      scrollEventThrottle={16}
+    >
+      {Array.from({ length: 30 }, (_, i) => (
+        <View key={i} style={{ height: 40, justifyContent: 'center' }}>
+          <Text>Row {i}</Text>
+        </View>
+      ))}
+    </ScrollView>
+  );
+}
+```
+
+## Known gaps
+
+- Host tests drive `contentY` and invoke `dragStarted`, `dragEnded`, `flickStarted` and `flickEnded` directly (`tests/cpp/QtReactHostHostTest.cpp`). Real touch or wheel input into a ScrollView was not part of those tests.
+- No Pi 400 or Pi 4 QSTI run; the generated status shows no device receipt.

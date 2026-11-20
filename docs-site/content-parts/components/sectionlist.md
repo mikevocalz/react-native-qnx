@@ -1,0 +1,63 @@
+## Props
+
+`SectionList` is upstream React Native JavaScript with no QNX override (nothing for it under `packages/react-native-qnx/Libraries`). It renders `VirtualizedSectionList`, which renders `VirtualizedList` over a `ScrollView`. The generated notes say it is host-tested through that chain. I found no SectionList-specific test in `tests/cpp`; the searchable evidence is the FlatList test in `tests/cpp/QtReactHostHostTest.cpp`, and the claim that SectionList is host-tested comes from `docs/component-support.json`, whose test I could not locate by name.
+
+| Prop                                          | Type     | Status             | Source-backed note                                                                          |
+| --------------------------------------------- | -------- | ------------------ | ------------------------------------------------------------------------------------------- |
+| `sections`, `renderItem`, `keyExtractor`      | various  | supported          | Per the component notes; the shared `VirtualizedList` path is covered by the FlatList test. |
+| `renderSectionHeader`, `renderSectionFooter`  | function | supported          | Per the component notes only. No test found by name.                                        |
+| `initialNumToRender`, `windowSize`            | number   | supported          | Inherited from `VirtualizedList`; tested through `FlatList`.                                |
+| `stickySectionHeadersEnabled`                 | boolean  | accepted-no-effect | No evidence found that native code implements sticky headers.                               |
+| `onScroll`, `onLayout`, `onContentSizeChange` | function | supported          | Delivered from the ScrollView layer.                                                        |
+
+## Events
+
+`onScroll`, `onLayout` and `onContentSizeChange` come from the same native sources as `FlatList` (`QtScrollBridge`, layout events). `onViewableItemsChanged` and `onEndReached`: No evidence found of a QNX test.
+
+## Platform behavior on QNX
+
+Sections flatten into a single `VirtualizedList` window, so windowing, batching and cell release behave as described on the [FlatList](/docs/reference/components/flatlist) page: scroll offsets arrive from the Qt Flickable, cell sizes come from `onLayout`, and the 50 ms batching period is real time because QNX timers are `QTimer`s. All limits of [ScrollView](/docs/reference/components/scrollview) carry over, including that `scrollToLocation` ends in a `ScrollView` command that ignores `animated`.
+
+## Unsupported or partial props
+
+- Sticky section headers: `stickySectionHeadersEnabled` leads to ScrollView `stickyHeaderIndices`, for which No evidence found of native handling or a test.
+- `scrollToLocation`, `getItemLayout`, `SectionSeparatorComponent`: No evidence found of a QNX test.
+- Anything depending on ScrollView props with no native read (`scrollEnabled`, `pagingEnabled`, `bounces`, scroll indicators).
+
+## Minimal example
+
+```tsx
+import React from 'react';
+import { SectionList, Text, View } from 'react-native';
+
+const sections = [
+  { title: 'Fruit', data: ['Apple', 'Pear', 'Plum'] },
+  { title: 'Vegetables', data: ['Leek', 'Kale', 'Beet'] },
+];
+
+export default function App() {
+  return (
+    <SectionList
+      style={{ flexShrink: 0, height: 240 }}
+      sections={sections}
+      keyExtractor={(item) => item}
+      renderSectionHeader={({ section }) => (
+        <View style={{ height: 28, backgroundColor: '#dddddd', justifyContent: 'center' }}>
+          <Text>{section.title}</Text>
+        </View>
+      )}
+      renderItem={({ item }) => (
+        <View style={{ height: 30, justifyContent: 'center' }}>
+          <Text>{item}</Text>
+        </View>
+      )}
+    />
+  );
+}
+```
+
+## Known gaps
+
+- Host-only status, offscreen Qt platform. No Pi 400 or Pi 4 QSTI receipt.
+- I could not find the SectionList-specific test the notes imply. Evidence missing: a named test that renders a `SectionList` with headers and scrolls it.
+- Sticky headers, `scrollToLocation` and viewability callbacks have no recorded run.

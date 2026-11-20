@@ -1,0 +1,88 @@
+---
+title: Glossary
+description: Terms used across the React Native QNX docs and README, defined from how the repository uses them, each with a source path.
+---
+
+Each definition is taken from the repository's own usage. The source path is the file that shows the term in use. Where the repository uses a word with a narrower meaning than the general one, the narrower meaning is given.
+
+## Platform and hardware
+
+**QNX.** The real-time operating system this project targets. The README describes the project as "an out-of-tree React Native platform for QNX". The version in use is QNX 8.0.5 (SDP) on a board whose kernel reports 8.0.0. Source: `README.md`, `docs/toolchain.md`.
+
+**SDP (Software Development Platform).** The licensed QNX toolchain and sysroot used to cross-build, installed on an x86-64 Linux host. The scripts read it through the `QNX_HOST` and `QNX_TARGET` environment variables, and `qcc`/`q++` come from it. Its files are never redistributed: runner archives that contain SDP files are rejected. Source: `scripts/doctor.sh`, `packages/react-native-qnx-cli/src/runner.mjs`, `docs/adr/0018-runner-hosting-and-sdp-boundary.md`.
+
+**Screen (QNX Screen).** The QNX window-system and compositor API. Qt's QNX platform plugin (`libqqnx.so`) sits on top of it, and this project's Qt Quick renderer draws through that plugin. ADR-0001 keeps the older direct-Screen executable as a probe, not the React Native runtime. Source: `docs/adr/0001-qt-quick-backend.md`, `docs/packaging.md`.
+
+**QSTI (Quick Start Target Image).** The QNX Everywhere prebuilt target image for the Raspberry Pi 4 and 5. The repository refers to "stock Pi 4 QSTI" and "QSTI 0.5.0 build 50". Source: `docs/getting-started/raspberry-pi-today.md`, `docs/qnx/release-matrix-2026-11-02.json`.
+
+**Pi 400.** A Raspberry Pi 400 running a custom BCM2711 QNX 8.0.5 image. It is the only board with device receipts. The release matrix notes that QNX does not name it as an officially validated QSTI target. Source: `README.md`, `docs/getting-started/raspberry-pi-400.md`, `docs/qnx/release-matrix-2026-11-02.json`.
+
+**Pi 4 QSTI.** The stock Raspberry Pi 4 or 5 image, tracked as its own column because the Pi 400 image does not establish its support. Every device result in this repository for that column is `untested`. Source: `docs/component-support.md`, `docs/v1/release-notes.md`.
+
+**slog2.** The QNX system log. `pnpm qnx log-qnx` streams slog2 output, and the target runtime doctor checks that `slogger2` and `/dev/slog2` work. Source: `docs/getting-started/qnx-cli.md`, `packages/react-native-qnx-cli/src/target-runtime-doctor.mjs`.
+
+**Linux/Wayland host target.** A second, separate platform target in this repository that uses Qt on Linux and Wayland. It is not part of the QNX v1 milestone. Source: ADR-0015 in `docs/adr/`, `docs/releases/required-checks.md`.
+
+## Rendering and runtime
+
+**Fabric.** React Native's new renderer. ADR-0009 makes the project Fabric-only. The Fabric shadow tree is laid out by Yoga and mounted into Qt Quick items. Source: `docs/adr/0009-fabric-only.md`, `README.md`.
+
+**Qt Quick.** Qt's declarative UI toolkit (`QQuickItem`, `QQuickWindow`, scene graph). Qt Quick items are the visible views; Fabric component views own them. Source: `docs/adr/0001-qt-quick-backend.md`, `docs/build-qt-modules.md`.
+
+**Yoga.** The layout engine bundled with React Native. It is the only layout authority: `QtQuickLayouts` is excluded because it would conflict with Yoga. Source: `docs/adr/0001-qt-quick-backend.md`, `docs/adr/0010-macos-qt-development-host.md`.
+
+**Hermes.** The JavaScript engine. ADR-0005 makes the project Hermes-only. The QNX device build uses a "lean" Hermes that runs precompiled bytecode (`.hbc`), compiled with a matching `hermesc`. Source: `docs/adr/0005-hermes-only.md`, `docs/nitro/QT_DISPATCHER.md`.
+
+**Mounting layer.** The code that turns Fabric mutations into Qt Quick items (`QtQuickMountingLayer`). Source: `vnext/include/react-native-qnx/fabric/QtQuickMountingLayer.h`.
+
+**Host renderer.** The macOS or Linux build of the full Fabric, Hermes and Qt Quick graph, run without QNX. It proves bundling and rendering on a developer machine and nothing about QNX. A host result never counts toward a device column. Source: `docs/testing-host-renderer.md`, `README.md`, `docs/v1/evidence-gallery.md`.
+
+**Host.** In the support columns, the development machine running Qt Quick. In Nitro and CMake text, "host" also means the C++ object that owns the Qt event loop and the JavaScript runtime (`QtReactHost`). Source: `docs/component-support.md`, `vnext/src/runtime/QtReactHost.cpp`.
+
+**Owner thread.** The Qt thread that created the host. JavaScript shares it; there is no separate JS thread. Native code must post work back to it. Source: `docs/nitro/QT_DISPATCHER.md`, `vnext/src/runtime/QtRuntimeTaskQueue.cpp`.
+
+**Worklets, Reanimated, Gesture Handler.** Libraries integrated opt-in. Worklets runs a UI runtime on a dedicated thread of the Qt host. Source: `docs/worklets-qnx.md`, `docs/reanimated-gesture-handler-qnx.md`.
+
+**Metro.** The JavaScript bundler. The CLI bundles with Metro and the platform ships `metro-config-qnx`. Source: `packages/metro-config-qnx`. See [Metro config](/docs/how-to/metro-config).
+
+## Native modules
+
+**Nitro.** The native module system the project uses for application-facing APIs (Nitro Modules), at the pinned v1 alpha. TurboModules are not the route for app APIs. Source: `docs/adr/0004-nitro-modules.md`, `docs/nitro/API_CONTRACTS.md`. See [Nitro module API on QNX](/docs/reference/nitro-api).
+
+**Nitrogen.** Nitro's code generator. Upstream Nitrogen targets only Apple and Android, so this repository uses its own constrained generator for one spec. Source: `docs/nitro/PLATFORM_CODEGEN_POC.md`, `scripts/nitro-platform-codegen.mjs`.
+
+**HybridObject.** Nitro's base class for a native object exposed to JavaScript. In v1, the registered unit is a `HybridClass` descriptor with a real JavaScript constructor, found through `NitroModules.getHybridClass(name)`. Source: `packages/qnx-nitro-runtime/cpp/QnxPlatformInfo.hpp`, `packages/qnx-nitro-runtime/index.js`.
+
+**Dispatcher.** The Nitro component that runs callbacks and settles Promises. The opt-in `QtNitroDispatcher` routes them through the Qt event loop. Without it, only synchronous HybridObjects work. Source: `docs/nitro/QT_DISPATCHER.md`.
+
+**Expo module host.** `packages/expo-modules-core-qnx`, which installs `globalThis.expo` before the bundle runs. Source: `docs/getting-started/compatibility-matrix.md`.
+
+**Forge (Nitro Forge).** A separately sold premium component product, built on Nitro. The repository treats it as an optional licensed consumer integration and never a platform dependency or release gate. Source: `AGENTS.md`, `docs/handoff/CURRENT_STATE.md`.
+
+## Build and packaging
+
+**Runner.** A prebuilt development or standalone executable archive (`tar.gz`) fetched with `rnqnx runner fetch`, listed in a manifest, verified by SHA-256. Source: `packages/react-native-qnx-cli/src/runner.mjs`. See [prebuilt runner](/docs/how-to/prebuilt-runner).
+
+**Descriptor (`native-app.json`).** The generated file that holds app identity, window options, icon hashes and linked modules for the native build. It is written by `project prepare-native`. Source: `packages/react-native-qnx-cli/src/prepare-native.mjs`, `packages/react-native-qnx-cli/src/window-descriptor.mjs`.
+
+**Tier (Qt module tier).** A ranking in `docs/build-qt-modules.md`: Tier 0 always on, Tier 1 component-backing, Tier 2 evaluate per need. Not to be confused with `evidenceTier`, a field in the target runtime doctor report (`offline-observation`). Source: `docs/build-qt-modules.md`, `packages/react-native-qnx-cli/src/target-runtime-doctor.mjs`. See [Qt module tiers](/docs/reference/qt-tiers).
+
+**Closure (library closure).** The full set of shared libraries and plugins a runtime needs, staged and hashed per file in a manifest. Source: `docs/packaging.md`, `scripts/qt-public/stage-runtime.py`.
+
+## Evidence and release process
+
+**Evidence receipt (receipt).** A file under `docs/evidence/` (or `docs/validation/`) that records one run: the commit, the machine, the commands, the output and often file hashes. A receipt names its target, and a host receipt never counts for a device. Source: `docs/v1/evidence-gallery.md`, `docs/evidence/pi400-nitro-qt-2026-11-07.md`.
+
+**Scoped.** A device support level meaning only the linked device scenario ran. It is not a claim of full support. The device vocabulary is `scoped`, `failed`, `unverified`, `untested`; host is `supported`, `partial`, `no-op`, `unsupported`, `unverified`. Source: `docs/component-support.md`.
+
+**No-op.** A host support level: the API accepts calls without doing the platform behavior. Source: `docs/component-support.md`.
+
+**Gate (release gate).** One of eleven acceptance conditions in `docs/releases/v1-readiness.json`. Each has a status (`blocked`, `pending`, `passed`) and evidence paths. `pnpm validate:v1` fails while any gate is open. Source: `docs/releases/v1-readiness.md`, `scripts/lib/docs-model.mjs`. See [release gate definitions](/docs/reference/release-gate-definitions).
+
+**Candidate.** A specific commit proposed for release. The CI gate counts only checks run on the candidate's exact head commit. Source: `docs/releases/required-checks.md`.
+
+**Hosted check, QNX cross-build check, device result.** The three result categories kept apart in release records: GitHub-hosted runners, builds with the licensed SDP, and supervised runs on named hardware. Source: `docs/releases/required-checks.md`.
+
+**Cold boot.** A full start of the board, counted separately from relaunching the application. The `cold-boot` gate asks for 20 consecutive supervised cold boots. Source: `docs/releases/v1-readiness.json` (`cold-boot`).
+
+**DRI.** A field name in readiness evidence entries (`dri`) that holds a short name such as `finish_expo159` or `qnx_readiness`. The files read do not expand the acronym. Source: `docs/releases/v1-readiness.json`.
