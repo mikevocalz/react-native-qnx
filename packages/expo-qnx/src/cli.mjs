@@ -3,7 +3,6 @@ import { createHash } from 'node:crypto';
 import { lstat, mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
 const require = createRequire(import.meta.url);
@@ -291,7 +290,7 @@ export async function main(argv, cwd = process.cwd()) {
   console.log(JSON.stringify(report, null, 2));
   return 0;
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (import.meta.main) {
   try {
     process.exitCode = await main(process.argv.slice(2));
   } catch (error) {

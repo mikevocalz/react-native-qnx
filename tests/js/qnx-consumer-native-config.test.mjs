@@ -160,6 +160,7 @@ rnqnx_add_consumer_app()
 `
   );
   const config = path.join(project, 'build/qnx/native-app.json');
+  let originalConfig = '';
   /** @param {string} label @param {string[]} args @param {boolean} good */
   function configure(label, args, good) {
     const result = spawnSync(
@@ -179,37 +180,48 @@ rnqnx_add_consumer_app()
     checks++;
     return result;
   }
-  configure('preview', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], true);
+  // The Linux host preview is only valid when CMake reports CMAKE_SYSTEM_NAME
+  // Linux (cmake/RnqnxConsumerApp.cmake). Other hosts must refuse it, so the
+  // generation assertions below run on Linux only and are reported as not run.
+  const linuxHost = process.platform === 'linux';
+  if (linuxHost) configure('preview', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], true);
+  else {
+    const refused = configure('preview-off-linux', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);
+    check(/Linux\s+preview\s+must\s+be\s+explicitly\s+enabled/.test(refused.stderr));
+  }
   configure('no-false-qnx', [], false);
-  const generated = await readFile(
-    path.join(temporary, 'preview/consumer/qnx/org.rnqnx.notes/ApplicationIdentity.generated.h'),
-    'utf8'
-  );
-  check(generated.includes('FieldNotes') && generated.includes('学習'));
-  check(
-    generated.includes(
-      'configuredIconSizes() { return {16, 24, 32, 48, 64, 96, 128, 192, 256, 512}; }'
-    )
-  );
-  const tamperedIcon = JSON.parse(await readFile(config, 'utf8'));
-  tamperedIcon.icon.sizes[0].sha256 = '0'.repeat(64);
-  await writeFile(config, JSON.stringify(tamperedIcon));
-  configure('stale-icon', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);
-  // A descriptor without generated icons is refused: no app builds with the
-  // platform's blank icon.
-  tamperedIcon.icon.sizes = [];
-  await writeFile(config, JSON.stringify(tamperedIcon));
-  const emptySet = configure('empty-icon-set', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);
-  check(emptySet.stderr.includes('Consumer configuration has no generated icon set'));
-  delete tamperedIcon.icon;
-  await writeFile(config, JSON.stringify(tamperedIcon));
-  configure('missing-icon', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);
-  const originalConfig = await readFile(config, 'utf8');
-  const tampered = JSON.parse(originalConfig);
-  tampered.bundleSha256 = '0'.repeat(64);
-  await writeFile(config, JSON.stringify(tampered));
-  configure('stale-bundle', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);
-  await writeFile(config, originalConfig);
+  if (linuxHost) {
+    const generated = await readFile(
+      path.join(temporary, 'preview/consumer/qnx/org.rnqnx.notes/ApplicationIdentity.generated.h'),
+      'utf8'
+    );
+    check(generated.includes('FieldNotes') && generated.includes('学習'));
+    check(
+      generated.includes(
+        'configuredIconSizes() { return {16, 24, 32, 48, 64, 96, 128, 192, 256, 512}; }'
+      )
+    );
+    const tamperedIcon = JSON.parse(await readFile(config, 'utf8'));
+    tamperedIcon.icon.sizes[0].sha256 = '0'.repeat(64);
+    await writeFile(config, JSON.stringify(tamperedIcon));
+    configure('stale-icon', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);
+    // A descriptor without generated icons is refused: no app builds with the
+    // platform's blank icon.
+    tamperedIcon.icon.sizes = [];
+    await writeFile(config, JSON.stringify(tamperedIcon));
+    const emptySet = configure('empty-icon-set', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);
+    check(emptySet.stderr.includes('Consumer configuration has no generated icon set'));
+    delete tamperedIcon.icon;
+    await writeFile(config, JSON.stringify(tamperedIcon));
+    configure('missing-icon', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);
+    originalConfig = await readFile(config, 'utf8');
+    const tampered = JSON.parse(originalConfig);
+    tampered.bundleSha256 = '0'.repeat(64);
+    await writeFile(config, JSON.stringify(tampered));
+    configure('stale-bundle', ['-DRNQNX_CONSUMER_HOST_PREVIEW=ON'], false);
+    await writeFile(config, originalConfig);
+  } // linuxHost
+  originalConfig = await readFile(config, 'utf8');
   const staged = path.join(temporary, 'staged.bundle.js');
   const stage = spawnSync(
     'cmake',
@@ -225,7 +237,10 @@ rnqnx_add_consumer_app()
   check(stage.status === 0);
   check((await readFile(staged, 'utf8')) === 'trusted synthetic bundle\n');
   console.log(
-    `Consumer native configuration: ${checks} checks passed (real file/hash/CMake generation; native compilation separate).`
+    `Consumer native configuration: ${checks} checks passed (real file/hash/CMake generation; native compilation separate).` +
+      (linuxHost
+        ? ''
+        : ` Linux host-preview generation assertions not run on ${process.platform}; the host refusal was asserted instead.`)
   );
 } finally {
   await rm(temporary, { recursive: true, force: true });

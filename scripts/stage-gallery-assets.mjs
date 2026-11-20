@@ -165,7 +165,7 @@ async function main(argv) {
   for (const staged of await stageAssets(app, out)) console.log(`staged ${staged}`);
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (import.meta.main) {
   main(process.argv.slice(2)).catch((error) => {
     console.error(error.message);
     process.exitCode = 1;
