@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { lstat, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { packedFilename } from '../../packages/react-native-qnx-cli/src/create-project.mjs';
 
 const root = await mkdtemp(path.join(tmpdir(), 'rnqnx-project-create-'));
 const cli = path.resolve('packages/react-native-qnx-cli/src/bin.mjs');
@@ -17,6 +18,24 @@ const run = (...args) =>
     maxBuffer: 4 * 1024 * 1024,
     env: { ...process.env, npm_config_cache: cache },
   });
+
+// `npm pack --json` is an array through npm 11 and an object keyed by package
+// name from npm 12. Both name the archive; anything else is refused.
+const entry = { name: '@rn-qnx/x', filename: 'rn-qnx-x-1.0.0.tgz' };
+assert.equal(packedFilename([entry]), entry.filename);
+assert.equal(packedFilename({ '@rn-qnx/x': entry }), entry.filename);
+for (const bad of [
+  [],
+  {},
+  null,
+  [entry, entry],
+  { a: entry, b: entry },
+  [{ filename: '../escape.tgz' }],
+  { a: { filename: 'UPPER.tgz' } },
+  [{ filename: 'x.zip' }],
+  [{}],
+])
+  assert.throws(() => packedFilename(bad), /Unexpected npm archive filename/);
 
 try {
   const qnx = path.join(root, 'qnx-app');

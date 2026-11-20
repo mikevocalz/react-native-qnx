@@ -36,10 +36,28 @@ await writeFile(
   })
 );
 let count = 0;
+const linuxHost = process.platform === 'linux';
+/** @type {string[]} */
+const skipped = [];
 /** @param {() => Promise<void>} fn @param {string} label */
 async function caseNamed(fn, label) {
   await fn();
   count++;
+}
+/**
+ * Cases that plan the Linux host preview or the Marathon Linux client. On a
+ * non-Linux host the same call must be refused with the host error, which is
+ * the behavior those hosts get; the Linux-only assertions are reported as not
+ * run instead of passing silently.
+ * @param {() => Promise<void>} fn
+ * @param {string} label
+ * @param {() => Promise<unknown>} refused
+ * @param {RegExp} hostError
+ */
+async function linuxCase(fn, label, refused, hostError) {
+  if (linuxHost) return caseNamed(fn, label);
+  await caseNamed(() => assert.rejects(refused(), hostError), `${label} (host refusal)`);
+  skipped.push(label);
 }
 /** @param {'qnx'|'marathon'} platform @param {string} [filename] */
 async function createDescriptor(platform, filename = 'app.bundle.js') {
@@ -91,25 +109,35 @@ try {
       JSON.stringify({ name: 'my-app', version: '1.0.0', private: true })
     );
   }, 'Expo project without package.json rejects');
-  await caseNamed(async () => {
-    const plan = await planNativeBuild(project, 'qnx', true);
-    assert.equal(plan.platform, 'qnx');
-    assert.equal(plan.preview, true);
-    assert.equal(plan.nativeBuildVerified, false);
-    assert.ok(plan.configure.includes('-DRNQNX_CONSUMER_HOST_PREVIEW=ON'));
-    assert.equal(plan.build[0], 'cmake');
-    assert.equal(plan.build[1], '--build');
-    assert.match(plan.output, /org\.example\.myapp/);
-  }, 'explicit Linux preview');
-  await caseNamed(async () => {
-    const plan = await planNativeBuild(project, 'marathon');
-    assert.equal(plan.platform, 'marathon');
-    assert.equal(plan.configure[2], 'linux-host-renderer');
-    assert.ok(plan.configure.includes('-DRNQNX_BUILD_MARATHON_HOST=ON'));
-    assert.ok(plan.configure.includes('-DRNQNX_ENABLE_WINDOW_CHROME=OFF'));
-    assert.ok(!plan.configure.includes('-DRNQNX_CONSUMER_HOST_PREVIEW=ON'));
-    assert.ok(plan.output.includes('/marathon/'));
-  }, 'Marathon Linux target');
+  await linuxCase(
+    async () => {
+      const plan = await planNativeBuild(project, 'qnx', true);
+      assert.equal(plan.platform, 'qnx');
+      assert.equal(plan.preview, true);
+      assert.equal(plan.nativeBuildVerified, false);
+      assert.ok(plan.configure.includes('-DRNQNX_CONSUMER_HOST_PREVIEW=ON'));
+      assert.equal(plan.build[0], 'cmake');
+      assert.equal(plan.build[1], '--build');
+      assert.match(plan.output, /org\.example\.myapp/);
+    },
+    'explicit Linux preview',
+    () => planNativeBuild(project, 'qnx', true),
+    /requires a Linux development host/
+  );
+  await linuxCase(
+    async () => {
+      const plan = await planNativeBuild(project, 'marathon');
+      assert.equal(plan.platform, 'marathon');
+      assert.equal(plan.configure[2], 'linux-host-renderer');
+      assert.ok(plan.configure.includes('-DRNQNX_BUILD_MARATHON_HOST=ON'));
+      assert.ok(plan.configure.includes('-DRNQNX_ENABLE_WINDOW_CHROME=OFF'));
+      assert.ok(!plan.configure.includes('-DRNQNX_CONSUMER_HOST_PREVIEW=ON'));
+      assert.ok(plan.output.includes('/marathon/'));
+    },
+    'Marathon Linux target',
+    () => planNativeBuild(project, 'marathon'),
+    /requires Linux/
+  );
   await caseNamed(async () => {
     await assert.rejects(planNativeBuild(project, 'marathon', true), /host-preview/);
     await assert.rejects(planNativeBuild(project, 'bogus'), /qnx or marathon/);
@@ -138,35 +166,50 @@ try {
       await createDescriptor('qnx');
     }
   }, 'QNX requires SDK and full native React/Hermes graph');
-  await caseNamed(async () => {
-    const file = path.join(project, 'build/qnx/app.bundle.js');
-    await writeFile(file, 'changed');
-    await assert.rejects(planNativeBuild(project, 'qnx', true), /stale/);
-    await writeFile(file, 'real local JS fixture');
-  }, 'stale bundle rejects');
-  await caseNamed(async () => {
-    const file = path.join(project, 'build/marathon/native-app.json');
-    const doc = JSON.parse(await readFile(file, 'utf8'));
-    doc.appId = 'org.example.wrong';
-    await writeFile(file, JSON.stringify(doc));
-    await assert.rejects(planNativeBuild(project, 'marathon'), /stale/);
-    doc.appId = 'org.example.myapp';
-    await writeFile(file, JSON.stringify(doc));
-  }, 'identity drift rejects');
-  await caseNamed(async () => {
-    const file = path.join(project, 'build/marathon/icons/icon-16.png');
-    const original = await readFile(file);
-    await writeFile(file, 'tampered');
-    await assert.rejects(planNativeBuild(project, 'marathon'), /stale/);
-    await writeFile(file, original);
-    const app = path.join(project, 'app.json');
-    const config = JSON.parse(await readFile(app, 'utf8'));
-    config.expo.extra.rnqnx.shortName = 'Mine';
-    await writeFile(app, JSON.stringify(config));
-    await assert.rejects(planNativeBuild(project, 'marathon'), /stale/);
-    delete config.expo.extra.rnqnx.shortName;
-    await writeFile(app, JSON.stringify(config));
-  }, 'icon and tile label drift rejects');
+  await linuxCase(
+    async () => {
+      const file = path.join(project, 'build/qnx/app.bundle.js');
+      await writeFile(file, 'changed');
+      await assert.rejects(planNativeBuild(project, 'qnx', true), /stale/);
+      await writeFile(file, 'real local JS fixture');
+    },
+    'stale bundle rejects',
+    () => planNativeBuild(project, 'qnx', true),
+    /requires a Linux development host/
+  );
+  await linuxCase(
+    async () => {
+      const file = path.join(project, 'build/marathon/native-app.json');
+      const doc = JSON.parse(await readFile(file, 'utf8'));
+      doc.appId = 'org.example.wrong';
+      await writeFile(file, JSON.stringify(doc));
+      await assert.rejects(planNativeBuild(project, 'marathon'), /stale/);
+      doc.appId = 'org.example.myapp';
+      await writeFile(file, JSON.stringify(doc));
+    },
+    'identity drift rejects',
+    () => planNativeBuild(project, 'marathon'),
+    /requires Linux/
+  );
+  await linuxCase(
+    async () => {
+      const file = path.join(project, 'build/marathon/icons/icon-16.png');
+      const original = await readFile(file);
+      await writeFile(file, 'tampered');
+      await assert.rejects(planNativeBuild(project, 'marathon'), /stale/);
+      await writeFile(file, original);
+      const app = path.join(project, 'app.json');
+      const config = JSON.parse(await readFile(app, 'utf8'));
+      config.expo.extra.rnqnx.shortName = 'Mine';
+      await writeFile(app, JSON.stringify(config));
+      await assert.rejects(planNativeBuild(project, 'marathon'), /stale/);
+      delete config.expo.extra.rnqnx.shortName;
+      await writeFile(app, JSON.stringify(config));
+    },
+    'icon and tile label drift rejects',
+    () => planNativeBuild(project, 'marathon'),
+    /requires Linux/
+  );
   await caseNamed(async () => {
     await assert.rejects(
       buildNativeMain([
@@ -184,15 +227,25 @@ try {
       /qnx or marathon/
     );
   }, 'duplicate/invalid CLI');
-  await caseNamed(async () => {
-    const plan = await planNativeBuild(project, 'qnx', true);
-    await assert.rejects(lstat(plan.buildDir), { code: 'ENOENT' });
-    const rc = await buildNativeMain(['--project', project, '--host-preview', '--dry-run']);
-    assert.equal(rc, 0);
-    await assert.rejects(lstat(plan.buildDir), { code: 'ENOENT' });
-  }, 'dry run does not create build');
+  await linuxCase(
+    async () => {
+      const plan = await planNativeBuild(project, 'qnx', true);
+      await assert.rejects(lstat(plan.buildDir), { code: 'ENOENT' });
+      const rc = await buildNativeMain(['--project', project, '--host-preview', '--dry-run']);
+      assert.equal(rc, 0);
+      await assert.rejects(lstat(plan.buildDir), { code: 'ENOENT' });
+    },
+    'dry run does not create build',
+    () => buildNativeMain(['--project', project, '--host-preview', '--dry-run']),
+    /requires a Linux development host/
+  );
   console.log(
-    'Native consumer build planning: ' + count + ' checks passed (no native build or device claim).'
+    'Native consumer build planning: ' +
+      count +
+      ' checks passed (no native build or device claim).' +
+      (skipped.length
+        ? ` Linux-only assertions not run on ${process.platform} (host refusal asserted instead): ${skipped.join('; ')}.`
+        : '')
   );
 } finally {
   await rm(root, { recursive: true, force: true });

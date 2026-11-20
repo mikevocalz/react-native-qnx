@@ -4,7 +4,6 @@ import { constants } from 'node:fs';
 import { access, lstat, open, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import { fileURLToPath } from 'node:url';
 
 const help = `React Native QNX: local Marathon development client
   inspect --runner <native-ELF> --bundle <file>
@@ -266,7 +265,7 @@ export async function marathonMain(argv) {
   return launch(runner.file, bundle.file, Number(timeout));
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (import.meta.main) {
   try {
     process.exitCode = await marathonMain(process.argv.slice(2));
   } catch (error) {

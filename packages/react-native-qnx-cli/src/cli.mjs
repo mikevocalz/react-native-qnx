@@ -14,7 +14,6 @@ import {
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import { fileURLToPath } from 'node:url';
 
 const help = `React Native QNX (source checkout)
 
@@ -337,7 +336,7 @@ export async function main(argv, cwd = process.cwd()) {
   return code;
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (import.meta.main) {
   try {
     process.exitCode = await main(process.argv.slice(2));
   } catch (error) {
