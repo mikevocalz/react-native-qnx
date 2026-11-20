@@ -1229,3 +1229,11 @@ figure.shiki code span {
     display: none;
   }
 }
+/* Desktop: the terminal card still crosses the capture's bottom-left corner on
+   purpose, but only by the width of the monitor bezel (10px). The sidebar's tab
+   labels, including "More", stay uncovered at every width above 1180px. */
+@media (min-width: 1181px) {
+  .bench .code {
+    width: 500px;
+  }
+}
