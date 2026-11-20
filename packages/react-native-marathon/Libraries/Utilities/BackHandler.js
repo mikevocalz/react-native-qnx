@@ -37,7 +37,9 @@ const BackHandler = {
     }
     if (host.__DEV__ === true && !warnedExit) {
       warnedExit = true;
-      console.warn('BackHandler.exitApp has no effect: the host does not expose __rnqnxMarathonExitApp.');
+      console.warn(
+        'BackHandler.exitApp has no effect: the host does not expose __rnqnxMarathonExitApp.'
+      );
     }
   },
   addEventListener(_eventName, handler) {

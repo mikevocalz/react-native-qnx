@@ -539,7 +539,11 @@ function InputProbeApp() {
         {
           key: 'row' + i,
           collapsable: false,
-          style: { height: 40, backgroundColor: i % 2 ? '#335577' : '#224466', justifyContent: 'center' },
+          style: {
+            height: 40,
+            backgroundColor: i % 2 ? '#335577' : '#224466',
+            justifyContent: 'center',
+          },
         },
         React.createElement(Text, { style: { color: 'white', fontSize: 16 } }, 'row ' + i)
       )
@@ -547,7 +551,10 @@ function InputProbeApp() {
   }
   return React.createElement(
     View,
-    { style: { flex: 1, backgroundColor: backs % 2 === 1 ? '#602060' : '#101820', padding: 12 }, collapsable: false },
+    {
+      style: { flex: 1, backgroundColor: backs % 2 === 1 ? '#602060' : '#101820', padding: 12 },
+      collapsable: false,
+    },
     React.createElement(
       Text,
       { style: { color: 'white', fontSize: 18 }, collapsable: false },
@@ -556,7 +563,13 @@ function InputProbeApp() {
     React.createElement(
       Pressable,
       {
-        style: { height: 56, marginTop: 12, backgroundColor: '#00aa66', justifyContent: 'center', alignItems: 'center' },
+        style: {
+          height: 56,
+          marginTop: 12,
+          backgroundColor: '#00aa66',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
         collapsable: false,
         onPress: () => {
           setTaps((n) => {
@@ -570,7 +583,13 @@ function InputProbeApp() {
     React.createElement(
       Pressable,
       {
-        style: { height: 56, marginTop: 12, backgroundColor: '#aa3300', justifyContent: 'center', alignItems: 'center' },
+        style: {
+          height: 56,
+          marginTop: 12,
+          backgroundColor: '#aa3300',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
         collapsable: false,
         onPress: () => {
           console.log('RNQNX_PROBE exitApp');
@@ -594,7 +613,13 @@ function InputProbeApp() {
       rows
     ),
     React.createElement(TextInput, {
-      style: { height: 44, marginTop: 12, fontSize: 18, color: 'white', backgroundColor: '#203040' },
+      style: {
+        height: 44,
+        marginTop: 12,
+        fontSize: 18,
+        color: 'white',
+        backgroundColor: '#203040',
+      },
       collapsable: false,
       placeholder: 'type here',
       placeholderTextColor: '#889',
