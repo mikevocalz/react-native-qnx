@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Provider } from '@/components/provider';
+import { mono, sans } from './fonts';
 import './global.css';
+import './bench.css';
 
 export const metadata: Metadata = {
   title: { default: 'React Native QNX', template: '%s | React Native QNX' },
@@ -10,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
         <Provider>{children}</Provider>
       </body>
