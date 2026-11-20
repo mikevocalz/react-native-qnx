@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import status from '@/generated/status.json';
 import { componentRows } from '@/lib/site-data';
-import { gitConfig } from '@/lib/shared';
+import { gitConfig, withBase } from '@/lib/shared';
 
 const device = status.counts['Device-verified (Pi 400, scoped)'] ?? 0;
 const host = status.counts['Host-tested'] ?? 0;
@@ -164,7 +164,7 @@ export default function HomePage() {
               <figure className="monitor">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/evidence/gallery-pi400.png"
+                  src={withBase('/evidence/gallery-pi400.png')}
                   width={1024}
                   height={768}
                   fetchPriority="high"
@@ -338,7 +338,7 @@ export default function HomePage() {
                 <figure className="shot2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/evidence/svg-pi400.png"
+                    src={withBase('/evidence/svg-pi400.png')}
                     width={1024}
                     height={768}
                     loading="lazy"
