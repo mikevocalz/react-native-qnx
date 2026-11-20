@@ -6,11 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "serve out",
-    "data": "node scripts/generate-data.mjs",
-    "data:check": "node scripts/generate-data.mjs --check",
+    "data": "node scripts/generate-data.mjs && node scripts/generate-api.mjs",
+    "data:check": "node scripts/generate-data.mjs --check && node scripts/generate-api.mjs --check",
     "check:content": "node scripts/check-content.mjs",
     "types:check": "next typegen && tsc --noEmit",
-    "lint": "eslint"
+    "lint": "eslint",
+    "api": "node scripts/generate-api.mjs",
+    "api:check": "node scripts/generate-api.mjs --check"
   },
   "dependencies": {
     "cn": "^0.5.2",

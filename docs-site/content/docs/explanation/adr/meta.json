@@ -3,6 +3,7 @@
   "pages": [
     "0001-qt-quick-backend",
     "0002-qt-quick-item-instantiation",
+    "0003-skia-initial-renderer",
     "0004-nitro-modules",
     "0005-hermes-only",
     "0006-expo-dev-builds",
@@ -11,7 +12,9 @@
     "0009-fabric-only",
     "0010-macos-qt-development-host",
     "0011-qt-module-licensing",
+    "0012-quick-controls-styling",
     "0013-open-source-qt",
+    "0016-window-chrome-on-qnx-screen",
     "0017-qt-qnx-optimization-level",
     "0018-runner-hosting-and-sdp-boundary",
     "0019-nitro-package-metadata",

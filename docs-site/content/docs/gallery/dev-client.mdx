@@ -1,0 +1,146 @@
+---
+title: Development client on the Pi 400
+description: 'Six captures of the Metro development client on the Raspberry Pi 400: Fast Refresh, LogBox, the developer menu and the Metro-unreachable screen.'
+---
+
+Six captures from the 2026-11-13 development client run. The receipt says input was injected through Screen with `rnqnx-inject key`, because pointer injection did not reach the right coordinates under the window manager at that time. The counter was driven from the keyboard-navigable developer menu.
+
+The receipt also lists a device log excerpt and the Metro terminal start. Both are text files next to the images.
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pi400-dev-client-2026-11-13/1-counter-3.jpg" alt="Component gallery on the Pi 400 showing the Fast Refresh card with the counter at 3" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>1-counter-3.jpg</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>The counter in FastRefreshCard.js raised to 3 through the developer menu item the card registers.</dd>
+      <dt>Build</dt>
+      <dd>apps/component-gallery built with RNQNX_ENABLE_DEV_SUPPORT=ON, launched by rnqnx project dev; Qt 6.12.0 (-O2 runtime), rnqnx-winmgr. The receipt names no git commit.</dd>
+      <dt>Device</dt>
+      <dd>Raspberry Pi 400, QNX SDP 8.0.5 image. Metro ran on a Mac on the USB Ethernet link (192.168.2.1).</dd>
+      <dt>Resolution</dt>
+      <dd>800 x 450 px (read with sips). The receipt records no display or window size. The files are JPEG.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-dev-client-2026-11-13/README.md">pi400-dev-client-2026-11-13/README.md</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pi400-dev-client-2026-11-13/1-counter-3.jpg</code>, 68354 bytes, SHA-256 <code>0708f4751d07de69e69af578911bf53e6a747a91b2055daa31941c5a144eab03</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>018a57d</code>, 2026-11-13</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pi400-dev-client-2026-11-13/2-fast-refresh-state-kept.jpg" alt="Component gallery on the Pi 400 after a Fast Refresh edit, counter still 3" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>2-fast-refresh-state-kept.jpg</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>After editing HEADLINE and ACCENT on the Mac: new text and colour, counter still 3.</dd>
+      <dt>Build</dt>
+      <dd>apps/component-gallery built with RNQNX_ENABLE_DEV_SUPPORT=ON, launched by rnqnx project dev; Qt 6.12.0 (-O2 runtime), rnqnx-winmgr. The receipt names no git commit.</dd>
+      <dt>Device</dt>
+      <dd>Raspberry Pi 400, QNX SDP 8.0.5 image. Metro ran on a Mac on the USB Ethernet link (192.168.2.1).</dd>
+      <dt>Resolution</dt>
+      <dd>800 x 450 px (read with sips). The receipt records no display or window size. The files are JPEG.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-dev-client-2026-11-13/README.md">pi400-dev-client-2026-11-13/README.md</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pi400-dev-client-2026-11-13/2-fast-refresh-state-kept.jpg</code>, 68430 bytes, SHA-256 <code>1a8911ea637aced4ad7a7bc6743cc4ef4b3debaa57d0239a19be35a6eafc335d</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>018a57d</code>, 2026-11-13</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pi400-dev-client-2026-11-13/3-logbox-syntax-error.jpg" alt="LogBox syntax error surface over the component gallery on the Pi 400" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>3-logbox-syntax-error.jpg</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>A syntax error saved on the Mac: the LogBox surface over the app. Fixing the error hid LogBox.</dd>
+      <dt>Build</dt>
+      <dd>apps/component-gallery built with RNQNX_ENABLE_DEV_SUPPORT=ON, launched by rnqnx project dev; Qt 6.12.0 (-O2 runtime), rnqnx-winmgr. The receipt names no git commit.</dd>
+      <dt>Device</dt>
+      <dd>Raspberry Pi 400, QNX SDP 8.0.5 image. Metro ran on a Mac on the USB Ethernet link (192.168.2.1).</dd>
+      <dt>Resolution</dt>
+      <dd>800 x 450 px (read with sips). The receipt records no display or window size. The files are JPEG.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-dev-client-2026-11-13/README.md">pi400-dev-client-2026-11-13/README.md</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pi400-dev-client-2026-11-13/3-logbox-syntax-error.jpg</code>, 47568 bytes, SHA-256 <code>9da95e21420ea7d9d57f3f22e7344d8e5b91d985174d60343affd55abeb05f61</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>018a57d</code>, 2026-11-13</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pi400-dev-client-2026-11-13/4-logbox-render-error.jpg" alt="LogBox render error with component and call stacks on the Pi 400" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>4-logbox-render-error.jpg</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>A throw during render: LogBox with component and call stacks.</dd>
+      <dt>Build</dt>
+      <dd>apps/component-gallery built with RNQNX_ENABLE_DEV_SUPPORT=ON, launched by rnqnx project dev; Qt 6.12.0 (-O2 runtime), rnqnx-winmgr. The receipt names no git commit.</dd>
+      <dt>Device</dt>
+      <dd>Raspberry Pi 400, QNX SDP 8.0.5 image. Metro ran on a Mac on the USB Ethernet link (192.168.2.1).</dd>
+      <dt>Resolution</dt>
+      <dd>800 x 450 px (read with sips). The receipt records no display or window size. The files are JPEG.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-dev-client-2026-11-13/README.md">pi400-dev-client-2026-11-13/README.md</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pi400-dev-client-2026-11-13/4-logbox-render-error.jpg</code>, 67799 bytes, SHA-256 <code>28946ec057909148bcd0bc54a7ca6706f97462998692346f6df05d21a0673182</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>018a57d</code>, 2026-11-13</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pi400-dev-client-2026-11-13/5-dev-menu-from-metro.jpg" alt="Developer menu open over the component gallery on the Pi 400" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>5-dev-menu-from-metro.jpg</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>Pressing d in the Metro terminal opens the developer menu on the board. In the image the menu lists Reload, Disable Fast Refresh, a Fast Refresh card item and Close, and says it is connected to Metro at http://192.168.2.1:8081.</dd>
+      <dt>Build</dt>
+      <dd>apps/component-gallery built with RNQNX_ENABLE_DEV_SUPPORT=ON, launched by rnqnx project dev; Qt 6.12.0 (-O2 runtime), rnqnx-winmgr. The receipt names no git commit.</dd>
+      <dt>Device</dt>
+      <dd>Raspberry Pi 400, QNX SDP 8.0.5 image. Metro ran on a Mac on the USB Ethernet link (192.168.2.1).</dd>
+      <dt>Resolution</dt>
+      <dd>800 x 450 px (read with sips). The receipt records no display or window size. The files are JPEG.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-dev-client-2026-11-13/README.md">pi400-dev-client-2026-11-13/README.md</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pi400-dev-client-2026-11-13/5-dev-menu-from-metro.jpg</code>, 62288 bytes, SHA-256 <code>8633fde5256f47b6afb3d9b579055ea4c94bcea04652ce566d050ba812fa3119</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>018a57d</code>, 2026-11-13</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pi400-dev-client-2026-11-13/6-metro-unreachable.jpg" alt="Native error screen shown on the Pi 400 after a reload with Metro stopped" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>6-metro-unreachable.jpg</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>Reload with Metro stopped: the native error screen. The app loaded again when Metro came back.</dd>
+      <dt>Build</dt>
+      <dd>apps/component-gallery built with RNQNX_ENABLE_DEV_SUPPORT=ON, launched by rnqnx project dev; Qt 6.12.0 (-O2 runtime), rnqnx-winmgr. The receipt names no git commit.</dd>
+      <dt>Device</dt>
+      <dd>Raspberry Pi 400, QNX SDP 8.0.5 image. Metro ran on a Mac on the USB Ethernet link (192.168.2.1).</dd>
+      <dt>Resolution</dt>
+      <dd>800 x 450 px (read with sips). The receipt records no display or window size. The files are JPEG.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-dev-client-2026-11-13/README.md">pi400-dev-client-2026-11-13/README.md</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pi400-dev-client-2026-11-13/6-metro-unreachable.jpg</code>, 53868 bytes, SHA-256 <code>1bf0c95a62ff181fd9554dc2e0a03b17b8863176f5f47cb3bab0e4dd75139204</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>018a57d</code>, 2026-11-13</dd>
+    </dl>
+  </figcaption>
+</figure>

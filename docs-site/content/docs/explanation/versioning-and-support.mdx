@@ -57,9 +57,28 @@ No other React Native or Expo version is mentioned as supported. Treat any other
 
 The repository has no support window, no deprecation policy and no compatibility promise across versions. The nearest statement is in [SECURITY.md](https://github.com/mikevocalz/react-native-qnx/blob/main/SECURITY.md): the project is experimental, the active RN 0.88 development line receives security fixes as maintainers can verify them, and no supported production release or response-time guarantee exists. The [FAQ](/docs/faq) answers "Is it ready for production?" with no.
 
-## Why the docs site is unversioned
+## Proposed versioning scheme
 
-The site always describes `main`. The [changelog page](/docs/reference/changelog) states that there are no release tags, so there are no versioned releases and no versioned copies of the docs. The [docs parity page](/docs/explanation/docs-parity) records the decision: a version selector and a frozen copy per release come when a release exists. The `documentation` gate in the readiness record ("Versioned v1 documentation") is pending and asks for versioned getting-started pages, API and support limits, an evidence gallery, ADRs and release notes.
+This section is a proposal. The repository records no decision on it, and the owner has not accepted it. It uses only facts stated above: the root workspace and all 12 packages sit at `0.1.0`, there are no tags, and v1 is "a release milestone for the RN 0.88 line".
+
+- **One version line for the whole repository.** The root `package.json` `version` is the number of the repository. Package manifests move with it until package ownership and release units are reviewed, which [CONTRIBUTING.md](https://github.com/mikevocalz/react-native-qnx/blob/main/CONTRIBUTING.md) already requires before independent releases.
+- **Semantic versioning, `0.x` until v1.** Before v1, a minor bump may break the API. `1.0.0` is tagged only when all eleven gates in the readiness record are passed.
+- **Tags are `v<major>.<minor>.<patch>`.** Pre-release tags use a suffix such as `v1.0.0-rc.1`. A tag is created only after the gate evidence for the claim exists, as CONTRIBUTING.md says.
+- **The React Native line is part of the release note, not the version.** Each release states its pinned React Native, React, Expo and Hermes versions from the compatibility matrix. A move to a new React Native line starts a new minor (or major after v1) and a new snapshot of these docs.
+- **Docs follow the tag.** `latest` is `main`. Each tag gets a frozen copy of this site.
+
+## Versioned docs
+
+The site has a version selector in the header. It reads two files at build time:
+
+| Source                                    | What it provides                                                                                                               |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `version` in the repository's `package.json` | The number in the label of the first entry, "latest (main, 0.1.0)". The label changes when the root version changes.        |
+| `docs-site/versions.json`                 | The frozen copies. Each entry is a release tag and links to `/v/<tag>/docs`.                                                   |
+
+Today `versions.json` lists no snapshots, because no tag exists, so the selector shows one entry and is disabled. No release was invented to fill it. The procedure for adding a snapshot at a tag is in [Contributing](/docs/contributing#snapshot-the-docs-at-a-release-tag).
+
+The `documentation` gate in the readiness record ("Versioned v1 documentation") is pending. It asks for versioned getting-started pages, API and support limits, an evidence gallery, ADRs and release notes. The selector and the snapshot procedure give it the versioning mechanism. The gate stays pending until a v1 snapshot exists and a reviewer inspects it.
 
 ## Where to report problems
 

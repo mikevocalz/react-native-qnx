@@ -1,0 +1,60 @@
+---
+title: 'ADR-0003: Skia as the initial graphics renderer'
+description: The superseded plan to draw React Native views with Skia on QNX Screen, why Qt Quick replaced it, and what of it is left in the tree.
+---
+
+Record: [`docs/adr/0003-skia-initial-renderer.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0003-skia-initial-renderer.md), dated 2026-07-19 in the ADR index. The record file carries no date line of its own.
+
+## Status
+
+The record states: "Superseded by ADR-0001 and the current platform specification". Its closing note adds that the decision predates the locked Qt Quick backend, was never backed by a QNX Skia build or target result, and must not be used as implementation authority. Read it as history.
+
+## Context
+
+A production renderer has to draw rectangles, rounded rectangles, paths, borders, gradients, images, text, clipping, transforms, opacity layers and shadows. The record judged that writing a full GPU renderer from scratch was out of reach for the initial release.
+
+## Decision
+
+Use Skia as the initial production renderer, connected to QNX Screen through EGL/OpenGL ES or the strongest graphics path the board support package validates. The graphics layer sits behind four abstractions (`GraphicsBackend`, `RenderSurface`, `RenderContext`, `FrameScheduler`) so that Vulkan or Vulkan SC could be added without rewriting the Fabric integration. The Notes section says Skia must be cross-compiled for QNX and that the exact Skia commit belongs in the compatibility matrix.
+
+## Consequences
+
+- A faster path to production rendering.
+- Skia's Paragraph module would supply complex text layout.
+- Backend capability reporting is required so unsupported features do not degrade silently.
+
+## Alternatives rejected
+
+- A custom 2D renderer, because of scope.
+- A direct OpenGL ES 2D renderer, because it does not solve text layout or image decoding.
+
+## What the source tree shows
+
+[ADR-0001](/docs/explanation/adr/0001-qt-quick-backend) replaced this decision. It makes Qt Quick the component backend and lists Skia as superseded, with a possible return only as a leaf or canvas capability after a separate source-backed decision. The tree agrees with that reading.
+
+The record's "Related files" list names three directories. None exists:
+
+- `native/renderer/` is absent.
+- `native/text/` is absent.
+- `native/images/` is absent.
+
+`native/` holds `app-identity`, `common`, `lifecycle`, `platform`, `qt`, `testing`, `webgpu` and `window-chrome`. Under `native/qt/` the subdirectories are `graphics`, `motion`, `nativeui`, `rnsvg`, `svg` and `video`. Image work lives under `vnext/src/views/qt/image/`.
+
+Only one of the four named abstractions survives, and not as a Skia seam. `GraphicsBackend` is an enum in `native/qt/graphics/GraphicsSurfaceState.h` (`Unknown`, `Software`, `OpenVG`, `OpenGL`, `Direct3D11`, `Vulkan`, `Metal`, `Null`, `Direct3D12`), filled in by `native/qt/graphics/QtGraphicsSurface.cpp` from Qt's `QSGRendererInterface::GraphicsApi`. The header comment says Qt's selected backend is not evidence of an installed external engine. `RenderSurface`, `RenderContext` and `FrameScheduler` do not appear as identifiers anywhere outside the record itself.
+
+A search of `cmake/`, `native/`, `vnext/`, `packages/`, `scripts/` and `.github/` finds no Skia build, no Skia dependency pin and no Skia include. The remaining mentions are about other things:
+
+- `scripts/webgpu/dawn-pin.env` pins the Dawn commit that `react-native-skia` also pins, so the WebGPU work agrees with that library's checkout. This is a Dawn pin, not a Skia build.
+- `docs/expo-delivery/sdk58-support.json` marks `@shopify/react-native-skia` 2.14.0 as unsupported, with the reason "Native code for ios/android only; no qnx implementation."
+- `docs/component-support.md` states that no React Native WebGPU, TypeGPU, Three.js or Skia component is supported.
+- `docs/handoff/HANDOFF_2026-11-13.md` lists Skia Graphite among the WebGPU items that are not started.
+
+The compatibility-matrix commit the Notes section asks for was never recorded, which fits the record's own statement that no Skia build was attempted.
+
+## Evidence
+
+No device evidence exists for this decision, and the record says so. The evidence that matters is for the replacement: the Qt Quick item factory at `vnext/src/views/qt/QtQuickItemFactory.cpp` and the Pi 400 receipts listed under [ADR-0001](/docs/explanation/adr/0001-qt-quick-backend), including `docs/evidence/pi400-hello-world-2026-11-07.txt`.
+
+## What would reverse this
+
+Nothing in the record revives it. [ADR-0001](/docs/explanation/adr/0001-qt-quick-backend) states the only route back: a separate decision backed by sources, scoped to a leaf or canvas capability and not to component rendering. Such a decision would also need the QNX cross-build and target result that this record never had.

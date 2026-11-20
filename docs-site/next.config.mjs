@@ -7,6 +7,8 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   output: 'export',
+  // Frozen release copies are built with NEXT_PUBLIC_DOCS_BASE_PATH=/v/<tag>.
+  basePath: process.env.NEXT_PUBLIC_DOCS_BASE_PATH || undefined,
   reactStrictMode: true,
   // The repository root has its own pnpm lockfile; pin Turbopack to this app.
   turbopack: { root: dirname(fileURLToPath(import.meta.url)) },

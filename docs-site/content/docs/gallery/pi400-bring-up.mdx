@@ -1,0 +1,79 @@
+---
+title: Pi 400 bring-up
+description: The first Hello World captures from the Raspberry Pi 400, at 640x480 and 1920x1080, with the input lifecycle capture.
+---
+
+Three captures from the first on-device runs on 2026-11-07. All three show the same Hello World screen. The text and the layout are all the image contains. The claims about Fabric, Hermes, Nitro and input live in the receipts, not in the pixels.
+
+The stock Pi 4 board has no captures. See the [verification log](/docs/reference/verification-log) for what each result covers.
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pi400-hello-world-2026-11-07.png" alt="Centered text React Native QNX: Hello World on a dark blue background, 640 by 480" loading="lazy" style={{ maxWidth: "100%", width: 480, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>pi400-hello-world-2026-11-07.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>Centered text "React Native QNX: Hello World" on a dark blue background. The receipt says the image was visually verified as centered text over the full 640x480 app background, and that the log printed RNQNX_HELLO_NITRO_V1_OK platform=qnx architecture=aarch64 add=42.</dd>
+      <dt>Build</dt>
+      <dd>Production Metro entry hello-world-nitro.js compiled with matching hermesc, through Fabric, Hermes and Qt Quick. React Native 0.88.1, Hermes hermes-v260318099.0.5, Qt 6.12.0 evaluation, Nitro 1.0.0-alpha.nightly.105.g69d365fc9b18. The receipt does not name a git commit. Native executable SHA-256 4cf476ff...6865f5 (full value in the receipt).</dd>
+      <dt>Device</dt>
+      <dd>Physical Raspberry Pi 400, QNX SDP / Everywhere 8.0.5, user qnxuser, manual DRM/Screen startup</dd>
+      <dt>Resolution</dt>
+      <dd>640 x 480 px (read with sips). The receipt logs RNQNX_PLAYGROUND_SCREENSHOT hello-world-nitro.png 640x480. This file's SHA-256 matches the "captured PNG" hash in the receipt.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-hello-world-2026-11-07.txt">pi400-hello-world-2026-11-07.txt</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pi400-hello-world-2026-11-07.png</code>, 15781 bytes, SHA-256 <code>dfec0cafbb64c4c73fac76eadcc0be1dc63e0ce5d7645e19d01102ec7cc652c7</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>f2dc251</code>, 2026-11-07</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pi400-hello-world-fullscreen-2026-11-07.png" alt="Centered text React Native QNX: Hello World on a dark blue 1920 by 1080 screen" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>pi400-hello-world-fullscreen-2026-11-07.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>The same Hello World screen at fullscreen: centered white text on a dark blue background.</dd>
+      <dt>Build</dt>
+      <dd>Same marker line as above (RNQNX_HELLO_NITRO_V1_OK). The receipt lists no executable hash for this follow-up run, only the PNG hash, and no git commit.</dd>
+      <dt>Device</dt>
+      <dd>Physical Raspberry Pi 400, QNX SDP / Everywhere 8.0.5, user qnxuser, manual DRM/Screen startup</dd>
+      <dt>Resolution</dt>
+      <dd>1920 x 1080 px (read with sips). The receipt calls this an owner-requested fullscreen follow-up and logs RNQNX_PLAYGROUND_SCREENSHOT hello-world-fullscreen.png 1920x1080. It says explicit --fullscreen uses monitor geometry and the actual startup surface size. The SHA-256 of this file matches the receipt.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-hello-world-2026-11-07.txt">pi400-hello-world-2026-11-07.txt</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pi400-hello-world-fullscreen-2026-11-07.png</code>, 24677 bytes, SHA-256 <code>a41ee57ea8628c1fc42d2f516c8fb11fdc1562fcb608fe9f0b514078b6ce0cb8</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>f2dc251</code>, 2026-11-07</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pi400-input-lifecycle-2026-11-07.png" alt="Centered text React Native QNX: Hello World on a dark blue 1920 by 1080 screen, captured by the input lifecycle probe" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>pi400-input-lifecycle-2026-11-07.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>The same Hello World screen, captured as hello-world-input.png during the input lifecycle run. The image itself shows only the centered text. The data file records the input marker RNQNX_INPUT_LIFECYCLE_OK decorated-hit terminal multi-contact cancel deactivate unmount mouse-reentrant and the render marker RNQNX_HELLO_NITRO_V1_OK.</dd>
+      <dt>Build</dt>
+      <dd>Data file: source_commit 634ef0ac0069a23aab0d75a7d7e5e4ed47c7331f, input_code_commit 843730f, fixture_commit a58196d. Probe binary rnqnx_input_lifecycle_probe, SHA-256 85ca3c0b784837075287ea2b5079ba77185ece6958ee87def671ea16bce51141.</dd>
+      <dt>Device</dt>
+      <dd>Physical Pi 400 / QNX SDP 8.0.5 / Qt 6.12.0 / qnxuser (the data file's target field)</dd>
+      <dt>Resolution</dt>
+      <dd>1920 x 1080 px (read with sips). The data file records render_size [1920, 1080]. This file's SHA-256 matches the hello-world-input.png entry in the data file.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-input-lifecycle-2026-11-07.json">pi400-input-lifecycle-2026-11-07.json</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pi400-input-lifecycle-2026-11-07.png</code>, 24677 bytes, SHA-256 <code>365068ead9f0dd33473f32fdf9af20c2a5a98cad57c1b7472361e521979636f3</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>f2dc251</code>, 2026-11-07</dd>
+      <dt>Note</dt>
+      <dd>The data file marks synthetic_qt_input true, usb_hardware_input_verified false and qnx_js_handler_delivery_verified false. The screenshot does not show input.</dd>
+    </dl>
+  </figcaption>
+</figure>

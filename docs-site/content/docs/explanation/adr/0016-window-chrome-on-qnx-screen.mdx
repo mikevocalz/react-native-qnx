@@ -1,0 +1,98 @@
+---
+title: 'ADR-0016: Client-drawn window chrome on QNX Screen'
+description: The proposed design for a Qt Quick title bar on QNX, where the record and the code agree, and what a Pi 400 receipt does and does not show.
+---
+
+Record: [`docs/adr/0016-window-chrome-on-qnx-screen.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0016-window-chrome-on-qnx-screen.md), dated 2026-11-12. The index lists its status as "Proposed; host tests, Pi 400 close only".
+
+## Status
+
+The record states: "Proposed, 2026-11-12. Host tests exist. The chrome ran on the Pi 400 on 2026-11-12 (close only); the revised minimize, maximize and windowed start (items 3, 8, 9) await their device run. The v1 `window-chrome` gate stays `pending`."
+
+This ADR is Proposed, not Accepted. The code it describes exists and is built behind an opt-in switch. The rest of this page separates what host tests and device logs show from what the record still lists as open.
+
+## Context
+
+The v1 `window-chrome` gate asks for a native title bar outside the Fabric root, with `macos` and `windows` control layouts, three `titleBarStyle` values (`default`, `hidden`, `none`), an initial window size, and an ADR that defines minimize on QNX Screen. The configuration fields live at `extra.rnqnx.window = { controls, titleBarStyle, initialSize }`, and the resolved object goes into `native-app.json` with default controls `macos`.
+
+QNX Screen draws no window decorations for an application. It is a compositor with an optional window-manager context. The stock target images run either a fullscreen launcher or `screenwm`, and neither draws a title bar inside the app's buffer, so anything above the React content has to come from the app.
+
+The record tabulates what the Qt 6.12.0 QNX platform plugin (`qqnxwindow.cpp`) allows. `QWindow::close()` destroys the Screen window and the event loop quits when the last window goes. `showMinimized()` only logs "`Qt::WindowMinimized is not supported by this OS version`" and restores the previous geometry. `showMaximized()` and `showNormal()` switch between available geometry and the saved geometry. Without `no-fullscreen`, the root window is forced to the screen geometry. `startSystemMove()` and `startSystemResize()` are not overridden and return `false`.
+
+## Decision
+
+The record has eleven numbered decisions.
+
+1. Chrome is client-side Qt Quick. A QML title bar is a sibling of a content item inside the `QQuickWindow`, the Fabric root mounts into the content item, and Yoga never lays out the bar. It compiles only with `RNQNX_ENABLE_WINDOW_CHROME=ON`, default `OFF`.
+2. Controls map to `QWindow` calls, and a control that cannot work is not drawn. Each hidden control is logged with a reason at startup.
+3. Minimize on QNX Screen hides and destroys the app's native window while the process, the `QQuickWindow`, its items and the React tree stay. Restore is a relaunch: a second launch asks the running copy over a local socket to show its window and exits. The record rejects setting `SCREEN_PROPERTY_VISIBLE` to 0 because `fullscreen-winmgr` then leaves the screen blank.
+4. `default` draws the bar and moves content down by its height. `hidden` floats the controls over the content. `none` draws nothing.
+5. `macos` puts close, minimize and maximize at the left as round glyphs with a centred title. `windows` puts minimize, maximize and close at the right with a left-aligned title.
+6. The bar is 44 device-independent pixels tall, and every control hit target is at least 44 by 44.
+7. Each control is keyboard focusable, has an accessible button role and name (`Close window`, `Minimize window`, `Maximize window` or `Restore window`), and activates on Enter and Space.
+8. `initialSize` is the outer size, clamped to the screen and centred. On QNX an app with `initialSize` gets a contained window: the native window stays at display size and the chrome draws the app's window as a frame inside it. The bar moves the frame, the outer 6 px of each edge resize it (16 px from a corner), with a 400 by 300 minimum.
+9. The React surface follows the window size, and maximize is live wherever the platform can run it. On QNX that means an app with `initialSize`.
+10. The bar is dark unless the platform reports a light color scheme.
+11. A window manager of the project's own, `rnqnx-winmgr`, keeps the launcher visible, lets apps keep their own size and position, shows a dock, and implements Alt+Tab. Under it the app uses real native windows.
+
+## Consequences
+
+- QNX apps get a title and a working close control without a window manager.
+- Minimize works on QNX at the cost of releasing the native window. The gate item "minimize and restore with the AppState transition logged" still needs the `AppState` part and a device receipt.
+- In the `default` style the React surface is shorter by the bar height. The inset is not yet reported to JavaScript or `SafeAreaView`.
+- The chrome never calls into JavaScript, but `QtReactHost` runs JavaScript on the Qt GUI thread, so a blocking JS call blocks the title bar. The record does not claim the gate item "chrome still operable while the JS thread is deliberately blocked".
+- With the input-lifecycle dispatcher on, `pagePoint` and `screenPoint` are window coordinates, so in the `default` style they include the 44 px bar.
+- In `hidden` style a press on a floating control also reaches the Fabric view underneath.
+- On QNX under `fullscreen-winmgr` the app moves and resizes its own frame inside a display-sized window, so Alt+Tab previews and screenshots show the whole display.
+
+## Alternatives rejected
+
+- The Qt Quick Controls `ToolButton` frame from draft PR #110, because it pulls the Controls/Basic QML closure onto the target. The record keeps to plain `QtQuick`. See [ADR-0012](/docs/explanation/adr/0012-quick-controls-styling).
+- A hand-written `setPosition()` move on QNX, because `fullscreen-winmgr` resets the native size on every post.
+- A disabled minimize button with a tooltip, because a control that never works is a dead button. `unavailableControls: "disable"` exists for apps that want it, and the default stays `hide`.
+- Minimize by `SCREEN_PROPERTY_VISIBLE` = 0 or by lowering the z-order, because `fullscreen-winmgr` ignores both.
+- The QPA's `desktop` option (`Frame=Y`), because this window manager rejects the `Pos=` and `Visible=` messages it relies on.
+- Server-side decorations through `screenwm`, which are not available on the fullscreen launcher image and would leave the app no choice of control layout.
+
+## What the source tree shows
+
+Most of the design is in the tree and matches the record. These items check out against the files:
+
+- The opt-in switch is `option(RNQNX_ENABLE_WINDOW_CHROME ... OFF)` in `cmake/RnqnxWindowChrome.cmake`. The `--window-chrome` flag is in `packages/react-native-qnx-cli/src/build-native.mjs`.
+- `native/window-chrome/` holds `WindowChrome.qml`, `WindowChrome.cpp`, `WindowChromeModel.{h,cpp}`, `WindowHost.{h,cpp}` and three test sources (`WindowChromeModelTest.cpp`, `WindowChromeQuickTest.cpp`, `ConsumerDescriptorTest.cpp`), plus `fixtures/` with 13 JSON descriptors.
+- `kBarHeight = 44`, `kResizeBorder = 6`, `kResizeCorner = 16`, `kMinWindowWidth = 400` and `kMinWindowHeight = 300` are constants in `native/window-chrome/WindowChromeModel.h`.
+- `windowManagerKeepsWindowSize()` and `withSizeKeepingWindowManager()` exist (`WindowHost.cpp`, `WindowChromeModel.cpp`, `vnext/probes/playground/main.cpp`), as do the `rnqnx=minimize` manager message and `SCREEN_PROPERTY_SELF_LAYOUT` in `tools/qnx-winmgr/rnqnx-winmgr.c`. That file also has the Alt+Tab switcher and the `SIGTERM` timeout.
+- `scripts/qt-public/patches/qtbase-qnx-resize-swap.patch` exists. So do `cmake/RnqnxConsumerApp.cmake`, `cmake/ConsumerWindowChrome.h.in` and `packages/react-native-qnx-cli/src/window-descriptor.mjs`, all named under "Related files".
+- The Screen seams the record leans on are tabulated against the installed SDP 8.0.5 header in `docs/cited-seams.md` under "Window manager and window chrome Screen seams (2026-11-12)".
+
+Where the record and the tree differ:
+
+- **Status wording lags the tree.** The record calls the ADR Proposed and the device result "close only". The user-facing pages written afterwards go further. `docs/getting-started/window-chrome.md` and the [window chrome how-to](/docs/how-to/window-chrome) describe minimize, maximize and drag as working on QNX, and `docs/getting-started/pi400-desktop-app.md` documents all three buttons under both window managers. `docs-site/content/docs/reference/known-gaps.mdx` says "Host tests plus one Pi 400 run on pointer events injected through Screen". The ADR itself was edited in place after its date (items 3, 8, 9, 10 and 11 carry "revised" or "added" notes), so the record describes the later behavior while its Status line still reports the earlier device result.
+- **Gate still pending.** `docs/v1/hardening-coverage.md` lists `window-chrome` as "Pending" with the Windows API, inset propagation, close guards, both layouts, minimize/restore with `AppState`, and chrome operation while JS is blocked as the missing items. `docs/v1/release-notes.md` lists `window-chrome` as native title bar, minimize on QNX Screen and the Nitro v1 windows API. A search of `native/`, `packages/` and `vnext/` found no windows API implementation, so the release-notes row names more than the tree contains.
+- **Hidden-control log line.** The record gives the format as `RNQNX_WINDOW_CHROME hidden=<action> reason=<text>`. The code in `native/window-chrome/WindowChrome.cpp` prints `RNQNX_WINDOW_CHROME platform=<qpa> hidden=<action> reason=<text>`, with a `platform=` field first.
+- **Socket naming.** Item 3 says the host listens on a "per-user local socket named after the app id". `native/window-chrome/WindowHost.cpp` builds the primary path as `<socket directory>/rnqnx-<base app id>`, using `/tmp` by default, `RNQNX_SOCKET_DIR` as an override and `QLocalServer::WorldAccessOption`, so any login can reach it. The base app id drops build-variant suffixes. A per-user name (`...<user id>`) appears only as a fallback. `docs/getting-started/pi400-desktop-app.md` documents the shared form.
+- **A logged line with no source.** The Notes quote `RNQNX_WINDOW_GEOMETRY ... was=1920x1080` as device evidence, about 80 lines in 8 seconds. That string appears in the record only. It is in no source file and in no receipt under `docs/evidence/`, so the claim cannot be re-checked from the repository. The Notes also describe a disassembly of `/system/bin/fullscreen-winmgr` with addresses; the tree holds no copy of that disassembly.
+- **Host build switch for the Wayland shell.** The record says the chrome option is rejected together with the Linux Wayland host build, and that `build-native` rejects `--window-chrome` for it. Both hold: `cmake/RnqnxWindowChrome.cmake` fails the configure with a "not supported with" error when the Wayland shell host option is on, and `build-native.mjs` throws an error that names `docs/adr/0016`. The record's sentence that Wayland "gets close only" in the meantime has no matching code path: the build refuses rather than falling back, so there is no close-only Wayland configuration to run.
+- **Parity test.** The Notes say a parity test against `resolveQnxWindow` follows once PR #122 lands. `resolveQnxWindow` exists now (`packages/expo-qnx-config-plugins/index.js`), and `tests/js/window-chrome-descriptor.test.mjs` runs the shared fixtures against `window-descriptor.mjs`. This page found no test that checks `resolveQnxWindow` against those fixtures, so the promised parity test is not there.
+- **Open consequences still open.** `docs/getting-started/window-chrome.md` still lists the same gaps the Consequences section does: no inset to JavaScript, JS on the GUI thread, floating controls passing presses through, and `pageX`/`pageY` including the bar. The record's closing paragraph lists the windows API, close guards, runtime layout changes, the title-bar inset in JavaScript, the window icon and edge resize as out of the first slice. Edge resize has since been built for the QNX contained window and under `rnqnx-winmgr` (item 8, the constants above), but the other items have no code.
+
+## Evidence
+
+What host tests and CI cover:
+
+- `.github/workflows/window-chrome.yml` builds `native/window-chrome` with Qt 6.11.1 on Ubuntu, with sanitizers off and on, and runs `ctest`. It triggers on changes under `native/window-chrome/`, `cmake/RnqnxWindowChrome.cmake` and `cmake/WindowChromeQml.h.in`.
+- `docs/evidence/window-chrome-host-2026-11-12/` holds five 2x frames (`macos-default-2x.png`, `macos-hidden-2x.png`, `qnx-macos-2x.png`, `qnx-windows-2x.png`, `windows-default-2x.png`). `docs/getting-started/window-chrome.md` states they come from the offscreen QPA with Qt 6.12.0 on a macOS host, not QNX output, and that the `qnx-*` frames use the QNX capability table on the host.
+- `tests/js/window-chrome-descriptor.test.mjs` checks the descriptor against the shared fixtures.
+
+What device evidence exists, quoted as it reads:
+
+- `docs/evidence/pr149-pi400-run1-2026-11-19/app.txt` contains `RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=1024x768 mode=native-moved` from the Pi 400 (host `qnxpi`, QNX 8.0.0, display 1024x768). It shows the chrome started on the board in `native-moved` mode. The run's README says only the deploy log, the app log and the screenshots survive, with no injector command lines.
+- `docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md` records a build with `-DRNQNX_ENABLE_WINDOW_CHROME=ON -DRNQNX_ENABLE_INPUT_LIFECYCLE=ON`, and states that the CMakeCache confirms `WINDOW_CHROME` ON.
+- `docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md` says three `--screenshot` runs under `rnqnx-winmgr` and `demolauncher` each wrote a 1280x800 frame "showing the component gallery with its title bar, not a black window".
+- `docs/evidence/tile-layout-pi400-2026-11-13/README.md` reports live edge drags that changed the window width, and that "the green button toggled maximise and restore twice (two `RNQNX_WINDOW_ACTION maximize` lines, both captures taken)". Its own status note says it does not record the host identity, the deployed commit, the commands or the exit statuses, and "cannot qualify the current PR head".
+
+What no receipt in `docs/evidence/` shows: a minimize followed by a restore on the board, a close-button press with its exit status, the `hidden=` control line from a device run, the windows-layout bar on the Pi, or any run with JavaScript deliberately blocked. The how-to page says one Pi 400 run on 2026-11-12 moved, resized, minimized, maximized and restored an app window under `rnqnx-winmgr`, and points to `docs/getting-started/window-chrome.md` "for the receipt". That page contains no receipt section and no link into `docs/evidence/` for those actions. Treat the minimize and restore behavior as described but not device-verified on the evidence in the repository.
+
+## What would reverse this
+
+The record names no reversal condition. It names the exits that keep it Proposed: the `window-chrome` gate stays `pending` until the missing gate items are met (AppState on minimize, a device receipt, chrome operable with blocked JavaScript). The Alternatives section keeps two later directions open. The `QtDesktopWindow` frame from PR #110 can merge with this design, and `screenwm` decorations remain possible on images that run it. A window manager that honors app sizes on every image would remove the contained-window workaround in item 8, as the record's last Consequences bullet says.

@@ -1,0 +1,246 @@
+---
+title: Held key with repeat on the Pi 400
+description: Ten captures of the focus ring moving across the gallery sidebar while a down key is held with Screen key repeat events.
+---
+
+Run 2 sent one key-down and one key-up, so it could not show key repeat. This run used the new `keyhold` command of `tools/qnx-input/rnqnx-inject`, which sets the `SCREEN_FLAG_KEY_REPEAT` flag. The focus ring moves among the five sidebar tabs: Components, Advanced, Documents, Controls, More.
+
+The receipt's result: with repeat events, a held `down` moved focus across the tabs repeatedly and wrapped, where run 2's single key-down moved it one step. The step counts are the receipt author's arithmetic from the injector timing. The app log did not change, so nothing in the app records individual key events. A real USB keyboard through `io-hid` was not exercised.
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pr149-pi400-keyhold-2026-11-19/after-key-down.png" alt="Gallery with the focus ring on the Advanced tab at the start of test A" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>after-key-down.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>Focus ring on Advanced (start of test A).</dd>
+      <dt>Build</dt>
+      <dd>PR 149 build 2 (commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6) from /data/home/qnxuser/rnqnx-pr149-2, as in run 2. The receipt says it was not re-hashed in this run. Injector rnqnx-inject5, SHA-256 3d52daac5471c49ee7046c7d2f4fa7e79740f3376c3213a7be2e7d2d270262fa.</dd>
+      <dt>Device</dt>
+      <dd>Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), display 1024x768</dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 per the receipt.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/README.md">pr149-pi400-keyhold-2026-11-19/README.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/SHA256SUMS">pr149-pi400-keyhold-2026-11-19/SHA256SUMS</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pr149-pi400-keyhold-2026-11-19/after-key-down.png</code>, 106825 bytes, SHA-256 <code>9a5b5044b202a94c1879ef51c5b9f6e99b2f871e27db1664a947874c7f5212cf</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>22039ec</code>, 2026-11-19</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pr149-pi400-keyhold-2026-11-19/A-before.png" alt="Gallery with the focus ring on the Advanced tab before keyhold test A" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>A-before.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>Focus ring on Advanced (start of test A).</dd>
+      <dt>Build</dt>
+      <dd>PR 149 build 2 (commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6) from /data/home/qnxuser/rnqnx-pr149-2, as in run 2. The receipt says it was not re-hashed in this run. Injector rnqnx-inject5, SHA-256 3d52daac5471c49ee7046c7d2f4fa7e79740f3376c3213a7be2e7d2d270262fa.</dd>
+      <dt>Device</dt>
+      <dd>Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), display 1024x768</dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 per the receipt.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/README.md">pr149-pi400-keyhold-2026-11-19/README.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/SHA256SUMS">pr149-pi400-keyhold-2026-11-19/SHA256SUMS</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pr149-pi400-keyhold-2026-11-19/A-before.png</code>, 106825 bytes, SHA-256 <code>9a5b5044b202a94c1879ef51c5b9f6e99b2f871e27db1664a947874c7f5212cf</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>22039ec</code>, 2026-11-19</dd>
+      <dt>Duplicate</dt>
+      <dd>Byte-identical to <code>after-key-down.png</code>, shown above on this page.</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pr149-pi400-keyhold-2026-11-19/A-after-800ms-10hz.png" alt="Gallery with the focus ring on Components after keyhold down 800 10" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>A-after-800ms-10hz.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>Focus ring on Components after keyhold down 800 10. The receipt's arithmetic: one press and about three repeats make four presses from Advanced on a five-tab wrapping ring.</dd>
+      <dt>Build</dt>
+      <dd>PR 149 build 2 (commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6) from /data/home/qnxuser/rnqnx-pr149-2, as in run 2. The receipt says it was not re-hashed in this run. Injector rnqnx-inject5, SHA-256 3d52daac5471c49ee7046c7d2f4fa7e79740f3376c3213a7be2e7d2d270262fa.</dd>
+      <dt>Device</dt>
+      <dd>Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), display 1024x768</dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 per the receipt.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/README.md">pr149-pi400-keyhold-2026-11-19/README.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/SHA256SUMS">pr149-pi400-keyhold-2026-11-19/SHA256SUMS</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pr149-pi400-keyhold-2026-11-19/A-after-800ms-10hz.png</code>, 106511 bytes, SHA-256 <code>211125f9b975b0e2dc14ea1536168eba46ae2d8cca1ce098edf10e170c62509c</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>22039ec</code>, 2026-11-19</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pr149-pi400-keyhold-2026-11-19/B-during-2500ms.png" alt="Gallery with the focus ring on Controls during the 2.5 second key hold" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>B-during-2500ms.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>Focus ring on Controls, captured about 1.5 s into keyhold down 2500 at 30 Hz.</dd>
+      <dt>Build</dt>
+      <dd>PR 149 build 2 (commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6) from /data/home/qnxuser/rnqnx-pr149-2, as in run 2. The receipt says it was not re-hashed in this run. Injector rnqnx-inject5, SHA-256 3d52daac5471c49ee7046c7d2f4fa7e79740f3376c3213a7be2e7d2d270262fa.</dd>
+      <dt>Device</dt>
+      <dd>Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), display 1024x768</dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 per the receipt.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/README.md">pr149-pi400-keyhold-2026-11-19/README.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/SHA256SUMS">pr149-pi400-keyhold-2026-11-19/SHA256SUMS</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pr149-pi400-keyhold-2026-11-19/B-during-2500ms.png</code>, 106862 bytes, SHA-256 <code>7cc51f5f7777dbdcd21f5a05d0a8d554e997db3593ca7384139bb7e63b56aae8</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>22039ec</code>, 2026-11-19</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pr149-pi400-keyhold-2026-11-19/B-after-2500ms.png" alt="Gallery with the focus ring on Documents after the 2.5 second key hold" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>B-after-2500ms.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>Focus ring on Documents after the hold and a pointer nudge. The receipt's arithmetic: one press and about 61 repeats, 62 steps from Components.</dd>
+      <dt>Build</dt>
+      <dd>PR 149 build 2 (commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6) from /data/home/qnxuser/rnqnx-pr149-2, as in run 2. The receipt says it was not re-hashed in this run. Injector rnqnx-inject5, SHA-256 3d52daac5471c49ee7046c7d2f4fa7e79740f3376c3213a7be2e7d2d270262fa.</dd>
+      <dt>Device</dt>
+      <dd>Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), display 1024x768</dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 per the receipt.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/README.md">pr149-pi400-keyhold-2026-11-19/README.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/SHA256SUMS">pr149-pi400-keyhold-2026-11-19/SHA256SUMS</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pr149-pi400-keyhold-2026-11-19/B-after-2500ms.png</code>, 107254 bytes, SHA-256 <code>da00ce8be60857a0b62ddf7944d10b2dd216e3d2e414a8d6978ce385cf59b9f0</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>22039ec</code>, 2026-11-19</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pr149-pi400-keyhold-2026-11-19/B-after-2s-later.png" alt="Gallery with the focus ring on Documents two seconds after the key was released" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>B-after-2s-later.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>Focus ring on Documents, the same as the capture before it. The receipt reads this as the key being released correctly.</dd>
+      <dt>Build</dt>
+      <dd>PR 149 build 2 (commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6) from /data/home/qnxuser/rnqnx-pr149-2, as in run 2. The receipt says it was not re-hashed in this run. Injector rnqnx-inject5, SHA-256 3d52daac5471c49ee7046c7d2f4fa7e79740f3376c3213a7be2e7d2d270262fa.</dd>
+      <dt>Device</dt>
+      <dd>Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), display 1024x768</dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 per the receipt.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/README.md">pr149-pi400-keyhold-2026-11-19/README.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/SHA256SUMS">pr149-pi400-keyhold-2026-11-19/SHA256SUMS</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pr149-pi400-keyhold-2026-11-19/B-after-2s-later.png</code>, 107254 bytes, SHA-256 <code>da00ce8be60857a0b62ddf7944d10b2dd216e3d2e414a8d6978ce385cf59b9f0</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>22039ec</code>, 2026-11-19</dd>
+      <dt>Duplicate</dt>
+      <dd>Byte-identical to <code>B-after-2500ms.png</code>, shown above on this page.</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pr149-pi400-keyhold-2026-11-19/sidebar-crops-ex2-A0-A1-Bduring-B1-B2.png" alt="Six sidebar crops side by side showing the focus ring position in each capture" loading="lazy" style={{ maxWidth: "100%", width: 660, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>sidebar-crops-ex2-A0-A1-Bduring-B1-B2.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>The sidebar of six captures side by side, cropped from the originals.</dd>
+      <dt>Build</dt>
+      <dd>PR 149 build 2 (commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6) from /data/home/qnxuser/rnqnx-pr149-2, as in run 2. The receipt says it was not re-hashed in this run. Injector rnqnx-inject5, SHA-256 3d52daac5471c49ee7046c7d2f4fa7e79740f3376c3213a7be2e7d2d270262fa.</dd>
+      <dt>Device</dt>
+      <dd>Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), display 1024x768</dd>
+      <dt>Resolution</dt>
+      <dd>660 x 380 px (read with sips). A crop made from the originals; the receipt gives no size.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/README.md">pr149-pi400-keyhold-2026-11-19/README.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/SHA256SUMS">pr149-pi400-keyhold-2026-11-19/SHA256SUMS</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pr149-pi400-keyhold-2026-11-19/sidebar-crops-ex2-A0-A1-Bduring-B1-B2.png</code>, 14847 bytes, SHA-256 <code>f1a3c7a7ff21be1ad8af441b6641199134cf89fd5f5c8f2710bd8607b187d1cd</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>22039ec</code>, 2026-11-19</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pr149-pi400-keyhold-2026-11-19/stock-desktop-after.png" alt="Stock QNX desktop after the app was stopped" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>stock-desktop-after.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>Stock desktop after the app was stopped.</dd>
+      <dt>Build</dt>
+      <dd>PR 149 build 2 (commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6) from /data/home/qnxuser/rnqnx-pr149-2, as in run 2. The receipt says it was not re-hashed in this run. Injector rnqnx-inject5, SHA-256 3d52daac5471c49ee7046c7d2f4fa7e79740f3376c3213a7be2e7d2d270262fa.</dd>
+      <dt>Device</dt>
+      <dd>Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), display 1024x768</dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 per the receipt.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/README.md">pr149-pi400-keyhold-2026-11-19/README.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/SHA256SUMS">pr149-pi400-keyhold-2026-11-19/SHA256SUMS</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pr149-pi400-keyhold-2026-11-19/stock-desktop-after.png</code>, 730183 bytes, SHA-256 <code>7ae2a443e07561ff7f66528b6a02d38c682de4bcc77f9b0646f9a3c17fea11e6</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>22039ec</code>, 2026-11-19</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pr149-pi400-keyhold-2026-11-19/after-key-tab.png" alt="Gallery first screen with no visible focus ring after the first Tab key" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>after-key-tab.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>Gallery after the first key tab following the click. The receipt says there was no visible ring change and it is unknown whether focus moved without a ring.</dd>
+      <dt>Build</dt>
+      <dd>PR 149 build 2 (commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6) from /data/home/qnxuser/rnqnx-pr149-2, as in run 2. The receipt says it was not re-hashed in this run. Injector rnqnx-inject5, SHA-256 3d52daac5471c49ee7046c7d2f4fa7e79740f3376c3213a7be2e7d2d270262fa.</dd>
+      <dt>Device</dt>
+      <dd>Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), display 1024x768</dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 per the receipt.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/README.md">pr149-pi400-keyhold-2026-11-19/README.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/SHA256SUMS">pr149-pi400-keyhold-2026-11-19/SHA256SUMS</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pr149-pi400-keyhold-2026-11-19/after-key-tab.png</code>, 106035 bytes, SHA-256 <code>75fab30767364231321ad5ad91adbde9b4ce222ad66c13f4451eb0c2513beba6</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>22039ec</code>, 2026-11-19</dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: "2rem 0" }}>
+  <Img src="/evidence/pr149-pi400-keyhold-2026-11-19/gallery-first-screen.png" alt="Component gallery first screen with the Components tab selected" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
+  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+    <strong>gallery-first-screen.png</strong>
+    <dl style={{ marginTop: "0.5rem" }}>
+      <dt>Shows</dt>
+      <dd>Gallery first screen, Components tab selected, Fast Refresh card reading Release build: bundled bytecode, no Metro connection.</dd>
+      <dt>Build</dt>
+      <dd>PR 149 build 2 (commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6) from /data/home/qnxuser/rnqnx-pr149-2, as in run 2. The receipt says it was not re-hashed in this run. Injector rnqnx-inject5, SHA-256 3d52daac5471c49ee7046c7d2f4fa7e79740f3376c3213a7be2e7d2d270262fa.</dd>
+      <dt>Device</dt>
+      <dd>Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), display 1024x768</dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 per the receipt.</dd>
+      <dt>Receipt</dt>
+      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/README.md">pr149-pi400-keyhold-2026-11-19/README.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-keyhold-2026-11-19/SHA256SUMS">pr149-pi400-keyhold-2026-11-19/SHA256SUMS</a></dd>
+      <dt>Image file</dt>
+      <dd><code>docs/evidence/pr149-pi400-keyhold-2026-11-19/gallery-first-screen.png</code>, 106035 bytes, SHA-256 <code>75fab30767364231321ad5ad91adbde9b4ce222ad66c13f4451eb0c2513beba6</code></dd>
+      <dt>Added to the repository</dt>
+      <dd>commit <code>22039ec</code>, 2026-11-19</dd>
+      <dt>Duplicate</dt>
+      <dd>Byte-identical to <code>after-key-tab.png</code>, shown above on this page.</dd>
+      <dt>Note</dt>
+      <dd>No receipt names this file. Its bytes are identical to after-key-tab.png.</dd>
+    </dl>
+  </figcaption>
+</figure>

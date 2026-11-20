@@ -1,0 +1,65 @@
+---
+title: 'ADR-0012: Quick Controls style for the QNX component library'
+description: The proposed rule that any use of Qt Quick Controls defaults to the Basic style, and the fact that no code imports Quick Controls yet.
+---
+
+Record: [`docs/adr/0012-quick-controls-styling.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0012-quick-controls-styling.md), dated 2026-08-14.
+
+## Status
+
+The record states: "Proposed 2026-08-14. Evidence is from the Qt 6.11.1 Homebrew installation and Qt's Quick Controls documentation. Acceptance on the Pi requires a component gallery that renders correctly with RN style props authoritative."
+
+The decision is still Proposed. The Notes section says the acceptance gate, a themed gallery on the Pi 400, "remains unproven on the macOS host" and that the record is a design decision only.
+
+## Context
+
+Qt Quick Controls ships several built-in styles: Basic, Fusion, Imagine, Material, Universal and some platform styles. A labs module, `Qt.labs.stylekit`, is a Technology Preview. The style decides how controls such as `Switch`, `Button`, `Slider` and `TextField` look and behave.
+
+The record says the view layer did not use Quick Controls when it was written. `Switch`, `Button`, `ActivityIndicator` and `TextInput` were plain `QtQuick` items or `FocusScope` wrappers with direct `Rectangle` and `Text` drawing. The style question therefore applies to future components, or to a move onto Quick Controls for those four.
+
+## Decision
+
+1. The default style for any Quick Controls use is `Basic`. It is the smallest and most predictable style, and the least likely to override React Native style props with platform chrome.
+2. `Fusion`, `Imagine`, `Material` and `Universal` may become opt-in themes later, but only if a component gallery on the Pi shows that RN `style` props still control color, font, border and geometry. A style that overrides them is a bug.
+3. `Qt.labs.stylekit` is not used until it leaves Technology Preview.
+4. Theming does not replace RN style props. Quick Controls styles are an implementation detail, and the public API stays React Native's style system.
+
+## Consequences
+
+- Components built on Quick Controls look simple and uniform across QNX targets.
+- No macOS-specific platform style leaks in, because `Basic` does not vary by desktop environment.
+- A later Material or Fusion opt-in needs its own gallery and a revision of this record.
+
+## Alternatives rejected
+
+- `Material` by default, because its elevation, ink and density assumptions can override RN `style` values, and its palette does not suit automotive or industrial expectations.
+- `Fusion` by default, because it adds styling beyond RN's that would still need proof on the Pi. Kept as a possible opt-in.
+- Adopting `Qt.labs.stylekit` now, because it has no source or binary compatibility promise.
+- A custom style from scratch, because `Basic` plus RN style props is the smallest thing that can work.
+
+## What the source tree shows
+
+The record's premise still holds, and the tree has gone further than the record describes. No file under `cmake/`, `native/`, `vnext/`, `packages/`, `scripts/` or `tests/` imports `QtQuick.Controls`, links a Quick Controls target, or calls `QQuickStyle`. Every QML import in the runtime is `QtQuick`, with `QtQuick.Shapes` in two places. The runtime links `Qt6::Quick`, `Qt6::Qml` and `Qt6::Gui` (for example in `cmake/RnqnxReactQt.cmake`) and no Controls module. Two comments confirm the choice in code: `native/qt/video/QnxVideo.qml` says it uses plain items with no Qt Quick Controls dependency, and `vnext/include/react-native-qnx/fabric/QtQuickMountingLayer.h` explains that `TextInput` has no placeholder because that belongs to `TextField` in Quick Controls, so the host does not fake it.
+
+So the decision is a rule for code that does not exist. The components the record names are mounted through other paths:
+
+- `Switch` goes through `vnext/src/fabric/SwitchShadowNode.cpp`, `vnext/src/fabric/QtSwitchBridge.cpp` and `QtQuickMountingLayer::updateSwitch`.
+- `ActivityIndicator` goes through `QtQuickMountingLayer::updateActivityIndicator`.
+- `TextInput` is built from the inline QML in `vnext/src/views/qt/QtTextInputQml.cpp`, which starts with `import QtQuick` only.
+- `docs/component-support.md` lists `Button`, `ActivityIndicator` and `Switch` as supported, with the device column "unverified".
+
+Other documents still describe Quick Controls as planned. `docs/build-qt-modules.md` and `docs-site/content/docs/reference/qt-tiers.mdx` list Quick Controls 2 and the Basic style as Tier 1, "default style per ADR-0012", with licenses LGPLv3 or GPLv2 and the deployment columns still "TBD". `docs/packaging.md` says Quick Controls, Quick Layouts and Widgets stay outside the application deployment subset, and the ADR-0011 evaluation subset adds Quick Shapes but not Controls. `docs/evidence/qt-public-runtime-closure-o2-2026-11-12-a79e16a.json` has no entry mentioning Controls.
+
+One more point: the record cites `vnext/probes/qtquick/main.cpp` as a related file. It exists, and it contains no Controls import or reference.
+
+The "Installed evidence" section lists frameworks from the Qt 6.11.1 Homebrew keg on the macOS host under `/opt/homebrew/Cellar/qt/6.11.1/Frameworks`. This page did not re-check the keg, which is outside the repository. The device runtime is Qt 6.12.0 (see [ADR-0013](/docs/explanation/adr/0013-open-source-qt)), so the 6.11.1 list is the record's evidence about the macOS host and says nothing about the public-source QNX build.
+
+## Evidence
+
+Source tree: `vnext/src/views/qt/QtQuickItemFactory.cpp` (the factory that builds items from inline QML), `vnext/src/views/qt/QtTextInputQml.cpp`, `vnext/src/fabric/QtSwitchBridge.cpp`, `docs/build-qt-modules.md` and `docs/adr/0011-qt-module-licensing.md`, the licensing record this one depends on ([ADR-0011](/docs/explanation/adr/0011-qt-module-licensing)).
+
+Device evidence: none. No receipt in `docs/evidence/` renders a Quick Controls component on the Pi 400, which matches the record's own statement that the gallery gate is unproven.
+
+## What would reverse this
+
+The record names the trigger for promotion, not reversal. It moves from Proposed to Accepted when a component gallery on the Pi shows that RN style props remain authoritative under `Basic`. It would be dropped or rewritten if the project keeps all controls as plain Qt Quick items, in which case the Tier 1 rows that cite it would need the same change. A move to `Material` or `Fusion` needs its own gallery and a revision of this record, per its Consequences.
