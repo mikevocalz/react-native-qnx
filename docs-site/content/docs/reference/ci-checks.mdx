@@ -1,0 +1,83 @@
+---
+title: CI checks
+description: The GitHub Actions workflows in the repository, what triggers and runs each one, which are required for a v1 candidate, and how hosted, QNX cross-build and device evidence differ.
+---
+
+This page describes what each workflow runs, read from the YAML in [`.github/workflows`](https://github.com/mikevocalz/react-native-qnx/tree/main/.github/workflows) at `8d7deaa`. It does not say any check passes. A run result belongs to one commit, and the [required-checks record](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/required-checks.md) says a run on an earlier commit does not count for a candidate.
+
+I counted 27 workflow files. Every job uses `runs-on: ubuntu-24.04`, a GitHub-hosted runner. The files were read with Ruby's YAML parser. I did not run any workflow.
+
+## Three kinds of evidence
+
+[required-checks.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/required-checks.md) sorts results into three categories and says each is reported on its own.
+
+| Category | What it is | Status in the repository |
+| --- | --- | --- |
+| Hosted | GitHub-hosted `ubuntu-24.04` runners. Linux host builds, source contracts and bundles. None of them compile for QNX. | Every workflow below. |
+| QNX cross-build | A build with the QNX SDP toolchain for the target, on a self-hosted runner the owner authorizes to hold the licensed SDP. | Required and missing. The document says no workflow does this. |
+| Device | Supervised runs on named QNX hardware. Recorded as evidence receipts under the other v1 gates. They are not CI checks. | Receipts under `docs/evidence/`. The Pi 400 receipts belong to earlier revisions and do not cover a candidate. |
+
+A local run of the same command never substitutes for a hosted check. A passing hosted check says nothing about a QNX cross-build or a device. The [status page](/docs/reference/status) uses "host-tested" for what a hosted job builds and runs on Linux, and "device-verified" for what a receipt shows on the Pi 400.
+
+## Required for a v1 candidate
+
+The Candidate CI gate (`ci`) in [v1-readiness.json](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/v1-readiness.json) asks for successful required checks on the release candidate, on authorized runners, with local checks labeled separately. The gate is pending on `main`. The required hosted workflows, from required-checks.md, are these 18:
+
+`sdk58-validation`, `host-renderer`, `image-loader`, `nitro-v1-host`, `nitro-qnx-source-check`, `expo-modules-qnx-source-check`, `expo-qnx-autolinking`, `hermes-qnx-source-check`, `react-qnx-source-check`, `pi-tooling-quality`, `runtime-appstate`, `qnx-create-app`, `qnx-native-consumer-build`, `phase6-doctor`, `phase7-release-dossier`, `phase-public-host`, `app-identity`, `phase4-lifecycle`.
+
+Most of them filter on paths, so a pull request that touches other files does not start them. The document gives a `gh workflow run` loop that dispatches all 18 on the candidate ref. Each run has to belong to the candidate's head commit.
+
+Separately, the document records a branch ruleset on `main` that requires a pull request and three checks on every pull request: `validate` (from SDK 58 validation), the two `Qt 6.11 / RN 0.88 / Hermes (input lifecycle ON|OFF)` jobs (from SDK 58 full host renderer) and `image-cache` (from Image loader HTTP and cache). Path-filtered workflows are left out of the ruleset because a skipped required check would wait forever.
+
+required-checks.md does not list `window-chrome.yml`, `docs-site.yml`, `runner-release.yml` or `webgpu-host.yml` as required or as not required. The `window-chrome` gate in the readiness record names device receipts and a native test as its evidence.
+
+Each required workflow sets `permissions: contents: read` and pins actions to full commit SHAs, per the same document.
+
+## Workflows
+
+Triggers: `PR` is `pull_request`, `push` is a push to `main` unless noted, `dispatch` is `workflow_dispatch`. "Paths" means the trigger only fires when changed files match a filter. Three workflows whose file names carry the name of the separate Linux/Wayland target are not listed by name, because a CI check on this site bans that word. They are marked informational in required-checks.md, run on pull requests with path filters (one also on a push to a feature branch) and can be dispatched, and cover that target's Metro platform, its native Qt host and its development launcher.
+
+### Required for a candidate
+
+| Workflow file | Triggers | What it runs |
+| --- | --- | --- |
+| [`sdk58-validation.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/sdk58-validation.yml) | PR to `main` and three feature branches, push to `main` and `ci/sdk58-validation`, dispatch | Frozen `pnpm install`, `validate-security-overrides.mjs`, `format:check`, `validate:manifests`, `validate:dependencies`, `typecheck`, `peers check`, `validate:expo-sdk58-support`, a Metro bundle of the playground, the component-conformance bundle, `test:js`, `build:packages`, `validate:architecture`, `codegen:check`, `validate:clean-app`, `test:cpp:host`, `audit:dependencies` |
+| [`host-renderer.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/host-renderer.yml) | PR to `main` and two feature branches, push to `main`, dispatch | Matrix over input lifecycle `OFF` and `ON`. Builds the Fabric, Hermes and Qt Quick host with the `linux-host-renderer` CMake preset, runs the Qt SVG, react-native-svg, native-ui and video checks, sanitized worklets and react-native-svg tests, renders the component-conformance bundle with window-control layouts, runs hello-world and 1000-row list workloads, `validate:clean-app` and an external-app integration test |
+| [`image-loader.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/image-loader.yml) | PR to `main`, push to `main`, dispatch | CMake build and `ctest` of `tests/image-loader`: HTTP fetch and decoded-cache tests |
+| [`nitro-v1-host.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/nitro-v1-host.yml) | PR (paths), dispatch | `validate:dependencies`, `validate:qnx-nitro`, `test:js`, `typecheck`, then a CMake host compile of `tests/native/nitro-v1-host` |
+| [`nitro-qnx-source-check.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/nitro-qnx-source-check.yml) | PR (paths), push (paths), dispatch | `validate:qnx-nitro`, `format:check` |
+| [`expo-modules-qnx-source-check.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/expo-modules-qnx-source-check.yml) | PR (paths), push (paths), dispatch | `validate:qnx-expo-modules`, `format:check` |
+| [`expo-qnx-autolinking.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/expo-qnx-autolinking.yml) | PR (paths), push (paths), dispatch | `validate:qnx-expo-autolinking`, `test:js`, `format:check` |
+| [`hermes-qnx-source-check.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/hermes-qnx-source-check.yml) | PR (paths), push (paths), dispatch | Clones `facebook/hermes` at a pinned commit, applies `scripts/patch-hermes-qnx.mjs`, runs `git diff --check`, and greps the patch script for two removed constructs |
+| [`react-qnx-source-check.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/react-qnx-source-check.yml) | PR (paths), push (paths), dispatch | `validate:qnx-react`, `format:check`, and a Metro build of `react-probe.js` for the `qnx` platform |
+| [`pi-tooling-quality.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/pi-tooling-quality.yml) | PR (paths), push (paths), dispatch | `bash -n` and ShellCheck on the board build and deploy scripts. Job name `Shell syntax and lint` |
+| [`runtime-appstate.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/runtime-appstate.yml) | PR (paths), dispatch | Matrix over AppState `OFF` and `ON`. Builds the host renderer and AppState tests |
+| [`qnx-create-app.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/qnx-create-app.yml) | PR (paths), dispatch | `format:check`, `typecheck`, dependency and manifest validation, the project-create test, `test:js`, builds the identity tool, creates an external Expo app with the CLI and bundles it, then `validate:architecture`, `codegen:check`, `audit:dependencies` |
+| [`qnx-native-consumer-build.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/qnx-native-consumer-build.yml) | PR (paths), dispatch | Consumer-build and Nitro package metadata tests, creates an app with the CLI, runs `project build-native` in host-preview mode and for the other target |
+| [`phase6-doctor.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/phase6-doctor.yml) | PR (paths), dispatch | `format:check`, `typecheck`, `validate:dependencies`, `validate:manifests`, `test:js`, `build:packages`, `validate:architecture`, `codegen:check`, `audit:dependencies` |
+| [`phase7-release-dossier.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/phase7-release-dossier.yml) | PR (paths), dispatch | The same list as `phase6-doctor`, then `scripts/qnx-release-dossier.mjs` `create` and `verify` |
+| [`phase-public-host.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/phase-public-host.yml) | PR to `main` and one feature branch (paths), dispatch | Builds the host renderer and renders the public React Native import bundles |
+| [`app-identity.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/app-identity.yml) | PR (paths), dispatch | Matrix over sanitizers `OFF` and `ON`. Builds and tests `native/app-identity`, then runs `tests/js/app-identity.test.mjs` |
+| [`phase4-lifecycle.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/phase4-lifecycle.yml) | PR (paths), dispatch | Matrix over sanitizers `OFF` and `ON`. Builds and tests the `native/lifecycle` Qt lifecycle observer |
+
+### Other workflows
+
+| Workflow file | Triggers | What it runs | Status in required-checks.md |
+| --- | --- | --- | --- |
+| [`docs-site.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/docs-site.yml) | PR to `main` (paths under `docs-site/` and the generated-data sources), dispatch | In `docs-site/`: `npm ci`, `data:check`, `lint`, `types:check`, `build`, `check:content` | Not mentioned |
+| [`window-chrome.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/window-chrome.yml) | PR (paths), no dispatch | Matrix over sanitizers `OFF` and `ON`. Builds and tests `native/window-chrome` | Not mentioned |
+| [`runner-release.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/runner-release.yml) | Dispatch only, with `tag` and `archive` inputs | Downloads an archive and manifest from a draft release, verifies them with `scripts/verify-runner-archive.mjs`, writes `SHA256SUMS`, makes a build provenance attestation and uploads `SHA256SUMS` | Not mentioned. [ADR-0018](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0018-runner-hosting-and-sdp-boundary.md) describes it |
+| [`webgpu-host.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/webgpu-host.yml) | Dispatch and a weekly schedule (`17 4 * * 1`) | Fetches a pinned Dawn, builds it with the null backend and runs `rnqnx_webgpu_test` | Not mentioned |
+| [`websocket-host.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/websocket-host.yml) | PR (paths), push (paths), no dispatch | Builds and runs WebSocket loopback and JSI host tests with the backend on and the disabled-build behavior with it off | Not required. Experimental backend that is off by default |
+| [`forge-native-host.yml`](https://github.com/mikevocalz/react-native-qnx/blob/main/.github/workflows/forge-native-host.yml) | Dispatch only | Checks out the separate `mikevocalz/nitro-forge` repository at a pinned commit, builds its Rust `nf-sys` crate and runs the CMake host tests in `tests/native/forge-host` | Not required. Core CI must not depend on premium components |
+
+## What a result means
+
+- A pass on a hosted workflow shows that a Linux job ran the listed commands on one commit. Several jobs compile host code, so their results say nothing about QNX `qcc` output.
+- The `hermes-qnx-source-check`, `nitro-qnx-source-check`, `expo-modules-qnx-source-check` and `react-qnx-source-check` jobs check source contracts and patches against pinned sources on Linux. Their names contain `qnx` and none of them cross-compiles for QNX.
+- A CI result cannot stand in for device evidence. The device gates (`cold-boot`, `device-parity`, `performance`) ask for supervised runs on named hardware, for example 20 consecutive cold boots on the release board and image.
+- required-checks.md carries a table of dispatch results at `0e8e893` on branch `v1/gate2-ci`. It says that commit is not a release candidate. Read the table in that file for the recorded results. Do not take them as the state of `main`.
+
+## Sources
+
+[`.github/workflows/`](https://github.com/mikevocalz/react-native-qnx/tree/main/.github/workflows), [docs/releases/required-checks.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/required-checks.md), [docs/releases/v1-readiness.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/v1-readiness.md), [docs/releases/v1-readiness.json](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/v1-readiness.json), [docs/packaging.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/packaging.md).

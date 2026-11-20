@@ -1,0 +1,99 @@
+---
+title: Requirements
+description: Host, toolchain, dependency and target versions that React Native QNX pins or checks, each with the file that sets it.
+---
+
+Every row names the file that sets the value. Versions are exact pins unless the table says "at least". The pins move with the repository, so check the source file if this page and the file disagree.
+
+Source links point at `main` in [mikevocalz/react-native-qnx](https://github.com/mikevocalz/react-native-qnx).
+
+## Host tools
+
+| Requirement | Version | Source |
+| --- | --- | --- |
+| Node | at least 26.0.0 | `engines.node` in [package.json](https://github.com/mikevocalz/react-native-qnx/blob/main/package.json) |
+| pnpm | 12.18.0 exactly | `packageManager` in [package.json](https://github.com/mikevocalz/react-native-qnx/blob/main/package.json); `engines.pnpm` is `>=12.18.0` |
+| CMake | at least 3.31.9 | `cmake_minimum_required` in [CMakeLists.txt](https://github.com/mikevocalz/react-native-qnx/blob/main/CMakeLists.txt) and `cmakeMinimumRequired` in [CMakePresets.json](https://github.com/mikevocalz/react-native-qnx/blob/main/CMakePresets.json) |
+| Ninja | at least 1.11 | Development host row in [the compatibility matrix](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/compatibility-matrix.md) |
+| Python | at least 3.11 | Same row of the compatibility matrix |
+| Qt | at least 6.11.1 (Core, Gui, Qml, Quick) | `find_package(Qt6 6.11.1 ...)` in [CMakeLists.txt](https://github.com/mikevocalz/react-native-qnx/blob/main/CMakeLists.txt) and the compatibility matrix |
+| C++ standard | C++20, no compiler extensions | `CMAKE_CXX_STANDARD 20` in [CMakeLists.txt](https://github.com/mikevocalz/react-native-qnx/blob/main/CMakeLists.txt) |
+| Git | any | [Quick start](/docs/tutorials/quick-start) lists it; no version is pinned |
+
+The JavaScript-only path in the [quick start](/docs/tutorials/quick-start) needs Node, pnpm and Git. It does not need CMake, Ninja, Python or Qt. Those matter when you build the host playground or the native binaries.
+
+The quick start records its runs on macOS arm64 with Node 26.13.0 and pnpm 12.18.0.
+
+### CMake presets
+
+[CMakePresets.json](https://github.com/mikevocalz/react-native-qnx/blob/main/CMakePresets.json) uses preset schema version 6 and the Ninja generator. The presets include `macos-host-debug`, `macos-host-release`, `macos-host-tests`, `linux-host-debug`, `linux-host-tests`, `qnx-aarch64-debug` and `qnx-pi4`. The macOS presets only appear on Darwin and the Linux presets only on Linux. The two QNX presets use the toolchain file `vnext/cmake/qnx-aarch64le.toolchain.cmake`.
+
+`qnx-pi4` sets `RNQNX_G0_PROBE_ONLY=ON`, so it configures only the C++20 probe. The preset description says a configure or build is not a passed gate until the binary runs on the Pi.
+
+### Optional CMake switches
+
+These are default `OFF` in [CMakeLists.txt](https://github.com/mikevocalz/react-native-qnx/blob/main/CMakeLists.txt). Turn on the ones you need.
+
+| Switch | What it builds |
+| --- | --- |
+| `RNQNX_BUILD_HERMES` | Hermes from source for the host. Slow, so opt-in. |
+| `RNQNX_BUILD_HERMES_QNX` | The cross-built QNX Hermes and JSI probe. |
+| `RNQNX_BUILD_REACT_QNX` | The full React Native, Hermes, Fabric and Qt Quick QNX target graph. |
+| `RNQNX_BUILD_PLAYGROUND_QNX` | The visual Qt Quick and Fabric playground for QNX. |
+
+## JavaScript dependencies
+
+Exact pins from `package.json` and the generated dependency table.
+
+| Requirement | Version | Source |
+| --- | --- | --- |
+| React Native | 0.88.1 | `devDependencies` in [package.json](https://github.com/mikevocalz/react-native-qnx/blob/main/package.json) |
+| React | 19.3.0 | Same file. 19.3.1 is held back; see [the compatibility matrix](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/compatibility-matrix.md). |
+| Expo | 58.0.24 | Same file |
+| Metro | 0.87.1 | Same file. 0.88.0 is held back because React Native 0.88.1 accepts `^0.87.1`. |
+| `@react-native/metro-config` | 0.88.1 | Same file |
+| `babel-preset-expo` | 58.0.25 | Same file |
+| TypeScript | 7.0.2 | Same file. `codegenTypescript` is 6.0.2. |
+| Nitro (`nitro-core`, `react-native-nitro-modules`, `nitrogen`) | `1.0.0-alpha.nightly.136.gdb81de61bd32` | Same file |
+| `expo-modules-core` | 58.1.0 | Generated table in the compatibility matrix |
+| Hermes compiler | `260318099.0.5` | Generated table in the compatibility matrix |
+| Hermes source | tag `hermes-v260318099.0.5` | Generated table in the compatibility matrix |
+
+[pnpm-workspace.yaml](https://github.com/mikevocalz/react-native-qnx/blob/main/pnpm-workspace.yaml) includes the workspace packages `apps/*` and `packages/*`. It also patches `react-native@0.88.1` and `braces@3.0.3` from the `patches/` directory.
+
+## Target and QNX
+
+From the "Target and toolchain" table in [the compatibility matrix](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/compatibility-matrix.md) and [docs/toolchain.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/toolchain.md).
+
+| Requirement | Version | Source |
+| --- | --- | --- |
+| QNX cross-build host | Licensed QNX SDP 8.0.5 on a supported x86-64 host | Compatibility matrix |
+| Compiler target | `gcc_ntoaarch64le` (GCC 12.2.0 in the SDP 8.0.5 check) | [docs/toolchain.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/toolchain.md), 2026-11-06 entry |
+| Experimental Pi 400 | Custom BCM2711 image, Qt 6.12.0 evaluation build, QNX 8.0.5 | Compatibility matrix; [Hello World receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-hello-world-2026-11-07.txt) |
+| Stock Pi 4 and Pi 5 | QSTI 0.5.0 build 50 | Compatibility matrix. Full runtime and device parity still need receipts. |
+
+Compiling with the SDP is separate from running on a device. The compatibility matrix says so in its evidence column, and the Pi 400 row is "not stock QSTI validation".
+
+Qt for the Pi 400 runtime uses a restricted module subset and a licensed evaluation. [docs/toolchain.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/toolchain.md) says that evaluation evidence does not resolve production distribution. Read [ADR-0011](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0011-qt-module-licensing.md) before you ship.
+
+## Checked on this host
+
+These were run read-only while writing this page, on a macOS arm64 machine, in a clone at commit `8d7deaa`.
+
+| Command | Output |
+| --- | --- |
+| `node --version` | `v26.13.0` |
+| `cmake --version` | `cmake version 4.4.5` |
+| `ninja --version` | `1.13.2` |
+| `python3 --version` | `Python 3.13.3` |
+| `pnpm --version` | Failed: `Failed to switch pnpm to v12.18.0 ... ENOEXEC`. The global pnpm tried to switch to the pinned version and could not. The quick start describes this failure and its fix. |
+
+Not run: `pnpm validate:dependencies`, any CMake configure, any Qt or SDP check, and anything on a Pi.
+
+Run `pnpm qnx doctor` in your checkout to check host tools, the SDP environment and target settings. Each failure prints a `Fix:` line. See the [CLI reference](/docs/reference/cli).
+
+## Related
+
+- [Quick start](/docs/tutorials/quick-start)
+- [First device run](/docs/tutorials/first-device-run)
+- [Known gaps](/docs/reference/known-gaps)
