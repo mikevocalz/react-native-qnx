@@ -1,0 +1,15 @@
+QMake version 3.1
+Using Qt version 6.11.1 in /usr/lib
+6.11.1
+Alpine clang version 22.1.3
+qt6-qtbase: A cross-platform application and UI framework
+qt6-qtbase: https://qt.io/
+qt6-qtbase: 15 MiB
+qt6-qtwayland: Provides APIs for Wayland
+qt6-qtwayland: https://qt.io/
+qt6-qtwayland: 4133 KiB
+weston: Reference Wayland server
+weston: https://wayland.freedesktop.org/
+weston: 1532 KiB
+3.24.4
+Linux lima-mvm 6.18.60-0-virt #1-Alpine SMP PREEMPT_DYNAMIC 2026-11-01 07:26:31 aarch64 Linux

@@ -6,8 +6,9 @@
  * version keeps the public API and answers from what the host provides today:
  * no launch URL, no URL events, no way to open another app. `openURL` and
  * `openSettings` reject with a Marathon-specific error and `canOpenURL`
- * resolves false. Opening a URL needs a host module that talks to the Marathon
- * shell (https://github.com/patrickjquinn/Marathon-Shell); none exists yet.
+ * resolves false. The shell has a D-Bus route for `marathon://` URLs only and no http
+ * handler of its own, so there is no general contract to bridge; see
+ * docs/marathon/SHELL_CONTRACTS.md (Marathon-Shell source read 2026-11-20).
  */
 'use strict';
 
