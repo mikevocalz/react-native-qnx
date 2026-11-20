@@ -12,6 +12,8 @@ on:
       - 'packages/react-native-marathon/**'
       - 'apps/rn-playground/**'
       - 'tests/cpp/QtNitroDispatcherTest.cpp'
+      - 'tests/cpp/MarathonBackKeyTest.cpp'
+      - 'tests/cpp/MainThreadStackTest.cpp'
       - 'tests/fixtures/nitro-qt/**'
       - 'tests/native/marathon-wayland/**'
       - 'tests/js/marathon-native-host-contract.test.mjs'
@@ -29,6 +31,8 @@ on:
       - 'packages/react-native-marathon/**'
       - 'apps/rn-playground/**'
       - 'tests/cpp/QtNitroDispatcherTest.cpp'
+      - 'tests/cpp/MarathonBackKeyTest.cpp'
+      - 'tests/cpp/MainThreadStackTest.cpp'
       - 'tests/fixtures/nitro-qt/**'
       - 'tests/native/marathon-wayland/**'
       - 'tests/js/marathon-native-host-contract.test.mjs'
@@ -101,8 +105,10 @@ jobs:
             -DRNQNX_ENABLE_NITRO_QT_DISPATCHER=ON \
             -DRNQNX_NITRO_CORE_ROOT="$PWD/build/nitro-core-isolated" \
             -DRNQNX_BUILD_MARATHON_HOST=ON \
-            -DRNQNX_MARATHON_HOST_NITRO=ON
-          cmake --build build/marathon-host --target rnqnx_marathon_host rnqnx_nitro_qt_test -j 4
+            -DRNQNX_MARATHON_HOST_NITRO=ON \
+            -DRNQNX_ENABLE_INPUT_LIFECYCLE=ON
+          cmake --build build/marathon-host --target rnqnx_marathon_host rnqnx_nitro_qt_test \
+            rnqnx_marathon_back_key_test rnqnx_marathon_main_stack_test -j 4
       - name: Marathon host offscreen run with Nitro proof
         run: |
           ./build/marathon-host/bin/rnqnx_marathon_host -platform offscreen --nitro-proof \
@@ -116,12 +122,14 @@ jobs:
           test -s build/marathon-host/evidence/marathon-offscreen.png
           git rev-parse HEAD > build/marathon-host/evidence/commit.txt
           sha256sum build/marathon-host/evidence/marathon-offscreen.png > build/marathon-host/evidence/SHA256SUMS
-      - name: Qt Nitro dispatcher tests (Promises, callbacks, cancellation, teardown)
+      - name: Qt Nitro dispatcher, Marathon Back key and main-thread stack tests
         run: |
-          ctest --test-dir build/marathon-host -R '^rnqnx_nitro_' --output-on-failure \
+          ctest --test-dir build/marathon-host -R '^rnqnx_(nitro|marathon)_' --output-on-failure \
             > build/marathon-host/evidence/nitro-ctest.log
           cat build/marathon-host/evidence/nitro-ctest.log
           grep -F 'rnqnx_nitro_qt_test' build/marathon-host/evidence/nitro-ctest.log
+          grep -F 'rnqnx_marathon_back_key_test' build/marathon-host/evidence/nitro-ctest.log
+          grep -F 'rnqnx_marathon_main_stack_test' build/marathon-host/evidence/nitro-ctest.log
       - name: Verify changed image invalidates the Marathon bundle
         run: |
           set -euo pipefail

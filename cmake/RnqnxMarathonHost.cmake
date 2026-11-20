@@ -72,7 +72,26 @@ function(rnqnx_add_marathon_host)
     target_compile_definitions(rnqnx_marathon_host PRIVATE
       RNQNX_MARATHON_NITRO=1)
   endif()
+  target_include_directories(rnqnx_marathon_host PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/native/platform/linux-host")
   add_dependencies(rnqnx_marathon_host rnqnx_marathon_playground_bundle)
+  if(BUILD_TESTING)
+    # Back arrives from Marathon-Shell as XF86Back (Qt::Key_Back); see
+    # native/platform/linux-host/MarathonBackKey.hpp.
+    add_executable(rnqnx_marathon_back_key_test
+      "${CMAKE_CURRENT_SOURCE_DIR}/tests/cpp/MarathonBackKeyTest.cpp")
+    target_include_directories(rnqnx_marathon_back_key_test PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}/native/platform/linux-host")
+    target_link_libraries(rnqnx_marathon_back_key_test PRIVATE Qt6::Gui)
+    add_test(NAME rnqnx_marathon_back_key_test COMMAND rnqnx_marathon_back_key_test)
+    # musl reports the main thread stack as its mapped part; see
+    # native/platform/linux-host/MainThreadStack.hpp.
+    add_executable(rnqnx_marathon_main_stack_test
+      "${CMAKE_CURRENT_SOURCE_DIR}/tests/cpp/MainThreadStackTest.cpp")
+    target_include_directories(rnqnx_marathon_main_stack_test PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}/native/platform/linux-host")
+    add_test(NAME rnqnx_marathon_main_stack_test COMMAND rnqnx_marathon_main_stack_test)
+  endif()
   target_compile_definitions(rnqnx_marathon_host PRIVATE
     RNQNX_MARATHON_HOST=1
     RNQNX_PLAYGROUND_BUNDLE_PATH="${RNQNX_MARATHON_BUNDLE}"

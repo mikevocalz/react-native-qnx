@@ -28,9 +28,13 @@ class FakeEmitter {
     for (const listener of this.listeners.get(type) ?? []) listener(event);
   }
 }
+const deviceEvents = new FakeEmitter();
 const originalLoad = ModuleInternals._load;
 ModuleInternals._load = function (/** @type {string} */ request, /** @type {unknown[]} */ ...rest) {
   if (request === 'react-native/Libraries/Components/View/View') return { default: FakeView };
+  if (request === 'react-native/Libraries/EventEmitter/RCTDeviceEventEmitter') {
+    return { default: deviceEvents };
+  }
   if (request === 'react-native/Libraries/vendor/emitter/EventEmitter') {
     return { default: FakeEmitter };
   }
@@ -194,8 +198,43 @@ globals.__DEV__ = true;
       BackHandler.exitApp();
     }).length,
     1,
-    'exitApp warns once'
+    'exitApp without a host function warns once'
   );
+}
+
+// ---- BackHandler bridge: the host emits `hardwareBackPress` when the shell's
+// XF86Back reaches the window, and exitApp calls the host's exit function.
+{
+  deviceEvents.listeners.clear();
+  const BackHandler = fresh('Utilities/BackHandler.js');
+  /** @type {string[]} */
+  const calls = [];
+  const lower = BackHandler.addEventListener('hardwareBackPress', () => {
+    calls.push('lower');
+    return true;
+  });
+  const upper = BackHandler.addEventListener('hardwareBackPress', () => {
+    calls.push('upper');
+    return false;
+  });
+  deviceEvents.emit('hardwareBackPress', undefined);
+  assert.deepEqual(calls, ['upper', 'lower'], 'device event runs newest first, stops at handled');
+  upper.remove();
+  deviceEvents.emit('hardwareBackPress', undefined);
+  assert.deepEqual(calls, ['upper', 'lower', 'lower']);
+  lower.remove();
+  calls.length = 0;
+  deviceEvents.emit('hardwareBackPress', undefined);
+  assert.deepEqual(calls, [], 'no listener: nothing runs and nothing throws');
+  assert.equal(deviceEvents.listeners.get('hardwareBackPress')?.size, 1, 'one subscription');
+
+  let exits = 0;
+  globals.__rnqnxMarathonExitApp = () => {
+    exits += 1;
+  };
+  assert.equal(captureWarnings(() => BackHandler.exitApp()).length, 0);
+  assert.equal(exits, 1, 'exitApp calls the host exit function');
+  delete globals.__rnqnxMarathonExitApp;
 }
 
 ModuleInternals._load = originalLoad;
