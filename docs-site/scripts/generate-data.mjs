@@ -171,7 +171,6 @@ const adrPage = [
   '',
 ].join('\n');
 
-
 // Per-component reference pages. Every field comes from component-support.json
 // and git; nothing here is written by hand.
 const PULL = 'https://github.com/mikevocalz/react-native-qnx/pull/';
@@ -229,15 +228,28 @@ for (const [i, c] of support.components.entries()) {
   componentPages[`content/docs/reference/components/${slug(c.name)}.mdx`] = lines.join('\n');
 }
 componentPages['content/docs/reference/components/meta.json'] =
-  JSON.stringify({ title: 'Components', pages: support.components.map((c) => slug(c.name)) }, null, 2) + '\n';
+  JSON.stringify(
+    { title: 'Components', pages: support.components.map((c) => slug(c.name)) },
+    null,
+    2
+  ) + '\n';
 
 // Changelog from merged pull requests. The boundary commit lives in
 // changelog-through.txt so the page does not change every time main moves.
 // `npm run data -- --advance` moves the boundary to HEAD.
 const throughFile = join(site, 'changelog-through.txt');
-if (process.argv.includes('--advance') && !check) writeFileSync(throughFile, git('rev-parse', 'HEAD') + '\n');
-const through = existsSync(throughFile) ? readFileSync(throughFile, 'utf8').trim() : git('rev-parse', 'HEAD');
-const merges = git('log', through, '--first-parent', '--merges', '--format=%h%x1f%cs%x1f%s%x1f%b%x1e')
+if (process.argv.includes('--advance') && !check)
+  writeFileSync(throughFile, git('rev-parse', 'HEAD') + '\n');
+const through = existsSync(throughFile)
+  ? readFileSync(throughFile, 'utf8').trim()
+  : git('rev-parse', 'HEAD');
+const merges = git(
+  'log',
+  through,
+  '--first-parent',
+  '--merges',
+  '--format=%h%x1f%cs%x1f%s%x1f%b%x1e'
+)
   .split('\x1e')
   .map((e) => e.trim())
   .filter(Boolean)
@@ -278,7 +290,9 @@ const changelogPage = [
       '',
       '| PR | Merged | Title | Commit |',
       '| --- | --- | --- | --- |',
-      ...byMonth[month].map((m) => `| [#${m.num}](${PULL}${m.num}) | ${m.date} | ${esc(m.title)} | \`${m.sha}\` |`),
+      ...byMonth[month].map(
+        (m) => `| [#${m.num}](${PULL}${m.num}) | ${m.date} | ${esc(m.title)} | \`${m.sha}\` |`
+      ),
       '',
     ]),
   hiddenPrs

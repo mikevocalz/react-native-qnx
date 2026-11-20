@@ -40,9 +40,9 @@ Mobbin previews are low resolution and cover products unrelated to QNX. They inf
 
 Searched Mobbin for a changelog and for a component reference page. The component search returned no documentation screens (Productboard, Braintrust, Subframe and Stripe dashboard screens), so no layout was taken from it. The changelog search returned one usable pattern.
 
-| Reference | Pattern borrowed |
-| --- | --- |
+| Reference                                                                                          | Pattern borrowed                                                                                                                                  |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [incident.io, "What's new" panel](https://mobbin.com/screens/92fe8695-3d16-4e2b-8b9a-23cf01fc5a7d) | A date and a one-line title per entry, newest first. The changelog uses a table per month with the same two fields plus the PR number and commit. |
-| [Stripe, API versions list](https://mobbin.com/screens/0d1defeb-2907-4c9e-be0d-664f5fef0f89) | A small "Latest" or "Default" badge beside a version. Not used: there are no versions to badge. |
+| [Stripe, API versions list](https://mobbin.com/screens/0d1defeb-2907-4c9e-be0d-664f5fef0f89)       | A small "Latest" or "Default" badge beside a version. Not used: there are no versions to badge.                                                   |
 
 Weak matches, not used: [Productboard releases](https://mobbin.com/screens/5d055c4b-a5cf-4113-9246-bb879a4004a6), [Upwork weekly summary](https://mobbin.com/screens/270263a9-c419-4eeb-9e93-848e7f0bfbe9), [Plane release changelog tab](https://mobbin.com/screens/c3220fd6-b32d-4ae9-8764-64617ec006c2).

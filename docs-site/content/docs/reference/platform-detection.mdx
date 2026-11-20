@@ -14,7 +14,7 @@ That file only loads when Metro resolves for the `qnx` platform. React Native's 
 ## Platform.select
 
 ```js
-select: (spec) => ('qnx' in spec ? spec.qnx : 'native' in spec ? spec.native : spec.default)
+select: (spec) => ('qnx' in spec ? spec.qnx : 'native' in spec ? spec.native : spec.default);
 ```
 
 The lookup order is `qnx`, then `native`, then `default`. The code checks key presence with `in`, so `{ qnx: undefined }` returns `undefined` and does not fall through. `ios` and `android` keys are ignored. With none of the three keys present, the result is `undefined`.
@@ -53,14 +53,14 @@ Not verified here: whether the generic `.native.js` suffix resolves on `qnx`. Th
 
 Source: [Platform.js](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/react-native-qnx/Libraries/Utilities/Platform.js).
 
-| Property | Value |
-| --- | --- |
-| `OS` | `'qnx'` |
-| `Version` | `constants.osVersion` |
-| `constants` | The object the host installs (next section) |
-| `isPad`, `isTV`, `isVision`, `isVisionOS` | `false` |
-| `isTesting` | `constants.isTesting` when `__DEV__` is true, otherwise `false` |
-| `isDisableAnimations` | `constants.isDisableAnimations`, or `isTesting` when that is unset |
+| Property                                  | Value                                                              |
+| ----------------------------------------- | ------------------------------------------------------------------ |
+| `OS`                                      | `'qnx'`                                                            |
+| `Version`                                 | `constants.osVersion`                                              |
+| `constants`                               | The object the host installs (next section)                        |
+| `isPad`, `isTV`, `isVision`, `isVisionOS` | `false`                                                            |
+| `isTesting`                               | `constants.isTesting` when `__DEV__` is true, otherwise `false`    |
+| `isDisableAnimations`                     | `constants.isDisableAnimations`, or `isTesting` when that is unset |
 
 ## Host constants
 
@@ -68,11 +68,11 @@ Source: [Platform.js](https://github.com/mikevocalz/react-native-qnx/blob/main/p
 
 The host sets these fields:
 
-| Field | Source in the host |
-| --- | --- |
-| `osVersion` | `QSysInfo::productVersion()` |
-| `systemName` | `QSysInfo::productType()` |
-| `isTesting` | `false` |
+| Field                | Source in the host                                            |
+| -------------------- | ------------------------------------------------------------- |
+| `osVersion`          | `QSysInfo::productVersion()`                                  |
+| `systemName`         | `QSysInfo::productType()`                                     |
+| `isTesting`          | `false`                                                       |
 | `reactNativeVersion` | A fixed object: major 0, minor 88, patch 0, prerelease `rc.3` |
 
 Two things follow from the source.

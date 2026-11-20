@@ -51,7 +51,15 @@ for (const c of support.components)
 
 const out = join(site, 'out');
 if (existsSync(out)) {
-  for (const need of ['llms.txt', 'llms-full.txt', 'SKILL.md', 'api/search', 'docs.html', 'sitemap.xml', 'robots.txt'])
+  for (const need of [
+    'llms.txt',
+    'llms-full.txt',
+    'SKILL.md',
+    'api/search',
+    'docs.html',
+    'sitemap.xml',
+    'robots.txt',
+  ])
     if (!existsSync(join(out, need))) errors.push(`missing build output: out/${need}`);
   for (const f of walk(out).filter((f) => /\.(html|txt|md|json)$/.test(f)))
     if (banned.test(readFileSync(f, 'utf8'))) errors.push(`banned term in out/${relative(out, f)}`);

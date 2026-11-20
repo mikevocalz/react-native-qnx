@@ -13,15 +13,15 @@ Repository-authored code is MIT-licensed. The [LICENSE](https://github.com/mikev
 
 The MIT license does not cover dependencies. [THIRD_PARTY_NOTICES.md](https://github.com/mikevocalz/react-native-qnx/blob/main/THIRD_PARTY_NOTICES.md) says each dependency keeps its own copyright notice, license and distribution terms. It is a source inventory. It is not a complete binary SBOM and not permission to redistribute a target runtime. A release has to collect notices for its actual linked, plugin and font closure, including transitive components.
 
-| Component | Source of terms | Packaging requirement |
-| --- | --- | --- |
-| React and React Native | Installed package `LICENSE` files (MIT) | Preserve upstream notices in distributions that contain them |
-| Hermes | Pinned Hermes source `LICENSE` (MIT), plus its external dependencies | Collect notices from the exact source and build closure |
-| Nitro core, RN adapter and Nitrogen | Exact pinned packages and their license files | Preserve notices. Generated and native dependencies need their own inventory |
-| folly, fmt, glog, double-conversion, fast_float, Yoga | Each pinned source's license and notice files | Inventory the versions actually fetched or bundled |
-| Qt | Selected open-source source and module licenses | Record the public-source build, every module and plugin, notices and applicable LGPL or GPL materials |
-| QNX | Licensed SDP, BSP, image and runtime terms | Obtain independently. Keep tools, sysroots, headers, vendor libraries, images and account material out of public packages |
-| Optional premium Forge packages | Separately licensed product terms | Excluded from core platform distributions |
+| Component                                             | Source of terms                                                      | Packaging requirement                                                                                                     |
+| ----------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| React and React Native                                | Installed package `LICENSE` files (MIT)                              | Preserve upstream notices in distributions that contain them                                                              |
+| Hermes                                                | Pinned Hermes source `LICENSE` (MIT), plus its external dependencies | Collect notices from the exact source and build closure                                                                   |
+| Nitro core, RN adapter and Nitrogen                   | Exact pinned packages and their license files                        | Preserve notices. Generated and native dependencies need their own inventory                                              |
+| folly, fmt, glog, double-conversion, fast_float, Yoga | Each pinned source's license and notice files                        | Inventory the versions actually fetched or bundled                                                                        |
+| Qt                                                    | Selected open-source source and module licenses                      | Record the public-source build, every module and plugin, notices and applicable LGPL or GPL materials                     |
+| QNX                                                   | Licensed SDP, BSP, image and runtime terms                           | Obtain independently. Keep tools, sysroots, headers, vendor libraries, images and account material out of public packages |
+| Optional premium Forge packages                       | Separately licensed product terms                                    | Excluded from core platform distributions                                                                                 |
 
 The table condenses the one in THIRD_PARTY_NOTICES.md, which also lists a font used only for host label measurement.
 

@@ -40,11 +40,11 @@ The `watchFolders` and `nodeModulesPaths` entries are there because the template
 
 From [index.d.ts](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/metro-config-qnx/src/index.d.ts):
 
-| Export | Type | Purpose |
-| --- | --- | --- |
-| `getQnxMetroConfig(projectRoot, overrides?)` | `(string, InputConfigT?) => ConfigT` | Returns a full Metro config for the app at `projectRoot`. |
-| `createQnxResolveRequest(overridesRoot)` | `(string) => resolveRequest` | Builds the resolver function. `getQnxMetroConfig` calls it for you. |
-| `QNX_PLATFORM` | `'qnx'` | The platform name. |
+| Export                                       | Type                                 | Purpose                                                             |
+| -------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------- |
+| `getQnxMetroConfig(projectRoot, overrides?)` | `(string, InputConfigT?) => ConfigT` | Returns a full Metro config for the app at `projectRoot`.           |
+| `createQnxResolveRequest(overridesRoot)`     | `(string) => resolveRequest`         | Builds the resolver function. `getQnxMetroConfig` calls it for you. |
+| `QNX_PLATFORM`                               | `'qnx'`                              | The platform name.                                                  |
 
 `projectRoot` must be an absolute path. `overrides` is merged with Metro's `mergeConfig`, so you pass the same shape you would pass to any Metro config.
 
@@ -112,11 +112,11 @@ The repository also has Metro tests under `tests/js`, among them `qnx-external-p
 
 ## Common problems
 
-| Symptom | Cause from the source |
-| --- | --- |
-| `react` does not resolve in a workspace app | Missing `watchFolders` or `nodeModulesPaths` for the workspace root. The template comment describes this. |
-| `Platform` is undefined | The QNX `Platform.js` override was not applied, so the config is not coming from `getQnxMetroConfig` or the bundle is not built with `--platform qnx`. The header of `Libraries/Utilities/Platform.js` describes the failure. |
-| An error naming `react-native-svg` and a version | The SVG overlay supports `15.16.0` only. |
+| Symptom                                          | Cause from the source                                                                                                                                                                                                         |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `react` does not resolve in a workspace app      | Missing `watchFolders` or `nodeModulesPaths` for the workspace root. The template comment describes this.                                                                                                                     |
+| `Platform` is undefined                          | The QNX `Platform.js` override was not applied, so the config is not coming from `getQnxMetroConfig` or the bundle is not built with `--platform qnx`. The header of `Libraries/Utilities/Platform.js` describes the failure. |
+| An error naming `react-native-svg` and a version | The SVG overlay supports `15.16.0` only.                                                                                                                                                                                      |
 
 ## Related
 
