@@ -11,7 +11,7 @@ Verdicts: verified, wrong, unverifiable. "Stale" means true when written and fal
 | docs-site content (35 files, README, REFERENCES) | 45            | 13    | 0     | 5 (two dismissed as intentional, see below) | 2            |
 | README, component-support, v1-readiness, docs/v1 | 51            | 10    | 2     | 2                                           | 6            |
 
-The docs-site omits the Marathon packages and `--with-marathon` on purpose. The owner decided to keep the Marathon integration out of the root README and docs-site content, so the auditor's finding on this point (module-matrix package list, `cli.mdx` options) was dismissed and nothing was changed.
+The docs-site omits two workspace packages and one `project create` option (`--with-…`) on purpose. The owner decided to keep that integration out of the root README and docs-site content, so the auditor's finding on this point (module-matrix package list, `cli.mdx` options) was dismissed and nothing was changed.
 
 A row groups related claims in one file section that share the same evidence, so the row counts are lower than the number of individual sentences checked. Wrong counts include items fixed in this pull request; the deferred and unfixed ones are listed under "Left open".
 
