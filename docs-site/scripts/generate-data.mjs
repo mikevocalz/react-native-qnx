@@ -21,7 +21,7 @@ const shaFor = (paths) => {
   let best = null;
   for (const p of paths) {
     if (!existsSync(join(repo, p))) throw new Error(`missing path ${p}`);
-    const line = git('log', '-1', '--format=%ct %h', '--', p);
+    const line = git('log', '-1', '--abbrev=7', '--format=%ct %h', '--', p);
     if (!line) continue;
     const [ts, sha] = line.split(' ');
     if (!best || Number(ts) > best.ts) best = { ts: Number(ts), sha };
@@ -90,7 +90,7 @@ const matrix = [
   '| Untested | No claim either way. |',
   '| Not supported | Not implemented. No component has this status today. |',
   '',
-  'The **SHA** is `git log -1 --format=%h` for the newest evidence file in the row. ' +
+  'The **SHA** is `git log -1 --abbrev=7 --format=%h` for the newest evidence file in the row. ' +
     'A row with no evidence file uses the commit that last changed `component-support.json`, and the SHA column says so. ' +
     'Pi 4 QSTI is untested for every component: no stock Pi 4 run exists.',
   '',
@@ -253,6 +253,7 @@ const merges = git(
   through,
   '--first-parent',
   '--merges',
+  '--abbrev=7',
   '--format=%h%x1f%cs%x1f%s%x1f%b%x1e'
 )
   .split('\x1e')
