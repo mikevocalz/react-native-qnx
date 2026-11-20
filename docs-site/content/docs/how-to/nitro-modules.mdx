@@ -1,27 +1,97 @@
 ---
-title: Use Nitro modules
-description: What native modules can use on React Native QNX today, and where the limits are.
+title: Add a Nitro module
+description: What a native module can use on QNX today, how the one proven module is defined and called, how to regenerate its bindings, and the rules for writing a new one.
 ---
 
-Application-facing native APIs on QNX use [Nitro Modules](https://nitro.margelo.com), not TurboModules. See [ADR-0004](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0004-nitro-modules.md) and [ADR-0009](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md).
+Application-facing native APIs on QNX use [Nitro Modules](https://nitro.margelo.com), not TurboModules ([ADR-0004](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0004-nitro-modules.md), [ADR-0009](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md)). Be clear about the starting point: Nitro 1.0 is an alpha, the repository has one proven module, and there is no general QNX code generator in upstream Nitrogen. This guide shows the existing module end to end and the checks you can run, and it says what you cannot do yet.
 
-## What is pinned
+<Callout type="warn">
+  Not run in this docs pass: any native build or device call of a Nitro module. The JavaScript and
+  generator checks below ran on macOS on 2026-11-19. They prove source contracts, not QNX execution.
+  The validator itself says: `actual QNX native execution NOT yet proven`.
+</Callout>
 
-Nitro `1.0.0-alpha.nightly.136.gdb81de61bd32` is pinned exactly for `nitro-core`, `nitro-modules` and `nitrogen`. It is an alpha. Dispatcher patches require that exact source structure.
+## Prerequisites
+
+- A checkout with `pnpm install --frozen-lockfile` done.
+- Nitro `1.0.0-alpha.nightly.136.gdb81de61bd32`, pinned exactly for `nitro-core`, `nitro-modules` and `nitrogen`. The dispatcher patches require that exact source structure.
+- For a device call, a QNX build with the Nitro runtime linked and an installed Pi 400 as in [first device run](/docs/tutorials/first-device-run).
 
 ## What has run
 
-A synchronous `HybridClass` and an optional async dispatcher ran on the Pi 400. That is narrower than support for any third-party Nitro module. See the [Nitro and Qt receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-nitro-qt-2026-11-07.md) and the [API contracts](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/nitro/API_CONTRACTS.md).
+A synchronous `HybridClass` and an optional async dispatcher ran on the Pi 400 on 2026-11-07. That is narrower than support for any third-party Nitro module. The receipts are the [Nitro and Qt receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-nitro-qt-2026-11-07.md) and the Hello World capture, which logged `RNQNX_HELLO_NITRO_V1_OK platform=qnx architecture=aarch64 add=42`. No module from iOS or Android, such as `react-native-nitro-fetch` or MMKV, is claimed to run on QNX. Each needs its own platform implementation.
 
-## Rules for writing a module
+## 1. The module that exists
 
-- Use a typed, cached synchronous property for a cheap local read.
+`@rn-qnx/qnx-nitro-runtime` defines `PlatformInfo` in [`packages/qnx-nitro-runtime/specs/PlatformInfo.nitro.ts`](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/qnx-nitro-runtime/specs/PlatformInfo.nitro.ts): two string properties, `platform` and `architecture`, and one synchronous `add(left, right)`. From JavaScript:
+
+```ts
+import { createQnxPlatformInfo } from '@rn-qnx/qnx-nitro-runtime';
+
+const info = createQnxPlatformInfo();
+info.platform; // 'qnx'
+info.architecture; // e.g. 'aarch64', determined natively
+const answer: number = info.add(20, 22); // 42, synchronously
+```
+
+The wrapper imports `NitroModules` from `nitro-core`, resolves `getHybridClass('QnxPlatformInfo')` and calls `new`. The import must happen after the native installer ran on the same Hermes runtime. A missing capability throws. It does not return `undefined`, and there is no fallback to a TurboModule.
+
+The playground proof does the same without the wrapper (`apps/rn-playground/hello-world-nitro.js`):
+
+```js
+const { NitroModules } = require('nitro-core');
+const QnxPlatformInfo = NitroModules.getHybridClass('QnxPlatformInfo');
+const info = new QnxPlatformInfo();
+if (info.platform !== 'qnx' || info.architecture !== 'aarch64' || info.add(20, 22) !== 42) {
+  throw new Error('QNX Nitro v1 native binding verification failed');
+}
+```
+
+## 2. Regenerate and check the bindings
+
+Upstream Nitrogen only knows `apple` and `android`. The repository bridges that with a constrained generator that reads the spec with the TypeScript 6 compatibility parser and writes the C++ registration for QNX and for the Linux host:
+
+```bash
+pnpm nitro:platform:check       # deterministic generated output
+pnpm nitro:platform:generate    # regenerate after the spec is reviewed
+pnpm codegen:check
+pnpm validate:qnx-nitro
+```
+
+Run on 2026-11-19 at `8d7deaa`: `Platform Nitro v1 binding check passed`, then `No nitro.json files exist yet; Nitrogen generation is not applicable to this milestone.`, then `Nitro v1 source/ABI contracts found; actual QNX native execution NOT yet proven.`
+
+The generator supports only the reviewed shape: two required string getters and one two-argument numeric method, from an exported ambient `PlatformInfo` class extending `HybridObject`. It rejects static, private, protected, optional and generic members, extra heritage, initializers, method bodies, callbacks, Promise returns, unsupported types and additional methods, rather than emitting a different contract. That is the limit of "add a Nitro module" today: a new module with other shapes needs the generator extended with reviewed source, not a hand edit of generated files.
+
+## 3. Rules for writing a module
+
+- Use a typed, cached synchronous property for a cheap local read. A pure scalar computation stays synchronous.
 - Use an owned native execution context for I/O or heavy work. A Promise around a blocking call does not move work off the JS thread.
-- Return a ready resource from a factory and define its disposal.
-- Keep heavy work on your own workers. JavaScript shares the Qt thread today. See [threading](/docs/explanation/threading).
+- Return a ready resource from a factory and define its disposal. Hold large payloads behind stateful HybridObjects with explicit cleanup and lazy `ArrayBuffer` access.
+- Keep heavy work on your own workers. JavaScript shares the Qt GUI thread today, so blocking it blocks painting. See [threading](/docs/explanation/threading).
+- No fake async dispatcher and no global mutable fake platform constants. Platform fields must come from the native host.
+- Never edit generated Nitro artifacts by hand.
 
-The full policy is in the [Nitro v1 API policy](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/platform-modernization/NITRO_V1_API_POLICY.md).
+The full policy is the [Nitro v1 API policy](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/platform-modernization/NITRO_V1_API_POLICY.md) and the [API contracts](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/nitro/API_CONTRACTS.md).
 
-## Not covered
+## 4. Package metadata for an app dependency
 
-General QNX codegen, third-party module support and Forge worker shutdown are open. The runtime package is `@rn-qnx/qnx-nitro-runtime`.
+An app dependency whose `package.json` declares a `react-native-qnx` block with `nitro` metadata for the platform is recorded by `project prepare-native` in `native-app.json` as `nitroModules`. Only JSON is read. No package code runs. `project build-native` adds each recorded module with `add_subdirectory`, links and registers it at startup, and requires the QNX toolchain build. `--host-preview` rejects Nitro modules. See [ADR-0019](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0019-nitro-package-metadata.md).
+
+## Verify
+
+- `pnpm nitro:platform:check` prints `Platform Nitro v1 binding check passed`.
+- On a device build, the app log shows `RNQNX_HELLO_NITRO_V1_OK ... add=42`.
+
+## Troubleshooting
+
+| What you see | Cause and fix |
+| --- | --- |
+| `nitro:platform:check` reports drift | The generated file no longer matches the spec. Review the spec and run `pnpm nitro:platform:generate`. |
+| The generator rejects your spec | It supports only the reviewed shape. Extend it with reviewed source. |
+| `NitroModulesProxy` is undefined | The module was used before the native installer ran. Import after install. |
+| A mobile Nitro package does not work | It has no QNX implementation. Each module needs its own. |
+
+## Reference
+
+- [Module matrix](/docs/reference/module-matrix)
+- [Nitro and Qt receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-nitro-qt-2026-11-07.md)
