@@ -1,0 +1,62 @@
+---
+title: 'ADR-0002: Qt Quick item instantiation'
+description: How Fabric creates Qt Quick items (one cached QQmlComponent per component type), the host benchmark behind it, and the Pi evidence still open.
+---
+
+Record: [`docs/adr/0002-qt-quick-item-instantiation.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0002-qt-quick-item-instantiation.md), dated 2026-08-13.
+
+## Status
+
+The record states: "Provisionally accepted on host evidence (2026-08-14). The pinned Qt 6.12.0 private evaluation now has scoped Pi 400 Hello World proof, recorded in ADR-0001 and the device receipt. G0-C's 1,000-item Pi benchmark and the remaining source/ownership acceptance items below stay open."
+
+## Context
+
+Fabric has to create, update and destroy native component items. The specification asks a question that class names cannot answer: Qt Quick's built-in visual types may need QML type registration or private implementation classes, even though `QQuickItem`, `QQuickWindow` and scene-graph nodes are public.
+
+## Decision
+
+The default candidate is one cached `QQmlComponent` per React Native component type, compiled once from an inline type declaration. The mounting layer instantiates it and mutates the resulting public object through verified properties and metaobjects. QML serves as the type source only. It is not the authored UI and not the layout authority.
+
+A custom `QQuickItem` or scene-graph implementation is the fallback for any component where the cached-component path cannot meet measured control or performance requirements. Text must not pick a path until the pinned source shows which public text and scene-graph facilities exist.
+
+The record lists five items that must hold before full acceptance:
+
+1. The exact Qt source tag chosen by G0-B.
+2. Pinned `qtdeclarative` file and symbol citations for registration, component creation, ownership, property mutation and destruction.
+3. Confirmation that no unapproved private header is used.
+4. Pi benchmark results for creating, updating and destroying 1,000 items.
+5. Correct ownership and thread affinity under the real Qt event loop.
+
+If the candidate needs a private header or a behavioral Qt patch, work stops for a new decision.
+
+## Consequences
+
+The host measurement settles the shape of the strategy and leaves the target open. Under [ADR-0010](/docs/explanation/adr/0010-macos-qt-development-host), the cached-component path was implemented and measured on macOS against Qt 6.11.1, with the offscreen QPA on Apple Silicon, in a Debug build with strict warnings, using 1,000 `Rectangle`-backed items:
+
+| Phase                                     | Time      | Per item |
+| ----------------------------------------- | --------- | -------- |
+| Create, parent and set absolute geometry  | 12.856 ms | 12.9 µs  |
+| 10 update passes (x and opacity per item) | 0.456 ms  | 46 ns    |
+| Destroy                                   | 0.516 ms  | 0.5 µs   |
+
+Updates are the path Fabric drives each frame, and they cost about three orders of magnitude less than creation. The probe also asserts that destroying items leaves no residual children on the content item and that an unregistered type fails instead of returning a bare item. The view layer, `rnqnx_views_qt`, uses public headers only, which satisfies item 3 for Qt 6.11.1.
+
+The record says the Pi is slower than this host by an unmeasured factor. These numbers are host numbers and do not satisfy the Pi benchmark in item 4.
+
+## Alternatives rejected
+
+The record names one fallback rather than a rejected option: a custom `QQuickItem` per component. It is held in reserve, and the ADR does not rank it below the cached-component path for any component yet.
+
+## Evidence
+
+Source tree:
+
+- `vnext/include/react-native-qnx/views/QtQuickItemFactory.h` and `vnext/src/views/qt/QtQuickItemFactory.cpp`, the factory the record names.
+- `vnext/probes/qtquick/main.cpp`, the `rnqnx_qtquick_host_probe` that produced the table above.
+- `vnext/src/fabric/QtQuickMountingLayer.cpp`, the consumer of the factory.
+
+Host evidence is labeled as host evidence. Device evidence for this ADR is limited to the Hello World receipt, `docs/evidence/pi400-hello-world-2026-11-07.txt`, which proves a small entry and not the 1,000-item benchmark. No Pi receipt for items 2, 4 or 5 exists under `docs/evidence`.
+
+## What would reverse this
+
+The record gives two triggers. A required private header or behavioral Qt patch forces a new decision. A component that misses its measured control or performance requirement on the cached-component path moves to a custom `QQuickItem`. The open Pi benchmark in item 4 is the measurement most likely to produce either result.

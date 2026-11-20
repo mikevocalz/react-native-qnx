@@ -1,9 +1,9 @@
 ---
 title: For LLMs and agents
-description: Where to find the machine-readable index, the full text, and the SKILL.md for coding agents.
+description: The machine-readable index, the full text, per-page Markdown and the SKILL.md file for coding agents, and how the site generates them.
 ---
 
-These files are generated from the pages in this site. They describe only what the site and the repository contain.
+The site publishes its pages in forms that a language model or a coding agent can read without parsing HTML. The files describe only what the pages and the repository contain, and a page that says "not verified" keeps that wording in every format.
 
 | File                       | Content                                                     |
 | -------------------------- | ----------------------------------------------------------- |
@@ -12,5 +12,35 @@ These files are generated from the pages in this site. They describe only what t
 | `/llms.mdx/docs/<page>.md` | One page as Markdown                                        |
 | `/SKILL.md`                | A skill file for coding agents working with this repository |
 | `/api/search`              | The static search index used by the site search             |
+
+## How the files are generated
+
+The site is a static export (`output: 'export'` in `docs-site/next.config.mjs`), so every file below exists as a plain file in `out/` after `npm run build`.
+
+`docs-site/src/lib/source.ts` turns on `includeProcessedMarkdown` for the MDX loader and builds the files with the `llms` helper from `fumadocs-core/source`. Three route handlers under `docs-site/src/app` serve them.
+
+`/llms.txt` comes from `src/app/llms.txt/route.ts`. It is the page tree rendered as a Markdown list: the site title, then one line per page with the page title as a link and its front matter `description:` after it. The sidebar separators (Learn, Do, Look up, Understand, Help) appear as bold headings. Each link points to the page's Markdown file under `/llms.mdx`, so an agent that follows the index reads Markdown and not HTML.
+
+`/llms-full.txt` comes from `src/app/llms-full.txt/route.ts`. It concatenates every page, each one introduced by a line of the form `# Title (/docs/url)` and followed by the processed text of the page. Use it when you want the whole site in one request. It is large, so an agent with a small context window does better to fetch `/llms.txt` first and then single pages.
+
+`/llms.mdx/docs/<page>.md` comes from `src/app/llms.mdx/[...path]/route.ts`. A page whose URL is `/docs/contributing` is served at `/llms.mdx/docs/contributing.md`. The handler prerenders exactly the pages the loader knows and returns 404 for any other path (`dynamicParams = false`). The files are served as `text/markdown`, and `/llms.txt` and `/llms-full.txt` as `text/plain`.
+
+The text in each file is what Fumadocs returns from `getText('processed')` for the page, which `source.ts` wraps with the `# Title (url)` line. It is not the raw MDX source. How it renders the `Cards` components has not been checked, so read the linked pages when a card matters.
+
+## SKILL.md
+
+`/SKILL.md` is the file `docs-site/public/SKILL.md`, copied into the build unchanged. Nothing generates it. It is written for an agent that works inside a checkout of the repository. It carries front matter (`name` and `description`), the rules that keep claims honest, and the commands to set up, create an app, bundle it, run the validators and build this site. It points to repository paths and to pages under `/docs` for detail.
+
+An agent that has the file can install it as a skill. Where the skill goes depends on the agent, and this site does not verify any particular installation path.
+
+## Search index
+
+`/api/search` is the static search index that the site search queries in the browser. It comes from `src/app/api/search/route.ts`. It is not meant as an API for agents. Use `/llms.txt` and the per-page Markdown files for that.
+
+## Keep the files correct
+
+`npm run check:content` fails the build output if `llms.txt`, `llms-full.txt`, `SKILL.md`, `api/search` or `docs.html` is missing from `out/`. It does not check that `SKILL.md` matches the repository, so change it in the same pull request as any command it names. See [contributing](/docs/contributing#change-this-documentation-site) for the site workflow.
+
+## Licence
 
 The licence is MIT, from the repository's [LICENSE](https://github.com/mikevocalz/react-native-qnx/blob/main/LICENSE) file. Dependencies keep their own terms. See [third-party notices](https://github.com/mikevocalz/react-native-qnx/blob/main/THIRD_PARTY_NOTICES.md).

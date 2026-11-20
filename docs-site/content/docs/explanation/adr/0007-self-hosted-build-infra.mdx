@@ -1,0 +1,49 @@
+---
+title: 'ADR-0007: Self-hosted QNX build infrastructure'
+description: Why QNX artifacts are built on private machines with a licensed SDP, and how public CI is kept to checks that need no QNX files.
+---
+
+Record: [`docs/adr/0007-self-hosted-build-infra.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0007-self-hosted-build-infra.md), dated 2026-07-19.
+
+## Status
+
+The record states: "Accepted".
+
+## Context
+
+QNX SDP is licensed proprietary software and cannot be redistributed in public CI images. Cloud-hosted runners generally do not have it installed.
+
+## Decision
+
+Use self-hosted CI runners or private agents with a licensed QNX SDP 8.0 installed, and record the exact installed update and build with the runner evidence. Build scripts are idempotent and driven by environment variables, so any compliant private runner can run them.
+
+## Consequences
+
+- Public CI cannot build QNX artifacts without a licensed self-hosted runner.
+- Build reproducibility depends on pinned SDP versions and documented environment variables.
+- QNX license material never enters the repository.
+
+The Notes add that CI configuration stays generic: the operator injects runner labels and secrets.
+
+## Alternatives rejected
+
+- Public CI that downloads a QNX toolchain, rejected as a violation of licensing and distribution terms.
+- Prebuilt QNX images in a public registry, rejected for the same reason.
+
+## What the source tree shows
+
+The split between public checks and private builds is visible in `.github/workflows/`. All 27 `runs-on` entries in the current workflow files name `ubuntu-24.04`, and none names a self-hosted label. The workflows that exist (for example `host-renderer.yml`, `nitro-v1-host.yml`, `window-chrome.yml`, `sdk58-validation.yml` and the `*-source-check.yml` family) run host builds and source-shape checks. The ADR's generic-labels rule matches this: private runner labels are not committed.
+
+QNX cross-builds happen outside those workflows. `scripts/qnx-sdk-container.sh` checks or restarts a macOS build host made of a Colima VM and a `qnx805-build` container. It reports PASS or FAIL per check, never creates or reconfigures a profile or container, and prints no addresses or keys. The working notes are `docs/handoff/QNX_SDK_CONTAINER_MACOS.md` and `docs/handoff/QNX_VM_WINDOWS.md`, and the how-to [Cross-build from Windows](/docs/how-to/cross-build-windows) covers the Windows route. `docs/packaging.md` states that a platform cannot claim a QNX build unless it runs on an authorized private or self-hosted environment.
+
+The runner release flow in [ADR-0018](/docs/explanation/adr/0018-runner-hosting-and-sdp-boundary) is the same boundary seen from the publishing side. `.github/workflows/runner-release.yml` notes that QNX runners are built on a machine with a licensed SDP and attests only the files uploaded to it. It does not compile anything.
+
+The record lists `docs/security/build-infra-security.md` as a related file. That file is not in the current tree, so this page does not cite it. `docs/getting-started/build-and-deploy.md` and `scripts/` (for example `scripts/build-qnx.sh`, `scripts/configure-qnx.sh` and `scripts/deploy-qnx.sh`) are present.
+
+## Evidence
+
+The public-source Qt receipt `docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md` reads its build tree from the `qnx805-build` container, as [ADR-0017](/docs/explanation/adr/0017-qt-qnx-optimization-level) quotes. The record asks for the exact SDP update and build to be stored with runner evidence. The Pi receipts name SDP 8.0.5 (for example `docs/evidence/pi400-nitro-qt-2026-11-07.md`).
+
+## What would reverse this
+
+The record gives no trigger. A change would need QNX's terms to permit redistribution of the SDP in public CI images, which the record treats as a licensing fact the project cannot change. [ADR-0018](/docs/explanation/adr/0018-runner-hosting-and-sdp-boundary) records that those terms have not been checked and that the project avoids needing them.
