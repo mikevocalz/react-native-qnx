@@ -1,6 +1,6 @@
 # MarathonOS integration: multi-agent / contributor roster
 
-Status: proposed responsibilities; **not** claims of people hired, assigned, or having completed work. Every slice must have a DRI and reviewer named in its actual PR. Never invent collaborator identities.
+Status (2026-11-19): proposed responsibilities. The owner and reviewer columns are still unassigned for every slice. These are **not** claims of people hired, assigned, or having completed work. Every slice must have a DRI and reviewer named in its actual PR. Never invent collaborator identities.
 
 | Role / agent                                  | Owns                                                                        | Primary source paths                                           | Deliverable                                             | Blocking reviewer            |
 | --------------------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------- | ---------------------------- |
@@ -24,6 +24,8 @@ Status: proposed responsibilities; **not** claims of people hired, assigned, or 
 - Nitro/Expo migrations are deliberately isolated from the baseline host render path, until compile and runtime proofs exist.
 - QNX smoke/regression is a gate for changing shared Qt or JS overrides, not a reason to misrepresent incomplete device evidence.
 - Upstream Marathon compatibility review is required before saying "out-of-box" or including official store packaging claims.
+
+Progress on that ordering (2026-11-19): the Metro resolver and platform identity are merged and CI-verified. Host runtime wiring is merged and renders one offscreen frame in CI. The Wayland view, input, permissions, lifecycle and launcher/packaging steps have not been run on a compositor or device.
 
 ## Handoff / stop conditions
 

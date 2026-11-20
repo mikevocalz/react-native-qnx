@@ -10,6 +10,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/../../../../cmake/RnqnxNitroV1.cmake")
 rnqnx_add_nitro_v1_core()
 
 add_library(rnqnx_nitro_marathon STATIC
+  MarathonNitroProof.cpp
   MarathonNitroRuntime.cpp
   MarathonPlatformInfo.cpp
   generated/MarathonPlatformInfo.binding.cpp
