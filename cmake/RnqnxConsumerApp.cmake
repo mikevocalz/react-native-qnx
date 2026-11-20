@@ -407,6 +407,9 @@ function(rnqnx_add_consumer_app)
   endif()
   if(platform STREQUAL "marathon")
     target_compile_definitions(rnqnx_consumer_app PRIVATE RNQNX_MARATHON_HOST=1)
+    # main.cpp includes the Marathon Back key filter and the musl stack helper.
+    target_include_directories(rnqnx_consumer_app PRIVATE
+      "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../native/platform/linux-host")
   endif()
   if(TARGET rnqnx_dev_support)
     target_link_libraries(rnqnx_consumer_app PRIVATE rnqnx_dev_support)
