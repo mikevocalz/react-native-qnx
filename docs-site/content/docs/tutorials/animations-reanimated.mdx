@@ -1,0 +1,164 @@
+---
+title: Animations with Reanimated
+description: Turn on Worklets and Reanimated in a QNX build, write a spring and a timing animation from the component gallery's card, and read what the Pi 400 runs proved and what they did not.
+---
+
+By the end you will know which CMake switches turn on Worklets and Reanimated, how the gallery's Reanimated card drives a box with `withSpring`, `withTiming`, `withRepeat` and `withSequence`, and how to read the UI frame counter that proves the animation ran off the JavaScript thread. The code is the gallery's own [`ReanimatedCard.js`](https://github.com/mikevocalz/react-native-qnx/blob/main/apps/component-gallery/motion/ReanimatedCard.js), shown as excerpts. It is not a new sample.
+
+<Callout type="warn">
+  Not run in this docs pass: the native build with Worklets and Reanimated on, and every animation
+  on a device. Their results come from the cited receipts. On a Mac, the gallery's JavaScript
+  bundled without errors with these cards in its source tree. It was not rendered, because the
+  headless host renderer was built without Worklets and Reanimated.
+</Callout>
+
+## What ran where
+
+Everything below is one Raspberry Pi 400 on a custom QNX 8.0.5 image, commit `240dc08`, 1024x768, public-source Qt 6.12.0, a build with Worklets, Reanimated, Gesture Handler, Qt SVG and RNSVG on. The [run 2 receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md) of 2026-11-19 recorded:
+
+- `withSpring` ran to its end state. The card read `spring finished` and the bar reached the end of its track.
+- The UI frame counter advanced: `reanimated UI frames: 27204, shared x: 220, runtime kind: 1` in the app log.
+
+![The Reanimated card after a spring: a yellow box at the right of its track, a full teal bar and the text spring finished, UI frame callback count 0.](/evidence/pi400-reanimated-spring-end.png)
+
+That screenshot is the `reanimated-spring-end.png` capture. Its status text reads `UI frame callback count 0` because the card shows the count it last read with the "read UI frames" button, and the button had not been pressed yet. The 27,204 in the log came from a later press.
+
+Not shown by any receipt: an animation that keeps running while JavaScript is blocked. Run 1 printed `0 of 40 UI worklet jobs ran inside the busy window`. Today JavaScript runs on the Qt GUI thread, so a long JS call freezes repainting, and an animation catches up afterwards from UI-thread state. Plan the work accordingly. The [threading explanation](/docs/explanation/threading) covers why.
+
+## Prerequisites
+
+- A native build with the three switches below on. They default to OFF.
+- Versions: `react-native-worklets` 0.13.x, `react-native-reanimated` 4.7.1, `react-native-gesture-handler` 3.4.0. Each CMake step reads its package version and fails outside the supported range.
+- Worklets evaluates serialized function source on a second runtime, so it needs the full Hermes VM (`libhermesvm.so`) and not the lean one. A missing full VM stops configuration. Release apps without Worklets keep `libhermesvmlean.so`.
+- `babel-preset-expo` adds the Worklets Babel plugin when the package is installed. The app needs no Babel change.
+
+## 1. Enable the native side
+
+```sh
+cmake ... -DRNQNX_ENABLE_WORKLETS=ON  -DRNQNX_WORKLETS_SOURCE_DIR=<node_modules>/react-native-worklets \
+          -DRNQNX_ENABLE_REANIMATED=ON -DRNQNX_REANIMATED_SOURCE_DIR=<node_modules>/react-native-reanimated \
+          -DRNQNX_ENABLE_GESTURE_HANDLER=ON -DRNQNX_GESTURE_HANDLER_SOURCE_DIR=<node_modules>/react-native-gesture-handler
+```
+
+What you should see: the configure step passes. A version outside the range stops it with the offending version. The upstream C++ is compiled from the installed packages and is not vendored ([ADR-0020](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0020-worklets-reanimated-gesture-handler-bootstrap.md)).
+
+What the port provides and omits, from the repository's [Reanimated notes](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/reanimated-gesture-handler-qnx.md):
+
+| Reanimated feature | On QNX |
+| --- | --- |
+| Frame requests | Qt Quick `afterAnimating`, through the Worklets frame bridge |
+| Animation clock | `steady_clock` milliseconds, the same clock as frame timestamps |
+| Synchronous style updates | GUI-thread update into the mounted Qt item |
+| Scroll and gesture event handlers | Handler worklet runs on the UI thread |
+| Sensors, keyboard, pseudo-selectors, platform CSS backends | Not provided. Sensors and keyboard log and return -1. |
+
+## 2. Write a spring
+
+The card keeps shared values for position, spin and pulse, and derives a style from them. Excerpt:
+
+```js
+const Animated = require('react-native-reanimated').default;
+const {
+  useSharedValue,
+  useAnimatedStyle,
+  useDerivedValue,
+  withSpring,
+  withTiming,
+  Easing,
+  interpolate,
+  interpolateColor,
+  Extrapolation,
+} = require('react-native-reanimated');
+const { scheduleOnRN } = require('react-native-worklets');
+
+const x = useSharedValue(0);
+
+const progress = useDerivedValue(() =>
+  interpolate(x.value, [0, 220], [0, 1], Extrapolation.CLAMP)
+);
+
+const boxStyle = useAnimatedStyle(() => ({
+  transform: [{ translateX: x.value }],
+  opacity: 0.5 + progress.value * 0.5,
+  backgroundColor: interpolateColor(progress.value, [0, 1], ['#79e8dc', '#f2b84b']),
+}));
+
+const spring = () => {
+  x.value = withSpring(x.value > 100 ? 0 : 220, { damping: 12, stiffness: 140 }, (finished) => {
+    'worklet';
+    scheduleOnRN(setDone, finished ? 'spring finished' : 'spring interrupted');
+  });
+};
+```
+
+Render the animated style on an `Animated.View`. The `'worklet'` directive marks the completion callback to run on the UI thread, and `scheduleOnRN` hops back to React to set state. The gallery's version keeps that state in a Zustand store.
+
+What you should see: pressing `withSpring` moves the box to the right with overshoot and settles at x = 220. The bar grows with `progress`, and the box fades from teal to yellow. The text changes from `spring running` to `spring finished`. That is the sequence in the Pi 400 screenshots `reanimated-spring-mid.png` and `reanimated-spring-end.png`.
+
+## 3. Write a timing and a loop
+
+```js
+const timing = () => {
+  x.value = withTiming(
+    x.value > 100 ? 0 : 220,
+    { duration: 500, easing: Easing.out(Easing.cubic) },
+    (finished) => {
+      'worklet';
+      scheduleOnRN(setDone, finished ? 'timing finished' : 'timing interrupted');
+    }
+  );
+};
+
+const loop = () => {
+  spin.value = withRepeat(withTiming(1, { duration: 900, easing: Easing.linear }), 2, false, () => {
+    'worklet';
+    spin.value = 0;
+  });
+  pulse.value = withSequence(
+    withTiming(1, { duration: 200 }),
+    withDelay(100, withTiming(0, { duration: 300 }))
+  );
+};
+```
+
+`withTiming`, `withRepeat` and `withSequence` are in the card, and the card exercises them. The 2026-11-13 [continuation notes](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/reanimated-gesture-handler-qnx.md) say the corrected candidate paints intermediate timing pixels and completes springs, as bounded device trials. Run 2 kept no timing or loop capture, so those two rest on the earlier notes.
+
+## 4. Read the frame counter
+
+```js
+useFrameCallback(() => {
+  'worklet';
+  frames.value += 1;
+});
+
+const readFrames = () => {
+  log('reanimated UI frames: ' + frames.value + ', shared x: ' + x.value +
+      ', runtime kind: ' + globalThis.__RUNTIME_KIND);
+};
+```
+
+`useFrameCallback` runs on the UI runtime once per frame. If `frames.value` grows between two reads and `runtime kind` prints a nonzero value, the UI runtime is alive and driving frames. A count that stays at 0 means Worklets did not start. When the build has no native Worklets, the gallery shows `This build has no native Worklets module. Configure with RNQNX_ENABLE_WORKLETS=ON.` instead of the card.
+
+## Common errors
+
+| What you see | Cause and fix |
+| --- | --- |
+| The card says `This build has no native Worklets module` | The build was configured with `RNQNX_ENABLE_WORKLETS=OFF`. Reconfigure with the switch on. |
+| Configure stops on a version | The installed package is outside the supported range. Pin Reanimated 4.7.1, Worklets 0.13.x and Gesture Handler 3.4.0. Expo SDK 58's own table lists Gesture Handler `~3.3.0`, so `expo install` can choose the older line. |
+| Configure stops on a missing full Hermes VM | Build `hermesvm jsi` in the Hermes tree. Do not rename the lean library. |
+| An animation freezes while a button's handler loops | JavaScript and the Qt GUI thread are the same thread. The screen catches up afterwards. Keep JS work short. |
+| Sensor or keyboard hooks log and return -1 | Not provided on QNX. |
+
+## Next steps
+
+<Cards>
+  <Card title="Gestures" href="/docs/tutorials/gestures">
+    Drive the same shared values with a pan.
+  </Card>
+  <Card title="Module matrix" href="/docs/reference/module-matrix">
+    Support level for each native module.
+  </Card>
+  <Card title="Threading" href="/docs/explanation/threading">
+    Why JavaScript shares the GUI thread.
+  </Card>
+</Cards>
