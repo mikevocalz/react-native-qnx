@@ -56,3 +56,46 @@ These are reported here and left unchanged because another change owns the READM
 ## Cold-read review of the quick start
 
 A reviewer with no project context followed the [quick start](/docs/tutorials/quick-start) in a new clone at `73e5972` on macOS arm64, Node 26.13.0, pnpm 12.18.0 from a prefixed install. Steps 1 to 7 all passed and matched their expected output. The lockfile gained exactly 13 lines and the bundle was 482,873 bytes. The reviewer filed seven defects, all wording or missing context (commit pin, how to use a prefixed pnpm, the npm install-scripts warning, disk and first-install time, the exact `Done in` line and the 16-project scope after step 4, `PIN:` lines in the dependency check, the byte size). All seven were fixed in the page. Not tested by the reviewer: the claim that `--dry-run` works on every executable command, and the `Failed to switch pnpm` message from an old global pnpm.
+
+## Tutorials and how-to pass, 2026-11-19
+
+The tutorial and how-to writer ran these on a Mac (macOS arm64, Node 26.13.0, pnpm 12.18.0, Qt 6.12.0, CMake 4.4.5, Ninja 1.13.2) from a fresh clone at `8d7deaa`, then at the docs branch head. The pnpm was a prefixed install, with `node <prefix>/node_modules/pnpm/install.js` run once so Node's `spawnSync` can start it.
+
+### Host render and samples
+
+| Command | Exit | Key output |
+| --- | --- | --- |
+| `cmake -S . -B build/playground -G Ninja -DCMAKE_BUILD_TYPE=Debug -DRNQNX_BUILD_HERMES=ON` | 0 | `Qt 6.12.0 found; building Qt Quick host targets (minimum 6.11.1)`, `Configuring done (50.1s)` |
+| `cmake --build build/playground --target rnqnx_playground_host` | 0 | 854 steps, `Linking CXX executable bin/rnqnx_playground_host`, binary 40,243,784 bytes. Build tree about 4 GB. Run twice, once to render the dashboard and once, after deleting the tree, to render the samples |
+| `rnqnx_playground_host --bundle build/dashboard.bundle.js -platform offscreen --screenshot build/dashboard.png` | 0 | `RNQNX_PLAYGROUND_SCREENSHOT build/dashboard.png 640x480`. Image viewed: white text `dashboard on React Native QNX` on dark blue |
+| `pnpm qnx bundle-qnx --app notes --out build/notes.bundle.js` (public entry, `View`/`Text`/`Pressable`/`FlatList`) | 0 | 724,054 bytes. Rendered at 640x480, image viewed |
+| `pnpm qnx bundle-qnx --app notes --out build/notes-themed.bundle.js` (theme context, `useColorScheme`) | 0 | 725,485 bytes. Rendered dark. A second bundle with `useState('light')` rendered light. Both images viewed |
+| `hermesc -O -emit-binary -out build/notes.hbc build/notes.bundle.js`, then the host renderer on the `.hbc` | 0, 0 | 1,060,496 bytes of bytecode. The render was a 19,075-byte PNG, the same size as the JavaScript bundle's |
+| `pnpm qnx bundle-qnx --app component-gallery --out build/gallery.bundle.js` | 0 | 3,402,301 bytes |
+
+### CLI, validators and tests
+
+| Command | Exit | Key output |
+| --- | --- | --- |
+| `pnpm qnx doctor` | 1 | `Environment has 1 error(s) and 2 warning(s).` Error: SDP environment not loaded. Qt 6.12.0, CMake 4.4.5, Ninja 1.13.2, Node 26.13.0, Python 3.13.3 passed |
+| `pnpm qnx configure-qnx --arch aarch64 --config Release --dry-run`, and the same for `build-qnx`, `deploy-qnx`, `run-qnx` | 0 | JSON naming `scripts/configure-qnx.sh aarch64 Release`, `build-qnx.sh aarch64 Release`, `deploy-qnx.sh aarch64 rnqnx_playground Release`, `run-qnx.sh aarch64 rnqnx_playground`. `log-qnx --dry-run` named `scripts/log-qnx.sh` |
+| `pnpm qnx project dev ... --dry-run`, `pnpm qnx project run --help --dry-run` | 1 | `Unknown option '--dry-run'`. These two subcommands reject it |
+| `pnpm qnx:device screenshot --out build/pi.bmp --dry-run` (with `QNX_TARGET_IP` and `QNX_TARGET_USER` set) | 0 | JSON naming `scripts/qnx-device.sh screenshot <24 hex chars>`, `timeoutMs: 30000`, `dryRun: true` |
+| `node scripts/qnx-release-dossier.mjs create --file build/release-candidate/dossier.json`, then `verify` | 0, 0 | `receiptCount: 0`, `releaseAuthorized: false`, then `integrityVerified: true` and all 11 gates `pending` |
+| `pnpm qnx project add-qnx --project <dir with only package.json and app.json> --dry-run` | 1 | `Cannot load @expo/config. Install expo in the app (npx expo install expo).` |
+| `pnpm qnx project doctor --project <same dir>` | 1 | `passed: node`, `passed: app-icon`, `failed: entry`, `failed: metro-config`, and `failed: package:*` for each uninstalled package |
+| `pnpm validate:docs`, `validate:manifests`, `validate:architecture`, `validate:qnx-nitro`, `nitro:platform:check`, `codegen:check` | 0 | Each printed its pass line. `validate:qnx-nitro` printed `actual QNX native execution NOT yet proven` |
+| `node tests/js/qnx-cli.test.mjs`, `node tests/js/app-identity.test.mjs` | 0 | `qnx-cli.test.mjs passed`, `App identity: 84 checks passed` |
+| `pnpm test:js` with a pnpm Node cannot start | 1 | `ERR_INVALID_ARG_TYPE` at `tests/js/braces-security.test.mjs`. The pnpm was a stub that `spawnSync` rejects with `ENOEXEC` |
+| `pnpm test:js` with a native pnpm binary | 1 | Passed 36 files, failed at `tests/js/qnx-consumer-native-config.test.mjs` with `QNX consumer needs a QNX toolchain; Linux preview must be explicitly enabled` |
+
+### Not run in this docs pass
+
+These appear in the tutorials and how-to guides as described steps, each marked on its page.
+
+- Every command that needs a board or a QNX SDP: `configure-qnx`, `build-qnx`, `deploy-qnx` and `run-qnx` without `--dry-run`, `project dev`, `project run`, `project prepare-native` and `project build-native`, the Hermes and Qt for QNX builds, `scripts/qnx-sdk-container.sh`, `tools/qnx-input/build.sh`, `rnqnx-inject` and `screenshot` on the board, `pnpm pi:preflight`, `pnpm pi:mouse-smoke`, and the on-board `ls` for `runner fetch`.
+- `runner list` and `runner fetch`, because no manifest is published.
+- The native builds with Worklets, Reanimated, Gesture Handler, RNSVG, expo-image and window chrome on, so no animation, gesture, SVG or title bar was rendered by this pass. The pictures for those come from the repository's Pi 400 receipts and host frames.
+- Pressing a row in the notes sample and the theme button. The headless renderer takes no input.
+- `pnpm test:cpp:host`, `node scripts/validate-host-renderer.mjs` and the window-chrome CTest lane. The full C++ lane needs several gigabytes of disk that were not free.
+- `cmake -S native/app-identity ... -DRNQNX_BUILD_IDENTITY_TOOL=ON`.

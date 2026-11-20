@@ -1,6 +1,7 @@
 {
   "title": "Tutorials",
   "pages": [
+    "index",
     "quick-start",
     "first-component-app",
     "styling-and-theming",

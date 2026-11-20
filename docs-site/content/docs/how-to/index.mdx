@@ -1,30 +1,71 @@
 ---
 title: How-to guides
-description: Task-focused guides for Expo setup, the prebuilt runner, icons, window chrome, Nitro modules, debugging and cross-building.
+description: Task-focused guides for the toolchain, cross-building, deploying, debugging, screenshots, input injection, Nitro modules, host tests, icons, window chrome, the prebuilt runner, display modes and the docs site.
 ---
 
-Each guide solves one task and assumes you finished the [quick start](/docs/tutorials/quick-start).
+Each guide solves one task and assumes you finished the [quick start](/docs/tutorials/quick-start). Guides that need a QNX SDP or a board say so at the top and mark every command that was not run.
+
+## Set up and build
 
 <Cards>
+  <Card title="Set up the toolchain" href="/docs/how-to/set-up-toolchain">
+    Install and check host tools, then the QNX SDP side.
+  </Card>
   <Card title="Set up Expo" href="/docs/how-to/expo-setup">
-    Create a new shared Expo app or add QNX to an existing one.
+    Create a shared Expo app or add QNX to an existing one.
+  </Card>
+  <Card title="Cross-build for QNX" href="/docs/how-to/cross-build">
+    Which hosts can build, and the commands.
+  </Card>
+  <Card title="Cross-build from Windows" href="/docs/how-to/cross-build-windows">
+    What the repository documents about a Windows host.
   </Card>
   <Card title="Use the prebuilt runner" href="/docs/how-to/prebuilt-runner">
     Download and verify a runner archive. No manifest is published yet.
   </Card>
+</Cards>
+
+## Run and debug on a board
+
+<Cards>
+  <Card title="Deploy over ssh" href="/docs/how-to/deploy-over-ssh">
+    Copy, run and read logs from a board.
+  </Card>
+  <Card title="Debug and iterate" href="/docs/how-to/debugging">
+    Metro, Fast Refresh and reload on a board.
+  </Card>
+  <Card title="Take a device screenshot" href="/docs/how-to/screenshot-device">
+    Host render, app window and whole display.
+  </Card>
+  <Card title="Drive input with rnqnx-inject" href="/docs/how-to/rnqnx-inject">
+    Send pointer and key events through Screen.
+  </Card>
+  <Card title="Troubleshoot display modes" href="/docs/how-to/display-modes">
+    Why a Pi 400 runs at 1024x768 or 1920x1080.
+  </Card>
+</Cards>
+
+## Customize the app
+
+<Cards>
   <Card title="Set icon and app name" href="/docs/how-to/icons-and-app-name">
     Window title, tile label and icon set.
   </Card>
   <Card title="Add window chrome" href="/docs/how-to/window-chrome">
     Title bar and window controls.
   </Card>
-  <Card title="Use Nitro modules" href="/docs/how-to/nitro-modules">
+  <Card title="Add a Nitro module" href="/docs/how-to/nitro-modules">
     What native modules can use today.
   </Card>
-  <Card title="Debug and iterate" href="/docs/how-to/debugging">
-    Metro, Fast Refresh and reload on a board.
+</Cards>
+
+## Test and document
+
+<Cards>
+  <Card title="Write a host test" href="/docs/how-to/host-test">
+    JavaScript and C++ tests that run on your computer.
   </Card>
-  <Card title="Cross-build from Windows" href="/docs/how-to/cross-build-windows">
-    What the repository documents about a Windows host.
+  <Card title="Run the docs site" href="/docs/how-to/docs-site">
+    Install, build and check this site.
   </Card>
 </Cards>
