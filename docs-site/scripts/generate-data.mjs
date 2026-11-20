@@ -21,10 +21,11 @@ const shaFor = (paths) => {
   let best = null;
   for (const p of paths) {
     if (!existsSync(join(repo, p))) throw new Error(`missing path ${p}`);
-    const line = git('log', '-1', '--format=%ct %h', '--', p);
+    // %H cut to 7: %h grows with the object count, which differs between clones and CI.
+    const line = git('log', '-1', '--format=%ct %H', '--', p);
     if (!line) continue;
     const [ts, sha] = line.split(' ');
-    if (!best || Number(ts) > best.ts) best = { ts: Number(ts), sha };
+    if (!best || Number(ts) > best.ts) best = { ts: Number(ts), sha: sha.slice(0, 7) };
   }
   if (!best) throw new Error(`no git history for ${paths.join(', ')}`);
   return best.sha;
