@@ -52,6 +52,8 @@
 #include <cstdlib>
 #include <exception>
 #include <fstream>
+#include <regex>
+#include <iterator>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -1254,8 +1256,37 @@ void hostInstallsBridgelessGlobals() {
 #endif
 
 
-/// Platform constants must track the React Native line this repository builds.
+/// Reads devDependencies["react-native"] from the root package.json, without
+/// going through the CMake step that feeds the host. A regex over the file is
+/// enough: the pin is one exact "react-native": "x.y.z[-pre]" line.
+struct PinnedReactNative {
+  int major;
+  int minor;
+  int patch;
+  std::string prerelease;
+};
+
+PinnedReactNative readPinnedReactNative() {
+  std::ifstream file(RNQNX_ROOT_PACKAGE_JSON);
+  EXPECT(file.good());
+  const std::string text(
+      (std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+  const std::regex pin(
+      R"re("react-native"\s*:\s*"(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?")re");
+  std::smatch match;
+  EXPECT(std::regex_search(text, match, pin));
+  return {
+      std::stoi(match[1]),
+      std::stoi(match[2]),
+      std::stoi(match[3]),
+      match[4].matched ? match[4].str() : std::string()};
+}
+
+/// Platform constants must report the React Native version pinned in the root
+/// package.json, whatever it is, and a stable pin has a null prerelease.
 void platformConstantsReportCurrentReactNativeVersion() {
+  const auto pinned = readPinnedReactNative();
+
   Fixture fixture;
   fixture.host().installPlatformConstants();
 
@@ -1269,13 +1300,16 @@ void platformConstantsReportCurrentReactNativeVersion() {
   EXPECT(versionValue.isObject());
   const auto version = versionValue.getObject(runtime);
 
-  EXPECT_NEAR(version.getProperty(runtime, "major").getNumber(), 0.0);
-  EXPECT_NEAR(version.getProperty(runtime, "minor").getNumber(), 88.0);
-  EXPECT_NEAR(version.getProperty(runtime, "patch").getNumber(), 0.0);
+  EXPECT_NEAR(version.getProperty(runtime, "major").getNumber(), pinned.major);
+  EXPECT_NEAR(version.getProperty(runtime, "minor").getNumber(), pinned.minor);
+  EXPECT_NEAR(version.getProperty(runtime, "patch").getNumber(), pinned.patch);
   const auto prerelease = version.getProperty(runtime, "prerelease");
-  EXPECT(prerelease.isString());
-  EXPECT(
-      prerelease.getString(runtime).utf8(runtime) == std::string("rc.3"));
+  if (pinned.prerelease.empty()) {
+    EXPECT(prerelease.isNull());
+  } else {
+    EXPECT(prerelease.isString());
+    EXPECT(prerelease.getString(runtime).utf8(runtime) == pinned.prerelease);
+  }
 }
 
 /// The Metro bundle evaluates in Hermes and installs React Native's globals.
