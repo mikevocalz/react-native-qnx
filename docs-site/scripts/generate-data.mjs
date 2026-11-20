@@ -188,6 +188,12 @@ const deviceMeaning = {
   untested: 'No device receipt exists.',
 };
 const componentPages = {};
+// Hand-written reference text per component lives in content-parts/components/<slug>.md
+// (no front matter). It is spliced in after the generated notes, before the evidence list.
+const partFor = (name) => {
+  const f = join(site, 'content-parts/components', `${slug(name)}.md`);
+  return existsSync(f) ? readFileSync(f, 'utf8').trimEnd() : '';
+};
 for (const [i, c] of support.components.entries()) {
   const r = rows[i];
   const ev = [...c.evidence.pi400, ...c.evidence.pi4Qsti];
@@ -216,6 +222,7 @@ for (const [i, c] of support.components.entries()) {
     '',
     esc(c.notes),
     '',
+    ...(partFor(c.name) ? [partFor(c.name), ''] : []),
     '## Evidence',
     '',
     ev.length
