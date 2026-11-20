@@ -1,51 +1,50 @@
 ---
 title: React Native QNX documentation
-description: Run React Native 0.88 on QNX with Fabric, Hermes, Yoga and a Qt Quick view backend. What works, what was proven on a device, and how to start.
+description: React Native 0.88 on QNX SDP 8.0.5 through Fabric, Hermes, Yoga and Qt Quick, with what a device has run and what it has not.
 ---
 
-React Native QNX runs a React Native 0.88 app on QNX SDP 8.0.5 through Fabric, Hermes, Yoga and Qt Quick. It is experimental and pre-v1. All eleven release gates are open (see [release gates](/docs/reference/release-gates)).
+React Native QNX runs a React Native 0.88 app on QNX SDP 8.0.5. Fabric and Hermes execute the JavaScript, Yoga lays out the views, and a Qt Quick mounting layer draws them through QNX Screen. The project is experimental and pre-v1: all eleven release gates in `docs/releases/v1-readiness.json` are pending (see [release gates](/docs/reference/release-gates)).
 
-## What was proven on a device
+## What is verified
 
-Every device result comes from one physical Raspberry Pi 400 running a custom BCM2711 image of QNX 8.0.5. No stock Pi 4 has run anything.
+Every device result comes from one physical Raspberry Pi 400 running a custom BCM2711 image of QNX 8.0.5 (the board's `uname` reports `QNX qnxpi 8.0.0 2026/06/05`). No stock Pi 4 has run anything. The scoped results below come from the 2026-11-19 runs, recorded under `docs/evidence`, on a 1024x768 display.
 
-| Proven on the Pi 400                             | Receipt                                                                                                           |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| Reanimated animation, including a spring         | [run 1](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19)       |
-| Gesture Handler pan, tap and double-tap          | [run 1](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19)       |
-| SVG and expo-image cards                         | [run 2](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19)       |
-| Escape closing a Modal and a drawer              | [run 2](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19)       |
-| Held key repeat, sent as synthetic Screen events | [key hold](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-keyhold-2026-11-19) |
+| Verified on the Pi 400                           | Receipt                                                                                                                                                                                                                     |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Reanimated animation, including a spring         | [run 1](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19)                                                                                                                 |
+| Gesture Handler pan, tap and double-tap          | [run 1](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19) and [run 2](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19) |
+| SVG and expo-image cards                         | [run 2](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19)                                                                                                                 |
+| Escape closing a Modal and a drawer              | [run 2](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19)                                                                                                                 |
+| Held key repeat, sent as synthetic Screen events | [key hold](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-keyhold-2026-11-19)                                                                                                           |
 
-## What is not proven
+Earlier scoped receipts cover `View`, `Text`, `TextInput` and `Pressable`. The [component matrix](/docs/reference/component-matrix) lists every component with its host and Pi 400 status and the commit that last changed its evidence. A host result (the Qt Quick renderer tests and the hosted CI workflows) shows that code builds and renders on macOS or Linux. It says nothing about QNX.
 
-Pinch, rotation and multi-pointer gestures. 1920x1080 output beyond the Hello World capture (the 2026-11-19 runs used 1024x768). Video and audio (the QtVideo module is not in the build). A held key on a real USB keyboard. A stock Pi 4. All eleven release gates. See [status and limits](/docs/reference/status).
+## What is not verified
 
-## Find a page by what you need
+- Pinch, rotation and any multi-pointer gesture. The input injector sends one pointer.
+- 1920x1080 output beyond the Hello World capture. The 2026-11-19 runs used 1024x768 because the monitor's EDID was unreadable.
+- Video and audio in the 2026-11-19 runs. Those builds set `RNQNX_ENABLE_QT_VIDEO=OFF`. An earlier scoped receipt for `QtVideo` exists in `docs/evidence/media-2026-11-13.md`, and it has not been repeated on the current gallery.
+- A held key on a real USB keyboard. The key hold run used synthetic Screen events.
+- A stock Pi 4.
+- All eleven release gates, including the QNX cross-build check, which no workflow performs yet.
 
-The pages follow the [Diataxis](https://diataxis.fr) split.
+See [status and limits](/docs/reference/status) and [known gaps](/docs/reference/known-gaps).
+
+## Start here
+
+The pages follow the [Diataxis](https://diataxis.fr) split. Pick the entry point that matches what you need.
 
 <Cards>
-  <Card title="Tutorials" href="/docs/tutorials/quick-start">
-    Learn by doing. Start with the quick start: create an app and bundle it.
+  <Card title="Tutorial: quick start" href="/docs/tutorials/quick-start">
+    Create an app and produce a QNX bundle on macOS or Linux. Needs no SDP and no board.
   </Card>
-  <Card title="How-to guides" href="/docs/how-to">
-    Solve one task: Expo setup, runner, icons, window chrome, Nitro, debugging, cross-build.
+  <Card title="How-to: set up Expo" href="/docs/how-to/expo-setup">
+    Add QNX to an Expo project. The other how-to guides cover the runner, icons, window chrome,
+    Nitro modules, debugging and cross-building.
   </Card>
-  <Card title="Reference" href="/docs/reference">
-    CLI, config, the component matrix with commit SHAs, module and Qt tiers, known gaps.
-  </Card>
-  <Card title="Explanation" href="/docs/explanation">
-    Why it is built this way: architecture, threading, decisions.
-  </Card>
-  <Card title="Troubleshooting" href="/docs/troubleshooting">
-    Error text you will see, and the fix.
-  </Card>
-  <Card title="FAQ" href="/docs/faq">
-    Short answers to the questions that come first.
+  <Card title="Explanation: architecture" href="/docs/explanation/architecture">
+    The layers from JavaScript to the Qt Quick item tree, and why the project is built that way.
   </Card>
 </Cards>
 
-## Who this is for
-
-Three readers drive the page order. See [readers and tasks](/docs/explanation/readers).
+Reference ([CLI](/docs/reference/cli), [config](/docs/reference/config), [component matrix](/docs/reference/component-matrix)), [troubleshooting](/docs/troubleshooting) and the [FAQ](/docs/faq) are in the sidebar. Contributors start at [contributing](/docs/contributing). Coding agents can read [For LLMs and agents](/docs/llms). [Readers and tasks](/docs/explanation/readers) explains the page order.

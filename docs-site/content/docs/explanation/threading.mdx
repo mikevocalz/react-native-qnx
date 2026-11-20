@@ -1,32 +1,72 @@
 ---
 title: Threading model
-description: Which thread runs JavaScript, Qt and native module work, and what that means for module authors.
+description: Which thread runs JavaScript, mounts Qt items, loads images and runs worklets, and how work moves between them.
 ---
 
-This page follows [Owned Qt/JavaScript Nitro v1 dispatch](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/nitro/QT_DISPATCHER.md), audited at Nitro alpha 105 and re-pinned to alpha 136. The QNX cross-build and device run were not repeated at 136.
+JavaScript, React Native's scheduler, the Fabric mount and every Qt Quick item share one thread: the thread that constructs `QtReactHost`, which in the playground host is the `QGuiApplication` thread. There is no separate JavaScript thread. The header says so directly: "JavaScript runs on the thread that constructs this object; there is no separate JS thread yet" (`vnext/include/react-native-qnx/runtime/QtReactHost.h`). Other threads exist for image work, the optional UI-worklet runtime and native module code, and each hands results back to the owner thread.
 
-## One owner thread
+## Threads and what runs on them
 
-JavaScript shares the Qt thread that constructed the host. There is no separate JS thread. Heavy native work must run on the native engine's own workers.
+| Thread                                  | Runs                                                                                                                                                                               | Source                                                     |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Owner thread (Qt GUI thread)            | Hermes and React, `RuntimeScheduler` tasks, Fabric commits and mounts, all `QQuickItem` changes, `QTimer` timers, pointer-event dispatch, AppState and WebSocket transport objects | `QtReactHost`, `QtSchedulerDelegate`, `QtTouchDispatcher`  |
+| UI-worklet thread `rnqnx-ui-worklet`    | The Worklets UI runtime, when Worklets is enabled. It runs a Qt event loop so others can post jobs. It never touches a Qt Quick item                                               | `vnext/src/worklets/QtUiThread.cpp`                        |
+| Qt thread pool workers                  | Image fetch I/O, image decode, `ImageRef` computation, disk-cache clearing                                                                                                         | `ImageTaskQueue`, `QtImageFetcher`, `ExpoImageItem`        |
+| Worker threads owned by a native module | Whatever that module starts (Nitro engines, for example)                                                                                                                           | Module author                                              |
+| Qt Quick render thread                  | Scene graph rendering, if the platform's render loop uses one                                                                                                                      | Not verified. The repository does not select a render loop |
 
-## Getting back to JavaScript
+## Owner-thread rules
 
-A worker calls `runAsync`. That posts an owned task to the host's `QObject`, and the owner thread then enters a React Native scheduler task. That boundary performs React Native's microtask checkpoint and the rendering update.
+`QtSchedulerDelegate` records its construction thread in `owner_`. `schedulerShouldRenderTransactions`, `schedulerDidDispatchCommand` and `schedulerShouldSynchronouslyUpdateViewOnUIThread` all call `onOwnerOrPost`. On the owner thread the work runs inline. Off it, the delegate posts the work through the function set with `setOwnerPoster`. With no poster set, a call from a foreign thread prints `RNQNX_FATAL` and calls `std::terminate`, because mutating Qt items off the GUI thread is a programming error.
 
-- `runSync` requires the owner thread and throws otherwise. It never blocks a worker waiting for Qt.
-- Nitro's `Callback::callSync` bypasses `runSync`, so the dispatcher tracks nested entries and runs the checkpoint after the outermost native call.
-- Qt `QueuedConnection` posts a wakeup without running user work. Tasks run on the owner, outside the admission mutex. Nested Qt pumping does not reorder the queue.
+`QtWorkletsPlatform::install` sets that poster to `postToGui`, which queues the job on the GUI thread through `QtFrameBridge`. That is how a shadow-tree commit made from a worklet reaches the Qt items. `schedulerDidFinishTransaction` fires synchronously on the committing thread and does nothing. Mounting waits for `schedulerShouldRenderTransactions`, which React Native dispatches as a rendering update on the runtime scheduler.
+
+## Entering JavaScript
+
+The `runtimeExecutor` that `QtReactHost` gives the `RuntimeScheduler` calls straight into Hermes on the current thread and counts nesting in `runtimeExecutionDepth`. The executor handed to the UIManager (for starting and stopping surfaces) goes through `RuntimeScheduler::scheduleWork`, so React's callbacks always run inside a scheduler task. Timers follow the same rule: `setTimeout`, `setInterval`, `setImmediate` and `requestAnimationFrame` are `QTimer` objects whose callbacks run through `scheduleWork`. The comment in `installTimers` gives the reason: a direct JSI call skips React Native's microtask and rendering checkpoint and can strand updates.
+
+`requestAnimationFrame` is a zero-delay timer here. It is not tied to Qt Quick frames. The native Animated driver has its own 16 ms `QTimer`. Worklet frame callbacks are the only per-frame hook: `QtFrameBridge` fires on `QQuickWindow::afterAnimating`, once per rendered frame, and only while a request is pending, so an idle app does not tick.
+
+Qt calls into React Native's event system through `QtEventBeat`. React Native calls `request()`, the beat posts `induce()` to its own `QObject` with a queued connection, and the call lands on the owner thread after the current Qt event. Using a per-beat receiver means a pending beat dies with its beat when a host is torn down.
+
+## Getting back to JavaScript from a worker
+
+Workers never touch JSI values. A completion goes through `QtRuntimeTaskQueue`, which `QtReactHost::taskQueue()` returns.
+
+- `post(task)` appends to a mutex-guarded list and, if no wakeup is pending, posts one `Qt::QueuedConnection` call to the queue's `QObject`. User work never runs while the mutex is held.
+- The wakeup runs `drain()` on the owner thread. Each task goes to `RuntimeScheduler::scheduleWork`, so it runs inside a scheduler task and gets React Native's microtask checkpoint and rendering update afterward.
+- `runSync` and `enterJS` require the owner thread and throw `std::runtime_error` otherwise. They never block a worker waiting for Qt.
+- When the outermost native-to-JavaScript entry returns (`runtimeExecutionDepth` back to zero), the queue schedules an empty task to force the checkpoint. This covers Nitro's `Callback::callSync`, which bypasses `runSync`.
+- Nested Qt event pumping cannot reorder the list: `drain()` returns immediately if it is already draining.
+
+The Nitro-side contract is in [Owned Qt/JavaScript Nitro v1 dispatch](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/nitro/QT_DISPATCHER.md). It was audited at Nitro alpha 105 and re-pinned to alpha 136 with `Dispatcher.hpp` and `Callback.hpp` byte-identical. The QNX cross-build and the Pi 400 run were not repeated at 136. The Pi 400 receipt (`docs/evidence/pi400-nitro-qt-2026-11-07.md`) is for alpha 105.
+
+## Image work
+
+`ImageTaskQueue` runs image computation on `QThreadPool` workers behind `ImageFetchQueue`, which starts at most `kSharedConcurrency` (6) tasks at a time and orders waiting tasks by priority. The work lambda captures plain native values only. Completion runs on the owner thread through a `QFutureWatcher`, and only that completion may capture a JavaScript Promise (`vnext/src/runtime/QnxImageLoaderRefs.cpp`).
+
+Cancellation does not free a running worker's slot early. A cancelled task that already started holds its admission slot until the worker finishes, then the owner-side completion is dropped. `ExpoImageItem` uses generation counters so a decode that finishes after a source change cannot paint over the newer image.
+
+## Worklets
+
+`QtUiThread` is a `QThread` with an event loop whose id is published after start. `QtUIScheduler` posts one wakeup per batch of UI jobs. Its header states that this thread is neither the GUI thread nor a separate JavaScript thread. Dedicated JavaScript-thread work for Worklets is listed as open in [`docs/handoff/CURRENT_STATE.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/handoff/CURRENT_STATE.md).
 
 ## Shutdown
 
-At idle owner-thread destruction the host stops surfaces, closes worker admission, drains every accepted task including ones posted while draining, then deletes the `QObject`. Late work is rejected.
+The `QtReactHost` destructor runs in a fixed order on the owner thread, at an idle JavaScript boundary:
 
-Close is a drain, not a cancellation or a deadline. A task that never returns, or one that keeps posting owner work, can delay shutdown. Do not join a worker that needs a synchronous JS call from the owner. Destroying the host during active JavaScript is invalid.
+1. Stop and unregister every surface, so React unmount cleanup can still call native callbacks.
+2. Run teardown hooks in reverse registration order. Libraries that own threads, such as the worklet runtime, stop them here while Hermes is alive.
+3. Invalidate the AppState module when it is enabled.
+4. Call `QtRuntimeTaskQueue::close()`, which stops worker admission, drains every accepted task (including settlement tasks that the drain itself posts from the owner thread), then deletes the `QObject`.
+
+Close is a drain, not a cancellation or a deadline. A task that never returns, or one that keeps posting owner work, can delay shutdown. `close()` throws if it is called during a drain or inside a JavaScript entry. The destructor calls `std::terminate` if `runtimeExecutionDepth` is not zero, so destroying the host during active JavaScript is invalid. Late posts to a closed queue throw `Qt JavaScript task queue is closed`.
 
 ## For module authors
 
-- Do cheap reads synchronously.
-- Put I/O and compute on your own worker and complete through the dispatcher.
-- Dispose producers at an idle owner boundary.
+- Do cheap reads synchronously on the owner thread.
+- Put I/O and compute on your own worker, capture plain native values, and complete through `taskQueue()->post`.
+- Never join a worker that needs a synchronous JavaScript call from the owner thread.
+- Stop producers in a teardown hook or at an idle owner boundary, before the host is destroyed.
 
-Forge worker shutdown and HybridClass disposal still need their own tests. A dedicated JS thread for Worklets is open work.
+Forge worker shutdown and HybridClass disposal need their own binding-level tests and are not covered here. The [Nitro modules how-to](/docs/how-to/nitro-modules) covers writing modules, and [Render lifecycle](/docs/explanation/render-lifecycle) shows where the mount sits among these threads.

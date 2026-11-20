@@ -1,0 +1,76 @@
+---
+title: How releases are gated
+description: How v1 release gates, required CI checks, device receipts and the release dossier fit together, and why nothing is released yet.
+---
+
+React Native QNX has no release. `docs/v1/release-notes.md` opens with "Not released. No tag, npm package or binary exists for v1", and `CHANGELOG.md` has one section, "Unreleased". The release process is therefore a set of gates and checks that are defined and enforced in part. This page describes them. The current status of each gate is on the [release gates](/docs/reference/release-gates) page, which the docs build generates from `docs/releases/v1-readiness.json`.
+
+## One record, eleven gates
+
+`docs/releases/v1-readiness.json` holds the v1 record: a schema version, an `evidenceBaseline` block and a list of gates. Each gate has an `id`, a `title`, a `status` (`blocked`, `pending` or `passed`), an `acceptance` text and an `evidence` list. The eleven ids are `distribution`, `ci`, `cold-boot`, `device-parity`, `performance`, `developer-path`, `documentation`, `app-identity`, `window-chrome`, `expo` and `dependencies`. All eleven are `pending` on this branch.
+
+Two scripts read the record through `scripts/lib/docs-model.mjs`.
+
+- `pnpm validate:docs` (`scripts/validate-docs.mjs`) checks that generated tables in the docs match their sources. It rejects an invalid or duplicate gate and a record that drops one of the eleven. It also rejects a `passed` gate with an empty evidence list and checks that evidence paths exist and that relative documentation links resolve.
+- `pnpm validate:v1` runs the same check with `--release`. It exits nonzero with a list of every gate whose status is not `passed`.
+
+`docs/releases/v1-readiness.md` adds the rule that governs both: "A reviewer must inspect the cited revision and actual result before changing a gate; a file's existence cannot prove the claim inside it." The scripts check that evidence is present. A human decides whether it supports the gate.
+
+```text
+v1-readiness.json  ->  validate-docs.mjs  ->  v1-readiness.md (generated table)
+                                          ->  docs-site generate-data.mjs  ->  release gates page
+required workflows ->  receipts under docs/evidence  ->  gate evidence list
+                                          ->  qnx-release-dossier.mjs create / verify
+```
+
+## What each gate asks for
+
+The acceptance text in the record is the authority. In summary, from `docs/releases/v1-readiness.md`:
+
+| Gate                                                    | Asks for                                                                                                                                       |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `distribution`                                          | A qualified public-source Qt build with notices, hashes, library and plugin closure, kept apart from evaluation artifacts and QNX SDK payloads |
+| `ci`                                                    | Required checks passing on the exact candidate commit, on runners the owner authorizes                                                         |
+| `cold-boot`                                             | 20 consecutive supervised cold boots on the named board and image. Application relaunches do not count                                         |
+| `device-parity`                                         | A device disposition for every component on stock Pi 4 QSTI, plus keyboard and touch proof. Pi 400 results stay separate                       |
+| `performance`                                           | Startup-to-first-frame, presented-frame intervals and RSS for Hello World, a 1000-row list and a drawer drag                                   |
+| `developer-path`                                        | A new licensed developer creates, builds, deploys and runs an app from the documented prerequisites                                            |
+| `documentation`                                         | Versioned getting-started, support limits, evidence gallery, ADRs and release notes with reviewed local links                                  |
+| `app-identity`, `window-chrome`, `expo`, `dependencies` | Icon and name handling, a native QML title bar, Expo create and prebuild behaviour, and updated or held packages                               |
+
+The record's `evidenceBaseline` block says the stock-target result is pending, the Pi 400 image is experimental and hosted checks "have run since" an earlier block by billing and spending limits. It describes performance as "unmeasured on QNX".
+
+## Required checks and three result categories
+
+See also [CI checks](/docs/reference/ci-checks).
+`docs/releases/required-checks.md` defines the Candidate CI gate. Results fall into three categories that are reported separately:
+
+- **Hosted**: GitHub-hosted `ubuntu-24.04` runners, covering Linux host builds, source contracts and bundles. "None of them compile for QNX."
+- **QNX cross-build**: a QNX SDP toolchain build. The document says no workflow does this yet, and that it needs a self-hosted runner holding a licensed SDP.
+- **Device**: supervised runs on named hardware, recorded as evidence receipts under the other gates and not as CI checks.
+
+A local run never substitutes for a hosted check, and a hosted pass says nothing about QNX or a device. A run on an earlier commit does not count for a later one, "even when only documentation changed after it".
+
+The document lists 18 required workflows. Most filter on paths, so a pull request touching other files does not start them. The document therefore gives a dispatch loop that runs every required workflow on the candidate branch with `gh workflow run "$w.yml" --ref <candidate-branch>`. The workflows are `sdk58-validation`, `host-renderer`, `image-loader`, `nitro-v1-host`, `nitro-qnx-source-check`, `expo-modules-qnx-source-check`, `expo-qnx-autolinking`, `hermes-qnx-source-check`, `react-qnx-source-check`, `pi-tooling-quality`, `runtime-appstate`, `qnx-create-app`, `qnx-native-consumer-build`, `phase6-doctor`, `phase7-release-dossier`, `phase-public-host`, `app-identity` and `phase4-lifecycle`.
+
+Several workflows in `.github/workflows/` are not required: the one that builds against the separately licensed Forge engine, the informational workflows for the Linux/Wayland target, and `websocket-host.yml`, whose backend is OFF by default. `docs-site.yml` checks the documentation site (`npm run data:check` confirms generated pages are current), and `runner-release.yml` attests prebuilt runners.
+
+The document records a dispatch run on branch `v1/gate2-ci` at `0e8e8939a9f257e2624f76fc9eaeb83bac6ede46` (2026-11-12 UTC), noted as "not a release candidate". Four workflows failed there on one step, `pnpm audit:dependencies`, which rejected node-forge 1.4.2. Pull request 117 pinned node-forge 1.4.3, and later runs of those four passed. The failures stay in the document.
+
+Workflows set `permissions: contents: read` at the top level, and each action is pinned to a full commit SHA. A ruleset on `main` (id 27120426, active since 2026-11-12 per the document) blocks deletion and force-pushes, requires a pull request, and requires `validate`, the two `Qt 6.11 / RN 0.88 / Hermes` renderer jobs and `image-cache`. No approving review is required while one maintainer owns the repository. Path-filtered workflows stay out of the ruleset because a pull request that skips them would wait forever.
+
+## The release dossier
+
+`scripts/qnx-release-dossier.mjs create` freezes the committed candidate into JSON: the exact HEAD commit and tree, the lockfile, the package manifest, the component matrix and the eleven gates. A `receipts` array starts empty. A receipt names a gate, a lane, an outcome, the tested commit, the lockfile hash, the exact command, the environment, "what this observation does not prove", the author and the artifact files. `verify` checks the receipts against the frozen candidate. The guide (`docs/getting-started/release-dossier.md`) says verification means file integrity and "not completed release qualification". The `phase7-release-dossier` workflow checks that the dossier tool grants no release approval.
+
+## Evidence and the gallery
+
+Gate evidence lives under `docs/evidence/` as receipts, and `docs/v1/evidence-gallery.md` lists them by target. The draft release notes list the Hello World, Nitro dispatcher, Pressable and CLI receipts as "dated results from earlier candidates" and state that a release candidate "needs its own". Device receipts exist only for a Raspberry Pi 400 on a custom image. `docs/handoff/CURRENT_STATE.md` repeats that rule for open pull requests. Its recent sections say to keep feature defaults OFF, keep all eleven gates pending and keep each pull request draft until hosted checks and current device acceptance exist for its head.
+
+## Publishing a runner
+
+Runner releases follow [ADR-0018](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0018-runner-hosting-and-sdp-boundary.md). The steps are a build on a licensed-SDP machine, a manifest entry with `sha256`, `size` and `targetLibraries`, a draft GitHub release, the "Runner release attestation" workflow, then publication. No runner exists yet, so no manifest URL is live (see [security](/docs/explanation/security)).
+
+## What is not decided
+
+Package versions stay at their current values "until package ownership, release units and publication are reviewed" (`docs/releases/v1-readiness.md`). Nitro stays on an exact alpha pin, and v1 does not promise a stable Nitro ABI. No versioning scheme, tag format or npm publication step is documented for the packages.

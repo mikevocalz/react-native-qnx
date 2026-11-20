@@ -1,0 +1,58 @@
+---
+title: Worklets
+description: How react-native-worklets 0.13.x runs its UI runtime on a Qt thread, and the limits of that design.
+---
+
+## Install
+
+The root `package.json` pins `react-native-worklets` at `0.13.1`. The doc `docs/worklets-qnx.md` says the supported line is 0.13.x, with React Native 0.86 to 0.88. The upstream C++ is compiled from the installed npm package and nothing from it is vendored. The bootstrap exception is ADR-0020.
+
+Platform sources are in `vnext/src/worklets`: `QnxWorkletsModule`, `QtFrameBridge`, `QtUiThread`, `QtUIScheduler.h`, `QtTaskQueueCallInvoker.h`, `QtWorkletsPlatform` and `QnxWorkletsPlatformLogger`.
+
+## Setup
+
+```sh
+cmake ... -DRNQNX_ENABLE_WORKLETS=ON \
+  -DRNQNX_WORKLETS_SOURCE_DIR=<app>/node_modules/react-native-worklets
+```
+
+The switch defaults to OFF. CMake rejects any version outside 0.13.x.
+
+Hermes: Worklets evaluates serialized function source on a second runtime, so `cmake/dependencies/HermesQNX.cmake` selects the real `libhermesvm.so` when `RNQNX_ENABLE_WORKLETS` is on. Build `hermesvm jsi` in the Hermes tree named by `RNQNX_HERMES_QNX_DIR`. A missing full VM stops configuration. Release apps without Worklets keep `libhermesvmlean.so`.
+
+Babel: `babel-preset-expo` adds the `react-native-worklets/plugin` plugin when the package is installed, so an app needs no Babel change (per `docs/worklets-qnx.md`).
+
+Patch: one line of `AsyncQueueImpl.cpp` is replaced in a generated copy, because `pthread_setname_np` takes the thread first on QNX. CMake fails if the line changes. See also [Metro config](/docs/how-to/metro-config) and [threading](/docs/explanation/threading).
+
+## Supported API
+
+| Area       | Behavior on the Qt host                                                                                                                                     |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UI runtime | Runs on a dedicated thread, `rnqnx-ui-worklet`. Every `scheduleOnUI` worklet and `requestAnimationFrame` callback runs there.                               |
+| UI to JS   | `QtTaskQueueCallInvoker` posts to the host task queue. React Native's own invoker cannot be used, because this host runs the callback inline on the caller. |
+| JS to UI   | `QtUiThread::post`, one queued call per batch.                                                                                                              |
+| Frames     | `QtFrameBridge` delivers one batch per `QQuickWindow::afterAnimating`, with a `steady_clock` millisecond timestamp. One window is followed.                 |
+| Teardown   | `addTeardownHook` stops frames, marks the runtime dead, invalidates the proxy and joins the UI thread. Queued unstarted jobs are discarded.                 |
+
+## Not supported
+
+- Bundle Mode: reports unsupported when used. Networking inside worklet runtimes (Bundle Mode only) is not provided.
+- `toggleSlowAnimationsOnUIRuntime`: a no-op that returns false.
+- A hidden or unexposed window produces no frames and no callbacks.
+- Bytecode unpacker path for lean Hermes release builds: not proven on the target. Only the source-unpacker path on full Hermes is proven.
+- Execution of queued UI jobs while JavaScript is blocked: not established. Both the 2026-11-13 probe and run 1 report 0 of 40 jobs in the busy window.
+
+## Evidence
+
+| Path                                                | Shows                                                                                                                                                                                                                          |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `docs/worklets-qnx.md`                              | The design and the receipts below, with dates.                                                                                                                                                                                 |
+| `docs/evidence/pr149-linked-host-2026-11-17/`       | Linux host, Qt 6.11.1, software rendering. Three-frame UI-worklet roundtrip, repeated host creation, unmount, and destruction with a pending frame callback. A negative control rejects a bundle without the native bootstrap. |
+| `docs/evidence/pr149-playground-errors-2026-11-16/` | Fatal and nonfatal bootstrap error controls, including a real false positive before the fix.                                                                                                                                   |
+| `docs/evidence/worklets-frame-2026-11-13/`          | Pi 400, 2026-11-13, Worklets 0.13.1. Two runs of 30 frame callbacks in 465 ms and 472 ms (largest gap 18 ms and 17 ms). The worklet reported thread `ui-worklet` and React Native reported `gui`.                              |
+| `docs/evidence/pr149-pi400-run1-2026-11-19/`        | Pi 400, commit `26bd6aa`. `worklets-proof.png` and a log line `RNQNX_WORKLETS_SHUTDOWN_OK`.                                                                                                                                    |
+| `docs/evidence/pr149-pi400-run2-2026-11-19/`        | Pi 400, commit `240dc08`, with Worklets ON.                                                                                                                                                                                    |
+
+An earlier startup probe (Worklets 0.13.0, QNX SDP 8.0.5, full Hermes, `-O1`) logged 20 frames in 480 ms and five of five clean exits after a queue flood. The doc says those runs predate the 0.13.1 bump.
+
+Missing evidence: frame pacing against the display, behavior with JS busy, and any Pi 4 QSTI run. The Linux host receipt says it does not qualify the QNX binary or physical-device lifecycle.

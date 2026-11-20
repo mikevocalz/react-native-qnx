@@ -68,17 +68,17 @@ Source: [Platform.js](https://github.com/mikevocalz/react-native-qnx/blob/main/p
 
 The host sets these fields:
 
-| Field                | Source in the host                                            |
-| -------------------- | ------------------------------------------------------------- |
-| `osVersion`          | `QSysInfo::productVersion()`                                  |
-| `systemName`         | `QSysInfo::productType()`                                     |
-| `isTesting`          | `false`                                                       |
-| `reactNativeVersion` | A fixed object: major 0, minor 88, patch 0, prerelease `rc.3` |
+| Field                | Source in the host                                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `osVersion`          | `QSysInfo::productVersion()`                                                                                             |
+| `systemName`         | `QSysInfo::productType()`                                                                                                |
+| `isTesting`          | `false`                                                                                                                  |
+| `reactNativeVersion` | The version pinned in the root `package.json`, split into major, minor, patch and prerelease (null for a stable release) |
 
 Two things follow from the source.
 
 - The values describe the machine the process runs on. The C++ comment says that on the development host this reports macOS, and that on the target it reports the target. This page did not run a build on a QNX target, so the exact strings `QSysInfo` returns on QNX are not recorded here.
-- `reactNativeVersion` is hard-coded to `0.88.0-rc.3`, while the repository pins React Native 0.88.1 in [package.json](https://github.com/mikevocalz/react-native-qnx/blob/main/package.json). Do not use it to read the installed version.
+- `reactNativeVersion` comes from the `react-native` pin in [package.json](https://github.com/mikevocalz/react-native-qnx/blob/main/package.json). `cmake/RnqnxReactQt.cmake` reads it at configure time and passes it to the host as compile definitions, so the value tracks the pin. For the 0.88.1 pin it is major 0, minor 88, patch 1, prerelease null. The host test `platformConstantsReportCurrentReactNativeVersion` compares it with the pin.
 
 If the host did not install the global, reading `Platform.constants`, and anything built on it such as `Version`, throws: `Platform constants are unavailable: the QNX host did not install globalThis.__RNQNX_PLATFORM_CONSTANTS before evaluating the bundle.` The module throws instead of inventing values. A bundle run under a host that skips `installPlatformConstants` hits this error.
 

@@ -21,6 +21,57 @@ Overall: **Untested**.
 
 Direct component coverage is unverified.
 
+## Props
+
+`TouchableWithoutFeedback` has no QNX override and no direct test (`docs/component-support.json` host `unverified`). It attaches `Pressability` handlers to its single child by cloning it (`TouchableWithoutFeedback.js:171-211` upstream) and draws nothing. No `setState`, native animation or Qt property is involved.
+
+Native touch path: only Fabric `onTouchStart`, `onTouchMove`, `onTouchEnd` and `onTouchCancel` reach React (`vnext/src/fabric/QtTouchDispatcher.cpp:227-247,280-360`). There is no hover or pointer enter and leave event, and hit testing uses item geometry (lines 141-225), so a press cannot start outside the view's box. Long-press and delay timing, `hitSlop` and `pressRetentionOffset` regions are computed in JavaScript by `Pressability` (`Pressability.js:464-478,800-867`) using `setTimeout` and a shadow-tree `measure`. The only press test is the `Pressable` probe (`tests/cpp/QtPressableProbe.cpp`), which covers press in, out, press, cancel, deactivation, disabled, unmount and remount, not long press or regions.
+
+| Prop                                                | Status            | Trace                                                                                                                                     |
+| --------------------------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `onPress`, `onPressIn`, `onPressOut`, `onLongPress` | inherited         | `Pressability` and the touch path above.                                                                                                  |
+| `disabled`                                          | inherited         | Handled in `Pressability`.                                                                                                                |
+| `delayPressIn`, `delayPressOut`, `delayLongPress`   | JS-only, untested | `setTimeout` in `Pressability.js:464-478,790`.                                                                                            |
+| `hitSlop`, `pressRetentionOffset`                   | partial           | The child gets `hitSlop` in its View props, which native code ignores for views. `Pressability` uses it for the JS retention region only. |
+| `children`                                          | untested          | One child that accepts responder props; React Native enforces this.                                                                       |
+
+## Events
+
+| Event           | Status    | Note                          |
+| --------------- | --------- | ----------------------------- |
+| Press lifecycle | inherited | Same dispatch as `Pressable`. |
+
+## Platform behavior on QNX
+
+The child must be a host `View`-like element that mounts as a Qt item for hit testing to find it. The dispatcher walks the item tree and maps the item to a tag with a registered emitter (`QtTouchDispatcher.cpp:195-224`). `pointerEvents` on an ordinary `View` is not read by the dispatcher (only SVG elements and `ExpoImageItem` read it), so No evidence found that `pointerEvents="none"` prevents a press.
+
+## Unsupported or partial props
+
+- None is unsupported by a native reader, because none is read natively except through the touch events.
+- `hitSlop` cannot enlarge the starting area.
+
+## Minimal example
+
+```tsx
+import { Text, TouchableWithoutFeedback, View } from 'react-native';
+
+export default function Example() {
+  return (
+    <TouchableWithoutFeedback onPress={() => console.log('tap')}>
+      <View style={{ padding: 12 }}>
+        <Text>Tap target, no feedback</Text>
+      </View>
+    </TouchableWithoutFeedback>
+  );
+}
+```
+
+## Known gaps
+
+- Host, Pi 400 and Pi 4 QSTI are all unverified. No host test, device receipt or physical HID run exists for this component.
+- The keyboard-dismiss use case (wrapping a screen to dismiss a keyboard) has no meaning here as no Keyboard module is wired (see `KeyboardAvoidingView`).
+- Use `Pressable` if you need documented behavior.
+
 ## Evidence
 
 No evidence file is linked for this component.

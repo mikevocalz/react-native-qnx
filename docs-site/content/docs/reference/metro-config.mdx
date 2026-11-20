@@ -1,0 +1,204 @@
+---
+title: Metro config reference
+description: Exports, parameters, settings and defaults of the @rn-qnx/metro-config-qnx package and its public-entry helper, with the source file for each.
+---
+
+This is the lookup page for `@rn-qnx/metro-config-qnx`. For a task-oriented walkthrough, see [Configure Metro for QNX](/docs/how-to/metro-config). Everything here was read from source on 2026-11-19. No Metro bundle was built for this page. Defaults below were read by installing `@react-native/metro-config@0.88.1` and `metro-config@0.87.1` (the peer versions in `packages/metro-config-qnx/package.json`) in a scratch directory and calling `getDefaultConfig` and `mergeConfig` on 2026-11-19.
+
+## Package
+
+Source: `packages/metro-config-qnx/package.json`.
+
+| Field              | Value                                                          |
+| ------------------ | -------------------------------------------------------------- |
+| `name`             | `@rn-qnx/metro-config-qnx`                                     |
+| `version`          | `0.1.0`                                                        |
+| `main`             | `src/index.js`                                                 |
+| `types`            | `src/index.d.ts`                                               |
+| `files`            | `src`, `public-entry.js`, `public-entry.d.ts`                  |
+| `dependencies`     | `@rn-qnx/react-native-qnx` (`workspace:*`)                     |
+| `peerDependencies` | `@react-native/metro-config` `0.88.1`, `metro-config` `0.87.1` |
+
+Import paths:
+
+| Path                                    | File              | Export                                                         |
+| --------------------------------------- | ----------------- | -------------------------------------------------------------- |
+| `@rn-qnx/metro-config-qnx`              | `src/index.js`    | `{ getQnxMetroConfig, createQnxResolveRequest, QNX_PLATFORM }` |
+| `@rn-qnx/metro-config-qnx/public-entry` | `public-entry.js` | `module.exports = withPublicEntry` (a single function)         |
+
+The package has no `exports` map, so both paths resolve by file name.
+
+## Exports of the main entry
+
+Types are in `src/index.d.ts`.
+
+### QNX_PLATFORM
+
+`'qnx'`. The platform name Metro is asked for (`--platform qnx`) and the string used for the platform list, the resolver check and the package export condition.
+
+### getQnxMetroConfig(projectRoot, overrides?)
+
+```ts
+declare function getQnxMetroConfig(projectRoot: string, overrides?: InputConfigT): ConfigT;
+```
+
+| Parameter     | Type           | Default | Meaning                                                                                                     |
+| ------------- | -------------- | ------- | ----------------------------------------------------------------------------------------------------------- |
+| `projectRoot` | string         | none    | Absolute path of the app. Passed to `getDefaultConfig`.                                                     |
+| `overrides`   | `InputConfigT` | none    | Project settings merged with `mergeConfig` after the QNX settings and before the export condition is added. |
+
+Steps, in order (`src/index.js`):
+
+1. `getDefaultConfig(projectRoot)` from `@react-native/metro-config`. Its defaults are listed under "Defaults from `getDefaultConfig`" below.
+2. Build a small config with only `resolver.resolveRequest` and `resolver.platforms` and merge it into the defaults with `mergeConfig`.
+3. If `overrides` is given, `mergeConfig(merged, overrides)`.
+4. Add `qnx` to `resolver.unstable_conditionsByPlatform.qnx`, keeping existing entries and removing duplicates.
+
+### Defaults from `getDefaultConfig`
+
+Printed from `@react-native/metro-config@0.88.1` with `metro-config@0.87.1`. These are what `getQnxMetroConfig` starts from, before the three QNX changes above.
+
+| Setting                                    | Default                                                                                                                  |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `resolver.platforms`                       | `android`, `ios` (QNX appends `qnx`)                                                                                     |
+| `resolver.sourceExts`                      | `js`, `jsx`, `json`, `ts`, `tsx`                                                                                         |
+| `resolver.assetExts`                       | `bmp gif jpg jpeg png psd svg webp xml m4v mov mp4 mpeg mpg webm aac aiff caf m4a mp3 wav html pdf yaml yml otf ttf zip` |
+| `resolver.assetResolutions`                | `1`, `1.5`, `2`, `3`, `4`                                                                                                |
+| `resolver.resolverMainFields`              | `react-native`, `browser`, `main`                                                                                        |
+| `resolver.unstable_conditionNames`         | `react-native`                                                                                                           |
+| `resolver.unstable_conditionsByPlatform`   | `web: [browser]` (QNX adds `qnx: [qnx]`)                                                                                 |
+| `resolver.unstable_enablePackageExports`   | `true`                                                                                                                   |
+| `resolver.disableHierarchicalLookup`       | `false`                                                                                                                  |
+| `resolver.useWatchman`                     | `true`                                                                                                                   |
+| `resolver.resolveRequest`                  | `null` (QNX sets it)                                                                                                     |
+| `transformer.babelTransformerPath`         | `@react-native/metro-babel-transformer`                                                                                  |
+| `transformer.assetRegistryPath`            | `react-native/asset-registry`                                                                                            |
+| `transformer.assetPlugins`                 | empty                                                                                                                    |
+| `transformer.publicPath`                   | `/assets`                                                                                                                |
+| `transformer.minifierPath`                 | `metro-minify-terser`                                                                                                    |
+| `transformer.enableBabelRCLookup`          | `true`                                                                                                                   |
+| `transformer.hermesParser`                 | `false`                                                                                                                  |
+| `transformer.unstable_allowRequireContext` | `false`                                                                                                                  |
+| `serializer.customSerializer`              | `null`                                                                                                                   |
+| `server.port`                              | `8081`                                                                                                                   |
+| `server.forwardClientLogs`                 | `true`                                                                                                                   |
+| `watchFolders`                             | empty                                                                                                                    |
+
+`metro-config` also fills many other keys (`transformer.minifierConfig`, `transformer.optimizationSizeLimit` of `153600`, `serializer` hooks, `cacheStores` with one entry). The full printed object has about 90 keys; the table lists the ones this package interacts with or that change what a QNX app bundles.
+
+The function sets no `transformer`, `serializer`, `watchFolders`, `assetExts`, `sourceExts` or asset plugin option. Those come from the defaults and your overrides. Overrides cannot remove the `qnx` condition, because step 4 runs last.
+
+### Settings the function changes
+
+| Setting                                      | Value set                                                                                         | Notes                                                                                                                                                                            |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `resolver.platforms`                         | the default list with `'qnx'` appended; unchanged if `qnx` is already present                     | The default list comes from `getDefaultConfig`. The source comment says Expo's and React Native's defaults lack `qnx`. Without it `Foo.qnx.js` is never preferred over `Foo.js`. |
+| `resolver.resolveRequest`                    | `createSvgOverlayResolveRequest(createQnxResolveRequest(OVERRIDES_ROOT), { platforms: ['qnx'] })` | `OVERRIDES_ROOT` is `packages/react-native-qnx/Libraries`, from `@rn-qnx/react-native-qnx`.                                                                                      |
+| `resolver.unstable_conditionsByPlatform.qnx` | existing entries plus `'qnx'`                                                                     | Other platforms' conditions are kept. A package must list `qnx` before `react-native` in its `exports` object when it ships both.                                                |
+
+If your `overrides` set `resolver.resolveRequest`, `mergeConfig` combines it with the QNX one. Measured with `metro-config@0.87.1`: `mergeConfig` replaces a function-valued `resolver.resolveRequest` with the later one, and replaces array-valued settings such as `resolver.platforms` and `resolver.unstable_conditionNames` with the later array instead of concatenating them. Your `overrides` therefore replace the QNX `resolveRequest` and the `platforms` list that includes `qnx`, and the extended list is lost. Wrap `getQnxMetroConfig(...).resolver.resolveRequest` yourself if you need your own resolver. `withPublicEntry` and `withExpoRouterQnx` wrap the resolver explicitly instead.
+
+### createQnxResolveRequest(overridesRoot)
+
+```ts
+declare function createQnxResolveRequest(
+  overridesRoot: string
+): (context: unknown, moduleName: string, platform: string | null) => unknown;
+```
+
+Returns a Metro `resolveRequest` function. `getQnxMetroConfig` calls it for you. It first runs `context.resolveRequest` (Metro's own result). Then, only when `platform === 'qnx'` and the result is a `sourceFile`:
+
+| Case                                                                                                                                                            | Result                                                                                                    |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| The file path matches `expo-modules-core/build/polyfill/index.js` or `expo-modules-core/src/polyfill/index.ts`                                                  | The file `expo/polyfill.js` beside `overridesRoot`, that is `packages/react-native-qnx/expo/polyfill.js`. |
+| The file path contains `/react-native/Libraries/` (last occurrence) and the same relative path exists under `overridesRoot`, and differs from the resolved file | That file under `overridesRoot`.                                                                          |
+| Anything else                                                                                                                                                   | Metro's result unchanged.                                                                                 |
+
+When Metro's own resolution throws, `platform === 'qnx'` and the module name starts with `.`, it tries `src/private/<path>.js` under `packages/react-native-qnx` (the directory beside `Libraries`), for imports that resolve into React Native's `src/private`. If that file exists it returns it. Otherwise it rethrows the original error. The source comment gives `ReactDevToolsSettingsManager` in React Native 0.88 as the example.
+
+For any platform other than `qnx`, the resolver returns Metro's result unchanged.
+
+Files currently under `packages/react-native-qnx/Libraries`: `AppState/NativeAppState.js`, `Components/{KeyboardAvoidingView,RefreshControl,StatusBar,Switch,TextInput}/`, `Image/Image.js`, `Image/ImageBackground.js`, `Linking/Linking.js`, `NativeComponent/BaseViewConfig.js`, `ReactNative/PublicAPI.js`, `Utilities/BackHandler.js`, `Utilities/Platform.js`. This list is a directory listing, not a statement about which of them are complete.
+
+### The react-native-svg overlay
+
+`getQnxMetroConfig` wraps the resolver above with `createSvgOverlayResolveRequest` from `packages/react-native-qnx/svg/resolver.js`.
+
+| Item                     | Value                                                                                                                                                                                                                                                                                    |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Signature                | `createSvgOverlayResolveRequest(fallback, options?)`                                                                                                                                                                                                                                     |
+| `options.platforms`      | default `['qnx']`. `getQnxMetroConfig` passes `['qnx']`.                                                                                                                                                                                                                                 |
+| `options.overlayRoot`    | default `packages/react-native-qnx/svg/overlay`.                                                                                                                                                                                                                                         |
+| `options.packageVersion` | default reads `package.json` of the package root. Exists for tests.                                                                                                                                                                                                                      |
+| Expected version         | `react-native-svg` `15.16.0` exactly.                                                                                                                                                                                                                                                    |
+| Effect                   | A file resolved to `<root>/react-native-svg/src/<path>` is replaced by `overlay/<path>` with the same stem, when one exists. Overlay files themselves are never redirected. Files starting with `.` in the overlay directory are ignored.                                                |
+| Errors                   | Two installed copies: `Two copies of react-native-svg are installed (<a> and <b>). The QNX overlay supports one.` Another version: `The QNX react-native-svg overlay replaces whole files of 15.16.0, but <root> is <version>. Re-audit packages/react-native-qnx/svg before upgrading.` |
+| When it applies          | Only after Metro resolves a file inside `react-native-svg`, so an app without that package is unaffected.                                                                                                                                                                                |
+
+## Public entry
+
+`@rn-qnx/metro-config-qnx/public-entry` exports one function. Source: `packages/metro-config-qnx/public-entry.js` and `public-entry.d.ts`.
+
+```ts
+declare function withPublicEntry(config: InputConfigT, platform?: PlatformName): InputConfigT;
+export = withPublicEntry;
+```
+
+In the source, `PlatformName` is the union of `'qnx'` and the name of a second target. This site does not document the second target.
+
+| Parameter  | Type           | Default | Meaning                                                                                                                                                              |
+| ---------- | -------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `config`   | `InputConfigT` | none    | A Metro config. Its `resolver` is spread and its `resolveRequest` is kept as the fallback.                                                                           |
+| `platform` | string         | `'qnx'` | The platform whose `react-native` import is redirected. Any value other than `'qnx'` or the second target's name throws an error that names the two accepted values. |
+
+Behavior: a request for the exact module name `react-native` with `requestedPlatform === platform` resolves to `packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js`. Every other request goes to the previous `resolveRequest`, or to `context.resolveRequest` if there was none. The helper is opt-in: without it, app code imports React Native's internal paths such as `react-native/Libraries/Text/Text`.
+
+```js
+const withPublicEntry = require('@rn-qnx/metro-config-qnx/public-entry');
+const { getQnxMetroConfig } = require('@rn-qnx/metro-config-qnx');
+module.exports = withPublicEntry(getQnxMetroConfig(__dirname), 'qnx');
+```
+
+### Names exported by PublicAPI.js
+
+Source: `packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js`. Each name is a lazy getter that requires the real module. The module is a `Proxy`. A name not in this list throws `React Native QNX public export "<name>" is not implemented in this experimental entry.`, except `__esModule`, `default` and `then`, which return `undefined`. Having a name here does not mean the component has full native behavior; see the [component matrix](/docs/reference/component-matrix).
+
+`AppRegistry`, `AppState`, `View`, `Text`, `Image`, `ScrollView`, `FlatList`, `SectionList`, `TextInput`, `Pressable`, `ActivityIndicator`, `Switch`, `Modal`, `StyleSheet`, `Platform`, `Animated`, `I18nManager`, `processColor`, `PanResponder`, `Easing`, `TurboModuleRegistry`, `codegenNativeComponent`, `findNodeHandle`, `Dimensions`, `PixelRatio`, `useWindowDimensions`, `DevSettings`, `NativeModules`, `NativeEventEmitter`, `LogBox`, `Linking`, `Keyboard`, `KeyboardAvoidingView`, `Appearance`, `useColorScheme`, `AccessibilityInfo`, `UIManager`, `BackHandler`, `StatusBar`, `Alert`, `LayoutAnimation`, `NativeComponentRegistry`, `DeviceEventEmitter`, `RefreshControl`, `TouchableNativeFeedback`, `TouchableOpacity`, `TouchableHighlight`, `TouchableWithoutFeedback`.
+
+## Add-on: expo-router
+
+`@rn-qnx/expo-router-qnx/metro` exports `withExpoRouterQnx(config, options?)` (`packages/expo-router-qnx/metro.js`). It takes a config made by `getQnxMetroConfig` and replaces `resolver.resolveRequest` with `createExpoRouterResolveRequest(<previous resolver>, options)`.
+
+| Option          | Type   | Default | Meaning                                                                                          |
+| --------------- | ------ | ------- | ------------------------------------------------------------------------------------------------ |
+| `routerContext` | string | none    | Path of the file that exports the route `require.context`. The router starter uses `app-ctx.js`. |
+
+For the `qnx` platform the resolver swaps `react-native-safe-area-context`, `react-native-screens`, `react-native-screens/experimental` and `react-native-drawer-layout` for files in `packages/expo-router-qnx/src`, and three file patterns (`expo/build/winter/fetch/index.js`, `expo-linking/build/ExpoLinking.js`, `expo-router/build/react-navigation/bottom-tabs/views/ScreenFallback.js`) for shims (`src/resolver.js`). Peer versions: `expo-router` 58.0.31, `react-native-screens` 4.30.1, `react-native-safe-area-context` 5.11.1, `react-native-drawer-layout` 4.2.12.
+
+## Settings in generated configs
+
+Not part of the package, but the files the CLI writes use these settings.
+
+| File                                        | Written by                                       | Settings beyond `getQnxMetroConfig(__dirname)`                                                                                                                                                                                                                                 |
+| ------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `apps/<name>/metro.config.js`               | `pnpm qnx init` (`template/qnx/metro.config.js`) | `watchFolders: [<workspace root>]`, `resolver.nodeModulesPaths: [<app>/node_modules, <workspace>/node_modules]`, `resolver.disableHierarchicalLookup: false`.                                                                                                                  |
+| `metro.qnx.config.js`                       | `project add-qnx`                                | `withPublicEntry(getQnxMetroConfig(__dirname, { resolver: { extraNodeModules: { '@babel/runtime': <dirname of resolved @babel/runtime/package.json> } } }), 'qnx')`. Header comment: used only for `--platform qnx` bundles; `metro.config.js` stays for iOS, Android and web. |
+| `metro.config.js` of a `project create` app | `project create`                                 | `withExpoRouterQnx(withPublicEntry(getQnxMetroConfig(__dirname, { transformer: { unstable_allowRequireContext: true }, resolver: { extraNodeModules: { '@babel/runtime': ... } } }), 'qnx'), { routerContext: <app>/app-ctx.js })`.                                            |
+
+## Settings the CLI adds when it runs Metro
+
+| Command                                 | Setting                                                                                                                                                                                                                                                                                                                                                                               | Source                   |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `pnpm qnx bundle-qnx`, `project bundle` | `--platform qnx --dev false --max-workers 2 --config <file> --out <file>`                                                                                                                                                                                                                                                                                                             | `cli.mjs`, `project.mjs` |
+| `project start`, `project dev`          | `Metro.loadConfig({ cwd, config, port, resetCache })`, then `transformer.publicPath` set to `/assets?unstable_path=.` on the loaded config. Reason in the source: assets outside the project root (such as LogBox images in a monorepo or pnpm store) get an `httpServerLocation` with `../`, which Metro's URL parsing removes, so they would 404. Release bundles keep their paths. | `dev-server.mjs`         |
+| `project bundle`                        | Config file: `metro.qnx.config.js` if it exists, else `metro.config.js`.                                                                                                                                                                                                                                                                                                              | `project.mjs`            |
+| `project start`, `project dev`          | Same lookup, error `No metro.qnx.config.js or metro.config.js in <root>.`                                                                                                                                                                                                                                                                                                             | `dev-server.mjs`         |
+
+Asset and transformer settings (`assetPlugins`, `assetExts`, `babelTransformerPath` and the like) are not set by this package. No evidence found in the package for any of them. Their defaults come from `@react-native/metro-config` 0.88.1.
+
+## Related
+
+- [Configure Metro for QNX](/docs/how-to/metro-config)
+- [CLI reference](/docs/reference/cli)
+- [Config reference](/docs/reference/config)
+- [Platform detection](/docs/reference/platform-detection)

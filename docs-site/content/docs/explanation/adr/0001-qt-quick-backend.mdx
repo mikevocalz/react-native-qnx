@@ -1,0 +1,60 @@
+---
+title: 'ADR-0001: Qt Quick as the component backend'
+description: Why React Native component views on QNX are backed by a Qt Quick item tree, and what the Pi 400 has proven so far.
+---
+
+Record: [`docs/adr/0001-qt-quick-backend.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0001-qt-quick-backend.md), dated 2026-08-13.
+
+## Status
+
+The record states: "Accepted architecture; the selected Qt 6.12.0 QNX runtime cross-built under the restricted evaluation below. A standalone Qt Quick window rendered on the Pi as `qnxuser` and exited zero. The physical React Native Hello World rendered through Fabric/Hermes/Qt Quick on 2026-11-07. This verifies that small entry, not all component APIs; automatic graphics startup remains disabled."
+
+## Context
+
+Fabric needs a retained native item tree for component views, shaped text, images, input, animation and accessibility. The platform specification locks Qt Quick as that tree so the renderer, the Fabric host, the Hermes host and the Nitro C++ layer share one native language and one event-loop model.
+
+QNX Screen stays in the picture as the window-system and compositor API beneath Qt's QNX platform abstraction plugin. The earlier direct-Screen executable is therefore a window-system probe (gate G0) and a possible future bare-Screen experiment. The record says it is not the React Native component backend.
+
+GTK4 was a viable option. The record cites the QNX Everywhere June 2026 release notes, which document working GTK application windows and a GTK4 demo on the Developer Desktop.
+
+## Decision
+
+Use Qt Quick for React Native component views. Yoga stays the only layout authority. Qt items are positioned as absolute leaves, and the host does not use Qt anchors or layout managers to reinterpret what Yoga computed.
+
+The record gates the first implementation on G0-A and G0-D, then requires G0-B to select an exact Qt 6 LTS source tag, cite the QNX QPA implementation, cross-build the `qtbase` and `qtdeclarative` subset, identify the built platform plugin by inspection, and render a minimal Qt Quick window on the Pi over HDMI. The ADR authorizes no private Qt header.
+
+Two later sections change the licensing path. [ADR-0013](/docs/explanation/adr/0013-open-source-qt) removes the paid-license prerequisite and supersedes the earlier blanket download, build and deploy stop. The "Pi 400 evaluation authorization (2026-11-06)" section preserves the history of the Qt 6.12.0 evaluation source archive, including its SHA-256 and top-level `.tag`, as a temporary basis for private bring-up only.
+
+## Consequences
+
+- Fabric component views own Qt Quick items. They do not own direct Screen buffers or Skia drawing primitives.
+- QNX Screen lifecycle tests remain useful beneath the QPA but cannot validate the Qt component layer.
+- Qt runtime deployment, plugin discovery, fonts, LGPL relinkability and module licensing become packaging concerns. [ADR-0011](/docs/explanation/adr/0011-qt-module-licensing) and [ADR-0018](/docs/explanation/adr/0018-runner-hosting-and-sdp-boundary) follow from that.
+- Qt Multimedia is not assumed. The record notes that Qt's QNX support documentation lists it as unsupported with SDP 8.0.
+
+## Alternatives rejected
+
+- GTK4, rejected for C++ object and event-loop coherence with the rest of the runtime.
+- Direct Screen with a custom renderer, rejected because it would recreate text, scene graph, image, input and accessibility systems.
+- Skia as the component renderer, superseded by this decision. Skia may return as a leaf or canvas capability only after a separate source-backed decision. The record for that earlier choice, ADR-0003, is marked superseded.
+
+Two other records touch this area without an accepted status. ADR-0012 (Quick Controls style for QNX) is Proposed. ADR-0016 (client-drawn window chrome on QNX Screen) is Proposed, with host tests and a Pi 400 run covering close only; its design is summarized in the [window chrome how-to](/docs/how-to/window-chrome).
+
+## Evidence
+
+Source tree:
+
+- `vnext/src/views/qt/QtQuickItemFactory.cpp`, the item factory that creates Qt Quick items per component type.
+- `vnext/src/fabric/QtQuickMountingLayer.cpp`, where Fabric mutations reach those items.
+- `native/qt/` (`graphics`, `motion`, `nativeui`, `rnsvg`, `svg`, `video`) and `native/platform/qnx`.
+
+Device evidence on the Raspberry Pi 400:
+
+- `docs/evidence/pi400-hello-world-2026-11-07.txt` and the screenshots `pi400-hello-world-2026-11-07.png` and `pi400-hello-world-fullscreen-2026-11-07.png`.
+- `docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md`, the first public-source Qt build.
+
+The record points to the Pi 400 bring-up guide in `docs/getting-started/pi400-hello-world.md` for the physical prerequisites. See [Architecture](/docs/explanation/architecture) for how the backend fits into the whole stack.
+
+## What would reverse this
+
+The record names no reversal condition. It does say Skia could return only through a separate source-backed decision, and ADR-0002 keeps a custom `QQuickItem` fallback open for individual components. A change of backend would also need a replacement for the Qt text, image, input and accessibility paths that the Consequences section lists, because those are what the decision buys.

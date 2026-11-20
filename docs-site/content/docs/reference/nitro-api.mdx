@@ -1,0 +1,137 @@
+---
+title: Nitro module API on QNX
+description: The Nitro v1 surface that ships in @rn-qnx/qnx-nitro-runtime, how a spec maps to a HybridClass, the Qt dispatcher rule, and what is not supported.
+---
+
+This page describes what exists in `packages/qnx-nitro-runtime` and the scripts around it. For the task-oriented view, see [Use Nitro modules](/docs/how-to/nitro-modules). The runtime is an alpha-based proof, not a general Nitro platform for QNX. Each limit below is listed under "Unsupported".
+
+## Pinned Nitro version
+
+| Package                      | Pin                                     | Where                                                                 |
+| ---------------------------- | --------------------------------------- | --------------------------------------------------------------------- |
+| `nitro-core`                 | `1.0.0-alpha.nightly.136.gdb81de61bd32` | root `package.json`, `packages/qnx-nitro-runtime/package.json` (peer) |
+| `react-native-nitro-modules` | `1.0.0-alpha.nightly.136.gdb81de61bd32` | root `package.json`, `packages/qnx-nitro-runtime/package.json` (peer) |
+| `nitrogen`                   | `1.0.0-alpha.nightly.136.gdb81de61bd32` | root `package.json`                                                   |
+
+The device evidence for Nitro was recorded on alpha 105 (`1.0.0-alpha.nightly.105.g69d365fc9b18`). `docs/nitro/API_CONTRACTS.md` and `docs/nitro/QT_DISPATCHER.md` both state that the repository was re-pinned to 136 with `Dispatcher.hpp` and `Callback.hpp` byte-identical, and that the QNX cross-build and device run were not repeated on 136.
+
+## Runtime surface
+
+The package `@rn-qnx/qnx-nitro-runtime` (version `0.1.0`, MIT) exports one function from `index.d.ts`:
+
+```ts
+export function createQnxPlatformInfo(): QnxPlatformInfo;
+
+export interface QnxPlatformInfo {
+  readonly platform: 'qnx';
+  readonly architecture: string;
+  add(left: number, right: number): number;
+}
+```
+
+`createQnxPlatformInfo()` is implemented in `index.js`. It requires `nitro-core` (not `react-native-nitro-modules`, whose import would load an Android and iOS TurboModule path), calls `NitroModules.getHybridClass('QnxPlatformInfo')` and returns `new` of that class. The `.d.ts` comment says it throws if the Nitro runtime is missing or the class is not registered, and that the native installer must run on the same Hermes runtime before the JS import.
+
+The native installer has two overloads, declared in `cpp/QnxNitroRuntime.hpp`:
+
+```cpp
+void installQnxNitroRuntime(facebook::jsi::Runtime& runtime);
+void installQnxNitroRuntime(
+    facebook::jsi::Runtime& runtime,
+    std::shared_ptr<margelo::nitro::Dispatcher> dispatcher);
+```
+
+- The first registers `QnxPlatformInfo` in `HybridClassRegistry` if it is not already there, then calls `margelo::nitro::install(runtime)`. It installs no dispatcher, so it supports synchronous HybridObjects only.
+- The second throws `std::invalid_argument` with the message `QNX async Nitro requires an owned JS dispatcher` when the dispatcher is null. Otherwise it calls the first overload and then `Dispatcher::installRuntimeGlobalDispatcher`.
+
+The native implementation in `cpp/QnxPlatformInfo.cpp` returns `"qnx"` for `platform`, `"aarch64"` or `"x86_64"` (chosen at compile time by `__aarch64__` or `__x86_64__`, otherwise `"unknown"`) for `architecture`, and `left + right` for `add`.
+
+## HybridObject spec mapping
+
+The single source spec is `packages/qnx-nitro-runtime/specs/PlatformInfo.nitro.ts`:
+
+```ts
+export declare class PlatformInfo extends HybridObject {
+  readonly platform: string;
+  readonly architecture: string;
+  add(left: number, right: number): number;
+}
+```
+
+| Spec element                               | Generated registration                                              | Native member                           |
+| ------------------------------------------ | ------------------------------------------------------------------- | --------------------------------------- |
+| class `PlatformInfo`                       | `registerHybridConstructor(&QnxPlatformInfo::create)`               | `QnxPlatformInfo::create()`             |
+| `readonly platform: string`                | `registerHybridProperty("platform", &QnxPlatformInfo::getPlatform)` | `std::string getPlatform()`             |
+| `readonly architecture: string`            | `registerHybridProperty("architecture", ...::getArchitecture)`      | `std::string getArchitecture()`         |
+| `add(left: number, right: number): number` | `registerHybridMethod("add", &QnxPlatformInfo::add)`                | `double add(double left, double right)` |
+
+The native class `QnxPlatformInfo` derives from `margelo::nitro::HybridObject`, declares a nested `Class` with `name = "QnxPlatformInfo"`, and overrides `getHybridClass()`. The JS-visible name `QnxPlatformInfo` comes from that nested `Class::name`, not from the spec class name `PlatformInfo`.
+
+## Platform codegen output
+
+`scripts/nitro-platform-codegen.mjs` is a constrained generator. It exists because, per `docs/nitro/PLATFORM_CODEGEN_POC.md`, the inspected Nitrogen `getPlatformSpecs.ts` accepts only `apple` and `android`. It parses the spec with `@typescript/typescript6` (TypeScript 7 no longer exports `createSourceFile`) and writes two files:
+
+| Target     | Output path                                                            |
+| ---------- | ---------------------------------------------------------------------- |
+| QNX        | `packages/qnx-nitro-runtime/cpp/generated/QnxPlatformInfo.binding.cpp` |
+| Linux host | a binding file under `native/platform/linux-host/nitro/generated/`     |
+
+Run `pnpm nitro:platform:generate` to write and `pnpm nitro:platform:check` to compare (both scripts are in the root `package.json`). Usage with any other argument throws `Usage: node scripts/nitro-platform-codegen.mjs --check|--write`.
+
+The generator accepts only the reviewed shape: an `export declare class PlatformInfo extends HybridObject`, string readonly getters named `platform` and `architecture`, and one method `add` with two `number` parameters returning `number`. Static, private, protected, optional, generic and abstract members, extra heritage, initializers, method bodies, callbacks and Promise returns fail an assertion. It is an AST check, not a TypeScript semantic check.
+
+The codegen output has no Promise, callback, struct, enum or variant support. No evidence found for generated bindings of any other spec.
+
+## Qt dispatcher and threading rule
+
+Async Nitro (callbacks, Promises) works only through the opt-in Qt dispatcher. Files: `cpp/QtNitroDispatcher.hpp` and `.cpp`, built on `react-native-qnx/runtime/QtRuntimeTaskQueue.h`.
+
+```cpp
+auto dispatcher = std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue());
+rnqnx::nitro::installQnxNitroRuntime(host.runtime(), dispatcher);
+// Install once, before importing any Nitro-backed JavaScript.
+```
+
+| `Dispatcher` method | Implementation                                              |
+| ------------------- | ----------------------------------------------------------- |
+| `runSync`           | `queue_->runSync(...)`; owner thread only, throws elsewhere |
+| `runAsync`          | `queue_->post(...)`                                         |
+| `isOnDispatcher`    | `queue_->isOnOwnerThread()`                                 |
+| `enterJS`/`leaveJS` | `queue_->enterJS()` / `queue_->leaveJS()`                   |
+
+The constructor throws `std::invalid_argument` with `Qt Nitro dispatcher requires a host task queue` for a null queue.
+
+The rule, from `docs/nitro/QT_DISPATCHER.md`:
+
+- JavaScript shares the constructing Qt thread. There is no separate JS thread.
+- Native work must stay on the module's own workers. Completions return through `runAsync`.
+- `runSync` must be called from the owner thread. It never blocks a worker waiting for Qt.
+- Do not join workers that need synchronous JS calls from the JS owner.
+- Destruction must happen at an idle owner boundary. Destroying the host while JS is active, or reentrantly, is invalid.
+- Closing the queue is a drain, not a cancellation. A task that never returns can delay it.
+
+The dispatcher build needs `-DRNQNX_ENABLE_NITRO_QT_DISPATCHER=ON` (default OFF), `-DRNQNX_NITRO_CORE_ROOT=...` and `-DRNQNX_NITRO_ROOT=...`. On QNX it also needs `RNQNX_BUILD_NITRO_QNX=ON`; `CMakeLists.txt` raises `Qt Nitro dispatcher requires RNQNX_BUILD_NITRO_QNX` otherwise. The CMake patches require the exact alpha 136 source layout.
+
+Without the dispatcher, `cpp/ThreadUtils.cpp` makes `ThreadUtils::isUIThread()` return `false` and `createUIThreadDispatcher()` throw `Qt/JS Nitro UI dispatcher is not installed. Use synchronous HybridObjects until the React/Qt runtime supplies the real dispatcher.`
+
+`cpp/NitroLogger.cpp` writes `[Nitro.<tag>] <message>` to stderr only when `NITRO_DEBUG` is defined.
+
+## Unsupported
+
+- Generating bindings from any spec other than `PlatformInfo.nitro.ts` (`docs/nitro/PLATFORM_CODEGEN_POC.md`).
+- Upstream Nitrogen targets for QNX or the Linux host target. `API_CONTRACTS.md` records them as blocked on upstream target support.
+- Third-party Nitro modules. `API_CONTRACTS.md` says no claim is made for `react-native-nitro-fetch`, `react-native-mmkv`, VisionCamera or other iOS and Android Nitro modules. No evidence found that any runs on QNX.
+- Listener cancellation, reload, suspend and resume (`QT_DISPATCHER.md`, "Boundaries").
+- Frame, startup or memory budgets for Nitro. None were measured.
+- Linux host target runtime. Its Nitro adapter compiles in a Linux host fixture; `NATIVE_DUAL_TARGETS.md` lists its runtime gates as open.
+- A QNX sanitizer or TSan result. None is claimed.
+
+## Evidence
+
+| Claim                                                                                     | Evidence                                                                                                                               |
+| ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Synchronous `QnxPlatformInfo` constructor, getters and `add(20, 22)` on Pi 400, SDP 8.0.5 | `docs/evidence/pi400-hello-world-2026-11-07.txt`; the receipt shows `RNQNX_HELLO_NITRO_V1_OK platform=qnx architecture=aarch64 add=42` |
+| Qt dispatcher: worker callback, Promise, error, checkpoint, drain, close race             | `docs/evidence/pi400-nitro-qt-2026-11-07.md`, marker `RNQNX_NITRO_QT_OK worker callback promise error checkpoint drain close-race`     |
+| Artifact hashes (probe, candidate, hermesc, six HBC fixtures)                             | `docs/evidence/pi400-nitro-qt-artifacts-2026-11-07.json`                                                                               |
+| Capture of the run                                                                        | `docs/evidence/pi400-nitro-qt-hello-world-2026-11-07.png`                                                                              |
+
+Both runs were on alpha 105. See the [verification log](/docs/reference/verification-log) and [known gaps](/docs/reference/known-gaps) for the current record, and [threading](/docs/explanation/threading) for the background.

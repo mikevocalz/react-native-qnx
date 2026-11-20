@@ -1,0 +1,52 @@
+---
+title: 'ADR-0010: macOS as a development host'
+description: Why portable native work is developed and tested on macOS, and the rules that keep host results from promoting QNX or device claims.
+---
+
+Record: [`docs/adr/0010-macos-qt-development-host.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0010-macos-qt-development-host.md), dated 2026-08-14.
+
+## Status
+
+The record states: "Accepted 2026-08-14."
+
+## Context
+
+Every native seam had been treated as blocked behind the licensed QNX SDP and the Raspberry Pi target. The record calls that correct for QNX-specific seams (Screen, `qcc`, `libscreen`, `slog2`, SDP sysroot behavior, and anything whose evidence is target execution) and wrong for the rest.
+
+Several authorities were already installed on the macOS authoring host, and a claim cited against them is as strong as the same claim on Linux: React Native 0.86.2 C++ sources, bundled Yoga, `react-native-nitro-modules` 0.36.5 with Nitrogen, `expo-modules-core` 57.0.10, and Qt 6.11.1 from Homebrew, whose public Qt Quick, QML and scene-graph headers match what the pinned LTS provides on QNX. Waiting for hardware to write code that touches no QNX symbol would turn a procurement delay into a development delay.
+
+## Decision
+
+macOS is an approved development and verification host for native work that does not depend on the QNX toolchain or target. Its results are labeled host evidence and never promote a QNX or device row. Five rules apply:
+
+1. Portable code (Fabric mounting, the component-view registry, the Qt Quick view layer, Nitro HybridObject cores, the JSI runtime host) is developed and tested on the host first.
+2. Platform-specific code stays behind the seam that already isolates it. Nothing calls a macOS-only API outside `native/platform/macos-host`.
+3. Host Qt is a development dependency. The QNX target builds the pinned Qt 6 LTS from source per [ADR-0001](/docs/explanation/adr/0001-qt-quick-backend), and every Qt symbol used on the host must exist in that LTS. Using a symbol introduced after the LTS is a defect.
+4. `find_package(Qt6 ...)` is `QUIET` and optional, so a host without Qt still configures, builds and passes every non-Qt target.
+5. Host benchmark numbers are recorded as host numbers. The Pi benchmark in G0-C is not satisfied by them.
+
+## Consequences
+
+The view, mounting and module layers can reach a working state before the Windows build host and the Pi are available, so hardware time goes to toolchain porting. The cost is two build hosts and the risk that macOS-isms leak in. Rules 2 and 3 mitigate that, and the QNX cross-build remains the merge gate for anything that compiles for the target. The record accepts that host Qt is a current-release Homebrew build with a different QPA plugin (cocoa or offscreen, not the QNX plugin over Screen), so window-system behavior proven on the host says nothing about the target compositor.
+
+## Alternatives rejected
+
+- Waiting for the licensed host, because it blocks work with no QNX dependency and had produced zero native progress.
+- A Linux container on macOS, for now, because it adds a runtime without closing the QNX gap.
+- Building Qt from source on macOS to match the LTS, as premature while the LTS tag was not yet chosen.
+
+## What the source tree shows
+
+Rule 4 is in `CMakeLists.txt`. The Qt host modules (`Core Gui Qml Quick`) are found with `find_package(Qt6 6.11.1 COMPONENTS ... QUIET)` unless `RNQNX_REQUIRE_FULL_HOST_RENDERER` is set, and a comment cites ADR-0010 and the optionality. Other targets, such as the React-on-Qt build, require Qt6 6.11.1 outright, so the optional path covers the base host renderer only.
+
+Rule 2 names `native/platform/macos-host`. That directory currently holds only a `.gitkeep`, so the isolation seam exists as a reserved location and no macOS-only code lives behind it yet. `native/platform/linux-host` contains `nitro/` and a README, and `native/platform/qnx` holds `application`, `forge`, `screen` and `tools`.
+
+Related files from the record that exist: `vnext/include/react-native-qnx/views/QtQuickItemFactory.h`, `vnext/src/views/qt/QtQuickItemFactory.cpp`, `vnext/probes/qtquick/main.cpp`, `docs/cited-seams.md` and `docs/toolchain.md`. CI for host builds runs in `.github/workflows/host-renderer.yml`, `nitro-v1-host.yml` and the other `*-host.yml` files. `docs/handoff/CURRENT_STATE.md` reports host runs on Qt 6.11.1 with Clang 19.1.7 and GCC 14.2 under ASan and UBSan.
+
+## Evidence
+
+The record's own measurement, 1,000 `Rectangle`-backed items on Qt 6.11.1, is quoted on the [ADR-0002](/docs/explanation/adr/0002-qt-quick-item-instantiation) page and labeled host evidence there. Host-labeled files under `docs/evidence` include `v1-polish-host-2026-11-07.md`, `clean-host-sim-2026-11-12-b51b49c.md` and `window-chrome-host-2026-11-12/`. Each Pi 400 receipt is the separate, device-labeled counterpart, for example `pi400-host-validation-2026-11-07.md`. The [verification log](/docs/reference/verification-log) and [status vocabulary](/docs/reference/status) keep the two kinds of result apart.
+
+## What would reverse this
+
+The record names no trigger. Its alternatives section says the Linux container option is "worth revisiting when the SDP host exists," and its Notes require re-auditing every host-used Qt symbol against the pinned Qt LTS once that tag is selected. The Qt 6.12.0 source is now the pin ([ADR-0001](/docs/explanation/adr/0001-qt-quick-backend)), and the tree still sets a 6.11.1 minimum for the host. `docs/cited-seams.md` repeats the requirement to re-audit against the pinned LTS tag. Whether that re-audit is complete was not verified for this page.

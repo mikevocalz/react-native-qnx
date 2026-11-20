@@ -1,23 +1,79 @@
 ---
 title: Explanation
-description: Background on the design of React Native QNX.
+description: Background on how React Native QNX is built, why it is built that way, and what has been verified.
 ---
+
+These pages explain the design. They name source files and evidence directories so each claim can be checked.
+
+## How it works
 
 <Cards>
   <Card title="Architecture" href="/docs/explanation/architecture">
     The layers from JavaScript to the Qt Quick item tree.
   </Card>
+  <Card title="Render and commit lifecycle" href="/docs/explanation/render-lifecycle">
+    From a React render to Qt items on screen.
+  </Card>
+  <Card title="Layout" href="/docs/explanation/layout">
+    How Yoga geometry reaches Qt items.
+  </Card>
   <Card title="Threading model" href="/docs/explanation/threading">
     Which thread runs what.
   </Card>
+  <Card title="Input path" href="/docs/explanation/input-path">
+    From the input device to JavaScript events.
+  </Card>
+  <Card title="Image pipeline" href="/docs/explanation/image-pipeline">
+    Fetch, decode, cache and display.
+  </Card>
+  <Card title="Animation and worklet runtime" href="/docs/explanation/animation-runtime">
+    Worklets, Reanimated and Gesture Handler on the Qt host.
+  </Card>
+</Cards>
+
+## Why it is built this way
+
+<Cards>
+  <Card title="Why Fabric only" href="/docs/explanation/why-fabric-only">
+    What dropping the legacy renderer buys and costs.
+  </Card>
+  <Card title="Why Qt tiers" href="/docs/explanation/qt-tiers-rationale">
+    How Qt modules are grouped and gated.
+  </Card>
+  <Card title="Security and sandbox" href="/docs/explanation/security">
+    What the runner isolates and what it does not.
+  </Card>
+  <Card title="Performance model" href="/docs/explanation/performance">
+    What has been measured and what has not.
+  </Card>
+  <Card title="How releases are gated" href="/docs/explanation/releases">
+    The checks and records behind a release.
+  </Card>
+  <Card title="Comparison with other platforms" href="/docs/explanation/comparison">
+    Cited facts about other out-of-tree React Native platforms.
+  </Card>
+</Cards>
+
+## Decisions and audience
+
+<Cards>
   <Card title="Architecture decisions" href="/docs/explanation/adr-index">
-    Every decision record, with status.
+    Every decision record, with status. Accepted records have their own pages.
   </Card>
   <Card title="Versioning and support" href="/docs/explanation/versioning-and-support">
     How the project is versioned and where to report problems.
   </Card>
   <Card title="Licensing and packaging" href="/docs/explanation/licensing-and-packaging">
     What the repository can and cannot redistribute.
+  </Card>
+  <Card title="Versioning and support" href="/docs/explanation/versioning-and-support">
+    Pinned versions and what each pin supports.
+  </Card>
+  <Card title="Licensing and packaging" href="/docs/explanation/licensing-and-packaging">
+    Licences and how the packages are distributed.
+  </Card>
+  <Card title="Docs parity" href="/docs/explanation/docs-parity">
+    How the docs are checked against the repository.
   </Card>
   <Card title="Readers and tasks" href="/docs/explanation/readers">
     Who the docs are written for.

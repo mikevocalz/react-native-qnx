@@ -1,0 +1,64 @@
+## Props
+
+No component named `QtAudio` exists. Searches of the whole repository (excluding `node_modules` and the docs) for the name found only documentation and the support table, and no export, view manager or QML type. `packages/react-native-qnx/qt/index.js:93` exports `QtSvgDocument` and `QtVideo` only. Audio output goes through `QtVideo`, which creates a Qt `MediaPlayer` and `AudioOutput` in `native/qt/video/QnxVideo.qml`. The props below are the `QtVideo` props that bear on audio; see [QtVideo](/docs/reference/components/qtvideo) for the rest.
+
+| Prop                                            | Type                | Status            | Source-backed note                                                                                                                                                                                                                                         |
+| ----------------------------------------------- | ------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `source`                                        | string or `{ uri }` | supported         | An audio file path or URL. The gallery's Audio card uses `QtVideo` this way (`apps/component-gallery/media/AudioCard.js`).                                                                                                                                 |
+| `muted`                                         | boolean             | supported         | Bound to `AudioOutput.muted`.                                                                                                                                                                                                                              |
+| `volume`                                        | number              | supported         | Clamped to 0 to 1 (`native/qt/video/QtVideoItem.cpp:95`), bound to `AudioOutput.volume` (`QnxVideo.qml:127`).                                                                                                                                              |
+| `rate`                                          | number              | supported         | Clamped to 0.25 to 4 (`QtVideoItem.cpp:96`), bound to `playbackRate` (`QnxVideo.qml:93`). Not tested.                                                                                                                                                      |
+| `audioDevice`                                   | string              | supported         | `pickDevice` in `QnxVideo.qml:58-74`: an id or description substring from `QMediaDevices` wins; empty picks a description containing `usb`, then the first id starting `plughw:`, then the default output. `onLoad` reports the chosen name (`:27, :105`). |
+| `paused`, `repeat`                              | boolean             | supported         | As in QtVideo.                                                                                                                                                                                                                                             |
+| Equalizer, tracks, gapless, background playback | n/a                 | No evidence found | Not in `qt/index.d.ts`, `QtVideoNativeComponent.ts`, `QnxVideo.qml` or `QtVideoItem.cpp`, the files that define the props.                                                                                                                                 |
+
+## Events
+
+| Event                                                  | Status    | Note                                                          |
+| ------------------------------------------------------ | --------- | ------------------------------------------------------------- |
+| `onLoad`                                               | supported | Payload carries `audioDevice`, the name of the chosen output. |
+| `onProgress`, `onEnd`, `onError`, `onSeek`, `onBuffer` | supported | Same as QtVideo.                                              |
+
+## Platform behavior on QNX
+
+- Needs `RNQNX_ENABLE_QT_VIDEO=ON` and the Qt Multimedia add-on, the same switch as video.
+- On the Pi 400 image, `io-snd` was not running by default, so `QMediaDevices::audioOutputs()` was empty. The evidence run started it as root with `sudo io-snd -c /etc/system/config/sound/io_snd.conf`.
+- The only sound card is `bcm2711 pwm`, the 3.5 mm jack. No HDMI audio driver is on the image, and `docs/getting-started/media.md` says the BSP repository has no audio source to start from.
+- A 3 s WAV played to end of media in 3.0 s through that device. Audibility at the jack was not confirmed by ear. Source: `docs/evidence/media-2026-11-13.md`.
+- A USB audio device (`sndrv-ctrl-usb` is installed) is preferred by the device picker. No USB run is recorded.
+
+## Unsupported or partial props
+
+`react-native-audio-api` is not supported: its core is portable but it installs through a TurboModule and has players only for iOS and Android, so a QNX player and a JSI installer are missing (`docs/getting-started/media.md`). `expo-audio` and `expo-av` were not examined.
+
+## Minimal example
+
+```tsx
+import React from 'react';
+import { View } from 'react-native';
+import { QtVideo } from '@rn-qnx/react-native-qnx/qt';
+
+export default function AudioPlayer() {
+  return (
+    <View style={{ width: 320, height: 40 }}>
+      <QtVideo
+        style={{ flex: 1 }}
+        source="file:///data/home/qnxuser/clip.wav"
+        controls
+        volume={0.8}
+        onLoad={(e) => console.log('output device:', e.audioDevice)}
+        onError={(e) => console.log('audio error', e.code, e.message)}
+      />
+    </View>
+  );
+}
+```
+
+The path is a placeholder. The host must be built with `RNQNX_ENABLE_QT_VIDEO=ON`.
+
+## Known gaps
+
+- There is no dedicated audio component or audio-only API.
+- Audibility, HDMI audio, USB audio, and the Audio card buttons were not tested.
+- `io-snd` must be started by hand as root on the evaluated image.
+- Host result is unverified. This row records QtVideo audio, not a separate component.

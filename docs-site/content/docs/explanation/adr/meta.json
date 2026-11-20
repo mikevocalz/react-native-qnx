@@ -1,0 +1,20 @@
+{
+  "title": "Decisions",
+  "pages": [
+    "0001-qt-quick-backend",
+    "0002-qt-quick-item-instantiation",
+    "0004-nitro-modules",
+    "0005-hermes-only",
+    "0006-expo-dev-builds",
+    "0007-self-hosted-build-infra",
+    "0008-version-pinning",
+    "0009-fabric-only",
+    "0010-macos-qt-development-host",
+    "0011-qt-module-licensing",
+    "0013-open-source-qt",
+    "0017-qt-qnx-optimization-level",
+    "0018-runner-hosting-and-sdp-boundary",
+    "0019-nitro-package-metadata",
+    "0020-worklets-reanimated-gesture-handler-bootstrap"
+  ]
+}

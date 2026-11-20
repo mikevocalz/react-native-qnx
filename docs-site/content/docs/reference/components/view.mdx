@@ -21,6 +21,92 @@ Overall: **Device-verified (Pi 400, scoped)**.
 
 Yoga layout, background, corner radius and opacity. Border, clipping and transform limits are listed below. With the default-OFF accessibility bridge enabled, Pi400 evidence covers native generic View semantic queries and actual React registered activate delivery with semantic-label updates. Qt action-list/custom-label parity, RN disabled semantic state, values and reader output remain unqualified.
 
+## Props
+
+`View` is React Native's own component. On QNX the Fabric `View` descriptor is registered in `vnext/src/runtime/QtReactHost.cpp`, and `toViewStyle` in `vnext/src/fabric/ShadowViewMutationAdapter.cpp` converts the resolved `ViewProps` into a `ViewStyle` that `QtQuickMountingLayer::updateStyle` applies to a Qt Quick item.
+
+| Prop                                                                                                                     | Type          | Status                 | Source-backed note                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------ | ------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Yoga layout props (`flex`, `padding`, `position`, and so on)                                                             | style         | supported              | Yoga output is applied as absolute geometry by `updateLayout`.                                                      |
+| `backgroundColor`                                                                                                        | color         | supported              | Packed to ARGB and set on the item's `backgroundColor` property.                                                    |
+| `opacity`                                                                                                                | number        | supported              | `QQuickItem::setOpacity`.                                                                                           |
+| `borderRadius` and per-corner radii                                                                                      | number        | supported              | Uniform radii use a `Rectangle`; differing corners use a Qt Quick `Shape` path.                                     |
+| `borderWidth`, `borderColor`                                                                                             | number, color | supported when uniform | Non-uniform widths and colors collapse to the top edge.                                                             |
+| `transform`                                                                                                              | array         | partial                | Only translate, scale and rotateZ operations are read.                                                              |
+| `accessible`, `accessibilityLabel`, `accessibilityRole`, `accessibilityHint`, `accessibilityValue`, `accessibilityState` | various       | partial                | Forwarded as QML dynamic properties. The Qt accessibility bridge is a build option, default OFF.                    |
+| `onLayout`                                                                                                               | function      | supported              | Emitted only when the prop is set.                                                                                  |
+| Responder props                                                                                                          | function      | supported              | React's responder negotiation runs over the touch events; covered by a host test per `docs/component-support.md`.   |
+| `overflow`                                                                                                               | string        | ignored                | `ViewStyle` has no overflow field. The playground View QML clips unconditionally. See Unsupported or partial props. |
+| `pointerEvents`                                                                                                          | string        | ignored                | Not read by `toViewStyle` or `QtTouchDispatcher` for a plain View. Only SVG element items honor it.                 |
+| `hitSlop`                                                                                                                | edge insets   | ignored                | Hit testing uses item geometry. Pressability's own `hitSlop` handling is JavaScript.                                |
+| `shadowColor`, `shadowOffset`, `shadowOpacity`, `shadowRadius`, `elevation`                                              | various       | ignored                | Parsed by React Native's `ViewProps`, never read on this platform.                                                  |
+
+## Events
+
+| Event                                       | Status    | Note                                                                                                                                    |
+| ------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `onLayout`                                  | supported | `ViewEventEmitter::onLayout` is called when the layout is applied and `props->onLayout` is set.                                         |
+| `onTouchStart`, `onTouchMove`, `onTouchEnd` | partial   | `QtTouchDispatcher` hit-tests the item tree, ordering siblings by `z`. Single pointer from the mouse, multi-pointer from `QTouchEvent`. |
+| `onResponderGrant`, `onResponderRelease`    | supported | Same path as the touch events.                                                                                                          |
+
+## Platform behavior on QNX
+
+Yoga is the only layout authority. Each View becomes a Qt Quick item whose position and size come from the Yoga frame, and `translateX` and `translateY` are added on top of that frame. See [threading](/docs/explanation/threading) for where mounting runs.
+
+The View QML used by the playground host (`vnext/probes/playground/main.cpp`, `kViewSource`) sets `clip: true` on every View. The host test fixtures register their own View sources: `tests/cpp/QtReactHostHostTest.cpp:79-81` is a plain `Rectangle` with no `clip`, and the other host tests under `tests/cpp` register a bare `Rectangle` or `Item`. No source in the repository switches clipping on `overflow`. The contract between the adapter and the mounting layer is the `ViewStyle` struct in `vnext/include/react-native-qnx/fabric/QtQuickMountingLayer.h:60-90`: opacity, background, border radii, border width and color, translate, scale, rotation and the accessibility fields. A style prop that is not a field of that struct cannot reach the item.
+
+## Unsupported or partial props
+
+- `overflow`: ignored by the paint path. `toViewStyle` (`ShadowViewMutationAdapter.cpp:202-330`) never copies it, and the playground View QML sets `clip: true` (`vnext/probes/playground/main.cpp:99`) for every View regardless of the prop. `overflow: 'visible'` therefore clips on that host. `QtQuickMountingLayer::updateStyle` (`QtQuickMountingLayer.cpp:412-500`) has no clip call. The ScrollView QML (`main.cpp:198`) and the Modal QML (`vnext/src/views/qt/QtModalQml.cpp:11`) set `clip` themselves.
+- `pointerEvents`: ignored for Views. `QtTouchDispatcher::hitTest` and `deepestItemAt` (`QtTouchDispatcher.cpp:141-200`) walk child items by `z`, skip items whose `rnqnxInputTransparent` property is true or whose rectangle does not contain the point, and return the deepest remaining item. The only `pointerEvents` handling in that file is the `RnsvgElementItem` branch (`passesTouchesToChildren`, lines 152-160), compiled only with the SVG add-on. A View with `pointerEvents` set to `none` or `box-only` still becomes the touch target. No test covers it (searched `tests/cpp`, `tests/native`, `tests/js`).
+- `hitSlop`: ignored by the native hit test, which tests the item rectangle only (`visiblyContains`, `QtTouchDispatcher.cpp:129-135`). `Pressable` and the `Touchable*` components implement `hitSlop` in JavaScript Pressability as a press retention region measured with `UIManager.measure` (`react-native/Libraries/Pressability/Pressability.js:840-870`). That region widens where a move or release still counts as a press. It does not make the press start outside the item rectangle. The only native `hitSlop` reader is `QtExpoImageBridge.cpp:158`, for the separate expo-image view.
+- `shadowColor`, `shadowOffset`, `shadowOpacity`, `shadowRadius`: React Native parses them into `BaseViewProps` (`ReactCommon/react/renderer/components/view/BaseViewProps.h:64-67`). A search of `vnext/` and `native/` finds no reader, and the View QML has no `layer.effect` or shadow item. They render nothing.
+- `elevation`: same result. No reader in `vnext/` or `native/` (the only `elevation` hits are SVG lighting filters).
+- `transform` skew, perspective, `transformOrigin` and arbitrary matrices: the loop in `toViewStyle` handles Translate, Scale and Rotate and ignores every other operation type (`default: break`, line 297).
+- Scale uses only the x factor (`style.scale *= op.x.value`, line 291), and `QQuickItem::setScale` takes one factor for both axes. `scaleY` produces an operation with x equal to 1, so it has no effect. `scaleX: -1` sets scale to -1, which flips both axes. `viewTransformApplies` (`tests/cpp/QtReactHostHostTest.cpp:2186`) covers only a uniform `scale: 1.5`. This matters for `inverted` lists (see [FlatList](/docs/reference/components/flatlist)).
+- `borderRadius` with `overflow`: children are clipped to the item rectangle, not the rounded shape (`docs/component-support.md`, View props table).
+- Non-uniform `borderWidth` and `borderColor`: the code falls back to the top edge (`toViewStyle`, comments on the uniform checks).
+- Accessibility: with the bridge OFF there is no screen reader output. `updateStyle` can return `MountError::UnsupportedAccessibility` when the bridge is ON and a prop combination cannot be mapped.
+
+## Minimal example
+
+```tsx
+import React from 'react';
+import { View } from 'react-native';
+
+export default function App() {
+  return (
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#202830',
+      }}
+    >
+      <View
+        style={{
+          width: 120,
+          height: 60,
+          borderRadius: 8,
+          backgroundColor: '#3aa675',
+          opacity: 0.9,
+        }}
+        onLayout={(event) => console.log(event.nativeEvent.layout)}
+      />
+    </View>
+  );
+}
+```
+
+## Known gaps
+
+- Qt Quick's accessibility engine is not connected unless the bridge is enabled. Pi 400 evidence covers generic View semantic queries and activate delivery with semantic-label updates only. Qt action-list and custom-label parity, the RN disabled state, values and reader output are unqualified (see the notes above).
+- Pi 4 QSTI has no run.
+- Touch hardware (USB, touchscreen) input is listed as unverified in `docs/component-support.md`.
+- Overflow, `pointerEvents`, `hitSlop` and shadows are dropped in the adapter, so a host that registers a different View QML cannot recover them. Whether Yoga uses `overflow` for layout was not traced.
+- No test sets any of `overflow`, `pointerEvents`, `hitSlop`, `shadow*` or `elevation` on a View.
+
 ## Evidence
 
 - [`docs/evidence/pi400-hello-world-2026-11-07.txt`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-hello-world-2026-11-07.txt), last changed in `1ac8a3d`

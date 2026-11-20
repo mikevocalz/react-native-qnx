@@ -1,0 +1,55 @@
+## Props
+
+`ImageBackground` is overridden in `packages/react-native-qnx/Libraries/Image/ImageBackground.js`. React Native's version relies on `StyleSheet.absoluteFill` and an image with intrinsic size. The file comment says Qt Quick's `Image` works more reliably with explicit width and height, so the override builds the same View, Image and children structure with a simpler style.
+
+| Prop                                                                                   | Type        | Status    | Source-backed note                                                                                  |
+| -------------------------------------------------------------------------------------- | ----------- | --------- | --------------------------------------------------------------------------------------------------- |
+| `style`                                                                                | style       | supported | Applied to the outer `View` and merged into the image style.                                        |
+| `imageStyle`                                                                           | style       | supported | Merged over `style` for the inner `Image` (`Object.assign({}, style, imageStyle)`).                 |
+| `imageRef`                                                                             | ref         | supported | Set as `ref` on the inner `Image`.                                                                  |
+| `children`                                                                             | node        | supported | Rendered in a second `View` filled with `StyleSheet.absoluteFill`, above the image.                 |
+| `source`, `defaultSource`, `loadingIndicatorSource`, `resizeMode`, `onLoad`, `onError` | image props | supported | Passed through to `Image`. See the [Image page](/docs/reference/components/image) for their limits. |
+
+## Events
+
+`ImageBackground` adds no events. `onLoadStart`, `onLoad`, `onLoadEnd` and `onError` pass through to the inner `Image` and behave as described there.
+
+## Platform behavior on QNX
+
+The tree is a `View` (`collapsable: false`) containing an `Image` and an absolute-fill `View` that holds the children. Because `style` is copied onto the image, the image takes the container's width and height, so a container with explicit dimensions paints the picture at that size. Layout is Yoga, as for any View, and mounting runs on the Qt GUI thread.
+
+Because the style is copied wholesale, any style prop on the container, including padding, margin and border, is also copied onto the image. The file does not strip them, and no test sets those keys.
+
+## Unsupported or partial props
+
+- Props that `Image` ignores are ignored here too: `resizeMode` values `center`, `repeat` and `none` render as `stretch`, only the first entry of a `source` array is used, and `tintColor`, `blurRadius`, `fadeDuration`, `onProgress` and `onPartialLoad` have no effect (`ShadowViewMutationAdapter.cpp`, `applyImage`; see the [Image page](/docs/reference/components/image)). A changed `source` does not re-fire the load events.
+- `style` is copied onto the image whole, which differs from React Native's own `ImageBackground`. Upstream gives the image `absoluteFill` plus the flattened `width` and `height` only (`react-native/Libraries/Image/ImageBackground.js:92-108`). Here `Object.assign({}, style, imageStyle)` copies every key, so `padding`, `margin`, `flex`, `position` and borders also land on the image. When `style` is an array, `Object.assign` copies its numeric indices and not the styles inside it, so the image gets no `width` or `height` from the container. The first difference is from the source. The array case is from reading `Object.assign` semantics and was not run.
+- `imageStyle` is merged over `style` for the image. It is not restricted to image-only keys, which matches the file comment and differs from upstream.
+
+## Minimal example
+
+```tsx
+import React from 'react';
+import { ImageBackground, Text } from 'react-native';
+
+const pixel =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
+
+export default function App() {
+  return (
+    <ImageBackground
+      source={{ uri: pixel }}
+      resizeMode="cover"
+      style={{ width: 240, height: 120, justifyContent: 'center', alignItems: 'center' }}
+    >
+      <Text style={{ color: '#ffffff', fontSize: 20 }}>Over the image</Text>
+    </ImageBackground>
+  );
+}
+```
+
+## Known gaps
+
+- One host test covers it: `imageBackgroundMounts` (`tests/cpp/QtReactHostHostTest.cpp:2473-2505`) renders the `RNQnxImageBackground` app (`apps/rn-playground/index.js:342-353`) and asserts that the root has two children, that the first (the image) is 64 by 64, and that its `fillMode` is Cover. It is recorded as `[PASS] imageBackgroundMounts` in `docs/evidence/pr149-on-native-build-2026-11-14/host-test.log:278`. The app passes explicit `style` and `imageStyle`, so the case with only `style`, and the child `Text` content, are not asserted.
+- The generated status rests on that test and the override source. No Pi 400 receipt. Pi 4 QSTI has no run.
+- A container that relies on content size rather than explicit width and height, and array styles, were not tested.

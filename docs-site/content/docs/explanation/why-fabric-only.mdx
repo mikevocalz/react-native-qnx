@@ -1,0 +1,69 @@
+---
+title: Why Fabric only
+description: Why React Native QNX implements Fabric and JSI without a Paper renderer or legacy bridge, and what that costs.
+---
+
+React Native QNX implements one renderer, Fabric, and no other. There is no Paper view manager, no legacy bridge, and no compatibility layer for libraries that still depend on either. [ADR-0009](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md) records the decision. This page covers the reasoning in that ADR, how the source reflects it, and what a library author gives up.
+
+## The decision
+
+ADR-0009 (status Accepted) has three sentences that carry the weight:
+
+- "Implement only Fabric plus JSI."
+- "There is no Paper view-manager registration or legacy application bridge."
+- "React Native internal host contracts are implemented only where installed source proves they are required."
+
+The ADR gives one reason for rejecting a Paper plus Fabric build: it "doubles unproven platform seams". A second option, a legacy bridge first, was "rejected by the project charter". The charter is not in the repository docs I read, so this page cannot say more about it.
+
+## What a Fabric-only host has to provide
+
+Fabric moves view creation out of platform view managers. React Native's C++ core computes a shadow tree, diffs it, and hands the platform a list of mutations. A platform needs to supply the pieces that core does not own. In this repository those pieces are concrete classes.
+
+```text
+React (Hermes)
+  -> Fabric Scheduler           react-native C++ core, built with the app
+  -> QtSchedulerDelegate        vnext/src/runtime/QtReactHost.cpp
+  -> ShadowViewMutationAdapter  vnext/src/fabric/ShadowViewMutationAdapter.cpp
+  -> QtQuickMountingLayer       vnext/src/fabric/QtQuickMountingLayer.cpp
+  -> QtQuickItemFactory         vnext/src/views/qt/QtQuickItemFactory.cpp
+  -> QQuickItem tree            Qt Quick scene graph
+```
+
+- `QtSchedulerDelegate` implements the scheduler delegate callbacks, including `schedulerShouldRenderTransactions`, `schedulerDidDispatchCommand`, `schedulerDidSetIsJSResponder` and `schedulerShouldSynchronouslyUpdateViewOnUIThread`.
+- `ShadowViewMutationAdapter` translates a React Native mount transaction into mounting-layer calls. It switches on the five `ShadowViewMutation::Type` values (Create, Delete, Insert, Remove, Update) and returns a `MutationFailure` with the tag and detail when a mutation is rejected.
+- `QtQuickMountingLayer` owns the create, insert, remove and update operations on Qt items. Its `MountError` enum lists the failures it can report: `UnknownComponentType`, `DuplicateTag`, `UnknownTag`, `UnknownParent`, `NotAChildOfParent`, `IndexOutOfRange`, `ItemCreationFailed`, `UnsupportedTextInput` and `UnsupportedAccessibility`.
+- `QtReactHost` creates a `RuntimeScheduler` and installs `RuntimeSchedulerBinding` into the Hermes runtime. See [threading](/docs/explanation/threading) for how that scheduler relates to Qt's owner thread.
+
+The layers above `QtSchedulerDelegate` are React Native's own. The project writes everything below the delegate.
+
+## Why one renderer is a smaller job than two
+
+Each platform seam has to be built and then proven on a device. ADR-0009 treats a second renderer as a second set of seams with no evidence behind either. The Fabric side already needs the mount adapter, a touch dispatcher (`QtTouchDispatcher`), text measurement (`QtTextLayoutManager`) and component descriptors. The only device under test is a Raspberry Pi 400 (see [status](/docs/reference/status)), so the repository has one hardware lane to qualify a renderer on. The ADR states the first point and does not mention the device count.
+
+## What "no TurboModules" does and does not mean
+
+ADR-0009 says a React Native internal interface that mentions TurboModules "does not authorize TurboModules as the QNX application module system". [ADR-0004](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0004-nitro-modules.md) sets Nitro HybridObjects as the application-facing module system.
+
+The source shows a narrow exception that `docs/handoff/DECISIONS.md` records, made by the project owner on 2026-08-14. React Native's own JavaScript calls `TurboModuleRegistry.getEnforcing('X')`, which reads `global.__turboModuleProxy` or `global.nativeModuleProxy`. Only `TurboModuleBinding::install` sets those. A Nitro HybridObject lives in `HybridObjectRegistry` and does not appear to that lookup. So modules that React Native's JavaScript requires by name (`ExceptionsManager`, `SourceCode`, `DeviceInfo` and similar) are written in C++ against React Native's generated `CxxSpec` classes. `QtReactHost` exposes `registerTurboModule` and `setTurboModuleProvider` for this, and files such as `QnxAppStateModule.cpp`, `QnxExceptionsManager.cpp` and `QnxImageLoader.cpp` sit in `vnext/src/runtime/`.
+
+The decision log records two rejected alternatives. One wrapped Nitro objects behind the TurboModule provider, which gives identical JavaScript behaviour but defines every method shape twice. The other forked React Native's JavaScript so it asks Nitro, which adds permanent maintenance for no functional gain.
+
+Fabric-only therefore means no Paper and no legacy bridge. It does not mean zero C++ modules answering the TurboModule registry.
+
+## What a library author gives up
+
+A library whose native view exists only as a Paper view manager has nothing to mount here, because ADR-0009 provides no Paper registration. Native views reach the screen as Fabric components with a C++ descriptor set and a prop applier. Three such sets exist today.
+
+- `react-native-svg`, behind `RNQNX_ENABLE_QT_RNSVG`, default OFF.
+- Native UI components for drawer and tab bar, behind `RNQNX_ENABLE_QT_NATIVE_UI`.
+- `expo-image`, through the Fabric component `ViewManagerAdapter_ExpoImage`, behind `RNQNX_ENABLE_QT_EXPO_IMAGE` (the name is Expo's; no Paper view manager registers under it).
+
+`vnext/src/fabric/QtExtraComponents.cpp` holds the list: "A feature appears here once, behind its own switch." Support for each is tracked in the [component matrix](/docs/reference/component-matrix) and [module matrix](/docs/reference/module-matrix).
+
+Hermes is the only JavaScript engine ([ADR-0005](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0005-hermes-only.md)), and the build fails at configure time when a required Hermes artifact is missing.
+
+## Evidence status
+
+ADR-0009's own "Evidence boundary" section says no headless Fabric QNX build had passed and that phase P2 stayed behind earlier gates. That paragraph dates from the ADR's acceptance on 2026-08-13 and has not been rewritten. Later receipts under `docs/evidence/` show a Fabric-rendered Hello World at 1920 by 1080 on a Raspberry Pi 400 (`pi400-hello-world-2026-11-07.txt`) and scoped component runs (`pressable-qnx-2026-11-07.md`, `text-input-qnx-2026-11-07.md`). They cover a custom Pi 400 image only. No stock Pi 4 result and no QNX VM result exist for this renderer, and all eleven [release gates](/docs/reference/release-gates) are pending.
+
+The ADR's evidence text names "installed React Native 0.86.2". The generated dependency table in `docs/v1/release-notes.md` now pins 0.88.1. This page did not re-verify the host contracts against 0.88.1.

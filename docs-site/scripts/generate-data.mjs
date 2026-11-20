@@ -21,11 +21,10 @@ const shaFor = (paths) => {
   let best = null;
   for (const p of paths) {
     if (!existsSync(join(repo, p))) throw new Error(`missing path ${p}`);
-    // %H cut to 7: %h grows with the object count, which differs between clones and CI.
-    const line = git('log', '-1', '--format=%ct %H', '--', p);
+    const line = git('log', '-1', '--abbrev=7', '--format=%ct %h', '--', p);
     if (!line) continue;
     const [ts, sha] = line.split(' ');
-    if (!best || Number(ts) > best.ts) best = { ts: Number(ts), sha: sha.slice(0, 7) };
+    if (!best || Number(ts) > best.ts) best = { ts: Number(ts), sha };
   }
   if (!best) throw new Error(`no git history for ${paths.join(', ')}`);
   return best.sha;
@@ -189,6 +188,12 @@ const deviceMeaning = {
   untested: 'No device receipt exists.',
 };
 const componentPages = {};
+// Hand-written reference text per component lives in content-parts/components/<slug>.md
+// (no front matter). It is spliced in after the generated notes, before the evidence list.
+const partFor = (name) => {
+  const f = join(site, 'content-parts/components', `${slug(name)}.md`);
+  return existsSync(f) ? readFileSync(f, 'utf8').trimEnd() : '';
+};
 for (const [i, c] of support.components.entries()) {
   const r = rows[i];
   const ev = [...c.evidence.pi400, ...c.evidence.pi4Qsti];
@@ -217,6 +222,7 @@ for (const [i, c] of support.components.entries()) {
     '',
     esc(c.notes),
     '',
+    ...(partFor(c.name) ? [partFor(c.name), ''] : []),
     '## Evidence',
     '',
     ev.length
@@ -249,7 +255,8 @@ const merges = git(
   through,
   '--first-parent',
   '--merges',
-  '--format=%H%x1f%cs%x1f%s%x1f%b%x1e'
+  '--abbrev=7',
+  '--format=%h%x1f%cs%x1f%s%x1f%b%x1e'
 )
   .split('\x1e')
   .map((e) => e.trim())
@@ -259,7 +266,7 @@ const merges = git(
     const m = subject.match(/^Merge pull request #(\d+) from \S+/);
     if (!m) return null;
     const title = (body ?? '').split('\n')[0].trim() || subject;
-    return { sha: sha.slice(0, 7), date, num: m[1], title };
+    return { sha, date, num: m[1], title };
   })
   .filter(Boolean);
 const shownPrs = merges.filter((m) => !banned.test(m.title));

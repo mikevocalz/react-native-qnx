@@ -1,44 +1,370 @@
 ---
 title: Troubleshooting
-description: Error messages from the CLI and host tools, what causes each, and the fix.
+description: Failure modes seen on the host, the build machine and the Raspberry Pi 400, with the cause where it is known, the fix, and the evidence file.
 ---
 
-Messages marked **seen** were produced by the verifier. Others are quoted from the repository's guides.
+Each entry lists the symptom, the cause, the fix and the file that records it. Where the repository does not establish a cause, the entry says so. All device results come from one Raspberry Pi 400 with a custom BCM2711 QNX 8.0.5 image. No stock Pi 4 or Pi 5 result exists.
 
-## pnpm
+Two rules from the repository's handoff apply to every device entry below.
 
-**`Failed to switch pnpm to v12.18.0`** (seen as an `ENOEXEC` on a broken global pnpm). The repository pins pnpm through `packageManager`. Install it: `npm install -g pnpm@12.18.0`, or install it into a prefix and put that on your PATH. Check with `pnpm --version`.
+- Never reboot the board with software. The handoff records that `shutdown -S reboot` and `shutdown -b` both halt this board until power is cut. Recovery from a halt needs someone to unplug and replug it.
+- Never `kill -9` an app or use `pkill` and `killall` on the board or the build container. Send a plain `kill` to a PID you started. `kill -9` froze the desktop once.
 
-## CLI
+Source: [`docs/handoff/HANDOFF_2026-11-13.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/handoff/HANDOFF_2026-11-13.md).
 
-**`rnqnx: Bundle output must be inside this checkout’s build/ directory.`** (seen). Use `--out build/<file>`.
+## Host setup
 
-**`already exists`**. `init` refuses an existing app. Pick another name.
+### `Failed to switch pnpm` with `ENOEXEC`
 
-**`apps/<name>/index.js not found`**. Run `pnpm qnx init <name>` and the second `pnpm install --no-frozen-lockfile`, or pass an app that exists under `apps/`.
+- **Symptom:** `pnpm install --frozen-lockfile` stops in about 2 seconds with `Failed to switch pnpm to v... ENOEXEC`.
+- **Cause:** The repository pins pnpm through `packageManager`, currently `pnpm@12.18.0`. An older global pnpm (the clean-host run used Homebrew pnpm 10.32.1) downloads the pinned version and fails to execute it. Node 26 ships no `corepack` binary, so Corepack is not a fallback.
+- **Fix:** Install the pinned version, for example `npm install -g pnpm@12.18.0`, or run it once with `npx -y pnpm@12.18.0`. The handoff uses the `npx` form because the Homebrew pnpm cannot switch versions. The clean-host receipt notes that the npm route was not executed on a clean machine.
+- **Evidence:** `docs/evidence/clean-host-sim-2026-11-12-b51b49c.md` (steps 2 and 2a), `package.json`, `docs/handoff/HANDOFF_2026-11-13.md`.
 
-**`does not accept` or `takes options only`**. Check `pnpm qnx --help`. Unrelated options and extra words are rejected.
+### `pnpm test:js` stops at the first failing file on macOS
 
-**`rnqnx: package.json does not depend on expo; add-qnx targets existing Expo apps.`** (seen). `project add-qnx` only works on Expo apps. Add `expo` to `dependencies`.
+- **Symptom:** The runner exits 1 after about 20 seconds and later test files never run.
+- **Cause:** The runner imports files in order and stops at the first failure. At `b51b49c` five files failed on macOS before any change: `qnx-consumer-native-config`, `qnx-device-tools`, `qnx-external-project`, `qnx-native-consumer-build` and `qnx-project-create`. Later handoff notes add a Linux-only consumer-preview test and, in one sandboxed environment, an `AF_UNIX` socket restriction (`EPERM`) that blocks the full runner. The reason each of the five fails is not recorded.
+- **Fix:** Run each file in its own process to see every result: `for f in tests/js/*.test.mjs; do node "$f" >/dev/null 2>&1 && echo "PASS $f" || echo "FAIL $f"; done`. Treat hosted Linux CI as the first real run for tests that need Linux or the SDP.
+- **Evidence:** `docs/evidence/clean-host-sim-2026-11-12-b51b49c.md` (section "Known test failures on macOS"), `docs/handoff/BLOCKERS.md` (PR 149 shutdown follow-up).
 
-**`configure-qnx exited with code 1`** (or build, deploy, run). The next line names the next command. Run `pnpm qnx doctor` first.
+### `The QNX SDP environment is not loaded`
 
-## doctor
+- **Symptom:** `pnpm qnx doctor` reports that `QNX_HOST` and `QNX_TARGET` are unset and marks the dependent checks `SKIPPED`.
+- **Cause:** The licensed SDP's environment script was not sourced in this shell.
+- **Fix:** Run `source <qnx-installation>/qnxsdp-env.sh` in the same shell, then `pnpm qnx doctor` again. Every `ERROR` and `WARNING` it prints has a `Fix:` line, and the summary ends with `Start with:` and the first fix.
+- **Evidence:** `docs/evidence/clean-host-sim-2026-11-12-b51b49c.md` (D5), `docs/getting-started/build-and-deploy.md`.
 
-**`The QNX SDP environment is not loaded (QNX_HOST and QNX_TARGET are unset).`** (seen). Source `<qnx-installation>/qnxsdp-env.sh` in the same shell and rerun. `pnpm qnx doctor` exits 1 on a Mac without the SDP. That is correct.
+### `qcc` missing or not runnable on macOS
 
-**`qcc` unavailable on macOS with the SDP sourced.** The SDP selects Windows host tools there. QNX cross-builds need an x86-64 Linux host in this project's setup.
+- **Symptom:** `pnpm qnx doctor` exits 1 on a Mac with the SDP sourced, and `configure-qnx` fails with `Could not find CMAKE_C_COMPILER using the following names: qcc, qcc.exe`.
+- **Cause:** SDP 8.0 ships Linux and Windows host tools only. Sourcing the environment script on macOS sets `QNX_HOST` to the Windows host directory, so no runnable `qcc` exists for the OS.
+- **Fix:** Edit and bundle on the Mac, and run doctor, configure, build and deploy on an x86-64 Linux host (Ubuntu 22.04 is the canonical one) with the licensed SDP. Doctor distinguishes "no runnable `qcc` for this OS" from "`qcc` exists in `${QNX_HOST}/usr/bin` but is not on PATH". If `qcc` is only off PATH, add `${QNX_HOST}/usr/bin`.
+- **Evidence:** `docs/evidence/clean-host-sim-2026-11-12-b51b49c.md` (steps 14 and 15, D6, D9), `docs/getting-started/build-and-deploy.md` ("`qcc` is not found").
 
-**Warnings about host OS Darwin and arm64.** Expected. Each has a `Fix:` line about building on x86-64 Ubuntu 22.04.
+### Cross-build from a Windows PC does not work as written
 
-## Tests
+- **Symptom:** `rnqnx project run` on a Windows host stops at `prepare-native`.
+- **Cause:** The app identity tool refuses to configure on Windows, and the helper scripts are POSIX shell. Nothing in the repository shows `pnpm qnx build-qnx` running on Windows. The cause of any other Windows failure is not established.
+- **Fix:** Use the Ubuntu x86-64 path, or the `qnx805-build` container. See [cross-build from Windows](/docs/how-to/cross-build-windows).
+- **Evidence:** `CHANGELOG.md` ("`rnqnx project run` on a Windows host now fails at prepare-native"), `docs/getting-started/raspberry-pi-400.md`.
 
-**`pnpm test:js` stops at `tests/js/braces-security.test.mjs`** with `ERR_INVALID_ARG_TYPE: The "message" argument must be one of type string or function` (seen on macOS arm64, Node 26.13.0). The README says the suite stops at the first failing file and lists known macOS failures in [the clean-host receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/clean-host-sim-2026-11-12-b51b49c.md#known-test-failures-on-macos). Whether this one is listed there was not checked.
+### The QNX Screen header or library check fails
 
-## Device
+- **Symptom:** Configure or doctor reports missing `screen/screen.h` or `libscreen`.
+- **Cause:** The graphics development package or BSP component is not installed in the SDP. An earlier doctor also reported `libscreen.so` missing when it was present, because the check used `find -type f` and the library is a symlink. That check is fixed.
+- **Fix:** Install the graphics development component through QNX Software Center. If the installed SDK lacks the APIs that `native/platform/qnx/screen/QnxScreenSurface.cpp` uses, stop and update the wrapper only from installed headers. Do not invent an API shape.
+- **Evidence:** `docs/getting-started/build-and-deploy.md`, `docs/evidence/clean-host-sim-2026-11-12-b51b49c.md` (D7).
 
-**Two windows of one app.** Use `--replace`, which `project dev` passes. See [one instance per app](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md#one-instance-per-app).
+## CLI messages
 
-**"Could not connect to Metro" screen.** Start Metro. The app loads as soon as it is up.
+### `Bundle output must be inside this checkout's build/ directory`
 
-**Black screen or no input on the board.** Check the input and GPU nodes first. The [Pi 400 desktop guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md) lists the checks and the recovery boot. Do not rewrite boot configuration without a recovery path.
+- **Symptom:** `bundle-qnx` refuses an `--out` path.
+- **Cause:** The CLI only writes bundles under `build/`. The destination must not already exist. Path checks also reject symlinks and parent-directory escapes.
+- **Fix:** Pass `--out build/<file>`, or choose a new path under `build/` inside an external project.
+- **Evidence:** `docs/getting-started/external-project-bundles.md`, `docs/getting-started/qnx-cli.md`.
+
+### `already exists`, `apps/<name>/index.js not found`, `does not accept`
+
+- **Symptom:** `init` or `bundle-qnx` stops with one of those messages.
+- **Cause:** `init` refuses an existing app and preserves its files. `bundle-qnx --app` needs an app that exists under `apps/`. The CLI rejects unrelated options and extra words.
+- **Fix:** Pick another name, or run `pnpm qnx init <name>` followed by `pnpm install --no-frozen-lockfile`. Check `pnpm qnx --help` for the accepted options.
+- **Evidence:** `docs/getting-started/qnx-cli.md` ("Recover from an error").
+
+### `configure-qnx exited with code 1` (or build, deploy, run)
+
+- **Symptom:** A child step fails and the CLI prints a next-step line.
+- **Cause:** The first failed prerequisite. For configure and build it is usually the SDP environment or the host OS.
+- **Fix:** Run `pnpm qnx doctor` first and follow its first `Fix:` line. Run configure or build for the matching architecture and Debug or Release preset before deploying.
+- **Evidence:** `docs/getting-started/qnx-cli.md`, `docs/evidence/clean-host-sim-2026-11-12-b51b49c.md` (D8, D12).
+
+### `project run` stops at native-build with exit code 3
+
+- **Symptom:** The step table shows `native-build needs SDP` and the later steps read `not run`.
+- **Cause:** `project run` runs each step the host can do and stops at the first one that needs something missing. A run with `--device` also stops before copying anything, because deploying a consumer app from `project run` is not implemented.
+- **Fix:** Source the SDP on a Linux build host and rerun. Steps marked `not run` did not happen.
+- **Evidence:** `docs/getting-started/expo-add-to-existing.md`.
+
+### `Generated native configuration differs`, or a rejected `native-app.json`
+
+- **Symptom:** `project run` or `prepare-native` stops and names a configuration difference. Separately, a `native-app.json` made earlier is rejected.
+- **Cause:** `project run` refreshes `native-app.json` only when the bundle path or hash changed. Any other change, such as a new app ID, stops it so you can review. A descriptor prepared with the removed `--skip-identity-tool` option has `icon.sizes: []`, and the current tooling rejects it.
+- **Fix:** Review the difference. For the empty icon set, delete `build/<platform>/native-app.json` and run `prepare-native` again. It now always builds the icon set.
+- **Evidence:** `docs/getting-started/expo-add-to-existing.md`, `CHANGELOG.md` ("Changed").
+
+### `package.json does not depend on expo`
+
+- **Symptom:** `project add-qnx` refuses the project.
+- **Cause:** `add-qnx` targets existing Expo apps only.
+- **Fix:** Add `expo` to `dependencies`, or use `project create` for a new app.
+- **Evidence:** `docs/getting-started/expo-add-to-existing.md`.
+
+### `Runner ... failed hash verification`
+
+- **Symptom:** `runner fetch` ends with `failed hash verification (got ..., manifest ...). The download was deleted.`, or a size or content-encoding error.
+- **Cause:** The downloaded bytes do not match the manifest's size or SHA-256, or the server compressed the response. The client also refuses redirects other than GitHub Release downloads, and refuses a QNX archive that contains SDP files. Why a given download mismatched is not established. No manifest is published today.
+- **Fix:** Check the manifest entry and serve the archive uncompressed. Do not edit the hash to match.
+- **Evidence:** `packages/react-native-qnx-cli/src/runner.mjs`. See also the [prebuilt runner guide](/docs/how-to/prebuilt-runner).
+
+## Hermes and third-party builds
+
+### Hermes source preparation refuses to run
+
+- **Symptom:** `prepare-hermes-qnx.sh` fails with `Run pnpm install first; missing .../.hermesv1version`, or `React Native selects <tag>; this port is audited for hermes-v260318099.0.5`. CMake fails with a matching "audited for" message.
+- **Cause:** The script and `cmake/dependencies/Hermes.cmake` pin tag `hermes-v260318099.0.5` and commit `9a115f15785851f4ff2747ebb090ddd066fc8ad2`. They compare it with the tag React Native records in `node_modules/react-native/sdks/.hermesv1version`. A different React Native version, or a missing install, fails the check on purpose.
+- **Fix:** Run `pnpm install --frozen-lockfile` first. If React Native moved, re-audit the Hermes patches before building. Do not edit the expected tag.
+- **Evidence:** `scripts/prepare-hermes-qnx.sh`, `cmake/dependencies/Hermes.cmake`.
+
+### A download from GitHub is cut off during the Hermes or dependency fetch
+
+- **Symptom:** The first configure fails while fetching Hermes from `github.com/facebook/hermes`, or while fetching folly, fmt, glog, double-conversion, fast_float or Boost.
+- **Cause:** Not established. The repository has no record of a reset or timeout, and the PR threads contain none. The fetches are: a git clone of Hermes at the pinned commit, and URL downloads whose SHA-256 values are pinned in `cmake/dependencies/ReactNativeThirdParty.cmake`. The first host configure downloads and compiles Hermes, folly and Boost, so it is a long, network-heavy step.
+- **Fix:** Rerun the same command. `prepare-hermes-qnx.sh` fetches the exact commit with `git fetch --depth 1`, checks it out detached, resets to it and cleans before it patches, so a rerun starts from the audited commit. A pinned SHA-256 means a damaged archive should fail the hash check rather than build. That last point is CMake's `URL_HASH` behavior and was not exercised in this repository.
+- **Evidence:** `scripts/prepare-hermes-qnx.sh`, `cmake/dependencies/Hermes.cmake`, `cmake/dependencies/ReactNativeThirdParty.cmake`, `README.md` ("Quick start").
+
+### Hermes does not compile for QNX (`machine/endian.h`, `isatty`, `statvfs`, `MAP_NORESERVE`)
+
+- **Symptom:** Errors for a missing `machine/endian.h`, hidden POSIX functions, an empty `HERMESVM_SIZEOF_VOID_P`, `f_flags` and `MNT_LOCAL` in llvh `Path.inc`, a missing `internal_unit.c`, or `MAP_NORESERVE`, `madvise` and `pthread_getattr_np`.
+- **Cause:** QNX lacks those headers, symbols and `/proc` files. The notes record the fixes against the older Hermes `250829098` line.
+- **Fix:** Use `scripts/prepare-hermes-qnx.sh` and `scripts/configure-hermes-qnx.sh`, which apply the current patcher `scripts/patch-hermes-qnx.mjs` to the audited source. Do not apply `patches/hermes-qnx-250829.patch` to the current source. The handoff says that patch and the `third-party/hermes-250829098` paths are historical.
+- **Evidence:** `docs/handoff/HERMES_QNX.md`, `scripts/patch-hermes-qnx.mjs`.
+
+### Hermes probe crashes with `SIGSEGV` in `DictPropertyMap::lookupEntryFor`
+
+- **Symptom:** On the x86_64 QNX VM, the Hermes probe crashes in `Runtime::initJSBuiltins` with a pointer such as `0x9d267800000000`.
+- **Cause:** Not found. The investigation was on Hermes `250829098` and traced the bad base address to an allocation path it never identified.
+- **Fix:** That x86_64 lane is historical. The lean-bytecode JSI probe for `hermes-v260318099.0.5` passed on a physical Pi 400, including 256 KiB and 1 MiB worker stacks. Use that line. The note says this does not validate the x86_64 lane.
+- **Evidence:** `docs/handoff/HERMES_QNX.md`, `docs/evidence/pi400-hermes-2026-11-06.txt`.
+
+### Folly fails to build or reports `ENOSYS` on QNX
+
+- **Symptom:** Compile errors in `folly/portability/SysSyscall.h` or `folly/net/NetOps.cpp`, or a probe line `syscall=ENOSYS`.
+- **Cause:** QNX has no Linux syscall-number interface, and SDP 8 already declares `recvmmsg` and `sendmmsg`, which Folly would redeclare. `ENOSYS` from the Linux syscall wrapper is the expected result there.
+- **Fix:** Build through the repository's CMake fetch path, which applies `cmake/dependencies/QnxThirdPartyPatches.cmake`. Those patches keep Folly's portable futex path and use its per-message batch code. The Pi 400 probe passed with `RNQNX_FOLLY_QNX_OK threads=2 batch=2 syscall=ENOSYS`. Native socket batching remains unverified.
+- **Evidence:** `cmake/dependencies/QnxThirdPartyPatches.cmake`, `docs/evidence/pi400-qt-folly-2026-11-07.txt`.
+
+### Qt `moc` fails under QCC
+
+- **Symptom:** Qt Core compilation stops at the MOC predefinitions step.
+- **Cause:** CMake's QCC predefinitions command omits the normal compiler flags and the compiler-target selector.
+- **Fix:** Build with the canonical toolchain `cmake/toolchains/qnx-8.0.cmake`, which repeats the locked ARM selector and `_QNX_SOURCE` in `CMAKE_CXX_COMPILER_ARG1`. The doc records that this step then passed.
+- **Evidence:** `docs/getting-started/pi400-hello-world.md` ("Opt-in QNX visual runner").
+
+### Qt configure exits unless the Release flags contain `-O2`
+
+- **Symptom:** `scripts/qt-public/configure-qnx.sh` exits right after configure.
+- **Cause:** The script checks that `CMAKE_C_FLAGS_RELEASE` and `CMAKE_CXX_FLAGS_RELEASE` contain `-O2`, per ADR-0017. It no longer passes `-optimize-size`. The 2026-11-12 runtime predates this and has no `-O` level.
+- **Fix:** Do not set `-optimize-size` or the `optimize_size` features. To rebuild an existing tree, apply the patches to the existing source (each patch script refuses to run twice), move `qnx-build/CMakeCache.txt` aside and rerun `configure-qnx.sh`. On macOS, write the runtime tarball with `tar --no-xattrs --no-mac-metadata`, or QNX `tar` warns about `LIBARCHIVE.xattr` headers.
+- **Evidence:** `scripts/qt-public/README.md`, `docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md`.
+
+### Qt runtime staging fails, or the staged output is missing
+
+- **Symptom:** `stage-runtime.py` exits without publishing, reports a lock, or the runtime directory is absent.
+- **Cause:** Staging builds a candidate beside the output. It refuses missing inputs, invalid audit JSON, failed dependency checks and failed promotion. It also exits when `libqwebp.so` or `libqtiff.so` is staged and the audits name no webp or tiff component. Publication uses two directory renames and is not crash-atomic, so an interruption between them can leave the output path absent. A `.NAME.stage-lock` directory blocks concurrent staging.
+- **Fix:** A failed run keeps the previous output. For an interrupted run, read `transaction.json` in the lock, confirm the recorded process exited, check that `work`, `previous` and `candidate` are real siblings named `.NAME.stage-*`, and rename `previous` back if the destination is absent. Verify the restored manifest and hashes, then remove only the recorded work directory and this output's lock. Never remove a lock only because another attempt reports it.
+- **Evidence:** `scripts/qt-public/README.md` ("Staging failures and recovery"), `docs/handoff/BLOCKERS.md` (PR 159 notes), PR #163.
+
+### CMake rejects an option combination
+
+- **Symptom:** Configure fails with `RNQNX_BUILD_REACT_QNX requires RNQNX_BUILD_HERMES_QNX=ON`, `RNQNX_BUILD_REACT_QNX requires RNQNX_FETCH_REACT_NATIVE_DEPS=ON`, `RNQNX_BUILD_PLAYGROUND_QNX requires QNX and RNQNX_BUILD_REACT_QNX=ON`, or `RNQNX_ENABLE_DEV_SUPPORT needs RNQNX_ENABLE_WEBSOCKETS=ON`.
+- **Cause:** The switches depend on each other, and the guards stop an incomplete graph. `RNQNX_BUILD_PLAYGROUND_QNX` also rejects host builds.
+- **Fix:** Turn on the prerequisite option named in the message. The development client needs `-DRNQNX_ENABLE_WEBSOCKETS=ON` and `-DRNQNX_ENABLE_DEV_SUPPORT=ON`.
+- **Evidence:** `CMakeLists.txt`, `cmake/RnqnxDevSupport.cmake`, `docs/getting-started/dev-workflow.md`.
+
+### The build container is down, or a supervised run refuses to start
+
+- **Symptom:** `docker exec qnx805-build` fails after the Colima VM stopped, or the harness refuses to start.
+- **Cause:** When the VM stops, every container exits and `qnx805-build` has restart policy `no`. The harness needs at least 3 GiB free on the Mac volume behind `/work`, and sends `SIGTERM` if free space falls below 1 GiB. Builds that use all six shared cores also slow every other agent.
+- **Fix:** Run `scripts/qnx-sdk-container.sh status`, then `scripts/qnx-sdk-container.sh start`. Free space on the Mac, since the checks measure that volume and not the Colima disk. Build with `ninja -j 2` or `cmake --build ... --parallel 2`. Stop the VM with `colima stop` and do not kill it. The exact file-system repair used once after an unclean stop is unconfirmed.
+- **Evidence:** `docs/handoff/QNX_SDK_CONTAINER_MACOS.md`, `docs/handoff/HANDOFF_2026-11-13.md`.
+
+### `mkqnximage` reports `license check failed` on Windows
+
+- **Symptom:** The QEMU VM image build fails, or the image boots without `libc.so.6`, or the boot loader hangs.
+- **Cause:** The notes list five Windows-specific faults. The QNX bash needs `HOME` set for `~/.qnx/license`, `mkqnximage` leaves unresolved `__LIB*` placeholders, the disk boot sector hangs under QEMU 11.1.0, the `.vmdk` descriptor truncates the backing filename, and the Windows QEMU build rejects `rng-random`.
+- **Fix:** The notes give a workaround for each: set `HOME`, replace the placeholders, boot the IFS directly with `-kernel`, attach the raw disk, and drop `rng-random`. Use `MACs=hmac-sha2-256` for SSH to that VM. This is the historical x86_64 lane, not the Pi 400.
+- **Evidence:** `docs/handoff/QNX_VM_WINDOWS.md` ("Known Windows-specific bugs").
+
+## Display, graphics and input on the Pi 400
+
+### No HDMI signal at first boot
+
+- **Symptom:** The display stays dark during the first graphical boot.
+- **Cause:** The documented causes are the wrong port and a headless boot. QNX documents Raspberry Pi cases where booting without a display leaves Screen at an unexpected resolution. Whether either explains a given dark screen is not established.
+- **Fix:** Use the Pi 400 micro-HDMI port closest to the microSD-card side. Connect the display before power-on. Confirm the image contains the correct Pi 400 device tree blob. Keep the original Pi 4 DTB and Wi-Fi files in the build tree, since the image tooling still checks for them.
+- **Evidence:** `docs/getting-started/raspberry-pi-400.md` (section 5 and "Black screen or no launcher"), `docs/getting-started/raspberry-pi-today.md`.
+
+### No HDMI signal and no Ethernet after a cold boot
+
+- **Symptom:** After a power cycle with automatic graphics startup saved, the board shows neither HDMI signal nor an Ethernet link.
+- **Cause:** Not established. It happened twice on the early image. The stock startup script's conditional desktop-client launch is a source-backed difference from the working manual path, but the notes do not prove it explains the failure, and the failed boot created no helper log. The graphics server also rejected `RaspberryPi400` there, so an isolated legacy Pi 4 graphics stack was used.
+- **Fix:** Restore the saved recovery boot file from the host. The notes restored it from the Mac, verified the image checksum, and then regained network access. Do not change boot configuration without a recovery path. Do not try a software reboot. See the rules at the top of this page.
+- **Evidence:** `docs/getting-started/pi400-hello-world.md`, `docs/evidence/pi400-hello-world-2026-11-07.txt`, `docs/getting-started/raspberry-pi-400.md`.
+
+### The display runs at 1024x768 instead of 1920x1080
+
+- **Symptom:** The startup line reads `RNQNX_WINDOW_CHROME ... window=1024x768`, and screenshots are 1024x768.
+- **Cause:** On 2026-11-19 the monitor's EDID was unreadable, and the receipts say the owner was fixing that separately. Why it was unreadable is not recorded. A 1920x1080 Hello World capture exists from 2026-11-07, and the 2026-11-12 public-Qt run also captured 1920x1080.
+- **Fix:** No fix is documented. The app's own `--window-size WxH` sets the window size and does not change the display mode. When Qt reports a zero physical size in millimeters, set `QQNX_PHYSICAL_SCREEN_SIZE=width,height` from a measured value. The runtime doctor says not to guess dimensions from the pixel resolution.
+- **Evidence:** `docs/evidence/pr149-pi400-run2-2026-11-19/README.md`, `docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md`, `docs/getting-started/qnx-target-runtime-doctor.md`.
+
+### Black Qt Quick window under `fullscreen-winmgr`
+
+- **Symptom:** The app draws a black window under the stock window manager. The same app renders with `QT_QUICK_BACKEND=software`, or with no window manager running.
+- **Cause:** Qt Quick's OpenGL path asks for a `QOffscreenSurface`. The stock Qt 6.12.0 qnx plugin does not implement `createPlatformOffscreenSurface()`, so Qt falls back to a hidden 1x1 top-level Screen window, and the window manager manages it like an app window.
+- **Fix:** Use the patched `libqqnx.so` built from `scripts/qt-public/patches/qtbase-qnx-offscreen-surface.patch`. Point both `QT_QPA_PLATFORM_PLUGIN_PATH` and `QT_PLUGIN_PATH` at the patched plugin tree. With only the first set, Qt loaded the stock plugin. Software rendering is the fallback: set `QT_QUICK_BACKEND=software`. It is slower and `--screenshot` returns no image with it.
+- **Evidence:** `scripts/qt-public/README.md`, `docs/getting-started/pi400-desktop-app.md` ("GPU rendering"), PR #136.
+
+### The app exits 134 with `failed to initialize EGL display, err=12289`
+
+- **Symptom:** A Qt app run as `qnxuser` aborts with `QQnxIntegration: failed to initialize EGL display, err=12289` (`EGL_NOT_INITIALIZED`).
+- **Cause:** `drm-rpi4` creates `/dev/drm/card0` and `/dev/drm/renderD128` as `root:root 0660`. Mesa opens both, so granting only `renderD128` is not enough.
+- **Fix:** The boot script should set group `36` (`screen`) and mode `0660` on both nodes, right after the `waitfor` lines in `full_startup.sh`. `pnpm pi:preflight` fails with a pointer to this section when the SSH user cannot read and write them. Restarting `drm-rpi4` by hand recreates the nodes as `root:root`, so rerun the two lines afterward. Check with `ls -l /dev/drm`. Earlier proofs used a temporary `setfacl -m u:qnxuser:rw` and removed it afterward.
+- **Evidence:** `docs/getting-started/raspberry-pi-400.md` ("GPU node access"), `docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md`, `scripts/pi-preflight.sh`.
+
+### Black screen while the desktop processes are all running
+
+- **Symptom:** The screen is black, but `screen`, `drm-rpi4`, the window manager and the launcher all appear in `pidin`.
+- **Cause:** The window manager and launcher are stuck waiting on the display server. The notes do not say why.
+- **Fix:** The handoff documents restarting only those two: `sudo -n slay demolauncher rnqnx-winmgr`, then starting `rnqnx-winmgr` and `demolauncher` again with the commands in the handoff. The desktop script starts the stock manager when ours stops, so stop that first for a clean restart. Do not reboot.
+- **Evidence:** `docs/handoff/HANDOFF_2026-11-13.md` ("Desktop recovery").
+
+### Black around the app, or a title bar inside a full-display window
+
+- **Symptom:** The app sits in a dark frame, and the startup line says `mode=contained`.
+- **Cause:** Either the window manager is `fullscreen-winmgr` (it sets every window to display size, so the app draws its own window inside), or the app runs with `QT_QPA_PLATFORM=qnx` instead of `qnx:no-fullscreen`.
+- **Fix:** Check with `pidin -F "%a %N" | grep winmgr`. Under `rnqnx-winmgr` the line reads `mode=native-moved` and the desktop stays visible. Set `QT_QPA_PLATFORM=qnx:no-fullscreen`. `--fullscreen` also turns windowed mode off.
+- **Evidence:** `docs/getting-started/pi400-desktop-app.md` ("Windowed or full screen", "Troubleshooting").
+
+### A blank window in a release build, or a view is missing
+
+- **Symptom:** A release build opens a blank window, or one view never appears.
+- **Cause:** A JavaScript module throws at load, or a view type has no QML mapping. One fixed case is a blank release gallery whose log said `get DevSettings`, because React Native's `NativeDevSettings` calls `TurboModuleRegistry.getEnforcing('DevSettings')` at load and only the development client registered it. Mount failures log as `RNQNX_MOUNT_FAILURE type=<n> tag=<n> error=<n> <detail>`, for example `No QML type mapped for component 'ModalHostView'`.
+- **Fix:** Read the app log (`/tmp/rnqnx-<appId>.log` with the guarded launcher) for `js fatal` and `RNQNX_MOUNT_FAILURE` lines. Current `main` answers `DevSettings` with a no-op module when no provider supplies one.
+- **Evidence:** PR #150, `docs/getting-started/pi400-desktop-app.md` ("Troubleshooting"), `docs/evidence/drawer-route-2026-11-13/drawer-input-host-test.txt`.
+
+### No mouse pointer, or clicks do nothing
+
+- **Symptom:** The pointer does not appear or does not respond.
+- **Cause:** `/dev/io-hid/io-hid` must show owner `36`. If the node is missing, `io-hid` did not start. On this image `pi400-recover.sh` runs as `post_start` and skips the stock USB block, so the USB lines live in `full_startup.sh`.
+- **Fix:** Run `ls -l /dev/io-hid/io-hid`. If it is missing, read `/tmp/pi400-usb.log`. Re-plug the mouse after `io-hid` is running. Check `id` shows group `36(screen)` for `qnxuser`.
+- **Evidence:** `docs/getting-started/pi400-desktop-app.md` ("What the desktop runs", "Troubleshooting").
+
+### Injected clicks do nothing, or every click reads as a double click
+
+- **Symptom:** Scripted pointer events do not reach a tile, or pairs of clicks act as a double click at the corner.
+- **Cause:** `demolauncher` ignores injected clicks, so the tile itself was not driven that way. Events must come through Screen from a real pointer device with the position flag and a millisecond timestamp. Without them Screen puts the pointer at 0,0.
+- **Fix:** Use `tools/qnx-input/rnqnx-inject.c` (built by `tools/qnx-input/build.sh`), which creates its own devices and sets both fields. Take a screenshot after a short settle, because the capture can lag one event. On a freshly started app set `RNQNX_MOUSE_FRAME=WxH+X+Y` for `pnpm pi:mouse-smoke`.
+- **Evidence:** `docs/handoff/HANDOFF_2026-11-13.md` ("Drive the mouse and keyboard"), `docs/getting-started/pi400-desktop-app.md`.
+
+### Two windows of one app, or the app will not close
+
+- **Symptom:** A second copy of an app appears, or a launch with `--replace` fails.
+- **Cause:** Builds from before PR #157 have no guard. The current instance key is the base app ID without `.dev`, `.debug` or `.preview`. `--replace` asks the old copy to quit, waits 5 seconds, sends `SIGTERM`, waits 3 more seconds and never sends `SIGKILL`. If the old copy will not exit, the launch fails and starts nothing.
+- **Fix:** Start apps through `run-app.sh` or the tile and pass `--replace` from the dev tools. To stop one, press the red light or run `kill <pid>` with the PID from `pidin -F "%a %N" | grep org.rnqnx`. Never use `kill -9`.
+- **Evidence:** `docs/getting-started/pi400-desktop-app.md` ("One instance per app", "Troubleshooting"), PR #157.
+
+### The launcher tile does nothing
+
+- **Symptom:** Clicking the tile starts nothing.
+- **Cause:** `demolauncher` reads tiles only when it starts, and it rejects a `.desktop` file with a second `=` on a line.
+- **Fix:** Run `project desktop-entry` again instead of editing the file by hand. The tile needs the launcher restarted to appear.
+- **Evidence:** `docs/getting-started/pi400-desktop-app.md` ("Launcher tile", "Troubleshooting").
+
+### Qt loads the wrong plugin from a backup file
+
+- **Symptom:** Not recorded as an observed failure. The handoff states the rule.
+- **Cause:** Qt loads every file in `plugins/platforms`, backups included.
+- **Fix:** Keep backup files out of Qt plugin folders. Move them to a sibling `*-backups` folder.
+- **Evidence:** `docs/handoff/HANDOFF_2026-11-13.md` ("What runs on the Pi").
+
+### Remote images fail, or a WebP does not load
+
+- **Symptom:** Every `https://` image fails, a GIF or JPEG does not decode, a WebP fails, or `onError` carried an empty string or `HTTP 0`.
+- **Cause:** Qt 6 loads TLS from `plugins/tls/` and the staged runtime had none. Without `plugins/imageformats/` Qt Quick decodes only PNG, and `QImageReader` reports no `webp` format without `libqwebp.so`. A self-signed certificate is refused by design (`SSL handshake failed: The certificate is self-signed, and untrusted`).
+- **Fix:** Stage `libqopensslbackend.so` in `plugins/tls/` and the JPEG, GIF and WebP plugins in `plugins/imageformats/`, or carry them in the app's own `plugins/` directory with `QT_PLUGIN_PATH=<app>/plugins:<runtime>/plugins`. Error text now reads `Could not load <url>` or names Qt Network's reason. The board needs working DNS. `build-imageformats-qnx.sh` builds the WebP, TIFF, TGA, ICNS and WBMP plugins, and the handoff says `stage-runtime.py` did not copy them yet.
+- **Evidence:** `docs/image-loader.md`, `scripts/qt-public/README.md`, PR #145.
+
+### No sound
+
+- **Symptom:** A video or audio card plays but nothing is audible.
+- **Cause:** `io-snd` is not started at boot, and the image has no HDMI audio driver. The only configured output is the 3.5 mm jack (`bcm2711_pwm`). Sound at the jack was never confirmed by ear.
+- **Fix:** Use headphones or speakers in the jack, or a USB audio device. Starting `io-snd` at boot is a boot-script change that `tools/qnx-audio/install-audio-boot.sh` stages and the owner installs.
+- **Evidence:** `docs/getting-started/media.md`, `docs/evidence/media-2026-11-13.md`.
+
+## Connecting to the board
+
+### `qnxpi.local` does not resolve
+
+- **Symptom:** `pnpm pi:preflight` cannot reach the target.
+- **Cause:** The default is `QNX_TARGET_IP=qnxpi.local`, which relies on mDNS.
+- **Fix:** Export `QNX_TARGET_IP=<pi-ip-address>`. The IP appears on the QNX Welcome screen. The script accepts an IPv4 address or an alphanumeric hostname.
+- **Evidence:** `docs/getting-started/raspberry-pi-today.md`, `scripts/lib/qnx-target.sh`.
+
+### SSH negotiates no compatible MAC, or fails during rekeying
+
+- **Symptom:** SSH or SCP to the board drops during key exchange.
+- **Cause:** The QNX `sshd` and some clients disagree on the integrity algorithm. The Windows OpenSSH client disagreed during rekeying.
+- **Fix:** Use `-o MACs=hmac-sha2-256`. The repository scripts already pass it through `QNX_SSH_MACS`. Do not disable integrity checks. For a dedicated lane, give the key only to `qnxuser`, never to `root`, and record the host key out of band before the first connection.
+- **Evidence:** `scripts/lib/qnx-target.sh`, `docs/getting-started/raspberry-pi-today.md`, `docs/handoff/QNX_VM_WINDOWS.md`, `docs/handoff/QNX_SDK_CONTAINER_MACOS.md`.
+
+### `pidin` prints permission errors, and the `screenshot` tool fails
+
+- **Symptom:** `pidin` as `qnxuser` lists permission errors for other users' processes. The board's `screenshot` tool cannot create a Screen context.
+- **Cause:** `qnxuser` lacks the privileges. The tool needs Screen privileges that `qnxuser` does not have.
+- **Fix:** Use `sudo -n pidin -F "%a %N %A"` and `sudo -n screenshot -file=/tmp/now.bmp`, then `sudo -n chmod 644` the file before copying it. An app's own `--screenshot <png>` renders its window without the tool, and reads the Qt window and not the screen.
+- **Evidence:** `docs/handoff/HANDOFF_2026-11-13.md` ("Connect to the Pi"), `docs/getting-started/pi400-desktop-app.md`.
+
+### `/dev/screen` is missing, or the target is not `aarch64le`
+
+- **Symptom:** `pnpm pi:preflight` reports that Screen is not ready or that the target is not AArch64le.
+- **Cause:** Screen did not finish startup, or the image did not boot the expected QNX AArch64 configuration.
+- **Fix:** Confirm the QNX Welcome screen is running. Fix the image's graphics and Screen startup before debugging React Native, Hermes, Nitro or Expo. If the architecture is wrong, stop, do not deploy, capture `uname -a` and `uname -m`, and never deploy an x86_64 QEMU binary to the Pi.
+- **Evidence:** `docs/getting-started/raspberry-pi-400.md`, `docs/getting-started/raspberry-pi-today.md`, `scripts/pi-preflight.sh`.
+
+### Wi-Fi does not start
+
+- **Symptom:** The Pi 400 has no wireless network.
+- **Cause:** A filename mismatch is the documented case: all three `brcmfmac43456` names must match in both the Wi-Fi Makefile and the copied system snippet. On a Pi 5, QNXE-2016 lets several boards share one Wi-Fi MAC.
+- **Fix:** Recheck the three filenames. Use Ethernet to separate network problems from bring-up. On Pi 5, assign unique MACs or use Ethernet.
+- **Evidence:** `docs/getting-started/raspberry-pi-400.md`, `docs/getting-started/raspberry-pi-today.md`.
+
+## Metro, the development client and bundles
+
+### `Could not connect to Metro`
+
+- **Symptom:** The app shows a "Could not connect to Metro" screen, and the log has `RNQNX_DEV_BUNDLE_FAILED Could not connect to Metro: Connection refused`.
+- **Cause:** The app started before Metro, or Metro is unreachable from the board. Metro listens on all interfaces unless you pass `--host`.
+- **Fix:** Start Metro with `rnqnx project dev` or `project start`. The app loads as soon as Metro is up. If Metro stops later, the app keeps running and reloads by itself, because the host reconnects the `/message` socket every 3 seconds. Check that the board reaches the Mac's address (the verified link used `192.168.2.2` for the board and `192.168.2.1` for the Mac).
+- **Evidence:** `docs/getting-started/dev-workflow.md`, `docs/evidence/pi400-dev-client-2026-11-13/device-log-excerpt.txt`.
+
+### LogBox shows unsymbolicated call stacks
+
+- **Symptom:** LogBox prints stacks with a "Source Map" warning.
+- **Cause:** Symbolication goes through `fetch`, and React Native's `RCTNetworking` is not implemented on QNX.
+- **Fix:** None documented. The Hermes inspector and React DevTools were not connected either.
+- **Evidence:** `docs/getting-started/dev-workflow.md` ("Limits").
+
+### `TurboModuleRegistry.getEnforcing(...) could not be found` or `Callable module ... is not registered`
+
+- **Symptom:** The bundle runs and the surface mounts, then a native-module lookup throws. Seen cases are `Invariant Violation: TurboModuleRegistry.getEnforcing(...): '<name>' could not be found` and `Callable module RCTDeviceEventEmitter is not registered`.
+- **Cause:** The JavaScript asks for a native module the host did not register, or an export is missing from the public entry. Missing `DeviceEventEmitter`, `RefreshControl` and `TouchableNativeFeedback` exports once crashed Gesture Handler on load. A failed entry import used to report through `ExceptionsManager` and still exit 0 with a screenshot, which the playground now treats as a failure.
+- **Fix:** Check the module is registered in the host and exported from `packages/react-native-qnx` `PublicAPI.js`. Read the log for `[js fatal]`. Metro must resolve the `qnx` export condition for packages that ship a Qt implementation, which PR #138 added.
+- **Evidence:** `docs/evidence/pr149-playground-errors-2026-11-16/README.md`, `docs/handoff/HANDOFF_2026-11-13.md`, PR #138.
+
+### Release bytecode and the Hermes VM do not match
+
+- **Symptom:** Not documented as an observed failure. The guides state the requirement.
+- **Cause:** Bytecode must come from the same Hermes version as `libhermesvmlean.so` on the board. A development client needs `libhermesvm.so`, the VM that includes the compiler, because it loads plain JavaScript from Metro.
+- **Fix:** Compile with `hermesc` from the pinned `hermes-compiler@260318099.0.5` package. Deploy `libhermesvmlean.so` with release builds and `libhermesvm.so` with the development client.
+- **Evidence:** `docs/getting-started/pi400-desktop-app.md` ("Build"), `docs/getting-started/dev-workflow.md` ("How it works").
+
+## Continuous integration
+
+### Renderer-ON hosted job times out on SVG corpus shards
+
+- **Symptom:** The `Qt 6.11 / RN 0.88 / Hermes` renderer-ON lane fails with a 300-second CTest timeout on two SVG corpus shards, while renderer-OFF passes.
+- **Cause:** Not established. A later head passed all nine hosted workflows at the original limits, and the successful run does not identify the earlier cause. A mount profile cut Complex-1 from 244.5 to 181.2 seconds, but that does not explain the failure.
+- **Fix:** Keep the failed log. Do not infer the cause from the passing run, and do not raise the timeouts to hide it. Review the exact-head results.
+- **Evidence:** `docs/handoff/BLOCKERS.md` (PR 161 notes), `docs/handoff/CURRENT_STATE.md` (PR 161 sections).

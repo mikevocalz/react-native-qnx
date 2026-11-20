@@ -1,0 +1,63 @@
+## Props
+
+`Switch` is overridden in `packages/react-native-qnx/Libraries/Components/Switch/Switch.js`. The upstream file uses `useState` and the iOS `SwitchCommands.setValue` command, which lower to `@babel/runtime` helpers not installed in this workspace. The override is a `forwardRef` wrapper around `SwitchNativeComponent` that spreads all props, then sets `onTintColor`, `tintColor`, `thumbTintColor`, `value`, `disabled` and `onChange` (`Switch.js:20-48`). On the native side, `ShadowViewMutationAdapter::applySwitch` (`ShadowViewMutationAdapter.cpp:598-629`) builds a `SwitchStyle` and `QtQuickMountingLayer::updateSwitch` (`QtQuickMountingLayer.cpp:674-698`) sets `value`, `disabled`, `trackOnColor`, `trackOffColor` and `thumbColor` on the QML item.
+
+The QML for the switch is not in `vnext/src`. `SwitchShadowNode.cpp` supplies only the component name and a fixed 51 by 31 size (lines 17-34). The item comes from whatever the host registers under `Switch`: the playground probe (`vnext/probes/playground/main.cpp:272-310`) and the host-test fixture (`tests/cpp/QtReactHostHostTest.cpp:146-178`). Both draw a track and thumb and declare the five properties above. I found no production QML file for `Switch` elsewhere under `vnext/` or `native/`, so what the prop does depends on the host's QML.
+
+| Prop                  | Status                         | Trace                                                                                                                                                                                                                                                                                                           |
+| --------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`               | supported                      | `value === true` (`Switch.js:42`), `style.value` (`ShadowViewMutationAdapter.cpp:606`), QML `value` (`QtQuickMountingLayer.cpp:684`). Test `switchToggles` checks the property and the echo (`QtReactHostHostTest.cpp:2029-2090`).                                                                              |
+| `disabled`            | supported if the QML honors it | Set as QML `disabled` (`QtQuickMountingLayer.cpp:685`). In both known QML sources it disables the `MouseArea`; the probe also dims to 0.5 opacity. No test sets `disabled`.                                                                                                                                     |
+| `trackColor.true`     | supported if the QML honors it | `onTintColor`, then `trackOnColor` (`ShadowViewMutationAdapter.cpp:611-614`, `QtQuickMountingLayer.cpp:686-688`). The test fixture passes it but asserts no color.                                                                                                                                              |
+| `trackColor.false`    | supported if the QML honors it | `tintColor`, then `trackOffColor` (`ShadowViewMutationAdapter.cpp:615-618`). Same test note.                                                                                                                                                                                                                    |
+| `thumbColor`          | supported if the QML honors it | `thumbTintColor`, then `thumbColor` (`ShadowViewMutationAdapter.cpp:619-622`). Same test note.                                                                                                                                                                                                                  |
+| `ios_backgroundColor` | no effect                      | Upstream React Native maps it to a `backgroundColor` style. The override does not (`Switch.js:20-48`), and the spread forwards it as an unused prop. `applySwitch` does not read it. The playground QML comment states the root draws nothing so background styles cannot cover the track (`main.cpp:269-271`). |
+| `style`               | supported                      | Merged after `alignSelf: 'flex-start'` (`Switch.js:39`).                                                                                                                                                                                                                                                        |
+| `onChange`            | supported                      | Raw native event, called before `onValueChange` (`Switch.js:24-31`).                                                                                                                                                                                                                                            |
+| `onValueChange`       | supported                      | Called with `event.nativeEvent.value`.                                                                                                                                                                                                                                                                          |
+
+## Events
+
+| Event                  | Status    | Trace                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `onValueChange(value)` | supported | `connectSwitchEvents` connects the item's `valueChanged()` signal to `QtSwitchBridge::notify`, which emits `onChange` when the property differs from `lastValue_` (`ShadowViewMutationAdapter.cpp:688-724`, `QtSwitchBridge.cpp:17-25`). `setExpectedValue` is called before each prop update so JS writes do not echo (`ShadowViewMutationAdapter.cpp:624-626`). |
+| `onChange(event)`      | supported | Same path.                                                                                                                                                                                                                                                                                                                                                        |
+
+The host test drives the event by calling `setProperty("value", true)` on the item, not by sending a pointer press (`QtReactHostHostTest.cpp:2063`). A press reaching the QML `MouseArea` is therefore untested at the host level.
+
+## Platform behavior on QNX
+
+The wrapper sets `onStartShouldSetResponder` to true and `onResponderTerminationRequest` to false, so the switch keeps a press once it takes it. A controlled switch whose JS state does not update stays at the prop value after the next render, because `applySwitch` writes `value` on every update.
+
+## Unsupported or partial props
+
+- `ios_backgroundColor`: no effect.
+- Native commands: the upstream `setValue` command path is not used; value flows only through props.
+- Appearance of `disabled` and the three colors depends on the host's `Switch` QML, which is not part of `vnext/src`.
+
+## Minimal example
+
+```tsx
+import { useState } from 'react';
+import { Switch, View } from 'react-native';
+
+export default function Example() {
+  const [on, setOn] = useState(false);
+  return (
+    <View style={{ padding: 16 }}>
+      <Switch
+        value={on}
+        onValueChange={setOn}
+        trackColor={{ false: '#888', true: '#2a7' }}
+        thumbColor="#fff"
+      />
+    </View>
+  );
+}
+```
+
+## Known gaps
+
+- The note in `docs/component-support.json` says value, disabled, tint props and `onValueChange` are host-tested. No Pi 400 receipt exists, so device behavior is unverified.
+- Physical HID activation, keyboard focus and assistive technology are unverified.
+- Pi 4 QSTI is untested.
