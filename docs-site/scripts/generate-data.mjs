@@ -268,13 +268,7 @@ const found = new Map();
 const addPull = (num, date, sha, title) => {
   if (!found.has(num)) found.set(num, { sha, date, num, title });
 };
-git(
-  'log',
-  through,
-  '--first-parent',
-  '--abbrev=7',
-  '--format=%h%x1f%cs%x1f%s%x1f%b%x1e'
-)
+git('log', through, '--first-parent', '--abbrev=7', '--format=%h%x1f%cs%x1f%s%x1f%b%x1e')
   .split('\x1e')
   .map((e) => e.trim())
   .filter(Boolean)
@@ -296,18 +290,22 @@ for (const o of overrides) {
   try {
     git('merge-base', '--is-ancestor', full, through);
   } catch {
-    throw new Error(`changelog-overrides.json: ${o.commit} is not in the history of ${through.slice(0, 7)}`);
+    throw new Error(
+      `changelog-overrides.json: ${o.commit} is not in the history of ${through.slice(0, 7)}`
+    );
   }
   const date = git('log', '-1', '--format=%cs', full);
   const sha = git('rev-parse', '--short=7', full);
   for (const p of o.pulls) {
     if (found.has(String(p.number)))
-      throw new Error(`changelog-overrides.json: #${p.number} is already derived from a merge subject`);
+      throw new Error(
+        `changelog-overrides.json: #${p.number} is already derived from a merge subject`
+      );
     addPull(String(p.number), date, sha, p.title);
   }
 }
-const merges = [...found.values()].sort(
-  (x, y) => (x.date === y.date ? Number(y.num) - Number(x.num) : x.date < y.date ? 1 : -1)
+const merges = [...found.values()].sort((x, y) =>
+  x.date === y.date ? Number(y.num) - Number(x.num) : x.date < y.date ? 1 : -1
 );
 const hiddenPrs = merges.filter((m) => banned.test(m.title)).length;
 const shownPrs = merges.map((m) => (banned.test(m.title) ? { ...m, title: omittedTitle } : m));

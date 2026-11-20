@@ -18,7 +18,9 @@ export default function ReleasesPage() {
   const months = mergedPulls();
   const total = months.reduce((n, m) => n + m.pulls.length, 0);
   if (total !== status.pulls.total)
-    throw new Error(`releases: parsed ${total} pull requests, status.json says ${status.pulls.total}`);
+    throw new Error(
+      `releases: parsed ${total} pull requests, status.json says ${status.pulls.total}`
+    );
 
   return (
     <div className="bench">
