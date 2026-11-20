@@ -15,12 +15,13 @@ APP_ID = "org.rnqnx.marathon.playground"
 
 # WAYLAND_DEBUG lines look like:
 #   [ 123.456]  -> xdg_surface@14.get_toplevel(new id xdg_toplevel@15)
-TOPLEVEL = re.compile(r"-> xdg_surface@(\d+)\.get_toplevel\(new id xdg_toplevel@(\d+)\)")
-SET_APP_ID = re.compile(r'-> xdg_toplevel@(\d+)\.set_app_id\("([^"]*)"\)')
-ACK = re.compile(r"-> xdg_surface@(\d+)\.ack_configure\(\d+\)")
-ATTACH = re.compile(r"-> wl_surface@(\d+)\.attach\(wl_buffer@\d+, ")
-COMMIT = re.compile(r"-> wl_surface@(\d+)\.commit\(\)")
-GET_XDG_SURFACE = re.compile(r"-> xdg_wm_base@\d+\.get_xdg_surface\(new id xdg_surface@(\d+), wl_surface@(\d+)\)")
+# libwayland 1.24 and later print the object separator as # instead of @.
+TOPLEVEL = re.compile(r"-> xdg_surface[@#](\d+)\.get_toplevel\(new id xdg_toplevel[@#](\d+)\)")
+SET_APP_ID = re.compile(r'-> xdg_toplevel[@#](\d+)\.set_app_id\("([^"]*)"\)')
+ACK = re.compile(r"-> xdg_surface[@#](\d+)\.ack_configure\(\d+\)")
+ATTACH = re.compile(r"-> wl_surface[@#](\d+)\.attach\(wl_buffer[@#]\d+, ")
+COMMIT = re.compile(r"-> wl_surface[@#](\d+)\.commit\(\)")
+GET_XDG_SURFACE = re.compile(r"-> xdg_wm_base[@#]\d+\.get_xdg_surface\(new id xdg_surface[@#](\d+), wl_surface[@#](\d+)\)")
 
 
 def check(text: str) -> list[str]:
