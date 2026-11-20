@@ -72,13 +72,13 @@ and no-ops, are in [component support](docs/component-support.md).
 
 | Component                  | Host       | Pi 400     | Row last changed |
 | -------------------------- | ---------- | ---------- | ---------------- |
-| `View`                     | partial    | scoped     | `7c664c2`        |
-| `Text`                     | partial    | scoped     | `0e87951`        |
-| `Image`                    | supported  | unverified | `0e87951`        |
-| `ScrollView`               | supported  | unverified | `0e87951`        |
+| `View`                     | partial    | scoped     | `c50ce32`        |
+| `Text`                     | partial    | scoped     | `c50ce32`        |
+| `Image`                    | supported  | scoped     | `c50ce32`        |
+| `ScrollView`               | supported  | scoped     | `c50ce32`        |
 | `TextInput`                | partial    | scoped     | `5aba848`        |
 | `Pressable`                | supported  | scoped     | `6e4882a`        |
-| `FlatList`                 | supported  | unverified | `0e87951`        |
+| `FlatList`                 | supported  | scoped     | `c50ce32`        |
 | `VirtualizedList`          | supported  | unverified | `0e87951`        |
 | `SectionList`              | supported  | unverified | `0e87951`        |
 | `VirtualizedSectionList`   | unverified | unverified | `0e87951`        |
@@ -88,11 +88,11 @@ and no-ops, are in [component support](docs/component-support.md).
 | `TouchableWithoutFeedback` | unverified | unverified | `0e87951`        |
 | `ImageBackground`          | supported  | unverified | `0e87951`        |
 | `KeyboardAvoidingView`     | no-op      | unverified | `0e87951`        |
-| `ActivityIndicator`        | supported  | unverified | `0e87951`        |
+| `ActivityIndicator`        | supported  | scoped     | `c50ce32`        |
 | `RefreshControl`           | no-op      | unverified | `0e87951`        |
 | `Modal`                    | partial    | scoped     | `79a4279`        |
 | `SafeAreaView`             | partial    | unverified | `0e87951`        |
-| `Switch`                   | supported  | unverified | `0e87951`        |
+| `Switch`                   | supported  | scoped     | `c50ce32`        |
 | `StatusBar`                | no-op      | unverified | `73ff82a`        |
 | `QtVideo`                  | unverified | scoped     | `79a4279`        |
 | `QtAudio`                  | unverified | scoped     | `79a4279`        |
