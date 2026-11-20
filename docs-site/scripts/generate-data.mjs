@@ -157,7 +157,7 @@ const adrPage = [
   '',
   'Each record lives in [`docs/adr`](' +
     BLOB.replace('blob', 'tree') +
-    'docs/adr). Status is the first line under "Status" in the record.',
+    'docs/adr). Status is the first sentence under "Status" in the record.',
   '',
   '| ADR | Title | Status | SHA |',
   '| --- | --- | --- | --- |',
