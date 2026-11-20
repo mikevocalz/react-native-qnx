@@ -1,5 +1,5 @@
 import { llms, loader } from 'fumadocs-core/source';
-import { docsRoute } from './shared';
+import { docsRoute, withBase } from './shared';
 import { defineDocs } from 'fumadocs-mdx/macro';
 import { metaSchema, pageSchema } from 'fumadocs-core/source/schema';
 
@@ -24,9 +24,10 @@ export const source = loader({
 });
 
 export const docsLlms = llms(source, {
-  renderPage: async (page) => `# ${page.data.title} (${page.url})
+  renderPage: async (page) => `# ${page.data.title} (${withBase(page.url)})
 
 ${await page.data.getText('processed')}`,
   // link to the files under `/llms.mdx`
-  renderUrl: (item) => (/^\/.*\.(md|txt)$/.test(item.url) ? `/llms.mdx${item.url}` : item.url),
+  renderUrl: (item) =>
+    withBase(/^\/.*\.(md|txt)$/.test(item.url) ? `/llms.mdx${item.url}` : item.url),
 });
