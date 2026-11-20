@@ -1,0 +1,84 @@
+---
+title: react-native-svg
+description: How react-native-svg 15.16.0 elements render on Qt Quick, and what the Qt renderer leaves out.
+---
+
+## Install
+
+The root `package.json` pins `react-native-svg` at `15.16.0`. `packages/react-native-qnx/package.json` lists it as an optional peer dependency. The app imports the unmodified package. Its Fabric components (`RNSVGSvgView`, `RNSVGPath`, `RNSVGGroup` and the rest) reach a Qt Quick renderer in `native/qt/rnsvg`.
+
+That renderer is separate from `QtSvgDocument`, which draws one static XML string with no element tree (`docs/v2/react-native-svg.md`).
+
+## Setup
+
+Build switch: `RNQNX_ENABLE_QT_RNSVG` (default OFF, declared in `cmake/RnqnxQtNative.cmake`). It needs only Qt Core, Gui and Quick and does not link `Qt6::Svg`. Importing `react-native-svg` in a host built without it fails at first render with an unknown-component error for `RNSVGSvgView`.
+
+```sh
+pnpm install --frozen-lockfile
+cmake --preset <preset> -DRNQNX_ENABLE_QT_RNSVG=ON
+pnpm qt:rnsvg:check
+```
+
+`pnpm qt:rnsvg:check` regenerates Fabric props and events from the package's TypeScript specs and fails on drift.
+
+Metro: `packages/metro-config-qnx/src/index.js` wraps the resolver with `createSvgOverlayResolveRequest`, for the `qnx` platform only. The overlay in `packages/react-native-qnx/svg/overlay` supplies what 15.16.0 never sends to a host: ten filter elements that return `null` upstream, `FeDropShadow` offsets, gradient `spreadMethod`, and `textLength` and `lengthAdjust`. Nothing in `node_modules` changes. See [Metro config](/docs/how-to/metro-config).
+
+An `<Image>` with an SVG source needs the `qsvg` image-format plugin, which the base public Qt build omits. `scripts/qt-public/build-svg-qnx.sh` builds it (`docs/v2/react-native-svg.md`).
+
+## Supported API
+
+From the `react-native-svg` table in `docs/component-support.md` (host column; Pi 400 column in brackets):
+
+| Element or prop                                                    | Host (Pi 400)          |
+| ------------------------------------------------------------------ | ---------------------- |
+| `Svg` (`viewBox`, `preserveAspectRatio`, nested `Svg`, `onLayout`) | supported (scoped)     |
+| `Path`, `Rect`, `Circle`, `Ellipse`, `Line`, `Polygon`, `Polyline` | supported (scoped)     |
+| `G`, `Defs`, `Use`, `Symbol`                                       | supported (scoped)     |
+| `LinearGradient`, `RadialGradient`, `Stop`                         | supported (scoped)     |
+| `Pattern`, `Marker`                                                | supported (unverified) |
+| `ClipPath`, `Mask`                                                 | supported (scoped)     |
+| `Text`, `TSpan`, `TextPath`                                        | supported (scoped)     |
+| `Filter` and the 17 `Fe*` primitives                               | supported (unverified) |
+| `Image`                                                            | partial (unverified)   |
+| `ForeignObject`                                                    | partial (unverified)   |
+| `onPress` and responder props                                      | supported (unverified) |
+| Animated props                                                     | partial (scoped)       |
+| `SvgXml`, `SvgCss`, `SvgUri`, `parse`                              | supported (unverified) |
+
+Each row marked supported for Pattern, Symbol, Marker, TextPath and Filter was checked against the renderer source, not only the support doc:
+
+| Element         | Fabric name mapped to a renderer kind                                                                                 | Renderer code                                                                                                                                                                         | Host test                                                                     |
+| --------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `Pattern`       | `RNSVGPattern` (`native/qt/rnsvg/RnsvgItems.cpp:211`); props converted in `vnext/src/fabric/QtRnsvgBridgeDefs.cpp:61` | `native/qt/rnsvg/scene/PaintServers.cpp:36`                                                                                                                                           | `Pattern-1` to `-5` corpus fixtures, listed in `docs/v2/react-native-svg.md`  |
+| `Symbol`        | `RNSVGSymbol` (`RnsvgItems.cpp:212`)                                                                                  | `native/qt/rnsvg/scene/Scene.cpp:247-265` (viewBox applied through `Use`)                                                                                                             | `useOfASymbolFitsItsViewBox`, `tests/native/qt-rnsvg/RnsvgSceneTest.cpp:315`  |
+| `Marker`        | `RNSVGMarker` (`RnsvgItems.cpp:212`; component name in `QtRnsvgBridgeShadowNodes.cpp:28`)                             | `native/qt/rnsvg/scene/Markers.cpp:81`                                                                                                                                                | `RnsvgSceneTest.cpp:345`                                                      |
+| `TextPath`      | `RNSVGTextPath` (`RnsvgItems.cpp:213`; `QtRnsvgBridgeShadowNodes.cpp:36`)                                             | `native/qt/rnsvg/scene/TextRenderer.cpp:49-53`                                                                                                                                        | `RnsvgTextTest.cpp:165, 774`                                                  |
+| `Filter`, `Fe*` | `RNSVGFilter` and any `RNSVGFe*` name (`RnsvgItems.cpp:213, 219`)                                                     | `native/qt/rnsvg/scene/Effects.cpp:44`; one source file per primitive in `native/qt/rnsvg/filter/` (16 `Fe*.cpp` files; `FeLighting.cpp` is the one file for the lighting primitives) | `RnsvgFilterTest.cpp`, golden images in `tests/native/qt-rnsvg/golden/filter` |
+
+The macOS run in `docs/evidence/rnsvg-corpus-2026-11-13/macos-native.txt` shows eight native test targets passing, including the filter, fixtures, foreignobject, image, scene and text targets. The Pi 400 run 2 receipt, `docs/evidence/pr149-pi400-run2-2026-11-19/README.md`, lists `svg-pattern-symbol-marker.png` and `svg-filters.png` among the rendering SVG cards. `docs/component-support.md` still records Pattern, Marker and Filter as `unverified` on the device, so this page keeps that label. The [module matrix](/docs/reference/module-matrix) page is reconciled with the support doc in pull request 172.
+
+## Not supported
+
+From the limits table in `docs/v2/react-native-svg.md`:
+
+- `toDataURL`, `getBBox` and other native view commands.
+- `Image` `onError`, and request headers on `Image`. SVG `Image` sources need the `qsvg` plugin.
+- `direction`, `unicode-bidi` and bidirectional text across `TSpan`s.
+- `<gradient xlink:href>` inheritance. `SvgXml` drops `a`, `switch`, `view`, `title`, `desc`, `metadata`, `animate*` and `set`.
+- `visibility`, `paint-order`, `mix-blend-mode`, `shape-rendering`, `overflow`, `transform-origin`.
+- `ForeignObject` children draw above the painted texture.
+- Work bound: 200000 element visits per paint or hit test. Raster size is capped at 4096 physical pixels per side.
+- Reanimated-driven props through `useAnimatedProps`: no device receipt.
+
+## Evidence
+
+| Path                                                  | Shows                                                                                                                          |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `docs/v2/validation.md` (react-native-svg section)    | Host test counts: 149 fixtures against resvg 0.50.0 passed, plus golden-pixel, filter, text and image suites. Host, Qt 6.12.0. |
+| `docs/evidence/rnsvg-corpus-2026-11-13/`              | One macOS native run log (8 of 8 native test targets passed) and one diff image pair (`Use-2`).                                |
+| `docs/evidence/svg-device-2026-11-13/`                | Pi 400 gallery screenshots and artifact hashes, Qt 6.12.0.                                                                     |
+| `docs/evidence/pr149-pi400-run2-2026-11-19/`          | Pi 400, commit `240dc08`, SVG ON. SVG cards rendered with Circle and Group press counters.                                     |
+| `docs/evidence/pr149-pi400-run1-2026-11-19/`          | Pi 400, SVG OFF. `svg-not-in-host-build.png` shows the expected fallback text.                                                 |
+| `docs/evidence/pr149-svg-native-interest-2026-11-17/` | Host receipt for the SVG layout event path.                                                                                    |
+
+Missing: a device status above `unverified` for Pattern, Marker and Filter in `docs/component-support.json` (run 2 shows their cards rendering, but no one has updated the row), and device runs for Image, ForeignObject, press handlers beyond the Circle and Group counters, and `SvgXml`. No Pi 4 QSTI run exists.

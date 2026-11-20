@@ -1,0 +1,60 @@
+## Props
+
+`Modal` is React Native 0.88.1's own `Libraries/Modal/Modal.js` (re-exported by `packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js:42`). It renders the portable `ModalHostView` host component. The adapter maps that to a QML item named `RNQnxModal` (`vnext/src/fabric/ShadowViewMutationAdapter.cpp:416`), whose source is `vnext/src/views/qt/QtModalQml.cpp`. `Platform.OS` is `'qnx'` (`packages/react-native-qnx/Libraries/Utilities/Platform.js:32`), so every `Platform.OS === 'ios'` branch in `Modal.js` is skipped.
+
+The native side reads no Modal prop. `applyModal` (`ShadowViewMutationAdapter.cpp:654-680`) marks the item as an overlay and writes the surface-root size into the shadow-node state. `connectModalEvents` (`:631-652`) attaches `onRequestClose`. Files traced for the rows below: `ShadowViewMutationAdapter.cpp`, `QtQuickMountingLayer.cpp`, `QtModalBridge.cpp`, `QtModalQml.cpp`, and every `vnext`, `native`, `packages` and `tests` C++, QML and JS file that mentions the prop names. None of them reads the props marked "no native reader".
+
+| Prop                                                                                                                                                            | Status             | Traced finding                                                                                                                                                                                                                                                                                                                                                                        |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `visible`                                                                                                                                                       | supported          | JavaScript only. `Modal.js:276-280` returns `null` unless `visible === true`, so the host view mounts and unmounts.                                                                                                                                                                                                                                                                   |
+| `children`                                                                                                                                                      | supported          | Mounted inside the overlay item. `modalMounts` (`tests/cpp/QtReactHostHostTest.cpp:2577-2623`) checks one child and its color.                                                                                                                                                                                                                                                        |
+| `onRequestClose`                                                                                                                                                | supported          | Escape on the top Modal fires it. See Events.                                                                                                                                                                                                                                                                                                                                         |
+| `transparent`                                                                                                                                                   | partial            | No native reader. `Modal.js:292-294` sets the inner container View's `backgroundColor` to `transparent`, otherwise `white` (`Modal.js:386`). That View is drawn by the generic View path. The `RNQnxModal` item's own `backgroundColor` stays `transparent` (`QtModalQml.cpp:12`); `updateStyle` (`QtQuickMountingLayer.cpp:425`) writes it only when the host view has a background. |
+| `backdropColor`                                                                                                                                                 | partial            | Same path as `transparent` (`Modal.js:295-297`).                                                                                                                                                                                                                                                                                                                                      |
+| `animationType`, `presentationStyle`, `statusBarTranslucent`, `navigationBarTranslucent`, `hardwareAccelerated`, `supportedOrientations`, `allowSwipeDismissal` | accepted-no-effect | `Modal.js:329-342` passes them to the host view. React Native's C++ props struct parses them. No QNX code reads them, and the QML item has no matching property (`QtModalQml.cpp`). No fade or slide exists; the overlay appears at once.                                                                                                                                             |
+| `onShow`, `onDismiss`, `onOrientationChange`                                                                                                                    | unsupported        | `ShadowViewMutationAdapter.cpp:631-652` connects only `onRequestClose`. `Modal.js:315-324` calls `onDismiss` only when `Platform.OS === 'ios'`.                                                                                                                                                                                                                                       |
+
+## Events
+
+| Event            | Status                                       | Note                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `onRequestClose` | supported on host, device firing unconfirmed | The QML item accepts Escape and emits `requestClose()` (`QtModalQml.cpp:18-22`). `QtModalBridge::requestClose` (`QtModalBridge.cpp:117-121`) forwards it to the Fabric emitter only for the top Modal in a window (wired at `ShadowViewMutationAdapter.cpp:646-651`). `tests/native/qt-native-ui/ModalQuickTest.cpp` checks that Escape requests close, other keys do not, and only the top Modal fires. |
+| `onShow`         | unsupported                                  | Not connected.                                                                                                                                                                                                                                                                                                                                                                                           |
+| `onDismiss`      | unsupported                                  | Not connected, and never called by `Modal.js` off iOS.                                                                                                                                                                                                                                                                                                                                                   |
+
+## Platform behavior on QNX
+
+- The Modal covers the surface root from its top-left corner whatever Yoga computes (`QtQuickMountingLayer.cpp:883-892`). The shadow-node state is set to the root size because the portable default of 0 by 0 laid the content out as nothing (`ShadowViewMutationAdapter.cpp:663-678`).
+- Escape is the counterpart of Android's back button. The QML handler accepts the key, so the covered app never sees it (`QtModalQml.cpp:19-22`).
+- Opening a Modal takes active focus and remembers the previous item. Only the most recent Modal in a window reclaims focus and handles close; closing restores the previous item (`QtModalBridge.cpp`). `docs/validation/pr159-modal-focus-2026-11-14.md` records 11 passing QtTest entries on the Linux host target, with a stand-in for the Fabric emitter.
+- Pi 400, run 2: the gallery Modal opened and closed after a synthetic `key esc` (`docs/evidence/pr149-pi400-run2-2026-11-19/README.md`). That rests on screenshots.
+
+A host that maps `ModalHostView` to a plain View has no `requestClose()` signal, so the bridge is skipped and the Modal closes only from JavaScript (comment at `ShadowViewMutationAdapter.cpp:640-641`).
+
+## Minimal example
+
+```tsx
+import React, { useState } from 'react';
+import { Button, Modal, Text, View } from 'react-native';
+
+export default function Screen() {
+  const [open, setOpen] = useState(false);
+  return (
+    <View style={{ flex: 1 }}>
+      <Button title="Open" onPress={() => setOpen(true)} />
+      <Modal visible={open} onRequestClose={() => setOpen(false)}>
+        <View style={{ flex: 1, backgroundColor: '#101820', padding: 24 }}>
+          <Text style={{ color: 'white' }}>Press Escape or the button to close.</Text>
+          <Button title="Close" onPress={() => setOpen(false)} />
+        </View>
+      </Modal>
+    </View>
+  );
+}
+```
+
+## Known gaps
+
+- The Pi 400 app log has no line showing `onRequestClose` firing on the board, and no physical keyboard was tried.
+- `onShow` and `onDismiss` need native event emission. The animation, presentation and translucency props need native handling. Neither exists.
+- Focus behavior was tested on the Linux host target, not on QNX.

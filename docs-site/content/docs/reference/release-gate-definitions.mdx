@@ -1,0 +1,107 @@
+---
+title: Release gate definitions
+description: What each of the eleven v1 release gates requires to pass, the evidence kinds it names, and why each is still pending.
+---
+
+The [release gates](/docs/reference/release-gates) page is generated from `docs/releases/v1-readiness.json` and lists each gate's id, status and evidence count. This page explains the definitions behind that table. It summarizes each gate's `acceptance` text; the full text is in [`docs/releases/v1-readiness.json`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/v1-readiness.json) and [`docs/releases/v1-readiness.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/v1-readiness.md), and a summary here does not replace it.
+
+## How a gate passes
+
+From `scripts/lib/docs-model.mjs`:
+
+- A gate has `status` of `blocked`, `pending` or `passed`.
+- Every entry in a gate's `evidence` array must be a path that starts with `docs/evidence/` and contains no `..`.
+- A `passed` gate with an empty `evidence` array is rejected.
+- `pnpm validate:v1` (`node scripts/validate-docs.mjs --release`) exits nonzero while any gate is not `passed`, and prints `v1 is not release-ready:` followed by each open gate.
+- The record must contain exactly these eleven ids: `distribution`, `ci`, `cold-boot`, `device-parity`, `performance`, `developer-path`, `documentation`, `app-identity`, `window-chrome`, `expo`, `dependencies`.
+
+`docs/releases/v1-readiness.md` adds a review rule: a reviewer inspects the cited revision and the actual result before changing a gate, because a file's existence cannot prove the claim inside it.
+
+## Recorded state
+
+All eleven gates are `pending` and every `evidence` array is empty. `evidenceBaseline.reviewedAt` is `2026-11-07`, with source commit `be71bc9`, QNX SDP `8.0.5`, stock target `Pi 4/5 QSTI 0.5.0 build 50; full-runtime device result pending`, and experimental target `Pi 400 custom BCM2711 image; scoped Hello World/Nitro/runtime/input receipts`. The baseline also records `performance` as `unmeasured on QNX`. Later entries in `evidenceBaseline` (named `pr105`, `pr149...`, `pr159...`, `pr161...`) carry receipts for individual changes and state, in each case, that the release gates stay pending.
+
+Pi 400 results never count for the stock Pi 4 QSTI board. Hosted CI, QNX cross-build and device runs are separate categories (`docs/releases/required-checks.md`).
+
+## The eleven gates
+
+### distribution: Open-source runtime packaging
+
+- **Passes when:** the public-source Qt build is qualified, with exact module and QPA plugin notices and hashes, the shared-library and plugin closure, and the applicable source and library replacement materials. Evaluation artifacts and QNX SDK payloads stay separate. No paid Qt subscription is a prerequisite.
+- **Evidence kinds:** build record with hashes, notices, library and plugin closure manifest.
+- **Why pending:** public-source Qt 6.12.0 Pi 400 receipts exist from 2026-11-12 (`docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md`, `docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md`). The baseline says "no gate is closed by them". The release notes list this gate as missing "A public-source Qt build with its notices, hashes and library/plugin closure" for a release artifact. See [Qt module tiers](/docs/reference/qt-tiers).
+
+### ci: Candidate CI
+
+- **Passes when:** every required check succeeds on the exact release candidate commit, on runners the owner authorizes. Local runs are labeled separately.
+- **Evidence kinds:** hosted workflow runs on the candidate head, QNX cross-build runs, labeled by category.
+- **Why pending:** `docs/releases/required-checks.md` lists 18 required hosted workflows (the dispatch loop in that file names them) and a required QNX cross-build check that is "required, and missing": no workflow compiles for QNX, and the gate needs a self-hosted runner holding the licensed SDP. Hosted results do not stand in for it. See [CI checks](/docs/reference/ci-checks).
+
+### cold-boot: Repeatable graphics cold boot
+
+- **Passes when:** 20 consecutive supervised cold boots succeed on the named release board and image, with recovery and logs. Application relaunch trials do not count.
+- **Evidence kinds:** per-boot logs and recovery record.
+- **Why pending:** the release notes state that graphics starts manually on the Pi 400 and the recovery boot stays selected. `docs/handoff/CURRENT_STATE.md` says ten application trials do not establish cold boot.
+
+### device-parity: Device component and input results
+
+- **Passes when:** every component has a device disposition and tested limits on stock Pi 4 QSTI, and keyboard and touch input plus the selected interaction scope are proven. Pi 400 results stay separate.
+- **Evidence kinds:** device receipts per component on stock Pi 4 QSTI, input receipts.
+- **Why pending:** no receipt exists for stock Pi 4 QSTI (`docs/v1/release-notes.md`, "Known limits"). IME and multi-touch are listed as unsupported there. See [component matrix](/docs/reference/component-matrix).
+
+### performance: QNX performance measurements
+
+- **Passes when:** startup-to-first-frame, presented-frame intervals and RSS are published for Hello World, a 1000-row list and a drawer drag, with revision, sample sizes and capture limitations.
+- **Evidence kinds:** measurement receipts with sample counts.
+- **Why pending:** the baseline records performance as unmeasured on QNX. The release notes say no startup, frame or memory figure exists.
+
+### developer-path: Clean-host app workflow
+
+- **Passes when:** a new licensed developer can create, build, deploy and run an app from the documented prerequisites. Package ownership and contents are verified before any npm publication.
+- **Evidence kinds:** a recorded end-to-end run from documented prerequisites.
+- **Why pending:** the release notes say the CLI and template work inside the repository checkout and no npm package is published.
+
+### documentation: Versioned v1 documentation
+
+- **Passes when:** getting-started, API and support limits, the evidence gallery, ADRs and release notes are published at a versioned location with reviewed local links.
+- **Evidence kinds:** the published, versioned set.
+- **Why pending:** `docs/v1/README.md` calls the set a draft. `scripts/lib/docs-model.mjs` already checks that local links in the documentation resolve; publishing at a versioned location is the open part.
+
+### app-identity: App identity, icon and name
+
+- **Passes when (summary):** `prepare-native` and `doctor` read the Expo icon (optional `extra.rnqnx.icon`), reject anything but a square PNG of at least 1024x1024, generate each target's size set at build time and hash it into `native-app.json`, and apply it to the launcher tile, title bar, task switcher and `QGuiApplication::setWindowIcon`. A default template icon is used with a one-line notice naming `expo.icon` when none is set. Tile labels (`extra.rnqnx.shortName`, else `expo.name`) must fit by measured rendered width in the launcher font; overflow fails with the measured size instead of truncating. Tests cover the longest fitting name, one glyph over, wide glyphs, CJK, emoji and RTL.
+- **Evidence kinds:** host and device receipts showing the custom icon in every location, and a tile grid where a maximum-length and a short name give identical tile sizes; unit tests for the cases listed.
+- **Why pending:** the evidence array is empty. The release notes tag the gate to PR #115. Doctor already reports `app-icon` and `tile-label` checks (see [error codes](/docs/reference/error-codes)), but a check in code is not a receipt. See [icons and app name](/docs/how-to/icons-and-app-name).
+
+### window-chrome: Window chrome and windows API
+
+- **Passes when (summary):** a native QML title bar outside the Fabric root, with macOS-style and Windows-style control layouts selectable in config and at runtime, `titleBarStyle` of `default`, `hidden` or `none`, and a title bar inset exposed to JavaScript and `SafeAreaView`. Drag-move and edge resize only where the QPA plugin is verified to support them, with a per-target receipt. An ADR defines minimize on QNX Screen. A Nitro v1 HybridClass windows API covers title, size, position, minimize, close, close guards, focus and visibility events, and states its multi-window scope. Controls are keyboard operable with visible focus and finger-sized targets.
+- **Evidence kinds:** device receipts for both layouts, minimize and restore with the AppState transition logged, a close guard that cancels and one that proceeds, chrome operable while JS is blocked; a test or receipt showing inset values reaching JavaScript; an ADR.
+- **Why pending:** the evidence array is empty; tagged to PR #115 in the release notes. The windows API in the acceptance text is a Nitro HybridClass, and [Nitro module API on QNX](/docs/reference/nitro-api) records that the only generated binding today is the `PlatformInfo` proof. `docs/getting-started/window-chrome.md` (line 215) says there is "No runtime layout change or close guard yet", and no source matching a windows HybridClass was found in `docs`, `native`, `packages` or `vnext`. See [window chrome](/docs/how-to/window-chrome).
+
+### expo: Expo readiness
+
+- **Passes when (summary):** one-command create and an add-to-existing-Expo-app path; static `app.json` and dynamic `app.config.js` or `.ts` resolved through `@expo/config`; `packages/expo-qnx-config-plugins` as the single source of native configuration with no hand-edited native files, and a second prebuild that changes nothing; Expo CLI owning Metro, logs and reload; a prebuilt development runner, versioned against SDP, Qt and React Native and verified against a published hash on download, for the QNX release board and macOS and Linux hosts; a custom development build and a standalone package; a native-module requirement check before JavaScript loads; autolinking of Expo and Nitro modules outside the checkout; a committed Expo SDK 58 support list generated from tests with a drift check; `apps/expo-router-example` running on device.
+- **Evidence kinds:** an end-to-end recording. On a clean host without the SDP: create an app, change name, icon and chrome layout only through Expo config, run it on device in the downloaded runner with Fast Refresh. Then with the SDP, build and launch the standalone package on device.
+- **Why pending:** the evidence array is empty; tagged to PR #115. `runner.mjs` states "No runner manifest is published yet" in its error text (`packages/react-native-qnx-cli/src/runner.mjs:565`), which bears on the prebuilt runner requirement. See [Expo setup](/docs/how-to/expo-setup) and [prebuilt runner](/docs/how-to/prebuilt-runner).
+
+### dependencies: Packages updated
+
+- **Passes when:** every `Bump` row in `docs/releases/v1-dependency-baseline.md` has landed, every `Hold` row has its reason in the compatibility matrix, `pnpm outdated -r` output is attached with each remaining item bumped or held with a recorded reason, `pnpm validate:dependencies`, `pnpm audit:dependencies`, typecheck, host suites and every required hosted workflow pass on the updated graph, and the README dependency table is regenerated.
+- **Evidence kinds:** `pnpm outdated -r` output, passing validation and audit runs, hosted workflow runs.
+- **Why pending:** the baseline, checked on 2026-11-11, has open Bump rows (for example expo, expo-modules-core, babel-preset-expo, expo-modules-autolinking, prettier, node-forge, pnpm, Node) and a Qt row marked Rebuild. See [compatibility](/docs/reference/compatibility).
+
+## Summary of pending reasons
+
+| Gate                                                    | Blocking item                                                     |
+| ------------------------------------------------------- | ----------------------------------------------------------------- |
+| `distribution`                                          | No release artifact built and recorded from public-source Qt      |
+| `ci`                                                    | No QNX cross-build workflow; no candidate-head run set            |
+| `cold-boot`                                             | No 20-boot series                                                 |
+| `device-parity`                                         | No stock Pi 4 QSTI receipts                                       |
+| `performance`                                           | Nothing measured on QNX                                           |
+| `developer-path`                                        | No recorded clean-host run; no published npm package              |
+| `documentation`                                         | Draft, not published at a versioned location                      |
+| `app-identity`, `window-chrome`, `expo`, `dependencies` | Empty evidence arrays; acceptance text not yet backed by receipts |
+
+For the underlying device evidence by component, see the [component matrix](/docs/reference/component-matrix), [status](/docs/reference/status) and [verification log](/docs/reference/verification-log).

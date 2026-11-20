@@ -1,0 +1,48 @@
+---
+title: Video and audio
+description: QtVideo is the only media component. This page covers its API, build switch and the Pi 400 receipts.
+---
+
+## Install
+
+Media playback is one opt-in renderer component, `QtVideo` (`native/qt/video`: `QtVideoItem.cpp`, `QtVideoItem.h`, `QnxVideo.qml`). No component named `QtAudio` exists: the only exports of `packages/react-native-qnx/qt/index.js` are `QtSvgDocument` and `QtVideo`, and a repository search for the name finds only documentation and the support table. The `QtAudio` row in the component matrix records audio output through `QtVideo`, as `docs/component-support.json` says in its notes. The gallery's Audio card is a zero-size `QtVideo` playing a bundled tone (`apps/component-gallery/media/AudioCard.js`).
+
+Not installable on QNX, per `docs/expo-delivery/sdk58-support.json` (a scan of published packages, not a device run): `expo-video` 58.0.14 and `expo-audio` 58.0.12, both "Native code for apple, android only; no qnx implementation". The same notes say `react-native-audio-api` has no QNX player or JSI installer, and the `react-native-video` 7 beta cannot load on the pinned Nitro v1.
+
+## Setup
+
+`RNQNX_ENABLE_QT_VIDEO` (default OFF, `cmake/RnqnxQtNative.cmake`) builds `rnqnx_qt_video`. `native/qt/video/CMakeLists.txt` needs Qt 6.11.1 or newer with the Multimedia component, on Linux, macOS or QNX targets. The QML compiles into the binary. The Qt Multimedia add-on is a separate artifact. On the Pi 400 it was a separate directory, `qt612-media`.
+
+Audio on the Pi 400 needs `io-snd` running. It was not running by default and was started as root with `io_snd.conf`. The output device is chosen by the `audioDevice` prop through `pickDevice` in `native/qt/video/QnxVideo.qml:58-74`: an id or description substring wins, empty picks a description containing `usb`, then the first id starting `plughw:`, then the default output. `onLoad` reports the chosen name. See [Qt tiers](/docs/reference/qt-tiers) and [licensing and packaging](/docs/explanation/licensing-and-packaging).
+
+## Supported API
+
+From `docs/component-support.json`:
+
+| Kind        | Items                                                                                                     |
+| ----------- | --------------------------------------------------------------------------------------------------------- |
+| Props       | `source`, `paused`, `muted`, `volume`, `rate`, `repeat`, `resizeMode`, `poster`, `controls`, `fullscreen` |
+| Events      | `onLoad`, `onProgress`, `onEnd`, `onError`, `onBuffer`, `onSeek`, `onFullscreen`                          |
+| Ref methods | `seek`, `play`, `pause`                                                                                   |
+
+`volume` is clamped to 0 to 1 and `rate` to 0.25 to 4 in `QtVideoItem.cpp:95-96`. `fullscreen` only recolors the control-bar button and `onFullscreen` reports a click on it; no code resizes the window for it (`QnxVideo.qml:234-239`, traced in [QtVideo](/docs/reference/components/qtvideo)). Decode is software through Qt Multimedia's FFmpeg backend. Frames go into the Qt Quick scene graph. Audio files play through Qt `AudioOutput` and the QNX `io-snd` backend. The matrix lists a JavaScript API subset for react-native-video that "has not run".
+
+## Not supported
+
+- Hardware decode: none.
+- HDMI audio: the Pi 400 image has no HDMI audio driver. Only the 3.5 mm jack (`bcm2711_pwm`) exists.
+- `expo-video`, `expo-audio`, `react-native-audio-api` and the `react-native-video` 7 beta (see Install).
+- Control-bar taps and fullscreen: not exercised on a device. Fullscreen is a flag and an event, with no window action behind it.
+- A separate audio component or audio-only API: none exists.
+- Whether audio is audible: not confirmed by ear.
+- Any use in the 2026-11-19 builds. They had QtVideo OFF, and the Video and Audio cards read "QtVideo is not in this build".
+
+## Evidence
+
+| Path                                                     | Shows                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/evidence/media-2026-11-13.md`                      | Pi 400, QNX 8.0, Qt `qt612-public-o2` plus media add-on, branch `feat/qt-video`, built with QNX SDP 8.0.5. A plain-Qt probe decoded a 480x270 H.264 and AAC clip (170 frames in 7.0 s from a file, 97 in 4.0 s over HTTP). A 3 s WAV played to the end. In a gallery copy with its own app id, `load`, `seek`, `end` and `error` events reached JavaScript, and `play`, `pause` and `seek(5)` worked through the ref. |
+| `docs/evidence/media/`                                   | Screenshots and `SHA256SUMS.txt` for that run.                                                                                                                                                                                                                                                                                                                                                                        |
+| `tests/native/qt-video` and `tests/js/qt-video.test.mjs` | Host tests named in the component matrix. Not run for this page.                                                                                                                                                                                                                                                                                                                                                      |
+
+The same receipt records an https clip (960x540, 5.06 s) that played 143 frames in 5.0 s after FFmpeg was rebuilt with OpenSSL 3. The receipt names the branch and does not give a commit SHA. The work was on a custom-image Pi 400. Missing: a run at the current head, a QtVideo run on 2026-11-19, a hardware audio check by ear, and any Pi 4 QSTI run.

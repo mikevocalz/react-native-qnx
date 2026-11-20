@@ -1,0 +1,83 @@
+## Props
+
+`VirtualizedList` is upstream JavaScript from `@react-native/virtualized-lists` (pinned through `react-native` 0.88.1 in `pnpm-lock.yaml`, where `@react-native/virtualized-lists@0.88.1` is a dependency). No QNX override exists in `packages/react-native-qnx/Libraries`, and no native component is registered for it in `vnext/src/runtime/QtReactHost.cpp`. It renders a `ScrollView`, which QNX mounts as a Qt Quick `Flickable`.
+
+Import path matters. React Native 0.88.1's own `index.js` exports `VirtualizedList` (line 174) and `VirtualizedSectionList` (line 177). The QNX opt-in public entry, `packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js`, does not: it exports `FlatList` and `SectionList` only, and its Proxy throws `React Native QNX public export "VirtualizedList" is not implemented in this experimental entry.` for any other name (`PublicAPI.js:170-185`; the list of exports is asserted in `tests/js/qnx-public-entry.test.mjs:27-72`). Projects made by `project create` and `add-qnx` set `withPublicEntry` in Metro (`packages/react-native-qnx-cli/src/create-project.mjs:188-192`, `add-qnx.mjs:63-65`), so for them `import { VirtualizedList } from 'react-native'` fails at runtime. The example below imports the component from `@react-native/virtualized-lists` for that reason.
+
+The generated notes give its host coverage as "covered transitively by the FlatList virtualization test". `FlatList` is a thin wrapper over `VirtualizedList` (`FlatList.js:683`), so that test runs `VirtualizedList` code. No test uses `VirtualizedList` directly.
+
+| Prop                                                            | Type     | Status                                   | Source-backed note                                                                          |
+| --------------------------------------------------------------- | -------- | ---------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `data`, `getItem`, `getItemCount`, `renderItem`, `keyExtractor` | various  | supported                                | Exercised through `FlatList` in the host test.                                              |
+| `initialNumToRender`, `windowSize`                              | number   | supported                                | Test used 4 and 1; the window followed the scroll and released cells.                       |
+| `onLayout`, `onContentSizeChange`, `onScroll`                   | function | supported                                | Delivered from the ScrollView layer.                                                        |
+| `onEndReached`, `onEndReachedThreshold`                         | various  | JavaScript, untested                     | Computed from scroll metrics that QNX supplies. See Events.                                 |
+| `onViewableItemsChanged`                                        | function | JavaScript, tested through `SectionList` | One host test asserts the callback runs. See Events.                                        |
+| `maxToRenderPerBatch`, `updateCellsBatchingPeriod`              | number   | JavaScript, untested                     | Drive `setTimeout` batching; timers are real `QTimer`s.                                     |
+| `getItemLayout`                                                 | function | JavaScript, untested                     | Replaces measured sizes; the test sizes cells from `onLayout`.                              |
+| `horizontal`, `inverted`                                        | boolean  | see below                                | `inverted` is dropped for vertical lists by the transform reader. `horizontal` is untested. |
+| `refreshing`, `onRefresh`                                       | various  | ignored                                  | Routed through a `RefreshControl` that `ScrollView` drops on QNX.                           |
+
+## Events
+
+The same three events as `FlatList` were asserted in the host test: `onScroll`, `onLayout` and `onContentSizeChange`. Their native sources are `QtScrollBridge` (contentX and contentY changes) and the layout events emitted by `ShadowViewMutationAdapter` when `props->onLayout` is set.
+
+`onEndReached`, `onViewableItemsChanged` and `onRefresh` are traced on the [FlatList](/docs/reference/components/flatlist) page: the first two need only `contentOffset`, `contentSize` and `layoutMeasurement` from the scroll event, which `connectScrollEvents` fills (`ShadowViewMutationAdapter.cpp:921-938`). `onViewableItemsChanged` ran in the SectionList test with one or more viewable items. `onEndReached` has no test anywhere in the repository. `onRefresh` never fires.
+
+## Platform behavior on QNX
+
+Windowing depends on three things the platform supplies. Scroll offsets come back from the Flickable. `onLayout` gives cell sizes and the viewport (the test saw a 100pt viewport and four 30pt cells). Timers are `QTimer`s, so the 50 ms default batching period is real wall-clock time (`docs/handoff/TEST_STATUS.md`, "FlatList virtualises"). The test measured that rendered rows follow the scroll position and that rows that left the window are removed from the tree.
+
+Because the list is JavaScript, its behavior on QNX is bounded by the ScrollView limits: `animated` is ignored by `scrollTo` and `scrollToEnd`, and `scrollEnabled`, `pagingEnabled`, scroll indicators, `bounces`, `contentInset` and `refreshControl` are verified as having no effect. See [ScrollView](/docs/reference/components/scrollview).
+
+## Unsupported or partial props
+
+- `inverted`: `VirtualizedList.js:2079-2085` uses `scaleY: -1` for vertical lists on every platform but Android and `scaleX: -1` for horizontal ones. The adapter reads only the x scale factor, so the vertical flip is dropped and the horizontal one mirrors both axes. Details and citations are on the [FlatList](/docs/reference/components/flatlist) page.
+- `CellRendererComponent`, `ListHeaderComponent` and `ListFooterComponent`: ordinary React elements rendered as cells; no native dependency. No test sets them.
+- `stickyHeaderIndices`: passed to the ScrollView, which implements it in JavaScript; unverified.
+- `horizontal`: read natively only by `scrollToEnd`.
+
+## Minimal example
+
+The QNX public entry has no `VirtualizedList` export, so the example takes it from the package that defines it. The app must list `@react-native/virtualized-lists` (0.88.1, the version the lockfile pins) as its own dependency. This import was not run on QNX.
+
+```tsx
+import React from 'react';
+import { Text, View } from 'react-native';
+import VirtualizedLists from '@react-native/virtualized-lists';
+
+const { VirtualizedList } = VirtualizedLists;
+
+type Row = { key: string; label: string };
+const getItem = (_data: unknown, index: number): Row => ({
+  key: String(index),
+  label: 'Item ' + index,
+});
+
+export default function App() {
+  return (
+    <VirtualizedList
+      style={{ flexShrink: 0, height: 240 }}
+      data={null}
+      initialNumToRender={6}
+      getItemCount={() => 500}
+      getItem={getItem}
+      keyExtractor={(item: Row) => item.key}
+      renderItem={({ item }: { item: Row }) => (
+        <View style={{ height: 30, justifyContent: 'center' }}>
+          <Text>{item.label}</Text>
+        </View>
+      )}
+    />
+  );
+}
+```
+
+## Known gaps
+
+- No direct test. The only evidence is the transitive FlatList host test, run on the offscreen Qt platform on 2026-08-14, and the SectionList test for `onViewableItemsChanged`.
+- No Pi 400 or Pi 4 QSTI receipt.
+- Scroll in the test was produced by writing `contentY`, so real touch or wheel scrolling of a virtualized list has no recorded run.
+- `VirtualizedList` is not reachable through the QNX public entry. Getting it requires the `@react-native/virtualized-lists` import path, which has no recorded run.
+
+Tracked in [issue 178](https://github.com/mikevocalz/react-native-qnx/issues/178).
