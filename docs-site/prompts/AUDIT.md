@@ -8,8 +8,10 @@ Verdicts: verified, wrong, unverifiable. "Stale" means true when written and fal
 
 | Scope                                            | Verified rows | Wrong | Stale | Misleading or incomplete        | Unverifiable |
 | ------------------------------------------------ | ------------- | ----- | ----- | ------------------------------- | ------------ |
-| docs-site content (35 files, README, REFERENCES) | 45            | 13    | 0     | 5 (two deferred, see Left open) | 2            |
+| docs-site content (35 files, README, REFERENCES) | 45            | 13    | 0     | 5 (two dismissed as intentional, see below) | 2            |
 | README, component-support, v1-readiness, docs/v1 | 51            | 10    | 2     | 2                               | 6            |
+
+The docs-site omits the Marathon packages and `--with-marathon` on purpose. The owner decided to keep the Marathon integration out of the root README and docs-site content, so the auditor's finding on this point (module-matrix package list, `cli.mdx` options) was dismissed and nothing was changed.
 
 A row groups related claims in one file section that share the same evidence, so the row counts are lower than the number of individual sentences checked. Wrong counts include items fixed in this pull request; the deferred and unfixed ones are listed under "Left open".
 
@@ -65,7 +67,6 @@ A row groups related claims in one file section that share the same evidence, so
 
 | Item                                                                                                                  | Reason                                                                                                                                                                     |
 | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| docs-site module-matrix omits the two Marathon packages; cli.mdx omits `--with-marathon`                              | The `docs/remove-marathon` branch is removing that word and those packages from the docs; editing here would conflict. Re-check after it merges                            |
 | `component-support.json` QtVideo `host: unverified` while the note cites host tests                                   | The host tests exist (`tests/native/qt-video`, `tests/js/qt-video.test.mjs`, CI ON leg), but no run of them is recorded. Needs a recorded run before the status can change |
 | README Status table under-claims Switch, ActivityIndicator, ScrollView, Image on Pi 400 (run 2 screenshots show them) | `unverified` means no claim either way, so it is not false. Raising it needs per-row evidence entries; not done in this pass                                               |
 
