@@ -1,0 +1,2198 @@
+---
+title: PR 149 on the Pi 400, run 2
+description: 'Thirty-seven captures from the second Pi 400 run: modal and drawer Escape, focus keys, animated GIF and WebP, Reanimated, Gesture Handler and SVG, with command logs.'
+---
+
+Build 2 of PR 149, run by hand over SSH with the full command log (`run.txt`) and a hash list of all 21 deployed files (`SHA256SUMS`, `pi-hash-verify.txt`). Each capture is a Screen `screenshot -file` bitmap converted to PNG.
+
+Limits stated in the receipt:
+
+- No pinch, rotation or multi-pointer gesture.
+- No gesture that keeps running while the JS thread is blocked. Run 1 printed `0 of 40 UI worklet jobs ran inside the busy window`, and this run did not repeat the worklets proof.
+- Display 1024x768, not 1920x1080.
+- Single key-down events only. A held key with repeat is on the [key hold page](/docs/gallery/pr149-key-hold).
+- The RemoteImageCard load times in the app log (154149 ms and 618203 ms) are unexplained.
+- Whether `onRequestClose` fired on the Modal Escape is unknown, because there is no log line.
+- Video and Audio are absent from this build.
+
+The held-down captures below are numbered in the receipt as held-down-0 to held-down-4. The receipt's table covers them as a range, and each caption here follows that range description.
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/stock-desktop-after.png"
+    alt="Stock QNX desktop after the app was stopped"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>stock-desktop-after.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Stock QNX desktop after the app was stopped.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/stock-desktop-after.png</code>, 730183
+        bytes, SHA-256 <code>7ae2a443e07561ff7f66528b6a02d38c682de4bcc77f9b0646f9a3c17fea11e6</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/stock-desktop-before.png"
+    alt="Stock QNX desktop before launch"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>stock-desktop-before.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Stock QNX desktop before launch.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/stock-desktop-before.png</code>, 106065
+        bytes, SHA-256 <code>314f099051ee5c394adeebea476a085af9af1a5948be5ccb529f2c965db80366</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/gallery-first-screen.png"
+    alt="Component gallery after launch on the Pi 400"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>gallery-first-screen.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Gallery after launch.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/gallery-first-screen.png</code>, 103473
+        bytes, SHA-256 <code>e1d6e847a77d552121fa60db2778694c3624995721b485355fc41f4c52a516d5</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/modal-open.png"
+    alt="Gallery Modal open"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>modal-open.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Modal open.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/modal-open.png</code>, 83156 bytes, SHA-256{' '}
+        <code>7004ec4e22e362e2d185ebeb821e78414696f908e98782a9b308067bb9e4b55a</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/modal-after-escape.png"
+    alt="Gallery after the Modal was closed with Escape"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>modal-after-escape.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>
+        Modal closed after key esc. No click was sent in between. The receipt notes the app log has
+        no line for the modal close, so this result rests on the screenshots.
+      </dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/modal-after-escape.png</code>, 82334 bytes,
+        SHA-256 <code>ffee0ce844533e1e95b6d337204ff2fcea2e1765f5f2ac772e12ca554dc73fc9</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/drawer-open.png"
+    alt="Gallery drawer open"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>drawer-open.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Drawer open.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/drawer-open.png</code>, 62073 bytes, SHA-256{' '}
+        <code>b6032e544ce43d276a44d92f87058e1f5ec8ebbc657a366dff3241f0e8404bbc</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/drawer-after-escape.png"
+    alt="Gallery after the drawer was closed with Escape"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>drawer-after-escape.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>
+        Drawer closed after key esc. The app log has no line for the drawer close, so this result
+        rests on the screenshots.
+      </dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/drawer-after-escape.png</code>, 82260 bytes,
+        SHA-256 <code>a7690e2c29746c43ddcc87ae56661768a351bd136027308a51b7075eb4e219bb</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/held-down-0-before.png"
+    alt="Gallery sidebar with no focus ring before the held down key test"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>held-down-0-before.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Focus ring on the sidebar tabs: none.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/held-down-0-before.png</code>, 106024 bytes,
+        SHA-256 <code>10e2c49a31ed94f4db6c5456c20c4115607b563d3e5e5c20fbcb1f4ec766c95a</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/held-down-1-after-2500ms.png"
+    alt="Gallery sidebar with the focus ring on Advanced after the 2.5 second down key"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>held-down-1-after-2500ms.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>
+        Focus ring on Advanced after keydown down, sleep 2500, keyup down. The receipt says this
+        sends one key-down and one key-up, so it cannot show OS key repeat.
+      </dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/held-down-1-after-2500ms.png</code>, 106818
+        bytes, SHA-256 <code>a10221989183e66cb9ab758522d67aff291db49f896c16da578110b66ac80237</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/held-down-2-after-4000ms.png"
+    alt="Gallery sidebar with the focus ring on Documents after the 4 second down key"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>held-down-2-after-4000ms.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Focus ring on Documents after the 4 s hold.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/held-down-2-after-4000ms.png</code>, 107238
+        bytes, SHA-256 <code>875a1e3731c22cb539a4c4cc5728ab079f49c24bba1da75bb809eb3260c0e508</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/held-down-3-after-three-key-down.png"
+    alt="Gallery sidebar with the focus ring on Components after three down key presses"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>held-down-3-after-three-key-down.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Focus ring on Components after three separate key down presses.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/held-down-3-after-three-key-down.png</code>,
+        106495 bytes, SHA-256{' '}
+        <code>b64cece9c739ce87628f70c9a1bef08a36d53ddc3915c3806aa28a5c098200d2</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/held-down-4-after-four-key-up.png"
+    alt="Gallery sidebar with the focus ring on Advanced after four up key presses"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>held-down-4-after-four-key-up.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>
+        Focus ring on Advanced after four key up presses, which fits a five-tab ring that wraps.
+      </dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/held-down-4-after-four-key-up.png</code>,
+        106818 bytes, SHA-256{' '}
+        <code>a10221989183e66cb9ab758522d67aff291db49f896c16da578110b66ac80237</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+      <dt>Duplicate</dt>
+      <dd>
+        Byte-identical to <code>held-down-1-after-2500ms.png</code>, shown above on this page.
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/expo-image-gif-frame-a.png"
+    alt="Expo Image animated GIF chip, first frame, yellow"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>expo-image-gif-frame-a.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Animated GIF chip: yellow frame, the first of three taken about 1 s apart.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/expo-image-gif-frame-a.png</code>, 240647
+        bytes, SHA-256 <code>ddde9c1db022f8882c0e68a7d86f707e47da99a3f9ddddc7071fcaafdc32ba7f</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/expo-image-gif-frame-b.png"
+    alt="Expo Image animated GIF chip, second frame, green"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>expo-image-gif-frame-b.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Animated GIF chip: green frame.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/expo-image-gif-frame-b.png</code>, 240629
+        bytes, SHA-256 <code>6c91eb83c899f292810e879cb467b1df91482791fa52517b9ebf229044cb5268</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/expo-image-gif-frame-c.png"
+    alt="Expo Image animated GIF chip, third frame, blue"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>expo-image-gif-frame-c.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Animated GIF chip: blue frame.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/expo-image-gif-frame-c.png</code>, 240639
+        bytes, SHA-256 <code>650e80408a911d1b673379a2ad52ba19e13b5b3c2382247ae3672093c0f3e64f</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/expo-image-webp-frame-a.png"
+    alt="Expo Image animated WebP chip, first frame, red with a white bar"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>expo-image-webp-frame-a.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Animated WebP chip: red with a white bar.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/expo-image-webp-frame-a.png</code>, 240665
+        bytes, SHA-256 <code>09fb8621b1cb3d8c8dcbf3f8749f969b6a44374b10e77fae7110d06288b6f264</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/expo-image-webp-frame-b.png"
+    alt="Expo Image animated WebP chip, second frame"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>expo-image-webp-frame-b.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Animated WebP chip, second capture.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/expo-image-webp-frame-b.png</code>, 240665
+        bytes, SHA-256 <code>09fb8621b1cb3d8c8dcbf3f8749f969b6a44374b10e77fae7110d06288b6f264</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+      <dt>Duplicate</dt>
+      <dd>
+        Byte-identical to <code>expo-image-webp-frame-a.png</code>, shown above on this page.
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/expo-image-webp-frame-c.png"
+    alt="Expo Image animated WebP chip, third frame, green with a white bar"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>expo-image-webp-frame-c.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Animated WebP chip: green with a white bar.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/expo-image-webp-frame-c.png</code>, 240715
+        bytes, SHA-256 <code>10683a6e1951639dc36a372d682724e906fffa7b2dd40a66145b0197ea94d88a</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/expo-image-resize-anim-a.png"
+    alt="Expo Image resize card with startAnimating, first frame, red"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>expo-image-resize-anim-a.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Expo Image resize card with startAnimating: red.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/expo-image-resize-anim-a.png</code>, 104336
+        bytes, SHA-256 <code>6de1c59260242fa4e36269b60d684ebf01ac767fa8e2c50afc206f8453806ffa</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/expo-image-resize-anim-b.png"
+    alt="Expo Image resize card with startAnimating, second frame, yellow"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>expo-image-resize-anim-b.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>The same card: yellow.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/expo-image-resize-anim-b.png</code>, 104404
+        bytes, SHA-256 <code>a3a6e1773af2a48bfba5aca3b5f78f4b69e79783659eabd3a63704a003ce3617</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/expo-image-resize-anim-c.png"
+    alt="Expo Image resize card with startAnimating, third frame, green"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>expo-image-resize-anim-c.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>The same card: green.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/expo-image-resize-anim-c.png</code>, 104474
+        bytes, SHA-256 <code>ecfc5afbdc91e6758b4b884f2658af07c3fd0d7e201a7276647ecb85641fd4b9</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/reanimated-spring-mid.png"
+    alt="Reanimated withSpring card with the box mid-travel"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>reanimated-spring-mid.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>withSpring: box mid-travel ("spring running").</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/reanimated-spring-mid.png</code>, 75516
+        bytes, SHA-256 <code>66cf34a6db62a6f74c954ff0adbf27992fd3f1480d89710148207e617769c194</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/reanimated-spring-end.png"
+    alt="Reanimated withSpring card at the end of the spring"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>reanimated-spring-end.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>withSpring: box and bar at the end ("spring finished").</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/reanimated-spring-end.png</code>, 75619
+        bytes, SHA-256 <code>27a0df83933c3b7cd70bbd2b175ae5fc9f35d9a378326f5d758ea55a7e6aa80d</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/reanimated-end-state.png"
+    alt="Reanimated card end state with the UI frame count"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>reanimated-end-state.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>
+        The end state with the UI frame count. The app log line reads reanimated UI frames: 27204,
+        shared x: 220.
+      </dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/reanimated-end-state.png</code>, 76208
+        bytes, SHA-256 <code>a25cd41e51fc6fc18dc64909883cc4c83d0ded57e3acbba6631742ff8eb1e753</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/gesture-pan-release.png"
+    alt="Gesture Handler card after a drag reading released at 266, 85"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>gesture-pan-release.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Gesture Handler card after a drag: "released at 266, 85, springing back".</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/gesture-pan-release.png</code>, 71669 bytes,
+        SHA-256 <code>26fa92f2abfa19e0114c9e68fd55a774117292cbc4b87218b2b447ec2d58ac62</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/gesture-double-tap.png"
+    alt="Gesture Handler card after a double click reading double tap"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>gesture-double-tap.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>Card after a double click: status "double tap".</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/gesture-double-tap.png</code>, 69031 bytes,
+        SHA-256 <code>cb917fce5a26d9c9c352804d8d6f25657a2457b6eac08ebbcc6bfa9d9cdabd3c</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/svg-image-card.png"
+    alt="react-native-svg card rendering image hrefs"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>svg-image-card.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>RNSVG card rendering image hrefs.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/svg-image-card.png</code>, 117954 bytes,
+        SHA-256 <code>1300cccb5b6c1356ce4825cb699d1b24f165d68ecdc83541f5a6b9b4b90dde69</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/svg-filters.png"
+    alt="react-native-svg card rendering filters"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>svg-filters.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>RNSVG card rendering filters.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/svg-filters.png</code>, 111197 bytes,
+        SHA-256 <code>c416c59ea1bd9137903e0fc73fe272dccc7c47cd332e54cf8b16f147e9182c18</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/svg-text-layout.png"
+    alt="react-native-svg card rendering text layout"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>svg-text-layout.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>RNSVG card rendering text layout.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/svg-text-layout.png</code>, 142056 bytes,
+        SHA-256 <code>912620d2e95fa4a7e7e307ec58bdfc1125c878df32728f59934d62e1d26f351a</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/svg-fill-rules.png"
+    alt="react-native-svg card rendering fill rules"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>svg-fill-rules.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>RNSVG card rendering fill rules.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/svg-fill-rules.png</code>, 117840 bytes,
+        SHA-256 <code>5664086e9760add5b8fdc289fa4d34437527ac5aee163a82f5db53bbf6c7fd54</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/svg-pattern-symbol-marker.png"
+    alt="react-native-svg card rendering patterns, symbols and markers"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>svg-pattern-symbol-marker.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>RNSVG card rendering patterns, symbols and markers.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/svg-pattern-symbol-marker.png</code>, 122288
+        bytes, SHA-256 <code>d36d3401489991bc68f53471a87781eab12ec959d1dd7b8c17e95d185490ea41</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/svg-text-and-touch.png"
+    alt="react-native-svg text and touch cards"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>svg-text-and-touch.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>
+        RNSVG text and touch cards. The receipt's table lists this file among the RNSVG card
+        captures without a separate caption.
+      </dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/svg-text-and-touch.png</code>, 120738 bytes,
+        SHA-256 <code>3ccc69db043d6021782d1adfcb36fce0c29254593ae908d2ac04f42bb473fb89</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/svg-gradients-clip.png"
+    alt="react-native-svg card rendering gradients and clips"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>svg-gradients-clip.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>RNSVG card rendering gradients and clips.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/svg-gradients-clip.png</code>, 128527 bytes,
+        SHA-256 <code>a04bc97eacdcf211e4ba577f4a741ce2217d70b80b808788eb966f4a6c14f36e</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/svg-touch-before.png"
+    alt="react-native-svg Touch targets and updates card with both counters at 0"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>svg-touch-before.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>"Touch targets and updates" card: counters 0 and 0.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/svg-touch-before.png</code>, 123033 bytes,
+        SHA-256 <code>029fec715055c0c951ab20a55b599f4afd7f8ea69da553e840f6a3eb93703d80</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/svg-touch-circle-pressed.png"
+    alt="react-native-svg Touch targets card after the circle was pressed"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>svg-touch-circle-pressed.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>The same card after a press: Circle 1.</dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/svg-touch-circle-pressed.png</code>, 122758
+        bytes, SHA-256 <code>b28d3f0d05e7c400e6313230e2b3e644d04774300a4d8ade44e27a8687ee3fb4</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/svg-touch-circle-group-pressed.png"
+    alt="react-native-svg Touch targets card after the circle and group were pressed"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>svg-touch-circle-group-pressed.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>
+        The same card: Circle 1 and Group 1. The receipt says this capture shows rotation 318 deg.
+      </dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/svg-touch-circle-group-pressed.png</code>,
+        123044 bytes, SHA-256{' '}
+        <code>fc4b1551cefe197793aa671e31c936642cb91904d8c27859595e2e3fc3b8a06a</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>
+
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-pi400-run2-2026-11-19/svg-video-card-qtvideo-absent.png"
+    alt="Video card reading QtVideo is not in this build"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+    <strong>svg-video-card-qtvideo-absent.png</strong>
+    <dl style={{ marginTop: '0.5rem' }}>
+      <dt>Shows</dt>
+      <dd>
+        Video card reading "QtVideo is not in this build". The Audio card says the same
+        (RNQNX_ENABLE_QT_VIDEO=OFF).
+      </dd>
+      <dt>Build</dt>
+      <dd>
+        PR 149 build 2, commit 240dc0814dd129e806e5228d1b70b9cc27dbd2d6, cross-built in qnx805-build
+        with ninja -j2 (723/723 steps, exit 0). Worklets, Reanimated, Gesture Handler, Qt SVG and
+        RNSVG ON. Executable SHA-256
+        315cb1c34a600b4d48810476c4acec5b87fcea21e02243efc1f549ee6a303143.
+      </dd>
+      <dt>Device</dt>
+      <dd>
+        Custom Raspberry Pi 400 QNX image (QNX 8.0.0 2026/06/05 RaspberryPi400 aarch64le), not a
+        stock Pi 4, user qnxuser. Run between 07:37 and 07:52 UTC on 2026-11-19.
+      </dd>
+      <dt>Resolution</dt>
+      <dd>1024 x 768 px (read with sips). Display 1024x768 (EDID unreadable, per the receipt).</dd>
+      <dt>Receipt</dt>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md">
+          pr149-pi400-run2-2026-11-19/README.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/build-receipt.md">
+          pr149-pi400-run2-2026-11-19/build-receipt.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS">
+          pr149-pi400-run2-2026-11-19/SHA256SUMS
+        </a>
+      </dd>
+      <dt>Image file</dt>
+      <dd>
+        <code>docs/evidence/pr149-pi400-run2-2026-11-19/svg-video-card-qtvideo-absent.png</code>,
+        112941 bytes, SHA-256{' '}
+        <code>69a4ad8804d7dc8ecbe4afcfe39d94b3dbe94f9637cbe87d239b33799cf9c55a</code>
+      </dd>
+      <dt>Added to the repository</dt>
+      <dd>
+        commit <code>22039ec</code>, 2026-11-19
+      </dd>
+    </dl>
+  </figcaption>
+</figure>

@@ -1,0 +1,15 @@
+{
+  "title": "Gallery",
+  "pages": [
+    "index",
+    "pi400-bring-up",
+    "dev-client",
+    "window-layout",
+    "media-and-images",
+    "webgpu",
+    "pr149-run1",
+    "pr149-run2",
+    "pr149-key-hold",
+    "pr149-svg-host-frames"
+  ]
+}

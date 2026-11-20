@@ -116,14 +116,15 @@ npm ci
 npm run dev
 ```
 
-| Script                  | Purpose                                                                                                                                                        |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run data`          | Regenerates the component matrix, release gates and ADR index pages. Needs full git history.                                                                   |
-| `npm run data:check`    | Fails if those pages differ from what `data` would write.                                                                                                      |
-| `npm run lint`          | ESLint.                                                                                                                                                        |
-| `npm run types:check`   | `next typegen` and `tsc --noEmit`.                                                                                                                             |
-| `npm run build`         | Static export to `out/`.                                                                                                                                       |
-| `npm run check:content` | Checks front matter, internal `/docs` links, banned terms, and that `llms.txt`, `llms-full.txt`, `SKILL.md`, the search index and `docs.html` exist in `out/`. |
+| Script                     | Purpose                                                                                                                                                        |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run data`             | Regenerates the component matrix, release gates, changelog and ADR index pages, and the native API reference. The first four need full git history.            |
+| `npm run data:check`       | Fails if those pages differ from what `data` would write.                                                                                                      |
+| `npm run api`, `api:check` | Only the native API reference under `reference/native-api/`, generated from the C++ headers and Nitro specs.                                                   |
+| `npm run lint`             | ESLint.                                                                                                                                                        |
+| `npm run types:check`      | `next typegen` and `tsc --noEmit`.                                                                                                                             |
+| `npm run build`            | Static export to `out/`.                                                                                                                                       |
+| `npm run check:content`    | Checks front matter, internal `/docs` links, banned terms, and that `llms.txt`, `llms-full.txt`, `SKILL.md`, the search index and `docs.html` exist in `out/`. |
 
 CI runs them in that order: `data:check`, `lint`, `types:check`, `build`, `check:content`.
 
@@ -139,3 +140,26 @@ Rules for a page:
 6. Give an external claim a URL.
 
 The site is not deployed from this repository. The files under `docs-site/public` and the generated `llms` routes are described in [For LLMs and agents](/docs/llms).
+
+## Snapshot the docs at a release tag
+
+Do this once per release tag, after the tag exists. It freezes the site as it reads at that tag and adds it to the version selector. The scheme behind it is on [Versioning and support](/docs/explanation/versioning-and-support#proposed-versioning-scheme).
+
+1. Check out the tag in a clean clone: `git clone --branch <tag> <repo> docs-<tag>`. A tag build needs full history for the generated pages, so do not use `--depth 1`.
+2. Build with the base path set:
+
+   ```bash
+   cd docs-<tag>/docs-site
+   npm ci
+   DOCS_BASE_PATH=<root>/v/<tag> npm run build
+   ```
+
+   `<root>` is the base path of the whole deploy, empty at a domain root and `/react-native-qnx` on GitHub project Pages. The export in `out/` links to itself under `<root>/v/<tag>/`, and its search index and images load from there. The version selector strips the `/v/<tag>` suffix to find `<root>` when it links to other copies.
+
+3. Publish `out/` so it is served at `<root>/v/<tag>/`. Publish it once and never rebuild it.
+4. On `main`, add `{ "tag": "<tag>" }` to `docs-site/versions.json`, run the full check sequence and open a pull request. The selector on `latest` then lists the tag.
+5. Delete the clone.
+
+A snapshot uses the data files and `versions.json` as they were at the tag, so its own selector lists only the snapshots that existed then, plus itself. The `latest` site is the one that lists every snapshot.
+
+Do not create a snapshot without a tag. The selector label for `latest` comes from the root `package.json` version, so bump that version in the release pull request.

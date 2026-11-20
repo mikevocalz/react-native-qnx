@@ -1,0 +1,60 @@
+---
+title: Samples gallery
+description: Every screenshot and animated image from the repository's evidence folder that is shown on this site, with what it shows, the build, the device, the resolution and the receipt it comes from.
+---
+
+This gallery shows real captures from `docs/evidence/`. Each one carries a caption block with five fields: what it shows, the build, the device, the resolution and the receipt. The captions repeat what the receipt says or what can be read off the image. When a receipt does not give a field, the caption says "not recorded in the receipt" or names the gap. Nothing here is stock imagery, and every image is copied unchanged.
+
+## Counts
+
+The evidence folder holds 170 image files: 162 PNG, 6 JPEG, 1 GIF and 1 WebP. It holds no BMP files and no video files, so no format conversion was needed. Every image is copied unchanged, with the same relative path, to `/evidence/` on this site.
+
+| Count                                | Images |
+| ------------------------------------ | ------ |
+| Image files found in `docs/evidence` | 170    |
+| Shown on these pages                 | 99     |
+| Not shown on these pages             | 71     |
+
+The 71 images that are not shown stay in the repository. They are left out of this build of the gallery and are not described here.
+
+The 99 shown images add about 11 MB to the site.
+
+## How to read a caption
+
+- **Shows** is the receipt's own description where the receipt gives one. Otherwise it is a plain description of what is visible, and the caption says so.
+- **Build** names the commit, branch, flags and artifact hashes the receipt records. Where the receipt names no commit, the caption says so. The "Added to the repository" row is the commit that first added the image file. It is not the build commit.
+- **Device** is the board or host the receipt names. A host run is never presented as a device run.
+- **Resolution** is the pixel size of the image file, read with `sips`, plus whatever the receipt says about the display or window size. The file size and the display size can differ, because some captures are crops or downscaled copies.
+- **Receipt** links to the file on GitHub. Receipts that are text logs sit next to the images in `docs/evidence`.
+
+Captures from the Pi 400 come from one custom BCM2711 QNX 8.0.5 image. No capture comes from a stock Pi 4. See the [verification log](/docs/reference/verification-log) and the [status page](/docs/reference/status) for what each result does and does not qualify.
+
+## Pages
+
+| Page                                                                           | Images | Covers                                                                                         |
+| ------------------------------------------------------------------------------ | ------ | ---------------------------------------------------------------------------------------------- |
+| [Pi 400 bring-up](/docs/gallery/pi400-bring-up)                                | 3      | Hello World at 640x480 and 1920x1080, input lifecycle capture                                  |
+| [Development client](/docs/gallery/dev-client)                                 | 6      | Fast Refresh, LogBox, developer menu and Metro-unreachable screen                              |
+| [Window sizes and layout](/docs/gallery/window-layout)                         | 10     | 586, 880 and 1280 pixel windows, live resizes, animated GIF and WebP, first Escape captures    |
+| [Media and image formats](/docs/gallery/media-and-images)                      | 4      | Qt Multimedia video, animated GIF and WebP test files                                          |
+| [WebGPU](/docs/gallery/webgpu)                                                 | 2      | Dawn test window on the Pi 400 desktop, Qt scene graph grab                                    |
+| [PR 149 on the Pi 400, run 1](/docs/gallery/pr149-run1)                        | 12     | Worklets, Reanimated, Gesture Handler on build 1                                               |
+| [PR 149 on the Pi 400, run 2](/docs/gallery/pr149-run2)                        | 37     | Modal and drawer Escape, focus keys, GIF and WebP, Reanimated, Gesture Handler, SVG on build 2 |
+| [Held key with repeat](/docs/gallery/pr149-key-hold)                           | 10     | Focus ring across the sidebar tabs with Screen key repeat events                               |
+| [PR 149 SVG native interest, host frames](/docs/gallery/pr149-svg-host-frames) | 15     | Linux host frames from the native SVG event interest fixture                                   |
+| Total                                                                          | 99     |                                                                                                |
+
+## Duplicates and animation
+
+Several files in one run are byte-identical to each other, for example the stock desktop captures and the SVG host frames. The caption of the later file says which file it duplicates. The one animated GIF and the one animated WebP are 64x48 test inputs. They are not device captures. Animated behaviour on the device is shown as separate still frames taken a moment apart.
+
+## No receipt found
+
+Two shown images are not named by any receipt. They are shown with a note rather than a guessed caption.
+
+| Image                                                     | What is known                                                                                                                                                                        |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `webgpu-qnx-2026-11-13/qt-compose-grab.png`               | No receipt names the file. The WebGPU page describes a Qt composition run on 2026-11-13 with a `grabWindow()` of the scene. The link between the two is an inference from the image. |
+| `pr149-pi400-keyhold-2026-11-19/gallery-first-screen.png` | Not named in the key hold README or its `SHA256SUMS`. Its bytes equal `after-key-tab.png`, which the README does name.                                                               |
+
+Images whose receipts exist but are thin are still shown with the thin fields stated. The [window sizes page](/docs/gallery/window-layout) is the main example: its receipt records no host, commit, bundle hash or commands.

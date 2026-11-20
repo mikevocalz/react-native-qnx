@@ -13,6 +13,7 @@
     "module-matrix",
     "modules",
     "nitro-api",
+    "native-api",
     "---Platform---",
     "requirements",
     "platform-detection",
