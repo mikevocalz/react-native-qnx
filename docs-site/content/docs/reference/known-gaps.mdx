@@ -25,13 +25,13 @@ A gap here is a fact about the repository today. Fixing one is feature work and 
 
 ## Components that accept calls and do nothing
 
-| Component              | Behavior                                                   |
-| ---------------------- | ---------------------------------------------------------- |
-| `KeyboardAvoidingView` | Renders children as a `View`. No keyboard module is wired. |
-| `RefreshControl`       | No-op.                                                     |
-| `StatusBar`            | Static calls have no effect. The target has no status bar. |
-| `Modal`                | `onShow`, `onRequestClose` and `onDismiss` are unwired.    |
-| `Text` inline views    | Attachments have zero size.                                |
+| Component              | Behavior                                                                   |
+| ---------------------- | -------------------------------------------------------------------------- |
+| `KeyboardAvoidingView` | Renders children as a `View`. No keyboard module is wired.                 |
+| `RefreshControl`       | No-op.                                                                     |
+| `StatusBar`            | Static calls have no effect. The target has no status bar.                 |
+| `Modal`                | `onShow` and `onDismiss` are unwired. `onRequestClose` is wired to Escape. |
+| `Text` inline views    | Attachments have zero size.                                                |
 
 ## Input and platform
 
