@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Probe
+Exec=sh /home/mikevocalz.guest/ms-evidence/launch-probe.sh
+Terminal=false
+StartupWMClass=org.rnqnx.marathon.probe

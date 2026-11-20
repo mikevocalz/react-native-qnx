@@ -499,6 +499,17 @@ foreach(rn_target IN LISTS RNQNX_REACT_NATIVE_RENDERER_TARGETS)
     # every other upstream diagnostic, including -Werror, enabled under QCC.
     target_compile_options(${rn_target} PRIVATE -Wno-unknown-pragmas)
   endif()
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU" AND
+     (rn_target_type STREQUAL "OBJECT_LIBRARY" OR
+      rn_target_type STREQUAL "STATIC_LIBRARY"))
+    # React Native 0.88 headers (core/ReactPrimitives.h,
+    # jsinspector-modern/ExecutionContext.h) use int32_t/int64_t with only
+    # <string> included. libstdc++ 15 (Alpine 3.24) no longer includes
+    # <cstdint> from <string>, so force it for every upstream RN target.
+    target_compile_options(${rn_target} PRIVATE
+      "$<$<COMPILE_LANGUAGE:CXX>:-include>"
+      "$<$<COMPILE_LANGUAGE:CXX>:cstdint>")
+  endif()
   if(rn_target_type STREQUAL "OBJECT_LIBRARY")
     target_sources(rnqnx_react_native_renderer INTERFACE
       $<TARGET_OBJECTS:${rn_target}>)

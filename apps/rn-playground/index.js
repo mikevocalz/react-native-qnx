@@ -30,6 +30,7 @@ const Switch = require('react-native/Libraries/Components/Switch/Switch').defaul
 const SafeAreaView = require('react-native/Libraries/Components/SafeAreaView/SafeAreaView').default;
 const Button = require('react-native/Libraries/Components/Button').default;
 const Modal = require('react-native/Libraries/Modal/Modal').default;
+const BackHandler = require('react-native/Libraries/Utilities/BackHandler').default;
 
 function PlaygroundApp() {
   return React.createElement(
@@ -503,7 +504,136 @@ function ImageApp() {
   });
 }
 
+/**
+ * Input and lifecycle probe for a run under a Wayland compositor. Each event
+ * prints one RNQNX_PROBE line (console.log reaches the host's stdout), so a
+ * driver outside the process can tell which input reached JavaScript:
+ * `--app-id org.rnqnx.marathon.probe --app-name Probe --component-name RNQnxInputProbe`.
+ */
+function InputProbeApp() {
+  const [taps, setTaps] = React.useState(0);
+  const [backs, setBacks] = React.useState(0);
+  const [scrollY, setScrollY] = React.useState(0);
+  const [text, setText] = React.useState('');
+  const backCount = React.useRef(0);
+  React.useEffect(() => {
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      backCount.current += 1;
+      const n = backCount.current;
+      // Odd presses are handled and repaint the whole window, which is how
+      // Marathon-Shell sees "handled" (a commit damaging a tenth of the
+      // window). Even presses return false and change nothing, so the shell
+      // treats them as unhandled and backs out of the app.
+      const handled = n % 2 === 1;
+      console.log('RNQNX_PROBE back n=' + n + ' handled=' + handled);
+      if (handled) setBacks(n);
+      return handled;
+    });
+    return () => subscription.remove();
+  }, []);
+  const rows = [];
+  for (let i = 0; i < 20; i += 1) {
+    rows.push(
+      React.createElement(
+        View,
+        {
+          key: 'row' + i,
+          collapsable: false,
+          style: {
+            height: 40,
+            backgroundColor: i % 2 ? '#335577' : '#224466',
+            justifyContent: 'center',
+          },
+        },
+        React.createElement(Text, { style: { color: 'white', fontSize: 16 } }, 'row ' + i)
+      )
+    );
+  }
+  return React.createElement(
+    View,
+    {
+      style: { flex: 1, backgroundColor: backs % 2 === 1 ? '#602060' : '#101820', padding: 12 },
+      collapsable: false,
+    },
+    React.createElement(
+      Text,
+      { style: { color: 'white', fontSize: 18 }, collapsable: false },
+      'taps ' + taps + ' back ' + backs + ' scrollY ' + Math.round(scrollY) + ' text [' + text + ']'
+    ),
+    React.createElement(
+      Pressable,
+      {
+        style: {
+          height: 56,
+          marginTop: 12,
+          backgroundColor: '#00aa66',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        collapsable: false,
+        onPress: () => {
+          setTaps((n) => {
+            console.log('RNQNX_PROBE tap n=' + (n + 1));
+            return n + 1;
+          });
+        },
+      },
+      React.createElement(Text, { style: { color: 'white', fontSize: 20 } }, 'Tap me')
+    ),
+    React.createElement(
+      Pressable,
+      {
+        style: {
+          height: 56,
+          marginTop: 12,
+          backgroundColor: '#aa3300',
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        collapsable: false,
+        onPress: () => {
+          console.log('RNQNX_PROBE exitApp');
+          BackHandler.exitApp();
+        },
+      },
+      React.createElement(Text, { style: { color: 'white', fontSize: 20 } }, 'exitApp')
+    ),
+    React.createElement(
+      ScrollView,
+      {
+        style: { height: 200, marginTop: 12, flexShrink: 0 },
+        collapsable: false,
+        scrollEventThrottle: 16,
+        onScroll: (event) => {
+          const y = event.nativeEvent.contentOffset.y;
+          setScrollY(y);
+          console.log('RNQNX_PROBE scroll y=' + Math.round(y));
+        },
+      },
+      rows
+    ),
+    React.createElement(TextInput, {
+      style: {
+        height: 44,
+        marginTop: 12,
+        fontSize: 18,
+        color: 'white',
+        backgroundColor: '#203040',
+      },
+      collapsable: false,
+      placeholder: 'type here',
+      placeholderTextColor: '#889',
+      onFocus: () => console.log('RNQNX_PROBE focus'),
+      onChangeText: (value) => {
+        console.log('RNQNX_PROBE text=' + value);
+        setText(value);
+      },
+    })
+  );
+}
+
 AppRegistry.registerComponent('RNQnxPlayground', () => PlaygroundApp);
+AppRegistry.registerComponent('RNQnxInputProbe', () => InputProbeApp);
 AppRegistry.registerComponent('RNQnxViewLayout', () => ViewLayoutApp);
 AppRegistry.registerComponent('RNQnxTransform', () => TransformApp);
 AppRegistry.registerComponent('RNQnxFlatList', () => FlatListApp);

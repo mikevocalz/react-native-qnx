@@ -5,7 +5,8 @@
  * and the host exposes no keyboard frame events to JavaScript, so this view
  * cannot compute an offset and does not pretend to. It renders a `View` and
  * forwards every view prop, including `ref`, `testID`, accessibility props and
- * `onLayout`. The avoidance props (`behavior`, `keyboardVerticalOffset`,
+ * `onLayout`. At Marathon-Shell `1f845160` the shell sends `ime_inset` 0 and
+ * has no other keyboard-height signal (docs/marathon/SHELL_CONTRACTS.md). The avoidance props (`behavior`, `keyboardVerticalOffset`,
  * `enabled`, `contentContainerStyle`) are consumed and have no effect.
  *
  * This file sits at the same path as React Native's own

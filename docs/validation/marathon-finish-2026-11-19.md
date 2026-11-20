@@ -28,7 +28,7 @@ None of the three workflows has a run on `main` itself, because each is path-fil
 
 ## QNX device evidence that exists
 
-Physical Pi 400 (custom QNX 8.0.0 image, cross-built with SDP 8.0.5): [pi400-host-validation-2026-11-07](../evidence/pi400-host-validation-2026-11-07.md), [pi400-nitro-qt-2026-11-07](../evidence/pi400-nitro-qt-2026-11-07.md), [pi400-public-qt-o2-2026-11-12-a79e16a](../evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md), [pr149-pi400-run1-2026-11-19](../evidence/pr149-pi400-run1-2026-11-19/README.md), plus run 2 and a key-hold run in the same directory family. Not run: stock Pi 4 QSTI board and QNX VM ([pi400-public-qt-2026-11-12-b51b49c](../evidence/pi400-public-qt-2026-11-12-b51b49c.md), line "Pi 400 only; no stock Pi 4 QSTI, QNX VM or Marathon run"). [qnx-target-runtime-doctor-2026-11-14](qnx-target-runtime-doctor-2026-11-14.md) is an offline diagnostic and states that no target collection was produced. None of this is Marathon evidence. No receipt anywhere in `docs/evidence` or `docs/validation` records a Wayland-compositor or MarathonOS run of `rnqnx_marathon_host`.
+Physical Pi 400 (custom QNX 8.0.0 image, cross-built with SDP 8.0.5): [pi400-host-validation-2026-11-07](../evidence/pi400-host-validation-2026-11-07.md), [pi400-nitro-qt-2026-11-07](../evidence/pi400-nitro-qt-2026-11-07.md), [pi400-public-qt-o2-2026-11-12-a79e16a](../evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md), [pr149-pi400-run1-2026-11-19](../evidence/pr149-pi400-run1-2026-11-19/README.md), plus run 2 and a key-hold run in the same directory family. Not run: stock Pi 4 QSTI board and QNX VM ([pi400-public-qt-2026-11-12-b51b49c](../evidence/pi400-public-qt-2026-11-12-b51b49c.md), line "Pi 400 only; no stock Pi 4 QSTI, QNX VM or Marathon run"). [qnx-target-runtime-doctor-2026-11-14](qnx-target-runtime-doctor-2026-11-14.md) is an offline diagnostic and states that no target collection was produced. None of this is Marathon evidence. When this ledger was written, no receipt in `docs/evidence` or `docs/validation` recorded a Wayland-compositor or MarathonOS run of `rnqnx_marathon_host`. The VM run of 2026-11-20 at the end of this file is the first compositor run; there is still no device run.
 
 ## Upstream state (read-only `gh` queries)
 
@@ -60,8 +60,27 @@ Physical Pi 400 (custom QNX 8.0.0 image, cross-built with SDP 8.0.5): [pi400-hos
 
 ## Open items needing owner or upstream
 
-The full list is in [ARCHITECTURE](../marathon/ARCHITECTURE.md#open-items-needing-owner-or-upstream). In short: a Wayland compositor run, a Marathon VM or device run, a device-toolchain build, an upstream decision on native-executable delivery, and lifecycle, back and IME behavior.
+The full list is in [ARCHITECTURE](../marathon/ARCHITECTURE.md#open-items-needing-owner-or-upstream). In short: a Marathon device run (a VM run was added on 2026-11-20, see the last section), a device-toolchain build, an upstream decision on native-executable delivery, and lifecycle, back and IME behavior.
 
 ## Runs on the marathon/finish PR
 
 [`marathon-qt-host` run 44646133204](https://github.com/mikevocalz/react-native-qnx/actions/runs/44646133204) (PR #170, success): the Marathon host links the Marathon Nitro adapter and the Qt dispatcher, prints `RNQNX_MARATHON_NITRO_OK platform=marathon architecture=x86_64 add=5` offscreen and under Wayland, `rnqnx_nitro_` ctest passes 2 of 2, and the Wayland log checker prints `PASS xdg_toplevel created with app_id org.rnqnx.marathon.playground, configured, buffer attach` against `weston --backend=headless`. This is a generic compositor, not a Marathon shell.
+
+## Run against the real Marathon-Shell in a VM, 2026-11-20
+
+This closes the "Wayland compositor run" item above for a VM. It is not a device run. Everything below, with scripts, logs and screenshots, is in [docs/evidence/marathon-vm-2026-11-20](../evidence/marathon-vm-2026-11-20/README.md).
+
+What ran, in a Lima VM (Alpine 3.24.4 aarch64, Qt 6.11.1, clang 22.1.3, software rendering):
+
+- Marathon-Shell `1f845160f0c249cb29da127fb66abaad380b5438` built from source with no local patch and started. `wayland-info` lists `xdg_wm_base` v1 and 19 other globals.
+- `rnqnx_marathon_host` built against musl and run as its client. The Wayland log checker prints `PASS xdg_toplevel created with app_id org.rnqnx.marathon.playground, configured, buffer attached and committed`. The shell configured the toplevel to 390 x 785.
+- The shell launched the host from a `.desktop` entry and showed its window. A pointer press, a drag scroll and typed text reached JavaScript. Back arrived as XF86Back and ran a handler (handled and unhandled), a relaunch restored the window, and `BackHandler.exitApp()` ended the process.
+- `ctest -R '^rnqnx_(nitro|marathon)_'` passed 4 of 4 in the VM.
+
+What did not run: touch events, mouse wheel (no scroll reached JavaScript, cause not found), the shell's back gesture, text-input enable and commit, keyboard inset, cgroup freeze, any device, GPU rendering, performance. Details and reasons are in the evidence README.
+
+What the run found and fixed: on musl the main thread's stack is reported as its mapped part, so Hermes cached about 132 KiB and JavaScript calls from the event loop failed with `Maximum call stack size exceeded`; the Marathon host did not enable `RNQNX_ENABLE_INPUT_LIFECYCLE`, so presses never reached `Pressable`; React Native 0.88 headers needed `<cstdint>` with libstdc++ 15; Hermes needed `HAVE_LSEEK64` off on musl; the Wayland log checker did not match libwayland 1.24's `#` separator.
+
+Bridges: `BackHandler` is now wired to the shell's XF86Back and to exit, with C++ and JavaScript tests. `Linking`, `StatusBar` and `KeyboardAvoidingView` stay tested stubs because the shell has no contract for them, which [SHELL_CONTRACTS](../marathon/SHELL_CONTRACTS.md) documents with source citations.
+
+Open items after this run: gate 7 (device), touch, wheel, the back gesture, text-input and keyboard inset, and the 96-byte LeakSanitizer report at exit inside `libwayland-client`.

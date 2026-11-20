@@ -1,0 +1,38 @@
+No such plugin for spec "marathontouch"
+qt.qml.context: qrc:/react-native-qnx/TextInput.qml:86:5 Parameter "event" is not declared. Injection of parameters into signal handlers is deprecated. Use JavaScript functions with formal parameters instead.
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+W1120 02:29:48.549217 3081089096 Scheduler.cpp:181] Scheduler::~Scheduler() was called (address: 0xfd2fa5244b90).
+W1120 02:29:48.550863 2659689240 UIManagerBinding.cpp:66] UIManagerBinding::~UIManagerBinding() was called (address: 0xfd1fa524bd50).
+W1120 02:29:48.550894 2659689240 UIManager.cpp:57] UIManager::~UIManager() was called (address: 0xfd3fa5245050).
+
+=================================================================
+==1818==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 96 byte(s) in 1 object(s) allocated from:
+    #0 0xaaaae318bfb8  (/home/mikevocalz.guest/rnq-build/host/bin/rnqnx_marathon_host+0x13bfb8) (BuildId: f783a200e4b03c300e4d800326ca29bc3d8223f9)
+    #1 0xffffb0db38f4  (/usr/lib/libwayland-client.so.0+0x58f4) (BuildId: 38ef0fe11bcc2b54ebc28ef8fd9779f29dc5379e)
+    #2 0xffffb0db3d18  (/usr/lib/libwayland-client.so.0+0x5d18) (BuildId: 38ef0fe11bcc2b54ebc28ef8fd9779f29dc5379e)
+    #3 0xffffb0db474c  (/usr/lib/libwayland-client.so.0+0x674c) (BuildId: 38ef0fe11bcc2b54ebc28ef8fd9779f29dc5379e)
+    #4 0xfbffa3bebfd8  (/usr/lib/qt6/plugins/platforms/../../..//libQt6WaylandClient.so.6+0xc9fd8) (BuildId: 400c19364d13857e9b53803f175e646480e3ff37)
+    #5 0xfbffa3ba0fd8  (/usr/lib/qt6/plugins/platforms/../../..//libQt6WaylandClient.so.6+0x7efd8) (BuildId: 400c19364d13857e9b53803f175e646480e3ff37)
+    #6 0xfbffa3baaf70  (/usr/lib/qt6/plugins/platforms/../../..//libQt6WaylandClient.so.6+0x88f70) (BuildId: 400c19364d13857e9b53803f175e646480e3ff37)
+    #7 0xfbffa3bdf110  (/usr/lib/qt6/plugins/platforms/../../..//libQt6WaylandClient.so.6+0xbd110) (BuildId: 400c19364d13857e9b53803f175e646480e3ff37)
+    #8 0xffffa5f81e30  (/usr/lib/libffi.so.8+0x5e30) (BuildId: ecdca1e7c361a296a83db8859453bb11d40d6366)
+    #9 0xffffa5f813f8  (/usr/lib/libffi.so.8+0x53f8) (BuildId: ecdca1e7c361a296a83db8859453bb11d40d6366)
+    #10 0xffffb0db2bf8  (/usr/lib/libwayland-client.so.0+0x4bf8) (BuildId: 38ef0fe11bcc2b54ebc28ef8fd9779f29dc5379e)
+    #11 0xffffb0db31d4  (/usr/lib/libwayland-client.so.0+0x51d4) (BuildId: 38ef0fe11bcc2b54ebc28ef8fd9779f29dc5379e)
+    #12 0xffffb0db355c  (/usr/lib/libwayland-client.so.0+0x555c) (BuildId: 38ef0fe11bcc2b54ebc28ef8fd9779f29dc5379e)
+    #13 0xffffb0db5c8c  (/usr/lib/libwayland-client.so.0+0x7c8c) (BuildId: 38ef0fe11bcc2b54ebc28ef8fd9779f29dc5379e)
+    #14 0xffffb0db5cfc  (/usr/lib/libwayland-client.so.0+0x7cfc) (BuildId: 38ef0fe11bcc2b54ebc28ef8fd9779f29dc5379e)
+    #15 0xffffb0db5e18  (/usr/lib/libwayland-client.so.0+0x7e18) (BuildId: 38ef0fe11bcc2b54ebc28ef8fd9779f29dc5379e)
+    #16 0xfbffa3ba6274  (/usr/lib/qt6/plugins/platforms/../../..//libQt6WaylandClient.so.6+0x84274) (BuildId: 400c19364d13857e9b53803f175e646480e3ff37)
+    #17 0xfbffa521f5e8  (/usr/lib/qt6/plugins/platforms/libqwayland.so+0x15e8) (BuildId: e3beb30d9979c4892055a293343b62980b0cb0f5)
+    #18 0xffffb63bbc80  (/usr/lib/libQt6Gui.so.6+0x1bbc80) (BuildId: 4a1359885642bf4db36c95fa27b068632358c45a)
+    #19 0xffffb63bce20  (/usr/lib/libQt6Gui.so.6+0x1bce20) (BuildId: 4a1359885642bf4db36c95fa27b068632358c45a)
+    #20 0xffffb4973290  (/usr/lib/libQt6Core.so.6+0x173290) (BuildId: 138c64327c1206c9f5179b2c48d2ce50495622da)
+    #21 0xffffb63bcf40  (/usr/lib/libQt6Gui.so.6+0x1bcf40) (BuildId: 4a1359885642bf4db36c95fa27b068632358c45a)
+    #22 0xffffb63b7888  (/usr/lib/libQt6Gui.so.6+0x1b7888) (BuildId: 4a1359885642bf4db36c95fa27b068632358c45a)
+    #23 0xaaaae375b908  (/home/mikevocalz.guest/rnq-build/host/bin/rnqnx_marathon_host+0x70b908) (BuildId: f783a200e4b03c300e4d800326ca29bc3d8223f9)
+    #24 0xffffb79c5df4  (/lib/ld-musl-aarch64.so.1+0x1fdf4) (BuildId: a2407ccede8e47850e8ee6af52d0f8cc2effa2e0)
+
+SUMMARY: AddressSanitizer: 96 byte(s) leaked in 1 allocation(s).

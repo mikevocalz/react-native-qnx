@@ -1,0 +1,19 @@
+# Marathon-Shell compositor evidence (Fri Nov 20 01:54:23 EST 2026)
+PID=27286
+XDG_RUNTIME_DIR=/tmp/xdg
+WAYLAND_DISPLAY=marathon-wayland-0
+SOCKET=/tmp/xdg/marathon-wayland-0
+DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/xdg/bus (dbus-daemon pid 27285)
+QT_QPA_PLATFORM=offscreen
+QT_QUICK_BACKEND=software
+QML_IMPORT_PATH=$HOME/ms-keel/qml:$HOME/Marathon-Shell/marathon-silica
+BINARY=/home/mikevocalz.guest/ms-build/shell/marathon-shell-bin
+ARGS=--skip-lock
+COMMIT=1f845160f0c249cb29da127fb66abaad380b5438
+MARATHON_VERSION=1.0.0 (CMake PROJECT_VERSION, shell/CMakeLists.txt:65 MARATHON_VERSION define)
+SCREENSHOT: kill -USR1 $(cat ~/ms-evidence/marathon.pid) -> $MARATHON_SCREENSHOT_PATH=/home/mikevocalz.guest/ms-evidence/marathon-shot.png
+RESTART: sh ~/ms-evidence/start-marathon.sh (kills only pids in marathon.pid/dbus.pid)
+CLIENT: XDG_RUNTIME_DIR=/tmp/xdg WAYLAND_DISPLAY=marathon-wayland-0 DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/xdg/bus <client>
+NOTE: ~/.config/marathon-os/Marathon Shell.conf system/firstRunComplete set true (OOBE skipped)
+
+27286 /home/mikevocalz.guest/ms-build/shell/marathon-shell-bin

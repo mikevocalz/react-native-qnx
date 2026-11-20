@@ -55,6 +55,11 @@
 #endif
 #endif
 
+#ifdef RNQNX_MARATHON_HOST
+#include "MainThreadStack.hpp"
+#include "MarathonBackKey.hpp"
+#endif
+
 #ifdef RNQNX_MARATHON_NITRO
 #include "MarathonNitroProof.hpp"
 #include "MarathonNitroRuntime.hpp"
@@ -323,6 +328,11 @@ constexpr int kWindowHeight = 480;
 }  // namespace
 
 int main(int argc, char** argv) {
+#ifdef RNQNX_MARATHON_HOST
+  // Before anything starts Hermes: it caches the main thread's stack bounds on
+  // first use, and musl reports only the part of the stack mapped so far.
+  rnqnx::platform::growMainThreadStackToLimit();
+#endif
 #if RNQNX_ENABLE_WINDOW_CHROME
   // A desktop app with an initial size opens as a normal window. On QNX the
   // qnx plugin keeps its default full-screen root window: fullscreen-winmgr
@@ -951,6 +961,23 @@ int main(int argc, char** argv) {
   host.installComponentProvider();
   host.installPlatformConstants();
   host.installTimers();
+#ifdef RNQNX_MARATHON_HOST
+  {
+    // BackHandler.exitApp: the shell treats a client that leaves as closed
+    // (docs/NATIVE_APP_LIFECYCLE.md). Quit through the event loop, not from
+    // inside the JS call.
+    auto& rt = host.runtime();
+    rt.global().setProperty(rt, "__rnqnxMarathonExitApp",
+        facebook::jsi::Function::createFromHostFunction(rt,
+            facebook::jsi::PropNameID::forAscii(rt, "__rnqnxMarathonExitApp"), 0,
+            [](facebook::jsi::Runtime&, const facebook::jsi::Value&,
+               const facebook::jsi::Value*, size_t) {
+              QMetaObject::invokeMethod(QCoreApplication::instance(), &QCoreApplication::quit,
+                  Qt::QueuedConnection);
+              return facebook::jsi::Value::undefined();
+            }));
+  }
+#endif
 
   const bool evaluated = host.evaluate(bundle.toStdString(), bundlePath.toStdString());
   const auto bundleFailure = applicationFailure();
@@ -1137,6 +1164,23 @@ int main(int argc, char** argv) {
     host.runtime().drainMicrotasks();
   });
   drainTimer.start(16);
+
+#ifdef RNQNX_MARATHON_HOST
+  // Marathon-Shell sends Back as XF86Back. JavaScript gets it as the
+  // `hardwareBackPress` device event that React Native's BackHandler reads on
+  // Android; the Marathon BackHandler override subscribes to it.
+  rnqnx::marathon::BackKeyFilter backKey([&host]() {
+    std::printf("RNQNX_MARATHON_BACK_KEY\n");
+    std::fflush(stdout);
+    static constexpr const char* kEmit =
+        "(function(){var e=globalThis.__rctDeviceEventEmitter;"
+        "if(e&&e.emit)e.emit('hardwareBackPress');})();";
+    if (!host.evaluate(kEmit, "marathon-back-key.js")) {
+      std::fprintf(stderr, "RNQNX_MARATHON_BACK_FAILED %s\n", host.lastError().toUtf8().constData());
+    }
+  });
+  window.installEventFilter(&backKey);
+#endif
 
 #if RNQNX_ENABLE_DEV_SUPPORT
   // A quit that arrived while the host was starting has no loop to leave yet.
