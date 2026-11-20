@@ -1,40 +1,167 @@
 ---
 title: First device run
-description: What you need to run a React Native QNX app on a Raspberry Pi 400, and which repository guides cover each step.
+description: Take an app from source to a window on a Raspberry Pi 400 running QNX 8.0.5, with the exact build, deploy and launch commands from the repository guides and the evidence behind each one.
 ---
 
-This page does not repeat the device runbooks. It tells you what a Pi 400 run requires and where each step is documented. No step on this page was re-run for these docs. The receipts linked from each guide record when it last ran.
+By the end you will have the component gallery, or your own app, running as a window on the QNX desktop of a Raspberry Pi 400. This tutorial walks the path in order and states what each step needs. It does not repeat the full device runbooks. They stay in the repository and are linked at each step.
+
+<Callout type="warn">
+  Not run in this docs pass: every command on this page that talks to a board or needs a QNX SDP.
+  Only `pnpm qnx doctor` and the `--dry-run` forms ran, on a Mac. The device steps come from
+  repository guides and the receipts they cite. The receipt dates are given where a step has one.
+</Callout>
 
 ## The target
 
-The only board with device results is a Raspberry Pi 400 with a custom BCM2711 image of QNX 8.0.5, adapted from the Raspberry Pi 4 custom target image. It is not a stock Pi 4. Stock Pi 4 and Pi 5 QSTI have a separate guide and no runtime results yet.
+The only board with device results is a Raspberry Pi 400 with a custom BCM2711 image of QNX 8.0.5, adapted from the Raspberry Pi 4 custom target image. It reports `QNX qnxpi 8.0.0 2026/06/05-16:21:14EDT RaspberryPi400 aarch64le`. It is not a stock Pi 4. Stock Pi 4 and Pi 5 QSTI images have a [separate guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-today.md) and no runtime results.
 
-## What you need
+The best recorded run is [PR 149 run 2](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md) on 2026-11-19. It ran the component gallery at 1024x768, with Qt 6.12.0 built from public source, over SSH.
 
-| Need                           | Notes                                                                                                                                                           |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| QNX SDP 8.0.5                  | Licensed, installed on an x86-64 host. Official hosts are Windows 11, Ubuntu 22.04 or 24.04, and RHEL 9. There is no macOS or ARM host.                         |
-| A Pi 400 with the custom image | Built from QNX's Pi 4 image sources. See the [Pi 400 guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-400.md). |
-| Qt for QNX                     | Public-source Qt 6.12.0, built by [`scripts/qt-public/`](https://github.com/mikevocalz/react-native-qnx/tree/main/scripts/qt-public).                           |
-| Hermes for QNX                 | Built by `pnpm hermes:qnx:prepare` and `pnpm hermes:qnx:configure`.                                                                                             |
+![The component gallery in a QNX window on the Pi 400 desktop, with a sidebar of Components, Advanced, Documents, Controls and More tabs.](/evidence/pi400-gallery-first-screen.png)
 
-## Check the host
+That screenshot is from the run 2 receipt. It is what step 7 should leave you with, at the size of your display.
+
+## Prerequisites
+
+| Need           | Version                        | Notes                                                                                                                        |
+| -------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Build host     | x86-64 Ubuntu 22.04            | Also supported by the SDP: Ubuntu 24.04, RHEL 9, Windows 11. No macOS and no ARM host.                                       |
+| QNX SDP        | 8.0.5                          | Licensed, installed by you. The repository never ships it.                                                                   |
+| Node, pnpm     | 26 or newer, 12.18.0           | On the build host.                                                                                                           |
+| CMake, Ninja   | 3.31.9 or newer, 1.11 or newer | `pnpm qnx doctor` checks both.                                                                                               |
+| Qt for QNX     | 6.12.0                         | Public-source build from [`scripts/qt-public/`](https://github.com/mikevocalz/react-native-qnx/tree/main/scripts/qt-public). |
+| Hermes for QNX | `hermes-v260318099.0.5`        | Built by `pnpm hermes:qnx:prepare` and `pnpm hermes:qnx:configure`.                                                          |
+| The board      | Pi 400, custom image           | Reachable over SSH as `qnxuser`. The recorded runs used a USB Ethernet link, board `192.168.2.2`.                            |
+
+A Mac is a fine place to edit and run the host render from the [quick start](/docs/tutorials/quick-start). QNX builds run on the Ubuntu host. The repository's own Mac setup does that inside a Colima container named `qnx805-build`. See [cross-build](/docs/how-to/cross-build).
+
+## 1. Check the host
 
 ```bash
 pnpm qnx doctor
 ```
 
-On a Mac without the SDP this exits with code 1. That is the expected result. The first failure reads `The QNX SDP environment is not loaded (QNX_HOST and QNX_TARGET are unset).` and its `Fix:` line says to source `qnxsdp-env.sh` and rerun. Every failed check prints a `Fix:` line.
+On a Mac without the SDP this exits with code 1. That is the expected result, and it was run for this page. The output ends:
 
-## The path
+```text
+[2/8] QNX SDP
+  ERROR: The QNX SDP environment is not loaded (QNX_HOST and QNX_TARGET are unset).
+    Fix: source <qnx-installation>/qnxsdp-env.sh in this shell, then rerun pnpm qnx doctor (see docs/getting-started/build-and-deploy.md)
+...
+Environment has 1 error(s) and 2 warning(s).
+```
 
-1. [Pi 400 setup](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-400.md): image, boot, network.
-2. [Runtime bring-up](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-hello-world.md): build and run the React Native runtime.
-3. [Run an app on the desktop](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md): build, deploy and launch a windowed app.
-4. [Debugging](/docs/how-to/debugging): Metro and Fast Refresh from your computer.
+The two warnings say the host is Darwin and arm64, so `qcc` cannot run. On the Ubuntu build host, source the SDP and run it again:
 
-Nothing starts at boot. Launch apps by hand.
+```bash
+source <qnx-installation>/qnxsdp-env.sh
+pnpm qnx doctor
+```
 
-## What was seen
+What you should see: no `ERROR` lines. Every failed check prints a `Fix:` line. Resolve every error before you configure anything.
 
-The [status page](/docs/reference/status) lists what ran on the board and what did not.
+## 2. Prepare the board
+
+Follow the [Pi 400 guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-400.md) for the image, boot and network. Then check the input and GPU nodes on the board:
+
+```sh
+ls -l /dev/io-hid/io-hid /dev/drm/card0 /dev/drm/renderD128
+id
+```
+
+What you should see: all three nodes exist and `id` lists group `36(screen)`. Without group 36 on the DRM nodes an app exits 134 with `QQnxIntegration: failed to initialize EGL display, err=12289`.
+
+## 3. Build the runtime
+
+[Runtime bring-up](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-hello-world.md) builds Hermes and Qt for QNX and runs a Hello World. It is the longest step. Its last receipt is the 2026-11-07 Hello World, 640x480.
+
+## 4. Build your app
+
+From [Run a React Native app on the Pi 400 desktop](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md), on the build host with the SDP sourced:
+
+```bash
+pnpm install --frozen-lockfile
+
+# JavaScript: Metro bundle, then Hermes bytecode from the pinned compiler.
+node packages/react-native-qnx-cli/src/bin.mjs bundle-qnx \
+  --app component-gallery --out build/gallery/app.bundle.js
+"$HERMESC" -O -emit-binary -out apps/component-gallery/build/qnx/app.hbc \
+  build/gallery/app.bundle.js
+
+# App identity, icon set and window settings.
+cmake -S native/app-identity -B build/identity -G Ninja -DRNQNX_BUILD_IDENTITY_TOOL=ON
+cmake --build build/identity
+node packages/react-native-qnx-cli/src/bin.mjs project prepare-native \
+  --project apps/component-gallery --platform qnx --bundle build/qnx/app.hbc \
+  --identity-tool build/identity/rnqnx_identity_tool
+
+# The native host, with the title bar compiled in.
+pnpm qnx project build-native --project apps/component-gallery --window-chrome
+```
+
+`$HERMESC` is the `hermesc` from the pinned `hermes-compiler@260318099.0.5` package. The bytecode must come from the same Hermes version as `libhermesvmlean.so` on the board. The `hermesc` that the host build makes in `build/playground/bin/` is the same Hermes source, and it compiled a 724 KB sample bundle to 1 MB of bytecode, which the host renderer then loaded and drew, on a Mac with exit 0. That is a host check only.
+
+What you should see: an executable named after the app id, `app.bundle.js` and `icons/` under `apps/component-gallery/build/qnx/native/consumer/qnx/org.rnqnx.showcase/`.
+
+## 5. Deploy
+
+Copy the build into a new directory next to the one that runs now, and switch the launcher only after the new build works:
+
+```sh
+# on the board, as qnxuser
+mkdir -p /data/home/qnxuser/rnqnx-chrome-app-next/assets/assets
+```
+
+Copy into it the executable, `app.bundle.js`, `icons/`, `libhermesvmlean.so`, and the bundled assets from `node scripts/stage-gallery-assets.mjs --out <dir>`. Check the directory first with `--check <dir>`. [Deploy over ssh](/docs/how-to/deploy-over-ssh) lists the exact scripts.
+
+To see what the CLI would run without touching a board:
+
+```bash
+pnpm qnx deploy-qnx --arch aarch64 --config Release --target rnqnx_playground --dry-run
+```
+
+This printed JSON naming `scripts/deploy-qnx.sh` with the arguments `aarch64`, `rnqnx_playground`, `Release`. That target is the Screen probe, not the React Native runtime.
+
+## 6. Launch
+
+The launcher sets a self-contained environment. The test board's `/data/home/qnxuser/run-chrome-app.sh` exports the library path, `QT_QPA_PLATFORM=qnx:no-fullscreen` and the plugin paths, then runs the executable. Run it from a terminal on the desktop or over SSH. Over SSH the window still opens on the board's display.
+
+```sh
+cd /data/home/qnxuser/rnqnx-pr149-2 && sh ./run-app.sh
+```
+
+Nothing starts at boot. Launch apps by hand. To stop the app: `sh ./run-app.sh --stop-running`.
+
+## 7. What you should see
+
+A window on the QNX desktop with a title bar, a drawer button and a sidebar of five tabs. That is the screenshot at the top. On the 2026-11-19 run the display was 1024x768, because the monitor's EDID was unreadable. [Troubleshoot display modes](/docs/how-to/display-modes) covers that.
+
+Run 2 also recorded, by screenshot and app log, a Reanimated spring that finished, a Gesture Handler drag and double tap, Qt SVG cards, an animated GIF and WebP, and a Modal and drawer that closed on the Escape key. The [status page](/docs/reference/status) separates what ran from what did not.
+
+## Common errors
+
+| What you see                                         | Cause and fix                                                                                                                                                                                |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `The QNX SDP environment is not loaded`              | Source `qnxsdp-env.sh` in the same shell, then rerun `pnpm qnx doctor`.                                                                                                                      |
+| `qcc` unavailable on macOS even with the SDP sourced | `QNX_HOST` selects Windows host tools. The error is correct. Build on x86-64 Ubuntu.                                                                                                         |
+| Black window or black screen                         | Both plugin paths must point at the patched plugin in `glfix`. If it is missing, use the software fallback `QT_QUICK_BACKEND=software`, which is slower and returns no `--screenshot` image. |
+| Exit 134 with `failed to initialize EGL display`     | The DRM nodes are `root:root 0660`. Add the `chgrp 36` and `chmod 0660` lines from the Pi 400 guide to `full_startup.sh`.                                                                    |
+| A second app window appears                          | Launch through `run-app.sh`. It looks for the app's process with `pidin` first, and `--replace` quits the running copy.                                                                      |
+| No mouse                                             | Check `/dev/io-hid/io-hid` and group 36.                                                                                                                                                     |
+
+## Next steps
+
+<Cards>
+  <Card title="Deploy over ssh" href="/docs/how-to/deploy-over-ssh">
+    The scripts behind steps 5 and 6.
+  </Card>
+  <Card title="Debug and iterate" href="/docs/how-to/debugging">
+    Metro and Fast Refresh from your computer.
+  </Card>
+  <Card title="Windows and chrome" href="/docs/tutorials/windows-and-chrome">
+    The title bar you see in the screenshot.
+  </Card>
+  <Card title="Ship a release build" href="/docs/tutorials/ship-a-release-build">
+    What a release build does and does not prove.
+  </Card>
+</Cards>

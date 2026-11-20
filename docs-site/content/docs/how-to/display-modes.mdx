@@ -1,0 +1,75 @@
+---
+title: Troubleshoot display modes
+description: Work out why a Raspberry Pi 400 runs at 640x480, 1024x768 or 1920x1080, which flags change the window size, and what each recorded run actually used.
+---
+
+The display mode on a Pi 400 depends on the monitor's EDID, the graphics stack and the app's window settings. This guide separates the three and lists what each recorded run used.
+
+<Callout type="warn">
+  Not run in this docs pass: everything here is device-side. The facts come from the repository
+  guides and receipts, and no command was run against a board.
+</Callout>
+
+## Prerequisites
+
+- An app running on a Pi 400, from [first device run](/docs/tutorials/first-device-run).
+- Shell access to the board.
+
+## What the recorded runs used
+
+| Run                               | Display or capture size                                  | Note                                                                  |
+| --------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------- |
+| 2026-11-07 Hello World            | Capture 640x480, then a full-screen capture at 1920x1080 | Custom Pi 400 image, manual DRM and Screen startup.                   |
+| 2026-11-12 public Qt              | Full-screen capture 1920x1080                            | Public-source Qt 6.12.0.                                              |
+| 2026-11-19 runs 1 and 2, key-hold | 1024x768                                                 | The monitor's EDID was unreadable. The owner is fixing it separately. |
+
+1920x1080 is unproven on current builds. Gallery results at 1280x800 are a window inside the display, not a display mode.
+
+## 1. Find the mode the app sees
+
+The window-chrome startup line names the window size. The line has this shape, taken from the receipts and the window-chrome guide, with the values depending on your board:
+
+```text
+RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=1024x768 mode=contained
+```
+
+A full-screen app reports the display size there. If the app has `initialSize` the window is that size, centred, and `mode=contained` or `mode=native-moved` says which window manager drew it. Read the line from the app log, `/tmp/rnqnx-showcase.log` in the guarded launcher.
+
+## 2. Separate the window from the display
+
+| You want                    | Do                                                                                      |
+| --------------------------- | --------------------------------------------------------------------------------------- |
+| A window of a set size      | Give the app `extra.rnqnx.window.initialSize`, or run it with `--window-size 1600x900`. |
+| The app to fill the display | Run it with `--fullscreen`, or have no `initialSize`.                                   |
+| No title bar                | `--title-bar-style none`.                                                               |
+
+Run the app with `QT_QPA_PLATFORM=qnx:no-fullscreen`. With plain `qnx` the Qt plugin makes the first window full screen regardless of its size. The window managers differ: `fullscreen-winmgr` sizes every native window to the display each time it posts a frame, so a sized app lives in a contained frame. `rnqnx-winmgr` gives the app a real window of its own size. See [windows and chrome](/docs/tutorials/windows-and-chrome).
+
+## 3. When the display itself is wrong
+
+If the whole desktop is at the wrong size, the cause is below the app. The record shows these:
+
+- The EDID cannot be read. The 2026-11-19 runs fell to 1024x768. Boot with the display connected from power-on and use the HDMI port closest to the microSD-card side.
+- The graphics server rejects the board. The packaged graphics server rejected `RaspberryPi400`, so the Pi 400 image runs the legacy Pi 4 graphics stack from `/data/pi400-graphics-compat` with `graphics-pi400-hdmi2.conf`. Check that `/dev/drm/card0` and `/dev/drm/renderD128` exist with group 36.
+- A cold boot returned neither Ethernet nor HDMI. On 2026-11-06 a saved graphics startup failed the next cold boot, and a recovery boot file restored the original startup. Automatic graphics startup stayed disabled in that recovery boot, so graphics are started by hand.
+
+Changes to boot files and the graphics stack are in the [Pi 400 guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-400.md). Read its recovery notes before you edit startup scripts.
+
+## Verify
+
+Run the app, read the `RNQNX_WINDOW_CHROME` line, and take a [screenshot](/docs/how-to/screenshot-device). The PNG size should match the `window=` value for a full-screen app.
+
+## Troubleshooting
+
+| What you see                                                | Cause and fix                                                                                      |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| 1024x768 on a 1080p monitor                                 | EDID unreadable. Reconnect, boot with the display attached, try the other HDMI port.               |
+| Black window or screen                                      | Check both Qt plugin paths point at the patched plugin in `glfix`, and the GPU nodes are group 36. |
+| The app is full screen but you set a size                   | Missing `qnx:no-fullscreen`, or no `initialSize`.                                                  |
+| Exit 134 with `failed to initialize EGL display, err=12289` | The DRM nodes are root-only. Add the `chgrp 36` and `chmod 0660` lines to `full_startup.sh`.       |
+| No signal after a reboot                                    | The recovery boot disabled automatic graphics. Start DRM and Screen by hand.                       |
+
+## Reference
+
+- [Known gaps](/docs/reference/known-gaps): 1920x1080 is listed as unproven.
+- [Pi 400 desktop guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md).

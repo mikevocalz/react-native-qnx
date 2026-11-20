@@ -1,24 +1,47 @@
 ---
 title: Cross-build from Windows
-description: What the repository documents about using a Windows 11 PC as the QNX SDP build host, and what it does not.
+description: What the repository documents and does not verify about building for QNX from a Windows 11 PC, and the verified Linux path to use instead.
 ---
 
-The repository has no verified Windows build recipe. This page states what is documented so you do not assume more.
+The repository has no verified Windows build recipe. This page states what is documented so you do not assume more, and gives the path that is verified.
+
+## Prerequisites
+
+- A Windows 11 x64 PC, if you want to try. QNX SDP 8.0.5 supports Windows 11 x64, Ubuntu Desktop 22.04 and 24.04, and RHEL 9 hosts. It does not support macOS or ARM hosts. Windows 10 is a legacy host. Windows 7, 8, 8.1 and 32-bit Windows are unsupported.
+- A licensed SDP 8.0.5. See [Set up the toolchain](/docs/how-to/set-up-toolchain).
 
 ## What is documented
 
-- QNX SDP 8.0.5 supports Windows 11 x64, Ubuntu Desktop 22.04 and 24.04, and RHEL 9 hosts. It does not support macOS or ARM hosts.
 - The Pi 400 guide recommends a spare x86-64 Windows PC as the SDP host, with a Mac for editing and Git. See [development host](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-400.md#development-host-use-the-spare-windows-pc-first).
-- Windows 10 is a legacy host. Windows 7, 8, 8.1 and 32-bit Windows are unsupported.
+- If your PC cannot run Windows 11, the guide recommends Ubuntu 24.04 on a spare SSD, or dual boot.
 
 ## What is not verified
 
-The repository's helper scripts are POSIX shell. On a native Windows SDP, validate the QNX toolchain first and use the environment QNX supplies. Do not assume the bash helpers run unchanged. Nothing in the repository shows `pnpm qnx build-qnx` running on Windows. The app identity tool also refuses to configure on Windows.
+The repository's helper scripts are POSIX shell. Nothing shows `pnpm qnx build-qnx` running on Windows, and the app identity tool refuses to configure on Windows. On a native Windows SDP, validate the QNX toolchain first and use the environment QNX supplies. Do not assume the bash helpers run unchanged.
 
 ## The path that is verified
 
-Ubuntu 22.04 on x86-64 is the host the project builds on. Its cross-builds run in a `qnx805-build` container with the licensed SDP. If your PC cannot run Windows 11, the Pi 400 guide recommends installing Ubuntu 24.04 on a spare SSD or dual booting.
+Ubuntu 22.04 on x86-64 is the host the project builds on. Its cross-builds run in a `qnx805-build` container with the licensed SDP. The steps are in [cross-build for QNX](/docs/how-to/cross-build). On macOS, `pnpm qnx doctor` reports that `qcc` is unavailable even with the SDP sourced, because `QNX_HOST` selects Windows host tools. That error is correct for that host.
 
-On macOS, `pnpm qnx doctor` reports that `qcc` is unavailable even with the SDP sourced, because `QNX_HOST` selects Windows host tools. The error is correct for that host.
+## If you try Windows anyway
 
-If you use a Windows PC, set up the toolchain from the QNX documentation at [qnx.com/developers/docs/8.0](https://www.qnx.com/developers/docs/8.0/), then follow [build and deploy](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/build-and-deploy.md) and report which steps need changes.
+1. Set up the toolchain from the [QNX 8.0 documentation](https://www.qnx.com/developers/docs/8.0/) and confirm `qcc -V` lists `gcc_ntoaarch64le`.
+2. Follow [build and deploy](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/build-and-deploy.md), translating each `./scripts/*.sh` call to a shell that can run it.
+3. Report which steps need changes.
+
+## Verify
+
+Nothing here is verified on Windows. The check is the same as on Linux: `pnpm qnx doctor` has no errors, and a build produces `build/qnx-aarch64-release/bin/<target>`.
+
+## Troubleshooting
+
+| What you see                         | Cause and fix                                                                                            |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| A `.sh` helper will not run          | The scripts are POSIX shell. Use a shell that runs them or build on Linux.                               |
+| The identity tool will not configure | Its CMake refuses on hosts other than Linux and macOS. Run `prepare-native` on a Linux or macOS machine. |
+| `qcc` unavailable                    | The SDP environment is not loaded in this shell, or you are on macOS.                                    |
+
+## Reference
+
+- [Cross-build for QNX](/docs/how-to/cross-build)
+- [Build and deploy](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/build-and-deploy.md)

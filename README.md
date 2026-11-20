@@ -36,7 +36,7 @@ You need Node 26 or newer, pnpm 12.18.0, CMake, Ninja and Qt 6.11.1 or newer
 ([toolchain notes](docs/toolchain.md)).
 
 ```bash
-npm install -g pnpm@12.18.0
+npm install -g pnpm@12.18.0   # or: npm install --prefix ~/pnpm12 pnpm@12.18.0, then see the note below
 git clone https://github.com/mikevocalz/react-native-qnx.git
 cd react-native-qnx
 pnpm install --frozen-lockfile
@@ -47,6 +47,12 @@ cmake -S . -B build/playground -G Ninja -DCMAKE_BUILD_TYPE=Debug -DRNQNX_BUILD_H
 cmake --build build/playground --target rnqnx_playground_host
 ./build/playground/bin/rnqnx_playground_host --bundle build/dashboard.bundle.js
 ```
+
+If you install pnpm into a prefix instead of globally, put it first on your PATH
+(`export PATH=~/pnpm12/node_modules/.bin:$PATH`) and run
+`node ~/pnpm12/node_modules/pnpm/install.js` once. npm blocks pnpm's install script, so
+`pnpm` works from your shell but Node programs that start it with `spawnSync`, such as
+`pnpm test:js`, fail with `ENOEXEC` until that script has run.
 
 Append `-platform offscreen --screenshot build/dashboard.png` to the last command for a headless
 capture. Run `pnpm qnx doctor` to see which QNX prerequisites your machine lacks.
