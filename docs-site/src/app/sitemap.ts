@@ -9,5 +9,9 @@ export const dynamic = 'force-static';
 const base = `${(process.env.DOCS_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '')}${basePath}`;
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [{ url: `${base}/` }, ...source.getPages().map((page) => ({ url: `${base}${page.url}` }))];
+  return [
+    { url: `${base}/` },
+    { url: `${base}/releases` },
+    ...source.getPages().map((page) => ({ url: `${base}${page.url}` })),
+  ];
 }
