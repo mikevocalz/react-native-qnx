@@ -8,7 +8,9 @@
  * React Native's StatusBar and records what the app asked for, so code that
  * mounts `<StatusBar hidden />` or calls `StatusBar.setBarStyle(...)` runs and
  * a host can read the request with `StatusBar.getRequestedState()` when a
- * shell API exists to honor it. The first call of each setter logs one
+ * shell API exists to honor it. At Marathon-Shell `1f845160`
+ * `marathon_surface_v1.set_system_bars` is recorded and ignored, and insets
+ * are always zero (docs/marathon/SHELL_CONTRACTS.md). The first call of each setter logs one
  * development warning so the missing effect is visible, not silent.
  */
 'use strict';
