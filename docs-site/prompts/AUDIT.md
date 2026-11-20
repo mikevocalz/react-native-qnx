@@ -6,10 +6,10 @@ Verdicts: verified, wrong, unverifiable. "Stale" means true when written and fal
 
 ## Counts
 
-| Scope                                            | Verified rows | Wrong | Stale | Misleading or incomplete        | Unverifiable |
-| ------------------------------------------------ | ------------- | ----- | ----- | ------------------------------- | ------------ |
+| Scope                                            | Verified rows | Wrong | Stale | Misleading or incomplete                    | Unverifiable |
+| ------------------------------------------------ | ------------- | ----- | ----- | ------------------------------------------- | ------------ |
 | docs-site content (35 files, README, REFERENCES) | 45            | 13    | 0     | 5 (two dismissed as intentional, see below) | 2            |
-| README, component-support, v1-readiness, docs/v1 | 51            | 10    | 2     | 2                               | 6            |
+| README, component-support, v1-readiness, docs/v1 | 51            | 10    | 2     | 2                                           | 6            |
 
 The docs-site omits the Marathon packages and `--with-marathon` on purpose. The owner decided to keep the Marathon integration out of the root README and docs-site content, so the auditor's finding on this point (module-matrix package list, `cli.mdx` options) was dismissed and nothing was changed.
 
