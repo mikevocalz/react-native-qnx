@@ -64,6 +64,18 @@ set(JSI_DIR "${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi" CACHE PATH "" FORCE)
 # (Alpine) declares lseek64 only under _LARGEFILE64_SOURCE, so the configure
 # probe says yes and the C++ compile then fails. On LP64 Linux off_t is already
 # 64 bits in glibc and musl, so plain lseek is equivalent: skip the probe.
+# Hermes checks in Debug builds (HERMES_SLOW_DEBUG) that the cached
+# thread_stack_bounds() equals a fresh pthread_getattr_np() result. musl reports
+# the main thread stack as the currently mapped part of the stack VMA, which
+# grows lazily, so the check aborts the host once the stack deepens past its
+# first mapping ("bounds == detail::thread_stack_bounds_impl()", seen after
+# about 8 s under Marathon-Shell on Alpine). The check is self-test only. Turn
+# it off when the build host libc is musl.
+file(GLOB rnqnx_musl_loader "/lib/ld-musl-*.so.1")
+if(rnqnx_musl_loader)
+  set(HERMES_SLOW_DEBUG OFF CACHE BOOL "musl main-thread stack bounds grow lazily" FORCE)
+endif()
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(HAVE_LSEEK64 OFF CACHE INTERNAL "off_t is 64-bit on LP64 Linux" FORCE)
 endif()
