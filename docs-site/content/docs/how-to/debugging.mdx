@@ -1,11 +1,39 @@
 ---
 title: Debug and iterate
-description: Run Metro, Fast Refresh, reload and the developer menu against a QNX board from your computer.
+description: Build the development client once, then run Metro, Fast Refresh, reload and the developer menu against a QNX board from your computer, with LogBox errors and logs.
 ---
 
-A release build runs Hermes bytecode staged next to the executable. A development build loads the bundle from Metro on your computer, applies Fast Refresh and shows LogBox errors. This ran on one Pi 400 on 2026-11-13 over a USB Ethernet link. The [receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-dev-client-2026-11-13/README.md) has the details.
+A release build runs Hermes bytecode staged next to the executable. A development build loads the bundle from Metro on your computer, applies Fast Refresh and shows LogBox errors. This ran on one Raspberry Pi 400 on 2026-11-13 over a USB Ethernet link, with the board at `192.168.2.2` and the computer at `192.168.2.1`. The [receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-dev-client-2026-11-13/README.md) has the captures.
 
-## The daily loop
+<Callout type="warn">
+  Not run in this docs pass: every command on this page that talks to a board. Only `--help` and
+  `project dev --dry-run` were run. `--dry-run` prints the Metro settings and the ssh command as
+  JSON and starts neither. `project start` does not accept it.
+</Callout>
+
+## Prerequisites
+
+- A development client on the board: the same app built with `RNQNX_ENABLE_DEV_SUPPORT=ON`. Step 1 builds it. A release build cannot do this.
+- The board and your computer on one network, and ssh key or agent authentication to the board.
+- A launcher script on the board that starts the dev build and passes its arguments through, for example `/data/home/qnxuser/run-chrome-app-dev.sh`. The repository's guarded `template/qnx/run-app.sh` does this.
+- Never ship a build with `RNQNX_ENABLE_DEV_SUPPORT=ON` and never expose Metro beyond a lab network.
+
+## 1. Build the development client once
+
+Add these CMake options to the app build:
+
+```cmake
+-DRNQNX_ENABLE_WEBSOCKETS=ON
+-DRNQNX_ENABLE_DEV_SUPPORT=ON
+-DRNQNX_HERMES_QNX_DIR=<Hermes build tree that has lib/libhermesvm.so>
+-DQt6WebSockets_DIR=<Qt WebSockets build>/lib/cmake/Qt6WebSockets
+```
+
+Both switches default to OFF, and `RNQNX_ENABLE_DEV_SUPPORT` without `RNQNX_ENABLE_WEBSOCKETS` stops at configure time. A development bundle is plain JavaScript, so the client links the Hermes VM that includes the compiler (`libhermesvm.so`). Build it with `cmake --build build/hermes-qnx-aarch64 --target hermesvm jsi` after `scripts/prepare-hermes-qnx.sh` and `scripts/configure-hermes-qnx.sh`. Qt WebSockets comes from `scripts/qt-public/build-websockets-qnx.sh`.
+
+Deploy the build to its own directory, separate from the release app. It needs the executable, `app.bundle.js`, `icons/`, `libhermesvm.so` instead of `libhermesvmlean.so`, `libQt6WebSockets.so.6*`, `plugins/tls/libqopensslbackend.so` and the image plugins.
+
+## 2. Run the daily loop
 
 From the app directory on the computer the board is plugged into:
 
@@ -15,23 +43,73 @@ rnqnx project dev \
   --launcher /data/home/qnxuser/run-chrome-app-dev.sh
 ```
 
-`rnqnx` is `node <checkout>/packages/react-native-qnx-cli/src/bin.mjs`. Add `--identity <key>` and `--known-hosts <file>` if your SSH setup needs them. Metro starts on port 8081, the command works out which of your addresses the board reaches, and it runs the launcher with `--replace --dev-server http://<address>:8081`.
+`rnqnx` is `node <checkout>/packages/react-native-qnx-cli/src/bin.mjs`. Add `--identity <key>` and `--known-hosts <file>` if your ssh setup needs them. The command starts Metro on port 8081, works out which of your addresses the board reaches, and runs the launcher with `--replace --dev-server http://<address>:8081`. `--replace` quits the copy of the app that is already running, a release build or an earlier dev run, so the board never shows two windows of one app. `project dev --help` lists `--project`, `--platform`, `--port`, `--host-address` and `--reset-cache`.
 
-`rnqnx project dev --help` lists `--project`, `--platform`, `--port`, `--host-address` and `--reset-cache`.
+To run only Metro, for example when you start the app on the board yourself:
 
-## What the keys do
+```bash
+rnqnx project start --project .
+```
 
-| You do                                                 | The app does                                         |
-| ------------------------------------------------------ | ---------------------------------------------------- |
-| Save a component file                                  | Fast Refresh keeps component state                   |
-| Save the entry file                                    | Full reload                                          |
-| `r` in the Metro terminal, `Ctrl+R` or `F5` in the app | Full reload                                          |
-| `d` in the terminal, `Ctrl+D` or `F1` in the app       | Developer menu                                       |
-| Save a syntax error                                    | LogBox shows it; fixing it clears it                 |
-| Stop Metro                                             | The app keeps running and reloads when Metro returns |
+```sh
+# on the board
+/data/home/qnxuser/run-chrome-app-dev.sh --replace --dev-server http://192.168.2.1:8081
+```
+
+The launcher also reads `RNQNX_DEV_SERVER` from the environment. With neither, the client runs its staged bundle like a release build.
+
+### What you should see
+
+The app opens on the board with its UI from the bundle Metro served. Edit a component file on your computer and save. The window shows a "Refreshing..." banner and the new code, with component state kept. The receipt's captures show a counter at 3 that stayed 3 after an edit changed the headline text and accent colour.
+
+## 3. What the keys do
+
+| You do                                                     | The app does                                                                                           |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Save a component file                                      | Fast Refresh keeps component state                                                                     |
+| Save the entry file, or a file that is not only components | Full reload                                                                                            |
+| `r` in the Metro terminal, `Ctrl+R` or `F5` in the app     | Full reload with a new React host and a fresh bundle                                                   |
+| `d` in the terminal, `Ctrl+D` or `F1` in the app           | Developer menu: Reload, Fast Refresh on or off, and items the app added with `DevSettings.addMenuItem` |
+| Save a syntax error                                        | LogBox shows it over the app, and fixing it clears it                                                  |
+| Throw during render                                        | LogBox shows the error and component stack                                                             |
+| Stop Metro                                                 | The app keeps running and reloads when Metro returns                                                   |
+| Start the app before Metro                                 | A "Could not connect to Metro" screen that loads as soon as Metro starts                               |
+
+Errors before React can render, such as Metro unreachable or a throw while the bundle evaluates, show a native error screen with Reload and Dismiss.
+
+## 4. Read logs
+
+```bash
+pnpm qnx log-qnx
+```
+
+It streams the board's slog2. The development client also writes `RNQNX_DEV_*` lines, for example `RNQNX_DEV_RELOAD Metro` and `RNQNX_DEV_MENU open`, to `/tmp/rnqnx-<appId>.log` with the guarded launcher, unless `RNQNX_LOG` says otherwise. `RNQNX_DEV_SERVER <url>` means development mode is on, `RNQNX_DEV_BUNDLE_LOADED bytes=... ms=...` means the bundle was fetched, and `RNQNX_DEV_BUNDLE_FAILED <title>: <detail>` means the fetch or build failed and the error screen is up.
+
+## How it works
+
+The bundle comes from `http://<server>/index.bundle?platform=qnx&dev=true&...`. After it runs, the host calls React Native's own `HMRClient.setup`, which opens `ws://<server>/hot` through Qt WebSockets. The host provides `DevSettings`, `DevLoadingView` and `LogBox`, and keeps Metro's `/message` socket open for `r` and `d`, reconnecting every 3 seconds.
 
 ## Not covered
 
-The Hermes debugger (CDP) and React DevTools were not tested. For on-board logs use `pnpm qnx log-qnx`, which streams slog2.
+LogBox shows call stacks unsymbolicated, because symbolication goes through `fetch` and React Native's networking module is not implemented on QNX yet. The development client runs whatever JavaScript the server sends, over plain HTTP by default. Metro listens on all interfaces. Pass `--host <address>` to `project start` to limit it. The Hermes debugger (CDP) and React DevTools were not tested. The receipt says its input was injected through Screen with `rnqnx-inject key`, because pointer injection did not reach the right coordinates under the window manager then in use. See [drive input with rnqnx-inject](/docs/how-to/rnqnx-inject).
 
-The device commands on this page were not run by this docs pass. Only the `--help` output was.
+## Verify
+
+- `rnqnx project dev` prints Metro's banner and then launches the app.
+- A saved edit changes the window without a restart.
+- `d` in the Metro terminal opens the developer menu on the board.
+
+## Troubleshooting
+
+| What you see                               | Cause and fix                                                                                                   |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `Unknown option '--dry-run'`               | `project start` does not take it. `project dev` and `project run` do.                                           |
+| "Could not connect to Metro" screen        | Metro is not running or the board cannot reach your address. Pass `--host-address`. It loads once Metro starts. |
+| Two app windows                            | Launch with `--replace`, which `project dev` does for you.                                                      |
+| `RNQNX_ENABLE_DEV_SUPPORT` stops configure | `RNQNX_ENABLE_WEBSOCKETS=ON` is missing.                                                                        |
+| The dev build will not start the bundle    | It links `libhermesvmlean.so`. A dev client needs `libhermesvm.so`.                                             |
+
+## Reference
+
+- [CLI reference](/docs/reference/cli)
+- [Development workflow](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/dev-workflow.md) in the repository.

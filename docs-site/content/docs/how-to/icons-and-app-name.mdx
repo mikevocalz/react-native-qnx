@@ -1,11 +1,17 @@
 ---
-title: Set the icon and app name
-description: Set the window title, launcher tile label and icon set for a QNX app with app.json or a config plugin.
+title: Set the app icon and name
+description: Set the window title, launcher tile label and icon for a QNX app in app.json, build the identity tool, and check the result with project doctor.
 ---
 
-`prepare-native` reads your Expo config the way `expo start` does. Options on the `@rn-qnx/expo-qnx-config-plugins` entry win over `extra.rnqnx`.
+`project prepare-native` reads your Expo config the way `expo start` does: `app.json`, `app.config.js` or `app.config.ts`, with config plugins applied. It checks the icon and the launcher tile label before it writes `build/<platform>/native-app.json`. `project doctor` runs the same checks and writes nothing.
 
-## Set the fields
+## Prerequisites
+
+- An Expo app with a config file. See [Set up Expo](/docs/how-to/expo-setup).
+- A square PNG of at least 1024 by 1024 and at most 8192 by 8192, with square corners and the artwork filling the square. The platform applies any mask.
+- To measure the tile label, the identity tool from `native/app-identity` (step 3).
+
+## 1. Set the fields
 
 ```json
 {
@@ -23,6 +29,8 @@ description: Set the window title, launcher tile label and icon set for a QNX ap
 }
 ```
 
+Options on the `@rn-qnx/expo-qnx-config-plugins` entry in `plugins` win over values in `extra.rnqnx`, so `icon` and `shortName` can come from either place.
+
 | Field                        | Required | Meaning                                                                      |
 | ---------------------------- | -------- | ---------------------------------------------------------------------------- |
 | `expo.name`                  | yes      | Window title and About name. Also the tile label when `shortName` is absent. |
@@ -30,19 +38,54 @@ description: Set the window title, launcher tile label and icon set for a QNX ap
 | `expo.extra.rnqnx.icon`      | no       | Overrides `expo.icon` for QNX only.                                          |
 | `expo.extra.rnqnx.shortName` | no       | Tile label, for when `expo.name` is too wide for the launcher.               |
 
-Use a square PNG of at least 1024 by 1024. A field that is set is checked strictly. An empty string, a missing file or a bad PNG stops `prepare-native`; it never falls back to the default.
+`project create` writes `expo.icon` and copies the default icon from `template/qnx/assets/icon.png`. Replace that file with your own. With no icon set, `prepare-native` uses the default and prints `rnqnx: notice: no app icon is set, so the default icon template/qnx/assets/icon.png is used.` A field that is set is checked strictly. An empty string, a non-string, a missing file or a bad PNG stops `prepare-native`. It never falls back to the default.
 
-## Generated sizes
+## 2. Check without building
 
-The icon tool writes an icon set from 16 to 512 px. Run `prepare-native` with the identity tool, built from `native/app-identity`:
+```bash
+pnpm qnx project doctor --project apps/my-app
+```
+
+Verified on a project with only `expo.name` set: `passed: app-icon — No app icon is set, so prepare-native uses the default icon template/qnx/assets/icon.png`, and `not-checked: tile-label — Tile label comes from expo.name; its rendered width was not measured. Pass --identity-tool to measure it.` Without the identity tool the doctor checks the icon header and label text from `app.json` only.
+
+## 3. Build the identity tool
 
 ```bash
 cmake -S native/app-identity -B build/identity -G Ninja -DRNQNX_BUILD_IDENTITY_TOOL=ON
 cmake --build build/identity
 ```
 
-The identity tool runs on Linux or macOS. On other hosts its CMake refuses to configure.
+The tool is a Qt host program. It runs on Linux or macOS and its CMake refuses to configure on other hosts. Not run in this docs pass.
 
-Full details, including how labels fit launcher boxes: [App icon and tile name](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/app-identity.md). Device result: [tile layout on the Pi 400](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/tile-layout-pi400-2026-11-13).
+## 4. Prepare
 
-These steps were not run by this docs pass.
+```bash
+pnpm qnx project prepare-native --project apps/my-app --platform qnx \
+  --bundle build/qnx/app.bundle.js --identity-tool build/identity/rnqnx_identity_tool
+```
+
+It scales the source once with Qt's smooth scaler and writes `build/<platform>/icons/icon-<size>.png` for 16, 24, 32, 48, 64, 96, 128, 192, 256 and 512 px. Title bar and task switcher use 16 to 48, and launcher tiles use 64 to 512. Each file's SHA-256 goes into `native-app.json`, and the native build refuses an icon whose hash changed. `--skip-identity-tool` builds an app with no icon set, and the title bar then shows the title alone. On QNX, Qt's platform plugin has no `setWindowIcon`. The icon reaches `QGuiApplication::windowIcon()` and `--describe-app`, and the window-chrome title bar draws it.
+
+## Tile label length
+
+The tile label must fit the launcher box on one line. The check measures the rendered width, not the character count, and a label that does not fit fails `prepare-native` with the measured overflow. Nothing is shortened for you. Set `shortName` when `expo.name` is too long, for example `"shortName": "Notes"` for `Field Notes Professional`.
+
+## Verify
+
+`prepare-native` ends without error and `build/qnx/icons/` holds ten files. `--describe-app` on the built app lists the loaded sizes in `windowIconSizes`. A missing or damaged icon set at launch prints `RNQNX_APP_ICON_WARNING`, and the app keeps running with the platform default.
+
+A device result for tile layout is in the [tile-layout receipt](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/tile-layout-pi400-2026-11-13) (Pi 400, 2026-11-13).
+
+## Troubleshooting
+
+| What you see                                                                          | Cause and fix                                                             |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `expo.icon "./assets/icon.png" is 640x640. Export a square PNG of at least 1024x1024` | The icon is too small. Export a larger one.                               |
+| The tile label is N px too wide                                                       | Set a shorter `shortName`.                                                |
+| `prepare-native` stops on a missing icon file                                         | `expo.icon` is set but the file is missing. A set field never falls back. |
+| The identity tool will not configure                                                  | It supports Linux and macOS hosts only.                                   |
+
+## Reference
+
+- [App icon and tile name](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/app-identity.md) in the repository.
+- [Config reference](/docs/reference/config)

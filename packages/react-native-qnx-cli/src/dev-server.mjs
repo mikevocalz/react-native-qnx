@@ -25,7 +25,7 @@ const devHelp = `React Native QNX - start Metro and launch the development clien
               [--project <dir>] [--platform qnx|marathon] [--port 8081]
               [--identity <ssh key>] [--known-hosts <file>]
               [--host-address <this computer's address as the board sees it>]
-              [--reset-cache]
+              [--reset-cache] [--dry-run]
 
 Starts Metro (as project start does), then runs
   <launcher> --replace --dev-server http://<host-address>:<port>
@@ -34,6 +34,7 @@ with RNQNX_ENABLE_DEV_SUPPORT=ON and passes its arguments through. --replace
 makes the app quit the running copy of the same app (a release build or an
 older dev run) before it starts, so one app never has two windows. SSH uses
 BatchMode and your known_hosts (or --known-hosts); host keys are never skipped.
+--dry-run prints the Metro settings and the ssh command as JSON and starts neither.
 `;
 
 /** The part of a `ws` socket this file uses (ws comes from Metro's graph).
@@ -332,6 +333,7 @@ export async function devMain(argv) {
       'known-hosts': { type: 'string' },
       'host-address': { type: 'string' },
       'reset-cache': { type: 'boolean' },
+      'dry-run': { type: 'boolean' },
     },
   });
   if (values.help) {
@@ -352,6 +354,27 @@ export async function devMain(argv) {
     identity: values.identity,
     knownHosts: values['known-hosts'],
   });
+
+  if (values['dry-run']) {
+    console.log(
+      JSON.stringify(
+        {
+          action: 'dry-run',
+          metro: {
+            project: values.project ?? '.',
+            platform: values.platform ?? 'qnx',
+            port,
+            resetCache: Boolean(values['reset-cache']),
+          },
+          devServer: url,
+          ssh: { executable: 'ssh', args: sshArgs },
+        },
+        null,
+        2
+      )
+    );
+    return 0;
+  }
 
   const server = await startDevServer({
     project: values.project ?? '.',

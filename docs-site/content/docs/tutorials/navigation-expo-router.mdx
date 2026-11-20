@@ -1,0 +1,225 @@
+---
+title: Navigation with expo-router
+description: Run an expo-router app with a drawer around bottom or side tabs on React Native QNX, using the repository's starter and the component gallery as working examples, and learn what the port does not support.
+---
+
+By the end you will know the file layout, the three files that make expo-router run on QNX, and the layouts the starter gives you: a left drawer around a tab bar that moves from the bottom to a left rail as the window widens. The component gallery bundled with Metro 0.87.1 on macOS on 2026-11-19 (3,402,301 bytes). The drawer was run on a Raspberry Pi 400. The tab layout on the board is in the gallery screenshots. A stack navigator is not supported.
+
+## Prerequisites
+
+- The [quick start](/docs/tutorials/quick-start) finished: an installed checkout and Node 26.13.0, pnpm 12.18.0.
+- Familiarity with [file-based routing in expo-router](https://docs.expo.dev/router/introduction/). This page covers only what is different on QNX.
+
+## What is supported
+
+[`@rn-qnx/expo-router-qnx`](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/expo-router-qnx/README.md) runs expo-router 58.0.31 with its own `Tabs` and `Drawer`, and the app imports them unchanged:
+
+```js
+import { Tabs } from 'expo-router';
+import { Drawer } from 'expo-router/drawer';
+```
+
+expo-router 58 bundles react-navigation, which reaches for four packages whose native halves QNX does not have. A Metro resolver replaces them for the `qnx` platform only:
+
+| Import                           | Replaced by                                                              |
+| -------------------------------- | ------------------------------------------------------------------------ |
+| `react-native-safe-area-context` | A shim with zero insets and the window size from `useWindowDimensions`.  |
+| `react-native-screens`           | A shim where `screensEnabled()` is false, so navigators use plain Views. |
+| `react-native-drawer-layout`     | The native `RNQnxDrawer`, or a JavaScript `JsDrawer` without it.         |
+| expo-router's `BottomTabBar`     | The native `RNQnxTabBar`, or a JavaScript `JsTabBar`.                    |
+
+Not supported, per the package README: a stack navigator (the default `Stack` needs react-native-screens, and its JavaScript stack needs Gesture Handler wiring that expo-router does not use here), native tabs, and `expo-router/ui`. `Linking.openURL` rejects, and there is no deep-link input. Inactive tabs and drawer screens stay mounted, so keep screens cheap to keep alive.
+
+## 1. Create a starter
+
+```bash
+pnpm qnx project create --project ../notes-qnx --app-id org.example.notes --name "Notes" --dry-run
+```
+
+Expected: JSON with `"action": "dry-run"`, `"platforms": ["qnx"]`, `"componentName": "main"` and `"nativeBuildVerified": false`. No directory is created. Drop `--dry-run` to create the project. The starter comes from [`template/qnx-router`](https://github.com/mikevocalz/react-native-qnx/tree/main/template/qnx-router): a left drawer with Home, Settings and About, around three tabs, Home, Explore and Controls. It was installed and bundled in a container on 2026-11-13 and was not built into a native host or run on the Pi. The shipped gallery is the version that was.
+
+## 2. The layout on disk
+
+```text
+app/
+  _layout.js           the drawer
+  (tabs)/_layout.js    the tab bar
+  (tabs)/index.js      Home
+  (tabs)/explore.js
+  (tabs)/controls.js
+  settings.js          a drawer page
+  about.js             a drawer page
+app-ctx.js             the route list, as a require.context
+index.js               registers the router app
+metro.config.js        withExpoRouterQnx(...)
+```
+
+The three QNX-specific files:
+
+`index.js` registers the router root under the name the host starts. Keep it free of components so Fast Refresh can swap a route without a full reload:
+
+```js
+const { AppRegistry } = require('react-native');
+const { App } = require('expo-router/build/qualified-entry');
+
+AppRegistry.registerComponent('RNQnxPlayground', () => App);
+```
+
+`app-ctx.js` lists the route files. Expo's Babel plugin normally generates this. On QNX the resolver points `expo-router/_ctx` here instead:
+
+```js
+export const ctx = require.context(
+  './app',
+  true,
+  /^(?:\.\/)(?!(?:(?:(?:.*\+api)|(?:\+html)|(?:\+middleware)))\.[tj]sx?$).*\.[tj]sx?$/,
+  'sync'
+);
+```
+
+`metro.config.js` wraps the QNX config. The gallery's version also enables the public entry and `transformer.unstable_allowRequireContext`:
+
+```js
+const { withExpoRouterQnx } = require('@rn-qnx/expo-router-qnx/metro');
+module.exports = withExpoRouterQnx(
+  withPublicEntry(getQnxMetroConfig(__dirname, {/* watchFolders, resolver */}), 'qnx'),
+  { routerContext: path.join(__dirname, 'app-ctx.js') }
+);
+```
+
+Today you copy these three files from `apps/component-gallery`. The package README notes that a follow-up change makes `project create` write them.
+
+## 3. The drawer
+
+`app/_layout.js` from the gallery:
+
+```jsx
+import { DarkTheme, ThemeProvider } from 'expo-router';
+import { Drawer } from 'expo-router/drawer';
+
+const theme = {
+  ...DarkTheme,
+  colors: { ...DarkTheme.colors, background: BACKGROUND, card: '#0f2236', border: '#1d3248' },
+};
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider value={theme}>
+      <Drawer
+        drawerContent={(props) => <DrawerContent {...props} />}
+        screenOptions={{ drawerType: 'front', sceneStyle: { backgroundColor: BACKGROUND } }}
+      >
+        <Drawer.Screen
+          name="(tabs)"
+          options={{ title: 'Home', header: header('Component gallery') }}
+        />
+        <Drawer.Screen
+          name="settings"
+          options={{ title: 'Settings', header: header('Settings') }}
+        />
+        <Drawer.Screen name="about" options={{ title: 'About', header: header('About') }} />
+      </Drawer>
+    </ThemeProvider>
+  );
+}
+```
+
+Drawer props the port handles: `drawerPosition`, `drawerType` (`front`, `slide`, `back`, `permanent`), `drawerStyle.width`, `overlayStyle.backgroundColor`, `overlayAccessibilityLabel`, `swipeEnabled` and `swipeEdgeWidth`. Right-to-left follows `I18nManager.isRTL`. The edge swipe needs a pointer. The JavaScript drawer also opens from the header button, `DrawerActions.toggleDrawer()` and the developer menu.
+
+## 4. The tabs
+
+`app/(tabs)/_layout.js` measures the window and lets `qnxTabsScreenOptions` choose the bar position:
+
+```jsx
+import { Tabs } from 'expo-router';
+import { qnxTabsScreenOptions } from '@rn-qnx/expo-router-qnx';
+
+export default function TabsLayout() {
+  const [width, setWidth] = React.useState(1280);
+  return (
+    <View
+      style={{ flex: 1 }}
+      onLayout={(event) => {
+        const next = Math.round(event.nativeEvent.layout.width);
+        if (next > 0) setWidth(next);
+      }}
+    >
+      <Tabs
+        screenOptions={qnxTabsScreenOptions({
+          width,
+          headerShown: false,
+          tabBarActiveTintColor: ACCENT,
+          tabBarInactiveTintColor: MUTED,
+          tabBarStyle: { backgroundColor: '#102338' },
+          sceneStyle: { backgroundColor: BACKGROUND },
+        })}
+      >
+        {TABS.map((tab) => (
+          <Tabs.Screen
+            key={tab.name}
+            name={tab.name}
+            options={{ title: tab.title, qnxIcon: tab.icon }}
+          />
+        ))}
+      </Tabs>
+    </View>
+  );
+}
+```
+
+`layout` is `auto` by default: a bottom bar under `breakpoint` (700 px) and a left rail from it up. Pass `'bottom'` or `'side'` to force one. Give each `Tabs.Screen` `options.qnxIcon`, a glyph or an image URI. A `tabBarIcon` function renders React elements, which cannot reach the native bar, so a screen that sets one falls back to the JavaScript tab bar. Keep to five tabs or fewer and put the rest under a More tab.
+
+## 5. Bundle
+
+```bash
+pnpm qnx bundle-qnx --app component-gallery --out build/gallery.bundle.js
+```
+
+Expected: `Done writing bundle output` and a 3.4 MB file. This only proves the routes resolve and bundle. To run on a board, build the native host as in [first device run](/docs/tutorials/first-device-run).
+
+## What you should see
+
+On the Pi 400 at 1024x768 the gallery shows a title bar, a header with a drawer button, and the tab rail on the left:
+
+![The component gallery on a Pi 400: a header with a menu button and the title Component gallery, and a left rail of five tabs.](/evidence/pi400-gallery-first-screen.png)
+
+Pressing the drawer button, or running the app with a pointer at the left edge, opens the drawer over the page:
+
+![The gallery with its drawer open: an account header, then Home, Components, Media, Settings and About, with Home highlighted.](/evidence/pi400-drawer-open.png)
+
+In the narrower 586x600 window the tabs sit at the bottom of the window instead:
+
+![The gallery in a 586 pixel wide window with the five tabs in a bar along the bottom.](/evidence/pi400-window-586x600.png)
+
+## What ran on the board
+
+- The drawer route receipt (2026-11-13, custom-image Pi 400) holds one capture per route (`home.png`, `components.png`, `media.png`, `settings.png`, `about.png` and the tab pages) and a manifest of which drawer entry is selected for each. Tab pages keep Home selected. See the [route receipt](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/drawer-route-2026-11-13). [PR 149 run 2](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md) has `drawer-open.png` and `drawer-after-escape.png`: the drawer closed after a synthetic Escape key. That result rests on screenshots only, because the app log has no line for the close.
+- Tab focus moves with the Up and Down keys in the sidebar. A held key was run with a synthetic injector, not a USB keyboard. See [drive input with rnqnx-inject](/docs/how-to/rnqnx-inject).
+- The window re-lays-out when resized. The 2026-11-13 [tile-layout receipt](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/tile-layout-pi400-2026-11-13) holds captures at 586x600, 880x600 and 1280x800, plus live-resize captures at about 589 and 1180 px wide.
+
+Not run: a stack navigator, deep links, and a real USB keyboard or touch input.
+
+## Common problems
+
+These come from the package README and the config above. They were not reproduced for this page, so treat each as the first thing to check.
+
+| What you see                            | First thing to check                                                                                              |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Metro cannot resolve `expo-router/_ctx` | The Metro config is not wrapped with `withExpoRouterQnx`, or `routerContext` does not point at your `app-ctx.js`. |
+| `require.context` is rejected           | `transformer.unstable_allowRequireContext` is off in the Metro config.                                            |
+| `Stack` is missing or blank             | No stack navigator is provided. Use `Tabs` or `Drawer`.                                                           |
+| Tab icons do not show                   | `tabBarIcon` forces the JavaScript tab bar. Use `options.qnxIcon` for the native bar.                             |
+| A route does not appear                 | The file is outside `app/`, or the pattern in `app-ctx.js` excludes it (`+api`, `+html`, `+middleware`).          |
+
+## Next steps
+
+<Cards>
+  <Card title="Styling and theming" href="/docs/tutorials/styling-and-theming">
+    Theme the screens inside the navigators.
+  </Card>
+  <Card title="Windows and chrome" href="/docs/tutorials/windows-and-chrome">
+    The title bar above the drawer.
+  </Card>
+  <Card title="Set up Expo" href="/docs/how-to/expo-setup">
+    Create a shared Expo app or add QNX to one.
+  </Card>
+</Cards>

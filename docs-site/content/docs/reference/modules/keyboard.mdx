@@ -10,7 +10,7 @@ No dedicated keyboard module exists in this repository. No package, native modul
 What exists is spread across three places:
 
 - `packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js` exports React Native's own `Keyboard` and `KeyboardAvoidingView` modules. The comment there says a module without its native half "degrades the way React Native itself does when its TurboModule is absent".
-- `packages/react-native-qnx/Libraries/Components/KeyboardAvoidingView/KeyboardAvoidingView.js` is a QNX replacement.
+- `packages/react-native-qnx/Libraries/Components/Keyboard/KeyboardAvoidingView.js` is a QNX replacement.
 - `TextInput` takes Qt key events (see the component matrix).
 
 ## Setup

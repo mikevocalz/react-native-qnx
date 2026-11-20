@@ -1,0 +1,152 @@
+---
+title: Gestures
+description: Use Gesture Handler 3 pan, tap and double tap on React Native QNX, with the gallery's draggable card as the example, and see which recognizers are implemented and which are not.
+---
+
+By the end you will have read a draggable card built from `usePanGesture`, `useTapGesture` and `useExclusiveGestures`, know the recognizers that exist and the ones that fail on the first pointer, and know what the Pi 400 runs showed. The code is the gallery's own [`SpringCard.js`](https://github.com/mikevocalz/react-native-qnx/blob/main/apps/component-gallery/motion/SpringCard.js), shown as excerpts.
+
+<Callout type="warn">
+  Not run in this docs pass: the native build with Gesture Handler on, and every gesture on a
+  device. The results below come from the cited receipts. Input in those runs was single-pointer
+  mouse events injected through QNX Screen. No finger touched a screen.
+</Callout>
+
+## Prerequisites
+
+- The [animations tutorial](/docs/tutorials/animations-reanimated). Gesture Handler writes Reanimated shared values, so the same native switches and versions apply.
+- `-DRNQNX_ENABLE_GESTURE_HANDLER=ON -DRNQNX_GESTURE_HANDLER_SOURCE_DIR=<node_modules>/react-native-gesture-handler`, with `react-native-gesture-handler` 3.4.0.
+
+## Which recognizers exist
+
+The recognizers are the repository's own C++ ([`vnext/src/gesture/GestureHandlerCore.cpp`](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/src/gesture/GestureHandlerCore.cpp)). The library's JavaScript and detector shadow node are upstream's.
+
+| Handler                        | Status                                                                                                     |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Pan                            | Minimum distance, active and fail offsets, velocity, translation, begin, activate, update, end and cancel. |
+| Tap                            | Tap count, maximum duration, maximum delay between taps, maximum distance.                                 |
+| LongPress                      | Minimum duration deadline, maximum distance.                                                               |
+| Fling                          | Direction mask, minimum velocity.                                                                          |
+| Manual                         | Driven by `GestureStateManager`.                                                                           |
+| Pinch, Rotation, Native, Hover | Accepted, then fail on the first pointer with a log line. Not implemented.                                 |
+
+Not implemented either: pointer data callbacks such as `onTouchesDown`, multi-pointer pan averaging, hit slop, `RNGestureHandlerButton` behavior (it mounts as a plain container), arbitration with Qt scrolling, and coordinate spaces for transformed ancestors.
+
+By default the first handler to activate fails every other begun or active handler that shares a pointer. `simultaneousHandlers` lets two handlers be active together. `waitFor` and `blocksHandlers` hold a handler at Began until another fails or ends. Input is Qt mouse and touch events seen through an event filter that never consumes them, so React responders and `Pressable` keep working beside it.
+
+## 1. Write a draggable card
+
+The pan stores the start position, follows the pointer, and springs back on release. Excerpt:
+
+```js
+const {
+  GestureHandlerRootView,
+  GestureDetector,
+  usePanGesture,
+  useTapGesture,
+  useExclusiveGestures,
+} = require('react-native-gesture-handler');
+const { scheduleOnRN } = require('react-native-worklets');
+
+const x = useSharedValue(0);
+const y = useSharedValue(0);
+const startX = useSharedValue(0);
+const startY = useSharedValue(0);
+const lift = useSharedValue(0);
+
+const pan = usePanGesture({
+  onBegin: () => {
+    'worklet';
+    startX.value = x.value;
+    startY.value = y.value;
+    lift.value = withTiming(1, { duration: 90 });
+    scheduleOnRN(setStatus, 'pan began');
+  },
+  onUpdate: (event) => {
+    'worklet';
+    x.value = startX.value + event.translationX;
+    y.value = startY.value + event.translationY;
+  },
+  onDeactivate: (event) => {
+    'worklet';
+    x.value = withSpring(0, { damping: 14, stiffness: 160, velocity: event.velocityX });
+    y.value = withSpring(0, { damping: 14, stiffness: 160, velocity: event.velocityY });
+    scheduleOnRN(
+      setStatus,
+      'released at ' +
+        Math.round(event.translationX) +
+        ', ' +
+        Math.round(event.translationY) +
+        ', springing back'
+    );
+  },
+  onFinalize: () => {
+    'worklet';
+    lift.value = withTiming(0, { duration: 140 });
+  },
+});
+```
+
+Every callback is a worklet. It runs on the UI-worklet thread and writes shared values, which Reanimated applies to the mounted Qt item. `scheduleOnRN` sends a message back to React.
+
+## 2. Add tap and double tap
+
+```js
+const doubleTap = useTapGesture({
+  numberOfTaps: 2,
+  onDeactivate: () => {
+    'worklet';
+    scheduleOnRN(setStatus, 'double tap');
+  },
+});
+const singleTap = useTapGesture({
+  onDeactivate: () => {
+    'worklet';
+    scheduleOnRN(incrementTaps);
+  },
+});
+// A single tap waits for the double tap to fail. The pan competes with both.
+const taps = useExclusiveGestures(doubleTap, singleTap);
+```
+
+Then wrap the card in a `GestureHandlerRootView` and a `GestureDetector` that takes the pan and the exclusive pair, and put the animated style from `useAnimatedStyle` on the card. Pointer clicks still reach `Pressable` siblings, such as the card's "Block JS 400 ms" button.
+
+## 3. What you should see
+
+On the Pi 400 after a drag and release, the card sits back at its start with the status line reading `released at 266, 85, springing back`:
+
+![The draggable card on the Pi 400: a teal rounded card reading Drag me, tapped 0, with the status line released at 266, 85, springing back below it.](/evidence/pi400-gesture-pan-release.png)
+
+After a double click the status line reads `double tap`, and the tap count does not increase. The receipt for those is `gesture-pan-release.png` and `gesture-double-tap.png` in [run 2](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md), and the 2026-11-13 notes record a single tap incrementing the count to 1. Run 1 recorded the swipeable-list card as well.
+
+## What was not verified
+
+- Pinch, rotation, and any multi-pointer gesture. The recognizers fail on the first pointer.
+- A gesture that keeps running while JavaScript is blocked. Run 1: `0 of 40 UI worklet jobs ran inside the busy window`. The "Block JS 400 ms" button exists to test this. On this host the JS thread is also the Qt GUI thread, so the screen cannot repaint during the block, and the card catches up from UI-thread state afterwards.
+- A touchscreen. Every recorded gesture used injected mouse events.
+- 1920x1080. The display was 1024x768.
+
+## Common errors
+
+| What you see                                     | Cause and fix                                                                                      |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| A pinch or rotation never activates              | Those handlers fail on the first pointer and log a line. Build the effect from a pan or a tap.     |
+| The single tap fires on every double tap         | The two taps are not joined with `useExclusiveGestures(doubleTap, singleTap)`.                     |
+| Nothing responds                                 | The tree is missing `GestureHandlerRootView`, or the build has `RNQNX_ENABLE_GESTURE_HANDLER=OFF`. |
+| A press on a button inside the card does nothing | An ancestor gesture claimed the pointer. Use `simultaneousHandlers` or move the button out.        |
+| The card pauses mid-drag after a slow handler    | JS blocked the GUI thread. Shorten the handler.                                                    |
+
+The last three rows are the expected consequences of the arbitration rules above. They were not reproduced for this page.
+
+## Next steps
+
+<Cards>
+  <Card title="Animations with Reanimated" href="/docs/tutorials/animations-reanimated">
+    The shared values the pan writes.
+  </Card>
+  <Card title="Drive input with rnqnx-inject" href="/docs/how-to/rnqnx-inject">
+    How the recorded input was sent.
+  </Card>
+  <Card title="Known gaps" href="/docs/reference/known-gaps">
+    What the project has not proven.
+  </Card>
+</Cards>

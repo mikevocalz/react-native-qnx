@@ -1,0 +1,85 @@
+---
+title: Cross-build for QNX on macOS, Linux and Windows
+description: Which hosts can build for QNX, how a Mac builds through a Linux container, and the configure, build, deploy and run commands with their dry-run output.
+---
+
+Builds for QNX run on a host that has the licensed QNX SDP 8.0.5 host tools. That means x86-64 Linux or Windows. This guide says what each host OS can do and gives the commands.
+
+<Callout type="warn">
+  Not run in this docs pass: the configure, build, deploy and run commands and the container. They
+  need the SDP. Their `--dry-run` forms ran on a Mac, and the output is quoted.
+</Callout>
+
+## Prerequisites
+
+- A toolchain set up as in [Set up the toolchain](/docs/how-to/set-up-toolchain), with `pnpm qnx doctor` free of errors.
+- The SDP sourced in the shell that builds.
+
+## Which host does what
+
+| Host                           | Cross-build                          | Notes                                                                                                 |
+| ------------------------------ | ------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| x86-64 Ubuntu 22.04            | Yes, canonical                       | The project builds here. Ubuntu 24.04 and RHEL 9 are SDP-supported hosts.                             |
+| Windows 11 x64                 | Documented as possible, not verified | See [cross-build from Windows](/docs/how-to/cross-build-windows). The helper scripts are POSIX shell. |
+| macOS (Apple silicon or Intel) | No SDP host tools                    | Edit and run host checks locally. Build in a Linux container or over SSH to an Ubuntu host.           |
+
+On macOS, `pnpm qnx doctor` reports `qcc` as unavailable even with the SDP sourced, because `QNX_HOST` selects the Windows host tools. That is correct for that host.
+
+## Build on Linux
+
+```bash
+source <qnx-installation>/qnxsdp-env.sh
+pnpm install --frozen-lockfile
+pnpm qnx doctor
+pnpm qnx configure-qnx --arch aarch64 --config Release
+pnpm qnx build-qnx --arch aarch64 --config Release
+```
+
+`--arch` takes `aarch64` or `x86_64` and `--config` takes `Debug` or `Release`. The scripts map the pair to a checked-in CMake preset and recreate its configure state with `cmake --fresh`. The dry runs printed:
+
+```json
+{ "executable": "bash", "args": ["<checkout>/scripts/configure-qnx.sh", "aarch64", "Release"], "cwd": "<checkout>" }
+{ "executable": "bash", "args": ["<checkout>/scripts/build-qnx.sh", "aarch64", "Release"], "cwd": "<checkout>" }
+```
+
+The output goes to `build/qnx-aarch64-release/bin/`. `build-qnx.sh` stops with `Configured Ninja build not found` until configure has run. The app host is built by `pnpm qnx project build-native`, covered in the [release tutorial](/docs/tutorials/ship-a-release-build).
+
+## Build from a Mac
+
+The project's own Mac setup is a Colima VM with a Docker container named `qnx805-build` (Ubuntu 24.04, x86-64 under Rosetta, the SDP mounted at `/work`). [`docs/handoff/QNX_SDK_CONTAINER_MACOS.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/handoff/QNX_SDK_CONTAINER_MACOS.md) records how it was made and recreated. Check or restart it with:
+
+```bash
+scripts/qnx-sdk-container.sh status
+scripts/qnx-sdk-container.sh start
+```
+
+`status` reports each check as PASS or FAIL and changes nothing. `start` restarts a stopped profile or container and never creates, recreates or removes one. Then run the Linux commands above inside the container. The alternative is to use the Mac as a client: edit locally, `pnpm validate:macos`, and run the doctor, configure, build and deploy over SSH on an Ubuntu host.
+
+## Deploy and run
+
+```bash
+export QNX_TARGET_IP=qnxpi.local
+export QNX_TARGET_USER=qnxuser
+pnpm qnx deploy-qnx --arch aarch64 --config Release --target rnqnx_playground
+pnpm qnx run-qnx --arch aarch64 --target rnqnx_playground
+```
+
+The dry runs printed `scripts/deploy-qnx.sh aarch64 rnqnx_playground Release` and `scripts/run-qnx.sh aarch64 rnqnx_playground`. [Deploy over ssh](/docs/how-to/deploy-over-ssh) covers them.
+
+## Verify
+
+A build succeeded when `build/qnx-aarch64-release/bin/<target>` exists. It is not proven until it runs on the board. The repository's own rule: do not record a macOS host build as a QNX compile or runtime pass.
+
+## Troubleshooting
+
+| What you see                        | Cause and fix                                                                                  |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `QNX_HOST` or `QNX_TARGET` is unset | Source `qnxsdp-env.sh`, then run the license check and the doctor.                             |
+| `qcc` not found                     | Put `${QNX_HOST}/usr/bin` on `PATH`. The official SDP environment script normally does.        |
+| Screen headers or libraries missing | Install the graphics development package through QNX Software Center. Do not stub the headers. |
+| CMake cannot find the QNX toolchain | Use the repository scripts so the architecture and preset stay consistent.                     |
+
+## Reference
+
+- [CLI reference](/docs/reference/cli)
+- [Build and deploy](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/build-and-deploy.md) in the repository.

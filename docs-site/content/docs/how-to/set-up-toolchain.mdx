@@ -1,0 +1,121 @@
+---
+title: Set up the toolchain
+description: Install and check the host tools for JavaScript work and the host renderer, then the licensed QNX SDP side, and read what pnpm qnx doctor reports.
+---
+
+This guide installs and checks the tools in two groups. The host group lets you bundle JavaScript and render on your computer. The QNX group lets you cross-build for the board and needs a licensed SDP. Do the host group first. It is enough for the [quick start](/docs/tutorials/quick-start).
+
+## Prerequisites
+
+- macOS or Linux for the host group. The SDP supports Ubuntu 22.04 and 24.04, RHEL 9 and Windows 11 as hosts. It has no macOS or ARM host tools.
+- A myQNX account for the SDP. QNX offers a free, non-commercial SDP 8.0 license through a signed-in account. Commercial work needs a separate license determination. The repository never ships the SDP.
+
+## Host tools
+
+| Tool   | Version                           | Used by                                                  |
+| ------ | --------------------------------- | -------------------------------------------------------- |
+| Node   | 26 or newer (26.13.0 verified)    | Everything. `package.json` requires `>=26.0.0`.          |
+| pnpm   | 12.18.0 exactly                   | The workspace. The `packageManager` field pins it.       |
+| CMake  | 3.31.9 or newer (4.4.5 verified)  | Host renderer, QNX builds.                               |
+| Ninja  | 1.11 or newer (1.13.2 verified)   | Host renderer, QNX builds.                               |
+| Qt     | 6.11.1 or newer (6.12.0 verified) | Host renderer only. A warning in `doctor`, not an error. |
+| Python | 3.11 or newer (3.13.3 verified)   | Helper scripts.                                          |
+
+On macOS, `./scripts/bootstrap-macos.sh` prepares a machine. It checks Node against 26.0.0 and pnpm against 12.18.0 and installs nothing proprietary. On Ubuntu, `./scripts/bootstrap-host.sh` installs CMake, Ninja, Node, pnpm and Python. It does not install or license the SDP.
+
+If your global pnpm is older, it tries to switch itself and can fail with `Failed to switch pnpm to v12.18.0`. Use a prefixed copy:
+
+```bash
+npm install --prefix ~/pnpm12 pnpm@12.18.0
+export PATH=~/pnpm12/node_modules/.bin:$PATH
+node ~/pnpm12/node_modules/pnpm/install.js
+pnpm --version
+```
+
+The `install.js` line replaces npm's blocked-script stub with the native binary. Without it, `pnpm` works from your shell but fails when another program starts it with `spawnSync` (for example `pnpm test:js`) with `ENOEXEC`.
+
+## Check the host group
+
+```bash
+node --version
+pnpm --version
+cmake --version | head -1
+ninja --version
+qmake --version
+```
+
+Verified output: `v26.13.0`, `12.18.0`, `cmake version 4.4.5`, `1.13.2`, `Using Qt version 6.12.0 in /opt/homebrew/lib`.
+
+Then run the doctor from the checkout:
+
+```bash
+pnpm install --frozen-lockfile
+pnpm qnx doctor
+```
+
+On a Mac with no SDP the doctor exits 1. That is expected. The verified output:
+
+```text
+[1/8] Host environment
+  WARNING: Host OS is Darwin. QNX SDP 8.0 ships Linux and Windows host tools only, so qcc cannot run here.
+  WARNING: Host architecture is arm64. The QNX SDP host tools are x86-64 binaries.
+[2/8] QNX SDP
+  ERROR: The QNX SDP environment is not loaded (QNX_HOST and QNX_TARGET are unset).
+[3/8] Build tools
+  OK: cmake 4.4.5 satisfies >=3.31.9
+  OK: ninja 1.13.2 satisfies >=1.11
+  OK: Qt 6.12.0 host tools found (qtpaths6)
+[4/8] Node.js tooling
+  OK: node 26.13.0 satisfies >=26.0.0
+  OK: pnpm 12.18.0 matches the repository pin
+[5/8] Python
+  OK: python3 3.13.3 satisfies >=3.11
+[7/8] Target device configuration
+  SKIPPED: target device (no target configured; ...)
+Environment has 1 error(s) and 2 warning(s).
+```
+
+Every `ERROR` and `WARNING` is followed by a `Fix:` line. The log is also written under `artifacts/logs/`.
+
+## QNX group
+
+Not run in this docs pass: everything in this section needs a licensed SDP and an x86-64 Linux or Windows host.
+
+1. Install QNX Software Center through your licensed channel.
+2. Install QNX SDP 8.0.5 and, for a Pi 4 or 5, the QSTI package.
+3. Activate the license, then source the SDP environment in every build shell:
+
+```bash
+source <qnx-installation>/qnxsdp-env.sh
+./scripts/verify-qnx-license.sh
+pnpm qnx doctor
+```
+
+What you should see: no `ERROR` lines. The doctor also checks `qcc` and `q++`, the Screen and EGL headers, and for a deploy it needs a target. Set the target before `deploy-qnx`:
+
+```bash
+export QNX_TARGET_IP=qnxpi.local
+export QNX_TARGET_USER=qnxuser
+```
+
+Qt for the target is a public-source 6.12.0 build made by [`scripts/qt-public/`](https://github.com/mikevocalz/react-native-qnx/tree/main/scripts/qt-public). It runs in a Linux container with the SDP and needs the Qt 6.12.0 source archive (SHA-256 `98ff4f44bac6ec3e1e62ee2a4316ae0e3d15badb015d753cc0268a20db52f165`) and the CVE patch files its README lists. Hermes for QNX is built with `pnpm hermes:qnx:prepare` and `pnpm hermes:qnx:configure`.
+
+## Verify
+
+- Host group: `pnpm qnx doctor` shows `OK` for CMake, Ninja, Node, pnpm and Python, and Qt either `OK` or a warning.
+- QNX group: the doctor has no errors and `qcc -V` lists `gcc_ntoaarch64le`.
+
+## Troubleshooting
+
+| What you see                                    | Cause and fix                                                                                 |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `Failed to switch pnpm to v12.18.0`             | Old global pnpm. Use the prefixed copy above.                                                 |
+| `qcc` unavailable on macOS with the SDP sourced | `QNX_HOST` selects Windows host tools. Correct. Build on x86-64 Ubuntu.                       |
+| Qt is missing in `doctor`                       | A warning only the host renderer and `rnqnx_playground_qnx` need. Install Qt 6.11.1 or newer. |
+| `The QNX SDP environment is not loaded`         | Source `qnxsdp-env.sh` in the same shell.                                                     |
+
+## Reference
+
+- [CLI reference](/docs/reference/cli) for `doctor`.
+- [Qt tiers](/docs/reference/qt-tiers) for which Qt modules are in play.
+- [Toolchain evidence](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/toolchain.md) and [build and deploy](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/build-and-deploy.md).
