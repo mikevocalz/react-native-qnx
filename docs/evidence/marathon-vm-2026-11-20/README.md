@@ -64,6 +64,7 @@ One item is left open: the Debug host is built with AddressSanitizer, and at exi
 
 ## Files
 
+- `SHA256SUMS`: hashes of every other file in this directory.
 - `contracts.md`: what Marathon-Shell exposes to a client, with `file:line` citations into the shell source.
 - `environment.txt`, `compositor-env.txt`: versions, `ldd`, `file`, hashes, how the compositor was started.
 - `logs/`: compositor logs, build logs, wayland-info, host stdout and stderr, step log.

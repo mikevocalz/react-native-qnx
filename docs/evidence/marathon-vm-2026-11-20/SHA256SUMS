@@ -22,7 +22,7 @@ bdff727e474f777b98043563075f25d58cf98a300224892e5fe3fc66adf19045  ./logs/probe-h
 bc33e10947870e69ed84ce574fb3884b0d69af330d4df572dc60b7020a6ad929  ./logs/shell-build-attempt2-RUSTC_BOOTSTRAP.log
 926f9b6a1fabb1ccc33b93b1fda7ab6002b772f0789217bfde9e27a5c783a4fb  ./logs/shell-build-rustup-1.100.log
 1534487acee4a34c135eef0b03f64f7541d7bcd02474f2ac9c7130fa418f391b  ./logs/wayland-info-marathon-shell.txt
-f761bfecc6a704a8bc0e4714f2ef7fabce76d00a19845297f194bc32e5e562b2  ./README.md
+351f3c4939e26a3c91e9676e1c91498ee613ffc4343f3074bbf7ef5520045a33  ./README.md
 14466a6b0daf91457f2ef8909ef4c09d060685467fbb69949d1421c14ee98248  ./screenshots/00-shell-home-vnc.png
 a608e8b02485aaeb5aef7515d5b1d48934ed3ee6366378923f6fa0d86407c55f  ./screenshots/01-shell-home-usr1.png
 4e81e778ea8dff5e8a4a05932935bda6cc72bfc7a3661ef6c7ffbfaaf61484a1  ./screenshots/probe-20-launched.png
