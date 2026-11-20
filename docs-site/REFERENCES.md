@@ -6,7 +6,7 @@ Mobbin was used for layout references, searched on 2026-11-19. No image was copi
 
 | Reference                                                                                                  | Pattern borrowed                                                                               |
 | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| [Vercel, developer framework hero](https://mobbin.com/sites/sections/23fc99c3-5a39-45ae-9b49-7015e3193042) | One headline, one install command, one "read docs" button. Used for the home page hero.        |
+| [Vercel, developer framework hero](https://mobbin.com/sites/sections/23fc99c3-5a39-45ae-9b49-7015e3193042) | One headline, a primary Quick start button, and a short code block of the first three commands. Used for the home page hero.        |
 | [Mural, "for developers"](https://mobbin.com/sites/sections/d98fd0c4-8ff4-4ef8-bf82-c2597b1edb38)          | A plain statement of what it is above a single docs call to action.                            |
 | [Anchor, "made for developers"](https://mobbin.com/sites/sections/d99917c8-d6a4-42f2-92ce-00e32442c35c)    | A code sample next to the headline. Used as the reason to show real commands on the home page. |
 

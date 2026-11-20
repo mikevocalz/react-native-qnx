@@ -140,7 +140,9 @@ const adrs = readdirSync(adrDir)
   .map((f) => {
     const txt = readFileSync(join(adrDir, f), 'utf8');
     const title = txt.match(/^# (.+)$/m)?.[1].replace(/^ADR-\d+:\s*/, '') ?? f;
-    const status = (txt.match(/## Status\s+([^\n]+)/)?.[1] ?? '').trim();
+    const raw = (txt.match(/## Status\s+([\s\S]*?)(?:\n\s*\n|$)/)?.[1] ?? '').replace(/\s*\n\s*/g, ' ').trim().replace(/\[([^\]]+)\]\([^)]*\)/g, '$1');
+    // First sentence; never cut mid-sentence.
+    const status = raw.match(/^.*?\.(?=\s|$)/)?.[0] ?? raw;
     return { file: f, num: f.slice(0, 4), title, status, sha: shaFor([`docs/adr/${f}`]) };
   });
 const shown = adrs.filter((a) => !banned.test(a.title) && !banned.test(a.file));
@@ -161,11 +163,11 @@ const adrPage = [
   '| --- | --- | --- | --- |',
   ...shown.map(
     (a) =>
-      `| [${a.num}](${BLOB}docs/adr/${a.file}) | ${esc(a.title)} | ${esc(a.status.slice(0, 120))} | \`${a.sha}\` |`
+      `| [${a.num}](${BLOB}docs/adr/${a.file}) | ${esc(a.title)} | ${esc(a.status)} | \`${a.sha}\` |`
   ),
   '',
   hidden
-    ? `${hidden} more ${hidden === 1 ? 'record covers' : 'records cover'} a separate target and appear only in the [repository index](${BLOB}docs/adr/index.md).`
+    ? `${hidden} more ${hidden === 1 ? 'record covers' : 'records cover'} a separate target and ${hidden === 1 ? 'appears' : 'appear'} only in the [repository index](${BLOB}docs/adr/index.md).`
     : '',
   '',
 ].join('\n');

@@ -21,7 +21,7 @@ Commands marked **run** were executed by the verifier; see the [verification log
 | `log-qnx`                                      | Streams slog2 output from the target.                                                          | help only                   |
 | `evidence verify [--dir <path>]`               | Verifies captured Pi evidence and writes a SHA-256 manifest into that directory.               | help only                   |
 
-Shared options: `--help`, `--dry-run`, `--app`, `--out`, `--arch aarch64|x86_64` (default `aarch64`), `--config Debug|Release` (default `Debug`), `--target <cmake-target>` (default `rnqnx_playground`, the Screen probe), `--dir`. Unrelated options and extra words are rejected.
+Shared options: `--help`, `--dry-run`, `--app`, `--out`, `--arch aarch64|x86_64` (default `aarch64`), `--config Debug|Release` (default `Debug`), `--target <cmake-target>` (default `rnqnx_playground`, the Screen probe), `--dir`. Unrelated options and extra words are rejected. `--dry-run` works on every command except `init`.
 
 `rnqnx_playground` is the Screen probe. The React Native runtime is `rnqnx_playground_qnx`.
 

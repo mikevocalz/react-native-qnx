@@ -7,7 +7,7 @@ Messages marked **seen** were produced by the verifier. Others are quoted from t
 
 ## pnpm
 
-**`Failed to switch pnpm to v12.18.0`** (seen as an `ENOEXEC` on a broken global pnpm). The repository pins pnpm through `packageManager`. Install it: `npm install -g pnpm@12.18.0`, or install it into a prefix and put that on your PATH. Check with `pnpm --version`.
+**`Failed to switch pnpm to v12.18.0`** (seen with v12.8.1 and `ENOEXEC` in the 2026-11-12 clean-host receipt, from an older global pnpm; not re-run for 12.18.0). The repository pins pnpm through `packageManager`. Install it: `npm install -g pnpm@12.18.0`, or install it into a prefix and put that on your PATH. Check with `pnpm --version`.
 
 ## CLI
 
@@ -33,7 +33,7 @@ Messages marked **seen** were produced by the verifier. Others are quoted from t
 
 ## Tests
 
-**`pnpm test:js` stops at `tests/js/braces-security.test.mjs`** with `ERR_INVALID_ARG_TYPE: The "message" argument must be one of type string or function` (seen on macOS arm64, Node 26.13.0). The README says the suite stops at the first failing file and lists known macOS failures in [the clean-host receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/clean-host-sim-2026-11-12-b51b49c.md#known-test-failures-on-macos). Whether this one is listed there was not checked.
+**`pnpm test:js` stops at `tests/js/braces-security.test.mjs`** with `ERR_INVALID_ARG_TYPE: The "message" argument must be one of type string or function` (seen on macOS arm64, Node 26.13.0). `scripts/run-js-tests.mjs` imports the files in order and stops at the first failure. [The clean-host receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/clean-host-sim-2026-11-12-b51b49c.md#known-test-failures-on-macos) lists five other failing files and not this one. The cause was the test spawning a bare `pnpm` and passing a null `stderr` as the assertion message, so it failed with this error whenever `pnpm` was not on `PATH`. `scripts/lib/braces-security.mjs` now runs the pnpm that launched the suite.
 
 ## Device
 

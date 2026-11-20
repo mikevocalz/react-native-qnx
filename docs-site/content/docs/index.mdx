@@ -12,14 +12,14 @@ Every device result comes from one physical Raspberry Pi 400 running a custom BC
 | Proven on the Pi 400                             | Receipt                                                                                                           |
 | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
 | Reanimated animation, including a spring         | [run 1](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19)       |
-| Gesture Handler pan, tap and double-tap          | [run 1](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19)       |
+| Gesture Handler pan, tap and double-tap          | [run 1](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19) (pan, tap), [run 2](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19) (pan, double-tap) |
 | SVG and expo-image cards                         | [run 2](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19)       |
 | Escape closing a Modal and a drawer              | [run 2](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run2-2026-11-19)       |
 | Held key repeat, sent as synthetic Screen events | [key hold](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-keyhold-2026-11-19) |
 
 ## What is not proven
 
-Pinch, rotation and multi-pointer gestures. 1920x1080 output beyond the Hello World capture (the 2026-11-19 runs used 1024x768). Video and audio (the QtVideo module is not in the build). A held key on a real USB keyboard. A stock Pi 4. All eleven release gates. See [status and limits](/docs/reference/status).
+Pinch, rotation and multi-pointer gestures. 1920x1080 output beyond the Hello World capture (the 2026-11-19 runs used 1024x768). Video and audio beyond one Pi 400 QtVideo run on 2026-11-13, which used the opt-in Qt Multimedia add-on build (the 2026-11-19 builds had QtVideo off, and the audio output opened but was not heard). A held key on a real USB keyboard. A stock Pi 4. All eleven release gates. See [status and limits](/docs/reference/status).
 
 ## Find a page by what you need
 
