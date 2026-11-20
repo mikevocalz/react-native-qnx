@@ -1,0 +1,142 @@
+---
+title: Images and SVG
+description: Load images with Image and expo-image and draw vector graphics with react-native-svg on React Native QNX, with the formats, limits and device receipts that apply.
+---
+
+By the end you will know how to load a data URI, a bundled asset and an HTTPS image, how `Image.getSize` and `Image.prefetch` behave, how to draw SVG shapes with gradients and clips, and which native switches and Qt plugins each one needs. Image loading and SVG both rest on Qt: Qt Network and Qt's image plugins for pictures, and a Qt Quick painter for `react-native-svg`.
+
+<Callout type="warn">
+  Not run in this docs pass: the native builds with `RNQNX_ENABLE_QT_RNSVG` and
+  `RNQNX_ENABLE_QT_EXPO_IMAGE` on, and every picture below on a device. The screenshots are from the
+  Pi 400 receipts. The matrix lists `Image` as supported on the host and unverified on the Pi 400.
+</Callout>
+
+## Support levels
+
+From [`docs/component-support.json`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/component-support.json):
+
+| Item              | Host      | Pi 400     | Note                                                                                              |
+| ----------------- | --------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| `Image`           | supported | unverified | Data URIs, Metro assets and HTTP(S) loading, load events and a header-aware bounded memory cache. |
+| `ImageBackground` | supported | unverified | Composes `View` and `Image`, paints the image behind its children, forwards `resizeMode`.         |
+
+Modules outside that table have their own receipts:
+
+- `expo-image` GIF and WebP frames and resize, on the Pi 400, receipt [`expo-image-device-2026-11-13`](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/expo-image-device-2026-11-13) and run 2 of 2026-11-19.
+- `react-native-svg` 15.16.0: fill rules, gradients, filters, patterns, text and touch targets, in run 2 on the Pi 400.
+- Qt image plugins for JPEG, GIF and WebP on the Pi 400, receipt `pi-image-formats-2026-11-13`.
+
+## Prerequisites
+
+- The [first component app](/docs/tutorials/first-component-app) with the public entry on, so `import { Image } from 'react-native'` works.
+- For a device: Qt's TLS backend and image plugins staged with the runtime, as described below.
+
+## 1. Show a local image
+
+```jsx
+import { Image, View } from 'react-native';
+
+const dot =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGMwTpv5HwAENAIyWy0K4AAAAABJRU5ErkJggg==';
+
+export function Tiny() {
+  return (
+    <View style={{ flex: 1 }}>
+      <Image source={{ uri: dot }} style={{ width: 120, height: 120 }} resizeMode="contain" />
+    </View>
+  );
+}
+```
+
+Supported sources: base64 data URIs (strict; percent-encoded data URIs are explicitly unsupported), Metro assets, file URLs, absolute paths, `qrc:` URLs and HTTP(S). Without Qt's JPEG, GIF and WebP plugins in `plugins/imageformats/`, Qt Quick decodes only PNG. An app carries `libqwebp.so` next to the JPEG and GIF plugins. Details are in [image loading](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/image-loader.md).
+
+## 2. Read the size and prefetch
+
+```js
+import { Image } from 'react-native';
+
+try {
+  const { width, height } = await Image.getSize(uri);
+  await Image.prefetch(uri);
+  const cached = await Image.queryCache([uri]);
+  console.log(cached[uri]); // "memory" while the decoded image is retained
+} catch (error) {
+  console.error('Could not load the image', error);
+}
+```
+
+Behavior from the loader's contract:
+
+- A failed lookup rejects with an `Error`. HTTP errors, malformed payloads, oversized images, missing files and unsupported schemes all reject.
+- Requests time out after 30 seconds and accept at most 16 MiB encoded and 16 million pixels decoded.
+- The decoded cache is a 32 MiB LRU. An image larger than the budget, or one marked private or `no-store`, can load and still be absent from `queryCache`.
+- Redirects allow five hops. TLS errors are not ignored. A self-signed certificate is rejected.
+- `Image.getSizeWithHeaders(uri, headers)` sends the headers and bypasses the URI-only cache.
+
+## 3. Load from a URL, and what the board needed
+
+On the Pi 400 on 2026-11-13 the gallery's "Image from a URL" card loaded a public HTTPS JPEG in 338 to 688 ms and a plain HTTP image in 68 to 161 ms. It rejected a self-signed HTTPS endpoint with `SSL handshake failed: The certificate is self-signed, and untrusted`, and a missing host with `Host rnqnx-missing.invalid not found`. That needed three additions to the Qt runtime: Qt's OpenSSL TLS backend (`libqopensslbackend.so`, which loads the board's OpenSSL 3), the JPEG and GIF image plugins, and the WebP plugin from `qtimageformats`. `scripts/qt-public/configure-qnx.sh` builds them and `stage-runtime.py` stages them.
+
+Run 2 on 2026-11-19 logged the same card at 154,149 ms and 618,203 ms for one URL. Earlier runs on this board show 677 to 721 ms for it, and the key-hold run logged 30,905 ms. The cause of the spread is unknown. Do not plan around network load times on the Pi until it is explained.
+
+## 4. Animated images with expo-image
+
+`expo-image` renders through the Fabric component `ViewManagerAdapter_ExpoImage` (`RNQNX_ENABLE_QT_EXPO_IMAGE`). It shares the decoded cache with `Image`, so `Image.prefetch` fills the cache that `expo-image` reads. Six fetches run at a time through one queue.
+
+![The expo-image card on the Pi 400 showing a 64 by 48 animated GIF frame, yellow with a white bar, with the status Loaded 64x48 and contentFit cover.](/evidence/pi400-expo-image-gif.png)
+
+That is one frame of an animated GIF chip. The same run captured three frames about a second apart (yellow, green, blue) and an animated WebP chip, plus the resize card with `startAnimating`. The app log shows `IMAGE-PROOF load {"count":1,"view":20,"sourceWidth":1024,"sourceHeight":1024,"cache":"none"}`. The receipt notes the app log has no ImageLoader lines, so the ImageLoader's own behavior in that build is not confirmed by it.
+
+## 5. Draw with react-native-svg
+
+Enable it with `-DRNQNX_ENABLE_QT_RNSVG=ON`. The switch needs only Qt Core, Gui and Quick and does not link `Qt6::Svg`. The package is unmodified, so you import it as usual:
+
+```jsx
+import Svg, { Defs, LinearGradient, Stop, Circle, Rect } from 'react-native-svg';
+
+<Svg width={200} height={120} viewBox="0 0 200 120">
+  <Defs>
+    <LinearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+      <Stop offset="0" stopColor="#79e8dc" />
+      <Stop offset="1" stopColor="#2f80ed" />
+    </LinearGradient>
+  </Defs>
+  <Rect width="200" height="120" rx="12" fill="url(#g)" />
+  <Circle cx="100" cy="60" r="30" fill="#fff" onPress={() => console.log('tapped')} />
+</Svg>;
+```
+
+Each `<Svg>` mounts one painted Qt Quick item that walks its element children, so the scene graph holds one textured node per `<Svg>` however many elements it has. Importing the package in a host built without the switch fails the first time a component renders, with React Native's unknown-component error for `RNSVGSvgView`.
+
+Run 2 on the Pi 400 captured gradients, clip and mask, text layout, fill rules, patterns with symbols and markers, filters, and touch targets:
+
+![Two gallery cards on the Pi 400: gradients (a linear gradient square, a radial gradient sphere and gradient bars) and clip, mask and use (a circle with a dot, a star, a masked gradient and two small badges), and the top of a Text card with gradient-filled text.](/evidence/pi400-svg-gradients-clip.png)
+
+In the touch-target card, presses on a circle and on its group raised counters 0 and 0 to Circle 1 and Group 1. Run 2 recorded these as screenshots, so they rest on pictures and not on log lines. The host is covered by golden-pixel renderer tests.
+
+`QtSvgDocument` is a separate component: it renders one static XML string and has no element tree, updates or touch targets.
+
+## Common errors
+
+| What you see                                    | Cause and fix                                                                             |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Only PNGs show, JPEGs are blank                 | The runtime has no `plugins/imageformats/` JPEG plugin. Stage it with `stage-runtime.py`. |
+| Every `https://` image fails                    | The staged Qt runtime has no `plugins/tls/` OpenSSL backend.                              |
+| An animated WebP fails to load                  | `libqwebp.so` is missing from `plugins/imageformats/`.                                    |
+| `Unknown component RNSVGSvgView` style error    | The build has `RNQNX_ENABLE_QT_RNSVG=OFF`.                                                |
+| `Image.queryCache` does not list a loaded image | The response was larger than 32 MiB decoded, or private or `no-store`.                    |
+| A self-signed HTTPS image is rejected           | Intended. TLS errors are never ignored.                                                   |
+
+## Next steps
+
+<Cards>
+  <Card title="Component matrix" href="/docs/reference/component-matrix">
+    Support level for each component.
+  </Card>
+  <Card title="Module matrix" href="/docs/reference/module-matrix">
+    Support level for each native module.
+  </Card>
+  <Card title="Ship a release build" href="/docs/tutorials/ship-a-release-build">
+    Stage the assets and plugins with the build.
+  </Card>
+</Cards>

@@ -1,0 +1,235 @@
+---
+title: Styling and theming
+description: Style the notes app with StyleSheet and Yoga flexbox, then move its colours into a dark and light theme with a React context and Appearance.
+---
+
+By the end the notes app from the [previous tutorial](/docs/tutorials/first-component-app) takes every colour from a theme object, has a button that switches between a dark and a light set, and falls back to dark when the system reports no colour scheme. The sample was bundled and rendered by the host renderer on macOS on 2026-11-19. Both screenshots below came from that renderer.
+
+## Prerequisites
+
+- The notes app from [Build your first component app](/docs/tutorials/first-component-app), with the public entry turned on in its Metro config.
+- A built `build/playground/bin/rnqnx_playground_host` from the [quick start](/docs/tutorials/quick-start).
+
+## How styling works here
+
+React Native styles are plain objects. `StyleSheet.create` returns them unchanged and lets you pass an array that merges left to right, so `[styles.row, pressed && styles.rowPressed]` applies the second only while pressed. Layout is Yoga flexbox, the same engine as React Native on Android and iOS: `flex`, `flexDirection`, `justifyContent`, `alignItems`, `padding`, `margin` and percentages.
+
+The matrix in [`docs/component-support.json`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/component-support.json) lists what the native side draws. For `View`: Yoga layout, background colour, corner radius and opacity. Borders, clipping and transforms have limits listed in [component support](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/component-support.md), so check that file before you rely on a `borderWidth` with a large radius or an `overflow: 'hidden'` crop. For `Text`: styled and wrapped text and `numberOfLines` ellipsis. Inline attachments have zero size.
+
+Two practical rules come from the repository's own gallery, in [`apps/component-gallery/ui.js`](https://github.com/mikevocalz/react-native-qnx/blob/main/apps/component-gallery/ui.js):
+
+- Use whole-pixel widths for grids. Percentage widths that add up to exactly 100% (48% plus a 2% margin) can overflow by a rounding error in Yoga and wrap every card onto its own line. The gallery measures the content width with `onLayout` and computes whole-pixel card widths.
+- Pick the column count from the measured width, not from a platform check. The gallery uses one column below 900 px, two from 900 and three from 1500.
+
+## 1. Add a theme module
+
+Create `apps/notes/theme.js`:
+
+```jsx
+import * as React from 'react';
+import { useColorScheme } from 'react-native';
+
+export const themes = {
+  dark: {
+    background: '#102033',
+    panel: '#142538',
+    panelPressed: '#1b3550',
+    text: '#e9f0f7',
+    muted: '#9dafc2',
+    accent: '#79e8dc',
+    checkbox: '#2c4a68',
+  },
+  light: {
+    background: '#f4f7fa',
+    panel: '#ffffff',
+    panelPressed: '#e3ecf5',
+    text: '#14202e',
+    muted: '#53657a',
+    accent: '#0b7f76',
+    checkbox: '#b8c7d6',
+  },
+};
+
+const ThemeContext = React.createContext({ name: 'dark', colors: themes.dark, toggle() {} });
+
+export function ThemeProvider({ children }) {
+  // The system scheme is only the starting point. `override` wins once the user picks.
+  const system = useColorScheme();
+  const [override, setOverride] = React.useState(null);
+  const name = override ?? (system === 'light' ? 'light' : 'dark');
+  const value = React.useMemo(
+    () => ({
+      name,
+      colors: themes[name],
+      toggle: () => setOverride(name === 'dark' ? 'light' : 'dark'),
+    }),
+    [name]
+  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+}
+
+export function useTheme() {
+  return React.useContext(ThemeContext);
+}
+```
+
+`Appearance` and `useColorScheme` are exported by the QNX public entry as the real React Native modules. Anything other than `'light'` falls back to dark. That default matches QNX itself: the window-chrome code reports no colour scheme on QNX, so QNX apps get a dark title bar. What `useColorScheme()` returns on the Pi 400 was not recorded in any receipt.
+
+## 2. Use the theme in the screen
+
+Replace `apps/notes/index.js`. Static layout stays in `StyleSheet`; colours come from `useTheme()` and are merged in as inline objects:
+
+```jsx
+import * as React from 'react';
+import { AppRegistry, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ThemeProvider, useTheme } from './theme';
+
+const NOTES = [
+  { id: '1', title: 'Order a spare SD card' },
+  { id: '2', title: 'Label the USB Ethernet cable' },
+  { id: '3', title: 'Check the display resolution' },
+];
+
+function NoteRow({ note, done, onToggle }) {
+  const { colors } = useTheme();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={() => onToggle(note.id)}
+      style={({ pressed }) => [
+        styles.row,
+        { backgroundColor: pressed ? colors.panelPressed : colors.panel },
+      ]}
+    >
+      <View style={[styles.box, { backgroundColor: done ? colors.accent : colors.checkbox }]} />
+      <Text
+        style={[
+          styles.rowText,
+          { color: done ? colors.muted : colors.text },
+          done && styles.rowTextDone,
+        ]}
+      >
+        {note.title}
+      </Text>
+    </Pressable>
+  );
+}
+
+function Notes() {
+  const { name, colors, toggle } = useTheme();
+  const [doneIds, setDoneIds] = React.useState(() => new Set(['2']));
+  const toggleNote = React.useCallback((id) => {
+    setDoneIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  return (
+    <View style={[styles.screen, { backgroundColor: colors.background }]}>
+      <View style={styles.header}>
+        <View>
+          <Text style={[styles.title, { color: colors.text }]}>Notes</Text>
+          <Text style={[styles.subtitle, { color: colors.muted }]}>
+            {doneIds.size} of {NOTES.length} done
+          </Text>
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          onPress={toggle}
+          style={[styles.themeButton, { borderColor: colors.accent }]}
+        >
+          <Text style={{ color: colors.accent, fontSize: 16 }}>Theme: {name}</Text>
+        </Pressable>
+      </View>
+      <FlatList
+        data={NOTES}
+        keyExtractor={(note) => note.id}
+        extraData={[doneIds, name]}
+        renderItem={({ item }) => (
+          <NoteRow note={item} done={doneIds.has(item.id)} onToggle={toggleNote} />
+        )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+      />
+    </View>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <Notes />
+    </ThemeProvider>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, padding: 24 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  title: { fontSize: 32, fontWeight: '600' },
+  subtitle: { fontSize: 16, marginTop: 4 },
+  themeButton: { borderWidth: 1, borderRadius: 8, paddingVertical: 8, paddingHorizontal: 14 },
+  row: { flexDirection: 'row', alignItems: 'center', padding: 14, borderRadius: 8 },
+  box: { width: 20, height: 20, borderRadius: 4, marginRight: 12 },
+  rowText: { fontSize: 18 },
+  rowTextDone: { textDecorationLine: 'line-through' },
+  separator: { height: 8 },
+});
+
+AppRegistry.registerComponent('RNQnxPlayground', () => App);
+```
+
+`extraData={[doneIds, name]}` makes the list re-render when the theme changes. Without it `FlatList` skips rows whose `data` is the same array.
+
+## 3. Bundle and render
+
+```bash
+pnpm qnx bundle-qnx --app notes --out build/notes-themed.bundle.js
+./build/playground/bin/rnqnx_playground_host \
+  --bundle build/notes-themed.bundle.js \
+  -platform offscreen --screenshot build/notes-themed.png
+```
+
+Expected: a bundle of 725,485 bytes and the line `RNQNX_PLAYGROUND_SCREENSHOT build/notes-themed.png 640x480`.
+
+### What you should see
+
+The host reported a scheme other than `light`, so the app starts dark. The header button reads `Theme: dark`:
+
+![The notes app in the dark theme, with a Theme: dark button outlined in teal at the top right.](/evidence/host-notes-dark-theme.png)
+
+To see the light set without a pointer, start from `useState('light')` in `ThemeProvider`, bundle, and render again. That is how this second screenshot was made. Change it back afterwards:
+
+![The notes app in the light theme: a pale background, white rows, dark text and a Theme: light button.](/evidence/host-notes-light-theme.png)
+
+Pressing the button in a live window flips between the two. That press was not run for this page. The headless renderer takes no input, and the toggle rests on the same `Pressable` path the matrix lists as host-supported.
+
+## Common errors
+
+| What you see                               | Cause and fix                                                                                                     |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Rows keep the old colours after the toggle | `extraData` does not include the theme name.                                                                      |
+| `useColorScheme` is undefined              | The Metro config does not wrap with `withPublicEntry`. The public entry exports it.                               |
+| A card grid wraps to one column per row    | Widths that sum to 100%. Use whole-pixel widths computed from `onLayout`.                                         |
+| The line-through does not show             | `textDecorationLine` is not confirmed in this renderer. The sample also dims the colour, so state stays readable. |
+
+## Next steps
+
+<Cards>
+  <Card title="Navigation with expo-router" href="/docs/tutorials/navigation-expo-router">
+    The gallery wraps its screens in a themed drawer and tabs.
+  </Card>
+  <Card title="Animations with Reanimated" href="/docs/tutorials/animations-reanimated">
+    Animate a style change instead of swapping it.
+  </Card>
+  <Card title="Windows and chrome" href="/docs/tutorials/windows-and-chrome">
+    The title bar picks its own colours from the platform scheme.
+  </Card>
+</Cards>

@@ -480,6 +480,7 @@ Command run: `node packages/react-native-qnx-cli/src/bin.mjs project run --help`
 React Native QNX - build, deploy and launch an Expo app on QNX
   project run --project <directory> [--platform qnx|[omitted]] [--device <user@host>]
               [--launcher <remote script>] [--identity <ssh key>] [--known-hosts <file>]
+              [--dry-run]
 
 Steps: config -> bundle -> native-descriptor -> native-build -> deploy -> launch.
 The launch step runs <launcher> --replace on the board: the app quits any
@@ -489,14 +490,15 @@ Exit 0 when every step ran, 3 when a step needs the board, the SDP or a
 bundle first (the output names the command), 1 on failure.
 ```
 
-| Option                 | Type   | Default | Meaning                                                       |
-| ---------------------- | ------ | ------- | ------------------------------------------------------------- |
-| `--project <dir>`      | string | `.`     | Project root.                                                 |
-| `--platform`           | string | `qnx`   | Target platform.                                              |
-| `--device <user@host>` | string | none    | Board address. Without it the run stops at the deploy step.   |
-| `--launcher <path>`    | string | none    | Absolute path of the launcher script on the board.            |
-| `--identity <key>`     | string | none    | SSH key, used only to build the launch command text.          |
-| `--known-hosts <file>` | string | none    | known_hosts file, used only to build the launch command text. |
+| Option                 | Type    | Default | Meaning                                                                                                                    |
+| ---------------------- | ------- | ------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `--project <dir>`      | string  | `.`     | Project root.                                                                                                              |
+| `--platform`           | string  | `qnx`   | Target platform.                                                                                                           |
+| `--device <user@host>` | string  | none    | Board address. Without it the run stops at the deploy step.                                                                |
+| `--launcher <path>`    | string  | none    | Absolute path of the launcher script on the board.                                                                         |
+| `--identity <key>`     | string  | none    | SSH key, used only to build the launch command text.                                                                       |
+| `--known-hosts <file>` | string  | none    | known_hosts file, used only to build the launch command text.                                                              |
+| `--dry-run`            | boolean | off     | Print the six step names and the ssh launch command (when `--device` and `--launcher` are given) as JSON, and run no step. |
 
 Steps run in order: `config`, `bundle`, `native-descriptor`, `native-build`, `deploy`, `launch`. It looks for `build/<platform>/app.bundle.hbc` and `app.bundle.js` and uses the newer. It runs `project prepare-native` and `project build-native` itself, and stops with status `needs SDP` if `QNX_HOST` or `QNX_TARGET` is unset, and with `needs bundle` if no bundle exists. It prints one line per step.
 
@@ -544,7 +546,7 @@ React Native QNX - start Metro and launch the development client on a board
               [--project <dir>] [--platform qnx|[omitted]] [--port 8081]
               [--identity <ssh key>] [--known-hosts <file>]
               [--host-address <this computer's address as the board sees it>]
-              [--reset-cache]
+              [--reset-cache] [--dry-run]
 
 Starts Metro (as project start does), then runs
   <launcher> --replace --dev-server http://<host-address>:<port>
@@ -555,17 +557,18 @@ older dev run) before it starts, so one app never has two windows. SSH uses
 BatchMode and your known_hosts (or --known-hosts); host keys are never skipped.
 ```
 
-| Option                  | Type    | Default                                      | Meaning                                                                 |
-| ----------------------- | ------- | -------------------------------------------- | ----------------------------------------------------------------------- |
-| `--device <user@host>`  | string  | none                                         | Required. Must match `user@host`.                                       |
-| `--launcher <path>`     | string  | none                                         | Required. Absolute path on the board, characters `A-Z a-z 0-9 . _ - /`. |
-| `--project <dir>`       | string  | `.`                                          | Project root.                                                           |
-| `--platform`            | string  | `qnx`                                        | Target platform.                                                        |
-| `--port <n>`            | string  | `8081`                                       | As for `project start`.                                                 |
-| `--identity <key>`      | string  | none                                         | Passed to `ssh -i`.                                                     |
-| `--known-hosts <file>`  | string  | none                                         | Passed as `-o UserKnownHostsFile=<file>`.                               |
-| `--host-address <addr>` | string  | local address the OS uses to reach the board | Address of this computer as the board sees it.                          |
-| `--reset-cache`         | boolean | off                                          | Clear Metro's transform cache.                                          |
+| Option                  | Type    | Default                                      | Meaning                                                                                  |
+| ----------------------- | ------- | -------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `--device <user@host>`  | string  | none                                         | Required. Must match `user@host`.                                                        |
+| `--launcher <path>`     | string  | none                                         | Required. Absolute path on the board, characters `A-Z a-z 0-9 . _ - /`.                  |
+| `--project <dir>`       | string  | `.`                                          | Project root.                                                                            |
+| `--platform`            | string  | `qnx`                                        | Target platform.                                                                         |
+| `--port <n>`            | string  | `8081`                                       | As for `project start`.                                                                  |
+| `--identity <key>`      | string  | none                                         | Passed to `ssh -i`.                                                                      |
+| `--known-hosts <file>`  | string  | none                                         | Passed as `-o UserKnownHostsFile=<file>`.                                                |
+| `--host-address <addr>` | string  | local address the OS uses to reach the board | Address of this computer as the board sees it.                                           |
+| `--reset-cache`         | boolean | off                                          | Clear Metro's transform cache.                                                           |
+| `--dry-run`             | boolean | off                                          | Print the Metro settings, the dev server URL and the ssh command as JSON. Start neither. |
 
 It starts Metro on `0.0.0.0`, then runs `ssh -o BatchMode=yes -o ConnectTimeout=10 [-i key] [-o UserKnownHostsFile=...] -- <device> "nohup <launcher> --replace --dev-server http://<host-address>:<port> </dev/null >/dev/null 2>&1 &"`. Host keys are never skipped. If `ssh` exits nonzero the command prints `ssh exited with <n>; Metro keeps running. ...` and keeps serving. Ctrl+C exits 0. A missing `--device` or `--launcher` fails with `project dev needs --device and --launcher.` The launcher must pass `--replace` and `--dev-server` to a build made with `RNQNX_ENABLE_DEV_SUPPORT=ON`; see [debugging](/docs/how-to/debugging).
 

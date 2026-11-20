@@ -1,0 +1,192 @@
+---
+title: Windows and window chrome
+description: Give a React Native QNX app a resizable window with a title bar and window controls, choose the control layout, and read how the QNX window managers treat it.
+---
+
+By the end you will have an app configured to open as a 1024x600 window with a Windows-style title bar, you will know what each control does under each of the two QNX window managers, and you will have seen the host frames and the Pi 400 captures that show it. QNX Screen draws no window decorations, so the title bar is Qt Quick inside the app window, above the React Native surface. The reasoning is in [ADR-0016](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0016-window-chrome-on-qnx-screen.md). The feature is experimental and off by default.
+
+<Callout type="warn">
+  Not run in this docs pass: the native build with window chrome on, and every window action on a
+  device. The screenshots are the repository's own host frames and Pi 400 captures. The commands
+  below are from
+  [`docs/getting-started/window-chrome.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/window-chrome.md).
+</Callout>
+
+## Prerequisites
+
+- An Expo app with an `app.json` or `app.config.ts`, for example the one you made in [Set up Expo](/docs/how-to/expo-setup).
+- The QNX build host from [first device run](/docs/tutorials/first-device-run) for the native build.
+- A board with a window manager. The recorded runs used the stock `fullscreen-winmgr` and the project's `rnqnx-winmgr`.
+
+## 1. Configure the window
+
+Put the settings in `extra.rnqnx.window` in `app.json`. This is the gallery's own config:
+
+```json
+{
+  "expo": {
+    "name": "QNX Components",
+    "icon": "./assets/icon.png",
+    "extra": {
+      "rnqnx": {
+        "appId": "org.rnqnx.showcase",
+        "componentName": "RNQnxPlayground",
+        "window": {
+          "controls": "macos",
+          "titleBarStyle": "default",
+          "initialSize": { "width": 1280, "height": 800 }
+        }
+      }
+    }
+  }
+}
+```
+
+Or use the config plugin in `app.config.ts`. Options on the plugin entry win over `extra.rnqnx`:
+
+```ts
+import type { ExpoConfig } from 'expo/config';
+
+const config: ExpoConfig = {
+  name: 'My App',
+  slug: 'my-app',
+  icon: './assets/icon.png',
+  plugins: [
+    [
+      '@rn-qnx/expo-qnx-config-plugins',
+      {
+        appId: 'org.example.myapp',
+        componentName: 'main',
+        window: {
+          controls: 'windows',
+          titleBarStyle: 'default',
+          initialSize: { width: 1024, height: 600 },
+        },
+      },
+    ],
+  ],
+};
+
+export default config;
+```
+
+| Field                 | Values                                   | Default   |
+| --------------------- | ---------------------------------------- | --------- |
+| `controls`            | `macos` (left, round), `windows` (right) | `macos`   |
+| `titleBarStyle`       | `default`, `hidden`, `none`              | `default` |
+| `initialSize`         | `{ width, height }`, integers 1 to 16384 | none      |
+| `unavailableControls` | `hide`, `disable`                        | `hide`    |
+
+- `default` draws the bar and starts the React content below it.
+- `hidden` draws only the controls, floating over the top of the content. The content starts at the top edge.
+- `none` draws nothing, and the app owns its exit path.
+- `initialSize` is the whole window, title bar included, clamped to the screen. Without it the app fills the screen on QNX.
+- `unavailableControls` says what happens to a control the platform cannot run. Prefer `hide`. A grey control that never works is a dead button.
+
+The window title is `expo.name`, and the bar shows the app's generated icon. Each value is validated by the config plugin, `prepare-native`, CMake and the C++ reader, so a typo fails at prebuild.
+
+## 2. Build it in
+
+```bash
+pnpm qnx project prepare-native --project my-app --platform qnx --bundle build/qnx/app.hbc \
+  --identity-tool build/identity/rnqnx_identity_tool
+pnpm qnx project build-native --project my-app --window-chrome
+```
+
+`--window-chrome` adds `-DRNQNX_ENABLE_WINDOW_CHROME=ON`. Without it the `window` object is validated and otherwise ignored. It fails if the descriptor has nothing to draw: no `window`, or `titleBarStyle: "none"`. `prepare-native` writes `build/qnx/native-app.json`, and a file written before the `window` field existed keeps the old window without chrome.
+
+`pnpm qnx project build-native --help` prints the flags. It was run for this page and lists `--window-chrome` as the experimental title bar, default OFF.
+
+## 3. Try the layouts on the host
+
+The host playground takes the same settings on the command line when it is built with the option on:
+
+```bash
+rnqnx_playground_host --bundle app.bundle.js \
+  --window-controls windows --title-bar-style default --window-size 1024x600
+```
+
+These flags also override a consumer's compiled settings, so one executable can show both layouts on a device. The default host build in the quick start does not enable chrome, so this command was not run here.
+
+### What you should see
+
+The repository's reference frames, rendered on a macOS host at 2x with Qt 6.12.0 (not QNX output):
+
+`controls: "macos"`: round controls on the left. The blue ring is keyboard focus on Close:
+
+![A light title bar with the title My App centred, and red, yellow and green round controls on the left. A blue focus ring surrounds the red one.](/evidence/host-window-chrome-macos-default.png)
+
+`controls: "windows"`: minimize, maximize and close on the right, title on the left:
+
+![A light title bar with the title My App on the left, and minimize, maximize and close glyphs on the right.](/evidence/host-window-chrome-windows-default.png)
+
+The bar is 44 device-independent pixels tall and every hit target is at least 44 by 44. Tab moves through the controls, Enter or Space activates one, and a focus ring shows only for keyboard focus. Each control is an accessible button named `Close window`, `Minimize window`, `Maximize window` or `Restore window`.
+
+## 4. What the controls do on QNX
+
+Under the stock `fullscreen-winmgr` desktop:
+
+| Control  | Behavior                                                                                                             |
+| -------- | -------------------------------------------------------------------------------------------------------------------- |
+| Close    | Closes the window and the app exits.                                                                                 |
+| Minimize | Releases the native window so the launcher shows. The app keeps running, and launching it again restores it.         |
+| Maximize | For apps with `initialSize`, toggles between the full display and the window. Double-click on the bar does the same. |
+| Drag     | The bar moves the window. Edges and corners resize it, with a minimum of 400 by 300.                                 |
+
+`fullscreen-winmgr` sets every native window to the display size each time it posts a frame. An app with `initialSize` therefore gets a contained window: the native window fills the display, and the chrome draws the app's window inside it, centred, with a 1 px outline. The startup line reports `mode=contained`. Screen has no resize cursor shapes, so the app draws a resize arrow beside the pointer on an edge.
+
+Under `rnqnx-winmgr` (`tools/qnx-winmgr`) the app gets a real native window. The desktop shows around it, the bar and edges move and resize the native window, minimize hides it into the manager's dock, and maximize fills the screen. The app reads the manager's answer from `SCREEN_PROPERTY_MANAGER_STRING` at start and needs `QT_QPA_PLATFORM=qnx:no-fullscreen`. The startup line reports `mode=native-moved`.
+
+At start the host prints a line like this for a full-screen app:
+
+```text
+RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=1920x1080
+RNQNX_WINDOW_CHROME platform=qnx hidden=maximize reason=the app has no initialSize, so there is no window size to return to
+```
+
+Each activation prints `RNQNX_WINDOW_ACTION <action>`. After a move or resize the host prints `RNQNX_WINDOW_FRAME <w>x<h>+<x>+<y>`.
+
+## 5. What you should see on the Pi 400
+
+On the 2026-11-12 run under `rnqnx-winmgr`, started by hand, the board ran the app as a 1280x800 window over the desktop and recorded: move and resize by the title bar and a corner, minimize and restore from the dock, maximize and back, restore by running the launch script again, and a click beside the window reaching the launcher. Those runs used pointer events injected through Screen. `demolauncher` ignores injected clicks, so the launcher tile itself was not driven that way.
+
+The 2026-11-13 [tile-layout receipt](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/tile-layout-pi400-2026-11-13) captured the same app at several window sizes with the `--window-size WxH --screenshot` flags. At 586x600 the tabs sit in a bottom bar:
+
+![The gallery in a 586 pixel wide window on the Pi 400, with a dark title bar showing the app icon and name and round close, minimize and maximize controls on the left.](/evidence/pi400-window-586x600.png)
+
+The bar is dark because QNX reports no colour scheme, and the title bar falls back to dark. Maximize and restore glyphs follow the window state: compact windows show outward triangles (macOS layout) or one square (Windows layout), and a window filling the screen shows inward triangles or two overlapping squares.
+
+The Pi 400 desktop guide covers the rest: a [black window, missing mouse, and an app that will not close](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md#troubleshooting).
+
+## Known gaps
+
+- The title-bar inset is not reported to JavaScript or `SafeAreaView`. With `default`, the React surface already starts below the bar. With `hidden`, set the native drawer's `topInset` to the bar height.
+- JavaScript runs on the Qt GUI thread, so a long JS call freezes the title bar along with everything else.
+- Under `fullscreen-winmgr`, a minimized app is not in the Alt+Tab list. It comes back from its launcher tile or by running its script again.
+- `Dimensions` reports the screen, not the window. Use `onLayout` for the window's content size.
+- Wayland gets close only, and the chrome build is rejected for the Wayland shell until its behavior is defined.
+- No runtime layout change or close guard yet.
+
+## Common errors
+
+| What you see                                      | Cause and fix                                                                                                               |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `build-native` fails with the chrome option       | The descriptor has no `window`, or `titleBarStyle` is `none`. Add a `window` object with a style other than `none`.         |
+| No title bar appears                              | The build was made without `--window-chrome`, or `native-app.json` predates the `window` field. Run `prepare-native` again. |
+| Maximize is missing                               | The app has no `initialSize`, so there is no window size to return to. The startup log says so.                             |
+| A typo in a field value                           | Validation fails at prebuild. Fix the value.                                                                                |
+| The window fills the display and ignores the size | Without `QT_QPA_PLATFORM=qnx:no-fullscreen` the Qt plugin makes the first window full screen.                               |
+
+## Next steps
+
+<Cards>
+  <Card title="Add window chrome (how-to)" href="/docs/how-to/window-chrome">
+    The short recipe.
+  </Card>
+  <Card title="Set icon and app name" href="/docs/how-to/icons-and-app-name">
+    The icon the title bar shows.
+  </Card>
+  <Card title="Navigation with expo-router" href="/docs/tutorials/navigation-expo-router">
+    The drawer that sits below the bar.
+  </Card>
+</Cards>

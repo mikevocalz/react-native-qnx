@@ -1,19 +1,26 @@
 ---
 title: Set up Expo
-description: Create a shared Expo app for QNX, or add QNX to an existing Expo app, with the rnqnx project commands.
+description: Create a new shared Expo app for QNX, add QNX to an existing Expo app, bundle an app outside the checkout, and run the project doctor, with the dry-run output that was verified.
 ---
 
-The commands run from a React Native QNX checkout. `rnqnx` below means `node <checkout>/packages/react-native-qnx-cli/src/bin.mjs`, or `pnpm qnx` inside the checkout. Nothing is published to npm.
+The commands run from a React Native QNX checkout. `rnqnx` below means `node <checkout>/packages/react-native-qnx-cli/src/bin.mjs`, or `pnpm qnx` inside the checkout. Nothing is published to npm. Expo SDK 58 is pinned, and development builds replace Expo Go ([ADR-0006](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0006-expo-dev-builds.md)).
 
-## Preview a new project
+## Prerequisites
+
+- A checkout with `pnpm install --frozen-lockfile` done, as in the [quick start](/docs/tutorials/quick-start).
+- For `add-qnx`, an Expo app that depends on `expo` and has an `app.json` or `app.config.js` or `.ts`, with `expo` installed so `@expo/config` loads.
+
+## Create a new project
+
+Preview first:
 
 ```bash
 pnpm qnx project create --project ../notes-qnx --app-id org.example.notes --name "Notes" --dry-run
 ```
 
-The dry run prints JSON with `action: "dry-run"`, the identity (`appId`, `displayName`, `componentName: "main"`), `platforms: ["qnx"]` and `nativeBuildVerified: false`. It creates no directory. Drop `--dry-run` to create the project.
+The dry run prints JSON with `action: "dry-run"`, the identity (`appId`, `displayName`, `componentName: "main"`), `platforms: ["qnx"]` and `nativeBuildVerified: false`. It creates no directory. Drop `--dry-run` to create the project. Options are `--project`, `--app-id`, `--name` and `--component-name` (default `main`). The command refuses existing directories, unsupported identifiers and duplicate or unknown arguments, and a failure removes only the directory it just made.
 
-A QNX-only project is an expo-router starter with a left drawer around three tabs (Home, Explore, Controls). It was installed and bundled in a container on 2026-11-13. It was not built into a native host or run on the Pi.
+A QNX-only project is an expo-router starter from `template/qnx-router`: a left drawer (Home, Settings, About) around three tabs (Home, Explore, Controls). It was installed and bundled in a container on 2026-11-13. It was not built into a native host or run on the Pi. The [navigation tutorial](/docs/tutorials/navigation-expo-router) walks its files.
 
 ## Add QNX to an existing Expo app
 
@@ -31,16 +38,42 @@ With an Expo app, the dry run lists these changes and writes nothing:
 
 Run it again without `--dry-run` to apply them. It adds entries and never replaces one. The `file:` links use absolute paths to your checkout, so moving the checkout breaks the install until you rerun the command.
 
+If `expo` is declared but not installed, the command stops early. On a bare `package.json` plus `app.json` this printed `Cannot load @expo/config. Install expo in the app (npx expo install expo).` and named the three modules it could not find. Install `expo` in the app, then rerun.
+
 ## Bundle an app outside the checkout
 
 ```bash
 pnpm qnx project bundle --project apps/dashboard --platform qnx --dry-run
 ```
 
-Expected JSON includes the entry `apps/dashboard/index.js`, the output `apps/dashboard/build/qnx/app.bundle.js`, `metroVersion: "0.87.1"`, `nativeBuildVerified: false` and `runtimeVerified: false`. Output must be a new file under the project's `build/` directory. This produces JavaScript only.
+Expected JSON includes the entry `apps/dashboard/index.js`, the output `apps/dashboard/build/qnx/app.bundle.js`, `metroVersion: "0.87.1"`, `nativeBuildVerified: false` and `runtimeVerified: false`. The output must be a new file under the project's `build/` directory. This produces JavaScript only. The project supplies installed Metro and its target config: `metro.qnx.config.js`, else `metro.config.js`.
 
 ## Check a project
 
-`rnqnx project doctor --project <directory>` runs read-only metadata checks. Add `--json` for machine output.
+```bash
+rnqnx project doctor --project <directory>
+```
 
-For the dev and run commands, see [debugging](/docs/how-to/debugging).
+Read-only metadata checks. No project JavaScript, package manager, compiler, network request or device command runs. Add `--json` for machine output, `--identity-tool <path>` to measure the tile label with the Qt tool, and `--entry`. On a bare project with only a `package.json` and `app.json`, the run printed `passed: node`, `passed: project-manifest` and `passed: app-icon`, then `failed:` lines for the missing `index.js`, the missing `metro.config.js` and each package that was not installed. It ended `Fix the failed checks before attempting this platform workflow.` The checks that it marks `not-checked`, such as the native toolchain and runtime, are never inspected by this command.
+
+## Verify
+
+- `project create --dry-run` prints `"action": "dry-run"` and `"nativeBuildVerified": false`.
+- `project doctor` ends with no `failed:` line on an installed project.
+- `project bundle` writes `build/qnx/app.bundle.js` without error.
+
+## Troubleshooting
+
+| What you see                                                                  | Cause and fix                                                 |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `package.json does not depend on expo; add-qnx targets existing Expo apps.`   | Add `expo` to the app first.                                  |
+| `Cannot load @expo/config. Install expo in the app`                           | Install `expo` in the app, then rerun.                        |
+| `No Expo config found. Add app.json or app.config.js/ts to the project root.` | The doctor needs a config file in the project root.           |
+| The `file:` links stop resolving                                              | The checkout moved. Rerun `add-qnx`.                          |
+| A bundle output path is rejected                                              | It must be a new file under the project's `build/` directory. |
+
+## Reference
+
+- [Creating an Expo project](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/expo-project-create.md) and [adding QNX to an existing app](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/expo-add-to-existing.md)
+- [CLI reference](/docs/reference/cli) and [config reference](/docs/reference/config)
+- [Debug and iterate](/docs/how-to/debugging) for the dev and run commands

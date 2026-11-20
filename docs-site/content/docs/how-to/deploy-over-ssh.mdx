@@ -1,0 +1,93 @@
+---
+title: Deploy over ssh
+description: Copy a built QNX executable to a Raspberry Pi over ssh with the atomic deploy script, run it, read its logs, and stage a full app directory beside the running one.
+---
+
+The deploy scripts use plain `ssh` and `scp` to a board you can reach. They need no agent on the board.
+
+<Callout type="warn">
+  Not run in this docs pass: any deploy, run or log command against a board. The `--dry-run` forms
+  ran on a Mac and their output is quoted.
+</Callout>
+
+## Prerequisites
+
+- A built executable, from the [cross-build guide](/docs/how-to/cross-build).
+- SSH key or agent authentication to the board, and the board's host key in `known_hosts`. The restricted device tools use OpenSSH key authentication only.
+- The board's address and user. The stock image uses `qnxuser@qnxpi.local`. The recorded Pi 400 runs used `qnxuser@192.168.2.2` over a USB Ethernet link.
+
+## 1. Set the target
+
+```bash
+export QNX_TARGET_IP=qnxpi.local
+export QNX_TARGET_USER=qnxuser
+```
+
+Optional variables: `QNX_SSH_PORT` (default 22), `QNX_SSH_KEY`, `QNX_SSH_MACS` (default `hmac-sha2-256`), `QNX_SSH_CONNECT_TIMEOUT` (default 10) and `QNX_TARGET_DIR` (default `/data/home/<user>/rnqnx`). The script validates each one and refuses an address with unusual characters or a directory that is not an absolute path.
+
+Check the board first:
+
+```bash
+pnpm pi:preflight
+```
+
+It stops if the target is not AArch64le. Do not deploy past that.
+
+## 2. Deploy one executable
+
+```bash
+pnpm qnx deploy-qnx --arch aarch64 --config Release --target rnqnx_playground
+```
+
+The script finds `build/qnx-aarch64-release/bin/rnqnx_playground`, makes sure the target directory exists and is writable, uploads to a temporary name, then does `chmod 755` and `mv -f` onto `<QNX_TARGET_DIR>/rnqnx_playground`. The move makes it atomic. A failed upload removes the temporary file. The dry run printed:
+
+```json
+{
+  "executable": "bash",
+  "args": ["<checkout>/scripts/deploy-qnx.sh", "aarch64", "rnqnx_playground", "Release"],
+  "cwd": "<checkout>"
+}
+```
+
+What you should see: `Deploying <path>`, the destination line, then `Deployment complete.` If the binary is missing it prints `Binary not found` and the build command to run.
+
+## 3. Run and read logs
+
+```bash
+pnpm qnx run-qnx --arch aarch64 --target rnqnx_playground
+pnpm qnx log-qnx
+```
+
+`run-qnx` runs `cd <QNX_TARGET_DIR> && exec ./<target>` over ssh. `log-qnx` streams the board's slog2. For one read, or a status check, `pnpm qnx:device status` and `pnpm qnx:device logs` do the same with restricted ssh.
+
+## 4. Stage a whole app directory
+
+An app is more than one file. The Pi 400 desktop guide copies it into a new directory beside the one that runs, then switches the launcher:
+
+```sh
+# on the board, as qnxuser
+mkdir -p /data/home/qnxuser/rnqnx-chrome-app-next/assets/assets
+```
+
+Copy in the executable named after the app id, `app.bundle.js`, `icons/`, `libhermesvmlean.so` and the staged assets. Make the asset tree with `node scripts/stage-gallery-assets.mjs --out <dir>` and check a deploy directory with `--check <dir>`. Launch with the guarded `run-app.sh`, and stop with `sh ./run-app.sh --stop-running`. `scripts/install-pi.sh` is the one-command lane for a stock Pi 4 or 5. It preflights, builds, deploys atomically, runs and captures evidence.
+
+## Verify
+
+- `pnpm qnx:device status` reads the OS and architecture and lists which tools exist.
+- The app window opens on the board's display, even when you started it over SSH.
+- `pnpm qnx log-qnx` shows the app's output.
+
+## Troubleshooting
+
+| What you see                                                  | Cause and fix                                                                       |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `QNX_TARGET_IP must be an IPv4 address or DNS/mDNS hostname.` | The address has unsupported characters.                                             |
+| `QNX_SSH_KEY does not name a readable file`                   | Fix the path.                                                                       |
+| `test -w` fails on the target directory                       | The user cannot write `QNX_TARGET_DIR`. Pick a directory under `/data/home/<user>`. |
+| Host key prompt blocks the script                             | Add the key to `known_hosts` first. The scripts do not skip host key checks.        |
+| Two app windows                                               | Launch through `run-app.sh`. It checks `pidin` and `--replace` quits the old copy.  |
+
+## Reference
+
+- [CLI reference](/docs/reference/cli)
+- [Debug and iterate](/docs/how-to/debugging) for Metro on the same link.
