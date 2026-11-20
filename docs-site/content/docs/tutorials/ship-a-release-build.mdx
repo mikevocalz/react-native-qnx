@@ -1,0 +1,142 @@
+---
+title: Ship a release build
+description: Produce a release build of a React Native QNX app with Hermes bytecode, stage it on a Raspberry Pi 400, freeze a release-candidate dossier, and read what a release build does and does not prove.
+---
+
+By the end you will have a release build of an app: Hermes bytecode instead of a Metro dev bundle, a native executable built with the QNX `Release` preset, a deploy directory staged on the board, and a frozen dossier file that ties receipts to one commit. You will also know why nothing here is a v1 release. All 11 release gates in [`docs/releases/v1-readiness.json`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/v1-readiness.json) are still `pending`, and the project is experimental software.
+
+<Callout type="warn">
+  Not run in this docs pass: the QNX configure, build, deploy and launch commands. They need a
+  licensed SDP on x86-64 Linux and a board. What ran on a Mac: the `--dry-run` forms, `hermesc` on a
+  sample bundle, and the dossier `create` and `verify` commands. Their real output is below.
+</Callout>
+
+## What "release" means here
+
+- A release build runs Hermes bytecode staged next to the executable. A development build loads the bundle from Metro and links the Hermes VM that includes the compiler, so it can run plain JavaScript. See [debugging](/docs/how-to/debugging).
+- There is no npm publication, no signed artifact and no store. The CLI runs from a checkout. A QNX SDP is licensed software that the repository does not ship, and [packaging](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/packaging.md) states that commercial distribution needs its own license determination with QNX.
+- The Qt used on the Pi is a public-source Qt 6.12.0 build. Open-source Qt module terms decide what you may ship. `docs/packaging.md` lists the GPL-only modules that stay out of the LGPL-compatible core (Qt Virtual Keyboard, Qt Quick 3D, Qt Graphs and others). Check every module you add against its notices.
+
+## Prerequisites
+
+- Everything in [first device run](/docs/tutorials/first-device-run): x86-64 Ubuntu 22.04 build host, QNX SDP 8.0.5 sourced, Qt 6.12.0 public-source build, Hermes for QNX, a Pi 400 reachable over SSH.
+- A clean git checkout. The dossier tool needs tracked files unmodified.
+- Node 26.13.0 and pnpm 12.18.0 on the build host.
+
+## 1. Bundle and compile to bytecode
+
+```bash
+node packages/react-native-qnx-cli/src/bin.mjs bundle-qnx \
+  --app component-gallery --out build/gallery/app.bundle.js
+"$HERMESC" -O -emit-binary -out apps/component-gallery/build/qnx/app.hbc \
+  build/gallery/app.bundle.js
+```
+
+`$HERMESC` is the `hermesc` of the pinned `hermes-compiler@260318099.0.5` package. The bytecode must come from the same Hermes version as `libhermesvmlean.so` on the board.
+
+On a Mac, the `hermesc` that the host build makes compiled a 724,054-byte Metro bundle to 1,060,496 bytes of bytecode with exit code 0, and the host renderer loaded that `.hbc` and drew the same picture as the JavaScript bundle (a 19,075-byte PNG in both cases). That checks the bytecode path on the host. It does not check the QNX Hermes build.
+
+## 2. Configure and build for QNX
+
+```bash
+pnpm qnx doctor
+pnpm qnx configure-qnx --arch aarch64 --config Release
+pnpm qnx build-qnx --arch aarch64 --config Release
+```
+
+Run `doctor` first and fix every error. The two other commands wrap `scripts/configure-qnx.sh` and `scripts/build-qnx.sh`, which map the architecture and configuration to a checked-in CMake preset (`qnx-aarch64-release`) and write to `build/qnx-aarch64-release/`. Their dry runs printed:
+
+```json
+{ "executable": "bash", "args": ["<checkout>/scripts/configure-qnx.sh", "aarch64", "Release"], "cwd": "<checkout>" }
+{ "executable": "bash", "args": ["<checkout>/scripts/build-qnx.sh", "aarch64", "Release"], "cwd": "<checkout>" }
+```
+
+The build script refuses to run until configure has produced `build.ninja`. By the CLI's own help, `rnqnx_playground` is the Screen probe, and `rnqnx_playground_qnx` is the React Native runtime with Qt and Hermes prerequisites that these presets do not provision. The consumer app host is built by the next command.
+
+## 3. Build your app's native host
+
+```bash
+cmake -S native/app-identity -B build/identity -G Ninja -DRNQNX_BUILD_IDENTITY_TOOL=ON
+cmake --build build/identity
+node packages/react-native-qnx-cli/src/bin.mjs project prepare-native \
+  --project apps/component-gallery --platform qnx --bundle build/qnx/app.hbc \
+  --identity-tool build/identity/rnqnx_identity_tool
+pnpm qnx project build-native --project apps/component-gallery --window-chrome
+```
+
+Always pass the identity tool. It writes the 16 to 512 px icon set that the window and title bar use, and `--skip-identity-tool` builds an app with none. The output is the executable (named after the app id), `app.bundle.js` and `icons/` under `apps/component-gallery/build/qnx/native/consumer/qnx/org.rnqnx.showcase/`. [Set the icon and name](/docs/how-to/icons-and-app-name) covers the fields.
+
+`prepare-native --dry-run` is not usable until the bundle exists: it stopped here with `ENOENT: no such file or directory, lstat '<checkout>/apps/component-gallery/build/qnx/app.bundle.js'` when run with no bundle.
+
+## 4. Stage and deploy
+
+The Pi 400 guide copies a build into a new directory beside the running one:
+
+```sh
+mkdir -p /data/home/qnxuser/rnqnx-chrome-app-next/assets/assets
+```
+
+Copy the executable, `app.bundle.js`, `icons/`, `libhermesvmlean.so` and the staged assets. Check the assets with `node scripts/stage-gallery-assets.mjs --check <dir>` against the deploy directory before you switch the launcher. [Deploy over ssh](/docs/how-to/deploy-over-ssh) lists the scripts. `deploy-qnx.sh` uploads through a temporary filename and promotes it atomically, and `pnpm qnx deploy-qnx --arch aarch64 --config Release --target rnqnx_playground --dry-run` printed the call `scripts/deploy-qnx.sh aarch64 rnqnx_playground Release`.
+
+Launch with the guarded `run-app.sh`. It looks for the app's process with `pidin` before it starts anything, so a tile never opens a second copy:
+
+```sh
+cd /data/home/qnxuser/rnqnx-chrome-app-next && sh ./run-app.sh
+```
+
+To add a launcher tile, `pnpm qnx project desktop-entry --project <dir> --app-dir <device directory>` writes the `.desktop` file, the `[Launcher]` block, the launcher script and `install-tile.sh` under `build/qnx/desktop/`.
+
+## 5. Freeze a dossier
+
+This one runs on any host with Git and Node. From a clean checkout:
+
+```bash
+node scripts/qnx-release-dossier.mjs create --file build/release-candidate/dossier.json
+node scripts/qnx-release-dossier.mjs verify --file build/release-candidate/dossier.json
+```
+
+Run on this docs branch at commit `42410a9d`, `create` printed `"candidate": "42410a9d2e579c84f82bafcbb58b8bb49dadb1cc"`, `"receiptCount": 0` and `"releaseAuthorized": false`. `verify` printed `"action": "verified"` and `"integrityVerified": true`, then a snapshot of all 11 gates as `pending`.
+
+The file records the HEAD commit, tree, lockfile, package manifest, component matrix and the 11 gates. Its `receipts` array starts empty. Add a receipt only for something you observed: the exact command, the environment, what it does not prove, an author and the SHA-256 of each artifact. Creation refuses an existing destination. A successful `verify` means file integrity, not release qualification. The tool does not run tests or contact a device.
+
+Performance and cold-boot captures use a second checker: `node scripts/qualify-qnx-evidence.mjs artifacts/qualification/capture.json`, with `--require-complete` for a CI job. It reads files only, hashes the raw logs it lists, and exits 0 for a valid report, 1 for invalid data and 2 for an incomplete capture. This one was not run here, because no capture exists.
+
+## What you should see, and what it proves
+
+After step 4 the board shows the app window as in the [first device run](/docs/tutorials/first-device-run) screenshot. After step 5 you have a dossier whose integrity check passes and whose gates are all pending.
+
+A release build proves that the toolchain produced an executable and bytecode that loaded on one board. It does not prove:
+
+- Stock Pi 4 or Pi 5 behavior. Every device result is from one Pi 400 on a custom image.
+- 1920x1080 on the current build. The 2026-11-19 runs were at 1024x768.
+- Performance. Host timings do not predict QNX numbers, and device performance is unmeasured.
+- Hosted CI for QNX. The hosted checks cover Linux host builds and source checks. No workflow cross-builds for QNX or runs on a device ([required checks](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/required-checks.md)).
+
+The [release gates reference](/docs/reference/release-gates) lists each gate and the evidence it needs.
+
+## Common errors
+
+| What you see | Cause and fix |
+| --- | --- |
+| `The QNX SDP environment is not loaded` | Source `qnxsdp-env.sh` in this shell and rerun `pnpm qnx doctor`. |
+| `Configured Ninja build not found. Run ./scripts/configure-qnx.sh ... first.` | Run configure before build. |
+| `ENOENT ... app.bundle.js` from `prepare-native` | Bundle first, then pass `--bundle` with that path. |
+| `Binary not found: .../bin/rnqnx_playground` from deploy | The Release build for that preset has not run. Build it, then deploy. |
+| Bytecode fails to load on the board | `hermesc` and `libhermesvmlean.so` come from different Hermes versions. Use the pinned compiler. |
+| `create` refuses to write the dossier | The destination exists or tracked files are modified. Choose a new path and commit or stash first. |
+
+The last row follows from the tool's documented refusals. The `Configured Ninja build` and `Binary not found` messages are read from the scripts. Neither row was triggered in this pass.
+
+## Next steps
+
+<Cards>
+  <Card title="Release gates" href="/docs/reference/release-gates">
+    What each of the 11 gates needs.
+  </Card>
+  <Card title="Verification log" href="/docs/reference/verification-log">
+    What was run for these pages.
+  </Card>
+  <Card title="Use the prebuilt runner" href="/docs/how-to/prebuilt-runner">
+    Fetch a runner instead of building one.
+  </Card>
+</Cards>
