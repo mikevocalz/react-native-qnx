@@ -1131,16 +1131,9 @@ a[href='#nd-page'].sr-only:focus-visible {
   }
 }
 @media (max-width: 600px) {
-  .bench .say > .code {
-    margin: -40px 28px -36px -8px;
-  }
   .bench .code pre {
-    white-space: pre;
-    overflow-x: auto;
-  }
-  .bench .code .ln {
-    padding-left: 0;
-    text-indent: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 }
 
@@ -1180,5 +1173,59 @@ figure.shiki code span {
 @media (min-width: 1181px) and (max-width: 1380px) {
   .bench .stage {
     align-self: end;
+  }
+}
+
+/* Narrow screens: nothing overlaps the capture. The terminal card follows the
+   capture instead of crossing it, long commands wrap, and the three labels sit
+   as chips under the image instead of on leader lines over it. */
+@media (max-width: 1180px) {
+  .bench .stage {
+    margin-bottom: 0;
+  }
+  .bench .say > .code {
+    order: 3;
+    width: auto;
+    margin: 28px 0 0;
+    align-self: stretch;
+  }
+  .bench .code pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    overflow-x: visible;
+  }
+  .bench .monitor {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .bench .monitor img {
+    flex: 0 0 100%;
+  }
+  .bench .tag {
+    position: static;
+    transform: none;
+    padding: 4px 9px;
+    background: var(--ground);
+    border-radius: var(--r-s);
+    box-shadow: none;
+  }
+  .bench .tag small {
+    display: inline;
+    margin-left: 6px;
+  }
+}
+@media (max-width: 600px) {
+  .bench .tag small {
+    display: none;
+  }
+}
+.bench .code .f {
+  white-space: nowrap;
+}
+@media (max-width: 380px) {
+  .bench .code header span:last-child {
+    display: none;
   }
 }
