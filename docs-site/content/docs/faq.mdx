@@ -1,48 +1,164 @@
 ---
 title: FAQ
-description: Short answers about targets, licences, Expo, and what is supported.
+description: Short answers about scope, hardware, licences, tooling, architecture and what works, each with a link to the page or repository file that backs it.
 ---
 
-## Can I run this on a stock Raspberry Pi 4?
+Every answer comes from files in the repository. Device claims name a Raspberry Pi 400 with a custom BCM2711 QNX 8.0.5 image, which is the only board with results. When something has no evidence, the answer says so.
 
-No result exists. All device results are from a Raspberry Pi 400 with a custom BCM2711 image. There is a separate [guide for stock Pi 4 and Pi 5 QSTI](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-today.md), and its full-runtime device result is pending.
+## Scope and status
 
-## Can I use Expo Go?
+### What is react-native-qnx?
 
-No. Expo runs through development builds ([ADR-0006](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0006-expo-dev-builds.md)).
+An out-of-tree React Native platform for QNX. JavaScript runs on Hermes, Fabric and Yoga lay out the views, and a Qt Quick mounting layer draws them through QNX Screen. See [architecture](/docs/explanation/architecture) and the [README](https://github.com/mikevocalz/react-native-qnx/blob/main/README.md).
 
-## Is it on npm?
+### Is it ready for production?
 
-No. Packages are source-distributed and version 0.1.0. `rnqnx runner fetch` has no published manifest.
+No. The repository calls itself experimental and v1 preparation software. All eleven v1 release gates are pending. See [release gates](/docs/reference/release-gates) and [`docs/releases/v1-readiness.json`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/v1-readiness.json).
 
-## Does it need a paid Qt licence?
+### Which versions does it pin?
 
-The project follows the open-source Qt path with no paid subscription as a prerequisite ([ADR-0013](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0013-open-source-qt.md)). Some Qt modules are GPLv3 only. See [Qt tiers](/docs/reference/qt-tiers). Check your own obligations.
+React Native 0.88.1, React 19.3.0, Expo SDK 58 (`expo` 58.0.24), Metro 0.87.1, Hermes compiler `260318099.0.5` with source tag `hermes-v260318099.0.5`, Node 26 or newer, and pnpm 12.18.0. The generated table is in [`docs/getting-started/compatibility-matrix.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/compatibility-matrix.md).
 
-## Do I need a QNX licence?
+### Is it on npm?
 
-Yes, for QNX builds. The QNX SDP is licensed software, and this project does not redistribute it.
+No. The packages are source-distributed, and the permanent npm organization that replaces the provisional `@rn-qnx` scope is an open item. See [`TODO.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/TODO.md).
 
-## Can I build on a Mac?
+### What counts as verified?
 
-You can create apps, bundle and run the host renderer. QNX cross-builds need an x86-64 host. SDP 8.0.5 has no macOS or ARM host.
+Four statuses exist: device-verified, host-tested, untested and not supported. Device-verified means a receipt shows the scenario on the Pi 400. See [status and limits](/docs/reference/status) and the [verification log](/docs/reference/verification-log).
 
-## Which React Native version?
+### What does hosted CI cover?
 
-0.88.1, with Expo SDK 58 (`58.0.24`) and Hermes compiler `260318099.0.5`.
+Linux host builds and source checks. It does not cross-build for QNX or run on a device. The list of required checks is in [`docs/releases/required-checks.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/required-checks.md).
 
-## Does Reanimated work?
+## Hardware and display
 
-Reanimated timing and spring ran on the Pi 400, with Gesture Handler pan, tap and double-tap. Pinch, rotation and multi-pointer are not proven. See [status](/docs/reference/status).
+### Which hardware has been run?
 
-## Does video work?
+One Raspberry Pi 400 on a custom BCM2711 image with QNX SDP 8.0.5. The image follows QNX's published custom-image recipe for the Pi 400. See [`docs/getting-started/raspberry-pi-400.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-400.md).
 
-It ran once on the Pi 400 (2026-11-13) with the Qt Multimedia add-on. QtVideo is opt-in and was off in the 2026-11-19 device builds. See [known gaps](/docs/reference/known-gaps).
+### Does it run on a stock Raspberry Pi 4 or Pi 5?
 
-## Is it ready for production?
+No result exists. The stock QSTI path has its own guide, and its full-runtime device result is pending. The `device-parity` gate asks for stock Pi 4 QSTI results. See [`docs/getting-started/raspberry-pi-today.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/raspberry-pi-today.md).
 
-No. v1 is not released and all eleven gates are open. See [release gates](/docs/reference/release-gates).
+### What resolution did the Pi run at?
 
-## How do I report a problem or contribute?
+The 2026-11-19 runs used 1024x768 because the monitor's EDID was unreadable. A Hello World capture at 1920x1080 exists from 2026-11-07, and the 2026-11-12 public-Qt run also captured 1920x1080. Current builds at 1920x1080 are unproven. See [known gaps](/docs/reference/known-gaps) and [troubleshooting](/docs/troubleshooting).
 
-See [contributing](/docs/contributing).
+### Does an app start at boot?
+
+No. The board boots to the QNX desktop, and no React Native app starts at boot. You launch apps by hand or from a launcher tile. See [`docs/getting-started/pi400-desktop-app.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md).
+
+### Can I run two copies of an app?
+
+No. Each app has one instance. A second launch restores the running window and exits, and `--replace` quits the old copy first. Different apps run side by side under `rnqnx-winmgr`. See [window chrome](/docs/how-to/window-chrome).
+
+### Is it safe to reboot the board with a command?
+
+Not on this board. The handoff records that `shutdown -S reboot` and `shutdown -b` both halt it until power is cut. See [troubleshooting](/docs/troubleshooting) and [`docs/handoff/HANDOFF_2026-11-13.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/handoff/HANDOFF_2026-11-13.md).
+
+## Licences
+
+### Do I need a QNX licence?
+
+Yes, for QNX builds. The QNX SDP is licensed software, and the project does not redistribute it. A prebuilt runner archive may not contain SDP files. See [ADR-0018](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0018-runner-hosting-and-sdp-boundary.md) and [prebuilt runner](/docs/how-to/prebuilt-runner).
+
+### Does it need a paid Qt licence?
+
+The project follows the open-source Qt path, so a paid subscription is not a prerequisite. Some Qt modules are GPLv3 only. Check your own obligations. See [Qt tiers](/docs/reference/qt-tiers) and [ADR-0013](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0013-open-source-qt.md).
+
+### What licence is the repository under?
+
+MIT for project-authored code. Dependencies keep their own terms. See [`LICENSE`](https://github.com/mikevocalz/react-native-qnx/blob/main/LICENSE) and [`THIRD_PARTY_NOTICES.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/THIRD_PARTY_NOTICES.md).
+
+## Build machine and tooling
+
+### Can I build on a Mac?
+
+You can create apps, bundle and run the host renderer. QNX cross-builds need an x86-64 Linux host, because SDP 8.0 ships Linux and Windows host tools only. See [quick start](/docs/tutorials/quick-start) and [troubleshooting](/docs/troubleshooting).
+
+### Can I build on Windows?
+
+The repository has no verified Windows recipe. Its helper scripts are POSIX shell, and the app identity tool refuses to configure on Windows. See [cross-build from Windows](/docs/how-to/cross-build-windows).
+
+### Can I use Expo Go?
+
+No. Expo runs through development builds, because QNX native code cannot ship inside the generic Expo Go binary. See [ADR-0006](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0006-expo-dev-builds.md) and [Expo setup](/docs/how-to/expo-setup).
+
+### Can I add QNX to an existing Expo app?
+
+Yes, with `project add-qnx`, which targets Expo apps. `project run` walks config, bundle, native descriptor, native build, deploy and launch, and stops at the first step that needs something missing. Deploying a consumer app from `project run` is not implemented yet. See [Expo setup](/docs/how-to/expo-setup) and [`docs/getting-started/expo-add-to-existing.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/expo-add-to-existing.md).
+
+### Does Fast Refresh work?
+
+Yes, on the Pi 400 over a USB Ethernet link, on 2026-11-13. Saving a component keeps its state, and `r` or `Ctrl+R` reloads. The Hermes debugger and React DevTools were not tested. See [debug and iterate](/docs/how-to/debugging) and the [receipt](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pi400-dev-client-2026-11-13).
+
+### Is there a prebuilt runner I can download?
+
+The command exists, but no manifest is published, so there is nothing to fetch from the project. Pass the URL of your own manifest. See [prebuilt runner](/docs/how-to/prebuilt-runner).
+
+### How do I see the app's logs?
+
+`pnpm qnx log-qnx` streams slog2. The guarded launcher also writes `/tmp/rnqnx-<appId>.log` on the board. See [debug and iterate](/docs/how-to/debugging) and [`docs/getting-started/dev-workflow.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/dev-workflow.md).
+
+## Architecture
+
+### Why Qt Quick?
+
+The platform needs a retained native item tree for Fabric views, shaped text, images, input, animation and accessibility. ADR-0001 locks Qt Quick as that backend, with QNX Screen beneath Qt's QNX platform plugin. See [ADR-0001](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0001-qt-quick-backend.md) and [architecture](/docs/explanation/architecture).
+
+### Why only Hermes and only Fabric?
+
+ADR-0005 makes Hermes the required engine, and ADR-0009 implements Fabric plus JSI only, with no Paper view managers or legacy bridge. See [ADR index](/docs/explanation/adr-index).
+
+### Which thread runs JavaScript?
+
+The Qt thread that constructed the host. There is no separate JS thread, so a busy JS thread freezes repaint. A dedicated thread for Worklets is open work. See [threading](/docs/explanation/threading).
+
+### How do I write a native module?
+
+With Nitro Modules. ADR-0004 makes Nitro the standard bridge for application-facing native APIs, and ADR-0019 covers linking packages from outside the repository. See [Nitro modules](/docs/how-to/nitro-modules).
+
+## What works
+
+### Does Reanimated work?
+
+Reanimated timing and spring ran on the Pi 400, and Gesture Handler pan, tap and double-tap ran with them. Pinch, rotation and multi-pointer are not proven. See [status](/docs/reference/status) and [run 1](https://github.com/mikevocalz/react-native-qnx/tree/main/docs/evidence/pr149-pi400-run1-2026-11-19).
+
+### Does video or audio work?
+
+Video and audio played on the Pi 400 on 2026-11-13 through `QtVideo`, in a build with the Qt Multimedia add-on and software decode. The current showcase build does not include it, and the image has no HDMI audio driver. Audio goes to the 3.5 mm jack or a USB device. See [known gaps](/docs/reference/known-gaps) and [`docs/getting-started/media.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/media.md).
+
+### Do remote images and SVG work?
+
+Remote images over HTTP and HTTPS loaded on the Pi 400 once the TLS and image-format plugins were staged. `react-native-svg` 15.16.0 renders behind a default-OFF switch, and run 2 recorded fills, gradients, filters, patterns, text and touch targets. See [`docs/image-loader.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/image-loader.md) and [component matrix](/docs/reference/component-matrix).
+
+### Does text input work, including IME?
+
+`TextInput` is partial with scoped Pi 400 evidence. IME and the software keyboard are not qualified, and a held key from a real USB keyboard is unproven. See [known gaps](/docs/reference/known-gaps).
+
+### Does touch work?
+
+Not verified. The receipts drive the Pi with mouse and keyboard events injected through Screen. Multi-pointer gestures have no device run. See [status](/docs/reference/status).
+
+### Which components are supported?
+
+Each component row carries a host status and a Pi 400 status. Some accept calls and do nothing, for example `KeyboardAvoidingView`, `RefreshControl` and `StatusBar`. See [component matrix](/docs/reference/component-matrix) and [module matrix](/docs/reference/module-matrix).
+
+### Is Skia, WebGPU or Three.js supported?
+
+No React Native component is supported. A Dawn WebGPU backend ran on the Pi 400's OpenGL ES in a native test app only. See [known gaps](/docs/reference/known-gaps) and [`docs/v2/webgpu-qnx.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/v2/webgpu-qnx.md).
+
+### How fast is it?
+
+Unmeasured on a device. Host timings do not predict QNX numbers, and the `performance` gate has no result. See [release gates](/docs/reference/release-gates).
+
+## Contributing and help
+
+### Something fails. Where do I look?
+
+Start with [troubleshooting](/docs/troubleshooting), which lists symptom, cause, fix and evidence for each failure the repository records.
+
+### How do I report a problem or contribute?
+
+See [contributing](/docs/contributing) and [`CONTRIBUTING.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/CONTRIBUTING.md).

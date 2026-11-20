@@ -1,0 +1,52 @@
+---
+title: 'ADR-0004: Nitro Modules for native application APIs'
+description: Why application-facing native APIs are Nitro HybridObjects, and where React Native's own TurboModule lookups stay in C++.
+---
+
+Record: [`docs/adr/0004-nitro-modules.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0004-nitro-modules.md), dated 2026-07-19.
+
+## Status
+
+The record states: "Accepted".
+
+## Context
+
+React Native historically authored native modules as TurboModules, which need hand-written C++ boilerplate and carry no type guarantees across the JavaScript and native boundary. Nitro Modules generates JSI bindings and C++ HybridObjects from typed TypeScript specs.
+
+## Decision
+
+All new QNX application-facing native APIs use Nitro Modules. Nitrogen-generated code and C++ HybridObjects are the standard bridge between TypeScript and QNX native services. A minimal internal adapter satisfies React Native core interfaces that expect TurboModule registry semantics, and that adapter delegates real behavior to Nitro or the platform runtime.
+
+The record's Notes section pins down the boundary. It was confirmed by the project owner on 2026-08-14. Modules that React Native's own JavaScript requires by name are implemented in C++ against React Native's generated `…CxxSpec` classes. The reason is that `TurboModuleRegistry` reads a global that Nitro's registry does not populate, and those call sites live inside React Native's source. Everything an application calls is a Nitro HybridObject. `docs/handoff/DECISIONS.md` carries the dated entry, "React Native's own modules stay C++; Nitro is for application APIs", including the rejected idea of forking React Native's JavaScript so it asks Nitro.
+
+The Notes also say not to generate empty TurboModules just to silence linker errors.
+
+## Consequences
+
+- Application native APIs are type-safe from their TypeScript definitions.
+- HybridObjects give one ownership and lifetime model.
+- Expo Modules Core integration builds on Nitro primitives.
+
+Later ADRs lean on this boundary. [ADR-0019](/docs/explanation/adr/0019-nitro-package-metadata) defines how third-party Nitro packages declare a QNX build. [ADR-0020](/docs/explanation/adr/0020-worklets-reanimated-gesture-handler-bootstrap) names the three third-party libraries whose registry lookups a Nitro HybridObject cannot answer and applies the "no stub" rule from this record.
+
+## Alternatives rejected
+
+TurboModules first, rejected because it conflicts with the goal of type-safe, modern native APIs and adds boilerplate.
+
+## Evidence
+
+Source tree:
+
+- `packages/qnx-nitro-runtime/`, with `cpp/QnxNitroRuntime.cpp`, `cpp/QnxPlatformInfo.cpp` and `cpp/QtNitroDispatcher.cpp`, plus `specs/` for the TypeScript contracts.
+- `cmake/RnqnxNitroV1.cmake` and `cmake/RnqnxNitroQt.cmake`, the build switches for the Nitro runtime.
+- `docs/nitro/API_CONTRACTS.md` and `docs/nitro/QT_DISPATCHER.md`.
+
+The record also lists `native/nitro/` and `docs/native-modules/nitro-guide.md`. Neither path exists in the current tree, so they are not cited as evidence here.
+
+Device evidence on the Raspberry Pi 400: `docs/evidence/pi400-nitro-qt-2026-11-07.md` records actual Nitro callbacks and Promise conversions running in the Hermes, React Native and Qt host, using a Nitro nightly (105) that predates the current pin. `docs/evidence/pi400-hello-world-2026-11-07.txt` includes a synchronous Nitro v1 getter and add proof. The Nitro receipt states it adds no application-facing binding beyond the probe and no general QNX Nitrogen support.
+
+Nitrogen at the pinned version emits only Apple and Android platform specs, according to [ADR-0019](/docs/explanation/adr/0019-nitro-package-metadata). This repository's own generator, `scripts/nitro-platform-codegen.mjs`, covers `PlatformInfo` only.
+
+## What would reverse this
+
+The record gives no explicit trigger. The ADR depends on two facts that can change. If Nitro stops being maintained or its registry begins to populate the global that `TurboModuleRegistry` reads, the C++ carve-out for React Native's own modules could shrink. If a Nitro release breaks the HybridObject contracts the runtime relies on, the version-pinning process in [ADR-0008](/docs/explanation/adr/0008-version-pinning) governs the response. Reversing to TurboModules for application APIs would discard the type-safety goal stated in the Decision.

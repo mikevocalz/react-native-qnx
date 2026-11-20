@@ -1,0 +1,57 @@
+---
+title: 'ADR-0005: Hermes as the initial JavaScript engine'
+description: Why Hermes is the required JavaScript engine on QNX and how the build refuses to proceed without it.
+---
+
+Record: [`docs/adr/0005-hermes-only.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0005-hermes-only.md), dated 2026-07-19.
+
+## Status
+
+The record states: "Accepted".
+
+## Context
+
+React Native supports several JavaScript engines. The record calls Hermes the default and best-supported engine on production platforms, with deterministic bytecode, small bundles and direct React Native integration.
+
+## Decision
+
+Hermes is the initial and required engine, cross-compiled for QNX. The build system contains a configure-time check for every required Hermes artifact. The Notes section sharpens this: if Hermes cannot be built, the configure step fails with the exact missing component, and no stub engine is allowed.
+
+## Consequences
+
+- Bytecode behavior stays consistent between host and target.
+- Inspector and Fast Refresh integration follow Hermes paths.
+- A different engine could arrive later as an optional package.
+
+## Alternatives rejected
+
+- JavaScriptCore, because the record judges React Native's JSC integration less maintained on new platforms.
+- V8, because it is large and its React Native integration is not upstream.
+- QuickJS, because it does not support the full JSI surface React Native needs.
+
+## What the source tree shows
+
+The configure-time check is real. `cmake/dependencies/Hermes.cmake` reads React Native's `sdks/.hermesv1version` and stops with `message(FATAL_ERROR ...)` if the file is missing or if the tag differs from the one the project audited. At the time of writing the expected tag is `hermes-v260318099.0.5`, and the file fetches Hermes at a pinned commit through `FetchContent`. The message tells the developer to re-audit before building, which ties this ADR to the pinning rules in [ADR-0008](/docs/explanation/adr/0008-version-pinning).
+
+Related files in the tree:
+
+- `cmake/dependencies/HermesQNX.cmake`, `cmake/ImportHermesHostCompilers.cmake` and `cmake/qnx-hermes-shims/` for the QNX build and host compiler import.
+- `scripts/prepare-hermes-qnx.sh`, `scripts/configure-hermes-qnx.sh` and `scripts/patch-hermes-qnx.mjs`, the scripted path that prepares and patches the Hermes source for QNX.
+- `docs/handoff/HERMES_QNX.md`, the working notes on the QNX Hermes patch.
+- `.github/workflows/hermes-qnx-source-check.yml`, a CI job triggered by changes to the Hermes CMake files and patch scripts.
+
+The record also lists `native/hermes/`. That directory does not exist in the current tree, and the Hermes work lives under `cmake/` and `scripts/` as listed above.
+
+## Evidence
+
+Device evidence on the Raspberry Pi 400:
+
+- `docs/evidence/pi400-hermes-2026-11-06.txt` shows the lean Hermes VM running on the board. It prints `RNQNX_HERMES_QNX_STACK_OK` at 262144 and 1048576 bytes, `RNQNX_HERMES_OK bytecode`, and a C++20 probe line (`RNQNX_G0_CXX20_OK`, with `jthread=unsupported`).
+- `docs/evidence/pi400-hello-world-2026-11-07.txt` records the first React Native Hello World through Fabric, Hermes and Qt Quick.
+- `docs/evidence/pi400-nitro-qt-2026-11-07.md` runs six HBC fixtures compiled with the pinned Linux `hermesc`.
+
+Hermes also carries the Worklets work. `docs/handoff/CURRENT_STATE.md` notes that the Hermes importer selects the real compiler VM for opt-in Worklets, with exact-head CI and review of that import still open at the time of the note.
+
+## What would reverse this
+
+The record gives no explicit trigger. The decision rests on React Native's Hermes integration and on the project's ability to build Hermes for QNX. The "different engine as an optional package" line in Consequences is the stated way out. Anything that replaces Hermes as the required engine would also need to preserve the JSI surface, the bytecode path used by the bundle tooling, and the inspector integration listed above.
