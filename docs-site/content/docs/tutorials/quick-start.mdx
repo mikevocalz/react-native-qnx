@@ -9,20 +9,21 @@ The commands were run from a fresh clone on macOS arm64. The bundle and install 
 
 <Callout type="warn">
   Budget disk and time for step 6. The first CMake configure clones Hermes (about 140 MB) and the
-  build compiles 854 targets. The build tree was about 4 GB and the configure took 50 seconds and the build
-  about eight minutes of wall time on an Apple silicon laptop, including the Hermes clone. Steps 1 to 5 need about 1 GB.
+  build compiles 854 targets. The build tree was about 4 GB and the configure took 50 seconds and
+  the build about eight minutes of wall time on an Apple silicon laptop, including the Hermes clone.
+  Steps 1 to 5 need about 1 GB.
 </Callout>
 
 ## Prerequisites
 
-| Tool | Version used | Notes |
-| --- | --- | --- |
-| Node | 26.13.0 | 26 or newer. `package.json` requires `>=26.0.0`. |
-| pnpm | 12.18.0 | Exactly this version. The repository pins it in `packageManager`. |
-| Git | any recent | |
-| CMake | 4.4.5 | `pnpm qnx doctor` requires 3.31.9 or newer. |
-| Ninja | 1.13.2 | `pnpm qnx doctor` requires 1.11 or newer. |
-| Qt | 6.12.0 | 6.11.1 or newer. Needs Core, Gui, Qml and Quick. Step 6 only. |
+| Tool  | Version used | Notes                                                             |
+| ----- | ------------ | ----------------------------------------------------------------- |
+| Node  | 26.13.0      | 26 or newer. `package.json` requires `>=26.0.0`.                  |
+| pnpm  | 12.18.0      | Exactly this version. The repository pins it in `packageManager`. |
+| Git   | any recent   |                                                                   |
+| CMake | 4.4.5        | `pnpm qnx doctor` requires 3.31.9 or newer.                       |
+| Ninja | 1.13.2       | `pnpm qnx doctor` requires 1.11 or newer.                         |
+| Qt    | 6.12.0       | 6.11.1 or newer. Needs Core, Gui, Qml and Quick. Step 6 only.     |
 
 Check what you have:
 
@@ -162,14 +163,14 @@ Expected: `Documentation validated: 24 components, 11 release gates.` and no typ
 
 ## Common errors
 
-| What you see | Cause and fix |
-| --- | --- |
-| `Failed to switch pnpm to v12.18.0` | An older global pnpm. Use the prefixed install above. |
-| `Bundle output must be inside this checkout's build/ directory.` | Pass `--out build/<name>.js`. |
-| `bundle-qnx exited with code 1. Read the Metro error above` | The CLI's own message. A missing module usually means `pnpm install --no-frozen-lockfile` was not run after `init`. Re-run it and read the Metro error above the summary. |
-| The `rnqnx_playground_host` target is missing | CMake did not find Qt 6.11.1 or newer, so it defines no host target. Point `CMAKE_PREFIX_PATH` at your Qt. Add `-DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON` to fail at configure time instead of skipping the target. |
-| The build disk fills up | The tree is about 4 GB. Delete `build/playground` when you are done. It is not needed to bundle. |
-| `pnpm qnx doctor` exits 1 | Expected without a QNX SDP. The error reads `The QNX SDP environment is not loaded`. See [first device run](/docs/tutorials/first-device-run). |
+| What you see                                                                   | Cause and fix                                                                                                                                                                                                                                                                |
+| ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Failed to switch pnpm to v12.18.0`                                            | An older global pnpm. Use the prefixed install above.                                                                                                                                                                                                                        |
+| `Bundle output must be inside this checkout's build/ directory.`               | Pass `--out build/<name>.js`.                                                                                                                                                                                                                                                |
+| `bundle-qnx exited with code 1. Read the Metro error above`                    | The CLI's own message. A missing module usually means `pnpm install --no-frozen-lockfile` was not run after `init`. Re-run it and read the Metro error above the summary.                                                                                                    |
+| The `rnqnx_playground_host` target is missing                                  | CMake did not find Qt 6.11.1 or newer, so it defines no host target. Point `CMAKE_PREFIX_PATH` at your Qt. Add `-DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON` to fail at configure time instead of skipping the target.                                                             |
+| The build disk fills up                                                        | The tree is about 4 GB. Delete `build/playground` when you are done. It is not needed to bundle.                                                                                                                                                                             |
+| `pnpm qnx doctor` exits 1                                                      | Expected without a QNX SDP. The error reads `The QNX SDP environment is not loaded`. See [first device run](/docs/tutorials/first-device-run).                                                                                                                               |
 | `pnpm test:js` stops at `braces-security.test.mjs` with `ERR_INVALID_ARG_TYPE` | Node cannot start your prefixed pnpm. Run `install.js` as described above. After that the suite reaches `qnx-consumer-native-config.test.mjs` and fails there on macOS, because that test configures the QNX consumer without a QNX toolchain. It is not a quick-start step. |
 
 ## What you have and what you do not

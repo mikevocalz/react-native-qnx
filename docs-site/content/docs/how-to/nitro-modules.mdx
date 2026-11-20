@@ -84,12 +84,12 @@ An app dependency whose `package.json` declares a `react-native-qnx` block with 
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
+| What you see                         | Cause and fix                                                                                          |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
 | `nitro:platform:check` reports drift | The generated file no longer matches the spec. Review the spec and run `pnpm nitro:platform:generate`. |
-| The generator rejects your spec | It supports only the reviewed shape. Extend it with reviewed source. |
-| `NitroModulesProxy` is undefined | The module was used before the native installer ran. Import after install. |
-| A mobile Nitro package does not work | It has no QNX implementation. Each module needs its own. |
+| The generator rejects your spec      | It supports only the reviewed shape. Extend it with reviewed source.                                   |
+| `NitroModulesProxy` is undefined     | The module was used before the native installer ran. Import after install.                             |
+| A mobile Nitro package does not work | It has no QNX implementation. Each module needs its own.                                               |
 
 ## Reference
 

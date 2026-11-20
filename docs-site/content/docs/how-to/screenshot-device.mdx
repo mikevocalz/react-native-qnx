@@ -5,11 +5,11 @@ description: Capture the host renderer's output headlessly on your computer, an 
 
 There are three ways to get a picture, and each one captures something different. Pick by what you need.
 
-| Method | Captures | Where it runs | Needs |
-| --- | --- | --- | --- |
-| `--screenshot` on the host renderer | The app's render | Your Mac or Linux machine | The host build from the [quick start](/docs/tutorials/quick-start) |
-| `--screenshot` on the QNX app | The app's own Qt window | The board | An OpenGL-capable Qt build, not the software backend |
-| `screenshot -file=` | The whole display | The board, with Screen privileges | root or `sudo` |
+| Method                              | Captures                | Where it runs                     | Needs                                                              |
+| ----------------------------------- | ----------------------- | --------------------------------- | ------------------------------------------------------------------ |
+| `--screenshot` on the host renderer | The app's render        | Your Mac or Linux machine         | The host build from the [quick start](/docs/tutorials/quick-start) |
+| `--screenshot` on the QNX app       | The app's own Qt window | The board                         | An OpenGL-capable Qt build, not the software backend               |
+| `screenshot -file=`                 | The whole display       | The board, with Screen privileges | root or `sudo`                                                     |
 
 ## Prerequisites
 
@@ -65,13 +65,13 @@ Open the PNG. For the host method it should match what a live window shows at 64
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| A black or stale image from `screenshot -file=` | Nudge the pointer, wait, capture again. The compositor can lag one event. |
-| `screenshot` fails for `qnxuser` | It needs Screen privileges. Use `sudo -n`. |
-| `--screenshot` returns no image | The app runs on the software Qt backend. Use the OpenGL build with the patched `libqqnx.so`. |
-| `screenshot is not installed.` | The board image lacks the tool. Use the app's own `--screenshot`. |
-| The file already exists | `qnx:device screenshot --out` writes only new files. |
+| What you see                                    | Cause and fix                                                                                |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| A black or stale image from `screenshot -file=` | Nudge the pointer, wait, capture again. The compositor can lag one event.                    |
+| `screenshot` fails for `qnxuser`                | It needs Screen privileges. Use `sudo -n`.                                                   |
+| `--screenshot` returns no image                 | The app runs on the software Qt backend. Use the OpenGL build with the patched `libqqnx.so`. |
+| `screenshot is not installed.`                  | The board image lacks the tool. Use the app's own `--screenshot`.                            |
+| The file already exists                         | `qnx:device screenshot --out` writes only new files.                                         |
 
 ## Reference
 

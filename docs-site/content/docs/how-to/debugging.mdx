@@ -64,16 +64,16 @@ The app opens on the board with its UI from the bundle Metro served. Edit a comp
 
 ## 3. What the keys do
 
-| You do | The app does |
-| --- | --- |
-| Save a component file | Fast Refresh keeps component state |
-| Save the entry file, or a file that is not only components | Full reload |
-| `r` in the Metro terminal, `Ctrl+R` or `F5` in the app | Full reload with a new React host and a fresh bundle |
-| `d` in the terminal, `Ctrl+D` or `F1` in the app | Developer menu: Reload, Fast Refresh on or off, and items the app added with `DevSettings.addMenuItem` |
-| Save a syntax error | LogBox shows it over the app, and fixing it clears it |
-| Throw during render | LogBox shows the error and component stack |
-| Stop Metro | The app keeps running and reloads when Metro returns |
-| Start the app before Metro | A "Could not connect to Metro" screen that loads as soon as Metro starts |
+| You do                                                     | The app does                                                                                           |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Save a component file                                      | Fast Refresh keeps component state                                                                     |
+| Save the entry file, or a file that is not only components | Full reload                                                                                            |
+| `r` in the Metro terminal, `Ctrl+R` or `F5` in the app     | Full reload with a new React host and a fresh bundle                                                   |
+| `d` in the terminal, `Ctrl+D` or `F1` in the app           | Developer menu: Reload, Fast Refresh on or off, and items the app added with `DevSettings.addMenuItem` |
+| Save a syntax error                                        | LogBox shows it over the app, and fixing it clears it                                                  |
+| Throw during render                                        | LogBox shows the error and component stack                                                             |
+| Stop Metro                                                 | The app keeps running and reloads when Metro returns                                                   |
+| Start the app before Metro                                 | A "Could not connect to Metro" screen that loads as soon as Metro starts                               |
 
 Errors before React can render, such as Metro unreachable or a throw while the bundle evaluates, show a native error screen with Reload and Dismiss.
 
@@ -101,13 +101,13 @@ LogBox shows call stacks unsymbolicated, because symbolication goes through `fet
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| `Unknown option '--dry-run'` | `project dev` and `project run` do not take it. |
-| "Could not connect to Metro" screen | Metro is not running or the board cannot reach your address. Pass `--host-address`. It loads once Metro starts. |
-| Two app windows | Launch with `--replace`, which `project dev` does for you. |
-| `RNQNX_ENABLE_DEV_SUPPORT` stops configure | `RNQNX_ENABLE_WEBSOCKETS=ON` is missing. |
-| The dev build will not start the bundle | It links `libhermesvmlean.so`. A dev client needs `libhermesvm.so`. |
+| What you see                               | Cause and fix                                                                                                   |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `Unknown option '--dry-run'`               | `project dev` and `project run` do not take it.                                                                 |
+| "Could not connect to Metro" screen        | Metro is not running or the board cannot reach your address. Pass `--host-address`. It loads once Metro starts. |
+| Two app windows                            | Launch with `--replace`, which `project dev` does for you.                                                      |
+| `RNQNX_ENABLE_DEV_SUPPORT` stops configure | `RNQNX_ENABLE_WEBSOCKETS=ON` is missing.                                                                        |
+| The dev build will not start the bundle    | It links `libhermesvmlean.so`. A dev client needs `libhermesvm.so`.                                             |
 
 ## Reference
 

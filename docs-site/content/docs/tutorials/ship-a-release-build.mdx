@@ -116,14 +116,14 @@ The [release gates reference](/docs/reference/release-gates) lists each gate and
 
 ## Common errors
 
-| What you see | Cause and fix |
-| --- | --- |
-| `The QNX SDP environment is not loaded` | Source `qnxsdp-env.sh` in this shell and rerun `pnpm qnx doctor`. |
-| `Configured Ninja build not found. Run ./scripts/configure-qnx.sh ... first.` | Run configure before build. |
-| `ENOENT ... app.bundle.js` from `prepare-native` | Bundle first, then pass `--bundle` with that path. |
-| `Binary not found: .../bin/rnqnx_playground` from deploy | The Release build for that preset has not run. Build it, then deploy. |
-| Bytecode fails to load on the board | `hermesc` and `libhermesvmlean.so` come from different Hermes versions. Use the pinned compiler. |
-| `create` refuses to write the dossier | The destination exists or tracked files are modified. Choose a new path and commit or stash first. |
+| What you see                                                                  | Cause and fix                                                                                      |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `The QNX SDP environment is not loaded`                                       | Source `qnxsdp-env.sh` in this shell and rerun `pnpm qnx doctor`.                                  |
+| `Configured Ninja build not found. Run ./scripts/configure-qnx.sh ... first.` | Run configure before build.                                                                        |
+| `ENOENT ... app.bundle.js` from `prepare-native`                              | Bundle first, then pass `--bundle` with that path.                                                 |
+| `Binary not found: .../bin/rnqnx_playground` from deploy                      | The Release build for that preset has not run. Build it, then deploy.                              |
+| Bytecode fails to load on the board                                           | `hermesc` and `libhermesvmlean.so` come from different Hermes versions. Use the pinned compiler.   |
+| `create` refuses to write the dossier                                         | The destination exists or tracked files are modified. Choose a new path and commit or stash first. |
 
 The last row follows from the tool's documented refusals. The `Configured Ninja build` and `Binary not found` messages are read from the scripts. Neither row was triggered in this pass.
 

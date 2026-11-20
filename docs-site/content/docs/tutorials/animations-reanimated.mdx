@@ -44,13 +44,13 @@ What you should see: the configure step passes. A version outside the range stop
 
 What the port provides and omits, from the repository's [Reanimated notes](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/reanimated-gesture-handler-qnx.md):
 
-| Reanimated feature | On QNX |
-| --- | --- |
-| Frame requests | Qt Quick `afterAnimating`, through the Worklets frame bridge |
-| Animation clock | `steady_clock` milliseconds, the same clock as frame timestamps |
-| Synchronous style updates | GUI-thread update into the mounted Qt item |
-| Scroll and gesture event handlers | Handler worklet runs on the UI thread |
-| Sensors, keyboard, pseudo-selectors, platform CSS backends | Not provided. Sensors and keyboard log and return -1. |
+| Reanimated feature                                         | On QNX                                                          |
+| ---------------------------------------------------------- | --------------------------------------------------------------- |
+| Frame requests                                             | Qt Quick `afterAnimating`, through the Worklets frame bridge    |
+| Animation clock                                            | `steady_clock` milliseconds, the same clock as frame timestamps |
+| Synchronous style updates                                  | GUI-thread update into the mounted Qt item                      |
+| Scroll and gesture event handlers                          | Handler worklet runs on the UI thread                           |
+| Sensors, keyboard, pseudo-selectors, platform CSS backends | Not provided. Sensors and keyboard log and return -1.           |
 
 ## 2. Write a spring
 
@@ -73,9 +73,7 @@ const { scheduleOnRN } = require('react-native-worklets');
 
 const x = useSharedValue(0);
 
-const progress = useDerivedValue(() =>
-  interpolate(x.value, [0, 220], [0, 1], Extrapolation.CLAMP)
-);
+const progress = useDerivedValue(() => interpolate(x.value, [0, 220], [0, 1], Extrapolation.CLAMP));
 
 const boxStyle = useAnimatedStyle(() => ({
   transform: [{ translateX: x.value }],
@@ -132,8 +130,14 @@ useFrameCallback(() => {
 });
 
 const readFrames = () => {
-  log('reanimated UI frames: ' + frames.value + ', shared x: ' + x.value +
-      ', runtime kind: ' + globalThis.__RUNTIME_KIND);
+  log(
+    'reanimated UI frames: ' +
+      frames.value +
+      ', shared x: ' +
+      x.value +
+      ', runtime kind: ' +
+      globalThis.__RUNTIME_KIND
+  );
 };
 ```
 
@@ -141,13 +145,13 @@ const readFrames = () => {
 
 ## Common errors
 
-| What you see | Cause and fix |
-| --- | --- |
-| The card says `This build has no native Worklets module` | The build was configured with `RNQNX_ENABLE_WORKLETS=OFF`. Reconfigure with the switch on. |
-| Configure stops on a version | The installed package is outside the supported range. Pin Reanimated 4.7.1, Worklets 0.13.x and Gesture Handler 3.4.0. Expo SDK 58's own table lists Gesture Handler `~3.3.0`, so `expo install` can choose the older line. |
-| Configure stops on a missing full Hermes VM | Build `hermesvm jsi` in the Hermes tree. Do not rename the lean library. |
-| An animation freezes while a button's handler loops | JavaScript and the Qt GUI thread are the same thread. The screen catches up afterwards. Keep JS work short. |
-| Sensor or keyboard hooks log and return -1 | Not provided on QNX. |
+| What you see                                             | Cause and fix                                                                                                                                                                                                               |
+| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The card says `This build has no native Worklets module` | The build was configured with `RNQNX_ENABLE_WORKLETS=OFF`. Reconfigure with the switch on.                                                                                                                                  |
+| Configure stops on a version                             | The installed package is outside the supported range. Pin Reanimated 4.7.1, Worklets 0.13.x and Gesture Handler 3.4.0. Expo SDK 58's own table lists Gesture Handler `~3.3.0`, so `expo install` can choose the older line. |
+| Configure stops on a missing full Hermes VM              | Build `hermesvm jsi` in the Hermes tree. Do not rename the lean library.                                                                                                                                                    |
+| An animation freezes while a button's handler loops      | JavaScript and the Qt GUI thread are the same thread. The screen catches up afterwards. Keep JS work short.                                                                                                                 |
+| Sensor or keyboard hooks log and return -1               | Not provided on QNX.                                                                                                                                                                                                        |
 
 ## Next steps
 

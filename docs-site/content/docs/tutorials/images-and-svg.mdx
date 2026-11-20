@@ -6,17 +6,19 @@ description: Load images with Image and expo-image and draw vector graphics with
 By the end you will know how to load a data URI, a bundled asset and an HTTPS image, how `Image.getSize` and `Image.prefetch` behave, how to draw SVG shapes with gradients and clips, and which native switches and Qt plugins each one needs. Image loading and SVG both rest on Qt: Qt Network and Qt's image plugins for pictures, and a Qt Quick painter for `react-native-svg`.
 
 <Callout type="warn">
-  Not run in this docs pass: the native builds with `RNQNX_ENABLE_QT_RNSVG` and `RNQNX_ENABLE_QT_EXPO_IMAGE` on, and every picture below on a device. The screenshots are from the Pi 400 receipts. The matrix lists `Image` as supported on the host and unverified on the Pi 400.
+  Not run in this docs pass: the native builds with `RNQNX_ENABLE_QT_RNSVG` and
+  `RNQNX_ENABLE_QT_EXPO_IMAGE` on, and every picture below on a device. The screenshots are from the
+  Pi 400 receipts. The matrix lists `Image` as supported on the host and unverified on the Pi 400.
 </Callout>
 
 ## Support levels
 
 From [`docs/component-support.json`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/component-support.json):
 
-| Item | Host | Pi 400 | Note |
-| --- | --- | --- | --- |
-| `Image` | supported | unverified | Data URIs, Metro assets and HTTP(S) loading, load events and a header-aware bounded memory cache. |
-| `ImageBackground` | supported | unverified | Composes `View` and `Image`, paints the image behind its children, forwards `resizeMode`. |
+| Item              | Host      | Pi 400     | Note                                                                                              |
+| ----------------- | --------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| `Image`           | supported | unverified | Data URIs, Metro assets and HTTP(S) loading, load events and a header-aware bounded memory cache. |
+| `ImageBackground` | supported | unverified | Composes `View` and `Image`, paints the image behind its children, forwards `resizeMode`.         |
 
 Modules outside that table have their own receipts:
 
@@ -116,14 +118,14 @@ In the touch-target card, presses on a circle and on its group raised counters 0
 
 ## Common errors
 
-| What you see | Cause and fix |
-| --- | --- |
-| Only PNGs show, JPEGs are blank | The runtime has no `plugins/imageformats/` JPEG plugin. Stage it with `stage-runtime.py`. |
-| Every `https://` image fails | The staged Qt runtime has no `plugins/tls/` OpenSSL backend. |
-| An animated WebP fails to load | `libqwebp.so` is missing from `plugins/imageformats/`. |
-| `Unknown component RNSVGSvgView` style error | The build has `RNQNX_ENABLE_QT_RNSVG=OFF`. |
-| `Image.queryCache` does not list a loaded image | The response was larger than 32 MiB decoded, or private or `no-store`. |
-| A self-signed HTTPS image is rejected | Intended. TLS errors are never ignored. |
+| What you see                                    | Cause and fix                                                                             |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Only PNGs show, JPEGs are blank                 | The runtime has no `plugins/imageformats/` JPEG plugin. Stage it with `stage-runtime.py`. |
+| Every `https://` image fails                    | The staged Qt runtime has no `plugins/tls/` OpenSSL backend.                              |
+| An animated WebP fails to load                  | `libqwebp.so` is missing from `plugins/imageformats/`.                                    |
+| `Unknown component RNSVGSvgView` style error    | The build has `RNQNX_ENABLE_QT_RNSVG=OFF`.                                                |
+| `Image.queryCache` does not list a loaded image | The response was larger than 32 MiB decoded, or private or `no-store`.                    |
+| A self-signed HTTPS image is rejected           | Intended. TLS errors are never ignored.                                                   |
 
 ## Next steps
 

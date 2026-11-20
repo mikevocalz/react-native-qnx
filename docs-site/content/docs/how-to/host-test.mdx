@@ -83,11 +83,11 @@ Host tests compile the Screen wrapper against a fake Screen, and they validate o
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| `ERR_INVALID_ARG_TYPE` at `braces-security.test.mjs` | Node cannot start pnpm. Run `node <prefix>/node_modules/pnpm/install.js` once. |
+| What you see                                                                  | Cause and fix                                                                                                              |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `ERR_INVALID_ARG_TYPE` at `braces-security.test.mjs`                          | Node cannot start pnpm. Run `node <prefix>/node_modules/pnpm/install.js` once.                                             |
 | `QNX consumer needs a QNX toolchain` at `qnx-consumer-native-config.test.mjs` | The test configures the QNX consumer on a host without a QNX toolchain. It fails on macOS here. Run your own file instead. |
-| Qt tests are missing | CMake did not find Qt 6.11.1 or newer, so the Qt targets are not defined. |
+| Qt tests are missing                                                          | CMake did not find Qt 6.11.1 or newer, so the Qt targets are not defined.                                                  |
 
 ## Reference
 

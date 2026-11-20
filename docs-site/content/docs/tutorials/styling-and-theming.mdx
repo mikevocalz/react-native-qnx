@@ -213,12 +213,12 @@ Pressing the button in a live window flips between the two. That press was not r
 
 ## Common errors
 
-| What you see | Cause and fix |
-| --- | --- |
-| Rows keep the old colours after the toggle | `extraData` does not include the theme name. |
-| `useColorScheme` is undefined | The Metro config does not wrap with `withPublicEntry`. The public entry exports it. |
-| A card grid wraps to one column per row | Widths that sum to 100%. Use whole-pixel widths computed from `onLayout`. |
-| The line-through does not show | `textDecorationLine` is not confirmed in this renderer. The sample also dims the colour, so state stays readable. |
+| What you see                               | Cause and fix                                                                                                     |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Rows keep the old colours after the toggle | `extraData` does not include the theme name.                                                                      |
+| `useColorScheme` is undefined              | The Metro config does not wrap with `withPublicEntry`. The public entry exports it.                               |
+| A card grid wraps to one column per row    | Widths that sum to 100%. Use whole-pixel widths computed from `onLayout`.                                         |
+| The line-through does not show             | `textDecorationLine` is not confirmed in this renderer. The sample also dims the colour, so state stays readable. |
 
 ## Next steps
 

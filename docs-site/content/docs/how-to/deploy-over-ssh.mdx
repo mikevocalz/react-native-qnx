@@ -42,7 +42,11 @@ pnpm qnx deploy-qnx --arch aarch64 --config Release --target rnqnx_playground
 The script finds `build/qnx-aarch64-release/bin/rnqnx_playground`, makes sure the target directory exists and is writable, uploads to a temporary name, then does `chmod 755` and `mv -f` onto `<QNX_TARGET_DIR>/rnqnx_playground`. The move makes it atomic. A failed upload removes the temporary file. The dry run printed:
 
 ```json
-{ "executable": "bash", "args": ["<checkout>/scripts/deploy-qnx.sh", "aarch64", "rnqnx_playground", "Release"], "cwd": "<checkout>" }
+{
+  "executable": "bash",
+  "args": ["<checkout>/scripts/deploy-qnx.sh", "aarch64", "rnqnx_playground", "Release"],
+  "cwd": "<checkout>"
+}
 ```
 
 What you should see: `Deploying <path>`, the destination line, then `Deployment complete.` If the binary is missing it prints `Binary not found` and the build command to run.
@@ -75,13 +79,13 @@ Copy in the executable named after the app id, `app.bundle.js`, `icons/`, `libhe
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| `QNX_TARGET_IP must be an IPv4 address or DNS/mDNS hostname.` | The address has unsupported characters. |
-| `QNX_SSH_KEY does not name a readable file` | Fix the path. |
-| `test -w` fails on the target directory | The user cannot write `QNX_TARGET_DIR`. Pick a directory under `/data/home/<user>`. |
-| Host key prompt blocks the script | Add the key to `known_hosts` first. The scripts do not skip host key checks. |
-| Two app windows | Launch through `run-app.sh`. It checks `pidin` and `--replace` quits the old copy. |
+| What you see                                                  | Cause and fix                                                                       |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `QNX_TARGET_IP must be an IPv4 address or DNS/mDNS hostname.` | The address has unsupported characters.                                             |
+| `QNX_SSH_KEY does not name a readable file`                   | Fix the path.                                                                       |
+| `test -w` fails on the target directory                       | The user cannot write `QNX_TARGET_DIR`. Pick a directory under `/data/home/<user>`. |
+| Host key prompt blocks the script                             | Add the key to `known_hosts` first. The scripts do not skip host key checks.        |
+| Two app windows                                               | Launch through `run-app.sh`. It checks `pidin` and `--replace` quits the old copy.  |
 
 ## Reference
 

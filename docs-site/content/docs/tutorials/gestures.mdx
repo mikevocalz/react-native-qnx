@@ -20,14 +20,14 @@ By the end you will have read a draggable card built from `usePanGesture`, `useT
 
 The recognizers are the repository's own C++ ([`vnext/src/gesture/GestureHandlerCore.cpp`](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/src/gesture/GestureHandlerCore.cpp)). The library's JavaScript and detector shadow node are upstream's.
 
-| Handler | Status |
-| --- | --- |
-| Pan | Minimum distance, active and fail offsets, velocity, translation, begin, activate, update, end and cancel. |
-| Tap | Tap count, maximum duration, maximum delay between taps, maximum distance. |
-| LongPress | Minimum duration deadline, maximum distance. |
-| Fling | Direction mask, minimum velocity. |
-| Manual | Driven by `GestureStateManager`. |
-| Pinch, Rotation, Native, Hover | Accepted, then fail on the first pointer with a log line. Not implemented. |
+| Handler                        | Status                                                                                                     |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Pan                            | Minimum distance, active and fail offsets, velocity, translation, begin, activate, update, end and cancel. |
+| Tap                            | Tap count, maximum duration, maximum delay between taps, maximum distance.                                 |
+| LongPress                      | Minimum duration deadline, maximum distance.                                                               |
+| Fling                          | Direction mask, minimum velocity.                                                                          |
+| Manual                         | Driven by `GestureStateManager`.                                                                           |
+| Pinch, Rotation, Native, Hover | Accepted, then fail on the first pointer with a log line. Not implemented.                                 |
 
 Not implemented either: pointer data callbacks such as `onTouchesDown`, multi-pointer pan averaging, hit slop, `RNGestureHandlerButton` behavior (it mounts as a plain container), arbitration with Qt scrolling, and coordinate spaces for transformed ancestors.
 
@@ -72,7 +72,11 @@ const pan = usePanGesture({
     y.value = withSpring(0, { damping: 14, stiffness: 160, velocity: event.velocityY });
     scheduleOnRN(
       setStatus,
-      'released at ' + Math.round(event.translationX) + ', ' + Math.round(event.translationY) + ', springing back'
+      'released at ' +
+        Math.round(event.translationX) +
+        ', ' +
+        Math.round(event.translationY) +
+        ', springing back'
     );
   },
   onFinalize: () => {
@@ -123,13 +127,13 @@ After a double click the status line reads `double tap`, and the tap count does 
 
 ## Common errors
 
-| What you see | Cause and fix |
-| --- | --- |
-| A pinch or rotation never activates | Those handlers fail on the first pointer and log a line. Build the effect from a pan or a tap. |
-| The single tap fires on every double tap | The two taps are not joined with `useExclusiveGestures(doubleTap, singleTap)`. |
-| Nothing responds | The tree is missing `GestureHandlerRootView`, or the build has `RNQNX_ENABLE_GESTURE_HANDLER=OFF`. |
-| A press on a button inside the card does nothing | An ancestor gesture claimed the pointer. Use `simultaneousHandlers` or move the button out. |
-| The card pauses mid-drag after a slow handler | JS blocked the GUI thread. Shorten the handler. |
+| What you see                                     | Cause and fix                                                                                      |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| A pinch or rotation never activates              | Those handlers fail on the first pointer and log a line. Build the effect from a pan or a tap.     |
+| The single tap fires on every double tap         | The two taps are not joined with `useExclusiveGestures(doubleTap, singleTap)`.                     |
+| Nothing responds                                 | The tree is missing `GestureHandlerRootView`, or the build has `RNQNX_ENABLE_GESTURE_HANDLER=OFF`. |
+| A press on a button inside the card does nothing | An ancestor gesture claimed the pointer. Use `simultaneousHandlers` or move the button out.        |
+| The card pauses mid-drag after a slow handler    | JS blocked the GUI thread. Shorten the handler.                                                    |
 
 The last three rows are the expected consequences of the arbitration rules above. They were not reproduced for this page.
 

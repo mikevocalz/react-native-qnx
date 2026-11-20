@@ -8,7 +8,8 @@ By the end you will have an app configured to open as a 1024x600 window with a W
 <Callout type="warn">
   Not run in this docs pass: the native build with window chrome on, and every window action on a
   device. The screenshots are the repository's own host frames and Pi 400 captures. The commands
-  below are from [`docs/getting-started/window-chrome.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/window-chrome.md).
+  below are from
+  [`docs/getting-started/window-chrome.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/window-chrome.md).
 </Callout>
 
 ## Prerequisites
@@ -69,12 +70,12 @@ const config: ExpoConfig = {
 export default config;
 ```
 
-| Field | Values | Default |
-| --- | --- | --- |
-| `controls` | `macos` (left, round), `windows` (right) | `macos` |
-| `titleBarStyle` | `default`, `hidden`, `none` | `default` |
-| `initialSize` | `{ width, height }`, integers 1 to 16384 | none |
-| `unavailableControls` | `hide`, `disable` | `hide` |
+| Field                 | Values                                   | Default   |
+| --------------------- | ---------------------------------------- | --------- |
+| `controls`            | `macos` (left, round), `windows` (right) | `macos`   |
+| `titleBarStyle`       | `default`, `hidden`, `none`              | `default` |
+| `initialSize`         | `{ width, height }`, integers 1 to 16384 | none      |
+| `unavailableControls` | `hide`, `disable`                        | `hide`    |
 
 - `default` draws the bar and starts the React content below it.
 - `hidden` draws only the controls, floating over the top of the content. The content starts at the top edge.
@@ -125,12 +126,12 @@ The bar is 44 device-independent pixels tall and every hit target is at least 44
 
 Under the stock `fullscreen-winmgr` desktop:
 
-| Control | Behavior |
-| --- | --- |
-| Close | Closes the window and the app exits. |
-| Minimize | Releases the native window so the launcher shows. The app keeps running, and launching it again restores it. |
+| Control  | Behavior                                                                                                             |
+| -------- | -------------------------------------------------------------------------------------------------------------------- |
+| Close    | Closes the window and the app exits.                                                                                 |
+| Minimize | Releases the native window so the launcher shows. The app keeps running, and launching it again restores it.         |
 | Maximize | For apps with `initialSize`, toggles between the full display and the window. Double-click on the bar does the same. |
-| Drag | The bar moves the window. Edges and corners resize it, with a minimum of 400 by 300. |
+| Drag     | The bar moves the window. Edges and corners resize it, with a minimum of 400 by 300.                                 |
 
 `fullscreen-winmgr` sets every native window to the display size each time it posts a frame. An app with `initialSize` therefore gets a contained window: the native window fills the display, and the chrome draws the app's window inside it, centred, with a 1 px outline. The startup line reports `mode=contained`. Screen has no resize cursor shapes, so the app draws a resize arrow beside the pointer on an edge.
 
@@ -168,13 +169,13 @@ The Pi 400 desktop guide covers the rest: a [black window, missing mouse, and an
 
 ## Common errors
 
-| What you see | Cause and fix |
-| --- | --- |
-| `build-native` fails with the chrome option | The descriptor has no `window`, or `titleBarStyle` is `none`. Add a `window` object with a style other than `none`. |
-| No title bar appears | The build was made without `--window-chrome`, or `native-app.json` predates the `window` field. Run `prepare-native` again. |
-| Maximize is missing | The app has no `initialSize`, so there is no window size to return to. The startup log says so. |
-| A typo in a field value | Validation fails at prebuild. Fix the value. |
-| The window fills the display and ignores the size | Without `QT_QPA_PLATFORM=qnx:no-fullscreen` the Qt plugin makes the first window full screen. |
+| What you see                                      | Cause and fix                                                                                                               |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `build-native` fails with the chrome option       | The descriptor has no `window`, or `titleBarStyle` is `none`. Add a `window` object with a style other than `none`.         |
+| No title bar appears                              | The build was made without `--window-chrome`, or `native-app.json` predates the `window` field. Run `prepare-native` again. |
+| Maximize is missing                               | The app has no `initialSize`, so there is no window size to return to. The startup log says so.                             |
+| A typo in a field value                           | Validation fails at prebuild. Fix the value.                                                                                |
+| The window fills the display and ignores the size | Without `QT_QPA_PLATFORM=qnx:no-fullscreen` the Qt plugin makes the first window full screen.                               |
 
 ## Next steps
 

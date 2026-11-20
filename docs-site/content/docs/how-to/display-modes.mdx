@@ -17,11 +17,11 @@ The display mode on a Pi 400 depends on the monitor's EDID, the graphics stack a
 
 ## What the recorded runs used
 
-| Run | Display or capture size | Note |
-| --- | --- | --- |
-| 2026-11-07 Hello World | Capture 640x480, then a full-screen capture at 1920x1080 | Custom Pi 400 image, manual DRM and Screen startup. |
-| 2026-11-12 public Qt | Full-screen capture 1920x1080 | Public-source Qt 6.12.0. |
-| 2026-11-19 runs 1 and 2, key-hold | 1024x768 | The monitor's EDID was unreadable. The owner is fixing it separately. |
+| Run                               | Display or capture size                                  | Note                                                                  |
+| --------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------- |
+| 2026-11-07 Hello World            | Capture 640x480, then a full-screen capture at 1920x1080 | Custom Pi 400 image, manual DRM and Screen startup.                   |
+| 2026-11-12 public Qt              | Full-screen capture 1920x1080                            | Public-source Qt 6.12.0.                                              |
+| 2026-11-19 runs 1 and 2, key-hold | 1024x768                                                 | The monitor's EDID was unreadable. The owner is fixing it separately. |
 
 1920x1080 is unproven on current builds. Gallery results at 1280x800 are a window inside the display, not a display mode.
 
@@ -37,11 +37,11 @@ A full-screen app reports the display size there. If the app has `initialSize` t
 
 ## 2. Separate the window from the display
 
-| You want | Do |
-| --- | --- |
-| A window of a set size | Give the app `extra.rnqnx.window.initialSize`, or run it with `--window-size 1600x900`. |
-| The app to fill the display | Run it with `--fullscreen`, or have no `initialSize`. |
-| No title bar | `--title-bar-style none`. |
+| You want                    | Do                                                                                      |
+| --------------------------- | --------------------------------------------------------------------------------------- |
+| A window of a set size      | Give the app `extra.rnqnx.window.initialSize`, or run it with `--window-size 1600x900`. |
+| The app to fill the display | Run it with `--fullscreen`, or have no `initialSize`.                                   |
+| No title bar                | `--title-bar-style none`.                                                               |
 
 Run the app with `QT_QPA_PLATFORM=qnx:no-fullscreen`. With plain `qnx` the Qt plugin makes the first window full screen regardless of its size. The window managers differ: `fullscreen-winmgr` sizes every native window to the display each time it posts a frame, so a sized app lives in a contained frame. `rnqnx-winmgr` gives the app a real window of its own size. See [windows and chrome](/docs/tutorials/windows-and-chrome).
 
@@ -61,13 +61,13 @@ Run the app, read the `RNQNX_WINDOW_CHROME` line, and take a [screenshot](/docs/
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| 1024x768 on a 1080p monitor | EDID unreadable. Reconnect, boot with the display attached, try the other HDMI port. |
-| Black window or screen | Check both Qt plugin paths point at the patched plugin in `glfix`, and the GPU nodes are group 36. |
-| The app is full screen but you set a size | Missing `qnx:no-fullscreen`, or no `initialSize`. |
-| Exit 134 with `failed to initialize EGL display, err=12289` | The DRM nodes are root-only. Add the `chgrp 36` and `chmod 0660` lines to `full_startup.sh`. |
-| No signal after a reboot | The recovery boot disabled automatic graphics. Start DRM and Screen by hand. |
+| What you see                                                | Cause and fix                                                                                      |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| 1024x768 on a 1080p monitor                                 | EDID unreadable. Reconnect, boot with the display attached, try the other HDMI port.               |
+| Black window or screen                                      | Check both Qt plugin paths point at the patched plugin in `glfix`, and the GPU nodes are group 36. |
+| The app is full screen but you set a size                   | Missing `qnx:no-fullscreen`, or no `initialSize`.                                                  |
+| Exit 134 with `failed to initialize EGL display, err=12289` | The DRM nodes are root-only. Add the `chgrp 36` and `chmod 0660` lines to `full_startup.sh`.       |
+| No signal after a reboot                                    | The recovery boot disabled automatic graphics. Start DRM and Screen by hand.                       |
 
 ## Reference
 

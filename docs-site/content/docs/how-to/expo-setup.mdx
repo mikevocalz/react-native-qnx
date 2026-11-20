@@ -64,13 +64,13 @@ Read-only metadata checks. No project JavaScript, package manager, compiler, net
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| `package.json does not depend on expo; add-qnx targets existing Expo apps.` | Add `expo` to the app first. |
-| `Cannot load @expo/config. Install expo in the app` | Install `expo` in the app, then rerun. |
-| `No Expo config found. Add app.json or app.config.js/ts to the project root.` | The doctor needs a config file in the project root. |
-| The `file:` links stop resolving | The checkout moved. Rerun `add-qnx`. |
-| A bundle output path is rejected | It must be a new file under the project's `build/` directory. |
+| What you see                                                                  | Cause and fix                                                 |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `package.json does not depend on expo; add-qnx targets existing Expo apps.`   | Add `expo` to the app first.                                  |
+| `Cannot load @expo/config. Install expo in the app`                           | Install `expo` in the app, then rerun.                        |
+| `No Expo config found. Add app.json or app.config.js/ts to the project root.` | The doctor needs a config file in the project root.           |
+| The `file:` links stop resolving                                              | The checkout moved. Rerun `add-qnx`.                          |
+| A bundle output path is rejected                                              | It must be a new file under the project's `build/` directory. |
 
 ## Reference
 

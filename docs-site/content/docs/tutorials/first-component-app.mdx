@@ -14,12 +14,12 @@ By the end you will have an app called `notes` with a title, a counter and a tap
 
 The status matrix in [`docs/component-support.json`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/component-support.json) is the source for these levels. Host means the host renderer tests. Pi 400 means scoped proof on the one board.
 
-| Component | Host | Pi 400 | Note from the matrix |
-| --- | --- | --- | --- |
-| `View` | partial | scoped | Yoga layout, background, corner radius and opacity. Border, clipping and transform have limits. |
-| `Text` | partial | scoped | Styled, wrapped text and `numberOfLines` ellipsis. Inline attachments have zero size. |
-| `Pressable` | supported | scoped | Host pointer press delivers `onPress`. Pi 400 proof used synthetic Qt input, not a physical mouse or keyboard. |
-| `FlatList` | supported | unverified | Scroll-following virtualization and off-window cell release are host-tested. |
+| Component   | Host      | Pi 400     | Note from the matrix                                                                                           |
+| ----------- | --------- | ---------- | -------------------------------------------------------------------------------------------------------------- |
+| `View`      | partial   | scoped     | Yoga layout, background, corner radius and opacity. Border, clipping and transform have limits.                |
+| `Text`      | partial   | scoped     | Styled, wrapped text and `numberOfLines` ellipsis. Inline attachments have zero size.                          |
+| `Pressable` | supported | scoped     | Host pointer press delivers `onPress`. Pi 400 proof used synthetic Qt input, not a physical mouse or keyboard. |
+| `FlatList`  | supported | unverified | Scroll-following virtualization and off-window cell release are host-tested.                                   |
 
 `unverified` on the Pi 400 column means there is no device receipt for that component. It does not mean the component fails there.
 
@@ -182,12 +182,12 @@ This screenshot was taken at the host's default 640x480. The host render has no 
 
 ## Common errors
 
-| What you see | Cause and fix |
-| --- | --- |
-| `bundle-qnx exited with code 1` and Metro stops at `1%` | This is what a first attempt without the `extraNodeModules` line did here: Metro could not finish the first file. Redo step 2 and read the Metro error above the summary. |
-| The bundle builds but the window is blank | The component name is not `RNQnxPlayground`. |
-| `Bundle output must be inside this checkout's build/ directory.` | Write to `build/<name>.bundle.js`. |
-| A row does not update when you press it | `extraData` is missing, so `FlatList` skipped the re-render. |
+| What you see                                                     | Cause and fix                                                                                                                                                             |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bundle-qnx exited with code 1` and Metro stops at `1%`          | This is what a first attempt without the `extraNodeModules` line did here: Metro could not finish the first file. Redo step 2 and read the Metro error above the summary. |
+| The bundle builds but the window is blank                        | The component name is not `RNQnxPlayground`.                                                                                                                              |
+| `Bundle output must be inside this checkout's build/ directory.` | Write to `build/<name>.bundle.js`.                                                                                                                                        |
+| A row does not update when you press it                          | `extraData` is missing, so `FlatList` skipped the re-render.                                                                                                              |
 
 ## Next steps
 

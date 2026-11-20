@@ -60,13 +60,13 @@ What `fetch` does:
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| No manifest | None is published. Pass `--manifest` or set `RNQNX_RUNNER_MANIFEST`. |
-| The download is deleted | Its size or SHA-256 did not match the manifest. Fix the manifest or the file. |
-| A redirect is refused | Only GitHub Release downloads to `githubusercontent.com` may redirect. Host the file directly. |
-| A QNX runner is refused | The archive contains QNX SDP files, which the project does not redistribute. |
-| `--sdp` is required | QNX targets need `--sdp <version>`. Host runners use `--sdp none`. |
+| What you see            | Cause and fix                                                                                  |
+| ----------------------- | ---------------------------------------------------------------------------------------------- |
+| No manifest             | None is published. Pass `--manifest` or set `RNQNX_RUNNER_MANIFEST`.                           |
+| The download is deleted | Its size or SHA-256 did not match the manifest. Fix the manifest or the file.                  |
+| A redirect is refused   | Only GitHub Release downloads to `githubusercontent.com` may redirect. Host the file directly. |
+| A QNX runner is refused | The archive contains QNX SDP files, which the project does not redistribute.                   |
+| `--sdp` is required     | QNX targets need `--sdp <version>`. Host runners use `--sdp none`.                             |
 
 ## Reference
 

@@ -23,15 +23,15 @@ That screenshot is from the run 2 receipt. It is what step 7 should leave you wi
 
 ## Prerequisites
 
-| Need | Version | Notes |
-| --- | --- | --- |
-| Build host | x86-64 Ubuntu 22.04 | Also supported by the SDP: Ubuntu 24.04, RHEL 9, Windows 11. No macOS and no ARM host. |
-| QNX SDP | 8.0.5 | Licensed, installed by you. The repository never ships it. |
-| Node, pnpm | 26 or newer, 12.18.0 | On the build host. |
-| CMake, Ninja | 3.31.9 or newer, 1.11 or newer | `pnpm qnx doctor` checks both. |
-| Qt for QNX | 6.12.0 | Public-source build from [`scripts/qt-public/`](https://github.com/mikevocalz/react-native-qnx/tree/main/scripts/qt-public). |
-| Hermes for QNX | `hermes-v260318099.0.5` | Built by `pnpm hermes:qnx:prepare` and `pnpm hermes:qnx:configure`. |
-| The board | Pi 400, custom image | Reachable over SSH as `qnxuser`. The recorded runs used a USB Ethernet link, board `192.168.2.2`. |
+| Need           | Version                        | Notes                                                                                                                        |
+| -------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Build host     | x86-64 Ubuntu 22.04            | Also supported by the SDP: Ubuntu 24.04, RHEL 9, Windows 11. No macOS and no ARM host.                                       |
+| QNX SDP        | 8.0.5                          | Licensed, installed by you. The repository never ships it.                                                                   |
+| Node, pnpm     | 26 or newer, 12.18.0           | On the build host.                                                                                                           |
+| CMake, Ninja   | 3.31.9 or newer, 1.11 or newer | `pnpm qnx doctor` checks both.                                                                                               |
+| Qt for QNX     | 6.12.0                         | Public-source build from [`scripts/qt-public/`](https://github.com/mikevocalz/react-native-qnx/tree/main/scripts/qt-public). |
+| Hermes for QNX | `hermes-v260318099.0.5`        | Built by `pnpm hermes:qnx:prepare` and `pnpm hermes:qnx:configure`.                                                          |
+| The board      | Pi 400, custom image           | Reachable over SSH as `qnxuser`. The recorded runs used a USB Ethernet link, board `192.168.2.2`.                            |
 
 A Mac is a fine place to edit and run the host render from the [quick start](/docs/tutorials/quick-start). QNX builds run on the Ubuntu host. The repository's own Mac setup does that inside a Colima container named `qnx805-build`. See [cross-build](/docs/how-to/cross-build).
 
@@ -140,14 +140,14 @@ Run 2 also recorded, by screenshot and app log, a Reanimated spring that finishe
 
 ## Common errors
 
-| What you see | Cause and fix |
-| --- | --- |
-| `The QNX SDP environment is not loaded` | Source `qnxsdp-env.sh` in the same shell, then rerun `pnpm qnx doctor`. |
-| `qcc` unavailable on macOS even with the SDP sourced | `QNX_HOST` selects Windows host tools. The error is correct. Build on x86-64 Ubuntu. |
-| Black window or black screen | Both plugin paths must point at the patched plugin in `glfix`. If it is missing, use the software fallback `QT_QUICK_BACKEND=software`, which is slower and returns no `--screenshot` image. |
-| Exit 134 with `failed to initialize EGL display` | The DRM nodes are `root:root 0660`. Add the `chgrp 36` and `chmod 0660` lines from the Pi 400 guide to `full_startup.sh`. |
-| A second app window appears | Launch through `run-app.sh`. It looks for the app's process with `pidin` first, and `--replace` quits the running copy. |
-| No mouse | Check `/dev/io-hid/io-hid` and group 36. |
+| What you see                                         | Cause and fix                                                                                                                                                                                |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `The QNX SDP environment is not loaded`              | Source `qnxsdp-env.sh` in the same shell, then rerun `pnpm qnx doctor`.                                                                                                                      |
+| `qcc` unavailable on macOS even with the SDP sourced | `QNX_HOST` selects Windows host tools. The error is correct. Build on x86-64 Ubuntu.                                                                                                         |
+| Black window or black screen                         | Both plugin paths must point at the patched plugin in `glfix`. If it is missing, use the software fallback `QT_QUICK_BACKEND=software`, which is slower and returns no `--screenshot` image. |
+| Exit 134 with `failed to initialize EGL display`     | The DRM nodes are `root:root 0660`. Add the `chgrp 36` and `chmod 0660` lines from the Pi 400 guide to `full_startup.sh`.                                                                    |
+| A second app window appears                          | Launch through `run-app.sh`. It looks for the app's process with `pidin` first, and `--replace` quits the running copy.                                                                      |
+| No mouse                                             | Check `/dev/io-hid/io-hid` and group 36.                                                                                                                                                     |
 
 ## Next steps
 

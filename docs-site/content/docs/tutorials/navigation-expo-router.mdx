@@ -21,12 +21,12 @@ import { Drawer } from 'expo-router/drawer';
 
 expo-router 58 bundles react-navigation, which reaches for four packages whose native halves QNX does not have. A Metro resolver replaces them for the `qnx` platform only:
 
-| Import | Replaced by |
-| --- | --- |
-| `react-native-safe-area-context` | A shim with zero insets and the window size from `useWindowDimensions`. |
-| `react-native-screens` | A shim where `screensEnabled()` is false, so navigators use plain Views. |
-| `react-native-drawer-layout` | The native `RNQnxDrawer`, or a JavaScript `JsDrawer` without it. |
-| expo-router's `BottomTabBar` | The native `RNQnxTabBar`, or a JavaScript `JsTabBar`. |
+| Import                           | Replaced by                                                              |
+| -------------------------------- | ------------------------------------------------------------------------ |
+| `react-native-safe-area-context` | A shim with zero insets and the window size from `useWindowDimensions`.  |
+| `react-native-screens`           | A shim where `screensEnabled()` is false, so navigators use plain Views. |
+| `react-native-drawer-layout`     | The native `RNQnxDrawer`, or a JavaScript `JsDrawer` without it.         |
+| expo-router's `BottomTabBar`     | The native `RNQnxTabBar`, or a JavaScript `JsTabBar`.                    |
 
 Not supported, per the package README: a stack navigator (the default `Stack` needs react-native-screens, and its JavaScript stack needs Gesture Handler wiring that expo-router does not use here), native tabs, and `expo-router/ui`. `Linking.openURL` rejects, and there is no deep-link input. Inactive tabs and drawer screens stay mounted, so keep screens cheap to keep alive.
 
@@ -81,7 +81,7 @@ export const ctx = require.context(
 ```js
 const { withExpoRouterQnx } = require('@rn-qnx/expo-router-qnx/metro');
 module.exports = withExpoRouterQnx(
-  withPublicEntry(getQnxMetroConfig(__dirname, { /* watchFolders, resolver */ }), 'qnx'),
+  withPublicEntry(getQnxMetroConfig(__dirname, {/* watchFolders, resolver */}), 'qnx'),
   { routerContext: path.join(__dirname, 'app-ctx.js') }
 );
 ```
@@ -108,8 +108,14 @@ export default function RootLayout() {
         drawerContent={(props) => <DrawerContent {...props} />}
         screenOptions={{ drawerType: 'front', sceneStyle: { backgroundColor: BACKGROUND } }}
       >
-        <Drawer.Screen name="(tabs)" options={{ title: 'Home', header: header('Component gallery') }} />
-        <Drawer.Screen name="settings" options={{ title: 'Settings', header: header('Settings') }} />
+        <Drawer.Screen
+          name="(tabs)"
+          options={{ title: 'Home', header: header('Component gallery') }}
+        />
+        <Drawer.Screen
+          name="settings"
+          options={{ title: 'Settings', header: header('Settings') }}
+        />
         <Drawer.Screen name="about" options={{ title: 'About', header: header('About') }} />
       </Drawer>
     </ThemeProvider>
@@ -148,7 +154,11 @@ export default function TabsLayout() {
         })}
       >
         {TABS.map((tab) => (
-          <Tabs.Screen key={tab.name} name={tab.name} options={{ title: tab.title, qnxIcon: tab.icon }} />
+          <Tabs.Screen
+            key={tab.name}
+            name={tab.name}
+            options={{ title: tab.title, qnxIcon: tab.icon }}
+          />
         ))}
       </Tabs>
     </View>
@@ -192,13 +202,13 @@ Not run: a stack navigator, deep links, and a real USB keyboard or touch input.
 
 These come from the package README and the config above. They were not reproduced for this page, so treat each as the first thing to check.
 
-| What you see | First thing to check |
-| --- | --- |
+| What you see                            | First thing to check                                                                                              |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | Metro cannot resolve `expo-router/_ctx` | The Metro config is not wrapped with `withExpoRouterQnx`, or `routerContext` does not point at your `app-ctx.js`. |
-| `require.context` is rejected | `transformer.unstable_allowRequireContext` is off in the Metro config. |
-| `Stack` is missing or blank | No stack navigator is provided. Use `Tabs` or `Drawer`. |
-| Tab icons do not show | `tabBarIcon` forces the JavaScript tab bar. Use `options.qnxIcon` for the native bar. |
-| A route does not appear | The file is outside `app/`, or the pattern in `app-ctx.js` excludes it (`+api`, `+html`, `+middleware`). |
+| `require.context` is rejected           | `transformer.unstable_allowRequireContext` is off in the Metro config.                                            |
+| `Stack` is missing or blank             | No stack navigator is provided. Use `Tabs` or `Drawer`.                                                           |
+| Tab icons do not show                   | `tabBarIcon` forces the JavaScript tab bar. Use `options.qnxIcon` for the native bar.                             |
+| A route does not appear                 | The file is outside `app/`, or the pattern in `app-ctx.js` excludes it (`+api`, `+html`, `+middleware`).          |
 
 ## Next steps
 

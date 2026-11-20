@@ -37,20 +37,20 @@ sudo rnqnx-inject keyhold down 2500              # hold Down 2.5 s with auto-rep
 
 Coordinates are display pixels. Commands chain on one line. Without arguments the tool prints this list:
 
-| Command | Effect |
-| --- | --- |
-| `move X Y` | Move the pointer. |
-| `down [left\|middle\|right]`, `up` | Press at the current position, release all buttons. |
-| `click X Y [button]` | Move, press, release. |
-| `dclick X Y` | Two clicks 90 ms apart. |
-| `drag X0 Y0 X1 Y1 [steps]` | Press at the start, move in steps, release at the end. |
-| `wheel N`, `hwheel N` | N wheel ticks, vertical or horizontal. Up is negative. |
-| `mods HEX` | Modifier mask for later events. |
-| `key NAME\|HEX [mods]` | Press and release. Names: `esc tab ret space bksp del left right up down home end pgup pgdn alt ctrl shift`, or one character. |
-| `keydown`, `keyup` | One press or one release. |
-| `keyhold NAME\|HEX MS [HZ]` | Hold a key for 1 to 30000 ms like a keyboard: one press, auto-repeat after 500 ms at HZ per second (default 30, 1 to 120), then release. |
-| `type TEXT` | Type ASCII text. |
-| `sleep MS` | Wait. |
+| Command                            | Effect                                                                                                                                   |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `move X Y`                         | Move the pointer.                                                                                                                        |
+| `down [left\|middle\|right]`, `up` | Press at the current position, release all buttons.                                                                                      |
+| `click X Y [button]`               | Move, press, release.                                                                                                                    |
+| `dclick X Y`                       | Two clicks 90 ms apart.                                                                                                                  |
+| `drag X0 Y0 X1 Y1 [steps]`         | Press at the start, move in steps, release at the end.                                                                                   |
+| `wheel N`, `hwheel N`              | N wheel ticks, vertical or horizontal. Up is negative.                                                                                   |
+| `mods HEX`                         | Modifier mask for later events.                                                                                                          |
+| `key NAME\|HEX [mods]`             | Press and release. Names: `esc tab ret space bksp del left right up down home end pgup pgdn alt ctrl shift`, or one character.           |
+| `keydown`, `keyup`                 | One press or one release.                                                                                                                |
+| `keyhold NAME\|HEX MS [HZ]`        | Hold a key for 1 to 30000 ms like a keyboard: one press, auto-repeat after 500 ms at HZ per second (default 30, 1 to 120), then release. |
+| `type TEXT`                        | Type ASCII text.                                                                                                                         |
+| `sleep MS`                         | Wait.                                                                                                                                    |
 
 `keydown ... sleep ... keyup` sends one press and one release, so an app sees no auto-repeat. Use `keyhold` for that. Bad `keyhold` arguments print a message and exit 2.
 
@@ -73,13 +73,13 @@ These were synthetic Screen events, not a USB keyboard. A real keyboard held dow
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| Clicks land at the top left or nowhere | You are not using this tool, or the device or position flag is missing. A first injector had this fault. |
-| Every click acts as a double click | The event had no timestamp. This tool sets one. |
-| Nothing happens | Run it as root. The tool is an input provider. |
-| The window ignores a click on the launcher tile | `demolauncher` ignores injected clicks. |
-| A screenshot shows the old frame | Nudge the pointer first with `move`. See [take a device screenshot](/docs/how-to/screenshot-device). |
+| What you see                                    | Cause and fix                                                                                            |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Clicks land at the top left or nowhere          | You are not using this tool, or the device or position flag is missing. A first injector had this fault. |
+| Every click acts as a double click              | The event had no timestamp. This tool sets one.                                                          |
+| Nothing happens                                 | Run it as root. The tool is an input provider.                                                           |
+| The window ignores a click on the launcher tile | `demolauncher` ignores injected clicks.                                                                  |
+| A screenshot shows the old frame                | Nudge the pointer first with `move`. See [take a device screenshot](/docs/how-to/screenshot-device).     |
 
 ## Reference
 

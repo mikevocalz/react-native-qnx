@@ -12,14 +12,14 @@ This guide installs and checks the tools in two groups. The host group lets you 
 
 ## Host tools
 
-| Tool | Version | Used by |
-| --- | --- | --- |
-| Node | 26 or newer (26.13.0 verified) | Everything. `package.json` requires `>=26.0.0`. |
-| pnpm | 12.18.0 exactly | The workspace. The `packageManager` field pins it. |
-| CMake | 3.31.9 or newer (4.4.5 verified) | Host renderer, QNX builds. |
-| Ninja | 1.11 or newer (1.13.2 verified) | Host renderer, QNX builds. |
-| Qt | 6.11.1 or newer (6.12.0 verified) | Host renderer only. A warning in `doctor`, not an error. |
-| Python | 3.11 or newer (3.13.3 verified) | Helper scripts. |
+| Tool   | Version                           | Used by                                                  |
+| ------ | --------------------------------- | -------------------------------------------------------- |
+| Node   | 26 or newer (26.13.0 verified)    | Everything. `package.json` requires `>=26.0.0`.          |
+| pnpm   | 12.18.0 exactly                   | The workspace. The `packageManager` field pins it.       |
+| CMake  | 3.31.9 or newer (4.4.5 verified)  | Host renderer, QNX builds.                               |
+| Ninja  | 1.11 or newer (1.13.2 verified)   | Host renderer, QNX builds.                               |
+| Qt     | 6.11.1 or newer (6.12.0 verified) | Host renderer only. A warning in `doctor`, not an error. |
+| Python | 3.11 or newer (3.13.3 verified)   | Helper scripts.                                          |
 
 On macOS, `./scripts/bootstrap-macos.sh` prepares a machine. It checks Node against 26.0.0 and pnpm against 12.18.0 and installs nothing proprietary. On Ubuntu, `./scripts/bootstrap-host.sh` installs CMake, Ninja, Node, pnpm and Python. It does not install or license the SDP.
 
@@ -107,12 +107,12 @@ Qt for the target is a public-source 6.12.0 build made by [`scripts/qt-public/`]
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| `Failed to switch pnpm to v12.18.0` | Old global pnpm. Use the prefixed copy above. |
-| `qcc` unavailable on macOS with the SDP sourced | `QNX_HOST` selects Windows host tools. Correct. Build on x86-64 Ubuntu. |
-| Qt is missing in `doctor` | A warning only the host renderer and `rnqnx_playground_qnx` need. Install Qt 6.11.1 or newer. |
-| `The QNX SDP environment is not loaded` | Source `qnxsdp-env.sh` in the same shell. |
+| What you see                                    | Cause and fix                                                                                 |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `Failed to switch pnpm to v12.18.0`             | Old global pnpm. Use the prefixed copy above.                                                 |
+| `qcc` unavailable on macOS with the SDP sourced | `QNX_HOST` selects Windows host tools. Correct. Build on x86-64 Ubuntu.                       |
+| Qt is missing in `doctor`                       | A warning only the host renderer and `rnqnx_playground_qnx` need. Install Qt 6.11.1 or newer. |
+| `The QNX SDP environment is not loaded`         | Source `qnxsdp-env.sh` in the same shell.                                                     |
 
 ## Reference
 

@@ -49,12 +49,12 @@ npm run build
 npm run check:content
 ```
 
-| Command | What it checks |
-| --- | --- |
-| `data:check` | The generated pages (matrix, gates, ADR index) are current with `docs/component-support.json`, `docs/releases/v1-readiness.json` and `docs/adr/*.md`. |
-| `lint` | ESLint with the Next config. |
-| `types:check` | `next typegen` then `tsc --noEmit`. |
-| `build` | Static export to `out/`. |
+| Command         | What it checks                                                                                                                                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data:check`    | The generated pages (matrix, gates, ADR index) are current with `docs/component-support.json`, `docs/releases/v1-readiness.json` and `docs/adr/*.md`.                                                                           |
+| `lint`          | ESLint with the Next config.                                                                                                                                                                                                    |
+| `types:check`   | `next typegen` then `tsc --noEmit`.                                                                                                                                                                                             |
+| `build`         | Static export to `out/`.                                                                                                                                                                                                        |
 | `check:content` | After the build: no banned term in sources or output, every internal link resolves, every page has a title and a description, and `llms.txt`, `llms-full.txt`, `SKILL.md`, the search index and `docs.html` exist in the build. |
 
 When `check:content` passes it prints `content ok: <n> pages, build output checked`.
@@ -75,14 +75,14 @@ Open `http://localhost:3000/docs/tutorials/quick-start`. The page renders, the s
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| A new page is missing from the sidebar | Add its slug to the folder's `meta.json`. |
+| What you see                                 | Cause and fix                                                                        |
+| -------------------------------------------- | ------------------------------------------------------------------------------------ |
+| A new page is missing from the sidebar       | Add its slug to the folder's `meta.json`.                                            |
 | `broken link /docs/...` from `check:content` | An internal link points at a page that does not exist. Fix the path or add the page. |
-| `missing title or description` | Add both to the page's front matter. |
-| `banned term in ...` | A source file or the output contains a term the check rejects. Remove it. |
-| `data:check` reports stale pages | Run `npm run data` and commit the result. |
-| `npm run data` fails | It needs full git history. A shallow clone lacks the commits it reads. |
+| `missing title or description`               | Add both to the page's front matter.                                                 |
+| `banned term in ...`                         | A source file or the output contains a term the check rejects. Remove it.            |
+| `data:check` reports stale pages             | Run `npm run data` and commit the result.                                            |
+| `npm run data` fails                         | It needs full git history. A shallow clone lacks the commits it reads.               |
 
 ## Reference
 

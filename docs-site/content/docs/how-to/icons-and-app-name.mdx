@@ -31,12 +31,12 @@ description: Set the window title, launcher tile label and icon for a QNX app in
 
 Options on the `@rn-qnx/expo-qnx-config-plugins` entry in `plugins` win over values in `extra.rnqnx`, so `icon` and `shortName` can come from either place.
 
-| Field | Required | Meaning |
-| --- | --- | --- |
-| `expo.name` | yes | Window title and About name. Also the tile label when `shortName` is absent. |
-| `expo.icon` | no | Project-relative path to a square PNG. Unset uses the default icon. |
-| `expo.extra.rnqnx.icon` | no | Overrides `expo.icon` for QNX only. |
-| `expo.extra.rnqnx.shortName` | no | Tile label, for when `expo.name` is too wide for the launcher. |
+| Field                        | Required | Meaning                                                                      |
+| ---------------------------- | -------- | ---------------------------------------------------------------------------- |
+| `expo.name`                  | yes      | Window title and About name. Also the tile label when `shortName` is absent. |
+| `expo.icon`                  | no       | Project-relative path to a square PNG. Unset uses the default icon.          |
+| `expo.extra.rnqnx.icon`      | no       | Overrides `expo.icon` for QNX only.                                          |
+| `expo.extra.rnqnx.shortName` | no       | Tile label, for when `expo.name` is too wide for the launcher.               |
 
 `project create` writes `expo.icon` and copies the default icon from `template/qnx/assets/icon.png`. Replace that file with your own. With no icon set, `prepare-native` uses the default and prints `rnqnx: notice: no app icon is set, so the default icon template/qnx/assets/icon.png is used.` A field that is set is checked strictly. An empty string, a non-string, a missing file or a bad PNG stops `prepare-native`. It never falls back to the default.
 
@@ -78,12 +78,12 @@ A device result for tile layout is in the [tile-layout receipt](https://github.c
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| `expo.icon "./assets/icon.png" is 640x640. Export a square PNG of at least 1024x1024` | The icon is too small. Export a larger one. |
-| The tile label is N px too wide | Set a shorter `shortName`. |
-| `prepare-native` stops on a missing icon file | `expo.icon` is set but the file is missing. A set field never falls back. |
-| The identity tool will not configure | It supports Linux and macOS hosts only. |
+| What you see                                                                          | Cause and fix                                                             |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `expo.icon "./assets/icon.png" is 640x640. Export a square PNG of at least 1024x1024` | The icon is too small. Export a larger one.                               |
+| The tile label is N px too wide                                                       | Set a shorter `shortName`.                                                |
+| `prepare-native` stops on a missing icon file                                         | `expo.icon` is set but the file is missing. A set field never falls back. |
+| The identity tool will not configure                                                  | It supports Linux and macOS hosts only.                                   |
 
 ## Reference
 

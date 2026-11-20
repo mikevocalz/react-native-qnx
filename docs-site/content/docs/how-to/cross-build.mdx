@@ -17,11 +17,11 @@ Builds for QNX run on a host that has the licensed QNX SDP 8.0.5 host tools. Tha
 
 ## Which host does what
 
-| Host | Cross-build | Notes |
-| --- | --- | --- |
-| x86-64 Ubuntu 22.04 | Yes, canonical | The project builds here. Ubuntu 24.04 and RHEL 9 are SDP-supported hosts. |
-| Windows 11 x64 | Documented as possible, not verified | See [cross-build from Windows](/docs/how-to/cross-build-windows). The helper scripts are POSIX shell. |
-| macOS (Apple silicon or Intel) | No SDP host tools | Edit and run host checks locally. Build in a Linux container or over SSH to an Ubuntu host. |
+| Host                           | Cross-build                          | Notes                                                                                                 |
+| ------------------------------ | ------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| x86-64 Ubuntu 22.04            | Yes, canonical                       | The project builds here. Ubuntu 24.04 and RHEL 9 are SDP-supported hosts.                             |
+| Windows 11 x64                 | Documented as possible, not verified | See [cross-build from Windows](/docs/how-to/cross-build-windows). The helper scripts are POSIX shell. |
+| macOS (Apple silicon or Intel) | No SDP host tools                    | Edit and run host checks locally. Build in a Linux container or over SSH to an Ubuntu host.           |
 
 On macOS, `pnpm qnx doctor` reports `qcc` as unavailable even with the SDP sourced, because `QNX_HOST` selects the Windows host tools. That is correct for that host.
 
@@ -72,12 +72,12 @@ A build succeeded when `build/qnx-aarch64-release/bin/<target>` exists. It is no
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| `QNX_HOST` or `QNX_TARGET` is unset | Source `qnxsdp-env.sh`, then run the license check and the doctor. |
-| `qcc` not found | Put `${QNX_HOST}/usr/bin` on `PATH`. The official SDP environment script normally does. |
+| What you see                        | Cause and fix                                                                                  |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `QNX_HOST` or `QNX_TARGET` is unset | Source `qnxsdp-env.sh`, then run the license check and the doctor.                             |
+| `qcc` not found                     | Put `${QNX_HOST}/usr/bin` on `PATH`. The official SDP environment script normally does.        |
 | Screen headers or libraries missing | Install the graphics development package through QNX Software Center. Do not stub the headers. |
-| CMake cannot find the QNX toolchain | Use the repository scripts so the architecture and preset stay consistent. |
+| CMake cannot find the QNX toolchain | Use the repository scripts so the architecture and preset stay consistent.                     |
 
 ## Reference
 

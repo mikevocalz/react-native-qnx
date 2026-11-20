@@ -40,12 +40,12 @@ const config: ExpoConfig = {
 export default config;
 ```
 
-| Field | Values | Default |
-| --- | --- | --- |
-| `controls` | `macos` (left, round), `windows` (right) | `macos` |
-| `titleBarStyle` | `default`, `hidden`, `none` | `default` |
-| `initialSize` | `{ width, height }`, integers 1 to 16384 | none |
-| `unavailableControls` | `hide`, `disable` | `hide` |
+| Field                 | Values                                   | Default   |
+| --------------------- | ---------------------------------------- | --------- |
+| `controls`            | `macos` (left, round), `windows` (right) | `macos`   |
+| `titleBarStyle`       | `default`, `hidden`, `none`              | `default` |
+| `initialSize`         | `{ width, height }`, integers 1 to 16384 | none      |
+| `unavailableControls` | `hide`, `disable`                        | `hide`    |
 
 With `titleBarStyle: "none"` nothing is drawn and the app owns its exit path. With `hidden` the controls float over the content, which starts at the top edge. Without `initialSize` the app fills the screen on QNX. The same `window` object works in `app.json` under `expo.extra.rnqnx`.
 
@@ -82,12 +82,12 @@ A title bar with the controls you chose shows above the app. Close ends the app.
 
 ## Troubleshooting
 
-| What you see | Cause and fix |
-| --- | --- |
-| The build fails with the chrome option | No `window` object, or `titleBarStyle: "none"`. |
-| No title bar | The build was made without `--window-chrome`, or `native-app.json` predates the `window` field. Prepare again. |
-| Maximize is missing | No `initialSize`. The startup log names the reason. |
-| A value is rejected at prebuild | The config plugin, `prepare-native`, CMake and the C++ reader all validate. Fix the value. |
+| What you see                           | Cause and fix                                                                                                  |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| The build fails with the chrome option | No `window` object, or `titleBarStyle: "none"`.                                                                |
+| No title bar                           | The build was made without `--window-chrome`, or `native-app.json` predates the `window` field. Prepare again. |
+| Maximize is missing                    | No `initialSize`. The startup log names the reason.                                                            |
+| A value is rejected at prebuild        | The config plugin, `prepare-native`, CMake and the C++ reader all validate. Fix the value.                     |
 
 ## Reference
 
