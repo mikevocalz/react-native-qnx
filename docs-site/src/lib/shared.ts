@@ -24,4 +24,3 @@ export function getPageImageUrl(page: { slugs: string[]; locale?: string }) {
 
   return { segments, url: withBase(getImageUrl(segments, page.locale)) };
 }
-
