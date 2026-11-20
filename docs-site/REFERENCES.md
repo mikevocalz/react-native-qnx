@@ -46,3 +46,20 @@ Searched Mobbin for a changelog and for a component reference page. The componen
 | [Stripe, API versions list](https://mobbin.com/screens/0d1defeb-2907-4c9e-be0d-664f5fef0f89)       | A small "Latest" or "Default" badge beside a version. Not used: there are no versions to badge.                                                   |
 
 Weak matches, not used: [Productboard releases](https://mobbin.com/screens/5d055c4b-a5cf-4113-9246-bb879a4004a6), [Upwork weekly summary](https://mobbin.com/screens/270263a9-c419-4eeb-9e93-848e7f0bfbe9), [Plane release changelog tab](https://mobbin.com/screens/c3220fd6-b32d-4ae9-8764-64617ec006c2).
+
+## Visual direction (redesign, 2026-11-19)
+
+The look named "Bench" replaces the neutral palette and system fonts described above. It was chosen from three rendered explorations. Three live sites set the structure; no logo, wordmark, illustration, text or code was copied from any of them.
+
+| Reference                                                  | Pattern borrowed                                                                                                                                                                                 | Where it is used                               |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
+| [VisionCamera docs](https://visioncamera.margelo.com/docs) | One flat cool grey ground with hairlines, a heavy slanted wordmark, top bar with a centred search, grouped sidebar with a tinted active row, "Copy Markdown" and "Open", a right "On this page". | Every page under `/docs` (the Notebook layout) |
+| [reactnative.dev](https://reactnative.dev/)                | Name, one line and two buttons first, then the code beside the thing it produces.                                                                                                                | `/` (home)                                     |
+| [Reactylon releases](https://www.reactylon.com/releases)   | One reading column with no sidebar, a ruled heading per group, prose and bullets under it.                                                                                                       | `/releases`                                    |
+
+Decisions:
+
+- Type: [Archivo](https://fonts.google.com/specimen/Archivo) with its width axis (expanded heavy italic for the wordmark, the home headline, step numbers and status figures; normal width for text) and [Azeret Mono](https://fonts.google.com/specimen/Azeret+Mono) for code, figures and measured labels. Both load through `next/font/google`, which downloads them at build time and serves them from the site.
+- Colour: one teal, taken from the gallery app that runs on the board (`#7BE8DC` on the device, darkened to `#0A6A62` for text on the light ground). Tokens are the `--rq-*` variables in `src/app/global.css`; the Fumadocs colours read from them, in light and dark.
+- Imagery: only real captures from the Pi 400, copied from `docs/evidence/pr149-pi400-run2-2026-11-19/` into `public/evidence/`.
+- Code tabs: the repository pins pnpm, so there are no npm, yarn or bun tabs.

@@ -10,5 +10,10 @@
   },
   "total": 24,
   "gatesPending": 11,
-  "gatesTotal": 11
+  "gatesTotal": 11,
+  "pulls": {
+    "total": 147,
+    "titleOmitted": 10,
+    "through": "6ac60b5"
+  }
 }

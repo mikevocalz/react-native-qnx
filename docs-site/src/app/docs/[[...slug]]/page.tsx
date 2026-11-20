@@ -6,12 +6,12 @@ import {
   DocsTitle,
   MarkdownCopyButton,
   ViewOptionsPopover,
-} from 'fumadocs-ui/layouts/docs/page';
+} from 'fumadocs-ui/layouts/notebook/page';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
-import { getPageImageUrl, gitConfig } from '@/lib/shared';
+import { getPageImageUrl, gitConfig, withBase } from '@/lib/shared';
 
 function generatedSource(path: string): string | null {
   if (path.startsWith('reference/components/') || path === 'reference/component-matrix.mdx')
@@ -28,7 +28,7 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   if (!page) notFound();
 
   const MDX = page.data.body;
-  const markdownUrl = `/llms.mdx${page.url}.md`;
+  const markdownUrl = withBase(`/llms.mdx${page.url}.md`);
   const repoUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}`;
   const sourcePath = `${gitConfig.contentDir}/${page.path}`;
   // Generated pages are rebuilt from their data source, so an edit to the MDX

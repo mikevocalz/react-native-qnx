@@ -255,27 +255,65 @@ if (process.argv.includes('--advance') && !check)
 const through = existsSync(throughFile)
   ? readFileSync(throughFile, 'utf8').trim()
   : git('rev-parse', 'HEAD');
-const merges = git(
-  'log',
-  through,
-  '--first-parent',
-  '--merges',
-  '--abbrev=7',
-  '--format=%h%x1f%cs%x1f%s%x1f%b%x1e'
-)
+if (git('rev-parse', '--is-shallow-repository') === 'true')
+  throw new Error(
+    'Shallow clone: the changelog needs full history. Check out with fetch-depth: 0 or run `git fetch --unshallow`.'
+  );
+
+// A merged pull request is recognised from the first-parent history by the
+// subject git recorded for it:
+//   "Merge pull request #N from owner/branch"  (merge commit; title in body)
+//   "Merge PR #N: title"                       (hand-written merge commit)
+//   "title (#N)"                               (squash merge)
+// A few pull requests were merged with a subject that carries no number.
+// changelog-overrides.json maps each such commit to its pull requests. Every
+// override is checked against history so a stale entry fails the build.
+const omittedTitle = 'Title omitted: names a separate target';
+const found = new Map();
+const addPull = (num, date, sha, title) => {
+  if (!found.has(num)) found.set(num, { sha, date, num, title });
+};
+git('log', through, '--first-parent', '--abbrev=7', '--format=%h%x1f%cs%x1f%s%x1f%b%x1e')
   .split('\x1e')
   .map((e) => e.trim())
   .filter(Boolean)
-  .map((e) => {
+  .forEach((e) => {
     const [sha, date, subject, body] = e.split('\x1f');
-    const m = subject.match(/^Merge pull request #(\d+) from \S+/);
-    if (!m) return null;
-    const title = (body ?? '').split('\n')[0].trim() || subject;
-    return { sha, date, num: m[1], title };
-  })
-  .filter(Boolean);
-const shownPrs = merges.filter((m) => !banned.test(m.title));
-const hiddenPrs = merges.length - shownPrs.length;
+    let m = subject.match(/^Merge pull request #(\d+) from \S+/);
+    if (m) return addPull(m[1], date, sha, (body ?? '').split('\n')[0].trim() || subject);
+    m = subject.match(/^Merge PR #(\d+):\s*(.+)$/);
+    if (m) return addPull(m[1], date, sha, m[2].trim());
+    m = subject.match(/^(.*\S)\s+\(#(\d+)\)$/);
+    if (m) return addPull(m[2], date, sha, m[1].trim());
+  });
+const overridesFile = join(site, 'changelog-overrides.json');
+const overrides = existsSync(overridesFile)
+  ? JSON.parse(readFileSync(overridesFile, 'utf8')).commits
+  : [];
+for (const o of overrides) {
+  const full = git('rev-parse', '--verify', `${o.commit}^{commit}`);
+  try {
+    git('merge-base', '--is-ancestor', full, through);
+  } catch {
+    throw new Error(
+      `changelog-overrides.json: ${o.commit} is not in the history of ${through.slice(0, 7)}`
+    );
+  }
+  const date = git('log', '-1', '--format=%cs', full);
+  const sha = git('rev-parse', '--short=7', full);
+  for (const p of o.pulls) {
+    if (found.has(String(p.number)))
+      throw new Error(
+        `changelog-overrides.json: #${p.number} is already derived from a merge subject`
+      );
+    addPull(String(p.number), date, sha, p.title);
+  }
+}
+const merges = [...found.values()].sort((x, y) =>
+  x.date === y.date ? Number(y.num) - Number(x.num) : x.date < y.date ? 1 : -1
+);
+const hiddenPrs = merges.filter((m) => banned.test(m.title)).length;
+const shownPrs = merges.map((m) => (banned.test(m.title) ? { ...m, title: omittedTitle } : m));
 const tags = git('tag', '--list').split('\n').filter(Boolean);
 const byMonth = {};
 for (const m of shownPrs) (byMonth[m.date.slice(0, 7)] ??= []).push(m);
@@ -293,7 +331,7 @@ const changelogPage = [
     ? `Release tags in this repository: ${tags.map((t) => `\`${t}\``).join(', ')}.`
     : 'This repository has no release tags. v1 is not released (see [release gates](/docs/reference/release-gates)), so there are no versioned releases and no versioned copies of these docs. The site always describes `main`.',
   '',
-  `Hand-written release notes are in [CHANGELOG.md](${BLOB}CHANGELOG.md) under "Unreleased". The list below is generated from merge commits on the first-parent history of \`${through.slice(0, 7)}\`: ${shownPrs.length} merged pull requests.`,
+  `Hand-written release notes are in [CHANGELOG.md](${BLOB}CHANGELOG.md) under "Unreleased". The list below is generated from the first-parent history of \`${through.slice(0, 7)}\`: ${shownPrs.length} merged pull requests, each recognised from the number git recorded in its merge or squash subject${overrides.length ? ` (${overrides.reduce((n, o) => n + o.pulls.length, 0)} that carry no number are listed in \`docs-site/changelog-overrides.json\`)` : ''}.${hiddenPrs ? ` ${hiddenPrs} titles name a separate target and show as "${omittedTitle}"; the numbers link to the full titles on GitHub.` : ''}`,
   '',
   ...Object.keys(byMonth)
     .sort()
@@ -308,9 +346,6 @@ const changelogPage = [
       ),
       '',
     ]),
-  hiddenPrs
-    ? `${hiddenPrs} more merged ${hiddenPrs === 1 ? 'pull request covers' : 'pull requests cover'} a separate target and appear only in the repository history.`
-    : '',
   '',
 ].join('\n');
 
@@ -320,6 +355,7 @@ const data = {
   total: rows.length,
   gatesPending: gates.filter((g) => g.status === 'pending').length,
   gatesTotal: gates.length,
+  pulls: { total: shownPrs.length, titleOmitted: hiddenPrs, through: through.slice(0, 7) },
 };
 
 const outputs = {
