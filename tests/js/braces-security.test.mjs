@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
 import { mkdtempSync, cpSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -7,17 +6,23 @@ import {
   advisoryId,
   classifyAudit,
   installedBraces,
+  listBracesInventory,
   verifyBraces,
 } from '../../scripts/lib/braces-security.mjs';
 
-const inventory = spawnSync(
-  'pnpm',
-  ['list', 'braces', '--recursive', '--depth', 'Infinity', '--json'],
-  { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 }
-);
-assert.equal(inventory.status, 0, inventory.stderr);
-const paths = installedBraces(JSON.parse(inventory.stdout));
+const paths = installedBraces(listBracesInventory());
 for (const packagePath of paths) verifyBraces(packagePath);
+
+// A missing pnpm is reported as such. It used to surface as ERR_INVALID_ARG_TYPE
+// because the test passed a null stderr to assert.equal.
+assert.throws(() => listBracesInventory({ env: { PATH: '' } }), /Unable to run pnpm/);
+// The pnpm that launched the process is preferred over PATH.
+if (process.env.npm_execpath) {
+  assert.deepEqual(
+    installedBraces(listBracesInventory({ env: { ...process.env, PATH: '' } })).sort(),
+    [...paths].sort()
+  );
+}
 
 // Missing inventories, unexpected versions, and unpatched/tampered copies fail closed.
 assert.throws(() => installedBraces([]));

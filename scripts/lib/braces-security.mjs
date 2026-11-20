@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -19,6 +20,44 @@ const expectedHashes = {
   'lib/stringify.js': '49dc2d8bafa74f34715a18a845bcb82ce66caaf3bab4cf117998e06b1f9a50a9',
   'lib/utils.js': 'b5a7596aa67730412b3c029ef09e84e6b67b8e445cffd35d1d295549c89066c7',
 };
+
+/**
+ * Run `pnpm list braces` and return the parsed inventory.
+ *
+ * Prefers the pnpm that launched this process (`npm_execpath`), so the
+ * inventory comes from the same pnpm version as the install. Falls back to
+ * `pnpm` on PATH. A spawn failure (pnpm missing) throws an Error that says so,
+ * instead of reaching an assert with a null stderr.
+ * @param {{ env?: NodeJS.ProcessEnv, cwd?: string }} [options]
+ */
+export function listBracesInventory({ env = process.env, cwd } = {}) {
+  const args = ['list', 'braces', '--recursive', '--depth', 'Infinity', '--json'];
+  const execPath = env.npm_execpath;
+  const fromPnpm = execPath && path.basename(execPath).toLowerCase().startsWith('pnpm');
+  const scripted = fromPnpm && /\.[cm]?js$/.test(execPath);
+  const [command, commandArgs] = fromPnpm
+    ? scripted
+      ? [process.execPath, [execPath, ...args]]
+      : [execPath, args]
+    : ['pnpm', args];
+  const result = spawnSync(command, commandArgs, {
+    encoding: 'utf8',
+    env,
+    cwd,
+    maxBuffer: 16 * 1024 * 1024,
+  });
+  if (result.error) {
+    throw new Error(`Unable to run pnpm (${command}): ${result.error.message}`, {
+      cause: result.error,
+    });
+  }
+  assert.equal(
+    result.status,
+    0,
+    `pnpm list failed (${command}): ${result.stderr || result.stdout}`
+  );
+  return JSON.parse(result.stdout);
+}
 
 /** @param {unknown} tree */
 export function installedBraces(tree) {

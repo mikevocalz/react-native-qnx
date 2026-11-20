@@ -226,7 +226,7 @@
       "host": "partial",
       "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Full-screen overlay; onShow, onRequestClose and onDismiss are unwired. Pi 400, run 2 (commit 240dc08, synthetic key input through Screen): the gallery's Modal opened and closed after `key esc`; this rests on screenshots, the app log has no line for it, so whether onRequestClose fired is unknown. Not tested with a physical keyboard.",
+      "notes": "Full-screen overlay; onShow and onDismiss are unwired. Escape raises the Qt `requestClose()` signal and QtModalBridge sends onRequestClose to JavaScript (host-tested in tests/native/qt-native-ui/ModalQuickTest.cpp). Pi 400, run 2 (commit 240dc08, synthetic key input through Screen): the gallery's Modal, whose onRequestClose handler closes it, closed after `key esc`; this rests on screenshots and the app log has no line for it. Not tested with a physical keyboard.",
       "evidence": {
         "pi400": ["docs/evidence/pr149-pi400-run2-2026-11-19/README.md"],
         "pi4Qsti": []

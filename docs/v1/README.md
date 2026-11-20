@@ -15,13 +15,13 @@ Gates 8 to 11 came from
 Pick the page for the board you have. The custom Pi 400 image and stock Pi 4
 QSTI are different targets with different results.
 
-| You have                        | Start here                                                                                                               |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| A macOS or Linux host, no board | [CLI commands and limits](../getting-started/qnx-cli.md)                                                                 |
-| Stock Pi 4 or Pi 5 with QSTI    | [Raspberry Pi today](../getting-started/raspberry-pi-today.md)                                                           |
-| The custom Pi 400 image         | [Pi 400 setup](../getting-started/raspberry-pi-400.md), then [runtime bring-up](../getting-started/pi400-hello-world.md) |
-| An existing Expo app            | [Create an Expo project for QNX](../getting-started/expo-project-create.md)                                              |
-| A QNX SDP host and a board      | [Build and deploy](../getting-started/build-and-deploy.md)                                                               |
+| You have                        | Start here                                                                                                                                                        |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A macOS or Linux host, no board | [CLI commands and limits](../getting-started/qnx-cli.md)                                                                                                          |
+| Stock Pi 4 or Pi 5 with QSTI    | [Raspberry Pi today](../getting-started/raspberry-pi-today.md)                                                                                                    |
+| The custom Pi 400 image         | [Pi 400 setup](../getting-started/raspberry-pi-400.md), then [runtime bring-up](../getting-started/pi400-hello-world.md)                                          |
+| An existing Expo app            | [Add QNX to an existing Expo app](../getting-started/expo-add-to-existing.md); for a new app, [create an Expo project](../getting-started/expo-project-create.md) |
+| A QNX SDP host and a board      | [Build and deploy](../getting-started/build-and-deploy.md)                                                                                                        |
 
 ## API and support limits
 

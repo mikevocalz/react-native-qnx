@@ -4,7 +4,6 @@ import { createHash } from 'node:crypto';
 import { constants } from 'node:fs';
 import { lstat, mkdir, open, realpath } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { isDeepStrictEqual, parseArgs } from 'node:util';
 
 const SOURCE_FILES = [
@@ -362,7 +361,7 @@ export async function main(argv, cwd = process.cwd()) {
   console.log(JSON.stringify(result, null, 2));
   return 0;
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (import.meta.main) {
   try {
     process.exitCode = await main(process.argv.slice(2));
   } catch (error) {

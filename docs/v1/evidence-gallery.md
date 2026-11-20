@@ -1,7 +1,7 @@
 # Evidence gallery
 
-Every receipt in [`docs/evidence/`](../evidence/), sorted by the machine it ran
-on. A receipt that covers a host run and a device run appears in both tables;
+The 2026-11-06 and 2026-11-07 receipts in [`docs/evidence/`](../evidence/) and the three 2026-11-19 runs, sorted by the machine they ran
+on. Later receipts are not tabulated here; see `docs/evidence/` and `docs/validation/`. A receipt that covers a host run and a device run appears in both tables;
 each row states only what ran on that table's target. A host result never
 counts toward a device column.
 
@@ -22,11 +22,11 @@ cover Worklets, Reanimated, Gesture Handler pan, tap and double-tap, SVG,
 1920x1080, Video, Audio or a gesture that runs while JavaScript is blocked.
 They are not attached to any v1 gate.
 
-| Target                       | What that target means here                                                  |
-| ---------------------------- | ---------------------------------------------------------------------------- |
-| Development host             | macOS arm64 unless the row says otherwise; Linux container runs are labelled |
-| Pi 400, custom BCM2711 image | Physical Pi 400, QNX SDP 8.0.5, Qt 6.12.0 evaluation build, run as `qnxuser` |
-| Stock Pi 4, QSTI             | QSTI 0.5.0 build 50, the stock release board for v1. No receipts yet         |
+| Target                       | What that target means here                                                                                                                          |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Development host             | macOS arm64 unless the row says otherwise; Linux container runs are labelled                                                                         |
+| Pi 400, custom BCM2711 image | Physical Pi 400, QNX SDP 8.0.5, Qt 6.12.0 evaluation build (expired 2026-11-17) for the 2026-11-06/07 rows; public-source Qt later, run as `qnxuser` |
+| Stock Pi 4, QSTI             | QSTI 0.5.0 build 50, the stock release board for v1. No receipts yet                                                                                 |
 
 ## Development host
 

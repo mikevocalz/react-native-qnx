@@ -19,6 +19,10 @@ Neither that proof nor Forge's native engine tests establish library support.
 | Worklets 0.13.1  | Peer RN `0.86 - 0.88`; shipped compatibility table agrees                           | Candidate patch release in the required 0.13 line           |
 | RNGH 3.5.0       | Wildcard RN peer; package development baseline RN 0.88.0; README minimum 0.82       | Audit target, not proof of RN 0.88/QNX native compatibility |
 
+The repository pins RNGH 3.4.0 (`package.json`, `pnpm-lock.yaml`), the version the RNGH
+table lists for RN 0.88. 3.5.0 was the registry `latest` when this audit was written and is
+not adopted; the 3.5.0 rows describe that audit target only.
+
 These were the registry `latest` tags observed for this audit, not moving refs
 to use in an implementation. A later implementation must pin exact versions
 and regenerate its own dependency graph. The

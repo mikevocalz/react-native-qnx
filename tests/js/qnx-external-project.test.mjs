@@ -1,10 +1,22 @@
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  realpath,
+  rm,
+  symlink,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { planProject, projectMain } from '../../packages/react-native-qnx-cli/src/project.mjs';
 
-const temporary = await mkdtemp(path.join(tmpdir(), 'rnqnx-external-'));
+// planProject resolves the project with realpath on purpose (symlinked build
+// paths are rejected), so expectations are built from the real temporary path.
+// macOS tmpdir() is /var/folders, a symlink to /private/var/folders.
+const temporary = await realpath(await mkdtemp(path.join(tmpdir(), 'rnqnx-external-')));
 const project = path.join(temporary, 'an app');
 let checks = 0;
 /** @param {unknown} actual @param {unknown} expected */
