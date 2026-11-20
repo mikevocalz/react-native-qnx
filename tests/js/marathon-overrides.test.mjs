@@ -124,7 +124,7 @@ globals.__DEV__ = true;
 
 // ---- KeyboardAvoidingView: forwards view props, drops avoidance props.
 {
-  const KeyboardAvoidingView = fresh('Components/KeyboardAvoidingView/KeyboardAvoidingView.js');
+  const KeyboardAvoidingView = fresh('Components/Keyboard/KeyboardAvoidingView.js');
   const onLayout = () => {};
   const element = KeyboardAvoidingView({
     behavior: 'padding',

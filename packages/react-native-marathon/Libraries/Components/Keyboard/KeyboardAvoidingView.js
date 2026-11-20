@@ -7,6 +7,11 @@
  * forwards every view prop, including `ref`, `testID`, accessibility props and
  * `onLayout`. The avoidance props (`behavior`, `keyboardVerticalOffset`,
  * `enabled`, `contentContainerStyle`) are consumed and have no effect.
+ *
+ * This file sits at the same path as React Native's own
+ * `Libraries/Components/Keyboard/KeyboardAvoidingView.js`, which is what makes
+ * the Marathon Metro resolver select it. tests/js/override-paths-match-upstream
+ * fails if the path drifts.
  */
 'use strict';
 
