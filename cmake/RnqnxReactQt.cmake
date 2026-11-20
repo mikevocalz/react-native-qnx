@@ -265,6 +265,32 @@ function(rnqnx_add_fabric_adapter_target)
   rnqnx_enable_strict_warnings(rnqnx_fabric_adapter)
 endfunction()
 
+# The React Native version the host reports through Platform.constants is read
+# from the root package.json (devDependencies["react-native"]), the same pin
+# validate:dependencies checks. Nothing in C++ spells the version out, so a
+# dependency bump needs no source edit. The values reach the host as compile
+# definitions; a reconfigure runs whenever package.json changes.
+function(rnqnx_read_react_native_version)
+  set(package_json "${RNQNX_REACT_QT_ROOT}/package.json")
+  file(READ "${package_json}" package_json_text)
+  string(JSON version ERROR_VARIABLE json_error
+    GET "${package_json_text}" devDependencies react-native)
+  if(json_error)
+    message(FATAL_ERROR
+      "Cannot read devDependencies.react-native from ${package_json}: ${json_error}")
+  endif()
+  if(NOT version MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(-([0-9A-Za-z.-]+))?$")
+    message(FATAL_ERROR
+      "devDependencies.react-native in ${package_json} must be an exact version, got '${version}'")
+  endif()
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${package_json}")
+  set(RNQNX_REACT_NATIVE_VERSION "${version}" PARENT_SCOPE)
+  set(RNQNX_REACT_NATIVE_VERSION_MAJOR "${CMAKE_MATCH_1}" PARENT_SCOPE)
+  set(RNQNX_REACT_NATIVE_VERSION_MINOR "${CMAKE_MATCH_2}" PARENT_SCOPE)
+  set(RNQNX_REACT_NATIVE_VERSION_PATCH "${CMAKE_MATCH_3}" PARENT_SCOPE)
+  set(RNQNX_REACT_NATIVE_VERSION_PRERELEASE "${CMAKE_MATCH_5}" PARENT_SCOPE)
+endfunction()
+
 function(rnqnx_add_react_host_target)
   if(TARGET rnqnx_react_host)
     return()
@@ -312,6 +338,13 @@ function(rnqnx_add_react_host_target)
   rnqnx_add_qt_rnsvg_image_fabric_test()
   rnqnx_add_qt_rnsvg_corpus_test()
   rnqnx_add_qt_rnsvg_values_test()
+  rnqnx_read_react_native_version()
+  target_compile_definitions(rnqnx_react_host PUBLIC
+    RNQNX_REACT_NATIVE_VERSION="${RNQNX_REACT_NATIVE_VERSION}"
+    RNQNX_REACT_NATIVE_VERSION_MAJOR=${RNQNX_REACT_NATIVE_VERSION_MAJOR}
+    RNQNX_REACT_NATIVE_VERSION_MINOR=${RNQNX_REACT_NATIVE_VERSION_MINOR}
+    RNQNX_REACT_NATIVE_VERSION_PATCH=${RNQNX_REACT_NATIVE_VERSION_PATCH}
+    RNQNX_REACT_NATIVE_VERSION_PRERELEASE="${RNQNX_REACT_NATIVE_VERSION_PRERELEASE}")
   rnqnx_enable_strict_warnings(rnqnx_react_host)
   if(RNQNX_ENABLE_WORKLETS)
     rnqnx_add_worklets_target()

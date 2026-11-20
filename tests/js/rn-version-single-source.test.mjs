@@ -16,7 +16,11 @@ for (const macro of [
   assert.ok(host.includes(macro), `QtReactHost.cpp must read ${macro}`);
   assert.ok(cmake.includes(macro), `RnqnxReactQt.cmake must define ${macro}`);
 }
-assert.match(cmake, /devDependencies react-native/, 'CMake must read the react-native pin from package.json');
+assert.match(
+  cmake,
+  /devDependencies react-native/,
+  'CMake must read the react-native pin from package.json'
+);
 
 const body = host.slice(host.indexOf('QtReactHost::installPlatformConstants'));
 const installer = body.slice(0, body.indexOf('\n}\n'));
