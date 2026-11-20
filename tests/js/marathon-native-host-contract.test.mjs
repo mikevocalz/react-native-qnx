@@ -14,10 +14,11 @@ const workflow = await read('.github/workflows/marathon-qt-host.yml');
 const nitroWorkflow = await read('.github/workflows/nitro-v1-host.yml');
 
 /** CMake text with comment lines removed, so prose can mention forbidden names. */
+/** @param {string} text */
 const activeLines = (text) =>
   text
     .split('\n')
-    .filter((line) => !line.trimStart().startsWith('#'))
+    .filter((/** @type {string} */ line) => !line.trimStart().startsWith('#'))
     .join('\n');
 const activeNative = activeLines(native);
 
@@ -151,7 +152,8 @@ for (const [, ref, comment] of uses) {
   assert.match(comment ?? '', /^v\d+\.\d+\.\d+$/, `pinned action needs a version comment: ${ref}`);
 }
 for (const action of ['actions/checkout', 'actions/setup-node', 'actions/upload-artifact']) {
-  const pin = (text) => text.match(new RegExp(`${action}@([0-9a-f]{40})`))?.[1];
+  const pin = (/** @type {string} */ text) =>
+    text.match(new RegExp(`${action}@([0-9a-f]{40})`))?.[1];
   assert.ok(pin(workflow), `${action} is not pinned in the Marathon workflow`);
   assert.equal(pin(workflow), pin(nitroWorkflow), `${action} pin differs from nitro-v1-host.yml`);
 }
@@ -170,10 +172,12 @@ const accepted = execFileSync('python3', ['-I', checker, `${fixtures}/client-ok.
   encoding: 'utf8',
 });
 assert.match(accepted, /^PASS /);
-for (const [name, message] of [
+/** @type {Array<[string, RegExp]>} */
+const rejectedFixtures = [
   ['client-wrong-app-id.log', /no set_app_id/],
   ['client-no-buffer.log', /never had a wl_buffer attached/],
-]) {
+];
+for (const [name, message] of rejectedFixtures) {
   const rejected = spawnSync('python3', ['-I', checker, `${fixtures}/${name}`], {
     encoding: 'utf8',
   });

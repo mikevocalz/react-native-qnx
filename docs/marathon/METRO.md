@@ -17,7 +17,7 @@ cd apps/rn-playground
 ../../node_modules/.bin/metro build index.js --platform qnx --dev false --out ../../artifacts/qnx-playground.bundle.js
 ```
 
-The Marathon bundle is evaluated by the Linux Qt host (`rnqnx_marathon_host`, see [NATIVE_HOST](NATIVE_HOST.md)) in the offscreen CI job. It has not been evaluated under a Wayland compositor or on MarathonOS. The selected JS OS name is `marathon`; `Platform.select({marathon: ...})` prefers the Marathon key. A host must install real `__RNQNX_PLATFORM_CONSTANTS` before the bundle runs; do not hard-code OS version. JS components inherited from QNX are temporary **source** reuse, and any OS-specific behavior (StatusBar, KeyboardAvoidingView, Focus, SafeArea, etc.) must be audited for Marathon.
+The Marathon bundle is evaluated by the Linux Qt host (`rnqnx_marathon_host`, see [NATIVE_HOST](NATIVE_HOST.md)) in the offscreen CI job. It has not been evaluated under a Wayland compositor or on MarathonOS. The selected JS OS name is `marathon`; `Platform.select({marathon: ...})` prefers the Marathon key. A host must install real `__RNQNX_PLATFORM_CONSTANTS` before the bundle runs; do not hard-code OS version. JS components inherited from QNX are temporary **source** reuse, and Focus and other OS-specific behavior must be audited for Marathon.
 
 ## Verified
 
@@ -25,7 +25,7 @@ CI workflow `marathon-metro.yml`, [run 44492351488](https://github.com/mikevocal
 
 ## Open items needing owner or upstream
 
-- The JS overrides inherited from QNX are source reuse. The QNX no-op StatusBar is not acceptable final Marathon system-bar behavior. KeyboardAvoidingView, focus and safe-area behavior need a Marathon audit against the shell's lifecycle and inset contract, which upstream has not defined for native clients. Owner action: run the Wayland host on a Marathon device and record each behavior.
+- Marathon has its own JS overrides for StatusBar, KeyboardAvoidingView, Linking and BackHandler (`packages/react-native-marathon/Libraries`). They record requests and apply nothing, because the shell owns the system bars and sends no keyboard frame, URL or back events to native clients yet. They are tested stubs, not working features. Owner action: once upstream defines the native client inset, back and deep-link contract, replace each stub with a bridge to it, and run the Wayland host on a Marathon device to record each behavior.
 - Expo Router, autolinking, Nitro 1 alpha and Expo Modules API v2 beta capability on Marathon follow in separate slices. The Nitro adapter compiles in CI ([NATIVE_HOST](NATIVE_HOST.md)); runtime proof on Marathon is open.
 - A bundle hash comparison of the QNX output before and after any shared-override change is a regression check not yet automated.
 

@@ -20,12 +20,13 @@ Files, new public API, JS Metro platform name, Qt/CMake target flags, Marathon s
 - [ ] Expo Modules API v2 beta is not confused with package major v2
 - [ ] Exact lockfile regenerated; frozen install and license/security audit pass
 
-## Evidence — do not cross-label tests
+## Evidence (do not cross-label tests)
 
 | Test | Environment | Command | Result + log/artifact | Missing proof |
 | --- | --- | --- | --- | --- |
 | QNX Metro | host | | | |
-| Marathon Metro | host | | | |
+| Marathon Metro (production and dev) | host | | | |
+| QNX bundle unchanged, QNX and Marathon sha256 differ | host | | | |
 | Qt/Fabric/Hermes | host | | | |
 | Wayland xdg-shell | Linux/QEMU | | | |
 | Marathon app launch | QEMU/hardware | | | |
