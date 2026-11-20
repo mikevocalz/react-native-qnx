@@ -25,4 +25,6 @@ docs-site/next-env.d.ts
 docs-site/content/docs/reference/component-matrix.mdx
 docs-site/content/docs/reference/release-gates.mdx
 docs-site/content/docs/explanation/adr-index.mdx
+docs-site/content/docs/reference/changelog.mdx
+docs-site/content/docs/reference/components/
 docs-site/src/generated/
