@@ -1,0 +1,46 @@
+---
+title: Error codes and messages
+description: Index of exit codes, doctor check ids and the full error-message tables for the CLI, scripts and native runtime.
+---
+
+The source defines few numeric codes. Most failures are message strings. This page lists the exit codes and structured identifiers, then links three tables that cover the throw, print and exit sites found by searching the repository on 2026-11-19:
+
+- [CLI and JavaScript packages](/docs/reference/error-codes-packages): `packages/**` JavaScript, including the CLI, Expo support, Metro config and the `react-native-qnx` JavaScript layer.
+- [Scripts, tools and CMake](/docs/reference/error-codes-scripts): `scripts/**`, `tools/**` and every `message(FATAL_ERROR ...)`.
+- [Native runtime](/docs/reference/error-codes-native): C++ and QML under `native/`, `vnext/src/` and the `packages/*/cpp` directories.
+
+Test files and `vnext/probes` are excluded. Messages that name the Linux host target are omitted from this site, and each table says how many. A message can change without notice.
+
+## Exit codes and structured identifiers
+
+| Code                                            | Where                                           | Meaning                                                                                                                               |
+| ----------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| process exit `1` after `rnqnx: <message>`       | `packages/react-native-qnx-cli/src/cli.mjs:344` | Any error thrown inside the `pnpm qnx` CLI.                                                                                           |
+| the delegated script's exit code                | `packages/react-native-qnx-cli/src/cli.mjs:335` | A script run by `pnpm qnx <command>` failed. The CLI prints a hint per command and returns that code.                                 |
+| `exit 1` from `scripts/doctor.sh`               | `scripts/doctor.sh:344`                         | The doctor found one or more errors. It prints `Start with: <first fix>` and a log path. `exit 0` means no errors (warnings allowed). |
+| `ERROR=expected-aarch64le`, exit `21`           | `scripts/pi-preflight.sh:53`                    | The remote board reports a machine type other than `aarch64le`.                                                                       |
+| `ERROR=screen-not-ready`, exit `22`             | `scripts/pi-preflight.sh:57`                    | `/dev/screen` is missing on the board.                                                                                                |
+| `exit 2` after `qnx-device: <message>`          | `scripts/qnx-device.sh:8`                       | A `fail` call in the device helper.                                                                                                   |
+| `exit 127` after `screenshot is not installed.` | `scripts/qnx-device.sh:62`                      | The `screenshot` tool is missing on the board.                                                                                        |
+
+### Project doctor check ids (`rnqnx doctor`)
+
+Each check has an `id` and a `status` of `passed`, `failed` or `not-checked` (`packages/react-native-qnx-cli/src/doctor.mjs`). The ids found in source: `app-identity`, `app-icon`, `tile-label`, `identity-tool`, `node`, `project-manifest`, `package-manager`, `nitro-modules`, `package-graph`. Failure messages for the `node` check read `Use the documented Node version before building.` (`doctor.mjs`, `node` check). `package-manager` fails when `packageManager` differs from the platform contract.
+
+### Target runtime doctor (`rnqnx doctor --target-runtime-report`)
+
+Result `step` values: `platform`, `read-report`, `parse-report`, `validate-report` (`packages/react-native-qnx-cli/src/target-runtime-doctor.mjs`). Check ids and their failure text:
+
+| Check id                                                | Failure message                                                                                                                                        | Source                          |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
+| `screen`                                                | `Start and verify Screen using the image runbook before launching Qt.`                                                                                 | `target-runtime-doctor.mjs:179` |
+| `slogger2`                                              | `Verify slogger2 and /dev/slog2 on the target.`                                                                                                        | `target-runtime-doctor.mjs:185` |
+| `tmp`                                                   | `Provide an accessible /tmp directory for the application and slog2.`                                                                                  | `target-runtime-doctor.mjs:191` |
+| `random`                                                | `Verify the target random service and /dev/random.`                                                                                                    | `target-runtime-doctor.mjs:197` |
+| `ipv6`                                                  | `Verify IPv6 support, including when the application uses IPv4.`                                                                                       | `target-runtime-doctor.mjs:203` |
+| `LD_LIBRARY_PATH`, `QT_PLUGIN_PATH`, `QML2_IMPORT_PATH` | `<KEY>: report the actual resolved runtime directory and verify that it exists on the target.`                                                         | `target-runtime-doctor.mjs:213` |
+| `fonts`                                                 | `Without fontconfig, report a real font file and its resolved directory (QT_QPA_FONTDIR, Qt lib/fonts or registered application fonts).`               | `target-runtime-doctor.mjs:228` |
+| `display-configuration`                                 | `Check display count/order and QT_QPA_QNX_DISPLAY_CONFIG; an explicit path must be a reported file.`                                                   | `target-runtime-doctor.mjs:235` |
+| `physical-screen-size`                                  | `For a zero/unknown Screen dimension, set QQNX_PHYSICAL_SCREEN_SIZE to the actual width,height in millimetres; any configured fallback must be valid.` | `target-runtime-doctor.mjs:248` |
+
+The step messages: `Target runtime observations are QNX-only.` (step `platform`, lines 142 and 288); `The target observation is not valid JSON.` and `Use a JSON observation of at most 64 KiB.` (step `parse-report`, lines 148 and 157); `The target observation does not match rnqnx-qnx-runtime-observation/v1. See docs/getting-started/qnx-target-runtime-doctor.md.` (step `validate-report`, line 164); `Use a regular report file of at most 64 KiB; symlinks are refused.` and `Cannot read a bounded regular target observation file.` (step `read-report`, lines 296 and 331).

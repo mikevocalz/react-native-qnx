@@ -1,0 +1,47 @@
+---
+title: Keyboard
+description: There is no dedicated keyboard module. This page lists what exists for keys, focus and KeyboardAvoidingView.
+---
+
+## Install
+
+No dedicated keyboard module exists in this repository. No package, native module or CMake target handles a software keyboard, keyboard height or keyboard avoidance. `docs/expo-delivery/sdk58-support.json` marks `react-native-keyboard-controller` 1.22.7 as `unsupported` ("Native code for ios/android only; no qnx implementation"). That file is a scan of published package contents, not a device run.
+
+What exists is spread across three places:
+
+- `packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js` exports React Native's own `Keyboard` and `KeyboardAvoidingView` modules. The comment there says a module without its native half "degrades the way React Native itself does when its TurboModule is absent".
+- `packages/react-native-qnx/Libraries/Components/KeyboardAvoidingView/KeyboardAvoidingView.js` is a QNX replacement.
+- `TextInput` takes Qt key events (see the component matrix).
+
+## Setup
+
+There is nothing to enable for `KeyboardAvoidingView`. The on-screen keyboard is a licensing question. `docs/packaging.md` says Qt Virtual Keyboard is GPLv3-only and "required for on-screen keyboard on touchscreen targets". The repository does not build it. See [licensing and packaging](/docs/explanation/licensing-and-packaging).
+
+For key input on a device, `tools/qnx-input/rnqnx-inject` injects key events through QNX Screen. The `keyhold` command, added for the held-key run, sends repeat events.
+
+## Supported API
+
+| Item                   | Behavior                                                                                                                                                                                                                                                                             |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `KeyboardAvoidingView` | Renders its children in a `View` with `style`. `behavior`, `keyboardVerticalOffset`, `enabled` and `contentContainerStyle` are accepted and ignored. The file header says QNX has no software keyboard or `Keyboard` native module. Component matrix: host no-op, Pi 400 unverified. |
+| `Keyboard`             | The real React Native JavaScript module, re-exported. No evidence found that any call does anything on QNX.                                                                                                                                                                          |
+| `TextInput`            | Host partial, Pi 400 scoped. Controlled and default text, focus and blur, edit, selection, key and submit events, Tab and Backtab focus traversal.                                                                                                                                   |
+
+## Not supported
+
+- Keyboard height, `Keyboard.dismiss` behavior and keyboard events: no evidence found.
+- Software keyboard and IME provider: the component matrix says they remain unqualified.
+- Physical HID keyboard input into `TextInput`: unqualified. The Pi 400 `TextInput` proof used synthetic Qt input.
+- Assistive technology with `TextInput`.
+- `react-native-keyboard-controller`: no QNX implementation.
+
+## Evidence
+
+| Path                                                       | Shows                                                                                                                                                                                                                  |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/evidence/text-input-qnx-2026-11-07.md`               | Host checks, and a physical Pi 400 run on candidate `15100b8` (branch `codex/text-input-integration`) with edit counts and UTF-16 selection. The receipt says it does not establish complete TextInput or IME support. |
+| `docs/evidence/text-input-focus-qnx-2026-11-07.md`         | Tab and Backtab traversal, host tests and a physical Pi 400 trial.                                                                                                                                                     |
+| `docs/evidence/text-input-readonly-blur-qnx-2026-11-07.md` | Read-only and blur behavior. Not read for this page, so its result is not summarized here.                                                                                                                             |
+| `docs/evidence/pr149-pi400-keyhold-2026-11-19/`            | Pi 400, commit `240dc08`. Held `down` key with repeat events through `rnqnx-inject keyhold`, moving focus in the gallery.                                                                                              |
+
+Missing: any run with a hardware keyboard, any software keyboard, any `KeyboardAvoidingView` check, and any Pi 4 QSTI run. See [known gaps](/docs/reference/known-gaps).

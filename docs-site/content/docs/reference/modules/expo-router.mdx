@@ -1,0 +1,65 @@
+---
+title: expo-router
+description: How expo-router 58.0.31 Tabs and Drawer run on QNX through a Metro resolver and Qt adapters.
+---
+
+## Install
+
+`@rn-qnx/expo-router-qnx` (version `0.1.0`, unpublished) runs expo-router `58.0.31` with its own `Tabs` and `Drawer`, unchanged in the app. Its peer pins in `package.json` are `react` 19.3.0, `react-native` 0.88.1, `react-native-drawer-layout` 4.2.12, `react-native-safe-area-context` 5.11.1, `react-native-screens` 4.30.1 and `zustand` 5.1.0. The component gallery depends on `expo-router` 58.0.31 and the package.
+
+expo-router 58 bundles its own react-navigation, which reaches for packages whose native halves QNX lacks. The Metro resolver in `src/resolver.js` replaces them for the `qnx` platform only (per the package README):
+
+| Import                           | Replacement                                                        |
+| -------------------------------- | ------------------------------------------------------------------ |
+| `react-native-safe-area-context` | Shim with zero insets                                              |
+| `react-native-screens`           | Shim where `screensEnabled()` is false                             |
+| `react-native-drawer-layout`     | `drawer-layout.js`: native `RNQnxDrawer`, or `JsDrawer` without it |
+| expo-router `BottomTabBar`       | `BottomTabBar.js`: native `RNQnxTabBar`, or `JsTabBar`             |
+
+It also swaps the `expo/fetch` and `ExpoLinking` wrappers for JavaScript and points `expo-router/_ctx` at the app's `app-ctx.js`.
+
+## Setup
+
+In `metro.config.js`, wrap the QNX config:
+
+```js
+const { withExpoRouterQnx } = require('@rn-qnx/expo-router-qnx/metro');
+module.exports = withExpoRouterQnx(getQnxMetroConfig(__dirname, {}), {
+  routerContext: path.join(__dirname, 'app-ctx.js'),
+});
+```
+
+`app-ctx.js` exports a `require.context` over the app directory. `index.js` registers `App` from `expo-router/build/qualified-entry`. The README says `rnqnx project create` does not yet write these files, so copy them from `apps/component-gallery`. Native adapters need `RNQNX_ENABLE_QT_NATIVE_UI`. Without it the JavaScript drawer and tab bar draw instead. See [Metro config](/docs/how-to/metro-config) and [Expo setup](/docs/how-to/expo-setup).
+
+## Supported API
+
+| Surface  | Supported props, from the README                                                                                                                                                                                                                                                                                |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Tabs`   | `tabBarPosition` (`bottom`, `top`, `left`, `right`), `tabBarShowLabel`, `tabBarActiveTintColor`, `tabBarInactiveTintColor`, `tabBarStyle` (`backgroundColor`, `height`, `display: 'none'`), `tabBarBadge`, `tabBarBadgeStyle`, `tabBarLabel`, `tabBarAccessibilityLabel`, `headerShown`, `hidden`, `tabBarIcon` |
+| `Drawer` | `drawerPosition`, `drawerType` (`front`, `slide`, `back`, `permanent`), `drawerStyle.width`, `overlayStyle.backgroundColor`, `overlayAccessibilityLabel`, `swipeEnabled`, `swipeEdgeWidth`                                                                                                                      |
+| Helper   | `qnxTabsScreenOptions({ width, layout, breakpoint })`; `layout` is `auto`, `bottom` or `side`                                                                                                                                                                                                                   |
+| Icons    | `options.qnxIcon` (glyph or image URI) keeps the native bar. A `tabBarIcon` function sends that screen set to the JavaScript bar.                                                                                                                                                                               |
+
+Right-to-left follows `I18nManager.isRTL`. The full option audit, with a status word per prop, is `docs/evidence/router-prop-audit-2026-11-13.md`. Native views: `RNQnxDrawer` and `RNQnxTabBar` (host partial in the component matrix, `native/qt/nativeui`).
+
+## Not supported
+
+- Stack navigator: neither provided nor tried. The README says the native stack needs `react-native-screens`, and the JavaScript stack needs Gesture Handler, "which is not ported". That README sentence predates the Gesture Handler port (see [Gesture Handler](/docs/reference/modules/gesture-handler)). No evidence found that a Stack now works.
+- Native tabs and `expo-router/ui`.
+- `Linking.openURL` rejects, and there is no deep-link input.
+- Inactive tab and drawer screens stay mounted.
+- The drawer's edge swipe needs a pointer.
+- `docs/expo-delivery/sdk58-support.json` lists `expo-router` as `unsupported`. It scans published package contents, says no status is a device run, and does not account for this package.
+
+## Evidence
+
+| Path                                            | Shows                                                                                                                                                                                                                               |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/evidence/router-prop-audit-2026-11-13.md` | Audit of every `Tabs` and `Drawer` option against the vendored react-navigation sources.                                                                                                                                            |
+| `docs/evidence/drawer-route-2026-11-13/`        | Manifest at implementation commit `1f809ce`, screenshots of each route, host input tests with negative controls. The manifest limits read: custom-image Pi 400, public Qt O2, no clean combined build, no stock QSTI or QNX VM run. |
+| `docs/evidence/drawer-runtime-2026-11-13/`      | Native and JavaScript drawer screenshots, ordered router tests, QML tests under ASan and UBSan.                                                                                                                                     |
+| `docs/evidence/drawer-selection-2026-11-13/`    | Selection tests and negative controls.                                                                                                                                                                                              |
+| `docs/evidence/tile-layout-pi400-2026-11-13/`   | Older Pi 400 screenshots. Its README says host, commit and commands were not recorded, so it cannot qualify the current head.                                                                                                       |
+| `docs/evidence/pr149-pi400-run2-2026-11-19/`    | Pi 400, commit `240dc08`. A drawer opening and closing on `key esc`. The receipt does not say whether the native or JavaScript drawer drew.                                                                                         |
+
+Missing: a Pi 400 run that identifies the native drawer and tab bar at the current head, any Stack, and any Pi 4 QSTI run.

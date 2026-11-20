@@ -1,36 +1,301 @@
 ---
 title: Config reference
-description: The app.json and config plugin fields React Native QNX reads, with defaults.
+description: Every key in the app config, the generated native-app.json, package.json declarations, tsconfig, templates, CMake presets and CMake cache variables that React Native QNX reads, with types, defaults and source files.
 ---
 
-`prepare-native` resolves your Expo config through `@expo/config`: `app.json`, `app.config.js` or `app.config.ts`, with plugins applied. Options on the `@rn-qnx/expo-qnx-config-plugins` entry win over `expo.extra.rnqnx`.
+This page lists configuration keys with the file that reads them. Everything here comes from source files in the repository, read on 2026-11-19. None of the keys were exercised by a build for this page. For environment variables, see [environment variables](/docs/reference/environment-variables). For Metro, see the [Metro config reference](/docs/reference/metro-config). For command options, see the [CLI reference](/docs/reference/cli).
 
-## Identity
+## Files the tools read
 
-| Field                                                      | Required | Meaning                                                                       |
-| ---------------------------------------------------------- | -------- | ----------------------------------------------------------------------------- |
-| `expo.name`                                                | yes      | Window title and About name. Tile label when `shortName` is absent.           |
-| `expo.icon`                                                | no       | Square PNG, at least 1024 by 1024. Unset uses `template/qnx/assets/icon.png`. |
-| `expo.extra.rnqnx.appId` or plugin `appId`                 | yes      | Reverse-DNS app ID, for example `org.example.notes`.                          |
-| `expo.extra.rnqnx.componentName` or plugin `componentName` | no       | Registered React component. Defaults to `main`.                               |
-| `expo.extra.rnqnx.icon`                                    | no       | Icon override for QNX only.                                                   |
-| `expo.extra.rnqnx.shortName`                               | no       | Launcher tile label.                                                          |
+| File                                                               | Read by                                                                 | Limits and rules                                                                                                                                                                                                                                                             |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app.json`, `app.config.ts`, `.mts`, `.cts`, `.js`, `.mjs`, `.cjs` | `loadExpoConfig` in `packages/react-native-qnx-cli/src/expo-config.mjs` | Each present file must be a regular file (no symlink) of 1 to 65536 bytes. At least one must exist. A `package.json` must sit beside them. Resolved through `@expo/config` `getConfig` with plugins applied. `app.config.*` is code and runs, as it does under `expo start`. |
+| `package.json` of the app                                          | `project.mjs`, `doctor.mjs`, `add-qnx.mjs`, `nitro-modules.mjs`         | At most 1 MiB. `name` must be a nonempty string. `add-qnx` requires `dependencies.expo`.                                                                                                                                                                                     |
+| `metro.qnx.config.js`, else `metro.config.js`                      | `project.mjs`, `dev-server.mjs`                                         | See the [Metro config reference](/docs/reference/metro-config).                                                                                                                                                                                                              |
+| `build/<platform>/native-app.json`                                 | `build-native.mjs`, `desktop-entry.mjs`, CMake                          | Written by `project prepare-native`. At most 64 KiB (65536 bytes).                                                                                                                                                                                                           |
+| `node_modules/<dep>/package.json`                                  | `nitro-modules.mjs`                                                     | Field `react-native-qnx`. See [Native module declarations](#native-module-declarations).                                                                                                                                                                                     |
+| `tsconfig.json`, `tests/types/adaptive.tsconfig.json`              | `tsc`                                                                   | See [TypeScript](#typescript).                                                                                                                                                                                                                                               |
+| `CMakePresets.json`, `CMakeLists.txt`, `cmake/**`                  | `cmake`                                                                 | See [CMake presets](#cmake-presets) and [CMake cache variables](#cmake-cache-variables).                                                                                                                                                                                     |
+| Runner manifest (JSON at a URL)                                    | `runner.mjs`                                                            | Schema `rnqnx-runner-manifest/v1`. See [Runner manifest](#runner-manifest).                                                                                                                                                                                                  |
+| Target observation report (JSON)                                   | `target-runtime-doctor.mjs`                                             | Schema `rnqnx-qnx-runtime-observation/v1`, at most 64 KiB. Fields were not read in full for this page.                                                                                                                                                                       |
 
-## Window
+## App config
 
-| Field                        | Values                                   | Default   |
-| ---------------------------- | ---------------------------------------- | --------- |
-| `window.controls`            | `macos`, `windows`                       | `macos`   |
-| `window.titleBarStyle`       | `default`, `hidden`, `none`              | `default` |
-| `window.initialSize`         | `{ width, height }`, integers 1 to 16384 | none      |
-| `window.unavailableControls` | `hide`, `disable`                        | `hide`    |
+Keys the CLI reads from the resolved Expo config. Identity keys can also be set as options of the config plugin `@rn-qnx/expo-qnx-config-plugins`. Plugin options win over values already in `expo.extra.rnqnx` (`packages/expo-qnx-config-plugins/index.js`, function `withQnxProject`).
 
-Each value is validated by the config plugin, `prepare-native`, CMake and the C++ reader, so a typo fails at prebuild. The window needs a build with `RNQNX_ENABLE_WINDOW_CHROME=ON`.
+### Identity
 
-## Build switches
+| Key                                                             | Type   | Default                        | Required | Meaning                                                                                                                                                                                              | Source                                     |
+| --------------------------------------------------------------- | ------ | ------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `expo.name`                                                     | string | none                           | yes      | Display name. 1 to 128 characters, no control characters, no leading or trailing whitespace. Window title and About name.                                                                            | `prepare-native.mjs` `validateAppIdentity` |
+| `expo.extra.rnqnx.appId`, plugin option `appId`                 | string | none                           | yes      | Reverse-DNS ID, for example `org.example.notes`. At most 255 characters, letters, digits, `_` and `.` only, at least two dot-separated parts, each starting with a letter, and no `.desktop` suffix. | `prepare-native.mjs`                       |
+| `expo.extra.rnqnx.componentName`, plugin option `componentName` | string | `main`                         | no       | Name registered with `AppRegistry`. ASCII letters, digits and `_`, starting with a letter, 1 to 128 characters.                                                                                      | `prepare-native.mjs`                       |
+| `expo.extra.rnqnx.shortName`, plugin option `shortName`         | string | `expo.name`                    | no       | Launcher tile label. Same character rules as the name, plus no invisible format characters and at least one visible character. At most 128 characters.                                               | `app-identity.mjs` `resolveTileLabel`      |
+| `expo.icon`                                                     | string | `template/qnx/assets/icon.png` | no       | Project-relative path such as `./assets/icon.png` to a square PNG, 1024 to 8192 pixels per edge, at most 32 MiB. With none set, the default icon is used and a notice is printed.                    | `app-identity.mjs` `validateIconSource`    |
+| `expo.extra.rnqnx.icon`, plugin option `icon`                   | string | none                           | no       | Same as `expo.icon`, for QNX only. Wins over `expo.icon`.                                                                                                                                            | `app-identity.mjs`                         |
 
-Optional libraries are off until you enable them. Examples from the repository: `RNQNX_ENABLE_WORKLETS`, `RNQNX_ENABLE_REANIMATED`, `RNQNX_ENABLE_GESTURE_HANDLER`, `RNQNX_ENABLE_QT_RNSVG`, `RNQNX_ENABLE_QT_VIDEO`, `RNQNX_ENABLE_INPUT_LIFECYCLE`, `RNQNX_ENABLE_QT_NATIVE_UI`, `RNQNX_ENABLE_QT_EXPO_IMAGE`. Each default-off switch needs its own evidence before you rely on it. See the [module matrix](/docs/reference/module-matrix).
+Plugin option values `appId`, `componentName`, `shortName` and `icon` must be nonempty strings, else `@rn-qnx/expo-qnx-config-plugins option <key> must be a nonempty string.`
 
-## Environment
+The CLI measures the tile label only when a launcher profile exists for the platform. For `qnx` the source says `No QNX launcher is defined in this repository or the QNX SDP, so there is no label box to measure.` `project doctor` therefore reports the `tile-label` check as `not-checked` for QNX. The help text's statement that the label "must fit the target launcher on one line" has no measured QNX box behind it.
 
-`QNX_TARGET_IP`, `QNX_TARGET_USER`, `QNX_TARGET_DIR` and `QNX_SSH_KEY` configure the deploy scripts. `RNQNX_RUNNER_MANIFEST` sets the runner manifest URL. Source your SDP's `qnxsdp-env.sh` before any QNX build. See [build and deploy](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/build-and-deploy.md).
+### Plugin-only options
+
+These options go on the plugin entry. They are written to `expo.extra.rnQnx` (capital Q), not `extra.rnqnx`.
+
+| Option             | Type                    | Default                                  | Meaning                                                   | Source                                           |
+| ------------------ | ----------------------- | ---------------------------------------- | --------------------------------------------------------- | ------------------------------------------------ |
+| `targetArch`       | `'aarch64'`, `'x86_64'` | `aarch64`                                | Target architecture recorded for Expo module autolinking. | `expo-qnx-config-plugins/index.js`, `index.d.ts` |
+| `autolinkingJson`  | string                  | `build/generated/expo-qnx-modules.json`  | Path recorded for the autolinking JSON.                   | same                                             |
+| `autolinkingCMake` | string                  | `build/generated/expo-qnx-modules.cmake` | Path recorded for the autolinking CMake file.             | same                                             |
+
+`expo.extra.rnqnx.platforms` (an array, written as `["qnx"]` by `project create`) has no reader in `packages/react-native-qnx-cli/src`. No evidence found for a consumer of that key.
+
+Example plugin entry, as `project add-qnx` writes it into `app.json`:
+
+```json
+["@rn-qnx/expo-qnx-config-plugins", { "appId": "org.example.notes", "componentName": "main" }]
+```
+
+### Window
+
+Key path: `expo.extra.rnqnx.window`, or plugin option `window`. Source: `resolveQnxWindow` in `packages/expo-qnx-config-plugins/index.js`, repeated in `window-descriptor.mjs`, `cmake/RnqnxConsumerApp.cmake` and `rnqnx::window::parseWindowChromeConfig`. An unknown key, a `null` or a wrong type throws, so a typo fails at prebuild.
+
+| Key                          | Type                              | Default in the plugin | Default when read from `native-app.json` | Meaning                                                         |
+| ---------------------------- | --------------------------------- | --------------------- | ---------------------------------------- | --------------------------------------------------------------- |
+| `window.controls`            | `'macos'`, `'windows'`            | `macos`               | `macos`                                  | Title bar button layout.                                        |
+| `window.titleBarStyle`       | `'default'`, `'hidden'`, `'none'` | `default`             | `default`                                | `none` draws no title bar. `--window-chrome` fails with `none`. |
+| `window.initialSize`         | `{ width, height }`               | unset                 | unset                                    | Exactly two keys, each an integer from 1 to 16384.              |
+| `window.unavailableControls` | `'hide'`, `'disable'`             | unset                 | `hide`                                   | A control the platform cannot run is left out or drawn inert.   |
+
+A `native-app.json` with no `window` key predates the field and is read as `controls: macos`, `titleBarStyle: none`, `unavailableControls: hide` (`window-descriptor.mjs`). The title bar is drawn only in a build made with `RNQNX_ENABLE_WINDOW_CHROME=ON`; see [window chrome](/docs/how-to/window-chrome).
+
+## native-app.json
+
+Generated by `project prepare-native` at `build/<platform>/native-app.json`. Do not edit it: CMake rechecks the bundle and icon hashes, and `prepare-native` refuses to overwrite a descriptor that differs (`prepare-native.mjs`, `cmake/RnqnxConsumerApp.cmake`).
+
+| Key             | Type   | Meaning                                                                                                                                |
+| --------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `schemaVersion` | number | `1`.                                                                                                                                   |
+| `generatedBy`   | string | `react-native-qnx/prepare-native-v1`. CMake rejects another value.                                                                     |
+| `appId`         | string | From the identity above.                                                                                                               |
+| `displayName`   | string | `expo.name`.                                                                                                                           |
+| `componentName` | string | From the identity above.                                                                                                               |
+| `platform`      | string | `qnx`.                                                                                                                                 |
+| `bundle`        | string | Absolute path of the bundle, at most 256 MiB. A real QNX build needs a `.hbc` file.                                                    |
+| `bundleSha256`  | string | SHA-256 of the bundle. CMake fails with `Consumer bundle hash changed; prepare its configuration again` if it differs.                 |
+| `window`        | object | The resolved window, see above.                                                                                                        |
+| `nitroModules`  | array  | Present only when the app has Nitro modules. At most 64 entries.                                                                       |
+| `expoModules`   | array  | Present only when the app has Expo modules. At most 64 entries.                                                                        |
+| `expoConfig`    | object | Present only with `expoModules`. The resolved Expo config without keys that start with `_`, at most 16 KiB as compact JSON.            |
+| `shortName`     | string | Tile label.                                                                                                                            |
+| `icon`          | object | `source`, `sha256`, and `sizes`, a list of `{ size, path, sha256 }` for sizes 16, 24, 32, 48, 64, 96, 128, 192, 256, 512.              |
+| `labelFit`      | object | Label measurement. Its `widthPx` and `fallbackCodePoints` depend on the host's Qt and are left out of the stale-descriptor comparison. |
+
+Each `nitroModules` and `expoModules` entry has exactly these string keys: `package`, `version`, `root`, `cmakeLists`, `target`, `initializer` (`cmake/RnqnxConsumerApp.cmake`).
+
+## Native module declarations
+
+A direct dependency of the app declares a native module for QNX in its own `package.json`. `prepare-native` reads JSON only and runs no package code (`packages/react-native-qnx-cli/src/nitro-modules.mjs`). See [Nitro modules](/docs/how-to/nitro-modules).
+
+```json
+{
+  "react-native-qnx": {
+    "nitro": {
+      "platforms": ["qnx"],
+      "cmakeListsPath": "qnx/CMakeLists.txt",
+      "target": "my_module",
+      "initializer": "my::ns::registerQnxHybridClasses"
+    }
+  }
+}
+```
+
+The path, target and function in this example are placeholders, not a real package.
+
+| Key                | Type     | Rule                                                                                                                        |
+| ------------------ | -------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `react-native-qnx` | object   | Allowed keys: `nitro` and `expo`. Both use the same four fields.                                                            |
+| `.platforms`       | string[] | Nonempty, no repeats. Only `qnx` is supported; another value throws.                                                        |
+| `.cmakeListsPath`  | string   | Package-relative path to a file named `CMakeLists.txt`, with no `..`, `.`, empty segment, backslash or CMake metacharacter. |
+| `.target`          | string   | CMake target name, 1 to 128 characters, `^[A-Za-z_][A-Za-z0-9_.+-]*$`, not starting with `rnqnx_`.                          |
+| `.initializer`     | string   | A C++ function name such as `ns::fn`, at most 256 characters.                                                               |
+
+## TypeScript
+
+`tsconfig.json` at the repository root (`pnpm typecheck` runs `tsc --noEmit` with it, then with `tests/types/adaptive.tsconfig.json`).
+
+| Option                                                                                                                               | Value                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `target`, `lib`                                                                                                                      | `ES2022`                                                                                                                     |
+| `module`, `moduleResolution`                                                                                                         | `NodeNext`                                                                                                                   |
+| `types`                                                                                                                              | `["node"]`                                                                                                                   |
+| `strict`, `esModuleInterop`, `skipLibCheck`, `forceConsistentCasingInFileNames`, `resolveJsonModule`, `allowJs`, `checkJs`, `noEmit` | `true`                                                                                                                       |
+| `include`                                                                                                                            | `scripts/**/*.mjs`, `scripts/**/*.ts`, `tests/js/**/*.ts`, `tests/js/**/*.mjs`, `packages/react-native-qnx-cli/src/**/*.mjs` |
+| `exclude`                                                                                                                            | `node_modules`, `build`, `tests/js/qnx-gallery-yoga-layout.test.mjs`, `tests/js/helpers/yoga-host.mjs`                       |
+
+`tests/types/adaptive.tsconfig.json` extends the root file, sets `types` to `["react"]`, `allowJs` and `checkJs` to `false`, includes `./adaptive.ts`, and clears `exclude`. The generated app from `project create` has its own `babel.config.js` with the single preset `babel-preset-expo`; the repository template `template/qnx/babel.config.js` is the same.
+
+## Template files
+
+Source: `template/`. Placeholders are replaced when a file is copied.
+
+| File                           | Used by                            | Placeholders                         | Notes                                                                                                                                                        |
+| ------------------------------ | ---------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `template/qnx/index.js`        | `pnpm qnx init`                    | `__APP_NAME__`                       | Registers the surface name `RNQnxPlayground`. Keep that name: the playground runner starts that surface.                                                     |
+| `template/qnx/metro.config.js` | `pnpm qnx init`                    | none                                 | Calls `getQnxMetroConfig` with `watchFolders` and `nodeModulesPaths` for the workspace root two levels up.                                                   |
+| `template/qnx/babel.config.js` | `pnpm qnx init`                    | none                                 | `presets: ['babel-preset-expo']`.                                                                                                                            |
+| `template/qnx/README.md`       | `pnpm qnx init`                    | `__APP_NAME__`                       |                                                                                                                                                              |
+| `template/qnx/assets/icon.png` | `prepare-native`, `project create` | none                                 | Default icon.                                                                                                                                                |
+| `template/qnx/run-app.sh`      | `project desktop-entry`            | `__APP_ID__`                         | Guarded launcher. Flags: `--replace`, `--dev-server <url>`. Environment: see [environment variables](/docs/reference/environment-variables#launcher-script). |
+| `template/qnx-router/**`       | `project create`                   | `__APP_NAME__`, `__COMPONENT_NAME__` | Expo Router starter: `app/`, `app-ctx.js`, `components/`, `index.js`, `theme.js`. `app-ctx.js` builds a `require.context` over `./app`.                      |
+
+The generated `package.json` for `pnpm qnx init` has `name` `@rn-qnx/<name>`, `version` `0.1.0`, `private` `true`, `main` `index.js`, `react` and `react-native` taken from the workspace `devDependencies`, and `@rn-qnx/metro-config-qnx` at `workspace:*` (`cli.mjs`).
+
+## CMake presets
+
+File: `CMakePresets.json`, `version` 6, `cmakeMinimumRequired` 3.31.9. All configure presets use the Ninja generator and the binary directory `build/<preset name>`, except `qnx-pi`, which uses `build/qnx-pi4`.
+
+| Configure preset      | Toolchain file                              | `CMAKE_BUILD_TYPE` | Other cache variables                                                                                                                                      | Condition                 |
+| --------------------- | ------------------------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| `macos-host-debug`    | none                                        | Debug              | `CMAKE_C_COMPILER=clang`, `CMAKE_CXX_COMPILER=clang++`, `BUILD_TESTING=OFF`                                                                                | host is Darwin            |
+| `macos-host-release`  | none                                        | Release            | same                                                                                                                                                       | host is Darwin            |
+| `macos-host-tests`    | none                                        | Debug              | clang compilers, `BUILD_TESTING=ON`, `RNQNX_ENABLE_HOST_SANITIZERS=ON`                                                                                     | host is Darwin            |
+| `linux-host-debug`    | none                                        | Debug              | `BUILD_TESTING=OFF`                                                                                                                                        | host is Linux             |
+| `linux-host-tests`    | none                                        | Debug              | `BUILD_TESTING=ON`, `RNQNX_ENABLE_HOST_SANITIZERS=ON`                                                                                                      | host is Linux             |
+| `qnx-aarch64-debug`   | `vnext/cmake/qnx-aarch64le.toolchain.cmake` | Debug              | `BUILD_TESTING=OFF`                                                                                                                                        | none                      |
+| `qnx-aarch64-release` | `vnext/cmake/qnx-aarch64le.toolchain.cmake` | Release            | `BUILD_TESTING=OFF`                                                                                                                                        | none                      |
+| `qnx-x86_64-debug`    | `cmake/toolchains/qnx-8.0.cmake`            | Debug              | `BUILD_TESTING=OFF`, `QNX_TARGET_ARCH=x86_64`                                                                                                              | none                      |
+| `qnx-x86_64-release`  | `cmake/toolchains/qnx-8.0.cmake`            | Release            | same                                                                                                                                                       | none                      |
+| `qnx-pi4`             | `vnext/cmake/qnx-aarch64le.toolchain.cmake` | Debug              | `BUILD_TESTING=OFF`, `RNQNX_G0_PROBE_ONLY=ON`. Description: a configure or build is not a passed gate until the binary runs on the Pi.                     | none                      |
+| `qnx-pi`              | `vnext/cmake/qnx-aarch64le.toolchain.cmake` | Debug              | same as `qnx-pi4`. Description: runtime proof still requires the physical QSTI target.                                                                     | none                      |
+| `linux-host-renderer` | none (inherits `linux-host-tests`)          | Debug              | adds `RNQNX_REQUIRE_FULL_HOST_RENDERER=ON`, `RNQNX_BUILD_HERMES=ON`, `RNQNX_FETCH_REACT_NATIVE_DEPS=ON`, clang compilers, `CMAKE_CXX_SCAN_FOR_MODULES=OFF` | host is Linux (inherited) |
+
+Build presets exist for every configure preset above with the same name. `qnx-pi4` and `qnx-pi` build only the target `rnqnx_g0_cxx20_probe`. `linux-host-renderer` sets `jobs` to 2. Test presets exist for `macos-host-tests`, `linux-host-tests` (both with `outputOnFailure`) and `linux-host-renderer` (`noTestsAction` `error`, `timeout` 180 seconds).
+
+`pnpm qnx configure-qnx` and `build-qnx` select `qnx-<arch>-<config>`; `project build-native` selects `qnx-aarch64-debug` or `linux-host-renderer`.
+
+## CMake cache variables
+
+All are set with `-D<name>=<value>` at configure time. `BOOL` options below come from `option()` calls. Defaults and descriptions are copied from those calls. A variable marked "required with" fails configure when the dependency is off.
+
+### Core and build mode
+
+| Name                               | Type   | Default | Meaning                                                                                                                                              | Source                          |
+| ---------------------------------- | ------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `RNQNX_WARNINGS_AS_ERRORS`         | BOOL   | ON      | Treat compiler warnings as errors.                                                                                                                   | `CMakeLists.txt`                |
+| `RNQNX_ENABLE_HOST_SANITIZERS`     | BOOL   | ON      | Enable ASan and UBSan for host tests.                                                                                                                | `CMakeLists.txt`                |
+| `RNQNX_REQUIRE_FULL_HOST_RENDERER` | BOOL   | OFF     | Require the Qt/Hermes/React host graph instead of silently skipping it.                                                                              | `CMakeLists.txt`                |
+| `RNQNX_G0_PROBE_ONLY`              | BOOL   | OFF     | Build only the G0 C++20 probe on QNX.                                                                                                                | `CMakeLists.txt`                |
+| `RNQNX_BUILD_QNX_SYSTEMS_PROBES`   | BOOL   | OFF     | Build finite native systems diagnostics.                                                                                                             | `CMakeLists.txt`                |
+| `RNQNX_FETCH_REACT_NATIVE_DEPS`    | BOOL   | ON      | Fetch React Native's pinned C++ third-party dependencies.                                                                                            | `CMakeLists.txt`                |
+| `RNQNX_BUILD_HERMES`               | BOOL   | OFF     | Build Hermes from source for the host.                                                                                                               | `CMakeLists.txt`                |
+| `RNQNX_BUILD_HERMES_QNX`           | BOOL   | OFF     | Link the cross-built QNX Hermes/JSI probe.                                                                                                           | `CMakeLists.txt`                |
+| `RNQNX_BUILD_NITRO_QNX`            | BOOL   | OFF     | Build the QNX Nitro shared C++ runtime.                                                                                                              | `CMakeLists.txt`                |
+| `RNQNX_ENABLE_NITRO_QT_DISPATCHER` | BOOL   | OFF     | Enable the experimental owned Qt/JS Nitro dispatcher and its native probe. Needs `RNQNX_BUILD_NITRO_QNX`.                                            | `CMakeLists.txt`                |
+| `RNQNX_BUILD_EXPO_MODULES_QNX`     | BOOL   | OFF     | Build the QNX Expo Modules JSI bootstrap.                                                                                                            | `CMakeLists.txt`                |
+| `RNQNX_BUILD_REACT_QNX`            | BOOL   | OFF     | Build the full React Native + Hermes + Fabric + Qt Quick QNX target graph. Needs `RNQNX_BUILD_HERMES_QNX=ON` and `RNQNX_FETCH_REACT_NATIVE_DEPS=ON`. | `CMakeLists.txt`                |
+| `RNQNX_BUILD_PLAYGROUND_QNX`       | BOOL   | OFF     | Build the visual Qt Quick/Fabric playground for QNX. Needs a QNX target and `RNQNX_BUILD_REACT_QNX=ON`.                                              | `CMakeLists.txt`                |
+| `RNQNX_BUILD_FORGE_QNX`            | BOOL   | OFF     | Build the opt-in native Forge Rust engine owner for QNX.                                                                                             | `CMakeLists.txt`                |
+| `RNQNX_FORGE_SOURCE_DIR`           | PATH   | empty   | Absolute path to the reviewed nitro-forge checkout.                                                                                                  | `cmake/RnqnxForge.cmake`        |
+| `RNQNX_FORGE_RUST_TARGET`          | STRING | empty   | Rust target triple used to build the QNX `nf-sys` archive.                                                                                           | `cmake/RnqnxForge.cmake`        |
+| `RNQNX_FORGE_BUILD_PROBE`          | BOOL   | OFF     | Build Forge's shared native write/reopen probe.                                                                                                      | `cmake/RnqnxForge.cmake`        |
+| `RNQNX_ENABLE_FRAME_TRACE`         | BOOL   | OFF     | Enable bounded native runtime diagnostic trace sessions.                                                                                             | `cmake/RnqnxRuntimeTrace.cmake` |
+
+### Input, accessibility and lifecycle
+
+| Name                                | Type | Default | Meaning                                                                                                                                                          | Source                          |
+| ----------------------------------- | ---- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `RNQNX_ENABLE_INPUT_LIFECYCLE`      | BOOL | OFF     | Enable experimental Qt pointer cancellation and terminal payload fixes. Needs a Linux, macOS or QNX Qt host.                                                     | `CMakeLists.txt`                |
+| `RNQNX_ENABLE_TEXT_INPUT_CONTRACT`  | BOOL | OFF     | Enable experimental owned TextInput editing and selection contract. Same host rule.                                                                              | `CMakeLists.txt`                |
+| `RNQNX_ENABLE_ACCESSIBILITY_BRIDGE` | BOOL | OFF     | Enable experimental generic View Qt accessibility semantics. Same host rule.                                                                                     | `CMakeLists.txt`                |
+| `RNQNX_ENABLE_APP_STATE`            | BOOL | OFF     | Wire Qt lifecycle to React Native AppState.                                                                                                                      | `cmake/RnqnxAppState.cmake`     |
+| `RNQNX_ENABLE_WEBSOCKETS`           | BOOL | OFF     | Enable the experimental Qt WebSockets backend (dev-client transport; QNX release acceptance pending).                                                            | `cmake/RnqnxWebSockets.cmake`   |
+| `RNQNX_ENABLE_DEV_SUPPORT`          | BOOL | OFF     | Build the development client (Metro bundle, Fast Refresh, reload, LogBox). Links a Hermes VM that can compile source. Fails unless `RNQNX_ENABLE_WEBSOCKETS=ON`. | `cmake/RnqnxDevSupport.cmake`   |
+| `RNQNX_ENABLE_WINDOW_CHROME`        | BOOL | OFF     | Draw the Qt Quick title bar and window controls.                                                                                                                 | `cmake/RnqnxWindowChrome.cmake` |
+
+### Qt components and third-party libraries
+
+| Name                               | Type | Default                                    | Meaning                                                            | Source                            |
+| ---------------------------------- | ---- | ------------------------------------------ | ------------------------------------------------------------------ | --------------------------------- |
+| `RNQNX_ENABLE_QT_MOTION`           | BOOL | OFF                                        | Build experimental native Qt motion primitives.                    | `cmake/RnqnxQtNative.cmake`       |
+| `RNQNX_ENABLE_QT_SVG`              | BOOL | OFF                                        | Build the experimental native SVG document component.              | `cmake/RnqnxQtNative.cmake`       |
+| `RNQNX_ENABLE_QT_GRAPHICS`         | BOOL | OFF                                        | Build the experimental Qt graphics surface observer.               | `cmake/RnqnxQtNative.cmake`       |
+| `RNQNX_ENABLE_QT_VIDEO`            | BOOL | OFF                                        | Build the Qt Multimedia video component (QtVideo).                 | `cmake/RnqnxQtNative.cmake`       |
+| `RNQNX_ENABLE_QT_RNSVG`            | BOOL | OFF                                        | Build react-native-svg element rendering on Qt Quick.              | `cmake/RnqnxQtNative.cmake`       |
+| `RNQNX_ENABLE_QT_NATIVE_UI`        | BOOL | ON if `RNQNX_BUILD_CONSUMER_APP`, else OFF | Build the `RNQnxDrawer` and `RNQnxTabBar` Fabric components.       | `cmake/RnqnxQtNative.cmake`       |
+| `RNQNX_ENABLE_QT_EXPO_IMAGE`       | BOOL | ON if `RNQNX_BUILD_CONSUMER_APP`, else OFF | Build the ExpoImage native view (`ViewManagerAdapter_ExpoImage`).  | `cmake/RnqnxQtNative.cmake`       |
+| `RNQNX_ENABLE_WORKLETS`            | BOOL | OFF                                        | Build react-native-worklets with the Qt UI-worklet platform layer. | `cmake/RnqnxWorklets.cmake`       |
+| `RNQNX_WORKLETS_SOURCE_DIR`        | PATH | empty                                      | Installed react-native-worklets package root.                      | `cmake/RnqnxWorklets.cmake`       |
+| `RNQNX_ENABLE_REANIMATED`          | BOOL | OFF                                        | Build react-native-reanimated v4 on the Qt Worklets platform.      | `cmake/RnqnxReanimated.cmake`     |
+| `RNQNX_REANIMATED_SOURCE_DIR`      | PATH | empty                                      | Installed react-native-reanimated package root.                    | `cmake/RnqnxReanimated.cmake`     |
+| `RNQNX_ENABLE_GESTURE_HANDLER`     | BOOL | OFF                                        | Build react-native-gesture-handler 3 on the Qt Worklets platform.  | `cmake/RnqnxGestureHandler.cmake` |
+| `RNQNX_GESTURE_HANDLER_SOURCE_DIR` | PATH | empty                                      | Installed react-native-gesture-handler package root.               | `cmake/RnqnxGestureHandler.cmake` |
+
+Each default-off library switch needs its own evidence before you rely on it. See the [module matrix](/docs/reference/module-matrix) and [component matrix](/docs/reference/component-matrix).
+
+### Consumer app
+
+| Name                          | Type     | Default | Meaning                                                                                       | Source                     |
+| ----------------------------- | -------- | ------- | --------------------------------------------------------------------------------------------- | -------------------------- |
+| `RNQNX_BUILD_CONSUMER_APP`    | BOOL     | OFF     | Build an external configured consumer application. `project build-native` passes ON.          | `cmake/RnqnxReactQt.cmake` |
+| `RNQNX_CONSUMER_CONFIG`       | FILEPATH | empty   | Generated consumer `native-app.json`. Must be an absolute regular file within the size limit. | `cmake/RnqnxReactQt.cmake` |
+| `RNQNX_CONSUMER_HOST_PREVIEW` | BOOL     | OFF     | Explicitly preview a QNX consumer on Linux (not QNX proof).                                   | `cmake/RnqnxReactQt.cmake` |
+
+Flags that `project build-native` adds: always `RNQNX_BUILD_CONSUMER_APP=ON`, `RNQNX_CONSUMER_CONFIG=<descriptor path>` and `RNQNX_ENABLE_WINDOW_CHROME=ON|OFF`. For a QNX build also `RNQNX_BUILD_REACT_QNX=ON`, `RNQNX_BUILD_HERMES_QNX=ON` and `RNQNX_FETCH_REACT_NATIVE_DEPS=ON`. Then, as applicable, `RNQNX_CONSUMER_HOST_PREVIEW=ON`, `RNQNX_BUILD_NITRO_QNX=ON` (when Nitro modules are recorded) and `RNQNX_BUILD_EXPO_MODULES_QNX=ON` (when Expo modules are recorded) (`build-native.mjs`).
+
+### Toolchains and Hermes for QNX
+
+| Name                          | Type   | Default                                       | Meaning                                                                                                        | Source                                      |
+| ----------------------------- | ------ | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `QNX_TARGET_ARCH`             | STRING | `aarch64`                                     | Target architecture, `aarch64` or `x86_64`. Anything else is a fatal error.                                    | `cmake/toolchains/qnx-8.0.cmake`            |
+| `RNQNX_QCC_TARGET`            | STRING | `gcc_ntoaarch64le`                            | Installed `qcc` target used for the QNX Pi 4 build.                                                            | `vnext/cmake/qnx-aarch64le.toolchain.cmake` |
+| `RNQNX_LLVM_BIN`              | path   | none (required)                               | Directory with `clang`, `clang++`, `llvm-ar`, `llvm-ranlib` (LLVM 19 or newer). Cache variable or environment. | `cmake/toolchains/qnx-8.0-clang.cmake`      |
+| `RNQNX_QNX_TARGET`            | path   | none (required)                               | SDP target sysroot for the clang toolchain. Cache variable or environment.                                     | `cmake/toolchains/qnx-8.0-clang.cmake`      |
+| `RNQNX_QT_PREFIX`             | path   | none (required)                               | Cross-built Qt prefix added to `CMAKE_FIND_ROOT_PATH`. Cache variable or environment.                          | `cmake/toolchains/qnx-8.0-qt.cmake`         |
+| `RNQNX_HERMES_QNX_TAG`        | STRING | `hermes-v260318099.0.5`                       | Hermes source tag audited for QNX.                                                                             | `cmake/dependencies/HermesQNX.cmake`        |
+| `RNQNX_HERMES_QNX_SOURCE_DIR` | PATH   | `<source>/third-party/hermes-260318099.0.5`   | Patched Hermes source tree for QNX.                                                                            | `cmake/dependencies/HermesQNX.cmake`        |
+| `RNQNX_HERMES_QNX_DIR`        | PATH   | `<source>/build/hermes-qnx-<QNX_TARGET_ARCH>` | QNX Hermes build tree.                                                                                         | `cmake/dependencies/HermesQNX.cmake`        |
+
+`qnx-8.0.cmake` also needs the environment variables `QNX_HOST` and `QNX_TARGET` and stops with `Environment variable QNX_HOST is not set.` if they are missing. The toolchain files in `CMakePresets.json` are listed above.
+
+### Test, probe and tool options
+
+These configure native tests, probes and host tools. They are off or empty by default unless noted. Source is the CMake file named in the last column.
+
+| Name                                                                                                                                           | Type     | Default | Meaning (from the option description)                                                                                      | Source                                                                                                             |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `RNQNX_BUILD_IDENTITY_TOOL`                                                                                                                    | BOOL     | OFF     | Build the host icon/label tool used by `prepare-native`.                                                                   | `native/app-identity/CMakeLists.txt`                                                                               |
+| `RNQNX_BUILD_APP_IDENTITY_TESTS`, `RNQNX_APP_IDENTITY_SANITIZERS`                                                                              | BOOL     | OFF     | Build isolated identity tests, instrument them.                                                                            | `native/app-identity/CMakeLists.txt`                                                                               |
+| `RNQNX_BUILD_LIFECYCLE_OBSERVER`, `RNQNX_LIFECYCLE_SANITIZERS`                                                                                 | BOOL     | OFF     | Build the isolated native lifecycle observer, instrument it.                                                               | `native/lifecycle/CMakeLists.txt`                                                                                  |
+| `RNQNX_BUILD_WINDOW_CHROME_TESTS`, `RNQNX_WINDOW_CHROME_SANITIZERS`                                                                            | BOOL     | OFF     | Build isolated window chrome host tests, instrument them.                                                                  | `native/window-chrome/CMakeLists.txt`                                                                              |
+| `RNQNX_BUILD_APPSTATE_TESTS`, `RNQNX_APPSTATE_SANITIZERS`                                                                                      | BOOL     | OFF     | Build real Hermes AppState contract tests, instrument them.                                                                | `cmake/RnqnxAppState.cmake`                                                                                        |
+| `RNQNX_BUILD_WEBSOCKET_JSI_TESTS`                                                                                                              | BOOL     | OFF     | Build real Hermes/JSI tests for enabled and disabled WebSocketModule.                                                      | `cmake/RnqnxWebSockets.cmake`                                                                                      |
+| `RNQNX_WORKLETS_SANITIZERS`, `RNQNX_MOTION_SANITIZERS`, `RNQNX_QT_SVG_SANITIZERS`, `RNQNX_QT_RNSVG_SANITIZERS`, `RNQNX_QT_GRAPHICS_SANITIZERS` | BOOL     | OFF     | Instrument the named test with ASan/UBSan.                                                                                 | `tests/native/*/CMakeLists.txt`                                                                                    |
+| `RNQNX_DAWN_SOURCE_DIR`, `RNQNX_DAWN_BUILD_DIR`                                                                                                | PATH     | empty   | Dawn source tree (pinned checkout), Dawn build tree with `libwebgpu_dawn.a` and `gen/`.                                    | `native/webgpu/CMakeLists.txt`                                                                                     |
+| `RNQNX_WEBGPU_LIBCXX_SHIM`                                                                                                                     | BOOL     | OFF     | Link the libc++ member shim (needed for a clang-built Dawn).                                                               | `native/webgpu/CMakeLists.txt`                                                                                     |
+| `RNQNX_WEBGPU_QT_COMPOSE`                                                                                                                      | BOOL     | OFF     | Build the Qt Quick composition test.                                                                                       | `native/webgpu/CMakeLists.txt`                                                                                     |
+| `RNQNX_TEXT_INPUT_TEST_BUNDLE`, `RNQNX_PRESSABLE_TEST_BUNDLE`, `RNQNX_ACCESSIBILITY_ACTION_TEST_BUNDLE`                                        | FILEPATH | empty   | Host-produced production Metro bundle for the matching QNX probe.                                                          | `cmake/RnqnxTextInput.cmake`, `RnqnxInputLifecycle.cmake`, `RnqnxAccessibilityActions.cmake`                       |
+| `RNQNX_INPUT_TEST_HERMESC`, `RNQNX_NITRO_TEST_HERMESC`, `RNQNX_ACCESSIBILITY_ACTION_TEST_HERMESC`                                              | FILEPATH | empty   | Pinned host `hermesc` for the matching probe or fixtures (version `260318099.0.5` for the input and accessibility probes). | `cmake/RnqnxInputLifecycle.cmake`, `RnqnxTextInput.cmake`, `RnqnxNitroQt.cmake`, `RnqnxAccessibilityActions.cmake` |
+
+Two further cache variables, `RNQNX_NITRO_V1_REPO_ROOT` and `RNQNX_NITRO_V1_COMPAT`, are `INTERNAL` and set with `FORCE` in `cmake/RnqnxNitroV1.cmake`. They are not inputs.
+
+The cache variables set with `FORCE` for Hermes in `cmake/dependencies/Hermes.cmake` are `HERMES_ENABLE_INTL=OFF`, `HERMES_ENABLE_TEST_SUITE=OFF`, `HERMES_ENABLE_DEBUGGER=ON`, `HERMES_BUILD_APPLE_FRAMEWORK=OFF`, `HERMES_BUILD_SHARED_JSI=ON` and `HERMES_ENABLE_TOOLS=ON`. Passing a different value on the command line is overridden.
+
+## Runner manifest
+
+JSON at the URL given to `runner list` or `runner fetch` (`packages/react-native-qnx-cli/src/runner.mjs`, `validateRunnerManifest`).
+
+| Key                         | Type     | Rule                                                                                                       |
+| --------------------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
+| `schema`                    | string   | Must be `rnqnx-runner-manifest/v1`.                                                                        |
+| `publishedAt`               | string   | An ISO date.                                                                                               |
+| `runners`                   | array    | At most 256 entries, unique `id`s.                                                                         |
+| `runners[].id`              | string   | `^[a-z0-9][a-z0-9.-]{0,127}$`.                                                                             |
+| `runners[].target`          | string   | One of `qnx-aarch64-pi400`, `macos-arm64`, `macos-x86_64`, `linux-x86_64`, `linux-aarch64`.                |
+| `runners[].kind`            | string   | `development` or `standalone`. `runner fetch` selects only `development`.                                  |
+| `runners[].format`          | string   | `tar.gz`.                                                                                                  |
+| `runners[].sha256`          | string   | 64 lowercase hex characters.                                                                               |
+| `runners[].size`            | integer  | 1 to 2 GiB.                                                                                                |
+| `runners[].url`             | string   | https, or http to loopback. No credentials.                                                                |
+| `runners[].versions`        | object   | Keys `reactNativeQnx`, `reactNative`, `hermes`, `qt`, `sdp`. `sdp` may be `null` for non-QNX targets only. |
+| `runners[].targetLibraries` | string[] | Required for `qnx-` targets. Up to 256 distinct shared-library names.                                      |
