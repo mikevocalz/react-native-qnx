@@ -60,7 +60,7 @@ cd react-native-qnx
 pnpm install --frozen-lockfile
 ```
 
-Expected: `Scope: all 15 workspace projects`, then `Done in <time> using pnpm v12.18.0`. The first install downloads about 520 packages and takes longer on a slow network than the 2 to 3 seconds shown with a warm store.
+Expected: `Scope: all 15 workspace projects`, then `Done in <time> using pnpm v12.18.0`. The first install adds about 580 packages and takes longer on a slow network than the 2 to 3 seconds shown with a warm store.
 
 ## 2. Check the pinned dependencies
 
@@ -111,7 +111,7 @@ ls -l build/dashboard.bundle.js
 
 Expected: Metro v0.87.1 output that ends with `Done writing bundle output`, and a file of about 480,000 bytes (`ls -l` showed 482873). The last two lines carry the result. The rest is Metro's banner and progress bar. A Watchman recrawl warning can appear above them. It is harmless.
 
-The output path must be inside the checkout's `build/` directory. A path elsewhere fails with `Bundle output must be inside this checkout's build/ directory.`
+The output path must be inside the checkout's `build/` directory. A path elsewhere fails with `Bundle output must be inside this checkout’s build/ directory.`
 
 ## 6. Render the bundle on your computer
 
@@ -166,7 +166,7 @@ Expected: `Documentation validated: 24 components, 11 release gates.` and no typ
 | What you see                                                                   | Cause and fix                                                                                                                                                                                                                                                                |
 | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Failed to switch pnpm to v12.18.0`                                            | An older global pnpm. Use the prefixed install above.                                                                                                                                                                                                                        |
-| `Bundle output must be inside this checkout's build/ directory.`               | Pass `--out build/<name>.js`.                                                                                                                                                                                                                                                |
+| `Bundle output must be inside this checkout’s build/ directory.`               | Pass `--out build/<name>.js`.                                                                                                                                                                                                                                                |
 | `bundle-qnx exited with code 1. Read the Metro error above`                    | The CLI's own message. A missing module usually means `pnpm install --no-frozen-lockfile` was not run after `init`. Re-run it and read the Metro error above the summary.                                                                                                    |
 | The `rnqnx_playground_host` target is missing                                  | CMake did not find Qt 6.11.1 or newer, so it defines no host target. Point `CMAKE_PREFIX_PATH` at your Qt. Add `-DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON` to fail at configure time instead of skipping the target.                                                             |
 | The build disk fills up                                                        | The tree is about 4 GB. Delete `build/playground` when you are done. It is not needed to bundle.                                                                                                                                                                             |

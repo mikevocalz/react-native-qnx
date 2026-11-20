@@ -44,7 +44,7 @@ Right-to-left follows `I18nManager.isRTL`. The full option audit, with a status 
 
 ## Not supported
 
-- Stack navigator: neither provided nor tried. The README says the native stack needs `react-native-screens`, and the JavaScript stack needs Gesture Handler, "which is not ported". That README sentence predates the Gesture Handler port (see [Gesture Handler](/docs/reference/modules/gesture-handler)). No evidence found that a Stack now works.
+- Stack navigator: neither provided nor tried. The native stack needs `react-native-screens`. The JavaScript stack needs Gesture Handler, which is ported (3.4.0, see [Gesture Handler](/docs/reference/modules/gesture-handler)), but a stack on top of it has not been built or run.
 - Native tabs and `expo-router/ui`.
 - `Linking.openURL` rejects, and there is no deep-link input.
 - Inactive tab and drawer screens stay mounted.

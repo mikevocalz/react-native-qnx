@@ -20,12 +20,12 @@ function StepHeading({ children, ...props }: ComponentProps<'h2'>) {
   );
 }
 
-// A raw <img> is not prefixed by Next's basePath. Frozen release builds live
-// under /<base>/v/<tag>, so site-absolute image paths get the prefix here.
-function Img(props: ComponentProps<'img'>) {
-  const src = typeof props.src === 'string' ? withBase(props.src) : props.src;
-  // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-  return <img {...props} src={src} />;
+const DefaultImg = defaultMdxComponents.img as (props: ComponentProps<'img'>) => React.ReactNode;
+
+// A site-absolute string src (/evidence/x.png) needs the deploy base path. Imported images
+// (objects) and external URLs pass through untouched.
+export function Img({ src, ...props }: ComponentProps<'img'>) {
+  return <DefaultImg {...props} src={typeof src === 'string' ? withBase(src) : src} />;
 }
 
 export function getMDXComponents(components?: MDXComponents) {

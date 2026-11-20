@@ -1,14 +1,14 @@
 # Layout references
 
-Mobbin was used for layout references, searched on 2026-11-19. No image was copied into the repository. Each link opens the screen on Mobbin.
+Mobbin was used for layout references, searched on 2026-11-19. No image was copied into the repository. Each link opens the screen on Mobbin. The links are as recorded by the author and were not re-opened in the 2026-11-19 audit.
 
 ## Landing page
 
-| Reference                                                                                                  | Pattern borrowed                                                                               |
-| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| [Vercel, developer framework hero](https://mobbin.com/sites/sections/23fc99c3-5a39-45ae-9b49-7015e3193042) | One headline, one install command, one "read docs" button. Used for the home page hero.        |
-| [Mural, "for developers"](https://mobbin.com/sites/sections/d98fd0c4-8ff4-4ef8-bf82-c2597b1edb38)          | A plain statement of what it is above a single docs call to action.                            |
-| [Anchor, "made for developers"](https://mobbin.com/sites/sections/d99917c8-d6a4-42f2-92ce-00e32442c35c)    | A code sample next to the headline. Used as the reason to show real commands on the home page. |
+| Reference                                                                                                  | Pattern borrowed                                                                                                             |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| [Vercel, developer framework hero](https://mobbin.com/sites/sections/23fc99c3-5a39-45ae-9b49-7015e3193042) | One headline, a primary Quick start button, and a short code block of the first three commands. Used for the home page hero. |
+| [Mural, "for developers"](https://mobbin.com/sites/sections/d98fd0c4-8ff4-4ef8-bf82-c2597b1edb38)          | A plain statement of what it is above a single docs call to action.                                                          |
+| [Anchor, "made for developers"](https://mobbin.com/sites/sections/d99917c8-d6a4-42f2-92ce-00e32442c35c)    | A code sample next to the headline. Used as the reason to show real commands on the home page.                               |
 
 ## Quick start
 
@@ -34,7 +34,7 @@ Mobbin was used for layout references, searched on 2026-11-19. No image was copi
 | [GitBook, API reference](https://mobbin.com/screens/5f15798e-7b7e-43f2-9a66-740564ad9a26)    | Request on the left, example on the right. Not used: the CLI has no HTTP API. |
 | [Base44, API documentation](https://mobbin.com/screens/67828c1b-90e1-4e8d-89a1-9e6f6cec99b4) | Code block with a copy button, then a schema table.                           |
 
-Mobbin previews are low resolution and cover products unrelated to QNX. They informed layout only. Visual design choices (neutral palette, system fonts, no gradients, reduced motion support) come from the design review checklist, not from copying these screens.
+Mobbin previews are low resolution and cover products unrelated to QNX. They informed layout only. Visual design choices (neutral palette, system fonts, no gradients, reduced motion support) were chosen by the page author (no checklist file exists in this repository), not copied from these screens.
 
 ## Changelog and component pages (docs parity pass, 2026-11-19)
 

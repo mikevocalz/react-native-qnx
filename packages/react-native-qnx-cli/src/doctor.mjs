@@ -3,7 +3,6 @@ import { lstat, open, realpath } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
-import { fileURLToPath } from 'node:url';
 import {
   identityToolBuildDirectory,
   locateIdentityTool,
@@ -481,7 +480,7 @@ export async function doctorMain(argv) {
   }
   return report.metadataCompatible ? 0 : 1;
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (import.meta.main) {
   try {
     process.exitCode = await doctorMain(process.argv.slice(2));
   } catch (error) {

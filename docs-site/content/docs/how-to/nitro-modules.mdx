@@ -19,7 +19,7 @@ Application-facing native APIs on QNX use [Nitro Modules](https://nitro.margelo.
 
 ## What has run
 
-A synchronous `HybridClass` and an optional async dispatcher ran on the Pi 400 on 2026-11-07. That is narrower than support for any third-party Nitro module. The receipts are the [Nitro and Qt receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-nitro-qt-2026-11-07.md) and the Hello World capture, which logged `RNQNX_HELLO_NITRO_V1_OK platform=qnx architecture=aarch64 add=42`. No module from iOS or Android, such as `react-native-nitro-fetch` or MMKV, is claimed to run on QNX. Each needs its own platform implementation.
+A synchronous `HybridClass` and an optional async dispatcher ran on the Pi 400 on 2026-11-07 at Nitro alpha 105; the re-pin to alpha 136 was not re-run on the device. That is narrower than support for any third-party Nitro module. The receipts are the [Nitro and Qt receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi400-nitro-qt-2026-11-07.md) and the Hello World capture, which logged `RNQNX_HELLO_NITRO_V1_OK platform=qnx architecture=aarch64 add=42`. No module from iOS or Android, such as `react-native-nitro-fetch` or MMKV, is claimed to run on QNX. Each needs its own platform implementation.
 
 ## 1. The module that exists
 

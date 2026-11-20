@@ -163,7 +163,7 @@ export async function generate(mode) {
   console.log(`Platform Nitro v1 binding ${mode === '--check' ? 'check' : 'generation'} passed`);
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (import.meta.main) {
   const mode = process.argv[2];
   if (mode !== '--write' && mode !== '--check') {
     throw new Error('Usage: node scripts/nitro-platform-codegen.mjs --check|--write');

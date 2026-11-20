@@ -4,6 +4,8 @@
 
 **React Native on QNX, rendered through Fabric, Hermes, Yoga and Qt Quick.**
 
+[Documentation](https://mikevocalz.github.io/react-native-qnx/)
+
 [![SDK 58 validation](https://github.com/mikevocalz/react-native-qnx/actions/workflows/sdk58-validation.yml/badge.svg)](https://github.com/mikevocalz/react-native-qnx/actions/workflows/sdk58-validation.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![QNX SDP 8.0.5](https://img.shields.io/badge/QNX%20SDP-8.0.5-black)
@@ -72,13 +74,13 @@ and no-ops, are in [component support](docs/component-support.md).
 
 | Component                  | Host       | Pi 400     | Row last changed |
 | -------------------------- | ---------- | ---------- | ---------------- |
-| `View`                     | partial    | scoped     | `7c664c2`        |
-| `Text`                     | partial    | scoped     | `0e87951`        |
-| `Image`                    | supported  | unverified | `0e87951`        |
-| `ScrollView`               | supported  | unverified | `0e87951`        |
+| `View`                     | partial    | scoped     | `c50ce32`        |
+| `Text`                     | partial    | scoped     | `c50ce32`        |
+| `Image`                    | supported  | scoped     | `c50ce32`        |
+| `ScrollView`               | supported  | scoped     | `c50ce32`        |
 | `TextInput`                | partial    | scoped     | `5aba848`        |
 | `Pressable`                | supported  | scoped     | `6e4882a`        |
-| `FlatList`                 | supported  | unverified | `0e87951`        |
+| `FlatList`                 | supported  | scoped     | `c50ce32`        |
 | `VirtualizedList`          | supported  | unverified | `0e87951`        |
 | `SectionList`              | supported  | unverified | `0e87951`        |
 | `VirtualizedSectionList`   | unverified | unverified | `0e87951`        |
@@ -88,11 +90,11 @@ and no-ops, are in [component support](docs/component-support.md).
 | `TouchableWithoutFeedback` | unverified | unverified | `0e87951`        |
 | `ImageBackground`          | supported  | unverified | `0e87951`        |
 | `KeyboardAvoidingView`     | no-op      | unverified | `0e87951`        |
-| `ActivityIndicator`        | supported  | unverified | `0e87951`        |
+| `ActivityIndicator`        | supported  | scoped     | `c50ce32`        |
 | `RefreshControl`           | no-op      | unverified | `0e87951`        |
 | `Modal`                    | partial    | scoped     | `79a4279`        |
 | `SafeAreaView`             | partial    | unverified | `0e87951`        |
-| `Switch`                   | supported  | unverified | `0e87951`        |
+| `Switch`                   | supported  | scoped     | `c50ce32`        |
 | `StatusBar`                | no-op      | unverified | `73ff82a`        |
 | `QtVideo`                  | unverified | scoped     | `79a4279`        |
 | `QtAudio`                  | unverified | scoped     | `79a4279`        |
@@ -102,12 +104,10 @@ Reanimated, Gesture Handler, Qt SVG and RNSVG on.
 
 - Reanimated, with Worklets: `withSpring` ran to its end state and the UI frame counter advanced.
   [Run 2 receipt](docs/evidence/pr149-pi400-run2-2026-11-19/README.md), `22039ec`.
-- Gesture Handler: pan with release, tap and double-tap.
-  Same receipt, `22039ec`.
+- Gesture Handler: pan with release and double-tap ([run 2](docs/evidence/pr149-pi400-run2-2026-11-19/README.md)); a single tap and a swipeable list ([run 1](docs/evidence/pr149-pi400-run1-2026-11-19/README.md)). Both at `22039ec`.
 - `react-native-svg` 15.16.0: fill rules, gradients, filters, patterns, text and touch targets.
   Same receipt, `22039ec`.
-- `expo-image`: animated GIF and WebP frames and resize. [Receipt](docs/evidence/expo-image-device-2026-11-13),
-  `df434d5`.
+- `expo-image`: animated GIF start and stop, and the resize and API card ([2026-11-13 receipt](docs/evidence/expo-image-device-2026-11-13), `df434d5`). Animated WebP frames and the resize card with `startAnimating` are in the [run 2 receipt](docs/evidence/pr149-pi400-run2-2026-11-19/README.md), `22039ec`.
 - Keyboard: Escape closed a Modal and the drawer, and a held Down key moved a focus ring. The
   key events were synthetic Screen events, not a USB keyboard. Same receipt, `22039ec`.
 - Audio: no component named QtAudio exists in the code. QtVideo plays audio files through Qt AudioOutput, and run 2 did not build it in.
@@ -116,7 +116,7 @@ Reanimated, Gesture Handler, Qt SVG and RNSVG on.
 ## Requirements
 
 - Host for JavaScript work: macOS or Linux, Node 26 or newer, pnpm 12.18.0.
-- Host renderer: Qt 6.11.1 or newer, CMake and Ninja. The quick start was run with Qt 6.12.0, CMake 4.4.5 and Ninja 1.13.2 on macOS.
+- Host renderer: Qt 6.11.1 or newer, CMake and Ninja. The quick start commands were run on macOS with Qt 6.12.0, CMake 4.4.5 and Ninja 1.13.2 ([receipt](docs/evidence/quickstart-host-2026-11-19.md)).
 - QNX cross-builds: an x86-64 Linux host (Ubuntu 22.04 is the canonical one) with a licensed QNX SDP
   8.0.5, because SDP 8.0 ships Linux and Windows host tools only. `pnpm qnx doctor` reports gaps.
 - Target: a Raspberry Pi 400 on a custom BCM2711 QNX 8.0.5 image, or a stock Pi 4 or Pi 5 on QSTI
@@ -161,6 +161,7 @@ Read the [architecture decisions](docs/adr/index.md) and the
 - A real USB keyboard held down is unproven. IME and software keyboards are unqualified.
 - Video and Audio cards do not run in the current showcase build, because QtVideo was off in it.
   The Pi 400 image has no HDMI audio driver.
+- The Nitro Pi 400 receipts (2026-11-07) ran Nitro `1.0.0-alpha.nightly.105.g69d365fc9b18`. The pin is alpha 136, and the Nitro device result was not rerun on it.
 - Device performance is unmeasured. Host timings do not predict QNX numbers.
 - `RemoteImageCard` load times of 154149 ms and 618203 ms in run 2 are unexplained.
 - Per-key repeat counts and whether Modal `onRequestClose` fired on Escape rest on screenshots only.

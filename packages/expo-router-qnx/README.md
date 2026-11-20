@@ -67,9 +67,9 @@ Inactive tabs are `display: none`, so they take no layout and no touches.
 ## Limits
 
 - No stack navigator is provided or tried. expo-router's default `Stack` is a native stack that
-  needs react-native-screens, and its JavaScript stack needs react-native-gesture-handler, which
-  is not ported (see `docs/reanimated-gesture-handler-qnx-audit.md`). Native tabs and
-  `expo-router/ui` are not supported.
+  needs react-native-screens. Its JavaScript stack needs react-native-gesture-handler, which is
+  ported (3.4.0, see `docs/reanimated-gesture-handler-qnx.md`), but a stack on top of it has not
+  been built or run here. Native tabs and `expo-router/ui` are not supported.
 - Inactive tab and drawer screens stay mounted.
 - The drawer's edge swipe needs a pointer. The JavaScript drawer also opens from the header
   button, `DrawerActions.toggleDrawer()` and the developer menu entries the gallery adds.

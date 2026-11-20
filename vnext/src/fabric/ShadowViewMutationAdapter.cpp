@@ -95,11 +95,6 @@ std::uint32_t packColor(const facebook::react::SharedColor& color) {
       static_cast<std::uint32_t>(facebook::react::blueFromColor(color));
 }
 
-/// Flattens a paragraph's attributed string into plain text.
-///
-/// Per-fragment attributes — font, colour, weight — are measured by the text
-/// layout manager but not yet carried onto the Qt item, so a paragraph renders
-/// with one style. Recorded in docs/component-support.md.
 /// CSS for one fragment, in the subset Qt's rich text understands.
 QString fragmentStyleAttribute(const facebook::react::TextAttributes& attributes) {
   QStringList parts;
@@ -125,6 +120,12 @@ QString fragmentStyleAttribute(const facebook::react::TextAttributes& attributes
   return parts.join(QLatin1Char(';'));
 }
 
+/// Flattens a paragraph's attributed string into the text of one Qt item.
+///
+/// Per-fragment attributes (font size, colour, weight, italic, family) are
+/// carried as rich text: each fragment is wrapped with the CSS from
+/// fragmentStyleAttribute(). A paragraph with more than one fragment sets
+/// mixedStyles and renders from that rich text, so it can show several styles.
 TextStyle paragraphTextStyle(const ShadowView& view) {
   using ParagraphState = facebook::react::ParagraphState;
   const auto* state =

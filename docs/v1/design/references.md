@@ -47,9 +47,3 @@ The files came from the installed plugin cache; the hashes identify those
 bytes and do not establish upstream authenticity. This slice writes design
 documents only. It does not claim a Figma artifact, user interviews, UI code,
 device execution, an accessibility conformance result or completed gate.
-
----
-
-**Your Mobbin AI usage is high this month**
-
-Usage is unlimited during beta. If your usage stays at this level, you may need to purchase more credits once limits take effect. [View usage and plan options](https://mobbin.com/settings/billing-and-usage?utm_source=chatgpt&utm_medium=ai-assistant&utm_source_platform=mcp)

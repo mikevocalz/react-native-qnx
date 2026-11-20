@@ -6,12 +6,13 @@
       "host": "partial",
       "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Yoga layout, background, corner radius and opacity. Border, clipping and transform limits are listed below. With the default-OFF accessibility bridge enabled, Pi400 evidence covers native generic View semantic queries and actual React registered activate delivery with semantic-label updates. Qt action-list/custom-label parity, RN disabled semantic state, values and reader output remain unqualified.",
+      "notes": "Yoga layout, background, corner radius and opacity. Border, clipping and transform limits are listed below. With the default-OFF accessibility bridge enabled, Pi400 evidence covers native generic View semantic queries and actual React registered activate delivery with semantic-label updates. Qt action-list/custom-label parity, RN disabled semantic state, values and reader output remain unqualified. Pi 400 gallery capture (1280x800 window, build feat/expo-image-painted-view merged with main #157, exact revision unrecorded): the View + Text card shows three coloured Views laid out by Yoga. Render only; no interaction.",
       "evidence": {
         "pi400": [
           "docs/evidence/pi400-hello-world-2026-11-07.txt",
           "docs/evidence/accessibility-view-qnx-2026-11-07.md",
-          "docs/evidence/accessibility-action-qnx-2026-11-07.md"
+          "docs/evidence/accessibility-action-qnx-2026-11-07.md",
+          "docs/evidence/tile-layout-pi400-2026-11-13/window-1280x800.png"
         ],
         "pi4Qsti": []
       }
@@ -21,31 +22,41 @@
       "host": "partial",
       "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Styled, wrapped text and numberOfLines ellipsis. Inline attachments have zero size.",
+      "notes": "Styled, wrapped text and numberOfLines ellipsis. Inline attachments have zero size. The same gallery capture shows styled Text in many cards. Wrapping and numberOfLines are not shown on the device.",
       "evidence": {
-        "pi400": ["docs/evidence/pi400-hello-world-2026-11-07.txt"],
+        "pi400": [
+          "docs/evidence/pi400-hello-world-2026-11-07.txt",
+          "docs/evidence/tile-layout-pi400-2026-11-13/window-1280x800.png"
+        ],
         "pi4Qsti": []
       }
     },
     {
       "name": "Image",
       "host": "supported",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Data URIs, Metro assets and HTTP(S) loading; load events and a header-aware bounded memory cache. See [image loading](image-loader.md).",
+      "notes": "Data URIs, Metro assets and HTTP(S) loading; load events and a header-aware bounded memory cache. See [image loading](image-loader.md). Pi 400: the gallery Image card renders a bundled PNG (\"PNG decoded by the image backend\"; tile-layout window-1280x800.png, build revision unrecorded). The \"Image from a URL\" card logged `Image.getSize` 640x427 over HTTPS in run 2 (commit 240dc08), with an unexplained 154149 ms load time. Image events, resizeMode and the memory cache were not exercised on the device.",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/tile-layout-pi400-2026-11-13/window-1280x800.png",
+          "docs/evidence/pr149-pi400-run2-2026-11-19/run.txt"
+        ],
         "pi4Qsti": []
       }
     },
     {
       "name": "ScrollView",
       "host": "supported",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Qt Flickable scrolling, lifecycle events and scrollTo/scrollToEnd. zoomScale is reported in metrics; visible content scale stays 1.",
+      "notes": "Qt Flickable scrolling, lifecycle events and scrollTo/scrollToEnd. zoomScale is reported in metrics; visible content scale stays 1. Pi 400, run 2 (commit 240dc08): the Components tab is a ScrollView. gallery-first-screen.png shows it at offset 0 and modal-after-escape.png shows it scrolled down to the Switch and Modal cards after injected `wheel` events (run.txt). run.txt does not map each wheel command to a screenshot. Drag scrolling, scrollTo and lifecycle events were not exercised.",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pr149-pi400-run2-2026-11-19/gallery-first-screen.png",
+          "docs/evidence/pr149-pi400-run2-2026-11-19/modal-after-escape.png",
+          "docs/evidence/pr149-pi400-run2-2026-11-19/run.txt"
+        ],
         "pi4Qsti": []
       }
     },
@@ -77,11 +88,15 @@
     {
       "name": "FlatList",
       "host": "supported",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Scroll-following virtualization, off-window cell release, onLayout and onContentSizeChange are host-tested.",
+      "notes": "Scroll-following virtualization, off-window cell release, onLayout and onContentSizeChange are host-tested. Pi 400: the gallery Advanced tab is a FlatList of cards. In run 2 (commit 240dc08) injected `wheel` events moved it from the Image and Xml cards to the Filters and Video cards (svg-filters.png, svg-video-card-qtvideo-absent.png; the command-to-screenshot mapping is inferred from run.txt). drawer-route-2026-11-13/documents.png shows the Documents tab (1,000 rows) rendering rows 001 to 010 behind an open drawer. Scrolling the Documents list, onEndReached, recycling and keyboard scrolling were not exercised.",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pr149-pi400-run2-2026-11-19/svg-filters.png",
+          "docs/evidence/pr149-pi400-run2-2026-11-19/svg-video-card-qtvideo-absent.png",
+          "docs/evidence/drawer-route-2026-11-13/documents.png"
+        ],
         "pi4Qsti": []
       }
     },
@@ -187,11 +202,11 @@
     {
       "name": "ActivityIndicator",
       "host": "supported",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Qt Quick spinner with animating, color, hidesWhenStopped and size.",
+      "notes": "Qt Quick spinner with animating, color, hidesWhenStopped and size. Pi 400, run 2 (commit 240dc08): the spinner renders next to the Switch (\"Switch + ActivityIndicator\" card). Two frames show different hand angles, which fits animation, but no frame-rate or hidesWhenStopped check ran.",
       "evidence": {
-        "pi400": [],
+        "pi400": ["docs/evidence/pr149-pi400-run2-2026-11-19/modal-after-escape.png"],
         "pi4Qsti": []
       }
     },
@@ -211,7 +226,7 @@
       "host": "partial",
       "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Full-screen overlay; onShow, onRequestClose and onDismiss are unwired. Pi 400, run 2 (commit 240dc08, synthetic key input through Screen): the gallery's Modal opened and closed after `key esc`; this rests on screenshots, the app log has no line for it, so whether onRequestClose fired is unknown. Not tested with a physical keyboard.",
+      "notes": "Full-screen overlay; onShow and onDismiss are unwired. Escape raises the Qt `requestClose()` signal and QtModalBridge sends onRequestClose to JavaScript (host-tested in tests/native/qt-native-ui/ModalQuickTest.cpp). Pi 400, run 2 (commit 240dc08, synthetic key input through Screen): the gallery's Modal, whose onRequestClose handler closes it, closed after `key esc`; this rests on screenshots and the app log has no line for it. Not tested with a physical keyboard.",
       "evidence": {
         "pi400": ["docs/evidence/pr149-pi400-run2-2026-11-19/README.md"],
         "pi4Qsti": []
@@ -231,11 +246,14 @@
     {
       "name": "Switch",
       "host": "supported",
-      "pi400": "unverified",
+      "pi400": "scoped",
       "pi4Qsti": "unverified",
-      "notes": "Renders and toggles; value, disabled, tint props and onValueChange are host-tested.",
+      "notes": "Renders and toggles; value, disabled, tint props and onValueChange are host-tested. Pi 400: a native Qt Switch rendered in the off state in the Components card (\"Switch OFF\", run 2, commit 240dc08) and on the Settings page (drawer-route settings.png). No capture shows it toggled, so onValueChange and the on state are not verified on the device.",
       "evidence": {
-        "pi400": [],
+        "pi400": [
+          "docs/evidence/pr149-pi400-run2-2026-11-19/modal-after-escape.png",
+          "docs/evidence/drawer-route-2026-11-13/settings.png"
+        ],
         "pi4Qsti": []
       }
     },

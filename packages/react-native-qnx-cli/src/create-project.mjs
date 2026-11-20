@@ -148,11 +148,7 @@ async function packLocalPackages(output, marathon) {
       if (packed.error || packed.status !== 0) {
         throw new Error('Local npm pack failed: ' + (packed.error?.message ?? packed.stderr));
       }
-      const info = JSON.parse(packed.stdout);
-      const file = info?.[0]?.filename;
-      if (info.length !== 1 || typeof file !== 'string' || !/^[a-z0-9.-]+\.tgz$/.test(file)) {
-        throw new Error('Unexpected npm archive filename.');
-      }
+      const file = packedFilename(JSON.parse(packed.stdout));
       const archive = path.join(vendor, file);
       const stat = await lstat(archive);
       if (
@@ -175,6 +171,26 @@ async function packLocalPackages(output, marathon) {
   } finally {
     await rm(staging, { recursive: true, force: true });
   }
+}
+
+/**
+ * The archive name from `npm pack --json`. npm 11 and earlier print an array of
+ * one entry; npm 12 prints an object keyed by package name. Either shape must
+ * hold exactly one entry with a plain `.tgz` file name.
+ * @param {unknown} info
+ * @returns {string}
+ */
+export function packedFilename(info) {
+  const entries = Array.isArray(info)
+    ? info
+    : info && typeof info === 'object'
+      ? Object.values(info)
+      : [];
+  const file = entries.length === 1 ? entries[0]?.filename : undefined;
+  if (typeof file !== 'string' || !/^[a-z0-9.-]+\.tgz$/.test(file)) {
+    throw new Error('Unexpected npm archive filename.');
+  }
+  return file;
 }
 
 const routerStarterRoot = path.join(sourceRoot, 'template', 'qnx-router');
