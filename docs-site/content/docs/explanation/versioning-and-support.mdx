@@ -71,10 +71,10 @@ This section is a proposal. The repository records no decision on it, and the ow
 
 The site has a version selector in the header. It reads two files at build time:
 
-| Source                                    | What it provides                                                                                                               |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `version` in the repository's `package.json` | The number in the label of the first entry, "latest (main, 0.1.0)". The label changes when the root version changes.        |
-| `docs-site/versions.json`                 | The frozen copies. Each entry is a release tag and links to `/v/<tag>/docs`.                                                   |
+| Source                                       | What it provides                                                                                                     |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `version` in the repository's `package.json` | The number in the label of the first entry, "latest (main, 0.1.0)". The label changes when the root version changes. |
+| `docs-site/versions.json`                    | The frozen copies. Each entry is a release tag and links to `/v/<tag>/docs`.                                         |
 
 Today `versions.json` lists no snapshots, because no tag exists, so the selector shows one entry and is disabled. No release was invented to fill it. The procedure for adding a snapshot at a tag is in [Contributing](/docs/contributing#snapshot-the-docs-at-a-release-tag).
 

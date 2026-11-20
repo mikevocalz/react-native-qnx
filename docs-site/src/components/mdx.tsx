@@ -6,7 +6,8 @@ import { basePath } from '@/lib/shared';
 // Plain <img> is not prefixed by Next's basePath. Frozen release builds live
 // under /v/<tag>, so site-absolute image paths need the prefix added here.
 function Img(props: ComponentProps<'img'>) {
-  const src = typeof props.src === 'string' && props.src.startsWith('/') ? basePath + props.src : props.src;
+  const src =
+    typeof props.src === 'string' && props.src.startsWith('/') ? basePath + props.src : props.src;
   // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
   return <img {...props} src={src} />;
 }

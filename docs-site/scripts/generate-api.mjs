@@ -11,7 +11,14 @@
 // The C++ scanner is a small, tolerant, brace-depth scanner. It is not a C++ parser. Anything
 // it cannot classify is counted and listed on the index page ("Not parsed") instead of dropped.
 import { execFileSync } from 'node:child_process';
-import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync, unlinkSync } from 'node:fs';
+import {
+  readFileSync,
+  writeFileSync,
+  readdirSync,
+  existsSync,
+  mkdirSync,
+  unlinkSync,
+} from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -27,7 +34,8 @@ const NO_DOC = 'No doc comment in the header.';
 const BANNED_DOC_NOTICE =
   'A doc comment exists in the source. It is omitted here because it contains a term the docs build bans.';
 
-const git = (...args) => execFileSync('git', args, { cwd: repo, encoding: 'utf8', maxBuffer: 1 << 28 });
+const git = (...args) =>
+  execFileSync('git', args, { cwd: repo, encoding: 'utf8', maxBuffer: 1 << 28 });
 const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 const read = (rel) => readFileSync(join(repo, rel), 'utf8');
 const esc = (s) => s.replace(/\|/g, '\\|').replace(/[<>{}]/g, (c) => `\\${c}`);
@@ -75,7 +83,15 @@ function lex(S, mode) {
     if (c === '/' && d === '/') {
       let j = S.indexOf('\n', i);
       if (j < 0) j = n;
-      comments.push({ s: i, e: j, sl: lineOf(i), el: lineOf(i), text: S.slice(i, j), block: false, alone: onlyWsBefore(i) });
+      comments.push({
+        s: i,
+        e: j,
+        sl: lineOf(i),
+        el: lineOf(i),
+        text: S.slice(i, j),
+        block: false,
+        alone: onlyWsBefore(i),
+      });
       blank(M, i, j);
       blank(P, i, j);
       i = j;
@@ -84,7 +100,15 @@ function lex(S, mode) {
     if (c === '/' && d === '*') {
       let j = S.indexOf('*/', i + 2);
       j = j < 0 ? n : j + 2;
-      comments.push({ s: i, e: j, sl: lineOf(i), el: lineOf(j - 1), text: S.slice(i, j), block: true, alone: onlyWsBefore(i) });
+      comments.push({
+        s: i,
+        e: j,
+        sl: lineOf(i),
+        el: lineOf(j - 1),
+        text: S.slice(i, j),
+        block: true,
+        alone: onlyWsBefore(i),
+      });
       blank(M, i, j);
       blank(P, i, j);
       i = j;
@@ -198,7 +222,9 @@ function printSig(lx, a, b) {
   const col = a - lx.lineStarts[lx.lineOf(a) - 1];
   const out = text
     .split('\n')
-    .map((l, idx) => (idx === 0 ? l : l.replace(new RegExp(`^ {0,${col}}`), '')).replace(/\s+$/, ''))
+    .map((l, idx) =>
+      (idx === 0 ? l : l.replace(new RegExp(`^ {0,${col}}`), '')).replace(/\s+$/, '')
+    )
     .filter((l) => l.trim());
   return plainDash(out.join('\n').trim());
 }
@@ -206,7 +232,8 @@ function printSig(lx, a, b) {
 // ---------------------------------------------------------------------------------------------
 // C++ scanner
 // ---------------------------------------------------------------------------------------------
-const BLANK_BARE = /\b(Q_OBJECT|Q_GADGET|Q_NAMESPACE|QML_ELEMENT|QML_ANONYMOUS|QML_SINGLETON|Q_SIGNAL|Q_SLOT|QT_BEGIN_NAMESPACE|QT_END_NAMESPACE|QT_BEGIN_MOC_NAMESPACE|QT_END_MOC_NAMESPACE)\b/g;
+const BLANK_BARE =
+  /\b(Q_OBJECT|Q_GADGET|Q_NAMESPACE|QML_ELEMENT|QML_ANONYMOUS|QML_SINGLETON|Q_SIGNAL|Q_SLOT|QT_BEGIN_NAMESPACE|QT_END_NAMESPACE|QT_BEGIN_MOC_NAMESPACE|QT_END_MOC_NAMESPACE)\b/g;
 const BLANK_CALL =
   /\b(Q_ENUM|Q_FLAG|Q_ENUM_NS|Q_FLAG_NS|Q_DECLARE_FLAGS|Q_DECLARE_METATYPE|Q_DISABLE_COPY|Q_DISABLE_COPY_MOVE|Q_DECLARE_OPERATORS_FOR_FLAGS|QML_NAMED_ELEMENT|QML_UNCREATABLE|Q_CLASSINFO|Q_INTERFACES|Q_PRIVATE_SLOT|Q_DECLARE_INTERFACE|Q_DECLARE_PRIVATE|Q_DECLARE_PUBLIC|Q_REVISION|QML_ADDED_IN_VERSION|QML_EXTENDED|QML_FOREIGN|QML_VALUE_TYPE)\s*\(/g;
 
@@ -291,10 +318,17 @@ function scanCpp(file, S) {
   const out = { decls: [], unparsed: [], convSkipped: 0, bannedSkipped: 0 };
   const stack = [{ kind: 'file', reach: true, conv: false, name: '' }];
   const top = () => stack[stack.length - 1];
-  const nsChain = () => stack.filter((s) => s.kind === 'namespace' && s.name).map((s) => s.name).join('::');
-  const clsChain = () => stack.filter((s) => s.kind === 'class' && s.name).map((s) => s.name).join('::');
-  const unparsed = (idx, reason) =>
-    out.unparsed.push({ file, line: lx.lineOf(idx), reason });
+  const nsChain = () =>
+    stack
+      .filter((s) => s.kind === 'namespace' && s.name)
+      .map((s) => s.name)
+      .join('::');
+  const clsChain = () =>
+    stack
+      .filter((s) => s.kind === 'class' && s.name)
+      .map((s) => s.name)
+      .join('::');
+  const unparsed = (idx, reason) => out.unparsed.push({ file, line: lx.lineOf(idx), reason });
 
   const record = (kind, name, start, endExclusive, extra = {}) => {
     const sc = top();
@@ -324,7 +358,8 @@ function scanCpp(file, S) {
     });
   };
 
-  const sectionKind = (sc) => (sc.sect === 'signals' ? 'signal' : sc.sect === 'slots' ? 'slot' : null);
+  const sectionKind = (sc) =>
+    sc.sect === 'signals' ? 'signal' : sc.sect === 'slots' ? 'slot' : null;
 
   // Directives: public macros.
   const guard = new Set();
@@ -365,9 +400,15 @@ function scanCpp(file, S) {
     if (/^(class|struct|union)\b[^=()]*$/.test(core) && !/[{]/.test(core)) {
       if (/^(class|struct|union)\s+(\w+\s*)?(\w+\s*)?$/.test(core)) return; // forward declaration
     }
-    if (/^enum\b[^=()]*$/.test(core) && /^enum(\s+(class|struct))?\s+\w+(\s*:\s*[\w:\s]+)?$/.test(core)) return;
+    if (
+      /^enum\b[^=()]*$/.test(core) &&
+      /^enum(\s+(class|struct))?\s+\w+(\s*:\s*[\w:\s]+)?$/.test(core)
+    )
+      return;
     if (/^Q_PROPERTY\b/.test(core)) {
-      const m = raw.match(/Q_PROPERTY\s+.*?(\w+)\s+(READ|MEMBER|WRITE|NOTIFY|RESET|REVISION|DESIGNABLE|SCRIPTABLE|STORED|USER|CONSTANT|FINAL|REQUIRED|BINDABLE)\b/);
+      const m = raw.match(
+        /Q_PROPERTY\s+.*?(\w+)\s+(READ|MEMBER|WRITE|NOTIFY|RESET|REVISION|DESIGNABLE|SCRIPTABLE|STORED|USER|CONSTANT|FINAL|REQUIRED|BINDABLE)\b/
+      );
       if (!m) return unparsed(start, 'Q_PROPERTY without a recognizable name');
       return record('property', m[1], start, end + 1);
     }
@@ -384,14 +425,18 @@ function scanCpp(file, S) {
       return record('alias', name, start, end + (term === ';' ? 1 : 0));
     }
     const noSpec = core
-      .replace(/^((Q_INVOKABLE|static|virtual|inline|constexpr|consteval|constinit|explicit|extern|mutable|thread_local|\[\[[^\]]*\]\])\s+)+/, '')
+      .replace(
+        /^((Q_INVOKABLE|static|virtual|inline|constexpr|consteval|constinit|explicit|extern|mutable|thread_local|\[\[[^\]]*\]\])\s+)+/,
+        ''
+      )
       .trim();
     const p = findFuncParen(noSpec);
     const inClass = sc.kind === 'class';
     if (p > 0 && !/^[(*&]/.test(noSpec.slice(p + 1).trim())) {
       const pre = noSpec.slice(0, p).trim();
       let name;
-      if (/\boperator\b/.test(pre)) name = pre.slice(pre.search(/\boperator\b/)).replace(/\s+/g, ' ');
+      if (/\boperator\b/.test(pre))
+        name = pre.slice(pre.search(/\boperator\b/)).replace(/\s+/g, ' ');
       else {
         const m = pre.match(/((?:[A-Za-z_]\w*(?:<[^()]*>)?\s*::\s*)*)(~?[A-Za-z_]\w*)\s*$/);
         name = m ? m[2] : '';
@@ -418,7 +463,8 @@ function scanCpp(file, S) {
   };
 
   let i = 0;
-  const accessRe = /\s*(public|private|protected)(\s+(Q_SLOTS|slots))?\s*:(?!:)|\s*(Q_SIGNALS|signals)\s*:(?!:)|\s*(Q_SLOTS|slots)\s*:(?!:)/y;
+  const accessRe =
+    /\s*(public|private|protected)(\s+(Q_SLOTS|slots))?\s*:(?!:)|\s*(Q_SIGNALS|signals)\s*:(?!:)|\s*(Q_SLOTS|slots)\s*:(?!:)/y;
   while (i < n) {
     while (i < n && /\s/.test(M[i])) i++;
     if (i >= n) break;
@@ -488,7 +534,11 @@ function scanCpp(file, S) {
             j = close;
             continue;
           }
-          if (/^(inline\s+)?namespace\b/.test(core) || /^extern\s+"[^"]*"$/.test(core) || /^(class|struct|union)\b/.test(core)) {
+          if (
+            /^(inline\s+)?namespace\b/.test(core) ||
+            /^extern\s+"[^"]*"$/.test(core) ||
+            /^(class|struct|union)\b/.test(core)
+          ) {
             term = '{scope';
             break scan;
           }
@@ -543,15 +593,27 @@ function scanCpp(file, S) {
       const parentOpen = parent.kind !== 'class' || parent.pub;
       let sc;
       if (/namespace\b/.test(core) && !/^(class|struct|union)\b/.test(core)) {
-        const nm = core.replace(/^inline\s+/, '').replace(/^namespace\s*/, '').trim();
+        const nm = core
+          .replace(/^inline\s+/, '')
+          .replace(/^namespace\s*/, '')
+          .trim();
         const hidden = nm === '' || /(^|::)(detail|internal|impl)$/.test(nm);
-        sc = { kind: 'namespace', name: nm, reach: parent.reach && !hidden, conv: parent.conv || hidden };
+        sc = {
+          kind: 'namespace',
+          name: nm,
+          reach: parent.reach && !hidden,
+          conv: parent.conv || hidden,
+        };
       } else if (/^extern\b/.test(core)) {
         sc = { kind: 'extern', name: '', reach: parent.reach, conv: parent.conv };
       } else {
         const isClassKw = core.match(/^(class|struct|union)\b/)[1];
         let h = core.replace(/^(class|struct|union)\s+/, '').replace(/\[\[[^\]]*\]\]/g, '');
-        h = h.split(/(?<!:):(?!:)/)[0].replace(/\bfinal\b/, '').replace(/<.*$/, '').trim();
+        h = h
+          .split(/(?<!:):(?!:)/)[0]
+          .replace(/\bfinal\b/, '')
+          .replace(/<.*$/, '')
+          .trim();
         const nm = lastIdent(h);
         sc = {
           kind: 'class',
@@ -643,7 +705,16 @@ function scanTs(file, S) {
       out.bannedSkipped++;
       return;
     }
-    out.decls.push({ file, line, kind, name, ns: '', cls, sig, doc: doc && banned.test(doc) ? { omitted: true } : doc });
+    out.decls.push({
+      file,
+      line,
+      kind,
+      name,
+      ns: '',
+      cls,
+      sig,
+      doc: doc && banned.test(doc) ? { omitted: true } : doc,
+    });
   };
   const readStmt = (from, limit) => {
     let p = 0;
@@ -657,7 +728,8 @@ function scanTs(file, S) {
       else if (c === ']') br = Math.max(0, br - 1);
       else if (c === '<') ang++;
       else if (c === '>' && M[j - 1] !== '=') ang = Math.max(0, ang - 1);
-      else if (p === 0 && br === 0 && ang === 0 && (c === ';' || c === '{' || c === '}')) return { j, term: c };
+      else if (p === 0 && br === 0 && ang === 0 && (c === ';' || c === '{' || c === '}'))
+        return { j, term: c };
     }
     return { j: limit, term: null };
   };
@@ -712,7 +784,9 @@ function scanTs(file, S) {
           if (semi > 0 && semi < close && /^\s*$/.test(M.slice(end, semi))) next = semi + 1;
         }
         const mh = M.slice(k, end).replace(/\s+/g, ' ').trim();
-        const mm = mh.match(/^(?:(?:public|private|protected|static|readonly|abstract|declare|get|set)\s+)*([A-Za-z_$][\w$]*)\s*(\??)\s*([(:<])/);
+        const mm = mh.match(
+          /^(?:(?:public|private|protected|static|readonly|abstract|declare|get|set)\s+)*([A-Za-z_$][\w$]*)\s*(\??)\s*([(:<])/
+        );
         if (!mm) unparsed(k, 'class or interface member');
         else add(mm[3] === ':' ? 'property' : 'method', mm[1], cm[2], k, end);
         k = next;
@@ -736,7 +810,14 @@ function scanTs(file, S) {
       continue;
     }
     const m = head.match(/\b(function|type|const|let|var)\s+([A-Za-z_$][\w$]*)/);
-    if (m) add(m[1] === 'function' ? 'function' : m[1] === 'type' ? 'type' : 'variable', m[2], '', start, j);
+    if (m)
+      add(
+        m[1] === 'function' ? 'function' : m[1] === 'type' ? 'type' : 'variable',
+        m[2],
+        '',
+        start,
+        j
+      );
     else unparsed(start, 'top-level statement');
     i = j + 1;
   }
@@ -747,7 +828,10 @@ function scanTs(file, S) {
 // Header classification. Each rule cites CMake evidence that is looked up in the file, so a
 // renamed target or a moved line fails the generator instead of leaving a stale citation.
 // ---------------------------------------------------------------------------------------------
-const cmakeFiles = git('ls-files', '*CMakeLists.txt', '*.cmake').split('\n').filter(Boolean).sort(cmp);
+const cmakeFiles = git('ls-files', '*CMakeLists.txt', '*.cmake')
+  .split('\n')
+  .filter(Boolean)
+  .sort(cmp);
 const cmakeText = new Map(cmakeFiles.map((f) => [f, read(f)]));
 const line = (file, re) => ({ type: 'line', file, re });
 const absent = (needle) => ({ type: 'absent', needle });
@@ -759,24 +843,43 @@ function resolveEvidence(ev) {
     const lines = text.split('\n');
     const idx = lines.findIndex((l) => new RegExp(ev.re).test(l));
     if (idx < 0) throw new Error(`evidence not found: ${ev.file} /${ev.re}/`);
-    return { md: `[${ev.file}#L${idx + 1}](${BLOB}${ev.file}#L${idx + 1}) \`${lines[idx].trim().replace(/\s+/g, ' ')}\``, plain: `${ev.file}:${idx + 1}` };
+    return {
+      md: `[${ev.file}#L${idx + 1}](${BLOB}${ev.file}#L${idx + 1}) \`${lines[idx].trim().replace(/\s+/g, ' ')}\``,
+      plain: `${ev.file}:${idx + 1}`,
+    };
   }
   if (ev.type === 'absent') {
-    for (const [f, t] of cmakeText) if (t.includes(ev.needle)) throw new Error(`evidence claim is false: ${f} mentions ${ev.needle}`);
+    for (const [f, t] of cmakeText)
+      if (t.includes(ev.needle))
+        throw new Error(`evidence claim is false: ${f} mentions ${ev.needle}`);
     return { md: `no CMake file mentions \`${ev.needle}\``, plain: 'absent' };
   }
   const text = cmakeText.get(ev.file);
-  if (text.includes(ev.needle)) throw new Error(`evidence claim is false: ${ev.file} mentions ${ev.needle}`);
+  if (text.includes(ev.needle))
+    throw new Error(`evidence claim is false: ${ev.file} mentions ${ev.needle}`);
   return { md: `[${ev.file}](${BLOB}${ev.file}) has no \`${ev.needle}\``, plain: 'absent' };
 }
 
 const INC = 'vnext/include/react-native-qnx/';
-const PUB = (needle) => `PUBLIC include root, so every header under ${needle} is reachable by consumers`;
+const PUB = (needle) =>
+  `PUBLIC include root, so every header under ${needle} is reachable by consumers`;
 const PAGES = {
-  runtime: ['Runtime headers', 'Host runtime classes in react-native-qnx: React host, task queue, image loader, dev support and web socket modules.'],
-  fabric: ['Fabric headers', 'Fabric mounting and bridge headers: mounting layer, touch dispatch, accessibility and per-component bridges.'],
-  views: ['View headers', 'Qt Quick view factory, color parsing and modal and text input QML helpers.'],
-  'views-image': ['Image view headers', 'Image decoding, caching, layout, effects and the expo-image item.'],
+  runtime: [
+    'Runtime headers',
+    'Host runtime classes in react-native-qnx: React host, task queue, image loader, dev support and web socket modules.',
+  ],
+  fabric: [
+    'Fabric headers',
+    'Fabric mounting and bridge headers: mounting layer, touch dispatch, accessibility and per-component bridges.',
+  ],
+  views: [
+    'View headers',
+    'Qt Quick view factory, color parsing and modal and text input QML helpers.',
+  ],
+  'views-image': [
+    'Image view headers',
+    'Image decoding, caching, layout, effects and the expo-image item.',
+  ],
   gesture: ['Gesture headers', 'Gesture handler core, bindings and the Qt gesture platform.'],
   reanimated: ['Reanimated headers', 'Reanimated platform adapter for Qt.'],
   worklets: ['Worklets headers', 'Worklets platform adapter, UI thread and frame bridge for Qt.'],
@@ -787,55 +890,344 @@ const PAGES = {
   'qt-motion': ['Qt motion headers', 'Native Qt motion controller, transform and timing types.'],
   'qt-svg': ['Qt SVG headers', 'Qt SVG item and SVG document, path and transform validation.'],
   'qt-video': ['Qt video headers', 'Qt video item.'],
-  rnsvg: ['react-native-svg renderer headers', 'Model, items, path and renderer for react-native-svg elements.'],
-  'rnsvg-scene': ['react-native-svg scene headers', 'Scene traversal and painting for react-native-svg.'],
+  rnsvg: [
+    'react-native-svg renderer headers',
+    'Model, items, path and renderer for react-native-svg elements.',
+  ],
+  'rnsvg-scene': [
+    'react-native-svg scene headers',
+    'Scene traversal and painting for react-native-svg.',
+  ],
   'rnsvg-text': ['react-native-svg text headers', 'Text layout and painting for react-native-svg.'],
   'rnsvg-filter': ['react-native-svg filter headers', 'Filter primitives for react-native-svg.'],
-  'rnsvg-image': ['react-native-svg image headers', 'Image element loading and painting for react-native-svg.'],
+  'rnsvg-image': [
+    'react-native-svg image headers',
+    'Image element loading and painting for react-native-svg.',
+  ],
   'qnx-screen': ['QNX Screen headers', 'QNX Screen window-system surface.'],
   forge: ['Forge runtime headers', 'QNX Forge runtime adapter.'],
-  'nitro-runtime': ['Nitro runtime headers', 'C++ headers of the Nitro runtime package: installer, platform info and Qt dispatcher.'],
+  'nitro-runtime': [
+    'Nitro runtime headers',
+    'C++ headers of the Nitro runtime package: installer, platform info and Qt dispatcher.',
+  ],
   'expo-modules': ['Expo modules headers', 'C++ headers of the QNX Expo modules core package.'],
-  'nitro-specs': ['Nitro specs', 'TypeScript interface members of the Nitro specs, with their doc comments.'],
+  'nitro-specs': [
+    'Nitro specs',
+    'TypeScript interface members of the Nitro specs, with their doc comments.',
+  ],
 };
 
 const rules = [
-  { re: /^tests\//, cls: 'internal', why: 'Test code and fixtures. Test targets use the library include roots as PRIVATE; no library exports this directory.', ev: [line('tests/native/worklets/CMakeLists.txt', /target_include_directories\(rnqnx_worklets_lifecycle_test PRIVATE/.source)] },
-  { re: /^vnext\/src\//, cls: 'internal', why: 'Private source directory. The only CMake use is a PRIVATE include of a test target.', ev: [line('cmake/RnqnxQtRnsvgFabric.cmake', /rnqnx_qt_rnsvg_values_test PRIVATE "\$\{root\}\/vnext\/src\/fabric"/.source)] },
-  { re: /^vnext\/generated\//, cls: 'internal', why: 'Codegen output for the Fabric components. It is regenerated from the component specs, which are the contract.', ev: [line('cmake/RnqnxReactQt.cmake', /"\$\{RNQNX_REACT_QT_ROOT\}\/vnext\/generated"\)/.source)] },
-  { re: /^docs\/evidence\//, cls: 'internal', why: 'Captured evidence artifact. No CMake target uses it.', ev: [absent('docs/evidence')] },
-  { re: /^cmake\/qnx-hermes-shims\//, cls: 'internal', why: 'libc header shim the QNX toolchain adds with -isystem. It patches the sysroot and is not an API.', ev: [line('cmake/toolchains/qnx-8.0.cmake', /qnx-hermes-shims/.source)] },
-  { re: /^tools\/qnx-winmgr\//, cls: 'internal', why: 'Window manager tool source. No CMake target includes it.', ev: [absent('tools/qnx-winmgr')] },
-  { re: /^native\/webgpu\//, cls: 'internal', why: 'WebGPU probe and test app. Its include directories are PRIVATE to the test executable.', ev: [line('native/webgpu/CMakeLists.txt', /target_include_directories\(rnqnx_webgpu_test PRIVATE/.source)] },
-  { re: /^packages\/expo-image-qnx\/cpp\//, cls: 'internal', why: 'The target declares no include directory, so these headers are reachable only from its own sources.', ev: [line('packages/expo-image-qnx/CMakeLists.txt', /add_library\(expo_image_qnx STATIC/.source), absentIn('packages/expo-image-qnx/CMakeLists.txt', 'target_include_directories')] },
-  { re: /^packages\/qnx-nitro-runtime\/cpp\/NitroCoreCompat\.hpp$/, cls: 'internal', why: 'Force-included compatibility shim for the pinned Nitro alpha, passed as a PRIVATE compile option.', ev: [line('cmake/RnqnxNitroQt.cmake', /"-include" "\$\{RNQNX_NITRO_V1_COMPAT\}"/.source)] },
-  { re: /^packages\/qnx-nitro-runtime\/cpp\/QtNitroDispatcher\.hpp$/, cls: 'public', page: 'nitro-runtime', why: `${PUB('packages/qnx-nitro-runtime/cpp')}.`, ev: [line('cmake/RnqnxNitroQt.cmake', /target_include_directories\(rnqnx_nitro_qt PUBLIC/.source)] },
-  { re: /^packages\/qnx-nitro-runtime\/cpp\//, cls: 'public', page: 'nitro-runtime', why: `${PUB('packages/qnx-nitro-runtime/cpp')}.`, ev: [line('packages/qnx-nitro-runtime/CMakeLists.txt', /target_include_directories\(rnqnx_nitro_qnx PUBLIC/.source)] },
-  { re: /^packages\/expo-modules-core-qnx\/cpp\//, cls: 'public', page: 'expo-modules', why: `${PUB('packages/expo-modules-core-qnx/cpp')}.`, ev: [line('packages/expo-modules-core-qnx/CMakeLists.txt', /target_include_directories\(rnqnx_expo_modules_qnx PUBLIC/.source)] },
-  { re: /^native\/platform\/qnx\/screen\//, cls: 'public', page: 'qnx-screen', why: `${PUB('native/platform/qnx')}.`, ev: [line('CMakeLists.txt', /target_include_directories\(qnx_platform PUBLIC/.source)] },
-  { re: /^native\/platform\/qnx\/forge\//, cls: 'public', page: 'forge', why: `${PUB('native/platform/qnx/forge')}.`, ev: [line('cmake/RnqnxForge.cmake', /target_include_directories\(rnqnx_forge_runtime PUBLIC/.source)] },
-  { re: /^native\/lifecycle\//, cls: 'public', page: 'lifecycle', why: `${PUB('native/lifecycle')}.`, ev: [line('native/lifecycle/CMakeLists.txt', /target_include_directories\(rnqnx_lifecycle_observer PUBLIC/.source)] },
-  { re: /^native\/window-chrome\//, cls: 'public', page: 'window-chrome', why: `${PUB('native/window-chrome')}.`, ev: [line('cmake/RnqnxWindowChrome.cmake', /target_include_directories\(\$\{target\} PUBLIC "\$\{root\}"/.source)] },
-  { re: /^native\/app-identity\//, cls: 'public', page: 'app-identity', why: `${PUB('native/app-identity')}.`, ev: [line('native/app-identity/CMakeLists.txt', /target_include_directories\(rnqnx_identity_core PUBLIC/.source)] },
-  { re: /^native\/qt\/graphics\//, cls: 'public', page: 'qt-graphics', why: `${PUB('native/qt/graphics')}.`, ev: [line('native/qt/graphics/CMakeLists.txt', /target_include_directories\(rnqnx_qt_graphics PUBLIC/.source)] },
-  { re: /^native\/qt\/motion\//, cls: 'public', page: 'qt-motion', why: `${PUB('native/qt/motion')}.`, ev: [line('native/qt/motion/CMakeLists.txt', /target_include_directories\(rnqnx_qt_motion PUBLIC/.source)] },
-  { re: /^native\/qt\/svg\//, cls: 'public', page: 'qt-svg', why: `${PUB('native/qt/svg')}.`, ev: [line('native/qt/svg/CMakeLists.txt', /target_include_directories\(rnqnx_qt_svg PUBLIC/.source)] },
-  { re: /^native\/qt\/video\//, cls: 'public', page: 'qt-video', why: `${PUB('native/qt/video')}.`, ev: [line('native/qt/video/CMakeLists.txt', /target_include_directories\(rnqnx_qt_video PUBLIC/.source)] },
+  {
+    re: /^tests\//,
+    cls: 'internal',
+    why: 'Test code and fixtures. Test targets use the library include roots as PRIVATE; no library exports this directory.',
+    ev: [
+      line(
+        'tests/native/worklets/CMakeLists.txt',
+        /target_include_directories\(rnqnx_worklets_lifecycle_test PRIVATE/.source
+      ),
+    ],
+  },
+  {
+    re: /^vnext\/src\//,
+    cls: 'internal',
+    why: 'Private source directory. The only CMake use is a PRIVATE include of a test target.',
+    ev: [
+      line(
+        'cmake/RnqnxQtRnsvgFabric.cmake',
+        /rnqnx_qt_rnsvg_values_test PRIVATE "\$\{root\}\/vnext\/src\/fabric"/.source
+      ),
+    ],
+  },
+  {
+    re: /^vnext\/generated\//,
+    cls: 'internal',
+    why: 'Codegen output for the Fabric components. It is regenerated from the component specs, which are the contract.',
+    ev: [
+      line('cmake/RnqnxReactQt.cmake', /"\$\{RNQNX_REACT_QT_ROOT\}\/vnext\/generated"\)/.source),
+    ],
+  },
+  {
+    re: /^docs\/evidence\//,
+    cls: 'internal',
+    why: 'Captured evidence artifact. No CMake target uses it.',
+    ev: [absent('docs/evidence')],
+  },
+  {
+    re: /^cmake\/qnx-hermes-shims\//,
+    cls: 'internal',
+    why: 'libc header shim the QNX toolchain adds with -isystem. It patches the sysroot and is not an API.',
+    ev: [line('cmake/toolchains/qnx-8.0.cmake', /qnx-hermes-shims/.source)],
+  },
+  {
+    re: /^tools\/qnx-winmgr\//,
+    cls: 'internal',
+    why: 'Window manager tool source. No CMake target includes it.',
+    ev: [absent('tools/qnx-winmgr')],
+  },
+  {
+    re: /^native\/webgpu\//,
+    cls: 'internal',
+    why: 'WebGPU probe and test app. Its include directories are PRIVATE to the test executable.',
+    ev: [
+      line(
+        'native/webgpu/CMakeLists.txt',
+        /target_include_directories\(rnqnx_webgpu_test PRIVATE/.source
+      ),
+    ],
+  },
+  {
+    re: /^packages\/expo-image-qnx\/cpp\//,
+    cls: 'internal',
+    why: 'The target declares no include directory, so these headers are reachable only from its own sources.',
+    ev: [
+      line('packages/expo-image-qnx/CMakeLists.txt', /add_library\(expo_image_qnx STATIC/.source),
+      absentIn('packages/expo-image-qnx/CMakeLists.txt', 'target_include_directories'),
+    ],
+  },
+  {
+    re: /^packages\/qnx-nitro-runtime\/cpp\/NitroCoreCompat\.hpp$/,
+    cls: 'internal',
+    why: 'Force-included compatibility shim for the pinned Nitro alpha, passed as a PRIVATE compile option.',
+    ev: [line('cmake/RnqnxNitroQt.cmake', /"-include" "\$\{RNQNX_NITRO_V1_COMPAT\}"/.source)],
+  },
+  {
+    re: /^packages\/qnx-nitro-runtime\/cpp\/QtNitroDispatcher\.hpp$/,
+    cls: 'public',
+    page: 'nitro-runtime',
+    why: `${PUB('packages/qnx-nitro-runtime/cpp')}.`,
+    ev: [
+      line('cmake/RnqnxNitroQt.cmake', /target_include_directories\(rnqnx_nitro_qt PUBLIC/.source),
+    ],
+  },
+  {
+    re: /^packages\/qnx-nitro-runtime\/cpp\//,
+    cls: 'public',
+    page: 'nitro-runtime',
+    why: `${PUB('packages/qnx-nitro-runtime/cpp')}.`,
+    ev: [
+      line(
+        'packages/qnx-nitro-runtime/CMakeLists.txt',
+        /target_include_directories\(rnqnx_nitro_qnx PUBLIC/.source
+      ),
+    ],
+  },
+  {
+    re: /^packages\/expo-modules-core-qnx\/cpp\//,
+    cls: 'public',
+    page: 'expo-modules',
+    why: `${PUB('packages/expo-modules-core-qnx/cpp')}.`,
+    ev: [
+      line(
+        'packages/expo-modules-core-qnx/CMakeLists.txt',
+        /target_include_directories\(rnqnx_expo_modules_qnx PUBLIC/.source
+      ),
+    ],
+  },
+  {
+    re: /^native\/platform\/qnx\/screen\//,
+    cls: 'public',
+    page: 'qnx-screen',
+    why: `${PUB('native/platform/qnx')}.`,
+    ev: [line('CMakeLists.txt', /target_include_directories\(qnx_platform PUBLIC/.source)],
+  },
+  {
+    re: /^native\/platform\/qnx\/forge\//,
+    cls: 'public',
+    page: 'forge',
+    why: `${PUB('native/platform/qnx/forge')}.`,
+    ev: [
+      line(
+        'cmake/RnqnxForge.cmake',
+        /target_include_directories\(rnqnx_forge_runtime PUBLIC/.source
+      ),
+    ],
+  },
+  {
+    re: /^native\/lifecycle\//,
+    cls: 'public',
+    page: 'lifecycle',
+    why: `${PUB('native/lifecycle')}.`,
+    ev: [
+      line(
+        'native/lifecycle/CMakeLists.txt',
+        /target_include_directories\(rnqnx_lifecycle_observer PUBLIC/.source
+      ),
+    ],
+  },
+  {
+    re: /^native\/window-chrome\//,
+    cls: 'public',
+    page: 'window-chrome',
+    why: `${PUB('native/window-chrome')}.`,
+    ev: [
+      line(
+        'cmake/RnqnxWindowChrome.cmake',
+        /target_include_directories\(\$\{target\} PUBLIC "\$\{root\}"/.source
+      ),
+    ],
+  },
+  {
+    re: /^native\/app-identity\//,
+    cls: 'public',
+    page: 'app-identity',
+    why: `${PUB('native/app-identity')}.`,
+    ev: [
+      line(
+        'native/app-identity/CMakeLists.txt',
+        /target_include_directories\(rnqnx_identity_core PUBLIC/.source
+      ),
+    ],
+  },
+  {
+    re: /^native\/qt\/graphics\//,
+    cls: 'public',
+    page: 'qt-graphics',
+    why: `${PUB('native/qt/graphics')}.`,
+    ev: [
+      line(
+        'native/qt/graphics/CMakeLists.txt',
+        /target_include_directories\(rnqnx_qt_graphics PUBLIC/.source
+      ),
+    ],
+  },
+  {
+    re: /^native\/qt\/motion\//,
+    cls: 'public',
+    page: 'qt-motion',
+    why: `${PUB('native/qt/motion')}.`,
+    ev: [
+      line(
+        'native/qt/motion/CMakeLists.txt',
+        /target_include_directories\(rnqnx_qt_motion PUBLIC/.source
+      ),
+    ],
+  },
+  {
+    re: /^native\/qt\/svg\//,
+    cls: 'public',
+    page: 'qt-svg',
+    why: `${PUB('native/qt/svg')}.`,
+    ev: [
+      line(
+        'native/qt/svg/CMakeLists.txt',
+        /target_include_directories\(rnqnx_qt_svg PUBLIC/.source
+      ),
+    ],
+  },
+  {
+    re: /^native\/qt\/video\//,
+    cls: 'public',
+    page: 'qt-video',
+    why: `${PUB('native/qt/video')}.`,
+    ev: [
+      line(
+        'native/qt/video/CMakeLists.txt',
+        /target_include_directories\(rnqnx_qt_video PUBLIC/.source
+      ),
+    ],
+  },
   ...['scene', 'text', 'filter', 'image'].map((d) => ({
     re: new RegExp(`^native/qt/rnsvg/${d}/`),
     cls: 'public',
     page: `rnsvg-${d}`,
     why: `${PUB('native/qt/rnsvg')}, including the ${d}/ subdirectory.`,
-    ev: [line('native/qt/rnsvg/CMakeLists.txt', /target_include_directories\(rnqnx_qt_rnsvg PUBLIC/.source)],
+    ev: [
+      line(
+        'native/qt/rnsvg/CMakeLists.txt',
+        /target_include_directories\(rnqnx_qt_rnsvg PUBLIC/.source
+      ),
+    ],
   })),
-  { re: /^native\/qt\/rnsvg\//, cls: 'public', page: 'rnsvg', why: `${PUB('native/qt/rnsvg')}.`, ev: [line('native/qt/rnsvg/CMakeLists.txt', /target_include_directories\(rnqnx_qt_rnsvg PUBLIC/.source)] },
-  { re: new RegExp(`^${INC}gesture/`), cls: 'public', page: 'gesture', why: `${PUB('vnext/include')}.`, ev: [line('cmake/RnqnxGestureHandler.cmake', /^\s*target_include_directories\(rnqnx_gesture_handler\s*$/.source)] },
-  { re: new RegExp(`^${INC}reanimated/`), cls: 'public', page: 'reanimated', why: `${PUB('vnext/include')}.`, ev: [line('cmake/RnqnxReanimated.cmake', /^\s*target_include_directories\(rnqnx_reanimated\s*$/.source)] },
-  { re: new RegExp(`^${INC}worklets/`), cls: 'public', page: 'worklets', why: `${PUB('vnext/include')}.`, ev: [line('cmake/RnqnxWorklets.cmake', /^\s*target_include_directories\(rnqnx_worklets\s*$/.source)] },
-  { re: new RegExp(`^${INC}runtime/`), cls: 'public', page: 'runtime', why: `${PUB('vnext/include')}.`, ev: [line('cmake/RnqnxReactQt.cmake', /target_include_directories\(rnqnx_views_qt PUBLIC/.source), line('cmake/RnqnxRuntimeTrace.cmake', /target_include_directories\(rnqnx_runtime_trace PUBLIC/.source)] },
-  { re: new RegExp(`^${INC}fabric/`), cls: 'public', page: 'fabric', why: `${PUB('vnext/include')}.`, ev: [line('cmake/RnqnxReactQt.cmake', /target_include_directories\(rnqnx_views_qt PUBLIC/.source)] },
-  { re: new RegExp(`^${INC}views/image/`), cls: 'public', page: 'views-image', why: `${PUB('vnext/include')}.`, ev: [line('cmake/RnqnxReactQt.cmake', /target_include_directories\(rnqnx_views_qt PUBLIC/.source)] },
-  { re: new RegExp(`^${INC}views/`), cls: 'public', page: 'views', why: `${PUB('vnext/include')}.`, ev: [line('cmake/RnqnxReactQt.cmake', /target_include_directories\(rnqnx_views_qt PUBLIC/.source)] },
+  {
+    re: /^native\/qt\/rnsvg\//,
+    cls: 'public',
+    page: 'rnsvg',
+    why: `${PUB('native/qt/rnsvg')}.`,
+    ev: [
+      line(
+        'native/qt/rnsvg/CMakeLists.txt',
+        /target_include_directories\(rnqnx_qt_rnsvg PUBLIC/.source
+      ),
+    ],
+  },
+  {
+    re: new RegExp(`^${INC}gesture/`),
+    cls: 'public',
+    page: 'gesture',
+    why: `${PUB('vnext/include')}.`,
+    ev: [
+      line(
+        'cmake/RnqnxGestureHandler.cmake',
+        /^\s*target_include_directories\(rnqnx_gesture_handler\s*$/.source
+      ),
+    ],
+  },
+  {
+    re: new RegExp(`^${INC}reanimated/`),
+    cls: 'public',
+    page: 'reanimated',
+    why: `${PUB('vnext/include')}.`,
+    ev: [
+      line(
+        'cmake/RnqnxReanimated.cmake',
+        /^\s*target_include_directories\(rnqnx_reanimated\s*$/.source
+      ),
+    ],
+  },
+  {
+    re: new RegExp(`^${INC}worklets/`),
+    cls: 'public',
+    page: 'worklets',
+    why: `${PUB('vnext/include')}.`,
+    ev: [
+      line(
+        'cmake/RnqnxWorklets.cmake',
+        /^\s*target_include_directories\(rnqnx_worklets\s*$/.source
+      ),
+    ],
+  },
+  {
+    re: new RegExp(`^${INC}runtime/`),
+    cls: 'public',
+    page: 'runtime',
+    why: `${PUB('vnext/include')}.`,
+    ev: [
+      line('cmake/RnqnxReactQt.cmake', /target_include_directories\(rnqnx_views_qt PUBLIC/.source),
+      line(
+        'cmake/RnqnxRuntimeTrace.cmake',
+        /target_include_directories\(rnqnx_runtime_trace PUBLIC/.source
+      ),
+    ],
+  },
+  {
+    re: new RegExp(`^${INC}fabric/`),
+    cls: 'public',
+    page: 'fabric',
+    why: `${PUB('vnext/include')}.`,
+    ev: [
+      line('cmake/RnqnxReactQt.cmake', /target_include_directories\(rnqnx_views_qt PUBLIC/.source),
+    ],
+  },
+  {
+    re: new RegExp(`^${INC}views/image/`),
+    cls: 'public',
+    page: 'views-image',
+    why: `${PUB('vnext/include')}.`,
+    ev: [
+      line('cmake/RnqnxReactQt.cmake', /target_include_directories\(rnqnx_views_qt PUBLIC/.source),
+    ],
+  },
+  {
+    re: new RegExp(`^${INC}views/`),
+    cls: 'public',
+    page: 'views',
+    why: `${PUB('vnext/include')}.`,
+    ev: [
+      line('cmake/RnqnxReactQt.cmake', /target_include_directories\(rnqnx_views_qt PUBLIC/.source),
+    ],
+  },
 ];
 
 // install() commands: report how many exist and whether any installs a header.
@@ -844,7 +1236,9 @@ for (const [f, t] of cmakeText)
   t.split('\n').forEach((l, k) => {
     if (/^\s*install\(/.test(l)) installLines.push({ f, k: k + 1, l });
   });
-const installsHeader = installLines.filter((x) => /\.(h|hpp)\b|DIRECTORY|FILE_SET|HEADERS/i.test(x.l)).length;
+const installsHeader = installLines.filter((x) =>
+  /\.(h|hpp)\b|DIRECTORY|FILE_SET|HEADERS/i.test(x.l)
+).length;
 
 // ---------------------------------------------------------------------------------------------
 // Collect
@@ -896,9 +1290,19 @@ notParsed.sort((a, b) => cmp(a.file, b.file) || a.line - b.line || cmp(a.reason,
 // ---------------------------------------------------------------------------------------------
 // Render
 // ---------------------------------------------------------------------------------------------
-const qname = (d, spec) => (spec ? [d.cls, d.name].filter(Boolean).join('.') : [d.ns, d.cls, d.name].filter(Boolean).join('::')) || d.name;
-const front = (title, description) =>
-  ['---', `title: ${JSON.stringify(title)}`, `description: ${JSON.stringify(description)}`, '---', '', '{/* Generated by docs-site/scripts/generate-api.mjs. Do not edit by hand. */}', ''];
+const qname = (d, spec) =>
+  (spec
+    ? [d.cls, d.name].filter(Boolean).join('.')
+    : [d.ns, d.cls, d.name].filter(Boolean).join('::')) || d.name;
+const front = (title, description) => [
+  '---',
+  `title: ${JSON.stringify(title)}`,
+  `description: ${JSON.stringify(description)}`,
+  '---',
+  '',
+  '{/* Generated by docs-site/scripts/generate-api.mjs. Do not edit by hand. */}',
+  '',
+];
 
 function renderDecl(d, spec) {
   const out = [`### \`${qname(d, spec)}\``, ''];
@@ -915,7 +1319,9 @@ function renderDecl(d, spec) {
 
 const outputs = {};
 const counts = {};
-const pageOrder = Object.keys(PAGES).filter((k) => k !== 'nitro-specs' && results.has(k)).sort(cmp);
+const pageOrder = Object.keys(PAGES)
+  .filter((k) => k !== 'nitro-specs' && results.has(k))
+  .sort(cmp);
 for (const key of pageOrder) {
   const [title, desc] = PAGES[key];
   const files = [...results.get(key).keys()].sort(cmp);
@@ -932,7 +1338,11 @@ for (const key of pageOrder) {
     if (!ds.length) body.push('The scanner found no public declarations in this header.', '');
     for (const d of ds) body.push(...renderDecl(d, false));
   }
-  outputs[`${OUT_DIR}/${key}.mdx`] = body.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n';
+  outputs[`${OUT_DIR}/${key}.mdx`] =
+    body
+      .join('\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trimEnd() + '\n';
 }
 
 // Nitro specs
@@ -946,10 +1356,19 @@ for (const key of pageOrder) {
     '',
   ];
   for (const f of [...specResults.keys()].sort(cmp)) {
-    body.push(`## \`${f}\``, '', `Spec: [${f}](${BLOB}${f}). ${specResults.get(f).length} declarations.`, '');
+    body.push(
+      `## \`${f}\``,
+      '',
+      `Spec: [${f}](${BLOB}${f}). ${specResults.get(f).length} declarations.`,
+      ''
+    );
     for (const d of specResults.get(f)) body.push(...renderDecl(d, true));
   }
-  outputs[`${OUT_DIR}/nitro-specs.mdx`] = body.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n';
+  outputs[`${OUT_DIR}/nitro-specs.mdx`] =
+    body
+      .join('\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trimEnd() + '\n';
 }
 
 // Index
@@ -958,7 +1377,10 @@ const internalHeaders = headers.filter((h) => h.cls === 'internal');
 const totalDecls = Object.values(counts).reduce((a, b) => a + b, 0);
 const pageLink = (k) => `[${PAGES[k][0]}](${DOCS_URL}/${k})`;
 const idx = [
-  ...front('Native API reference', 'Per-function reference for the public C++ headers and the Nitro specs, generated from the source with a deterministic scanner.'),
+  ...front(
+    'Native API reference',
+    'Per-function reference for the public C++ headers and the Nitro specs, generated from the source with a deterministic scanner.'
+  ),
   `This section lists the declarations an app or module author can call from the public C++ headers of react-native-qnx and from the Nitro specs. Each entry has the name, signature, namespace, class, the doc comment copied from the header, and a link to the line in \`main\`. Where a header has no comment, the entry says so. No description is written by hand or inferred.`,
   '',
   '## How it is generated',
@@ -990,7 +1412,14 @@ const idx = [
     : 'The scanner classified every statement it read in the public headers and specs. There is no gap to list.',
   '',
   ...(notParsed.length
-    ? ['| File | Line | Reason |', '| --- | --- | --- |', ...notParsed.map((u) => `| [${esc(u.file)}](${BLOB}${u.file}#L${u.line}) | ${u.line} | ${esc(u.reason)} |`), '']
+    ? [
+        '| File | Line | Reason |',
+        '| --- | --- | --- |',
+        ...notParsed.map(
+          (u) => `| [${esc(u.file)}](${BLOB}${u.file}#L${u.line}) | ${u.line} | ${esc(u.reason)} |`
+        ),
+        '',
+      ]
     : []),
   '## Pages',
   '',
@@ -1015,10 +1444,15 @@ const idx = [
   }),
   '',
 ];
-outputs[`${OUT_DIR}/index.mdx`] = idx.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n';
+outputs[`${OUT_DIR}/index.mdx`] =
+  idx
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trimEnd() + '\n';
 
 outputs[`${OUT_DIR}/meta.json`] =
-  JSON.stringify({ title: 'Native API', pages: ['index', ...pageOrder, 'nitro-specs'] }, null, 2) + '\n';
+  JSON.stringify({ title: 'Native API', pages: ['index', ...pageOrder, 'nitro-specs'] }, null, 2) +
+  '\n';
 
 // ---------------------------------------------------------------------------------------------
 // Write or check
@@ -1052,6 +1486,8 @@ for (const [rel, body] of Object.entries(outputs)) {
 }
 if (!check || !process.exitCode) {
   const summary = [...pageOrder, 'nitro-specs'].map((k) => `${k}=${counts[k]}`).join(' ');
-  console.log(`headers: ${headers.length} (public ${publicHeaders.length}, internal ${internalHeaders.length}); declarations: ${totalDecls}; not parsed: ${notParsed.length}`);
+  console.log(
+    `headers: ${headers.length} (public ${publicHeaders.length}, internal ${internalHeaders.length}); declarations: ${totalDecls}; not parsed: ${notParsed.length}`
+  );
   console.log(summary);
 }

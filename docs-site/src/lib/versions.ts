@@ -17,9 +17,9 @@ export function getVersions(): { options: VersionOption[]; current: string } {
   const root = JSON.parse(readFileSync(join(process.cwd(), '..', 'package.json'), 'utf8')) as {
     version: string;
   };
-  const { snapshots } = JSON.parse(
-    readFileSync(join(process.cwd(), 'versions.json'), 'utf8')
-  ) as { snapshots: Snapshot[] };
+  const { snapshots } = JSON.parse(readFileSync(join(process.cwd(), 'versions.json'), 'utf8')) as {
+    snapshots: Snapshot[];
+  };
   const options: VersionOption[] = [
     { label: `latest (main, ${root.version})`, href: '/docs' },
     ...snapshots.map((s) => ({ label: s.tag, href: `/v/${s.tag}/docs` })),

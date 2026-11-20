@@ -7,96 +7,236 @@ Two gallery captures from the 2026-11-13 Qt Multimedia run, and the two small an
 
 The media receipt lists what was not run: taps on the control bar, the fullscreen toggle and the Audio buttons, and sound at the jack was not heard. The image path is described in the [image pipeline](/docs/explanation/image-pipeline) page.
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/media/gallery-media-page-playing.png" alt="Component gallery Media page on the Pi 400 with a test-pattern video playing and a control bar" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/media/gallery-media-page-playing.png"
+    alt="Component gallery Media page on the Pi 400 with a test-pattern video playing and a control bar"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>gallery-media-page-playing.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>The Media page with the Video card playing: a colour-bar test clip with a timecode in the Qt Quick scene graph, the native control bar (pause, time, scrubber, volume, fullscreen), and the React status line "playing 0.5 s - 480x270, 8.0 s". The Audio card starts below it.</dd>
+      <dd>
+        The Media page with the Video card playing: a colour-bar test clip with a timecode in the Qt
+        Quick scene graph, the native control bar (pause, time, scrubber, volume, fullscreen), and
+        the React status line "playing 0.5 s - 480x270, 8.0 s". The Audio card starts below it.
+      </dd>
       <dt>Build</dt>
-      <dd>Branch feat/qt-video. Qt core from qt612-public-o2 with the Qt Multimedia add-on in /data/home/qnxuser/qt612-media, built in the qnx805-build container with QNX SDP 8.0.5. App org.rnqnx.mediaproof, a copy of the gallery with its app id changed, the Media page as start page and logging added. Neither change is in the PR. The receipt names no git commit.</dd>
+      <dd>
+        Branch feat/qt-video. Qt core from qt612-public-o2 with the Qt Multimedia add-on in
+        /data/home/qnxuser/qt612-media, built in the qnx805-build container with QNX SDP 8.0.5. App
+        org.rnqnx.mediaproof, a copy of the gallery with its app id changed, the Media page as start
+        page and logging added. Neither change is in the PR. The receipt names no git commit.
+      </dd>
       <dt>Device</dt>
       <dd>Raspberry Pi 400, QNX 8.0 (uname: QNX qnxpi 8.0.0 2026/06/05)</dd>
       <dt>Resolution</dt>
-      <dd>1100 x 900 px (read with sips). Taken with the app's --screenshot option of its own window. The receipt does not state the size.</dd>
+      <dd>
+        1100 x 900 px (read with sips). Taken with the app's --screenshot option of its own window.
+        The receipt does not state the size.
+      </dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/media-2026-11-13.md">media-2026-11-13.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/media/SHA256SUMS.txt">media/SHA256SUMS.txt</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/media-2026-11-13.md">
+          media-2026-11-13.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/media/SHA256SUMS.txt">
+          media/SHA256SUMS.txt
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/media/gallery-media-page-playing.png</code>, 175898 bytes, SHA-256 <code>578e6bf332ba6be144a07b1b7bb265e36dbc494b73eb7843945093d2aefd0d48</code></dd>
+      <dd>
+        <code>docs/evidence/media/gallery-media-page-playing.png</code>, 175898 bytes, SHA-256{' '}
+        <code>578e6bf332ba6be144a07b1b7bb265e36dbc494b73eb7843945093d2aefd0d48</code>
+      </dd>
       <dt>Added to the repository</dt>
-      <dd>commit <code>73ff82a</code>, 2026-11-13</dd>
+      <dd>
+        commit <code>73ff82a</code>, 2026-11-13
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/media/gallery-advanced-video-card.png" alt="Component gallery Advanced tab on the Pi 400 with five react-native-svg placeholder cards and the Video card" loading="lazy" style={{ maxWidth: "100%", width: 640, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/media/gallery-advanced-video-card.png"
+    alt="Component gallery Advanced tab on the Pi 400 with five react-native-svg placeholder cards and the Video card"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 640,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>gallery-advanced-video-card.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>The Advanced tab with the Video card. Five SVG cards read "react-native-svg is not in this host build", so SVG was not enabled in this build. The Video card shows the same test clip.</dd>
+      <dd>
+        The Advanced tab with the Video card. Five SVG cards read "react-native-svg is not in this
+        host build", so SVG was not enabled in this build. The Video card shows the same test clip.
+      </dd>
       <dt>Build</dt>
-      <dd>Branch feat/qt-video. Qt core from qt612-public-o2 with the Qt Multimedia add-on in /data/home/qnxuser/qt612-media, built in the qnx805-build container with QNX SDP 8.0.5. App org.rnqnx.mediaproof, a copy of the gallery with its app id changed, the Media page as start page and logging added. Neither change is in the PR. The receipt names no git commit.</dd>
+      <dd>
+        Branch feat/qt-video. Qt core from qt612-public-o2 with the Qt Multimedia add-on in
+        /data/home/qnxuser/qt612-media, built in the qnx805-build container with QNX SDP 8.0.5. App
+        org.rnqnx.mediaproof, a copy of the gallery with its app id changed, the Media page as start
+        page and logging added. Neither change is in the PR. The receipt names no git commit.
+      </dd>
       <dt>Device</dt>
       <dd>Raspberry Pi 400, QNX 8.0 (uname: QNX qnxpi 8.0.0 2026/06/05)</dd>
       <dt>Resolution</dt>
-      <dd>1100 x 900 px (read with sips). Taken with the app's --screenshot option of its own window. The receipt does not state the size.</dd>
+      <dd>
+        1100 x 900 px (read with sips). Taken with the app's --screenshot option of its own window.
+        The receipt does not state the size.
+      </dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/media-2026-11-13.md">media-2026-11-13.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/media/SHA256SUMS.txt">media/SHA256SUMS.txt</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/media-2026-11-13.md">
+          media-2026-11-13.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/media/SHA256SUMS.txt">
+          media/SHA256SUMS.txt
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/media/gallery-advanced-video-card.png</code>, 165876 bytes, SHA-256 <code>c370fd30c17490d10f399f9a3f5b13d944a336fe844a4827019dc0dde76c75a1</code></dd>
+      <dd>
+        <code>docs/evidence/media/gallery-advanced-video-card.png</code>, 165876 bytes, SHA-256{' '}
+        <code>c370fd30c17490d10f399f9a3f5b13d944a336fe844a4827019dc0dde76c75a1</code>
+      </dd>
       <dt>Added to the repository</dt>
-      <dd>commit <code>73ff82a</code>, 2026-11-13</dd>
+      <dd>
+        commit <code>73ff82a</code>, 2026-11-13
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pi-image-formats-2026-11-13/anim.gif" alt="Tiny 64 by 48 animated GIF test file, red with a white block" loading="lazy" style={{ maxWidth: "100%", width: 192, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pi-image-formats-2026-11-13/anim.gif"
+    alt="Tiny 64 by 48 animated GIF test file, red with a white block"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 192,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>anim.gif</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>The animated GIF test file used by the decode probe. The receipt describes it as four 64x48 frames (red, green, blue, yellow), 100 ms each, made with Pillow. This is a source file, not a screen capture, and the browser plays it as an animation.</dd>
+      <dd>
+        The animated GIF test file used by the decode probe. The receipt describes it as four 64x48
+        frames (red, green, blue, yellow), 100 ms each, made with Pillow. This is a source file, not
+        a screen capture, and the browser plays it as an animation.
+      </dd>
       <dt>Build</dt>
-      <dd>Branch fix/pi-image-formats, base feat/expo-image-painted-view. The receipt names no commit hash for the build.</dd>
+      <dd>
+        Branch fix/pi-image-formats, base feat/expo-image-painted-view. The receipt names no commit
+        hash for the build.
+      </dd>
       <dt>Device</dt>
-      <dd>Raspberry Pi 400. The probe ran from /data/home/qnxuser/rnqnx-fmt-1 under the board's Qt runtime with the QNX platform plugin.</dd>
+      <dd>
+        Raspberry Pi 400. The probe ran from /data/home/qnxuser/rnqnx-fmt-1 under the board's Qt
+        runtime with the QNX platform plugin.
+      </dd>
       <dt>Resolution</dt>
-      <dd>64 x 48 px (read with sips). 64x48 per the receipt. Frame 0 reads ffff0000 (red) at pixel (2,2) in the probe output.</dd>
+      <dd>
+        64 x 48 px (read with sips). 64x48 per the receipt. Frame 0 reads ffff0000 (red) at pixel
+        (2,2) in the probe output.
+      </dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi-image-formats-2026-11-13.md">pi-image-formats-2026-11-13.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi-image-formats-2026-11-13/probe-run-pi400.txt">pi-image-formats-2026-11-13/probe-run-pi400.txt</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi-image-formats-2026-11-13.md">
+          pi-image-formats-2026-11-13.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi-image-formats-2026-11-13/probe-run-pi400.txt">
+          pi-image-formats-2026-11-13/probe-run-pi400.txt
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pi-image-formats-2026-11-13/anim.gif</code>, 829 bytes, SHA-256 <code>c8387de60e4a463c87596c2e0a0464b961385bd230ebc7be011a91067a5b15b6</code></dd>
+      <dd>
+        <code>docs/evidence/pi-image-formats-2026-11-13/anim.gif</code>, 829 bytes, SHA-256{' '}
+        <code>c8387de60e4a463c87596c2e0a0464b961385bd230ebc7be011a91067a5b15b6</code>
+      </dd>
       <dt>Added to the repository</dt>
-      <dd>commit <code>530edd2</code>, 2026-11-13</dd>
+      <dd>
+        commit <code>530edd2</code>, 2026-11-13
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pi-image-formats-2026-11-13/anim.webp" alt="Tiny 64 by 48 animated WebP test file" loading="lazy" style={{ maxWidth: "100%", width: 192, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pi-image-formats-2026-11-13/anim.webp"
+    alt="Tiny 64 by 48 animated WebP test file"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 192,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>anim.webp</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>The animated WebP test file, the same four frames as the GIF. The receipt's result: with the app's GIF and JPEG plugins only (variant A) it did not decode; with the qtimageformats plugins (variant B) the probe read imageCount=4 and QMovie played four distinct frames in 450 ms, then looped.</dd>
+      <dd>
+        The animated WebP test file, the same four frames as the GIF. The receipt's result: with the
+        app's GIF and JPEG plugins only (variant A) it did not decode; with the qtimageformats
+        plugins (variant B) the probe read imageCount=4 and QMovie played four distinct frames in
+        450 ms, then looped.
+      </dd>
       <dt>Build</dt>
-      <dd>Branch fix/pi-image-formats, base feat/expo-image-painted-view. libqwebp.so SHA-256 98caf99ec812055ad0b12b3b38eac9d2d18f2da1478e9a0a7d311a0704d3eae1. The receipt names no commit hash.</dd>
+      <dd>
+        Branch fix/pi-image-formats, base feat/expo-image-painted-view. libqwebp.so SHA-256
+        98caf99ec812055ad0b12b3b38eac9d2d18f2da1478e9a0a7d311a0704d3eae1. The receipt names no
+        commit hash.
+      </dd>
       <dt>Device</dt>
       <dd>Raspberry Pi 400, as for the GIF.</dd>
       <dt>Resolution</dt>
       <dd>64 x 48 px (read with sips). 64x48 per the receipt.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi-image-formats-2026-11-13.md">pi-image-formats-2026-11-13.md</a>, <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi-image-formats-2026-11-13/probe-run-pi400.txt">pi-image-formats-2026-11-13/probe-run-pi400.txt</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi-image-formats-2026-11-13.md">
+          pi-image-formats-2026-11-13.md
+        </a>
+        ,{' '}
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi-image-formats-2026-11-13/probe-run-pi400.txt">
+          pi-image-formats-2026-11-13/probe-run-pi400.txt
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pi-image-formats-2026-11-13/anim.webp</code>, 362 bytes, SHA-256 <code>b100308edc9c2ab91a588e1be073dea75377618fdd12f8a282ee77d1fc2ae981</code></dd>
+      <dd>
+        <code>docs/evidence/pi-image-formats-2026-11-13/anim.webp</code>, 362 bytes, SHA-256{' '}
+        <code>b100308edc9c2ab91a588e1be073dea75377618fdd12f8a282ee77d1fc2ae981</code>
+      </dd>
       <dt>Added to the repository</dt>
-      <dd>commit <code>530edd2</code>, 2026-11-13</dd>
+      <dd>
+        commit <code>530edd2</code>, 2026-11-13
+      </dd>
       <dt>Note</dt>
-      <dd>Some browsers do not animate WebP files this small; the receipt's proof is the probe output on the board.</dd>
+      <dd>
+        Some browsers do not animate WebP files this small; the receipt's proof is the probe output
+        on the board.
+      </dd>
     </dl>
   </figcaption>
 </figure>

@@ -7,341 +7,797 @@ These frames come from a Linux host run, not from the Pi 400. The fixture render
 
 Every frame of the same type (initial, pan, timing) is byte-identical across the control, candidate and final runs, and each caption says so. The README says the control and the candidate differ in whether a late-registered native SVG event arrives. The frames show only the geometry, so they cannot tell the runs apart.
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/control-frames/0-initial.png" alt="240 by 180 frame of coloured squares, control frames, initial" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/control-frames/0-initial.png"
+    alt="240 by 180 frame of coloured squares, control frames, initial"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>0-initial.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 0, initial. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: initial frame: a red square at the top left, a blue square below it and a small green bar at the top centre.</dd>
+      <dd>
+        Host instance 0, initial. The README names these as frames from the "real timing/pan
+        transforms" checks. This capture, read off the image: initial frame: a red square at the top
+        left, a blue square below it and a small green bar at the top centre.
+      </dd>
       <dt>Build</dt>
-      <dd>Control run, original Reanimated module (local parent ff86386a218ceda4e842e79c601fd70c2ff43b7a, published equivalent 75782e716d3a17fb7a22c47f883e37585a94f640). The README says the control geometry marker completed and only the late native subscriber check failed.</dd>
+      <dd>
+        Control run, original Reanimated module (local parent
+        ff86386a218ceda4e842e79c601fd70c2ff43b7a, published equivalent
+        75782e716d3a17fb7a22c47f883e37585a94f640). The README says the control geometry marker
+        completed and only the late native subscriber check failed.
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/control-frames/0-initial.png</code>, 635 bytes, SHA-256 <code>c93860f6ba96c626327b9214c4dd1e37da49c18739e3b5dfbb63410e35504079</code></dd>
+      <dd>
+        <code>docs/evidence/pr149-svg-native-interest-2026-11-17/control-frames/0-initial.png</code>
+        , 635 bytes, SHA-256{' '}
+        <code>c93860f6ba96c626327b9214c4dd1e37da49c18739e3b5dfbb63410e35504079</code>
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/control-frames/0-pan.png" alt="240 by 180 frame of coloured squares, control frames, pan" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/control-frames/0-pan.png"
+    alt="240 by 180 frame of coloured squares, control frames, pan"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>0-pan.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 0, pan. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: pan frame: the red and blue squares have moved right.</dd>
+      <dd>
+        Host instance 0, pan. The README names these as frames from the "real timing/pan transforms"
+        checks. This capture, read off the image: pan frame: the red and blue squares have moved
+        right.
+      </dd>
       <dt>Build</dt>
-      <dd>Control run, original Reanimated module (local parent ff86386a218ceda4e842e79c601fd70c2ff43b7a, published equivalent 75782e716d3a17fb7a22c47f883e37585a94f640). The README says the control geometry marker completed and only the late native subscriber check failed.</dd>
+      <dd>
+        Control run, original Reanimated module (local parent
+        ff86386a218ceda4e842e79c601fd70c2ff43b7a, published equivalent
+        75782e716d3a17fb7a22c47f883e37585a94f640). The README says the control geometry marker
+        completed and only the late native subscriber check failed.
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/control-frames/0-pan.png</code>, 634 bytes, SHA-256 <code>3c3d894ba6c90e88e682413391c681a04d1f07f226dbfb49ae1a3b07118e346e</code></dd>
+      <dd>
+        <code>docs/evidence/pr149-svg-native-interest-2026-11-17/control-frames/0-pan.png</code>,
+        634 bytes, SHA-256{' '}
+        <code>3c3d894ba6c90e88e682413391c681a04d1f07f226dbfb49ae1a3b07118e346e</code>
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/control-frames/0-timing.png" alt="240 by 180 frame of coloured squares, control frames, timing" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/control-frames/0-timing.png"
+    alt="240 by 180 frame of coloured squares, control frames, timing"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>0-timing.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 0, timing. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: timing frame: the red square has moved right and the blue square is back at its initial position.</dd>
+      <dd>
+        Host instance 0, timing. The README names these as frames from the "real timing/pan
+        transforms" checks. This capture, read off the image: timing frame: the red square has moved
+        right and the blue square is back at its initial position.
+      </dd>
       <dt>Build</dt>
-      <dd>Control run, original Reanimated module (local parent ff86386a218ceda4e842e79c601fd70c2ff43b7a, published equivalent 75782e716d3a17fb7a22c47f883e37585a94f640). The README says the control geometry marker completed and only the late native subscriber check failed.</dd>
+      <dd>
+        Control run, original Reanimated module (local parent
+        ff86386a218ceda4e842e79c601fd70c2ff43b7a, published equivalent
+        75782e716d3a17fb7a22c47f883e37585a94f640). The README says the control geometry marker
+        completed and only the late native subscriber check failed.
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/control-frames/0-timing.png</code>, 636 bytes, SHA-256 <code>3de76f40d010c0568adcd58a82f6ba5a7f3d4f61084d65f4545608f991a2bd25</code></dd>
+      <dd>
+        <code>docs/evidence/pr149-svg-native-interest-2026-11-17/control-frames/0-timing.png</code>,
+        636 bytes, SHA-256{' '}
+        <code>3de76f40d010c0568adcd58a82f6ba5a7f3d4f61084d65f4545608f991a2bd25</code>
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/0-initial.png" alt="240 by 180 frame of coloured squares, candidate frames, initial" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/0-initial.png"
+    alt="240 by 180 frame of coloured squares, candidate frames, initial"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>0-initial.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 0, initial. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: initial frame: a red square at the top left, a blue square below it and a small green bar at the top centre.</dd>
+      <dd>
+        Host instance 0, initial. The README names these as frames from the "real timing/pan
+        transforms" checks. This capture, read off the image: initial frame: a red square at the top
+        left, a blue square below it and a small green bar at the top centre.
+      </dd>
       <dt>Build</dt>
-      <dd>Candidate run, restored reviewed module on the provisional prerequisite patches (parent ff86386a). The README says the restored hook passed both configured Worklets CTests (2/2).</dd>
+      <dd>
+        Candidate run, restored reviewed module on the provisional prerequisite patches (parent
+        ff86386a). The README says the restored hook passed both configured Worklets CTests (2/2).
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/0-initial.png</code>, 635 bytes, SHA-256 <code>c93860f6ba96c626327b9214c4dd1e37da49c18739e3b5dfbb63410e35504079</code></dd>
+      <dd>
+        <code>
+          docs/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/0-initial.png
+        </code>
+        , 635 bytes, SHA-256{' '}
+        <code>c93860f6ba96c626327b9214c4dd1e37da49c18739e3b5dfbb63410e35504079</code>
+      </dd>
       <dt>Duplicate</dt>
-      <dd>Byte-identical to <code>0-initial.png</code>, shown above on this page.</dd>
+      <dd>
+        Byte-identical to <code>0-initial.png</code>, shown above on this page.
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/0-pan.png" alt="240 by 180 frame of coloured squares, candidate frames, pan" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/0-pan.png"
+    alt="240 by 180 frame of coloured squares, candidate frames, pan"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>0-pan.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 0, pan. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: pan frame: the red and blue squares have moved right.</dd>
+      <dd>
+        Host instance 0, pan. The README names these as frames from the "real timing/pan transforms"
+        checks. This capture, read off the image: pan frame: the red and blue squares have moved
+        right.
+      </dd>
       <dt>Build</dt>
-      <dd>Candidate run, restored reviewed module on the provisional prerequisite patches (parent ff86386a). The README says the restored hook passed both configured Worklets CTests (2/2).</dd>
+      <dd>
+        Candidate run, restored reviewed module on the provisional prerequisite patches (parent
+        ff86386a). The README says the restored hook passed both configured Worklets CTests (2/2).
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/0-pan.png</code>, 634 bytes, SHA-256 <code>3c3d894ba6c90e88e682413391c681a04d1f07f226dbfb49ae1a3b07118e346e</code></dd>
+      <dd>
+        <code>docs/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/0-pan.png</code>,
+        634 bytes, SHA-256{' '}
+        <code>3c3d894ba6c90e88e682413391c681a04d1f07f226dbfb49ae1a3b07118e346e</code>
+      </dd>
       <dt>Duplicate</dt>
-      <dd>Byte-identical to <code>0-pan.png</code>, shown above on this page.</dd>
+      <dd>
+        Byte-identical to <code>0-pan.png</code>, shown above on this page.
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/0-timing.png" alt="240 by 180 frame of coloured squares, candidate frames, timing" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/0-timing.png"
+    alt="240 by 180 frame of coloured squares, candidate frames, timing"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>0-timing.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 0, timing. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: timing frame: the red square has moved right and the blue square is back at its initial position.</dd>
+      <dd>
+        Host instance 0, timing. The README names these as frames from the "real timing/pan
+        transforms" checks. This capture, read off the image: timing frame: the red square has moved
+        right and the blue square is back at its initial position.
+      </dd>
       <dt>Build</dt>
-      <dd>Candidate run, restored reviewed module on the provisional prerequisite patches (parent ff86386a). The README says the restored hook passed both configured Worklets CTests (2/2).</dd>
+      <dd>
+        Candidate run, restored reviewed module on the provisional prerequisite patches (parent
+        ff86386a). The README says the restored hook passed both configured Worklets CTests (2/2).
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/0-timing.png</code>, 636 bytes, SHA-256 <code>3de76f40d010c0568adcd58a82f6ba5a7f3d4f61084d65f4545608f991a2bd25</code></dd>
+      <dd>
+        <code>
+          docs/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/0-timing.png
+        </code>
+        , 636 bytes, SHA-256{' '}
+        <code>3de76f40d010c0568adcd58a82f6ba5a7f3d4f61084d65f4545608f991a2bd25</code>
+      </dd>
       <dt>Duplicate</dt>
-      <dd>Byte-identical to <code>0-timing.png</code>, shown above on this page.</dd>
+      <dd>
+        Byte-identical to <code>0-timing.png</code>, shown above on this page.
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/1-initial.png" alt="240 by 180 frame of coloured squares, candidate frames, initial" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/1-initial.png"
+    alt="240 by 180 frame of coloured squares, candidate frames, initial"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>1-initial.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 1, initial. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: initial frame: a red square at the top left, a blue square below it and a small green bar at the top centre.</dd>
+      <dd>
+        Host instance 1, initial. The README names these as frames from the "real timing/pan
+        transforms" checks. This capture, read off the image: initial frame: a red square at the top
+        left, a blue square below it and a small green bar at the top centre.
+      </dd>
       <dt>Build</dt>
-      <dd>Candidate run, restored reviewed module on the provisional prerequisite patches (parent ff86386a). The README says the restored hook passed both configured Worklets CTests (2/2).</dd>
+      <dd>
+        Candidate run, restored reviewed module on the provisional prerequisite patches (parent
+        ff86386a). The README says the restored hook passed both configured Worklets CTests (2/2).
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/1-initial.png</code>, 635 bytes, SHA-256 <code>c93860f6ba96c626327b9214c4dd1e37da49c18739e3b5dfbb63410e35504079</code></dd>
+      <dd>
+        <code>
+          docs/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/1-initial.png
+        </code>
+        , 635 bytes, SHA-256{' '}
+        <code>c93860f6ba96c626327b9214c4dd1e37da49c18739e3b5dfbb63410e35504079</code>
+      </dd>
       <dt>Duplicate</dt>
-      <dd>Byte-identical to <code>0-initial.png</code>, shown above on this page.</dd>
+      <dd>
+        Byte-identical to <code>0-initial.png</code>, shown above on this page.
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/1-pan.png" alt="240 by 180 frame of coloured squares, candidate frames, pan" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/1-pan.png"
+    alt="240 by 180 frame of coloured squares, candidate frames, pan"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>1-pan.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 1, pan. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: pan frame: the red and blue squares have moved right.</dd>
+      <dd>
+        Host instance 1, pan. The README names these as frames from the "real timing/pan transforms"
+        checks. This capture, read off the image: pan frame: the red and blue squares have moved
+        right.
+      </dd>
       <dt>Build</dt>
-      <dd>Candidate run, restored reviewed module on the provisional prerequisite patches (parent ff86386a). The README says the restored hook passed both configured Worklets CTests (2/2).</dd>
+      <dd>
+        Candidate run, restored reviewed module on the provisional prerequisite patches (parent
+        ff86386a). The README says the restored hook passed both configured Worklets CTests (2/2).
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/1-pan.png</code>, 634 bytes, SHA-256 <code>3c3d894ba6c90e88e682413391c681a04d1f07f226dbfb49ae1a3b07118e346e</code></dd>
+      <dd>
+        <code>docs/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/1-pan.png</code>,
+        634 bytes, SHA-256{' '}
+        <code>3c3d894ba6c90e88e682413391c681a04d1f07f226dbfb49ae1a3b07118e346e</code>
+      </dd>
       <dt>Duplicate</dt>
-      <dd>Byte-identical to <code>0-pan.png</code>, shown above on this page.</dd>
+      <dd>
+        Byte-identical to <code>0-pan.png</code>, shown above on this page.
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/1-timing.png" alt="240 by 180 frame of coloured squares, candidate frames, timing" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/1-timing.png"
+    alt="240 by 180 frame of coloured squares, candidate frames, timing"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>1-timing.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 1, timing. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: timing frame: the red square has moved right and the blue square is back at its initial position.</dd>
+      <dd>
+        Host instance 1, timing. The README names these as frames from the "real timing/pan
+        transforms" checks. This capture, read off the image: timing frame: the red square has moved
+        right and the blue square is back at its initial position.
+      </dd>
       <dt>Build</dt>
-      <dd>Candidate run, restored reviewed module on the provisional prerequisite patches (parent ff86386a). The README says the restored hook passed both configured Worklets CTests (2/2).</dd>
+      <dd>
+        Candidate run, restored reviewed module on the provisional prerequisite patches (parent
+        ff86386a). The README says the restored hook passed both configured Worklets CTests (2/2).
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/1-timing.png</code>, 636 bytes, SHA-256 <code>3de76f40d010c0568adcd58a82f6ba5a7f3d4f61084d65f4545608f991a2bd25</code></dd>
+      <dd>
+        <code>
+          docs/evidence/pr149-svg-native-interest-2026-11-17/candidate-frames/1-timing.png
+        </code>
+        , 636 bytes, SHA-256{' '}
+        <code>3de76f40d010c0568adcd58a82f6ba5a7f3d4f61084d65f4545608f991a2bd25</code>
+      </dd>
       <dt>Duplicate</dt>
-      <dd>Byte-identical to <code>0-timing.png</code>, shown above on this page.</dd>
+      <dd>
+        Byte-identical to <code>0-timing.png</code>, shown above on this page.
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/final-frames/0-initial.png" alt="240 by 180 frame of coloured squares, final frames, initial" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/final-frames/0-initial.png"
+    alt="240 by 180 frame of coloured squares, final frames, initial"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>0-initial.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 0, initial. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: initial frame: a red square at the top left, a blue square below it and a small green bar at the top centre.</dd>
+      <dd>
+        Host instance 0, initial. The README names these as frames from the "real timing/pan
+        transforms" checks. This capture, read off the image: initial frame: a red square at the top
+        left, a blue square below it and a small green bar at the top centre.
+      </dd>
       <dt>Build</dt>
-      <dd>Final run on the published PR 159 head 12cae67885b77f9a371059fc2b0a1168ef07430b merged into the parent. The README records its own 2/2 configured test result.</dd>
+      <dd>
+        Final run on the published PR 159 head 12cae67885b77f9a371059fc2b0a1168ef07430b merged into
+        the parent. The README records its own 2/2 configured test result.
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/final-frames/0-initial.png</code>, 635 bytes, SHA-256 <code>c93860f6ba96c626327b9214c4dd1e37da49c18739e3b5dfbb63410e35504079</code></dd>
+      <dd>
+        <code>docs/evidence/pr149-svg-native-interest-2026-11-17/final-frames/0-initial.png</code>,
+        635 bytes, SHA-256{' '}
+        <code>c93860f6ba96c626327b9214c4dd1e37da49c18739e3b5dfbb63410e35504079</code>
+      </dd>
       <dt>Duplicate</dt>
-      <dd>Byte-identical to <code>0-initial.png</code>, shown above on this page.</dd>
+      <dd>
+        Byte-identical to <code>0-initial.png</code>, shown above on this page.
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/final-frames/0-pan.png" alt="240 by 180 frame of coloured squares, final frames, pan" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/final-frames/0-pan.png"
+    alt="240 by 180 frame of coloured squares, final frames, pan"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>0-pan.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 0, pan. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: pan frame: the red and blue squares have moved right.</dd>
+      <dd>
+        Host instance 0, pan. The README names these as frames from the "real timing/pan transforms"
+        checks. This capture, read off the image: pan frame: the red and blue squares have moved
+        right.
+      </dd>
       <dt>Build</dt>
-      <dd>Final run on the published PR 159 head 12cae67885b77f9a371059fc2b0a1168ef07430b merged into the parent. The README records its own 2/2 configured test result.</dd>
+      <dd>
+        Final run on the published PR 159 head 12cae67885b77f9a371059fc2b0a1168ef07430b merged into
+        the parent. The README records its own 2/2 configured test result.
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/final-frames/0-pan.png</code>, 634 bytes, SHA-256 <code>3c3d894ba6c90e88e682413391c681a04d1f07f226dbfb49ae1a3b07118e346e</code></dd>
+      <dd>
+        <code>docs/evidence/pr149-svg-native-interest-2026-11-17/final-frames/0-pan.png</code>, 634
+        bytes, SHA-256 <code>3c3d894ba6c90e88e682413391c681a04d1f07f226dbfb49ae1a3b07118e346e</code>
+      </dd>
       <dt>Duplicate</dt>
-      <dd>Byte-identical to <code>0-pan.png</code>, shown above on this page.</dd>
+      <dd>
+        Byte-identical to <code>0-pan.png</code>, shown above on this page.
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/final-frames/0-timing.png" alt="240 by 180 frame of coloured squares, final frames, timing" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/final-frames/0-timing.png"
+    alt="240 by 180 frame of coloured squares, final frames, timing"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>0-timing.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 0, timing. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: timing frame: the red square has moved right and the blue square is back at its initial position.</dd>
+      <dd>
+        Host instance 0, timing. The README names these as frames from the "real timing/pan
+        transforms" checks. This capture, read off the image: timing frame: the red square has moved
+        right and the blue square is back at its initial position.
+      </dd>
       <dt>Build</dt>
-      <dd>Final run on the published PR 159 head 12cae67885b77f9a371059fc2b0a1168ef07430b merged into the parent. The README records its own 2/2 configured test result.</dd>
+      <dd>
+        Final run on the published PR 159 head 12cae67885b77f9a371059fc2b0a1168ef07430b merged into
+        the parent. The README records its own 2/2 configured test result.
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/final-frames/0-timing.png</code>, 636 bytes, SHA-256 <code>3de76f40d010c0568adcd58a82f6ba5a7f3d4f61084d65f4545608f991a2bd25</code></dd>
+      <dd>
+        <code>docs/evidence/pr149-svg-native-interest-2026-11-17/final-frames/0-timing.png</code>,
+        636 bytes, SHA-256{' '}
+        <code>3de76f40d010c0568adcd58a82f6ba5a7f3d4f61084d65f4545608f991a2bd25</code>
+      </dd>
       <dt>Duplicate</dt>
-      <dd>Byte-identical to <code>0-timing.png</code>, shown above on this page.</dd>
+      <dd>
+        Byte-identical to <code>0-timing.png</code>, shown above on this page.
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/final-frames/1-initial.png" alt="240 by 180 frame of coloured squares, final frames, initial" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/final-frames/1-initial.png"
+    alt="240 by 180 frame of coloured squares, final frames, initial"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>1-initial.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 1, initial. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: initial frame: a red square at the top left, a blue square below it and a small green bar at the top centre.</dd>
+      <dd>
+        Host instance 1, initial. The README names these as frames from the "real timing/pan
+        transforms" checks. This capture, read off the image: initial frame: a red square at the top
+        left, a blue square below it and a small green bar at the top centre.
+      </dd>
       <dt>Build</dt>
-      <dd>Final run on the published PR 159 head 12cae67885b77f9a371059fc2b0a1168ef07430b merged into the parent. The README records its own 2/2 configured test result.</dd>
+      <dd>
+        Final run on the published PR 159 head 12cae67885b77f9a371059fc2b0a1168ef07430b merged into
+        the parent. The README records its own 2/2 configured test result.
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/final-frames/1-initial.png</code>, 635 bytes, SHA-256 <code>c93860f6ba96c626327b9214c4dd1e37da49c18739e3b5dfbb63410e35504079</code></dd>
+      <dd>
+        <code>docs/evidence/pr149-svg-native-interest-2026-11-17/final-frames/1-initial.png</code>,
+        635 bytes, SHA-256{' '}
+        <code>c93860f6ba96c626327b9214c4dd1e37da49c18739e3b5dfbb63410e35504079</code>
+      </dd>
       <dt>Duplicate</dt>
-      <dd>Byte-identical to <code>0-initial.png</code>, shown above on this page.</dd>
+      <dd>
+        Byte-identical to <code>0-initial.png</code>, shown above on this page.
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/final-frames/1-pan.png" alt="240 by 180 frame of coloured squares, final frames, pan" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/final-frames/1-pan.png"
+    alt="240 by 180 frame of coloured squares, final frames, pan"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>1-pan.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 1, pan. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: pan frame: the red and blue squares have moved right.</dd>
+      <dd>
+        Host instance 1, pan. The README names these as frames from the "real timing/pan transforms"
+        checks. This capture, read off the image: pan frame: the red and blue squares have moved
+        right.
+      </dd>
       <dt>Build</dt>
-      <dd>Final run on the published PR 159 head 12cae67885b77f9a371059fc2b0a1168ef07430b merged into the parent. The README records its own 2/2 configured test result.</dd>
+      <dd>
+        Final run on the published PR 159 head 12cae67885b77f9a371059fc2b0a1168ef07430b merged into
+        the parent. The README records its own 2/2 configured test result.
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/final-frames/1-pan.png</code>, 634 bytes, SHA-256 <code>3c3d894ba6c90e88e682413391c681a04d1f07f226dbfb49ae1a3b07118e346e</code></dd>
+      <dd>
+        <code>docs/evidence/pr149-svg-native-interest-2026-11-17/final-frames/1-pan.png</code>, 634
+        bytes, SHA-256 <code>3c3d894ba6c90e88e682413391c681a04d1f07f226dbfb49ae1a3b07118e346e</code>
+      </dd>
       <dt>Duplicate</dt>
-      <dd>Byte-identical to <code>0-pan.png</code>, shown above on this page.</dd>
+      <dd>
+        Byte-identical to <code>0-pan.png</code>, shown above on this page.
+      </dd>
     </dl>
   </figcaption>
 </figure>
 
-<figure style={{ margin: "2rem 0" }}>
-  <Img src="/evidence/pr149-svg-native-interest-2026-11-17/final-frames/1-timing.png" alt="240 by 180 frame of coloured squares, final frames, timing" loading="lazy" style={{ maxWidth: "100%", width: 240, height: "auto", border: "1px solid rgba(128,128,128,0.4)" }} />
-  <figcaption style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+<figure style={{ margin: '2rem 0' }}>
+  <Img
+    src="/evidence/pr149-svg-native-interest-2026-11-17/final-frames/1-timing.png"
+    alt="240 by 180 frame of coloured squares, final frames, timing"
+    loading="lazy"
+    style={{
+      maxWidth: '100%',
+      width: 240,
+      height: 'auto',
+      border: '1px solid rgba(128,128,128,0.4)',
+    }}
+  />
+  <figcaption style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
     <strong>1-timing.png</strong>
-    <dl style={{ marginTop: "0.5rem" }}>
+    <dl style={{ marginTop: '0.5rem' }}>
       <dt>Shows</dt>
-      <dd>Host instance 1, timing. The README names these as frames from the "real timing/pan transforms" checks. This capture, read off the image: timing frame: the red square has moved right and the blue square is back at its initial position.</dd>
+      <dd>
+        Host instance 1, timing. The README names these as frames from the "real timing/pan
+        transforms" checks. This capture, read off the image: timing frame: the red square has moved
+        right and the blue square is back at its initial position.
+      </dd>
       <dt>Build</dt>
-      <dd>Final run on the published PR 159 head 12cae67885b77f9a371059fc2b0a1168ef07430b merged into the parent. The README records its own 2/2 configured test result.</dd>
+      <dd>
+        Final run on the published PR 159 head 12cae67885b77f9a371059fc2b0a1168ef07430b merged into
+        the parent. The README records its own 2/2 configured test result.
+      </dd>
       <dt>Device</dt>
-      <dd>Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host sanitizers ON. The README labels the whole run as Linux host evidence.</dd>
+      <dd>
+        Linux host (Qt, Hermes and Fabric host renderer), not a device. CMake Debug build with host
+        sanitizers ON. The README labels the whole run as Linux host evidence.
+      </dd>
       <dt>Resolution</dt>
       <dd>240 x 180 px (read with sips). The README gives no frame size.</dd>
       <dt>Receipt</dt>
-      <dd><a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">pr149-svg-native-interest-2026-11-17/README.md</a></dd>
+      <dd>
+        <a href="https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-svg-native-interest-2026-11-17/README.md">
+          pr149-svg-native-interest-2026-11-17/README.md
+        </a>
+      </dd>
       <dt>Image file</dt>
-      <dd><code>docs/evidence/pr149-svg-native-interest-2026-11-17/final-frames/1-timing.png</code>, 636 bytes, SHA-256 <code>3de76f40d010c0568adcd58a82f6ba5a7f3d4f61084d65f4545608f991a2bd25</code></dd>
+      <dd>
+        <code>docs/evidence/pr149-svg-native-interest-2026-11-17/final-frames/1-timing.png</code>,
+        636 bytes, SHA-256{' '}
+        <code>3de76f40d010c0568adcd58a82f6ba5a7f3d4f61084d65f4545608f991a2bd25</code>
+      </dd>
       <dt>Duplicate</dt>
-      <dd>Byte-identical to <code>0-timing.png</code>, shown above on this page.</dd>
+      <dd>
+        Byte-identical to <code>0-timing.png</code>, shown above on this page.
+      </dd>
     </dl>
   </figcaption>
 </figure>

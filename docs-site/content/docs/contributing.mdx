@@ -116,15 +116,15 @@ npm ci
 npm run dev
 ```
 
-| Script                  | Purpose                                                                                                                                                        |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run data`          | Regenerates the component matrix, release gates, changelog and ADR index pages, and the native API reference. The first four need full git history.            |
-| `npm run data:check`    | Fails if those pages differ from what `data` would write.                                                                                                      |
-| `npm run api`, `api:check` | Only the native API reference under `reference/native-api/`, generated from the C++ headers and Nitro specs.                                                |
-| `npm run lint`          | ESLint.                                                                                                                                                        |
-| `npm run types:check`   | `next typegen` and `tsc --noEmit`.                                                                                                                             |
-| `npm run build`         | Static export to `out/`.                                                                                                                                       |
-| `npm run check:content` | Checks front matter, internal `/docs` links, banned terms, and that `llms.txt`, `llms-full.txt`, `SKILL.md`, the search index and `docs.html` exist in `out/`. |
+| Script                     | Purpose                                                                                                                                                        |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run data`             | Regenerates the component matrix, release gates, changelog and ADR index pages, and the native API reference. The first four need full git history.            |
+| `npm run data:check`       | Fails if those pages differ from what `data` would write.                                                                                                      |
+| `npm run api`, `api:check` | Only the native API reference under `reference/native-api/`, generated from the C++ headers and Nitro specs.                                                   |
+| `npm run lint`             | ESLint.                                                                                                                                                        |
+| `npm run types:check`      | `next typegen` and `tsc --noEmit`.                                                                                                                             |
+| `npm run build`            | Static export to `out/`.                                                                                                                                       |
+| `npm run check:content`    | Checks front matter, internal `/docs` links, banned terms, and that `llms.txt`, `llms-full.txt`, `SKILL.md`, the search index and `docs.html` exist in `out/`. |
 
 CI runs them in that order: `data:check`, `lint`, `types:check`, `build`, `check:content`.
 
@@ -155,6 +155,7 @@ Do this once per release tag, after the tag exists. It freezes the site as it re
    ```
 
    The export in `out/` links to itself under `/v/<tag>/`, and its search index loads from `/v/<tag>/api/search`.
+
 3. Publish `out/` so it is served at `/v/<tag>/`. Publish it once and never rebuild it.
 4. On `main`, add `{ "tag": "<tag>" }` to `docs-site/versions.json`, run the full check sequence and open a pull request. The selector on `latest` then lists the tag.
 5. Delete the clone.
