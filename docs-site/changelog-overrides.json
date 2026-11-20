@@ -1,0 +1,22 @@
+{
+  "note": "Pull requests whose merge commit subject carries no pull request number. Each entry is checked against git history by scripts/generate-data.mjs. Numbers and titles were checked against the GitHub pull request list.",
+  "commits": [
+    {
+      "commit": "59fce79",
+      "pulls": [
+        { "number": 74, "title": "feat(qnx): expose Pi evidence verification in developer CLI" },
+        { "number": 75, "title": "feat(qnx): implement non-premium component conformance fixture and bundle CI" },
+        { "number": 76, "title": "feat(qnx): qualify performance and cold-boot evidence without false release passes" },
+        { "number": 77, "title": "feat(qnx): replace performance-lab scaffold with real baseline and 1000-row workloads" },
+        { "number": 78, "title": "feat(qnx): implement restricted device diagnostics, screenshot capture and SSH forwarding" },
+        { "number": 79, "title": "feat(expo-qnx): add repeatable project preparation with actual Expo discovery" }
+      ]
+    },
+    {
+      "commit": "0c91be9",
+      "pulls": [
+        { "number": 101, "title": "feat(qnx): target-aware native build command for external Expo applications" }
+      ]
+    }
+  ]
+}

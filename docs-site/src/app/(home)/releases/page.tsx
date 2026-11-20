@@ -17,6 +17,8 @@ export default function ReleasesPage() {
   const notes = unreleasedNotes();
   const months = mergedPulls();
   const total = months.reduce((n, m) => n + m.pulls.length, 0);
+  if (total !== status.pulls.total)
+    throw new Error(`releases: parsed ${total} pull requests, status.json says ${status.pulls.total}`);
 
   return (
     <div className="bench">
@@ -56,8 +58,15 @@ export default function ReleasesPage() {
         ) : null}
 
         <h2 id="merged">
-          Merged pull requests <small>{total} listed</small>
+          Merged pull requests <small>{total} merged</small>
         </h2>
+        <p>
+          Every merged pull request in git history through <code>{status.pulls.through}</code> is
+          listed. Each number comes from the merge or squash subject git recorded.
+          {status.pulls.titleOmitted
+            ? ` ${status.pulls.titleOmitted} titles name a separate target and are shown as "title omitted"; the pull request number links to the full title.`
+            : ''}
+        </p>
         {months.map((m) => (
           <section key={m.month} aria-label={m.month}>
             <h3>{m.month}</h3>
