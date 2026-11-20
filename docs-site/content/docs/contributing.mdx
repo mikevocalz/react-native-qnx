@@ -1,21 +1,114 @@
 ---
 title: Contributing
-description: How to contribute to React Native QNX and to this documentation site.
+description: Set up a development checkout, run the test suites, meet the required checks, write a decision record and change this documentation site.
 ---
 
-Code contributions follow [CONTRIBUTING.md](https://github.com/mikevocalz/react-native-qnx/blob/main/CONTRIBUTING.md). Read the [current state handoff](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/handoff/CURRENT_STATE.md) first. The rules that matter most:
+This page covers the mechanics of a change. The rules behind them are in [CONTRIBUTING.md](https://github.com/mikevocalz/react-native-qnx/blob/main/CONTRIBUTING.md) and [AGENTS.md](https://github.com/mikevocalz/react-native-qnx/blob/main/AGENTS.md). Read [`docs/handoff/CURRENT_STATE.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/handoff/CURRENT_STATE.md) before you start, because it records which work is open.
 
-- Fabric and JSI only. No legacy bridge.
-- Qt Quick is the view backend and Yoga is the only layout authority.
-- Native modules use Nitro HybridObjects, not TurboModules.
-- Cite the installed header or pinned source before calling a native symbol.
-- A locally prepared harness is not a passed gate.
+Security issues go through the [security policy](https://github.com/mikevocalz/react-native-qnx/blob/main/SECURITY.md), not a public issue.
 
-Security issues go through the [security policy](https://github.com/mikevocalz/react-native-qnx/blob/main/SECURITY.md).
+## Architecture rules
 
-## Contribute to these docs
+CONTRIBUTING.md fixes these. A change that breaks one is rejected before review.
 
-The site lives in `docs-site/` and is a Next.js app using Fumadocs. Pages are MDX under `docs-site/content/docs`.
+- Fabric and JSI only. No legacy bridge. See [Fabric-only](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md).
+- Qt Quick is the view backend and Yoga is the only layout authority. Qt items are absolutely positioned leaves. See [architecture](/docs/explanation/architecture).
+- Native modules use Nitro HybridObjects with manual registry integration. TurboModules are not the QNX module architecture.
+- Hermes is the engine, built from the source tag the pinned React Native release selects.
+- Cite the installed header or an exact pinned upstream source path before you call a QNX, Qt, React Native, Hermes, Yoga, Nitro or Expo native symbol.
+- Unsupported behavior is a typed error, a documented no-op or a gap in the support table. Never return invented success data.
+- A locally prepared harness is not a passed gate. Host results do not stand in for a QNX cross-build or a device run.
+
+## Set up a checkout
+
+`package.json` pins the toolchain:
+
+| Field            | Value          |
+| ---------------- | -------------- |
+| `engines.node`   | `>=26.0.0`     |
+| `engines.pnpm`   | `>=12.18.0`    |
+| `packageManager` | `pnpm@12.18.0` |
+
+CI installs pnpm with `npm install --global pnpm@12.18.0` (`.github/workflows/sdk58-validation.yml`), and the repository documents the same command. Install that exact version, then use the frozen lockfile:
+
+```bash
+npm install -g pnpm@12.18.0
+git clone https://github.com/mikevocalz/react-native-qnx.git
+cd react-native-qnx
+pnpm install --frozen-lockfile
+pnpm validate:dependencies
+```
+
+Direct dependencies use exact pins. A version bump needs registry verification and a lockfile regenerated in the same change (CONTRIBUTING.md, "Dependency and release discipline"). Do not commit QNX headers, libraries, images, license material, device credentials or private keys.
+
+The C++ host tests also need CMake, Ninja, a C++ compiler and Qt 6.11.1 or newer. The [quick start](/docs/tutorials/quick-start) lists the versions its verifier used.
+
+## Run the tests
+
+Run the narrowest check while you iterate, then the full local set before you push.
+
+| Command                                                                                      | What it runs                                                                                                                                                                                                                                                                    |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm test:js`                                                                               | Every `*.test.mjs` and `*.test.ts` file in `tests/js`, in sorted order (`scripts/run-js-tests.mjs`). It fails if the directory has none.                                                                                                                                        |
+| `pnpm test:cpp:host`                                                                         | `cmake --fresh --preset macos-host-tests` (or `linux-host-tests` on Linux), then `cmake --build --preset` and `ctest --preset` for the same preset (`scripts/run-cpp-host-tests.mjs`). Both presets turn host sanitizers on.                                                    |
+| `pnpm test`                                                                                  | `test:js` then `test:cpp:host`.                                                                                                                                                                                                                                                 |
+| `pnpm typecheck`                                                                             | `tsc --noEmit`, then the same with `tests/types/adaptive.tsconfig.json`. A hard gate for every TypeScript package.                                                                                                                                                              |
+| `pnpm format:check`                                                                          | Prettier over the whole repository. `pnpm format` rewrites.                                                                                                                                                                                                                     |
+| `pnpm validate:manifests`, `validate:dependencies`, `validate:architecture`, `validate:docs` | Package manifests, pinned dependency and source contracts, architecture locks, and generated documentation tables against their JSON records.                                                                                                                                   |
+| `pnpm codegen:check`                                                                         | Nitro code-generation applicability check.                                                                                                                                                                                                                                      |
+| `pnpm validate:macos`                                                                        | Runs eight stages in order: format, typecheck, dependency validation, JS tests, C++ host tests, package build and manifest validation, architecture and docs validation, codegen check (`scripts/validate-macos.sh`). It ends by stating that it did not cross-compile for QNX. |
+
+`tests/` also holds `tests/cpp` (C++ host tests), `tests/native`, `tests/cmake`, `tests/image-loader`, `tests/benchmarks`, `tests/fixtures` and `tests/python`. The Python test, `tests/python/test_qt_public_staging.py`, has no package script, and a search of `package.json`, `scripts` and `.github` finds no workflow that runs it. Run it directly with `python3` when you change Qt staging.
+
+The full host renderer (Qt, Hermes, folly, Boost) builds through the `linux-host-renderer` preset in CI (`.github/workflows/host-renderer.yml`). Locally, the root README builds `rnqnx_playground_host` with `cmake -S . -B build/playground -G Ninja -DRNQNX_BUILD_HERMES=ON`. The first configure downloads and compiles Hermes, folly and Boost.
+
+QNX validation uses the commands and evidence requirements in [`docs/handoff/NEXT_ACTIONS.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/handoff/NEXT_ACTIONS.md). Never promote a QNX row from a host-only result. A device claim records the host, the target, the command, the exit status and what you observed, and it names the board. The only device results in the repository come from a Raspberry Pi 400.
+
+## Commit style
+
+CONTRIBUTING.md asks for a Conventional Commit subject, for example `feat(toolchain): add Pi probe` or `fix(screen): preserve errno`. Add a task identifier only when the repository defines that task. Keep each change focused, and keep these in the same change as the implementation: tests, generated Nitrogen output, cited native seams, support-table changes and documentation.
+
+The history is mixed. Recent subjects include `ci: build and check the documentation site` and `docs-site: fix quick-start defects from the cold read` next to merge commits and plain imperative subjects such as `Record PR 149 Pi 400 device runs 1 and 2 and the held-key run`. Follow CONTRIBUTING.md for new commits.
+
+## Pull request checklist
+
+Before you open a pull request:
+
+1. `pnpm install --frozen-lockfile` and `git diff --check` are clean.
+2. The tests and validators above pass for the parts you touched, or you state which you could not run and why.
+3. Tests, generated output, support tables and docs ship in the same change.
+4. Any native symbol you call has a cited header or pinned source path.
+5. Device claims name the board and link the evidence directory under `docs/evidence`. No claim rests on host results.
+6. The handoff files stay current: `docs/handoff/CURRENT_STATE.md`, `TEST_STATUS.md`, `BLOCKERS.md`, `NEXT_ACTIONS.md` and `SESSION_LOG.md`, plus `.project-state.json`. Do not describe untracked work as committed.
+7. Do not publish, tag or claim QNX support until the applicable real-device gate has passed.
+
+## Required checks
+
+The full list of workflows and jobs is in [CI checks](/docs/reference/ci-checks).
+[`docs/releases/required-checks.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/required-checks.md) records the state of the `main` branch ruleset (id 27120426, active since 2026-11-12). It blocks deletion and force-pushes and requires a pull request. It also requires four checks, which run on every pull request to `main`:
+
+| Check name                                         | Workflow file                            |
+| -------------------------------------------------- | ---------------------------------------- |
+| `validate`                                         | `.github/workflows/sdk58-validation.yml` |
+| `Qt 6.11 / RN 0.88 / Hermes (input lifecycle ON)`  | `.github/workflows/host-renderer.yml`    |
+| `Qt 6.11 / RN 0.88 / Hermes (input lifecycle OFF)` | `.github/workflows/host-renderer.yml`    |
+| `image-cache`                                      | `.github/workflows/image-loader.yml`     |
+
+The job names match the workflow files. The live ruleset was not queried, so confirm it in the repository settings if the list matters. The same file lists 18 hosted workflows that a v1 release candidate needs, run by dispatch because most of them filter on paths. No workflow compiles for QNX, so those hosted checks say nothing about a QNX build or a device.
+
+The documentation site has its own workflow, `docs-site.yml`. It runs when a pull request touches `docs-site/**`, `docs/component-support.json`, `docs/releases/v1-readiness.json`, `docs/adr/**` or the workflow itself. It is not on the ruleset list in `required-checks.md`.
+
+Workflows pin each action to a full commit SHA and set `permissions: contents: read`. Keep that when you add one.
+
+## Write an architecture decision record
+
+Decision records live in `docs/adr`, named `NNNN-short-title.md`. Copy `docs/adr/adr-template.md`. Its sections are Status, Context, Decision, Consequences, Alternatives considered, Related files and Notes. Take the next unused number. The title line reads `# ADR-NNNN: Title`.
+
+Put the status on the first line under `## Status`. Use `Proposed`, `Accepted`, `Deprecated` or `Superseded by` a later record, and add scope when the proof is narrow, as ADR-0001 does with "Accepted; scoped Pi 400 proof". Then add a row to the table in `docs/adr/index.md`. The documentation site reads the title and first status line from each file, so those two lines must stay in the template's shape. The [architecture decisions](/docs/explanation/adr-index) page is generated from them.
+
+## Change this documentation site
+
+The site lives in `docs-site/`. It is a Next.js static export using Fumadocs, and it has its own `package-lock.json`, so it uses npm, not pnpm. CI runs Node 26.13.1.
 
 ```bash
 cd docs-site
@@ -23,11 +116,26 @@ npm ci
 npm run dev
 ```
 
+| Script                  | Purpose                                                                                                                                                        |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run data`          | Regenerates the component matrix, release gates and ADR index pages. Needs full git history.                                                                   |
+| `npm run data:check`    | Fails if those pages differ from what `data` would write.                                                                                                      |
+| `npm run lint`          | ESLint.                                                                                                                                                        |
+| `npm run types:check`   | `next typegen` and `tsc --noEmit`.                                                                                                                             |
+| `npm run build`         | Static export to `out/`.                                                                                                                                       |
+| `npm run check:content` | Checks front matter, internal `/docs` links, banned terms, and that `llms.txt`, `llms-full.txt`, `SKILL.md`, the search index and `docs.html` exist in `out/`. |
+
+CI runs them in that order: `data:check`, `lint`, `types:check`, `build`, `check:content`.
+
+Three pages are generated and carry a "do not edit" comment: `reference/component-matrix.mdx`, `reference/release-gates.mdx` and `explanation/adr-index.mdx`. They read `docs/component-support.json`, `docs/releases/v1-readiness.json` and `docs/adr/*.md`, and they run `git log` for each evidence path. Change the source record, then run `npm run data`.
+
 Rules for a page:
 
-1. Pick one Diataxis type: tutorial, how-to, reference or explanation.
-2. Claim only what you verified. Name the board for any device claim.
-3. Run every command you show, and add its result to the [verification log](/docs/reference/verification-log).
-4. Give external claims a real URL.
+1. Pick one [Diataxis](https://diataxis.fr) type and put the file in that folder: `tutorials` (learn by doing, one path), `how-to` (solve one task), `reference` (facts without argument) or `explanation` (background). Add it to the folder's `meta.json`. [Readers and tasks](/docs/explanation/readers) explains the page order.
+2. Give it `title:` and `description:` front matter. `check:content` fails without both.
+3. Link internal pages as `/docs/section/page` with no trailing slash. `check:content` fails on a link that does not resolve.
+4. Claim only what you verified in the repository. Name the board for any device claim, and link the evidence directory.
+5. Run every command you show. Record the result in the [verification log](/docs/reference/verification-log).
+6. Give an external claim a URL.
 
-The component matrix, release gates and ADR index are generated. Edit the JSON or ADR source, then run `npm run data`. `npm run data:check` fails if the committed pages are stale. Run `npm run build` and `npm run check:content` before you push.
+The site is not deployed from this repository. The files under `docs-site/public` and the generated `llms` routes are described in [For LLMs and agents](/docs/llms).

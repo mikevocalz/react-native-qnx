@@ -1,0 +1,49 @@
+---
+title: 'ADR-0006: Expo development builds instead of Expo Go'
+description: Why QNX apps use a custom Expo development client and never Expo Go, and what the expo-qnx layer provides.
+---
+
+Record: [`docs/adr/0006-expo-dev-builds.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0006-expo-dev-builds.md), dated 2026-07-19.
+
+## Status
+
+The record states: "Accepted".
+
+## Context
+
+Expo Go is a generic prebuilt runtime. It cannot contain QNX-specific native code, QNX Screen integration or proprietary BSP libraries. Any QNX native module or renderer therefore needs a custom development build.
+
+## Decision
+
+Target Expo development builds. The `expo-qnx` platform layer implements Continuous Native Generation (CNG), prebuild, `run:qnx` and `export --platform qnx` workflows.
+
+## Consequences
+
+- Application developers build a QNX-specific development client.
+- Fast Refresh, bundle reload and the developer menu come from that client. The record adds that this was implemented on 2026-11-13 as the `RNQNX_ENABLE_DEV_SUPPORT` build of the consumer app, and points to the development workflow guide, `docs/getting-started/dev-workflow.md`.
+- Expo Go is not supported and, in the record's words, never will be for this platform.
+- Development builds reuse the QNX CMake build path that production builds use.
+
+## Alternatives rejected
+
+Adapting Expo Go, because QNX native code cannot ship inside the generic Expo Go binary.
+
+## What the source tree shows
+
+The packages the record names exist:
+
+- `packages/expo-qnx/` holds `src/cli.mjs` and a README. The README scopes the command narrowly: it discovers installed Expo modules that declare `qnx` support and generates their CMake linking metadata (`pnpm expo:qnx inspect` and `prepare`), and it says it is not `expo prebuild`, not an app template, not Expo Go support and not a QNX build or deployment command. The record's wording that `expo-qnx` implements CNG, prebuild, `run:qnx` and `export --platform qnx` therefore describes the intended platform layer, and the source shows only the module-linking part under that package name. Project creation, bundling and running live in `packages/react-native-qnx-cli/` (`create-project.mjs`, `prepare-native.mjs`, `build-native.mjs`, `run.mjs`, `dev-server.mjs`), where the verbs are `rnqnx project ...`.
+- `template/qnx/` is the project template (`index.js`, `babel.config.js`, `metro.config.js`, `run-app.sh`, `assets/`).
+- `packages/expo-qnx-autolinking`, `packages/expo-qnx-config-plugins` and `packages/expo-modules-core-qnx` carry the autolinking, config-plugin and Expo Modules Core parts of the story.
+- `cmake/RnqnxDevSupport.cmake` defines the dev-support build, which requires the Qt6 `WebSockets` component alongside Core, Gui, Network, Qml and Quick.
+- `packages/react-native-qnx-cli/src/dev-server.mjs` and `run.mjs` provide the developer-side commands. [ADR-0018](/docs/explanation/adr/0018-runner-hosting-and-sdp-boundary) adds the prebuilt-runner download that lets a developer skip the SDP on the host.
+
+See the [Expo setup how-to](/docs/how-to/expo-setup) for the workflow and the [CLI reference](/docs/reference/cli) for command names. This page does not restate them because the CLI surface changes faster than the decision.
+
+## Evidence
+
+Device evidence on the Raspberry Pi 400: `docs/evidence/pi400-dev-client-2026-11-13/` documents the development client running `apps/component-gallery`, built with `RNQNX_ENABLE_DEV_SUPPORT=ON` and launched by `rnqnx project dev`, with public-source Qt 6.12.0 at -O2. Its README and screenshots show a counter surviving a Fast Refresh edit, LogBox over a syntax error and over a render error, the developer menu opened from the Metro terminal, and the native error screen when Metro is unreachable. Input there was injected through Screen. The Expo SDK 58 line is exercised by `.github/workflows/sdk58-validation.yml`.
+
+## What would reverse this
+
+The record gives no explicit trigger, and its wording ("never will be") rules out a partial reversal. The facts underneath are that Expo Go ships one fixed native binary and that the platform needs native code in the app. Both would have to change before Expo Go could host a QNX app, and the project does not control either.

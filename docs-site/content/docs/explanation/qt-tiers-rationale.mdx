@@ -1,0 +1,54 @@
+---
+title: Why Qt modules come in tiers
+description: The reasoning behind the Qt module tiers, the licence gate, and the one-module-at-a-time rule.
+---
+
+The [Qt module tiers](/docs/reference/qt-tiers) are a list. This page explains why the list exists, what each tier is for, and which modules the renderer links today. The source of truth is [`docs/build-qt-modules.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/build-qt-modules.md), with the licence evidence in [ADR-0011](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0011-qt-module-licensing.md) and the licensing direction in [ADR-0013](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0013-open-source-qt.md).
+
+## Three costs, one list
+
+Adding a Qt module to a QNX build costs three things at once.
+
+1. **Licence posture.** Qt ships most modules under LGPLv3 or GPLv2 in its open-source offering, and a set of modules under GPLv3 only. ADR-0011 puts it this way: a GPLv3-only module in an LGPLv3 product "silently changes the licensing posture". The ADR therefore forbids building or shipping any GPLv3-only module without a documented product decision.
+2. **Size and build time on the target.** Rule 4 in `docs/build-qt-modules.md` requires every addition to record its QNX binary-size delta and cross-build-time delta before the pull request is accepted, and it treats a cell marked TBD as a blocker for that module.
+3. **QNX support.** Qt's documentation does not promise every module on QNX. ADR-0011 marks Qt Sensors as having no QNX support per Qt's docs, and marks Qt Multimedia, Quick Dialogs, SQL and others as "verify QNX backend".
+
+The tiers sort modules by how likely they are to pass all three checks and how soon a component needs them. They also give a reviewer a fixed place to look before approving a CMake change.
+
+```text
+Tier 0  always linked      Core, Gui, Qml, Quick     (+ Network, Shader Tools)
+Tier 1  component-backing  add when a component needs it
+Tier 2  per concrete need  some GPLv3-only, some LGPLv3, some unverified on QNX
+Tier 3  excluded           conflicts with Yoga, no QNX backend, or deprecated upstream
+```
+
+## What each tier means
+
+**Tier 0** is the minimum for the renderer. The host build declares `set(RNQNX_QT_HOST_MODULES Core Gui Qml Quick)` in `CMakeLists.txt`, and the view target links `Qt6::Quick`, `Qt6::Qml` and `Qt6::Gui`. Those four support `QtQuickItemFactory`, `QnxImageProvider` and `QtQuickMountingLayer` (see [architecture](/docs/explanation/architecture)). Qt Network joined Tier 0 for the image loader: `cmake/RnqnxReactQt.cmake` runs `find_package(Qt6 6.11.1 REQUIRED COMPONENTS Network)` and links `Qt6::Network` directly. The build document says this is declared on purpose instead of relying on transitive linking. ADR-0011 also lists Qt Shader Tools as Tier 0 for build-time shader processing.
+
+**Tier 1** holds modules that back a specific component or API: Quick Controls 2 and its Basic style, Quick Effects, SVG, Multimedia, Quick Dialogs 2, Image Formats and SQL. All are LGPLv3 or GPLv2. The rule is "adopt only when the feature lands", one module per change.
+
+**Tier 2** is for modules that need a concrete reason. It mixes two groups with different risk. Quick 3D, Graphs, Lottie, Quick Timeline, Quick 3D Physics, Canvas Painter, HTTP Server and the Qml compiler are listed as GPLv3 only. Material and Fusion styles, Remote Objects, Serial Bus, Serial Port, Positioning, Text To Speech, WebSockets and Print Support are LGPLv3 or GPLv2 but mostly marked "verify" for QNX. Qt PDF is listed as an extension or commercial module.
+
+**Tier 3** is the excluded set in ADR-0011. `QtQuickLayouts` is out because Yoga is the layout authority and [ADR-0001](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0001-qt-quick-backend.md) positions Qt items as absolute leaves without Qt anchors or layout managers. `QtWebEngine` is out because a Chromium cross-build for QNX aarch64 is out of scope, and `QtWebView` because QNX has no native web view to delegate to. Qt 3D, Charts and Data Visualization are out as deprecated upstream.
+
+## Why one module at a time
+
+A CMake link line does not show every Qt dependency. Four cases in the repository show the gap between what is linked and what is needed.
+
+- **Quick Shapes.** ADR-0011 records that the playground's View factory imports `QtQuick.Shapes`, an import nobody had listed as a requirement. The ADR adds it to the restricted runtime subset "explicitly, rather than rewriting the renderer". A search of `vnext/` and `native/` for `import QtQuick` finds plain `QtQuick` in 17 places and `QtQuick.Shapes` in two, including `native/qt/video/QnxVideo.qml`. No file there imports Quick Controls or Quick Layouts.
+- **Qt SVG.** `scripts/qt-public/build-svg-qnx.sh` builds qtsvg for QNX, and `stage-runtime.py` stages `libQt6Svg` and the `qsvg` image-format plugin. The renderer does not link `Qt6::Svg`. Qt finds the plugin at run time through `QT_PLUGIN_PATH`, and a runtime without it still renders everything except SVG `<Image>` sources.
+- **Image Formats.** `scripts/qt-public/build-imageformats-qnx.sh` cross-builds plugins such as `libqwebp.so`. No CMake target links `Qt6::ImageFormats`. The Pi 400 [run 2 receipt](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/SHA256SUMS) lists only `plugins/imageformats/libqsvg.so` in that directory, even though the same run captured animated GIF and WebP frames changing. The build document notes that the receipt "does not record which decoder produced them". A separate [image-format probe](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pi-image-formats-2026-11-13.md) found `libqgif.so` and `libqjpeg.so` in a tile directory and none in the Qt runtime's `plugins` folder.
+- **Qt WebSockets.** `RNQNX_ENABLE_WEBSOCKETS=ON` needs Core, Network and WebSockets, and defaults to OFF. On 2026-11-13 the module cross-built from the same archive with `scripts/qt-public/build-websockets-qnx.sh`. `libQt6WebSockets.so.6.12.0` is 333,792 bytes for aarch64le. Release apps do not link it. The development client is its first QNX user.
+
+The build document tracks plugin and run-time dependencies in the same table as link-time ones, so one review covers both.
+
+## Where the open-source decision fits
+
+ADR-0013 (accepted 2026-11-07) selects eligible open-source Qt under LGPL and GPL terms with no paid-licence prerequisite, and keeps project-authored code under MIT. It also says not to add GPL-only dependencies to the LGPL-compatible core build silently. The tiers turn that sentence into a checklist: the GPLv3-only modules are marked in the table, so adding `Quick3D` or `Lottie` needs the documented product decision that ADR-0011 requires before any CMake change.
+
+Earlier Pi 400 receipts used a private Qt evaluation licence, which ADR-0011 records as expiring on 17 November 2026. ADR-0013 states that the expiry belongs to those artifacts and does not expire independently obtained open-source Qt. The public-source runtime receipts from 2026-11-12 (`docs/evidence/pi400-public-qt-2026-11-12-b51b49c.md` and `docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md`) are the ones to read for the open-source path. The release gate "Open-source runtime packaging" remains pending (see [release gates](/docs/reference/release-gates)).
+
+## What is not measured
+
+Every QNX size and build-time cell in `docs/build-qt-modules.md` reads TBD, except the one WebSockets library size above and the -O2 aggregate in ADR-0017 (16 ELF files, 122.8 MB to 51.3 MB). No per-module cost table exists. ADR-0011's status is partly "Proposed": its historical evidence comes from Homebrew Qt 6.11.1 kegs and Qt's online documentation, and it says every row must be re-audited against the pinned Qt source tree. The per-module licence claims on this page repeat that ADR and have not been re-audited here.

@@ -2,10 +2,22 @@
   "title": "Explanation",
   "pages": [
     "architecture",
+    "render-lifecycle",
+    "layout",
     "threading",
-    "adr-index",
+    "input-path",
+    "image-pipeline",
+    "animation-runtime",
+    "why-fabric-only",
+    "qt-tiers-rationale",
+    "security",
+    "performance",
+    "releases",
+    "comparison",
     "versioning-and-support",
     "licensing-and-packaging",
+    "adr-index",
+    "adr",
     "readers",
     "docs-parity"
   ]

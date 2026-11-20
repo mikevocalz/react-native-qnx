@@ -1,0 +1,49 @@
+---
+title: 'ADR-0018: Runner hosting, signing and the SDP boundary'
+description: Where prebuilt QNX runners are published, how they are checked, and why no archive may contain QNX SDP or target-image files.
+---
+
+Record: [`docs/adr/0018-runner-hosting-and-sdp-boundary.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0018-runner-hosting-and-sdp-boundary.md), dated 2026-11-12.
+
+## Status
+
+The record states: "Accepted, 2026-11-12. The owner delegated this decision. No runner has been built or published yet. QNX's redistribution terms for SDP files have not been checked; this ADR avoids needing them."
+
+## Context
+
+`rnqnx runner fetch` downloads a prebuilt development runner listed in an `rnqnx-runner-manifest/v1` manifest and verifies its size and SHA-256. Four items were open: the publication host, how entries are signed or attested, the manifest URL, and whether a QNX runner archive may carry QNX SDP runtime files.
+
+A runner on the Pi 400 loads three groups of shared objects (the closure manifest's `device_loaded_objects`). Group 1 is project-built: the runner executable, `libhermesvmlean.so` and the public-source Qt libraries and plugins under LGPL-3.0. Group 2 is QNX system libraries from the board image: `libc.so.6`, `libc++.so.2`, `libm.so.3`, `libgcc_s.so.1`, `libscreen.so.1`, `libEGL.so.1`, `libGLESv2.so.1`, `libslog2.so.1`, `libsocket.so.4`, `libz.so.2`, `libzstd.so.1.5.6`, `libeventfd.so.1` and `libfsnotify.so.1`. Group 3 is the Mesa and libdrm overlay under `/data/pi400-graphics-compat`, taken from QNX Software Center packages. QNX's licence sets the redistribution terms for groups 2 and 3, and the project has not reviewed them.
+
+The v1 client refused every redirect, but GitHub Release asset URLs answer with a 302 to `release-assets.githubusercontent.com` or `objects.githubusercontent.com`, so a manifest on GitHub Releases could not be fetched.
+
+## Decision
+
+1. **Hosting.** Runner archives and the manifest are assets of GitHub Releases on `mikevocalz/react-native-qnx`. The manifest is an asset named `rnqnx-runner-manifest.json`. Once the first runner is published, the default manifest URL becomes the `releases/latest/download/rnqnx-runner-manifest.json` path on that repository. Until then `fetch` requires `--manifest` or `RNQNX_RUNNER_MANIFEST`.
+2. **Redirects.** The client follows a redirect only from an https `github.com` release-download path to another such path or to an https host under `githubusercontent.com`, for at most five hops. Every other redirect is refused.
+3. **Integrity and signing.** Three layers: the manifest's per-archive `sha256` and `size`, a `SHA256SUMS` asset, and GitHub artifact attestations (`actions/attest-build-provenance`) made by `.github/workflows/runner-release.yml`. A developer checks one with `gh attestation verify <file> --repo mikevocalz/react-native-qnx`. `fetch` does not call `gh`. Because QNX runners are built on a licensed-SDP machine outside GitHub-hosted runners, the attestation records the workflow run and commit that published the files and does not prove which machine compiled them. Release notes name the source commit, lockfile hash and Qt runtime hash.
+4. **No QNX SDP files in any runner archive.** A QNX runner archive holds project-built binaries, the public-source Qt libraries and plugins, and the Qt and LGPL notices, corresponding-source pointers and attribution files that `docs/packaging.md` requires. QNX system libraries, the Mesa and libdrm overlay, sysroot files and anything else from the SDP or a target image stay out. The developer's own licensed SDP and target image provide them. This ADR is not a legal opinion.
+5. **Enforcement in code.** Every QNX manifest entry lists `targetLibraries`. After the hash check, `fetch` lists the tar.gz without extracting it and refuses a QNX runner containing a file named like a QNX library or any name in its own `targetLibraries`. Absolute paths and `..` are refused for every target, and a refused download is deleted. `fetch --target-libs <file>` compares `targetLibraries` with a listing taken on the board and reports the missing names, and without the flag the output says `targetLibrariesChecked: false`. `scripts/verify-runner-archive.mjs` runs the same content check in the release workflow before anything is attested.
+
+## Consequences
+
+A developer needs a QNX target image with the group 2 libraries. The Pi 400 board used for the receipts had them in `/usr/lib` and `/proc/boot`. The group 3 overlay lives outside the image, and a Pi 400 developer installs it from QNX Software Center under their own account. The "Needs the SDP: No" column for the prebuilt runner means no SDP on the development host, and a licensed target image is still required.
+
+The manifest is trusted over TLS to github.com. A compromised repository could publish a bad manifest with a matching archive, and the attestation check catches files not published by this repository's workflow only when a developer runs it. `targetLibraries` is a new required field for QNX entries, and since no v1 manifest has been published, no published file breaks.
+
+## Alternatives rejected
+
+- A separate CDN or object store, because GitHub Releases is free for this public repository, sits beside the source that the LGPL corresponding-source offer points to, and supports attestations without another key.
+- A project signing key (minisign, cosign), because it adds key custody and rotation for one maintainer. Keyless attestations tie files to the repository's workflow identity.
+- Following all https redirects, because an open redirect on the path would let another host supply the root of trust.
+- Shipping the QNX libraries for convenience, until QNX's terms are checked.
+
+## Evidence
+
+Source tree: `packages/react-native-qnx-cli/src/runner.mjs` (it defines `QNX_SDP_FILE_PATTERNS`, and a check treats a name as forbidden if it matches a pattern or appears among the runner's own provided libraries), `scripts/verify-runner-archive.mjs`, `.github/workflows/runner-release.yml` (its header comment repeats that QNX runners are built on a licensed machine, and its "Check archive against manifest and SDP boundary" step runs before attestation), `tests/js/qnx-runner-manifest.test.mjs` and `docs/packaging.md`. The how-to [Use the prebuilt runner](/docs/how-to/prebuilt-runner) covers the developer flow.
+
+Device evidence on the Raspberry Pi 400: the closure manifests `docs/evidence/qt-public-runtime-closure-2026-11-12-b51b49c.json` and `qt-public-runtime-closure-o2-2026-11-12-a79e16a.json` list the loaded objects that the record sorts into the three groups. The record is explicit that no runner has been built or published, so this ADR has no published-runner receipt. Its checks have host tests only. The release steps in the record's Notes require a runner staged with the Qt runtime from an [ADR-0017](/docs/explanation/adr/0017-qt-qnx-optimization-level) build.
+
+## What would reverse this
+
+The record gives one explicit condition. Redistributing SDP files stays out of scope until QNX's terms have been checked by the owner, and a favorable reading could relax item 4. Item 5's pattern list is code, and a change to it needs a change to the ADR's boundary. A repository move or a key-custody requirement would reopen hosting and signing in items 1 and 3. The Notes also allow an archive built on a self-hosted runner to be attested in the same job that compiles it, which would replace manual step 4 of the release steps.
