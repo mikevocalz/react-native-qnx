@@ -4,8 +4,8 @@
     "readiness": "c376467"
   },
   "counts": {
-    "Device-verified (Pi 400, scoped)": 7,
-    "Host-tested": 14,
+    "Device-verified (Pi 400, scoped)": 12,
+    "Host-tested": 9,
     "Untested": 3
   },
   "total": 24,
