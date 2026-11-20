@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "evidenceBaseline": {
+    "snapshotNote": "Per-PR entries below are snapshots taken at their own reviewedAt dates. PRs 149, 159 and 161 merged on 2026-11-19 and are no longer drafts. All eleven gates remain pending.",
     "reviewedAt": "2026-11-07",
     "sourceCommit": "be71bc9",
     "qnxSdp": "8.0.5",

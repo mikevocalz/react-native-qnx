@@ -68,7 +68,7 @@ candidate needs its own.
 
 ## Pending
 
-Every gate is `pending` on 2026-11-11.
+All eleven gates are `pending` (checked 2026-11-19).
 
 | Gate             | What is missing                                                                              |
 | ---------------- | -------------------------------------------------------------------------------------------- |
@@ -87,14 +87,14 @@ Every gate is `pending` on 2026-11-11.
 ## Known limits
 
 - No receipt exists for stock Pi 4 QSTI. Pi 400 results do not carry over.
-- Graphics starts manually on the Pi 400; the recovery boot stays selected.
+- The Pi 400 boots to the QNX desktop. No React Native app starts at boot; apps are launched by hand ([desktop guide](../getting-started/pi400-desktop-app.md)).
 - IME and multi-touch are not supported. Worklets, Reanimated and Gesture Handler
   are integrated and ran on the Pi 400 on 2026-11-19 for single-pointer pan, tap,
   double-tap, a swipeable list and a `withSpring` card; pinch, rotation, gestures
   that keep running while JavaScript is blocked, and 1920x1080 were not run
   ([run 1](../evidence/pr149-pi400-run1-2026-11-19/README.md),
   [run 2](../evidence/pr149-pi400-run2-2026-11-19/README.md)).
-- The Pi 400 receipts used a Qt 6.12.0 evaluation build that expires on
-  2026-11-17. Release artifacts need the public-source build from `distribution`.
+- The 2026-11-06 and 2026-11-07 Pi 400 receipts used a Qt 6.12.0 evaluation build that expired on
+  2026-11-17. The 2026-11-12 and 2026-11-19 receipts used the public-source build. Release artifacts need the public-source build from `distribution`.
 - The CLI and template work inside this repository checkout. No npm package is
   published.

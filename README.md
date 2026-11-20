@@ -96,12 +96,10 @@ Reanimated, Gesture Handler, Qt SVG and RNSVG on.
 
 - Reanimated, with Worklets: `withSpring` ran to its end state and the UI frame counter advanced.
   [Run 2 receipt](docs/evidence/pr149-pi400-run2-2026-11-19/README.md), `22039ec`.
-- Gesture Handler: pan with release, tap and double-tap.
-  Same receipt, `22039ec`.
+- Gesture Handler: pan with release and double-tap ([run 2](docs/evidence/pr149-pi400-run2-2026-11-19/README.md)); a single tap and a swipeable list ([run 1](docs/evidence/pr149-pi400-run1-2026-11-19/README.md)). Both at `22039ec`.
 - `react-native-svg` 15.16.0: fill rules, gradients, filters, patterns, text and touch targets.
   Same receipt, `22039ec`.
-- `expo-image`: animated GIF and WebP frames and resize. [Receipt](docs/evidence/expo-image-device-2026-11-13),
-  `df434d5`.
+- `expo-image`: animated GIF start and stop, and the resize and API card ([2026-11-13 receipt](docs/evidence/expo-image-device-2026-11-13), `df434d5`). Animated WebP frames and the resize card with `startAnimating` are in the [run 2 receipt](docs/evidence/pr149-pi400-run2-2026-11-19/README.md), `22039ec`.
 - Keyboard: Escape closed a Modal and the drawer, and a held Down key moved a focus ring. The
   key events were synthetic Screen events, not a USB keyboard. Same receipt, `22039ec`.
 - Audio: no component named QtAudio exists in the code. QtVideo plays audio files through Qt AudioOutput, and run 2 did not build it in.
@@ -110,7 +108,7 @@ Reanimated, Gesture Handler, Qt SVG and RNSVG on.
 ## Requirements
 
 - Host for JavaScript work: macOS or Linux, Node 26 or newer, pnpm 12.18.0.
-- Host renderer: Qt 6.11.1 or newer, CMake and Ninja. The quick start was run with Qt 6.12.0, CMake 4.4.5 and Ninja 1.13.2 on macOS.
+- Host renderer: Qt 6.11.1 or newer, CMake and Ninja. The quick start commands were run on macOS with Qt 6.12.0, CMake 4.4.5 and Ninja 1.13.2 ([receipt](docs/evidence/quickstart-host-2026-11-19.md)).
 - QNX cross-builds: an x86-64 Linux host (Ubuntu 22.04 is the canonical one) with a licensed QNX SDP
   8.0.5, because SDP 8.0 ships Linux and Windows host tools only. `pnpm qnx doctor` reports gaps.
 - Target: a Raspberry Pi 400 on a custom BCM2711 QNX 8.0.5 image, or a stock Pi 4 or Pi 5 on QSTI

@@ -140,7 +140,10 @@ const adrs = readdirSync(adrDir)
   .map((f) => {
     const txt = readFileSync(join(adrDir, f), 'utf8');
     const title = txt.match(/^# (.+)$/m)?.[1].replace(/^ADR-\d+:\s*/, '') ?? f;
-    const raw = (txt.match(/## Status\s+([\s\S]*?)(?:\n\s*\n|$)/)?.[1] ?? '').replace(/\s*\n\s*/g, ' ').trim().replace(/\[([^\]]+)\]\([^)]*\)/g, '$1');
+    const raw = (txt.match(/## Status\s+([\s\S]*?)(?:\n\s*\n|$)/)?.[1] ?? '')
+      .replace(/\s*\n\s*/g, ' ')
+      .trim()
+      .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1');
     // First sentence; never cut mid-sentence.
     const status = raw.match(/^.*?\.(?=\s|$)/)?.[0] ?? raw;
     return { file: f, num: f.slice(0, 4), title, status, sha: shaFor([`docs/adr/${f}`]) };

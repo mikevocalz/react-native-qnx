@@ -40,7 +40,7 @@ Counts: 7 Device-verified (Pi 400, scoped), 14 Host-tested, 3 Untested.
 | `KeyboardAvoidingView` | Host-tested | no-op | unverified | untested | `79a4279` (component-support.json) | Renders children as a View; behavior, keyboardVerticalOffset and enabled are ignored because no Keyboard module is wired. |
 | `ActivityIndicator` | Host-tested | supported | unverified | untested | `79a4279` (component-support.json) | Qt Quick spinner with animating, color, hidesWhenStopped and size. |
 | `RefreshControl` | Host-tested | no-op | unverified | untested | `79a4279` (component-support.json) | Renders nothing; refreshing and onRefresh are accepted and ignored. |
-| `Modal` | Device-verified (Pi 400, scoped) | partial | scoped | untested | [`22039ec`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md) | Full-screen overlay; onShow, onRequestClose and onDismiss are unwired. |
+| `Modal` | Device-verified (Pi 400, scoped) | partial | scoped | untested | [`22039ec`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/evidence/pr149-pi400-run2-2026-11-19/README.md) | Full-screen overlay; onShow and onDismiss are unwired. |
 | `SafeAreaView` | Host-tested | partial | unverified | untested | `79a4279` (component-support.json) | Mounts as a View with zero insets. |
 | `Switch` | Host-tested | supported | unverified | untested | `79a4279` (component-support.json) | Renders and toggles; value, disabled, tint props and onValueChange are host-tested. |
 | `StatusBar` | Host-tested | no-op | unverified | untested | `79a4279` (component-support.json) | Static API calls have no effect. |
