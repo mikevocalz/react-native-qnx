@@ -9,6 +9,7 @@
     "data": "node scripts/generate-data.mjs && node scripts/generate-api.mjs",
     "data:check": "node scripts/generate-data.mjs --check && node scripts/generate-api.mjs --check",
     "check:content": "node scripts/check-content.mjs",
+    "check:search": "node scripts/check-search.mjs",
     "types:check": "next typegen && tsc --noEmit",
     "lint": "eslint",
     "api": "node scripts/generate-api.mjs",

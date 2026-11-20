@@ -24,7 +24,7 @@ export default function DefaultSearchDialog(props: SharedProps) {
   return (
     <SearchDialog {...search} {...props}>
       <SearchDialogOverlay />
-      <SearchDialogContent>
+      <SearchDialogContent className="rounded-[var(--rq-r-l)]">
         <SearchDialogHeader>
           <SearchDialogIcon />
           <SearchDialogInput />

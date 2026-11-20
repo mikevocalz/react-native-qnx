@@ -50,3 +50,6 @@ jobs:
 
       - name: Check links, front matter and build output
         run: npm run check:content
+
+      - name: Check the search trigger matches across layouts
+        run: npm run check:search

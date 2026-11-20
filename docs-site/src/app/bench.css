@@ -1283,3 +1283,31 @@ figure.shiki code span {
     animation-timeline: scroll(self inline);
   }
 }
+
+/* Top bar: the docs layout follows the home layout's order. */
+/* DocsLayout (notebook) centres the search between two flex-1 columns and puts the text links
+   on the right. The links are drawn beside the wordmark by NavLinks, so its own copy is hidden,
+   and the right column stops growing so the search sits against it, as on the home page. */
+#nd-subnav [data-header-body] > div:last-child {
+  flex: none;
+}
+#nd-subnav [data-header-body] > div:last-child > div:first-child {
+  display: none;
+}
+
+/* Search trigger: focus ring is the site-wide teal ring on both the field and the icon button. */
+[data-search-full]:focus-visible,
+[data-search]:focus-visible {
+  outline: 2px solid var(--rq-teal);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Search dialog: Bench radii. The panel is --rq-r-l (set in components/search.tsx); rows are --rq-r-m so they sit concentric
+   with the panel's 4px list padding. */
+#fd-search-dialog-content input {
+  border-radius: var(--rq-r-s);
+}
+#fd-search-list > * {
+  border-radius: var(--rq-r-m);
+}
