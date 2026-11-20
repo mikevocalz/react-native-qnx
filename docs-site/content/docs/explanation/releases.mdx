@@ -27,16 +27,16 @@ required workflows ->  receipts under docs/evidence  ->  gate evidence list
 
 The acceptance text in the record is the authority. In summary, from `docs/releases/v1-readiness.md`:
 
-| Gate | Asks for |
-| --- | --- |
-| `distribution` | A qualified public-source Qt build with notices, hashes, library and plugin closure, kept apart from evaluation artifacts and QNX SDK payloads |
-| `ci` | Required checks passing on the exact candidate commit, on runners the owner authorizes |
-| `cold-boot` | 20 consecutive supervised cold boots on the named board and image. Application relaunches do not count |
-| `device-parity` | A device disposition for every component on stock Pi 4 QSTI, plus keyboard and touch proof. Pi 400 results stay separate |
-| `performance` | Startup-to-first-frame, presented-frame intervals and RSS for Hello World, a 1000-row list and a drawer drag |
-| `developer-path` | A new licensed developer creates, builds, deploys and runs an app from the documented prerequisites |
-| `documentation` | Versioned getting-started, support limits, evidence gallery, ADRs and release notes with reviewed local links |
-| `app-identity`, `window-chrome`, `expo`, `dependencies` | Icon and name handling, a native QML title bar, Expo create and prebuild behaviour, and updated or held packages |
+| Gate                                                    | Asks for                                                                                                                                       |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `distribution`                                          | A qualified public-source Qt build with notices, hashes, library and plugin closure, kept apart from evaluation artifacts and QNX SDK payloads |
+| `ci`                                                    | Required checks passing on the exact candidate commit, on runners the owner authorizes                                                         |
+| `cold-boot`                                             | 20 consecutive supervised cold boots on the named board and image. Application relaunches do not count                                         |
+| `device-parity`                                         | A device disposition for every component on stock Pi 4 QSTI, plus keyboard and touch proof. Pi 400 results stay separate                       |
+| `performance`                                           | Startup-to-first-frame, presented-frame intervals and RSS for Hello World, a 1000-row list and a drawer drag                                   |
+| `developer-path`                                        | A new licensed developer creates, builds, deploys and runs an app from the documented prerequisites                                            |
+| `documentation`                                         | Versioned getting-started, support limits, evidence gallery, ADRs and release notes with reviewed local links                                  |
+| `app-identity`, `window-chrome`, `expo`, `dependencies` | Icon and name handling, a native QML title bar, Expo create and prebuild behaviour, and updated or held packages                               |
 
 The record's `evidenceBaseline` block says the stock-target result is pending, the Pi 400 image is experimental and hosted checks "have run since" an earlier block by billing and spending limits. It describes performance as "unmeasured on QNX".
 

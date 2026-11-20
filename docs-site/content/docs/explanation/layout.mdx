@@ -29,20 +29,32 @@ Yoga is the copy bundled with the selected React Native release. The project rec
   <text x="120" y="52" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">surface size, left to right</text>
   <line x1="230" y1="38" x2="290" y2="90" markerEnd="url(#lay-arrow)" />
 
-  <rect x="10" y="150" width="220" height="56" rx="6" />
-  <text x="120" y="174" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtTextLayoutManager</text>
-  <text x="120" y="192" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">QTextLayout measure()</text>
-  <line x1="230" y1="178" x2="290" y2="126" markerEnd="url(#lay-arrow)" />
+<rect x="10" y="150" width="220" height="56" rx="6" />
+<text x="120" y="174" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  QtTextLayoutManager
+</text>
+<text x="120" y="192" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  QTextLayout measure()
+</text>
+<line x1="230" y1="178" x2="290" y2="126" markerEnd="url(#lay-arrow)" />
 
-  <rect x="292" y="80" width="170" height="56" rx="6" />
-  <text x="377" y="104" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Yoga in ShadowTree</text>
-  <text x="377" y="122" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">LayoutMetrics per node</text>
-  <line x1="462" y1="108" x2="500" y2="108" markerEnd="url(#lay-arrow)" />
+<rect x="292" y="80" width="170" height="56" rx="6" />
+<text x="377" y="104" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  Yoga in ShadowTree
+</text>
+<text x="377" y="122" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  LayoutMetrics per node
+</text>
+<line x1="462" y1="108" x2="500" y2="108" markerEnd="url(#lay-arrow)" />
 
-  <rect x="502" y="80" width="248" height="56" rx="6" />
-  <text x="626" y="104" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">toLayoutFrame, updateLayout</text>
-  <text x="626" y="122" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">x, y, width, height on QQuickItem</text>
-  <line x1="626" y1="136" x2="626" y2="170" markerEnd="url(#lay-arrow)" />
+<rect x="502" y="80" width="248" height="56" rx="6" />
+<text x="626" y="104" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  toLayoutFrame, updateLayout
+</text>
+<text x="626" y="122" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  x, y, width, height on QQuickItem
+</text>
+<line x1="626" y1="136" x2="626" y2="170" markerEnd="url(#lay-arrow)" />
 
   <rect x="502" y="172" width="248" height="56" rx="6" />
   <text x="626" y="196" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">updateStyle</text>
@@ -85,12 +97,12 @@ The host watches the window's width and height (or the chrome content root's siz
 
 ## Evidence
 
-| Claim | Evidence | Scope |
-| --- | --- | --- |
-| Yoga geometry lands on Qt items | `tests/cpp/ShadowTreeMountingHostTest.cpp`, `tests/cpp/QtQuickMountingLayerHostTest.cpp` (`updateLayoutAppliesAbsoluteGeometry`) | Host |
-| Gallery pages stay inside the window at 586x600, 880x600 and 1280x800, and a drawer page does not change the tab pages | `docs/evidence/gallery-yoga-layout-2026-11-13.md`, `tests/js/qnx-gallery-yoga-layout.test.mjs` | Host. It uses `yoga-layout` 3.2.1 from npm with a fixed 0.55 em text advance, so it does not exercise the Qt text measure or the native tree |
-| Live resize on the device re-flows the gallery grid | `docs/evidence/tile-layout-pi400-2026-11-13/README.md` | Pi 400, historical screenshots. The receipt records no host identity, commit or full commands, so it cannot qualify the current head |
-| Retained SVG geometry changes schedule layout | `docs/validation/pr161-geometry-2026-11-16.md` | Host, offscreen Qt Quick |
+| Claim                                                                                                                  | Evidence                                                                                                                         | Scope                                                                                                                                        |
+| ---------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Yoga geometry lands on Qt items                                                                                        | `tests/cpp/ShadowTreeMountingHostTest.cpp`, `tests/cpp/QtQuickMountingLayerHostTest.cpp` (`updateLayoutAppliesAbsoluteGeometry`) | Host                                                                                                                                         |
+| Gallery pages stay inside the window at 586x600, 880x600 and 1280x800, and a drawer page does not change the tab pages | `docs/evidence/gallery-yoga-layout-2026-11-13.md`, `tests/js/qnx-gallery-yoga-layout.test.mjs`                                   | Host. It uses `yoga-layout` 3.2.1 from npm with a fixed 0.55 em text advance, so it does not exercise the Qt text measure or the native tree |
+| Live resize on the device re-flows the gallery grid                                                                    | `docs/evidence/tile-layout-pi400-2026-11-13/README.md`                                                                           | Pi 400, historical screenshots. The receipt records no host identity, commit or full commands, so it cannot qualify the current head         |
+| Retained SVG geometry changes schedule layout                                                                          | `docs/validation/pr161-geometry-2026-11-16.md`                                                                                   | Host, offscreen Qt Quick                                                                                                                     |
 
 No receipt measures layout time on a device. The [component matrix](/docs/reference/component-matrix) lists which components have device scenarios.
 

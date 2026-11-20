@@ -27,50 +27,100 @@ This page covers the threads, the seams between them and the evidence. Sources: 
   <text x="160" y="20" textAnchor="middle" fill="currentColor" stroke="none" fontSize="14">Qt GUI thread (also the RN JS thread)</text>
   <text x="600" y="20" textAnchor="middle" fill="currentColor" stroke="none" fontSize="14">rnqnx-ui-worklet thread</text>
 
-  <rect x="10" y="34" width="300" height="52" rx="6" />
-  <text x="160" y="56" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Hermes RN runtime</text>
-  <text x="160" y="74" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">React, useSharedValue, scheduleOnUI</text>
-  <rect x="450" y="34" width="300" height="52" rx="6" />
-  <text x="600" y="56" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtUiThread, QtUIScheduler</text>
-  <text x="600" y="74" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">one queued call per batch</text>
-  <line x1="310" y1="60" x2="448" y2="60" markerEnd="url(#anim-arrow)" />
-  <text x="380" y="52" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">QtUiThread::post</text>
+<rect x="10" y="34" width="300" height="52" rx="6" />
+<text x="160" y="56" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  Hermes RN runtime
+</text>
+<text x="160" y="74" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  React, useSharedValue, scheduleOnUI
+</text>
+<rect x="450" y="34" width="300" height="52" rx="6" />
+<text x="600" y="56" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  QtUiThread, QtUIScheduler
+</text>
+<text x="600" y="74" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  one queued call per batch
+</text>
+<line x1="310" y1="60" x2="448" y2="60" markerEnd="url(#anim-arrow)" />
+<text x="380" y="52" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  QtUiThread::post
+</text>
 
-  <rect x="10" y="110" width="300" height="52" rx="6" />
-  <text x="160" y="132" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtRuntimeTaskQueue</text>
-  <text x="160" y="150" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">runs JS callbacks on the owner</text>
-  <rect x="450" y="110" width="300" height="52" rx="6" />
-  <text x="600" y="132" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">UI Worklet Runtime</text>
-  <text x="600" y="150" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">worklets, gesture and event handlers</text>
-  <line x1="450" y1="136" x2="312" y2="136" markerEnd="url(#anim-arrow)" />
-  <text x="380" y="128" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">scheduleOnRN</text>
+<rect x="10" y="110" width="300" height="52" rx="6" />
+<text x="160" y="132" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  QtRuntimeTaskQueue
+</text>
+<text x="160" y="150" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  runs JS callbacks on the owner
+</text>
+<rect x="450" y="110" width="300" height="52" rx="6" />
+<text x="600" y="132" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  UI Worklet Runtime
+</text>
+<text x="600" y="150" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  worklets, gesture and event handlers
+</text>
+<line x1="450" y1="136" x2="312" y2="136" markerEnd="url(#anim-arrow)" />
+<text x="380" y="128" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  scheduleOnRN
+</text>
 
-  <rect x="10" y="186" width="300" height="52" rx="6" />
-  <text x="160" y="208" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtFrameBridge</text>
-  <text x="160" y="226" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">QQuickWindow::afterAnimating</text>
-  <rect x="450" y="186" width="300" height="52" rx="6" />
-  <text x="600" y="208" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">requestAnimationFrame batch</text>
-  <text x="600" y="226" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">steady_clock milliseconds</text>
-  <line x1="310" y1="212" x2="448" y2="212" markerEnd="url(#anim-arrow)" />
-  <text x="380" y="204" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">frame batch</text>
+<rect x="10" y="186" width="300" height="52" rx="6" />
+<text x="160" y="208" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  QtFrameBridge
+</text>
+<text x="160" y="226" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  QQuickWindow::afterAnimating
+</text>
+<rect x="450" y="186" width="300" height="52" rx="6" />
+<text x="600" y="208" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  requestAnimationFrame batch
+</text>
+<text x="600" y="226" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  steady_clock milliseconds
+</text>
+<line x1="310" y1="212" x2="448" y2="212" markerEnd="url(#anim-arrow)" />
+<text x="380" y="204" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  frame batch
+</text>
 
-  <rect x="10" y="262" width="300" height="52" rx="6" />
-  <text x="160" y="284" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtSchedulerDelegate</text>
-  <text x="160" y="302" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">mounts into Qt Quick items</text>
-  <rect x="450" y="262" width="300" height="52" rx="6" />
-  <text x="600" y="284" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Reanimated commit</text>
-  <text x="600" y="302" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">animated props from the UI thread</text>
-  <line x1="450" y1="288" x2="312" y2="288" markerEnd="url(#anim-arrow)" />
-  <text x="380" y="280" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">owner poster</text>
+<rect x="10" y="262" width="300" height="52" rx="6" />
+<text x="160" y="284" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  QtSchedulerDelegate
+</text>
+<text x="160" y="302" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  mounts into Qt Quick items
+</text>
+<rect x="450" y="262" width="300" height="52" rx="6" />
+<text x="600" y="284" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  Reanimated commit
+</text>
+<text x="600" y="302" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  animated props from the UI thread
+</text>
+<line x1="450" y1="288" x2="312" y2="288" markerEnd="url(#anim-arrow)" />
+<text x="380" y="280" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  owner poster
+</text>
 
-  <rect x="10" y="338" width="300" height="52" rx="6" />
-  <text x="160" y="360" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtGestureInput</text>
-  <text x="160" y="378" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">event filter, GestureHandlerCore Registry</text>
-  <rect x="450" y="338" width="300" height="52" rx="6" />
-  <text x="600" y="360" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Gesture worklet callbacks</text>
-  <text x="600" y="378" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">onBegin, onUpdate, onEnd</text>
-  <line x1="310" y1="364" x2="448" y2="364" markerEnd="url(#anim-arrow)" />
-  <text x="380" y="356" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">pointer events</text>
+<rect x="10" y="338" width="300" height="52" rx="6" />
+<text x="160" y="360" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  QtGestureInput
+</text>
+<text x="160" y="378" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  event filter, GestureHandlerCore Registry
+</text>
+<rect x="450" y="338" width="300" height="52" rx="6" />
+<text x="600" y="360" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  Gesture worklet callbacks
+</text>
+<text x="600" y="378" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  onBegin, onUpdate, onEnd
+</text>
+<line x1="310" y1="364" x2="448" y2="364" markerEnd="url(#anim-arrow)" />
+<text x="380" y="356" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  pointer events
+</text>
 
   <text x="380" y="412" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">The Qt render thread, when present, draws the scene graph and runs no worklet or React code.</text>
 </svg>
@@ -101,11 +151,11 @@ The platform patches upstream C++ in generated copies with one-line text substit
 
 The recognizers are in `vnext/src/gesture/GestureHandlerCore.cpp`, a registry with no Qt or React dependency. `QtGestureInput` observes window mouse and touch events and never consumes them, so `Pressable` keeps working beside it (see [Input path](/docs/explanation/input-path)).
 
-| Handler | Status |
-| --- | --- |
-| Pan, Tap, LongPress, Fling | Implemented with the options the source lists, for example Pan min distance, offsets and velocity, Tap count, duration and delay |
-| Manual | Driven by `GestureStateManager` |
-| Pinch, Rotation, Native, Hover | Accepted, then fail on the first pointer with a log line |
+| Handler                        | Status                                                                                                                           |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| Pan, Tap, LongPress, Fling     | Implemented with the options the source lists, for example Pan min distance, offsets and velocity, Tap count, duration and delay |
+| Manual                         | Driven by `GestureStateManager`                                                                                                  |
+| Pinch, Rotation, Native, Hover | Accepted, then fail on the first pointer with a log line                                                                         |
 
 By default the first handler to activate fails every other begun or active handler that shares a pointer. `simultaneousHandlers`, `waitFor` and `blocksHandlers` change that. Pointer-data callbacks, multi-pointer pan averaging, hit slop, `RNGestureHandlerButton` behavior (it mounts as a plain container), arbitration with Qt scrolling and coordinate spaces for transformed ancestors are not implemented.
 
@@ -115,12 +165,12 @@ At shutdown the platform stops frames, marks the RN runtime dead, invalidates th
 
 ## What the Pi 400 showed
 
-| Observation | Source |
-| --- | --- |
-| A worklet reports thread role `ui-worklet`, React reports `gui` | `docs/evidence/worklets-frame-2026-11-13/device-before-flush.txt`, run 1 `app.txt` |
-| 30 frame callbacks in 465 ms (worst gap 18 ms) and in 472 ms (17 ms) after the frame fix; 30 in 459 ms (worst gap 23 ms) in PR 149 run 1 | same files, `docs/evidence/pr149-pi400-run1-2026-11-19/README.md` |
-| `withSpring` mid-travel, then finished with the box at its end position, and a `withTiming` card with intermediate pixels | run 1 and run 2 screenshots, `docs/validation/pr149-frame-mount-2026-11-13.md` |
-| Pan moves a card and it springs back on release; single tap counts 1; a double click reports "double tap"; after a swipe, a swipeable list's first row (Inbox) is gone from the visible rows | run 1 and run 2 READMEs |
+| Observation                                                                                                                                                                                  | Source                                                                             |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| A worklet reports thread role `ui-worklet`, React reports `gui`                                                                                                                              | `docs/evidence/worklets-frame-2026-11-13/device-before-flush.txt`, run 1 `app.txt` |
+| 30 frame callbacks in 465 ms (worst gap 18 ms) and in 472 ms (17 ms) after the frame fix; 30 in 459 ms (worst gap 23 ms) in PR 149 run 1                                                     | same files, `docs/evidence/pr149-pi400-run1-2026-11-19/README.md`                  |
+| `withSpring` mid-travel, then finished with the box at its end position, and a `withTiming` card with intermediate pixels                                                                    | run 1 and run 2 screenshots, `docs/validation/pr149-frame-mount-2026-11-13.md`     |
+| Pan moves a card and it springs back on release; single tap counts 1; a double click reports "double tap"; after a swipe, a swipeable list's first row (Inbox) is gone from the visible rows | run 1 and run 2 READMEs                                                            |
 
 The frame figures are intervals between callbacks. They are not presentation timing, and no record shows frames reaching the display on schedule.
 

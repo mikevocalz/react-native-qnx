@@ -1,5 +1,5 @@
 ---
-title: "ADR-0002: Qt Quick item instantiation"
+title: 'ADR-0002: Qt Quick item instantiation'
 description: How Fabric creates Qt Quick items (one cached QQmlComponent per component type), the host benchmark behind it, and the Pi evidence still open.
 ---
 
@@ -33,11 +33,11 @@ If the candidate needs a private header or a behavioral Qt patch, work stops for
 
 The host measurement settles the shape of the strategy and leaves the target open. Under [ADR-0010](/docs/explanation/adr/0010-macos-qt-development-host), the cached-component path was implemented and measured on macOS against Qt 6.11.1, with the offscreen QPA on Apple Silicon, in a Debug build with strict warnings, using 1,000 `Rectangle`-backed items:
 
-| Phase | Time | Per item |
-| --- | --- | --- |
-| Create, parent and set absolute geometry | 12.856 ms | 12.9 µs |
-| 10 update passes (x and opacity per item) | 0.456 ms | 46 ns |
-| Destroy | 0.516 ms | 0.5 µs |
+| Phase                                     | Time      | Per item |
+| ----------------------------------------- | --------- | -------- |
+| Create, parent and set absolute geometry  | 12.856 ms | 12.9 µs  |
+| 10 update passes (x and opacity per item) | 0.456 ms  | 46 ns    |
+| Destroy                                   | 0.516 ms  | 0.5 µs   |
 
 Updates are the path Fabric drives each frame, and they cost about three orders of magnitude less than creation. The probe also asserts that destroying items leaves no residual children on the content item and that an unregistered type fails instead of returning a bare item. The view layer, `rnqnx_views_qt`, uses public headers only, which satisfies item 3 for Qt 6.11.1.
 

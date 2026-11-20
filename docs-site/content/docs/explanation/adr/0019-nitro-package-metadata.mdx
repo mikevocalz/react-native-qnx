@@ -1,5 +1,5 @@
 ---
-title: "ADR-0019: QNX build metadata for Nitro packages"
+title: 'ADR-0019: QNX build metadata for Nitro packages'
 description: How a third-party Nitro module declares its QNX CMake project and registration function in package.json, and how the consumer build links it.
 ---
 
@@ -19,20 +19,44 @@ The record lists what already exists. Expo modules declare QNX support in `expo-
 
 A Nitro module declares its QNX build under a `react-native-qnx` key in its own `package.json`, with four required fields under `nitro`: `platforms` (a nonempty array, only `"qnx"` today), `cmakeListsPath` (a package-relative path ending in `CMakeLists.txt`, with no `..`, absolute paths, backslashes, symlinks or shell-special characters), `target` (the CMake target the file defines, with the `rnqnx_` prefix reserved) and `initializer` (a `void()` C++ function named with `::` separators that registers the package's hybrid classes). Any other key under `react-native-qnx` or `react-native-qnx.nitro` is an error, so a typo fails and nothing is silently ignored.
 
-<svg role="img" aria-label="Nitro package discovery pipeline from package.json to the generated registration header" viewBox="0 0 760 150" width="100%" fill="none" stroke="currentColor" strokeWidth="1.5">
+<svg
+  role="img"
+  aria-label="Nitro package discovery pipeline from package.json to the generated registration header"
+  viewBox="0 0 760 150"
+  width="100%"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="1.5"
+>
   <title>Nitro package metadata pipeline</title>
   <rect x="10" y="40" width="150" height="70" rx="6" />
-  <text x="85" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">dependency</text>
-  <text x="85" y="90" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">package.json</text>
+  <text x="85" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+    dependency
+  </text>
+  <text x="85" y="90" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+    package.json
+  </text>
   <rect x="210" y="40" width="150" height="70" rx="6" />
-  <text x="285" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">prepare-native</text>
-  <text x="285" y="90" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">native-app.json</text>
+  <text x="285" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+    prepare-native
+  </text>
+  <text x="285" y="90" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+    native-app.json
+  </text>
   <rect x="410" y="40" width="150" height="70" rx="6" />
-  <text x="485" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">RnqnxConsumerApp</text>
-  <text x="485" y="90" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">.cmake</text>
+  <text x="485" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+    RnqnxConsumerApp
+  </text>
+  <text x="485" y="90" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+    .cmake
+  </text>
   <rect x="610" y="40" width="140" height="70" rx="6" />
-  <text x="680" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">NitroModules</text>
-  <text x="680" y="90" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">.generated.h</text>
+  <text x="680" y="70" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+    NitroModules
+  </text>
+  <text x="680" y="90" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+    .generated.h
+  </text>
   <path d="M160 75 H208 M360 75 H408 M560 75 H608" />
   <path d="M200 69 L208 75 L200 81 M400 69 L408 75 L400 81 M600 69 L608 75 L600 81" />
 </svg>

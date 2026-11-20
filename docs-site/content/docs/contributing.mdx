@@ -23,10 +23,10 @@ CONTRIBUTING.md fixes these. A change that breaks one is rejected before review.
 
 `package.json` pins the toolchain:
 
-| Field                  | Value        |
-| ---------------------- | ------------ |
-| `engines.node` | `>=26.0.0` |
-| `engines.pnpm` | `>=12.18.0` |
+| Field            | Value          |
+| ---------------- | -------------- |
+| `engines.node`   | `>=26.0.0`     |
+| `engines.pnpm`   | `>=12.18.0`    |
 | `packageManager` | `pnpm@12.18.0` |
 
 CI installs pnpm with `npm install --global pnpm@12.18.0` (`.github/workflows/sdk58-validation.yml`), and the repository documents the same command. Install that exact version, then use the frozen lockfile:
@@ -47,16 +47,16 @@ The C++ host tests also need CMake, Ninja, a C++ compiler and Qt 6.11.1 or newer
 
 Run the narrowest check while you iterate, then the full local set before you push.
 
-| Command                            | What it runs                                                                                                                                                                         |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `pnpm test:js`                     | Every `*.test.mjs` and `*.test.ts` file in `tests/js`, in sorted order (`scripts/run-js-tests.mjs`). It fails if the directory has none.                                              |
-| `pnpm test:cpp:host`               | `cmake --fresh --preset macos-host-tests` (or `linux-host-tests` on Linux), then `cmake --build --preset` and `ctest --preset` for the same preset (`scripts/run-cpp-host-tests.mjs`). Both presets turn host sanitizers on. |
-| `pnpm test`                        | `test:js` then `test:cpp:host`.                                                                                                                                                      |
-| `pnpm typecheck`                   | `tsc --noEmit`, then the same with `tests/types/adaptive.tsconfig.json`. A hard gate for every TypeScript package.                                                                    |
-| `pnpm format:check`                | Prettier over the whole repository. `pnpm format` rewrites.                                                                                                                          |
-| `pnpm validate:manifests`, `validate:dependencies`, `validate:architecture`, `validate:docs` | Package manifests, pinned dependency and source contracts, architecture locks, and generated documentation tables against their JSON records. |
-| `pnpm codegen:check`               | Nitro code-generation applicability check.                                                                                                                                           |
-| `pnpm validate:macos`              | Runs eight stages in order: format, typecheck, dependency validation, JS tests, C++ host tests, package build and manifest validation, architecture and docs validation, codegen check (`scripts/validate-macos.sh`). It ends by stating that it did not cross-compile for QNX. |
+| Command                                                                                      | What it runs                                                                                                                                                                                                                                                                    |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm test:js`                                                                               | Every `*.test.mjs` and `*.test.ts` file in `tests/js`, in sorted order (`scripts/run-js-tests.mjs`). It fails if the directory has none.                                                                                                                                        |
+| `pnpm test:cpp:host`                                                                         | `cmake --fresh --preset macos-host-tests` (or `linux-host-tests` on Linux), then `cmake --build --preset` and `ctest --preset` for the same preset (`scripts/run-cpp-host-tests.mjs`). Both presets turn host sanitizers on.                                                    |
+| `pnpm test`                                                                                  | `test:js` then `test:cpp:host`.                                                                                                                                                                                                                                                 |
+| `pnpm typecheck`                                                                             | `tsc --noEmit`, then the same with `tests/types/adaptive.tsconfig.json`. A hard gate for every TypeScript package.                                                                                                                                                              |
+| `pnpm format:check`                                                                          | Prettier over the whole repository. `pnpm format` rewrites.                                                                                                                                                                                                                     |
+| `pnpm validate:manifests`, `validate:dependencies`, `validate:architecture`, `validate:docs` | Package manifests, pinned dependency and source contracts, architecture locks, and generated documentation tables against their JSON records.                                                                                                                                   |
+| `pnpm codegen:check`                                                                         | Nitro code-generation applicability check.                                                                                                                                                                                                                                      |
+| `pnpm validate:macos`                                                                        | Runs eight stages in order: format, typecheck, dependency validation, JS tests, C++ host tests, package build and manifest validation, architecture and docs validation, codegen check (`scripts/validate-macos.sh`). It ends by stating that it did not cross-compile for QNX. |
 
 `tests/` also holds `tests/cpp` (C++ host tests), `tests/native`, `tests/cmake`, `tests/image-loader`, `tests/benchmarks`, `tests/fixtures` and `tests/python`. The Python test, `tests/python/test_qt_public_staging.py`, has no package script, and a search of `package.json`, `scripts` and `.github` finds no workflow that runs it. Run it directly with `python3` when you change Qt staging.
 
@@ -86,12 +86,12 @@ Before you open a pull request:
 
 [`docs/releases/required-checks.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/required-checks.md) records the state of the `main` branch ruleset (id 27120426, active since 2026-11-12). It blocks deletion and force-pushes and requires a pull request. It also requires four checks, which run on every pull request to `main`:
 
-| Check name                                                | Workflow file                       |
-| --------------------------------------------------------- | ----------------------------------- |
-| `validate`                                                | `.github/workflows/sdk58-validation.yml` |
-| `Qt 6.11 / RN 0.88 / Hermes (input lifecycle ON)`         | `.github/workflows/host-renderer.yml` |
-| `Qt 6.11 / RN 0.88 / Hermes (input lifecycle OFF)`        | `.github/workflows/host-renderer.yml` |
-| `image-cache`                                             | `.github/workflows/image-loader.yml` |
+| Check name                                         | Workflow file                            |
+| -------------------------------------------------- | ---------------------------------------- |
+| `validate`                                         | `.github/workflows/sdk58-validation.yml` |
+| `Qt 6.11 / RN 0.88 / Hermes (input lifecycle ON)`  | `.github/workflows/host-renderer.yml`    |
+| `Qt 6.11 / RN 0.88 / Hermes (input lifecycle OFF)` | `.github/workflows/host-renderer.yml`    |
+| `image-cache`                                      | `.github/workflows/image-loader.yml`     |
 
 The job names match the workflow files. The live ruleset was not queried, so confirm it in the repository settings if the list matters. The same file lists 18 hosted workflows that a v1 release candidate needs, run by dispatch because most of them filter on paths. No workflow compiles for QNX, so those hosted checks say nothing about a QNX build or a device.
 
@@ -115,14 +115,14 @@ npm ci
 npm run dev
 ```
 
-| Script                    | Purpose                                                                                                   |
-| ------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `npm run data`            | Regenerates the component matrix, release gates and ADR index pages. Needs full git history.              |
-| `npm run data:check`      | Fails if those pages differ from what `data` would write.                                                 |
-| `npm run lint`            | ESLint.                                                                                                   |
-| `npm run types:check`     | `next typegen` and `tsc --noEmit`.                                                                        |
-| `npm run build`           | Static export to `out/`.                                                                                  |
-| `npm run check:content`   | Checks front matter, internal `/docs` links, banned terms, and that `llms.txt`, `llms-full.txt`, `SKILL.md`, the search index and `docs.html` exist in `out/`. |
+| Script                  | Purpose                                                                                                                                                        |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run data`          | Regenerates the component matrix, release gates and ADR index pages. Needs full git history.                                                                   |
+| `npm run data:check`    | Fails if those pages differ from what `data` would write.                                                                                                      |
+| `npm run lint`          | ESLint.                                                                                                                                                        |
+| `npm run types:check`   | `next typegen` and `tsc --noEmit`.                                                                                                                             |
+| `npm run build`         | Static export to `out/`.                                                                                                                                       |
+| `npm run check:content` | Checks front matter, internal `/docs` links, banned terms, and that `llms.txt`, `llms-full.txt`, `SKILL.md`, the search index and `docs.html` exist in `out/`. |
 
 CI runs them in that order: `data:check`, `lint`, `types:check`, `build`, `check:content`.
 

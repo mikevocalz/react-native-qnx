@@ -7,13 +7,13 @@ JavaScript, React Native's scheduler, the Fabric mount and every Qt Quick item s
 
 ## Threads and what runs on them
 
-| Thread | Runs | Source |
-| --- | --- | --- |
-| Owner thread (Qt GUI thread) | Hermes and React, `RuntimeScheduler` tasks, Fabric commits and mounts, all `QQuickItem` changes, `QTimer` timers, pointer-event dispatch, AppState and WebSocket transport objects | `QtReactHost`, `QtSchedulerDelegate`, `QtTouchDispatcher` |
-| UI-worklet thread `rnqnx-ui-worklet` | The Worklets UI runtime, when Worklets is enabled. It runs a Qt event loop so others can post jobs. It never touches a Qt Quick item | `vnext/src/worklets/QtUiThread.cpp` |
-| Qt thread pool workers | Image fetch I/O, image decode, `ImageRef` computation, disk-cache clearing | `ImageTaskQueue`, `QtImageFetcher`, `ExpoImageItem` |
-| Worker threads owned by a native module | Whatever that module starts (Nitro engines, for example) | Module author |
-| Qt Quick render thread | Scene graph rendering, if the platform's render loop uses one | Not verified. The repository does not select a render loop |
+| Thread                                  | Runs                                                                                                                                                                               | Source                                                     |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Owner thread (Qt GUI thread)            | Hermes and React, `RuntimeScheduler` tasks, Fabric commits and mounts, all `QQuickItem` changes, `QTimer` timers, pointer-event dispatch, AppState and WebSocket transport objects | `QtReactHost`, `QtSchedulerDelegate`, `QtTouchDispatcher`  |
+| UI-worklet thread `rnqnx-ui-worklet`    | The Worklets UI runtime, when Worklets is enabled. It runs a Qt event loop so others can post jobs. It never touches a Qt Quick item                                               | `vnext/src/worklets/QtUiThread.cpp`                        |
+| Qt thread pool workers                  | Image fetch I/O, image decode, `ImageRef` computation, disk-cache clearing                                                                                                         | `ImageTaskQueue`, `QtImageFetcher`, `ExpoImageItem`        |
+| Worker threads owned by a native module | Whatever that module starts (Nitro engines, for example)                                                                                                                           | Module author                                              |
+| Qt Quick render thread                  | Scene graph rendering, if the platform's render loop uses one                                                                                                                      | Not verified. The repository does not select a render loop |
 
 ## Owner-thread rules
 

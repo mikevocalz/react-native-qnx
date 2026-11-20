@@ -23,44 +23,76 @@ react-native-qnx runs React Native on QNX with Hermes as the JavaScript engine, 
     </marker>
   </defs>
 
-  <rect x="10" y="10" width="440" height="54" rx="6" />
-  <text x="230" y="34" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">JavaScript app (Metro bundle, qnx platform)</text>
-  <text x="230" y="52" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">packages/metro-config-qnx, packages/react-native-qnx</text>
-  <line x1="230" y1="64" x2="230" y2="86" markerEnd="url(#arch-arrow)" />
+<rect x="10" y="10" width="440" height="54" rx="6" />
+<text x="230" y="34" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  JavaScript app (Metro bundle, qnx platform)
+</text>
+<text x="230" y="52" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  packages/metro-config-qnx, packages/react-native-qnx
+</text>
+<line x1="230" y1="64" x2="230" y2="86" markerEnd="url(#arch-arrow)" />
 
-  <rect x="10" y="88" width="440" height="54" rx="6" />
-  <text x="230" y="112" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Hermes and RuntimeScheduler</text>
-  <text x="230" y="130" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">QtReactHost (makeHermesRuntime)</text>
-  <line x1="230" y1="142" x2="230" y2="164" markerEnd="url(#arch-arrow)" />
+<rect x="10" y="88" width="440" height="54" rx="6" />
+<text x="230" y="112" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  Hermes and RuntimeScheduler
+</text>
+<text x="230" y="130" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  QtReactHost (makeHermesRuntime)
+</text>
+<line x1="230" y1="142" x2="230" y2="164" markerEnd="url(#arch-arrow)" />
 
-  <rect x="10" y="166" width="440" height="54" rx="6" />
-  <text x="230" y="190" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Fabric core (React Native C++)</text>
-  <text x="230" y="208" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">UIManager, ShadowTree, Yoga, MountingCoordinator</text>
-  <line x1="230" y1="220" x2="230" y2="242" markerEnd="url(#arch-arrow)" />
+<rect x="10" y="166" width="440" height="54" rx="6" />
+<text x="230" y="190" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  Fabric core (React Native C++)
+</text>
+<text x="230" y="208" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  UIManager, ShadowTree, Yoga, MountingCoordinator
+</text>
+<line x1="230" y1="220" x2="230" y2="242" markerEnd="url(#arch-arrow)" />
 
-  <rect x="10" y="244" width="440" height="54" rx="6" />
-  <text x="230" y="268" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtSchedulerDelegate, ShadowViewMutationAdapter</text>
-  <text x="230" y="286" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">mutations in, mounting calls out</text>
-  <line x1="230" y1="298" x2="230" y2="320" markerEnd="url(#arch-arrow)" />
+<rect x="10" y="244" width="440" height="54" rx="6" />
+<text x="230" y="268" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  QtSchedulerDelegate, ShadowViewMutationAdapter
+</text>
+<text x="230" y="286" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  mutations in, mounting calls out
+</text>
+<line x1="230" y1="298" x2="230" y2="320" markerEnd="url(#arch-arrow)" />
 
-  <rect x="10" y="322" width="440" height="54" rx="6" />
-  <text x="230" y="346" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtQuickMountingLayer, QtQuickItemFactory</text>
-  <text x="230" y="364" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">tag to QQuickItem, one cached QQmlComponent per type</text>
-  <line x1="230" y1="376" x2="230" y2="398" markerEnd="url(#arch-arrow)" />
+<rect x="10" y="322" width="440" height="54" rx="6" />
+<text x="230" y="346" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  QtQuickMountingLayer, QtQuickItemFactory
+</text>
+<text x="230" y="364" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  tag to QQuickItem, one cached QQmlComponent per type
+</text>
+<line x1="230" y1="376" x2="230" y2="398" markerEnd="url(#arch-arrow)" />
 
-  <rect x="10" y="400" width="440" height="54" rx="6" />
-  <text x="230" y="424" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">Qt Quick scene on QQuickWindow</text>
-  <text x="230" y="442" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">Qt QNX platform plugin, QNX Screen</text>
+<rect x="10" y="400" width="440" height="54" rx="6" />
+<text x="230" y="424" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  Qt Quick scene on QQuickWindow
+</text>
+<text x="230" y="442" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  Qt QNX platform plugin, QNX Screen
+</text>
 
-  <rect x="500" y="88" width="250" height="54" rx="6" />
-  <text x="625" y="112" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtEventBeat</text>
-  <text x="625" y="130" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">QtRuntimeTaskQueue</text>
-  <line x1="500" y1="115" x2="450" y2="115" markerEnd="url(#arch-arrow)" />
+<rect x="500" y="88" width="250" height="54" rx="6" />
+<text x="625" y="112" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  QtEventBeat
+</text>
+<text x="625" y="130" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  QtRuntimeTaskQueue
+</text>
+<line x1="500" y1="115" x2="450" y2="115" markerEnd="url(#arch-arrow)" />
 
-  <rect x="500" y="166" width="250" height="54" rx="6" />
-  <text x="625" y="190" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtTextLayoutManager</text>
-  <text x="625" y="208" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">measures text with QTextLayout</text>
-  <line x1="500" y1="193" x2="450" y2="193" markerEnd="url(#arch-arrow)" />
+<rect x="500" y="166" width="250" height="54" rx="6" />
+<text x="625" y="190" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">
+  QtTextLayoutManager
+</text>
+<text x="625" y="208" textAnchor="middle" fill="currentColor" stroke="none" fontSize="12">
+  measures text with QTextLayout
+</text>
+<line x1="500" y1="193" x2="450" y2="193" markerEnd="url(#arch-arrow)" />
 
   <rect x="500" y="266" width="250" height="90" rx="6" />
   <text x="625" y="294" textAnchor="middle" fill="currentColor" stroke="none" fontSize="13">QtTouchDispatcher</text>
@@ -72,14 +104,14 @@ react-native-qnx runs React Native on QNX with Hermes as the JavaScript engine, 
 
 Each box maps to a source file:
 
-| Layer | Implementation | Decision |
-| --- | --- | --- |
-| JavaScript engine | `QtReactHost::Impl` builds the runtime with `facebook::hermes::makeHermesRuntime` and the microtask queue on (`vnext/src/runtime/QtReactHost.cpp`) | [ADR-0005](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0005-hermes-only.md) |
-| Renderer core | React Native's own `Scheduler`, `UIManager` and `ShadowTree`, built from the installed React Native package | [ADR-0009](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md) |
-| Mount translation | `QtSchedulerDelegate` and `ShadowViewMutationAdapter` (`vnext/src/fabric/ShadowViewMutationAdapter.cpp`) | [ADR-0009](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md) |
-| Item tree | `QtQuickMountingLayer` and `QtQuickItemFactory` (`vnext/src/fabric/QtQuickMountingLayer.cpp`, `vnext/src/views/qt/QtQuickItemFactory.cpp`) | [ADR-0001](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0001-qt-quick-backend.md), [ADR-0002](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0002-qt-quick-item-instantiation.md) |
-| Window system | `QQuickWindow` on Qt's QNX platform plugin, above QNX Screen | ADR-0001 |
-| Application modules | Nitro HybridObjects, plus a small TurboModule adapter for React Native core | [ADR-0004](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0004-nitro-modules.md) |
+| Layer               | Implementation                                                                                                                                     | Decision                                                                                                                                                                                                                  |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| JavaScript engine   | `QtReactHost::Impl` builds the runtime with `facebook::hermes::makeHermesRuntime` and the microtask queue on (`vnext/src/runtime/QtReactHost.cpp`) | [ADR-0005](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0005-hermes-only.md)                                                                                                                         |
+| Renderer core       | React Native's own `Scheduler`, `UIManager` and `ShadowTree`, built from the installed React Native package                                        | [ADR-0009](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md)                                                                                                                         |
+| Mount translation   | `QtSchedulerDelegate` and `ShadowViewMutationAdapter` (`vnext/src/fabric/ShadowViewMutationAdapter.cpp`)                                           | [ADR-0009](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0009-fabric-only.md)                                                                                                                         |
+| Item tree           | `QtQuickMountingLayer` and `QtQuickItemFactory` (`vnext/src/fabric/QtQuickMountingLayer.cpp`, `vnext/src/views/qt/QtQuickItemFactory.cpp`)         | [ADR-0001](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0001-qt-quick-backend.md), [ADR-0002](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0002-qt-quick-item-instantiation.md) |
+| Window system       | `QQuickWindow` on Qt's QNX platform plugin, above QNX Screen                                                                                       | ADR-0001                                                                                                                                                                                                                  |
+| Application modules | Nitro HybridObjects, plus a small TurboModule adapter for React Native core                                                                        | [ADR-0004](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0004-nitro-modules.md)                                                                                                                       |
 
 ## Hermes and the bridgeless host
 

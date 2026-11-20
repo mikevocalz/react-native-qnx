@@ -15,14 +15,14 @@ The [architecture](/docs/explanation/architecture) sends each React commit throu
 
 **Image work leaves the owner thread.** `docs/image-loader.md` describes the image pipeline. File and data reads, disk-cache I/O, decoding, resizing, tinting, BlurHash and ThumbHash generation, and PNG encoding run on a bounded worker queue. Network and completion callbacks, Promise resolution and registry updates stay on the owner thread. All Expo Image views, `prefetch` and `loadAsync` share one `ImageFetchQueue` with six admitted tasks. A cancelled or abandoned worker keeps its slot until its work finishes, which caps queued work behind blocked file reads. Limits stated there:
 
-| Limit | Value |
-| --- | --- |
-| Decoded memory cache (LRU) | 32 MiB |
-| On-disk cache for the `ExpoImage` view and `expo-image` prefetch | 128 MiB |
-| Encoded response size | 16 MiB |
-| Request wall-clock timeout | 30 seconds |
-| Decoded pixels | rejected above 16 million |
-| Redirect hops | at most 5 |
+| Limit                                                            | Value                     |
+| ---------------------------------------------------------------- | ------------------------- |
+| Decoded memory cache (LRU)                                       | 32 MiB                    |
+| On-disk cache for the `ExpoImage` view and `expo-image` prefetch | 128 MiB                   |
+| Encoded response size                                            | 16 MiB                    |
+| Request wall-clock timeout                                       | 30 seconds                |
+| Decoded pixels                                                   | rejected above 16 million |
+| Redirect hops                                                    | at most 5                 |
 
 The worker design has host evidence under ASan and UBSan. The PR 159 receipts record 90 QtTest entries passing in the combined image, cache and queue graph (`docs/handoff/CURRENT_STATE.md`, section "PR 159 image workers and cache lifecycle continuation"). Those tests check correctness and lifetime. They do not report throughput.
 
@@ -44,31 +44,59 @@ ADR-0017 states that "no timing, size or frame-pacing measurement exists for thi
 
 `docs/evidence/pi400-runtime-trace-2026-11-07.json` is a bounded native trace of the Hello World app on the Pi 400 as `qnxuser`. It holds 8 records and dropped none. Subtracting the begin and end timestamps gives these spans.
 
-<svg role="img" aria-label="Four spans on a 1,900 millisecond timeline: host evaluate 6.6 ms, surface start 569.4 ms, surface stop 1.4 ms, queue close 0.01 ms" viewBox="0 0 800 190" width="100%" fill="none" stroke="currentColor" strokeWidth="1">
+<svg
+  role="img"
+  aria-label="Four spans on a 1,900 millisecond timeline: host evaluate 6.6 ms, surface start 569.4 ms, surface stop 1.4 ms, queue close 0.01 ms"
+  viewBox="0 0 800 190"
+  width="100%"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="1"
+>
   <title>Runtime trace spans for Hello World on a Raspberry Pi 400</title>
   <line x1="130" y1="20" x2="790" y2="20" />
-  <text x="130" y="14" fontSize="12" fill="currentColor" stroke="none">0 ms</text>
-  <text x="716" y="14" fontSize="12" fill="currentColor" stroke="none">1,900 ms</text>
-  <text x="8" y="50" fontSize="12" fill="currentColor" stroke="none">host.evaluate</text>
+  <text x="130" y="14" fontSize="12" fill="currentColor" stroke="none">
+    0 ms
+  </text>
+  <text x="716" y="14" fontSize="12" fill="currentColor" stroke="none">
+    1,900 ms
+  </text>
+  <text x="8" y="50" fontSize="12" fill="currentColor" stroke="none">
+    host.evaluate
+  </text>
   <rect x="138" y="38" width="3" height="16" fill="currentColor" />
-  <text x="150" y="50" fontSize="12" fill="currentColor" stroke="none">6.57 ms</text>
-  <text x="8" y="90" fontSize="12" fill="currentColor" stroke="none">surface.start</text>
+  <text x="150" y="50" fontSize="12" fill="currentColor" stroke="none">
+    6.57 ms
+  </text>
+  <text x="8" y="90" fontSize="12" fill="currentColor" stroke="none">
+    surface.start
+  </text>
   <rect x="141" y="78" width="197" height="16" fill="currentColor" />
-  <text x="346" y="90" fontSize="12" fill="currentColor" stroke="none">569.43 ms</text>
-  <text x="8" y="130" fontSize="12" fill="currentColor" stroke="none">surface.stop</text>
+  <text x="346" y="90" fontSize="12" fill="currentColor" stroke="none">
+    569.43 ms
+  </text>
+  <text x="8" y="130" fontSize="12" fill="currentColor" stroke="none">
+    surface.stop
+  </text>
   <rect x="389" y="118" width="3" height="16" fill="currentColor" />
-  <text x="400" y="130" fontSize="12" fill="currentColor" stroke="none">1.43 ms</text>
-  <text x="8" y="170" fontSize="12" fill="currentColor" stroke="none">queue.close</text>
+  <text x="400" y="130" fontSize="12" fill="currentColor" stroke="none">
+    1.43 ms
+  </text>
+  <text x="8" y="170" fontSize="12" fill="currentColor" stroke="none">
+    queue.close
+  </text>
   <rect x="786" y="158" width="3" height="16" fill="currentColor" />
-  <text x="690" y="170" fontSize="12" fill="currentColor" stroke="none">0.01 ms</text>
+  <text x="690" y="170" fontSize="12" fill="currentColor" stroke="none">
+    0.01 ms
+  </text>
 </svg>
 
-| Span | Begin (ms) | End (ms) | Duration (ms) |
-| --- | --- | --- | --- |
-| `host.evaluate` | 23.90 | 30.46 | 6.57 |
-| `surface.start` | 31.25 | 600.68 | 569.43 |
-| `surface.stop` | 746.43 | 747.86 | 1.43 |
-| `queue.close` | 1,888.32 | 1,888.33 | 0.01 |
+| Span            | Begin (ms) | End (ms) | Duration (ms) |
+| --------------- | ---------- | -------- | ------------- |
+| `host.evaluate` | 23.90      | 30.46    | 6.57          |
+| `surface.start` | 31.25      | 600.68   | 569.43        |
+| `surface.stop`  | 746.43     | 747.86   | 1.43          |
+| `queue.close`   | 1,888.32   | 1,888.33 | 0.01          |
 
 Read these with the limits the receipt states. The clock is `std::chrono::steady_clock`, "session-relative; not aligned to Qt/QNX/display clocks". Each timestamp is taken after the recorder lock, "record-copy after recorder lock". The receipt says the work "records no FPS, presentation latency or scheduling improvement". `surface.start` is the span of one start call and does not show when a pixel reached the display. The trace came from one run, so no distribution exists. The runtime was the pre-ADR-0017 Qt build of that date, and this page did not find a record of its optimisation level.
 

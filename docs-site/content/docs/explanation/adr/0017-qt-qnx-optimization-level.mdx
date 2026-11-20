@@ -1,5 +1,5 @@
 ---
-title: "ADR-0017: Compile public-source Qt for QNX at -O2"
+title: 'ADR-0017: Compile public-source Qt for QNX at -O2'
 description: Why the Qt libraries on the Pi 400 were first built with no optimization level, and the configure change that now requires -O2.
 ---
 
@@ -13,14 +13,14 @@ The record states: "Accepted, 2026-11-12. The owner delegated this decision. The
 
 The first public-source Qt 6.12.0 build for QNX reused the evaluation build's configure options, including `-release -optimize-size`. Its receipt noted that the Release flags carried no `-O` level and left the fix open. The build tree in the `qnx805-build` container, read on 2026-11-12, shows:
 
-| Cache entry | Value |
-| --- | --- |
-| `CMAKE_BUILD_TYPE` | `Release` |
-| `CMAKE_CXX_FLAGS_RELEASE` | `-DNDEBUG   -DNDEBUG` |
-| `CMAKE_C_FLAGS_RELEASE` | `-DNDEBUG   -DNDEBUG` |
+| Cache entry                  | Value                     |
+| ---------------------------- | ------------------------- |
+| `CMAKE_BUILD_TYPE`           | `Release`                 |
+| `CMAKE_CXX_FLAGS_RELEASE`    | `-DNDEBUG   -DNDEBUG`     |
+| `CMAKE_C_FLAGS_RELEASE`      | `-DNDEBUG   -DNDEBUG`     |
 | `CMAKE_CXX_FLAGS_MINSIZEREL` | `-DNDEBUG   -DNDEBUG -O2` |
-| `FEATURE_optimize_size` | `ON` |
-| `FEATURE_optimize_full` | `OFF` |
+| `FEATURE_optimize_size`      | `ON`                      |
+| `FEATURE_optimize_full`      | `OFF`                     |
 
 No compile line in `qnx-build/build.ninja` contains `-O0` through `-O3`, `-Os` or `-Oz`. GCC without an `-O` flag compiles at `-O0`, so the Qt libraries on the Pi 400 were unoptimized. The host-tools build in the same container has `-O2` because it uses the system GCC.
 
@@ -49,7 +49,7 @@ The cause is Qt's own CMake. `qtbase/cmake/QtCompilerOptimization.cmake` sets `Q
 
 ## Evidence
 
-The enforcement is visible in `scripts/qt-public/configure-qnx.sh`: it passes `-DFEATURE_optimize_size=OFF -DFEATURE_optimize_full=OFF`, then checks the cached Release flags for ` -O2 ` and exits with "ADR-0017 requires -O2" if one is missing. A header comment in the script gives the same history. Related files are `scripts/qt-public/README.md`, `docs/packaging.md` and the closure manifests `docs/evidence/qt-public-runtime-closure-2026-11-12-b51b49c.json` (the -O0 build) and `qt-public-runtime-closure-o2-2026-11-12-a79e16a.json`.
+The enforcement is visible in `scripts/qt-public/configure-qnx.sh`: it passes `-DFEATURE_optimize_size=OFF -DFEATURE_optimize_full=OFF`, then checks the cached Release flags for `-O2` and exits with "ADR-0017 requires -O2" if one is missing. A header comment in the script gives the same history. Related files are `scripts/qt-public/README.md`, `docs/packaging.md` and the closure manifests `docs/evidence/qt-public-runtime-closure-2026-11-12-b51b49c.json` (the -O0 build) and `qt-public-runtime-closure-o2-2026-11-12-a79e16a.json`.
 
 Device evidence on the Raspberry Pi 400: `docs/evidence/pi400-public-qt-o2-2026-11-12-a79e16a.md` is the receipt for the first -O2 build, and the earlier `pi400-public-qt-2026-11-12-b51b49c.md` covers the -O0 build. The index status "rebuild pending" reflects the Consequences list: the record still asks for the Pi runs to be repeated on the rebuilt runtime before the -O2 hashes are called qualified. This page did not verify whether those repeats have since been recorded.
 
