@@ -500,7 +500,7 @@ bundle first (the output names the command), 1 on failure.
 
 Steps run in order: `config`, `bundle`, `native-descriptor`, `native-build`, `deploy`, `launch`. It looks for `build/<platform>/app.bundle.hbc` and `app.bundle.js` and uses the newer. It runs `project prepare-native` and `project build-native` itself, and stops with status `needs SDP` if `QNX_HOST` or `QNX_TARGET` is unset, and with `needs bundle` if no bundle exists. It prints one line per step.
 
-The help text says exit 0 means every step ran. In the source read for this page, the `deploy` step always ends the run: with no `--device` it returns `needs device`, and with one it returns `needs device` and the detail `Deploying consumer apps to <device> is not implemented in project run yet; nothing was copied or launched.` So a normal run exits 3 or 1, and exit 0 is not reachable. Use `project dev` to launch a development build.
+The help text says exit 0 means every step ran. In the source read for this page, the `deploy` step always ends the run: with no `--device` it returns `needs device`, and with one it returns `needs device` and the detail `Deploying consumer apps to <device> is not implemented in project run yet; nothing was copied or launched.` So a normal run exits 3 or 1, and exit 0 is not reachable. Use `project dev` to launch a development build. Tracked in [issue 174](https://github.com/mikevocalz/react-native-qnx/issues/174).
 
 ```bash
 pnpm qnx project run --project ../notes

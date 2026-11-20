@@ -18,12 +18,13 @@
 
 The tree is a `View` (`collapsable: false`) containing an `Image` and an absolute-fill `View` that holds the children. Because `style` is copied onto the image, the image takes the container's width and height, so a container with explicit dimensions paints the picture at that size. Layout is Yoga, as for any View, and mounting runs on the Qt GUI thread.
 
-Because the style is copied wholesale, any style prop on the container, including padding, margin and border, is also copied onto the image. The file does not strip them. Nothing in the source says whether that causes a visible difference, and no test was found.
+Because the style is copied wholesale, any style prop on the container, including padding, margin and border, is also copied onto the image. The file does not strip them, and no test sets those keys.
 
 ## Unsupported or partial props
 
-- Props that `Image` ignores are ignored here too: `resizeMode` values `center` and `repeat` render as `stretch`, and only the first entry of a `source` array is used (`ShadowViewMutationAdapter.cpp`, `applyImage`).
-- No evidence found that the override handles `imageStyle` differently from the upstream rule of applying it only to the image. In this file `style` is applied to the image as well.
+- Props that `Image` ignores are ignored here too: `resizeMode` values `center`, `repeat` and `none` render as `stretch`, only the first entry of a `source` array is used, and `tintColor`, `blurRadius`, `fadeDuration`, `onProgress` and `onPartialLoad` have no effect (`ShadowViewMutationAdapter.cpp`, `applyImage`; see the [Image page](/docs/reference/components/image)). A changed `source` does not re-fire the load events.
+- `style` is copied onto the image whole, which differs from React Native's own `ImageBackground`. Upstream gives the image `absoluteFill` plus the flattened `width` and `height` only (`react-native/Libraries/Image/ImageBackground.js:92-108`). Here `Object.assign({}, style, imageStyle)` copies every key, so `padding`, `margin`, `flex`, `position` and borders also land on the image. When `style` is an array, `Object.assign` copies its numeric indices and not the styles inside it, so the image gets no `width` or `height` from the container. The first difference is from the source. The array case is from reading `Object.assign` semantics and was not run.
+- `imageStyle` is merged over `style` for the image. It is not restricted to image-only keys, which matches the file comment and differs from upstream.
 
 ## Minimal example
 
@@ -49,6 +50,6 @@ export default function App() {
 
 ## Known gaps
 
-- No dedicated test or evidence file is linked. The status in the generated table rests on the component notes ("Composes View and Image; paints the image behind children and forwards resizeMode") and on the override source, not on a recorded run of `ImageBackground` itself.
-- No Pi 400 receipt. Pi 4 QSTI has no run.
-- A container that relies on content size rather than explicit width and height was not tested. The file comment is the only guidance on that case.
+- One host test covers it: `imageBackgroundMounts` (`tests/cpp/QtReactHostHostTest.cpp:2473-2505`) renders the `RNQnxImageBackground` app (`apps/rn-playground/index.js:342-353`) and asserts that the root has two children, that the first (the image) is 64 by 64, and that its `fillMode` is Cover. It is recorded as `[PASS] imageBackgroundMounts` in `docs/evidence/pr149-on-native-build-2026-11-14/host-test.log:278`. The app passes explicit `style` and `imageStyle`, so the case with only `style`, and the child `Text` content, are not asserted.
+- The generated status rests on that test and the override source. No Pi 400 receipt. Pi 4 QSTI has no run.
+- A container that relies on content size rather than explicit width and height, and array styles, were not tested.

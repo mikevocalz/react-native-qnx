@@ -1,19 +1,22 @@
 ## Props
 
-`VirtualizedSectionList` is an internal React Native JavaScript component. `SectionList` renders it, and it renders `VirtualizedList` over a `ScrollView`. QNX has no override for it (nothing under `packages/react-native-qnx/Libraries`) and registers no native component for it in `vnext/src/runtime/QtReactHost.cpp`. The generated notes say direct coverage is unverified, and I found no test that mounts it by name.
+`VirtualizedSectionList` is a React Native JavaScript component from `@react-native/virtualized-lists`. `SectionList` renders it, and it renders `VirtualizedList` over a `ScrollView`. QNX has no override for it (nothing under `packages/react-native-qnx/Libraries`) and registers no native component for it in `vnext/src/runtime/QtReactHost.cpp`.
 
-Apps normally reach it through [SectionList](/docs/reference/components/sectionlist), so the props are the `SectionList` props plus the `VirtualizedList` ones. This page lists only what source evidence supports.
+Is it exported? React Native 0.88.1 itself exports `VirtualizedSectionList` from its `index.js` (line 177, pinned by `react-native@0.88.1` in `pnpm-lock.yaml`, `@react-native/virtualized-lists@0.88.1`). The QNX public entry, `packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js`, does not. It has getters for `FlatList` and `SectionList` and none for `VirtualizedList` or `VirtualizedSectionList`, and its Proxy throws `React Native QNX public export "VirtualizedSectionList" is not implemented in this experimental entry.` for any name not in the list (`PublicAPI.js:170-185`; the exact list is asserted by `tests/js/qnx-public-entry.test.mjs:27-72`). Projects made by `project create` and `add-qnx` use that entry. On them, `import { VirtualizedSectionList } from 'react-native'` fails at runtime. Without the public entry, React Native's own export applies.
 
-| Prop                                     | Type     | Status             | Source-backed note                                                      |
-| ---------------------------------------- | -------- | ------------------ | ----------------------------------------------------------------------- |
-| `sections`, `renderItem`, `keyExtractor` | various  | supported          | Through `SectionList`, per the component notes.                         |
-| `getItemCount`, `getItem`                | function | supported          | These come from `VirtualizedList`, which the FlatList host test covers. |
-| `initialNumToRender`, `windowSize`       | number   | supported          | Inherited from `VirtualizedList`; tested through `FlatList`.            |
-| `stickySectionHeadersEnabled`            | boolean  | accepted-no-effect | No evidence found that native code implements sticky headers.           |
+The generated notes say direct coverage is unverified, and that is correct: no test mounts `VirtualizedSectionList` by name. The `SectionList` host test mounts it indirectly (see [SectionList](/docs/reference/components/sectionlist)), because `SectionList` renders it. Apps normally reach it through `SectionList`, so the props are the `SectionList` props plus the `VirtualizedList` ones.
+
+| Prop                                     | Type     | Status                            | Source-backed note                                                                                               |
+| ---------------------------------------- | -------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `sections`, `renderItem`, `keyExtractor` | various  | supported (through `SectionList`) | Used by the `SectionList` host test.                                                                             |
+| `getItemCount`, `getItem`                | function | supported                         | These come from `VirtualizedList`, which the FlatList host test covers.                                          |
+| `initialNumToRender`, `windowSize`       | number   | supported                         | Inherited from `VirtualizedList`; tested through `FlatList`.                                                     |
+| `onViewableItemsChanged`                 | function | supported (initial report)        | Wrapped by `_onViewableItemsChanged` (`VirtualizedSectionList.js:340-348`); ran in the `SectionList` test.       |
+| `stickySectionHeadersEnabled`            | boolean  | JavaScript, untested              | Builds `stickyHeaderIndices` (`VirtualizedSectionList.js:189-200`); no default here, `SectionList` supplies one. |
 
 ## Events
 
-`onScroll`, `onLayout` and `onContentSizeChange` reach JavaScript from the Qt Flickable (`QtScrollBridge`) and the layout emitter, as for `FlatList`. No VirtualizedSectionList-specific event has evidence.
+`onScroll`, `onLayout` and `onContentSizeChange` reach JavaScript from the Qt Flickable (`QtScrollBridge`) and the layout emitter, as for `FlatList`. `onViewableItemsChanged` is the only VirtualizedSectionList-level event with a recorded run, through `SectionList`.
 
 ## Platform behavior on QNX
 
@@ -21,13 +24,14 @@ Nothing in this component is native. Its behavior is the behavior of the `Virtua
 
 ## Unsupported or partial props
 
-- Sticky section headers: No evidence found of native handling or a test.
-- `scrollToLocation` and section separators: No evidence found of a QNX run.
+- Sticky section headers: JavaScript through ScrollView `stickyHeaderIndices`; not tested. `SectionList` turns them on only when asked, because its default is iOS-only.
+- `scrollToLocation`: JavaScript (`VirtualizedSectionList.js:140-169`), ends in the `scrollTo` command, which ignores `animated`. No test calls it.
+- Section separators: ordinary cells; no test.
 - Direct use by app code is not a documented React Native pattern, so there is no reason to expect a recorded test.
 
 ## Minimal example
 
-Import `SectionList`, which wraps this component. `VirtualizedSectionList` is not exported from the `react-native` entry as a public component.
+Import `SectionList`, which wraps this component. See Props for why `VirtualizedSectionList` is not the import to use on QNX.
 
 ```tsx
 import React from 'react';
@@ -53,6 +57,8 @@ export default function App() {
 
 ## Known gaps
 
-- Direct component coverage is unverified. Evidence missing: a test that renders `VirtualizedSectionList` or a `SectionList` with sections and scrolls it, on host and on a device.
+- Direct component coverage is unverified. Evidence missing: a test that renders `VirtualizedSectionList` directly, or that scrolls a `SectionList`, on host and on a device.
 - No Pi 400 or Pi 4 QSTI receipt.
-- I did not verify whether `react-native` exports `VirtualizedSectionList` on the QNX entry; the minimal example avoids depending on it.
+- It is not importable from `react-native` through the QNX public entry. The `@react-native/virtualized-lists` import path was not run on QNX.
+
+Tracked in [issue 178](https://github.com/mikevocalz/react-native-qnx/issues/178).

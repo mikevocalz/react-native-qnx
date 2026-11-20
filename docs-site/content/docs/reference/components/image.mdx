@@ -25,14 +25,16 @@ Data URIs, Metro assets and HTTP(S) loading; load events and a header-aware boun
 
 `Image` is overridden in `packages/react-native-qnx/Libraries/Image/Image.js`. It resolves `source`, `defaultSource` and `loadingIndicatorSource` with React Native's `resolveAssetSource`, then renders `ImageViewNativeComponent`. `ShadowViewMutationAdapter::applyImage` reads the result and sets properties on a Qt Quick `Image` item.
 
-| Prop                                            | Type                     | Status    | Source-backed note                                                                                    |
-| ----------------------------------------------- | ------------------------ | --------- | ----------------------------------------------------------------------------------------------------- |
-| `source`                                        | uri object, asset, array | partial   | Only `sources.front().uri` is used. Later list entries are ignored.                                   |
-| `defaultSource`                                 | source                   | supported | Used as the URI only when `source` is empty.                                                          |
-| `loadingIndicatorSource`                        | source                   | supported | Shown by a child `Image` item while the main source loads, hidden on Ready or Error.                  |
-| `resizeMode`                                    | string                   | partial   | `cover` maps to `PreserveAspectCrop`, `contain` to `PreserveAspectFit`, everything else to `Stretch`. |
-| `style`                                         | style                    | supported | Width and height come from Yoga like any View.                                                        |
-| `onLoadStart`, `onLoad`, `onLoadEnd`, `onError` | function                 | supported | See Events.                                                                                           |
+| Prop                                                                   | Type                     | Status    | Source-backed note                                                                                                                                      |
+| ---------------------------------------------------------------------- | ------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `source`                                                               | uri object, asset, array | partial   | Only `sources.front().uri` is used (`applyImage`, `ShadowViewMutationAdapter.cpp:477`). Later list entries, `headers`, `cache` and `scale` are ignored. |
+| `defaultSource`                                                        | source                   | supported | Used as the URI only when `source` is empty.                                                                                                            |
+| `loadingIndicatorSource`                                               | source                   | supported | Shown by a child `Image` item while the main source loads, hidden on Ready or Error.                                                                    |
+| `resizeMode`                                                           | string                   | partial   | `cover` maps to `PreserveAspectCrop`, `contain` to `PreserveAspectFit`, everything else to `Stretch`.                                                   |
+| `style`                                                                | style                    | supported | Width and height come from Yoga like any View.                                                                                                          |
+| `onLoadStart`, `onLoad`, `onLoadEnd`, `onError`                        | function                 | partial   | Fire once per mounted Image. A changed `source` does not fire them again. See Events.                                                                   |
+| `tintColor`, `blurRadius`, `fadeDuration`, `capInsets`, `resizeMethod` | various                  | ignored   | Parsed into `ImageProps`, not read by `applyImage`; the Image QML has no effect item.                                                                   |
+| `onProgress`, `onPartialLoad`                                          | function                 | ignored   | The bridge wires only four callbacks. They never fire.                                                                                                  |
 
 ## Events
 
@@ -43,6 +45,8 @@ Data URIs, Metro assets and HTTP(S) loading; load events and a header-aware boun
 | `onLoadEnd`   | supported | Fired on Ready, and on Error before `onError`.                                                              |
 | `onError`     | supported | Carries QML's `errorString`, or `Could not load <url>` when that is empty (`QtImageBridge.cpp`).            |
 
+The four lifecycle events are one-shot per mounted Image. `connectImageEvents` creates a `QtImageBridge` only if none exists for the tag (`ShadowViewMutationAdapter.cpp:725-764`), and the bridge captures the first source at that moment (line 746). `QtImageBridge::notify` sets `startFired_` on the first Loading, Ready or Error status and `endFired_` on the first Ready or Error, and nothing resets either flag (`QtImageBridge.cpp:28-65`, `QtImageBridge.h:39-40`). `Update` mutations re-run `applyImage`, which sets the new `source` on the item (line 1216), but the bridge ignores later status changes. So after the first load or error, changing `source` loads the new image without `onLoadStart`, `onLoad`, `onLoadEnd` or `onError`, and a later `onLoad` payload (not possible after the first) would carry the original source. This is from code reading. `imageLoadEvents` (`tests/cpp/QtReactHostHostTest.cpp:2221-2263`) uses one fixed `data:` URI and does not change it.
+
 ## Platform behavior on QNX
 
 Qt Quick's `Image` cannot read `data:` URIs, so `QtQuickItemFactory::resolveImageSource` serves them through `QnxImageProvider` as `image://rnqnx/...`. The host test checks that a data URI reaches `Image.Ready` at the styled size. HTTP(S) sources that are not prefetched go to Qt Quick directly. Prefetched URIs are served from the shared decoded cache (32 MiB LRU, per `docs/image-loader.md`) without a second download.
@@ -51,10 +55,13 @@ The statics `Image.getSize`, `getSizeWithHeaders`, `prefetch`, `prefetchWithMeta
 
 ## Unsupported or partial props
 
-- `resizeMode` values `center` and `repeat`: the switch in `applyImage` has no case for them, so they render as `stretch`.
-- `tintColor`, `blurRadius`, `fadeDuration`, `capInsets`, `onProgress`, `onPartialLoad`: No evidence found that the plain `Image` path reads them. The `tintColor` and `blurRadius` code in `QtExpoImageBridge.cpp` belongs to the separate `expo-image` view.
-- Source `headers` and `cache` fields on the component: `docs/component-support.md` records header support for the loader statics only. No evidence found for the component.
-- `QtImageBridge.cpp` sets its start and end flags once and has no reset in that file. Whether a changed `source` fires events again was not verified.
+`applyImage` (`ShadowViewMutationAdapter.cpp:468-507`) reads four `ImageProps` members: `sources`, `defaultSource`, `loadingIndicatorSource` and `resizeMode`. The prop list in React Native's `ReactCommon/react/renderer/components/image/ImageProps.h:30-42` also has `blurRadius`, `capInsets`, `tintColor`, `resizeMethod` and `fadeDuration`. The Image QML (`vnext/probes/playground/main.cpp:165-182`) is a plain `Image` with a loading child and no `layer.effect`, blur or fade. The event bridge has four callbacks (`QtImageBridge.h:21-34`) and no progress callback. A search of `vnext/` and `native/qt` finds `tintColor` only in the Switch code (`ShadowViewMutationAdapter.cpp:615`) and in the separate `expo-image` bridge.
+
+- `resizeMode` values `center`, `repeat` and `none`: the switch in `applyImage` has cases for `cover` and `contain` only, so all three render as `stretch`. `ImageProps` itself defaults `resizeMode` to `Stretch` (`ImageProps.h:33`, same path), and the QNX override does not apply the upstream fallback to `style.resizeMode` or `'cover'` (`react-native/Libraries/Image/Image.ios.js:194-195`). An Image with no `resizeMode` therefore stretches, where React Native's iOS default is cover. This default is from code reading; the tests that check `fillMode` set `resizeMode` explicitly.
+- `tintColor`, `blurRadius`, `fadeDuration`, `capInsets`: ignored as described above. The `tintColor` and `blurRadius` code in `QtExpoImageBridge.cpp` belongs to the separate `expo-image` view.
+- `onProgress`, `onPartialLoad`: never fire.
+- Source `headers` and `cache` fields on the component: `applyImage` passes only `uri` (`resolveImageSource(uri)`). `docs/component-support.md` records header support for the loader statics only, so the component ignores them.
+- Changed `source`: loads, but does not re-fire the load events (see Events).
 
 ## Minimal example
 
@@ -81,6 +88,7 @@ export default function App() {
 ## Known gaps
 
 - No Pi 400 receipt exists for `Image`. The 2026-11-13 loader receipts in `docs/image-loader.md` cover the loader statics on a Pi 400, and that file says the later worker and cache-clear changes still need their own target receipt.
+- Host tests cover `data:` URIs, `defaultSource`, `loadingIndicatorSource`, bundler assets and the load events on one fixed source. None changes `source`, sets `tintColor`, `blurRadius` or `fadeDuration`, or omits `resizeMode`.
 - Pi 4 QSTI has no run.
 - `docs/component-support.md` marks `http(s):` component sources as partial.
 

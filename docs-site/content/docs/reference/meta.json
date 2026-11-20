@@ -28,6 +28,9 @@
     "verification-log",
     "---Lookup---",
     "error-codes",
+    "error-codes-packages",
+    "error-codes-scripts",
+    "error-codes-native",
     "glossary"
   ]
 }

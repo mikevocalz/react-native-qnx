@@ -23,31 +23,35 @@ Mounts through the responder system and uses NativeAnimated opacity. Responder c
 
 ## Props
 
-`TouchableOpacity` has no QNX override. It is React Native's component, which dims through an animated opacity value. The only claims backed here come from `docs/component-support.json`: it mounts through the responder system and uses NativeAnimated opacity, and responder coverage comes from `Pressable`.
+`TouchableOpacity` has no QNX override. It is React Native's component, built on `Pressability` with an `Animated.View` (`TouchableOpacity.js:168-173,232`). No file under `tests/` renders `TouchableOpacity` directly. `Button` renders it, and `buttonMounts` only checks that the mount succeeds (`tests/cpp/QtReactHostHostTest.cpp:2088-2116`).
 
-| Prop                                                       | Type     | Status     | Source-backed note                                         |
-| ---------------------------------------------------------- | -------- | ---------- | ---------------------------------------------------------- |
-| `onPress`, `onPressIn`, `onPressOut`                       | function | supported  | Same responder path as `Pressable`.                        |
-| `activeOpacity`                                            | number   | supported  | Drives the NativeAnimated opacity; no per-prop test found. |
-| `disabled`                                                 | boolean  | unverified | No evidence found.                                         |
-| `onLongPress`, `delayPressIn`, `delayLongPress`, `hitSlop` | various  | unverified | No evidence found.                                         |
-| `style`, `children`                                        | node     | supported  | Renders a View.                                            |
+Native touch path: only Fabric `onTouchStart`, `onTouchMove`, `onTouchEnd` and `onTouchCancel` reach React (`vnext/src/fabric/QtTouchDispatcher.cpp:227-247,280-360`). There is no hover or pointer enter and leave event, and hit testing uses item geometry (lines 141-225), so a press cannot start outside the view's box. Long-press and delay timing, `hitSlop` and `pressRetentionOffset` regions are computed in JavaScript by `Pressability` (`Pressability.js:464-478,800-867`) using `setTimeout` and a shadow-tree `measure`. The only press test is the `Pressable` probe (`tests/cpp/QtPressableProbe.cpp`), which covers press in, out, press, cancel, deactivation, disabled, unmount and remount, not long press or regions.
+
+| Prop                                                             | Status            | Trace                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ---------------------------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `onPress`, `onPressIn`, `onPressOut`                             | inherited         | Same `Pressability` and touch path as `Pressable`; no direct test.                                                                                                                                                                                                                                                                                                                                                                   |
+| `activeOpacity`                                                  | untested          | The press animates opacity to `activeOpacity ?? 0.2` with `Animated.timing`, `useNativeDriver: true` (`TouchableOpacity.js:168-177`). The NativeAnimated backend is created at `vnext/src/runtime/QtReactHost.cpp:1082`. The test `nativeAnimatedOpacity` checks an initial animated opacity of 0.5 on the Qt item (`QtReactHostHostTest.cpp:2573-2574`). No test presses a `TouchableOpacity` and reads the item opacity afterward. |
+| `onLongPress`, `delayLongPress`, `delayPressIn`, `delayPressOut` | JS-only, untested | `Pressability` timers, see above.                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `hitSlop`                                                        | partial           | Enlarges only the JS retention region, not where a press can start.                                                                                                                                                                                                                                                                                                                                                                  |
+| `disabled`                                                       | inherited         | Handled by `Pressability`; no direct test.                                                                                                                                                                                                                                                                                                                                                                                           |
+| `style`, `children`                                              | supported         | Renders an `Animated.View`, which adds a hierarchy level.                                                                                                                                                                                                                                                                                                                                                                            |
+| `hasTVPreferredFocus`, `nextFocus*`                              | not read          | No file under `vnext/` references them.                                                                                                                                                                                                                                                                                                                                                                                              |
 
 ## Events
 
-| Event                     | Status    | Note                                                                                                  |
-| ------------------------- | --------- | ----------------------------------------------------------------------------------------------------- |
-| `onPress`                 | supported | Mounts and responds via the touch dispatcher.                                                         |
-| `onPressIn`, `onPressOut` | supported | Inherits the responder evidence in `docs/evidence/pressable-qnx-2026-11-07.md`; no direct test found. |
+| Event                                | Status    | Note                                                                                                 |
+| ------------------------------------ | --------- | ---------------------------------------------------------------------------------------------------- |
+| `onPress`, `onPressIn`, `onPressOut` | inherited | Evidence is the `Pressable` receipt `docs/evidence/pressable-qnx-2026-11-07.md`, not this component. |
 
 ## Platform behavior on QNX
 
-Touch input comes from `QtTouchDispatcher` (`vnext/src/fabric/QtTouchDispatcher.cpp`), which maps Qt mouse and touch events to Fabric touch events and hit-tests the QML tree. React's JS responder logic decides when a press starts and ends. The dimming animation needs the NativeAnimated backend; if it is not connected, the opacity change does not reach the native item. No evidence found for behavior in that case.
+React's JS responder logic decides when a press starts and ends. The dimming animation runs through NativeAnimated. If the backend were not connected, the opacity change would not reach the Qt item; No evidence found for that case, and the backend is created unconditionally at the line above.
 
 ## Unsupported or partial props
 
-- Direct component coverage: the matrix lists no device evidence, so props are exercised only indirectly via `Pressable`.
-- `hasTVPreferredFocus`, `nextFocus*`: No evidence found that QNX reads them.
+- Direct component coverage: none; props are exercised only indirectly via `Pressable`.
+- `hasTVPreferredFocus`, `nextFocus*`: not read.
+- `hitSlop`: cannot enlarge the starting area.
 
 ## Minimal example
 

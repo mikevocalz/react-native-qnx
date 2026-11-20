@@ -1,19 +1,32 @@
 ## Props
 
-`FlatList` is React Native's upstream JavaScript. No QNX override exists under `packages/react-native-qnx/Libraries` (the directory holds only `Image`, `Components` entries for StatusBar, RefreshControl, TextInput, Switch and KeyboardAvoidingView, and a few utilities). The host test comment says it plainly: FlatList is upstream JavaScript over `ScrollView`, so it needs a mounted Flickable, measured children, `Dimensions`, timers and scroll offsets coming back (`tests/cpp/QtReactHostHostTest.cpp`, `flatListRendersAndVirtualises`).
+`FlatList` is React Native's upstream JavaScript. No QNX override exists under `packages/react-native-qnx/Libraries` (the directory holds only `Image`, `Components` entries for StatusBar, RefreshControl, TextInput, Switch and KeyboardAvoidingView, and a few utilities). The QNX public entry exports it (`packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js:24-26`). It renders `VirtualizedList` from `@react-native/virtualized-lists` over a `ScrollView`, which mounts as a Qt Quick `Flickable`. The host test comment says it plainly: FlatList is upstream JavaScript over `ScrollView`, so it needs a mounted Flickable, measured children, `Dimensions`, timers and scroll offsets coming back (`tests/cpp/QtReactHostHostTest.cpp`, `flatListRendersAndVirtualises`, line 1544).
 
-| Prop                                 | Type     | Status             | Source-backed note                                                                       |
-| ------------------------------------ | -------- | ------------------ | ---------------------------------------------------------------------------------------- |
-| `data`, `renderItem`, `keyExtractor` | various  | supported          | Exercised by the 20-row test list.                                                       |
-| `initialNumToRender`                 | number   | supported          | Test used 4 and got exactly 4 initial cells.                                             |
-| `windowSize`                         | number   | supported          | Test used 1; cells outside the window were released.                                     |
-| `onLayout`, `onContentSizeChange`    | function | supported          | Both reached JavaScript in the test.                                                     |
-| `onScroll`                           | function | supported          | Received offset 300 after stepped scrolling.                                             |
-| `getItemLayout`                      | function | accepted-no-effect | No evidence found that any test covers it; the test relied on measured `onLayout` sizes. |
+Every prop below is JavaScript behavior. None has a FlatList-specific native reader. Their support depends on four things the platform supplies, each traced here: scroll events that carry `contentOffset`, `contentSize` and `layoutMeasurement`; `onLayout` for the list and its cells; timers; and Yoga.
+
+| Prop                                    | Type     | Status                                   | Source-backed note                                                                                        |
+| --------------------------------------- | -------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `data`, `renderItem`, `keyExtractor`    | various  | supported                                | Exercised by the 20-row test list.                                                                        |
+| `initialNumToRender`                    | number   | supported                                | Test used 4 and got exactly 4 initial cells.                                                              |
+| `windowSize`                            | number   | supported                                | Test used 1; cells outside the window were released.                                                      |
+| `onLayout`, `onContentSizeChange`       | function | supported                                | Both reached JavaScript in the test.                                                                      |
+| `onScroll`                              | function | supported                                | Received offset 300 after stepped scrolling.                                                              |
+| `onEndReached`, `onEndReachedThreshold` | function | JavaScript, untested                     | Computed in JavaScript from the scroll event. See Events.                                                 |
+| `onViewableItemsChanged`                | function | JavaScript, tested through `SectionList` | `sectionListRenders` asserts the callback ran with at least one viewable item. See Events.                |
+| `getItemLayout`                         | function | JavaScript, untested                     | Replaces measured cell sizes with computed ones. No native dependency. The recorded test did not pass it. |
+| `numColumns`                            | number   | JavaScript, untested                     | Rows of flex-row Views from `FlatList.js`; needs only Yoga. See Unsupported or partial props.             |
+| `horizontal`                            | boolean  | partial, untested                        | Passed to `ScrollView`; native reads it only in `scrollToEnd`.                                            |
+| `inverted`                              | boolean  | ignored for vertical lists               | Implemented as `scaleY: -1`, and the adapter reads only the x scale factor.                               |
+| `refreshing`, `onRefresh`               | various  | ignored                                  | Wrapped in a `RefreshControl` that `ScrollView` drops on QNX.                                             |
 
 ## Events
 
-`onScroll`, `onLayout` and `onContentSizeChange` are the events the host test asserts. `onEndReached`, `onViewableItemsChanged`, `onRefresh` and `onScrollToIndexFailed`: No evidence found of a test on QNX. They are JavaScript behavior that depends on the same scroll offsets, so they may work, but this page does not claim it.
+`onScroll`, `onLayout` and `onContentSizeChange` are the events the host test asserts. The scroll event is built by `connectScrollEvents` (`ShadowViewMutationAdapter.cpp:892-991`) and carries `contentOffset` from the Flickable's `contentX` and `contentY`, `contentSize` from `contentWidth` and `contentHeight`, and `containerSize` from the item size (which React Native reads as `layoutMeasurement`, `ReactCommon/react/renderer/components/scrollview/ScrollEvent.cpp:42`). These are the three metrics `VirtualizedList._onScroll` uses (`@react-native/virtualized-lists/Lists/VirtualizedList.js:1725-1740`). The FlatList test checks the offset (300), the viewport height (100) and that the content height exceeds the viewport. The ScrollView test (`scrollEventsReachJavaScript`) checks offset 120 and content height 300.
+
+- `onEndReached`: `_maybeCallOnEdgeReached` (`VirtualizedList.js:1561-1625`) compares the distance from the end, computed from those three metrics, with `onEndReachedThreshold` times the viewport length, and fires once per content length. QNX supplies every input. No test, app or gallery card in the repository sets `onEndReached` (searched `tests/`, `apps/`, `packages/`), so it has never been exercised here.
+- `onViewableItemsChanged`: `ViewabilityHelper` runs on the same metrics plus cell layouts. The SectionList host test registers the callback and asserts `viewableItems.length >= 1` (`apps/rn-playground/index.js:451`, `tests/cpp/QtReactHostHostTest.cpp:1704-1745`), recorded as PASS in `docs/evidence/drawer-route-2026-11-13/drawer-input-host-test.txt:168`. That covers the initial report. A change after scrolling is not asserted, and no test sets the callback on a `FlatList`.
+- `onRefresh`: `VirtualizedList` builds a `RefreshControl` and passes it as the ScrollView's `refreshControl` (`VirtualizedList.js:1292-1320`). `ScrollView.js` renders `refreshControl` only for `ios` and `android`, so on `qnx` it is dropped, and the QNX `RefreshControl` returns null anyway. `onRefresh` never fires.
+- `onScrollToIndexFailed`: JavaScript, raised by `scrollToIndex` when it cannot place the index. Not tested.
 
 ## Platform behavior on QNX
 
@@ -21,9 +34,12 @@ Virtualization follows scroll offsets that the Flickable reports through `QtScro
 
 ## Unsupported or partial props
 
-- Everything that depends on `ScrollView` props marked accepted-no-effect there: `scrollEnabled`, `pagingEnabled`, scroll indicators, `bounces`, `contentInset`.
-- `scrollToIndex`, `scrollToOffset` and `scrollToEnd` on the list ref route through `ScrollView` commands. Those commands ignore `animated`.
-- `refreshing` and `onRefresh` go through `RefreshControl`, which has its own page: /docs/reference/components/refreshcontrol.
+- `inverted`: `VirtualizedList.js:2079-2082` styles an inverted vertical list with `transform: [{scaleY: -1}]` on every platform except Android, which uses `scale: -1`. QNX is not Android. React Native turns `scaleY` into a Scale operation with x equal to 1 (`ReactCommon/react/renderer/components/view/conversions.h:834-845`), and `toViewStyle` multiplies the item scale by `op.x.value` only (`ShadowViewMutationAdapter.cpp:290-291`). The flip is therefore dropped for the list and for every cell, and a vertical `inverted` list shows its first item at the top. A horizontal inverted list uses `scaleX: -1`, which becomes `QQuickItem::setScale(-1)` on the list and on each cell. That is a uniform scale, so it mirrors both axes. Neither case has a test. See [View](/docs/reference/components/view).
+- `numColumns`: `FlatList.js:501-575` groups items into rows and `VirtualizedList` renders each row as one cell, so columns are Yoga flex layout and need no native support. Real use exists: the component gallery's Advanced page passes `numColumns` (`apps/component-gallery/screens/AdvancedScreen.js:48`). Its layout test substitutes a small stand-in for `FlatList` (`tests/js/helpers/gallery-loader.cjs:47-90`), so upstream `numColumns` is not what that test runs, and `docs/evidence/gallery-yoga-layout-2026-11-13.md` does not mention FlatList. `numColumns` with `horizontal` throws in upstream JavaScript.
+- `horizontal`: React Native lays the content container out as a row and passes `horizontal` to the native ScrollView. `VirtualizedList` then reads `contentOffset.x` and the container width from the scroll event, which the adapter fills for both axes. The QML Flickable sets no `flickableDirection`. No test uses a horizontal list.
+- `scrollToIndex`, `scrollToOffset` and `scrollToEnd` on the list ref route through `ScrollView.scrollTo` and the `scrollTo` command, which jumps and ignores `animated`.
+- Everything that depends on `ScrollView` props ignored there: `scrollEnabled`, `pagingEnabled`, scroll indicators, `bounces`, `contentInset`, `refreshControl`.
+- `stickyHeaderIndices` and `ListHeaderComponent` stickiness are ScrollView JavaScript, unverified. See [ScrollView](/docs/reference/components/scrollview).
 
 ## Minimal example
 
@@ -53,6 +69,7 @@ export default function App() {
 
 ## Known gaps
 
-- Host-only evidence, offscreen Qt platform, from the 2026-08-14 entry in `docs/handoff/TEST_STATUS.md`. No Pi 400 or Pi 4 QSTI receipt.
-- The test used fixed 30pt rows with a playground bundle, not a real app list. Variable-height rows, `numColumns`, `horizontal` and `inverted` have no recorded test.
+- Host-only evidence, offscreen Qt platform, from the 2026-08-14 entry in `docs/handoff/TEST_STATUS.md`. The FlatList and SectionList cases also pass in `docs/evidence/drawer-route-2026-11-13/drawer-input-host-test.txt`. No Pi 400 or Pi 4 QSTI receipt.
+- The test used fixed 30pt rows with a playground bundle, not a real app list. Variable-height rows, `numColumns`, `horizontal`, `inverted`, `onEndReached` and `getItemLayout` have no recorded test.
+- `inverted` on a vertical list is a verified code-level mismatch, not just an untested prop.
 - Scrolling in the test is set by writing `contentY`, not by touch or wheel input.

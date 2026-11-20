@@ -23,27 +23,27 @@ Renders nothing; refreshing and onRefresh are accepted and ignored. Pull-to-refr
 
 ## Props
 
-`RefreshControl` is a QNX-specific JavaScript module at `packages/react-native-qnx/Libraries/Components/RefreshControl/RefreshControl.js`. Its source comment says QNX targets have no native pull-to-refresh gesture, so it is a minimal no-op. The function returns `null` and declares no logic. The only default is `refreshing: false`.
+`RefreshControl` is a QNX JavaScript module at `packages/react-native-qnx/Libraries/Components/RefreshControl/RefreshControl.js`. Its comment says QNX has no native pull-to-refresh gesture, so it is a no-op. The function takes no arguments and returns `null` (`:12-14`). The only default is `refreshing: false` (`:16-18`). `PublicAPI.js:157` exports it as `RefreshControl`, and `tests/js/qnx-public-entry.test.mjs:69` checks the export exists.
 
-| Prop                                                                                                             | Type     | Status             | Source-backed note                                         |
-| ---------------------------------------------------------------------------------------------------------------- | -------- | ------------------ | ---------------------------------------------------------- |
-| `refreshing`                                                                                                     | boolean  | accepted-no-effect | Default `false`. Not read.                                 |
-| `onRefresh`                                                                                                      | function | accepted-no-effect | Never called.                                              |
-| `colors`, `tintColor`, `title`, `titleColor`, `progressBackgroundColor`, `progressViewOffset`, `size`, `enabled` | various  | accepted-no-effect | The function takes no arguments, so every prop is ignored. |
+| Prop                                                                                                             | Type     | Status             | Traced finding                     |
+| ---------------------------------------------------------------------------------------------------------------- | -------- | ------------------ | ---------------------------------- |
+| `refreshing`                                                                                                     | boolean  | accepted-no-effect | Default `false`. Nothing reads it. |
+| `onRefresh`                                                                                                      | function | accepted-no-effect | Never called.                      |
+| `colors`, `tintColor`, `title`, `titleColor`, `progressBackgroundColor`, `progressViewOffset`, `size`, `enabled` | various  | accepted-no-effect | The function has no parameters.    |
 
 ## Events
 
-| Event       | Status      | Note                                                               |
-| ----------- | ----------- | ------------------------------------------------------------------ |
-| `onRefresh` | unsupported | Nothing fires it. No gesture, key or timer is wired in the module. |
+| Event       | Status      | Note                                                                                                                                                                                             |
+| ----------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `onRefresh` | unsupported | The module registers no gesture, key or timer. No native code references RefreshControl: the only files outside docs that mention it are `RefreshControl.js`, `PublicAPI.js` and the entry test. |
 
 ## Platform behavior on QNX
 
-When passed as the `refreshControl` prop of a `ScrollView` or `FlatList`, the element renders nothing. The list scrolls as usual and no refresh indicator appears. The public entry test (`tests/js/qnx-public-entry.test.mjs`) lists `RefreshControl` among the names the package entry must export, so importing it from `react-native` does not throw. That test checks the export, not any behavior of the component.
+The element is not mounted at all. In React Native 0.88.1's `ScrollView.js:1922-1960`, a `refreshControl` is placed in the tree only when `Platform.OS` is `'ios'` or `'android'`. `Platform.OS` is `'qnx'` (`packages/react-native-qnx/Libraries/Utilities/Platform.js:32`), so both branches are skipped and the ScrollView renders normally. `FlatList` and `SectionList` go through `VirtualizedList.js:1298-1322`, which builds a `RefreshControl` element when `onRefresh` is set and hands it to `ScrollView`, where it is dropped. That branch also asserts `typeof refreshing === 'boolean'` with an invariant, so a list with `onRefresh` and no `refreshing` prop throws on QNX as it does elsewhere.
 
 ## Unsupported or partial props
 
-All props are ignored, for the reason stated at the top of `packages/react-native-qnx/Libraries/Components/RefreshControl/RefreshControl.js`: the target has no native pull-to-refresh. Pointer-driven or keyboard-driven alternatives were not found in the code. If an app needs refresh, put a button in the list header that calls the same function you would pass to `onRefresh`.
+All props are ignored. No pointer-driven or keyboard-driven refresh exists in the repository (files traced: `packages/react-native-qnx`, `packages/expo-router-qnx/src`, `vnext/src`). An app that needs refresh can put a button in the list header that calls the function it would pass to `onRefresh`.
 
 ## Minimal example
 
@@ -77,8 +77,8 @@ On QNX the `Button` is the only way to trigger `reload`. The `refreshControl` el
 
 ## Known gaps
 
-- Pull-to-refresh does not exist on this target and no work toward it was found in the repository.
-- The status table shows `no-op` on host and unverified on both devices. No receipt exercises the component.
+- Pull-to-refresh does not exist on this target and no work toward it was found.
+- Host status is `no-op` and both device columns are unverified. No receipt exercises the component.
 
 ## Evidence
 

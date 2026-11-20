@@ -1,29 +1,29 @@
 ## Props
 
-`SafeAreaView` uses React Native's portable `SafeAreaViewComponentDescriptor`. The host registers it in `vnext/src/runtime/QtReactHost.cpp` with the comment that it has no platform fork and that insets are zero on QNX, so it behaves like a View. The test fixture in `tests/cpp/QtReactHostHostTest.cpp` maps `SafeAreaView` to the Qt Quick `View` item.
+On QNX, React Native's `SafeAreaView` is a plain `View`. In 0.88.1, `Libraries/Components/SafeAreaView/SafeAreaView.js` is `Platform.select({ios: RCTSafeAreaViewNativeComponent, default: View})`, and `Platform.OS` is `'qnx'` (`packages/react-native-qnx/Libraries/Utilities/Platform.js:32`). The `default` branch applies, so every View prop is handled exactly as on `View` (see [View](/docs/reference/components/view)): Yoga layout, then `toViewStyle` and `updateStyle` (`vnext/src/fabric/ShadowViewMutationAdapter.cpp:202`, `vnext/src/fabric/QtQuickMountingLayer.cpp:419`).
 
-| Prop                                            | Type      | Status            | Source-backed note                                                                                  |
-| ----------------------------------------------- | --------- | ----------------- | --------------------------------------------------------------------------------------------------- |
-| `style` (layout, background, border)            | ViewStyle | supported         | Applied as for a View, since the item type is `View`.                                               |
-| `children`                                      | node      | supported         | Mounted as View children.                                                                           |
-| `testID`, accessibility props, other View props | various   | No evidence found | The code only maps the component name; whether each View prop is read for this node was not traced. |
-| edges or inset-mode props                       | n/a       | unsupported       | RN's `SafeAreaView` has none. `react-native-safe-area-context` was not checked.                     |
+The host also registers `SafeAreaViewComponentDescriptor` (`vnext/src/runtime/QtReactHost.cpp:410-414`) with a comment that insets are zero on QNX. Only a host component named `SafeAreaView` would reach it, and the JavaScript above never creates one. The test fixture maps that name to the `View` QML item (`tests/cpp/QtReactHostHostTest.cpp:289`).
+
+| Prop                                                      | Status      | Traced finding                                                                                                                                                                                                              |
+| --------------------------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `style` (layout, background, border, opacity, transforms) | supported   | Same path as View.                                                                                                                                                                                                          |
+| `children`                                                | supported   | Mounted as View children.                                                                                                                                                                                                   |
+| `testID`, accessibility props, other View props           | as View     | Same path as View. The Qt Accessible bridge keys on the component name `View` (`QtQuickMountingLayer.cpp:221`), and a `SafeAreaView` is created as `View`, so it is eligible when the opt-in accessibility bridge is built. |
+| edges or inset-mode props                                 | unsupported | React Native's `SafeAreaView` has none.                                                                                                                                                                                     |
 
 ## Events
 
-| Event | Status         | Note                                         |
-| ----- | -------------- | -------------------------------------------- |
-| none  | not applicable | `SafeAreaView` defines no events of its own. |
+`SafeAreaView` defines no events of its own.
 
 ## Platform behavior on QNX
 
-Because insets are zero, `SafeAreaView` adds no padding. The host test `safeAreaViewMounts` mounts the playground surface `RNQnxSafeAreaView` and checks that it mounts with no failures and produces one child item. It does not measure the layout.
+It adds no padding. The host test `safeAreaViewMounts` (`tests/cpp/QtReactHostHostTest.cpp:2117-2150`) mounts `RNQnxSafeAreaView` and checks that it mounts without failures as one child item. It does not measure geometry.
 
-The window has no status bar and the host reports no system insets. If the window-chrome title bar is on, the host places the surface root below it (a comment in `vnext/src/fabric/QtQuickMountingLayer.cpp` says the host owns where the root sits), so content is already below the bar without `SafeAreaView`.
+Insets come from nowhere on this target. The router package's `react-native-safe-area-context` replacement, `packages/expo-router-qnx/src/shims/safe-area-context.js`, says the native half does not exist and the window has no notch or system bars. Its `SafeAreaProvider` supplies `{top: 0, right: 0, bottom: 0, left: 0}` (`:9, :22`), `useSafeAreaInsets` returns them (`:38-40`), `initialWindowMetrics` is a 1280 by 800 frame with zero insets (`:11-14`), and its `SafeAreaView` is `View` (`:34-36`). Metro points the package name at this shim for the `qnx` platform only. `tests/js/expo-router-qnx.test.mjs` loads it. If the window-chrome title bar is on, the host places the surface root below it (comment at `QtQuickMountingLayer.cpp:873-876`), so content already clears the bar.
 
 ## Unsupported or partial props
 
-System safe-area integration is absent: there is no source of non-zero insets on QNX. The reason is the comment in `vnext/src/runtime/QtReactHost.cpp`. The package `react-native-safe-area-context` was not examined, so this page makes no claim about it.
+System safe-area integration is absent. Zero insets are hard-coded in the shim and assumed in the host comment. No code reads display overscan or a bezel mask.
 
 ## Minimal example
 
@@ -42,6 +42,6 @@ export default function App() {
 
 ## Known gaps
 
-- Insets are always zero. Displays with overscan or a bezel mask are not compensated.
-- The host test checks that the node mounts, not its geometry or styling.
+- Insets are always zero. Displays with overscan are not compensated.
+- The host test checks that the node mounts, not geometry or styling.
 - No Pi 400 or Pi 4 QSTI receipt exists for this component.

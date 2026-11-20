@@ -1,28 +1,31 @@
 ## Props
 
-`TouchableWithoutFeedback` has no QNX override and no direct test. `docs/component-support.json` records host `unverified` with the note "Direct component coverage is unverified." Every row below is therefore unverified.
+`TouchableWithoutFeedback` has no QNX override and no direct test (`docs/component-support.json` host `unverified`). It attaches `Pressability` handlers to its single child by cloning it (`TouchableWithoutFeedback.js:171-211` upstream) and draws nothing. No `setState`, native animation or Qt property is involved.
 
-| Prop                                                | Type     | Status     | Source-backed note                                                                     |
-| --------------------------------------------------- | -------- | ---------- | -------------------------------------------------------------------------------------- |
-| `onPress`, `onPressIn`, `onPressOut`, `onLongPress` | function | unverified | No direct evidence found. Responder dispatch is covered only through `Pressable`.      |
-| `disabled`                                          | boolean  | unverified | No evidence found.                                                                     |
-| `delayPressIn`, `delayPressOut`, `delayLongPress`   | number   | unverified | No evidence found.                                                                     |
-| `hitSlop`, `pressRetentionOffset`                   | object   | unverified | No evidence found.                                                                     |
-| `children`                                          | element  | unverified | React Native requires a single child that accepts responder props; not checked on QNX. |
+Native touch path: only Fabric `onTouchStart`, `onTouchMove`, `onTouchEnd` and `onTouchCancel` reach React (`vnext/src/fabric/QtTouchDispatcher.cpp:227-247,280-360`). There is no hover or pointer enter and leave event, and hit testing uses item geometry (lines 141-225), so a press cannot start outside the view's box. Long-press and delay timing, `hitSlop` and `pressRetentionOffset` regions are computed in JavaScript by `Pressability` (`Pressability.js:464-478,800-867`) using `setTimeout` and a shadow-tree `measure`. The only press test is the `Pressable` probe (`tests/cpp/QtPressableProbe.cpp`), which covers press in, out, press, cancel, deactivation, disabled, unmount and remount, not long press or regions.
+
+| Prop                                                | Status            | Trace                                                                                                                                     |
+| --------------------------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `onPress`, `onPressIn`, `onPressOut`, `onLongPress` | inherited         | `Pressability` and the touch path above.                                                                                                  |
+| `disabled`                                          | inherited         | Handled in `Pressability`.                                                                                                                |
+| `delayPressIn`, `delayPressOut`, `delayLongPress`   | JS-only, untested | `setTimeout` in `Pressability.js:464-478,790`.                                                                                            |
+| `hitSlop`, `pressRetentionOffset`                   | partial           | The child gets `hitSlop` in its View props, which native code ignores for views. `Pressability` uses it for the JS retention region only. |
+| `children`                                          | untested          | One child that accepts responder props; React Native enforces this.                                                                       |
 
 ## Events
 
-| Event                         | Status     | Note                                              |
-| ----------------------------- | ---------- | ------------------------------------------------- |
-| `onPress` and press lifecycle | unverified | Relies on the same touch dispatch as `Pressable`. |
+| Event           | Status    | Note                          |
+| --------------- | --------- | ----------------------------- |
+| Press lifecycle | inherited | Same dispatch as `Pressable`. |
 
 ## Platform behavior on QNX
 
-The component adds responder handlers to its single child and gives no visual feedback of its own. Touch events originate in `QtTouchDispatcher` (`vnext/src/fabric/QtTouchDispatcher.cpp`), which hit-tests the QML tree and emits Fabric touch events. A view whose `pointerEvents` is none or box-only is excluded from hit tests by the input shield, so a child with those settings cannot receive presses. No test exercises this component on QNX.
+The child must be a host `View`-like element that mounts as a Qt item for hit testing to find it. The dispatcher walks the item tree and maps the item to a tag with a registered emitter (`QtTouchDispatcher.cpp:195-224`). `pointerEvents` on an ordinary `View` is not read by the dispatcher (only SVG elements and `ExpoImageItem` read it), so No evidence found that `pointerEvents="none"` prevents a press.
 
 ## Unsupported or partial props
 
-None is documented as unsupported in source or receipts. Support is unconfirmed rather than ruled out.
+- None is unsupported by a native reader, because none is read natively except through the touch events.
+- `hitSlop` cannot enlarge the starting area.
 
 ## Minimal example
 

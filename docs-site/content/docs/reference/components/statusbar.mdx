@@ -23,41 +23,28 @@ Static API calls have no effect. The target has no status-bar integration.
 
 ## Props
 
-`StatusBar` is a QNX-specific JavaScript module at `packages/react-native-qnx/Libraries/Components/StatusBar/StatusBar.js`. The component function returns `null`. It exports the static API of React Native's `StatusBar` as empty functions so calls do not throw.
+`StatusBar` is a QNX JavaScript module at `packages/react-native-qnx/Libraries/Components/StatusBar/StatusBar.js`. The component function takes no arguments and returns `null` (`:14-16`), so every prop is ignored. `PublicAPI.js:137` exports it and `tests/js/qnx-public-entry.test.mjs:64` checks the export.
 
-| Prop                              | Type    | Status             | Source-backed note                |
-| --------------------------------- | ------- | ------------------ | --------------------------------- |
-| `barStyle`                        | string  | accepted-no-effect | The component takes no arguments. |
-| `hidden`                          | boolean | accepted-no-effect | Same.                             |
-| `backgroundColor`                 | color   | accepted-no-effect | Same.                             |
-| `translucent`                     | boolean | accepted-no-effect | Same.                             |
-| `networkActivityIndicatorVisible` | boolean | accepted-no-effect | Same.                             |
-| `animated`, `showHideTransition`  | various | accepted-no-effect | Same.                             |
+| Prop                                                                                                                        | Type    | Status             | Traced finding                                                                                                                                                                                                  |
+| --------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `barStyle`, `hidden`, `backgroundColor`, `translucent`, `networkActivityIndicatorVisible`, `animated`, `showHideTransition` | various | accepted-no-effect | Not read. No native code mentions `StatusBar` (traced: `vnext/src`, `native`, `packages/react-native-qnx`, `packages/expo-router-qnx/src`; the only hits are the module and the router's drawer options below). |
 
 ## Events
 
-`StatusBar` has no events.
-
-| Event | Status         | Note                              |
-| ----- | -------------- | --------------------------------- |
-| none  | not applicable | The module registers no listener. |
+`StatusBar` has no events and registers no listener.
 
 ## Platform behavior on QNX
 
-The module comment states that QNX targets typically have no status bar to control. The static members are:
+The module comment says QNX targets typically have no status bar. The static API is present so calls do not throw:
 
-| Static                                                                                                   | Behavior        |
-| -------------------------------------------------------------------------------------------------------- | --------------- |
-| `setHidden`, `setBarStyle`, `setNetworkActivityIndicatorVisible`, `setBackgroundColor`, `setTranslucent` | Empty function. |
-| `pushStackEntry`, `replaceStackEntry`                                                                    | Return `0`.     |
-| `popStackEntry`                                                                                          | Empty function. |
-| `currentHeight`                                                                                          | `0`.            |
+| Static                                                                                                   | Behavior (`StatusBar.js` lines) |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `setHidden`, `setBarStyle`, `setNetworkActivityIndicatorVisible`, `setBackgroundColor`, `setTranslucent` | Empty function (`:18-22`).      |
+| `pushStackEntry`, `replaceStackEntry`                                                                    | Return `0` (`:24-30`).          |
+| `popStackEntry`                                                                                          | Empty function (`:27`).         |
+| `currentHeight`                                                                                          | `0` (`:32`).                    |
 
-`docs/component-support.md` also records that the router's `drawerHideStatusBarOnOpen` and `drawerStatusBarAnimation` have no effect because the window has no status bar.
-
-## Unsupported or partial props
-
-Every prop and static call is ignored. Reason: no status-bar integration exists on the target (`packages/react-native-qnx/Libraries/Components/StatusBar/StatusBar.js`). The window title bar that the window-chrome feature can draw is a separate thing; see [window chrome](/docs/how-to/window-chrome).
+`packages/expo-router-qnx/src/drawerOptions.js:7-14` lists `hideStatusBarOnOpen` and `statusBarAnimation` (the router's `drawerHideStatusBarOnOpen` and `drawerStatusBarAnimation`) as unsupported, with the reason that the window has no status bar, and `docs/component-support.md` records the same. The window title bar that window chrome can draw is separate and sits outside the React surface; see [window chrome](/docs/how-to/window-chrome).
 
 ## Minimal example
 
@@ -80,8 +67,8 @@ Both the element and the static call compile and run, and neither changes what i
 
 ## Known gaps
 
-- No status bar exists on the QNX target. Nothing in the repository implements one.
-- No device receipt covers this module; host and device columns are above in the status table.
+- No status bar exists on the QNX target, and nothing in the repository implements one.
+- No device receipt covers this module.
 
 ## Evidence
 

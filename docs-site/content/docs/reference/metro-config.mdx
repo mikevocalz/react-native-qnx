@@ -3,7 +3,7 @@ title: Metro config reference
 description: Exports, parameters, settings and defaults of the @rn-qnx/metro-config-qnx package and its public-entry helper, with the source file for each.
 ---
 
-This is the lookup page for `@rn-qnx/metro-config-qnx`. For a task-oriented walkthrough, see [Configure Metro for QNX](/docs/how-to/metro-config). Everything here was read from source on 2026-11-19. No Metro process was run for this page. The checkout had no `node_modules`, so the behavior of `@react-native/metro-config` and Metro itself (`getDefaultConfig`, `mergeConfig`) was not read. Statements about them are marked.
+This is the lookup page for `@rn-qnx/metro-config-qnx`. For a task-oriented walkthrough, see [Configure Metro for QNX](/docs/how-to/metro-config). Everything here was read from source on 2026-11-19. No Metro bundle was built for this page. Defaults below were read by installing `@react-native/metro-config@0.88.1` and `metro-config@0.87.1` (the peer versions in `packages/metro-config-qnx/package.json`) in a scratch directory and calling `getDefaultConfig` and `mergeConfig` on 2026-11-19.
 
 ## Package
 
@@ -49,10 +49,42 @@ declare function getQnxMetroConfig(projectRoot: string, overrides?: InputConfigT
 
 Steps, in order (`src/index.js`):
 
-1. `getDefaultConfig(projectRoot)` from `@react-native/metro-config`. Its defaults are not read here.
+1. `getDefaultConfig(projectRoot)` from `@react-native/metro-config`. Its defaults are listed under "Defaults from `getDefaultConfig`" below.
 2. Build a small config with only `resolver.resolveRequest` and `resolver.platforms` and merge it into the defaults with `mergeConfig`.
 3. If `overrides` is given, `mergeConfig(merged, overrides)`.
 4. Add `qnx` to `resolver.unstable_conditionsByPlatform.qnx`, keeping existing entries and removing duplicates.
+
+### Defaults from `getDefaultConfig`
+
+Printed from `@react-native/metro-config@0.88.1` with `metro-config@0.87.1`. These are what `getQnxMetroConfig` starts from, before the three QNX changes above.
+
+| Setting                                    | Default                                                                                                                  |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `resolver.platforms`                       | `android`, `ios` (QNX appends `qnx`)                                                                                     |
+| `resolver.sourceExts`                      | `js`, `jsx`, `json`, `ts`, `tsx`                                                                                         |
+| `resolver.assetExts`                       | `bmp gif jpg jpeg png psd svg webp xml m4v mov mp4 mpeg mpg webm aac aiff caf m4a mp3 wav html pdf yaml yml otf ttf zip` |
+| `resolver.assetResolutions`                | `1`, `1.5`, `2`, `3`, `4`                                                                                                |
+| `resolver.resolverMainFields`              | `react-native`, `browser`, `main`                                                                                        |
+| `resolver.unstable_conditionNames`         | `react-native`                                                                                                           |
+| `resolver.unstable_conditionsByPlatform`   | `web: [browser]` (QNX adds `qnx: [qnx]`)                                                                                 |
+| `resolver.unstable_enablePackageExports`   | `true`                                                                                                                   |
+| `resolver.disableHierarchicalLookup`       | `false`                                                                                                                  |
+| `resolver.useWatchman`                     | `true`                                                                                                                   |
+| `resolver.resolveRequest`                  | `null` (QNX sets it)                                                                                                     |
+| `transformer.babelTransformerPath`         | `@react-native/metro-babel-transformer`                                                                                  |
+| `transformer.assetRegistryPath`            | `react-native/asset-registry`                                                                                            |
+| `transformer.assetPlugins`                 | empty                                                                                                                    |
+| `transformer.publicPath`                   | `/assets`                                                                                                                |
+| `transformer.minifierPath`                 | `metro-minify-terser`                                                                                                    |
+| `transformer.enableBabelRCLookup`          | `true`                                                                                                                   |
+| `transformer.hermesParser`                 | `false`                                                                                                                  |
+| `transformer.unstable_allowRequireContext` | `false`                                                                                                                  |
+| `serializer.customSerializer`              | `null`                                                                                                                   |
+| `server.port`                              | `8081`                                                                                                                   |
+| `server.forwardClientLogs`                 | `true`                                                                                                                   |
+| `watchFolders`                             | empty                                                                                                                    |
+
+`metro-config` also fills many other keys (`transformer.minifierConfig`, `transformer.optimizationSizeLimit` of `153600`, `serializer` hooks, `cacheStores` with one entry). The full printed object has about 90 keys; the table lists the ones this package interacts with or that change what a QNX app bundles.
 
 The function sets no `transformer`, `serializer`, `watchFolders`, `assetExts`, `sourceExts` or asset plugin option. Those come from the defaults and your overrides. Overrides cannot remove the `qnx` condition, because step 4 runs last.
 
@@ -64,7 +96,7 @@ The function sets no `transformer`, `serializer`, `watchFolders`, `assetExts`, `
 | `resolver.resolveRequest`                    | `createSvgOverlayResolveRequest(createQnxResolveRequest(OVERRIDES_ROOT), { platforms: ['qnx'] })` | `OVERRIDES_ROOT` is `packages/react-native-qnx/Libraries`, from `@rn-qnx/react-native-qnx`.                                                                                      |
 | `resolver.unstable_conditionsByPlatform.qnx` | existing entries plus `'qnx'`                                                                     | Other platforms' conditions are kept. A package must list `qnx` before `react-native` in its `exports` object when it ships both.                                                |
 
-If your `overrides` set `resolver.resolveRequest`, `mergeConfig` combines it with the QNX one. Whether yours replaces or wraps it depends on Metro's `mergeConfig`, which was not read for this page. `withPublicEntry` and `withExpoRouterQnx` wrap the resolver explicitly instead.
+If your `overrides` set `resolver.resolveRequest`, `mergeConfig` combines it with the QNX one. Measured with `metro-config@0.87.1`: `mergeConfig` replaces a function-valued `resolver.resolveRequest` with the later one, and replaces array-valued settings such as `resolver.platforms` and `resolver.unstable_conditionNames` with the later array instead of concatenating them. Your `overrides` therefore replace the QNX `resolveRequest` and the `platforms` list that includes `qnx`, and the extended list is lost. Wrap `getQnxMetroConfig(...).resolver.resolveRequest` yourself if you need your own resolver. `withPublicEntry` and `withExpoRouterQnx` wrap the resolver explicitly instead.
 
 ### createQnxResolveRequest(overridesRoot)
 

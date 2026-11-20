@@ -23,69 +23,46 @@ Opt-in (RNQNX_ENABLE_QT_VIDEO, needs the Qt Multimedia add-on). Qt Multimedia FF
 
 ## Props
 
-`QtVideo` is a QNX-only component, not part of React Native. It is exported from `packages/react-native-qnx/qt` (the package has no `exports` map, so the subpath is a plain file path). The wrapper renders the Fabric component `QnxQtVideo`. Types are in `packages/react-native-qnx/qt/index.d.ts`; native props in `packages/react-native-qnx/qt/QtVideoNativeComponent.ts`; they are applied by `vnext/src/fabric/QtVideoBridge.cpp` to `native/qt/video/QtVideoItem.*`, which owns `QnxVideo.qml`.
+`QtVideo` is QNX-only. `packages/react-native-qnx/qt/index.js:42-91` wraps the Fabric component `QnxQtVideo`, declared in `qt/QtVideoNativeComponent.ts` and typed in `qt/index.d.ts`. `vnext/src/fabric/QtVideoBridge.cpp:44-74` forwards each changed prop to `native/qt/video/QtVideoItem.cpp`, which sets properties on `QnxVideo.qml`.
 
-| Prop                 | Type                          | Status    | Source-backed note                                                                                                  |
-| -------------------- | ----------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------- |
-| `source`             | string or `{ uri }`           | supported | URL, `file://`, absolute path, or path relative to the executable. Anything else throws a TypeError in the wrapper. |
-| `paused`             | boolean                       | supported | Default false.                                                                                                      |
-| `muted`              | boolean                       | supported | Bound to the QML `AudioOutput`.                                                                                     |
-| `volume`             | number                        | supported | Documented range 0 to 1. Default 1.                                                                                 |
-| `rate`               | number                        | supported | Documented range 0.25 to 4. Default 1. Clamping was not found in code.                                              |
-| `repeat`             | boolean                       | supported | Infinite loops when true.                                                                                           |
-| `resizeMode`         | `contain`, `cover`, `stretch` | supported | Other values throw. Default `contain`.                                                                              |
-| `poster`             | string                        | supported | Shown until the first frame arrives.                                                                                |
-| `audioDevice`        | string                        | supported | Device id or part of its description. Empty prefers a USB device, then the named card or default.                   |
-| `controls`           | boolean                       | supported | Draws a control bar in QML: play/pause, seek bar, time, volume, fullscreen button.                                  |
-| `fullscreen`         | boolean                       | partial   | Sets a QML property that highlights the button. No code was found that resizes the window; see Known gaps.          |
-| View props (`style`) | ViewProps                     | supported | `children` is omitted from the type.                                                                                |
+| Prop               | Status    | Traced finding                                                                                                                                                                                                                                                                                        |
+| ------------------ | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `source`           | supported | String or `{ uri }`, otherwise the wrapper throws (`index.js:66`). Any URL scheme passes through; an absolute path becomes a file URL; other paths resolve against the executable's directory (`QtVideoItem.cpp:72-82`, tested by `resolvesSources` in `tests/native/qt-video/VideoItemTest.cpp:38`). |
+| `paused`, `repeat` | supported | `paused` calls `applyPaused` (`QnxVideo.qml:52, 82`); `repeat` sets `loops` to infinite (`:92`).                                                                                                                                                                                                      |
+| `muted`, `volume`  | supported | Bound to `AudioOutput` (`QnxVideo.qml:124-129`). `volume` is clamped to 0 to 1 in C++ (`QtVideoItem.cpp:95`).                                                                                                                                                                                         |
+| `rate`             | supported | Clamped to 0.25 to 4 by `qBound` in `QtVideoItem.cpp:96`, then bound to `playbackRate` (`QnxVideo.qml:93`). The clamp is in code, not only in the type comment (`index.d.ts:38`). No test sets it.                                                                                                    |
+| `resizeMode`       | supported | `contain`, `cover`, `stretch`, else the wrapper throws (`index.js:69`). Mapped to `VideoOutput.fillMode` 1, 2, 0 (`QtVideoItem.cpp:107-112`). Not tested.                                                                                                                                             |
+| `poster`           | supported | Resolved like `source` and drawn by an `Image` until the first video frame arrives (`QnxVideo.qml:141-148`). Not tested.                                                                                                                                                                              |
+| `audioDevice`      | supported | Chooses the output (`QnxVideo.qml:58-74`); `onLoad` reports it.                                                                                                                                                                                                                                       |
+| `controls`         | supported | Shows a 40 px bar: play/pause, elapsed, scrubber, total, volume with mute, fullscreen (`QnxVideo.qml:168-333`). The bar's own clicks write `paused`, `muted` and `volume` in QML. Not tested on a board.                                                                                              |
+| `fullscreen`       | partial   | See below.                                                                                                                                                                                                                                                                                            |
+| `style`            | supported | Other View props, except `children`.                                                                                                                                                                                                                                                                  |
+
+**Fullscreen.** The prop sets `QnxVideo.qml`'s `fullscreen` property (`QtVideoItem.cpp:105`). The only effect there is the border of the bar's fullscreen button turning from white to the accent color (`QnxVideo.qml:234`). A click on that button emits `fullscreenToggled(!fullscreen)` (`:239`), which reaches JavaScript as `onFullscreen` (`QtVideoBridge.cpp:39-41`). Nothing changes the property in response, so the app must feed the value back. No code resizes the item or window for it: searches of `vnext`, `native` (including `native/window-chrome`), `packages` and `apps` for window-state calls found `showFullScreen` only for the runner's `--fullscreen` option (`vnext/probes/playground/main.cpp:797, 941`), which does not read this prop. So `fullscreen` is a flag plus an event, and the app has to do the resize.
 
 ## Events
 
-Handlers receive the payload directly, not a native event wrapper (`qt/index.js`).
-
-| Event          | Payload                                                      | Status                   |
-| -------------- | ------------------------------------------------------------ | ------------------------ |
-| `onLoad`       | `duration, width, height, audioDevice`                       | supported                |
-| `onProgress`   | `currentTime, playableDuration` (every 250 ms while playing) | supported                |
-| `onEnd`        | none                                                         | supported                |
-| `onError`      | `message, code`                                              | supported                |
-| `onBuffer`     | `isBuffering`                                                | supported                |
-| `onSeek`       | `currentTime, seekTime`                                      | supported                |
-| `onFullscreen` | `fullscreen`                                                 | supported, not exercised |
-
-The ref handle has `seek(seconds)`, `play()` and `pause()`.
+Handlers receive the payload directly (`index.js:76`). `onLoad` has `duration, width, height, audioDevice`; `onProgress` has `currentTime, playableDuration` every 250 ms while playing (`QnxVideo.qml:150-155`); `onEnd` has none; `onError` has `message, code`; `onBuffer` has `isBuffering`; `onSeek` has `currentTime, seekTime`; `onFullscreen` has `fullscreen`. All are connected in `QtVideoBridge.cpp:15-42`. The ref has `seek`, `play`, `pause`. `playsSeeksAndEnds` and `reportsBadSource` cover load, seek, end and error on a host with a working backend, and skip otherwise.
 
 ## Platform behavior on QNX
 
-Playback uses Qt Multimedia with the FFmpeg backend, software decode, and frames are drawn in the Qt Quick scene graph. The component exists only if the host is built with `RNQNX_ENABLE_QT_VIDEO=ON` (default OFF in `cmake/RnqnxQtNative.cmake`) and the Qt Multimedia add-on. Without it, rendering throws "QtVideo is unavailable" because the view manager `QnxQtVideo` is missing. On the Pi 400 on 2026-11-13, a 480x270 H.264/AAC clip played, with seek, pause, play, end and a bad-URL error reaching JavaScript. An https clip played after FFmpeg was rebuilt with OpenSSL 3. Source: `docs/evidence/media-2026-11-13.md`.
-
-## Unsupported or partial props
-
-Subtitles, audio-track selection, HLS and DASH playlists, and picture-in-picture have no props or code (`docs/getting-started/media.md`). Hardware decode is not used.
+Playback uses Qt Multimedia with the FFmpeg backend, software decode, and frames are drawn in the Qt Quick scene graph. The component exists only if the host is built with `RNQNX_ENABLE_QT_VIDEO=ON` (default OFF in `cmake/RnqnxQtNative.cmake`) and the Qt Multimedia add-on. Without it, rendering throws "QtVideo is unavailable" because the view manager `QnxQtVideo` is missing. On the Pi 400 on 2026-11-13, a 480x270 H.264/AAC clip played, with seek, pause, play, end and a bad-URL error reaching JavaScript. An https clip played after FFmpeg was rebuilt with OpenSSL 3. Source: `docs/evidence/media-2026-11-13.md`. Subtitles, audio-track selection, HLS and DASH playlists and picture-in-picture have no props or code (`docs/getting-started/media.md`). Hardware decode is not used.
 
 ## Minimal example
 
 ```tsx
-import React, { useRef } from 'react';
-import { Button, View } from 'react-native';
+import React from 'react';
 import { QtVideo } from '@rn-qnx/react-native-qnx/qt';
 
 export default function Player() {
-  const ref = useRef<{ seek(s: number): void; play(): void; pause(): void }>(null);
   return (
-    <View style={{ flex: 1 }}>
-      <QtVideo
-        ref={ref}
-        style={{ width: 480, height: 270 }}
-        source="http://192.168.2.1:8765/rnqnx-test-clip.mp4"
-        controls
-        resizeMode="contain"
-        onLoad={(e) => console.log('loaded', e.duration, e.width, e.height)}
-        onError={(e) => console.log('error', e.code, e.message)}
-      />
-      <Button title="Seek 5s" onPress={() => ref.current?.seek(5)} />
-    </View>
+    <QtVideo
+      style={{ width: 480, height: 270 }}
+      source="http://192.168.2.1:8765/rnqnx-test-clip.mp4"
+      controls
+      onLoad={(e) => console.log('loaded', e.duration, e.width, e.height)}
+      onError={(e) => console.log('error', e.code, e.message)}
+    />
   );
 }
 ```
@@ -94,10 +71,11 @@ Build the host with `-DRNQNX_ENABLE_QT_VIDEO=ON`. See [Qt tiers](/docs/reference
 
 ## Known gaps
 
-- Control-bar taps and the fullscreen toggle were not exercised on the board.
+- Control-bar taps and the fullscreen toggle were not exercised on the board (`docs/evidence/media-2026-11-13.md`).
 - The 2026-11-19 Pi 400 builds had QtVideo off, so they say nothing about it.
-- Host column is unverified: `tests/native/qt-video` playback tests had not run anywhere as of the media doc, and skip on Qt builds without a working backend.
-- A JavaScript subset of the `react-native-video` 7 API sits in `packages/react-native-qnx/video` (`useVideoPlayer`, `VideoView`). It has not run on a device and is not aliased in any app's Metro config. The upstream beta cannot load on the pinned Nitro v1.
+- Host column is unverified: `tests/native/qt-video` and `tests/js/qt-video.test.mjs` exist, but no run of them is recorded, and the playback tests skip on a Qt build without a working backend.
+- `rate`, `poster`, `resizeMode`, `controls` and `fullscreen` have no test at any level.
+- `packages/react-native-qnx/video` (`useVideoPlayer`, `VideoView`) has not run on a device and is not aliased in Metro. The upstream `react-native-video` 7 beta cannot load on the pinned Nitro v1.
 
 ## Evidence
 

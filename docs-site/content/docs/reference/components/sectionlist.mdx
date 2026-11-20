@@ -23,19 +23,25 @@ Renders through VirtualizedSectionList, ScrollView and VirtualizedList; host-tes
 
 ## Props
 
-`SectionList` is upstream React Native JavaScript with no QNX override (nothing for it under `packages/react-native-qnx/Libraries`). It renders `VirtualizedSectionList`, which renders `VirtualizedList` over a `ScrollView`. The generated notes say it is host-tested through that chain. I found no SectionList-specific test in `tests/cpp`; the searchable evidence is the FlatList test in `tests/cpp/QtReactHostHostTest.cpp`, and the claim that SectionList is host-tested comes from `docs/component-support.json`, whose test I could not locate by name.
+`SectionList` is upstream React Native JavaScript with no QNX override (nothing for it under `packages/react-native-qnx/Libraries`). The QNX public entry exports it (`PublicAPI.js:27-29`). It renders `VirtualizedSectionList`, which renders `VirtualizedList` over a `ScrollView`.
 
-| Prop                                          | Type     | Status             | Source-backed note                                                                          |
-| --------------------------------------------- | -------- | ------------------ | ------------------------------------------------------------------------------------------- |
-| `sections`, `renderItem`, `keyExtractor`      | various  | supported          | Per the component notes; the shared `VirtualizedList` path is covered by the FlatList test. |
-| `renderSectionHeader`, `renderSectionFooter`  | function | supported          | Per the component notes only. No test found by name.                                        |
-| `initialNumToRender`, `windowSize`            | number   | supported          | Inherited from `VirtualizedList`; tested through `FlatList`.                                |
-| `stickySectionHeadersEnabled`                 | boolean  | accepted-no-effect | No evidence found that native code implements sticky headers.                               |
-| `onScroll`, `onLayout`, `onContentSizeChange` | function | supported          | Delivered from the ScrollView layer.                                                        |
+A SectionList-specific host test exists. `sectionListRenders` (`tests/cpp/QtReactHostHostTest.cpp:1704-1745`) starts the surface `RNQnxSectionList`, whose app is `SectionListApp` (`apps/rn-playground/index.js:438-455`): two sections (two items and one item), `keyExtractor`, `renderSectionHeader`, `renderItem` and `onViewableItemsChanged`. It asserts that mounting reports no failures, that the surface has one root child, and that `onViewableItemsChanged` ran with `viewableItems.length >= 1`. It is recorded as `[PASS] sectionListRenders` in `docs/evidence/drawer-route-2026-11-13/drawer-input-host-test.txt:168` and in `drawer-input-negative-test.txt:169`. Both are offscreen host runs. The test does not scroll the list, does not assert header or footer content, and does not use sticky headers.
+
+| Prop                                               | Type     | Status                              | Source-backed note                                                          |
+| -------------------------------------------------- | -------- | ----------------------------------- | --------------------------------------------------------------------------- |
+| `sections`, `renderItem`, `keyExtractor`           | various  | supported                           | Used by `SectionListApp`; mounting and the viewability callback ran.        |
+| `renderSectionHeader`                              | function | supported, content unasserted       | Passed in the test; the test does not check what is drawn.                  |
+| `renderSectionFooter`, `SectionSeparatorComponent` | function | JavaScript, untested                | Ordinary cells with no native dependency.                                   |
+| `initialNumToRender`, `windowSize`                 | number   | supported                           | Inherited from `VirtualizedList`; tested through `FlatList`.                |
+| `onViewableItemsChanged`                           | function | supported (initial report)          | Asserted in `sectionListRenders`. Changes after scrolling are not asserted. |
+| `onEndReached`                                     | function | JavaScript, untested                | See Events.                                                                 |
+| `stickySectionHeadersEnabled`                      | boolean  | JavaScript, untested; default false | Default is `Platform.OS === 'ios'`, false on `qnx`.                         |
+| `onScroll`, `onLayout`, `onContentSizeChange`      | function | supported                           | Delivered from the ScrollView layer.                                        |
+| `refreshing`, `onRefresh`                          | various  | ignored                             | Routed through a `RefreshControl` that `ScrollView` drops on QNX.           |
 
 ## Events
 
-`onScroll`, `onLayout` and `onContentSizeChange` come from the same native sources as `FlatList` (`QtScrollBridge`, layout events). `onViewableItemsChanged` and `onEndReached`: No evidence found of a QNX test.
+`onScroll`, `onLayout` and `onContentSizeChange` come from the same native sources as `FlatList` (`QtScrollBridge`, layout events). `onViewableItemsChanged` is tested once, as above. `onEndReached` uses the scroll metrics traced on the [FlatList](/docs/reference/components/flatlist) page and has no test in the repository. `onRefresh` never fires.
 
 ## Platform behavior on QNX
 
@@ -43,9 +49,11 @@ Sections flatten into a single `VirtualizedList` window, so windowing, batching 
 
 ## Unsupported or partial props
 
-- Sticky section headers: `stickySectionHeadersEnabled` leads to ScrollView `stickyHeaderIndices`, for which No evidence found of native handling or a test.
-- `scrollToLocation`, `getItemLayout`, `SectionSeparatorComponent`: No evidence found of a QNX test.
-- Anything depending on ScrollView props with no native read (`scrollEnabled`, `pagingEnabled`, `bounces`, scroll indicators).
+- `stickySectionHeadersEnabled`: `SectionList.js:248-249` defaults it to `Platform.OS === 'ios'`, so it is off on QNX unless the app passes `true`. When true, `VirtualizedSectionList.js:189-200` builds `stickyHeaderIndices` from the section header positions and passes them down to the ScrollView, where sticky headers are JavaScript (`ScrollViewStickyHeader`, driven by an Animated scroll event and a `translateY` transform). The transform and `onScroll` pieces are host-tested separately. The Animated scroll-event driver and the combination are not. See [ScrollView](/docs/reference/components/scrollview).
+- `scrollToLocation`: JavaScript. It computes a flat index, calls `scrollToIndex` on the inner list (`VirtualizedSectionList.js:140-169`), and ends in the `scrollTo` command, which ignores `animated`. No test calls it.
+- `getItemLayout` and `SectionSeparatorComponent`: JavaScript with no native dependency; no test.
+- `inverted`: `scaleY: -1` is dropped by the transform reader, as described on the [FlatList](/docs/reference/components/flatlist) page.
+- Anything depending on ScrollView props with no native read (`scrollEnabled`, `pagingEnabled`, `bounces`, scroll indicators, `contentInset`, `refreshControl`).
 
 ## Minimal example
 
@@ -82,8 +90,7 @@ export default function App() {
 ## Known gaps
 
 - Host-only status, offscreen Qt platform. No Pi 400 or Pi 4 QSTI receipt.
-- I could not find the SectionList-specific test the notes imply. Evidence missing: a named test that renders a `SectionList` with headers and scrolls it.
-- Sticky headers, `scrollToLocation` and viewability callbacks have no recorded run.
+- The one test mounts the list and checks the first viewability report. Evidence missing: scrolling a `SectionList`, header and footer content, sticky headers, `scrollToLocation`, `onEndReached`.
 
 ## Evidence
 

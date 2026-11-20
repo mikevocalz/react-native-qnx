@@ -25,32 +25,36 @@ Renders children as a View; behavior, keyboardVerticalOffset and enabled are ign
 
 `KeyboardAvoidingView` is overridden in `packages/react-native-qnx/Libraries/Components/KeyboardAvoidingView/KeyboardAvoidingView.js`. The file header says QNX targets have no software keyboard or `Keyboard` native module, so the component is a pass-through `View`.
 
-| Prop                     | Type                                  | Status             | Source-backed note                                                                                        |
-| ------------------------ | ------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------- |
-| `children`               | node                                  | supported          | Rendered inside a `View`.                                                                                 |
-| `style`                  | style                                 | supported          | Passed to the `View`.                                                                                     |
-| `behavior`               | `'height' \| 'position' \| 'padding'` | accepted-no-effect | Ignored.                                                                                                  |
-| `keyboardVerticalOffset` | number                                | accepted-no-effect | Ignored.                                                                                                  |
-| `enabled`                | boolean                               | accepted-no-effect | Ignored.                                                                                                  |
-| `contentContainerStyle`  | style                                 | accepted-no-effect | Ignored, so `behavior="position"` has no inner container.                                                 |
-| other `View` props       | various                               | unsupported        | The function reads only `children` and `style`; `testID`, `onLayout` and accessibility props are dropped. |
+Wiring caveat. The Metro resolver replaces an upstream file only when the override sits at the same path under `Libraries` (`packages/metro-config-qnx/src/index.js:86-90`). Upstream `KeyboardAvoidingView` lives at `Libraries/Components/Keyboard/KeyboardAvoidingView.js`, and the QNX public entry requires exactly that path (`packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js:117-119`). The override file sits at `Libraries/Components/KeyboardAvoidingView/KeyboardAvoidingView.js`. The relative paths differ, so I found no mechanism that makes the resolver pick the override for `KeyboardAvoidingView`. If that holds, the upstream component runs and everything in this page about a pass-through `View` applies only to code that imports the override path directly. No test imports either one: `tests/js/qnx-public-entry.test.mjs:58` only checks the export name. This is unresolved until someone resolves the module in Metro and confirms which file loads.
+
+| Prop                                                                     | Type    | Status                  | Trace                                                                                                                  |
+| ------------------------------------------------------------------------ | ------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `children`                                                               | node    | supported               | Rendered inside a `View`.                                                                                              |
+| `style`                                                                  | style   | supported               | Passed to the `View`.                                                                                                  |
+| `behavior`, `keyboardVerticalOffset`, `enabled`, `contentContainerStyle` | various | ignored by the override | Not read (`KeyboardAvoidingView.js:14-17`).                                                                            |
+| other `View` props                                                       | various | dropped by the override | The function destructures only `children` and `style`; `testID`, `onLayout` and accessibility props are not forwarded. |
 
 ## Events
 
-| Event      | Status      | Note                                                                      |
-| ---------- | ----------- | ------------------------------------------------------------------------- |
-| `onLayout` | unsupported | Not forwarded by the override (source reads only `children` and `style`). |
+| Event      | Status                        | Note                                      |
+| ---------- | ----------------------------- | ----------------------------------------- |
+| `onLayout` | not forwarded by the override | Source reads only `children` and `style`. |
 
-The component subscribes to no keyboard events and emits none.
+## Keyboard events on QNX
+
+`PublicAPI.js:114-116` exports React Native's own `Keyboard` module unchanged. Upstream `Keyboard.js` builds its `NativeEventEmitter` with the iOS native module only when `Platform.OS` is `ios` (`Keyboard.js:73-77`), and passes `null` otherwise. On QNX that means a JS-only emitter. No file under `vnext/`, `native/` or `packages/` emits `keyboardDidShow`, `keyboardDidHide`, `keyboardWillShow`, `keyboardWillHide` or the frame-change events, so no event is ever delivered, and `Keyboard.isVisible()` stays false. Code in `packages/expo-router-qnx/src/BottomTabBar.js:132-133` subscribes to `keyboardDidShow` and `keyboardDidHide`, and the tests `tests/js/qnx-router-keyboard-space.test.mjs` and `qnx-router-tab-options.test.mjs` fire them from a mock `Keyboard`, not from the platform.
+
+If the upstream component loads, it picks `Keyboard.addListener('keyboardDidShow' ...)` because `Platform.OS` is not `ios` (`KeyboardAvoidingView.js:207-221` upstream) and never receives a keyboard event, so it applies no avoidance either way.
 
 ## Platform behavior on QNX
 
-The implementation is `React.createElement(View, { style }, children)`. Layout never changes when text input gains focus. The `Keyboard` module is not wired (`docs/component-support.json`: "no Keyboard module is wired"), so `Keyboard.addListener`, `Keyboard.dismiss` and frame events cannot drive layout from JS either. Hardware keyboards need no avoidance, and no on-screen keyboard exists in the evidence.
+Layout never changes when a text input gains focus. `Keyboard.dismiss` and frame events cannot drive layout. Hardware keyboards need no avoidance, and no on-screen keyboard exists in the evidence.
 
 ## Unsupported or partial props
 
-- `behavior`, `keyboardVerticalOffset`, `enabled`, `contentContainerStyle`: accepted and ignored, per the header in `KeyboardAvoidingView.js`.
-- Dropped `View` props: the override destructures only `children` and `style`, so every other prop is discarded. The status in the component matrix reads `no-op`.
+- `behavior`, `keyboardVerticalOffset`, `enabled`, `contentContainerStyle`: no effect in either implementation.
+- Dropped `View` props (override only).
+- The status in the component matrix reads `no-op`.
 
 ## Minimal example
 
@@ -71,8 +75,11 @@ On QNX this lays out exactly as a plain `View` with `flex: 1`.
 ## Known gaps
 
 - No Keyboard module exists, so avoidance cannot be implemented from JS. A Qt virtual keyboard or input-panel geometry hook would be needed; No evidence found that one is planned or present.
+- Which `KeyboardAvoidingView` file Metro loads is unconfirmed (see Props).
 - Software keyboard geometry is explicitly unclaimed in `docs/evidence/text-input-qnx-2026-11-07.md`.
 - Pi 400 and Pi 4 QSTI status is unverified or untested.
+
+Tracked in [issue 179](https://github.com/mikevocalz/react-native-qnx/issues/179).
 
 ## Evidence
 
