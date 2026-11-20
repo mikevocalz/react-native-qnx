@@ -56,7 +56,8 @@ candidate needs its own.
 - Hello World renders fullscreen at 1920×1080 on the custom Pi 400 image
   ([Hello World receipt](../evidence/pi400-hello-world-2026-11-07.txt)).
 - A synchronous Nitro v1 call and the opt-in Qt dispatcher for callbacks and
-  Promises run on the Pi 400
+  Promises ran on the Pi 400 at Nitro alpha 105; the pin is alpha 136 and the device
+  result was not rerun on it
   ([dispatcher receipt](../evidence/pi400-nitro-qt-2026-11-07.md)).
 - Synthetic Qt input reaches React `Pressable` on the Pi 400
   ([Pressable receipt](../evidence/pressable-qnx-2026-11-07.md)). Input stays OFF by

@@ -50,7 +50,7 @@ Use the [v1 gates](../releases/v1-readiness.json), [component matrix](../compone
 resolved to and a QNX status read from that version's published files:
 
 - `qnx-native`: `expo-module.config.json` declares `qnx`. No SDK 58 package does.
-- `partial`: `expo-modules-core`; this repo's `packages/expo-modules-core-qnx` supplies the QNX JSI host contract, covered by host tests only.
+- `partial`: a package whose native half this repo supplies out of tree: `expo-modules-core` (`packages/expo-modules-core-qnx`, the QNX JSI host contract, host tests only), `expo-constants` (`packages/expo-constants-qnx`), `expo-image` (`packages/expo-image-qnx`) and `expo-router` (`packages/expo-router-qnx`, Tabs and Drawer, no stack navigator). `expo-video`, `expo-audio` and `react-native-keyboard-controller` have no QNX package and stay `unsupported`.
 - `js-only`: no native code published; it bundles as JavaScript. This says only that nothing native is missing. It is not a claim that the package works on QNX.
 - `no-op`: web-only or iOS/Android build configuration; nothing runs on QNX.
 - `host-tooling`: lint, test, build, server or MCP tooling that runs on the development host or a server, such as `expo-server` (Expo Router API routes) and `expo-mcp`.

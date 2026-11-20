@@ -153,6 +153,7 @@ Read the [architecture decisions](docs/adr/index.md) and the
 - A real USB keyboard held down is unproven. IME and software keyboards are unqualified.
 - Video and Audio cards do not run in the current showcase build, because QtVideo was off in it.
   The Pi 400 image has no HDMI audio driver.
+- The Nitro Pi 400 receipts (2026-11-07) ran Nitro `1.0.0-alpha.nightly.105.g69d365fc9b18`. The pin is alpha 136, and the Nitro device result was not rerun on it.
 - Device performance is unmeasured. Host timings do not predict QNX numbers.
 - `RemoteImageCard` load times of 154149 ms and 618203 ms in run 2 are unexplained.
 - Per-key repeat counts and whether Modal `onRequestClose` fired on Escape rest on screenshots only.

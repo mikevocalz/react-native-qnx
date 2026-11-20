@@ -37,6 +37,18 @@ export const OVERRIDES = Object.freeze({
     'partial',
     'Upstream native core is iOS/Android; packages/expo-modules-core-qnx supplies the QNX JSI host contract, covered by host tests only.',
   ],
+  'expo-constants': [
+    'partial',
+    'Upstream native code is iOS/Android/web; packages/expo-constants-qnx supplies the ExponentConstants module for QNX.',
+  ],
+  'expo-image': [
+    'partial',
+    'Upstream native code is iOS/Android; packages/expo-image-qnx registers the ExpoImage module and view, drawn by ExpoImageItem. Device evidence is the Pi 400 runs listed in docs/component-support.md.',
+  ],
+  'expo-router': [
+    'partial',
+    'Upstream native code is iOS/Android/web; packages/expo-router-qnx provides Tabs and Drawer. No stack navigator is provided.',
+  ],
   'expo-server': [
     'host-tooling',
     'Server API for Expo Router API routes; runs on the server or development host, not in a QNX app bundle.',
