@@ -1,1 +1,15 @@
-{ "title": "Tutorials", "pages": ["quick-start", "first-device-run"] }
+{
+  "title": "Tutorials",
+  "pages": [
+    "quick-start",
+    "first-component-app",
+    "styling-and-theming",
+    "navigation-expo-router",
+    "animations-reanimated",
+    "gestures",
+    "images-and-svg",
+    "windows-and-chrome",
+    "first-device-run",
+    "ship-a-release-build"
+  ]
+}
