@@ -185,6 +185,7 @@ if (metroAvailable) {
 // --dry-run on project dev and project run prints a plan and starts nothing.
 async function captureJson(/** @type {() => Promise<number>} */ fn) {
   const log = console.log;
+  /** @type {string[]} */
   const lines = [];
   console.log = (line) => lines.push(String(line));
   try {
