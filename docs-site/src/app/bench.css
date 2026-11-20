@@ -1237,3 +1237,49 @@ figure.shiki code span {
     width: 500px;
   }
 }
+
+/* Docs code blocks scroll sideways. Fade each edge that still has code beyond
+   it, so a long line reads as continuing instead of cut. The fade follows the
+   scroll position (scroll-driven animation) and is off when the block fits,
+   and in browsers without scroll timelines the block simply scrolls. */
+@property --rq-fade-l {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --rq-fade-r {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@keyframes rq-edge-fade {
+  0% {
+    --rq-fade-l: 0px;
+    --rq-fade-r: 40px;
+  }
+  8% {
+    --rq-fade-l: 40px;
+    --rq-fade-r: 40px;
+  }
+  92% {
+    --rq-fade-l: 40px;
+    --rq-fade-r: 40px;
+  }
+  100% {
+    --rq-fade-l: 40px;
+    --rq-fade-r: 0px;
+  }
+}
+@supports (animation-timeline: scroll()) {
+  figure.shiki > div[tabindex='0'] {
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 var(--rq-fade-l),
+      #000 calc(100% - var(--rq-fade-r)),
+      transparent 100%
+    );
+    animation: rq-edge-fade linear both;
+    animation-timeline: scroll(self inline);
+  }
+}
