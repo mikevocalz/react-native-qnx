@@ -375,6 +375,10 @@ else()
             tests/cpp/QtReactHostHostTest.cpp
           )
           target_link_libraries(qt_react_host_host_test PRIVATE rnqnx_react_host)
+          # The version test compares the host's reported React Native version
+          # with the pin in this file, read independently of the host build.
+          target_compile_definitions(qt_react_host_host_test PRIVATE
+            RNQNX_ROOT_PACKAGE_JSON="${CMAKE_CURRENT_SOURCE_DIR}/package.json")
           rnqnx_enable_strict_warnings(qt_react_host_host_test)
           set_target_properties(qt_react_host_host_test PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"

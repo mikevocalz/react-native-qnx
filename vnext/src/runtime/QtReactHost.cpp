@@ -31,6 +31,7 @@
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #include <jserrorhandler/ErrorUtils.h>
+#include <string_view>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <react/nativemodule/defaults/DefaultTurboModules.h>
 #include <react/renderer/scheduler/SchedulerToolbox.h>
@@ -1150,16 +1151,24 @@ void QtReactHost::installPlatformConstants() {
           runtime, QSysInfo::productType().toStdString()));
   constants.setProperty(runtime, "isTesting", false);
 
-  // The React Native line this platform is built against, pinned in
-  // package.json and asserted by validate:dependencies.
+  // The React Native version this platform is built against. CMake reads it
+  // from the root package.json pin (cmake/RnqnxReactQt.cmake), so it cannot
+  // drift from the installed package. A stable release reports a null
+  // prerelease, matching React Native's own Platform.constants.
   auto version = facebook::jsi::Object(runtime);
-  version.setProperty(runtime, "major", 0);
-  version.setProperty(runtime, "minor", 88);
-  version.setProperty(runtime, "patch", 0);
-  version.setProperty(
-      runtime,
-      "prerelease",
-      facebook::jsi::String::createFromUtf8(runtime, "rc.3"));
+  version.setProperty(runtime, "major", RNQNX_REACT_NATIVE_VERSION_MAJOR);
+  version.setProperty(runtime, "minor", RNQNX_REACT_NATIVE_VERSION_MINOR);
+  version.setProperty(runtime, "patch", RNQNX_REACT_NATIVE_VERSION_PATCH);
+  constexpr std::string_view prerelease = RNQNX_REACT_NATIVE_VERSION_PRERELEASE;
+  if (prerelease.empty()) {
+    version.setProperty(runtime, "prerelease", facebook::jsi::Value::null());
+  } else {
+    version.setProperty(
+        runtime,
+        "prerelease",
+        facebook::jsi::String::createFromUtf8(
+            runtime, std::string(prerelease)));
+  }
   constants.setProperty(runtime, "reactNativeVersion", version);
 
   runtime.global().setProperty(
