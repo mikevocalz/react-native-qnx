@@ -1,7 +1,7 @@
 # Phase 5: MarathonOS as an additional native target
 
-Status: proposed implementation plan; documentation only.
-Planning base: main `cfc28165525e0d7c54192daf58b9b4318a26e83a`, 2026-11-07.
+Status (2026-11-19): the development-client half is implemented and CI-verified on a Linux host. The managed-application half is not started and is blocked on upstream. No run exists on a Marathon compositor or device. Evidence ledger: [marathon-finish-2026-11-19](../validation/marathon-finish-2026-11-19.md).
+Planning base (historical): main `cfc28165525e0d7c54192daf58b9b4318a26e83a`, 2026-11-07.
 QNX remains primary/default; retain the name React Native QNX and repository/package identities.
 
 ## Outcome and dependencies
@@ -16,7 +16,7 @@ QNX builds and releases must not require Marathon tools, compositor services or 
 
 Read [Marathon architecture](../marathon/ARCHITECTURE.md), [native host](../marathon/NATIVE_HOST.md), [roster](../marathon/ROSTER.md), [skills](../marathon/SKILLS.md), the [Marathon Metro resolver](../../packages/metro-config-marathon/src/index.js) and workstream13 in the [existing program](../platform-modernization/README.md).
 
-The owner's [Marathon-Shell PR1](https://github.com/mikevocalz/Marathon-Shell/pull/1) already contains the managed-client RFC at `d16e6db81f5bafde099c5452995f8f46bd05a51c`. Its inspected upstream baseline is `c2c1b2fe32aeaa51edf75a45045cbfbbc08c4ac5`; this is historical source provenance, not a claim that it is still the latest shell. Re-audit actual manifest, runner, security, lifecycle and Wayland interfaces before implementing. Extend that work through focused companion implementation PRs rather than opening another duplicate RFC.
+The owner's [Marathon-Shell PR1](https://github.com/mikevocalz/Marathon-Shell/pull/1) contains the managed-client RFC at `d16e6db81f5bafde099c5452995f8f46bd05a51c`. On 2026-11-19 it was still an open draft on the fork (head `209485b7d23c4468ab67c45348af5c3e7ef7df12`, no comments or reviews), and nothing had been submitted to `patrickjquinn/Marathon-Shell`. Its inspected upstream baseline is `c2c1b2fe32aeaa51edf75a45045cbfbbc08c4ac5`. Upstream `main` was `1f845160f0c249cb29da127fb66abaad380b5438`, and the manifest schema, security model and native lifecycle docs still support the RFC's constraints: a `.qml` `entryPoint` is required, native `.desktop` apps are unconfined, and native back handling is heuristic. Details in [UPSTREAM_RFC](../marathon/UPSTREAM_RFC.md). Re-audit before implementing, and extend the RFC through focused companion PRs rather than opening a duplicate.
 
 ## Two distinct native milestones
 
@@ -46,7 +46,7 @@ Apply repository `qnx-native-api` and `qnx-platform-validation`; follow Margelo 
 
 Callstack `react-native-best-practices`, `github-actions` and `create-react-native-library` at `59e9d17446a248b21d86f078fcd0bd2d36db1ca4` guide measured client behavior, target artifacts and package boundaries. Expo `expo-module` at `a9e5bd3fa00b4e61f632e43f85da73aee1942582` guides explicit native support. Discover/pin any additional Linux/Qt/security/packaging skills before claiming their use. Official Qt QPA/Wayland and current shell source are mandatory audits, not invented agent skills.
 
-Planning source guidance is read; installation/native execution is not claimed. Record exact source commit/path, installation/read status, applied decision and test result per implementation. Actual v1 policy overrides older generic examples. Never use mobile-only automation as Marathon device evidence.
+Skill source guidance was read; the per-skill record, with upstream blob SHAs and the decisions the code reflects, is in [SKILLS](../marathon/SKILLS.md). Installation and native execution of the skills are not claimed. Record exact source commit/path, installation/read status, applied decision and test result per implementation. Actual v1 policy overrides older generic examples. Never use mobile-only automation as Marathon device evidence.
 
 ## Bounded implementation sequence
 
@@ -55,6 +55,24 @@ Planning source guidance is read; installation/native execution is not claimed. 
 3. Add versioned lifecycle/readiness and semantic Back/activation. Test timeout, disconnect, late reply, root fallback, duplicate activation and an app continuously repainting. Never treat repaint as acknowledgment.
 4. Implement managed identity, permission mediation, storage ownership and executable path/argv validation through the chosen reviewed route. Verify wrong identity and denied/revoked capability failures at the native boundary.
 5. Implement install/update/rollback/uninstall, preserving declared user-data policy and existing QML applications. Add freeze/resume, app crash and service restart tests before declaring the same app integrated.
+
+## Status of the bounded sequence (2026-11-19)
+
+| Step                                                                  | Status                                                                                                                                                                                 | Evidence                                                                                                         |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 1. Freeze shell/toolchain/manifest versions and the delivery decision | Versions re-read at upstream `1f845160`. Delivery decision open: native entry, Flatpak or development client only                                                                      | [UPSTREAM_RFC](../marathon/UPSTREAM_RFC.md)                                                                      |
+| 2. Run the external app in Marathon as a development client           | Host build and Marathon bundle verified in CI on Linux (offscreen). The `pnpm qnx marathon` launcher exists (PR #93 closed, commit retained via #96). Not run in a Marathon compositor | [NATIVE_HOST](../marathon/NATIVE_HOST.md), [launcher guide](../getting-started/marathon-development-launcher.md) |
+| 3. Versioned lifecycle, readiness, semantic Back                      | Not started. Needs the upstream contract                                                                                                                                               | none                                                                                                             |
+| 4. Managed identity, permissions, storage, argv validation            | Not started. Blocked on the upstream schema and runner                                                                                                                                 | none                                                                                                             |
+| 5. Install, update, rollback, uninstall                               | Not started                                                                                                                                                                            | none                                                                                                             |
+
+PRs [#82](https://github.com/mikevocalz/react-native-qnx/pull/82), [#83](https://github.com/mikevocalz/react-native-qnx/pull/83), [#84](https://github.com/mikevocalz/react-native-qnx/pull/84), [#85](https://github.com/mikevocalz/react-native-qnx/pull/85) and [#86](https://github.com/mikevocalz/react-native-qnx/pull/86) (phases 1 to 5 plans) merged on 2026-11-08. [PR #100](https://github.com/mikevocalz/react-native-qnx/pull/100), which creates shared Expo applications with an optional Marathon target, merged the same day.
+
+## Open items needing owner or upstream
+
+- Run the development client in a real Marathon compositor and record identity, scale, touch and keyboard. Owner action: a Marathon VM image or device, then the commands in [NATIVE_HOST](../marathon/NATIVE_HOST.md).
+- Pick the delivery route (native-executable manifest extension, companion launcher, or Flatpak-first) with the upstream maintainer, or record that the target stays development-client only.
+- Everything in steps 3 to 5 waits on that decision.
 
 ## Acceptance and evidence
 
@@ -73,4 +91,4 @@ Use distinct Linux offscreen, generic Wayland, actual Marathon shell, VM and phy
 
 No official upstream, store, phone or managed-runtime support is claimed by this document. Native code needs actual confinement and authorization; JS checks are insufficient. No root, unrestricted D-Bus, sandbox-disable or forged identity to make a demo pass. SDK/runtime/source terms and Qt/plugin notices are reviewed separately; premium products stay unbundled.
 
-Rollback implementation by disabling the new native-entry mode and reverting client/shell contracts together while retaining old manifest readers, normal app launch and user data. Preserve QNX recovery boot. This planning PR changes no shell/runtime source or release gate and runs no target tests.
+Rollback implementation by disabling the new native-entry mode and reverting client/shell contracts together while retaining old manifest readers, normal app launch and user data. Preserve QNX recovery boot. This document changes no shell or runtime source and no release gate. The managed-application steps have no code to roll back yet.

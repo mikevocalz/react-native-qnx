@@ -1,10 +1,18 @@
 /**
  * React Native out-of-tree platform resolver for MarathonOS.
  *
- * It reuses the existing QNX Qt/Fabric React Native component overrides for
- * native views while giving Marathon a separate Platform identity. The
- * fallback is intentionally source-level: QNX and Linux do NOT share binaries.
- * This resolver is opt-in; it does not modify the qnx Metro configuration.
+ * Marathon has its own Platform identity and its own JS overrides under
+ * `@rn-qnx/react-native-marathon`. For every other React Native library file
+ * it falls back, at the source level, to the QNX JS overrides, because the Qt
+ * view components they implement are not QNX specific. No QNX binary, Screen
+ * code or ABI is shared. Resolution order for a React Native `Libraries/` file:
+ * Marathon override, then QNX override, then React Native's own file.
+ *
+ * The resolver is opt-in and never touches the `qnx` Metro configuration. It
+ * only acts when Metro asks for the `marathon` platform.
+ *
+ * Marathon-Shell reference: https://github.com/patrickjquinn/Marathon-Shell
+ * (the shell owns the Wayland compositor, system bars and keyboard).
  */
 'use strict';
 
@@ -17,6 +25,37 @@ const { OVERRIDES_ROOT: MARATHON_OVERRIDES_ROOT } = require('@rn-qnx/react-nativ
 
 const MARATHON_PLATFORM = 'marathon';
 
+// expo-modules-core's polyfill entry is a no-op outside the web. The shared
+// polyfill under the QNX package defines globalThis.expo and its JS classes
+// without a native host, which is what Marathon needs as well.
+const EXPO_POLYFILL_ENTRY =
+  /[\\/]expo-modules-core[\\/](?:build[\\/]polyfill[\\/]index\.js|src[\\/]polyfill[\\/]index\.ts)$/;
+
+/**
+ * A `src/private` module of React Native that exists only as `.ios.js` or
+ * `.android.js` (for example `ReactDevToolsSettingsManager` in 0.88), found in
+ * one of the override packages, or null.
+ *
+ * @param {string} origin Absolute path of the importing module.
+ * @param {string} moduleName Relative import as written.
+ * @param {string[]} privateRoots Override packages' `src/private` directories,
+ *   in priority order.
+ */
+function privateOverride(origin, moduleName, privateRoots) {
+  const reactNativeRoot = `${path.sep}react-native${path.sep}`;
+  const target = path.resolve(path.dirname(origin), moduleName);
+  const marker = target.lastIndexOf(reactNativeRoot);
+  if (marker === -1) return null;
+  const relative = target.slice(marker + reactNativeRoot.length);
+  const prefix = `src${path.sep}private${path.sep}`;
+  if (!relative.startsWith(prefix)) return null;
+  for (const root of privateRoots) {
+    const candidate = path.join(root, `${relative.slice(prefix.length)}.js`);
+    if (fs.existsSync(candidate)) return candidate;
+  }
+  return null;
+}
+
 /**
  * @param {string} marathonOverridesRoot
  * @param {string} qnxOverridesRoot
@@ -27,13 +66,30 @@ function createMarathonResolveRequest(
   qnxOverridesRoot = QNX_OVERRIDES_ROOT
 ) {
   const reactNativeLibraries = `${path.sep}react-native${path.sep}Libraries${path.sep}`;
+  const privateRoots = [marathonOverridesRoot, qnxOverridesRoot].map((root) =>
+    path.join(path.dirname(root), 'src', 'private')
+  );
+  const expoPolyfill = path.join(path.dirname(qnxOverridesRoot), 'expo', 'polyfill.js');
 
   return function resolveRequest(context, moduleName, platform) {
-    // Honor upstream resolver; never replace a non-React Native resolution.
-    // Fail if upstream resolution fails so missing modules are not fabricated.
-    const resolution = context.resolveRequest(context, moduleName, platform);
+    let resolution;
+    try {
+      resolution = context.resolveRequest(context, moduleName, platform);
+    } catch (error) {
+      // Only the relative-import case for platform-suffixed private modules is
+      // recovered. Any other failure is a real missing module and is rethrown.
+      const fallback =
+        platform === MARATHON_PLATFORM && moduleName.startsWith('.')
+          ? privateOverride(context.originModulePath, moduleName, privateRoots)
+          : null;
+      if (fallback) return { type: 'sourceFile', filePath: fallback };
+      throw error;
+    }
     if (platform !== MARATHON_PLATFORM || resolution?.type !== 'sourceFile') {
       return resolution;
+    }
+    if (EXPO_POLYFILL_ENTRY.test(resolution.filePath) && fs.existsSync(expoPolyfill)) {
+      return { type: 'sourceFile', filePath: expoPolyfill };
     }
 
     const marker = resolution.filePath.lastIndexOf(reactNativeLibraries);
@@ -42,8 +98,6 @@ function createMarathonResolveRequest(
     }
 
     const relative = resolution.filePath.slice(marker + reactNativeLibraries.length);
-    // First prefer Marathon-specific JS, then source-compatible QNX React
-    // overrides. No QNX Screen, ABI, native C++ or QNX binaries are reused.
     for (const root of [marathonOverridesRoot, qnxOverridesRoot]) {
       const override = path.join(root, relative);
       if (override !== resolution.filePath && fs.existsSync(override)) {

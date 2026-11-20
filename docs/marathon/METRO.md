@@ -1,8 +1,8 @@
-# Marathon Metro proof — experimental Linux/Qt platform identity
+# Marathon Metro proof - experimental Linux/Qt platform identity
 
-Status: JS build configuration added; native MarathonOS runtime/device has NOT been demonstrated.
+Status: merged (PR #34, 2026-11-02; package export conditions fixed in PR #138, 2026-11-12). The Marathon and QNX production bundles build in CI. No MarathonOS runtime or device run exists.
 
-The production code already has a Qt/Fabric/Hermes renderer for QNX, with source-level portability to Linux. This PR adds a separate Metro **marathon** platform that prefers Marathon-specific React Native JS overrides, then falls back to source-compatible QNX JS component overrides. It does not import QNX binary libraries and does not modify the production QNX bundler.
+The production code already has a Qt/Fabric/Hermes renderer for QNX, with source-level portability to Linux. The `@rn-qnx/metro-config-marathon` and `@rn-qnx/react-native-marathon` packages add a separate Metro **marathon** platform that prefers Marathon-specific React Native JS overrides, then falls back to source-compatible QNX JS component overrides. It does not import QNX binary libraries and does not modify the production QNX bundler.
 
 ## Commands after frozen pnpm installation
 
@@ -17,15 +17,17 @@ cd apps/rn-playground
 ../../node_modules/.bin/metro build index.js --platform qnx --dev false --out ../../artifacts/qnx-playground.bundle.js
 ```
 
-Only after a successful native host can the Marathon bundle be evaluated. The selected JS OS name is `marathon`; `Platform.select({marathon: ...})` prefers the Marathon key. A host must install real `__RNQNX_PLATFORM_CONSTANTS` before the bundle runs; do not hard-code OS version. JS components inherited from QNX are temporary **source** reuse, and any OS-specific behavior (StatusBar, KeyboardAvoidingView, Focus, SafeArea, etc.) must be audited for Marathon.
+The Marathon bundle is evaluated by the Linux Qt host (`rnqnx_marathon_host`, see [NATIVE_HOST](NATIVE_HOST.md)) in the offscreen CI job. It has not been evaluated under a Wayland compositor or on MarathonOS. The selected JS OS name is `marathon`; `Platform.select({marathon: ...})` prefers the Marathon key. A host must install real `__RNQNX_PLATFORM_CONSTANTS` before the bundle runs; do not hard-code OS version. JS components inherited from QNX are temporary **source** reuse, and Focus and other OS-specific behavior must be audited for Marathon.
 
-## Known open items
+## Verified
 
-- No Linux Qt/Wayland native runner, Marathon shell bridge, typed native module ABI or signed .marathon native-executable package in this PR.
-- QNX-specific no-op StatusBar override is NOT acceptable as final Marathon system bar behavior.
-- RN 0.88 rc baseline is inherited until a separate tested SDK58/RN0.88 stable upgrade with regenerated pnpm lockfile is merged.
-- Expo Router, autolinking, Nitro 1 alpha, Expo Modules API v2 beta, offscreen Qt render and hardware tests follow in separate reviewed slices.
-- Evidence required: production bundle compile and output hash on a runnable npm environment, cross-platform JS tests, Linux Qt native runtime screenshot and actual QNX regression run.
+CI workflow `marathon-metro.yml`, [run 44492351488](https://github.com/mikevocalz/react-native-qnx/actions/runs/44492351488) (PR #149 head `cbe27bf7`): frozen install, `pnpm format:check`, `pnpm test:js`, `pnpm typecheck`, `pnpm validate:dependencies`, then production QNX and Marathon bundles with `SHA256SUMS` in the `marathon-metro-<sha>` artifact. The baseline is `react-native` 0.88.1 and `expo` 58.0.24, not an RC. The CI job builds the QNX bundle but does not compare it to a pre-change hash.
+
+## Open items needing owner or upstream
+
+- Marathon has its own JS overrides for StatusBar, KeyboardAvoidingView, Linking and BackHandler (`packages/react-native-marathon/Libraries`). They record requests and apply nothing, because the shell owns the system bars and sends no keyboard frame, URL or back events to native clients yet. They are tested stubs, not working features. Owner action: once upstream defines the native client inset, back and deep-link contract, replace each stub with a bridge to it, and run the Wayland host on a Marathon device to record each behavior.
+- Expo Router, autolinking, Nitro 1 alpha and Expo Modules API v2 beta capability on Marathon follow in separate slices. The Nitro adapter compiles in CI ([NATIVE_HOST](NATIVE_HOST.md)); runtime proof on Marathon is open.
+- A bundle hash comparison of the QNX output before and after any shared-override change is a regression check not yet automated.
 
 ## Rollback
 

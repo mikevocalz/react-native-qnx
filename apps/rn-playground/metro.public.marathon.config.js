@@ -5,8 +5,9 @@ const { getMarathonMetroConfig } = require('../../packages/metro-config-marathon
 const rnRequire = createRequire(require.resolve('react-native/package.json'));
 const workspaceRoot = path.resolve(__dirname, '..', '..');
 
-// This source fixture does not declare a separate Marathon package importer.
-// Resolve the existing workspace factory without changing the locked graph.
+// The playground does not list @rn-qnx/metro-config-marathon as a dependency,
+// so this fixture loads the workspace sources by relative path. That keeps the
+// locked dependency graph unchanged.
 module.exports = withPublicEntry(
   getMarathonMetroConfig(__dirname, {
     watchFolders: [workspaceRoot],

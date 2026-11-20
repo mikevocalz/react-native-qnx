@@ -3,12 +3,36 @@ name: Marathon native Qt/Hermes/Fabric host proof
 on:
   pull_request:
     paths:
-      - 'cmake/RnqnxMarathonHost.cmake'
       - 'CMakeLists.txt'
-      - 'vnext/probes/playground/main.cpp'
+      - 'cmake/**'
+      - 'vnext/**'
+      - 'native/platform/linux-host/**'
+      - 'packages/qnx-nitro-runtime/**'
       - 'packages/metro-config-marathon/**'
       - 'packages/react-native-marathon/**'
+      - 'apps/rn-playground/**'
+      - 'tests/cpp/QtNitroDispatcherTest.cpp'
+      - 'tests/fixtures/nitro-qt/**'
+      - 'tests/native/marathon-wayland/**'
       - 'tests/js/marathon-native-host-contract.test.mjs'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/marathon-qt-host.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'CMakeLists.txt'
+      - 'cmake/**'
+      - 'vnext/**'
+      - 'native/platform/linux-host/**'
+      - 'packages/qnx-nitro-runtime/**'
+      - 'packages/metro-config-marathon/**'
+      - 'packages/react-native-marathon/**'
+      - 'apps/rn-playground/**'
+      - 'tests/cpp/QtNitroDispatcherTest.cpp'
+      - 'tests/fixtures/nitro-qt/**'
+      - 'tests/native/marathon-wayland/**'
+      - 'tests/js/marathon-native-host-contract.test.mjs'
+      - 'pnpm-lock.yaml'
       - '.github/workflows/marathon-qt-host.yml'
   workflow_dispatch:
 
@@ -18,14 +42,14 @@ permissions:
 jobs:
   native-qt-host:
     runs-on: ubuntu-24.04
-    timeout-minutes: 95
+    timeout-minutes: 110
     env:
       QT_QPA_PLATFORM: offscreen
       QT_QUICK_BACKEND: software
       QSG_RHI_BACKEND: software
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: 26.13.1
           package-manager-cache: false
@@ -42,14 +66,28 @@ jobs:
           python3 -m pip install --user --break-system-packages cmake==3.31.10
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Install repo-pinned Qt 6.11.1
-        uses: jurplel/install-qt-action@v4
+        uses: jurplel/install-qt-action@b344308e4483fc892e0d27b3cd1b173ebdd95f06 # v4.5.0
         with:
           version: '6.11.1'
           host: linux
           target: desktop
           arch: linux_gcc_64
           cache: true
-      - name: Build existing Qt/Fabric/Hermes host as Marathon executable
+      - name: Require the Qt Wayland client platform plugin
+        run: |
+          # The Qt 6.11.1 desktop package ships qtwayland in its base archive.
+          # Fail here, with the directory listing, rather than at host start.
+          ls -l "$QT_ROOT_DIR/plugins/platforms/"
+          ls "$QT_ROOT_DIR"/plugins/platforms/libqwayland*.so
+          ls "$QT_ROOT_DIR/plugins/wayland-shell-integration/" | grep -i 'xdg-shell'
+      - name: Isolated Nitro core for the Qt dispatcher patches
+        run: |
+          # cmake/RnqnxNitroQt.cmake patches the Nitro core sources and refuses
+          # to patch the installed dependency, so build against a copy.
+          rm -rf build/nitro-core-isolated
+          mkdir -p build
+          cp -RL node_modules/nitro-core build/nitro-core-isolated
+      - name: Build existing Qt/Fabric/Hermes host as Marathon executable with Nitro
         run: |
           mkdir -p build/marathon-host/evidence
           cmake -S . -B build/marathon-host -G Ninja \
@@ -60,13 +98,30 @@ jobs:
             -DRNQNX_BUILD_HERMES=ON \
             -DRNQNX_FETCH_REACT_NATIVE_DEPS=ON \
             -DRNQNX_REQUIRE_FULL_HOST_RENDERER=ON \
-            -DRNQNX_BUILD_MARATHON_HOST=ON
-          cmake --build build/marathon-host --target rnqnx_marathon_host -j 4
-          ./build/marathon-host/bin/rnqnx_marathon_host -platform offscreen \
-            --screenshot build/marathon-host/evidence/marathon-offscreen.png
+            -DRNQNX_ENABLE_NITRO_QT_DISPATCHER=ON \
+            -DRNQNX_NITRO_CORE_ROOT="$PWD/build/nitro-core-isolated" \
+            -DRNQNX_BUILD_MARATHON_HOST=ON \
+            -DRNQNX_MARATHON_HOST_NITRO=ON
+          cmake --build build/marathon-host --target rnqnx_marathon_host rnqnx_nitro_qt_test -j 4
+      - name: Marathon host offscreen run with Nitro proof
+        run: |
+          ./build/marathon-host/bin/rnqnx_marathon_host -platform offscreen --nitro-proof \
+            --screenshot build/marathon-host/evidence/marathon-offscreen.png \
+            > build/marathon-host/evidence/offscreen-host.log
+          cat build/marathon-host/evidence/offscreen-host.log
+          # Printed by the host from values JS read through NitroModulesProxy:
+          # platform === 'marathon' and add(2, 3) === 5 in the real process.
+          grep -F 'RNQNX_MARATHON_NITRO_OK platform=marathon' build/marathon-host/evidence/offscreen-host.log
+          grep -F 'add=5' build/marathon-host/evidence/offscreen-host.log
           test -s build/marathon-host/evidence/marathon-offscreen.png
           git rev-parse HEAD > build/marathon-host/evidence/commit.txt
           sha256sum build/marathon-host/evidence/marathon-offscreen.png > build/marathon-host/evidence/SHA256SUMS
+      - name: Qt Nitro dispatcher tests (Promises, callbacks, cancellation, teardown)
+        run: |
+          ctest --test-dir build/marathon-host -R '^rnqnx_nitro_' --output-on-failure \
+            > build/marathon-host/evidence/nitro-ctest.log
+          cat build/marathon-host/evidence/nitro-ctest.log
+          grep -F 'rnqnx_nitro_qt_test' build/marathon-host/evidence/nitro-ctest.log
       - name: Verify changed image invalidates the Marathon bundle
         run: |
           set -euo pipefail
@@ -84,9 +139,49 @@ jobs:
             build/marathon-host/evidence/asset-incremental-rebuild.txt
           after_mtime=$(stat -c %Y "$bundle")
           test "$after_mtime" -gt "$before_mtime"
-      - name: Preserve CI evidence (offscreen host only)
+      - name: Install a headless Wayland compositor
+        run: |
+          sudo apt-get install -y weston wayland-utils libwayland-client0 libwayland-cursor0 libwayland-egl1
+          weston --version
+      - name: Qt Wayland client against generic headless Weston (not a MarathonOS device proof)
+        env:
+          QT_QPA_PLATFORM: wayland
+        run: |
+          set -euo pipefail
+          evidence=build/marathon-host/evidence
+          export XDG_RUNTIME_DIR="$(mktemp -d)"
+          chmod 700 "$XDG_RUNTIME_DIR"
+          socket=rnqnx-marathon-ci
+
+          weston --backend=headless --socket="$socket" --width=1280 --height=800 \
+            --idle-time=0 > "$evidence/weston.log" 2>&1 &
+          weston_pid=$!
+          trap 'kill "$weston_pid" 2>/dev/null || true' EXIT
+
+          # Weston is an external process: wait for it to create its socket,
+          # bounded at 20 seconds, and stop early if it dies.
+          for _ in $(seq 1 100); do
+            test -S "$XDG_RUNTIME_DIR/$socket" && break
+            kill -0 "$weston_pid" 2>/dev/null || { cat "$evidence/weston.log"; exit 1; }
+            sleep 0.2
+          done
+          test -S "$XDG_RUNTIME_DIR/$socket" || { cat "$evidence/weston.log"; exit 1; }
+
+          WAYLAND_DISPLAY="$socket" wayland-info > "$evidence/wayland-info.txt"
+          grep -F 'xdg_wm_base' "$evidence/wayland-info.txt"
+
+          WAYLAND_DISPLAY="$socket" WAYLAND_DEBUG=client timeout 120 \
+            ./build/marathon-host/bin/rnqnx_marathon_host --nitro-proof \
+            --screenshot "$evidence/marathon-wayland.png" \
+            > "$evidence/wayland-host.log" 2> "$evidence/wayland-client.log"
+
+          grep -F 'RNQNX_MARATHON_NITRO_OK platform=marathon' "$evidence/wayland-host.log"
+          test -s "$evidence/marathon-wayland.png"
+          sha256sum "$evidence/marathon-wayland.png" >> "$evidence/SHA256SUMS"
+          python3 tests/native/marathon-wayland/check-wayland-client-log.py "$evidence/wayland-client.log"
+      - name: Preserve CI evidence (offscreen and generic headless Wayland, no device)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: marathon-native-qt-${{ github.sha }}
           path: |

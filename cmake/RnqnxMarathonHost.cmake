@@ -1,8 +1,13 @@
 include_guard(GLOBAL)
 
 # Experimental MarathonOS native Linux Qt Wayland target.
-# Link the EXISTING Qt/React/Fabric host; no QNX SDP, libscreen or second
-# component renderer is introduced. Requires the Marathon Metro PR to merge.
+# Links the existing Qt/React/Fabric host. No QNX SDP, libscreen or second
+# component renderer is introduced.
+#
+# With RNQNX_MARATHON_HOST_NITRO=ON the host also links the Marathon Nitro v1
+# adapter (native/platform/linux-host/nitro) and the shared Qt Nitro dispatcher
+# (cmake/RnqnxNitroQt.cmake), installs both before the bundle runs, and accepts
+# --nitro-proof. The QNX adapter targets are not part of this link graph.
 function(rnqnx_add_marathon_host)
   if(TARGET rnqnx_marathon_host)
     return()
@@ -15,8 +20,14 @@ function(rnqnx_add_marathon_host)
   endif()
   if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/apps/rn-playground/metro.marathon.config.js")
     message(FATAL_ERROR
-      "Missing apps/rn-playground/metro.marathon.config.js: "
-      "merge the Marathon Metro platform PR before enabling native Marathon build")
+      "Missing apps/rn-playground/metro.marathon.config.js, the Marathon Metro "
+      "config the native Marathon bundle is built with")
+  endif()
+  if(RNQNX_MARATHON_HOST_NITRO AND NOT TARGET rnqnx_nitro_qt)
+    message(FATAL_ERROR
+      "RNQNX_MARATHON_HOST_NITRO needs the Qt Nitro dispatcher: configure with "
+      "-DRNQNX_ENABLE_NITRO_QT_DISPATCHER=ON and an isolated copy of nitro-core "
+      "in RNQNX_NITRO_CORE_ROOT (see cmake/RnqnxNitroQt.cmake)")
   endif()
 
   set(RNQNX_MARATHON_BUNDLE
@@ -48,11 +59,19 @@ function(rnqnx_add_marathon_host)
     DEPENDS "${RNQNX_MARATHON_BUNDLE}")
 
   # This is the same host source, Fabric renderer and Hermes runtime as the
-  # current development-host playground, with Linux Wayland window metadata.
+  # development-host playground, with Linux Wayland window metadata.
   add_executable(rnqnx_marathon_host
     "${CMAKE_CURRENT_SOURCE_DIR}/vnext/probes/playground/main.cpp")
   target_link_libraries(rnqnx_marathon_host PRIVATE rnqnx_react_host)
   rnqnx_enable_strict_warnings(rnqnx_marathon_host)
+  if(RNQNX_MARATHON_HOST_NITRO)
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/native/platform/linux-host/nitro"
+      "${CMAKE_BINARY_DIR}/marathon-nitro-runtime")
+    target_link_libraries(rnqnx_marathon_host PRIVATE
+      rnqnx_nitro_marathon rnqnx_nitro_qt)
+    target_compile_definitions(rnqnx_marathon_host PRIVATE
+      RNQNX_MARATHON_NITRO=1)
+  endif()
   add_dependencies(rnqnx_marathon_host rnqnx_marathon_playground_bundle)
   target_compile_definitions(rnqnx_marathon_host PRIVATE
     RNQNX_MARATHON_HOST=1
