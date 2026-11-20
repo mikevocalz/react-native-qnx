@@ -21,7 +21,7 @@ const shaFor = (paths) => {
   let best = null;
   for (const p of paths) {
     if (!existsSync(join(repo, p))) throw new Error(`missing path ${p}`);
-    const line = git('log', '-1', '--format=%ct %h', '--', p);
+    const line = git('log', '-1', '--abbrev=7', '--format=%ct %h', '--', p);
     if (!line) continue;
     const [ts, sha] = line.split(' ');
     if (!best || Number(ts) > best.ts) best = { ts: Number(ts), sha };
@@ -255,6 +255,7 @@ const merges = git(
   through,
   '--first-parent',
   '--merges',
+  '--abbrev=7',
   '--format=%h%x1f%cs%x1f%s%x1f%b%x1e'
 )
   .split('\x1e')
