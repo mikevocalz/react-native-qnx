@@ -249,7 +249,7 @@ const merges = git(
   through,
   '--first-parent',
   '--merges',
-  '--format=%h%x1f%cs%x1f%s%x1f%b%x1e'
+  '--format=%H%x1f%cs%x1f%s%x1f%b%x1e'
 )
   .split('\x1e')
   .map((e) => e.trim())
@@ -259,7 +259,7 @@ const merges = git(
     const m = subject.match(/^Merge pull request #(\d+) from \S+/);
     if (!m) return null;
     const title = (body ?? '').split('\n')[0].trim() || subject;
-    return { sha, date, num: m[1], title };
+    return { sha: sha.slice(0, 7), date, num: m[1], title };
   })
   .filter(Boolean);
 const shownPrs = merges.filter((m) => !banned.test(m.title));
