@@ -39,7 +39,9 @@ const EXPLICIT_ENTRIES = new Map([
 
 /** @param {string} dir @returns {string[]} paths relative to dir */
 function listJs(dir) {
+  /** @type {string[]} */
   const out = [];
+  /** @param {string} current */
   const walk = (current) => {
     for (const entry of readdirSync(current, { withFileTypes: true })) {
       const full = path.join(current, entry.name);
@@ -55,7 +57,13 @@ const { createQnxResolveRequest } = require('../../packages/metro-config-qnx/src
 const overridesRoot = path.join(platformRoot, 'Libraries');
 const resolveRequest = createQnxResolveRequest(overridesRoot);
 
-/** Runs the real resolver as Metro would, with Metro's own result stubbed. */
+/**
+ * Runs the real resolver as Metro would, with Metro's own result stubbed.
+ * @param {string} moduleName
+ * @param {string | null} upstreamFile File Metro would resolve, or null when it cannot.
+ * @param {string} origin Importing module.
+ * @returns {{ type: string, filePath: string }}
+ */
 function resolveThroughQnx(moduleName, upstreamFile, origin) {
   const context = {
     originModulePath: origin,
@@ -64,7 +72,9 @@ function resolveThroughQnx(moduleName, upstreamFile, origin) {
       return { type: 'sourceFile', filePath: upstreamFile };
     },
   };
-  return resolveRequest(context, moduleName, 'qnx');
+  return /** @type {{ type: string, filePath: string }} */ (
+    resolveRequest(context, moduleName, 'qnx')
+  );
 }
 
 const checked = [];
