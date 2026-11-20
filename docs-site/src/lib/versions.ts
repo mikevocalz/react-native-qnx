@@ -14,19 +14,22 @@ interface Snapshot {
  * Frozen copies come from versions.json and live under /v/<tag>/.
  */
 export function getVersions(): { options: VersionOption[]; current: string } {
-  const root = JSON.parse(readFileSync(join(process.cwd(), '..', 'package.json'), 'utf8')) as {
+  const pkg = JSON.parse(readFileSync(join(process.cwd(), '..', 'package.json'), 'utf8')) as {
     version: string;
   };
   const { snapshots } = JSON.parse(readFileSync(join(process.cwd(), 'versions.json'), 'utf8')) as {
     snapshots: Snapshot[];
   };
+  // A frozen build has DOCS_BASE_PATH=<root>/v/<tag>. Links between copies go
+  // through <root>, which is the deploy base without that suffix.
+  const root = basePath.replace(/\/v\/[^/]+$/, '');
   const options: VersionOption[] = [
-    { label: `latest (main, ${root.version})`, href: '/docs' },
-    ...snapshots.map((s) => ({ label: s.tag, href: `/v/${s.tag}/docs` })),
+    { label: `latest (main, ${pkg.version})`, href: `${root}/docs` },
+    ...snapshots.map((s) => ({ label: s.tag, href: `${root}/v/${s.tag}/docs` })),
   ];
-  const current = basePath ? `${basePath}/docs` : '/docs';
+  const current = `${basePath}/docs`;
   // A frozen build predates its own versions.json entry, so list it explicitly.
   if (!options.some((o) => o.href === current))
-    options.push({ label: basePath.replace(/^\/v\//, ''), href: current });
+    options.push({ label: basePath.replace(/^.*\/v\//, ''), href: current });
   return { options, current };
 }

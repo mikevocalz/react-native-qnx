@@ -2,20 +2,110 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
+/*
+ * Direction "Bench": a cool grey bench top, one teal taken from the gallery
+ * app that runs on the board, Archivo (expanded for display) and Azeret Mono.
+ * The --rq-* tokens are the source; the Fumadocs colours read from them.
+ */
 :root {
+  --rq-ground: #eef1f2;
+  --rq-ground-2: #e4e9ea;
+  --rq-raise: #f7f9f9;
+  --rq-ink: #10181b;
+  --rq-ink-2: #445257;
+  --rq-line: rgba(16, 24, 27, 0.14);
+  --rq-line-2: rgba(16, 24, 27, 0.055);
+  --rq-teal: #0a6a62; /* the app's teal, darkened to pass AA on the ground */
+  --rq-teal-tint: #d3e7e3;
+  --rq-teal-lit: #7be8dc; /* the app's teal as it is on the device */
+  --rq-on-teal: #ffffff;
+  --rq-navy: #0e1a2b; /* the app's own ground, used for terminal cards */
+  --rq-on-navy: #dde7ee;
+  --rq-on-navy-2: #93a6b6;
+  --rq-bezel: #1b2327;
+  --rq-r-s: 6px;
+  --rq-r-m: 10px;
+  --rq-r-l: 14px;
+
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+    var(--font-archivo), 'Helvetica Neue', Helvetica, Arial, system-ui, 'Segoe UI', Roboto,
+    'Liberation Sans', sans-serif;
+  --font-mono:
+    var(--font-azeret), ui-monospace, 'SF Mono', Menlo, Consolas, 'Cascadia Mono',
+    'Liberation Mono', monospace;
+
+  --color-fd-background: var(--rq-ground);
+  --color-fd-foreground: var(--rq-ink);
+  --color-fd-muted: var(--rq-ground-2);
+  --color-fd-muted-foreground: var(--rq-ink-2);
+  --color-fd-popover: var(--rq-raise);
+  --color-fd-popover-foreground: var(--rq-ink);
+  --color-fd-card: var(--rq-raise);
+  --color-fd-card-foreground: var(--rq-ink);
+  --color-fd-border: var(--rq-line);
+  --color-fd-primary: var(--rq-teal);
+  --color-fd-primary-foreground: var(--rq-on-teal);
+  --color-fd-secondary: var(--rq-raise);
+  --color-fd-secondary-foreground: var(--rq-ink);
+  --color-fd-accent: var(--rq-teal-tint);
+  --color-fd-accent-foreground: var(--rq-ink);
+  --color-fd-ring: var(--rq-teal);
+}
+
+.dark {
+  --rq-ground: #0f1619;
+  --rq-ground-2: #0b1113;
+  --rq-raise: #162025;
+  --rq-ink: #e8eeef;
+  --rq-ink-2: #a3b1b6;
+  --rq-line: rgba(232, 238, 239, 0.16);
+  --rq-line-2: rgba(232, 238, 239, 0.07);
+  --rq-teal: #7be8dc;
+  --rq-teal-tint: #143c3a;
+  --rq-on-teal: #06211f;
+  --rq-bezel: #000000;
+
+  --color-fd-background: var(--rq-ground);
+  --color-fd-foreground: var(--rq-ink);
+  --color-fd-muted: var(--rq-ground-2);
+  --color-fd-muted-foreground: var(--rq-ink-2);
+  --color-fd-popover: var(--rq-raise);
+  --color-fd-popover-foreground: var(--rq-ink);
+  --color-fd-card: var(--rq-raise);
+  --color-fd-card-foreground: var(--rq-ink);
+  --color-fd-border: var(--rq-line);
+  --color-fd-primary: var(--rq-teal);
+  --color-fd-primary-foreground: var(--rq-on-teal);
+  --color-fd-secondary: var(--rq-raise);
+  --color-fd-secondary-foreground: var(--rq-ink);
+  --color-fd-accent: var(--rq-teal-tint);
+  --color-fd-accent-foreground: var(--rq-ink);
+  --color-fd-ring: var(--rq-teal);
+}
+
+/* The sidebar keeps the page ground: one surface, hairlines only. */
+.dark #nd-sidebar {
+  --color-fd-muted: var(--rq-ground-2);
+  --color-fd-secondary: var(--rq-raise);
+  --color-fd-muted-foreground: var(--rq-ink-2);
 }
 
 body {
   font-family: var(--font-sans);
+  font-stretch: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 code,
 pre,
 kbd {
   font-family: var(--font-mono);
+}
+
+:focus-visible {
+  outline: 2px solid var(--rq-teal);
+  outline-offset: 2px;
 }
 
 html {

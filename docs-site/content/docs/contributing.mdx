@@ -151,12 +151,12 @@ Do this once per release tag, after the tag exists. It freezes the site as it re
    ```bash
    cd docs-<tag>/docs-site
    npm ci
-   NEXT_PUBLIC_DOCS_BASE_PATH=/v/<tag> npm run build
+   DOCS_BASE_PATH=<root>/v/<tag> npm run build
    ```
 
-   The export in `out/` links to itself under `/v/<tag>/`, and its search index loads from `/v/<tag>/api/search`.
+   `<root>` is the base path of the whole deploy, empty at a domain root and `/react-native-qnx` on GitHub project Pages. The export in `out/` links to itself under `<root>/v/<tag>/`, and its search index and images load from there. The version selector strips the `/v/<tag>` suffix to find `<root>` when it links to other copies.
 
-3. Publish `out/` so it is served at `/v/<tag>/`. Publish it once and never rebuild it.
+3. Publish `out/` so it is served at `<root>/v/<tag>/`. Publish it once and never rebuild it.
 4. On `main`, add `{ "tag": "<tag>" }` to `docs-site/versions.json`, run the full check sequence and open a pull request. The selector on `latest` then lists the tag.
 5. Delete the clone.
 
