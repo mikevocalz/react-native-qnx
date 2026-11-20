@@ -1,0 +1,55 @@
+---
+title: expo-image
+description: How expo-image 58.0.18 runs on QNX through a native Qt painted view and a registered module.
+---
+
+## Install
+
+The component gallery (`apps/component-gallery/package.json`) depends on `expo-image` at `58.0.18` and `@rn-qnx/expo-image-qnx` at `workspace:*`. The package (version `0.1.0`, unpublished) registers two things with the QNX Expo host: the `ExpoImage` native module and the view config of the `ExpoImage` view. Its `package.json` declares the initializer `rnqnx::expo::image::registerModule` and the CMake target `expo_image_qnx`.
+
+The view is `ExpoImageItem` in `vnext/src/views/qt/image`, a `QQuickPaintedItem` that decodes and paints with `QPainter`. It uses no `QtQuick.Effects` or shader, because the Pi's Qt runtime ships neither (`packages/expo-image-qnx/README.md`).
+
+## Setup
+
+- Native view switch: `RNQNX_ENABLE_QT_EXPO_IMAGE` in `cmake/RnqnxQtNative.cmake`. It defaults to the native-UI default, which the support doc says is on in a consumer app build and off elsewhere. Without it the JavaScript loads and the view is an unknown component.
+- `project prepare-native` records the package in `native-app.json` as an `expoModules` entry, as for `@rn-qnx/expo-constants-qnx`.
+- Format plugins: animated GIF and WebP play through `QMovie` when the Qt build has the format plugin. `docs/evidence/pi-image-formats-2026-11-13.md` shows the public Qt runtime has no image plugins, and that `scripts/qt-public/build-imageformats-qnx.sh` builds `qtimageformats` (WebP, TIFF, TGA, ICNS, WBMP). The plugins must be copied into the app's `plugins/imageformats` directory by hand.
+
+See [Expo setup](/docs/how-to/expo-setup) and [Qt tiers](/docs/reference/qt-tiers).
+
+## Supported API
+
+Implemented per the package README (host tests, not all device-run):
+
+| Area          | What is implemented                                                                                                                                                                                                  |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sources       | `uri` with `headers` and `cacheKey`; arrays pick the smallest width that covers the view; `blurhash` and `thumbhash`                                                                                                 |
+| Layout        | `contentFit` (`cover`, `contain`, `fill`, `none`, `scale-down`), `contentPosition`, `borderRadius`, `borderWidth`, `borderColor`                                                                                     |
+| Effects       | `tintColor`, `blurRadius` (CPU box blur), `placeholder`, `transition` (`cross-dissolve` and four flips)                                                                                                              |
+| Caching       | `cachePolicy` (`none`, `disk`, `memory`, `memory-disk`); 128 MiB disk cache with LRU eviction; `recyclingKey`                                                                                                        |
+| Loading       | `priority` through a queue that runs 6 HTTP(S) loads at a time; `allowDownscaling`                                                                                                                                   |
+| Animation     | `autoplay`, GIF and WebP through `QMovie`                                                                                                                                                                            |
+| Events        | `onLoadStart`, `onProgress`, `onLoad`, `onError`, `onDisplay`                                                                                                                                                        |
+| Static API    | `Image.prefetch`, `clearMemoryCache`, `clearDiskCache`, `getCachePathAsync`, `loadAsync`, `useImage`, `generateBlurhashAsync`, `generateThumbhashAsync`, `writeToCacheAsync`, `readFromCacheAsync`, `configureCache` |
+| View commands | `startAnimating`, `stopAnimating`, `lockResourceAsync`, `unlockResourceAsync`, `reloadAsync`                                                                                                                         |
+
+## Not supported
+
+- `enableLiveTextInteraction`: accepted and ignored (an iOS 16 VisionKit feature).
+- `curl-up` and `curl-down` transitions: draw as a cross-dissolve and log one warning.
+- Blur on placeholders.
+- Animation from an `ImageRef`: only the first frame is used.
+- WebP without the `qwebp` plugin deployed.
+- `docs/expo-delivery/sdk58-support.json` lists `expo-image` as `unsupported` ("no qnx implementation"). That file scans published package contents and states that no status in it is a device run. It does not account for `@rn-qnx/expo-image-qnx`.
+
+## Evidence
+
+| Path                                          | Shows                                                                                                                                                               |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/evidence/expo-image-io-2026-11-13/`     | Release and sanitizer test logs, negative controls, and a screenshot named `device-apis.png`.                                                                       |
+| `docs/evidence/expo-image-resize-2026-11-13/` | Host test and negative controls for downscaled decode. The logged run used Qt 6.12.0 on macOS.                                                                      |
+| `docs/evidence/expo-image-device-2026-11-13/` | Pi 400 screenshots of a GIF running and stopped.                                                                                                                    |
+| `docs/evidence/pi-image-formats-2026-11-13/`  | Pi 400 probe of `QImageReader` formats before and after the WebP plugin build.                                                                                      |
+| `docs/evidence/pr149-pi400-run2-2026-11-19/`  | Pi 400, commit `240dc08`. GIF and WebP chips changing frames, and a resize card with `startAnimating`. Its log has `IMAGE-PROOF` lines and none from `ImageLoader`. |
+
+`docs/component-support.md` lists the `ExpoImage` view as host partial and Pi 400 scoped. Missing: device runs for `ImageLoader` caching, `blurRadius`, transitions and `prefetch`, and any Pi 4 QSTI run.

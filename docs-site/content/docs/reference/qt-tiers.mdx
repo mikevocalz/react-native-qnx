@@ -1,34 +1,64 @@
 ---
 title: Qt module tiers
-description: Which Qt modules React Native QNX uses, by tier, and which are gated by licence.
+description: Which Qt modules React Native QNX links or ships, by tier, with the licence of each and the CMake file that links it.
 ---
 
-The Qt module discipline is a rule from [`docs/build-qt-modules.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/build-qt-modules.md): add one module at a time, with a justification, a licence check and size and time data. Development follows the open-source Qt path ([ADR-0013](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0013-open-source-qt.md)). No paid Qt subscription is a prerequisite.
+The rule comes from [`docs/build-qt-modules.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/build-qt-modules.md): add one module at a time, with a justification, a licence check and QNX size and build-time data. Development follows the open-source Qt path ([ADR-0013](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0013-open-source-qt.md)). No paid Qt subscription is a prerequisite. Licence status for each module is in [ADR-0011](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0011-qt-module-licensing.md).
 
-## Tier 0: always on
+Host builds require Qt 6.11.1 or newer (`find_package(Qt6 6.11.1 ...)` in `CMakeLists.txt`). The QNX runtime is built from public Qt 6.12.0 sources (`docs/packaging.md`, "Public-source Qt 6.12.0 for QNX"). The size and build-time columns in the source table read TBD, so no QNX size measurement is published.
 
-Qt Core, Qt GUI, Qt Qml and Qt Quick. LGPLv3 or GPLv2. Host builds use Qt 6.11.1 or newer.
+## Tiers
 
-## Tier 1: component-backing
+- **Tier 0**: always on. Qt Core, Gui, Qml and Quick, LGPLv3 or GPLv2.
+- **Tier 1**: component-backing. Added when a component needs the module. LGPLv3 or GPLv2.
+- **Tier 2**: evaluate per need. Most are LGPLv3 or GPLv2. Quick 3D, Graphs, Lottie, Quick Timeline, Quick 3D Physics, Canvas Painter, HTTP Server and the Qml compiler are **GPLv3 only** in the open-source distribution. Qt PDF is an extension or commercial module.
+- **Excluded**: `QtQuickLayouts` (conflicts with Yoga), `QtWebEngine` and `QtWebView` (no QNX backend or Chromium cross-build scope), `QtVirtualKeyboard` (GPLv3-only, needs a product decision).
 
-Added when a component needs them. LGPLv3 or GPLv2.
+## Modules in use
 
-| Module                                | Why                                               |
-| ------------------------------------- | ------------------------------------------------- |
-| Quick Controls 2, and its Basic style | Native `Button`, `Switch` and similar controls    |
-| Quick Effects                         | Filters, blur, drop shadow                        |
-| SVG                                   | SVG icons and images                              |
-| Multimedia                            | Video and audio. Not in the current device build. |
-| Quick Dialogs 2                       | File and colour pickers                           |
-| Image Formats                         | Extra image codecs                                |
-| SQL                                   | Local SQL                                         |
+These are the modules a CMake target in this repository finds and links, or that the QNX runtime stages. Paths are relative to the repository root.
 
-## Tier 2: evaluate per need
+| Module        | Tier                                | Why                                                                            | Licence                               | Where linked                                                                                                                                      |
+| ------------- | ----------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Core          | 0                                   | Event loop, `QObject`, `QMetaObject`                                           | LGPLv3 / GPLv2                        | `CMakeLists.txt` (`RNQNX_QT_HOST_MODULES`), `native/lifecycle/CMakeLists.txt`, `native/app-identity/CMakeLists.txt`, `native/qt/*/CMakeLists.txt` |
+| Gui           | 0                                   | Text, fonts, `QImage`, platform abstraction                                    | LGPLv3 / GPLv2                        | `CMakeLists.txt`, `cmake/RnqnxReactQt.cmake` (`rnqnx_views_qt`), `cmake/dependencies/ReactNativeRenderer.cmake`                                   |
+| Qml           | 0                                   | `QQmlComponent` type compilation                                               | LGPLv3 / GPLv2                        | `CMakeLists.txt`, `cmake/RnqnxReactQt.cmake`, `cmake/RnqnxWindowChrome.cmake`                                                                     |
+| Quick         | 0                                   | `QQuickItem`, `QQuickWindow`, scene graph                                      | LGPLv3 / GPLv2                        | `CMakeLists.txt`, `cmake/RnqnxReactQt.cmake`, `cmake/RnqnxWindowChrome.cmake`, `cmake/RnqnxWorklets.cmake`, `cmake/RnqnxGestureHandler.cmake`     |
+| Network       | 0                                   | `QNetworkAccessManager` for the image loader, TLS, bounded requests            | LGPLv3 / GPLv2                        | `cmake/RnqnxReactQt.cmake` (lines 59, 129, 278), `cmake/RnqnxWindowChrome.cmake`, `cmake/RnqnxDevSupport.cmake`                                   |
+| WebSockets    | 2                                   | RFC 6455 handshake and framing for React Native's WebSocket and the dev client | LGPLv3 / GPLv2                        | `cmake/RnqnxWebSockets.cmake` (opt-in, `RNQNX_ENABLE_WEBSOCKETS`, default OFF), `cmake/RnqnxDevSupport.cmake`                                     |
+| Svg           | 1                                   | SVG document component (`RNQNX_ENABLE_QT_SVG`, default OFF)                    | LGPLv3 / GPLv2                        | `native/qt/svg/CMakeLists.txt`                                                                                                                    |
+| Multimedia    | 1                                   | `QtVideo` component (`RNQNX_ENABLE_QT_VIDEO`, default OFF)                     | LGPLv3 / GPLv2                        | `native/qt/video/CMakeLists.txt`                                                                                                                  |
+| Quick Shapes  | not tiered in `build-qt-modules.md` | The playground factory and `QnxVideo.qml` import `QtQuick.Shapes`              | LGPLv3 (audit in `docs/packaging.md`) | QML import only: `vnext/probes/playground/main.cpp`, `native/qt/video/QnxVideo.qml`. Staged in the QNX runtime                                    |
+| Concurrent    | not tiered in `build-qt-modules.md` | Ships beside the FFmpeg libraries in the media runtime                         | as Qt core                            | No CMake link found. Staged per `docs/packaging.md`                                                                                               |
+| Image Formats | 1                                   | Extra image codecs as run-time plugins                                         | LGPLv3 / GPLv2                        | Not linked. `scripts/qt-public/build-imageformats-qnx.sh` builds plugins, `scripts/qt-public/stage-runtime.py` stages them                        |
+| Test          | n/a                                 | Qt Test for unit tests only                                                    | n/a                                   | `native/lifecycle/CMakeLists.txt`, `native/window-chrome/CMakeLists.txt`, `native/app-identity/CMakeLists.txt`                                    |
 
-Includes Material and Fusion styles, Remote Objects, Serial Bus, Serial Port, Positioning, Text To Speech, WebSockets and Print Support under LGPLv3 or GPLv2. Quick 3D, Graphs, Lottie, Quick Timeline, Quick 3D Physics, Canvas Painter, HTTP Server and the Qml compiler are **GPLv3 only** in the open-source distribution. Qt PDF is an extension or commercial module.
+Notes that qualify the table:
 
-## Excluded
+- The base host list is exactly `set(RNQNX_QT_HOST_MODULES Core Gui Qml Quick)` at `CMakeLists.txt:322`. Network, WebSockets, Svg and Multimedia are found by their own CMake files, not by that list.
+- Network was added as a deliberate direct link rather than a transitive one (`docs/build-qt-modules.md`, "Image-loader Network dependency"). Its QNX size and build-time delta are TBD, and the doc states target acceptance is still blocked on those.
+- The QNX binary-size delta of WebSockets is on record for one file: `libQt6WebSockets.so.6.12.0` is 333,792 bytes for aarch64le. Cross-build time was not timed.
+- The `rnsvg` target (`native/qt/rnsvg/CMakeLists.txt`) does not link `Qt6::Svg`. A QNX runtime without the Svg module still renders everything except SVG `Image` sources.
+- Multimedia was built as an add-on for the Pi 400 on 2026-11-13 (`docs/evidence/media-2026-11-13.md`). The 2026-11-19 Pi 400 builds had QtVideo OFF (`docs/component-support.md`, `QtVideo` row), so they do not exercise it.
+- `ImageFormats` stays a plugin build. The deployed file list of the Pi 400 run 2 holds only `plugins/imageformats/libqsvg.so` in that directory, so the receipt does not record which decoder produced the animated GIF and WebP frames (`docs/build-qt-modules.md`).
 
-`QtQuickLayouts` conflicts with Yoga. `QtWebEngine` and `QtWebView` have no QNX backend. `QtVirtualKeyboard` is GPLv3-only and needs a product decision. See [ADR-0011](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0011-qt-module-licensing.md).
+## Modules with no link found
 
-The size and build-time columns in the source table read TBD. No QNX size measurement is published.
+`docs/build-qt-modules.md` lists these as candidates. A search of `CMakeLists.txt`, `cmake/`, `native/` and `vnext/` found no `find_package` or `Qt6::` link for them.
+
+| Module                                                                                                | Tier | Planned use                                                                                                                                                                 | Licence                 |
+| ----------------------------------------------------------------------------------------------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| Quick Controls 2 and Basic style                                                                      | 1    | `Button`, `Switch`, `Slider`, `TextField` (Basic style per ADR-0012)                                                                                                        | LGPLv3 / GPLv2          |
+| Quick Effects                                                                                         | 1    | Filters, blur, drop shadow. `native/qt/nativeui/CMakeLists.txt` says the ExpoImage view uses `QtQuick.Effects` "when the Qt build ships it", as a QML import and not a link | LGPLv3 / GPLv2          |
+| Quick Dialogs 2                                                                                       | 1    | File and colour pickers                                                                                                                                                     | LGPLv3 / GPLv2          |
+| SQL                                                                                                   | 1    | Local SQL (`expo-sqlite`)                                                                                                                                                   | LGPLv3 / GPLv2          |
+| Material and Fusion styles                                                                            | 2    | Opt-in themes                                                                                                                                                               | LGPLv3 / GPLv2          |
+| Remote Objects, Serial Bus, Serial Port, Positioning, Text To Speech, Print Support                   | 2    | As named                                                                                                                                                                    | LGPLv3 / GPLv2          |
+| Quick 3D, Graphs, Lottie, Quick Timeline, Quick 3D Physics, Canvas Painter, HTTP Server, Qml Compiler | 2    | 3D, charts, Lottie, keyframes, physics, canvas, local HTTP, AOT                                                                                                             | **GPLv3 only**          |
+| PDF                                                                                                   | 2    | PDF viewing                                                                                                                                                                 | Extension or commercial |
+
+## Restricted runtime subset
+
+The public-source QNX build lists Core, Gui, Network, OpenGL, Qml, QmlMeta, QmlModels, QmlWorkerScript, Quick and QuickShapes, plus the QNX QPA plugin `plugins/platforms/libqqnx.so`. `qtshadertools` is a host build tool. Source: `docs/packaging.md`. Every audited Qt module file offers `LGPL-3.0-only`, and no file is GPL-only.
+
+See also [module matrix](/docs/reference/module-matrix), [licensing and packaging](/docs/explanation/licensing-and-packaging) and [requirements](/docs/reference/requirements).

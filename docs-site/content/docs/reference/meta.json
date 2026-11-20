@@ -1,14 +1,36 @@
 {
   "title": "Reference",
   "pages": [
+    "---Tools---",
     "cli",
     "config",
+    "environment-variables",
+    "metro-config",
+    "---Components---",
     "component-matrix",
+    "components",
+    "---Modules---",
     "module-matrix",
+    "modules",
+    "nitro-api",
+    "---Platform---",
+    "requirements",
+    "platform-detection",
+    "compatibility",
     "qt-tiers",
-    "known-gaps",
+    "---Status and release---",
     "status",
+    "known-gaps",
     "release-gates",
-    "verification-log"
+    "release-gate-definitions",
+    "ci-checks",
+    "changelog",
+    "verification-log",
+    "---Lookup---",
+    "error-codes",
+    "error-codes-packages",
+    "error-codes-scripts",
+    "error-codes-native",
+    "glossary"
   ]
 }

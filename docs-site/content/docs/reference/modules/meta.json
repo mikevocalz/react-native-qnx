@@ -1,0 +1,14 @@
+{
+  "title": "Modules",
+  "pages": [
+    "index",
+    "reanimated",
+    "worklets",
+    "gesture-handler",
+    "react-native-svg",
+    "expo-image",
+    "keyboard",
+    "expo-router",
+    "video-audio"
+  ]
+}

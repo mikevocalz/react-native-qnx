@@ -1,0 +1,17 @@
+---
+title: Modules
+description: One page per native-backed module, with install, setup, supported API, gaps and evidence.
+---
+
+Each page lists only what the repository source or an evidence file shows. Where no evidence exists, the page says so. Versions come from the root `package.json`. The pins are also in the [module matrix](/docs/reference/module-matrix). Support words follow the [component matrix](/docs/reference/component-matrix). Pi 400 means the custom Raspberry Pi 400 QNX image, not a stock Pi 4. No module has a Pi 4 QSTI run.
+
+| Module                                                       | Status                                                                                                                                       |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Reanimated](/docs/reference/modules/reanimated)             | Opt-in, default OFF. Host fixture passes. Timing and spring seen on the Pi 400 on 2026-11-19.                                                |
+| [Worklets](/docs/reference/modules/worklets)                 | Opt-in, default OFF. Host fixture passes. UI-worklet thread seen on the Pi 400. Busy-JS case not established.                                |
+| [Gesture Handler](/docs/reference/modules/gesture-handler)   | Opt-in, default OFF. Pan, tap, long press, fling, manual implemented. Pinch, rotation, native, hover fail on first pointer.                  |
+| [react-native-svg](/docs/reference/modules/react-native-svg) | Opt-in, default OFF. Golden-pixel host tests. Gallery cards seen on the Pi 400.                                                              |
+| [expo-image](/docs/reference/modules/expo-image)             | Native view on by default in a consumer app build. Host tests. GIF and WebP chips seen on the Pi 400.                                        |
+| [Keyboard](/docs/reference/modules/keyboard)                 | No dedicated module. `KeyboardAvoidingView` is a pass-through. `TextInput` key events have a bounded Pi 400 receipt.                         |
+| [expo-router](/docs/reference/modules/expo-router)           | Tabs and Drawer through a Metro resolver and Qt adapters. No Stack. Drawer and tab bar have dated Pi 400 captures.                           |
+| [Video and audio](/docs/reference/modules/video-audio)       | `QtVideo`, opt-in. Played a clip and a WAV on the Pi 400 on 2026-11-13. `expo-video`, `expo-audio` and `react-native-audio-api` unsupported. |

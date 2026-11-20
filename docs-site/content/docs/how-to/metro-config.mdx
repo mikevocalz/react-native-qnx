@@ -1,0 +1,125 @@
+---
+title: Configure Metro for QNX
+description: Use getQnxMetroConfig to register the qnx platform with Metro, what each part of the config does, and how to check that resolution works.
+---
+
+React Native QNX is an out-of-tree platform. Metro does not know about it until your `metro.config.js` registers it. `@rn-qnx/metro-config-qnx` does that registration in one call.
+
+Source: [packages/metro-config-qnx/src/index.js](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/metro-config-qnx/src/index.js). The package is a workspace package at version 0.1.0, with peer dependencies on `@react-native/metro-config` 0.88.1 and `metro-config` 0.87.1 ([package.json](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/metro-config-qnx/package.json)).
+
+## The template config
+
+New apps start from [template/qnx/metro.config.js](https://github.com/mikevocalz/react-native-qnx/blob/main/template/qnx/metro.config.js):
+
+```js
+const path = require('node:path');
+
+const { getQnxMetroConfig } = require('@rn-qnx/metro-config-qnx');
+
+const workspaceRoot = path.resolve(__dirname, '..', '..');
+
+// pnpm keeps real package files under <root>/node_modules/.pnpm and links them
+// into each workspace package, so Metro has to watch the workspace root and be
+// told both module directories. Without this it cannot resolve `react` even
+// though the symlink exists next to this app.
+module.exports = getQnxMetroConfig(__dirname, {
+  watchFolders: [workspaceRoot],
+  resolver: {
+    nodeModulesPaths: [
+      path.join(__dirname, 'node_modules'),
+      path.join(workspaceRoot, 'node_modules'),
+    ],
+    disableHierarchicalLookup: false,
+  },
+});
+```
+
+The `watchFolders` and `nodeModulesPaths` entries are there because the template sits two directories below the workspace root (`apps/<name>`). If your app lives elsewhere, change `workspaceRoot` to match.
+
+## Signature
+
+From [index.d.ts](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/metro-config-qnx/src/index.d.ts):
+
+| Export                                       | Type                                 | Purpose                                                             |
+| -------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------- |
+| `getQnxMetroConfig(projectRoot, overrides?)` | `(string, InputConfigT?) => ConfigT` | Returns a full Metro config for the app at `projectRoot`.           |
+| `createQnxResolveRequest(overridesRoot)`     | `(string) => resolveRequest`         | Builds the resolver function. `getQnxMetroConfig` calls it for you. |
+| `QNX_PLATFORM`                               | `'qnx'`                              | The platform name.                                                  |
+
+`projectRoot` must be an absolute path. `overrides` is merged with Metro's `mergeConfig`, so you pass the same shape you would pass to any Metro config.
+
+## What getQnxMetroConfig does
+
+It starts from `getDefaultConfig(projectRoot)` of `@react-native/metro-config`, then makes four changes.
+
+**1. Adds `qnx` to `resolver.platforms`.** Metro prefers `Foo.qnx.js` over `Foo.js` only when `qnx` is in the platform list. The source comment says the Expo and React Native defaults do not include it. The function appends `qnx` and keeps the existing entries, so one codebase can still build for other platforms. It skips the append if `qnx` is already listed.
+
+**2. Installs a `resolveRequest`.** The resolver runs Metro's own resolution first. For `platform === 'qnx'` only, it then swaps the result in three cases:
+
+- A file under React Native's `Libraries/` is replaced by the file at the same relative path under `packages/react-native-qnx/Libraries/`, when that file exists. This is how `Platform`, `TextInput`, `Image`, `Linking`, `AppState`, `BackHandler` and other modules reach QNX implementations. React Native's own files cannot be edited in `node_modules`, so the swap happens at resolution time. Resolving by path rather than by module name is what makes relative imports such as `./Platform` work.
+- A relative import inside React Native that fails to resolve, and that points into `src/private`, falls back to `packages/react-native-qnx/src/private/<path>.js` if it exists. The source comment gives `ReactDevToolsSettingsManager` as the example: React Native 0.88 ships it only as `.ios.js` and `.android.js`.
+- The `expo-modules-core` polyfill entry (`build/polyfill/index.js` or `src/polyfill/index.ts`) is replaced by `packages/react-native-qnx/expo/polyfill.js`. That file supplies the JavaScript classes that iOS and Android define natively.
+
+For any other platform the resolver returns Metro's result unchanged.
+
+**3. Wraps the resolver with the `react-native-svg` overlay.** `createSvgOverlayResolveRequest` swaps files of `react-native-svg` for overlay copies on `qnx` only. It does nothing when `react-native-svg` is not installed. The overlay is tied to one version: [svg/resolver.js](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/react-native-qnx/svg/resolver.js) sets `EXPECTED_VERSION` to `15.16.0`, and its header says another version or a second installed copy throws.
+
+**4. Asserts the `qnx` package export condition.** After merging your overrides, the function adds `qnx` to `resolver.unstable_conditionsByPlatform.qnx` and keeps any conditions already there. The source comment explains why: explicit package `exports` take precedence over platform file extensions. A package that provides both a QNX and a React Native implementation must list `qnx` before `react-native` in its `exports` object.
+
+Your `overrides` are applied before step 4, so you cannot remove the `qnx` condition by passing overrides.
+
+## Opt in to the public react-native entry
+
+By default, app code imports React Native's internal paths, for example `react-native/Libraries/Text/Text`, as [apps/rn-playground/index.js](https://github.com/mikevocalz/react-native-qnx/blob/main/apps/rn-playground/index.js) does. To use named imports from `react-native` instead, wrap the config:
+
+```js
+const withPublicEntry = require('@rn-qnx/metro-config-qnx/public-entry');
+const { getQnxMetroConfig } = require('@rn-qnx/metro-config-qnx');
+module.exports = withPublicEntry(getQnxMetroConfig(__dirname), 'qnx');
+```
+
+This snippet is from [docs/getting-started/public-react-native-entry.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/public-react-native-entry.md). The helper in [public-entry.js](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/metro-config-qnx/public-entry.js) behaves like this:
+
+- The second argument is the platform name, default `'qnx'`. The helper accepts `'qnx'` and one other name used by a sibling platform in this repository. Any other value throws an error that names the accepted values.
+- When the requested platform matches and the module name is exactly `react-native`, it resolves to `Libraries/ReactNative/PublicAPI.js` in the platform package. Every other request goes to the resolver you already had.
+- The guide lists the initial exports: `AppRegistry`, `View`, `Text`, `Image`, `ScrollView`, `FlatList`, `SectionList`, `TextInput`, `Pressable`, `ActivityIndicator`, `Switch`, `Modal`, `StyleSheet`, `Platform` and `Animated`. The guide is older than the source. [PublicAPI.js](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/react-native-qnx/Libraries/ReactNative/PublicAPI.js) now also defines `BackHandler`, `Alert`, `StatusBar`, `UIManager`, `LayoutAnimation`, `RefreshControl`, `AccessibilityInfo`, `DeviceEventEmitter`, `useColorScheme` and the Touchable family, among others. Read that file for the current list.
+- Any name the file does not define throws `React Native QNX public export "<name>" is not implemented in this experimental entry.` Metadata names such as `__esModule`, `default` and `then` return `undefined` instead.
+- The guide calls the entry partial and opt-in. An export that exists is not full native parity.
+
+## Confirm that resolution works
+
+Run these from a checkout after `pnpm install --frozen-lockfile`. I did not run them while writing this page, because the clone had no `node_modules` and the page was written without running `pnpm install`. Both are labeled **not run** here.
+
+The commands themselves come from the [quick start](/docs/tutorials/quick-start), whose verifier ran them and recorded the result in the [verification log](/docs/reference/verification-log).
+
+```bash
+pnpm qnx bundle-qnx --app dashboard --out build/dashboard.bundle.js
+```
+
+Not run on this page. The quick start reports Metro v0.87.1 output ending in `Done writing bundle output` and a file of about 480,000 bytes. The command passes `--platform qnx --dev false`, per the [CLI reference](/docs/reference/cli). A bundle that builds shows that Metro resolved every import the app makes for `qnx`. It does not show that the bundle runs on a device.
+
+For a single entry file, [docs/getting-started/pi400-hello-world.md](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-hello-world.md) gives this form (not run on this page):
+
+```bash
+cd apps/rn-playground
+../../node_modules/.bin/metro build hello-world.js --platform qnx --dev false \
+  --out ../../build/hello-world/hello-world.bundle.js
+```
+
+Run in this session: `node --check packages/metro-config-qnx/src/index.js` printed no error, so the file parses. That checks syntax only, not resolution.
+
+The repository also has Metro tests under `tests/js`, among them `qnx-external-project-metro.test.mjs` and `qnx-public-entry-metro.test.mjs`. `pnpm test:js` runs the JavaScript tests. Not run here.
+
+## Common problems
+
+| Symptom                                          | Cause from the source                                                                                                                                                                                                         |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `react` does not resolve in a workspace app      | Missing `watchFolders` or `nodeModulesPaths` for the workspace root. The template comment describes this.                                                                                                                     |
+| `Platform` is undefined                          | The QNX `Platform.js` override was not applied, so the config is not coming from `getQnxMetroConfig` or the bundle is not built with `--platform qnx`. The header of `Libraries/Utilities/Platform.js` describes the failure. |
+| An error naming `react-native-svg` and a version | The SVG overlay supports `15.16.0` only.                                                                                                                                                                                      |
+
+## Related
+
+- [Platform detection](/docs/reference/platform-detection)
+- [Requirements](/docs/reference/requirements)
+- [CLI reference](/docs/reference/cli)

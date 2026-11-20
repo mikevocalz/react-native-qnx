@@ -1,1 +1,12 @@
-{ "title": "Explanation", "pages": ["architecture", "threading", "adr-index", "readers"] }
+{
+  "title": "Explanation",
+  "pages": [
+    "architecture",
+    "threading",
+    "adr-index",
+    "versioning-and-support",
+    "licensing-and-packaging",
+    "readers",
+    "docs-parity"
+  ]
+}

@@ -1,0 +1,98 @@
+---
+title: Platform detection
+description: How app code detects that it runs on QNX, covering Platform.OS, Platform.select, platform file suffixes and the constants the host provides.
+---
+
+This page describes what the code does today. Each claim cites the file that implements it. Links point at `main` in [mikevocalz/react-native-qnx](https://github.com/mikevocalz/react-native-qnx).
+
+## Platform.OS
+
+`Platform.OS` is the string `'qnx'`. It is a literal in [packages/react-native-qnx/Libraries/Utilities/Platform.js](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/react-native-qnx/Libraries/Utilities/Platform.js).
+
+That file only loads when Metro resolves for the `qnx` platform. React Native's `Libraries/Utilities/Platform.js` re-exports `./Platform` and expects a platform-suffixed sibling. With no sibling in React Native's tree, the import resolves to itself and `Platform` ends up undefined. [`@rn-qnx/metro-config-qnx`](/docs/how-to/metro-config) redirects that import to the QNX file. See the header of `Platform.js` and [index.js](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/metro-config-qnx/src/index.js).
+
+## Platform.select
+
+```js
+select: (spec) => ('qnx' in spec ? spec.qnx : 'native' in spec ? spec.native : spec.default);
+```
+
+The lookup order is `qnx`, then `native`, then `default`. The code checks key presence with `in`, so `{ qnx: undefined }` returns `undefined` and does not fall through. `ios` and `android` keys are ignored. With none of the three keys present, the result is `undefined`.
+
+## Example
+
+The code supports both checks below. The repository's own probe uses `Platform.OS` this way: [apps/rn-playground/public-api-probe.js](https://github.com/mikevocalz/react-native-qnx/blob/main/apps/rn-playground/public-api-probe.js) renders `Platform.OS` and throws when the value is not on its allowed list.
+
+```js
+import { Platform } from 'react-native';
+
+const isQnx = Platform.OS === 'qnx';
+
+const titleSize = Platform.select({
+  qnx: 20,
+  native: 16,
+  default: 14,
+});
+```
+
+The `import { Platform } from 'react-native'` form needs the opt-in public entry. See [Configure Metro for QNX](/docs/how-to/metro-config#opt-in-to-the-public-react-native-entry). Without it, import from `react-native/Libraries/Utilities/Platform`, which the internal-path code in [apps/rn-playground/index.js](https://github.com/mikevocalz/react-native-qnx/blob/main/apps/rn-playground/index.js) uses for its other imports. This example was not run.
+
+## Platform file suffixes
+
+`getQnxMetroConfig` appends `qnx` to Metro's `resolver.platforms`. The source comment says that without it a `Foo.qnx.js` file is never preferred over `Foo.js`. So with the QNX config, Metro picks `Foo.qnx.js` when it exists and builds for `--platform qnx`. The mechanism is in [packages/metro-config-qnx/src/index.js](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/metro-config-qnx/src/index.js).
+
+Other points from the same file:
+
+- Other platforms stay in the list, so one codebase keeps resolving `.ios.js` and `.android.js` for those builds.
+- The config also asserts a `qnx` package export condition. A package that ships both implementations must list `qnx` before `react-native` in its `exports`.
+- The QNX overrides of React Native's own files do not use suffixes. They replace a file by its path under `Libraries/`, only for the `qnx` platform.
+
+Not verified here: whether the generic `.native.js` suffix resolves on `qnx`. That is Metro behavior, and no repository code or test cited on this page checks it. The `native` key in `Platform.select` is a separate mechanism and is verified above.
+
+## Values on Platform
+
+Source: [Platform.js](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/react-native-qnx/Libraries/Utilities/Platform.js).
+
+| Property                                  | Value                                                              |
+| ----------------------------------------- | ------------------------------------------------------------------ |
+| `OS`                                      | `'qnx'`                                                            |
+| `Version`                                 | `constants.osVersion`                                              |
+| `constants`                               | The object the host installs (next section)                        |
+| `isPad`, `isTV`, `isVision`, `isVisionOS` | `false`                                                            |
+| `isTesting`                               | `constants.isTesting` when `__DEV__` is true, otherwise `false`    |
+| `isDisableAnimations`                     | `constants.isDisableAnimations`, or `isTesting` when that is unset |
+
+## Host constants
+
+`Platform.constants` reads `globalThis.__RNQNX_PLATFORM_CONSTANTS`. The C++ host installs it before the bundle runs. See `installPlatformConstants` in [vnext/src/runtime/QtReactHost.cpp](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/src/runtime/QtReactHost.cpp) and its declaration in [QtReactHost.h](https://github.com/mikevocalz/react-native-qnx/blob/main/vnext/include/react-native-qnx/runtime/QtReactHost.h).
+
+The host sets these fields:
+
+| Field                | Source in the host                                            |
+| -------------------- | ------------------------------------------------------------- |
+| `osVersion`          | `QSysInfo::productVersion()`                                  |
+| `systemName`         | `QSysInfo::productType()`                                     |
+| `isTesting`          | `false`                                                       |
+| `reactNativeVersion` | A fixed object: major 0, minor 88, patch 0, prerelease `rc.3` |
+
+Two things follow from the source.
+
+- The values describe the machine the process runs on. The C++ comment says that on the development host this reports macOS, and that on the target it reports the target. This page did not run a build on a QNX target, so the exact strings `QSysInfo` returns on QNX are not recorded here.
+- `reactNativeVersion` is hard-coded to `0.88.0-rc.3`, while the repository pins React Native 0.88.1 in [package.json](https://github.com/mikevocalz/react-native-qnx/blob/main/package.json). Do not use it to read the installed version.
+
+If the host did not install the global, reading `Platform.constants`, and anything built on it such as `Version`, throws: `Platform constants are unavailable: the QNX host did not install globalThis.__RNQNX_PLATFORM_CONSTANTS before evaluating the bundle.` The module throws instead of inventing values. A bundle run under a host that skips `installPlatformConstants` hits this error.
+
+## What is not implemented
+
+- There is no `Platform.isQnx` or similar helper. Use `Platform.OS === 'qnx'`.
+- `isPad`, `isTV`, `isVision` and `isVisionOS` are fixed `false`. No QNX device class is detected.
+- `isDisableAnimations` has no host source of its own. The host sets only the four fields in the table above, so it falls back to `isTesting`.
+- No `Platform.constants` field describes the board, such as Pi 400 versus another device. The host exposes only the four fields above.
+- No TypeScript declaration for the QNX `Platform` ships in `packages/react-native-qnx`. Its `Platform.js` is plain JavaScript.
+- `BackHandler` on QNX accepts listeners and never calls them, and `exitApp` does nothing. See [BackHandler.js](https://github.com/mikevocalz/react-native-qnx/blob/main/packages/react-native-qnx/Libraries/Utilities/BackHandler.js). Branching on `Platform.OS` will not tell you that a hardware back key exists, because QNX has none.
+
+## Related
+
+- [Configure Metro for QNX](/docs/how-to/metro-config)
+- [Requirements](/docs/reference/requirements)
+- [Known gaps](/docs/reference/known-gaps)
