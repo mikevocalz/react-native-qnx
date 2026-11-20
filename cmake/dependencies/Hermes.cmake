@@ -60,6 +60,14 @@ set(HERMES_BUILD_SHARED_JSI ON CACHE BOOL "" FORCE)
 set(HERMES_ENABLE_TOOLS ON CACHE BOOL "" FORCE)
 set(JSI_DIR "${RNQNX_REACT_NATIVE_DIR}/ReactCommon/jsi" CACHE PATH "" FORCE)
 
+# llvh raw_fd_ostream::seek calls ::lseek64 when HAVE_LSEEK64 is set. musl
+# (Alpine) declares lseek64 only under _LARGEFILE64_SOURCE, so the configure
+# probe says yes and the C++ compile then fails. On LP64 Linux off_t is already
+# 64 bits in glibc and musl, so plain lseek is equivalent: skip the probe.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(HAVE_LSEEK64 OFF CACHE INTERNAL "off_t is 64-bit on LP64 Linux" FORCE)
+endif()
+
 add_subdirectory(
   "${rnqnx_hermes_SOURCE_DIR}"
   "${CMAKE_BINARY_DIR}/hermes"
