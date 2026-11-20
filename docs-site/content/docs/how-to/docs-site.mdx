@@ -1,0 +1,90 @@
+---
+title: Run the docs site
+description: Install, serve, build and check this documentation site locally, and regenerate its generated pages.
+---
+
+The documentation site is a Fumadocs app (Next.js, static export) in `docs-site/` in the repository. Its pages are MDX files in `docs-site/content/docs/`, organized as tutorials, how-to guides, reference and explanation. The site is not deployed from this repository.
+
+## Prerequisites
+
+- Node 26 or newer. The commands below were run with Node 26.13.0 and npm.
+- A checkout with full git history if you run `npm run data`. The generator calls `git log` for each evidence path.
+- About 650 MB for `node_modules` and several hundred MB more for a build.
+
+## 1. Install
+
+```bash
+cd docs-site
+npm ci
+```
+
+Expected: npm installs from `package-lock.json` and exits 0, with warnings that install scripts were blocked (for example `esbuild@0.28.2 (postinstall: node install.js)`). The site builds without them.
+
+## 2. Serve it while you edit
+
+```bash
+npm run dev
+```
+
+It serves on `http://localhost:3000`. Edit an MDX file and the page reloads. The sidebar order comes from `meta.json` in each folder. A page missing from its folder's `meta.json` will not appear in the sidebar, so add each new page there.
+
+## 3. Build and serve the static export
+
+```bash
+npm run build
+npm start
+```
+
+`npm run build` writes the static export to `out/`. `npm start` serves it with `serve out`.
+
+## 4. Run the checks
+
+These are the commands CI runs for the docs site, in this order:
+
+```bash
+npm run data:check
+npm run lint
+npm run types:check
+npm run build
+npm run check:content
+```
+
+| Command         | What it checks                                                                                                                                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data:check`    | The generated pages (matrix, gates, ADR index) are current with `docs/component-support.json`, `docs/releases/v1-readiness.json` and `docs/adr/*.md`.                                                                           |
+| `lint`          | ESLint with the Next config.                                                                                                                                                                                                    |
+| `types:check`   | `next typegen` then `tsc --noEmit`.                                                                                                                                                                                             |
+| `build`         | Static export to `out/`.                                                                                                                                                                                                        |
+| `check:content` | After the build: no banned term in sources or output, every internal link resolves, every page has a title and a description, and `llms.txt`, `llms-full.txt`, `SKILL.md`, the search index and `docs.html` exist in the build. |
+
+When `check:content` passes it prints `content ok: <n> pages, build output checked`.
+
+## 5. Regenerate generated pages
+
+If you change `docs/component-support.json`, `docs/releases/v1-readiness.json` or an ADR, regenerate the pages that come from them:
+
+```bash
+npm run data
+```
+
+Then run `npm run data:check` to confirm nothing is stale. Do not edit the generated reference pages by hand.
+
+## Verify
+
+Open `http://localhost:3000/docs/tutorials/quick-start`. The page renders, the sidebar lists the tutorials, and images load. After a build, `grep -c` on `out/docs/tutorials/quick-start.html` finds the page text, and `check:content` exits 0.
+
+## Troubleshooting
+
+| What you see                                 | Cause and fix                                                                        |
+| -------------------------------------------- | ------------------------------------------------------------------------------------ |
+| A new page is missing from the sidebar       | Add its slug to the folder's `meta.json`.                                            |
+| `broken link /docs/...` from `check:content` | An internal link points at a page that does not exist. Fix the path or add the page. |
+| `missing title or description`               | Add both to the page's front matter.                                                 |
+| `banned term in ...`                         | A source file or the output contains a term the check rejects. Remove it.            |
+| `data:check` reports stale pages             | Run `npm run data` and commit the result.                                            |
+| `npm run data` fails                         | It needs full git history. A shallow clone lacks the commits it reads.               |
+
+## Reference
+
+- [`docs-site/README.md`](https://github.com/mikevocalz/react-native-qnx/blob/main/docs-site/README.md)
+- [Contributing](/docs/contributing)

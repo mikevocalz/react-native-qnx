@@ -5,13 +5,29 @@ on:
     paths:
       - 'packages/metro-config-marathon/**'
       - 'packages/react-native-marathon/**'
-      - 'apps/rn-playground/metro.marathon.config.js'
-      - 'apps/rn-playground/index.js'
-      - 'tests/js/marathon-metro-platform.test.mjs'
+      - 'packages/metro-config-qnx/**'
+      - 'packages/react-native-qnx/**'
+      - 'packages/qnx-devtools/src/marathon.mjs'
+      - 'apps/rn-playground/**'
+      - 'tests/js/marathon-*.test.mjs'
+      - 'scripts/validate-dependencies.mjs'
+      - 'package.json'
       - 'pnpm-lock.yaml'
       - '.github/workflows/marathon-metro.yml'
   push:
-    branches: [feat/marathon-metro-platform-20261102]
+    branches: [main]
+    paths:
+      - 'packages/metro-config-marathon/**'
+      - 'packages/react-native-marathon/**'
+      - 'packages/metro-config-qnx/**'
+      - 'packages/react-native-qnx/**'
+      - 'packages/qnx-devtools/src/marathon.mjs'
+      - 'apps/rn-playground/**'
+      - 'tests/js/marathon-*.test.mjs'
+      - 'scripts/validate-dependencies.mjs'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/marathon-metro.yml'
   workflow_dispatch:
 
 permissions:
@@ -22,8 +38,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: 26.13.1
           package-manager-cache: false
@@ -44,12 +60,34 @@ jobs:
           ../../node_modules/.bin/metro build index.js --config metro.marathon.config.js --platform marathon --dev false --out ../../build/marathon-metro-evidence/playground.marathon.js
           test -s ../../build/marathon-metro-evidence/playground.qnx.js
           test -s ../../build/marathon-metro-evidence/playground.marathon.js
-          cd ../..
-          sha256sum build/marathon-metro-evidence/playground.*.js > build/marathon-metro-evidence/SHA256SUMS
-          git rev-parse HEAD > build/marathon-metro-evidence/commit.txt
+      - name: Development Marathon bundle
+        run: |
+          cd apps/rn-playground
+          ../../node_modules/.bin/metro build index.js --config metro.marathon.config.js --platform marathon --dev true --out ../../build/marathon-metro-evidence/playground.marathon.dev.js
+          test -s ../../build/marathon-metro-evidence/playground.marathon.dev.js
+      - name: QNX bundle isolation and checksums
+        run: |
+          cd build/marathon-metro-evidence
+          marker='Marathon native host must install __RNQNX_PLATFORM_CONSTANTS'
+          if grep -q -F "$marker" playground.qnx.js; then
+            echo "::error::QNX bundle contains a Marathon-only module"
+            exit 1
+          fi
+          grep -q -F "$marker" playground.marathon.js || {
+            echo "::error::Marathon bundle does not contain the Marathon Platform module"
+            exit 1
+          }
+          qnx_sum=$(sha256sum playground.qnx.js | cut -d' ' -f1)
+          marathon_sum=$(sha256sum playground.marathon.js | cut -d' ' -f1)
+          if [ "$qnx_sum" = "$marathon_sum" ]; then
+            echo "::error::Marathon bundle is identical to the QNX bundle"
+            exit 1
+          fi
+          sha256sum playground.*.js | tee SHA256SUMS
+          git rev-parse HEAD > commit.txt
       - name: Archive exact branch evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: marathon-metro-${{ github.sha }}
           path: build/marathon-metro-evidence/

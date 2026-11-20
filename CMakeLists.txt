@@ -79,6 +79,8 @@ option(RNQNX_BUILD_PLAYGROUND_QNX
   "Build the visual Qt Quick/Fabric playground for QNX" OFF)
 option(RNQNX_BUILD_MARATHON_HOST
   "Build the experimental Linux/Wayland MarathonOS React Native host" OFF)
+option(RNQNX_MARATHON_HOST_NITRO
+  "Link and install the Marathon Nitro v1 adapter with the Qt dispatcher in the Marathon host" OFF)
 option(RNQNX_BUILD_FORGE_QNX
   "Build the opt-in native Forge Rust engine owner for QNX" OFF)
 
@@ -599,6 +601,10 @@ if(RNQNX_BUILD_MARATHON_HOST)
     message(FATAL_ERROR
       "Marathon host requires the existing Qt/Hermes/Fabric renderer target; "
       "install the documented Qt host modules (>=6.11.1)")
+  endif()
+  if(RNQNX_MARATHON_HOST_NITRO AND NOT RNQNX_ENABLE_NITRO_QT_DISPATCHER)
+    message(FATAL_ERROR
+      "RNQNX_MARATHON_HOST_NITRO requires RNQNX_ENABLE_NITRO_QT_DISPATCHER=ON")
   endif()
   include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/RnqnxMarathonHost.cmake)
   rnqnx_add_marathon_host()

@@ -90,6 +90,12 @@ argument array and working directory without executing it:
 pnpm qnx deploy-qnx --arch aarch64 --config Release --target rnqnx_playground --dry-run
 ```
 
+`--dry-run` is accepted by the commands above, by `project bundle`, `project create`,
+`project add-qnx`, `project prepare-native`, `project build-native`, `project desktop-entry`,
+`project dev` and `project run`. For `project dev` it prints the Metro settings and the ssh
+launch command as JSON and starts neither. For `project run` it lists the steps and the launch
+command and runs none of them. `project start` does not accept it.
+
 A child process failure stays a nonzero CLI result. The CLI forwards SIGINT and
 SIGTERM to its direct child; the existing script owns any remote process.
 `log-qnx` also reports SSH failures instead of returning a false success.

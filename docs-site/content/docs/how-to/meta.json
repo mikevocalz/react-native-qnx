@@ -1,13 +1,22 @@
 {
   "title": "How-to guides",
   "pages": [
+    "index",
+    "set-up-toolchain",
     "expo-setup",
     "metro-config",
-    "prebuilt-runner",
+    "cross-build",
+    "cross-build-windows",
+    "deploy-over-ssh",
+    "debugging",
+    "screenshot-device",
+    "rnqnx-inject",
+    "nitro-modules",
+    "host-test",
     "icons-and-app-name",
     "window-chrome",
-    "nitro-modules",
-    "debugging",
-    "cross-build-windows"
+    "prebuilt-runner",
+    "display-modes",
+    "docs-site"
   ]
 }

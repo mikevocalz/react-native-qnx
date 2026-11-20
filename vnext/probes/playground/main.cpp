@@ -55,6 +55,12 @@
 #endif
 #endif
 
+#ifdef RNQNX_MARATHON_NITRO
+#include "MarathonNitroProof.hpp"
+#include "MarathonNitroRuntime.hpp"
+#include "QtNitroDispatcher.hpp"
+#endif
+
 #include <QByteArray>
 #include <QColor>
 #include <QCommandLineOption>
@@ -406,6 +412,12 @@ int main(int argc, char** argv) {
 #endif
   parser.addOption(bundleOption);
   parser.addOption(screenshotOption);
+#ifdef RNQNX_MARATHON_NITRO
+  const QCommandLineOption nitroProofOption(QStringLiteral("nitro-proof"),
+      QStringLiteral("Run JavaScript that reads the MarathonPlatformInfo Nitro hybrid and exit "
+                     "with an error if the native values are wrong."));
+  parser.addOption(nitroProofOption);
+#endif
 #if RNQNX_ENABLE_DEV_SUPPORT
   // Development client: `--dev-server http://<computer>:8081` (or
   // RNQNX_DEV_SERVER in the launcher's environment) loads the bundle from
@@ -893,6 +905,27 @@ int main(int argc, char** argv) {
 #else
   rnqnx::nitro::installQnxNitroRuntime(host.runtime());
 #endif
+#endif
+#ifdef RNQNX_MARATHON_NITRO
+  // Marathon's own Nitro v1 adapter. The dispatcher is the Qt one over the
+  // host's task queue, so Promises and callbacks reach JS on the owner thread
+  // and accepted work is drained at host teardown, as on the QNX Qt path.
+  rnqnx::nitro::installMarathonNitroRuntime(
+      host.runtime(), std::make_shared<rnqnx::nitro::QtNitroDispatcher>(host.taskQueue()));
+  if (parser.isSet(nitroProofOption)) {
+    std::string proof;
+    try {
+      if (!host.evaluate(rnqnx::nitro::kMarathonNitroProofSource, "marathon-nitro-proof.js")) {
+        throw std::runtime_error(host.lastError().toStdString());
+      }
+      proof = rnqnx::nitro::verifyMarathonNitroProof(host.runtime());
+    } catch (const std::exception& error) {
+      std::fprintf(stderr, "RNQNX_MARATHON_NITRO_FAILED %s\n", error.what());
+      return 1;
+    }
+    std::printf("RNQNX_MARATHON_NITRO_OK %s\n", proof.c_str());
+    std::fflush(stdout);
+  }
 #endif
 #ifdef RNQNX_CONSUMER_EXPO_HEADER
   // Expo modules from the app's dependencies: globalThis.expo exists before

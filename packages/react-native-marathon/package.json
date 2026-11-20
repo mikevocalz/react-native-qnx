@@ -4,11 +4,15 @@
   "description": "Experimental MarathonOS React Native JavaScript platform overrides",
   "license": "MIT",
   "main": "index.js",
+  "types": "index.d.ts",
   "files": [
     "index.js",
-    "Libraries"
+    "index.d.ts",
+    "Libraries",
+    "README.md"
   ],
   "peerDependencies": {
+    "react": "19.3.0",
     "react-native": "0.88.1"
   }
 }

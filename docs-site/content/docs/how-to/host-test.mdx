@@ -1,0 +1,95 @@
+---
+title: Write a host test
+description: Add a JavaScript test or a C++ CTest that runs on macOS or Linux without a QNX SDP, run it, and read what a host test does and does not prove.
+---
+
+A host test runs on your computer. It needs no board and no SDP. The repository has two kinds: JavaScript tests in `tests/js/` run by a plain Node script, and C++ tests in `tests/cpp/` registered with CTest. Neither proves anything about QNX Screen, a device driver or performance.
+
+## Prerequisites
+
+- An installed checkout: `pnpm install --frozen-lockfile` (Node 26.13.0, pnpm 12.18.0).
+- If you start Node programs that call `pnpm`, a pnpm that works under `spawnSync`. See [Set up the toolchain](/docs/how-to/set-up-toolchain) for the `install.js` step.
+- For C++ tests: CMake, Ninja, clang and Qt 6.11.1 or newer, as for the host renderer.
+
+## 1. Write a JavaScript test
+
+Put a file named `tests/js/<name>.test.mjs` in the folder. The runner imports every `*.test.mjs` and `*.test.ts` file there in sorted order, in one process. A test passes when its import does not throw.
+
+```js
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+
+const support = JSON.parse(readFileSync('docs/component-support.json', 'utf8'));
+const names = support.components.map((c) => c.name);
+
+assert.ok(names.includes('View'), 'View must be in the support matrix');
+assert.equal(new Set(names).size, names.length, 'component names must be unique');
+
+console.log('component-support-names.test.mjs passed');
+```
+
+Rules the existing tests follow: use `node:assert/strict`, read paths relative to the repository root (the runner uses `process.cwd()`), make temporary directories with `mkdtemp(path.join(tmpdir(), ...))` and remove them, and print one line when the test finishes. Helpers are in `tests/js/helpers/`. JavaScript lanes have no Qt, so `tests/js/helpers/identity-tool.mjs` supplies a stand-in for the Qt identity tool and states that it proves nothing about Qt scaling or text measurement. Set `RNQNX_IDENTITY_TOOL` to use the real tool.
+
+## 2. Run it
+
+One file:
+
+```bash
+node tests/js/qnx-cli.test.mjs
+node tests/js/app-identity.test.mjs
+```
+
+Both were run on macOS on 2026-11-19 and exited 0. They printed `qnx-cli.test.mjs passed (init safety, output symlink confinement, option rejection, dry-run, real shell failure propagation; no device connection)` and `App identity: 84 checks passed (protocol stand-in; Qt measurement runs in native/app-identity CTest).`
+
+The whole suite:
+
+```bash
+pnpm test:js
+```
+
+Result on 2026-11-19 at `8d7deaa`: with a pnpm that Node can start, the runner got through 36 files and failed on the 37th, `tests/js/qnx-consumer-native-config.test.mjs`. The failure is a CMake configure error: `QNX consumer needs a QNX toolchain; Linux preview must be explicitly enabled`, raised from `cmake/RnqnxConsumerApp.cmake`. With a pnpm that Node cannot start, it fails earlier at `braces-security.test.mjs` with `ERR_INVALID_ARG_TYPE`, because that test runs `pnpm list` through `spawnSync`. Hosted CI runs this suite on Linux. A failing run on macOS is therefore not necessarily your change. Run your own file by name to isolate it.
+
+## 3. Write a C++ test
+
+C++ tests live in `tests/cpp/` and are listed in the root `CMakeLists.txt` with `add_test`. The existing ones follow one pattern: a `main` that prints a marker line on success, and `PASS_REGULAR_EXPRESSION` in the registration:
+
+```cmake
+add_test(NAME rnqnx_gesture_core_test
+         COMMAND $<TARGET_FILE:rnqnx_gesture_core_test>)
+set_tests_properties(rnqnx_gesture_core_test PROPERTIES
+                     PASS_REGULAR_EXPRESSION "RNQNX_GESTURE_CORE_OK")
+```
+
+Add your source file under `tests/cpp/`, an executable target with `rnqnx_enable_strict_warnings(<target>)`, and the two calls above. Tests that need Qt are only defined when CMake finds Qt 6.11.1 or newer. Existing tests include the Hermes runtime, the Qt Quick mounting layer, Fabric mutation conversion, shadow-tree mounting and the QNX Screen wrapper against a test-only implementation of the documented Screen C API.
+
+Run them:
+
+```bash
+pnpm test:cpp:host
+```
+
+The script picks the `macos-host-tests` or `linux-host-tests` preset, runs `cmake --fresh --preset <preset>`, builds, then runs `ctest --preset <preset>`. The preset turns on `BUILD_TESTING` and `RNQNX_ENABLE_HOST_SANITIZERS`. The first configure downloads pinned native dependencies and Hermes source, so it needs network and several gigabytes of disk.
+
+Not run in this docs pass: `pnpm test:cpp:host`. A full run was not attempted because disk was near its limit. For the stricter Linux lane, the repository's [host renderer validation](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/testing-host-renderer.md) requires Qt 6.11.1, clang with the system libstdc++ ABI, CMake 3.31.9 or newer, ICU headers and a nine-test inventory, and is run with `node scripts/validate-host-renderer.mjs`.
+
+## What a host test proves
+
+Host tests compile the Screen wrapper against a fake Screen, and they validate ownership and call sequencing. They do not establish QNX header, ABI, driver, compositor or runtime behavior. Do not record a macOS result as a QNX pass.
+
+## Verify
+
+- A JavaScript test: `node tests/js/<name>.test.mjs` exits 0 and prints your line.
+- A C++ test: `ctest --preset <preset> -R <name>` reports `100% tests passed`. Break the code under test once and confirm the test fails, so you know it checks something.
+
+## Troubleshooting
+
+| What you see                                                                  | Cause and fix                                                                                                              |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `ERR_INVALID_ARG_TYPE` at `braces-security.test.mjs`                          | Node cannot start pnpm. Run `node <prefix>/node_modules/pnpm/install.js` once.                                             |
+| `QNX consumer needs a QNX toolchain` at `qnx-consumer-native-config.test.mjs` | The test configures the QNX consumer on a host without a QNX toolchain. It fails on macOS here. Run your own file instead. |
+| Qt tests are missing                                                          | CMake did not find Qt 6.11.1 or newer, so the Qt targets are not defined.                                                  |
+
+## Reference
+
+- [Host renderer validation](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/testing-host-renderer.md)
+- [Required checks](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/releases/required-checks.md) for what CI runs.

@@ -1,11 +1,16 @@
 ---
 title: Add window chrome
-description: Draw a title bar with window controls in a QNX app, and set controls, style and initial size.
+description: Turn on the experimental title bar and window controls for a QNX app, choose its layout and size, build it in, and check it with the host flags and the startup log.
 ---
 
-QNX Screen draws no window decorations, so the title bar is Qt Quick inside the app window, above the React Native surface. The feature is experimental and off by default. The reasoning is in [ADR-0016](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0016-window-chrome-on-qnx-screen.md).
+QNX Screen draws no window decorations, so the title bar is Qt Quick inside the app window, above the React Native surface. The feature is experimental and off by default. The reasoning is in [ADR-0016](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0016-window-chrome-on-qnx-screen.md). For a longer walk through, with screenshots, see the [windows and chrome tutorial](/docs/tutorials/windows-and-chrome).
 
-## Configure it
+## Prerequisites
+
+- An Expo app with an `app.json` or `app.config.ts`, and the `@rn-qnx/expo-qnx-config-plugins` plugin, from [Set up Expo](/docs/how-to/expo-setup).
+- The QNX build host for the native build.
+
+## 1. Configure it
 
 In `app.config.ts`:
 
@@ -42,16 +47,49 @@ export default config;
 | `initialSize`         | `{ width, height }`, integers 1 to 16384 | none      |
 | `unavailableControls` | `hide`, `disable`                        | `hide`    |
 
-With `titleBarStyle: "none"` nothing is drawn and the app owns its exit path. Without `initialSize` the app fills the screen on QNX.
+With `titleBarStyle: "none"` nothing is drawn and the app owns its exit path. With `hidden` the controls float over the content, which starts at the top edge. Without `initialSize` the app fills the screen on QNX. The same `window` object works in `app.json` under `expo.extra.rnqnx`.
 
-## Build it in
+## 2. Build it in
 
 ```bash
+pnpm qnx project prepare-native --project my-app --platform qnx --bundle build/qnx/app.hbc \
+  --identity-tool build/identity/rnqnx_identity_tool
 pnpm qnx project build-native --project my-app --window-chrome
 ```
 
-Without `--window-chrome` the `window` object is validated and otherwise ignored.
+Without `--window-chrome` the `window` object is validated and otherwise ignored. With it, the build fails if the descriptor has nothing to draw. `pnpm qnx project build-native --help` was run for this page and describes `--window-chrome` as the experimental title bar, default OFF.
+
+Not run in this docs pass: the build, and any window on a device.
+
+## 3. Check it
+
+On the host playground, built with the option on, the same settings are flags:
+
+```bash
+rnqnx_playground_host --bundle app.bundle.js \
+  --window-controls windows --title-bar-style default --window-size 1024x600
+```
+
+On the board, the app prints a startup line such as `RNQNX_WINDOW_CHROME platform=qnx controls=macos style=default inset=44 window=1920x1080` and one line per control it left out. Each press prints `RNQNX_WINDOW_ACTION close|minimize|maximize`. After a move or resize it prints `RNQNX_WINDOW_FRAME <w>x<h>+<x>+<y>`.
 
 ## What ran
 
-Host tests cover the title bar. One Pi 400 run on 2026-11-12 moved, resized, minimized, maximized and restored an app window under `rnqnx-winmgr`, using pointer events injected through Screen. See the [Pi 400 desktop guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md) for the run. ADR-0016's status text still reads "close only". The build command above was not run by this docs pass.
+Host tests cover the title bar, with frames rendered at 2x on macOS (not QNX output) in `docs/evidence/window-chrome-host-2026-11-12/`. One Pi 400 run on 2026-11-12 moved, resized, minimized, maximized and restored an app window under `rnqnx-winmgr`, using pointer events injected through Screen. The [Pi 400 desktop guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md) has the run. ADR-0016's status text still reads "close only".
+
+## Verify
+
+A title bar with the controls you chose shows above the app. Close ends the app. Under `rnqnx-winmgr` the bar moves the native window.
+
+## Troubleshooting
+
+| What you see                           | Cause and fix                                                                                                  |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| The build fails with the chrome option | No `window` object, or `titleBarStyle: "none"`.                                                                |
+| No title bar                           | The build was made without `--window-chrome`, or `native-app.json` predates the `window` field. Prepare again. |
+| Maximize is missing                    | No `initialSize`. The startup log names the reason.                                                            |
+| A value is rejected at prebuild        | The config plugin, `prepare-native`, CMake and the C++ reader all validate. Fix the value.                     |
+
+## Reference
+
+- [Config reference](/docs/reference/config)
+- [ADR-0016](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/adr/0016-window-chrome-on-qnx-screen.md)

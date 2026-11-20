@@ -13,6 +13,7 @@ python-embed/
 node_modules/
 .pnpm-store/
 *.log
+!tests/native/marathon-wayland/fixtures/*.log
 npm-debug.log*
 
 # IDE

@@ -1,0 +1,79 @@
+---
+title: Take a device screenshot
+description: Capture the host renderer's output headlessly on your computer, an app's own window on the board, and the whole display with the QNX screenshot tool, with the limits of each.
+---
+
+There are three ways to get a picture, and each one captures something different. Pick by what you need.
+
+| Method                              | Captures                | Where it runs                     | Needs                                                              |
+| ----------------------------------- | ----------------------- | --------------------------------- | ------------------------------------------------------------------ |
+| `--screenshot` on the host renderer | The app's render        | Your Mac or Linux machine         | The host build from the [quick start](/docs/tutorials/quick-start) |
+| `--screenshot` on the QNX app       | The app's own Qt window | The board                         | An OpenGL-capable Qt build, not the software backend               |
+| `screenshot -file=`                 | The whole display       | The board, with Screen privileges | root or `sudo`                                                     |
+
+## Prerequisites
+
+- For the host method, a built `rnqnx_playground_host` and a bundle. Step 6 of the quick start builds both.
+- For the board methods, a deployed app as in [Deploy over ssh](/docs/how-to/deploy-over-ssh).
+
+## 1. Host render, headless
+
+```bash
+./build/playground/bin/rnqnx_playground_host \
+  --bundle build/dashboard.bundle.js \
+  -platform offscreen --screenshot build/dashboard.png
+```
+
+Verified on macOS on 2026-11-19. The app renders once, writes the PNG and exits with 0. It printed `RNQNX_PLAYGROUND_SCREENSHOT build/dashboard.png 640x480`. The default size is 640x480. The binary's `--help` lists `--bundle`, `--screenshot`, `--fullscreen`, `--app-id`, `--app-name`, `--component-name` and `--describe-app`. Drop `-platform offscreen --screenshot ...` for a live window.
+
+What you should see: a PNG of your app. For the template app it is white text on a dark blue field, shown in the quick start.
+
+## 2. The app's own window on the board
+
+The QNX app takes the same flag. Run it on the board with a size if you want one:
+
+```sh
+./org.rnqnx.showcase --window-size 586x600 --screenshot /tmp/app.png
+```
+
+The app logs `RNQNX_PLAYGROUND_SCREENSHOT <file> <WxH>` when it has written the file. The 2026-11-13 tile-layout receipt took its three window sizes this way. This captures the app's window, so it works for `qnxuser`, who lacks Screen privileges. With the software Qt backend (`QT_QUICK_BACKEND=software`) it returns no image. Run 1 of 2026-11-19 recorded `RNQNX_PLAYGROUND_SCREENSHOT /tmp/pr149-shot.png 1024x768` from the gallery.
+
+## 3. The whole display
+
+The QNX `screenshot` utility reads the display. It needs Screen privileges that `qnxuser` does not have, so the recorded runs used `sudo -n`:
+
+```sh
+sudo -n screenshot -file=/tmp/capture.bmp
+scp qnxuser@192.168.2.2:/tmp/capture.bmp .
+```
+
+Convert the BMP to PNG on your computer. Run 2 did exactly this and noted one quirk: the compositor can show a frame one input event late, so each capture followed a small pointer nudge (`rnqnx-inject move ...`).
+
+To capture without writing a file on the board, the repository's restricted tool streams a BMP back over ssh:
+
+```bash
+pnpm qnx:device screenshot --out build/pi.bmp
+```
+
+`--out` must be a new local file. The tool refuses to overwrite. With `--dry-run` it prints the call it would make, `scripts/qnx-device.sh screenshot <24-hex-id>`, and runs nothing. The script needs the `screenshot` tool on the board, and exits 127 with `screenshot is not installed.` if it is missing. Set `QNX_TARGET_IP` and `QNX_TARGET_USER` first. The `--timeout` option takes 1 to 120 seconds, default 30.
+
+Not run in this docs pass: sections 2 and 3 (they need a board). Only section 1 and the `--dry-run` form of `qnx:device screenshot` ran.
+
+## Verify
+
+Open the PNG. For the host method it should match what a live window shows at 640x480. For the board methods, check the pixel size against the log line, and compare it with the display mode your board booted into ([display modes](/docs/how-to/display-modes)).
+
+## Troubleshooting
+
+| What you see                                    | Cause and fix                                                                                |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| A black or stale image from `screenshot -file=` | Nudge the pointer, wait, capture again. The compositor can lag one event.                    |
+| `screenshot` fails for `qnxuser`                | It needs Screen privileges. Use `sudo -n`.                                                   |
+| `--screenshot` returns no image                 | The app runs on the software Qt backend. Use the OpenGL build with the patched `libqqnx.so`. |
+| `screenshot is not installed.`                  | The board image lacks the tool. Use the app's own `--screenshot`.                            |
+| The file already exists                         | `qnx:device screenshot --out` writes only new files.                                         |
+
+## Reference
+
+- [Pi 400 desktop guide](https://github.com/mikevocalz/react-native-qnx/blob/main/docs/getting-started/pi400-desktop-app.md) for the app flags.
+- [CLI reference](/docs/reference/cli).
